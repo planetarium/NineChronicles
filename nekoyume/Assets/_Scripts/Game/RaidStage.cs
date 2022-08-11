@@ -62,7 +62,8 @@ namespace Nekoyume.Game
             BattleLog log,
             ArenaPlayerDigest player,
             int damageDealt,
-            bool isNewRecord)
+            bool isNewRecord,
+            bool isPractice = false)
         {
             if (!_isPlaying)
             {
@@ -78,7 +79,7 @@ namespace Nekoyume.Game
                 if (log?.Count > 0)
                 {
                     _battleCoroutine = StartCoroutine(
-                        CoPlay(bossId, log, player, damageDealt, isNewRecord));
+                        CoPlay(bossId, log, player, damageDealt, isNewRecord, isPractice));
                 }
             }
             else
@@ -92,7 +93,8 @@ namespace Nekoyume.Game
             BattleLog log,
             ArenaPlayerDigest player,
             int damageDealt,
-            bool isNewRecord)
+            bool isNewRecord,
+            bool isPractice)
         {
             yield return StartCoroutine(CoEnter(bossId, player));
 
@@ -127,7 +129,7 @@ namespace Nekoyume.Game
                 }
             }
 
-            yield return StartCoroutine(CoFinish(damageDealt, isNewRecord));
+            yield return StartCoroutine(CoFinish(damageDealt, isNewRecord, isPractice));
         }
 
         private IEnumerator CoEnter(int bossId, ArenaPlayerDigest playerDigest)
@@ -166,14 +168,18 @@ namespace Nekoyume.Game
             _boss.UpdateStatusUI();
         }
 
-        private IEnumerator CoFinish(int damageDealt, bool isNewRecord)
+        private IEnumerator CoFinish(int damageDealt, bool isNewRecord, bool isPractice)
         {
             IsAvatarStateUpdatedAfterBattle = false;
             _onBattleEnded.OnNext(this);
             yield return _player.CurrentAction;
             yield return _boss.CurrentAction;
             yield return delayOnBattleFinished;
-            yield return new WaitUntil(() => IsAvatarStateUpdatedAfterBattle);
+
+            if (!isPractice)
+            {
+                yield return new WaitUntil(() => IsAvatarStateUpdatedAfterBattle);
+            }
 
             if (_battleCoroutine is not null)
             {
@@ -346,8 +352,7 @@ namespace Nekoyume.Game
             Character.RaidCharacter raidCharacter =
                 character.Id == _player.Id ? _player : _boss;
             raidCharacter.Set(character);
-            yield return _player.CurrentAction;
-            yield return _boss.CurrentAction;
+            yield return raidCharacter.TargetAction;
 
             if (raidCharacter is Character.RaidPlayer player)
             {

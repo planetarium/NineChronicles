@@ -84,7 +84,7 @@ namespace Nekoyume.UI
 
         private GameObject _bossNamePrefab;
         private GameObject _bossSpinePrefab;
-        private string _bossName;
+        private int _bossId;
         private (long, long) _period;
 
         private WorldBossStatus _status = WorldBossStatus.None;
@@ -262,8 +262,6 @@ namespace Nekoyume.UI
                 Destroy(_bossSpinePrefab);
             }
 
-            _bossName = string.Empty;
-
             if (WorldBossFrontHelper.TryGetBossData(row.BossId, out var data))
             {
                 if (isOffSeason)
@@ -272,7 +270,7 @@ namespace Nekoyume.UI
                 }
 
                 _bossSpinePrefab = Instantiate(data.spinePrefab, bossSpineContainer);
-                _bossName = data.name;
+                _bossId = row.BossId;
             }
         }
 
@@ -294,7 +292,7 @@ namespace Nekoyume.UI
 
         private void OnClickEnter()
         {
-            Find<RaidPreparation>().Show(CachedRaiderState, _bossName);
+            Find<RaidPreparation>().Show(CachedRaiderState, _bossId);
         }
 
         private async Task<(

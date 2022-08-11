@@ -15,21 +15,34 @@ using UnityEngine.UI;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
-using Nekoyume.Game.Character;
 using Nekoyume.Game.Factory;
 using Nekoyume.Model.Elemental;
 using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module.WorldBoss;
 using Nekoyume.UI.Scroller;
 using TMPro;
+using Nekoyume.Model;
+using Libplanet.Action;
+using Nekoyume.Battle;
 using Inventory = Nekoyume.UI.Module.Inventory;
 using Toggle = UnityEngine.UI.Toggle;
+using Player = Nekoyume.Game.Character.Player;
 
 namespace Nekoyume.UI
 {
     using UniRx;
     public class RaidPreparation : Widget
     {
+        private class PracticeRandom : System.Random, IRandom
+        {
+            public PracticeRandom() : base(Guid.NewGuid().GetHashCode())
+            {
+                
+            }
+
+            public int Seed => throw new NotImplementedException();
+        }
+
         private static readonly Vector3 PlayerPosition = new(1999.8f, 1999.3f, 3f);
         private const string RAID_EQUIPMENT_KEY = "RAID_EQUIPMENT_KEY";
 
@@ -91,6 +104,7 @@ namespace Nekoyume.UI
         private GameObject _cachedCharacterTitle;
 
         private int _requiredCost;
+        private int _bossId;
 
         private readonly List<IDisposable> _disposables = new();
         private HeaderMenuStatic _headerMenu;
@@ -149,10 +163,11 @@ namespace Nekoyume.UI
             toggle.gameObject.SetActive(GameConfig.IsEditor);
         }
 
-        public void Show(RaiderState raiderState, string bossName, bool ignoreShowAnimation = false)
+        public void Show(RaiderState raiderState, int bossId, bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
 
+            _bossId = bossId;
             _headerMenu = Find<HeaderMenuStatic>();
             _cachedRaiderState = raiderState;
 
@@ -178,7 +193,7 @@ namespace Nekoyume.UI
                 startButton.SetCost(CostType.None, 0);
             }
 
-            closeButtonText.text = bossName;
+            closeButtonText.text = L10nManager.LocalizeCharacterName(bossId);
             if (Player == null)
             {
                 Player = PlayerFactory.Create(currentAvatarState).GetComponent<Player>();
@@ -526,9 +541,11 @@ namespace Nekoyume.UI
             AudioController.PlayClick();
             var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
             var curStatus = WorldBossFrontHelper.GetStatus(currentBlockIndex);
+
             switch (curStatus)
             {
                 case WorldBossStatus.OffSeason:
+                    PracticeRaid();
                     break;
                 case WorldBossStatus.Season:
                     if (_cachedRaiderState is null)
@@ -560,6 +577,32 @@ namespace Nekoyume.UI
             }
         }
 
+        private void PracticeRaid()
+        {
+            (_, _, var foods) = SaveCurrentEquipment();
+            var currentAvatarState = States.Instance.CurrentAvatarState;
+            var simulator = new RaidSimulator(
+                _bossId,
+                new PracticeRandom(),
+                currentAvatarState,
+                foods,
+                Game.Game.instance.TableSheets.GetRaidSimulatorSheets()
+            );
+            var log = simulator.Simulate();
+            var digest = new ArenaPlayerDigest(currentAvatarState);
+            var raidStage = Game.Game.instance.RaidStage;
+            raidStage.Play(
+                simulator.BossId,
+                log,
+                digest,
+                simulator.DamageDealt,
+                false,
+                true);
+
+            Find<WorldBoss>().Close();
+            Close();
+        }
+
         private IEnumerator CoRaid(bool payNcg)
         {
             coverToBlockClick.SetActive(true);
@@ -583,9 +626,17 @@ namespace Nekoyume.UI
 
         private void Raid(bool payNcg)
         {
+            (var equipments, var costumes, var foods) = SaveCurrentEquipment();
+            ActionManager.Instance.Raid(costumes, equipments, foods, payNcg);
+            Find<LoadingScreen>().Show();
+            Close();
+        }
+
+        private (List<Guid> equipments, List<Guid> costumes, List<Guid> foods) SaveCurrentEquipment()
+        {
             var equipments = Player.Equipments.Select(c => c.ItemId).ToList();
             var costumes = Player.Costumes.Select(c => c.ItemId).ToList();
-            var consumables = consumableSlots
+            var foods = consumableSlots
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)
                 .Select(slot => (Consumable)slot.Item)
                 .Select(c => c.ItemId).ToList();
@@ -593,12 +644,9 @@ namespace Nekoyume.UI
             var equipment = new List<Guid>();
             equipment.AddRange(equipments);
             equipment.AddRange(costumes);
-            equipment.AddRange(consumables);
-
+            equipment.AddRange(foods);
             SaveEquipment(equipment);
-            ActionManager.Instance.Raid(costumes, equipments, consumables, payNcg);
-            Find<LoadingScreen>().Show();
-            Close();
+            return (equipments, costumes, foods);
         }
 
         private void ShowTicketPurchasePopup(long currentBlockIndex)
