@@ -4,10 +4,11 @@ using Cysharp.Threading.Tasks;
 using Nekoyume.Extensions;
 using Nekoyume.Model.Event;
 using Nekoyume.TableData.Event;
-using UniRx;
 
 namespace Nekoyume.State
 {
+    using UniRx;
+
     public static partial class RxProps
     {
         // Dungeon
@@ -39,6 +40,12 @@ namespace Nekoyume.State
         public static IReadOnlyReactiveProperty<TicketProgress>
             EventDungeonTicketProgress => _eventDungeonTicketProgress;
 
+        private static ReactiveProperty<string> _eventDungeonRemainingTimeText =
+            new(string.Empty);
+
+        public static IReadOnlyReactiveProperty<string> EventDungeonRemainingTimeText =>
+            _eventDungeonRemainingTimeText;
+
         // Recipe
         private static readonly ReactiveProperty<EventScheduleSheet.Row>
             _eventScheduleRowForRecipe = new(null);
@@ -52,22 +59,49 @@ namespace Nekoyume.State
         public static IReadOnlyReactiveProperty<List<EventConsumableItemRecipeSheet.Row>>
             EventConsumableItemRecipeRows => _eventConsumableItemRecipeRows;
 
+        private static ReactiveProperty<string> _eventRecipeRemainingTimeText =
+            new(string.Empty);
+
+        public static IReadOnlyReactiveProperty<string> EventRecipeRemainingTimeText =>
+            _eventRecipeRemainingTimeText;
+
         private static void StartEvent()
         {
             OnBlockIndexEvent(_agent.BlockIndex);
             OnAvatarChangedEvent();
 
+            _eventScheduleRowForDungeon
+                .ObserveOnMainThread()
+                .Subscribe(_ =>
+                {
+                    UpdateEventDungeonTicketProgress(_agent.BlockIndex);
+                    UpdateEventDungeonRemainingTimeText(_agent.BlockIndex);
+                })
+                .AddTo(_disposables);
             _eventDungeonInfo
                 .ObserveOnMainThread()
-                .Subscribe(_ => UpdateEventDungeonTicketProgress(_agent.BlockIndex))
+                .Subscribe(_ =>
+                {
+                    UpdateEventDungeonTicketProgress(_agent.BlockIndex);
+                    UpdateEventDungeonRemainingTimeText(_agent.BlockIndex);
+                })
+                .AddTo(_disposables);
+            _eventScheduleRowForRecipe
+                .ObserveOnMainThread()
+                .Subscribe(_ =>
+                {
+                    UpdateEventRecipeRemainingTimeText(_agent.BlockIndex);
+                })
                 .AddTo(_disposables);
         }
 
         private static void OnBlockIndexEvent(long blockIndex)
         {
             UpdateEventDungeonSheetData(blockIndex);
-            UpdateEventRecipeSheetData(blockIndex);
             UpdateEventDungeonTicketProgress(blockIndex);
+            UpdateEventDungeonRemainingTimeText(blockIndex);
+            UpdateEventRecipeSheetData(blockIndex);
+            UpdateEventRecipeRemainingTimeText(blockIndex);
         }
 
         private static void OnAvatarChangedEvent()
@@ -151,6 +185,19 @@ namespace Nekoyume.State
                 _eventDungeonTicketProgress.Value);
         }
 
+        private static void UpdateEventDungeonRemainingTimeText(long blockIndex)
+        {
+            if (_eventScheduleRowForDungeon.Value is null)
+            {
+                _eventDungeonRemainingTimeText.SetValueAndForceNotify(string.Empty);
+                return;
+            }
+
+            var value = _eventScheduleRowForDungeon.Value.RecipeEndBlockIndex - blockIndex;
+            var time = value.BlockRangeToTimeSpanString();
+            _eventDungeonRemainingTimeText.SetValueAndForceNotify($"{value}({time})");
+        }
+
         private static async Task<EventDungeonInfo>
             UpdateEventDungeonInfoAsync(EventDungeonInfo previous)
         {
@@ -195,6 +242,19 @@ namespace Nekoyume.State
             _eventConsumableItemRecipeRows.Value =
                 _tableSheets.EventConsumableItemRecipeSheet
                     .GetRecipeRows(_eventScheduleRowForRecipe.Value.Id);
+        }
+
+        private static void UpdateEventRecipeRemainingTimeText(long blockIndex)
+        {
+            if (_eventScheduleRowForRecipe.Value is null)
+            {
+                _eventRecipeRemainingTimeText.SetValueAndForceNotify(string.Empty);
+                return;
+            }
+
+            var value = _eventScheduleRowForRecipe.Value.RecipeEndBlockIndex - blockIndex;
+            var time = value.BlockRangeToTimeSpanString();
+            _eventRecipeRemainingTimeText.SetValueAndForceNotify($"{value}({time})");
         }
     }
 }
