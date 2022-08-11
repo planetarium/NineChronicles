@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Game.Controller;
@@ -60,9 +61,11 @@ namespace Nekoyume.UI
 
         public void Show(ToggleType toggleType)
         {
-            categoryToggles.FirstOrDefault(x => x.Type.Equals(toggleType)).Toggle.isOn = true;
-            _selectedItemSubType.SetValueAndForceNotify(toggleType);
             base.Show();
+            var toggle = categoryToggles.FirstOrDefault(x => x.Type.Equals(toggleType));
+            toggle.Item.gameObject.SetActive(true);
+            toggle.Toggle.isOn = true;
+            _selectedItemSubType.SetValueAndForceNotify(toggleType);
         }
 
         public void UpdateReward()
@@ -83,51 +86,48 @@ namespace Nekoyume.UI
 
         private void UpdateView(ToggleType toggleType)
         {
-            foreach (var toggle in categoryToggles)
+            foreach (var toggle in categoryToggles.Where(toggle => toggle.Type != toggleType))
             {
                 toggle.Item.gameObject.SetActive(false);
             }
 
-            foreach (var toggle in categoryToggles.Where(toggle => toggle.Type.Equals(toggleType)))
-            {
-                switch (toggle.Type)
-                {
-                    case ToggleType.Information:
-                        if (toggle.Item is WorldBossInformation information)
-                        {
-                            information.Show();
-                        }
-                        break;
-                    case ToggleType.PreviousRank:
-                        if (toggle.Item is WorldBossRank previousRank)
-                        {
-                            previousRank.ShowAsync(WorldBossRank.Status.PreviousSeason);
-                        }
-                        break;
-                    case ToggleType.Rank:
-                        if (toggle.Item is WorldBossRank rank)
-                        {
-                            rank.ShowAsync(WorldBossRank.Status.Season);
-                        }
-                        break;
-                    case ToggleType.Reward:
-                        if (toggle.Item is WorldBossReward reward)
-                        {
-                            reward.ShowAsync();
-                        }
-                        break;
-                    case ToggleType.Rune:
-                        if (toggle.Item is WorldBossRuneInventory inventory)
-                        {
-                            inventory.ShowAsync();
-                        }
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+            var categoryToggle = categoryToggles.FirstOrDefault(toggle => toggle.Type.Equals(toggleType));
+            categoryToggle.Item.gameObject.SetActive(true);
 
-                toggle.Item.gameObject.SetActive(true);
-                break;
+            switch (categoryToggle.Type)
+            {
+                case ToggleType.Information:
+                    if (categoryToggle.Item is WorldBossInformation information)
+                    {
+                        information.Show();
+                    }
+                    break;
+                case ToggleType.PreviousRank:
+                    if (categoryToggle.Item is WorldBossRank previousRank)
+                    {
+                        previousRank.ShowAsync(WorldBossRank.Status.PreviousSeason);
+                    }
+                    break;
+                case ToggleType.Rank:
+                    if (categoryToggle.Item is WorldBossRank rank)
+                    {
+                        rank.ShowAsync(WorldBossRank.Status.Season);
+                    }
+                    break;
+                case ToggleType.Reward:
+                    if (categoryToggle.Item is WorldBossReward reward)
+                    {
+                        reward.ShowAsync();
+                    }
+                    break;
+                case ToggleType.Rune:
+                    if (categoryToggle.Item is WorldBossRuneInventory inventory)
+                    {
+                        inventory.ShowAsync();
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
     }

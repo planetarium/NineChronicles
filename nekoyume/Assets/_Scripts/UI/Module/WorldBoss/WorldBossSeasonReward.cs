@@ -11,6 +11,11 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         public void Set(int raidId, int myRank, int userCount)
         {
+            foreach (var item in Items)
+            {
+                item.gameObject.SetActive(false);
+            }
+
             if (!WorldBossFrontHelper.TryGetRaid(raidId, out var raidRow))
             {
                 return;
@@ -24,6 +29,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             for (var i = 0; i < rankingRows.Count; i++)
             {
                 Items[i].Set(rankingRows[i], myRank, userCount);
+                Items[i].gameObject.SetActive(true);
             }
         }
     }

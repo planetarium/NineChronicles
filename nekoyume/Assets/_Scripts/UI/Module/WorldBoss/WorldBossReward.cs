@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -44,7 +45,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 {
                     if (!value) return;
                     AudioController.PlayClick();
-                    _selectedItemSubType.Value = categoryToggle.Type;
+                    _selectedItemSubType.SetValueAndForceNotify(categoryToggle.Type);
                 });
             }
 
@@ -57,11 +58,28 @@ namespace Nekoyume.UI.Module.WorldBoss
             }).AddTo(gameObject);
         }
 
+        private IEnumerator CoSetFirstCategory()
+        {
+            yield return null;
+            categoryToggles.First().Toggle.isOn = true;
+            _selectedItemSubType.SetValueAndForceNotify(ToggleType.SeasonRanking);
+        }
+
         public async void ShowAsync(bool isReset = true)
         {
             if (States.Instance.CurrentAvatarState is null)
             {
                 return;
+            }
+
+            if (isReset)
+            {
+                foreach (var toggle in categoryToggles)
+                {
+                    toggle.Item.gameObject.SetActive(false);
+                }
+
+                StartCoroutine(CoSetFirstCategory());
             }
 
             var (raider, killRewardRecord, raidId, record, userCount) = await GetDataAsync();
@@ -80,17 +98,6 @@ namespace Nekoyume.UI.Module.WorldBoss
                         grade.Set(raider, raidId);
                         break;
                 }
-            }
-
-            if (isReset)
-            {
-                foreach (var toggle in categoryToggles)
-                {
-                    toggle.Item.gameObject.SetActive(false);
-                }
-
-                categoryToggles.First().Toggle.isOn = true;
-                _selectedItemSubType.SetValueAndForceNotify(ToggleType.SeasonRanking);
             }
         }
 
