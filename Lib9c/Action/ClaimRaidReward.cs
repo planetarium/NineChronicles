@@ -19,6 +19,10 @@ namespace Nekoyume.Action
     {
         public Address AvatarAddress;
 
+        public ClaimRaidReward()
+        {
+        }
+
         public ClaimRaidReward(Address avatarAddress)
         {
             AvatarAddress = avatarAddress;

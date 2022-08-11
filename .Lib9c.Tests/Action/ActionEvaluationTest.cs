@@ -101,6 +101,8 @@ namespace Lib9c.Tests.Action
         [InlineData(typeof(UnlockEquipmentRecipe))]
         [InlineData(typeof(UnlockWorld))]
         [InlineData(typeof(Raid))]
+        [InlineData(typeof(ClaimRaidReward))]
+        [InlineData(typeof(ClaimWordBossKillReward))]
         public void Serialize_With_MessagePack(Type actionType)
         {
             var action = GetAction(actionType);
@@ -282,6 +284,11 @@ namespace Lib9c.Tests.Action
                     EquipmentIds = new List<Guid>(),
                     FoodIds = new List<Guid>(),
                     PayNcg = true,
+                },
+                ClaimRaidReward _ => new ClaimRaidReward(_sender),
+                ClaimWordBossKillReward _ => new ClaimWordBossKillReward
+                {
+                    AvatarAddress = _sender,
                 },
                 _ => throw new InvalidCastException(),
             };
