@@ -7,6 +7,7 @@ namespace Lib9c.Tools
     [HasSubCommands(typeof(Market), Description = "Query about market.")]
     [HasSubCommands(typeof(State), Description = "Manage states.")]
     [HasSubCommands(typeof(Tx), Description = "Manage transactions.")]
+    [HasSubCommands(typeof(Action), Description = "Gets metadata of actions.")]
     class Program
     {
         static void Main(string[] args) => CoconaLiteApp.Run<Program>(args);
