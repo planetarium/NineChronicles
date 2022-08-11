@@ -51,7 +51,10 @@ namespace Nekoyume.UI
         private WorldButton _eventDungeonButton;
 
         [SerializeField]
-        private TextMeshProUGUI _eventDungeonTicketsText;
+        private GameObject _eventDungeonRemainingTimeObject;
+
+        [SerializeField]
+        private TextMeshProUGUI _eventDungeonRemainingTimeText;
 
         private readonly List<IDisposable> _disposablesAtShow = new();
 
@@ -176,22 +179,19 @@ namespace Nekoyume.UI
                     Find<HeaderMenuStatic>().UpdateAssets(
                         HeaderMenuStatic.AssetVisibleState.Battle);
                     _eventDungeonButton.Lock(true);
+                    _eventDungeonRemainingTimeObject.SetActive(false);
                     return;
                 }
 
                 Find<HeaderMenuStatic>().UpdateAssets(
                     HeaderMenuStatic.AssetVisibleState.EventDungeon);
-                _eventDungeonTicketsText.text =
-                    RxProps.EventDungeonTicketProgress.Value
-                        .currentTickets.ToString(CultureInfo.InvariantCulture);
                 _eventDungeonButton.HasNotification.Value = true;
                 _eventDungeonButton.Unlock();
+                _eventDungeonRemainingTimeObject.SetActive(true);
             }).AddTo(_disposablesAtShow);
-            RxProps.EventDungeonTicketProgress.Subscribe(value =>
-            {
-                _eventDungeonTicketsText.text =
-                    value.currentTickets.ToString(CultureInfo.InvariantCulture);
-            }).AddTo(_disposablesAtShow);
+            RxProps.EventDungeonRemainingTimeText
+                .SubscribeTo(_eventDungeonRemainingTimeText)
+                .AddTo(_disposablesAtShow);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

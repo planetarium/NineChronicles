@@ -353,7 +353,8 @@ MonoBehaviour:
   - {fileID: 1312301102039139924}
   - {fileID: 4269781129739543417}
   _eventDungeonButton: {fileID: 7149023141089078293}
-  _eventDungeonTicketsText: {fileID: 6761193022807553279}
+  _eventDungeonRemainingTimeObject: {fileID: 8593641996932701599}
+  _eventDungeonRemainingTimeText: {fileID: 974607236082554696}
 --- !u!1 &847549926137805304
 GameObject:
   m_ObjectHideFlags: 0
@@ -16169,7 +16170,7 @@ PrefabInstance:
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 88
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
