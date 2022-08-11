@@ -372,12 +372,12 @@ namespace Nekoyume.UI
                                 StageType.EventDungeon,
                                 worldMap.SharedViewModel.SelectedWorldId.Value,
                                 stageRow.Id,
-                                $"{RxProps.EventDungeonRow?.GetLocalizedName()} {stageRow.Id}",
+                                $"{RxProps.EventDungeonRow?.GetLocalizedName()} {stageRow.Id.ToEventDungeonStageNumber()}",
                                 true);
                             Find<HeaderMenuStatic>()
                                 .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
                         },
-                        $"{RxProps.EventDungeonRow.GetLocalizedName()} {stageRow.Id}",
+                        $"{RxProps.EventDungeonRow.GetLocalizedName()} {stageRow.Id.ToEventDungeonStageNumber()}",
                         itemBase,
                         stageRow),
                 AcquisitionPlaceButton.PlaceType.Stage => stageRow is null
