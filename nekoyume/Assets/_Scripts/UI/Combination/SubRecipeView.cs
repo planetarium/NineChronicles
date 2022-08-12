@@ -43,29 +43,55 @@ namespace Nekoyume.UI
             public TextMeshProUGUI PercentageText;
         }
 
-        [SerializeField] private GameObject toggleParent = null;
-        [SerializeField] private List<Toggle> categoryToggles = null;
-        [SerializeField] private RecipeCell recipeCell = null;
-        [SerializeField] private TextMeshProUGUI titleText = null;
-        [SerializeField] private TextMeshProUGUI statText = null;
+        [SerializeField]
+        private GameObject toggleParent;
 
-        [SerializeField] private TextMeshProUGUI blockIndexText = null;
-        [SerializeField] private TextMeshProUGUI greatSuccessRateText = null;
+        [SerializeField]
+        private List<Toggle> categoryToggles;
 
-        [SerializeField] private List<OptionView> optionViews = null;
-        [SerializeField] private List<OptionView> skillViews = null;
-        [SerializeField] private TextMeshProUGUI levelText = null;
+        [SerializeField]
+        private RecipeCell recipeCell;
 
-        [SerializeField] private RequiredItemRecipeView requiredItemRecipeView = null;
+        [SerializeField]
+        private TextMeshProUGUI titleText;
 
-        [SerializeField] private ConditionalCostButton button = null;
-        [SerializeField] private GameObject lockedObject = null;
-        [SerializeField] private TextMeshProUGUI lockedText = null;
+        [SerializeField]
+        private TextMeshProUGUI statText;
+
+        [SerializeField]
+        private TextMeshProUGUI[] mainStatTexts;
+
+        [SerializeField]
+        private TextMeshProUGUI blockIndexText;
+
+        [SerializeField]
+        private TextMeshProUGUI greatSuccessRateText;
+
+        [SerializeField]
+        private List<OptionView> optionViews;
+
+        [SerializeField]
+        private List<OptionView> skillViews;
+
+        [SerializeField]
+        private TextMeshProUGUI levelText;
+
+        [SerializeField]
+        private RequiredItemRecipeView requiredItemRecipeView;
+
+        [SerializeField]
+        private ConditionalCostButton button;
+
+        [SerializeField]
+        private GameObject lockedObject;
+
+        [SerializeField]
+        private TextMeshProUGUI lockedText;
 
         public readonly Subject<RecipeInfo> CombinationActionSubject = new Subject<RecipeInfo>();
 
-        private SheetRow<int> _recipeRow = null;
-        private List<int> _subrecipeIds = null;
+        private SheetRow<int> _recipeRow;
+        private List<int> _subrecipeIds;
         private int _selectedIndex;
         private RecipeInfo _selectedRecipeInfo;
 
@@ -111,37 +137,67 @@ namespace Nekoyume.UI
             }
         }
 
-        public void SetData(SheetRow<int> recipeRow, List<int> subrecipeIds)
+        public void SetData(SheetRow<int> recipeRow, List<int> subRecipeIds)
         {
             _recipeRow = recipeRow;
-            _subrecipeIds = subrecipeIds;
+            _subrecipeIds = subRecipeIds;
 
             string title = null;
             var isEquipment = false;
-            if (recipeRow is EquipmentItemRecipeSheet.Row equipmentRow)
+            switch (recipeRow)
             {
-                isEquipment = true;
-                var resultItem = equipmentRow.GetResultEquipmentItemRow();
-                title = resultItem.GetLocalizedName(true, false);
+                case EquipmentItemRecipeSheet.Row equipmentRow:
+                {
+                    isEquipment = true;
+                    var resultItem = equipmentRow.GetResultEquipmentItemRow();
+                    title = resultItem.GetLocalizedName(true, false);
 
-                var stat = resultItem.GetUniqueStat();
-                var statValueText = stat.Type == StatType.SPD
-                    ? (stat.ValueAsInt * 0.01m).ToString(CultureInfo.InvariantCulture)
-                    : stat.ValueAsInt.ToString();
-                statText.text = string.Format(StatTextFormat, stat.Type, statValueText);
-                recipeCell.Show(equipmentRow, false);
-            }
-            else if (recipeRow is ConsumableItemRecipeSheet.Row consumableRow)
-            {
-                var resultItem = consumableRow.GetResultConsumableItemRow();
-                title = resultItem.GetLocalizedName();
+                    for (var i = 0; i < mainStatTexts.Length; i++)
+                    {
+                        var mainStatText = mainStatTexts[i];
+                        if (i == 0)
+                        {
+                            var stat = resultItem.GetUniqueStat();
+                            var statValueText = stat.Type == StatType.SPD
+                                ? (stat.ValueAsInt * 0.01m).ToString(CultureInfo.InvariantCulture)
+                                : stat.ValueAsInt.ToString();
+                            mainStatText.text = string.Format(StatTextFormat, stat.Type, statValueText);
+                            mainStatText.gameObject.SetActive(true);
+                            continue;
+                        }
 
-                var stat = resultItem.GetUniqueStat();
-                var statValueText = stat.StatType == StatType.SPD
-                    ? (stat.ValueAsInt * 0.01m).ToString(CultureInfo.InvariantCulture)
-                    : stat.ValueAsInt.ToString();
-                statText.text = string.Format(StatTextFormat, stat.StatType, statValueText);
-                recipeCell.Show(consumableRow, false);
+                        mainStatText.gameObject.SetActive(false);
+                    }
+
+                    recipeCell.Show(equipmentRow, false);
+                    break;
+                }
+                case ConsumableItemRecipeSheet.Row consumableRow:
+                {
+                    var resultItem = consumableRow.GetResultConsumableItemRow();
+                    title = resultItem.GetLocalizedName();
+
+                    var statsCount = resultItem.Stats.Count;
+                    for (var i = 0; i < mainStatTexts.Length; i++)
+                    {
+                        var mainStatText = mainStatTexts[i];
+                        if (i < statsCount)
+                        {
+                            var stat = resultItem.Stats[i];
+                            var statValueText = stat.StatType == StatType.SPD
+                                ? (stat.ValueAsInt * 0.01m).ToString(CultureInfo.InvariantCulture)
+                                : stat.ValueAsInt.ToString();
+                            mainStatText.text = string.Format(StatTextFormat, stat.StatType, statValueText);
+                            mainStatText.gameObject.SetActive(true);
+                            continue;
+                        }
+
+                        mainStatText.gameObject.SetActive(false);
+                    }
+
+                    recipeCell.Show(consumableRow, false);
+                    break;
+                }
             }
 
             titleText.text = title;
