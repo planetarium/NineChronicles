@@ -1,4 +1,4 @@
-id,_name,start_block_index,dungeon_end_block_index,dungeon_tickets_max,dungeon_tickets_reset_interval_block_range,dungeon_exp_seed_value,recipe_end_block_index
-1001,"2022 Summer Event",0,100,8,5040,1,110
-1002,"2022 Autumn Event",111,150,8,5040,1,210
-1003,"2022 Winter Event",211,250,8,5040,1,310
+id,_name,start_block_index,dungeon_end_block_index,dungeon_tickets_max,dungeon_tickets_reset_interval_block_range,dungeon_ticket_price,dungeon_ticket_additional_price,dungeon_exp_seed_value,recipe_end_block_index
+1001,"2022 Summer Event",0,100,8,5040,5,2,1,110
+1002,"2022 Autumn Event",111,150,8,5040,5,2,1,210
+1003,"2022 Winter Event",211,250,8,5040,5,2,1,310

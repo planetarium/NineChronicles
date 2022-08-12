@@ -3,8 +3,10 @@ namespace Lib9c.Tests.Action
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text;
     using Libplanet;
     using Libplanet.Action;
+    using Libplanet.Assets;
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
@@ -20,6 +22,7 @@ namespace Lib9c.Tests.Action
     public class EventDungeonBattleTest
     {
         private readonly IAccountStateDelta _initialStates;
+        private readonly Currency _ncgCurrency;
         private readonly TableSheets _tableSheets;
 
         private readonly Address _agentAddress;
@@ -28,6 +31,11 @@ namespace Lib9c.Tests.Action
         public EventDungeonBattleTest()
         {
             _initialStates = new State();
+
+            _ncgCurrency = new Currency("NCG", 2, minters: null);
+            _initialStates = _initialStates.SetState(
+                GoldCurrencyState.Address,
+                new GoldCurrencyState(_ncgCurrency).Serialize());
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
@@ -70,7 +78,7 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         [InlineData(1001, 10010001, 10010001)]
-        public void Execute_Success(
+        public void Execute_Success_Within_Event_Period(
             int eventScheduleId,
             int eventDungeonId,
             int eventDungeonStageId)
@@ -78,19 +86,93 @@ namespace Lib9c.Tests.Action
             Assert.True(_tableSheets.EventScheduleSheet
                 .TryGetValue(eventScheduleId, out var scheduleRow));
             var contextBlockIndex = scheduleRow.StartBlockIndex;
-            Execute(
+            var nextStates = Execute(
                 _initialStates,
                 eventScheduleId,
                 eventDungeonId,
                 eventDungeonStageId,
-                contextBlockIndex);
+                blockIndex: contextBlockIndex);
+            var eventDungeonInfoAddr =
+                EventDungeonInfo.DeriveAddress(_avatarAddress, eventDungeonId);
+            var eventDungeonInfo =
+                new EventDungeonInfo(nextStates.GetState(eventDungeonInfoAddr));
+            Assert.Equal(
+                scheduleRow.DungeonTicketsMax - 1,
+                eventDungeonInfo.RemainingTickets);
+
             contextBlockIndex = scheduleRow.DungeonEndBlockIndex;
-            Execute(
+            nextStates = Execute(
                 _initialStates,
                 eventScheduleId,
                 eventDungeonId,
                 eventDungeonStageId,
-                contextBlockIndex);
+                blockIndex: contextBlockIndex);
+            eventDungeonInfo =
+                new EventDungeonInfo(nextStates.GetState(eventDungeonInfoAddr));
+            Assert.Equal(
+                scheduleRow.DungeonTicketsMax - 1,
+                eventDungeonInfo.RemainingTickets);
+        }
+
+        [Theory]
+        [InlineData(1001, 10010001, 10010001, 0, 0, 0)]
+        [InlineData(1001, 10010001, 10010001, 1, 1, 1)]
+        [InlineData(1001, 10010001, 10010001, int.MaxValue, int.MaxValue, int.MaxValue - 1)]
+        public void Execute_Success_With_Ticket_Purchase(
+            int eventScheduleId,
+            int eventDungeonId,
+            int eventDungeonStageId,
+            int dungeonTicketPrice,
+            int dungeonTicketAdditionalPrice,
+            int numberOfTicketPurchases)
+        {
+            var previousStates = _initialStates;
+            var scheduleSheet = _tableSheets.EventScheduleSheet;
+            Assert.True(scheduleSheet.TryGetValue(eventScheduleId, out var scheduleRow));
+            var sb = new StringBuilder();
+            sb.AppendLine(
+                "id,_name,start_block_index,dungeon_end_block_index,dungeon_tickets_max,dungeon_tickets_reset_interval_block_range,dungeon_exp_seed_value,recipe_end_block_index,dungeon_ticket_price,dungeon_ticket_additional_price");
+            sb.AppendLine(
+                $"{eventScheduleId}" +
+                $",\"2022 Summer Event\"" +
+                $",{scheduleRow.StartBlockIndex}" +
+                $",{scheduleRow.DungeonEndBlockIndex}" +
+                $",{scheduleRow.DungeonTicketsMax}" +
+                $",{scheduleRow.DungeonTicketsResetIntervalBlockRange}" +
+                $",{dungeonTicketPrice}" +
+                $",{dungeonTicketAdditionalPrice}" +
+                $",{scheduleRow.DungeonExpSeedValue}" +
+                $",{scheduleRow.RecipeEndBlockIndex}");
+            previousStates = previousStates.SetState(
+                Addresses.GetSheetAddress<EventScheduleSheet>(),
+                sb.ToString().Serialize());
+
+            var eventDungeonInfoAddr =
+                EventDungeonInfo.DeriveAddress(_avatarAddress, eventDungeonId);
+            var eventDungeonInfo = new EventDungeonInfo(
+                remainingTickets: 0,
+                numberOfTicketPurchases: numberOfTicketPurchases);
+            previousStates = previousStates.SetState(
+                eventDungeonInfoAddr,
+                eventDungeonInfo.Serialize());
+
+            Assert.True(previousStates.GetSheet<EventScheduleSheet>()
+                .TryGetValue(eventScheduleId, out var newScheduleRow));
+            var ncgHas = newScheduleRow.GetDungeonTicketCost(numberOfTicketPurchases);
+            previousStates = previousStates.MintAsset(_agentAddress, ncgHas * _ncgCurrency);
+
+            var nextStates = Execute(
+                previousStates,
+                eventScheduleId,
+                eventDungeonId,
+                eventDungeonStageId,
+                buyTicketIfNeeded: true,
+                blockIndex: scheduleRow.StartBlockIndex);
+            var nextEventDungeonInfoList =
+                (Bencodex.Types.List)nextStates.GetState(eventDungeonInfoAddr)!;
+            Assert.Equal(
+                numberOfTicketPurchases + 1,
+                nextEventDungeonInfoList[2].ToInteger());
         }
 
         [Theory]
@@ -123,7 +205,7 @@ namespace Lib9c.Tests.Action
                     eventScheduleId,
                     eventDungeonId,
                     eventDungeonStageId,
-                    contextBlockIndex));
+                    blockIndex: contextBlockIndex));
             contextBlockIndex = scheduleRow.DungeonEndBlockIndex + 1;
             Assert.Throws<InvalidActionFieldException>(() =>
                 Execute(
@@ -131,7 +213,7 @@ namespace Lib9c.Tests.Action
                     eventScheduleId,
                     eventDungeonId,
                     eventDungeonStageId,
-                    contextBlockIndex));
+                    blockIndex: contextBlockIndex));
         }
 
         [Theory]
@@ -150,7 +232,7 @@ namespace Lib9c.Tests.Action
                     eventScheduleId,
                     eventDungeonId,
                     eventDungeonStageId,
-                    scheduleRow.StartBlockIndex));
+                    blockIndex: scheduleRow.StartBlockIndex));
         }
 
         [Theory]
@@ -169,7 +251,7 @@ namespace Lib9c.Tests.Action
                     eventScheduleId,
                     eventDungeonId,
                     eventDungeonStageId,
-                    scheduleRow.StartBlockIndex));
+                    blockIndex: scheduleRow.StartBlockIndex));
         }
 
         [Theory]
@@ -179,21 +261,53 @@ namespace Lib9c.Tests.Action
             int eventDungeonId,
             int eventDungeonStageId)
         {
-            var previousState = _initialStates;
+            var previousStates = _initialStates;
             var eventDungeonInfoAddr =
                 EventDungeonInfo.DeriveAddress(_avatarAddress, eventDungeonId);
-            var eventDungeonInfo = new EventDungeonInfo(0, 0);
-            previousState = previousState
+            var eventDungeonInfo = new EventDungeonInfo();
+            previousStates = previousStates
                 .SetState(eventDungeonInfoAddr, eventDungeonInfo.Serialize());
             Assert.True(_tableSheets.EventScheduleSheet
                 .TryGetValue(eventScheduleId, out var scheduleRow));
             Assert.Throws<NotEnoughEventDungeonTicketsException>(() =>
                 Execute(
-                    previousState,
+                    previousStates,
                     eventScheduleId,
                     eventDungeonId,
                     eventDungeonStageId,
-                    scheduleRow.StartBlockIndex));
+                    blockIndex: scheduleRow.StartBlockIndex));
+        }
+
+        [Theory]
+        [InlineData(1001, 10010001, 10010001, 0)]
+        [InlineData(1001, 10010001, 10010001, int.MaxValue - 1)]
+        public void Execute_Throw_InsufficientBalanceException(
+            int eventScheduleId,
+            int eventDungeonId,
+            int eventDungeonStageId,
+            int numberOfTicketPurchases)
+        {
+            var previousStates = _initialStates;
+            var eventDungeonInfoAddr =
+                EventDungeonInfo.DeriveAddress(_avatarAddress, eventDungeonId);
+            var eventDungeonInfo = new EventDungeonInfo(
+                remainingTickets: 0,
+                numberOfTicketPurchases: numberOfTicketPurchases);
+            previousStates = previousStates
+                .SetState(eventDungeonInfoAddr, eventDungeonInfo.Serialize());
+
+            Assert.True(_tableSheets.EventScheduleSheet
+                .TryGetValue(eventScheduleId, out var scheduleRow));
+            var ncgHas = scheduleRow.GetDungeonTicketCost(numberOfTicketPurchases) - 1;
+            previousStates = previousStates.MintAsset(_agentAddress, ncgHas * _ncgCurrency);
+
+            Assert.Throws<InsufficientBalanceException>(() =>
+                Execute(
+                    previousStates,
+                    eventScheduleId,
+                    eventDungeonId,
+                    eventDungeonStageId,
+                    buyTicketIfNeeded: true));
         }
 
         [Theory]
@@ -211,14 +325,15 @@ namespace Lib9c.Tests.Action
                     eventScheduleId,
                     eventDungeonId,
                     eventDungeonStageId,
-                    scheduleRow.StartBlockIndex));
+                    blockIndex: scheduleRow.StartBlockIndex));
         }
 
-        private void Execute(
+        private IAccountStateDelta Execute(
             IAccountStateDelta previousStates,
             int eventScheduleId,
             int eventDungeonId,
             int eventDungeonStageId,
+            bool buyTicketIfNeeded = false,
             long blockIndex = 0)
         {
             var previousAvatarState = previousStates.GetAvatarStateV2(_avatarAddress);
@@ -240,6 +355,7 @@ namespace Lib9c.Tests.Action
                     .ToList(),
                 Costumes = new List<Guid>(),
                 Foods = new List<Guid>(),
+                BuyTicketIfNeeded = buyTicketIfNeeded,
             };
 
             var nextStates = action.Execute(new ActionContext
@@ -256,18 +372,12 @@ namespace Lib9c.Tests.Action
                 out var scheduleRow));
             var nextAvatarState = nextStates.GetAvatarStateV2(_avatarAddress);
             var expectExp = scheduleRow.GetStageExp(
-                eventDungeonStageId.ToEventDungeonStageNumber(),
-                EventDungeonBattle.PlayCount);
+                eventDungeonStageId.ToEventDungeonStageNumber());
             Assert.Equal(
                 previousAvatarState.exp + expectExp,
                 nextAvatarState.exp);
-            var eventDungeonInfoAddr =
-                EventDungeonInfo.DeriveAddress(_avatarAddress, eventDungeonId);
-            var eventDungeonInfo =
-                new EventDungeonInfo(nextStates.GetState(eventDungeonInfoAddr));
-            Assert.Equal(
-                scheduleRow.DungeonTicketsMax - 1,
-                eventDungeonInfo.RemainingTickets);
+
+            return nextStates;
         }
     }
 }
