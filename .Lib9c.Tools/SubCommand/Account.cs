@@ -66,15 +66,16 @@ namespace Lib9c.Tools.SubCommand
                 stderr.Flush();
                 IEnumerable<Address> addrs = digest.TxIds
                     .Select(txId => store.GetTransaction<NCAction>(new TxId(txId.ToArray())))
-                    .SelectMany(tx => tx.Actions
-                        .Select(a => a.InnerAction)
-                        .SelectMany(a => a is TransferAsset t
-                            ? new[] { t.Sender, t.Recipient }
-                            : a is InitializeStates i &&
-                                i.GoldDistributions is Bencodex.Types.List l
-                            ? l.OfType<Bencodex.Types.Dictionary>()
-                                .Select(d => new GoldDistribution(d).Address)
-                            : new Address[0]))
+                    .SelectMany(tx => tx.CustomActions is { } ca
+                        ? ca.Select(a => a.InnerAction)
+                            .SelectMany(a => a is TransferAsset t
+                                ? new[] { t.Sender, t.Recipient }
+                                : a is InitializeStates i &&
+                                    i.GoldDistributions is Bencodex.Types.List l
+                                ? l.OfType<Bencodex.Types.Dictionary>()
+                                    .Select(d => new GoldDistribution(d).Address)
+                                : new Address[0])
+                        : Enumerable.Empty<Address>())
                     .Append(digest.Miner);
                 foreach (Address addr in addrs)
                 {

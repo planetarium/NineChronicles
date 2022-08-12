@@ -16,9 +16,9 @@ namespace Nekoyume.BlockChain.Policy
     // Collection of helper methods not directly used as a pluggable component.
     public partial class BlockPolicySource
     {
-        internal static bool IsObsolete(Transaction<NCAction> transaction, long blockIndex)
-        {
-            return transaction.Actions
+        internal static bool IsObsolete(Transaction<NCAction> transaction, long blockIndex) =>
+            transaction.CustomActions is { } customActions &&
+            customActions
                 .Select(action => action.InnerAction.GetType())
                 .Any(
                     at =>
@@ -27,7 +27,6 @@ namespace Nekoyume.BlockChain.Policy
                         .OfType<ActionObsoleteAttribute>()
                         .FirstOrDefault()?.ObsoleteIndex < blockIndex
                 );
-        }
 
         internal static bool IsAdminTransaction(
             BlockChain<NCAction> blockChain, Transaction<NCAction> transaction)
