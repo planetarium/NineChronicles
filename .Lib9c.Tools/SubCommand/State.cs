@@ -98,10 +98,9 @@ namespace Lib9c.Tools.SubCommand
                 }
 
                 Block<NCAction> block =
-                    store.GetBlock<NCAction>(policy.GetHashAlgorithm, blockHash);
+                    store.GetBlock<NCAction>(blockHash);
                 var preEvalBlock = new PreEvaluationBlock<NCAction>(
                     block,
-                    block.HashAlgorithm,
                     block.Nonce,
                     block.PreEvaluationHash
                 );
