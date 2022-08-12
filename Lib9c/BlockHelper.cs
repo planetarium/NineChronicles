@@ -57,7 +57,7 @@ namespace Nekoyume
                 redeemCodeState: new RedeemCodeState(redeemCodeListSheet),
                 adminAddressState: adminState,
                 activatedAccountsState: new ActivatedAccountsState(
-                    isActivateAdminAddress && adminState != null
+                    isActivateAdminAddress && !(adminState is null)
                     ? activatedAccounts.Add(adminState.AdminAddress)
                     : activatedAccounts),
                 goldCurrencyState: new GoldCurrencyState(ncg),

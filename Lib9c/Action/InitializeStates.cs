@@ -153,7 +153,7 @@ namespace Nekoyume.Action
                 .SetState(GoldCurrencyState.Address, GoldCurrency)
                 .SetState(Addresses.GoldDistribution, GoldDistributions);
 
-            if (AdminAddressState != null)
+            if (!(AdminAddressState is null))
             {
                 states = states.SetState(AdminState.Address, AdminAddressState);
             }
@@ -204,7 +204,7 @@ namespace Nekoyume.Action
                 .Add("gold_distributions", GoldDistributions)
                 .Add("pending_activation_states", PendingActivations);
 
-                if (AdminAddressState != null)
+                if (!(AdminAddressState is null))
                 {
                     rv = rv.Add("admin_address_state", AdminAddressState);
                 }
