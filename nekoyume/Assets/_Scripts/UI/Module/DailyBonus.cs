@@ -146,6 +146,7 @@ namespace Nekoyume.UI.Module
             animator.SetBool(IsFull, _isFull);
         }
 
+        // Call at Event Trigger Component
         public void ShowTooltip()
         {
             Widget.Find<VanilaTooltip>()

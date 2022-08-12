@@ -8,7 +8,6 @@ using Nekoyume.State;
 using Nekoyume.UI.Module;
 using TMPro;
 using UniRx;
-using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -35,16 +34,13 @@ namespace Nekoyume.UI
         private StakingItemView[] regularItemViews;
 
         [SerializeField]
-        private RectTransform tooltipRectTransform;
-
-        [SerializeField]
         private StakingItemView systemRewardView;
 
         [SerializeField]
-        private TextMeshProUGUI tooltipText;
+        private GameObject systemRewardArea;
 
         [SerializeField]
-        private GameObject systemRewardArea;
+        private SimpleTooltip simpleTooltip;
 
         private const string StepScoreFormat = "{0}<size=18><color=#A36F56>/{1}</color></size>";
 
@@ -63,14 +59,6 @@ namespace Nekoyume.UI
                 Close();
                 AudioController.PlayClick();
             });
-
-            tooltipRectTransform.gameObject.SetActive(false);
-
-            this.UpdateAsObservable()
-                .Where(_ => tooltipRectTransform.gameObject.activeSelf
-                            && Input.GetMouseButtonDown(0))
-                .Subscribe(_ => tooltipRectTransform.gameObject.SetActive(false))
-                .AddTo(gameObject);
         }
 
         public override void Show(bool ignoreStartAnimation = false)
@@ -103,7 +91,7 @@ namespace Nekoyume.UI
                     var view = regularItemViews[i];
                     view.Set(item, result, itemBase =>
                     {
-                        ShowToolTip(itemBase, view.transform);
+                        simpleTooltip.Show(itemBase, view.transform);
                     });
                 }
 
@@ -120,24 +108,12 @@ namespace Nekoyume.UI
                     systemRewardArea.SetActive(true);
                     systemRewardView.Set(
                         $"{row.Multiplier}%",
-                        () => ShowToolTip(L10nManager.Localize("UI_STAKING_BONUS_CRYSTAL"),
+                        () => simpleTooltip.Show(L10nManager.Localize("UI_STAKING_BONUS_CRYSTAL"),
                             systemRewardView.transform));
                 }
             }
 
             base.Show(ignoreStartAnimation);
-        }
-
-        private void ShowToolTip(ItemBase itemBase, Transform target)
-        {
-            ShowToolTip(itemBase.GetLocalizedDescription(), target);
-        }
-
-        private void ShowToolTip(string message, Transform target)
-        {
-            tooltipText.text = message;
-            tooltipRectTransform.position = target.position;
-            tooltipRectTransform.gameObject.SetActive(true);
         }
     }
 }
