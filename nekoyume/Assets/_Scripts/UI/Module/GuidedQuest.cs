@@ -639,7 +639,9 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                goal = info.ClearedStageId + 1;
+                goal = info.ClearedStageId == 0
+                    ? RxProps.EventDungeonRow.StageBegin
+                    : info.ClearedStageId + 1;
             }
 
             if (SharedViewModel.eventDungeonQuest.Value is not null &&
