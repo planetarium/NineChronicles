@@ -19,11 +19,11 @@ namespace Nekoyume.UI.Scroller
 
             public StatType StatType { get; set; }
 
-            public string Name { get; private set; }
+            public string Name { get; }
 
-            public int Grade { get; private set; }
+            public int Grade { get; }
 
-            public List<SheetRow<int>> Rows { get; private set; }
+            public List<SheetRow<int>> Rows { get; }
 
             public Model(string name, int grade)
             {
@@ -34,25 +34,25 @@ namespace Nekoyume.UI.Scroller
         }
 
         [SerializeField]
-        private TextMeshProUGUI nameText = null;
+        private TextMeshProUGUI nameText;
 
         [SerializeField]
-        private List<Image> gradeImages = null;
+        private List<Image> gradeImages;
 
         [SerializeField]
-        private List<RecipeCell> recipeCells = null;
+        private List<RecipeCell> recipeCells;
 
         [SerializeField]
-        private Animator animator = null;
+        private Animator animator;
 
         [SerializeField]
-        private CanvasGroup canvasGroup = null;
+        private CanvasGroup canvasGroup;
 
         [SerializeField]
-        private Sprite equipmentGradeSprite = null;
+        private Sprite equipmentGradeSprite;
 
         [SerializeField]
-        private Sprite consumableGradeSprite = null;
+        private Sprite consumableGradeSprite;
 
         private readonly int _triggerHash = Animator.StringToHash("Show");
 
@@ -60,7 +60,7 @@ namespace Nekoyume.UI.Scroller
         {
             nameText.text = viewModel.Name;
 
-            for (int i = 0; i < gradeImages.Count; ++i)
+            for (var i = 0; i < gradeImages.Count; ++i)
             {
                 var image = gradeImages[i];
 
@@ -78,7 +78,7 @@ namespace Nekoyume.UI.Scroller
                 }
             }
 
-            for (int i = 0; i < recipeCells.Count; ++i)
+            for (var i = 0; i < recipeCells.Count; ++i)
             {
                 if (i >= viewModel.Rows.Count)
                 {
@@ -95,7 +95,9 @@ namespace Nekoyume.UI.Scroller
         public void HideWithAlpha()
         {
             if (!gameObject.activeSelf)
+            {
                 return;
+            }
 
             canvasGroup.alpha = 0f;
         }
@@ -103,7 +105,9 @@ namespace Nekoyume.UI.Scroller
         public void ShowAnimation()
         {
             if (!gameObject.activeSelf)
+            {
                 return;
+            }
 
             canvasGroup.alpha = 1f;
             animator.SetTrigger(_triggerHash);

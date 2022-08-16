@@ -25,6 +25,7 @@ using Nekoyume.TableData;
 using Inventory = Nekoyume.UI.Module.Inventory;
 using Toggle = Nekoyume.UI.Module.Toggle;
 using Material = Nekoyume.Model.Item.Material;
+using Skill = Nekoyume.Model.Skill.Skill;
 
 namespace Nekoyume.UI
 {
@@ -186,7 +187,7 @@ namespace Nekoyume.UI
 
             sweepPopupButton.OnClickAsObservable()
                 .Where(_ => !IsFirstStage)
-                .Subscribe(_ => Find<SweepPopup>().Show(_worldId, _stageId.Value));
+                .Subscribe(_ => Find<SweepPopup>().Show(_worldId, _stageId.Value, Battle));
 
             boostPopupButton.OnClickAsObservable()
                 .Where(_ => EnoughToPlay && !Game.Game.instance.IsInWorld)
@@ -745,7 +746,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private void Battle(StageType stageType, bool repeat)
+        private void Battle(StageType stageType, bool repeat, int playCount = 1)
         {
             Find<WorldMap>().Close(true);
             Find<StageInformation>().Close(true);
@@ -770,7 +771,6 @@ namespace Nekoyume.UI
             {
                 case StageType.HackAndSlash:
                     var skillState = States.Instance.CrystalRandomSkillState;
-                    var buffResult = Find<BuffBonusResultPopup>();
                     var skillId = PlayerPrefs.GetInt("HackAndSlash.SelectedBonusSkillId", 0);
                     if (skillId == 0)
                     {
@@ -782,7 +782,8 @@ namespace Nekoyume.UI
                                 equipments,
                                 consumables,
                                 _worldId,
-                                _stageId.Value
+                                _stageId.Value,
+                                playCount: playCount
                             ).Subscribe();
                             break;
                         }
@@ -809,7 +810,8 @@ namespace Nekoyume.UI
                         consumables,
                         _worldId,
                         _stageId.Value,
-                        skillId
+                        skillId,
+                        playCount
                     ).Subscribe();
                     PlayerPrefs.SetInt("HackAndSlash.SelectedBonusSkillId", 0);
                     break;
@@ -982,16 +984,24 @@ namespace Nekoyume.UI
             }
 
             var tableSheets = Game.Game.instance.TableSheets;
+            var random = new Cheat.DebugRandom();
             var simulator = new StageSimulator(
-                new Cheat.DebugRandom(),
+                random,
                 avatarState,
                 consumables,
+                new List<Skill>(),
                 worldRow.Id,
                 stageId,
+                tableSheets.StageSheet[stageId],
+                tableSheets.StageWaveSheet[stageId],
+                avatarState.worldInformation.IsStageCleared(stageId),
+                StageRewardExpHelper.GetExp(avatarState.level, stageId),
                 tableSheets.GetStageSimulatorSheets(),
-                tableSheets.CostumeStatSheet
+                tableSheets.EnemySkillSheet,
+                tableSheets.CostumeStatSheet,
+                StageSimulator.GetWaveRewards(random, tableSheets.StageSheet[stageId], tableSheets.MaterialItemSheet)
             );
-            simulator.Simulate(1);
+            simulator.Simulate();
             GoToStage(simulator.Log);
         }
     }

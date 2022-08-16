@@ -6,11 +6,13 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using System.Numerics;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
     using mixpanel;
     using Nekoyume.BlockChain;
+    using System.Linq;
     using UniRx;
 
     public class BuffBonusPopup : PopupWidget
@@ -26,6 +28,21 @@ namespace Nekoyume.UI
         private BigInteger _advancedCost;
 
         private System.Action _onAttract;
+
+        [SerializeField]
+        private Button buffListButton = null;
+
+        [SerializeField]
+        private GameObject buffListView = null;
+
+        [SerializeField]
+        private RectTransform cellContainer;
+
+        [SerializeField]
+        private BuffBonusTitleCell titlePrefab;
+
+        [SerializeField]
+        private BuffBonusBuffCell buffPrefab;
 
         protected override void Awake()
         {
@@ -54,12 +71,15 @@ namespace Nekoyume.UI
             advancedButton.OnClickDisabledSubject
                 .Subscribe(OnInsufficientStar)
                 .AddTo(gameObject);
+
+            buffListButton.onClick.AddListener(OnClickBuffListButton);
         }
 
         public override void Initialize()
         {
             normalButton.Text = L10nManager.Localize("UI_DRAW_NORMAL");
             advancedButton.Text = L10nManager.Localize("UI_DRAW_ADVANCED");
+            InitializeBuffListView();
             base.Initialize();
         }
 
@@ -150,6 +170,33 @@ namespace Nekoyume.UI
 
             ActionManager.Instance.HackAndSlashRandomBuff(advanced).Subscribe();
             Close();
+        }
+
+        private void OnClickBuffListButton()
+        {
+            var pos = cellContainer.anchoredPosition;
+            pos.y = 0;
+            cellContainer.anchoredPosition = pos;
+
+            buffListView.SetActive(true);
+        }
+
+        private void InitializeBuffListView()
+        {
+            var randomBuffsheet = Game.Game.instance.TableSheets.CrystalRandomBuffSheet;
+            var randomBuffGroupsByRank = randomBuffsheet.Select(line => line.Value).GroupBy(row => row.Rank);
+
+            foreach (var randomBuffGroup in randomBuffGroupsByRank)
+            {
+                // Grade
+                Instantiate(titlePrefab, cellContainer).Set(randomBuffGroup.Key);
+
+                foreach (var randomBuffRow in randomBuffGroup)
+                {
+                    // buff
+                    Instantiate(buffPrefab, cellContainer).Set(randomBuffRow);
+                }
+            }
         }
     }
 }

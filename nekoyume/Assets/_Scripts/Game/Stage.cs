@@ -557,8 +557,9 @@ namespace Nekoyume.Game
                 }
             }
 
-            Widget.Find<BattleResultPopup>().Show(_battleResultModel, PlayCount > 1);
+            var isMulti = PlayCount > 1;
 
+            Widget.Find<BattleResultPopup>().Show(_battleResultModel, isMulti);
             yield return null;
 
             var characterSheet = Game.instance.TableSheets.CharacterSheet;
