@@ -266,8 +266,8 @@
         <member name="P:Libplanet.Net.BootstrapOptions.DialTimeout">
             <summary>
             Determines how long an <see cref="T:Libplanet.Net.Transports.ITransport"/> should wait before timimg out
-            when dialing peers for either <see cref="T:Libplanet.Net.Messages.Pong"/>, <see cref="T:Libplanet.Net.Messages.Neighbors"/>,
-            or <see cref="T:Libplanet.Net.Messages.ChainStatus"/> during a bootstrapping phase.  Generally, a more relaxed
+            when dialing peers for either <see cref="T:Libplanet.Net.Messages.PongMsg"/>, <see cref="T:Libplanet.Net.Messages.NeighborsMsg"/>,
+            or <see cref="T:Libplanet.Net.Messages.ChainStatusMsg"/> during a bootstrapping phase.  Generally, a more relaxed
             <see cref="T:System.TimeSpan"/> is used compared to <see cref="P:Libplanet.Net.TimeoutOptions.DialTimeout"/>.
             Set to <see cref="F:Libplanet.Net.BootstrapOptions.DefaultDialTimeout"/> seconds by default.
             </summary>
@@ -327,29 +327,29 @@
             <param name="localVersion">The currently running application's
             <see cref="T:Libplanet.Net.AppProtocolVersion"/>.</param>
         </member>
-        <member name="P:Libplanet.Net.Messages.BlockHashes.StartIndex">
+        <member name="P:Libplanet.Net.Messages.BlockHashesMsg.StartIndex">
             <summary>
-            The block index of the first hash in <see cref="P:Libplanet.Net.Messages.BlockHashes.Hashes"/>.
-            It is <c>null</c> iff <see cref="P:Libplanet.Net.Messages.BlockHashes.Hashes"/> are empty.
+            The block index of the first hash in <see cref="P:Libplanet.Net.Messages.BlockHashesMsg.Hashes"/>.
+            It is <c>null</c> iff <see cref="P:Libplanet.Net.Messages.BlockHashesMsg.Hashes"/> are empty.
             </summary>
         </member>
-        <member name="P:Libplanet.Net.Messages.BlockHashes.Hashes">
+        <member name="P:Libplanet.Net.Messages.BlockHashesMsg.Hashes">
             <summary>
             The continuous block hashes, from the lowest index to the highest index.
             </summary>
         </member>
-        <member name="T:Libplanet.Net.Messages.DifferentVersion">
+        <member name="T:Libplanet.Net.Messages.DifferentVersionMsg">
             <summary>
             A reply to any messages with different <see cref="T:Libplanet.Net.AppProtocolVersion"/>.
             Contains the expected and actual <see cref="T:Libplanet.Net.AppProtocolVersion"/>
             value of the message.
             </summary>
         </member>
-        <member name="T:Libplanet.Net.Messages.FindNeighbors">
+        <member name="T:Libplanet.Net.Messages.FindNeighborsMsg">
             <summary>
             Message containing request for nearby peers.
             </summary>
-            <seealso cref="T:Libplanet.Net.Messages.Neighbors"/>
+            <seealso cref="T:Libplanet.Net.Messages.NeighborsMsg"/>
         </member>
         <member name="M:Libplanet.Net.Messages.IMessageCodec`1.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,Libplanet.Net.Peer,System.DateTimeOffset)">
             <summary>
@@ -647,11 +647,11 @@
             <paramref name="message"/> is invalid.</exception>
             <seealso cref="P:Libplanet.Net.Messages.MessageValidator.MessageTimestampBuffer"/>.
         </member>
-        <member name="T:Libplanet.Net.Messages.Neighbors">
+        <member name="T:Libplanet.Net.Messages.NeighborsMsg">
             <summary>
-            Message containing nearby peers. A reply to <see cref="T:Libplanet.Net.Messages.FindNeighbors"/>.
+            Message containing nearby peers. A reply to <see cref="T:Libplanet.Net.Messages.FindNeighborsMsg"/>.
             </summary>
-            <seealso cref="T:Libplanet.Net.Messages.FindNeighbors"/>
+            <seealso cref="T:Libplanet.Net.Messages.FindNeighborsMsg"/>
         </member>
         <member name="M:Libplanet.Net.Messages.NetMQMessageCodec.#ctor">
             <summary>
@@ -664,17 +664,17 @@
         <member name="M:Libplanet.Net.Messages.NetMQMessageCodec.Decode(NetMQ.NetMQMessage,System.Boolean)">
             <inheritdoc/>
         </member>
-        <member name="T:Libplanet.Net.Messages.Ping">
+        <member name="T:Libplanet.Net.Messages.PingMsg">
             <summary>
             Check message to determine peer is alive.
             </summary>
-            <seealso cref="T:Libplanet.Net.Messages.Pong"/>
+            <seealso cref="T:Libplanet.Net.Messages.PongMsg"/>
         </member>
-        <member name="T:Libplanet.Net.Messages.Pong">
+        <member name="T:Libplanet.Net.Messages.PongMsg">
             <summary>
-            A reply to <see cref="T:Libplanet.Net.Messages.Ping"/>.
+            A reply to <see cref="T:Libplanet.Net.Messages.PingMsg"/>.
             </summary>
-            <seealso cref="T:Libplanet.Net.Messages.Ping"/>
+            <seealso cref="T:Libplanet.Net.Messages.PingMsg"/>
         </member>
         <member name="M:Libplanet.Net.Messages.TcpMessageCodec.#ctor">
             <summary>
@@ -762,8 +762,8 @@
         <member name="P:Libplanet.Net.PreloadOptions.DialTimeout">
             <summary>
             Determines how long an <see cref="T:Libplanet.Net.Transports.ITransport"/> should wait before timimg out
-            when dialing peers for either <see cref="T:Libplanet.Net.Messages.Pong"/>, <see cref="T:Libplanet.Net.Messages.Neighbors"/>,
-            or <see cref="T:Libplanet.Net.Messages.ChainStatus"/> during a preloading phase.  Generally, a more relaxed
+            when dialing peers for either <see cref="T:Libplanet.Net.Messages.PongMsg"/>, <see cref="T:Libplanet.Net.Messages.NeighborsMsg"/>,
+            or <see cref="T:Libplanet.Net.Messages.ChainStatusMsg"/> during a preloading phase.  Generally, a more relaxed
             <see cref="T:System.TimeSpan"/> is used compared to <see cref="P:Libplanet.Net.TimeoutOptions.DialTimeout"/>.
             Set to <see cref="F:Libplanet.Net.PreloadOptions.DefaultDialTimeout"/> seconds by default.
             </summary>
@@ -798,7 +798,7 @@
             <param name="bootstrapPeers">A <see cref="T:System.Collections.Generic.IEnumerable`1"/> of <see cref="T:Libplanet.Net.Peer"/>s
             to bootstrap.</param>
             <param name="dialTimeout">The timeout used when waiting a reply for either
-            <see cref="T:Libplanet.Net.Messages.Ping"/> or <see cref="T:Libplanet.Net.Messages.FindNeighbors"/>.
+            <see cref="T:Libplanet.Net.Messages.PingMsg"/> or <see cref="T:Libplanet.Net.Messages.FindNeighborsMsg"/>.
             If <c>null</c> is given, the task never halts by itself
             even no any response was given from the the target seed.</param>
             <param name="depth">Recursive operation depth to search peers from network.</param>
@@ -810,10 +810,10 @@
         <member name="M:Libplanet.Net.Protocols.IProtocol.AddPeersAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.Peer},System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
             <summary>
             Tries to add given <paramref name="peers"/> to routing table
-            by sending <see cref="T:Libplanet.Net.Messages.Ping"/>.
+            by sending <see cref="T:Libplanet.Net.Messages.PingMsg"/>.
             </summary>
             <param name="peers">The peers to add.</param>
-            <param name="timeout">A timeout of waiting for the reply of <see cref="T:Libplanet.Net.Messages.Ping"/>
+            <param name="timeout">A timeout of waiting for the reply of <see cref="T:Libplanet.Net.Messages.PingMsg"/>
             message sent to <paramref name="peers"/>.
             If <c>null</c> is given, task never halts by itself
             even the target peer gives no any response.</param>
@@ -825,7 +825,7 @@
         <member name="M:Libplanet.Net.Protocols.IProtocol.RefreshTableAsync(System.TimeSpan,System.Threading.CancellationToken)">
             <summary>
             Checks whether <see cref="T:Libplanet.Net.Peer"/>s in <see cref="T:Libplanet.Net.Protocols.RoutingTable"/> is online by
-            sending <see cref="T:Libplanet.Net.Messages.Ping"/>.
+            sending <see cref="T:Libplanet.Net.Messages.PingMsg"/>.
             </summary>
             <param name="maxAge">Maximum age of peer to validate.</param>
             <param name="cancellationToken">A cancellation token used to propagate notification
@@ -963,13 +963,13 @@
         </member>
         <member name="M:Libplanet.Net.Protocols.KademliaProtocol.FindSpecificPeerAsync(Libplanet.Address,System.Int32,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
             <summary>
-            Use <see cref="T:Libplanet.Net.Messages.FindNeighbors"/> messages to to find a <see cref="T:Libplanet.Net.BoundPeer"/> with
+            Use <see cref="T:Libplanet.Net.Messages.FindNeighborsMsg"/> messages to to find a <see cref="T:Libplanet.Net.BoundPeer"/> with
             <see cref="T:Libplanet.Address"/> of <paramref name="target"/>.
             </summary>
             <param name="target">The <see cref="T:Libplanet.Address"/> to find.</param>
             <param name="depth">Target depth of recursive operation.</param>
             <param name="timeout"><see cref="T:System.TimeSpan"/> for waiting reply of
-            <see cref="T:Libplanet.Net.Messages.FindNeighbors"/>.</param>
+            <see cref="T:Libplanet.Net.Messages.FindNeighborsMsg"/>.</param>
             <param name="cancellationToken">A cancellation token used to propagate notification
             that this operation should be canceled.</param>
             <returns>A <see cref="T:Libplanet.Net.BoundPeer"/> with <paramref name="target"/> as its
@@ -977,11 +977,11 @@
         </member>
         <member name="M:Libplanet.Net.Protocols.KademliaProtocol.ValidateAsync(Libplanet.Net.BoundPeer,System.TimeSpan,System.Threading.CancellationToken)">
             <summary>
-            Validate peer by send <see cref="T:Libplanet.Net.Messages.Ping"/> to <paramref name="peer"/>. If target peer
+            Validate peer by send <see cref="T:Libplanet.Net.Messages.PingMsg"/> to <paramref name="peer"/>. If target peer
             does not responds, remove it from the table.
             </summary>
             <param name="peer">A <see cref="T:Libplanet.Net.BoundPeer"/> to validate.</param>
-            <param name="timeout">Timeout for waiting reply of <see cref="T:Libplanet.Net.Messages.Ping"/>.</param>
+            <param name="timeout">Timeout for waiting reply of <see cref="T:Libplanet.Net.Messages.PingMsg"/>.</param>
             <param name="cancellationToken">A cancellation token used to propagate notification
             that this operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
@@ -991,25 +991,26 @@
         </member>
         <member name="M:Libplanet.Net.Protocols.KademliaProtocol.FindPeerAsync(System.Collections.Concurrent.ConcurrentBag{Libplanet.Net.BoundPeer},System.Collections.Concurrent.ConcurrentBag{Libplanet.Net.BoundPeer},Libplanet.Address,Libplanet.Net.BoundPeer,System.Int32,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
             <summary>
-            Send <see cref="T:Libplanet.Net.Messages.FindNeighbors"/> messages to <paramref name="viaPeer"/>
+            Send <see cref="T:Libplanet.Net.Messages.FindNeighborsMsg"/> messages to <paramref name="viaPeer"/>
             to find <see cref="T:Libplanet.Net.Peer"/>s near <paramref name="target"/>.
             </summary>
             <param name="history">The <see cref="T:Libplanet.Net.Peer"/> that searched.</param>
             <param name="dialHistory">The <see cref="T:Libplanet.Net.Peer"/> that ping was sent.</param>
             <param name="target">The <see cref="T:Libplanet.Address"/> to find.</param>
-            <param name="viaPeer">The target <see cref="T:Libplanet.Net.Peer"/> to send <see cref="T:Libplanet.Net.Messages.FindNeighbors"/>
-            message. If null, selects 3 <see cref="T:Libplanet.Net.Peer"/>s from <see cref="T:Libplanet.Net.Protocols.RoutingTable"/> of
+            <param name="viaPeer">The target <see cref="T:Libplanet.Net.Peer"/>
+            to send <see cref="T:Libplanet.Net.Messages.FindNeighborsMsg"/> message.
+            If null, selects 3 <see cref="T:Libplanet.Net.Peer"/>s from <see cref="T:Libplanet.Net.Protocols.RoutingTable"/> of
             self.</param>
             <param name="depth">Target depth of recursive operation.</param>
             <param name="timeout"><see cref="T:System.TimeSpan"/> for waiting reply of
-            <see cref="T:Libplanet.Net.Messages.FindNeighbors"/>.</param>
+            <see cref="T:Libplanet.Net.Messages.FindNeighborsMsg"/>.</param>
             <param name="cancellationToken">A cancellation token used to propagate notification
             that this operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
         </member>
         <member name="M:Libplanet.Net.Protocols.KademliaProtocol.ProcessFoundAsync(System.Collections.Concurrent.ConcurrentBag{Libplanet.Net.BoundPeer},System.Collections.Concurrent.ConcurrentBag{Libplanet.Net.BoundPeer},System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},Libplanet.Address,System.Int32,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
             <summary>
-            Process <see cref="T:Libplanet.Net.Peer"/>s that is replied by sending <see cref="T:Libplanet.Net.Messages.FindNeighbors"/>
+            Process <see cref="T:Libplanet.Net.Peer"/>s that is replied by sending <see cref="T:Libplanet.Net.Messages.FindNeighborsMsg"/>
             request.
             </summary>
             <param name="history"><see cref="T:Libplanet.Net.Peer"/>s that already searched.</param>
@@ -1601,7 +1602,7 @@
         </member>
         <member name="M:Libplanet.Net.Swarm`1.FindSpecificPeerAsync(Libplanet.Address,System.Int32,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
             <summary>
-            Use <see cref="T:Libplanet.Net.Messages.FindNeighbors"/> messages to to find a <see cref="T:Libplanet.Net.BoundPeer"/> with
+            Use <see cref="T:Libplanet.Net.Messages.FindNeighborsMsg"/> messages to to find a <see cref="T:Libplanet.Net.BoundPeer"/> with
             <see cref="P:Libplanet.Net.Swarm`1.Address"/> of <paramref name="target"/>.
             </summary>
             <param name="target">The <see cref="P:Libplanet.Net.Swarm`1.Address"/> to find.</param>
@@ -1609,7 +1610,7 @@
             will recursive until the closest <see cref="T:Libplanet.Net.BoundPeer"/> to the
             <paramref name="target"/> is found.</param>
             <param name="timeout">
-            <see cref="T:System.TimeSpan"/> for waiting reply of <see cref="T:Libplanet.Net.Messages.FindNeighbors"/>.
+            <see cref="T:System.TimeSpan"/> for waiting reply of <see cref="T:Libplanet.Net.Messages.FindNeighborsMsg"/>.
             If <c>null</c> is given, <see cref="T:System.TimeoutException"/> will not be thrown.
             </param>
             <param name="cancellationToken">A cancellation token used to propagate notification
@@ -1659,8 +1660,8 @@
         </member>
         <member name="M:Libplanet.Net.Swarm`1.DialExistingPeers(System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
             <summary>
-            Gets <see cref="T:Libplanet.Net.Messages.ChainStatus"/>es from randomly selected <see cref="T:Libplanet.Net.BoundPeer"/>s
-            from <see cref="P:Libplanet.Net.Swarm`1.Peers"/> with each <see cref="T:Libplanet.Net.Messages.ChainStatus"/> tied to
+            Gets <see cref="T:Libplanet.Net.Messages.ChainStatusMsg"/>es from randomly selected <see cref="T:Libplanet.Net.BoundPeer"/>s
+            from <see cref="P:Libplanet.Net.Swarm`1.Peers"/> with each <see cref="T:Libplanet.Net.Messages.ChainStatusMsg"/> tied to
             its originating <see cref="T:Libplanet.Net.BoundPeer"/>.
             </summary>
             <param name="dialTimeout">Timeout for each dialing operation to
@@ -1670,8 +1671,8 @@
             <param name="cancellationToken">A cancellation token used to propagate notification
             that this operation should be canceled.</param>
             <returns>An awaitable task with an <see cref="T:System.Array"/> of tuples
-            of <see cref="T:Libplanet.Net.BoundPeer"/> and <see cref="T:Libplanet.Net.Messages.ChainStatus"/> where
-            <see cref="T:Libplanet.Net.Messages.ChainStatus"/> can be <c>null</c> if dialing fails for
+            of <see cref="T:Libplanet.Net.BoundPeer"/> and <see cref="T:Libplanet.Net.Messages.ChainStatusMsg"/> where
+            <see cref="T:Libplanet.Net.Messages.ChainStatusMsg"/> can be <c>null</c> if dialing fails for
             a selected <see cref="T:Libplanet.Net.BoundPeer"/>.</returns>
         </member>
         <member name="M:Libplanet.Net.Swarm`1.IsBlockNeeded(Libplanet.Blocks.IBlockExcerpt)">
@@ -1734,7 +1735,7 @@
         </member>
         <member name="P:Libplanet.Net.SwarmOptions.BlockBroadcastInterval">
             <summary>
-            Determines how often <see cref="T:Libplanet.Net.Swarm`1"/> braodcasts <see cref="T:Libplanet.Net.Messages.BlockHeaderMessage"/>
+            Determines how often <see cref="T:Libplanet.Net.Swarm`1"/> braodcasts <see cref="T:Libplanet.Net.Messages.BlockHeaderMsg"/>
             to its peers.
             </summary>
             <remarks>
@@ -1744,7 +1745,7 @@
         </member>
         <member name="P:Libplanet.Net.SwarmOptions.TxBroadcastInterval">
             <summary>
-            Determines how often <see cref="T:Libplanet.Net.Swarm`1"/> braodcasts <see cref="T:Libplanet.Net.Messages.TxIds"/>
+            Determines how often <see cref="T:Libplanet.Net.Swarm`1"/> braodcasts <see cref="T:Libplanet.Net.Messages.TxIdsMsg"/>
             to its peers.
             </summary>
             <remarks>
@@ -1810,8 +1811,8 @@
         <member name="P:Libplanet.Net.TimeoutOptions.DialTimeout">
             <summary>
             Determines how long an <see cref="T:Libplanet.Net.Transports.ITransport"/> should wait before timing out
-            when dialing peers for either <see cref="T:Libplanet.Net.Messages.Pong"/>, <see cref="T:Libplanet.Net.Messages.Neighbors"/>,
-            or <see cref="T:Libplanet.Net.Messages.ChainStatus"/> for a long running process.
+            when dialing peers for either <see cref="T:Libplanet.Net.Messages.PongMsg"/>, <see cref="T:Libplanet.Net.Messages.NeighborsMsg"/>,
+            or <see cref="T:Libplanet.Net.Messages.ChainStatusMsg"/> for a long running process.
             Set to <see cref="F:Libplanet.Net.TimeoutOptions.DefaultDialTimeout"/> seconds by default.
             </summary>
             <seealso cref="P:Libplanet.Net.BootstrapOptions.DialTimeout"/>
@@ -1819,14 +1820,14 @@
         </member>
         <member name="P:Libplanet.Net.TimeoutOptions.GetBlockHashesTimeout">
             <summary>
-            The timeout used when sending a request with <see cref="T:Libplanet.Net.Messages.GetBlockHashes"/>
-            to receive a <see cref="T:Libplanet.Net.Messages.BlockHashes"/> message.
+            The timeout used when sending a request with <see cref="T:Libplanet.Net.Messages.GetBlockHashesMsg"/>
+            to receive a <see cref="T:Libplanet.Net.Messages.BlockHashesMsg"/> message.
             Set to <see cref="F:Libplanet.Net.TimeoutOptions.DefaultGetBlockHashesTimeout"/> seconds by default.
             </summary>
         </member>
         <member name="P:Libplanet.Net.TimeoutOptions.GetBlocksBaseTimeout">
             <summary>
-            The base timeout used when sending a request with <see cref="T:Libplanet.Net.Messages.GetBlocks"/>
+            The base timeout used when sending a request with <see cref="T:Libplanet.Net.Messages.GetBlocksMsg"/>
             to receive <see cref="N:Libplanet.Blocks"/> messages.
             Set to <see cref="F:Libplanet.Net.TimeoutOptions.DefaultGetBlocksBaseTimeout"/> seconds by default.
             </summary>
@@ -1835,14 +1836,14 @@
         <member name="P:Libplanet.Net.TimeoutOptions.GetBlocksPerBlockHashTimeout">
             <summary>
             The additional amount to wait for each <see cref="T:Libplanet.Blocks.BlockHash"/> in
-            <see cref="T:Libplanet.Net.Messages.GetBlocks"/> to receive <see cref="N:Libplanet.Blocks"/> messages.
+            <see cref="T:Libplanet.Net.Messages.GetBlocksMsg"/> to receive <see cref="N:Libplanet.Blocks"/> messages.
             Set to <see cref="F:Libplanet.Net.TimeoutOptions.DefaultGetBlocksPerBlockHashTimeout"/> seconds by default.
             </summary>
             <seealso cref="P:Libplanet.Net.TimeoutOptions.GetBlocksBaseTimeout"/>
         </member>
         <member name="P:Libplanet.Net.TimeoutOptions.GetTxsBaseTimeout">
             <summary>
-            The base timeout used when sending a request with <see cref="T:Libplanet.Net.Messages.GetTxs"/>
+            The base timeout used when sending a request with <see cref="T:Libplanet.Net.Messages.GetTxsMsg"/>
             to receive <see cref="N:Libplanet.Tx"/> messages.
             Set to <see cref="F:Libplanet.Net.TimeoutOptions.DefaultGetTxsBaseTimeout"/> seconds by default.
             </summary>
@@ -1850,7 +1851,7 @@
         </member>
         <member name="P:Libplanet.Net.TimeoutOptions.GetTxsPerTxIdTimeout">
             <summary>
-            The additional amount to wait for each <see cref="T:Libplanet.Tx.TxId"/> in <see cref="T:Libplanet.Net.Messages.GetTxs"/>
+            The additional amount to wait for each <see cref="T:Libplanet.Tx.TxId"/> in <see cref="T:Libplanet.Net.Messages.GetTxsMsg"/>
             to receive <see cref="N:Libplanet.Tx"/> messages.
             Set to <see cref="F:Libplanet.Net.TimeoutOptions.DefaultGetTxsPerTxIdTimeout"/> seconds by default.
             </summary>
