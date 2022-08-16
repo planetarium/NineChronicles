@@ -629,7 +629,8 @@ namespace Nekoyume.UI.Module
 
             int goal;
             var info = RxProps.EventDungeonInfo.Value;
-            if (info is null)
+            if (info is null ||
+                info.ClearedStageId == 0)
             {
                 goal = RxProps.EventDungeonRow.StageBegin;
             }
@@ -639,9 +640,7 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                goal = info.ClearedStageId == 0
-                    ? RxProps.EventDungeonRow.StageBegin
-                    : info.ClearedStageId + 1;
+                goal = info.ClearedStageId + 1;
             }
 
             if (SharedViewModel.eventDungeonQuest.Value is not null &&

@@ -240,7 +240,8 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (RxProps.EventDungeonInfo.Value is null)
+            if (RxProps.EventDungeonInfo.Value is null ||
+                RxProps.EventDungeonInfo.Value.ClearedStageId == 0)
             {
                 submitButton.Interactable =
                     eventDungeonStageId == RxProps.EventDungeonRow.StageBegin;
@@ -249,7 +250,9 @@ namespace Nekoyume.UI
 
             submitButton.Interactable =
                 eventDungeonStageId <=
-                math.min(RxProps.EventDungeonInfo.Value.ClearedStageId + 1, RxProps.EventDungeonRow.StageEnd);
+                math.min(
+                    RxProps.EventDungeonInfo.Value.ClearedStageId + 1,
+                    RxProps.EventDungeonRow.StageEnd);
         }
 
         private void UpdateStageInfoMonsters(List<int> monsterIds)

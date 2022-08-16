@@ -305,11 +305,13 @@ namespace Nekoyume.UI
             }
 
             Show(true);
-            var openedStageId = RxProps.EventDungeonInfo?.Value is null
-                ? RxProps.EventDungeonRow.StageBegin
-                : math.min(
-                    RxProps.EventDungeonInfo.Value.ClearedStageId + 1,
-                    RxProps.EventDungeonRow.StageEnd);
+            var openedStageId =
+                RxProps.EventDungeonInfo.Value is null ||
+                RxProps.EventDungeonInfo.Value.ClearedStageId == 0
+                    ? RxProps.EventDungeonRow.StageBegin
+                    : math.min(
+                        RxProps.EventDungeonInfo.Value.ClearedStageId + 1,
+                        RxProps.EventDungeonRow.StageEnd);
             SharedViewModel.SelectedWorldId.Value = eventDungeonRow.Id;
             SharedViewModel.SelectedStageId.Value = openedStageId;
             var stageInfo = Find<StageInformation>();
