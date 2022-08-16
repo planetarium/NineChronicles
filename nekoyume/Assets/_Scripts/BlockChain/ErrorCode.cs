@@ -208,27 +208,23 @@ namespace Nekoyume.BlockChain
                     code = "41";
                     key = "ERROR_EXCEED_TICKET_PURCHASE_LIMIT_EXCEPTION";
                     break;
-                case InvalidActionFieldException e:
+                case InvalidActionFieldException:
                 {
                     code = "42";
                     key = "ERROR_INVALID_ACTION_FIELDS_EXCEPTION";
-                    errorMsg = e.Message;
                     break;
                 }
-                case NotEnoughEventDungeonTicketsException e:
+                case NotEnoughEventDungeonTicketsException:
                     code = "43";
                     key = "ERROR_NOT_ENOUGH_EVENT_DUNGEON_TICKETS_EXCEPTION";
-                    errorMsg = e.Message;
                     break;
-                case StageNotClearedException e:
+                case StageNotClearedException:
                     code = "44";
                     key = "ERROR_STAGE_NOT_CLEARED_EXCEPTION";
-                    errorMsg = e.Message;
                     break;
-                case CombinationSlotUnlockException e:
+                case CombinationSlotUnlockException:
                     code = "45";
                     key = "ERROR_COMBINATION_SLOT_UNLOCK_EXCEPTION";
-                    errorMsg = e.Message;
                     break;
             }
 
