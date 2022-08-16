@@ -11,10 +11,13 @@ using System;
 using System.Globalization;
 using Nekoyume.State;
 using System.Numerics;
+using Nekoyume.Action;
 using Nekoyume.Extensions;
+using Nekoyume.Game;
 using Nekoyume.Model.Mail;
 using Nekoyume.UI.Scroller;
 using Nekoyume.L10n;
+using Nekoyume.Model.State;
 using UnityEngine.UI;
 using Toggle = Nekoyume.UI.Module.Toggle;
 
@@ -42,6 +45,15 @@ namespace Nekoyume.UI
             public TextMeshProUGUI OptionText;
             public TextMeshProUGUI PercentageText;
             public Slider PercentageSlider;
+        }
+
+        [Serializable]
+        private struct HammerPointView
+        {
+            public GameObject parentObject;
+            public Slider nowPoint;
+            public Image nowPointImage;
+            public Image increasePointImage;
         }
 
         [SerializeField]
@@ -91,6 +103,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private TextMeshProUGUI lockedText;
+
+        [SerializeField]
+        private HammerPointView hammerPointView;
 
         public readonly Subject<RecipeInfo> CombinationActionSubject = new Subject<RecipeInfo>();
 
@@ -145,6 +160,7 @@ namespace Nekoyume.UI
         {
             _recipeRow = recipeRow;
             _subrecipeIds = subRecipeIds;
+            //var hammerPointRow = RxProps.ArenaInfoTuple
 
             string title = null;
             var isEquipment = false;
@@ -281,10 +297,9 @@ namespace Nekoyume.UI
             }
 
             optionIcons.ForEach(obj => obj.SetActive(false));
-            var isLocked = false;
             if (equipmentRow != null)
             {
-                isLocked = !Craft.SharedModel.UnlockedRecipes.Value.Contains(_recipeRow.Key);
+                var isLocked = !Craft.SharedModel.UnlockedRecipes.Value.Contains(_recipeRow.Key);
                 var baseMaterialInfo = new EquipmentItemSubRecipeSheet.MaterialInfo(
                     equipmentRow.MaterialId,
                     equipmentRow.MaterialCount);
@@ -299,6 +314,28 @@ namespace Nekoyume.UI
                 if (_subrecipeIds != null &&
                     _subrecipeIds.Any())
                 {
+                    // Temporary initialize for avoid 'Local variable "hammerPointState' might not be initialized before accessing."
+                    var hammerPointState = new HammerPointState(Addresses.SuperCraft, 0);
+                    var showHammerPoint = RxProps.HammerPointStates is not null &&
+                                          RxProps.HammerPointStates.TryGetValue(
+                                              recipeId,
+                                              out hammerPointState);
+                    hammerPointView.parentObject.SetActive(showHammerPoint);
+                    if (showHammerPoint)
+                    {
+                        var max = TableSheets.Instance.CrystalHammerPointSheet[recipeId].MaxPoint;
+                        var increasePoint = index == 0
+                            ? CombinationEquipment.BasicSubRecipeHammerPoint
+                            : CombinationEquipment.SpecialSubRecipeHammerPoint;
+                        var increasedPoint = Math.Min(hammerPointState.HammerPoint + increasePoint, max);
+                        hammerPointView.nowPoint.maxValue = max;
+                        hammerPointView.nowPoint.value = hammerPointState.HammerPoint;
+                        hammerPointView.nowPointImage.fillAmount =
+                            hammerPointState.HammerPoint / (float)max;
+                        hammerPointView.increasePointImage.fillAmount =
+                            increasedPoint / (float) max;
+                    }
+
                     toggleParent.SetActive(true);
                     subRecipeId = _subrecipeIds[index];
                     var subRecipe = Game.Game.instance.TableSheets
