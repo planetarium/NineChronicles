@@ -34,23 +34,23 @@ namespace Nekoyume.ActionExtensions
             }
 
             var currentAvatarState = states.CurrentAvatarState;
-            if (action.avatarAddress != currentAvatarState.address)
+            if (action.AvatarAddress != currentAvatarState.address)
             {
                 return;
             }
 
             var stageSheet = tableSheets.StageSheet;
-            if (!stageSheet.TryGetValue(action.stageId, out var row))
+            if (!stageSheet.TryGetValue(action.StageId, out var row))
             {
-                throw new SheetRowNotFoundException(stageSheet.GetType().Name, action.stageId);
+                throw new SheetRowNotFoundException(stageSheet.GetType().Name, action.StageId);
             }
 
             currentAvatarState.actionPoint -= row.CostAP;
 
             var inventory = currentAvatarState.inventory;
-            for (var i = 0; i < action.foods.Count; i++)
+            for (var i = 0; i < action.Foods.Count; i++)
             {
-                var nonFungibleId = action.foods[i];
+                var nonFungibleId = action.Foods[i];
                 inventory.RemoveNonFungibleItem(nonFungibleId);
             }
 

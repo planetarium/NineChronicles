@@ -13,6 +13,7 @@ using Nekoyume.EnumType;
 using Nekoyume.L10n;
 using Nekoyume.State;
 using System.Numerics;
+using Nekoyume.UI.Module.Common;
 using TMPro;
 
 namespace Nekoyume.UI.Scroller
@@ -44,6 +45,9 @@ namespace Nekoyume.UI.Scroller
         }
 
         [SerializeField]
+        private GameObject viewport;
+
+        [SerializeField]
         private List<EquipmentCategoryToggle> equipmentCategoryToggles;
 
         [SerializeField]
@@ -59,13 +63,16 @@ namespace Nekoyume.UI.Scroller
         private GameObject eventScheduleTab;
 
         [SerializeField]
-        private TextMeshProUGUI eventScheduleTabEntireTimeText;
+        private BlocksAndDatesPeriod eventScheduleTabEntireBlocksAndDatesPeriod;
 
         [SerializeField]
         private TextMeshProUGUI eventScheduleTabRemainingTimeText;
 
         [SerializeField]
         private GameObject emptyObject;
+
+        [SerializeField]
+        private TextMeshProUGUI emptyObjectText;
 
         [SerializeField]
         private GameObject openAllRecipeArea;

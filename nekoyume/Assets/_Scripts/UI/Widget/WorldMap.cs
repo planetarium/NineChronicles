@@ -43,9 +43,12 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private WorldButton _eventDungeonButton;
-        
+
         [SerializeField]
-        private TextMeshProUGUI _eventDungeonTicketsText;
+        private GameObject _eventDungeonRemainingTimeObject;
+
+        [SerializeField]
+        private TextMeshProUGUI _eventDungeonRemainingTimeText;
 
         public ViewModel SharedViewModel { get; private set; }
 

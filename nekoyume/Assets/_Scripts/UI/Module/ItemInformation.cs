@@ -129,7 +129,7 @@ namespace Nekoyume.UI.Module
                 Model.item.Value.ItemBase.Value,
                 Model.item.Value.Count.Value));
 
-            var gradeColor = LocalizationExtension.GetItemGradeColor(item);
+            var gradeColor = item.GetItemGradeColor();
             iconArea.gradeText.text = item.GetGradeText();
             iconArea.gradeText.color = gradeColor;
             iconArea.subTypeText.text = item.GetSubTypeText();
@@ -144,7 +144,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            iconArea.elementalTypeText.text = LocalizationExtension.GetLocalizedString(item.ElementalType);
+            iconArea.elementalTypeText.text = item.ElementalType.GetLocalizedString();
             iconArea.elementalTypeText.color = item.GetElementalTypeColor();
             iconArea.elementalTypeImage.overrideSprite = sprite;
             iconArea.elementalTypeObject.SetActive(true);
