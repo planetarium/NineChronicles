@@ -61,7 +61,20 @@ namespace Nekoyume.State
             }
         }
 
-        private static async Task<Dictionary<int, HammerPointState>> InitializeHammerPointStates()
+        public static void UpdateHammerPointStates(int recipeId, HammerPointState state)
+        {
+            if (_hammerPointStates.ContainsKey(recipeId))
+            {
+                _hammerPointStates[recipeId] = state;
+            }
+            else
+            {
+                _hammerPointStates.Add(recipeId, state);
+            }
+        }
+
+        public static async UniTask<Dictionary<int, HammerPointState>> UpdateHammerPointStates(
+            IEnumerable<int> recipeIds)
         {
             if (_tableSheets.CrystalHammerPointSheet is null || !_currentAvatarAddress.HasValue)
             {
@@ -69,14 +82,14 @@ namespace Nekoyume.State
             }
 
             var hammerPointStateAddresses =
-                Craft.SharedModel.UnlockedRecipes.Value.Select(
-                    recipeId =>
+                recipeIds.Select(recipeId =>
                         (Addresses.GetHammerPointStateAddress(
                             _currentAvatarAddress.Value,
                             recipeId), recipeId))
                     .ToList();
             var states =
-                await _agent.GetStateBulk(hammerPointStateAddresses.Select(tuple => tuple.Item1));
+                await _agent.GetStateBulk(
+                    hammerPointStateAddresses.Select(tuple => tuple.Item1));
             var joinedStates = states.Join(
                 hammerPointStateAddresses,
                 state => state.Key,
@@ -87,14 +100,15 @@ namespace Nekoyume.State
                 .Select(tuple =>
                 {
                     var state = tuple.state;
-                    if (state.Value is not null)
-                    {
-                        return new HammerPointState(state.Key, (List)state.Value);
-                    }
-
-                    return new HammerPointState(state.Key, tuple.recipeId);
+                    return state.Value is not null
+                        ? new HammerPointState(state.Key, (List) state.Value)
+                        : new HammerPointState(state.Key, tuple.recipeId);
                 })
                 .ToDictionary(value => value.RecipeId, value => value);
         }
+
+        private static async Task<Dictionary<int, HammerPointState>>
+            InitializeHammerPointStates() =>
+            await UpdateHammerPointStates(Craft.SharedModel.UnlockedRecipes.Value);
     }
 }
