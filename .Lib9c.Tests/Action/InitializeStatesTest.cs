@@ -222,5 +222,48 @@ namespace Lib9c.Tests.Action
 
             Assert.Equal(creditState.Names, fetchedState.Names);
         }
+
+        [Fact]
+        public void ExecuteWithoutAdminState()
+        {
+            var gameConfigState = new GameConfigState(_sheets[nameof(GameConfigSheet)]);
+            var redeemCodeListSheet = new RedeemCodeListSheet();
+            redeemCodeListSheet.Set(_sheets[nameof(RedeemCodeListSheet)]);
+            var goldDistributionCsvPath = GoldDistributionTest.CreateFixtureCsvFile();
+            var goldDistributions =
+                GoldDistribution.LoadInDescendingEndBlockOrder(goldDistributionCsvPath);
+            var minterKey = new PrivateKey();
+            var ncg = new Currency("NCG", 2, minterKey.ToAddress());
+            var nonce = new byte[] { 0x00, 0x01, 0x02, 0x03 };
+            var privateKey = new PrivateKey();
+            (ActivationKey activationKey, PendingActivationState pendingActivation) =
+                ActivationKey.Create(privateKey, nonce);
+
+            var action = new InitializeStates(
+                rankingState: new RankingState0(),
+                shopState: new ShopState(),
+                tableSheets: _sheets,
+                gameConfigState: gameConfigState,
+                redeemCodeState: new RedeemCodeState(redeemCodeListSheet),
+                adminAddressState: null,
+                activatedAccountsState: new ActivatedAccountsState(ImmutableHashSet<Address>.Empty),
+                goldCurrencyState: new GoldCurrencyState(ncg),
+                goldDistributions: goldDistributions,
+                pendingActivationStates: new[] { pendingActivation }
+            );
+
+            var genesisState = action.Execute(new ActionContext()
+            {
+                BlockIndex = 0,
+                Miner = default,
+                PreviousStates = new State(),
+            });
+
+            var fetchedState = new ActivatedAccountsState(
+                (Dictionary)genesisState.GetState(Addresses.ActivatedAccount));
+            Assert.Empty(fetchedState.Accounts);
+
+            Assert.Null(genesisState.GetState(Addresses.Admin));
+        }
     }
 }

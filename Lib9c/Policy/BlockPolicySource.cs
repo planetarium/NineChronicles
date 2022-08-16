@@ -332,8 +332,9 @@ namespace Nekoyume.BlockChain.Policy
                 }
 
                 // Check ActivateAccount
-                if (transaction.Actions.Count == 1 &&
-                    transaction.Actions.First().InnerAction is IActivateAction aa)
+                if (transaction.CustomActions is { } customActions &&
+                    customActions.Count == 1 &&
+                    customActions.First().InnerAction is IActivateAction aa)
                 {
                     return transaction.Nonce == 0 &&
                         blockChain.GetState(aa.GetPendingAddress()) is Dictionary rawPending &&

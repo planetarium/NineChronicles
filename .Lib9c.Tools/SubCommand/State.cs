@@ -114,7 +114,11 @@ namespace Lib9c.Tools.SubCommand
                 );
                 IImmutableDictionary<string, IValue> delta;
                 HashDigest<SHA256> stateRootHash = block.Index < 1
-                    ? preEvalBlock.DetermineStateRootHash(chain.Policy.BlockAction, stateStore, out delta)
+                    ? preEvalBlock.DetermineStateRootHash(
+                        policy.BlockAction,
+                        policy.NativeTokens.Contains,
+                        stateStore,
+                        out delta)
                     : preEvalBlock.DetermineStateRootHash(
                         chain,
                         StateCompleterSet<NCAction>.Reject,
