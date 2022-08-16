@@ -157,6 +157,8 @@ namespace Nekoyume.Game
 
         public CrystalFluctuationSheet CrystalFluctuationSheet { get; private set; }
 
+        public CrystalHammerPointSheet CrystalHammerPointSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet = new ItemSheet();
