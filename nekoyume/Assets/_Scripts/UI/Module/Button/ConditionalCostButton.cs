@@ -172,7 +172,7 @@ namespace Nekoyume.UI.Module
             return CostType.None;
         }
 
-        protected bool CheckCostOfType(CostType type, long cost)
+        private static bool CheckCostOfType(CostType type, long cost)
         {
             switch (type)
             {
@@ -186,6 +186,10 @@ namespace Nekoyume.UI.Module
                     var inventory = States.Instance.CurrentAvatarState.inventory;
                     var count = Util.GetHourglassCount(inventory, Game.Game.instance.Agent.BlockIndex);
                     return count >= cost;
+                case CostType.ArenaTicket:
+                    return RxProps.ArenaTicketProgress.Value.currentTickets >= cost;
+                case CostType.EventDungeonTicket:
+                    return RxProps.EventDungeonTicketProgress.Value.currentTickets >= cost;
                 default:
                     return true;
             }
