@@ -62,7 +62,6 @@ namespace Lib9c.Benchmarks
             IBlockPolicy<NCAction> policy =
                 policySource.GetPolicy(
                     // Explicitly set to lowest possible difficulty.
-                    hashAlgorithmTypePolicy: null,
                     minimumDifficulty: BlockPolicySource.DifficultyStability,
                     maxBlockBytesPolicy: null,
                     minTransactionsPerBlockPolicy: null,
@@ -87,7 +86,7 @@ namespace Lib9c.Benchmarks
             }
 
             DateTimeOffset started = DateTimeOffset.UtcNow;
-            Block<NCAction> genesis = store.GetBlock<NCAction>(policy.GetHashAlgorithm, gHash);
+            Block<NCAction> genesis = store.GetBlock<NCAction>(gHash);
             IKeyValueStore stateKeyValueStore = new RocksDBKeyValueStore(Path.Combine(storePath, "states"));
             var stateStore = new TrieStateStore(stateKeyValueStore);
             var chain = new BlockChain<NCAction>(policy, stagePolicy, store, stateStore, genesis);
@@ -131,7 +130,9 @@ namespace Lib9c.Benchmarks
                     buildStateReferences: true
                 );
                 txs += block.Transactions.LongCount();
-                actions += block.Transactions.Sum(tx => tx.Actions.LongCount()) + 1;
+                actions += block.Transactions.Sum(tx =>
+                    (tx.CustomActions is { } customActions ? customActions.LongCount() : 0) +
+                    (tx.SystemAction is { } systemActions ? 1L : 0L)) + 1;
             }
 
             DateTimeOffset ended = DateTimeOffset.UtcNow;

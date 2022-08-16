@@ -57,23 +57,6 @@ namespace Nekoyume.BlockChain.Policy
             return allAuthorizedMiners.Contains(transaction.Signer);
         }
 
-        private static InvalidBlockHashAlgorithmTypeException ValidateHashAlgorithmTypeRaw(
-            Block<NCAction> block,
-            IVariableSubPolicy<HashAlgorithmType> hashAlgorithmTypePolicy)
-        {
-            HashAlgorithmType hashAlgorithm = hashAlgorithmTypePolicy.Getter(block.Index);
-
-            if (!block.HashAlgorithm.Equals(hashAlgorithm))
-            {
-                return new InvalidBlockHashAlgorithmTypeException(
-                    $"The hash algorithm type of block #{block.Index} {block.Hash} " +
-                    $"does not match {hashAlgorithm}: {block.HashAlgorithm}",
-                    hashAlgorithm);
-            }
-
-            return null;
-        }
-
         private static InvalidBlockBytesLengthException ValidateBlockBytesRaw(
             Block<NCAction> block,
             IVariableSubPolicy<long> maxBlockBytesPolicy)

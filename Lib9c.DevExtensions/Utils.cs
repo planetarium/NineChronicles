@@ -82,7 +82,6 @@ namespace Lib9c.DevExtensions
                 );
             }
             Block<NCAction> genesis = store.GetBlock<NCAction>(
-                policy.GetHashAlgorithm,
                 genesisBlockHash
             );
             BlockChain<NCAction> chain = new BlockChain<NCAction>(
