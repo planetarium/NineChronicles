@@ -15,6 +15,7 @@ using Nekoyume.Extensions;
 using Nekoyume.Model.Mail;
 using Nekoyume.UI.Scroller;
 using Nekoyume.L10n;
+using UnityEngine.UI;
 using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
@@ -40,6 +41,7 @@ namespace Nekoyume.UI
             public GameObject ParentObject;
             public TextMeshProUGUI OptionText;
             public TextMeshProUGUI PercentageText;
+            public Slider PercentageSlider;
         }
 
         [SerializeField]
@@ -515,21 +517,23 @@ namespace Nekoyume.UI
                 if (option.StatType != StatType.NONE)
                 {
                     var optionView = optionViews.First(x => !x.ParentObject.activeSelf);
-
+                    var normalizedRatio = ratio.NormalizeFromTenThousandths();
                     optionView.OptionText.text = option.OptionRowToString();
-                    optionView.PercentageText.text = (ratio.NormalizeFromTenThousandths()).ToString("0%");
+                    optionView.PercentageText.text = normalizedRatio.ToString("0%");
+                    optionView.PercentageSlider.value = (float) normalizedRatio;
                     optionView.ParentObject.transform.SetSiblingIndex(siblingIndex);
                     optionView.ParentObject.SetActive(true);
                 }
                 else
                 {
                     var skillView = skillViews.First(x => !x.ParentObject.activeSelf);
-
                     var description = skillSheet.TryGetValue(option.SkillId, out var skillRow)
                         ? skillRow.GetLocalizedName()
                         : string.Empty;
+                    var normalizedRatio = ratio.NormalizeFromTenThousandths();
                     skillView.OptionText.text = description;
-                    skillView.PercentageText.text = (ratio.NormalizeFromTenThousandths()).ToString("0%");
+                    skillView.PercentageText.text = normalizedRatio.ToString("0%");
+                    skillView.PercentageSlider.value = (float) normalizedRatio;
                     skillView.ParentObject.transform.SetSiblingIndex(siblingIndex);
                     skillView.ParentObject.SetActive(true);
                 }
