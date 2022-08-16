@@ -75,6 +75,9 @@ namespace Nekoyume.UI
         private List<OptionView> skillViews;
 
         [SerializeField]
+        private List<GameObject> optionIcons;
+
+        [SerializeField]
         private TextMeshProUGUI levelText;
 
         [SerializeField]
@@ -277,6 +280,7 @@ namespace Nekoyume.UI
                 skillView.ParentObject.SetActive(false);
             }
 
+            optionIcons.ForEach(obj => obj.SetActive(false));
             var isLocked = false;
             if (equipmentRow != null)
             {
@@ -523,6 +527,7 @@ namespace Nekoyume.UI
                     optionView.PercentageSlider.value = (float) normalizedRatio;
                     optionView.ParentObject.transform.SetSiblingIndex(siblingIndex);
                     optionView.ParentObject.SetActive(true);
+                    optionIcons[siblingIndex].SetActive(true);
                 }
                 else
                 {
@@ -536,6 +541,7 @@ namespace Nekoyume.UI
                     skillView.PercentageSlider.value = (float) normalizedRatio;
                     skillView.ParentObject.transform.SetSiblingIndex(siblingIndex);
                     skillView.ParentObject.SetActive(true);
+                    optionIcons.Last().SetActive(true);
                 }
 
                 ++siblingIndex;

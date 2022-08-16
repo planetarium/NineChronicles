@@ -27215,7 +27215,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6784101903973079296}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -27265,34 +27265,48 @@ MonoBehaviour:
   recipeCell: {fileID: 946278804148290470}
   titleText: {fileID: 1595198666716948043}
   statText: {fileID: 8191505717902066824}
+  mainStatTexts: []
   blockIndexText: {fileID: 7270673448602237482}
-  greatSuccessRateText: {fileID: 3369318430390358652}
+  greatSuccessRateText: {fileID: 6918453992858129788}
   optionViews:
   - ParentObject: {fileID: 2317275392032755833}
     OptionText: {fileID: 7007941882053913369}
     PercentageText: {fileID: 916310278739635682}
+    PercentageSlider: {fileID: 5130374587566211307}
   - ParentObject: {fileID: 3683889437496429271}
     OptionText: {fileID: 4203870925451154453}
     PercentageText: {fileID: 5551152523703234371}
+    PercentageSlider: {fileID: 3065793058169248923}
   - ParentObject: {fileID: 352168027689530766}
     OptionText: {fileID: 4058005955462118605}
     PercentageText: {fileID: 2642608751871426753}
+    PercentageSlider: {fileID: 2607745756581976554}
   - ParentObject: {fileID: 3842695064786974939}
     OptionText: {fileID: 6007981466290133102}
     PercentageText: {fileID: 1259688383191265297}
+    PercentageSlider: {fileID: 3080736511884839616}
   skillViews:
   - ParentObject: {fileID: 9050513799785241155}
     OptionText: {fileID: 1286713039018420594}
     PercentageText: {fileID: 5061468334090534543}
+    PercentageSlider: {fileID: 6255765881195054527}
   - ParentObject: {fileID: 4879357763268784036}
     OptionText: {fileID: 8971309981804837864}
     PercentageText: {fileID: 5329868651930281624}
+    PercentageSlider: {fileID: 4393458099949333178}
   - ParentObject: {fileID: 7810903067382174946}
     OptionText: {fileID: 7369374683753153212}
     PercentageText: {fileID: 6414646131320966166}
+    PercentageSlider: {fileID: 2997732510470868750}
   - ParentObject: {fileID: 8849282859835016315}
     OptionText: {fileID: 8725761177116648601}
     PercentageText: {fileID: 4456562007434012794}
+    PercentageSlider: {fileID: 7766392803080826119}
+  optionIcons:
+  - {fileID: 5843368351218467390}
+  - {fileID: 63145367696019783}
+  - {fileID: 5115815443179381424}
+  - {fileID: 3964192681605403236}
   levelText: {fileID: 8942851453121821110}
   requiredItemRecipeView: {fileID: 111346774065562781}
   button: {fileID: 3745099014369410291}
@@ -42806,7 +42820,7 @@ PrefabInstance:
     - target: {fileID: 5730728711148222447, guid: f28b579a9755c49b5b5d1a1763a906a8,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 228.045
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5730728711148222447, guid: f28b579a9755c49b5b5d1a1763a906a8,
         type: 3}
@@ -43054,6 +43068,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 3424119067033608860}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6918453992858129788 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5730728711148222432, guid: f28b579a9755c49b5b5d1a1763a906a8,
+    type: 3}
+  m_PrefabInstance: {fileID: 3424119067033608860}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &3913568673306208291
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -44128,18 +44154,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 7009177877678073244}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &3369318430390358652 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5730728711148222432, guid: f28b579a9755c49b5b5d1a1763a906a8,
-    type: 3}
-  m_PrefabInstance: {fileID: 7009177877678073244}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3369318430390358642}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &7270710638289751040
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -44421,7 +44435,7 @@ PrefabInstance:
     - target: {fileID: 3480436870340489609, guid: 63867f78a3a288049b3e8f4d0025b208,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 115
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3480436870340489609, guid: 63867f78a3a288049b3e8f4d0025b208,
         type: 3}
@@ -44626,7 +44640,7 @@ PrefabInstance:
     - target: {fileID: 4972502282326135715, guid: 63867f78a3a288049b3e8f4d0025b208,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 115
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4972502282326135715, guid: 63867f78a3a288049b3e8f4d0025b208,
         type: 3}
@@ -44842,7 +44856,7 @@ PrefabInstance:
     - target: {fileID: 8563028456115147020, guid: 63867f78a3a288049b3e8f4d0025b208,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 115
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8563028456115147020, guid: 63867f78a3a288049b3e8f4d0025b208,
         type: 3}
@@ -47425,6 +47439,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 52392669180a64fc094c4335ec915dd2, type: 3}
+--- !u!1 &3964192681605403236 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5465888564131858372, guid: 52392669180a64fc094c4335ec915dd2,
+    type: 3}
+  m_PrefabInstance: {fileID: 8996248725168330144}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &6325339999257806347 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3103270115792966571, guid: 52392669180a64fc094c4335ec915dd2,
