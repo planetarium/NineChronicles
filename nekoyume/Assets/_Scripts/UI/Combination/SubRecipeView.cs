@@ -54,6 +54,7 @@ namespace Nekoyume.UI
             public Slider nowPoint;
             public Image nowPointImage;
             public Image increasePointImage;
+            public TMP_Text hammerPointText;
         }
 
         [SerializeField]
@@ -329,6 +330,8 @@ namespace Nekoyume.UI
                             : CombinationEquipment.SpecialSubRecipeHammerPoint;
                         var increasedPoint = Math.Min(hammerPointState.HammerPoint + increasePoint, max);
                         hammerPointView.nowPoint.maxValue = max;
+                        hammerPointView.hammerPointText.text =
+                            $"{hammerPointState.HammerPoint}/{max}";
                         hammerPointView.nowPoint.value = hammerPointState.HammerPoint;
                         hammerPointView.nowPointImage.fillAmount =
                             hammerPointState.HammerPoint / (float)max;
