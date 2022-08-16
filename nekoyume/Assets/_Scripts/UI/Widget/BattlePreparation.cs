@@ -765,7 +765,7 @@ namespace Nekoyume.UI
                             ncgCost.ToString());
                         Find<PaymentPopup>().ShowAttract(
                             CostType.EventDungeonTicket,
-                            _requiredCost.ToString(),
+                            ncgCost.ToString(),
                             notEnoughTicketMsg,
                             L10nManager.Localize("UI_YES"),
                             () => StartCoroutine(
