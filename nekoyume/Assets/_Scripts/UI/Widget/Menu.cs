@@ -15,6 +15,7 @@ using Nekoyume.EnumType;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
@@ -227,7 +228,7 @@ namespace Nekoyume.UI
                     ncgCost.GetQuantityString(),
                     notEnoughNCGMsg,
                     L10nManager.Localize("UI_GO_TO_MARKET"),
-                    GoToMarket);
+                    () => GoToMarket(TradeType.Sell));
 
                 return;
             }
@@ -294,12 +295,22 @@ namespace Nekoyume.UI
                 Find<Craft>().ShowWithEquipmentRecipeId(recipeId));
         }
 
-        private void GoToMarket()
+        private void GoToMarket(TradeType tradeType)
         {
             Close();
-            Find<ShopBuy>().Show();
             Find<HeaderMenuStatic>()
                 .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+            switch (tradeType)
+            {
+                case TradeType.Buy:
+                    Find<ShopBuy>().Show();
+                    break;
+                case TradeType.Sell:
+                    Find<ShopSell>().Show();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(tradeType), tradeType, null);
+            }
         }
 
         private void UpdateButtons()

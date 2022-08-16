@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Linq;
 using Nekoyume.Battle;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
@@ -23,6 +22,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Game.Character;
 using Nekoyume.Model.Elemental;
+using Nekoyume.Model.EnumType;
 using Nekoyume.TableData;
 using Inventory = Nekoyume.UI.Module.Inventory;
 using Toggle = Nekoyume.UI.Module.Toggle;
@@ -785,7 +785,7 @@ namespace Nekoyume.UI
                         ncgCost.GetQuantityString(),
                         notEnoughNCGMsg,
                         L10nManager.Localize("UI_GO_TO_MARKET"),
-                        GoToMarket);
+                        () => GoToMarket(TradeType.Sell));
                     return;
                 }
                 default:
@@ -1041,14 +1041,24 @@ namespace Nekoyume.UI
             Close(true);
         }
 
-        private void GoToMarket()
+        private void GoToMarket(TradeType tradeType)
         {
             Close(true);
             Find<WorldMap>().Close(true);
             Find<StageInformation>().Close(true);
-            Find<ShopBuy>().Show();
             Find<HeaderMenuStatic>()
                 .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+            switch (tradeType)
+            {
+                case TradeType.Buy:
+                    Find<ShopBuy>().Show();
+                    break;
+                case TradeType.Sell:
+                    Find<ShopSell>().Show();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(tradeType), tradeType, null);
+            }
         }
 
         private static void ShowRefillConfirmPopup(Material material)
