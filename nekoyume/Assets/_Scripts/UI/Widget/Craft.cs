@@ -12,6 +12,7 @@ using Nekoyume.State;
 using Nekoyume.TableData;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
@@ -58,6 +59,8 @@ namespace Nekoyume.UI
         private const string ConsumableRecipeGroupPath = "Recipe/ConsumableRecipeGroup";
 
         private bool _isEquipment;
+
+        private List<IDisposable> _disposables = new List<IDisposable>();
 
         protected override void Awake()
         {
@@ -201,7 +204,18 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
 
             // Toggles can be switched after enabled.
+            if (RxProps.HammerPointStates is not null)
+            {
+                RxProps.HammerPointStates.ObserveReplace().Subscribe(_ =>
+                {
+                    if (equipmentSubRecipeView.gameObject.activeSelf)
+                    {
+                        equipmentSubRecipeView.UpdateView();
+                    }
+                }).AddTo(_disposables);
+            }
             ShowEquipment();
+
             if (equipmentToggle.isOn)
             {
                 _isEquipment = true;
@@ -226,6 +240,7 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            _disposables.DisposeAllAndClear();
             SharedModel.SelectedRow.Value = null;
             base.Close(ignoreCloseAnimation);
         }

@@ -107,8 +107,8 @@ namespace Nekoyume.State
                 .ToDictionary(value => value.RecipeId, value => value);
         }
 
-        private static async Task<Dictionary<int, HammerPointState>>
-            InitializeHammerPointStates() =>
-            await UpdateHammerPointStates(Craft.SharedModel.UnlockedRecipes.Value);
+        private static async UniTask<Dictionary<int, HammerPointState>>
+            InitializeHammerPointStates() => await
+            UpdateHammerPointStates(Craft.SharedModel.UnlockedRecipes.Value);
     }
 }
