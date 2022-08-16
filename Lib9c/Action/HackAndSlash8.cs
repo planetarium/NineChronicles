@@ -193,7 +193,7 @@ namespace Nekoyume.Action
             sw.Restart();
 
             var characterSheet = states.GetSheet<CharacterSheet>();
-            var simulator = new StageSimulator(
+            var simulator = new StageSimulatorV1(
                 ctx.Random,
                 avatarState,
                 foods,
@@ -201,7 +201,7 @@ namespace Nekoyume.Action
                 stageId,
                 states.GetStageSimulatorSheets(),
                 costumeStatSheet,
-                StageSimulator.ConstructorVersionV100025);
+                StageSimulatorV1.ConstructorVersionV100025);
 
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);

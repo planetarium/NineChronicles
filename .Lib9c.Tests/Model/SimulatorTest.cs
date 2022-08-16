@@ -34,7 +34,7 @@ namespace Lib9c.Tests.Model
                 string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty,
                 string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, "2", "2",
             });
-            var itemSelector = StageSimulator.SetItemSelector(row, _random);
+            var itemSelector = StageSimulatorV1.SetItemSelector(row, _random);
             var reward = Simulator.SetReward(itemSelector, _random.Next(2, 2), _random, _materialItemSheet);
             Assert.Equal(2, reward.Count);
             Assert.NotEmpty(reward);
@@ -54,7 +54,7 @@ namespace Lib9c.Tests.Model
                 string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty,
                 string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, "2", "2",
             });
-            var itemSelector = StageSimulator.SetItemSelector(row, _random);
+            var itemSelector = StageSimulatorV1.SetItemSelector(row, _random);
             var reward = Simulator.SetReward(itemSelector, _random.Next(2, 2), _random, _materialItemSheet);
             Assert.Equal(2, reward.Count);
             Assert.NotEmpty(reward);
@@ -74,7 +74,7 @@ namespace Lib9c.Tests.Model
                 string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty,
                 string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, "1", "1",
             });
-            var itemSelector = StageSimulator.SetItemSelector(row, _random);
+            var itemSelector = StageSimulatorV1.SetItemSelector(row, _random);
             var reward = Simulator.SetReward(itemSelector, _random.Next(1, 1), _random, _materialItemSheet);
             Assert.Single(reward);
         }
@@ -92,7 +92,7 @@ namespace Lib9c.Tests.Model
                 string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty,
                 string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, "1", "4",
             });
-            var itemSelector = StageSimulator.SetItemSelector(row, _random);
+            var itemSelector = StageSimulatorV1.SetItemSelector(row, _random);
             var reward = Simulator.SetReward(itemSelector, _random.Next(1, 4), _random, _materialItemSheet);
             Assert.True(reward.Count <= 2);
             Assert.NotEmpty(reward);
