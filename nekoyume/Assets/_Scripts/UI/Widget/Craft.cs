@@ -17,6 +17,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
 using System.Linq;
+using Nekoyume.BlockChain;
 using Nekoyume.Game;
 
 namespace Nekoyume.UI
@@ -291,7 +292,7 @@ namespace Nekoyume.UI
                 : JsonSerializer.Deserialize<CombinationRecipeGroup>(jsonAsset.text);
 
             SharedModel = new RecipeModel(
-                Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.Values,
+                TableSheets.Instance.EquipmentItemRecipeSheet.Values,
                 group.Groups);
         }
 
@@ -321,8 +322,8 @@ namespace Nekoyume.UI
 
         private void OnClickEquipmentAction(SubRecipeView.RecipeInfo recipeInfo)
         {
-            var requirementSheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
-            var recipeSheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
+            var requirementSheet = TableSheets.Instance.ItemRequirementSheet;
+            var recipeSheet = TableSheets.Instance.EquipmentItemRecipeSheet;
             if (!recipeSheet.TryGetValue(recipeInfo.RecipeId, out var recipeRow))
             {
                 return;
@@ -340,8 +341,8 @@ namespace Nekoyume.UI
 
         private void OnClickConsumableAction(SubRecipeView.RecipeInfo recipeInfo)
         {
-            var requirementSheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
-            var recipeSheet = Game.Game.instance.TableSheets.ConsumableItemRecipeSheet;
+            var requirementSheet = TableSheets.Instance.ItemRequirementSheet;
+            var recipeSheet = TableSheets.Instance.ConsumableItemRecipeSheet;
             if (!recipeSheet.TryGetValue(recipeInfo.RecipeId, out var recipeRow))
             {
                 return;
@@ -365,7 +366,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var tableSheets = Game.Game.instance.TableSheets;
+            var tableSheets = TableSheets.Instance;
             var equipmentRow = tableSheets.EquipmentItemRecipeSheet[recipeInfo.RecipeId];
             var equipment = (Equipment)ItemFactory.CreateItemUsable(
                 equipmentRow.GetResultEquipmentItemRow(), Guid.Empty, default);
@@ -394,7 +395,8 @@ namespace Nekoyume.UI
                         });
 
                         Game.Game.instance.ActionManager
-                            .CombinationEquipment(recipeInfo, slotIndex, true).Subscribe();
+                            .CombinationEquipment(recipeInfo, slotIndex, true, false)
+                            .Subscribe();
                         StartCoroutine(CoCombineNPCAnimation(equipment, requiredBlockIndex));
                     });
             }
@@ -402,7 +404,8 @@ namespace Nekoyume.UI
             {
                 var slots = Find<CombinationSlotsPopup>();
                 slots.SetCaching(slotIndex, true, requiredBlockIndex, itemUsable: equipment);
-                Game.Game.instance.ActionManager.CombinationEquipment(recipeInfo, slotIndex, false)
+                ActionManager.Instance
+                    .CombinationEquipment(recipeInfo, slotIndex, false, false)
                     .Subscribe();
                 StartCoroutine(CoCombineNPCAnimation(equipment, requiredBlockIndex));
             }
@@ -416,7 +419,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var consumableRow = Game.Game.instance.TableSheets.ConsumableItemRecipeSheet[recipeInfo.RecipeId];
+            var consumableRow = TableSheets.Instance.ConsumableItemRecipeSheet[recipeInfo.RecipeId];
             var consumable = (Consumable)ItemFactory.CreateItemUsable(
                 consumableRow.GetResultConsumableItemRow(), Guid.Empty, default);
             var requiredBlockIndex = consumableRow.RequiredBlockIndex;
@@ -424,7 +427,7 @@ namespace Nekoyume.UI
             slots.SetCaching(slotIndex, true, requiredBlockIndex, itemUsable: consumable);
 
             consumableSubRecipeView.UpdateView();
-            Game.Game.instance.ActionManager.CombinationConsumable(recipeInfo, slotIndex).Subscribe();
+            ActionManager.Instance.CombinationConsumable(recipeInfo, slotIndex).Subscribe();
 
             StartCoroutine(CoCombineNPCAnimation(consumable, requiredBlockIndex, true));
         }

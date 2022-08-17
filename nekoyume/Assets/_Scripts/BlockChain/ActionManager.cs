@@ -428,7 +428,7 @@ namespace Nekoyume.BlockChain
                 sellerAvatarAddress = avatarAddress,
                 updateSellInfos = updateSellInfos
             };
-            
+
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
@@ -667,7 +667,8 @@ namespace Nekoyume.BlockChain
         public IObservable<ActionBase.ActionEvaluation<CombinationEquipment>> CombinationEquipment(
             SubRecipeView.RecipeInfo recipeInfo,
             int slotIndex,
-            bool payByCrystal)
+            bool payByCrystal,
+            bool useHammerPoint)
         {
             Analyzer.Instance.Track("Unity/Create CombinationEquipment", new Value
             {
@@ -711,6 +712,7 @@ namespace Nekoyume.BlockChain
                 recipeId = recipeInfo.RecipeId,
                 subRecipeId = recipeInfo.SubRecipeId,
                 payByCrystal = payByCrystal,
+                useHammerPoint = useHammerPoint,
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
