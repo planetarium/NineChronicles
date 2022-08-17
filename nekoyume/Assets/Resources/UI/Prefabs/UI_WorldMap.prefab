@@ -352,6 +352,7 @@ MonoBehaviour:
   - {fileID: 9114340838112080730}
   - {fileID: 1312301102039139924}
   - {fileID: 4269781129739543417}
+  - {fileID: 418416840684108636}
   _eventDungeonButton: {fileID: 7149023141089078293}
   _eventDungeonRemainingTimeObject: {fileID: 8593641996932701599}
   _eventDungeonRemainingTimeText: {fileID: 974607236082554696}
@@ -14199,6 +14200,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2, type: 3}
+--- !u!114 &418416840684108636 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 640085520468513332, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+    type: 3}
+  m_PrefabInstance: {fileID: 949284829757827432}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c65452128ac54f398da492e55daa1016, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2673835531650059428 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2898020980522755532, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
