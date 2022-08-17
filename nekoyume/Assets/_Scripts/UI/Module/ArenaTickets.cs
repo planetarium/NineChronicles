@@ -40,23 +40,11 @@ namespace Nekoyume.UI.Module
             _disposables.DisposeAllAndClear();
         }
 
-        private void UpdateTimespanText((
-            int currentTicketCount,
-            int maxTicketCount,
-            int progressedBlockRange,
-            int totalBlockRange,
-            string remainTimespanToReset) tuple)
+        private void UpdateTimespanText(RxProps.TicketProgress ticketProgress)
         {
-            var (
-                currentTicketCount,
-                maxTicketCount,
-                _,
-                _,
-                remainTimespan) = tuple;
-            _slider.normalizedValue =
-                (float)currentTicketCount / maxTicketCount;
-            _fillText.text = $"{currentTicketCount}/{maxTicketCount}";
-            _timespanText.text = remainTimespan;
+            _slider.normalizedValue = ticketProgress.NormalizedTicketCount;
+            _fillText.text = ticketProgress.CurrentAndMaxTicketCountText;
+            _timespanText.text = ticketProgress.remainTimespanToReset;
         }
     }
 }

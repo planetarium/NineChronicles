@@ -407,6 +407,7 @@ GameObject:
   - component: {fileID: 8252503291579384000}
   - component: {fileID: 1452307568238468326}
   - component: {fileID: 4554483119869414184}
+  - component: {fileID: 3186760034637682143}
   m_Layer: 5
   m_Name: Fill
   m_TagString: Untagged
@@ -472,6 +473,23 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &3186760034637682143
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7348093891286558518}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efe700dddcd8341ff8607ac2c827b4b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_TargetColor: {r: 1, g: 0, b: 0, a: 1}
+  m_Range: 1
+  m_Hue: -0.47
+  m_Saturation: -0.447
+  m_Value: 0
 --- !u!1 &8470142169447513386
 GameObject:
   m_ObjectHideFlags: 0
@@ -617,7 +635,8 @@ MonoBehaviour:
   m_text: 9/9
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a215dd9105aed4fea9d665ae472083d6, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: f636edde225e94b558a0e373172f54cb, type: 2}
+  m_sharedMaterial: {fileID: -2364689171920820918, guid: a215dd9105aed4fea9d665ae472083d6,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

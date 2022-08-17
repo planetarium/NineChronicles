@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
+using Nekoyume.TableData.Event;
 
 namespace Nekoyume.Game
 {
@@ -33,7 +34,11 @@ namespace Nekoyume.Game
                     throw new Exception(sb.ToString());
                 }
 
-                iSheet.Set(pair.Value);
+                if (pair.Value is not null)
+                {
+                    iSheet.Set(pair.Value);
+                }
+
                 sheetPropertyInfo.SetValue(this, sheetObject);
             }
 
@@ -157,6 +162,16 @@ namespace Nekoyume.Game
 
         public CrystalFluctuationSheet CrystalFluctuationSheet { get; private set; }
 
+        public EventScheduleSheet EventScheduleSheet { get; private set; }
+
+        public EventDungeonSheet EventDungeonSheet { get; private set; }
+
+        public EventDungeonStageSheet EventDungeonStageSheet { get; private set; }
+
+        public EventDungeonStageWaveSheet EventDungeonStageWaveSheet { get; private set; }
+
+        public EventConsumableItemRecipeSheet EventConsumableItemRecipeSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet = new ItemSheet();
@@ -180,6 +195,19 @@ namespace Nekoyume.Game
             QuestSheet.Set(ItemTypeCollectQuestSheet, false);
             QuestSheet.Set(GoldQuestSheet, false);
             QuestSheet.Set(CombinationEquipmentQuestSheet);
+        }
+
+        public SimulatorSheets GetSimulatorSheets()
+        {
+            return new SimulatorSheets(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                BuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
+                EquipmentItemSetEffectSheet
+            );
         }
 
         public StageSimulatorSheets GetStageSimulatorSheets()

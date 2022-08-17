@@ -5,15 +5,18 @@ using System.Linq;
 using mixpanel;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
+using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.L10n;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -34,9 +37,10 @@ namespace Nekoyume.UI
 
         public class Model
         {
-            private readonly List<CountableItem> _rewards = new List<CountableItem>();
+            private readonly List<CountableItem> _rewards = new();
             public int[] ClearedWaves = new int[4];
 
+            public StageType StageType;
             public NextState NextState;
             public BattleLog.Result State;
             public string WorldName;
@@ -54,8 +58,8 @@ namespace Nekoyume.UI
 
             public void AddReward(CountableItem reward)
             {
-                var sameReward =
-                    _rewards.FirstOrDefault(e => e.ItemBase.Value.Equals(reward.ItemBase.Value));
+                var sameReward = _rewards.FirstOrDefault(e =>
+                    e.ItemBase.Value.Equals(reward.ItemBase.Value));
                 if (sameReward is null)
                 {
                     _rewards.Add(reward);
@@ -82,52 +86,52 @@ namespace Nekoyume.UI
         }
 
         private const int Timer = 10;
-        private static readonly Vector3 VfxBattleWinOffset = new Vector3(-0.05f, 1.2f, 10f);
+        private static readonly Vector3 VfxBattleWinOffset = new(-0.05f, 1.2f, 10f);
 
         [SerializeField]
-        private CanvasGroup canvasGroup = null;
+        private CanvasGroup canvasGroup;
 
         [SerializeField]
-        private GameObject victoryImageContainer = null;
+        private GameObject victoryImageContainer;
 
         [SerializeField]
-        private GameObject defeatImageContainer = null;
+        private GameObject defeatImageContainer;
 
         [SerializeField]
-        private TextMeshProUGUI worldStageId = null;
+        private TextMeshProUGUI worldStageId;
 
         [SerializeField]
-        private GameObject topArea = null;
+        private GameObject topArea;
 
         [SerializeField]
-        private DefeatTextArea defeatTextArea = default;
+        private DefeatTextArea defeatTextArea;
 
         [SerializeField]
-        private RewardsArea rewardsArea = default;
+        private RewardsArea rewardsArea;
 
         [SerializeField]
-        private TextMeshProUGUI bottomText = null;
+        private TextMeshProUGUI bottomText;
 
         [SerializeField]
-        private Button closeButton = null;
+        private Button closeButton;
 
         [SerializeField]
-        private Button stagePreparationButton = null;
+        private Button stagePreparationButton;
 
         [SerializeField]
-        private Button nextButton = null;
+        private Button nextButton;
 
         [SerializeField]
-        private Button repeatButton = null;
+        private Button repeatButton;
 
         [SerializeField]
-        private StageProgressBar stageProgressBar = null;
+        private StageProgressBar stageProgressBar;
 
         [SerializeField]
-        private GameObject[] victoryResultTexts = null;
+        private GameObject[] victoryResultTexts;
 
         [SerializeField]
-        private ActionPoint actionPoint = null;
+        private ActionPoint actionPoint;
 
         private BattleWin01VFX _battleWin01VFX;
 
@@ -139,14 +143,14 @@ namespace Nekoyume.UI
 
         private Coroutine _coUpdateBottomText;
 
-        private readonly WaitForSeconds _battleWinVFXYield = new WaitForSeconds(0.2f);
+        private readonly WaitForSeconds _battleWinVFXYield = new(0.2f);
         private static readonly int ClearedWave = Animator.StringToHash("ClearedWave");
 
         private Animator _victoryImageAnimator;
 
-        private bool _IsAlreadyOut = false;
+        private bool _IsAlreadyOut;
 
-        public Model SharedModel { get; private set; }
+        private Model SharedModel { get; set; }
 
         public Model ModelForMultiHackAndSlash { get; set; }
 
@@ -157,32 +161,31 @@ namespace Nekoyume.UI
             base.Awake();
 
             closeButton.OnClickAsObservable().Subscribe(_ =>
-                {
-                    if (States.Instance.CurrentAvatarState.worldInformation
-                        .TryGetUnlockedWorldByStageClearedBlockIndex(out var world))
-                    {
-                        var canExit = world.StageClearedId >= Battle.RequiredStageForExitButton;
-                        if (canExit)
-                        {
-                            StartCoroutine(OnClickClose());
-                        }
-                    }
-                }).AddTo(gameObject);
-
-            stagePreparationButton.OnClickAsObservable().Subscribe(_ =>
             {
-                OnClickStage();
+                var wi = States.Instance.CurrentAvatarState.worldInformation;
+                if (!wi.TryGetUnlockedWorldByStageClearedBlockIndex(out var world))
+                {
+                    return;
+                }
+
+                // NOTE: This `BattleResultPopup` cannot be closed when
+                //       the player is not cleared `Battle.RequiredStageForExitButton` stage yet.
+                var canExit = world.StageClearedId >= Battle.RequiredStageForExitButton;
+                if (canExit)
+                {
+                    StartCoroutine(OnClickClose());
+                }
             }).AddTo(gameObject);
 
-            nextButton.OnClickAsObservable().Subscribe(_ =>
-                {
-                    StartCoroutine(OnClickNext());
-                }).AddTo(gameObject);
+            stagePreparationButton.OnClickAsObservable().Subscribe(_ => { OnClickStage(); }).AddTo(gameObject);
 
-            repeatButton.OnClickAsObservable().Subscribe(_ =>
-                {
-                    StartCoroutine(OnClickRepeat());
-                }).AddTo(gameObject);
+            nextButton.OnClickAsObservable()
+                .Subscribe(_ => StartCoroutine(OnClickNext()))
+                .AddTo(gameObject);
+
+            repeatButton.OnClickAsObservable()
+                .Subscribe(_ => StartCoroutine(OnClickRepeat()))
+                .AddTo(gameObject);
 
             CloseWidget = closeButton.onClick.Invoke;
             SubmitWidget = nextButton.onClick.Invoke;
@@ -199,6 +202,7 @@ namespace Nekoyume.UI
             {
                 yield return CoDialog(SharedModel.StageID);
             }
+
             GoToMain();
         }
 
@@ -216,6 +220,16 @@ namespace Nekoyume.UI
                 yield break;
             }
 
+            if (SharedModel.StageType == StageType.EventDungeon &&
+                RxProps.EventScheduleRowForDungeon.Value is null)
+            {
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS"),
+                    NotificationCell.NotificationType.Information);
+                yield break;
+            }
+
             AudioController.PlayClick();
             yield return CoProceedNextStage();
         }
@@ -227,14 +241,30 @@ namespace Nekoyume.UI
                 yield break;
             }
 
+            if (SharedModel.StageType == StageType.EventDungeon &&
+                RxProps.EventScheduleRowForDungeon.Value is null)
+            {
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS"),
+                    NotificationCell.NotificationType.Information);
+                yield break;
+            }
+
             AudioController.PlayClick();
             yield return CoRepeatStage();
         }
 
-        private IEnumerator CoDialog(int worldStage)
+        private IEnumerator CoDialog(int stageId)
         {
-            var stageDialogs = Game.Game.instance.TableSheets.StageDialogSheet.Values
-                .Where(i => i.StageId == worldStage)
+            if (SharedModel.StageType == StageType.EventDungeon)
+            {
+                yield break;
+            }
+
+            var stageDialogs = TableSheets.Instance.StageDialogSheet
+                .OrderedList
+                .Where(i => i.StageId == stageId)
                 .OrderBy(i => i.DialogId)
                 .ToArray();
             if (!stageDialogs.Any())
@@ -281,7 +311,12 @@ namespace Nekoyume.UI
             SharedModel = model;
             _IsAlreadyOut = false;
 
-            worldStageId.text = $"{SharedModel.WorldName} {StageInformation.GetStageIdString(SharedModel.StageID, true)}";
+            var stageText = StageInformation.GetStageIdString(
+                SharedModel.StageType,
+                SharedModel.StageID,
+                true);
+            worldStageId.text = $"{SharedModel.WorldName}" +
+                                $" {stageText}";
             actionPoint.SetActionPoint(model.ActionPoint);
             actionPoint.SetEventTriggerEnabled(true);
 
@@ -291,7 +326,9 @@ namespace Nekoyume.UI
             }
 
             base.Show();
-            closeButton.gameObject.SetActive(model.StageID >= 3 || model.LastClearedStageId >= 3);
+            closeButton.gameObject.SetActive(
+                model.StageID >= Battle.RequiredStageForExitButton ||
+                model.LastClearedStageId >= Battle.RequiredStageForExitButton);
             stagePreparationButton.gameObject.SetActive(false);
             repeatButton.gameObject.SetActive(false);
             nextButton.gameObject.SetActive(false);
@@ -332,6 +369,7 @@ namespace Nekoyume.UI
                     {
                         UpdateViewAsDefeat(SharedModel.State);
                     }
+
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -346,8 +384,11 @@ namespace Nekoyume.UI
             victoryImageContainer.SetActive(true);
             // 4 is index of animation about multi-has.
             // if not use multi-has, set animation index to SharedModel.ClearedWaveNumber (1/2/3).
-            _victoryImageAnimator.SetInteger(ClearedWave,
-                isBoosted ? 4 : SharedModel.ClearedWaveNumber);
+            _victoryImageAnimator.SetInteger(
+                ClearedWave,
+                isBoosted
+                    ? 4
+                    : SharedModel.ClearedWaveNumber);
 
             defeatImageContainer.SetActive(false);
             topArea.SetActive(true);
@@ -461,12 +502,16 @@ namespace Nekoyume.UI
 
             if (!SharedModel.ActionPointNotEnough)
             {
-                var value = SharedModel.StageID >= 3 || SharedModel.LastClearedStageId >= 3;
+                var value =
+                    SharedModel.StageID >= Battle.RequiredStageForExitButton ||
+                    SharedModel.LastClearedStageId >= Battle.RequiredStageForExitButton;
                 repeatButton.gameObject.SetActive(value);
                 repeatButton.interactable = value;
             }
 
-            if (!SharedModel.IsEndStage && !SharedModel.ActionPointNotEnough && SharedModel.IsClear)
+            if (!SharedModel.IsEndStage &&
+                !SharedModel.ActionPointNotEnough &&
+                SharedModel.IsClear)
             {
                 nextButton.gameObject.SetActive(true);
                 nextButton.interactable = true;
@@ -476,9 +521,9 @@ namespace Nekoyume.UI
             {
                 case NextState.GoToMain:
                     SubmitWidget = closeButton.onClick.Invoke;
-                    fullFormat = SharedModel.ActionPointNotEnough ?
-                        L10nManager.Localize("UI_BATTLE_RESULT_NOT_ENOUGH_ACTION_POINT_FORMAT") :
-                        L10nManager.Localize("UI_BATTLE_EXIT_FORMAT");
+                    fullFormat = SharedModel.ActionPointNotEnough
+                        ? L10nManager.Localize("UI_BATTLE_RESULT_NOT_ENOUGH_ACTION_POINT_FORMAT")
+                        : L10nManager.Localize("UI_BATTLE_EXIT_FORMAT");
                     break;
                 case NextState.RepeatStage:
                     SubmitWidget = repeatButton.onClick.Invoke;
@@ -494,8 +539,8 @@ namespace Nekoyume.UI
             }
 
             // for tutorial
-            if (SharedModel.StageID == 3 &&
-                SharedModel.LastClearedStageId == 3 &&
+            if (SharedModel.StageID == Battle.RequiredStageForExitButton &&
+                SharedModel.LastClearedStageId == Battle.RequiredStageForExitButton &&
                 SharedModel.State == BattleLog.Result.Win)
             {
                 stagePreparationButton.gameObject.SetActive(false);
@@ -509,7 +554,7 @@ namespace Nekoyume.UI
 
             yield return new WaitUntil(() => CanClose);
 
-            var floatTime = (float) limitSeconds;
+            var floatTime = (float)limitSeconds;
             var floatTimeMinusOne = limitSeconds - 1f;
             while (limitSeconds > 0)
             {
@@ -565,8 +610,12 @@ namespace Nekoyume.UI
             stage.IsRepeatStage = false;
             stage.IsExitReserved = false;
             var stageLoadingScreen = Find<StageLoadingEffect>();
-            stageLoadingScreen.Show(stage.zone, SharedModel.WorldName,
-                SharedModel.StageID + 1, true, SharedModel.StageID);
+            stageLoadingScreen.Show(
+                SharedModel.StageType,
+                stage.zone,
+                SharedModel.WorldName,
+                SharedModel.StageID + 1,
+                true, SharedModel.StageID);
             Find<Status>().Close();
 
             StopVFX();
@@ -574,26 +623,10 @@ namespace Nekoyume.UI
             player.DisableHUD();
             ActionRenderHandler.Instance.Pending = true;
 
-            // NOTE: Check mimisbrunnr
-            if (SharedModel.WorldID > 10000)
-            {
-                yield return Game.Game.instance.ActionManager.MimisbrunnrBattle(
-                    player.Costumes,
-                    player.Equipments,
-                    new List<Consumable>(),
-                    SharedModel.WorldID,
-                    SharedModel.StageID + 1,
-                    1).StartAsCoroutine();
-            }
-            else
-            {
-                yield return Game.Game.instance.ActionManager.HackAndSlash(
-                    player.Costumes,
-                    player.Equipments,
-                    new List<Consumable>(),
-                    SharedModel.WorldID,
-                    SharedModel.StageID + 1).StartAsCoroutine();
-            }
+            yield return StartCoroutine(SendBattleActionAsync(
+                player.Equipments,
+                player.Costumes,
+                1));
         }
 
         private IEnumerator CoRepeatStage()
@@ -619,8 +652,13 @@ namespace Nekoyume.UI
             var stage = Game.Game.instance.Stage;
             stage.IsExitReserved = false;
             var stageLoadingScreen = Find<StageLoadingEffect>();
-            stageLoadingScreen.Show(stage.zone, SharedModel.WorldName,
-                SharedModel.StageID, false, SharedModel.StageID);
+            stageLoadingScreen.Show(
+                SharedModel.StageType,
+                stage.zone,
+                SharedModel.WorldName,
+                SharedModel.StageID,
+                false,
+                SharedModel.StageID);
             Find<Status>().Close();
 
             StopVFX();
@@ -632,30 +670,54 @@ namespace Nekoyume.UI
             {
                 ["StageId"] = SharedModel.StageID,
             };
-            var eventKey = SharedModel.ClearedWaveNumber == 3 ? "Repeat" : "Retry";
+            var eventKey = SharedModel.ClearedWaveNumber == 3
+                ? "Repeat"
+                : "Retry";
             var eventName = $"Unity/Stage Exit {eventKey}";
             Analyzer.Instance.Track(eventName, props);
 
-            // NOTE: Check mimisbrunnr
-            if (SharedModel.WorldID > 10000)
+            yield return StartCoroutine(SendBattleActionAsync(
+                player.Equipments,
+                player.Costumes,
+                0));
+        }
+
+        private IEnumerator SendBattleActionAsync(
+            List<Equipment> equipments,
+            List<Costume> costumes,
+            int stageIdOffset)
+        {
+            yield return SharedModel.StageType switch
             {
-                yield return Game.Game.instance.ActionManager.MimisbrunnrBattle(
-                    player.Costumes,
-                    player.Equipments,
-                    new List<Consumable>(),
-                    SharedModel.WorldID,
-                    SharedModel.StageID,
-                    1).StartAsCoroutine();
-            }
-            else
-            {
-                yield return Game.Game.instance.ActionManager.HackAndSlash(
-                    player.Costumes,
-                    player.Equipments,
-                    new List<Consumable>(),
-                    SharedModel.WorldID,
-                    SharedModel.StageID).StartAsCoroutine();
-            }
+                StageType.HackAndSlash => Game.Game.instance.ActionManager
+                    .HackAndSlash(
+                        costumes,
+                        equipments,
+                        new List<Consumable>(),
+                        SharedModel.WorldID,
+                        SharedModel.StageID + stageIdOffset)
+                    .StartAsCoroutine(),
+                StageType.Mimisbrunnr => Game.Game.instance.ActionManager
+                    .MimisbrunnrBattle(
+                        costumes,
+                        equipments,
+                        new List<Consumable>(),
+                        SharedModel.WorldID,
+                        SharedModel.StageID + stageIdOffset,
+                        1)
+                    .StartAsCoroutine(),
+                StageType.EventDungeon => Game.Game.instance.ActionManager
+                    .EventDungeonBattle(
+                        RxProps.EventScheduleRowForDungeon.Value.Id,
+                        SharedModel.WorldID,
+                        SharedModel.StageID + stageIdOffset,
+                        equipments,
+                        costumes,
+                        new List<Consumable>(),
+                        false)
+                    .StartAsCoroutine(),
+                _ => throw new ArgumentOutOfRangeException()
+            };
         }
 
         public void NextStage(BattleLog log)
@@ -680,6 +742,7 @@ namespace Nekoyume.UI
         {
             StartCoroutine(CoGoToNextMimisbrunnrStageClose(log));
         }
+
         private IEnumerator CoGoToNextMimisbrunnrStageClose(BattleLog log)
         {
             if (Find<Menu>().IsActive())
@@ -743,37 +806,51 @@ namespace Nekoyume.UI
                 CloseWithOtherWidgets();
                 Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
 
-                if (SharedModel.WorldID > 10000)
+                var stageNumber = 0;
+                switch (SharedModel.StageType)
                 {
-                    var viewModel = new WorldMap.ViewModel
-                    {
-                        WorldInformation = States.Instance.CurrentAvatarState.worldInformation,
-                    };
-                    viewModel.SelectedStageId.SetValueAndForceNotify(SharedModel.WorldID);
-                    viewModel.SelectedStageId.SetValueAndForceNotify(SharedModel.StageID);
-                    Game.Game.instance.TableSheets.WorldSheet.TryGetValue(SharedModel.WorldID,
-                        out var worldRow);
+                    case StageType.HackAndSlash:
+                        Find<WorldMap>().Show(SharedModel.WorldID, SharedModel.StageID, false);
+                        stageNumber = SharedModel.StageID;
+                        break;
 
-                    Find<StageInformation>().Show(viewModel, worldRow, StageType.Mimisbrunnr);
+                    case StageType.Mimisbrunnr:
+                        var viewModel = new WorldMap.ViewModel
+                        {
+                            WorldInformation = States.Instance.CurrentAvatarState.worldInformation,
+                        };
+                        viewModel.SelectedStageId.SetValueAndForceNotify(SharedModel.WorldID);
+                        viewModel.SelectedStageId.SetValueAndForceNotify(SharedModel.StageID);
+                        Game.Game.instance.TableSheets.WorldSheet.TryGetValue(SharedModel.WorldID,
+                            out var worldRow);
 
-                    Find<BattlePreparation>().Show(
-                        StageType.Mimisbrunnr,
-                        GameConfig.MimisbrunnrWorldId,
-                        SharedModel.StageID,
-                        $"{SharedModel.WorldName.ToUpper()} {SharedModel.StageID % 10000000}",
-                        true);
+                        Find<StageInformation>().Show(viewModel, worldRow, StageType.Mimisbrunnr);
+                        stageNumber = SharedModel.StageID % 10000000;
+                        break;
+
+                    case StageType.EventDungeon:
+                        if (RxProps.EventDungeonRow is null)
+                        {
+                            NotificationSystem.Push(
+                                MailType.System,
+                                L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS"),
+                                NotificationCell.NotificationType.Information);
+                            break;
+                        }
+
+                        var worldMap = Find<WorldMap>();
+                        worldMap.Show(States.Instance.CurrentAvatarState.worldInformation, true);
+                        worldMap.ShowEventDungeonStage(RxProps.EventDungeonRow, false);
+                        stageNumber = SharedModel.StageID.ToEventDungeonStageNumber();
+                        break;
                 }
-                else
-                {
-                    Find<WorldMap>().Show(SharedModel.WorldID, SharedModel.StageID, false);
 
-                    Find<BattlePreparation>().Show(
-                        StageType.HackAndSlash,
-                        SharedModel.WorldID,
-                        SharedModel.StageID,
-                        $"{SharedModel.WorldName.ToUpper()} {SharedModel.StageID}",
-                        true);
-                }
+                Find<BattlePreparation>().Show(
+                    SharedModel.StageType,
+                    SharedModel.WorldID,
+                    SharedModel.StageID,
+                    $"{SharedModel.WorldName.ToUpper()} {stageNumber}",
+                    true);
 
                 worldMapLoading.Close(true);
             });

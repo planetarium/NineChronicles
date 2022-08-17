@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Libplanet.Assets;
 using Nekoyume.Model;
@@ -8,11 +9,16 @@ using Nekoyume.UI.Module;
 using UnityEngine;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
+using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
+using Nekoyume.TableData.Event;
+using Nekoyume.UI.Scroller;
 using TMPro;
+using Unity.Mathematics;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -50,21 +56,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI _eventDungeonRemainingTimeText;
 
+        private readonly List<IDisposable> _disposablesAtShow = new();
+
         public ViewModel SharedViewModel { get; private set; }
-
-        public int SelectedWorldId
-        {
-            get => SharedViewModel.SelectedWorldId.Value;
-            private set => SharedViewModel.SelectedWorldId.SetValueAndForceNotify(value);
-        }
-
-        public int SelectedStageId
-        {
-            get => SharedViewModel.SelectedStageId.Value;
-            private set => SharedViewModel.SelectedStageId.SetValueAndForceNotify(value);
-        }
-
-        private int SelectedWorldStageBegin { get; set; }
 
         public bool HasNotification { get; private set; }
 
@@ -92,7 +86,7 @@ namespace Nekoyume.UI
         public override void Initialize()
         {
             base.Initialize();
-            var firstStageId = Game.Game.instance.TableSheets.StageWaveSheet.First?.StageId ?? 1;
+            var firstStageId = TableSheets.Instance.StageWaveSheet.First?.StageId ?? 1;
             SharedViewModel = new ViewModel
             {
                 SelectedStageId =
@@ -100,10 +94,10 @@ namespace Nekoyume.UI
                     Value = firstStageId
                 }
             };
-            var sheet = Game.Game.instance.TableSheets.WorldSheet;
+            var worldSheet = TableSheets.Instance.WorldSheet;
             foreach (var worldButton in _worldButtons)
             {
-                if (!sheet.TryGetByName(worldButton.WorldName, out var row))
+                if (!worldSheet.TryGetByName(worldButton.WorldName, out var row))
                 {
                     worldButton.Hide();
                     continue;
@@ -112,21 +106,37 @@ namespace Nekoyume.UI
                 worldButton.Set(row);
                 worldButton.Show();
                 worldButton.OnClickSubject
-                    .Subscribe(world =>
+                    .Subscribe(button =>
                     {
-                        if (world.IsUnlockable)
+                        if (button.IsUnlockable)
                         {
                             if (!ShowManyWorldUnlockPopup(SharedViewModel.WorldInformation))
                             {
-                                ShowWorldUnlockPopup(row.Id);
+                                ShowWorldUnlockPopup(button.Id);
                             }
                         }
                         else
                         {
-                            ShowWorld(row.Id);
+                            ShowWorld(button.Id);
                         }
                     }).AddTo(gameObject);
             }
+
+            _eventDungeonButton.Lock(true);
+            _eventDungeonButton.Show();
+            _eventDungeonButton.OnClickSubject.Subscribe(_ =>
+            {
+                if (RxProps.EventScheduleRowForDungeon.Value is null)
+                {
+                    NotificationSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS"),
+                        NotificationCell.NotificationType.Information);
+                    return;
+                }
+
+                ShowEventDungeonStage(RxProps.EventDungeonRow, false);
+            }).AddTo(gameObject);
 
             AgentStateSubject.Crystal.Subscribe(SetWorldOpenCostTextColor).AddTo(gameObject);
 
@@ -138,27 +148,59 @@ namespace Nekoyume.UI
 
         #endregion
 
-        public void Show(WorldInformation worldInformation)
+        public void Show(WorldInformation worldInformation, bool blockWorldUnlockPopup = false)
         {
+            SubscribeAtShow();
+
             HasNotification = false;
             SetWorldInformation(worldInformation);
 
             var status = Find<Status>();
             status.Close(true);
-            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
             Show(true);
             HelpTooltip.HelpMe(100002, true);
-            ShowManyWorldUnlockPopup(worldInformation);
+
+            if (!blockWorldUnlockPopup)
+            {
+                ShowManyWorldUnlockPopup(worldInformation);
+            }
         }
 
         public void Show(int worldId, int stageId, bool showWorld, bool callByShow = false)
         {
+            SubscribeAtShow();
             ShowWorld(worldId, stageId, showWorld, callByShow);
             Show(true);
         }
 
+        private void SubscribeAtShow()
+        {
+            _disposablesAtShow.DisposeAllAndClear();
+            RxProps.EventScheduleRowForDungeon.Subscribe(value =>
+            {
+                if (value is null)
+                {
+                    Find<HeaderMenuStatic>().UpdateAssets(
+                        HeaderMenuStatic.AssetVisibleState.Battle);
+                    _eventDungeonButton.Lock(true);
+                    _eventDungeonRemainingTimeObject.SetActive(false);
+                    return;
+                }
+
+                Find<HeaderMenuStatic>().UpdateAssets(
+                    HeaderMenuStatic.AssetVisibleState.EventDungeon);
+                _eventDungeonButton.HasNotification.Value = true;
+                _eventDungeonButton.Unlock();
+                _eventDungeonRemainingTimeObject.SetActive(true);
+            }).AddTo(_disposablesAtShow);
+            RxProps.EventDungeonRemainingTimeText
+                .SubscribeTo(_eventDungeonRemainingTimeText)
+                .AddTo(_disposablesAtShow);
+        }
+
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            _disposablesAtShow.DisposeAllAndClear();
             base.Close(true);
         }
 
@@ -200,7 +242,7 @@ namespace Nekoyume.UI
                 SetWorldOpenCostTextColor(States.Instance.CrystalBalance);
             }
 
-            if (!worldInformation.TryGetFirstWorld(out var firstWorld))
+            if (!worldInformation.TryGetFirstWorld(out _))
             {
                 throw new Exception("worldInformation.TryGetFirstWorld() failed!");
             }
@@ -209,7 +251,9 @@ namespace Nekoyume.UI
         private void ShowWorld(int worldId)
         {
             if (!SharedViewModel.WorldInformation.TryGetWorld(worldId, out var world))
+            {
                 throw new ArgumentException(nameof(worldId));
+            }
 
             if (worldId == 1)
             {
@@ -220,7 +264,11 @@ namespace Nekoyume.UI
             ShowWorld(world.Id, world.GetNextStageId(), false);
         }
 
-        private void ShowWorld(int worldId, int stageId, bool showWorld, bool callByShow = false)
+        private void ShowWorld(
+            int worldId,
+            int stageId,
+            bool showWorld,
+            bool callByShow = false)
         {
             if (callByShow)
             {
@@ -231,15 +279,49 @@ namespace Nekoyume.UI
                 SharedViewModel.IsWorldShown.SetValueAndForceNotify(showWorld);
             }
 
-            SelectedWorldId = worldId;
-            Game.Game.instance.TableSheets.WorldSheet.TryGetValue(SelectedWorldId,
+            TableSheets.Instance.WorldSheet.TryGetValue(worldId,
                 out var worldRow,
                 true);
-            SelectedWorldStageBegin = worldRow.StageBegin;
-            SelectedStageId = stageId;
-
+            SharedViewModel.SelectedWorldId.Value = worldId;
+            SharedViewModel.SelectedStageId.Value = stageId;
             var stageInfo = Find<StageInformation>();
             stageInfo.Show(SharedViewModel, worldRow, StageType.HackAndSlash);
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
+            Find<HeaderMenuStatic>().Show();
+        }
+
+        public void ShowEventDungeonStage(
+            EventDungeonSheet.Row eventDungeonRow,
+            bool showWorld,
+            bool callByShow = false)
+        {
+            if (callByShow)
+            {
+                CallByShowUpdateWorld();
+            }
+            else
+            {
+                SharedViewModel.IsWorldShown.SetValueAndForceNotify(showWorld);
+            }
+
+            Show(true);
+            var openedStageId =
+                RxProps.EventDungeonInfo.Value is null ||
+                RxProps.EventDungeonInfo.Value.ClearedStageId == 0
+                    ? RxProps.EventDungeonRow.StageBegin
+                    : math.min(
+                        RxProps.EventDungeonInfo.Value.ClearedStageId + 1,
+                        RxProps.EventDungeonRow.StageEnd);
+            SharedViewModel.SelectedWorldId.Value = eventDungeonRow.Id;
+            SharedViewModel.SelectedStageId.Value = openedStageId;
+            var stageInfo = Find<StageInformation>();
+            stageInfo.Show(
+                SharedViewModel,
+                eventDungeonRow,
+                openedStageId,
+                openedStageId);
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.EventDungeon);
+            Find<HeaderMenuStatic>().Show();
         }
 
         public void UpdateNotificationInfo()

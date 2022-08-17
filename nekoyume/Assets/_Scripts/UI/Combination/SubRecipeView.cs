@@ -12,6 +12,7 @@ using System.Globalization;
 using Nekoyume.State;
 using System.Numerics;
 using Nekoyume.Extensions;
+using Nekoyume.Game;
 using Nekoyume.Model.Mail;
 using Nekoyume.UI.Scroller;
 using Nekoyume.L10n;
@@ -295,7 +296,7 @@ namespace Nekoyume.UI
                 {
                     toggleParent.SetActive(true);
                     subRecipeId = _subrecipeIds[index];
-                    var subRecipe = Game.Game.instance.TableSheets
+                    var subRecipe = TableSheets.Instance
                         .EquipmentItemSubRecipeSheetV2[subRecipeId.Value];
                     var options = subRecipe.Options;
 
@@ -306,7 +307,7 @@ namespace Nekoyume.UI
 
                     SetOptions(options);
 
-                    var sheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
+                    var sheet = TableSheets.Instance.ItemRequirementSheet;
                     var resultItemRow = equipmentRow.GetResultEquipmentItemRow();
 
                     if (!sheet.TryGetValue(resultItemRow.Id, out var row))
@@ -352,7 +353,7 @@ namespace Nekoyume.UI
                 costAP = consumableRow.RequiredActionPoint;
                 recipeId = consumableRow.Id;
 
-                var sheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
+                var sheet = TableSheets.Instance.ItemRequirementSheet;
                 var resultItemRow = consumableRow.GetResultConsumableItemRow();
 
                 if (!sheet.TryGetValue(resultItemRow.Id, out var row))
@@ -412,17 +413,16 @@ namespace Nekoyume.UI
             var replacedMaterialMap = new Dictionary<int, int>();
             var inventory = States.Instance.CurrentAvatarState.inventory;
 
-            foreach (var pair in required)
+            foreach (var (id, count) in required)
             {
-                var id = pair.Key;
-                var count = pair.Value;
-
-                if (!Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(id, out var row))
+                if (!TableSheets.Instance.MaterialItemSheet.TryGetValue(id, out var row))
                 {
                     continue;
                 }
 
-                var itemCount = inventory.TryGetFungibleItems(row.ItemId, out var outFungibleItems)
+                var itemCount = inventory.TryGetFungibleItems(
+                    row.ItemId,
+                    out var outFungibleItems)
                     ? outFungibleItems.Sum(e => e.count)
                     : 0;
 
@@ -449,7 +449,7 @@ namespace Nekoyume.UI
                 var costNCG = new ConditionalCostButton.CostParam(
                     CostType.NCG,
                     (long)_selectedRecipeInfo.CostNCG);
-                var sheet = Game.Game.instance.TableSheets.CrystalMaterialCostSheet;
+                var sheet = TableSheets.Instance.CrystalMaterialCostSheet;
 
                 var crystalCost = 0 * CrystalCalculator.CRYSTAL;
                 foreach (var pair in _selectedRecipeInfo.ReplacedMaterials)
@@ -492,7 +492,7 @@ namespace Nekoyume.UI
         private void SetOptions(
             List<EquipmentItemSubRecipeSheetV2.OptionInfo> optionInfos)
         {
-            var tableSheets = Game.Game.instance.TableSheets;
+            var tableSheets = TableSheets.Instance;
             var optionSheet = tableSheets.EquipmentItemOptionSheet;
             var skillSheet = tableSheets.SkillSheet;
             var options = optionInfos
@@ -573,7 +573,7 @@ namespace Nekoyume.UI
             var inventory = States.Instance.CurrentAvatarState.inventory;
             foreach (var material in _selectedRecipeInfo.Materials)
             {
-                if (!Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(material.Key, out var row))
+                if (!TableSheets.Instance.MaterialItemSheet.TryGetValue(material.Key, out var row))
                 {
                     continue;
                 }
@@ -584,7 +584,7 @@ namespace Nekoyume.UI
 
                 // when a material is unreplaceable.
                 if (material.Value > itemCount &&
-                    !Game.Game.instance.TableSheets.CrystalMaterialCostSheet.ContainsKey(material.Key))
+                    !TableSheets.Instance.CrystalMaterialCostSheet.ContainsKey(material.Key))
                 {
                     var message = L10nManager.Localize("UI_UPREPLACEABLE_MATERIAL_FORMAT", row.GetLocalizedName());
                     errorMessage = message;

@@ -6,7 +6,6 @@ using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Arena;
-using Nekoyume.Helper;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
@@ -90,14 +89,10 @@ namespace Nekoyume.State
             }
         }
 
-        private static Address? _avatarAddressForArenaProps;
-        
         // TODO!!!! Remove [`_arenaInfoTuple`] and use [`_playersArenaParticipant`] instead.
         private static readonly
             AsyncUpdatableRxProp<(ArenaInformation current, ArenaInformation next)>
-            _arenaInfoTuple
-                = new AsyncUpdatableRxProp<(ArenaInformation current, ArenaInformation next)>(
-                    UpdateArenaInfoTupleAsync);
+            _arenaInfoTuple = new(UpdateArenaInfoTupleAsync);
 
         private static long _arenaInfoTupleUpdatedBlockIndex;
 
@@ -105,36 +100,20 @@ namespace Nekoyume.State
             IReadOnlyAsyncUpdatableRxProp<(ArenaInformation current, ArenaInformation next)>
             ArenaInfoTuple => _arenaInfoTuple;
 
-        private static readonly ReactiveProperty<(
-            int currentTicketCount,
-            int maxTicketCount,
-            int progressedBlockRange,
-            int totalBlockRange,
-            string remainTimespanToReset)> _arenaTicketProgress =
-            new ReactiveProperty<(
-                int currentTicketCount,
-                int maxTicketCount,
-                int progressedBlockRange,
-                int totalBlockRange,
-                string remainTimespanToReset)>();
+        private static readonly ReactiveProperty<TicketProgress>
+            _arenaTicketProgress = new(new TicketProgress());
 
-        public static IReadOnlyReactiveProperty<(
-            int currentTicketCount,
-            int maxTicketCount,
-            int progressedBlockRange,
-            int totalBlockRange,
-            string remainTimespanToReset)> ArenaTicketProgress =>
-            _arenaTicketProgress;
+        public static IReadOnlyReactiveProperty<TicketProgress>
+            ArenaTicketProgress => _arenaTicketProgress;
 
         private static readonly ReactiveProperty<PlayerArenaParticipant>
-            _playersArenaParticipant
-                = new ReactiveProperty<PlayerArenaParticipant>(null);
+            _playersArenaParticipant = new(null);
 
         public static IReadOnlyReactiveProperty<PlayerArenaParticipant>
             PlayersArenaParticipant => _playersArenaParticipant;
 
         private static readonly AsyncUpdatableRxProp<ArenaParticipant[]>
-            _arenaParticipantsOrderedWithScore = new AsyncUpdatableRxProp<ArenaParticipant[]>(
+            _arenaParticipantsOrderedWithScore = new(
                 Array.Empty<ArenaParticipant>(),
                 UpdateArenaParticipantsOrderedWithScoreAsync);
 
@@ -150,31 +129,8 @@ namespace Nekoyume.State
 
         private static void StartArena()
         {
-            ReactiveAvatarState.Address
-                .Subscribe(addr =>
-                {
-                    // NOTE: Reset all of cached block indexes for rx props when current avatar state changed.
-                    if (!_avatarAddressForArenaProps.HasValue)
-                    {
-                        _avatarAddressForArenaProps = addr;
-                    }
-                    else if (!_avatarAddressForArenaProps.Value.Equals(addr))
-                    {
-                        _avatarAddressForArenaProps = addr;
-                        _arenaInfoTupleUpdatedBlockIndex = 0;
-                        _arenaParticipantsOrderedWithScoreUpdatedBlockIndex = 0;
-                    }
-
-                    // TODO!!!! Update [`_playersArenaParticipant`] when current avatar changed.
-                    // if (_playersArenaParticipant.HasValue &&
-                    //     _playersArenaParticipant.Value.AvatarAddr == addr)
-                    // {
-                    //     return;
-                    // }
-                    //
-                    // _playersArenaParticipant.Value = null;
-                })
-                .AddTo(_disposables);
+            OnBlockIndexArena(_agent.BlockIndex);
+            OnAvatarChangedArena();
 
             ArenaInfoTuple
                 .Subscribe(_ => UpdateArenaTicketProgress(_agent.BlockIndex))
@@ -184,6 +140,22 @@ namespace Nekoyume.State
         private static void OnBlockIndexArena(long blockIndex)
         {
             UpdateArenaTicketProgress(blockIndex);
+        }
+
+        private static void OnAvatarChangedArena()
+        {
+            // NOTE: Reset all of cached block indexes for rx props when current avatar state changed.
+            _arenaInfoTupleUpdatedBlockIndex = 0;
+            _arenaParticipantsOrderedWithScoreUpdatedBlockIndex = 0;
+
+            // TODO!!!! Update [`_playersArenaParticipant`] when current avatar changed.
+            // if (_playersArenaParticipant.HasValue &&
+            //     _playersArenaParticipant.Value.AvatarAddr == addr)
+            // {
+            //     return;
+            // }
+            //
+            // _playersArenaParticipant.Value = null;
         }
 
         private static void UpdateArenaTicketProgress(long blockIndex)
@@ -196,12 +168,13 @@ namespace Nekoyume.State
                 : null;
             if (currentArenaInfo is null)
             {
-                _arenaTicketProgress.SetValueAndForceNotify((
+                _arenaTicketProgress.Value.Reset(
                     maxTicketCount,
                     maxTicketCount,
                     0,
-                    0,
-                    ""));
+                    0);
+                _arenaTicketProgress.SetValueAndForceNotify(
+                    _arenaTicketProgress.Value);
                 return;
             }
 
@@ -212,12 +185,13 @@ namespace Nekoyume.State
                 ticketResetInterval);
             var progressedBlockRange =
                 (blockIndex - currentRoundData.StartBlockIndex) % ticketResetInterval;
-            _arenaTicketProgress.SetValueAndForceNotify((
+            _arenaTicketProgress.Value.Reset(
                 currentTicketCount,
                 maxTicketCount,
                 (int)progressedBlockRange,
-                ticketResetInterval,
-                Util.GetBlockToTime(ticketResetInterval - progressedBlockRange)));
+                ticketResetInterval);
+            _arenaTicketProgress.SetValueAndForceNotify(
+                _arenaTicketProgress.Value);
         }
 
         private static async Task<(ArenaInformation current, ArenaInformation next)>

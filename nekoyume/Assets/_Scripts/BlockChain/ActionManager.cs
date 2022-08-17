@@ -13,6 +13,7 @@ using Nekoyume.Game.Character;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.ActionExtensions;
+using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -199,13 +200,16 @@ namespace Nekoyume.BlockChain
                 });
         }
 
-        public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(Player player, int worldId,
-            int stageId) => HackAndSlash(
-            player.Costumes,
-            player.Equipments,
-            null,
-            worldId,
-            stageId);
+        public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
+            Player player,
+            int worldId,
+            int stageId) =>
+            HackAndSlash(
+                player.Costumes,
+                player.Equipments,
+                null,
+                worldId,
+                stageId);
 
         public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
             List<Costume> costumes,
@@ -259,6 +263,87 @@ namespace Nekoyume.BlockChain
                 });
         }
 
+        public IObservable<ActionBase.ActionEvaluation<EventDungeonBattle>> EventDungeonBattle(
+            int eventScheduleId,
+            int eventDungeonId,
+            int eventDungeonStageId,
+            Player player,
+            bool buyTicketIfNeeded) =>
+            EventDungeonBattle(
+                eventScheduleId,
+                eventDungeonId,
+                eventDungeonStageId,
+                player.Equipments,
+                player.Costumes,
+                null,
+                buyTicketIfNeeded);
+
+        public IObservable<ActionBase.ActionEvaluation<EventDungeonBattle>> EventDungeonBattle(
+            int eventScheduleId,
+            int eventDungeonId,
+            int eventDungeonStageId,
+            List<Equipment> equipments,
+            List<Costume> costumes,
+            List<Consumable> foods,
+            bool buyTicketIfNeeded)
+        {
+            var numberOfTicketPurchases =
+                RxProps.EventDungeonInfo.Value?.NumberOfTicketPurchases ?? 0;
+            Analyzer.Instance.Track("Unity/EventDungeonBattle", new Value
+            {
+                ["EventScheduleId"] = eventScheduleId,
+                ["EventDungeonId"] = eventDungeonId,
+                ["EventDungeonStageId"] = eventDungeonStageId,
+                ["RemainingTickets"] =
+                    RxProps.EventDungeonTicketProgress.Value.currentTickets -
+                    Action.EventDungeonBattle.PlayCount,
+                ["NumberOfTicketPurchases"] = numberOfTicketPurchases,
+                ["BuyTicketIfNeeded"] = buyTicketIfNeeded,
+                ["TicketCostIfNeeded"] = buyTicketIfNeeded
+                    ? TableSheets.Instance.EventScheduleSheet.TryGetValue(
+                        eventScheduleId,
+                        out var scheduleRow)
+                        ? scheduleRow.GetDungeonTicketCost(numberOfTicketPurchases)
+                        : 0
+                    : 0,
+            });
+
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            costumes ??= new List<Costume>();
+            equipments ??= new List<Equipment>();
+            foods ??= new List<Consumable>();
+
+            var action = new EventDungeonBattle
+            {
+                AvatarAddress = avatarAddress,
+                EventScheduleId = eventScheduleId,
+                EventDungeonId = eventDungeonId,
+                EventDungeonStageId = eventDungeonStageId,
+                Equipments = equipments.Select(e => e.ItemId).ToList(),
+                Costumes = costumes.Select(c => c.ItemId).ToList(),
+                Foods = foods.Select(f => f.ItemId).ToList(),
+                BuyTicketIfNeeded = buyTicketIfNeeded,
+            };
+            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
+            LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
+            ProcessAction(action);
+            _lastBattleActionId = action.Id;
+            return _agent.ActionRenderer.EveryRender<EventDungeonBattle>()
+                .Timeout(ActionTimeout)
+                .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e =>
+                {
+                    if (_lastBattleActionId == action.Id)
+                    {
+                        _lastBattleActionId = null;
+                    }
+
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
+                });
+        }
+
         public IObservable<ActionBase.ActionEvaluation<CombinationConsumable>> CombinationConsumable(
             SubRecipeView.RecipeInfo recipeInfo,
             int slotIndex)
@@ -282,12 +367,9 @@ namespace Nekoyume.BlockChain
 
                 if (recipeInfo.ReplacedMaterials.ContainsKey(row.Id))
                 {
-                    if (!avatarState.inventory.TryGetFungibleItems(row.ItemId, out var items))
-                    {
-                        count = 0;
-                    }
-
-                    count = items.Sum(x => x.count);
+                    count = avatarState.inventory.TryGetFungibleItems(row.ItemId, out var items)
+                        ? items.Sum(x => x.count)
+                        : 0;
                 }
 
                 LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId, count);
@@ -309,6 +391,73 @@ namespace Nekoyume.BlockChain
             ProcessAction(action);
 
             return _agent.ActionRenderer.EveryRender<CombinationConsumable>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e => throw HandleException(action.Id, e));
+        }
+
+        public IObservable<ActionBase.ActionEvaluation<EventConsumableItemCrafts>>
+            EventConsumableItemCrafts(
+                int eventScheduleId,
+                SubRecipeView.RecipeInfo recipeInfo,
+                int slotIndex)
+        {
+            var trackValue = new Value
+            {
+                ["EventScheduleId"] = eventScheduleId,
+                ["RecipeId"] = recipeInfo.RecipeId,
+                ["SubRecipeId"] = recipeInfo.SubRecipeId ?? 0,
+            };
+            var num = 1;
+            foreach (var pair in recipeInfo.Materials)
+            {
+                trackValue.Add($"MaterialId_{num:00}", pair.Key);
+                trackValue.Add($"MaterialCount_{num:00}", pair.Value);
+                num++;
+            }
+            Analyzer.Instance.Track("Unity/EventConsumableItemCrafts", trackValue);
+
+            var agentAddress = States.Instance.AgentState.address;
+            var avatarState = States.Instance.CurrentAvatarState;
+            var avatarAddress = avatarState.address;
+
+            LocalLayerModifier.ModifyAgentGold(agentAddress, -recipeInfo.CostNCG);
+            LocalLayerModifier.ModifyAvatarActionPoint(agentAddress, -recipeInfo.CostAP);
+
+            foreach (var pair in recipeInfo.Materials)
+            {
+                var id = pair.Key;
+                var count = pair.Value;
+
+                if (!Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(id, out var row))
+                {
+                    continue;
+                }
+
+                if (recipeInfo.ReplacedMaterials.ContainsKey(row.Id))
+                {
+                    count = avatarState.inventory.TryGetFungibleItems(row.ItemId, out var items)
+                        ? items.Sum(x => x.count)
+                        : 0;
+                }
+
+                LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId, count);
+            }
+
+            var action = new EventConsumableItemCrafts
+            {
+                AvatarAddress = States.Instance.CurrentAvatarState.address,
+                EventScheduleId = eventScheduleId,
+                EventConsumableItemRecipeId = recipeInfo.RecipeId,
+                SlotIndex = slotIndex,
+            };
+            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
+            LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
+            ProcessAction(action);
+
+            return _agent.ActionRenderer.EveryRender<EventConsumableItemCrafts>()
                 .Timeout(ActionTimeout)
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
@@ -428,7 +577,7 @@ namespace Nekoyume.BlockChain
                 sellerAvatarAddress = avatarAddress,
                 updateSellInfos = updateSellInfos
             };
-            
+
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
@@ -693,12 +842,9 @@ namespace Nekoyume.BlockChain
 
                 if (recipeInfo.ReplacedMaterials.ContainsKey(row.Id))
                 {
-                    if (!avatarState.inventory.TryGetFungibleItems(row.ItemId, out var items))
-                    {
-                        count = 0;
-                    }
-
-                    count = items.Sum(x => x.count);
+                    count = avatarState.inventory.TryGetFungibleItems(row.ItemId, out var items)
+                        ? items.Sum(x => x.count)
+                        : 0;
                 }
 
                 LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId, count);

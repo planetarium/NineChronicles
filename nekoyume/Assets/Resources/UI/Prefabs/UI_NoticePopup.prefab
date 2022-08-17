@@ -29,6 +29,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1949091494416164654}
   - {fileID: 4346577352457730467}
@@ -51,7 +52,7 @@ CanvasRenderer:
   m_CullTransparentMesh: 0
 --- !u!95 &95256010546860014
 Animator:
-  serializedVersion: 3
+  serializedVersion: 4
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -64,6 +65,7 @@ Animator:
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
@@ -86,11 +88,11 @@ MonoBehaviour:
   detailButton: {fileID: 8915038191723940672}
   closeButton: {fileID: 9158407257095490729}
   noticeList:
-  - name: DailyRewardClaimX2
-    contentImage: {fileID: 21300000, guid: 131755c17cad82245b417134e7ef4ab0, type: 3}
-    beginTime: 2022/06/19 00:00:00
-    endTime: 2022/07/25 23:59:59
-    pageUrlFormat: https://onboarding.nine-chronicles.com/earn
+  - name: SummerEvent&Wolrd6
+    contentImage: {fileID: 21300000, guid: 2bc57019582df4cb18fa52ab8bf3c41e, type: 3}
+    beginTime: 2022/08/25 00:00:00
+    endTime: 2022/09/16 23:59:59
+    pageUrlFormat: https://ninechronicles-banner.com/01
 --- !u!1 &288844463192487935
 GameObject:
   m_ObjectHideFlags: 0
@@ -119,6 +121,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3201093557315215275}
   m_RootOrder: 0
@@ -194,6 +197,7 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1812342550917719134}
   - {fileID: 3201093557315215275}
@@ -269,6 +273,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1136111321838124206}
   - {fileID: 7206737788469507694}
@@ -306,6 +311,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5448215891775605253}
   - {fileID: 9210366363724160022}
@@ -347,6 +353,7 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2469869276478328227}
   m_Father: {fileID: 1812342550917719134}
@@ -494,6 +501,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3201093557315215275}
   m_RootOrder: 1
@@ -613,6 +621,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 224898616830980190}
   m_RootOrder: 1
@@ -688,6 +697,7 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 9210366363724160022}
   m_RootOrder: 0
@@ -822,6 +832,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1812342550917719134}
   m_RootOrder: 0
@@ -859,7 +870,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 131755c17cad82245b417134e7ef4ab0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 2bc57019582df4cb18fa52ab8bf3c41e, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

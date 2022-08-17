@@ -5,5 +5,7 @@ namespace Nekoyume.EnumType
         Default = 0,
         Christmas = 1,
         Valentine = 2,
+        // NOTE: [`EventDungeon`] is temporary.
+        EventDungeon = 3,
     }
 }

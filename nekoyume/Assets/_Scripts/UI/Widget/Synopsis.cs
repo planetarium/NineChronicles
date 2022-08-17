@@ -387,9 +387,7 @@ namespace Nekoyume.UI
                     var loadingScreen = Find<DataLoadingScreen>();
                     loadingScreen.Message = L10nManager.Localize("UI_LOADING_BOOTSTRAP_START");
                     loadingScreen.Show();
-                    await UniTask.WhenAll(
-                        States.Instance.SelectAvatarAsync(slotIndex),
-                        RxProps.ArenaInfoTuple.UpdateAsync());
+                    await RxProps.SelectAvatarAsync(slotIndex);
                     loadingScreen.Close();
                     Game.Event.OnRoomEnter.Invoke(false);
                     Game.Event.OnUpdateAddresses.Invoke();
