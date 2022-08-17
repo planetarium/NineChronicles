@@ -55,6 +55,14 @@ namespace Nekoyume.State
                 .AddTo(_disposables);
 
             StartArena();
+            ReactiveAvatarState.Address
+                .Subscribe(SetCurrentAvatarAddress)
+                .AddTo(_disposables);
+        }
+
+        public static void SetCurrentAvatarAddress(Address avatarAddress)
+        {
+            _currentAvatarAddress = avatarAddress;
         }
 
         public static void Stop()
