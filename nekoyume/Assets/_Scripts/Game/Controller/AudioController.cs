@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Pattern;
+using Nekoyume.State;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -158,12 +159,12 @@ namespace Nekoyume.Game.Controller
             base.Awake();
 
             CurrentState = State.None;
-            Event.OnRoomEnter.AddListener(_ => PlayMusic(EventManager.GetMainBgmName()));
-
-            // FixMe. 돈 버는 소리는 언제쯤 켜둘 수 있을까요. 마이너모드에서 소리가 방해된다는 피드백으로 다시 꺼둡니다.
-//#if !UNITY_EDITOR
-//            ReactiveAgentState.Gold.ObserveOnMainThread().Subscribe(_ => PlaySfx(SfxCode.Cash)).AddTo(this);
-//#endif
+            Event.OnRoomEnter.AddListener(_ =>
+            {
+                PlayMusic(RxProps.EventScheduleRowForDungeon.Value is not null
+                    ? "bgm_event_22summer_title"
+                    : EventManager.GetMainBgmName());
+            });
         }
 
         private void Update()

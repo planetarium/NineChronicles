@@ -18,7 +18,7 @@ namespace Nekoyume.UI.Module.Common
             long currentBlockIndex,
             DateTime now)
         {
-            blocksText.text = $"{blocksText:N0} - {endBlockIndex:N0}";
+            blocksText.text = $"{beginningBlockIndex:N0} - {endBlockIndex:N0}";
             blocksText.enabled = true;
 
             var from = beginningBlockIndex.BlockIndexToDateTimeString(currentBlockIndex, now);

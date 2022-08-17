@@ -184,11 +184,10 @@ namespace Nekoyume.UI
             btnLogin.SetActive(false);
             var loadingScreen = Find<GrayLoadingScreen>();
             loadingScreen.Show();
-            var results = await UniTask.WhenAll(
-                States.Instance.SelectAvatarAsync(_selectedIndex),
-                RxProps.ArenaInfoTuple.UpdateAsync());
+            var results =
+                await RxProps.SelectAvatarAsync(_selectedIndex);
             loadingScreen.Close();
-            OnDidAvatarStateLoaded(results.Item1);
+            OnDidAvatarStateLoaded(results.selectedAvatarState);
         }
 
         public void BackToLogin()

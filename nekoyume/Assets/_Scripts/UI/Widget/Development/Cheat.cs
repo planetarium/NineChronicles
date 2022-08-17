@@ -427,7 +427,7 @@ namespace Nekoyume
                 tableSheets.StageWaveSheet[stageId],
                 avatarState.worldInformation.IsStageCleared(stageId),
                 StageRewardExpHelper.GetExp(avatarState.level, stageId),
-                tableSheets.GetStageSimulatorSheets(),
+                tableSheets.GetSimulatorSheets(),
                 tableSheets.EnemySkillSheet,
                 tableSheets.CostumeStatSheet,
                 StageSimulator.GetWaveRewards(

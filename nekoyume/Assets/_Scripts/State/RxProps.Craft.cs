@@ -42,13 +42,13 @@ namespace Nekoyume.State
 
         public static void UpdateHammerPointStates(int recipeId)
         {
-            if (!_currentAvatarAddress.HasValue)
+            if (!_currentAvatarAddr.HasValue)
             {
                 return;
             }
 
             var address =
-                Addresses.GetHammerPointStateAddress(_currentAvatarAddress.Value, recipeId);
+                Addresses.GetHammerPointStateAddress(_currentAvatarAddr.Value, recipeId);
             var serialized = _agent.GetStateAsync(address).Result;
             var hammerPointState = new HammerPointState(address, serialized as List);
             if (_hammerPointStates.ContainsKey(recipeId))
@@ -76,7 +76,7 @@ namespace Nekoyume.State
         public static async UniTask<Dictionary<int, HammerPointState>> UpdateHammerPointStates(
             IEnumerable<int> recipeIds)
         {
-            if (_tableSheets.CrystalHammerPointSheet is null || !_currentAvatarAddress.HasValue)
+            if (_tableSheets.CrystalHammerPointSheet is null || !_currentAvatarAddr.HasValue)
             {
                 return null;
             }
@@ -84,7 +84,7 @@ namespace Nekoyume.State
             var hammerPointStateAddresses =
                 recipeIds.Select(recipeId =>
                         (Addresses.GetHammerPointStateAddress(
-                            _currentAvatarAddress.Value,
+                            _currentAvatarAddr.Value,
                             recipeId), recipeId))
                     .ToList();
             var states =

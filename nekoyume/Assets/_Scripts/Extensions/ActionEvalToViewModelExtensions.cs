@@ -12,7 +12,8 @@ namespace Nekoyume
 {
     public static class ActionEvalToViewModelExtensions
     {
-        public static BattleResultPopup.Model GetHackAndSlashReward(this ActionBase.ActionEvaluation<HackAndSlash> eval,
+        public static BattleResultPopup.Model GetHackAndSlashReward(
+            this ActionBase.ActionEvaluation<HackAndSlash> eval,
             AvatarState avatarState,
             List<Model.Skill.Skill> skillsOnWaveStart,
             TableSheets sheets,
