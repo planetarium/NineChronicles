@@ -400,7 +400,7 @@ namespace Nekoyume.UI
             PrivateKey privateKey = null;
             foreach (var pair in keyStore.List())
             {
-                pair.Deconstruct(out Guid keyId, out ProtectedPrivateKey ppk);
+                pair.Deconstruct(out _, out var ppk);
                 try
                 {
                     privateKey = ppk.Unprotect(passphrase: passphrase);
@@ -408,13 +408,12 @@ namespace Nekoyume.UI
                 catch (IncorrectPassphraseException)
                 {
                     Debug.LogWarningFormat(
-                        "The key {0} is protected with a passphrase; failed to load: {1}",
-                        ppk.Address,
-                        keyId
+                        "The key {0} cannot unprotected with a passphrase; failed to load",
+                        ppk.Address
                     );
                 }
 
-                Debug.LogFormat("The key {0} was successfully loaded using passphrase: {1}", ppk.Address, keyId);
+                Debug.LogFormat("The key {0} was successfully loaded", ppk.Address);
                 break;
             }
 

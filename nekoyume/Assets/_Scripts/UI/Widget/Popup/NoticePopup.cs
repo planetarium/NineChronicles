@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using UnityEngine.UI;
 using UnityEngine;
@@ -58,7 +56,9 @@ namespace Nekoyume.UI
                 "yyyy/MM/dd HH:mm:ss",
                 null);
             var now = DateTime.UtcNow;
-            var isNewDay = now.Year != lastNoticeDay.Year || now.Month != lastNoticeDay.Month || now.Day != lastNoticeDay.Day;
+            var isNewDay = now.Year != lastNoticeDay.Year ||
+                           now.Month != lastNoticeDay.Month ||
+                           now.Day != lastNoticeDay.Day;
             if (isNewDay)
             {
                 PlayerPrefs.SetString(lastNoticeDayKey, now.ToString("yyyy/MM/dd HH:mm:ss"));
