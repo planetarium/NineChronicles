@@ -559,11 +559,16 @@ namespace Nekoyume.BlockChain
                     .OrderBy(x => x.StageId)
                     .FirstOrDefault(x =>
                         gameInstance.TableSheets.EquipmentItemRecipeSheet.TryGetValue(x.RecipeId, out _));
+                var hammerPointStateAddress =
+                    Addresses.GetHammerPointStateAddress(avatarAddress, result.recipeId);
+                var hammerPointState = new HammerPointState(hammerPointStateAddress,
+                    eval.OutputStates.GetState(hammerPointStateAddress) as List);
 
                 UpdateCombinationSlotState(slotIndex, slot);
                 UpdateAgentStateAsync(eval).Forget();
                 UpdateCurrentAvatarStateAsync(eval).Forget();
                 RenderQuest(avatarAddress, avatarState.questList?.completedQuestIds);
+                RxProps.UpdateHammerPointStates(result.recipeId, hammerPointState);
 
                 if (!(nextQuest is null))
                 {
@@ -1435,6 +1440,7 @@ namespace Nekoyume.BlockChain
             recipeIds.AddRange(sharedModel.UnlockedRecipes.Value);
             sharedModel.SetUnlockedRecipes(recipeIds);
             sharedModel.UpdateUnlockableRecipes();
+            RxProps.UpdateHammerPointStates(eval.Action.RecipeIds).Forget();
         }
 
         private void ResponseUnlockWorld(ActionBase.ActionEvaluation<UnlockWorld> eval)
