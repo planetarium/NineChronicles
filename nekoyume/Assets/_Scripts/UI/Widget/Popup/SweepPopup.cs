@@ -150,10 +150,10 @@ namespace Nekoyume.UI
             _ap.SetValueAndForceNotify(States.Instance.CurrentAvatarState.actionPoint);
             _cp.SetValueAndForceNotify(States.Instance.CurrentAvatarState.GetCP());
             _repeatBattleAction = repeatBattleAction;
-            pageToggle.isOn = true;
             var disableRepeat = States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(stageId);
             canvasGroupForRepeat.alpha = disableRepeat ? 0 : 1;
             canvasGroupForRepeat.interactable = !disableRepeat;
+            pageToggle.isOn = disableRepeat;
             contentText.text =
                 $"({L10nManager.Localize("UI_AP")} / {L10nManager.Localize("UI_AP_POTION")})";
 
