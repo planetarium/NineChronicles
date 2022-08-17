@@ -307,7 +307,8 @@ namespace Lib9c.Tests.Action
                     eventScheduleId,
                     eventDungeonId,
                     eventDungeonStageId,
-                    buyTicketIfNeeded: true));
+                    buyTicketIfNeeded: true,
+                    blockIndex: scheduleRow.StartBlockIndex));
         }
 
         [Theory]
