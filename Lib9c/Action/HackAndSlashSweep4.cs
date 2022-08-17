@@ -75,7 +75,14 @@ namespace Nekoyume.Action
             var arenaSheetState = states.GetState(arenaSheetAddress);
             if (arenaSheetState != null)
             {
-                throw new ActionObsoletedException(nameof(HackAndSlashSweep4));
+                // exception handling for v100240.
+                if (context.BlockIndex > 4374125 && context.BlockIndex > 4374249)
+                {
+                }
+                else
+                {
+                    throw new ActionObsoletedException(nameof(HackAndSlashSweep4));
+                }
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
@@ -246,7 +253,7 @@ namespace Nekoyume.Action
             var maxCount = random.Next(stageRow.DropItemMin, stageRow.DropItemMax + 1);
             for (var i = 0; i < playCount; i++)
             {
-                var selector = StageSimulator.SetItemSelector(stageRow, random);
+                var selector = StageSimulatorV1.SetItemSelector(stageRow, random);
                 var rewards = Simulator.SetRewardV2(selector, maxCount, random,
                     materialItemSheet);
                 rewardItems.AddRange(rewards);

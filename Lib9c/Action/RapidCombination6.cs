@@ -62,6 +62,13 @@ namespace Nekoyume.Action
             }
 
             var slotState = states.GetCombinationSlotState(avatarAddress, slotIndex);
+
+            // exception handling for v100240.
+            if (context.BlockIndex > 4377159 && context.BlockIndex < 4377430 && slotState.Result is ItemEnhancement9.ResultModel)
+            {
+                return states;
+            }
+
             if (slotState?.Result is null)
             {
                 throw new CombinationSlotResultNullException($"{addressesHex}CombinationSlot Result is null. ({avatarAddress}), ({slotIndex})");
@@ -118,6 +125,30 @@ namespace Nekoyume.Action
                 else if (itemEnhanceMail != null)
                 {
                     avatarState.Update(itemEnhanceMail);
+                }
+            }
+            else
+            {
+                // exception handling for v100240.
+                if (context.BlockIndex > 4133442 && context.BlockIndex < 4374195)
+                {
+                    if (slotState.TryGetResultId(out var resultIdFix) &&
+                        avatarState.mailBox.All(mail => mail.id != resultIdFix) &&
+                        slotState.TryGetMail(
+                            context.BlockIndex,
+                            context.BlockIndex,
+                            out var combinationMailFix,
+                            out var itemEnhanceMailFix))
+                    {
+                        if (combinationMailFix != null)
+                        {
+                            avatarState.Update(combinationMailFix);
+                        }
+                        else if (itemEnhanceMailFix != null)
+                        {
+                            avatarState.Update(itemEnhanceMailFix);
+                        }
+                    }
                 }
             }
 

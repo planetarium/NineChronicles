@@ -100,6 +100,8 @@ namespace Lib9c.Tests.Action
         [InlineData(typeof(Grinding))]
         [InlineData(typeof(UnlockEquipmentRecipe))]
         [InlineData(typeof(UnlockWorld))]
+        [InlineData(typeof(EventDungeonBattle))]
+        [InlineData(typeof(EventConsumableItemCrafts))]
         public void Serialize_With_MessagePack(Type actionType)
         {
             var action = GetAction(actionType);
@@ -242,7 +244,18 @@ namespace Lib9c.Tests.Action
                 SellCancellation _ => new SellCancellation(),
                 UpdateSell _ => new UpdateSell
                 {
-                    price = _currency * 100,
+                    sellerAvatarAddress = new PrivateKey().ToAddress(),
+                    updateSellInfos = new[]
+                    {
+                        new UpdateSellInfo(
+                            Guid.NewGuid(),
+                            Guid.NewGuid(),
+                            Guid.NewGuid(),
+                            ItemSubType.Armor,
+                            _currency * 100,
+                            1
+                        ),
+                    },
                 },
                 CreatePendingActivations _ => new CreatePendingActivations
                 {
@@ -273,6 +286,23 @@ namespace Lib9c.Tests.Action
                         2,
                         3,
                     },
+                },
+                EventDungeonBattle _ => new EventDungeonBattle
+                {
+                    AvatarAddress = default,
+                    EventScheduleId = 0,
+                    EventDungeonId = 0,
+                    EventDungeonStageId = 0,
+                    Equipments = new List<Guid>(),
+                    Costumes = new List<Guid>(),
+                    Foods = new List<Guid>(),
+                },
+                EventConsumableItemCrafts _ => new EventConsumableItemCrafts
+                {
+                    AvatarAddress = default,
+                    EventScheduleId = 0,
+                    EventConsumableItemRecipeId = 0,
+                    SlotIndex = 0,
                 },
                 _ => throw new InvalidCastException(),
             };

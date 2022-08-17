@@ -5,6 +5,7 @@ namespace Lib9c.Tests
     using System.Text;
     using Nekoyume.TableData;
     using Nekoyume.TableData.Crystal;
+    using Nekoyume.TableData.Event;
 
     public class TableSheets
     {
@@ -157,6 +158,18 @@ namespace Lib9c.Tests
 
         public CrystalFluctuationSheet CrystalFluctuationSheet { get; private set; }
 
+        public CrystalHammerPointSheet CrystalHammerPointSheet { get; private set; }
+
+        public EventScheduleSheet EventScheduleSheet { get; private set; }
+
+        public EventDungeonSheet EventDungeonSheet { get; private set; }
+
+        public EventDungeonStageSheet EventDungeonStageSheet { get; private set; }
+
+        public EventDungeonStageWaveSheet EventDungeonStageWaveSheet { get; private set; }
+
+        public EventConsumableItemRecipeSheet EventConsumableItemRecipeSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet ??= new ItemSheet();
@@ -180,6 +193,19 @@ namespace Lib9c.Tests
             QuestSheet.Set(ItemTypeCollectQuestSheet, false);
             QuestSheet.Set(GoldQuestSheet, false);
             QuestSheet.Set(CombinationEquipmentQuestSheet);
+        }
+
+        public SimulatorSheets GetSimulatorSheets()
+        {
+            return new SimulatorSheets(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                BuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
+                EquipmentItemSetEffectSheet
+            );
         }
 
         public StageSimulatorSheets GetStageSimulatorSheets()

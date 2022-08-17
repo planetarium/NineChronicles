@@ -38,6 +38,8 @@ namespace Nekoyume.Model.Elemental
     {
         public const decimal WinMultiplier = 1.2m;
 
+        private static List<ElementalType> _allTypes;
+
         public static bool TryGetWinCase(this ElementalType win, out ElementalType lose)
         {
             switch (win)
@@ -135,9 +137,8 @@ namespace Nekoyume.Model.Elemental
             }
         }
 
-        public static List<ElementalType> GetAllTypes()
-        {
-            return new List<ElementalType>()
+        public static List<ElementalType> GetAllTypes() =>
+            _allTypes ??= new List<ElementalType>
             {
                 ElementalType.Normal,
                 ElementalType.Fire,
@@ -145,6 +146,5 @@ namespace Nekoyume.Model.Elemental
                 ElementalType.Land,
                 ElementalType.Wind,
             };
-        }
     }
 }

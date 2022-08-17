@@ -20,7 +20,8 @@ namespace Nekoyume.Action
 {
     /// <summary>
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1229
-    /// Updated at https://github.com/planetarium/lib9c/pull/1229
+    /// Updated at https://github.com/planetarium/lib9c/pull/1241
+    /// Updated at https://github.com/planetarium/lib9c/pull/1244
     /// </summary>
     [Serializable]
     [ActionType("hack_and_slash16")]
@@ -76,13 +77,20 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
-            return Execute(context.PreviousStates,
+            if (context.Rehearsal)
+            {
+                return context.PreviousStates;
+            }
+
+            return Execute(
+                context.PreviousStates,
                 context.Signer,
                 context.BlockIndex,
                 context.Random);
         }
 
-        public IAccountStateDelta Execute(IAccountStateDelta states,
+        public IAccountStateDelta Execute(
+            IAccountStateDelta states,
             Address signer,
             long blockIndex,
             IRandom random)
@@ -118,16 +126,18 @@ namespace Nekoyume.Action
             sw.Restart();
             var sheets = states.GetSheets(
                 containQuestSheet: true,
-                containStageSimulatorSheets: true,
+                containSimulatorSheets: true,
                 sheetTypes: new[]
                 {
                     typeof(WorldSheet),
                     typeof(StageSheet),
+                    typeof(StageWaveSheet),
+                    typeof(EnemySkillSheet),
+                    typeof(CostumeStatSheet),
                     typeof(SkillSheet),
                     typeof(QuestRewardSheet),
                     typeof(QuestItemRewardSheet),
                     typeof(EquipmentItemRecipeSheet),
-                    typeof(CostumeStatSheet),
                     typeof(WorldUnlockSheet),
                     typeof(MaterialItemSheet),
                     typeof(ItemRequirementSheet),
@@ -223,6 +233,8 @@ namespace Nekoyume.Action
             var worldSheet = sheets.GetSheet<WorldSheet>();
             var worldUnlockSheet = sheets.GetSheet<WorldUnlockSheet>();
             var crystalStageBuffSheet = sheets.GetSheet<CrystalStageBuffGachaSheet>();
+            var stageRow = sheets.GetSheet<StageSheet>()[StageId];
+            var materialItemSheet = sheets.GetSheet<MaterialItemSheet>();
             sw.Restart();
             // if PlayCount > 1, it is Multi-HAS.
             for (var i = 0; i < PlayCount; i++)
@@ -237,14 +249,19 @@ namespace Nekoyume.Action
                     i == 0 ? skillsOnWaveStart : new List<Skill>(),
                     WorldId,
                     StageId,
-                    sheets.GetStageSimulatorSheets(),
+                    stageRow,
+                    sheets.GetSheet<StageWaveSheet>()[StageId],
+                    avatarState.worldInformation.IsStageCleared(StageId),
+                    StageRewardExpHelper.GetExp(avatarState.level, StageId),
+                    sheets.GetSimulatorSheets(),
+                    sheets.GetSheet<EnemySkillSheet>(),
                     sheets.GetSheet<CostumeStatSheet>(),
-                    StageSimulator.ConstructorVersionV100080);
+                    StageSimulator.GetWaveRewards(random, stageRow, materialItemSheet));
                 sw.Stop();
                 Log.Verbose("{AddressesHex}HAS Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
 
                 sw.Restart();
-                simulator.Simulate(1);
+                simulator.Simulate();
                 sw.Stop();
                 Log.Verbose("{AddressesHex}HAS Simulator.Simulate(): {Elapsed}", addressesHex, sw.Elapsed);
 
@@ -286,7 +303,7 @@ namespace Nekoyume.Action
                 addressesHex, sw.Elapsed, PlayCount);
 
             sw.Restart();
-            avatarState.UpdateQuestRewards(sheets.GetSheet<MaterialItemSheet>());
+            avatarState.UpdateQuestRewards(materialItemSheet);
             avatarState.updatedAt = blockIndex;
             avatarState.mailBox.CleanUp();
             sw.Stop();

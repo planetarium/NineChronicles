@@ -205,7 +205,7 @@ namespace Nekoyume.Action
                     $" - ChampionshipId({roundData.ChampionshipId}) - round({roundData.Round})");
             }
 
-            if (!ArenaHelper.ValidateScoreDifference(ArenaHelper.ScoreLimits, roundData.ArenaType,
+            if (!ArenaHelper.ValidateScoreDifferenceV1(ArenaHelper.ScoreLimitsV1, roundData.ArenaType,
                     myArenaScore.Score, enemyArenaScore.Score))
             {
                 var scoreDiff = enemyArenaScore.Score - myArenaScore.Score;

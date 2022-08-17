@@ -16,6 +16,7 @@
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.Quest;
+    using Nekoyume.Model.Skill;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
@@ -1169,16 +1170,26 @@
                 BlockIndex = 1,
             };
             var nextState = action.Execute(ctx);
+            var contextRandom = new TestRandom(ctx.Random.Seed);
             var simulator = new StageSimulator(
-                new TestRandom(ctx.Random.Seed),
+                contextRandom,
                 previousAvatarState,
                 new List<Guid>(),
+                new List<Skill>(),
                 worldId,
                 stageId,
-                _tableSheets.GetStageSimulatorSheets(),
+                _tableSheets.StageSheet[stageId],
+                _tableSheets.StageWaveSheet[stageId],
+                false,
+                20,
+                _tableSheets.GetSimulatorSheets(),
+                _tableSheets.EnemySkillSheet,
                 _tableSheets.CostumeStatSheet,
-                StageSimulator.ConstructorVersionV100080);
-            simulator.Simulate(1);
+                StageSimulator.GetWaveRewards(
+                    contextRandom,
+                    _tableSheets.StageSheet[stageId],
+                    _tableSheets.MaterialItemSheet));
+            simulator.Simulate();
             var log = simulator.Log;
             var skillStateIValue =
                 nextState.GetState(skillStateAddress);

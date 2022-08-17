@@ -249,7 +249,7 @@ namespace Nekoyume.Action
             var maxCount = random.Next(stageRow.DropItemMin, stageRow.DropItemMax + 1);
             for (var i = 0; i < playCount; i++)
             {
-                var selector = StageSimulator.SetItemSelector(stageRow, random);
+                var selector = StageSimulatorV1.SetItemSelector(stageRow, random);
                 var rewards = Simulator.SetRewardV2(selector, maxCount, random,
                     materialItemSheet);
                 rewardItems.AddRange(rewards);

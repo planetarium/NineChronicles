@@ -1,5 +1,6 @@
 namespace Lib9c.Tests.Model.Skill
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Lib9c.Tests.Action;
@@ -44,15 +45,26 @@ namespace Lib9c.Tests.Model.Skill
             var worldRow = tableSheets.WorldSheet.First;
             Assert.NotNull(worldRow);
 
+            var random = new TestRandom();
             var simulator = new StageSimulator(
-                new TestRandom(),
+                random,
                 avatarState,
-                null,
-                worldRow.Id,
-                worldRow.StageBegin,
-                tableSheets.GetStageSimulatorSheets(),
-                2,
-                1);
+                new List<Guid>(),
+                new List<Nekoyume.Model.Skill.Skill>(),
+                1,
+                1,
+                tableSheets.StageSheet[1],
+                tableSheets.StageWaveSheet[1],
+                false,
+                20,
+                tableSheets.GetSimulatorSheets(),
+                tableSheets.EnemySkillSheet,
+                tableSheets.CostumeStatSheet,
+                StageSimulator.GetWaveRewards(
+                    random,
+                    tableSheets.StageSheet[1],
+                    tableSheets.MaterialItemSheet)
+            );
             var player = new Player(avatarState, simulator);
 
             var enemyRow = tableSheets.CharacterSheet.OrderedList

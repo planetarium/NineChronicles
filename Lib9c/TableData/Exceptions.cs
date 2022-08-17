@@ -41,7 +41,8 @@ namespace Nekoyume.TableData
         {
         }
 
-        public SheetRowNotFoundException(string sheetName, string key) : this(sheetName, "Key", key)
+        public SheetRowNotFoundException(string sheetName, string key)
+            : this(sheetName, "Key", key)
         {
         }
 
@@ -51,11 +52,15 @@ namespace Nekoyume.TableData
         }
 
         public SheetRowNotFoundException(string addressesHex, string sheetName, int intKey)
-            : base($"{addressesHex}{sheetName}: Key - {intKey.ToString(CultureInfo.InvariantCulture)}")
+            : base($"{addressesHex}{sheetName}:" +
+                   $" Key - {intKey.ToString(CultureInfo.InvariantCulture)}")
         {
         }
 
-        protected SheetRowNotFoundException(SerializationInfo info, StreamingContext context) : base(info, context)
+        protected SheetRowNotFoundException(
+            SerializationInfo info,
+            StreamingContext context)
+            : base(info, context)
         {
         }
     }
