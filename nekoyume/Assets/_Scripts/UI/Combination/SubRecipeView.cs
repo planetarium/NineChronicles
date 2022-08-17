@@ -158,7 +158,10 @@ namespace Nekoyume.UI
                 {
                     if (_canSuperCraft)
                     {
-                        Widget.Find<SuperCraftPopup>().Show(_skillOptionRow, _recipeRow.Key);
+                        Widget.Find<SuperCraftPopup>().Show(
+                            _skillOptionRow,
+                            _selectedRecipeInfo,
+                            _recipeRow.Key);
                     }
                 }).AddTo(gameObject);
         }
@@ -176,7 +179,6 @@ namespace Nekoyume.UI
         {
             _recipeRow = recipeRow;
             _subrecipeIds = subRecipeIds;
-            //var hammerPointRow = RxProps.ArenaInfoTuple
 
             string title = null;
             var isEquipment = false;
@@ -642,7 +644,6 @@ namespace Nekoyume.UI
         public bool CheckSubmittable(out string errorMessage, out int slotIndex)
         {
             slotIndex = -1;
-
 
             var inventory = States.Instance.CurrentAvatarState.inventory;
             foreach (var material in _selectedRecipeInfo.Materials)
