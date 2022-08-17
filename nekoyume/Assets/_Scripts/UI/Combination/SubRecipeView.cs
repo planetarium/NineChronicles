@@ -157,13 +157,11 @@ namespace Nekoyume.UI
                 .OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    if (_canSuperCraft)
-                    {
-                        Widget.Find<SuperCraftPopup>().Show(
-                            _skillOptionRow,
-                            _selectedRecipeInfo,
-                            _recipeRow.Key);
-                    }
+                    Widget.Find<SuperCraftPopup>().Show(
+                        _skillOptionRow,
+                        _selectedRecipeInfo,
+                        _recipeRow.Key,
+                        _canSuperCraft);
                 }).AddTo(gameObject);
         }
 
