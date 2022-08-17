@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Nekoyume.Helper;
+using Nekoyume.State;
 using UnityEngine;
 using EventType = Nekoyume.EnumType.EventType;
 
@@ -13,17 +14,33 @@ namespace Nekoyume
         private static EventScriptableObject SO =>
             _so ? _so : (_so = Resources.Load<EventScriptableObject>("ScriptableObject/EventData"));
 
+        /// <summary>
+        /// There is several event types in `EventScriptableObject`.
+        /// This method returns the `EventInfo` by following logic.
+        /// 1. Find time based event.
+        /// 2. Find block index based event.
+        /// 3. Find `EventDungeonSheet` id based event.
+        /// 4. Return default settings.
+        /// </summary>
+        /// <returns></returns>
         private static EventInfo GetEventInfo()
         {
-            return SO.Events.FirstOrDefault(x => Util.IsInTime(x.BeginDateTime, x.EndDateTime)) ??
-                   SO.DefaultEvent;
+            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+            var currentEventDungeonId = RxProps.EventDungeonRow?.Id ?? 0;
+            return SO.timeBasedEvents.FirstOrDefault(e =>
+                       Util.IsInTime(e.beginDateTime, e.endDateTime)) ??
+                   SO.blockIndexBasedEvents.FirstOrDefault(e =>
+                       e.beginBlockIndex <= currentBlockIndex &&
+                       e.endBlockIndex >= currentBlockIndex) ??
+                   SO.eventDungeonIdBasedEvents.FirstOrDefault(e =>
+                       e.targetDungeonIds.Contains(currentEventDungeonId)) ??
+                   SO.defaultSettings;
         }
 
-        public static bool TryGetArenaSeasonInfo(long blockIndex, out ArenaSeasonInfo info)
+        public static bool TryGetEvent(EventType eventType, out EventInfo timeBasedEventInfo)
         {
-            info = SO.ArenaSeasons.FirstOrDefault(x =>
-                x.StartBlockIndex <= blockIndex && blockIndex <= x.EndBlockIndex);
-            return info != null;
+            timeBasedEventInfo = SO.timeBasedEvents.FirstOrDefault(e => e.eventType == eventType);
+            return timeBasedEventInfo is not null;
         }
 
         public static void UpdateEventContainer(Transform parent)
@@ -38,17 +55,17 @@ namespace Nekoyume
 
         public static Sprite GetIntroSprite()
         {
-            return GetEventInfo().Intro;
+            return GetEventInfo().intro;
         }
 
         public static Sprite GetStageIcon()
         {
-            return GetEventInfo().StageIcon;
+            return GetEventInfo().stageIcon;
         }
 
         public static Vector2 GetStageIconOffset()
         {
-            return GetEventInfo().StageIconOffset;
+            return GetEventInfo().stageIconOffset;
         }
 
         public static string GetMainBgmName()
@@ -58,7 +75,7 @@ namespace Nekoyume
 
         public static EventType GetEventType()
         {
-            return GetEventInfo().EventType;
+            return GetEventInfo().eventType;
         }
     }
 }

@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using DG.Tweening;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
-using Nekoyume.TableData;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,28 +24,28 @@ namespace Nekoyume.UI.Module
 
         public class ViewModel : IDisposable
         {
+            public readonly StageType stageType;
             public readonly int stageId;
-            public readonly string stageNumber;
             public readonly bool hasBoss;
-            public readonly ReactiveProperty<State> State = new ReactiveProperty<State>();
-            public readonly ReactiveProperty<bool> Selected = new ReactiveProperty<bool>();
-            public readonly ReactiveProperty<bool> HasNotification = new ReactiveProperty<bool>(false);
+            public readonly ReactiveProperty<State> State = new();
+            public readonly ReactiveProperty<bool> Selected = new();
+            public readonly ReactiveProperty<bool> HasNotification = new(false);
 
-            public ViewModel(StageWaveSheet.Row stageRow, string stageNumber, State state) :
-                this(stageRow.StageId, stageNumber, stageRow.HasBoss, state)
+            public ViewModel(StageType stageType, State state)
+                : this(stageType, -1, false, state)
             {
             }
 
-            public ViewModel(State state) : this(-1, "0", false, state)
+            public ViewModel(
+                StageType stageType,
+                int stageId,
+                bool hasBoss,
+                State state)
             {
-            }
-
-            public ViewModel(int stageId, string stageNumber, bool hasBoss, State state)
-            {
+                this.stageType = stageType;
                 this.stageId = stageId;
-                this.stageNumber = stageNumber;
                 this.hasBoss = hasBoss;
-                this.State.Value = state;
+                State.Value = state;
             }
 
             public void Dispose()
@@ -58,25 +58,25 @@ namespace Nekoyume.UI.Module
         public float bossScale = 1f;
 
         [SerializeField]
-        private Image normalImage = null;
+        private Image normalImage;
 
         [SerializeField]
-        private Image disabledImage = null;
+        private Image disabledImage;
 
         [SerializeField]
-        private Image selectedImage = null;
+        private Image selectedImage;
 
         [SerializeField]
-        private Image bossImage = null;
+        private Image bossImage;
 
         [SerializeField]
-        private Button button = null;
+        private Button button;
 
         [SerializeField]
-        private TextMeshProUGUI buttonText = null;
+        private TextMeshProUGUI buttonText;
 
         [SerializeField]
-        private GameObject hasNotificationImage = null;
+        private GameObject hasNotificationImage;
 
         private Vector3 _normalImageScale;
 
@@ -84,11 +84,11 @@ namespace Nekoyume.UI.Module
 
         private Vector3 _selectedImageScale;
 
-        private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForModel = new();
 
         private Tweener _tweener;
 
-        public readonly Subject<WorldMapStage> onClick = new Subject<WorldMapStage>();
+        public readonly Subject<WorldMapStage> onClick = new();
 
         public ViewModel SharedViewModel { get; private set; }
 
@@ -117,7 +117,7 @@ namespace Nekoyume.UI.Module
             _tweener = null;
         }
 
-        public void Show(ViewModel viewModel, string imageKey)
+        public void Show(ViewModel viewModel)
         {
             if (viewModel is null)
             {
@@ -131,12 +131,11 @@ namespace Nekoyume.UI.Module
             SharedViewModel.State.Subscribe(SubscribeState).AddTo(_disposablesForModel);
             SharedViewModel.Selected.Subscribe(SubscribeSelect).AddTo(_disposablesForModel);
             SharedViewModel.HasNotification.SubscribeTo(hasNotificationImage).AddTo(_disposablesForModel);
-            Set(SharedViewModel.hasBoss, imageKey);
+            Set(SharedViewModel.hasBoss);
 
-            if (int.TryParse(SharedViewModel.stageNumber, out var stageId))
-            {
-                buttonText.text = StageInformation.GetStageIdString(stageId);
-            }
+            buttonText.text = StageInformation.GetStageIdString(
+                SharedViewModel.stageType,
+                SharedViewModel.stageId);
         }
 
         public void Hide()
@@ -211,18 +210,13 @@ namespace Nekoyume.UI.Module
                 .SetLoops(-1, LoopType.Yoyo);
         }
 
-        private void Set(bool isBoss, string imageKey)
+        private void Set(bool isBoss)
         {
             var icon = EventManager.GetStageIcon();
             var offset = EventManager.GetStageIconOffset();
             normalImage.sprite = icon;
             normalImage.SetNativeSize();
             normalImage.rectTransform.anchoredPosition = offset;
-            if (imageKey == "03")
-            {
-                //같은 이미지가 사용됨
-                imageKey = "02";
-            }
 
             disabledImage.sprite = icon;
             disabledImage.SetNativeSize();

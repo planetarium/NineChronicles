@@ -59,26 +59,14 @@ namespace Nekoyume.UI.Module.Arena
             Show();
         }
 
-        private void UpdateSliderAndText((
-            int currentTicketCount,
-            int maxTicketCount,
-            int progressedBlockRange,
-            int totalBlockRange,
-            string remainTimespanToReset) tuple)
+        private void UpdateSliderAndText(RxProps.TicketProgress ticketProgress)
         {
-            var (
-                currentTicketCount,
-                maxTicketCount,
-                progressedBlockRange,
-                totalBlockRange,
-                remainTimespan) = tuple;
-            _slider.normalizedValue =
-                (float)currentTicketCount / maxTicketCount;
+            _slider.normalizedValue = ticketProgress.NormalizedTicketCount;
             _sliderText.text = L10nManager.Localize(
                 "UI_ABOUT",
-                remainTimespan,
-                progressedBlockRange,
-                totalBlockRange);
+                ticketProgress.remainTimespanToReset,
+                ticketProgress.progressedBlockRange,
+                ticketProgress.totalBlockRange);
         }
     }
 }

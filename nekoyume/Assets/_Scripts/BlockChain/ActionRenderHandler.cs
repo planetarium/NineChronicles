@@ -25,6 +25,7 @@ using UnityEngine;
 using Cysharp.Threading.Tasks;
 using mixpanel;
 using Nekoyume.Arena;
+using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus.Arena;
@@ -105,6 +106,7 @@ namespace Nekoyume.BlockChain
             MimisbrunnrBattle();
             HackAndSlashSweep();
             HackAndSlashRandomBuff();
+            EventDungeonBattle();
 
             // Craft
             CombinationConsumable();
@@ -112,6 +114,7 @@ namespace Nekoyume.BlockChain
             ItemEnhancement();
             RapidCombination();
             Grinding();
+            EventConsumableItemCrafts();
 
             // Market
             Sell();
@@ -177,6 +180,15 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseMimisbrunnr)
+                .AddTo(_disposables);
+        }
+
+        private void EventDungeonBattle()
+        {
+            _actionRenderer.EveryRender<EventDungeonBattle>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseEventDungeonBattle)
                 .AddTo(_disposables);
         }
 
@@ -391,6 +403,15 @@ namespace Nekoyume.BlockChain
                 .AddTo(_disposables);
         }
 
+        private void EventConsumableItemCrafts()
+        {
+            _actionRenderer.EveryRender<EventConsumableItemCrafts>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseEventConsumableItemCrafts)
+                .AddTo(_disposables);
+        }
+
         private async UniTaskVoid ResponseCreateAvatar(ActionBase.ActionEvaluation<CreateAvatar> eval)
         {
             if (eval.Exception != null)
@@ -449,7 +470,7 @@ namespace Nekoyume.BlockChain
                         if (combineResultModel.itemUsable is Equipment equipment)
                         {
                             if (combineResultModel.subRecipeId.HasValue &&
-                                Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheetV2.TryGetValue(
+                                TableSheets.Instance.EquipmentItemSubRecipeSheetV2.TryGetValue(
                                     combineResultModel.subRecipeId.Value,
                                     out var subRecipeRow))
                             {
@@ -596,7 +617,7 @@ namespace Nekoyume.BlockChain
                 if (result.itemUsable is Equipment equipment)
                 {
                     if (eval.Action.subRecipeId.HasValue &&
-                        Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheetV2.TryGetValue(
+                        TableSheets.Instance.EquipmentItemSubRecipeSheetV2.TryGetValue(
                             eval.Action.subRecipeId.Value,
                             out var row))
                     {
@@ -668,6 +689,61 @@ namespace Nekoyume.BlockChain
             }
 
             Widget.Find<CombinationSlotsPopup>().SetCaching(eval.Action.slotIndex, false);
+        }
+
+        private void ResponseEventConsumableItemCrafts(
+            ActionBase.ActionEvaluation<EventConsumableItemCrafts> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                Widget.Find<CombinationSlotsPopup>()
+                    .SetCaching(eval.Action.SlotIndex, false);
+                return;
+            }
+
+            var agentAddress = eval.Signer;
+            var avatarAddress = eval.Action.AvatarAddress;
+            var slotIndex = eval.Action.SlotIndex;
+            var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, slotIndex);
+            var result = (CombinationConsumable5.ResultModel)slot.Result;
+            var itemUsable = result.itemUsable;
+            if (!eval.OutputStates.TryGetAvatarStateV2(
+                    agentAddress,
+                    avatarAddress,
+                    out var avatarState,
+                    out _))
+            {
+                return;
+            }
+
+            LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
+            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
+            foreach (var pair in result.materials)
+            {
+                LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
+            }
+
+            LocalLayerModifier.RemoveItem(
+                avatarAddress,
+                itemUsable.ItemId,
+                itemUsable.RequiredBlockIndex,
+                 1);
+            LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
+
+            UpdateCombinationSlotState(slotIndex, slot);
+            UpdateAgentStateAsync(eval).Forget();
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+
+            // Notify
+            var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
+            NotificationSystem.Reserve(
+                MailType.Workshop,
+                string.Format(format, result.itemUsable.GetLocalizedName()),
+                slot.UnlockBlockIndex,
+                result.itemUsable.TradableId);
+            // ~Notify
+
+            Widget.Find<CombinationSlotsPopup>().SetCaching(eval.Action.SlotIndex, false);
         }
 
         private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)
@@ -1017,7 +1093,7 @@ namespace Nekoyume.BlockChain
                                 .DoOnError(e => Debug.LogException(e));
                         });
 
-                var tableSheets = Game.Game.instance.TableSheets;
+                var tableSheets = TableSheets.Instance;
                 var skillsOnWaveStart = new List<Model.Skill.Skill>();
                 if (eval.Action.StageBuffId.HasValue)
                 {
@@ -1093,7 +1169,7 @@ namespace Nekoyume.BlockChain
                 {
                     var avatarAddress = eval.Action.avatarAddress;
                     LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, eval.Action.actionPoint);
-                    var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
+                    var row = TableSheets.Instance.MaterialItemSheet.Values.First(r =>
                         r.ItemSubType == ItemSubType.ApStone);
                     LocalLayerModifier.AddItem(avatarAddress, row.ItemId, eval.Action.apStoneCount);
                 }
@@ -1152,7 +1228,7 @@ namespace Nekoyume.BlockChain
                     sheets.StageWaveSheet[eval.Action.stageId],
                     avatarState.worldInformation.IsStageCleared(eval.Action.stageId),
                     0,
-                    sheets.GetStageSimulatorSheets(),
+                    sheets.GetSimulatorSheets(),
                     sheets.EnemySkillSheet,
                     sheets.CostumeStatSheet,
                     StageSimulator.GetWaveRewards(
@@ -1200,6 +1276,100 @@ namespace Nekoyume.BlockChain
             }
         }
 
+        private void ResponseEventDungeonBattle(ActionBase.ActionEvaluation<EventDungeonBattle> eval)
+        {
+            if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+            {
+                return;
+            }
+
+            if (eval.Exception is not null)
+            {
+                var showLoadingScreen = false;
+                if (Widget.Find<StageLoadingEffect>().IsActive())
+                {
+                    Widget.Find<StageLoadingEffect>().Close();
+                }
+
+                if (Widget.Find<BattleResultPopup>().IsActive())
+                {
+                    showLoadingScreen = true;
+                    Widget.Find<BattleResultPopup>().Close();
+                }
+
+                Game.Game.BackToMainAsync(eval.Exception.InnerException, showLoadingScreen).Forget();
+                return;
+            }
+
+            _disposableForBattleEnd?.Dispose();
+            _disposableForBattleEnd =
+                Game.Game.instance.Stage.onEnterToStageEnd
+                    .First()
+                    .Subscribe(_ =>
+                    {
+                        var task = UniTask.Run(() =>
+                        {
+                            UpdateCurrentAvatarStateAsync(eval).Forget();
+                            RxProps.EventDungeonInfo.UpdateAsync().Forget();
+                            _disposableForBattleEnd = null;
+                            Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
+                        });
+                        task.ToObservable()
+                            .First()
+                            // ReSharper disable once ConvertClosureToMethodGroup
+                            .DoOnError(e => Debug.LogException(e));
+                    });
+
+            var playCount = Action.EventDungeonBattle.PlayCount;
+            // NOTE: This is a temporary solution. The formula is not yet decided.
+            var random = new LocalRandom(eval.RandomSeed);
+            var stageId = eval.Action.EventDungeonStageId;
+            var stageRow = TableSheets.Instance.EventDungeonStageSheet[stageId];
+            var isCleared = RxProps.EventDungeonInfo.Value?.IsCleared(stageId) ?? false;
+            var exp = RxProps.EventScheduleRowForDungeon.Value.DungeonExpSeedValue;
+            var simulator = new StageSimulator(
+                random,
+                States.Instance.CurrentAvatarState,
+                eval.Action.Foods,
+                new List<Skill>(),
+                eval.Action.EventDungeonId,
+                stageId,
+                stageRow,
+                TableSheets.Instance.EventDungeonStageWaveSheet[stageId],
+                isCleared,
+                exp,
+                TableSheets.Instance.GetSimulatorSheets(),
+                TableSheets.Instance.EnemySkillSheet,
+                TableSheets.Instance.CostumeStatSheet,
+                StageSimulator.GetWaveRewards(
+                    random,
+                    stageRow,
+                    TableSheets.Instance.MaterialItemSheet,
+                    Action.EventDungeonBattle.PlayCount));
+            simulator.Simulate();
+            var log = simulator.Log;
+            var stage = Game.Game.instance.Stage;
+            stage.StageType = StageType.EventDungeon;
+            stage.PlayCount = playCount;
+
+            if (Widget.Find<LoadingScreen>().IsActive())
+            {
+                if (Widget.Find<BattlePreparation>().IsActive())
+                {
+                    Widget.Find<BattlePreparation>().GoToStage(log);
+                }
+                else if (Widget.Find<Menu>().IsActive())
+                {
+                    Widget.Find<Menu>().GoToStage(log);
+                }
+            }
+            else if (Widget.Find<StageLoadingEffect>().IsActive() &&
+                     Widget.Find<BattleResultPopup>().IsActive())
+            {
+                Widget.Find<BattleResultPopup>().NextStage(log);
+            }
+        }
+
         private void ResponseRedeemCode(ActionBase.ActionEvaluation<Action.RedeemCode> eval)
         {
             var key = "UI_REDEEM_CODE_INVALID_CODE";
@@ -1230,7 +1400,7 @@ namespace Nekoyume.BlockChain
                 var avatarAddress = eval.Action.avatarAddress;
                 LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress,
                     -States.Instance.GameConfigState.ActionPointMax);
-                var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
+                var row = TableSheets.Instance.MaterialItemSheet.Values.First(r =>
                     r.ItemSubType == ItemSubType.ApStone);
                 LocalLayerModifier.AddItem(avatarAddress, row.ItemId, 1);
 
@@ -1293,14 +1463,14 @@ namespace Nekoyume.BlockChain
             {
                 var rewardInfo = rewardInfos[i];
                 if (!rewardInfo.ItemId.TryParseAsTradableId(
-                        Game.Game.instance.TableSheets.ItemSheet,
+                        TableSheets.Instance.ItemSheet,
                         out var tradableId))
                 {
                     continue;
                 }
 
                 if (!rewardInfo.ItemId.TryGetFungibleId(
-                        Game.Game.instance.TableSheets.ItemSheet,
+                        TableSheets.Instance.ItemSheet,
                         out var fungibleId))
                 {
                     continue;
@@ -1388,7 +1558,7 @@ namespace Nekoyume.BlockChain
 
             if (eval.Action.ChargeAp)
             {
-                var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
+                var row = TableSheets.Instance.MaterialItemSheet.Values.First(r =>
                     r.ItemSubType == ItemSubType.ApStone);
                 LocalLayerModifier.AddItem(avatarAddress, row.ItemId);
 
@@ -1423,7 +1593,7 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            var sheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
+            var sheet = TableSheets.Instance.EquipmentItemRecipeSheet;
             var cost = CrystalCalculator.CalculateRecipeUnlockCost(recipeIds, sheet);
             await UniTask.WhenAll(
                 LocalLayerModifier.ModifyAgentCrystalAsync(
@@ -1532,7 +1702,7 @@ namespace Nekoyume.BlockChain
 
                 foreach (var reward in rewardMap)
                 {
-                    var materialRow = Game.Game.instance.TableSheets
+                    var materialRow = TableSheets.Instance
                         .MaterialItemSheet
                         .First(pair => pair.Key == reward.Key);
 
@@ -1675,7 +1845,7 @@ namespace Nekoyume.BlockChain
                         .DoOnError(e => Debug.LogException(e));
                 });
 
-            var tableSheets = Game.Game.instance.TableSheets;
+            var tableSheets = TableSheets.Instance;
             ArenaPlayerDigest? myDigest = null;
             ArenaPlayerDigest? enemyDigest = null;
             int? previousMyScore = null;

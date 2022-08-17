@@ -88,11 +88,11 @@ MonoBehaviour:
   detailButton: {fileID: 8915038191723940672}
   closeButton: {fileID: 9158407257095490729}
   noticeList:
-  - name: dccPFP
-    contentImage: {fileID: 21300000, guid: ded70c5af207cf14886af2e340cac0a7, type: 3}
-    beginTime: 2022/08/11 00:00:00
-    endTime: 2022/08/24 23:59:59
-    pageUrlFormat: https://ninechronicles.medium.com/d-cc-pionyan-program-1-e459939b2b69
+  - name: SummerEvent&Wolrd6
+    contentImage: {fileID: 21300000, guid: 2bc57019582df4cb18fa52ab8bf3c41e, type: 3}
+    beginTime: 2022/08/25 00:00:00
+    endTime: 2022/09/16 23:59:59
+    pageUrlFormat: https://ninechronicles-banner.com/01
 --- !u!1 &288844463192487935
 GameObject:
   m_ObjectHideFlags: 0
@@ -870,7 +870,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: ded70c5af207cf14886af2e340cac0a7, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 2bc57019582df4cb18fa52ab8bf3c41e, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

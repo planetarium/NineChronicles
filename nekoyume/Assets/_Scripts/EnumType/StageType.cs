@@ -2,8 +2,8 @@
 {
     public enum StageType
     {
-        None,
         HackAndSlash,
         Mimisbrunnr,
+        EventDungeon,
     }
 }

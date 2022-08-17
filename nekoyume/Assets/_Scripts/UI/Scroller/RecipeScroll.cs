@@ -13,6 +13,8 @@ using Nekoyume.EnumType;
 using Nekoyume.L10n;
 using Nekoyume.State;
 using System.Numerics;
+using System.Text;
+using Nekoyume.TableData.Event;
 using Nekoyume.UI.Module.Common;
 using TMPro;
 
@@ -210,6 +212,7 @@ namespace Nekoyume.UI.Scroller
             var items = Craft.SharedModel.EquipmentRecipeMap.Values
                 .Where(x => x.ItemSubType == type)
                 .ToList();
+            emptyObjectText.text = L10nManager.Localize("UI_WORKSHOP_EMPTY_CATEGORY");
             emptyObject.SetActive(!items.Any());
             Show(items, true);
             AnimateScroller();
@@ -250,6 +253,7 @@ namespace Nekoyume.UI.Scroller
             var items = Craft.SharedModel.ConsumableRecipeMap.Values
                 .Where(x => x.StatType == type)
                 .ToList();
+            emptyObjectText.text = L10nManager.Localize("UI_WORKSHOP_EMPTY_CATEGORY");
             emptyObject.SetActive(!items.Any());
             Show(items, true);
             AnimateScroller();
@@ -257,6 +261,77 @@ namespace Nekoyume.UI.Scroller
             Craft.SharedModel.NotifiedRow
                 .Subscribe(SubscribeNotifiedRow)
                 .AddTo(_disposablesAtShow);
+        }
+
+        public void ShowAsEventConsumable()
+        {
+            _disposablesAtShow.DisposeAllAndClear();
+            Game.Game.instance.Agent.BlockIndexSubject
+                .Subscribe(value => UpdateEventScheduleRemainingTime(
+                    RxProps.EventScheduleRowForRecipe.Value,
+                    value))
+                .AddTo(_disposablesAtShow);
+            RxProps.EventScheduleRowForRecipe
+                .Subscribe(UpdateEventScheduleEntireTime)
+                .AddTo(_disposablesAtShow);
+            RxProps.EventRecipeRemainingTimeText
+                .SubscribeTo(eventScheduleTabRemainingTimeText)
+                .AddTo(_disposablesAtShow);
+
+            openAllRecipeArea.SetActive(false);
+            Craft.SharedModel.SelectedRow.Value = null;
+            equipmentTab.SetActive(false);
+            consumableTab.SetActive(false);
+
+            if (RxProps.EventScheduleRowForRecipe is null ||
+                RxProps.EventConsumableItemRecipeRows.Value?.Count is null or 0)
+            {
+                Show(new List<RecipeRow.Model>(), true);
+                emptyObjectText.text = L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS");
+                viewport.SetActive(false);
+                emptyObject.SetActive(true);
+                eventScheduleTab.SetActive(false);
+                return;
+            }
+
+            var items = Craft.SharedModel.EventConsumableRecipeMap
+                .Values.ToList();
+            viewport.SetActive(true);
+            emptyObject.SetActive(false);
+            eventScheduleTab.SetActive(true);
+            Show(items, true);
+            AnimateScroller();
+        }
+
+        private void UpdateEventScheduleEntireTime(
+            EventScheduleSheet.Row row)
+        {
+            if (row is null)
+            {
+                eventScheduleTabEntireBlocksAndDatesPeriod.Hide();
+                return;
+            }
+
+            eventScheduleTabEntireBlocksAndDatesPeriod.Show(
+                row.StartBlockIndex,
+                row.RecipeEndBlockIndex,
+                Game.Game.instance.Agent.BlockIndex,
+                DateTime.UtcNow);
+        }
+
+        private void UpdateEventScheduleRemainingTime(
+            EventScheduleSheet.Row row,
+            long currentBlockIndex)
+        {
+            if (row is null)
+            {
+                eventScheduleTabRemainingTimeText.text = string.Empty;
+                return;
+            }
+
+            var value = row.RecipeEndBlockIndex - currentBlockIndex;
+            var time = value.BlockRangeToTimeSpanString();
+            eventScheduleTabRemainingTimeText.text = $"{value}({time})";
         }
 
         private void UpdateUnlockAllButton()
