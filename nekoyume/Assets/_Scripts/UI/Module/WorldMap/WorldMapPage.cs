@@ -2,6 +2,7 @@ using Nekoyume.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.EnumType;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,7 +21,9 @@ namespace Nekoyume.UI.Module
 
         public IReadOnlyList<WorldMapStage> Stages => stages;
 
-        public void Show(List<WorldMapStage.ViewModel> stageModels, string imageKey, int pageIndex)
+        public void Show(
+            List<WorldMapStage.ViewModel> stageModels,
+            Sprite backgroundSprite)
         {
             if (stageModels is null)
             {
@@ -43,7 +46,7 @@ namespace Nekoyume.UI.Module
                 var view = stages[i];
                 if (modelStagesCount > i)
                 {
-                    view.Show(stageModels[i], imageKey);
+                    view.Show(stageModels[i]);
                 }
                 else
                 {
@@ -54,7 +57,7 @@ namespace Nekoyume.UI.Module
             line.gameObject.SetActive(enable);
             line2.gameObject.SetActive(!enable);
 
-            background.sprite = SpriteHelper.GetWorldMapBackground(imageKey, pageIndex);
+            background.sprite = backgroundSprite;
         }
     }
 }

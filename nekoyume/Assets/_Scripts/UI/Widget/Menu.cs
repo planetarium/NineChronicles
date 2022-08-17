@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
@@ -10,8 +12,10 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 using mixpanel;
 using Nekoyume.EnumType;
+using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
@@ -86,6 +90,8 @@ namespace Nekoyume.UI
 
         private Coroutine _coLazyClose;
 
+        private readonly List<IDisposable> _disposablesAtShow = new();
+
         protected override void Awake()
         {
             base.Awake();
@@ -100,6 +106,12 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
             guidedQuest.OnClickCombinationEquipmentQuestCell
                 .Subscribe(tuple => GoToCombinationEquipmentRecipe(tuple.quest.RecipeId))
+                .AddTo(gameObject);
+            guidedQuest.OnClickEventDungeonQuestCell
+                .Subscribe(tuple => EventDungeonBattle(tuple.quest.Goal))
+                .AddTo(gameObject);
+            guidedQuest.CnClickCraftEventItemQuestCell
+                .Subscribe(tuple => GoToCraftWithToggleType(2))
                 .AddTo(gameObject);
             AnimationState.Subscribe(stateType =>
             {
@@ -122,7 +134,7 @@ namespace Nekoyume.UI
         }
 
         // TODO: QuestPreparation.Quest(bool repeat) 와 로직이 흡사하기 때문에 정리할 여지가 있습니다.
-        private void HackAndSlash(int stageId)
+        private static void HackAndSlash(int stageId)
         {
             var sheets = Game.Game.instance.TableSheets;
             var stageRow = sheets.StageSheet.OrderedList.FirstOrDefault(row => row.Id == stageId);
@@ -149,6 +161,7 @@ namespace Nekoyume.UI
             var worldId = worldRow.Id;
 
             Find<LoadingScreen>().Show();
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
 
             var stage = Game.Game.instance.Stage;
             stage.IsExitReserved = false;
@@ -157,7 +170,6 @@ namespace Nekoyume.UI
             player.StartRun();
             ActionCamera.instance.ChaseX(player.transform);
             ActionRenderHandler.Instance.Pending = true;
-
             Game.Game.instance.ActionManager
                 .HackAndSlash(player, worldId, stageId)
                 .Subscribe();
@@ -171,6 +183,97 @@ namespace Nekoyume.UI
             Analyzer.Instance.Track("Unity/Click Guided Quest Enter Dungeon", props);
         }
 
+        // NOTE: This method is almost same with part of
+        //       the `BattlePreparation.OnClickBattle()` method.
+        private void EventDungeonBattle(int eventDungeonStageId)
+        {
+            if (RxProps.EventScheduleRowForDungeon.Value is null)
+            {
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS"),
+                    NotificationCell.NotificationType.Information);
+                return;
+            }
+
+            if (RxProps.EventDungeonTicketProgress.Value.currentTickets == 0)
+            {
+                var ncgHas = States.Instance.GoldBalanceState.Gold;
+                var ncgCost =
+                    RxProps.EventScheduleRowForDungeon.Value
+                        .GetDungeonTicketCost(
+                            RxProps.EventDungeonInfo.Value.NumberOfTicketPurchases) *
+                    States.Instance.GoldBalanceState.Gold.Currency;
+                if (ncgHas >= ncgCost)
+                {
+                    // FIXME: `UI_CONFIRM_PAYMENT_CURRENCY_FORMAT_FOR_BATTLE_ARENA` key
+                    //        is temporary.
+                    var notEnoughTicketMsg = L10nManager.Localize(
+                        "UI_CONFIRM_PAYMENT_CURRENCY_FORMAT_FOR_BATTLE_ARENA",
+                        ncgCost.ToString());
+                    Find<PaymentPopup>().ShowAttract(
+                        CostType.EventDungeonTicket,
+                        ncgCost.ToString(),
+                        notEnoughTicketMsg,
+                        L10nManager.Localize("UI_YES"),
+                        () => SendEventDungeonBattleAction(
+                            eventDungeonStageId,
+                            true));
+
+                    return;
+                }
+
+                var notEnoughNCGMsg =
+                    L10nManager.Localize("UI_NOT_ENOUGH_NCG_WITH_SUPPLIER_INFO");
+                Find<PaymentPopup>().ShowAttract(
+                    CostType.NCG,
+                    ncgCost.GetQuantityString(),
+                    notEnoughNCGMsg,
+                    L10nManager.Localize("UI_GO_TO_MARKET"),
+                    () => GoToMarket(TradeType.Sell));
+
+                return;
+            }
+
+            SendEventDungeonBattleAction(
+                eventDungeonStageId,
+                false);
+
+            void SendEventDungeonBattleAction(
+                int eventDungeonStageId,
+                bool buyTicketIfNeeded)
+            {
+                Find<LoadingScreen>().Show();
+                Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.EventDungeon);
+
+                var stage = Game.Game.instance.Stage;
+                stage.IsExitReserved = false;
+                stage.IsRepeatStage = false;
+                var player = stage.GetPlayer();
+                player.StartRun();
+                ActionCamera.instance.ChaseX(player.transform);
+                ActionRenderHandler.Instance.Pending = true;
+
+                var scheduleId = RxProps.EventScheduleRowForDungeon.Value.Id;
+                var eventDungeonId = RxProps.EventDungeonRow.Id;
+                Game.Game.instance.ActionManager
+                    .EventDungeonBattle(
+                        scheduleId,
+                        eventDungeonId,
+                        eventDungeonStageId,
+                        player,
+                        buyTicketIfNeeded)
+                    .Subscribe();
+                var props = new Value
+                {
+                    ["EventScheduleID"] = scheduleId,
+                    ["EventDungeonID"] = eventDungeonId,
+                    ["EventDungeonStageID"] = eventDungeonStageId,
+                };
+                Analyzer.Instance.Track("Unity/Click Guided Quest Enter Event Dungeon", props);
+            }
+        }
+
         public void GoToStage(BattleLog battleLog)
         {
             Game.Event.OnStageStart.Invoke(battleLog);
@@ -178,11 +281,38 @@ namespace Nekoyume.UI
             Close(true);
         }
 
+        private void GoToCraftWithToggleType(int toggleIndex)
+        {
+            AudioController.PlayClick();
+            Analyzer.Instance.Track("Unity/Click Guided Quest Combination Equipment");
+            CombinationClickInternal(() =>
+                Find<Craft>().ShowWithToggleIndex(toggleIndex));
+        }
+
         private void GoToCombinationEquipmentRecipe(int recipeId)
         {
+            AudioController.PlayClick();
             Analyzer.Instance.Track("Unity/Click Guided Quest Combination Equipment");
+            CombinationClickInternal(() =>
+                Find<Craft>().ShowWithEquipmentRecipeId(recipeId));
+        }
 
-            CombinationClickInternal(() => Find<Craft>().Show(recipeId));
+        private void GoToMarket(TradeType tradeType)
+        {
+            Close();
+            Find<HeaderMenuStatic>()
+                .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+            switch (tradeType)
+            {
+                case TradeType.Buy:
+                    Find<ShopBuy>().Show();
+                    break;
+                case TradeType.Sell:
+                    Find<ShopSell>().Show();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(tradeType), tradeType, null);
+            }
         }
 
         private void UpdateButtons()
@@ -222,7 +352,6 @@ namespace Nekoyume.UI
             mimisbrunnrExclamationMark.gameObject.SetActive(
                 btnMimisbrunnr.IsUnlocked
                 && PlayerPrefs.GetInt(firstOpenMimisbrunnrKey, 0) == 0);
-            eventDungeonExclamationMark.gameObject.SetActive(false);
         }
 
         private void HideButtons()
@@ -310,8 +439,6 @@ namespace Nekoyume.UI
             Close();
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
             showAction();
-
-            AudioController.PlayClick();
         }
 
         public void RankingClick()
@@ -421,6 +548,8 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            SubscribeAtShow();
+
             if (!(_coLazyClose is null))
             {
                 StopCoroutine(_coLazyClose);
@@ -434,6 +563,24 @@ namespace Nekoyume.UI
             UpdateButtons();
             stakingLevelIcon.sprite =
                 SpriteHelper.GetStakingIcon(States.Instance.StakingLevel, IconType.Bubble);
+        }
+
+        private void SubscribeAtShow()
+        {
+            _disposablesAtShow.DisposeAllAndClear();
+            RxProps.EventScheduleRowForDungeon.Subscribe(value =>
+            {
+                eventDungeonTicketsText.text =
+                    RxProps.EventDungeonTicketProgress.Value
+                        .currentTickets.ToString(CultureInfo.InvariantCulture);
+                eventDungeonExclamationMark.gameObject
+                    .SetActive(value is not null);
+            }).AddTo(_disposablesAtShow);
+            RxProps.EventDungeonTicketProgress.Subscribe(value =>
+            {
+                eventDungeonTicketsText.text =
+                    value.currentTickets.ToString(CultureInfo.InvariantCulture);
+            }).AddTo(_disposablesAtShow);
         }
 
         protected override void OnCompleteOfShowAnimationInternal()
@@ -469,6 +616,7 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            _disposablesAtShow.DisposeAllAndClear();
             Find<NoticePopup>().Close(true);
             StopSpeeches();
             guidedQuest.Hide(true);

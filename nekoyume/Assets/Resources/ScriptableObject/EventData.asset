@@ -13,42 +13,37 @@ MonoBehaviour:
   m_Name: EventData
   m_EditorClassIdentifier: 
   type: 2
-  enums: []
-  DefaultEvent:
-    EventType: 0
-    BeginDateTime: 00/00 00:00:00
-    EndDateTime: 00/00 00:00:00
-    Intro: {fileID: 21300000, guid: 46a8a229bbe9b432d99a82b73c5c9c27, type: 3}
-    StageIcon: {fileID: 21300000, guid: 393ebe8864bbd4f04982ced1bf53943e, type: 3}
-    StageIconOffset: {x: 0, y: 0}
+  enums:
+  - Default
+  - Christmas
+  - Valentine
+  - EventDungeon
+  defaultSettings:
+    eventType: 0
+    intro: {fileID: 21300000, guid: 46a8a229bbe9b432d99a82b73c5c9c27, type: 3}
+    stageIcon: {fileID: 21300000, guid: 393ebe8864bbd4f04982ced1bf53943e, type: 3}
+    stageIconOffset: {x: 0, y: 0}
     mainBGM: {fileID: 8300000, guid: 09471cca651f74acb8b5223ac301ef79, type: 3}
-  Events:
-  - EventType: 1
-    BeginDateTime: 01/04 09:50:00
-    EndDateTime: 01/05 09:51:00
-    Intro: {fileID: 21300000, guid: d66925166185a4c9499ebb9359b58649, type: 3}
-    StageIcon: {fileID: 21300000, guid: a9ff32e70226c43dbbfcb26d6eae5228, type: 3}
-    StageIconOffset: {x: 0, y: 7.5}
+  timeBasedEvents:
+  - eventType: 1
+    intro: {fileID: 21300000, guid: d66925166185a4c9499ebb9359b58649, type: 3}
+    stageIcon: {fileID: 21300000, guid: a9ff32e70226c43dbbfcb26d6eae5228, type: 3}
+    stageIconOffset: {x: 0, y: 7.5}
     mainBGM: {fileID: 8300000, guid: 7093635f328f84c59af6f67a2e028a3e, type: 3}
-  - EventType: 2
-    BeginDateTime: 02/11 15:00:00
-    EndDateTime: 02/20 14:59:00
-    Intro: {fileID: 21300000, guid: 6d32eb725ef59455da599ad4577932f6, type: 3}
-    StageIcon: {fileID: 21300000, guid: 393ebe8864bbd4f04982ced1bf53943e, type: 3}
-    StageIconOffset: {x: 0, y: 0}
+    beginDateTime: 01/04 09:50:00
+    endDateTime: 01/05 09:51:00
+  - eventType: 2
+    intro: {fileID: 21300000, guid: 6d32eb725ef59455da599ad4577932f6, type: 3}
+    stageIcon: {fileID: 21300000, guid: 393ebe8864bbd4f04982ced1bf53943e, type: 3}
+    stageIconOffset: {x: 0, y: 0}
     mainBGM: {fileID: 8300000, guid: 09471cca651f74acb8b5223ac301ef79, type: 3}
-  ArenaSeasons:
-  - Index: 2
-    StartBlockIndex: 3528000
-    EndBlockIndex: 3640000
-    SeasonUrl: https://ninechronicles.medium.com/nine-chronicles-arena-season-2-224k-ncg-reward-pool-begins-march-4th-88c947d507d6
-    SeasonBanner: {fileID: 2800000, guid: 749cdca8f2f1843b59ead92ef14aab5d, type: 3}
-    RewardIcon: {fileID: 21300000, guid: a211f25fb181c504d8dcf53345a582b3, type: 3}
-    RewardNcg: 224000
-  - Index: 3
-    StartBlockIndex: 3920000
-    EndBlockIndex: 4032000
-    SeasonUrl: http://ninechronicles-banner.com/02
-    SeasonBanner: {fileID: 2800000, guid: 71e53f17c405b5d43a863e3e652d6b1b, type: 3}
-    RewardIcon: {fileID: 21300000, guid: 694b8f489f5e546ae90acf42ebf33293, type: 3}
-    RewardNcg: 252000
+    beginDateTime: 02/11 15:00:00
+    endDateTime: 02/20 14:59:00
+  blockIndexBasedEvents: []
+  eventDungeonIdBasedEvents:
+  - eventType: 3
+    intro: {fileID: 21300000, guid: 46a8a229bbe9b432d99a82b73c5c9c27, type: 3}
+    stageIcon: {fileID: 21300000, guid: 9280eabeaa0244db9aa93984db26a46e, type: 3}
+    stageIconOffset: {x: 1, y: 7}
+    mainBGM: {fileID: 8300000, guid: f461d703e65c9ea4f85f37f198af9f5f, type: 3}
+    targetDungeonIds: 91bd9800a1e49800

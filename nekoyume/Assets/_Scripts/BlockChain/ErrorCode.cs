@@ -3,6 +3,7 @@ using Cysharp.Threading.Tasks;
 using Libplanet.Action;
 using Libplanet.Tx;
 using Nekoyume.Action;
+using Nekoyume.Exceptions;
 using Nekoyume.L10n;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.State;
@@ -109,6 +110,7 @@ namespace Nekoyume.BlockChain
                     code = "25";
                     break;
                 case ActionTimeoutException ate:
+                {
                     key = "ERROR_NETWORK";
                     errorMsg = "Action timeout occurred.";
                     TxId txId;
@@ -140,10 +142,12 @@ namespace Nekoyume.BlockChain
                         }
                     }
 
-                    Debug.LogError($"Action timeout: (txId: {txId}, actionId: {ate.ActionId}, code: {code})");
+                    Debug.LogError(
+                        $"Action timeout: (txId: {txId}, actionId: {ate.ActionId}, code: {code})");
 
                     errorMsg += $"\nError Code: {code}";
                     break;
+                }
                 case UnableToRenderWhenSyncingBlocksException _:
                     code = "28";
                     key = "ERROR_UNABLE_TO_RENDER_WHEN_SYNCING_BLOCKS";
@@ -158,51 +162,69 @@ namespace Nekoyume.BlockChain
                     break;
                 case ArenaScoreAlreadyContainsException _:
                     code = "31";
-                    key = "ARENA_SCORE_ALREADY_CONTAINS_EXCEPTION";
+                    key = "ERROR_ARENA_SCORE_ALREADY_CONTAINS_EXCEPTION";
                     break;
                 case ArenaInformationAlreadyContainsException _:
                     code = "31";
-                    key = "ARENA_INFORMATION_ALREADY_CONTAINS_EXCEPTION";
+                    key = "ERROR_ARENA_INFORMATION_ALREADY_CONTAINS_EXCEPTION";
                     break;
                 case ArenaParticipantsNotFoundException _:
                     code = "32";
-                    key = "ARENA_PARTICIPANTS_NOT_FOUND_EXCEPTION";
+                    key = "ERROR_ARENA_PARTICIPANTS_NOT_FOUND_EXCEPTION";
                     break;
                 case ArenaAvatarStateNotFoundException _:
                     code = "33";
-                    key = "ARENA_AVATAR_STATE_NOT_FOUND_EXCEPTION";
+                    key = "ERROR_ARENA_AVATAR_STATE_NOT_FOUND_EXCEPTION";
                     break;
                 case ArenaScoreNotFoundException _:
                     code = "34";
-                    key = "ARENA_SCORE_NOT_FOUND_EXCEPTION";
+                    key = "ERROR_ARENA_SCORE_NOT_FOUND_EXCEPTION";
                     break;
                 case ArenaInformationNotFoundException _:
                     code = "35";
-                    key = "ARENA_INFORMATION_NOT_FOUND_EXCEPTION";
+                    key = "ERROR_ARENA_INFORMATION_NOT_FOUND_EXCEPTION";
                     break;
                 case AddressNotFoundInArenaParticipantsException _:
                     code = "36";
-                    key = "ADDRESS_NOT_FOUND_IN_ARENA_PARTICIPANTS_EXCEPTION";
+                    key = "ERROR_ADDRESS_NOT_FOUND_IN_ARENA_PARTICIPANTS_EXCEPTION";
                     break;
                 case NotEnoughTicketException _:
                     code = "37";
-                    key = "NOT_ENOUGH_TICKET_EXCEPTION";
+                    key = "ERROR_NOT_ENOUGH_TICKET_EXCEPTION";
                     break;
                 case ValidateScoreDifferenceException _:
                     code = "38";
-                    key = "VALIDATE_SCORE_DIFFERENCE_EXCEPTION";
+                    key = "ERROR_VALIDATE_SCORE_DIFFERENCE_EXCEPTION";
                     break;
                 case ThisArenaIsClosedException _:
                     code = "39";
-                    key = "THIS_ARENA_IS_CLOSED_EXCEPTION";
+                    key = "ERROR_THIS_ARENA_IS_CLOSED_EXCEPTION";
                     break;
                 case ExceedPlayCountException _:
                     code = "40";
-                    key = "EXCEED_PLAY_COUNT_EXCEPTION";
+                    key = "ERROR_EXCEED_PLAY_COUNT_EXCEPTION";
                     break;
                 case ExceedTicketPurchaseLimitException _:
                     code = "41";
-                    key = "EXCEED_TICKET_PURCHASE_LIMIT_EXCEPTION";
+                    key = "ERROR_EXCEED_TICKET_PURCHASE_LIMIT_EXCEPTION";
+                    break;
+                case InvalidActionFieldException:
+                {
+                    code = "42";
+                    key = "ERROR_INVALID_ACTION_FIELDS_EXCEPTION";
+                    break;
+                }
+                case NotEnoughEventDungeonTicketsException:
+                    code = "43";
+                    key = "ERROR_NOT_ENOUGH_EVENT_DUNGEON_TICKETS_EXCEPTION";
+                    break;
+                case StageNotClearedException:
+                    code = "44";
+                    key = "ERROR_STAGE_NOT_CLEARED_EXCEPTION";
+                    break;
+                case CombinationSlotUnlockException:
+                    code = "45";
+                    key = "ERROR_COMBINATION_SLOT_UNLOCK_EXCEPTION";
                     break;
             }
 

@@ -2,6 +2,7 @@
 using System.Linq;
 using Nekoyume.State;
 using Nekoyume.TableData;
+using Nekoyume.TableData.Event;
 
 namespace Nekoyume
 {
@@ -18,14 +19,18 @@ namespace Nekoyume
         public static List<MaterialItemSheet.Row> GetRewardItemRows(this StageSheet.Row stageRow)
         {
             if (GetRewardItemRowsCache.ContainsKey(stageRow.Key))
+            {
                 return GetRewardItemRowsCache[stageRow.Key];
+            }
 
             var tableSheets = Game.Game.instance.TableSheets;
             var itemRows = new List<MaterialItemSheet.Row>();
             foreach (var itemId in stageRow.Rewards.Select(rewardData => rewardData.ItemId))
             {
                 if (!tableSheets.MaterialItemSheet.TryGetValue(itemId, out var item))
+                {
                     continue;
+                }
 
                 itemRows.Add(item);
             }

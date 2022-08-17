@@ -32,7 +32,7 @@ namespace Nekoyume.UI
 
     public class ArenaBattlePreparation : Widget
     {
-        private static readonly Vector3 PlayerPosition = new Vector3(1999.8f, 1999.3f, 3f);
+        private static readonly Vector3 PlayerPosition = new(1999.8f, 1999.3f, 3f);
 
         [SerializeField] private Inventory inventory;
 
@@ -74,9 +74,9 @@ namespace Nekoyume.UI
         private AvatarState _chooseAvatarState;
         private Player _player;
         private GameObject _cachedCharacterTitle;
-        private int _ticketCountToUse = 1;
+        private const int _ticketCountToUse = 1;
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposables = new();
 
         public override bool CanHandleInputEvent =>
             base.CanHandleInputEvent &&
@@ -566,6 +566,8 @@ namespace Nekoyume.UI
 
         private void OnClickBattle()
         {
+            AudioController.PlayClick();
+
             if (Game.Game.instance.IsInWorld)
             {
                 return;
@@ -574,7 +576,7 @@ namespace Nekoyume.UI
             var arenaTicketCost = startButton.ArenaTicketCost;
             var hasEnoughTickets =
                 RxProps.ArenaTicketProgress.HasValue &&
-                RxProps.ArenaTicketProgress.Value.currentTicketCount >= arenaTicketCost;
+                RxProps.ArenaTicketProgress.Value.currentTickets >= arenaTicketCost;
             if (hasEnoughTickets)
             {
                 StartCoroutine(CoBattleStart(CostType.ArenaTicket));
@@ -622,13 +624,13 @@ namespace Nekoyume.UI
             var headerMenuStatic = Find<HeaderMenuStatic>();
             var currencyImage = costType switch
             {
-                CostType.None => null,
                 CostType.NCG => headerMenuStatic.Gold.IconImage,
                 CostType.ActionPoint => headerMenuStatic.ActionPoint.IconImage,
                 CostType.Hourglass => headerMenuStatic.Hourglass.IconImage,
                 CostType.Crystal => headerMenuStatic.Crystal.IconImage,
                 CostType.ArenaTicket => headerMenuStatic.ArenaTickets.IconImage,
-                _ => throw new ArgumentOutOfRangeException(nameof(costType), costType, null)
+                _ or CostType.None => throw new ArgumentOutOfRangeException(
+                    nameof(costType), costType, null)
             };
             var itemMoveAnimation = ItemMoveAnimation.Show(
                 currencyImage.sprite,

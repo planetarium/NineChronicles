@@ -25,6 +25,11 @@ namespace Nekoyume.Helper
 
         public static string GetBlockToTime(long block)
         {
+            if (block < 0)
+            {
+                return string.Empty;
+            }
+
             const int secondsPerBlock = 12;
             var remainSecond = block * secondsPerBlock;
             var timeSpan = TimeSpan.FromSeconds(remainSecond);
@@ -58,7 +63,7 @@ namespace Nekoyume.Helper
 
             if (sb.Length == 0)
             {
-                sb.Append("1m");
+                sb.Append("0m");
             }
 
             return sb.ToString();
@@ -271,7 +276,7 @@ namespace Nekoyume.Helper
                 return false;
             }
 
-            bool isValidated = false;
+            var isValidated = false;
             var tableSheets = Game.Game.instance.TableSheets;
             try
             {

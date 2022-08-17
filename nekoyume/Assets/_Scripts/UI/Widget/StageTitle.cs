@@ -1,3 +1,4 @@
+using Nekoyume.EnumType;
 using TMPro;
 
 namespace Nekoyume.UI
@@ -12,9 +13,10 @@ namespace Nekoyume.UI
             CloseWidget = null;
         }
 
-        public void Show(int stageId)
+        public void Show(StageType stageType, int stageId)
         {
-            textStage.text = $"STAGE {StageInformation.GetStageIdString(stageId, true)}";
+            var stageText = StageInformation.GetStageIdString(stageType, stageId, true);
+            textStage.text = $"STAGE {stageText}";
             base.Show();
         }
     }
