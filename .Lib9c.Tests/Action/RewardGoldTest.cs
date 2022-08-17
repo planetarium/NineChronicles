@@ -483,7 +483,7 @@ namespace Lib9c.Tests.Action
                 using var client = new HttpClient();
                 var rawBlock = await client.GetByteArrayAsync(uri);
                 var blockDict = (Bencodex.Types.Dictionary)new Codec().Decode(rawBlock);
-                genesis = BlockMarshaler.UnmarshalBlock<PolymorphicAction<ActionBase>>(policy.GetHashAlgorithm, blockDict);
+                genesis = BlockMarshaler.UnmarshalBlock<PolymorphicAction<ActionBase>>(blockDict);
             }
             else
             {
@@ -514,7 +514,6 @@ namespace Lib9c.Tests.Action
                     pendingActivationStates: pendingActivationStates.ToArray()
                 );
                 genesis = BlockChain<PolymorphicAction<ActionBase>>.MakeGenesisBlock(
-                    HashAlgorithmType.Of<SHA256>(),
                     new PolymorphicAction<ActionBase>[] { initializeStates }
                 );
             }

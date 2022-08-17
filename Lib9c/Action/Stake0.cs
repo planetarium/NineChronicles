@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
@@ -13,28 +12,29 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
-    [ActionType("stake2")]
-    public class Stake : GameAction
+    [ActionType("stake")]
+    public class Stake0 : ActionBase
     {
         internal BigInteger Amount { get; set; }
 
-        public Stake(BigInteger amount)
+        public Stake0(BigInteger amount)
         {
             Amount = amount >= 0
                 ? amount
                 : throw new ArgumentOutOfRangeException(nameof(amount));
         }
 
-        public Stake()
+        public Stake0()
         {
         }
 
-        protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
-            ImmutableDictionary<string, IValue>.Empty.Add(AmountKey, (IValue) (Integer) Amount);
+        public override IValue PlainValue =>
+            Dictionary.Empty.Add(AmountKey, (IValue) (Integer) Amount);
 
-        protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
+        public override void LoadPlainValue(IValue plainValue)
         {
-            Amount = plainValue[AmountKey].ToBigInteger();
+            var dictionary = (Dictionary) plainValue;
+            Amount = dictionary[AmountKey].ToBigInteger();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -87,6 +87,8 @@ namespace Nekoyume.Action
             // Stake if it doesn't exist yet.
             if (!states.TryGetStakeState(context.Signer, out StakeState stakeState))
             {
+                var stakeAchievementRewardSheet = states.GetSheet<StakeAchievementRewardSheet>();
+
                 stakeState = new StakeState(stakeStateAddress, context.BlockIndex);
                 return states
                     .SetState(

@@ -101,7 +101,9 @@ namespace Lib9c.Tools.SubCommand
                     .Where(tx => includeFails ||
                         !(chain.GetTxExecution(block.Hash, tx.Id) is { } e) ||
                         e is TxSuccess)
-                    .SelectMany(tx => tx.Actions.Reverse().Select(a => (tx, a)));
+                    .SelectMany(tx => tx.CustomActions is { } ca
+                        ? ca.Reverse().Select(a => (tx, a))
+                        : Enumerable.Empty<(Transaction<NCAction>, NCAction)>());
 
                 foreach (var (tx, act) in actions)
                 {
