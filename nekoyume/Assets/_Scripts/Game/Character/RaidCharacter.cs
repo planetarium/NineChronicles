@@ -496,37 +496,5 @@ namespace Nekoyume.Game.Character
                 gameObject.SetActive(false);
             }
         }
-
-        public void ToggleRunning()
-        {
-            if (Animator.IsIdle())
-            {
-                Animator.Run();
-            }
-            else
-            {
-                Animator.Idle();
-            }
-        }
-
-        public void SetRunning()
-        {
-            if (!Application.isPlaying)
-            {
-                return;
-            }
-
-            Animator.Run();
-        }
-
-        public void SetIdle()
-        {
-            if (!Application.isPlaying)
-            {
-                return;
-            }
-
-            Animator.Idle();
-        }
     }
 }

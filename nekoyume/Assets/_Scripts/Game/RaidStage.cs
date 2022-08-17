@@ -145,7 +145,6 @@ namespace Nekoyume.Game
             _actionQueue.Clear();
 
             CreateContainer(205007);
-            container.Show();
             MainCanvas.instance.Canvas.worldCamera = container.Camera;
 
             _player = container.Player;
@@ -153,6 +152,7 @@ namespace Nekoyume.Game
 
             _player.Init(playerDigest, _boss);
             _boss.Init(_player);
+            container.Show();
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.StageBlue);
             Widget.Find<LoadingScreen>().Close();

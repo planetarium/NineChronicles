@@ -30,6 +30,7 @@
 #define SPINE_EDITMODEPOSE
 
 using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
@@ -134,33 +135,73 @@ namespace Spine.Unity.Playables {
 				if (inputWeight > 0) lastNonZeroWeightTrack = i;
 			}
 
-			if (lastNonZeroWeightTrack != -1) {
-				ScriptPlayable<SpineAnimationStateBehaviour> inputPlayableClip =
-					(ScriptPlayable<SpineAnimationStateBehaviour>)playable.GetInput(lastNonZeroWeightTrack);
-				SpineAnimationStateBehaviour clipData = inputPlayableClip.GetBehaviour();
+            if (lastNonZeroWeightTrack != -1) {
+                ScriptPlayable<SpineAnimationStateBehaviour> inputPlayableClip =
+                        (ScriptPlayable<SpineAnimationStateBehaviour>)playable.GetInput(lastNonZeroWeightTrack);
+                var clipData = inputPlayableClip.GetBehaviour();
+                var clipAnimationReference = clipData.animationReference;
 
-				var skeleton = skeletonComponent.Skeleton;
+                var skeleton = skeletonComponent.Skeleton;
 
-				bool skeletonDataMismatch = clipData.animationReference != null && clipData.animationReference.SkeletonDataAsset &&
-					skeletonComponent.SkeletonDataAsset.GetSkeletonData(true) != clipData.animationReference.SkeletonDataAsset.GetSkeletonData(true);
-				if (skeletonDataMismatch) {
-					Debug.LogWarningFormat("SpineAnimationStateMixerBehaviour tried to apply an animation for the wrong skeleton. Expected {0}. Was {1}",
-						skeletonComponent.SkeletonDataAsset, clipData.animationReference.SkeletonDataAsset);
-				}
+                bool skeletonDataMismatch = clipAnimationReference != null && clipAnimationReference.SkeletonDataAsset &&
+                        skeletonComponent.SkeletonDataAsset.GetSkeletonData(true) != clipAnimationReference.SkeletonDataAsset.GetSkeletonData(true);
 
-				// Getting the from-animation here because it's required to get the mix information from AnimationStateData.
-				Animation fromAnimation = null;
-				float fromClipTime = 0;
-				bool fromClipLoop = false;
-				if (lastNonZeroWeightTrack != 0 && inputCount > 1) {
-					var fromClip = (ScriptPlayable<SpineAnimationStateBehaviour>)playable.GetInput(lastNonZeroWeightTrack - 1);
-					var fromClipData = fromClip.GetBehaviour();
-					fromAnimation = fromClipData.animationReference != null ? fromClipData.animationReference.Animation : null;
-					fromClipTime = (float)fromClip.GetTime() * (float)fromClip.GetSpeed();
-					fromClipLoop = fromClipData.loop;
-				}
+                // Getting the from-animation here because it's required to get the mix information from AnimationStateData.
+                Animation fromAnimation = null;
+                float fromClipTime = 0;
+                bool fromClipLoop = false;
+                if (lastNonZeroWeightTrack != 0 && inputCount > 1)
+                {
+                    var fromClip = (ScriptPlayable<SpineAnimationStateBehaviour>)playable.GetInput(lastNonZeroWeightTrack - 1);
+                    var fromClipData = fromClip.GetBehaviour();
 
-				Animation toAnimation = clipData.animationReference != null ? clipData.animationReference.Animation : null;
+                    if (skeletonDataMismatch)
+                    {
+                        var animationName = fromClipData.animationReference != null ?
+                            fromClipData.animationReference.Animation.Name : string.Empty;
+
+                        bool Matches(Animation a) => a.Name.Equals(animationName);
+                        fromAnimation = skeletonComponent
+                            .SkeletonDataAsset.GetSkeletonData(false)
+                            .Animations.FirstOrDefault(Matches);
+
+                        if (fromAnimation is null)
+                        {
+                            Debug.LogWarningFormat("SpineAnimationStateMixerBehaviour tried to apply an animation for the wrong skeleton. Expected {0}. Was {1}",
+                                    skeletonComponent.SkeletonDataAsset, fromClipData.animationReference.SkeletonDataAsset);
+                            fromAnimation = clipAnimationReference != null ? clipAnimationReference.Animation : null;
+                         }
+                    }
+                    else
+                    {
+                        fromAnimation = clipAnimationReference != null ? fromClipData.animationReference.Animation : null;
+                    }
+                    fromClipTime = (float)fromClip.GetTime() * (float)fromClip.GetSpeed();
+                    fromClipLoop = fromClipData.loop;
+                }
+
+                Animation toAnimation = null;
+                if (skeletonDataMismatch)
+                {
+                    var animationName = clipAnimationReference != null ?
+                        clipAnimationReference.Animation.Name : string.Empty;
+
+                    bool Matches(Animation a) => a.Name.Equals(animationName);
+                    toAnimation = skeletonComponent
+                        .SkeletonDataAsset.GetSkeletonData(false)
+                        .Animations.FirstOrDefault(Matches);
+
+                    if (toAnimation is null)
+                    {
+                        Debug.LogWarningFormat("SpineAnimationStateMixerBehaviour tried to apply an animation for the wrong skeleton. Expected {0}. Was {1}",
+                                skeletonComponent.SkeletonDataAsset, clipAnimationReference.SkeletonDataAsset);
+                        toAnimation = clipAnimationReference != null ? clipAnimationReference.Animation : null;
+                    }
+                }
+                else
+                {
+                    toAnimation = clipAnimationReference != null ? clipAnimationReference.Animation : null;
+                }
 				float toClipTime = (float)inputPlayableClip.GetTime() * (float)inputPlayableClip.GetSpeed();
 				float mixDuration = clipData.mixDuration;
 
