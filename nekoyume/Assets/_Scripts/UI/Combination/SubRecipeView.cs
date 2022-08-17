@@ -11,10 +11,14 @@ using System;
 using System.Globalization;
 using Nekoyume.State;
 using System.Numerics;
+using Nekoyume.Action;
 using Nekoyume.Extensions;
+using Nekoyume.Game;
 using Nekoyume.Model.Mail;
 using Nekoyume.UI.Scroller;
 using Nekoyume.L10n;
+using Nekoyume.Model.State;
+using UnityEngine.UI;
 using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
@@ -40,6 +44,20 @@ namespace Nekoyume.UI
             public GameObject ParentObject;
             public TextMeshProUGUI OptionText;
             public TextMeshProUGUI PercentageText;
+            public Slider PercentageSlider;
+        }
+
+        [Serializable]
+        private struct HammerPointView
+        {
+            public GameObject parentObject;
+            public Slider nowPoint;
+            public Image nowPointImage;
+            public Image increasePointImage;
+            public TMP_Text hammerPointText;
+            public GameObject notEnoughHammerPointObject;
+            public GameObject enoughHammerPointObject;
+            public Button superCraftButton;
         }
 
         [SerializeField]
@@ -73,6 +91,9 @@ namespace Nekoyume.UI
         private List<OptionView> skillViews;
 
         [SerializeField]
+        private List<GameObject> optionIcons;
+
+        [SerializeField]
         private TextMeshProUGUI levelText;
 
         [SerializeField]
@@ -87,6 +108,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI lockedText;
 
+        [SerializeField]
+        private HammerPointView hammerPointView;
+
         public readonly Subject<RecipeInfo> CombinationActionSubject = new Subject<RecipeInfo>();
 
         private SheetRow<int> _recipeRow;
@@ -97,6 +121,10 @@ namespace Nekoyume.UI
         private const string StatTextFormat = "{0} {1}";
         private const int MimisbrunnrRecipeIndex = 2;
         private IDisposable _disposableForOnDisable;
+
+        private bool _canSuperCraft;
+        private EquipmentItemOptionSheet.Row _skillOptionRow;
+        private HammerPointState _hammerPointState;
 
         private void Awake()
         {
@@ -125,6 +153,18 @@ namespace Nekoyume.UI
                     }
                 })
                 .AddTo(gameObject);
+            hammerPointView.superCraftButton
+                .OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    if (_canSuperCraft)
+                    {
+                        Widget.Find<SuperCraftPopup>().Show(
+                            _skillOptionRow,
+                            _selectedRecipeInfo,
+                            _recipeRow.Key);
+                    }
+                }).AddTo(gameObject);
         }
 
         private void OnDisable()
@@ -275,10 +315,10 @@ namespace Nekoyume.UI
                 skillView.ParentObject.SetActive(false);
             }
 
-            var isLocked = false;
+            optionIcons.ForEach(obj => obj.SetActive(false));
             if (equipmentRow != null)
             {
-                isLocked = !Craft.SharedModel.UnlockedRecipes.Value.Contains(_recipeRow.Key);
+                var isLocked = !Craft.SharedModel.UnlockedRecipes.Value.Contains(_recipeRow.Key);
                 var baseMaterialInfo = new EquipmentItemSubRecipeSheet.MaterialInfo(
                     equipmentRow.MaterialId,
                     equipmentRow.MaterialCount);
@@ -305,6 +345,36 @@ namespace Nekoyume.UI
                         .Aggregate((a, b) => a * b);
 
                     SetOptions(options);
+
+                    var showHammerPoint = RxProps.HammerPointStates is not null &&
+                                          RxProps.HammerPointStates.TryGetValue(
+                                              recipeId,
+                                              out _hammerPointState);
+                    hammerPointView.parentObject.SetActive(showHammerPoint);
+                    if (showHammerPoint)
+                    {
+                        var max = TableSheets.Instance.CrystalHammerPointSheet[recipeId].MaxPoint;
+                        var increasePoint = index == 0
+                            ? CombinationEquipment.BasicSubRecipeHammerPoint
+                            : CombinationEquipment.SpecialSubRecipeHammerPoint;
+                        var increasedPoint = Math.Min(_hammerPointState.HammerPoint + increasePoint, max);
+                        _canSuperCraft = _hammerPointState.HammerPoint == max;
+                        var optionSheet = TableSheets.Instance.EquipmentItemOptionSheet;
+                        hammerPointView.nowPoint.maxValue = max;
+                        hammerPointView.hammerPointText.text =
+                            $"{_hammerPointState.HammerPoint}/{max}";
+                        hammerPointView.nowPoint.value = _hammerPointState.HammerPoint;
+                        hammerPointView.nowPointImage.fillAmount =
+                            _hammerPointState.HammerPoint / (float)max;
+                        hammerPointView.increasePointImage.fillAmount =
+                            increasedPoint / (float) max;
+                        hammerPointView.notEnoughHammerPointObject.SetActive(!_canSuperCraft);
+                        hammerPointView.enoughHammerPointObject.SetActive(_canSuperCraft);
+                        _skillOptionRow = options
+                            .Select(x => (ratio: x.Ratio, option: optionSheet[x.Id]))
+                            .FirstOrDefault(tuple => tuple.option.SkillId != 0)
+                            .option;
+                    }
 
                     var sheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
                     var resultItemRow = equipmentRow.GetResultEquipmentItemRow();
@@ -377,7 +447,8 @@ namespace Nekoyume.UI
             }
 
             blockIndexText.text = blockIndex.ToString();
-            greatSuccessRateText.text = greatSuccessRate == 0m ? "-" : greatSuccessRate.ToString("0.0%");
+            greatSuccessRateText.text =
+                greatSuccessRate == 0m ? "-" : greatSuccessRate.ToString("0.0%");
 
             var recipeInfo = new RecipeInfo
             {
@@ -515,23 +586,27 @@ namespace Nekoyume.UI
                 if (option.StatType != StatType.NONE)
                 {
                     var optionView = optionViews.First(x => !x.ParentObject.activeSelf);
-
+                    var normalizedRatio = ratio.NormalizeFromTenThousandths();
                     optionView.OptionText.text = option.OptionRowToString();
-                    optionView.PercentageText.text = (ratio.NormalizeFromTenThousandths()).ToString("0%");
+                    optionView.PercentageText.text = normalizedRatio.ToString("0%");
+                    optionView.PercentageSlider.value = (float) normalizedRatio;
                     optionView.ParentObject.transform.SetSiblingIndex(siblingIndex);
                     optionView.ParentObject.SetActive(true);
+                    optionIcons[siblingIndex].SetActive(true);
                 }
                 else
                 {
                     var skillView = skillViews.First(x => !x.ParentObject.activeSelf);
-
                     var description = skillSheet.TryGetValue(option.SkillId, out var skillRow)
                         ? skillRow.GetLocalizedName()
                         : string.Empty;
+                    var normalizedRatio = ratio.NormalizeFromTenThousandths();
                     skillView.OptionText.text = description;
-                    skillView.PercentageText.text = (ratio.NormalizeFromTenThousandths()).ToString("0%");
+                    skillView.PercentageText.text = normalizedRatio.ToString("0%");
+                    skillView.PercentageSlider.value = (float) normalizedRatio;
                     skillView.ParentObject.transform.SetSiblingIndex(siblingIndex);
                     skillView.ParentObject.SetActive(true);
+                    optionIcons.Last().SetActive(true);
                 }
 
                 ++siblingIndex;
@@ -568,7 +643,6 @@ namespace Nekoyume.UI
         public bool CheckSubmittable(out string errorMessage, out int slotIndex)
         {
             slotIndex = -1;
-
 
             var inventory = States.Instance.CurrentAvatarState.inventory;
             foreach (var material in _selectedRecipeInfo.Materials)
