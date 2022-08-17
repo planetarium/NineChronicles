@@ -162,6 +162,8 @@ namespace Nekoyume.Game
 
         public CrystalFluctuationSheet CrystalFluctuationSheet { get; private set; }
 
+        public CrystalHammerPointSheet CrystalHammerPointSheet { get; private set; }
+
         public EventScheduleSheet EventScheduleSheet { get; private set; }
 
         public EventDungeonSheet EventDungeonSheet { get; private set; }

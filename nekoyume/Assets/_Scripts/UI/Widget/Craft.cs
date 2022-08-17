@@ -72,6 +72,8 @@ namespace Nekoyume.UI
 
         private bool _isEquipment;
 
+        private List<IDisposable> _disposables = new List<IDisposable>();
+
         protected override void Awake()
         {
             base.Awake();
@@ -234,7 +236,6 @@ namespace Nekoyume.UI
                     .PlayMusic(AudioController.MusicCode.Combination);
             }
 
-
             RxProps.EventScheduleRowForRecipe
                 .Skip(1)
                 .Select(_ => eventConsumableToggle.isOn)
@@ -247,6 +248,16 @@ namespace Nekoyume.UI
                     OnClickConsumableToggle(eventConsumableToggle.isOn);
                 })
                 .AddTo(_disposablesAtShow);
+            if (RxProps.HammerPointStates is not null)
+            {
+                RxProps.HammerPointStates.ObserveReplace().Subscribe(_ =>
+                {
+                    if (equipmentSubRecipeView.gameObject.activeSelf)
+                    {
+                        equipmentSubRecipeView.UpdateView();
+                    }
+                }).AddTo(_disposablesAtShow);
+            }
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -493,7 +504,11 @@ namespace Nekoyume.UI
                             });
 
                         ActionManager.Instance
-                            .CombinationEquipment(recipeInfo, slotIndex, true)
+                            .CombinationEquipment(
+                                recipeInfo,
+                                slotIndex,
+                                true,
+                                false)
                             .Subscribe();
                         StartCoroutine(CoCombineNPCAnimation(equipment, requiredBlockIndex));
                     });
@@ -507,7 +522,11 @@ namespace Nekoyume.UI
                     requiredBlockIndex,
                     itemUsable: equipment);
                 ActionManager.Instance
-                    .CombinationEquipment(recipeInfo, slotIndex, false)
+                    .CombinationEquipment(
+                        recipeInfo,
+                        slotIndex,
+                        false,
+                        false)
                     .Subscribe();
                 StartCoroutine(CoCombineNPCAnimation(equipment, requiredBlockIndex));
             }

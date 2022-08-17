@@ -816,7 +816,8 @@ namespace Nekoyume.BlockChain
         public IObservable<ActionBase.ActionEvaluation<CombinationEquipment>> CombinationEquipment(
             SubRecipeView.RecipeInfo recipeInfo,
             int slotIndex,
-            bool payByCrystal)
+            bool payByCrystal,
+            bool useHammerPoint)
         {
             Analyzer.Instance.Track("Unity/Create CombinationEquipment", new Value
             {
@@ -829,6 +830,10 @@ namespace Nekoyume.BlockChain
 
             LocalLayerModifier.ModifyAgentGold(agentAddress, -recipeInfo.CostNCG);
             LocalLayerModifier.ModifyAvatarActionPoint(agentAddress, -recipeInfo.CostAP);
+            if (useHammerPoint)
+            {
+                RxProps.HammerPointStates[recipeInfo.RecipeId].ResetHammerPoint();
+            }
 
             foreach (var pair in recipeInfo.Materials)
             {
@@ -857,6 +862,7 @@ namespace Nekoyume.BlockChain
                 recipeId = recipeInfo.RecipeId,
                 subRecipeId = recipeInfo.SubRecipeId,
                 payByCrystal = payByCrystal,
+                useHammerPoint = useHammerPoint,
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);

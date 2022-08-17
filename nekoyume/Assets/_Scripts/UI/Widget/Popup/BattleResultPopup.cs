@@ -284,7 +284,7 @@ namespace Nekoyume.UI
         {
             canvasGroup.alpha = 1f;
             canvasGroup.blocksRaycasts = true;
-            if (isBoosted)
+            if (isBoosted && model.WorldID < GameConfig.MimisbrunnrWorldId)
             {
                 model = new Model
                 {

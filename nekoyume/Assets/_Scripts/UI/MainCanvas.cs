@@ -345,6 +345,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<BuffBonusResultPopup>());
             yield return null;
+            secondWidgets.Add(Widget.Create<SuperCraftPopup>());
+            yield return null;
 
             // tooltip
             secondWidgets.Add(Widget.Create<EquipmentTooltip>());
