@@ -209,6 +209,7 @@ namespace Nekoyume.UI.Scroller
                 return;
             }
 
+            viewport.SetActive(true);
             var items = Craft.SharedModel.EquipmentRecipeMap.Values
                 .Where(x => x.ItemSubType == type)
                 .ToList();
@@ -250,6 +251,7 @@ namespace Nekoyume.UI.Scroller
                 return;
             }
 
+            viewport.SetActive(true);
             var items = Craft.SharedModel.ConsumableRecipeMap.Values
                 .Where(x => x.StatType == type)
                 .ToList();
