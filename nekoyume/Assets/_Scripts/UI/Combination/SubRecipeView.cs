@@ -57,6 +57,7 @@ namespace Nekoyume.UI
             public TMP_Text hammerPointText;
             public GameObject notEnoughHammerPointObject;
             public GameObject enoughHammerPointObject;
+            public Button superCraftButton;
         }
 
         [SerializeField]
@@ -121,6 +122,9 @@ namespace Nekoyume.UI
         private const int MimisbrunnrRecipeIndex = 2;
         private IDisposable _disposableForOnDisable;
 
+        private bool _canSuperCraft;
+        private EquipmentItemOptionSheet.Row _skillOptionRow;
+
         private void Awake()
         {
             for (int i = 0; i < categoryToggles.Count; ++i)
@@ -148,6 +152,15 @@ namespace Nekoyume.UI
                     }
                 })
                 .AddTo(gameObject);
+            hammerPointView.superCraftButton
+                .OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    if (_canSuperCraft)
+                    {
+                        Widget.Find<SuperCraftPopup>().Show(_skillOptionRow, _recipeRow.Key);
+                    }
+                }).AddTo(gameObject);
         }
 
         private void OnDisable()
@@ -317,6 +330,19 @@ namespace Nekoyume.UI
                 if (_subrecipeIds != null &&
                     _subrecipeIds.Any())
                 {
+                    toggleParent.SetActive(true);
+                    subRecipeId = _subrecipeIds[index];
+                    var subRecipe = Game.Game.instance.TableSheets
+                        .EquipmentItemSubRecipeSheetV2[subRecipeId.Value];
+                    var options = subRecipe.Options;
+
+                    blockIndex += subRecipe.RequiredBlockIndex;
+                    greatSuccessRate = options
+                        .Select(x => x.Ratio.NormalizeFromTenThousandths())
+                        .Aggregate((a, b) => a * b);
+
+                    SetOptions(options);
+
                     // Temporary initialize for avoid 'Local variable "hammerPointState' might not be initialized before accessing."
                     var hammerPointState = new HammerPointState(Addresses.SuperCraft, 0);
                     var showHammerPoint = RxProps.HammerPointStates is not null &&
@@ -331,7 +357,8 @@ namespace Nekoyume.UI
                             ? CombinationEquipment.BasicSubRecipeHammerPoint
                             : CombinationEquipment.SpecialSubRecipeHammerPoint;
                         var increasedPoint = Math.Min(hammerPointState.HammerPoint + increasePoint, max);
-                        var isHammerPointMax = hammerPointState.HammerPoint == max;
+                        _canSuperCraft = hammerPointState.HammerPoint == max;
+                        var optionSheet = TableSheets.Instance.EquipmentItemOptionSheet;
                         hammerPointView.nowPoint.maxValue = max;
                         hammerPointView.hammerPointText.text =
                             $"{hammerPointState.HammerPoint}/{max}";
@@ -340,22 +367,13 @@ namespace Nekoyume.UI
                             hammerPointState.HammerPoint / (float)max;
                         hammerPointView.increasePointImage.fillAmount =
                             increasedPoint / (float) max;
-                        hammerPointView.notEnoughHammerPointObject.SetActive(!isHammerPointMax);
-                        hammerPointView.enoughHammerPointObject.SetActive(isHammerPointMax);
+                        hammerPointView.notEnoughHammerPointObject.SetActive(!_canSuperCraft);
+                        hammerPointView.enoughHammerPointObject.SetActive(_canSuperCraft);
+                        _skillOptionRow = options
+                            .Select(x => (ratio: x.Ratio, option: optionSheet[x.Id]))
+                            .FirstOrDefault(tuple => tuple.option.SkillId != 0)
+                            .option;
                     }
-
-                    toggleParent.SetActive(true);
-                    subRecipeId = _subrecipeIds[index];
-                    var subRecipe = Game.Game.instance.TableSheets
-                        .EquipmentItemSubRecipeSheetV2[subRecipeId.Value];
-                    var options = subRecipe.Options;
-
-                    blockIndex += subRecipe.RequiredBlockIndex;
-                    greatSuccessRate = options
-                        .Select(x => x.Ratio.NormalizeFromTenThousandths())
-                        .Aggregate((a, b) => a * b);
-
-                    SetOptions(options);
 
                     var sheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
                     var resultItemRow = equipmentRow.GetResultEquipmentItemRow();
@@ -428,7 +446,8 @@ namespace Nekoyume.UI
             }
 
             blockIndexText.text = blockIndex.ToString();
-            greatSuccessRateText.text = greatSuccessRate == 0m ? "-" : greatSuccessRate.ToString("0.0%");
+            greatSuccessRateText.text =
+                greatSuccessRate == 0m ? "-" : greatSuccessRate.ToString("0.0%");
 
             var recipeInfo = new RecipeInfo
             {

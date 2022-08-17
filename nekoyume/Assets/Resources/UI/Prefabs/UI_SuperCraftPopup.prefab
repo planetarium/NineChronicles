@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 224898616830980190}
   - component: {fileID: 222668420831161334}
   - component: {fileID: 95256010546860014}
+  - component: {fileID: 9183027462833751799}
   m_Layer: 5
   m_Name: UI_SuperCraftPopup
   m_TagString: Untagged
@@ -69,6 +70,24 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &9183027462833751799
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1907849136098932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14a2687f3b864deea60fd24d3f824b9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tutorialTargets: []
+  tutorialActions: 
+  superCraftButton: {fileID: 1517806122348923672}
+  skillName: {fileID: 2760609118625277589}
+  skillPowerText: {fileID: 8286126236900493500}
+  skillChanceText: {fileID: 4647558963994349847}
 --- !u!1 &158038873445042577
 GameObject:
   m_ObjectHideFlags: 0
@@ -13140,7 +13159,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 9183027462833751799}
         m_TargetAssemblyTypeName: Nekoyume.UI.Widget, Nekoyume
         m_MethodName: Close
         m_Mode: 6
