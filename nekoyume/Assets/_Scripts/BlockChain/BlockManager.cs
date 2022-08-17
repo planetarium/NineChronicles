@@ -50,10 +50,8 @@ namespace Nekoyume.BlockChain
               {
                   var buffer = File.ReadAllBytes(path);
                   var dict = (Bencodex.Types.Dictionary)_codec.Decode(buffer);
-                  HashAlgorithmGetter hashAlgorithmGetter = agent.BlockPolicySource
-                      .GetPolicy()
-                      .GetHashAlgorithm;
-                  return BlockMarshaler.UnmarshalBlock<PolymorphicAction<ActionBase>>(hashAlgorithmGetter, dict);
+
+                  return BlockMarshaler.UnmarshalBlock<PolymorphicAction<ActionBase>>(dict);
               }
 
               var uri = new Uri(path);
@@ -61,10 +59,7 @@ namespace Nekoyume.BlockChain
               {
                   byte[] rawGenesisBlock = client.DownloadData(uri);
                   var dict = (Bencodex.Types.Dictionary)_codec.Decode(rawGenesisBlock);
-                  HashAlgorithmGetter hashAlgorithmGetter = agent.BlockPolicySource
-                      .GetPolicy()
-                      .GetHashAlgorithm;
-                  return BlockMarshaler.UnmarshalBlock<PolymorphicAction<ActionBase>>(hashAlgorithmGetter, dict);
+                  return BlockMarshaler.UnmarshalBlock<PolymorphicAction<ActionBase>>(dict);
               }
           }
 
@@ -75,10 +70,7 @@ namespace Nekoyume.BlockChain
               {
                   var buffer = File.ReadAllBytes(path);
                   var dict = (Bencodex.Types.Dictionary)_codec.Decode(buffer);
-                  HashAlgorithmGetter hashAlgorithmGetter = agent.BlockPolicySource
-                      .GetPolicy()
-                      .GetHashAlgorithm;
-                  return BlockMarshaler.UnmarshalBlock<PolymorphicAction<ActionBase>>(hashAlgorithmGetter, dict);
+                  return BlockMarshaler.UnmarshalBlock<PolymorphicAction<ActionBase>>(dict);
               }
 
               var uri = new Uri(path);
@@ -86,10 +78,7 @@ namespace Nekoyume.BlockChain
               {
                   byte[] rawGenesisBlock = await client.DownloadDataTaskAsync(uri);
                   var dict = (Bencodex.Types.Dictionary)_codec.Decode(rawGenesisBlock);
-                  HashAlgorithmGetter hashAlgorithmGetter = agent.BlockPolicySource
-                      .GetPolicy()
-                      .GetHashAlgorithm;
-                  return BlockMarshaler.UnmarshalBlock<PolymorphicAction<ActionBase>>(hashAlgorithmGetter, dict);
+                  return BlockMarshaler.UnmarshalBlock<PolymorphicAction<ActionBase>>(dict);
               }
           }
 
