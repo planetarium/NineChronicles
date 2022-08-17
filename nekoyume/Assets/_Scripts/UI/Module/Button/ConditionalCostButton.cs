@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
@@ -114,6 +115,25 @@ namespace Nekoyume.UI.Module
                 }
             }
         }
+
+        public void SetCostColor(bool isEnable)
+        {
+            foreach (var costObject in costObjects)
+            {
+                var exist = _costMap.ContainsKey(costObject.type);
+                if (exist)
+                {
+                    foreach (var costText in costObject.costTexts)
+                    {
+                        var cost = _costMap[costObject.type];
+                        costText.text.color = isEnable ?
+                            Palette.GetColor(ColorType.ButtonEnabled) :
+                            Palette.GetColor(ColorType.TextDenial);
+                    }
+                }
+            }
+        }
+
 
         /// <summary>
         /// Checks if costs are enough to pay for current avatar.

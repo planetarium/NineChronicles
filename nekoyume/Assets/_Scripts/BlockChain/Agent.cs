@@ -559,8 +559,7 @@ namespace Nekoyume.BlockChain
         private static IceServer LoadIceServer(string iceServerInfo)
         {
             var uri = new Uri(iceServerInfo);
-            var userInfo = uri.UserInfo.Split(':');
-            return new IceServer(uri, userInfo[0], userInfo[1]);
+            return new IceServer(uri);
         }
 
         private static BaseStore LoadStore(string path, string storageType)

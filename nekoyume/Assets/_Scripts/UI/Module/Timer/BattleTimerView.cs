@@ -19,7 +19,7 @@ namespace Nekoyume.UI.Module.Timer
             base.Show();
         }
 
-        public virtual void Show(double timeLimit)
+        public virtual void Show(int timeLimit)
         {
             _timeLimit = timeLimit;
             SetTimer(0);

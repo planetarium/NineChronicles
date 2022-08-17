@@ -22,16 +22,21 @@ namespace Nekoyume.Game.Character
         protected Model.CharacterBase _characterModel;
         protected HudContainer _hudContainer;
         protected SpeechBubble _speechBubble;
+        public HpBar HPBar { get; private set; }
 
         protected int _currentHp;
 
-        protected RaidBattle _raidBattle;
+        protected WorldBossBattle _worldBossBattle;
         protected float _attackTime;
         protected float _criticalAttackTime;
         protected RaidCharacter _target;
         public bool IsDead => _currentHp <= 0;
         public Model.CharacterBase Model => _characterModel;
         public Coroutine CurrentAction { get; set; }
+        public int NextSpecialSkillId { get; set; }
+        public Coroutine TargetAction => _target.CurrentAction;
+
+        private bool _isAppQuitting = false;
 
         protected virtual void Awake()
         {
@@ -44,11 +49,24 @@ namespace Nekoyume.Game.Character
             _speechBubble.UpdatePosition(gameObject, HUDOffset);
         }
 
+        private void OnDisable()
+        {
+            if (!_isAppQuitting)
+            {
+                DisableHUD();
+            }
+        }
+
+        private void OnApplicationQuit()
+        {
+            _isAppQuitting = true;
+        }
+
         public virtual void Init(RaidCharacter target)
         {
             gameObject.SetActive(true);
 
-            _raidBattle ??= Widget.Find<RaidBattle>();
+            _worldBossBattle ??= Widget.Find<WorldBossBattle>();
             _hudContainer ??= Widget.Create<HudContainer>(true);
             _speechBubble ??= Widget.Create<SpeechBubble>();
             _target = target;
@@ -56,11 +74,73 @@ namespace Nekoyume.Game.Character
 
         public void Spawn(Model.CharacterBase model)
         {
-            _characterModel = model;
+            Set(model, true);
             Id = _characterModel.Id;
             SizeType = _characterModel.SizeType;
-            _currentHp = _characterModel.HP;
             UpdateStatusUI();
+        }
+
+        public virtual void Set(
+            Model.CharacterBase model,
+            bool updateCurrentHP = false)
+        {
+            _characterModel = model;
+            if (updateCurrentHP)
+            {
+                _currentHp = _characterModel.HP;
+            }
+        }
+
+        protected virtual void InitializeHpBar()
+        {
+            HPBar = Widget.Create<HpBar>(true);
+            HPBar.transform.SetParent(_hudContainer.transform);
+            HPBar.transform.localPosition = Vector3.zero;
+            HPBar.transform.localScale = Vector3.one;
+        }
+
+        public virtual void UpdateHpBar()
+        {
+            if (!Game.instance.IsInWorld)
+                return;
+
+            if (!HPBar)
+            {
+                InitializeHpBar();
+                _hudContainer.UpdateAlpha(1);
+            }
+
+            _hudContainer.UpdatePosition(gameObject, HUDOffset);
+            HPBar.Set(_currentHp, _characterModel.Stats.BuffStats.HP, _characterModel.HP);
+            HPBar.SetBuffs(_characterModel.Buffs);
+            HPBar.SetLevel(_characterModel.Level);
+
+            //OnUpdateHPBar.OnNext(this);
+        }
+
+        public void DisableHUD()
+        {
+            // No pooling. HUD Pooling causes HUD positioning bug.
+            if (HPBar)
+            {
+                Destroy(HPBar.gameObject);
+                HPBar = null;
+            }
+
+            // No pooling. HUD Pooling causes HUD positioning bug.
+            if (_hudContainer)
+            {
+                Destroy(_hudContainer.gameObject);
+                _hudContainer = null;
+            }
+
+            if (!ReferenceEquals(_speechBubble, null))
+            {
+                _speechBubble.StopAllCoroutines();
+                _speechBubble.gameObject.SetActive(false);
+                Destroy(_speechBubble.gameObject, _speechBubble.destroyTime);
+                _speechBubble = null;
+            }
         }
 
         public virtual void UpdateStatusUI()
@@ -68,7 +148,13 @@ namespace Nekoyume.Game.Character
             if (!Game.instance.IsInWorld)
                 return;
 
+            UpdateHpBar();
             _hudContainer.UpdatePosition(gameObject, HUDOffset);
+        }
+
+        private void AddNextBuff(Model.Buff.Buff buff)
+        {
+            _characterModel.AddBuff(buff);
         }
 
         public IEnumerator CoNormalAttack(IReadOnlyList<Skill.SkillInfo> skillInfos)
@@ -80,6 +166,31 @@ namespace Nekoyume.Game.Character
 
             ActionPoint = () => ApplyDamage(skillInfos);
             yield return StartCoroutine(CoAnimationAttack(skillInfos.Any(x => x.Critical)));
+        }
+
+        public virtual IEnumerator CoSpecialAttack(
+            IReadOnlyList<Skill.SkillInfo> skillInfos)
+        {
+            if (skillInfos is null || skillInfos.Count == 0)
+            {
+                yield break;
+            }
+
+            yield return StartCoroutine(CoAnimationAttack(skillInfos.Any(x => x.Critical)));
+            ApplyDamage(skillInfos);
+
+            foreach (var info in skillInfos)
+            {
+                if (info.Buff is null)
+                {
+                    continue;
+                }
+
+                var target = info.Target.Id == Id ? this : _target;
+                target.ProcessBuff(target, info);
+            }
+
+            NextSpecialSkillId = 0;
         }
 
         public IEnumerator CoBlowAttack(IReadOnlyList<Skill.SkillInfo> skillInfos)
@@ -267,7 +378,7 @@ namespace Nekoyume.Game.Character
         {
         }
 
-        private IEnumerator CoAnimationAttack(bool isCritical)
+        protected IEnumerator CoAnimationAttack(bool isCritical)
         {
             if (isCritical)
             {
@@ -338,6 +449,11 @@ namespace Nekoyume.Game.Character
 
         public void ShowSpeech(string key, params int[] list)
         {
+            if (!_speechBubble)
+            {
+                return;
+            }
+
             _speechBubble.enable = true;
 
             if (_speechBubble.gameObject.activeSelf)
@@ -399,7 +515,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        private void ApplyDamage(IReadOnlyList<Skill.SkillInfo> skillInfos)
+        protected void ApplyDamage(IReadOnlyList<Skill.SkillInfo> skillInfos)
         {
             for (var i = 0; i < skillInfos.Count; i++)
             {
@@ -408,7 +524,7 @@ namespace Nekoyume.Game.Character
                 ProcessAttack(target, info, false);
                 if (info.Target is Model.Enemy)
                 {
-                    _raidBattle.ShowComboText(info.Effect > 0);
+                    _worldBossBattle.ShowComboText(info.Effect > 0);
                 }
             }
         }
@@ -425,7 +541,7 @@ namespace Nekoyume.Game.Character
             ShowSpeech("PLAYER_ATTACK");
         }
 
-        private void ProcessBuff(RaidCharacter target, Skill.SkillInfo info)
+        public void ProcessBuff(RaidCharacter target, Skill.SkillInfo info)
         {
             if (IsDead)
             {
@@ -435,6 +551,8 @@ namespace Nekoyume.Game.Character
             var buff = info.Buff;
             var effect = Game.instance.RaidStage.BuffController.Get<RaidCharacter, BuffVFX>(target, buff);
             effect.Play();
+            AddNextBuff(buff);
+            target.UpdateStatusUI();
         }
 
         private void ProcessHeal(Skill.SkillInfo info)
@@ -453,7 +571,7 @@ namespace Nekoyume.Game.Character
             VFXController.instance.CreateAndChase<BattleHeal01VFX>(transform, HealOffset);
         }
 
-        private IEnumerator CoProcessDamage(Skill.SkillInfo info, bool isConsiderElementalType)
+        protected virtual IEnumerator CoProcessDamage(Skill.SkillInfo info, bool isConsiderElementalType)
         {
             var dmg = info.Effect;
 
@@ -491,10 +609,6 @@ namespace Nekoyume.Game.Character
         protected virtual void OnDeadEnd()
         {
             Animator.Idle();
-            if (this is RaidPlayer)
-            {
-                gameObject.SetActive(false);
-            }
         }
     }
 }

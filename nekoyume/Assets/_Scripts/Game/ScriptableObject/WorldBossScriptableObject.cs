@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.UI.Module.WorldBoss;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume
 {
@@ -11,8 +12,8 @@ namespace Nekoyume
     public class WorldBossScriptableObject : ScriptableObject
     {
         public List<MonsterData> Monsters;
-
         public List<GradeData> Grades;
+        public List<RuneData> Runes;
 
         [Serializable]
         public class GradeData
@@ -26,8 +27,16 @@ namespace Nekoyume
         {
             public int id;
             public string name;
+            public Sprite illustration;
             public GameObject namePrefab;
             public GameObject spinePrefab;
+        }
+
+        [Serializable]
+        public class RuneData
+        {
+            public string ticker;
+            public Sprite icon;
         }
     }
 }

@@ -13,14 +13,16 @@ MonoBehaviour:
   m_Name: UI_WorldBossData
   m_EditorClassIdentifier: 
   Monsters:
-  - id: 205007
+  - id: 900001
     name: fenrir of the abyss
+    illustration: {fileID: 21300000, guid: 9b7b4ed9c234188499f361b1bd822bad, type: 3}
     namePrefab: {fileID: 7177679302177427472, guid: 9077ce1b0e2a349479de63699ea19926,
       type: 3}
     spinePrefab: {fileID: 7353096591528320530, guid: ba316703c4bf8134f8a8ebea259de773,
       type: 3}
-  - id: 203007
+  - id: 900002
     name: serimnir of the abyss
+    illustration: {fileID: 21300000, guid: 1242f629318f1db4bac418b773e128c9, type: 3}
     namePrefab: {fileID: 8173047061470112773, guid: 02d0bdb57bfdd1d45b1d67f46ca666ea,
       type: 3}
     spinePrefab: {fileID: 9063561474706172066, guid: e1c34daccc27ab84b8fb301d0fc87d41,
@@ -43,3 +45,16 @@ MonoBehaviour:
   - grade: 5
     prefab: {fileID: 2013082671546982576, guid: e43cb968e8032c44db2988c1ee1c1117,
       type: 3}
+  Runes:
+  - ticker: RUNE_FENRIR1
+    icon: {fileID: 21300000, guid: d6667769127c0ce46bbc124fcaa6252c, type: 3}
+  - ticker: RUNE_FENRIR2
+    icon: {fileID: 21300000, guid: 88c80e541a31e0b4ba550de7e7f5cf5d, type: 3}
+  - ticker: RUNE_FENRIR3
+    icon: {fileID: 21300000, guid: 000b7b5b45f709f4782b1ec62f9f9f56, type: 3}
+  - ticker: RUNE_SERIMNIR1
+    icon: {fileID: 21300000, guid: 08c5c16491d019c4b9855c73648f4054, type: 3}
+  - ticker: RUNE_SERIMNIR2
+    icon: {fileID: 21300000, guid: 3d08304794b882b4887cac13c56bd287, type: 3}
+  - ticker: RUNE_SERIMNIR3
+    icon: {fileID: 21300000, guid: d81052ddf736a394f83b9155f2004a1d, type: 3}

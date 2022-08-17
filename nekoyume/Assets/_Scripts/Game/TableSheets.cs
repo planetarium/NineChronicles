@@ -159,8 +159,13 @@ namespace Nekoyume.Game
 
         public WorldBossListSheet WorldBossListSheet { get; private set; }
         public WorldBossRankRewardSheet WorldBossRankRewardSheet { get; private set; }
+        public WorldBossKillRewardSheet WorldBossKillRewardSheet { get; private set; }
+        public WorldBossRankingRewardSheet WorldBossRankingRewardSheet { get; private set; }
         public WorldBossGlobalHpSheet WorldBossGlobalHpSheet { get; private set; }
+        public WorldBossCharacterSheet WorldBossCharacterSheet { get; private set; }
+        public WorldBossActionPatternSheet WorldBossActionPatternSheet { get; private set; }
         public RuneWeightSheet RuneWeightSheet { get; private set; }
+        public RuneSheet RuneSheet { get; private set; }
 
         public void ItemSheetInitialize()
         {
@@ -241,6 +246,21 @@ namespace Nekoyume.Game
                 EquipmentItemSetEffectSheet,
                 CostumeStatSheet,
                 WeeklyArenaRewardSheet
+            );
+        }
+
+        public RaidSimulatorSheets GetRaidSimulatorSheets()
+        {
+            return new RaidSimulatorSheets(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                BuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
+                EquipmentItemSetEffectSheet,
+                WorldBossCharacterSheet,
+                WorldBossActionPatternSheet
             );
         }
     }

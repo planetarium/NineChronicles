@@ -1,12 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Nekoyume.Model;
+using Nekoyume.Model.Item;
+using Nekoyume.UI;
 
 namespace Nekoyume.Game.Character
 {
-    using Nekoyume.Model;
-    using Nekoyume.Model.Item;
-    using Nekoyume.UI;
-    using System.Collections;
     using System.Linq;
 
     public class RaidPlayer : RaidCharacter
@@ -27,8 +26,10 @@ namespace Nekoyume.Game.Character
             base.Awake();
         }
 
-        public void Init(PlayerDigest digest, RaidCharacter target)
+        public void Init(ArenaPlayerDigest digest, RaidCharacter target)
         {
+            Init(target);
+
             appearance.Set(digest, Animator, _hudContainer);
             _attackTime = SpineAnimationHelper.GetAnimationDuration(appearance, "Attack");
             _criticalAttackTime = SpineAnimationHelper.GetAnimationDuration(appearance, "CriticalAttack");
@@ -38,8 +39,6 @@ namespace Nekoyume.Game.Character
             _costumes.AddRange(digest.Costumes);
             _equipments.Clear();
             _equipments.AddRange(digest.Equipments);
-
-            Init(target);
         }
 
         protected override void ShowCutscene()
@@ -53,6 +52,12 @@ namespace Nekoyume.Game.Character
 
             var armor = _equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
             AreaAttackCutscene.Show(armor?.Id ?? GameConfig.DefaultAvatarArmorId);
+        }
+
+        protected override void OnDeadEnd()
+        {
+            base.OnDeadEnd();
+            gameObject.SetActive(false);
         }
     }
 }

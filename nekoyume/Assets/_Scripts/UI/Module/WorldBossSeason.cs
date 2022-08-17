@@ -1,6 +1,7 @@
-using System;
+using System.Collections.Generic;
 using System.Numerics;
 using Nekoyume.Helper;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module.WorldBoss;
 using TMPro;
 using UnityEngine;
@@ -40,15 +41,22 @@ namespace Nekoyume
         [SerializeField]
         private Transform gradeContainer;
 
+        [SerializeField]
+        private List<Image> runeIcons;
 
-        private GameObject _gradePrefab;
+        private GameObject _gradeObject;
 
         public void UpdateUserCount(int count)
         {
             Debug.Log("[WorldBossSeason] UpdateUserCount");
-            raidersText.text = $"{count:#,0}";
+            raidersText.text = count > 0 ? $"{count:#,0}" : "-";
         }
-        public void UpdateBossInformation(string bossName, int level, BigInteger curHp, BigInteger maxHp)
+        public void UpdateBossInformation(
+            int bossId,
+            string bossName,
+            int level,
+            BigInteger curHp,
+            BigInteger maxHp)
         {
             Debug.Log("[WorldBossSeason] UpdateBossInformation");
             bossNameText.text = bossName;
@@ -57,36 +65,52 @@ namespace Nekoyume
 
             var lCurHp = (long)curHp;
             var lMaxHp = (long)maxHp;
-
             var ratio = lCurHp / (float)lMaxHp;
             bossHpRatioText.text = $"{(int)(ratio * 100)}%";
             bossHpSlider.normalizedValue = ratio;
+
+            UpdateRewards(bossId);
         }
 
-        public void UpdateRewards()
+        private void UpdateRewards(int bossId)
         {
-            // todo : 미적용
+            if (!WorldBossFrontHelper.TryGetRunes(bossId, out var runeRows))
+            {
+                return;
+            }
+
+            for (var i = 0; i < runeRows.Count; i++)
+            {
+                if (WorldBossFrontHelper.TryGetRuneIcon(runeRows[i].Ticker, out var sprite))
+                {
+                    runeIcons[i].sprite = sprite;
+                }
+            }
         }
 
-        public void UpdateMyInformation(int highScore, int totalScore)
+        public void UpdateMyInformation(int totalScore, int highScore, int rank)
         {
             Debug.Log("[WorldBossSeason] UpdateMyInformation");
-            // todo : 내 랭크 순위 찍어줘야함.
-            // todo : 랭크 마크 찍어줘야함.
 
-            if (_gradePrefab != null)
-            {
-                Destroy(_gradePrefab);
-            }
-
-            if (WorldBossFrontHelper.TryGetGrade(WorldBossGrade.S, out var prefab))
-            {
-                _gradePrefab = Instantiate(prefab, gradeContainer);
-            }
-
-            myRankText.text = "loading..";
-            myBestRecordText.text = highScore > 0 ? $"{highScore:#,0}" : "-";
             myTotalScoreText.text = totalScore > 0 ? $"{totalScore:#,0}" : "-";
+            myBestRecordText.text = highScore > 0 ? $"{highScore:#,0}" : "-";
+            myRankText.text = rank > 0 ? $"{rank:#,0}" : "-";
+
+            UpdateGrade(highScore);
+        }
+
+        private void UpdateGrade(int highScore)
+        {
+            if (_gradeObject != null)
+            {
+                Destroy(_gradeObject);
+            }
+
+            var grade = (WorldBossGrade)WorldBossHelper.CalculateRank(highScore);
+            if (WorldBossFrontHelper.TryGetGrade(grade, out var prefab))
+            {
+                _gradeObject = Instantiate(prefab, gradeContainer);
+            }
         }
     }
 }

@@ -81,7 +81,9 @@ namespace Nekoyume.UI
             var enoughBalance = balance >= cost;
 
             costContainer.SetActive(true);
-            costText.text = cost.ToString();
+            costText.text = cost.MinorUnit > 0
+                ? $"{cost.MajorUnit:#,0}.{cost.MinorUnit}"
+                : $"{cost.MajorUnit:#,0}";
             costText.color = enoughBalance
                 ? Color.white
                 : Palette.GetColor(EnumType.ColorType.ButtonDisabled);
