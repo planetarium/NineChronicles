@@ -139,7 +139,14 @@ namespace Nekoyume.Action
             var arenaSheetState = states.GetState(arenaSheetAddress);
             if (arenaSheetState != null)
             {
-                throw new ActionObsoletedException(nameof(ItemEnhancement10));
+                // exception handling for v100240.
+                if (context.BlockIndex > 4374144 && context.BlockIndex < 4374196)
+                {
+                }
+                else
+                {
+                    throw new ActionObsoletedException(nameof(ItemEnhancement10));
+                }
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);

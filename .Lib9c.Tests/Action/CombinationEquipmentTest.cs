@@ -1,8 +1,6 @@
-namespace Lib9c.Tests.Action
+﻿namespace Lib9c.Tests.Action
 {
     using System;
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
     using System.Globalization;
     using System.Linq;
     using Bencodex.Types;
@@ -12,11 +10,9 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
-    using Nekoyume.Arena;
     using Nekoyume.Extensions;
     using Nekoyume.Helper;
     using Nekoyume.Model;
-    using Nekoyume.Model.Arena;
     using Nekoyume.Model.Elemental;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
@@ -284,6 +280,7 @@ namespace Lib9c.Tests.Action
                 recipeId = recipeId,
                 subRecipeId = subRecipeId,
                 payByCrystal = payByCrystal,
+                useHammerPoint = false,
             };
 
             if (exc is null)
@@ -366,6 +363,125 @@ namespace Lib9c.Tests.Action
                     BlockIndex = blockIndex,
                     Random = _random,
                 }));
+            }
+        }
+
+        [Theory]
+        [InlineData(null, false, true, 1)]
+        [InlineData(null, false, false, 1)]
+        [InlineData(typeof(NotEnoughFungibleAssetValueException), true, true, 1)]
+        [InlineData(null, true, true, 1)]
+        public void ExecuteBySuperCraft(
+            Type exc,
+            bool doSuperCraft,
+            bool useBasicRecipe,
+            int recipeId)
+        {
+            IAccountStateDelta state = _initialState;
+            var unlockIds = List.Empty.Add(1.Serialize());
+            for (int i = 2; i < recipeId + 1; i++)
+            {
+                unlockIds = unlockIds.Add(i.Serialize());
+            }
+
+            state = state.SetState(_avatarAddress.Derive("recipe_ids"), unlockIds);
+            state = state.SetState(_agentAddress, _agentState.Serialize());
+            _avatarState.worldInformation = new WorldInformation(0, _tableSheets.WorldSheet, 200);
+            var row = _tableSheets.EquipmentItemRecipeSheet[recipeId];
+            var materialRow = _tableSheets.MaterialItemSheet[row.MaterialId];
+            var material = ItemFactory.CreateItem(materialRow, _random);
+            _avatarState.inventory.AddItem(material, row.MaterialCount);
+            int? subRecipeId = useBasicRecipe ? row.SubRecipeIds.First() : row.SubRecipeIds.Skip(1).First();
+            var subRow = _tableSheets.EquipmentItemSubRecipeSheetV2[subRecipeId.Value];
+            foreach (var materialInfo in subRow.Materials)
+            {
+                var subMaterial = ItemFactory.CreateItem(
+                    _tableSheets.MaterialItemSheet[materialInfo.Id], _random);
+                _avatarState.inventory.AddItem(subMaterial, materialInfo.Count);
+            }
+
+            state = state.MintAsset(
+                _agentAddress,
+                subRow.RequiredGold * state.GetGoldCurrency());
+
+            var inventoryAddress = _avatarAddress.Derive(LegacyInventoryKey);
+            var worldInformationAddress =
+                _avatarAddress.Derive(LegacyWorldInformationKey);
+            var questListAddress = _avatarAddress.Derive(LegacyQuestListKey);
+            state = state
+                .SetState(_avatarAddress, _avatarState.SerializeV2())
+                .SetState(inventoryAddress, _avatarState.inventory.Serialize())
+                .SetState(
+                    worldInformationAddress,
+                    _avatarState.worldInformation.Serialize())
+                .SetState(questListAddress, _avatarState.questList.Serialize());
+            var hammerPointAddress =
+                Addresses.GetHammerPointStateAddress(_avatarAddress, recipeId);
+            if (doSuperCraft)
+            {
+                var hammerPointState = new HammerPointState(hammerPointAddress, recipeId);
+                var hammerPointSheet = _tableSheets.CrystalHammerPointSheet;
+                hammerPointState.AddHammerPoint(
+                    hammerPointSheet[recipeId].MaxPoint,
+                    hammerPointSheet);
+                state = state.SetState(hammerPointAddress, hammerPointState.Serialize());
+                if (exc is null)
+                {
+                    var costCrystal = CrystalCalculator.CRYSTAL *
+                                      hammerPointSheet[recipeId].CRYSTAL;
+                    state = state.MintAsset(
+                        _agentAddress,
+                        costCrystal);
+                }
+            }
+
+            var action = new CombinationEquipment
+            {
+                avatarAddress = _avatarAddress,
+                slotIndex = 0,
+                recipeId = recipeId,
+                subRecipeId = subRecipeId,
+                payByCrystal = false,
+                useHammerPoint = doSuperCraft,
+            };
+            if (exc is null)
+            {
+                var nextState = action.Execute(new ActionContext
+                {
+                    PreviousStates = state,
+                    Signer = _agentAddress,
+                    BlockIndex = 1,
+                    Random = _random,
+                });
+
+                Assert.True(nextState.TryGetState(hammerPointAddress, out List serialized));
+                var hammerPointState =
+                    new HammerPointState(hammerPointAddress, serialized);
+                if (!doSuperCraft)
+                {
+                    Assert.Equal(useBasicRecipe ? 1 : 2, hammerPointState.HammerPoint);
+                }
+                else
+                {
+                    Assert.Equal(0, hammerPointState.HammerPoint);
+                    var slotState = nextState.GetCombinationSlotState(_avatarAddress, 0);
+                    Assert.NotNull(slotState.Result);
+                    Assert.NotNull(slotState.Result.itemUsable);
+                    Assert.NotEmpty(slotState.Result.itemUsable.Skills);
+                }
+            }
+            else
+            {
+                Assert.Throws(exc, () =>
+                {
+                    action.Execute(new ActionContext
+                    {
+                        PreviousStates = state,
+                        Signer = _agentAddress,
+                        BlockIndex = 1,
+                        Random = _random,
+                    });
+                });
             }
         }
 

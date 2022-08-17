@@ -98,10 +98,9 @@ namespace Lib9c.Tools.SubCommand
                 }
 
                 Block<NCAction> block =
-                    store.GetBlock<NCAction>(policy.GetHashAlgorithm, blockHash);
+                    store.GetBlock<NCAction>(blockHash);
                 var preEvalBlock = new PreEvaluationBlock<NCAction>(
                     block,
-                    block.HashAlgorithm,
                     block.Nonce,
                     block.PreEvaluationHash
                 );
@@ -114,7 +113,11 @@ namespace Lib9c.Tools.SubCommand
                 );
                 IImmutableDictionary<string, IValue> delta;
                 HashDigest<SHA256> stateRootHash = block.Index < 1
-                    ? preEvalBlock.DetermineStateRootHash(chain.Policy.BlockAction, stateStore, out delta)
+                    ? preEvalBlock.DetermineStateRootHash(
+                        policy.BlockAction,
+                        policy.NativeTokens.Contains,
+                        stateStore,
+                        out delta)
                     : preEvalBlock.DetermineStateRootHash(
                         chain,
                         StateCompleterSet<NCAction>.Reject,

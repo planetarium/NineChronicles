@@ -32,8 +32,14 @@ namespace Nekoyume.Model.State
                 .Add(HammerPoint.Serialize());
         }
 
-        public void AddHammerPoint(int point, CrystalHammerPointSheet sheet)
+        public void AddHammerPoint(int point, CrystalHammerPointSheet sheet = null)
         {
+            if (sheet == null)
+            {
+                HammerPoint += point;
+                return;
+            }
+
             if (sheet.TryGetValue(RecipeId, out var row))
             {
                 HammerPoint = Math.Min(HammerPoint + point, row.MaxPoint);
