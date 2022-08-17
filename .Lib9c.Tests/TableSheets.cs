@@ -5,6 +5,7 @@ namespace Lib9c.Tests
     using System.Text;
     using Nekoyume.TableData;
     using Nekoyume.TableData.Crystal;
+    using Nekoyume.TableData.Event;
 
     public class TableSheets
     {
@@ -158,6 +159,16 @@ namespace Lib9c.Tests
         public CrystalFluctuationSheet CrystalFluctuationSheet { get; private set; }
 
         public CrystalHammerPointSheet CrystalHammerPointSheet { get; private set; }
+
+        public EventScheduleSheet EventScheduleSheet { get; private set; }
+
+        public EventDungeonSheet EventDungeonSheet { get; private set; }
+
+        public EventDungeonStageSheet EventDungeonStageSheet { get; private set; }
+
+        public EventDungeonStageWaveSheet EventDungeonStageWaveSheet { get; private set; }
+
+        public EventConsumableItemRecipeSheet EventConsumableItemRecipeSheet { get; private set; }
 
         public void ItemSheetInitialize()
         {

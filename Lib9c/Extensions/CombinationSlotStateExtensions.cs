@@ -7,6 +7,27 @@ namespace Nekoyume.Extensions
 {
     public static class CombinationSlotStateExtensions
     {
+        public static void ValidateFromAction(
+            this CombinationSlotState slotState,
+            long blockIndex,
+            AvatarState avatarState,
+            int slotIndex,
+            string actionTypeText,
+            string addressesHex)
+        {
+            if (slotState is null)
+            {
+                throw new FailedLoadStateException(
+                    $"{addressesHex}Aborted as the slot state is failed to load: # {slotIndex}");
+            }
+
+            if (!slotState.Validate(avatarState, blockIndex))
+            {
+                throw new CombinationSlotUnlockException(
+                    $"{addressesHex}Aborted as the slot state is invalid: {slotState} @ {slotIndex}");
+            }
+        }
+        
         public static bool TryGetResultId(this CombinationSlotState state, out Guid resultId)
         {
             if (state?.Result is null)

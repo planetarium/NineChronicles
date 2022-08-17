@@ -89,7 +89,7 @@ namespace Nekoyume.TableData
                     .Distinct());
             }
         }
-        
+
         public StageWaveSheet() : base(nameof(StageWaveSheet))
         {
         }

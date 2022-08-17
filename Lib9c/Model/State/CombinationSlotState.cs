@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet;
@@ -15,6 +16,12 @@ namespace Nekoyume.Model.State
         public long StartBlockIndex { get; private set; }
         public AttachmentActionResult Result { get; private set; }
         public long RequiredBlockIndex => UnlockBlockIndex - StartBlockIndex;
+
+        public static Address DeriveAddress(Address address, int slotIndex) =>
+            address.Derive(string.Format(
+                CultureInfo.InvariantCulture,
+                DeriveFormat,
+                slotIndex));
 
         public CombinationSlotState(Address address, int unlockStage) : base(address)
         {
