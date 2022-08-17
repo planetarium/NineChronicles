@@ -55,6 +55,8 @@ namespace Nekoyume.UI
             public Image nowPointImage;
             public Image increasePointImage;
             public TMP_Text hammerPointText;
+            public GameObject notEnoughHammerPointObject;
+            public GameObject enoughHammerPointObject;
         }
 
         [SerializeField]
@@ -329,6 +331,7 @@ namespace Nekoyume.UI
                             ? CombinationEquipment.BasicSubRecipeHammerPoint
                             : CombinationEquipment.SpecialSubRecipeHammerPoint;
                         var increasedPoint = Math.Min(hammerPointState.HammerPoint + increasePoint, max);
+                        var isHammerPointMax = hammerPointState.HammerPoint == max;
                         hammerPointView.nowPoint.maxValue = max;
                         hammerPointView.hammerPointText.text =
                             $"{hammerPointState.HammerPoint}/{max}";
@@ -337,6 +340,8 @@ namespace Nekoyume.UI
                             hammerPointState.HammerPoint / (float)max;
                         hammerPointView.increasePointImage.fillAmount =
                             increasedPoint / (float) max;
+                        hammerPointView.notEnoughHammerPointObject.SetActive(!isHammerPointMax);
+                        hammerPointView.enoughHammerPointObject.SetActive(isHammerPointMax);
                     }
 
                     toggleParent.SetActive(true);
