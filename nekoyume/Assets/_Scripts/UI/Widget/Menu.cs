@@ -115,8 +115,10 @@ namespace Nekoyume.UI
                 buttonList.ForEach(button => button.interactable = stateType == AnimationStateType.Shown);
             }).AddTo(gameObject);
 
-            MonsterCollectionStateSubject.Level.Subscribe(level =>
-                stakingLevelIcon.sprite = SpriteHelper.GetStakingIcon(level, true)).AddTo(gameObject);
+            MonsterCollectionStateSubject.Level
+                .Subscribe(level =>
+                    stakingLevelIcon.sprite = SpriteHelper.GetStakingIcon(level, IconType.Bubble))
+                .AddTo(gameObject);
         }
 
         // TODO: QuestPreparation.Quest(bool repeat) 와 로직이 흡사하기 때문에 정리할 여지가 있습니다.
@@ -430,7 +432,8 @@ namespace Nekoyume.UI
 
             StartCoroutine(CoStartSpeeches());
             UpdateButtons();
-            stakingLevelIcon.sprite = SpriteHelper.GetStakingIcon(States.Instance.StakingLevel, true);
+            stakingLevelIcon.sprite =
+                SpriteHelper.GetStakingIcon(States.Instance.StakingLevel, IconType.Bubble);
         }
 
         protected override void OnCompleteOfShowAnimationInternal()
