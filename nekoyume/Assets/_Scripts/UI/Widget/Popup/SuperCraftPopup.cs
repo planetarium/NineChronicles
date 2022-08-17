@@ -61,7 +61,7 @@ namespace Nekoyume.UI
                         blockIndex += row.RequiredBlockIndex;
                     }
 
-                    StartCoroutine(CoCombineNPCAnimation(equipment, blockIndex));
+                    StartCoroutine(CoCombineNpcAnimation(equipment, blockIndex));
                 }
             }).AddTo(gameObject);
         }
@@ -74,6 +74,8 @@ namespace Nekoyume.UI
         {
             _skillOptionRow = row;
             _recipeInfo = recipeInfo;
+            superCraftButton.Interactable =
+                Find<CombinationSlotsPopup>().TryGetEmptyCombinationSlot(out _);
             skillName.text = L10nManager.Localize($"SKILL_NAME_{row.SkillId}");
             var sheets = TableSheets.Instance;
             var isBuffSkill = row.SkillDamageMax == 0;
@@ -91,14 +93,13 @@ namespace Nekoyume.UI
             base.Show(ignoreAnimation);
         }
 
-        private IEnumerator CoCombineNPCAnimation(ItemBase itemBase, long blockIndex)
+        private IEnumerator CoCombineNpcAnimation(ItemBase itemBase, long blockIndex)
         {
             var loadingScreen = Find<CombinationLoadingScreen>();
             loadingScreen.Show();
             loadingScreen.SetItemMaterial(new Item(itemBase));
             loadingScreen.SetCloseAction(null);
-            loadingScreen.OnDisappear = Pop;
-            Push();
+            loadingScreen.OnDisappear = () => Close();
             yield return new WaitForSeconds(.5f);
 
             var format = L10nManager.Localize("UI_COST_BLOCK");

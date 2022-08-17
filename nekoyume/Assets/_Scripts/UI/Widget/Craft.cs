@@ -369,7 +369,9 @@ namespace Nekoyume.UI
             var tableSheets = TableSheets.Instance;
             var equipmentRow = tableSheets.EquipmentItemRecipeSheet[recipeInfo.RecipeId];
             var equipment = (Equipment)ItemFactory.CreateItemUsable(
-                equipmentRow.GetResultEquipmentItemRow(), Guid.Empty, default);
+                equipmentRow.GetResultEquipmentItemRow(),
+                Guid.Empty,
+                default);
             var requiredBlockIndex = equipmentRow.RequiredBlockIndex;
             if (recipeInfo.SubRecipeId.HasValue)
             {

@@ -124,6 +124,7 @@ namespace Nekoyume.UI
 
         private bool _canSuperCraft;
         private EquipmentItemOptionSheet.Row _skillOptionRow;
+        private HammerPointState _hammerPointState;
 
         private void Awake()
         {
@@ -345,12 +346,10 @@ namespace Nekoyume.UI
 
                     SetOptions(options);
 
-                    // Temporary initialize for avoid 'Local variable "hammerPointState' might not be initialized before accessing."
-                    var hammerPointState = new HammerPointState(Addresses.SuperCraft, 0);
                     var showHammerPoint = RxProps.HammerPointStates is not null &&
                                           RxProps.HammerPointStates.TryGetValue(
                                               recipeId,
-                                              out hammerPointState);
+                                              out _hammerPointState);
                     hammerPointView.parentObject.SetActive(showHammerPoint);
                     if (showHammerPoint)
                     {
@@ -358,15 +357,15 @@ namespace Nekoyume.UI
                         var increasePoint = index == 0
                             ? CombinationEquipment.BasicSubRecipeHammerPoint
                             : CombinationEquipment.SpecialSubRecipeHammerPoint;
-                        var increasedPoint = Math.Min(hammerPointState.HammerPoint + increasePoint, max);
-                        _canSuperCraft = hammerPointState.HammerPoint == max;
+                        var increasedPoint = Math.Min(_hammerPointState.HammerPoint + increasePoint, max);
+                        _canSuperCraft = _hammerPointState.HammerPoint == max;
                         var optionSheet = TableSheets.Instance.EquipmentItemOptionSheet;
                         hammerPointView.nowPoint.maxValue = max;
                         hammerPointView.hammerPointText.text =
-                            $"{hammerPointState.HammerPoint}/{max}";
-                        hammerPointView.nowPoint.value = hammerPointState.HammerPoint;
+                            $"{_hammerPointState.HammerPoint}/{max}";
+                        hammerPointView.nowPoint.value = _hammerPointState.HammerPoint;
                         hammerPointView.nowPointImage.fillAmount =
-                            hammerPointState.HammerPoint / (float)max;
+                            _hammerPointState.HammerPoint / (float)max;
                         hammerPointView.increasePointImage.fillAmount =
                             increasedPoint / (float) max;
                         hammerPointView.notEnoughHammerPointObject.SetActive(!_canSuperCraft);
