@@ -26,6 +26,7 @@ using Cysharp.Threading.Tasks;
 using mixpanel;
 using Nekoyume.Arena;
 using Nekoyume.EnumType;
+using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus.Arena;
@@ -1327,8 +1328,6 @@ namespace Nekoyume.BlockChain
             var random = new LocalRandom(eval.RandomSeed);
             var stageId = eval.Action.EventDungeonStageId;
             var stageRow = TableSheets.Instance.EventDungeonStageSheet[stageId];
-            var isCleared = RxProps.EventDungeonInfo.Value?.IsCleared(stageId) ?? false;
-            var exp = RxProps.EventScheduleRowForDungeon.Value.DungeonExpSeedValue;
             var simulator = new StageSimulator(
                 random,
                 States.Instance.CurrentAvatarState,
@@ -1338,8 +1337,10 @@ namespace Nekoyume.BlockChain
                 stageId,
                 stageRow,
                 TableSheets.Instance.EventDungeonStageWaveSheet[stageId],
-                isCleared,
-                exp,
+                RxProps.EventDungeonInfo.Value?.IsCleared(stageId) ?? false,
+                RxProps.EventScheduleRowForDungeon.Value.GetStageExp(
+                    stageId.ToEventDungeonStageNumber(),
+                    Action.EventDungeonBattle.PlayCount),
                 TableSheets.Instance.GetSimulatorSheets(),
                 TableSheets.Instance.EnemySkillSheet,
                 TableSheets.Instance.CostumeStatSheet,
