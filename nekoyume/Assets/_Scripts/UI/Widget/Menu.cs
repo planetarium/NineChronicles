@@ -200,7 +200,7 @@ namespace Nekoyume.UI
                 var ncgCost =
                     RxProps.EventScheduleRowForDungeon.Value
                         .GetDungeonTicketCost(
-                            RxProps.EventDungeonInfo.Value.NumberOfTicketPurchases) *
+                            RxProps.EventDungeonInfo.Value?.NumberOfTicketPurchases ?? 0) *
                     States.Instance.GoldBalanceState.Gold.Currency;
                 if (ncgHas >= ncgCost)
                 {
@@ -211,7 +211,7 @@ namespace Nekoyume.UI
                         ncgCost.ToString());
                     Find<PaymentPopup>().ShowAttract(
                         CostType.EventDungeonTicket,
-                        ncgCost.ToString(),
+                        "1",
                         notEnoughTicketMsg,
                         L10nManager.Localize("UI_YES"),
                         () => SendEventDungeonBattleAction(
