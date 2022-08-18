@@ -1110,6 +1110,7 @@ namespace Nekoyume.BlockChain
                     out var simulator);
                 var log = simulator.Log;
                 Game.Game.instance.Stage.PlayCount = eval.Action.PlayCount;
+                Game.Game.instance.Stage.StageType = StageType.HackAndSlash;
                 if (eval.Action.PlayCount > 1)
                 {
                     Widget.Find<BattleResultPopup>().ModelForMultiHackAndSlash = resultModel;
@@ -1240,6 +1241,7 @@ namespace Nekoyume.BlockChain
                 simulator.Simulate();
                 BattleLog log = simulator.Log;
                 Game.Game.instance.Stage.PlayCount = eval.Action.playCount;
+                Game.Game.instance.Stage.StageType = StageType.Mimisbrunnr;
 
                 if (Widget.Find<LoadingScreen>().IsActive())
                 {
