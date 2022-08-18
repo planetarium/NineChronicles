@@ -301,7 +301,7 @@ namespace Nekoyume.UI
             var (begin, end) = time;
             var range = end - begin;
             var progress = current - begin;
-            timerSlider.NormalizedValue = (float)progress / range;
+            timerSlider.NormalizedValue = 1f - ((float)progress / range);
             timeBlock.SetTimeBlock($"{end - current:#,0}", Util.GetBlockToTime(end - current));
             blocksAndDatesPeriod.Show(begin, end, current, DateTime.Now);
         }
