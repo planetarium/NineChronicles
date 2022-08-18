@@ -15,6 +15,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
+using Nekoyume.TableData;
 using Nekoyume.TableData.Event;
 using Nekoyume.UI.Scroller;
 using TMPro;
@@ -220,15 +221,14 @@ namespace Nekoyume.UI
                 }
 
                 var buttonWorldId = worldButton.Id;
+                var unlockRow = TableSheets.Instance.WorldUnlockSheet
+                    .Select(pair => pair.Value)
+                    .FirstOrDefault(row => row.WorldIdToUnlock == buttonWorldId);
+                var canTryThisWorld = worldInformation.IsStageCleared(unlockRow?.StageId ?? int.MaxValue);
                 var worldIsUnlocked =
                     (worldInformation.TryGetWorld(buttonWorldId, out var worldModel) &&
                      worldModel.IsUnlocked) ||
-                    (TableSheets.Instance.WorldSheet.TryGetValue(
-                         buttonWorldId,
-                         out var worldRow,
-                         true) &&
-                     worldInformation.TryGetLastClearedStageId(out var stageId) &&
-                     worldRow.StageBegin == stageId + 1);
+                    canTryThisWorld;
 
                 UpdateNotificationInfo();
 
