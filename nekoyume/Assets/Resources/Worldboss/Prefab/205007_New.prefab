@@ -94,7 +94,7 @@ GameObject:
   m_Component:
   - component: {fileID: 487823643952975886}
   m_Layer: 10
-  m_Name: Chapter_05_03
+  m_Name: WorldBoss_01_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1009,6 +1009,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 3131037016693458774}
+  skillAnimationInfos: []
 --- !u!1 &2077597201567670815
 GameObject:
   m_ObjectHideFlags: 0
@@ -4044,9 +4045,9 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 39c42d266775c4e4ca0008edbd3960ca, type: 2}
-  - {fileID: 2100000, guid: ff1fe6441d103224ba4992361d606e43, type: 2}
-  - {fileID: 2100000, guid: 39c42d266775c4e4ca0008edbd3960ca, type: 2}
+  - {fileID: 2100000, guid: 47016ab2f60a53f4788ea1bc02d7a721, type: 2}
+  - {fileID: 2100000, guid: 88b11254a02803b42bf06452bbcb6e82, type: 2}
+  - {fileID: 2100000, guid: 47016ab2f60a53f4788ea1bc02d7a721, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4080,7 +4081,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skeletonDataAsset: {fileID: 11400000, guid: 41ffa3b6c8fb04a419048034222c41aa, type: 2}
+  skeletonDataAsset: {fileID: 11400000, guid: ab3b2b746681f9645a3ac617d9fcf3af, type: 2}
   initialSkinName: 
   initialFlipX: 0
   initialFlipY: 0
