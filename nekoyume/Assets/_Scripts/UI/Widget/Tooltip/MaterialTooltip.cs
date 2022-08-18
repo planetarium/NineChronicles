@@ -325,7 +325,8 @@ namespace Nekoyume.UI
                     !quest.Complete && quest.Reward.ItemMap.ContainsKey(itemBase.Id)))
                 {
                     acquisitionPlaceList.Add(
-                        MakeAcquisitionPlaceModelByType(AcquisitionPlaceButton.PlaceType.Quest,
+                        MakeAcquisitionPlaceModelByType(
+                            AcquisitionPlaceButton.PlaceType.Quest,
                             itemBase));
                 }
             }
@@ -363,7 +364,8 @@ namespace Nekoyume.UI
                             worldMap.SetWorldInformation(States.Instance.CurrentAvatarState.worldInformation);
                             worldMap.ShowEventDungeonStage(RxProps.EventDungeonRow, false);
 
-                            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.EventDungeon);
+                            Find<HeaderMenuStatic>()
+                                .UpdateAssets(HeaderMenuStatic.AssetVisibleState.EventDungeon);
                             Find<HeaderMenuStatic>().Show(true);
                             Find<BattlePreparation>().Show(
                                 StageType.EventDungeon,
@@ -371,8 +373,6 @@ namespace Nekoyume.UI
                                 stageRow.Id,
                                 $"{RxProps.EventDungeonRow?.GetLocalizedName()} {stageRow.Id.ToEventDungeonStageNumber()}",
                                 true);
-                            Find<HeaderMenuStatic>()
-                                .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
                         },
                         $"{RxProps.EventDungeonRow.GetLocalizedName()} {stageRow.Id.ToEventDungeonStageNumber()}",
                         itemBase,
