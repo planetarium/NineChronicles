@@ -100,8 +100,8 @@ namespace Nekoyume.State
                 .Select(tuple =>
                 {
                     var state = tuple.state;
-                    return state.Value is not null
-                        ? new HammerPointState(state.Key, (List) state.Value)
+                    return state.Value is List list
+                        ? new HammerPointState(state.Key, list)
                         : new HammerPointState(state.Key, tuple.recipeId);
                 })
                 .ToDictionary(value => value.RecipeId, value => value);
