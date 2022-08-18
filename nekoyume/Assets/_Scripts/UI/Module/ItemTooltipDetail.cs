@@ -156,7 +156,17 @@ namespace Nekoyume.UI.Module
 
                     var optionInfo = new ItemOptionInfo(equipment);
                     var (mainStatType, _, mainStatTotalValue) = optionInfo.MainStat;
-                    statViewList.First().Show(mainStatType, mainStatTotalValue);
+                    for(var i = 0; i < statViewList.Count; i++)
+                    {
+                        var statView = statViewList[i];
+                        if (i == 0)
+                        {
+                            statView.Show(mainStatType, mainStatTotalValue);
+                            continue;
+                        }
+
+                        statView.Hide();
+                    }
 
                     foreach (var (type, value, count) in optionInfo.StatOptions)
                     {
@@ -173,16 +183,22 @@ namespace Nekoyume.UI.Module
 
                     var stats = itemUsable.StatsMap.GetStats().ToList();
                     var usableStatCount = stats.Count;
-                    for (int i = 0; i < usableStatCount; i++)
+                    for(var i = 0; i < statViewList.Count; i++)
                     {
-                        statViewList[i].Show(stats[i].StatType, stats[i].TotalValueAsInt);
+                        var statView = statViewList[i];
+                        if (i < usableStatCount)
+                        {
+                            statView.Show(stats[i].StatType, stats[i].TotalValueAsInt);
+                            continue;
+                        }
+
+                        statView.Hide();
                     }
 
                     break;
                 }
                 case Costume costume:
                 {
-                    statViewList.ForEach(view => view.gameObject.SetActive(false));
                     var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
                     iconArea.countObject.SetActive(false);
                     var statsMap = new StatsMap();
@@ -193,10 +209,17 @@ namespace Nekoyume.UI.Module
 
                     var stats = statsMap.GetStats().ToList();
                     var usableStatCount = stats.Count;
-                    for (int i = 0; i < usableStatCount; i++)
+                    for(var i = 0; i < statViewList.Count; i++)
                     {
-                        statViewList[i].Show(stats[i].StatType, stats[i].TotalValueAsInt);
-                        statCount++;
+                        var statView = statViewList[i];
+                        if (i < usableStatCount)
+                        {
+                            statView.Show(stats[i].StatType, stats[i].TotalValueAsInt);
+                            statCount++;
+                            continue;
+                        }
+
+                        statView.Hide();
                     }
 
                     var cpEnable = statCount > 0;
