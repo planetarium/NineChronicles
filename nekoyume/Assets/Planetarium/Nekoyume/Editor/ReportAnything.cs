@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 using Lib9c.Model.Order;
+using Nekoyume;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using UnityEditor;
 using UnityEngine;
 
@@ -60,5 +64,25 @@ namespace Planetarium.Nekoyume.Editor
                         : null)
                 .Where(equipment => equipment is { })
             ?? Array.Empty<Equipment>();
+
+        [MenuItem("Tools/Report Anything/All of sheet addresses")]
+        public static void ReportAllOfSheetAddresses()
+        {
+            var iSheetType = typeof(ISheet);
+            var sheetTypes = Assembly.GetAssembly(iSheetType).GetTypes()
+                .Where(type => type.IsClass &&
+                               !type.IsAbstract &&
+                               iSheetType.IsAssignableFrom(type))
+                .ToArray();
+            var sb = new StringBuilder("========== All of sheet addresses ==========\n");
+            for (var i = 0; i < sheetTypes.Length; i++)
+            {
+                var sheetType = sheetTypes[i];
+                sb.AppendLine($"[{i + 1:000}] {sheetType.Name,40}:" +
+                              $" {Addresses.GetSheetAddress(sheetType.Name).ToString()}");
+            }
+
+            Debug.Log(sb.ToString());
+        }
     }
 }
