@@ -147,6 +147,12 @@ namespace Nekoyume.UI
             enterButton.OnSubmitSubject.Subscribe(_ => OnClickEnter()).AddTo(gameObject);
         }
 
+        protected override void OnCompleteOfShowAnimationInternal()
+        {
+            base.OnCompleteOfShowAnimationInternal();
+            Find<Status>().Close(true);
+        }
+
         protected override void OnEnable()
         {
             Game.Game.instance.Agent.BlockIndexSubject

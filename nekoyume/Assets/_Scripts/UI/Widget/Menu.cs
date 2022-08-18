@@ -96,6 +96,7 @@ namespace Nekoyume.UI
                     btnRanking.GetComponent<Button>(),
                     btnShop.GetComponent<Button>(),
                     btnStaking.GetComponent<Button>(),
+                    btnWorldBoss.GetComponent<Button>(),
                 };
                 buttonList.ForEach(button => button.interactable = stateType == AnimationStateType.Shown);
             }).AddTo(gameObject);
@@ -172,6 +173,7 @@ namespace Nekoyume.UI
             btnRanking.Update();
             btnMimisbrunnr.Update();
             btnStaking.Update();
+            btnWorldBoss.Update();
 
             var addressHex = States.Instance.CurrentAvatarState.address.ToHex();
             var firstOpenCombinationKey
