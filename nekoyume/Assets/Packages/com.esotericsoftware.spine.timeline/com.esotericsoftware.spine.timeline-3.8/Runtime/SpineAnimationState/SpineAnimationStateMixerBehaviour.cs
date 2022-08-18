@@ -82,13 +82,29 @@ namespace Spine.Unity.Playables {
 				if (trackStarted) {
 					ScriptPlayable<SpineAnimationStateBehaviour> inputPlayable = (ScriptPlayable<SpineAnimationStateBehaviour>)playable.GetInput(i);
 					SpineAnimationStateBehaviour clipData = inputPlayable.GetBehaviour();
+                    var clipAnimationReference = clipData.animationReference;
+                    var animation = clipData.animationReference.Animation;
 
-					if (clipData.animationReference == null) {
+                    bool skeletonDataMismatch = clipAnimationReference != null && clipAnimationReference.SkeletonDataAsset &&
+                        skeletonComponent.SkeletonDataAsset.GetSkeletonData(true) != clipAnimationReference.SkeletonDataAsset.GetSkeletonData(true);
+
+                    if (skeletonDataMismatch)
+                    {
+                        var animationName = clipAnimationReference != null ?
+                            clipAnimationReference.Animation.Name : string.Empty;
+
+                        bool Matches(Animation a) => a.Name.Equals(animationName);
+                        animation = skeletonComponent
+                            .SkeletonDataAsset.GetSkeletonData(false)
+                            .Animations.FirstOrDefault(Matches);
+                    }
+
+                    if (clipAnimationReference == null) {
 						float mixDuration = clipData.customDuration ? clipData.mixDuration : state.Data.DefaultMix;
 						state.SetEmptyAnimation(trackIndex, mixDuration);
 					} else {
-						if (clipData.animationReference.Animation != null) {
-							Spine.TrackEntry trackEntry = state.SetAnimation(trackIndex, clipData.animationReference.Animation, clipData.loop);
+						if (animation != null) {
+							Spine.TrackEntry trackEntry = state.SetAnimation(trackIndex, animation, clipData.loop);
 
 							trackEntry.EventThreshold = clipData.eventThreshold;
 							trackEntry.DrawOrderThreshold = clipData.drawOrderThreshold;
