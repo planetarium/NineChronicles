@@ -221,8 +221,14 @@ namespace Nekoyume.UI
 
                 var buttonWorldId = worldButton.Id;
                 var worldIsUnlocked =
-                    worldInformation.TryGetWorld(buttonWorldId, out var worldModel) &&
-                    worldModel.IsUnlocked;
+                    (worldInformation.TryGetWorld(buttonWorldId, out var worldModel) &&
+                     worldModel.IsUnlocked) ||
+                    (TableSheets.Instance.WorldSheet.TryGetValue(
+                         buttonWorldId,
+                         out var worldRow,
+                         true) &&
+                     worldInformation.TryGetLastClearedStageId(out var stageId) &&
+                     worldRow.StageBegin == stageId + 1);
 
                 UpdateNotificationInfo();
 
