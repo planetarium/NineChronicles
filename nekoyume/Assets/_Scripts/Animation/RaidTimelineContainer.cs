@@ -1,5 +1,7 @@
 using Nekoyume.Game.Character;
+using Spine.Unity;
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
@@ -55,8 +57,15 @@ namespace Nekoyume
 
         public IEnumerator CoPlayFallDownCutscene() => CoPlayCutscene(fallDownCutscene);
 
-        private IEnumerator CoPlayCutscene(PlayableAsset asset)
+        private IEnumerator CoPlayCutscene(TimelineAsset asset)
         {
+            director.GetGenericBinding(this);
+            var track = asset.GetRootTracks()
+                .FirstOrDefault(x => x.name.Equals("Spine_Player"))
+                .GetChildTracks()
+                .First();
+            director.SetGenericBinding(track, player.GetComponentInChildren<SkeletonAnimation>());
+
             IsCutscenePlaying = true;
             director.playableAsset = asset;
             director.RebuildGraph();
