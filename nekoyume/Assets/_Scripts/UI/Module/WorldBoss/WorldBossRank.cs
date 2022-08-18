@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Libplanet;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.State;
@@ -57,16 +58,18 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         private readonly Dictionary<Status, WorldBossRankItems> _cachedItems = new();
         private Status _status;
+        private Address currentAvatarAddress;
 
         private void Awake()
         {
             refreshButton.OnClickAsObservable()
-                .Subscribe(_ => RefreshMyInformationAsync()).AddTo(gameObject);
+                .Subscribe(_ => RefreshAsync()).AddTo(gameObject);
         }
 
         public async void ShowAsync(Status status)
         {
-            Reset(status);
+            _status = status;
+            ResetInformation(status);
 
             var raidId = GetRaidId(status);
             if (!WorldBossFrontHelper.TryGetRaid(raidId, out _))
@@ -88,7 +91,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             SetActiveQueryLoading(false);
         }
 
-        private void RefreshMyInformationAsync()
+        private void RefreshAsync()
         {
             _cachedItems.Remove(_status);
             ShowAsync(_status);
@@ -110,9 +113,8 @@ namespace Nekoyume.UI.Module.WorldBoss
             };
         }
 
-        private void Reset(Status status)
+        private void ResetInformation(Status status)
         {
-            _status = status;
             rankTitle.text = status == Status.PreviousSeason
                 ? L10nManager.Localize("UI_PREVIOUS_SEASON_RANK")
                 : L10nManager.Localize("UI_LEADERBOARD");
@@ -144,28 +146,27 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         private async Task SetItemsAsync(int raidId, Status status)
         {
-            if (_cachedItems.ContainsKey(status))
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            if (_cachedItems.ContainsKey(status) && _cachedItems[status].AvatarAddress == avatarAddress)
             {
                 return;
             }
 
-            var avatarState = States.Instance.CurrentAvatarState;
-            var response = await WorldBossQuery.QueryRankingAsync(raidId, avatarState.address);
+            var response = await WorldBossQuery.QueryRankingAsync(raidId, avatarAddress);
             var records = response?.WorldBossRanking ?? new List<WorldBossRankingRecord>();
             var userCount = response?.WorldBossTotalUsers ?? 0;
-
-            var avatarAddress = avatarState.address.ToHex();
-            var myRecord = records.FirstOrDefault(record => record.Address == avatarAddress);
+            var myRecord = records.FirstOrDefault(record => record.Address == avatarAddress.ToHex());
 
             if (records.Count > LimitCount)
             {
-                records = records.Where(record => record.Address != avatarAddress)
+                records = records.Where(record => record.Address != avatarAddress.ToHex())
                     .ToList();
             }
 
             var items = new WorldBossRankItems(
                 records.Select(record => new WorldBossRankItem(record)).ToList(),
                 myRecord != null ? new WorldBossRankItem(myRecord) : null,
+                avatarAddress,
                 userCount);
 
             _cachedItems[status] = items;

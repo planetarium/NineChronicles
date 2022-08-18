@@ -68,7 +68,7 @@ namespace Nekoyume.UI
             _selectedItemSubType.SetValueAndForceNotify(toggleType);
         }
 
-        public void UpdateReward()
+        public void UpdateReward() // For ClaimRaidReward Action Render
         {
             var reward = categoryToggles.FirstOrDefault(x => x.Type == ToggleType.Reward);
             if (reward.Item is WorldBossReward worldBossReward)

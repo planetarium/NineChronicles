@@ -35,7 +35,6 @@ namespace Nekoyume.UI.Module.WorldBoss
         private List<CategoryToggle> categoryToggles = null;
 
         private readonly ReactiveProperty<ToggleType> _selectedItemSubType = new();
-        private RaiderState _cachedRaiderState;
 
         protected void Awake()
         {

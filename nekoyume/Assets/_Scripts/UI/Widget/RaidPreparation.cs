@@ -37,14 +37,14 @@ namespace Nekoyume.UI
         {
             public PracticeRandom() : base(Guid.NewGuid().GetHashCode())
             {
-                
+
             }
 
             public int Seed => throw new NotImplementedException();
         }
 
         private static readonly Vector3 PlayerPosition = new(1999.8f, 1999.3f, 3f);
-        private const string RAID_EQUIPMENT_KEY = "RAID_EQUIPMENT_KEY";
+        private const string RAID_EQUIPMENT_KEY = "RAID_EQUIPMENT";
 
         [SerializeField]
         private Toggle toggle;
@@ -751,12 +751,14 @@ namespace Nekoyume.UI
 
         public List<Guid> LoadEquipment()
         {
-            if (!PlayerPrefs.HasKey(RAID_EQUIPMENT_KEY))
+            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            var key = $"{RAID_EQUIPMENT_KEY}_{avatarAddress}";
+            if (!PlayerPrefs.HasKey(key))
             {
                 return new List<Guid>();
             }
 
-            var json = PlayerPrefs.GetString(RAID_EQUIPMENT_KEY);
+            var json = PlayerPrefs.GetString(key);
             var data =  JsonUtility.FromJson<EquipmentData>(json);
             return data.Guids.Select(Guid.Parse).ToList();
         }
@@ -765,7 +767,9 @@ namespace Nekoyume.UI
         {
             var e = new EquipmentData(guids.Select(x=> x.ToString()).ToArray());
             var json = JsonUtility.ToJson(e);
-            PlayerPrefs.SetString(RAID_EQUIPMENT_KEY, json);
+            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            var key = $"{RAID_EQUIPMENT_KEY}_{avatarAddress}";
+            PlayerPrefs.SetString(key, json);
         }
 
         [Serializable]

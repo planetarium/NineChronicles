@@ -159,5 +159,10 @@ namespace Nekoyume.Helper
                 currentBlockIndex, refillBlockIndex, startBlockIndex);
             return refillable ? WorldBossHelper.MaxChallengeCount : state.RemainChallengeCount;
         }
+
+        public static int GetScoreInRank(int rank)
+        {
+            return rank * 10000;
+        }
     }
 }

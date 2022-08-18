@@ -1,13 +1,11 @@
 using System.Collections.Generic;
 using System.Numerics;
 using Nekoyume.Helper;
-using Nekoyume.UI.Model;
-using Nekoyume.UI.Module.WorldBoss;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Nekoyume
+namespace Nekoyume.UI.Module.WorldBoss
 {
     public class WorldBossSeason : MonoBehaviour
     {

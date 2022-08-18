@@ -83,8 +83,7 @@ namespace Nekoyume.UI.Module.WorldBoss
         {
             for (var i = 0; i < items.Count; i++)
             {
-                // todo : score 구해줘야함
-                var score = (i + 1) * 100000;
+                var score = WorldBossFrontHelper.GetScoreInRank(i + 1);
                 items[i].Set(score, rows[i].Rune, rows[i].Crystal);
 
                 if (i + 1 <= latestRewardRank)

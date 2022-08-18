@@ -80,16 +80,36 @@ namespace Nekoyume.UI
         [SerializeField]
         private List<GameObject> queryLoadingObjects;
 
-        public RaiderState CachedRaiderState { get; private set; }
-
         private GameObject _bossNamePrefab;
         private GameObject _bossSpinePrefab;
         private int _bossId;
         private (long, long) _period;
 
         private WorldBossStatus _status = WorldBossStatus.None;
-        private readonly List<IDisposable> _disposables = new();
         private HeaderMenuStatic _headerMenu;
+        private readonly List<IDisposable> _disposables = new();
+        private readonly Dictionary<Address, RaiderState> _cachedRaiderStates = new();
+
+        public RaiderState CachedRaiderState
+        {
+            get
+            {
+                var avatarAddress = States.Instance.CurrentAvatarState.address;
+                return _cachedRaiderStates[avatarAddress];
+            }
+            private set
+            {
+                var avatarAddress = States.Instance.CurrentAvatarState.address;
+                if (_cachedRaiderStates.ContainsKey(avatarAddress))
+                {
+                    _cachedRaiderStates[avatarAddress] = value;
+                }
+                else
+                {
+                    _cachedRaiderStates.Add(avatarAddress, value);
+                }
+            }
+        }
 
         protected override void Awake()
         {

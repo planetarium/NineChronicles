@@ -124,26 +124,39 @@ namespace Nekoyume.UI
 
         private void UpdateRewardItems(IReadOnlyList<FungibleAssetValue> rewards)
         {
-            var crystalReward = rewards.FirstOrDefault(x => x.Currency.Ticker == "CRYSTAL");
-            var crystal = Convert.ToInt32(crystalReward.GetQuantityString());
-            crystalCountText.text = $"{crystal:#,0}";
+            var crystalReward = rewards
+                .Where(x => x.Currency.Ticker == "CRYSTAL")
+                .Sum(x => Convert.ToInt32(x.GetQuantityString()));
+            crystalCountText.text = $"{crystalReward:#,0}";
 
             foreach (var rune in runes)
             {
                 rune.Object.SetActive(false);
             }
 
-            var runeRewards = rewards.Where(x => x.Currency.Ticker != "CRYSTAL").ToList();
-            for (var i = 0; i < runeRewards.Count; i++)
+            var totalRuneRewards = new Dictionary<string, int>();
+            foreach (var runeReward in rewards.Where(x => x.Currency.Ticker != "CRYSTAL"))
             {
-                runes[i].Object.SetActive(true);
-                var ticker = runeRewards[i].Currency.Ticker;
-                var count = Convert.ToInt32(runeRewards[i].GetQuantityString());
-                runes[i].Count.text = $"{count:#,0}";
+                var key = runeReward.Currency.Ticker;
+                if (!totalRuneRewards.ContainsKey(key))
+                {
+                    totalRuneRewards.Add(key, 0);
+                }
+
+                var count = Convert.ToInt32(runeReward.GetQuantityString());
+                totalRuneRewards[key] += count;
+            }
+
+            var index = 0;
+            foreach (var (ticker, count) in totalRuneRewards)
+            {
+                runes[index].Object.SetActive(true);
+                runes[index].Count.text = $"{count:#,0}";
                 if (WorldBossFrontHelper.TryGetRuneIcon(ticker, out var icon))
                 {
-                    runes[i].Icon.sprite = icon;
+                    runes[index].Icon.sprite = icon;
                 }
+                index++;
             }
         }
 
