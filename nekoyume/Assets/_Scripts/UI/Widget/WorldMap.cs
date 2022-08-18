@@ -222,7 +222,7 @@ namespace Nekoyume.UI
 
                 var buttonWorldId = worldButton.Id;
                 var unlockRow = TableSheets.Instance.WorldUnlockSheet
-                    .Select(pair => pair.Value)
+                    .OrderedList
                     .FirstOrDefault(row => row.WorldIdToUnlock == buttonWorldId);
                 var canTryThisWorld = worldInformation.IsStageCleared(unlockRow?.StageId ?? int.MaxValue);
                 var worldIsUnlocked =
