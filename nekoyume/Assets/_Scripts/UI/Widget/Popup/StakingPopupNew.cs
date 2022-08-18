@@ -4,6 +4,7 @@ using System.Numerics;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
@@ -33,8 +34,7 @@ namespace Nekoyume.UI
         [SerializeField] private Button closeButton;
 
         [Header("Center")]
-        [SerializeField] private Transform buffBenefitsCellContainer;
-        [SerializeField] private StakingBuffBenefitsView buffBenefitsPrefab;
+        [SerializeField] private StakingBuffBenefitsView[] buffBenefitsViews;
         [SerializeField] private StakingInterestBenefitsView[] interestBenefitsViews;
         [SerializeField] private GameObject remainingBlockArea;
         [SerializeField] private TextMeshProUGUI remainingBlockText;
@@ -49,16 +49,27 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject currentBenefitsTab;
         [SerializeField] private GameObject levelBenefitsTab;
 
-        private readonly ReactiveProperty<BigInteger> _deposit = new ReactiveProperty<BigInteger>();
-        private readonly Module.ToggleGroup _toggleGroup = new Module.ToggleGroup();
-        private Dictionary<int, (int ap, int arena)> _buffBenefits;
+        private readonly ReactiveProperty<BigInteger> _deposit = new();
+        private readonly Module.ToggleGroup _toggleGroup = new ();
 
+        // temporary table - buff benefits (HAS ap, arena ranking)
+        private readonly Dictionary<int, (int ap, int arena)> _buffBenefits = new()
+        {
+            {1, (5, 0)}, {2, (4, 100)}, {3, (4, 200)}, {4, (3, 200)}, {5, (3, 200)}
+        };
+        // temporary table - benefits rate
+        private readonly Dictionary<int, int> _benefitRates = new()
+        {
+            {1, 20}, {2, 50}, {3, 100}, {4, 500}, {5, 1000}
+        };
+
+        private readonly StakingBenefitsListView.Model[] _cachedModel =
+            new StakingBenefitsListView.Model[6];
+
+        private const string BuffBenefitFormat = "{0} <color=#1FFF00>+{1}</color>";
+        private const string BuffBenefitRateFormat = "{0} <color=#1FFF00>+{1}%</color>";
         private const string RemainingBlockFormat = "<Style=G5>{0}({1})";
-
-        [Header("Test")]
-        [SerializeField] private int testLevel;
-        [SerializeField] private int testDeposit;
-        [SerializeField] private long textBlockIndex;
+        private const int RewardBlockInterval = 50400;
 
         protected override void Awake()
         {
@@ -76,8 +87,6 @@ namespace Nekoyume.UI
                 currentBenefitsTab.SetActive(false);
                 levelBenefitsTab.SetActive(true);
             }).AddTo(gameObject);
-
-            _deposit.Subscribe(OnDepositEdited).AddTo(gameObject);
 
             stakingButtonNone.OnClickSubject.Subscribe(_ =>
             {
@@ -105,12 +114,157 @@ namespace Nekoyume.UI
                 AudioController.PlayClick();
             }).AddTo(gameObject);
 
-            // temporary table - buff benefits (HAS ap, arena ranking)
-            _buffBenefits = new Dictionary<int, (int ap, int arena)>
-            {
-                {1, (5, 0)}, {2, (4, 100)}, {3, (4, 200)}, {4, (3, 200)}, {5, (3, 200)},
-            };
+            _deposit.Subscribe(OnDepositEdited).AddTo(gameObject);
+            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
+                .Where(_ => gameObject.activeSelf).Subscribe(OnBlockUpdated)
+                .AddTo(gameObject);
+            SetBenefitsListViews();
+        }
 
+        public override void Show(bool ignoreStartAnimation = false)
+        {
+            var level = States.Instance.StakingLevel;
+            var deposit = States.Instance.StakedBalanceState?.Gold.MajorUnit ?? 0;
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+
+            if (level < 1)
+            {
+                none.SetActive(true);
+                content.SetActive(false);
+                base.Show(ignoreStartAnimation);
+                return;
+            }
+
+            _deposit.Value = deposit;
+            OnBlockUpdated(blockIndex);
+            _toggleGroup.SetToggledOffAll();
+            currentBenefitsTabButton.OnClick.OnNext(currentBenefitsTabButton);
+            currentBenefitsTabButton.SetToggledOn();
+            none.SetActive(false);
+            content.SetActive(true);
+
+            base.Show(ignoreStartAnimation);
+        }
+
+        private void OnDepositEdited(BigInteger deposit)
+        {
+            var level = States.Instance.StakingLevel;
+            if (level < 1) return;
+
+            var sheets = TableSheets.Instance;
+            var regularSheet = sheets.StakeRegularRewardSheet;
+
+            levelIconImage.sprite = SpriteHelper.GetStakingIcon(level, IconType.Small);
+            for (var i = 0; i < levelImages.Length; i++)
+            {
+                levelImages[i].enabled = i < level;
+            }
+
+            if (regularSheet.TryGetValue(level, out var regular))
+            {
+                var nextRequired = regularSheet.TryGetValue(level + 1, out var nextLevel)
+                    ? nextLevel.RequiredGold
+                    : regular.RequiredGold;
+                depositText.text = deposit.ToString("N0");
+                depositGaugeImage.fillAmount = (float)deposit / nextRequired;
+                remainingDepositText.text = level >= 5
+                    ? ""
+                    : L10nManager.Localize("UI_REMAINING_NCG_TO_NEXT_LEVEL", nextRequired - deposit);
+            }
+
+            buffBenefitsViews[0].Set(
+                string.Format(BuffBenefitRateFormat, L10nManager.Localize("ARENA_REWARD_BONUS"),
+                    _cachedModel[level].ArenaRewardBuff), _benefitRates[level]);
+            buffBenefitsViews[1].Set(
+                string.Format(BuffBenefitRateFormat, L10nManager.Localize("GRINDING_CRYSTAL_BONUS"),
+                    _cachedModel[level].CrystalBuff), _benefitRates[level]);
+            buffBenefitsViews[2].Set(
+                string.Format(BuffBenefitFormat, L10nManager.Localize("STAGE_AP_BONUS"),
+                    _cachedModel[level].ActionPointBuff), _benefitRates[level]);
+
+            for (int i = 0; i <= 5; i++)
+            {
+                benefitsListViews[i].Set(i, level);
+            }
+        }
+
+        private void OnBlockUpdated(long blockIndex)
+        {
+            var level = States.Instance.StakingLevel;
+            var deposit = States.Instance.StakedBalanceState?.Gold.MajorUnit ?? 0;
+
+            var sheets = TableSheets.Instance;
+            var regularSheet = sheets.StakeRegularRewardSheet;
+            var regularFixedSheet = sheets.StakeRegularFixedRewardSheet;
+
+            if (!TryGetWaitedBlockIndex(blockIndex, out var waitedBlockRange))
+            {
+                return;
+            }
+            var rewardCount = (int)waitedBlockRange / RewardBlockInterval;
+
+            if (regularSheet.TryGetValue(level, out var regular)
+                && regularFixedSheet.TryGetValue(level, out var regularFixed))
+            {
+                var materialSheet = sheets.MaterialItemSheet;
+                var rewardsCount = Mathf.Min(regular.Rewards.Count, interestBenefitsViews.Length);
+                for (var i = 0; i < rewardsCount; i++)
+                {
+                    var item = ItemFactory.CreateMaterial(materialSheet, regular.Rewards[i].ItemId);
+                    var result = (int)deposit / regular.Rewards[i].Rate;
+                    var levelBonus = regularFixed.Rewards.FirstOrDefault(
+                        reward => reward.ItemId == regular.Rewards[i].ItemId)?.Count ?? 0;
+                    result += levelBonus;
+                    result *= Mathf.Max(rewardCount, 1);
+
+                    interestBenefitsViews[i].Set(item, result, _benefitRates[level]);
+                }
+            }
+
+            if (rewardCount > 0)
+            {
+                archiveButtonArea.SetActive(true);
+                remainingBlockArea.SetActive(false);
+            }
+            else
+            {
+                var remainingBlock = RewardBlockInterval - waitedBlockRange;
+                remainingBlockText.text = string.Format(
+                    RemainingBlockFormat,
+                    remainingBlock.ToString("N0"),
+                    remainingBlock.BlockRangeToTimeSpanString());
+
+                archiveButtonArea.SetActive(false);
+                remainingBlockArea.SetActive(true);
+            }
+        }
+
+        private bool TryGetWaitedBlockIndex(long blockIndex, out long waitedBlockRange)
+        {
+            var stakeState = States.Instance.StakeState;
+            if (stakeState == null)
+            {
+                waitedBlockRange = 0;
+                return false;
+            }
+
+            var started = stakeState.StartedBlockIndex;
+            var received = stakeState.ReceivedBlockIndex;
+            if (received > 0)
+            {
+                waitedBlockRange = blockIndex - received;
+                waitedBlockRange += (received - started) % RewardBlockInterval;
+            }
+            else
+            {
+                waitedBlockRange = blockIndex - started;
+            }
+
+            return true;
+        }
+
+        private void SetBenefitsListViews()
+        {
             var sheets = TableSheets.Instance;
             var regularSheet = sheets.StakeRegularRewardSheet;
             var regularFixedSheet = sheets.StakeRegularFixedRewardSheet;
@@ -134,8 +288,8 @@ namespace Nekoyume.UI
                     model.HourGlassInterest = hourGlass;
                     model.ApPotionInterest = apPotion;
                 }
+                model.BenefitRate = _benefitRates[level];
                 model.RequiredDeposit = regular.RequiredGold;
-
 
                 if (stakingMultiplierSheet.TryGetValue(level, out var row))
                 {
@@ -145,107 +299,7 @@ namespace Nekoyume.UI
                 model.ArenaRewardBuff = _buffBenefits[level].arena;
 
                 benefitsListViews[level].Set(level, model);
-            }
-        }
-
-        public override void Show(bool ignoreStartAnimation = false)
-        {
-            var level = testLevel;
-            var deposit = (BigInteger)testDeposit;
-
-            if (level < 1)
-            {
-                none.SetActive(true);
-                content.SetActive(false);
-                base.Show(ignoreStartAnimation);
-                return;
-            }
-
-            _deposit.Value = deposit;
-            OnBlockUpdated(textBlockIndex);
-            currentBenefitsTabButton.OnClick.OnNext(currentBenefitsTabButton);
-            currentBenefitsTabButton.SetToggledOn();
-            none.SetActive(false);
-            content.SetActive(true);
-
-            base.Show(ignoreStartAnimation);
-        }
-
-        private void OnDepositEdited(BigInteger deposit)
-        {
-            var level = testLevel;
-            var sheets = TableSheets.Instance;
-            var regularSheet = sheets.StakeRegularRewardSheet;
-
-            levelIconImage.sprite = SpriteHelper.GetStakingIcon(level, IconType.Small);
-            for (var i = 0; i < levelImages.Length; i++)
-            {
-                levelImages[i].enabled = i < level;
-            }
-
-            if (regularSheet.TryGetValue(level, out var regular))
-            {
-                var nextRequired = regularSheet.TryGetValue(level + 1, out var nextLevel)
-                    ? nextLevel.RequiredGold
-                    : regular.RequiredGold;
-                depositText.text = deposit.ToString("N0");
-                depositGaugeImage.fillAmount = (float)deposit / nextRequired;
-                remainingDepositText.text = level >= 5 ? "" : (nextRequired - deposit).ToString("N2");
-            }
-
-            Instantiate(buffBenefitsPrefab, buffBenefitsCellContainer).Set("", 0, 100); // Todo : fill
-
-            for (int i = 0; i <= 5; i++)
-            {
-                benefitsListViews[i].Set(i, level);
-            }
-        }
-
-        private void OnBlockUpdated(long blockIndex)
-        {
-            var level = testLevel;
-            var deposit = (BigInteger)testDeposit;
-
-            var sheets = TableSheets.Instance;
-            var regularSheet = sheets.StakeRegularRewardSheet;
-            var regularFixedSheet = sheets.StakeRegularFixedRewardSheet;
-
-            var stakedBlocks = lastEditedBlock - blockIndex;
-            var rewardCount = (int)stakedBlocks / rewardBlockRange;
-
-            if (regularSheet.TryGetValue(level, out var regular)
-                && regularFixedSheet.TryGetValue(level, out var regularFixed))
-            {
-                var materialSheet = sheets.MaterialItemSheet;
-                var rewardsCount = Mathf.Min(regular.Rewards.Count, interestBenefitsViews.Length);
-                for (var i = 0; i < rewardsCount; i++)
-                {
-                    var item = ItemFactory.CreateMaterial(materialSheet, regular.Rewards[i].ItemId);
-                    var result = (int)deposit / regular.Rewards[i].Rate;
-                    var levelBonus = regularFixed.Rewards.FirstOrDefault(
-                        reward => reward.ItemId == regular.Rewards[i].ItemId)?.Count ?? 0;
-                    result += levelBonus;
-                    result *= rewardCount;
-
-                    interestBenefitsViews[i].Set(item, result, 100);
-                }
-            }
-
-            if (rewardCount > 0)
-            {
-                archiveButtonArea.SetActive(false);
-                remainingBlockArea.SetActive(true);
-            }
-            else
-            {
-                var remainingBlock = rewardBlockRange - stakedBlocks;
-                remainingBlockText.text = string.Format(
-                    RemainingBlockFormat,
-                    remainingBlock.ToString("N0"),
-                    remainingBlock.BlockRangeToTimeSpanString());
-
-                archiveButtonArea.SetActive(false);
-                remainingBlockArea.SetActive(true);
+                _cachedModel[level] = model;
             }
         }
     }

@@ -7,11 +7,10 @@ namespace Nekoyume.UI.Module
     {
         [SerializeField] private TextMeshProUGUI contentText;
         [SerializeField] private TextMeshProUGUI benefitsText;
-        private const string ContentFormat = "{0} <color=#1FFF00>+{1}</color>";
 
-        public void Set(string description, int count, int benefitsRate)
+        public void Set(string description, int benefitsRate)
         {
-            contentText.text = string.Format(ContentFormat, description, count);
+            contentText.text = description;
             benefitsText.text = $"{benefitsRate}%";
         }
     }

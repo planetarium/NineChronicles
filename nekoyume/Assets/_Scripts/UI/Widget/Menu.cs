@@ -531,14 +531,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (States.Instance.StakingLevel < 1)
-            {
-                Find<StakingPopupNone>().Show();
-            }
-            else
-            {
-                Find<StakingPopup>().Show();
-            }
+            Find<StakingPopupNew>().Show();
         }
 
         public void UpdateGuideQuest(AvatarState avatarState)
