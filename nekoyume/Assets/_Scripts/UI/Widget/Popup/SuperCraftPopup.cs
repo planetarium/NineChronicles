@@ -70,12 +70,13 @@ namespace Nekoyume.UI
             EquipmentItemOptionSheet.Row row,
             SubRecipeView.RecipeInfo recipeInfo,
             int recipeId,
+            bool canSuperCraft,
             bool ignoreAnimation = false)
         {
             _skillOptionRow = row;
             _recipeInfo = recipeInfo;
             superCraftButton.Interactable =
-                Find<CombinationSlotsPopup>().TryGetEmptyCombinationSlot(out _);
+                Find<CombinationSlotsPopup>().TryGetEmptyCombinationSlot(out _) && canSuperCraft;
             skillName.text = L10nManager.Localize($"SKILL_NAME_{row.SkillId}");
             var sheets = TableSheets.Instance;
             var isBuffSkill = row.SkillDamageMax == 0;
