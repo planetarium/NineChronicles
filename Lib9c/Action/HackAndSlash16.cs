@@ -25,7 +25,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("hack_and_slash16")]
-    public class HackAndSlash : GameAction
+    public class HackAndSlash16 : GameAction
     {
         public List<Guid> Costumes;
         public List<Guid> Equipments;
@@ -151,7 +151,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}HAS Get Sheets: {Elapsed}", addressesHex, sw.Elapsed);
 
             // Validate about avatar state.
-            Validator.ValidateForHackAndSlash(avatarState,
+            Validator.ValidateForHackAndSlashV1(avatarState,
                 sheets,
                 WorldId,
                 StageId,

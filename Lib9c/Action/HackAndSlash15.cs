@@ -130,7 +130,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}HAS Get Sheets: {Elapsed}", addressesHex, sw.Elapsed);
 
             // Validate about avatar state.
-            Validator.ValidateForHackAndSlash(avatarState,
+            Validator.ValidateForHackAndSlashV1(avatarState,
                 sheets,
                 worldId,
                 stageId,
