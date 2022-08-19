@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet;
@@ -224,6 +224,22 @@ namespace Nekoyume.Extensions
             );
         }
 
+        public static RaidSimulatorSheets GetRaidSimulatorSheets(
+            this Dictionary<Type, (Address address, ISheet sheet)> sheets)
+        {
+            return new RaidSimulatorSheets(
+                sheets.GetSheet<MaterialItemSheet>(),
+                sheets.GetSheet<SkillSheet>(),
+                sheets.GetSheet<SkillBuffSheet>(),
+                sheets.GetSheet<BuffSheet>(),
+                sheets.GetSheet<CharacterSheet>(),
+                sheets.GetSheet<CharacterLevelSheet>(),
+                sheets.GetSheet<EquipmentItemSetEffectSheet>(),
+                sheets.GetSheet<WorldBossCharacterSheet>(),
+                sheets.GetSheet<WorldBossActionPatternSheet>()
+            );
+        }
+
         public static int FindLevelByStakedAmount(this IStakeRewardSheet sheet, Address agentAddress,
             FungibleAssetValue balance)
         {
@@ -248,6 +264,37 @@ namespace Nekoyume.Extensions
 
             // Return maximum level when balance > maximum RequiredGold
             return orderedRows.Last().Level;
+        }
+
+        public static WorldBossListSheet.Row FindRowByBlockIndex(this WorldBossListSheet sheet,
+            long blockIndex)
+        {
+            return sheet.OrderedList
+                .First(r =>
+                    r.StartedBlockIndex <= blockIndex &&
+                    blockIndex <= r.EndedBlockIndex
+                );
+        }
+
+        public static WorldBossListSheet.Row FindPreviousRowByBlockIndex(
+            this WorldBossListSheet sheet, long blockIndex)
+        {
+            return sheet.OrderedList.Last(
+                r => r.EndedBlockIndex < blockIndex
+            );
+        }
+
+        public static int FindRaidIdByBlockIndex(this WorldBossListSheet sheet, long blockIndex)
+        {
+            WorldBossListSheet.Row row = sheet.FindRowByBlockIndex(blockIndex);
+            return row.Id;
+        }
+
+        public static int FindPreviousRaidIdByBlockIndex(this WorldBossListSheet sheet,
+            long blockIndex)
+        {
+            WorldBossListSheet.Row row = sheet.FindPreviousRowByBlockIndex(blockIndex);
+            return row.Id;
         }
     }
 }

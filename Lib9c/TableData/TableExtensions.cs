@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Numerics;
 
 namespace Nekoyume.TableData
 {
@@ -25,7 +26,7 @@ namespace Nekoyume.TableData
             }
             throw new ArgumentException(value);
         }
-        
+
         public static int ParseInt(string value, int defaultValue) =>
             TryParseInt(value, out var result) ? result : defaultValue;
 
@@ -37,7 +38,7 @@ namespace Nekoyume.TableData
             }
             throw new ArgumentException(value);
         }
-        
+
         public static decimal ParseDecimal(string value, decimal defaultValue) =>
             TryParseDecimal(value, out var result) ? result : defaultValue;
 
@@ -49,8 +50,18 @@ namespace Nekoyume.TableData
             }
             throw new ArgumentException(value);
         }
-        
+
         public static long ParseLong(string value, long defaultValue) =>
             TryParseLong(value, out var result) ? result : defaultValue;
+
+        public static BigInteger ParseBigInteger(string value)
+        {
+            if (BigInteger.TryParse(value, out var result))
+            {
+                return result;
+            }
+
+            throw new ArgumentException(value);
+        }
     }
 }
