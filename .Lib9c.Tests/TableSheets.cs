@@ -157,6 +157,8 @@ namespace Lib9c.Tests
 
         public CrystalFluctuationSheet CrystalFluctuationSheet { get; private set; }
 
+        public CrystalHammerPointSheet CrystalHammerPointSheet { get; private set; }
+
         public WorldBossListSheet WorldBossListSheet { get; private set; }
 
         public WorldBossRankRewardSheet WorldBossRankRewardSheet { get; private set; }
@@ -198,6 +200,19 @@ namespace Lib9c.Tests
             QuestSheet.Set(ItemTypeCollectQuestSheet, false);
             QuestSheet.Set(GoldQuestSheet, false);
             QuestSheet.Set(CombinationEquipmentQuestSheet);
+        }
+
+        public SimulatorSheets GetSimulatorSheets()
+        {
+            return new SimulatorSheets(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                BuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
+                EquipmentItemSetEffectSheet
+            );
         }
 
         public StageSimulatorSheets GetStageSimulatorSheets()

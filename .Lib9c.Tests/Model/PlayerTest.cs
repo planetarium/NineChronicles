@@ -44,11 +44,20 @@ namespace Lib9c.Tests.Model
                 _random,
                 _avatarState,
                 new List<Guid>(),
+                new List<Nekoyume.Model.Skill.Skill>(),
                 1,
                 1,
-                _tableSheets.GetStageSimulatorSheets(),
-                2,
-                1
+                _tableSheets.StageSheet[1],
+                _tableSheets.StageWaveSheet[1],
+                false,
+                20,
+                _tableSheets.GetSimulatorSheets(),
+                _tableSheets.EnemySkillSheet,
+                _tableSheets.CostumeStatSheet,
+                StageSimulator.GetWaveRewards(
+                    _random,
+                    _tableSheets.StageSheet[1],
+                    _tableSheets.MaterialItemSheet)
             );
             var player = simulator.Player;
             var enemy = new Enemy(player, _tableSheets.CharacterSheet.Values.First(), 1);
@@ -67,11 +76,20 @@ namespace Lib9c.Tests.Model
                 _random,
                 _avatarState,
                 new List<Guid>(),
+                new List<Nekoyume.Model.Skill.Skill>(),
                 1,
                 1,
-                _tableSheets.GetStageSimulatorSheets(),
-                2,
-                1
+                _tableSheets.StageSheet[1],
+                _tableSheets.StageWaveSheet[1],
+                false,
+                20,
+                _tableSheets.GetSimulatorSheets(),
+                _tableSheets.EnemySkillSheet,
+                _tableSheets.CostumeStatSheet,
+                StageSimulator.GetWaveRewards(
+                    _random,
+                    _tableSheets.StageSheet[1],
+                    _tableSheets.MaterialItemSheet)
             );
             var player = simulator.Player;
             var enemy = new Enemy(player, _tableSheets.CharacterSheet.Values.First(), 1);
@@ -107,11 +125,20 @@ namespace Lib9c.Tests.Model
                 _random,
                 _avatarState,
                 new List<Guid>(),
+                new List<Nekoyume.Model.Skill.Skill>(),
                 1,
                 1,
-                _tableSheets.GetStageSimulatorSheets(),
-                2,
-                1
+                _tableSheets.StageSheet[1],
+                _tableSheets.StageWaveSheet[1],
+                false,
+                20,
+                _tableSheets.GetSimulatorSheets(),
+                _tableSheets.EnemySkillSheet,
+                _tableSheets.CostumeStatSheet,
+                StageSimulator.GetWaveRewards(
+                    _random,
+                    _tableSheets.StageSheet[1],
+                    _tableSheets.MaterialItemSheet)
             );
             var player = simulator.Player;
 
@@ -224,11 +251,20 @@ namespace Lib9c.Tests.Model
                 _random,
                 _avatarState,
                 new List<Guid>(),
+                new List<Nekoyume.Model.Skill.Skill>(),
                 1,
                 1,
-                _tableSheets.GetStageSimulatorSheets(),
-                2,
-                1
+                _tableSheets.StageSheet[1],
+                _tableSheets.StageWaveSheet[1],
+                false,
+                20,
+                _tableSheets.GetSimulatorSheets(),
+                _tableSheets.EnemySkillSheet,
+                _tableSheets.CostumeStatSheet,
+                StageSimulator.GetWaveRewards(
+                    _random,
+                    _tableSheets.StageSheet[1],
+                    _tableSheets.MaterialItemSheet)
             );
             var player = simulator.Player;
             Assert.Empty(player.eventMap);

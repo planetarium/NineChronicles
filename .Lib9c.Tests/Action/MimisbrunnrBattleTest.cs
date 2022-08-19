@@ -4,14 +4,12 @@ namespace Lib9c.Tests.Action
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
-    using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model;
-    using Nekoyume.Model.BattleStatus;
     using Nekoyume.Model.Elemental;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
@@ -731,42 +729,6 @@ namespace Lib9c.Tests.Action
             var totalMax = max * playCount * stageRow.DropItemMax;
             var totalCount = rewardItem.Sum(x => x.count);
             Assert.InRange(totalCount, totalMin, totalMax);
-        }
-
-        [Fact]
-        public void Rehearsal()
-        {
-            var action = new MimisbrunnrBattle
-            {
-                costumes = new List<Guid>(),
-                equipments = new List<Guid>(),
-                foods = new List<Guid>(),
-                worldId = 1,
-                stageId = 1,
-                playCount = 1,
-                avatarAddress = _avatarAddress,
-            };
-
-            var updatedAddresses = new List<Address>
-            {
-                _agentAddress,
-                _avatarAddress,
-                _avatarAddress.Derive(LegacyInventoryKey),
-                _avatarAddress.Derive(LegacyWorldInformationKey),
-                _avatarAddress.Derive(LegacyQuestListKey),
-            };
-
-            var state = new State();
-
-            var nextState = action.Execute(new ActionContext
-            {
-                PreviousStates = state,
-                Signer = _agentAddress,
-                BlockIndex = 0,
-                Rehearsal = true,
-            });
-
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
         }
     }
 }
