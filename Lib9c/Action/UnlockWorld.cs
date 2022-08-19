@@ -13,6 +13,9 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
+    /// <summary>
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1309
+    /// </summary>
     [ActionType("unlock_world2")]
     public class UnlockWorld: GameAction
     {
@@ -90,6 +93,7 @@ namespace Nekoyume.Action
                 }
 
                 // Check stage cleared in HackAndSlash.
+                // If world is unlocked or can unlock, Execute it.
                 if (!worldInformation.IsWorldUnlocked(worldId) && !worldInformation.IsStageCleared(row.StageId))
                 {
                     throw new FailedToUnlockWorldException($"{worldId} is locked.");
