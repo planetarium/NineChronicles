@@ -2487,6 +2487,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 9a344bfb59796e8458291034d729bb9e, type: 2}
   - {fileID: 11400000, guid: 9a344bfb59796e8458291034d729bb9e, type: 2}
   fallDownCutscene: {fileID: 11400000, guid: 9a344bfb59796e8458291034d729bb9e, type: 2}
+  playerDefeatCutscene: {fileID: 11400000, guid: 9a344bfb59796e8458291034d729bb9e,
+    type: 2}
 --- !u!114 &1292220910054991738
 MonoBehaviour:
   m_ObjectHideFlags: 0

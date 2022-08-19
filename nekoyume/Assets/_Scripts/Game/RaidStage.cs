@@ -357,7 +357,7 @@ namespace Nekoyume.Game
 
             if (raidCharacter is Character.RaidPlayer player)
             {
-                yield return StartCoroutine(player.CoDie());
+                yield return StartCoroutine(container.CoPlayFallDownCutscene());
             }
             else if (raidCharacter is Character.RaidBoss boss)
             {
