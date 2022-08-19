@@ -268,6 +268,12 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 4940065230274820996, guid: b31b2cee292be9a4da74d5fded034343,
+        type: 3}
+      propertyPath: playerDefeatCutscene
+      value: 
+      objectReference: {fileID: 11400000, guid: 9a344bfb59796e8458291034d729bb9e,
+        type: 2}
     - target: {fileID: 4966907011472140292, guid: b31b2cee292be9a4da74d5fded034343,
         type: 3}
       propertyPath: controller

@@ -34,6 +34,9 @@ namespace Nekoyume
         [SerializeField]
         private TimelineAsset fallDownCutscene = null;
 
+        [SerializeField]
+        private TimelineAsset playerDefeatCutscene = null;
+
         public RaidPlayer Player => player;
         public RaidBoss Boss => boss;
         public Camera Camera => camera;
@@ -56,6 +59,8 @@ namespace Nekoyume
         public IEnumerator CoPlayRunAwayCutscene(int wave) => CoPlayCutscene(runAwayCutscenes[wave]);
 
         public IEnumerator CoPlayFallDownCutscene() => CoPlayCutscene(fallDownCutscene);
+
+        public IEnumerator CoPlayPlayerDefeatCutscene() => CoPlayCutscene(playerDefeatCutscene);
 
         private IEnumerator CoPlayCutscene(TimelineAsset asset)
         {
