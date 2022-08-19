@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Game;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
@@ -125,73 +126,72 @@ namespace Nekoyume.EnumType
             }
         }
 
-        public static ItemSubTypeFilter GetItemSubTypeFilter(ItemSheet sheet, int itemId)
+        public static List<ItemSubTypeFilter> GetItemSubTypeFilter(int itemId)
         {
-            var row = Game.Game.instance.TableSheets.ItemSheet[itemId];
-            var itemSubType = row.ItemSubType;
-
-            if (itemSubType == ItemSubType.Food)
+            var result = new List<ItemSubTypeFilter>();
+            var row = TableSheets.Instance.ItemSheet[itemId];
+            if (row.ItemType == ItemType.Consumable)
             {
                 var consumableRow = (ConsumableItemSheet.Row) row;
-                var state = consumableRow.Stats.First();
-                switch (state.StatType)
+                foreach (var statMap in consumableRow.Stats)
                 {
-                    case StatType.HP:
-                        return ItemSubTypeFilter.Food_HP;
-                    case StatType.ATK:
-                        return ItemSubTypeFilter.Food_ATK;
-                    case StatType.DEF:
-                        return ItemSubTypeFilter.Food_DEF;
-                    case StatType.CRI:
-                        return ItemSubTypeFilter.Food_CRI;
-                    case StatType.HIT:
-                        return ItemSubTypeFilter.Food_HIT;
-                    case StatType.SPD:
-                    case StatType.NONE:
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(state.StatType), state.StatType, null);
+                    switch (statMap.StatType)
+                    {
+                        case StatType.HP:
+                            result.Add(ItemSubTypeFilter.Food_HP);
+                            break;
+                        case StatType.ATK:
+                            result.Add(ItemSubTypeFilter.Food_ATK);
+                            break;
+                        case StatType.DEF:
+                            result.Add(ItemSubTypeFilter.Food_DEF);
+                            break;
+                        case StatType.CRI:
+                            result.Add(ItemSubTypeFilter.Food_CRI);
+                            break;
+                        case StatType.HIT:
+                            result.Add(ItemSubTypeFilter.Food_HIT);
+                            break;
+                        case StatType.SPD:
+                        case StatType.NONE:
+                        default:
+                            throw new ArgumentOutOfRangeException(
+                                nameof(statMap.StatType),
+                                statMap.StatType,
+                                null);
+                    }
                 }
+
+                return result;
             }
 
             switch (row.ItemSubType)
             {
                 case ItemSubType.Weapon:
-                    return ItemSubTypeFilter.Weapon;
-                    break;
+                    return new List<ItemSubTypeFilter> { ItemSubTypeFilter.Weapon };
                 case ItemSubType.Armor:
-                    return ItemSubTypeFilter.Armor;
-                    break;
+                    return new List<ItemSubTypeFilter> { ItemSubTypeFilter.Armor };
                 case ItemSubType.Belt:
-                    return ItemSubTypeFilter.Belt;
-                    break;
+                    return new List<ItemSubTypeFilter> { ItemSubTypeFilter.Belt };
                 case ItemSubType.Necklace:
-                    return ItemSubTypeFilter.Necklace;
-                    break;
+                    return new List<ItemSubTypeFilter> { ItemSubTypeFilter.Necklace };
                 case ItemSubType.Ring:
-                    return ItemSubTypeFilter.Ring;
-                    break;
+                    return new List<ItemSubTypeFilter> { ItemSubTypeFilter.Ring };
                 case ItemSubType.FullCostume:
-                    return ItemSubTypeFilter.FullCostume;
-                    break;
+                    return new List<ItemSubTypeFilter> { ItemSubTypeFilter.FullCostume };
                 case ItemSubType.HairCostume:
-                    return ItemSubTypeFilter.HairCostume;
-                    break;
+                    return new List<ItemSubTypeFilter> { ItemSubTypeFilter.HairCostume };
                 case ItemSubType.EarCostume:
-                    return ItemSubTypeFilter.EarCostume;
-                    break;
+                    return new List<ItemSubTypeFilter> { ItemSubTypeFilter.EarCostume };
                 case ItemSubType.EyeCostume:
-                    return ItemSubTypeFilter.EyeCostume;
-                    break;
+                    return new List<ItemSubTypeFilter> { ItemSubTypeFilter.EyeCostume };
                 case ItemSubType.TailCostume:
-                    return ItemSubTypeFilter.TailCostume;
-                    break;
+                    return new List<ItemSubTypeFilter> { ItemSubTypeFilter.TailCostume };
                 case ItemSubType.Title:
-                    return ItemSubTypeFilter.Title;
-                    break;
+                    return new List<ItemSubTypeFilter> { ItemSubTypeFilter.Title };
                 case ItemSubType.Hourglass:
                 case ItemSubType.ApStone:
-                    return ItemSubTypeFilter.Materials;
-                    break;
+                    return new List<ItemSubTypeFilter> { ItemSubTypeFilter.Materials };
                 case ItemSubType.Food:
                 case ItemSubType.EquipmentMaterial:
                 case ItemSubType.FoodMaterial:

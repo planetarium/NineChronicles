@@ -21,7 +21,7 @@ namespace Nekoyume.State
     /// </summary>
     public static class ReactiveShopState
     {
-        private static readonly List<ItemSubType> ItemSubTypes = new List<ItemSubType>()
+        private static readonly List<ItemSubType> ItemSubTypes = new()
         {
             ItemSubType.Weapon,
             ItemSubType.Armor,
@@ -39,7 +39,7 @@ namespace Nekoyume.State
             ItemSubType.ApStone,
         };
 
-        private static readonly List<ItemSubType> ShardedSubTypes = new List<ItemSubType>()
+        private static readonly List<ItemSubType> ShardedSubTypes = new()
         {
             ItemSubType.Weapon,
             ItemSubType.Armor,
@@ -51,22 +51,19 @@ namespace Nekoyume.State
             ItemSubType.ApStone,
         };
 
-        public static ReactiveProperty<List<OrderDigest>> BuyDigest { get; } =
-            new ReactiveProperty<List<OrderDigest>>();
+        public static ReactiveProperty<List<OrderDigest>> BuyDigest { get; } = new();
 
-        public static ReactiveProperty<List<OrderDigest>> SellDigest { get; } =
-            new ReactiveProperty<List<OrderDigest>>();
+        public static ReactiveProperty<List<OrderDigest>> SellDigest { get; } = new();
 
         // key: orderId
-        private static ConcurrentDictionary<Guid, ItemBase> CachedShopItems { get; } =
-            new ConcurrentDictionary<Guid, ItemBase>();
+        private static ConcurrentDictionary<Guid, ItemBase> CachedShopItems { get; } = new();
 
 
-        private static readonly Dictionary<ItemSubType, List<OrderDigest>> _buyDigest =
-            new Dictionary<ItemSubType, List<OrderDigest>>();
-        private static List<Guid> _removedOrderIds { get; } = new List<Guid>();
+        private static readonly Dictionary<ItemSubType, List<OrderDigest>> _buyDigest = new();
+        private static List<Guid> _removedOrderIds { get; } = new();
 
-        public static OrderDigest GetSellDigest(Guid tradableId,
+        public static OrderDigest GetSellDigest(
+            Guid tradableId,
             long requiredBlockIndex,
             FungibleAssetValue price,
             int count)
@@ -82,8 +79,8 @@ namespace Nekoyume.State
         {
             if (!CachedShopItems.ContainsKey(orderDigest.OrderId))
             {
-                Debug.LogWarning(
-                    $"[{nameof(TryGetShopItem)}] Not found address: {orderDigest.OrderId}");
+                Debug.LogWarning($"[{nameof(TryGetShopItem)}] Not found address:" +
+                                 $" {orderDigest.OrderId}");
                 itemBase = null;
                 return false;
             }
@@ -107,6 +104,7 @@ namespace Nekoyume.State
                         AddBuyDigest(digests, itemSubType);
                     }
                 }
+
                 return true;
             });
         }
@@ -115,7 +113,8 @@ namespace Nekoyume.State
         {
             var agentAddress = States.Instance.AgentState.address;
             var d = digests
-                .Where(digest => !digest.SellerAgentAddress.Equals(agentAddress)).ToList();
+                .Where(digest => !digest.SellerAgentAddress.Equals(agentAddress))
+                .ToList();
             if (!_buyDigest.ContainsKey(itemSubType))
             {
                 _buyDigest.Add(itemSubType, new List<OrderDigest>());
@@ -129,7 +128,9 @@ namespace Nekoyume.State
                 buyDigests.AddRange(pair.Value);
             }
 
-            var removeList = buyDigests.Where(digest => _removedOrderIds.Contains(digest.OrderId)).ToList();
+            var removeList = buyDigests
+                .Where(digest => _removedOrderIds.Contains(digest.OrderId))
+                .ToList();
             foreach (var orderDigest in removeList)
             {
                 buyDigests.Remove(orderDigest);
@@ -150,7 +151,8 @@ namespace Nekoyume.State
 
         public static void RemoveBuyDigest(Guid orderId)
         {
-            var item = BuyDigest.Value.FirstOrDefault(x => x.OrderId.Equals(orderId));
+            var item = BuyDigest.Value.FirstOrDefault(x =>
+                x.OrderId.Equals(orderId));
             if (item != null)
             {
                 if (!_removedOrderIds.Contains(orderId))
@@ -165,7 +167,8 @@ namespace Nekoyume.State
 
         public static void RemoveSellDigest(Guid orderId)
         {
-            var item = SellDigest.Value.FirstOrDefault(x => x.OrderId.Equals(orderId));
+            var item = SellDigest.Value.FirstOrDefault(x =>
+                x.OrderId.Equals(orderId));
             if (item != null)
             {
                 SellDigest.Value.Remove(item);
@@ -173,7 +176,8 @@ namespace Nekoyume.State
             }
         }
 
-        private static async UniTask<List<OrderDigest>> GetBuyOrderDigestsAsync(ItemSubType itemSubType)
+        private static async UniTask<List<OrderDigest>> GetBuyOrderDigestsAsync(
+            ItemSubType itemSubType)
         {
             var orderDigests = new Dictionary<Address, List<OrderDigest>>();
             var addressList = new List<Address>();
@@ -189,7 +193,8 @@ namespace Nekoyume.State
                 addressList.Add(address);
             }
 
-            var values = await Game.Game.instance.Agent.GetStateBulk(addressList);
+            var values =
+                await Game.Game.instance.Agent.GetStateBulk(addressList);
             var shopStates = new List<ShardedShopStateV2>();
             foreach (var kv in values)
             {
@@ -210,55 +215,16 @@ namespace Nekoyume.State
             return digests;
         }
 
-        private static async UniTask<List<OrderDigest>> GetBuyOrderDigestsAsync()
-        {
-            var orderDigests = new Dictionary<Address, List<OrderDigest>>();
-            var addressList = new List<Address>();
-
-            foreach (var itemSubType in ItemSubTypes)
-            {
-                if (ShardedSubTypes.Contains(itemSubType))
-                {
-                    addressList.AddRange(ShardedShopState.AddressKeys.Select(addressKey =>
-                        ShardedShopStateV2.DeriveAddress(itemSubType, addressKey)));
-                }
-                else
-                {
-                    var address = ShardedShopStateV2.DeriveAddress(itemSubType, string.Empty);
-                    addressList.Add(address);
-                }
-            }
-
-            var values = await Game.Game.instance.Agent.GetStateBulk(addressList);
-            var shopStates = new List<ShardedShopStateV2>();
-            foreach (var kv in values)
-            {
-                if (kv.Value is Dictionary shopDict)
-                {
-                    shopStates.Add(new ShardedShopStateV2(shopDict));
-                }
-            }
-
-            AddOrderDigest(shopStates, orderDigests);
-
-            var digests = new List<OrderDigest>();
-            foreach (var items in orderDigests.Values)
-            {
-                digests.AddRange(items);
-            }
-
-            return digests;
-        }
-
-        private static void AddOrderDigest(List<ShardedShopStateV2> shopStates,
+        private static void AddOrderDigest(
+            List<ShardedShopStateV2> shopStates,
             IDictionary<Address, List<OrderDigest>> orderDigests)
         {
             foreach (var shopState in shopStates)
             {
                 foreach (var orderDigest in shopState.OrderDigestList)
                 {
-                    if (orderDigest.ExpiredBlockIndex != 0 && orderDigest.ExpiredBlockIndex >
-                        Game.Game.instance.Agent.BlockIndex)
+                    if (orderDigest.ExpiredBlockIndex != 0 &&
+                        orderDigest.ExpiredBlockIndex > Game.Game.instance.Agent.BlockIndex)
                     {
                         var agentAddress = orderDigest.SellerAgentAddress;
                         if (!orderDigests.ContainsKey(agentAddress))
@@ -281,13 +247,13 @@ namespace Nekoyume.State
             if (receiptState is Dictionary dictionary)
             {
                 var state = new OrderDigestListState(dictionary);
-
-                var validOrderDigests = state.OrderDigestList.Where(x =>
-                    x.ExpiredBlockIndex > Game.Game.instance.Agent.BlockIndex);
+                var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+                var validOrderDigests = state.OrderDigestList
+                    .Where(x => x.ExpiredBlockIndex > currentBlockIndex);
                 receipts.AddRange(validOrderDigests);
 
-                var expiredOrderDigests = state.OrderDigestList.Where(x =>
-                    x.ExpiredBlockIndex <= Game.Game.instance.Agent.BlockIndex);
+                var expiredOrderDigests = state.OrderDigestList
+                    .Where(x => x.ExpiredBlockIndex <= currentBlockIndex);
                 var inventory = States.Instance.CurrentAvatarState.inventory;
                 var lockedDigests = expiredOrderDigests
                     .Where(x => inventory.TryGetLockedItem(new OrderLock(x.OrderId), out _))
@@ -298,29 +264,34 @@ namespace Nekoyume.State
             return receipts;
         }
 
-        private static async UniTask<bool> UpdateCachedShopItemsAsync(IEnumerable<OrderDigest> digests)
+        private static async UniTask<bool> UpdateCachedShopItemsAsync(
+            IEnumerable<OrderDigest> digests)
         {
             var selectedDigests = digests
-                .Where(orderDigest => !CachedShopItems.ContainsKey(orderDigest.OrderId)).ToList();
+                .Where(orderDigest => !CachedShopItems.ContainsKey(orderDigest.OrderId))
+                .ToList();
             var tuples = selectedDigests
                 .Select(e => (Address: Addresses.GetItemAddress(e.TradableId), OrderDigest: e))
                 .ToArray();
-            var itemAddresses = tuples.Select(tuple => tuple.Address).Distinct();
-            var itemValues = await Game.Game.instance.Agent.GetStateBulk(itemAddresses);
+            var itemAddresses = tuples
+                .Select(tuple => tuple.Address)
+                .Distinct();
+            var itemValues =
+                await Game.Game.instance.Agent.GetStateBulk(itemAddresses);
             foreach (var (address, orderDigest) in tuples)
             {
                 if (!itemValues.ContainsKey(address))
                 {
-                    Debug.LogWarning(
-                        $"[{nameof(ReactiveShopState)}] Not found address: {address.ToHex()}");
+                    Debug.LogWarning($"[{nameof(ReactiveShopState)}] Not found address:" +
+                                     $" {address.ToHex()}");
                     continue;
                 }
 
                 var itemValue = itemValues[address];
                 if (!(itemValue is Dictionary dictionary))
                 {
-                    Debug.LogWarning(
-                        $"[{nameof(ReactiveShopState)}] {nameof(itemValue)} cannot cast to {typeof(Bencodex.Types.Dictionary).FullName}");
+                    Debug.LogWarning($"[{nameof(ReactiveShopState)}] {nameof(itemValue)}" +
+                                     $" cannot cast to {typeof(Bencodex.Types.Dictionary).FullName}");
                     continue;
                 }
 
