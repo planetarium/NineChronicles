@@ -104,7 +104,6 @@ namespace Nekoyume.UI
                 Game.Event.OnRoomEnter.Invoke(true);
             }
 
-            Find<HeaderMenuStatic>().Close(true);
             Close(true);
         }
 
