@@ -1,4 +1,4 @@
-namespace Lib9c.Tests.Action
+﻿namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
@@ -17,7 +17,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static Lib9c.SerializeKeys;
 
-    public class UnlockWorldTest
+    public class UnlockWorld1Test
     {
         private readonly IRandom _random;
         private readonly TableSheets _tableSheets;
@@ -27,7 +27,7 @@ namespace Lib9c.Tests.Action
         private readonly Currency _currency;
         private readonly IAccountStateDelta _initialState;
 
-        public UnlockWorldTest()
+        public UnlockWorld1Test()
         {
             _random = new TestRandom();
             var sheets = TableSheetsImporter.ImportSheets();
@@ -58,8 +58,6 @@ namespace Lib9c.Tests.Action
         [InlineData(new[] { 2 }, true, false, false, true, 500, null)]
         // Migration AvatarState.
         [InlineData(new[] { 2, 3, 4, 5 }, true, true, false, true, 153000, null)]
-        // TODO: add world 6 unlock
-        //[InlineData(new[] { 2, 3, 4, 5, 6 }, true, true, false, true, 153000, null)]
         // Try open Yggdrasil.
         [InlineData(new[] { 1 }, false, true, false, true, 0, typeof(InvalidWorldException))]
         // Try open Mimisbrunnr.
@@ -146,7 +144,7 @@ namespace Lib9c.Tests.Action
                 state = state.SetState(unlockedWorldIdsAddress, unlockIds);
             }
 
-            var action = new UnlockWorld
+            var action = new UnlockWorld1
             {
                 WorldIds = worldIds,
                 AvatarAddress = _avatarAddress,
