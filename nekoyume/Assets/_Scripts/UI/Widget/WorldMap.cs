@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using Libplanet.Assets;
 using Nekoyume.Model;
@@ -15,7 +14,6 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
-using Nekoyume.TableData;
 using Nekoyume.TableData.Event;
 using Nekoyume.UI.Scroller;
 using TMPro;
@@ -40,7 +38,7 @@ namespace Nekoyume.UI
         }
 
         [SerializeField]
-        private GameObject worldMapRoot = null;
+        private GameObject worldMapRoot;
 
         [SerializeField]
         private Button closeButton;
@@ -177,6 +175,12 @@ namespace Nekoyume.UI
         private void SubscribeAtShow()
         {
             _disposablesAtShow.DisposeAllAndClear();
+            OnDisableStaticObservable
+                .Where(widget => widget is StageInformation)
+                .DelayFrame(1)
+                .Where(_ => gameObject.activeSelf)
+                .Subscribe(_ => SubscribeAtShow())
+                .AddTo(_disposablesAtShow);
             RxProps.EventScheduleRowForDungeon.Subscribe(value =>
             {
                 if (value is null)
@@ -285,7 +289,8 @@ namespace Nekoyume.UI
                 SharedViewModel.IsWorldShown.SetValueAndForceNotify(showWorld);
             }
 
-            TableSheets.Instance.WorldSheet.TryGetValue(worldId,
+            TableSheets.Instance.WorldSheet.TryGetValue(
+                worldId,
                 out var worldRow,
                 true);
             SharedViewModel.SelectedWorldId.Value = worldId;
@@ -358,7 +363,8 @@ namespace Nekoyume.UI
 
         private void ShowWorldUnlockPopup(int worldId)
         {
-            var cost = CrystalCalculator.CalculateWorldUnlockCost(new[] { worldId },
+            var cost = CrystalCalculator.CalculateWorldUnlockCost(
+                    new[] { worldId },
                     Game.TableSheets.Instance.WorldUnlockSheet)
                 .MajorUnit;
             var balance = States.Instance.CrystalBalance;

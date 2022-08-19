@@ -25,23 +25,22 @@ namespace Nekoyume.UI
             public Widget widget;
         }
 
-        private static readonly Subject<Widget> OnEnableStaticSubject = new Subject<Widget>();
-        private static readonly Subject<Widget> OnDisableStaticSubject = new Subject<Widget>();
+        private static readonly Subject<Widget> OnEnableStaticSubject = new();
+        private static readonly Subject<Widget> OnDisableStaticSubject = new();
 
-        private static readonly Dictionary<Type, PoolElementModel> Pool =
-            new Dictionary<Type, PoolElementModel>();
+        private static readonly Dictionary<Type, PoolElementModel> Pool = new();
 
-        protected static readonly Stack<GameObject> WidgetStack = new Stack<GameObject>();
+        protected static readonly Stack<GameObject> WidgetStack = new();
 
         public static IObservable<Widget> OnEnableStaticObservable => OnEnableStaticSubject;
 
         public static IObservable<Widget> OnDisableStaticObservable => OnDisableStaticSubject;
 
         protected readonly ReactiveProperty<AnimationStateType> AnimationState =
-            new ReactiveProperty<AnimationStateType>(AnimationStateType.Closed);
+            new(AnimationStateType.Closed);
 
-        private readonly Subject<Widget> _onEnableSubject = new Subject<Widget>();
-        private readonly Subject<Widget> _onDisableSubject = new Subject<Widget>();
+        private readonly Subject<Widget> _onEnableSubject = new();
+        private readonly Subject<Widget> _onDisableSubject = new();
         private System.Action _onClose;
 
         private Coroutine _coClose;
@@ -59,8 +58,8 @@ namespace Nekoyume.UI
 
         public bool IsCloseAnimationCompleted { get; private set; }
 
-        public List<TutorialTarget> tutorialTargets = new List<TutorialTarget>();
-        public List<TutorialActionType> tutorialActions = new List<TutorialActionType>();
+        public List<TutorialTarget> tutorialTargets = new();
+        public List<TutorialActionType> tutorialActions = new();
 
         public IObservable<Widget> OnEnableObservable => _onEnableSubject;
 
@@ -271,7 +270,7 @@ namespace Nekoyume.UI
 
         public virtual void Show(bool ignoreShowAnimation = false)
         {
-            if (!(_coClose is null))
+            if (_coClose is not null)
             {
                 StopCoroutine(_coClose);
                 _coClose = null;
@@ -299,7 +298,7 @@ namespace Nekoyume.UI
 
         public virtual void Close(bool ignoreCloseAnimation = false)
         {
-            if (WidgetStack.Count != 0 &&
+            if (WidgetStack.Count > 0 &&
                 WidgetStack.Peek() == gameObject)
             {
                 WidgetStack.Pop();
@@ -318,18 +317,19 @@ namespace Nekoyume.UI
                 OnCompleteOfCloseAnimation();
                 gameObject.SetActive(false);
                 AnimationState.Value = AnimationStateType.Closed;
+
                 return;
             }
 
             AnimationState.Value = AnimationStateType.Closing;
             // TODO : wait close animation
-            if (!(_coClose is null))
+            if (_coClose is not null)
             {
                 StopCoroutine(_coClose);
                 _coClose = null;
             }
 
-            if (!(_coCompleteCloseAnimation is null))
+            if (_coCompleteCloseAnimation is not null)
             {
                 StopCoroutine(_coCompleteCloseAnimation);
                 _coCompleteCloseAnimation = null;
@@ -368,14 +368,14 @@ namespace Nekoyume.UI
                 Animator.enabled = true;
                 Animator.Play("Close", 0, 0);
 
-                if (!(_coCompleteCloseAnimation is null))
+                if (_coCompleteCloseAnimation is not null)
                 {
                     StopCoroutine(_coCompleteCloseAnimation);
                 }
 
                 _coCompleteCloseAnimation = StartCoroutine(CoCompleteCloseAnimation());
                 yield return new WaitUntil(() => IsCloseAnimationCompleted);
-                if (!(_coCompleteCloseAnimation is null))
+                if (_coCompleteCloseAnimation is not null)
                 {
                     StopCoroutine(_coCompleteCloseAnimation);
                     _coCompleteCloseAnimation = null;
@@ -389,12 +389,12 @@ namespace Nekoyume.UI
         public void CloseWithOtherWidgets()
         {
             var deletableWidgets = FindWidgets().Where(widget =>
-                !(widget is SystemWidget) &&
-                !(widget is MessageCatTooltip) &&
-                !(widget is HeaderMenuStatic) &&
-                !(widget is MaterialTooltip) &&
-                !(widget is ShopBuy) &&
-                !(widget is ShopSell) &&
+                widget is not SystemWidget &&
+                widget is not MessageCatTooltip &&
+                widget is not HeaderMenuStatic &&
+                widget is not MaterialTooltip &&
+                widget is not ShopBuy &&
+                widget is not ShopSell &&
                 widget.IsActive());
             foreach (var widget in deletableWidgets)
             {
@@ -415,7 +415,6 @@ namespace Nekoyume.UI
             if (!IsCloseAnimationCompleted)
             {
                 IsCloseAnimationCompleted = true;
-                AnimationState.Value = AnimationStateType.Closed;
             }
         }
 
