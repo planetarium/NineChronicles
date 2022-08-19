@@ -258,7 +258,25 @@ namespace Nekoyume.UI
         {
             if (!SharedViewModel.WorldInformation.TryGetWorld(worldId, out var world))
             {
-                throw new ArgumentException(nameof(worldId));
+                var unlockConditionRow =
+                    TableSheets.Instance.WorldUnlockSheet.OrderedList
+                        .FirstOrDefault(row =>
+                            row.WorldIdToUnlock == worldId);
+                if (unlockConditionRow is null)
+                {
+                    throw new ArgumentException(nameof(worldId));
+                }
+
+                if (!SharedViewModel.WorldInformation
+                        .IsStageCleared(unlockConditionRow
+                        .StageId))
+                {
+                    throw new Action.InvalidWorldException();
+                }
+
+                var worldSheet = TableSheets.Instance.WorldSheet;
+                SharedViewModel.WorldInformation.UnlockWorld(worldId, 0, worldSheet);
+                SharedViewModel.WorldInformation.TryGetWorld(worldId, out world);
             }
 
             if (worldId == 1)
