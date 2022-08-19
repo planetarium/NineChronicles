@@ -18087,7 +18087,7 @@ PlayableDirector:
   m_GameObject: {fileID: 3932926034676862883}
   m_Enabled: 1
   serializedVersion: 3
-  m_PlayableAsset: {fileID: 11400000, guid: 9a344bfb59796e8458291034d729bb9e, type: 2}
+  m_PlayableAsset: {fileID: 11400000, guid: df5d23711e506f04aa0b1dafe7f66f1c, type: 2}
   m_InitialState: 1
   m_WrapMode: 2
   m_DirectorUpdateMode: 1
@@ -18251,6 +18251,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 644d45699be4e6945991f8ab2e1c184f, type: 2}
   - {fileID: 11400000, guid: 644d45699be4e6945991f8ab2e1c184f, type: 2}
   fallDownCutscene: {fileID: 11400000, guid: 9a344bfb59796e8458291034d729bb9e, type: 2}
+  playerDefeatCutscene: {fileID: 11400000, guid: 9a344bfb59796e8458291034d729bb9e,
+    type: 2}
 --- !u!114 &1292220910054991738
 MonoBehaviour:
   m_ObjectHideFlags: 0
