@@ -350,7 +350,8 @@ namespace Nekoyume.UI
                     var showHammerPoint = RxProps.HammerPointStates is not null &&
                                           RxProps.HammerPointStates.TryGetValue(
                                               recipeId,
-                                              out _hammerPointState);
+                                              out _hammerPointState) &&
+                                          index != MimisbrunnrRecipeIndex;
                     hammerPointView.parentObject.SetActive(showHammerPoint);
                     if (showHammerPoint)
                     {
