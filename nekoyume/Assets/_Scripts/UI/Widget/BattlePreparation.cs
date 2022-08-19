@@ -520,11 +520,13 @@ namespace Nekoyume.UI
                 var selectedPlayer = Game.Game.instance.Stage.GetPlayer();
                 switch (slotItem)
                 {
-                    default:
-                        return;
+                    case Consumable _:
+                        Game.Event.OnUpdatePlayerEquip.OnNext(selectedPlayer);
+                        break;
                     case Costume costume:
                         selectedPlayer.UnequipCostume(costume, true);
-                        selectedPlayer.EquipEquipmentsAndUpdateCustomize((Armor)_armorSlot.Item,
+                        selectedPlayer.EquipEquipmentsAndUpdateCustomize(
+                            (Armor)_armorSlot.Item,
                             (Weapon)_weaponSlot.Item);
                         Game.Event.OnUpdatePlayerEquip.OnNext(selectedPlayer);
 
@@ -551,6 +553,8 @@ namespace Nekoyume.UI
 
                         Game.Event.OnUpdatePlayerEquip.OnNext(selectedPlayer);
                         break;
+                    default:
+                        return;
                 }
             }
 
