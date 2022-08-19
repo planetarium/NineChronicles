@@ -55,6 +55,7 @@ namespace Nekoyume.Helper
             {
                 // NOTE: Add new World from WorldSheet
                 worldInformation.AddAndUnlockNewWorld(worldRow, blockIndex, worldSheet);
+                worldInformation.TryGetWorld(worldId, out world);
             }
 
             if (!world.IsUnlocked)
