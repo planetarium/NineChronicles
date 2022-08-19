@@ -262,16 +262,11 @@ namespace Nekoyume.UI
                     TableSheets.Instance.WorldUnlockSheet.OrderedList
                         .FirstOrDefault(row =>
                             row.WorldIdToUnlock == worldId);
-                if (unlockConditionRow is null)
+                if (unlockConditionRow is null ||
+                    !SharedViewModel.WorldInformation
+                        .IsStageCleared(unlockConditionRow.StageId))
                 {
                     throw new ArgumentException(nameof(worldId));
-                }
-
-                if (!SharedViewModel.WorldInformation
-                        .IsStageCleared(unlockConditionRow
-                        .StageId))
-                {
-                    throw new Action.InvalidWorldException();
                 }
 
                 var worldSheet = TableSheets.Instance.WorldSheet;
