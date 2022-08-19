@@ -90,7 +90,7 @@ namespace Nekoyume.Action
                 }
 
                 // Check stage cleared in HackAndSlash.
-                if (!worldInformation.IsWorldUnlocked(worldId))
+                if (!worldInformation.IsWorldUnlocked(worldId) && !worldInformation.IsStageCleared(row.StageId))
                 {
                     throw new FailedToUnlockWorldException($"{worldId} is locked.");
                 }
