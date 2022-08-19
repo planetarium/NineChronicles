@@ -292,6 +292,12 @@ namespace Nekoyume.Action
                     throw new FailedLoadSheetException(typeof(CrystalHammerPointSheet));
                 }
 
+                if (recipeRow.IsMimisBrunnrSubRecipe(subRecipeId))
+                {
+                    throw new ArgumentException(
+                        $"Can not super craft with mimisbrunnr recipe. Subrecipe id: {subRecipeId}");
+                }
+
                 states = UseAssetsBySuperCraft(
                     states,
                     context,
