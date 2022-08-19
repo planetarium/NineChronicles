@@ -24,15 +24,15 @@ namespace Nekoyume.UI
     public class ShopBuy : Widget
     {
         [SerializeField]
-        private Button sellButton = null;
+        private Button sellButton;
 
         [SerializeField]
-        private Button closeButton = null;
+        private Button closeButton;
 
         [SerializeField]
         private BuyView view;
 
-        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+        private CancellationTokenSource _cancellationTokenSource = new();
 
         private Shop SharedModel { get; set; }
 
@@ -66,16 +66,15 @@ namespace Nekoyume.UI
         {
             base.Initialize();
             SharedModel.ItemCountAndPricePopup.Value.Item.Subscribe(data =>
+            {
+                if (data is null)
                 {
-                    if (data is null)
-                    {
-                        Find<ItemCountAndPricePopup>().Close();
-                        return;
-                    }
+                    Find<ItemCountAndPricePopup>().Close();
+                    return;
+                }
 
-                    Find<ItemCountAndPricePopup>().Pop(SharedModel.ItemCountAndPricePopup.Value);
-                })
-                .AddTo(gameObject);
+                Find<ItemCountAndPricePopup>().Pop(SharedModel.ItemCountAndPricePopup.Value);
+            }).AddTo(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -90,7 +89,7 @@ namespace Nekoyume.UI
 
             var initWeaponTask = Task.Run(async () =>
             {
-                var list = new List<ItemSubType>() { ItemSubType.Weapon, };
+                var list = new List<ItemSubType> { ItemSubType.Weapon, };
                 await ReactiveShopState.SetBuyDigestsAsync(list);
                 return true;
             });
@@ -108,7 +107,7 @@ namespace Nekoyume.UI
             _cancellationTokenSource = new CancellationTokenSource();
             var initOthersTask = Task.Run(async () =>
             {
-                var list = new List<ItemSubType>()
+                var list = new List<ItemSubType>
                 {
                     ItemSubType.Armor,
                     ItemSubType.Belt,

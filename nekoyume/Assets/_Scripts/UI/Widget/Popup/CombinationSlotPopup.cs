@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
-using Nekoyume.EnumType;
 using Nekoyume.Extensions;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -69,7 +68,7 @@ namespace Nekoyume.UI
         private CraftType _craftType;
         private CombinationSlotState _slotState;
         private int _slotIndex;
-        private readonly List<IDisposable> _disposablesOfOnEnable = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesOfOnEnable = new();
 
         protected override void Awake()
         {
