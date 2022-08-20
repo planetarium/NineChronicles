@@ -11,6 +11,8 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Game;
+using Nekoyume.TableData.Event;
 using UniRx;
 using UnityEngine;
 
@@ -18,29 +20,25 @@ namespace Nekoyume.UI.Model
 {
     public class RecipeModel
     {
-        public readonly Dictionary<string, RecipeRow.Model> EquipmentRecipeMap
-            = new Dictionary<string, RecipeRow.Model>();
+        public readonly Dictionary<string, RecipeRow.Model> EquipmentRecipeMap = new();
 
-        public readonly Dictionary<int, RecipeRow.Model> ConsumableRecipeMap
-            = new Dictionary<int, RecipeRow.Model>();
+        public readonly Dictionary<int, RecipeRow.Model> ConsumableRecipeMap = new();
 
-        public readonly ReactiveProperty<SheetRow<int>> SelectedRow
-            = new ReactiveProperty<SheetRow<int>>();
+        public readonly Dictionary<ItemSubType, RecipeRow.Model> EventConsumableRecipeMap = new();
 
-        public readonly ReactiveProperty<SheetRow<int>> NotifiedRow
-            = new ReactiveProperty<SheetRow<int>>();
+        public readonly ReactiveProperty<SheetRow<int>> SelectedRow = new();
 
-        public readonly ReactiveProperty<List<int>> UnlockedRecipes =
-            new ReactiveProperty<List<int>>();
+        public readonly ReactiveProperty<SheetRow<int>> NotifiedRow = new();
 
-        public readonly ReactiveProperty<List<int>> UnlockableRecipes =
-            new ReactiveProperty<List<int>>();
+        public readonly ReactiveProperty<List<int>> UnlockedRecipes = new();
+
+        public readonly ReactiveProperty<List<int>> UnlockableRecipes = new();
 
         public int UnlockableRecipesOpenCost { get; private set; }
         public ItemSubType DisplayingItemSubtype { get; set; }
 
-        public readonly List<int> UnlockingRecipes = new List<int>();
-        public readonly List<int> DummyLockedRecipes = new List<int>();
+        public readonly List<int> UnlockingRecipes = new();
+        public readonly List<int> DummyLockedRecipes = new();
 
         public bool HasNotification => !(NotifiedRow.Value is null);
         public RecipeCell SelectedRecipeCell { get; set; }
@@ -50,10 +48,12 @@ namespace Nekoyume.UI.Model
 
         public RecipeModel(
             IEnumerable<EquipmentItemRecipeSheet.Row> equipments,
-            IEnumerable<RecipeGroup> consumableGroups)
+            IEnumerable<RecipeGroup> consumableGroups,
+            List<EventConsumableItemRecipeSheet.Row> eventConsumables)
         {
             LoadEquipment(equipments);
             LoadConsumable(consumableGroups);
+            UpdateEventConsumable(eventConsumables);
         }
 
         private void LoadEquipment(IEnumerable<EquipmentItemRecipeSheet.Row> recipes)
@@ -136,6 +136,27 @@ namespace Nekoyume.UI.Model
             }
         }
 
+        public void UpdateEventConsumable(List<EventConsumableItemRecipeSheet.Row> rows)
+        {
+            EventConsumableRecipeMap.Clear();
+            if (rows is null)
+            {
+                return;
+            }
+
+            var title = L10nManager.Localize("UI_EVENT_FOOD");
+            var value = new RecipeRow.Model(title, 0)
+            {
+                ItemSubType = ItemSubType.Food,
+            };
+            foreach (var row in rows)
+            {
+                value.Rows.Add(row);
+            }
+
+            EventConsumableRecipeMap[ItemSubType.Food] = value;
+        }
+
         public async void UpdateUnlockedRecipesAsync(Address address)
         {
             var unlockedRecipeIdsAddress = address.Derive("recipe_ids");
@@ -190,8 +211,8 @@ namespace Nekoyume.UI.Model
         public static string GetEquipmentGroup(int itemId)
         {
             var idString = itemId.ToString();
-            var tierArea = idString.Substring(0, 4);
-            var variationArea = idString.Substring(5);
+            var tierArea = idString[..4];
+            var variationArea = idString[5..];
             return string.Format(EquipmentSplitFormat, tierArea, variationArea);
         }
     }

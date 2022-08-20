@@ -11,10 +11,14 @@ using System;
 using System.Globalization;
 using Nekoyume.State;
 using System.Numerics;
+using Nekoyume.Action;
 using Nekoyume.Extensions;
+using Nekoyume.Game;
 using Nekoyume.Model.Mail;
 using Nekoyume.UI.Scroller;
 using Nekoyume.L10n;
+using Nekoyume.Model.State;
+using UnityEngine.UI;
 using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
@@ -40,37 +44,87 @@ namespace Nekoyume.UI
             public GameObject ParentObject;
             public TextMeshProUGUI OptionText;
             public TextMeshProUGUI PercentageText;
+            public Slider PercentageSlider;
         }
 
-        [SerializeField] private GameObject toggleParent = null;
-        [SerializeField] private List<Toggle> categoryToggles = null;
-        [SerializeField] private RecipeCell recipeCell = null;
-        [SerializeField] private TextMeshProUGUI titleText = null;
-        [SerializeField] private TextMeshProUGUI statText = null;
+        [Serializable]
+        private struct HammerPointView
+        {
+            public GameObject parentObject;
+            public Slider nowPoint;
+            public Image nowPointImage;
+            public Image increasePointImage;
+            public TMP_Text hammerPointText;
+            public GameObject notEnoughHammerPointObject;
+            public GameObject enoughHammerPointObject;
+            public Button superCraftButton;
+        }
 
-        [SerializeField] private TextMeshProUGUI blockIndexText = null;
-        [SerializeField] private TextMeshProUGUI greatSuccessRateText = null;
+        [SerializeField]
+        private GameObject toggleParent;
 
-        [SerializeField] private List<OptionView> optionViews = null;
-        [SerializeField] private List<OptionView> skillViews = null;
-        [SerializeField] private TextMeshProUGUI levelText = null;
+        [SerializeField]
+        private List<Toggle> categoryToggles;
 
-        [SerializeField] private RequiredItemRecipeView requiredItemRecipeView = null;
+        [SerializeField]
+        private RecipeCell recipeCell;
 
-        [SerializeField] private ConditionalCostButton button = null;
-        [SerializeField] private GameObject lockedObject = null;
-        [SerializeField] private TextMeshProUGUI lockedText = null;
+        [SerializeField]
+        private TextMeshProUGUI titleText;
+
+        // [SerializeField]
+        // private TextMeshProUGUI statText;
+
+        [SerializeField]
+        private TextMeshProUGUI[] mainStatTexts;
+
+        [SerializeField]
+        private TextMeshProUGUI blockIndexText;
+
+        [SerializeField]
+        private TextMeshProUGUI greatSuccessRateText;
+
+        [SerializeField]
+        private List<OptionView> optionViews;
+
+        [SerializeField]
+        private List<OptionView> skillViews;
+
+        [SerializeField]
+        private List<GameObject> optionIcons;
+
+        [SerializeField]
+        private TextMeshProUGUI levelText;
+
+        [SerializeField]
+        private RequiredItemRecipeView requiredItemRecipeView;
+
+        [SerializeField]
+        private ConditionalCostButton button;
+
+        [SerializeField]
+        private GameObject lockedObject;
+
+        [SerializeField]
+        private TextMeshProUGUI lockedText;
+
+        [SerializeField]
+        private HammerPointView hammerPointView;
 
         public readonly Subject<RecipeInfo> CombinationActionSubject = new Subject<RecipeInfo>();
 
-        private SheetRow<int> _recipeRow = null;
-        private List<int> _subrecipeIds = null;
+        private SheetRow<int> _recipeRow;
+        private List<int> _subrecipeIds;
         private int _selectedIndex;
         private RecipeInfo _selectedRecipeInfo;
 
         private const string StatTextFormat = "{0} {1}";
         private const int MimisbrunnrRecipeIndex = 2;
         private IDisposable _disposableForOnDisable;
+
+        private bool _canSuperCraft;
+        private EquipmentItemOptionSheet.Row _skillOptionRow;
+        private HammerPointState _hammerPointState;
 
         private void Awake()
         {
@@ -99,6 +153,19 @@ namespace Nekoyume.UI
                     }
                 })
                 .AddTo(gameObject);
+            if (hammerPointView.superCraftButton)
+            {
+                hammerPointView.superCraftButton
+                    .OnClickAsObservable()
+                    .Subscribe(_ =>
+                    {
+                        Widget.Find<SuperCraftPopup>().Show(
+                            _skillOptionRow,
+                            _selectedRecipeInfo,
+                            _recipeRow.Key,
+                            _canSuperCraft);
+                    }).AddTo(gameObject);
+            }
         }
 
         private void OnDisable()
@@ -110,37 +177,67 @@ namespace Nekoyume.UI
             }
         }
 
-        public void SetData(SheetRow<int> recipeRow, List<int> subrecipeIds)
+        public void SetData(SheetRow<int> recipeRow, List<int> subRecipeIds)
         {
             _recipeRow = recipeRow;
-            _subrecipeIds = subrecipeIds;
+            _subrecipeIds = subRecipeIds;
 
             string title = null;
             var isEquipment = false;
-            if (recipeRow is EquipmentItemRecipeSheet.Row equipmentRow)
+            switch (recipeRow)
             {
-                isEquipment = true;
-                var resultItem = equipmentRow.GetResultEquipmentItemRow();
-                title = resultItem.GetLocalizedName(true, false);
+                case EquipmentItemRecipeSheet.Row equipmentRow:
+                {
+                    isEquipment = true;
+                    var resultItem = equipmentRow.GetResultEquipmentItemRow();
+                    title = resultItem.GetLocalizedName(true, false);
 
-                var stat = resultItem.GetUniqueStat();
-                var statValueText = stat.Type == StatType.SPD
-                    ? (stat.ValueAsInt * 0.01m).ToString(CultureInfo.InvariantCulture)
-                    : stat.ValueAsInt.ToString();
-                statText.text = string.Format(StatTextFormat, stat.Type, statValueText);
-                recipeCell.Show(equipmentRow, false);
-            }
-            else if (recipeRow is ConsumableItemRecipeSheet.Row consumableRow)
-            {
-                var resultItem = consumableRow.GetResultConsumableItemRow();
-                title = resultItem.GetLocalizedName();
+                    for (var i = 0; i < mainStatTexts.Length; i++)
+                    {
+                        var mainStatText = mainStatTexts[i];
+                        if (i == 0)
+                        {
+                            var stat = resultItem.GetUniqueStat();
+                            var statValueText = stat.Type == StatType.SPD
+                                ? (stat.ValueAsInt * 0.01m).ToString(CultureInfo.InvariantCulture)
+                                : stat.ValueAsInt.ToString();
+                            mainStatText.text = string.Format(StatTextFormat, stat.Type, statValueText);
+                            mainStatText.gameObject.SetActive(true);
+                            continue;
+                        }
 
-                var stat = resultItem.GetUniqueStat();
-                var statValueText = stat.StatType == StatType.SPD
-                    ? (stat.ValueAsInt * 0.01m).ToString(CultureInfo.InvariantCulture)
-                    : stat.ValueAsInt.ToString();
-                statText.text = string.Format(StatTextFormat, stat.StatType, statValueText);
-                recipeCell.Show(consumableRow, false);
+                        mainStatText.gameObject.SetActive(false);
+                    }
+
+                    recipeCell.Show(equipmentRow, false);
+                    break;
+                }
+                case ConsumableItemRecipeSheet.Row consumableRow:
+                {
+                    var resultItem = consumableRow.GetResultConsumableItemRow();
+                    title = resultItem.GetLocalizedName();
+
+                    var statsCount = resultItem.Stats.Count;
+                    for (var i = 0; i < mainStatTexts.Length; i++)
+                    {
+                        var mainStatText = mainStatTexts[i];
+                        if (i < statsCount)
+                        {
+                            var stat = resultItem.Stats[i];
+                            var statValueText = stat.StatType == StatType.SPD
+                                ? (stat.ValueAsInt * 0.01m).ToString(CultureInfo.InvariantCulture)
+                                : stat.ValueAsInt.ToString();
+                            mainStatText.text = string.Format(StatTextFormat, stat.StatType, statValueText);
+                            mainStatText.gameObject.SetActive(true);
+                            continue;
+                        }
+
+                        mainStatText.gameObject.SetActive(false);
+                    }
+
+                    recipeCell.Show(consumableRow, false);
+                    break;
+                }
             }
 
             titleText.text = title;
@@ -219,10 +316,10 @@ namespace Nekoyume.UI
                 skillView.ParentObject.SetActive(false);
             }
 
-            var isLocked = false;
+            optionIcons.ForEach(obj => obj.SetActive(false));
             if (equipmentRow != null)
             {
-                isLocked = !Craft.SharedModel.UnlockedRecipes.Value.Contains(_recipeRow.Key);
+                var isLocked = !Craft.SharedModel.UnlockedRecipes.Value.Contains(_recipeRow.Key);
                 var baseMaterialInfo = new EquipmentItemSubRecipeSheet.MaterialInfo(
                     equipmentRow.MaterialId,
                     equipmentRow.MaterialCount);
@@ -239,7 +336,7 @@ namespace Nekoyume.UI
                 {
                     toggleParent.SetActive(true);
                     subRecipeId = _subrecipeIds[index];
-                    var subRecipe = Game.Game.instance.TableSheets
+                    var subRecipe = TableSheets.Instance
                         .EquipmentItemSubRecipeSheetV2[subRecipeId.Value];
                     var options = subRecipe.Options;
 
@@ -250,7 +347,38 @@ namespace Nekoyume.UI
 
                     SetOptions(options);
 
-                    var sheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
+                    var showHammerPoint = RxProps.HammerPointStates is not null &&
+                                          RxProps.HammerPointStates.TryGetValue(
+                                              recipeId,
+                                              out _hammerPointState) &&
+                                          index != MimisbrunnrRecipeIndex;
+                    hammerPointView.parentObject.SetActive(showHammerPoint);
+                    if (showHammerPoint)
+                    {
+                        var max = TableSheets.Instance.CrystalHammerPointSheet[recipeId].MaxPoint;
+                        var increasePoint = index == 0
+                            ? CombinationEquipment.BasicSubRecipeHammerPoint
+                            : CombinationEquipment.SpecialSubRecipeHammerPoint;
+                        var increasedPoint = Math.Min(_hammerPointState.HammerPoint + increasePoint, max);
+                        _canSuperCraft = _hammerPointState.HammerPoint == max;
+                        var optionSheet = TableSheets.Instance.EquipmentItemOptionSheet;
+                        hammerPointView.nowPoint.maxValue = max;
+                        hammerPointView.hammerPointText.text =
+                            $"{_hammerPointState.HammerPoint}/{max}";
+                        hammerPointView.nowPoint.value = _hammerPointState.HammerPoint;
+                        hammerPointView.nowPointImage.fillAmount =
+                            _hammerPointState.HammerPoint / (float)max;
+                        hammerPointView.increasePointImage.fillAmount =
+                            increasedPoint / (float) max;
+                        hammerPointView.notEnoughHammerPointObject.SetActive(!_canSuperCraft);
+                        hammerPointView.enoughHammerPointObject.SetActive(_canSuperCraft);
+                        _skillOptionRow = options
+                            .Select(x => (ratio: x.Ratio, option: optionSheet[x.Id]))
+                            .FirstOrDefault(tuple => tuple.option.SkillId != 0)
+                            .option;
+                    }
+
+                    var sheet = TableSheets.Instance.ItemRequirementSheet;
                     var resultItemRow = equipmentRow.GetResultEquipmentItemRow();
 
                     if (!sheet.TryGetValue(resultItemRow.Id, out var row))
@@ -296,7 +424,7 @@ namespace Nekoyume.UI
                 costAP = consumableRow.RequiredActionPoint;
                 recipeId = consumableRow.Id;
 
-                var sheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
+                var sheet = TableSheets.Instance.ItemRequirementSheet;
                 var resultItemRow = consumableRow.GetResultConsumableItemRow();
 
                 if (!sheet.TryGetValue(resultItemRow.Id, out var row))
@@ -321,7 +449,8 @@ namespace Nekoyume.UI
             }
 
             blockIndexText.text = blockIndex.ToString();
-            greatSuccessRateText.text = greatSuccessRate == 0m ? "-" : greatSuccessRate.ToString("0.0%");
+            greatSuccessRateText.text =
+                greatSuccessRate == 0m ? "-" : greatSuccessRate.ToString("0.0%");
 
             var recipeInfo = new RecipeInfo
             {
@@ -356,17 +485,16 @@ namespace Nekoyume.UI
             var replacedMaterialMap = new Dictionary<int, int>();
             var inventory = States.Instance.CurrentAvatarState.inventory;
 
-            foreach (var pair in required)
+            foreach (var (id, count) in required)
             {
-                var id = pair.Key;
-                var count = pair.Value;
-
-                if (!Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(id, out var row))
+                if (!TableSheets.Instance.MaterialItemSheet.TryGetValue(id, out var row))
                 {
                     continue;
                 }
 
-                var itemCount = inventory.TryGetFungibleItems(row.ItemId, out var outFungibleItems)
+                var itemCount = inventory.TryGetFungibleItems(
+                    row.ItemId,
+                    out var outFungibleItems)
                     ? outFungibleItems.Sum(e => e.count)
                     : 0;
 
@@ -393,7 +521,7 @@ namespace Nekoyume.UI
                 var costNCG = new ConditionalCostButton.CostParam(
                     CostType.NCG,
                     (long)_selectedRecipeInfo.CostNCG);
-                var sheet = Game.Game.instance.TableSheets.CrystalMaterialCostSheet;
+                var sheet = TableSheets.Instance.CrystalMaterialCostSheet;
 
                 var crystalCost = 0 * CrystalCalculator.CRYSTAL;
                 foreach (var pair in _selectedRecipeInfo.ReplacedMaterials)
@@ -436,7 +564,7 @@ namespace Nekoyume.UI
         private void SetOptions(
             List<EquipmentItemSubRecipeSheetV2.OptionInfo> optionInfos)
         {
-            var tableSheets = Game.Game.instance.TableSheets;
+            var tableSheets = TableSheets.Instance;
             var optionSheet = tableSheets.EquipmentItemOptionSheet;
             var skillSheet = tableSheets.SkillSheet;
             var options = optionInfos
@@ -459,23 +587,27 @@ namespace Nekoyume.UI
                 if (option.StatType != StatType.NONE)
                 {
                     var optionView = optionViews.First(x => !x.ParentObject.activeSelf);
-
+                    var normalizedRatio = ratio.NormalizeFromTenThousandths();
                     optionView.OptionText.text = option.OptionRowToString();
-                    optionView.PercentageText.text = (ratio.NormalizeFromTenThousandths()).ToString("0%");
+                    optionView.PercentageText.text = normalizedRatio.ToString("0%");
+                    optionView.PercentageSlider.value = (float) normalizedRatio;
                     optionView.ParentObject.transform.SetSiblingIndex(siblingIndex);
                     optionView.ParentObject.SetActive(true);
+                    optionIcons[siblingIndex].SetActive(true);
                 }
                 else
                 {
                     var skillView = skillViews.First(x => !x.ParentObject.activeSelf);
-
                     var description = skillSheet.TryGetValue(option.SkillId, out var skillRow)
                         ? skillRow.GetLocalizedName()
                         : string.Empty;
+                    var normalizedRatio = ratio.NormalizeFromTenThousandths();
                     skillView.OptionText.text = description;
-                    skillView.PercentageText.text = (ratio.NormalizeFromTenThousandths()).ToString("0%");
+                    skillView.PercentageText.text = normalizedRatio.ToString("0%");
+                    skillView.PercentageSlider.value = (float) normalizedRatio;
                     skillView.ParentObject.transform.SetSiblingIndex(siblingIndex);
                     skillView.ParentObject.SetActive(true);
+                    optionIcons.Last().SetActive(true);
                 }
 
                 ++siblingIndex;
@@ -513,11 +645,10 @@ namespace Nekoyume.UI
         {
             slotIndex = -1;
 
-
             var inventory = States.Instance.CurrentAvatarState.inventory;
             foreach (var material in _selectedRecipeInfo.Materials)
             {
-                if (!Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(material.Key, out var row))
+                if (!TableSheets.Instance.MaterialItemSheet.TryGetValue(material.Key, out var row))
                 {
                     continue;
                 }
@@ -528,7 +659,7 @@ namespace Nekoyume.UI
 
                 // when a material is unreplaceable.
                 if (material.Value > itemCount &&
-                    !Game.Game.instance.TableSheets.CrystalMaterialCostSheet.ContainsKey(material.Key))
+                    !TableSheets.Instance.CrystalMaterialCostSheet.ContainsKey(material.Key))
                 {
                     var message = L10nManager.Localize("UI_UPREPLACEABLE_MATERIAL_FORMAT", row.GetLocalizedName());
                     errorMessage = message;

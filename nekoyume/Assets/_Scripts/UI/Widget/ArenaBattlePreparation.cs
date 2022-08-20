@@ -7,7 +7,6 @@ using Nekoyume.Arena;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
-using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State;
@@ -28,61 +27,46 @@ using Inventory = Nekoyume.UI.Module.Inventory;
 
 namespace Nekoyume.UI
 {
-    using Nekoyume.UI.Scroller;
+    using Scroller;
     using UniRx;
 
     public class ArenaBattlePreparation : Widget
     {
-        private static readonly Vector3 PlayerPosition = new Vector3(1999.8f, 1999.3f, 3f);
+        private static readonly Vector3 PlayerPosition = new(1999.8f, 1999.3f, 3f);
 
-        [SerializeField]
-        private Inventory inventory;
+        [SerializeField] private Inventory inventory;
 
-        [SerializeField]
-        private EquipmentSlots equipmentSlots;
+        [SerializeField] private EquipmentSlots equipmentSlots;
 
-        [SerializeField]
-        private EquipmentSlots costumeSlots;
+        [SerializeField] private EquipmentSlots costumeSlots;
 
-        [SerializeField]
-        private Transform titleSocket;
+        [SerializeField] private Transform titleSocket;
 
-        [SerializeField]
-        private AvatarStats stats;
+        [SerializeField] private AvatarStats stats;
 
-        [SerializeField]
-        private ParticleSystem[] particles;
+        [SerializeField] private ParticleSystem[] particles;
 
-        [SerializeField]
-        private TMP_InputField levelField;
+        [SerializeField] private TMP_InputField levelField;
 
-        [SerializeField]
-        private ConditionalCostButton startButton;
+        [SerializeField] private ConditionalCostButton startButton;
 
-        [SerializeField]
-        private Button closeButton;
+        [SerializeField] private Button closeButton;
 
-        [SerializeField]
-        private Button simulateButton;
+        [SerializeField] private Button simulateButton;
 
-        [SerializeField]
-        private Transform buttonStarImageTransform;
+        [SerializeField] private Transform buttonStarImageTransform;
 
-        [SerializeField, Range(.5f, 3.0f)]
-        private float animationTime = 1f;
+        [SerializeField, Range(.5f, 3.0f)] private float animationTime = 1f;
 
-        [SerializeField]
-        private bool moveToLeft = false;
+        [SerializeField] private bool moveToLeft = false;
 
         [SerializeField, Range(0f, 10f),
          Tooltip("Gap between start position X and middle position X")]
         private float middleXGap = 1f;
 
-        [SerializeField]
-        private GameObject coverToBlockClick;
+        [SerializeField] private GameObject coverToBlockClick;
 
-        [SerializeField]
-        private GameObject blockStartingTextObject;
+        [SerializeField] private GameObject blockStartingTextObject;
 
         private EquipmentSlot _weaponSlot;
         private EquipmentSlot _armorSlot;
@@ -90,9 +74,9 @@ namespace Nekoyume.UI
         private AvatarState _chooseAvatarState;
         private Player _player;
         private GameObject _cachedCharacterTitle;
-        private int _ticketCountToUse = 1;
+        private const int _ticketCountToUse = 1;
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposables = new();
 
         public override bool CanHandleInputEvent =>
             base.CanHandleInputEvent &&
@@ -178,6 +162,7 @@ namespace Nekoyume.UI
             var stage = Game.Game.instance.Stage;
             stage.IsRepeatStage = false;
 
+            UpdateArenaAvatarState();
             var avatarState = RxProps.PlayersArenaParticipant.Value.AvatarState;
             if (!_player)
             {
@@ -218,6 +203,54 @@ namespace Nekoyume.UI
         }
 
         #endregion
+
+        private void UpdateArenaAvatarState()
+        {
+            var avatarState = Game.Game.instance.States.CurrentAvatarState;
+            var arenaAvatarState = RxProps.PlayersArenaParticipant.Value.AvatarState;
+            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+
+            for (int i = arenaAvatarState.inventory.Items.Count - 1; i > 0; i--)
+            {
+                Nekoyume.Model.Item.Inventory.Item existItem;
+                switch (arenaAvatarState.inventory.Items[i].item)
+                {
+                    case Equipment arenaEquipment:
+                    {
+                        existItem = avatarState.inventory.Items.FirstOrDefault(item =>
+                            item.item is Equipment equipment
+                            && equipment.ItemId == arenaEquipment.ItemId);
+                        break;
+                    }
+                    case Costume arenaCostume:
+                    {
+                        existItem = avatarState.inventory.Items.FirstOrDefault(item =>
+                            item.item is Costume costume
+                            && costume.ItemId == arenaCostume.ItemId);
+                        break;
+                    }
+                    default:
+                        continue;
+                }
+
+                if (existItem is null)
+                {
+                    // It cause modifying arenaAvatarState.inventory collection in a loop
+                    arenaAvatarState.inventory.RemoveItem(arenaAvatarState.inventory.Items[i]);
+                }
+                else
+                {
+                    var isValid = existItem is { Locked: false, item: ITradableItem tradableItem }
+                                  && tradableItem.RequiredBlockIndex <= currentBlockIndex;
+
+                    if (arenaAvatarState.inventory.Items[i] is { item: IEquippableItem { Equipped: true } equippedItem }
+                        && !isValid)
+                    {
+                        equippedItem.Unequip();
+                    }
+                }
+            }
+        }
 
         private void UpdateInventory()
         {
@@ -405,7 +438,7 @@ namespace Nekoyume.UI
             }
 
             if (!inventory.TryGetModel(slot.Item, out var targetInventoryItem) ||
-                !(targetInventoryItem.ItemBase is IEquippableItem equippableItem))
+                targetInventoryItem.ItemBase is not IEquippableItem equippableItem)
             {
                 return;
             }
@@ -533,6 +566,8 @@ namespace Nekoyume.UI
 
         private void OnClickBattle()
         {
+            AudioController.PlayClick();
+
             if (Game.Game.instance.IsInWorld)
             {
                 return;
@@ -541,7 +576,7 @@ namespace Nekoyume.UI
             var arenaTicketCost = startButton.ArenaTicketCost;
             var hasEnoughTickets =
                 RxProps.ArenaTicketProgress.HasValue &&
-                RxProps.ArenaTicketProgress.Value.currentTicketCount >= arenaTicketCost;
+                RxProps.ArenaTicketProgress.Value.currentTickets >= arenaTicketCost;
             if (hasEnoughTickets)
             {
                 StartCoroutine(CoBattleStart(CostType.ArenaTicket));
@@ -589,13 +624,13 @@ namespace Nekoyume.UI
             var headerMenuStatic = Find<HeaderMenuStatic>();
             var currencyImage = costType switch
             {
-                CostType.None => null,
                 CostType.NCG => headerMenuStatic.Gold.IconImage,
                 CostType.ActionPoint => headerMenuStatic.ActionPoint.IconImage,
                 CostType.Hourglass => headerMenuStatic.Hourglass.IconImage,
                 CostType.Crystal => headerMenuStatic.Crystal.IconImage,
                 CostType.ArenaTicket => headerMenuStatic.ArenaTickets.IconImage,
-                _ => throw new ArgumentOutOfRangeException(nameof(costType), costType, null)
+                _ or CostType.None => throw new ArgumentOutOfRangeException(
+                    nameof(costType), costType, null)
             };
             var itemMoveAnimation = ItemMoveAnimation.Show(
                 currencyImage.sprite,

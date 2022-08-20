@@ -4,7 +4,10 @@ namespace Nekoyume
 {
     public static class ItemSheetExtensions
     {
-        public static string GetLocalizedName(this ItemSheet.Row value, bool hasColor = true, bool useElementalIcon = true)
+        public static string GetLocalizedName(
+            this ItemSheet.Row value,
+            bool hasColor = true,
+            bool useElementalIcon = true)
         {
             if (value is EquipmentItemSheet.Row equipmentRow)
             {
@@ -12,18 +15,16 @@ namespace Nekoyume
                 {
                     return equipmentRow.GetLocalizedName(0, useElementalIcon);
                 }
-                else
-                {
-                    return LocalizationExtensions.GetLocalizedNonColoredName(
-                        equipmentRow.ElementalType,
-                        equipmentRow.Id,
-                        useElementalIcon);
-                }
+
+                return LocalizationExtensions.GetLocalizedNonColoredName(
+                    equipmentRow.ElementalType,
+                    equipmentRow.Id,
+                    useElementalIcon);
             }
 
             if (value is ConsumableItemSheet.Row consumableRow)
             {
-                return LocalizationExtensions.GetLocalizedName(consumableRow, hasColor);
+                return consumableRow.GetLocalizedName(hasColor);
             }
 
             return LocalizationExtensions.GetLocalizedNonColoredName(
@@ -34,7 +35,7 @@ namespace Nekoyume
             this ItemSheet.Row row,
             ArenaSheet arenaSheet) =>
             row.Id.GetIconResourceId(arenaSheet);
-        
+
         public static int GetIconResourceId(
             this int itemSheetRowId,
             ArenaSheet arenaSheet)

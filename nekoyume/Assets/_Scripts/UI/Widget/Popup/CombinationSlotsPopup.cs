@@ -14,13 +14,14 @@ namespace Nekoyume.UI
         [SerializeField]
         private List<CombinationSlot> slots;
 
-        private readonly List<IDisposable> _disposablesOfOnEnable = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesOfOnEnable = new();
 
         protected override void OnEnable()
         {
             base.OnEnable();
-            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
-                .Subscribe(SubscribeBlockIndex)
+            Game.Game.instance.Agent.BlockIndexSubject
+                .ObserveOnMainThread()
+                .Subscribe(UpdateSlots)
                 .AddTo(_disposablesOfOnEnable);
         }
 
@@ -37,7 +38,8 @@ namespace Nekoyume.UI
             HelpTooltip.HelpMe(100008, true);
         }
 
-        public void SetCaching(int slotIndex,
+        public void SetCaching(
+            int slotIndex,
             bool value,
             long requiredBlockIndex = 0,
             CombinationSlot.SlotType slotType = CombinationSlot.SlotType.Appraise,
@@ -65,15 +67,10 @@ namespace Nekoyume.UI
             return false;
         }
 
-        private void SubscribeBlockIndex(long blockIndex)
-        {
-            UpdateSlots(blockIndex);
-        }
-
         private void UpdateSlots(long blockIndex)
         {
-            var states = States.Instance.GetCombinationSlotState(blockIndex);
-
+            var states =
+                States.Instance.GetCombinationSlotState(blockIndex);
             for (var i = 0; i < slots.Count; i++)
             {
                 if (states != null && states.TryGetValue(i, out var state))

@@ -9,6 +9,7 @@ using DG.Tweening;
 using mixpanel;
 using Nekoyume.Battle;
 using Nekoyume.BlockChain;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Entrance;
@@ -72,13 +73,13 @@ namespace Nekoyume.Game
         private BattleLog _battleLog;
         private List<ItemBase> _rewards;
         private BattleResultPopup.Model _battleResultModel;
-        private bool _rankingBattle;
         private Coroutine _battleCoroutine;
         private Player _stageRunningPlayer;
         private Vector3 _playerPosition;
         private Coroutine _positionCheckCoroutine;
         private List<int> prevFood;
 
+        public StageType StageType { get; set; }
         public Player SelectedPlayer { get; set; }
         public List<GameObject> ReleaseWhiteList { get; private set; } = new List<GameObject>();
         public SkillController SkillController { get; private set; }
@@ -142,7 +143,6 @@ namespace Nekoyume.Game
 #if TEST_LOG
             Debug.Log($"[{nameof(Stage)}] {nameof(OnStageStart)}() enter");
 #endif
-            _rankingBattle = false;
             if (_battleLog is null)
             {
                 if (!(_battleCoroutine is null))
@@ -351,7 +351,7 @@ namespace Nekoyume.Game
         private static IEnumerator CoUnlockRecipe(int stageIdToFirstClear)
         {
             var questResult = Widget.Find<CelebratesPopup>();
-            var rows = Game.instance.TableSheets.EquipmentItemRecipeSheet.OrderedList
+            var rows = TableSheets.Instance.EquipmentItemRecipeSheet.OrderedList
                 .Where(row => row.UnlockStage == stageIdToFirstClear)
                 .Distinct()
                 .ToList();
@@ -371,53 +371,62 @@ namespace Nekoyume.Game
             stageId = log.stageId;
             waveCount = log.waveCount;
             newlyClearedStage = log.newlyCleared;
-            if (!Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var data))
-                yield break;
 
-            _battleResultModel = new BattleResultPopup.Model();
+            string bgmName = null;
+            switch (StageType)
+            {
+                case StageType.HackAndSlash:
+                case StageType.Mimisbrunnr:
+                {
+                    if (!TableSheets.Instance.StageSheet
+                            .TryGetValue(stageId, out var stageRow))
+                    {
+                        yield break;
+                    }
 
-            zone = data.Background;
+                    zone = stageRow.Background;
+                    bgmName = stageRow.BGM;
+                    break;
+                }
+                case StageType.EventDungeon:
+                {
+                    if (TableSheets.Instance.EventDungeonStageSheet is null ||
+                        !TableSheets.Instance.EventDungeonStageSheet
+                            .TryGetValue(stageId, out var eventDungeonStageRow))
+                    {
+                        yield break;
+                    }
+
+                    zone = eventDungeonStageRow.Background;
+                    bgmName = eventDungeonStageRow.BGM;
+                    break;
+                }
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            _battleResultModel = new BattleResultPopup.Model
+            {
+                StageType = StageType,
+            };
+
             LoadBackground(zone, 3.0f);
             PlayBGVFX(false);
             RunPlayer();
             ReleaseWhiteList.Clear();
             ReleaseWhiteList.Add(_stageRunningPlayer.gameObject);
 
-            Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var stageData);
             Widget.Find<UI.Battle>().StageProgressBar.Initialize(true);
             Widget.Find<BattleResultPopup>().StageProgressBar.Initialize(false);
             var title = Widget.Find<StageTitle>();
-            title.Show(stageId);
+            title.Show(StageType, stageId);
             IsShowHud = false;
             yield return new WaitForSeconds(StageConfig.instance.stageEnterDelay);
 
             yield return StartCoroutine(title.CoClose());
 
-            AudioController.instance.PlayMusic(data.BGM);
+            AudioController.instance.PlayMusic(bgmName);
             IsShowHud = true;
-        }
-
-        private IEnumerator CoRankingBattleEnter(BattleLog log)
-        {
-#if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoRankingBattleEnter)}() enter");
-#endif
-            waveCount = log.waveCount;
-            waveTurn = 1;
-            stageId = 999999;
-            if (!Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var data))
-                yield break;
-
-            _battleResultModel = new BattleResultPopup.Model();
-
-            zone = data.Background;
-            LoadBackground(zone, 3.0f);
-            PlayBGVFX(false);
-            RunPlayer(new Vector2(-15f, -1.2f), false);
-
-            yield return new WaitForSeconds(2.0f);
-
-            AudioController.instance.PlayMusic(AudioController.MusicCode.PVPBattle);
         }
 
         private IEnumerator CoStageEnd(BattleLog log)
@@ -498,19 +507,68 @@ namespace Nekoyume.Game
 
             _battleResultModel.ActionPoint = avatarState.actionPoint;
             _battleResultModel.State = log.result;
-            Game.instance.TableSheets.WorldSheet.TryGetValue(log.worldId, out var world);
-            _battleResultModel.WorldName = world?.GetLocalizedName();
+            switch (StageType)
+            {
+                case StageType.HackAndSlash:
+                case StageType.Mimisbrunnr:
+                {
+                    if (TableSheets.Instance.WorldSheet
+                        .TryGetValue(log.worldId, out var worldRow))
+                    {
+                        _battleResultModel.WorldName = worldRow.GetLocalizedName();
+                        _battleResultModel.IsEndStage = stageId == worldRow.StageEnd;
+                    }
+                    else
+                    {
+                        _battleResultModel.WorldName = string.Empty;
+                        _battleResultModel.IsEndStage = false;
+                    }
+
+                    if (TableSheets.Instance.StageSheet
+                        .TryGetValue(stageId, out var stageRow))
+                    {
+                        _battleResultModel.ActionPointNotEnough =
+                            avatarState.actionPoint < stageRow.CostAP;
+                    }
+
+                    break;
+                }
+                case StageType.EventDungeon:
+                {
+                    if (TableSheets.Instance.EventDungeonSheet is not null &&
+                        TableSheets.Instance.EventDungeonSheet
+                            .TryGetValue(log.worldId, out var eventDungeonRow))
+                    {
+                        _battleResultModel.WorldName = eventDungeonRow.GetLocalizedName();
+                        _battleResultModel.IsEndStage = stageId == eventDungeonRow.StageEnd;
+                    }
+                    else
+                    {
+                        _battleResultModel.WorldName = string.Empty;
+                        _battleResultModel.IsEndStage = false;
+                    }
+
+                    // NOTE: Event dungeon doesn't have action point cost.
+                    // if (TableSheets.Instance.EventDungeonStageSheet
+                    //     .TryGetValue(stageId, out var eventDungeonStageRow))
+                    // {
+                    //     _battleResultModel.ActionPointNotEnough =
+                    //         avatarState.actionPoint < eventDungeonStageRow.CostAP;
+                    // }
+                    _battleResultModel.ActionPointNotEnough =
+                        RxProps.EventDungeonTicketProgress.Value.currentTickets < PlayCount;
+
+                    break;
+                }
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
             _battleResultModel.WorldID = log.worldId;
             _battleResultModel.StageID = log.stageId;
             avatarState.worldInformation.TryGetLastClearedStageId(out var lasStageId);
             _battleResultModel.LastClearedStageId = lasStageId;
             _battleResultModel.IsClear = log.IsClear;
-            var succeedToGetWorldRow =
-                Game.instance.TableSheets.WorldSheet.TryGetValue(worldId, out var worldRow);
-            if (succeedToGetWorldRow)
-            {
-                _battleResultModel.IsEndStage = stageId == worldRow.StageEnd;
-            }
 
             if (IsExitReserved)
             {
@@ -519,14 +577,7 @@ namespace Nekoyume.Game
             }
             else
             {
-                var apNotEnough = true;
-                if (Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var stageRow))
-                {
-                    apNotEnough = avatarState.actionPoint < stageRow.CostAP;
-                }
-
-                _battleResultModel.ActionPointNotEnough = apNotEnough;
-                if (apNotEnough)
+                if (_battleResultModel.ActionPointNotEnough)
                 {
                     _battleResultModel.NextState = BattleResultPopup.NextState.GoToMain;
                 }
@@ -538,14 +589,11 @@ namespace Nekoyume.Game
                             ? BattleResultPopup.NextState.RepeatStage
                             : BattleResultPopup.NextState.NextStage;
 
-                        if (succeedToGetWorldRow)
+                        if (_battleResultModel.IsEndStage)
                         {
-                            if (stageId == worldRow.StageEnd)
-                            {
-                                _battleResultModel.NextState = IsRepeatStage
-                                    ? BattleResultPopup.NextState.RepeatStage
-                                    : BattleResultPopup.NextState.GoToMain;
-                            }
+                            _battleResultModel.NextState = IsRepeatStage
+                                ? BattleResultPopup.NextState.RepeatStage
+                                : BattleResultPopup.NextState.GoToMain;
                         }
                     }
                     else
@@ -558,12 +606,11 @@ namespace Nekoyume.Game
             }
 
             var isMulti = PlayCount > 1;
-
             Widget.Find<BattleResultPopup>().Show(_battleResultModel, isMulti);
             yield return null;
 
-            var characterSheet = Game.instance.TableSheets.CharacterSheet;
-            var costumeStatSheet = Game.instance.TableSheets.CostumeStatSheet;
+            var characterSheet = TableSheets.Instance.CharacterSheet;
+            var costumeStatSheet = TableSheets.Instance.CostumeStatSheet;
             var cp = CPHelper.GetCPV2(States.Instance.CurrentAvatarState, characterSheet, costumeStatSheet);
             var props = new Value
             {
@@ -602,43 +649,77 @@ namespace Nekoyume.Game
             status.ShowBattleStatus();
 
             var battle = Widget.Find<UI.Battle>();
-            if (_rankingBattle)
+            var isTutorial = false;
+            if (States.Instance.CurrentAvatarState.worldInformation
+                .TryGetUnlockedWorldByStageClearedBlockIndex(out var worldInfo))
             {
-                battle.ShowInArena();
-            }
-            else
-            {
-                var isTutorial = false;
-                if (States.Instance.CurrentAvatarState.worldInformation
-                    .TryGetUnlockedWorldByStageClearedBlockIndex(out var worldInfo))
-                {
-                    if (worldInfo.StageClearedId < UI.Battle.RequiredStageForExitButton)
-                    {
-                        Widget.Find<HeaderMenuStatic>().Close(true);
-                        isTutorial = true;
-                    }
-                    else
-                    {
-                        Widget.Find<HeaderMenuStatic>().Show();
-                    }
-                }
-                else
+                if (worldInfo.StageClearedId < UI.Battle.RequiredStageForExitButton)
                 {
                     Widget.Find<HeaderMenuStatic>().Close(true);
                     isTutorial = true;
                 }
-
-                battle.Show(stageId, IsRepeatStage, IsExitReserved, isTutorial, PlayCount * Game
-                    .instance
-                    .TableSheets.StageSheet.Values.First(i => i.Id == stageId).CostAP);
-                var stageSheet = Game.instance.TableSheets.StageSheet;
-                if (stageSheet.TryGetValue(stageId, out var row))
+                else
                 {
-                    status.ShowBattleTimer(row.TurnLimit);
+                    Widget.Find<HeaderMenuStatic>().Show();
                 }
             }
+            else
+            {
+                Widget.Find<HeaderMenuStatic>().Close(true);
+                isTutorial = true;
+            }
 
-            if (!(AvatarState is null) && !ActionRenderHandler.Instance.Pending)
+            int apCost;
+            int turnLimit;
+            switch (StageType)
+            {
+                case StageType.HackAndSlash:
+                case StageType.Mimisbrunnr:
+                {
+                    var sheet = TableSheets.Instance.StageSheet;
+                    apCost = sheet.OrderedList
+                        .FirstOrDefault(row => row.Id == stageId)?
+                        .CostAP ?? 0;
+                    turnLimit = sheet.TryGetValue(stageId, out var stageRow)
+                        ? stageRow.TurnLimit
+                        : 0;
+
+                    break;
+                }
+                case StageType.EventDungeon:
+                {
+                    var sheet = TableSheets.Instance.EventDungeonStageSheet;
+                    if (sheet is null)
+                    {
+                        apCost = 0;
+                        turnLimit = 0;
+
+                        break;
+                    }
+
+                    apCost = sheet.OrderedList
+                        .FirstOrDefault(row => row.Id == stageId)?
+                        .CostAP ?? 0;
+                    turnLimit = sheet.TryGetValue(stageId, out var eventDungeonStageRow)
+                        ? eventDungeonStageRow.TurnLimit
+                        : 0;
+
+                    break;
+                }
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            battle.Show(
+                StageType,
+                stageId,
+                IsRepeatStage,
+                IsExitReserved,
+                isTutorial,
+                apCost * PlayCount);
+            status.ShowBattleTimer(turnLimit);
+
+            if (AvatarState is not null && !ActionRenderHandler.Instance.Pending)
             {
                 ActionRenderHandler.Instance
                     .UpdateCurrentAvatarStateAsync(AvatarState)

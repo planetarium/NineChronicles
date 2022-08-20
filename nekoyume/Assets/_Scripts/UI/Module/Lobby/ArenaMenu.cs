@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Nekoyume.Game;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.EnumType;
@@ -32,7 +33,7 @@ namespace Nekoyume.UI.Module.Lobby
         [SerializeField]
         private GameObject _championshipGameObject;
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposables = new();
 
         private void OnEnable()
         {
@@ -52,18 +53,12 @@ namespace Nekoyume.UI.Module.Lobby
             _disposables.DisposeAllAndClear();
         }
 
-        private void UpdateTicket((
-            int currentTicketCount,
-            int maxTicketCount,
-            int progressedBlockRange,
-            int totalBlockRange,
-            string remainTimespanToReset) tuple)
+        private void UpdateTicket(RxProps.TicketProgress ticketProgress)
         {
-            var (currentTicketCount, _, _, _, remainTimespan) =
-                tuple;
-            _ticketCountGO.SetActive(currentTicketCount > 0);
-            _ticketCount.text = currentTicketCount.ToString();
-            _ticketResetTime.text = remainTimespan;
+            _ticketCountGO.SetActive(ticketProgress.currentTickets > 0);
+            _ticketCount.text = ticketProgress.currentTickets
+                .ToString(CultureInfo.InvariantCulture);
+            _ticketResetTime.text = ticketProgress.remainTimespanToReset;
         }
 
         private void UpdateArenaSeasonTitle(long blockIndex)

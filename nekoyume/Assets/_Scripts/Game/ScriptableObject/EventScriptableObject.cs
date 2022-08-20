@@ -4,43 +4,62 @@ using UnityEngine;
 
 namespace Nekoyume
 {
-    [CreateAssetMenu(fileName = "EventData", menuName = "Scriptable Object/Event Data",
+    [CreateAssetMenu(
+        fileName = "EventData",
+        menuName = "Scriptable Object/Event Data",
         order = int.MaxValue)]
     public class EventScriptableObject : ScriptableObjectIncludeEnum<EnumType.EventType>
     {
-        public EventInfo DefaultEvent;
-        public List<EventInfo> Events;
-        public List<ArenaSeasonInfo> ArenaSeasons;
+        public EventInfo defaultSettings;
+        public List<TimeBasedEventInfo> timeBasedEvents;
+        public List<BlockIndexBasedEventInfo> blockIndexBasedEvents;
+        public List<EventDungeonIdBasedEventInfo> eventDungeonIdBasedEvents;
     }
 
     [Serializable]
     public class EventInfo
     {
         [Tooltip("The type that describes the event")]
-        public EnumType.EventType EventType;
-        [Tooltip("DateTimeFormat(UTC):MM/dd/ HH:mm:ss (E.g: 05/10 10:20:30)")]
-        public string BeginDateTime;
-        [Tooltip("DateTimeFormat(UTC):MM/dd/ HH:mm:ss (E.g: 05/10 11:22:33)")]
-        public string EndDateTime;
+        public EnumType.EventType eventType;
+
         [Tooltip("The sprite used by UI_IntroScreen.prefab")]
-        public Sprite Intro;
+        public Sprite intro;
+
         [Tooltip("The sprite used by WorldMapStage.prefab")]
-        public Sprite StageIcon;
+        public Sprite stageIcon;
+
         [Tooltip("Value to modify step icon coordinates")]
-        public Vector2 StageIconOffset;
-        [Tooltip("Main lobby bgm. Reference only name of audio clip. Audio is managed by AudioController")]
+        public Vector2 stageIconOffset;
+
+        [Tooltip(
+            "Main lobby bgm. Reference only name of audio clip. Audio is managed by AudioController")]
         public AudioClip mainBGM;
     }
 
     [Serializable]
-    public class ArenaSeasonInfo
+    public class TimeBasedEventInfo : EventInfo
     {
-        public int Index;
-        public long StartBlockIndex;
-        public long EndBlockIndex;
-        public string SeasonUrl;
-        public Texture SeasonBanner;
-        public Sprite RewardIcon;
-        public int RewardNcg;
+        [Tooltip("DateTimeFormat(UTC):MM/dd/ HH:mm:ss (E.g: 05/10 10:20:30)")]
+        public string beginDateTime;
+
+        [Tooltip("DateTimeFormat(UTC):MM/dd/ HH:mm:ss (E.g: 05/10 11:22:33)")]
+        public string endDateTime;
+    }
+
+    [Serializable]
+    public class BlockIndexBasedEventInfo : EventInfo
+    {
+        [Tooltip("Beginning block index")]
+        public long beginBlockIndex;
+
+        [Tooltip("End block index")]
+        public long endBlockIndex;
+    }
+
+    [Serializable]
+    public class EventDungeonIdBasedEventInfo : EventInfo
+    {
+        [Tooltip("ID list of `EventDungeonSheet`")]
+        public int[] targetDungeonIds;
     }
 }

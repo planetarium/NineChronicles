@@ -61,6 +61,11 @@ namespace Nekoyume.UI.Module
                 ? (int)cost
                 : 0;
 
+        public int EventDungeonTicketCost =>
+            _costMap.TryGetValue(CostType.EventDungeonTicket, out var cost)
+                ? (int)cost
+                : 0;
+
         public void SetCost(params CostParam[] costs)
         {
             _costMap.Clear();
@@ -101,16 +106,19 @@ namespace Nekoyume.UI.Module
                 {
                     costText.parent.SetActive(exist);
                 }
-                if (exist)
+
+                if (!exist)
                 {
-                    foreach (var costText in costObject.costTexts)
-                    {
-                        var cost = _costMap[costObject.type];
-                        costText.text.text = cost.ToString();
-                        costText.text.color = CheckCostOfType(costObject.type, cost) ?
-                            Palette.GetColor(ColorType.ButtonEnabled) :
-                            Palette.GetColor(ColorType.TextDenial);
-                    }
+                    continue;
+                }
+
+                foreach (var costText in costObject.costTexts)
+                {
+                    var cost = _costMap[costObject.type];
+                    costText.text.text = cost.ToString();
+                    costText.text.color = CheckCostOfType(costObject.type, cost) ?
+                        Palette.GetColor(ColorType.ButtonEnabled) :
+                        Palette.GetColor(ColorType.TextDenial);
                 }
             }
         }
@@ -164,7 +172,7 @@ namespace Nekoyume.UI.Module
             return CostType.None;
         }
 
-        protected bool CheckCostOfType(CostType type, long cost)
+        private static bool CheckCostOfType(CostType type, long cost)
         {
             switch (type)
             {
@@ -178,6 +186,10 @@ namespace Nekoyume.UI.Module
                     var inventory = States.Instance.CurrentAvatarState.inventory;
                     var count = Util.GetHourglassCount(inventory, Game.Game.instance.Agent.BlockIndex);
                     return count >= cost;
+                case CostType.ArenaTicket:
+                    return RxProps.ArenaTicketProgress.Value.currentTickets >= cost;
+                case CostType.EventDungeonTicket:
+                    return RxProps.EventDungeonTicketProgress.Value.currentTickets >= cost;
                 default:
                     return true;
             }

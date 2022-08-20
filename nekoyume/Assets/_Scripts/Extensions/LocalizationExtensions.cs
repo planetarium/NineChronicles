@@ -5,6 +5,8 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Libplanet.Assets;
 using Nekoyume.Action;
+using Nekoyume.Extensions;
+using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -37,9 +39,9 @@ namespace Nekoyume
                         if (combinationMail.attachment is CombinationConsumable5.ResultModel result &&
                             result.subRecipeId.HasValue)
                         {
-                            if (Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheetV2 is null)
+                            if (TableSheets.Instance.EquipmentItemSubRecipeSheetV2 is null)
                             {
-                                if (Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheet.TryGetValue(
+                                if (TableSheets.Instance.EquipmentItemSubRecipeSheet.TryGetValue(
                                     result.subRecipeId.Value,
                                     out var row))
                                 {
@@ -52,7 +54,7 @@ namespace Nekoyume
                                     formatKey = "UI_COMBINATION_NOTIFY_FORMAT";
                                 }
                             }
-                            else if (Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheetV2.TryGetValue(
+                            else if (TableSheets.Instance.EquipmentItemSubRecipeSheetV2.TryGetValue(
                                 result.subRecipeId.Value,
                                 out var row))
                             {
@@ -308,32 +310,59 @@ namespace Nekoyume
                     return string.Format(L10nManager.Localize("QUEST_TRADE_CURRENT_INFO_FORMAT"),
                         tradeQuest.Type.GetLocalizedString(), tradeQuest.Goal);
                 case WorldQuest worldQuest:
-                    if (!Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(worldQuest.Goal,
-                        out var worldRow))
+                    if (TableSheets.Instance.WorldSheet.TryGetByStageId(
+                            worldQuest.Goal,
+                            out var worldRow))
                     {
-                        worldRow = Game.Game.instance.TableSheets.WorldSheet.Last;
-                        if (worldRow is null)
+                        if (worldQuest.Goal == worldRow.StageBegin)
                         {
-                            return string.Empty;
+                            return string.Format(
+                                L10nManager.Localize("QUEST_WORLD_FORMAT"),
+                                worldRow.GetLocalizedName());
                         }
+
+                        return string.Format(
+                            L10nManager.Localize("QUEST_CLEAR_STAGE_FORMAT"),
+                            worldRow.GetLocalizedName(), worldQuest.Goal);
                     }
 
-                    if (worldQuest.Goal == worldRow.StageBegin)
+                    if (!TableSheets.Instance.EventDungeonSheet.TryGetRowByEventDungeonStageId(
+                            worldQuest.Goal,
+                            out var eventDungeonRow))
                     {
-                        var format = L10nManager.Localize("QUEST_WORLD_FORMAT");
-                        return string.Format(format, worldRow.GetLocalizedName());
+                        return string.Empty;
                     }
-                    else
+
+                    if (worldQuest.Goal == eventDungeonRow.StageBegin)
                     {
-                        var format = L10nManager.Localize("QUEST_CLEAR_STAGE_FORMAT");
-                        return string.Format(format, worldRow.GetLocalizedName(), worldQuest.Goal);
+                        return string.Format(
+                            L10nManager.Localize("QUEST_WORLD_FORMAT"),
+                            eventDungeonRow.GetLocalizedName());
                     }
+
+                    return string.Format(
+                        L10nManager.Localize("QUEST_CLEAR_STAGE_FORMAT"),
+                        eventDungeonRow.GetLocalizedName(),
+                        worldQuest.Goal.ToEventDungeonStageNumber());
                 case CombinationEquipmentQuest combinationEquipmentQuest:
-                    var unlockFormat = L10nManager.Localize("QUEST_COMBINATION_EQUIPMENT_FORMAT");
-                    var recipeRow = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.Values
-                        .First(r => r.Id == combinationEquipmentQuest.RecipeId);
-                    var itemRow = recipeRow.GetResultEquipmentItemRow();
-                    return string.Format(unlockFormat, itemRow.GetLocalizedName(false, true));
+                    if (TableSheets.Instance.EquipmentItemRecipeSheet
+                        .TryGetValue(combinationEquipmentQuest.RecipeId, out var recipeRow))
+                    {
+                        var itemRow = recipeRow.GetResultEquipmentItemRow();
+                        return string.Format(
+                            L10nManager.Localize("QUEST_COMBINATION_EQUIPMENT_FORMAT"),
+                            itemRow.GetLocalizedName(false));
+                    }
+
+                    if (TableSheets.Instance.EventScheduleSheet
+                        .TryGetValue(combinationEquipmentQuest.RecipeId, out var eventScheduleRow))
+                    {
+                        return string.Format(
+                            L10nManager.Localize("QUEST_COMBINATION_EQUIPMENT_FORMAT"),
+                            L10nManager.Localize("UI_EVENT_ITEM"));
+                    }
+
+                    return string.Empty;
                 default:
                     throw new NotSupportedException(
                         $"Given quest[{quest}] doesn't support {nameof(GetContent)}() method.");

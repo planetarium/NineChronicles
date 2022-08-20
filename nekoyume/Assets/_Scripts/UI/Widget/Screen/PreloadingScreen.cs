@@ -64,9 +64,7 @@ namespace Nekoyume.UI
                     }
                     else
                     {
-                        await UniTask.WhenAll(
-                            States.Instance.SelectAvatarAsync(slotIndex),
-                            RxProps.ArenaInfoTuple.UpdateAsync());
+                        await RxProps.SelectAvatarAsync(slotIndex);
                         Game.Event.OnRoomEnter.Invoke(false);
                         Game.Event.OnUpdateAddresses.Invoke();
                     }

@@ -39,7 +39,7 @@ namespace Nekoyume
             {
                 if (sb.Length > 0)
                 {
-                    sb.Append(" ");
+                    sb.Append(@"\ ");
                 }
 
                 sb.Append(@"h\h");
@@ -49,7 +49,7 @@ namespace Nekoyume
             {
                 if (sb.Length > 0)
                 {
-                    sb.Append(" ");
+                    sb.Append(@"\ ");
                 }
 
                 sb.Append(@"m\m");
