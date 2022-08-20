@@ -34,6 +34,8 @@ namespace Nekoyume.UI
         private EquipmentItemOptionSheet.Row _skillOptionRow;
         private SubRecipeView.RecipeInfo _recipeInfo;
 
+        private const int SuperCraftIndex = 20;
+
         public override void Initialize()
         {
             ObservableExtensions.Subscribe(superCraftButton.OnSubmitSubject, _ =>
@@ -52,16 +54,9 @@ namespace Nekoyume.UI
                     var equipment = (Equipment) ItemFactory.CreateItemUsable(
                         equipmentRow.GetResultEquipmentItemRow(),
                         Guid.Empty,
-                        default);
-                    var blockIndex = equipment.RequiredBlockIndex;
-                    if (_recipeInfo.SubRecipeId != null &&
-                        sheets.EquipmentItemSubRecipeSheetV2.TryGetValue(
-                            _recipeInfo.SubRecipeId.Value, out var row))
-                    {
-                        blockIndex += row.RequiredBlockIndex;
-                    }
+                        SuperCraftIndex);
 
-                    StartCoroutine(CoCombineNpcAnimation(equipment, blockIndex));
+                    StartCoroutine(CoCombineNpcAnimation(equipment));
                 }
             }).AddTo(gameObject);
         }
@@ -94,7 +89,7 @@ namespace Nekoyume.UI
             base.Show(ignoreAnimation);
         }
 
-        private IEnumerator CoCombineNpcAnimation(ItemBase itemBase, long blockIndex)
+        private IEnumerator CoCombineNpcAnimation(ItemBase itemBase)
         {
             var loadingScreen = Find<CombinationLoadingScreen>();
             loadingScreen.Show();
@@ -104,7 +99,7 @@ namespace Nekoyume.UI
             yield return new WaitForSeconds(.5f);
 
             var format = L10nManager.Localize("UI_COST_BLOCK");
-            var quote = string.Format(format, blockIndex);
+            var quote = string.Format(format, SuperCraftIndex);
             loadingScreen.AnimateNPC(itemBase.ItemType, quote);
         }
     }

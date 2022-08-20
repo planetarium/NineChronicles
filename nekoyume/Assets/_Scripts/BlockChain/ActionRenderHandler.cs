@@ -26,6 +26,7 @@ using Cysharp.Threading.Tasks;
 using mixpanel;
 using Nekoyume.Arena;
 using Nekoyume.EnumType;
+using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus.Arena;
@@ -1110,6 +1111,7 @@ namespace Nekoyume.BlockChain
                     out var simulator);
                 var log = simulator.Log;
                 Game.Game.instance.Stage.PlayCount = eval.Action.PlayCount;
+                Game.Game.instance.Stage.StageType = StageType.HackAndSlash;
                 if (eval.Action.PlayCount > 1)
                 {
                     Widget.Find<BattleResultPopup>().ModelForMultiHackAndSlash = resultModel;
@@ -1240,6 +1242,7 @@ namespace Nekoyume.BlockChain
                 simulator.Simulate();
                 BattleLog log = simulator.Log;
                 Game.Game.instance.Stage.PlayCount = eval.Action.playCount;
+                Game.Game.instance.Stage.StageType = StageType.Mimisbrunnr;
 
                 if (Widget.Find<LoadingScreen>().IsActive())
                 {
@@ -1325,8 +1328,6 @@ namespace Nekoyume.BlockChain
             var random = new LocalRandom(eval.RandomSeed);
             var stageId = eval.Action.EventDungeonStageId;
             var stageRow = TableSheets.Instance.EventDungeonStageSheet[stageId];
-            var isCleared = RxProps.EventDungeonInfo.Value?.IsCleared(stageId) ?? false;
-            var exp = RxProps.EventScheduleRowForDungeon.Value.DungeonExpSeedValue;
             var simulator = new StageSimulator(
                 random,
                 States.Instance.CurrentAvatarState,
@@ -1336,8 +1337,10 @@ namespace Nekoyume.BlockChain
                 stageId,
                 stageRow,
                 TableSheets.Instance.EventDungeonStageWaveSheet[stageId],
-                isCleared,
-                exp,
+                RxProps.EventDungeonInfo.Value?.IsCleared(stageId) ?? false,
+                RxProps.EventScheduleRowForDungeon.Value.GetStageExp(
+                    stageId.ToEventDungeonStageNumber(),
+                    Action.EventDungeonBattle.PlayCount),
                 TableSheets.Instance.GetSimulatorSheets(),
                 TableSheets.Instance.EnemySkillSheet,
                 TableSheets.Instance.CostumeStatSheet,

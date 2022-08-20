@@ -72,8 +72,8 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI titleText;
 
-        [SerializeField]
-        private TextMeshProUGUI statText;
+        // [SerializeField]
+        // private TextMeshProUGUI statText;
 
         [SerializeField]
         private TextMeshProUGUI[] mainStatTexts;
@@ -153,16 +153,19 @@ namespace Nekoyume.UI
                     }
                 })
                 .AddTo(gameObject);
-            hammerPointView.superCraftButton
-                .OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    Widget.Find<SuperCraftPopup>().Show(
-                        _skillOptionRow,
-                        _selectedRecipeInfo,
-                        _recipeRow.Key,
-                        _canSuperCraft);
-                }).AddTo(gameObject);
+            if (hammerPointView.superCraftButton)
+            {
+                hammerPointView.superCraftButton
+                    .OnClickAsObservable()
+                    .Subscribe(_ =>
+                    {
+                        Widget.Find<SuperCraftPopup>().Show(
+                            _skillOptionRow,
+                            _selectedRecipeInfo,
+                            _recipeRow.Key,
+                            _canSuperCraft);
+                    }).AddTo(gameObject);
+            }
         }
 
         private void OnDisable()
@@ -347,7 +350,8 @@ namespace Nekoyume.UI
                     var showHammerPoint = RxProps.HammerPointStates is not null &&
                                           RxProps.HammerPointStates.TryGetValue(
                                               recipeId,
-                                              out _hammerPointState);
+                                              out _hammerPointState) &&
+                                          index != MimisbrunnrRecipeIndex;
                     hammerPointView.parentObject.SetActive(showHammerPoint);
                     if (showHammerPoint)
                     {

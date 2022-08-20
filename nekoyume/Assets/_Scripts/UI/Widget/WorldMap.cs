@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using Libplanet.Assets;
 using Nekoyume.Model;
@@ -39,7 +38,7 @@ namespace Nekoyume.UI
         }
 
         [SerializeField]
-        private GameObject worldMapRoot = null;
+        private GameObject worldMapRoot;
 
         [SerializeField]
         private Button closeButton;
@@ -176,6 +175,12 @@ namespace Nekoyume.UI
         private void SubscribeAtShow()
         {
             _disposablesAtShow.DisposeAllAndClear();
+            OnDisableStaticObservable
+                .Where(widget => widget is StageInformation)
+                .DelayFrame(1)
+                .Where(_ => gameObject.activeSelf)
+                .Subscribe(_ => SubscribeAtShow())
+                .AddTo(_disposablesAtShow);
             RxProps.EventScheduleRowForDungeon.Subscribe(value =>
             {
                 if (value is null)
@@ -220,9 +225,14 @@ namespace Nekoyume.UI
                 }
 
                 var buttonWorldId = worldButton.Id;
+                var unlockRow = TableSheets.Instance.WorldUnlockSheet
+                    .OrderedList
+                    .FirstOrDefault(row => row.WorldIdToUnlock == buttonWorldId);
+                var canTryThisWorld = worldInformation.IsStageCleared(unlockRow?.StageId ?? int.MaxValue);
                 var worldIsUnlocked =
-                    worldInformation.TryGetWorld(buttonWorldId, out var worldModel) &&
-                    worldModel.IsUnlocked;
+                    (worldInformation.TryGetWorld(buttonWorldId, out var worldModel) &&
+                     worldModel.IsUnlocked) ||
+                    canTryThisWorld;
 
                 UpdateNotificationInfo();
 
@@ -252,7 +262,20 @@ namespace Nekoyume.UI
         {
             if (!SharedViewModel.WorldInformation.TryGetWorld(worldId, out var world))
             {
-                throw new ArgumentException(nameof(worldId));
+                var unlockConditionRow =
+                    TableSheets.Instance.WorldUnlockSheet.OrderedList
+                        .FirstOrDefault(row =>
+                            row.WorldIdToUnlock == worldId);
+                if (unlockConditionRow is null ||
+                    !SharedViewModel.WorldInformation
+                        .IsStageCleared(unlockConditionRow.StageId))
+                {
+                    throw new ArgumentException(nameof(worldId));
+                }
+
+                var worldSheet = TableSheets.Instance.WorldSheet;
+                SharedViewModel.WorldInformation.UnlockWorld(worldId, 0, worldSheet);
+                SharedViewModel.WorldInformation.TryGetWorld(worldId, out world);
             }
 
             if (worldId == 1)
@@ -279,7 +302,8 @@ namespace Nekoyume.UI
                 SharedViewModel.IsWorldShown.SetValueAndForceNotify(showWorld);
             }
 
-            TableSheets.Instance.WorldSheet.TryGetValue(worldId,
+            TableSheets.Instance.WorldSheet.TryGetValue(
+                worldId,
                 out var worldRow,
                 true);
             SharedViewModel.SelectedWorldId.Value = worldId;
@@ -352,7 +376,8 @@ namespace Nekoyume.UI
 
         private void ShowWorldUnlockPopup(int worldId)
         {
-            var cost = CrystalCalculator.CalculateWorldUnlockCost(new[] { worldId },
+            var cost = CrystalCalculator.CalculateWorldUnlockCost(
+                    new[] { worldId },
                     Game.TableSheets.Instance.WorldUnlockSheet)
                 .MajorUnit;
             var balance = States.Instance.CrystalBalance;

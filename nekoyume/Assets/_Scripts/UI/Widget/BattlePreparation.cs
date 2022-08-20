@@ -520,11 +520,13 @@ namespace Nekoyume.UI
                 var selectedPlayer = Game.Game.instance.Stage.GetPlayer();
                 switch (slotItem)
                 {
-                    default:
-                        return;
+                    case Consumable _:
+                        Game.Event.OnUpdatePlayerEquip.OnNext(selectedPlayer);
+                        break;
                     case Costume costume:
                         selectedPlayer.UnequipCostume(costume, true);
-                        selectedPlayer.EquipEquipmentsAndUpdateCustomize((Armor)_armorSlot.Item,
+                        selectedPlayer.EquipEquipmentsAndUpdateCustomize(
+                            (Armor)_armorSlot.Item,
                             (Weapon)_weaponSlot.Item);
                         Game.Event.OnUpdatePlayerEquip.OnNext(selectedPlayer);
 
@@ -551,6 +553,8 @@ namespace Nekoyume.UI
 
                         Game.Event.OnUpdatePlayerEquip.OnNext(selectedPlayer);
                         break;
+                    default:
+                        return;
                 }
             }
 
@@ -754,7 +758,7 @@ namespace Nekoyume.UI
                     var ncgHas = States.Instance.GoldBalanceState.Gold;
                     var ncgCost = RxProps.EventScheduleRowForDungeon.Value
                         .GetDungeonTicketCost(
-                            RxProps.EventDungeonInfo.Value.NumberOfTicketPurchases) *
+                            RxProps.EventDungeonInfo.Value?.NumberOfTicketPurchases ?? 0) *
                                   States.Instance.GoldBalanceState.Gold.Currency;
                     if (ncgHas >= ncgCost)
                     {
@@ -765,7 +769,7 @@ namespace Nekoyume.UI
                             ncgCost.ToString());
                         Find<PaymentPopup>().ShowAttract(
                             CostType.EventDungeonTicket,
-                            ncgCost.ToString(),
+                            _requiredCost.ToString(),
                             notEnoughTicketMsg,
                             L10nManager.Localize("UI_YES"),
                             () => StartCoroutine(
