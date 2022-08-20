@@ -19,6 +19,7 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/1176
     /// </summary>
     [Serializable]
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100270ObsoleteIndex)]
     [ActionType("combination_equipment11")]
     public class CombinationEquipment11 : GameAction
     {
@@ -77,11 +78,20 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, context.Signer, ItemEnhancement10.GetFeeStoreAddress());
             }
 
+            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100270ObsoleteIndex, context);
+
             var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
             var arenaSheetState = states.GetState(arenaSheetAddress);
             if (arenaSheetState != null)
             {
-                throw new ActionObsoletedException(nameof(CombinationEquipment11));
+                // exception handling for v100240.
+                if (context.BlockIndex > 4374131 && context.BlockIndex < 4374214)
+                {
+                }
+                else
+                {
+                    throw new ActionObsoletedException(nameof(CombinationEquipment11));
+                }
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);

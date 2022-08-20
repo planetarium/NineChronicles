@@ -8,6 +8,7 @@ namespace Lib9c.Tests.Action
     using MessagePack;
     using MessagePack.Resolvers;
     using Nekoyume.Action;
+    using Nekoyume.Exceptions;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
@@ -59,6 +60,8 @@ namespace Lib9c.Tests.Action
         [InlineData(typeof(AlreadyRecipeUnlockedException))]
         [InlineData(typeof(InvalidRecipeIdException))]
         [InlineData(typeof(AlreadyWorldUnlockedException))]
+        [InlineData(typeof(InvalidActionFieldException))]
+        [InlineData(typeof(NotEnoughEventDungeonTicketsException))]
         public void Exception_Serializable(Type excType)
         {
             if (Activator.CreateInstance(excType, "for testing") is Exception exc)

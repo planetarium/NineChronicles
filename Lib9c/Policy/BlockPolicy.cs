@@ -21,7 +21,6 @@ namespace Nekoyume.BlockChain.Policy
             long difficultyStability,
             long minimumDifficulty,
             IComparer<IBlockExcerpt> canonicalChainComparer,
-            HashAlgorithmGetter hashAlgorithmGetter,
             Func<BlockChain<NCAction>, Transaction<NCAction>, TxPolicyViolationException>
                 validateNextBlockTx = null,
             Func<BlockChain<NCAction>, Block<NCAction>, BlockPolicyViolationException>
@@ -40,7 +39,6 @@ namespace Nekoyume.BlockChain.Policy
                 validateNextBlockTx: validateNextBlockTx,
                 validateNextBlock: validateNextBlock,
                 canonicalChainComparer: canonicalChainComparer,
-                hashAlgorithmGetter: hashAlgorithmGetter,
                 getMaxBlockBytes: getMaxBlockBytes,
                 getMinTransactionsPerBlock: getMinTransactionsPerBlock,
                 getMaxTransactionsPerBlock: getMaxTransactionsPerBlock,

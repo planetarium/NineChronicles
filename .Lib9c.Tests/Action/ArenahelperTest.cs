@@ -144,8 +144,8 @@ namespace Lib9c.Tests.Action
                                 additionalTicketPrice = 20;
                                 break;
                             case ArenaType.Championship:
-                                ticketPrice = 50;
-                                additionalTicketPrice = 20;
+                                ticketPrice = 100;
+                                additionalTicketPrice = 40;
                                 break;
                             default:
                                 throw new ArgumentOutOfRangeException();

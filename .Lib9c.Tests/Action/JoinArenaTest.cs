@@ -180,9 +180,9 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         [InlineData(0, 1, 1, "0")]
-        [InlineData(4_479_999L, 1, 2, "499000.5")]
+        [InlineData(4_479_999L, 1, 2, "998001")]
         [InlineData(4_480_001L, 1, 2, "998001")]
-        [InlineData(100, 1, 8, "1996002")]
+        [InlineData(100, 1, 8, "998001")]
         public void Execute(long blockIndex, int championshipId, int round, string balance)
         {
             var arenaSheet = _state.GetSheet<ArenaSheet>();

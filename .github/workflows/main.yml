@@ -51,6 +51,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+      with:
+        submodules: true
     - name: Check if a new tag refers a merge commit
       if: github.ref_type == 'tag'
       run: |
@@ -78,6 +80,20 @@ jobs:
         targets: |
           ${{ github.repository_owner }}/NineChronicles:rc-${{ github.ref_name }}?
           ${{ github.repository_owner }}/NineChronicles.Headless:rc-${{ github.ref_name }}?
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.100
+    - name: Collect available action type ids
+      run: |
+        mkdir publish
+        dotnet run --project .Lib9c.Tools/Lib9c.Tools.csproj -- action list > publish/all_action_type_ids.txt
+    - name: Publish available action type ids
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./publish
+        destination_dir: ${{ github.ref_name }}
 
   update-submodule:
     if: github.ref_type == 'branch' && startsWith(github.ref_name, 'rc-v')

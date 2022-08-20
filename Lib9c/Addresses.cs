@@ -28,6 +28,8 @@ namespace Nekoyume
         public static readonly Address MaterialCost          = new Address("0000000000000000000000000000000000000010");
         public static readonly Address StageRandomBuff       = new Address("0000000000000000000000000000000000000011");
         public static readonly Address Arena                 = new Address("0000000000000000000000000000000000000012");
+        public static readonly Address SuperCraft            = new Address("0000000000000000000000000000000000000013");
+        public static readonly Address EventDungeon          = new Address("0000000000000000000000000000000000000014");
 
         public static Address GetSheetAddress<T>() where T : ISheet => GetSheetAddress(typeof(T).Name);
 

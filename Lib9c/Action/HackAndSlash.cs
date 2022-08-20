@@ -20,11 +20,9 @@ namespace Nekoyume.Action
 {
     /// <summary>
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1229
-    /// Updated at https://github.com/planetarium/lib9c/pull/1241
-    /// Updated at https://github.com/planetarium/lib9c/pull/1244
     /// </summary>
     [Serializable]
-    [ActionType("hack_and_slash16")]
+    [ActionType("hack_and_slash17")]
     public class HackAndSlash : GameAction
     {
         public List<Guid> Costumes;
