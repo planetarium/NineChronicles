@@ -121,9 +121,10 @@ MonoBehaviour:
   levelBenefitsTabButton: {fileID: 1352374952083609231}
   currentBenefitsTab: {fileID: 1277203160402406578}
   levelBenefitsTab: {fileID: 374039472276035994}
-  testLevel: 0
-  testDeposit: 0
-  testBlockIndex: 0
+  stakeIconData: {fileID: 11400000, guid: 09a4839f75f3f7244aae388772ba2dfe, type: 2}
+  levelForTest: 0
+  depositForTest: 0
+  blockIndexForTest: 0
 --- !u!1 &26797007817332950
 GameObject:
   m_ObjectHideFlags: 0

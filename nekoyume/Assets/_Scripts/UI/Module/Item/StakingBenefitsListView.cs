@@ -41,7 +41,7 @@ namespace Nekoyume.UI.Module
         private const string RequiredDepositFormat = "<Style=G0>{0}";
         private const string HourGlassInterestFormat = "<Style=G2>x{0}";
         private const string ApPotionInterestFormat = "<Style=G6>x{0}";
-        private const string ArenaTicketBuffFormat = "<Style=G3>{0}%";
+        private const string ArenaTicketBuffFormat = "<Style=G0>{0}%";
         private const string CrystalBuffFormat = "<Style=G1>{0}%";
         private const string ActionPointBuffFormat = "<Style=G4>x{0}";
         [SerializeField] private StakeIconDataScriptableObject stakeIconData;
