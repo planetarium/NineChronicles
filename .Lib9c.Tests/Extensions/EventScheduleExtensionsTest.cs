@@ -1,6 +1,7 @@
 namespace Lib9c.Tests.Extensions
 {
     using System;
+    using Libplanet.Assets;
     using Nekoyume.Extensions;
     using Nekoyume.TableData.Event;
     using Xunit;
@@ -48,7 +49,7 @@ namespace Lib9c.Tests.Extensions
         [InlineData(int.MaxValue, int.MaxValue, 0, int.MaxValue)]
         [InlineData(int.MaxValue, int.MaxValue, 1, int.MaxValue * 2L)]
         [InlineData(int.MaxValue, int.MaxValue, 10, int.MaxValue * 11L)]
-        public void GetDungeonTicketCost(
+        public void GetDungeonTicketCostV1(
             int dungeonTicketPrice,
             int dungeonTicketAdditionalPrice,
             int numberOfTicketPurchases,
@@ -67,8 +68,49 @@ namespace Lib9c.Tests.Extensions
                 "0",
                 "0",
             });
-            var cost = scheduleRow.GetDungeonTicketCost(numberOfTicketPurchases);
+            var cost = scheduleRow.GetDungeonTicketCostV1(numberOfTicketPurchases);
             Assert.Equal(expectedCost, cost);
+        }
+
+        [Theory]
+        [InlineData(0, 0, 0, 0, 0)]
+        [InlineData(0, 0, 1, 0, 0)]
+        [InlineData(0, 0, 10, 0, 0)]
+        [InlineData(999_999, 0, 0, 99_999, 9)]
+        [InlineData(999_999, 0, 1, 99_999, 9)]
+        [InlineData(999_999, 0, 10, 99_999, 9)]
+        [InlineData(0, 999_999, 0, 0, 0)]
+        [InlineData(0, 999_999, 1, 99_999, 9)]
+        [InlineData(0, 999_999, 10, 999_999, 0)]
+        [InlineData(999_999, 999_999, 0, 99_999, 9)]
+        [InlineData(999_999, 999_999, 1, 199_999, 8)]
+        [InlineData(999_999, 999_999, 10, 1_099_999, 8)]
+        public void GetDungeonTicketCost(
+            int dungeonTicketPriceOnSheet,
+            int dungeonTicketAdditionalPriceOnSheet,
+            int numberOfTicketPurchases,
+            int expectedIntegralDigits,
+            int expectedFractionalDigits)
+        {
+            var scheduleRow = new EventScheduleSheet.Row();
+            scheduleRow.Set(new[]
+            {
+                "0",
+                "0",
+                "0",
+                "0",
+                "0",
+                dungeonTicketPriceOnSheet.ToString(),
+                dungeonTicketAdditionalPriceOnSheet.ToString(),
+                "0",
+                "0",
+            });
+            var currency = new Currency("NCG", 2, minter: null);
+            var cost = scheduleRow.GetDungeonTicketCost(
+                numberOfTicketPurchases,
+                currency);
+            Assert.Equal(expectedIntegralDigits, cost.MajorUnit);
+            Assert.Equal(expectedFractionalDigits, cost.MinorUnit);
         }
 
         [Theory]
@@ -77,7 +119,7 @@ namespace Lib9c.Tests.Extensions
         public void GetDungeonTicketCost_Throw_ArgumentException(
             int numberOfTicketPurchases) =>
             Assert.Throws<ArgumentException>(() =>
-                GetDungeonTicketCost(
+                GetDungeonTicketCostV1(
                     default,
                     default,
                     numberOfTicketPurchases,

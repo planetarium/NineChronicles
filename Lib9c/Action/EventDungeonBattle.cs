@@ -242,7 +242,7 @@ namespace Nekoyume.Action
                 }
 
                 var currency = states.GetGoldCurrency();
-                var cost = scheduleRow.GetDungeonTicketCost(
+                var cost = scheduleRow.GetDungeonTicketCostV1(
                     eventDungeonInfo.NumberOfTicketPurchases);
                 if (cost > 0L)
                 {

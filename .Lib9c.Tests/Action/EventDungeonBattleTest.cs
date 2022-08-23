@@ -158,7 +158,7 @@ namespace Lib9c.Tests.Action
 
             Assert.True(previousStates.GetSheet<EventScheduleSheet>()
                 .TryGetValue(eventScheduleId, out var newScheduleRow));
-            var ncgHas = newScheduleRow.GetDungeonTicketCost(numberOfTicketPurchases);
+            var ncgHas = newScheduleRow.GetDungeonTicketCostV1(numberOfTicketPurchases);
             previousStates = previousStates.MintAsset(_agentAddress, ncgHas * _ncgCurrency);
 
             var nextStates = Execute(
@@ -298,7 +298,7 @@ namespace Lib9c.Tests.Action
 
             Assert.True(_tableSheets.EventScheduleSheet
                 .TryGetValue(eventScheduleId, out var scheduleRow));
-            var ncgHas = scheduleRow.GetDungeonTicketCost(numberOfTicketPurchases) - 1;
+            var ncgHas = scheduleRow.GetDungeonTicketCostV1(numberOfTicketPurchases) - 1;
             previousStates = previousStates.MintAsset(_agentAddress, ncgHas * _ncgCurrency);
 
             Assert.Throws<InsufficientBalanceException>(() =>

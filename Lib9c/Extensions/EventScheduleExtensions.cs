@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
+using DecimalMath;
 using Libplanet.Assets;
 using Nekoyume.Exceptions;
 using Nekoyume.TableData;
@@ -23,7 +24,7 @@ namespace Nekoyume.Extensions
             return eventDungeonOrRecipeId / 10_000;
         }
 
-        public static long GetDungeonTicketCost(
+        public static long GetDungeonTicketCostV1(
             this EventScheduleSheet.Row row,
             int numberOfTicketPurchases)
         {
@@ -36,6 +37,23 @@ namespace Nekoyume.Extensions
 
             return row.DungeonTicketPrice +
                    row.DungeonTicketAdditionalPrice * (long)numberOfTicketPurchases;
+        }
+
+        public static FungibleAssetValue GetDungeonTicketCost(
+            this EventScheduleSheet.Row row,
+            int numberOfTicketPurchases,
+            Currency currency)
+        {
+            if (numberOfTicketPurchases < 0)
+            {
+                throw new ArgumentException(
+                    $"{nameof(numberOfTicketPurchases)}({numberOfTicketPurchases}) must be" +
+                    " greater than or equal to 0.");
+            }
+
+            var price = row.DungeonTicketPrice +
+                        row.DungeonTicketAdditionalPrice * numberOfTicketPurchases;
+            return (price * currency).DivRem(10, out _);
         }
 
         public static int GetStageExp(
