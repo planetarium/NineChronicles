@@ -23,6 +23,7 @@ namespace Nekoyume.UI.Module
         public RewardItems rewardItems;
         public TextMeshProUGUI rewardText;
         public TextMeshProUGUI failedText;
+        public StarForMulti starForMulti;
         public Animator animator;
 
         private Star _star;
@@ -105,6 +106,14 @@ namespace Nekoyume.UI.Module
             }
         }
 
+        [Serializable]
+        public struct StarForMulti
+        {
+            public TextMeshProUGUI StarCountText;
+            public TextMeshProUGUI[] WaveStarTexts;
+            public TextMeshProUGUI RemainingStarText;
+        }
+
         private void Awake()
         {
             rewardItems.gameObject.SetActive(false);
@@ -168,6 +177,18 @@ namespace Nekoyume.UI.Module
 
             rewardText.gameObject.SetActive(cleared);
             failedText.gameObject.SetActive(!cleared);
+        }
+
+        public void Set(int[] clearedWaves, int starCount, int maxStarCount)
+        {
+            starForMulti.StarCountText.text = $"{starCount}/{maxStarCount}";
+            for (int i = 0; i < starForMulti.WaveStarTexts.Length; i++)
+            {
+                starForMulti.WaveStarTexts[i].text = clearedWaves[i].ToString();
+            }
+            starForMulti.RemainingStarText.text = string.Format(
+                    "Collect {0} more, you can use the buff.",
+                    maxStarCount - starCount);
         }
 
         private string GetFailedText()

@@ -75,6 +75,7 @@ namespace Nekoyume.UI
         {
             public GameObject root;
             public BattleReward[] rewards;
+            public BattleReward rewardForMulti;
         }
 
         [Serializable]
@@ -324,6 +325,7 @@ namespace Nekoyume.UI
             {
                 reward.gameObject.SetActive(false);
             }
+            rewardsArea.rewardForMulti.gameObject.SetActive(false);
 
             base.Show();
             closeButton.gameObject.SetActive(
@@ -455,7 +457,13 @@ namespace Nekoyume.UI
             rewardsArea.root.SetActive(true);
             for (var i = 0; i < rewardsArea.rewards.Length; i++)
             {
-                var view = rewardsArea.rewards[i];
+                var isNotClearedInMulti = SharedModel.ClearedWaves[3] <= 0 &&
+                                          SharedModel.ClearedWaves.Sum() > 1;
+
+                var view = i == 2 && isNotClearedInMulti
+                    ? rewardsArea.rewardForMulti
+                    : rewardsArea.rewards[i];
+
                 view.StartShowAnimation();
                 var cleared = SharedModel.ClearedWaveNumber > i;
                 switch (i)
@@ -467,7 +475,19 @@ namespace Nekoyume.UI
                         view.Set(SharedModel.Rewards, Game.Game.instance.Stage.stageId, cleared);
                         break;
                     case 2:
-                        view.Set(SharedModel.State == BattleLog.Result.Win && cleared);
+                        if (isNotClearedInMulti)
+                        {
+                            Game.Game.instance.TableSheets.CrystalStageBuffGachaSheet.TryGetValue(
+                                SharedModel.StageID, out var row);
+                            var starCount = States.Instance.CrystalRandomSkillState?.StarCount ?? 0;
+                            var maxStarCount = row?.MaxStar ?? 0;
+
+                            view.Set(SharedModel.ClearedWaves, starCount, maxStarCount);
+                        }
+                        else
+                        {
+                            view.Set(SharedModel.State == BattleLog.Result.Win && cleared);
+                        }
                         break;
                 }
 
@@ -486,6 +506,8 @@ namespace Nekoyume.UI
                 reward.StopShowAnimation();
                 reward.StartScaleTween();
             }
+            rewardsArea.rewardForMulti.StopShowAnimation();
+            rewardsArea.rewardForMulti.StartScaleTween();
         }
 
         private IEnumerator CoUpdateBottom(int limitSeconds)
