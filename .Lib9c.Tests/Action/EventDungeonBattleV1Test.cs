@@ -19,7 +19,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static Lib9c.SerializeKeys;
 
-    public class EventDungeonBattleTest
+    public class EventDungeonBattleV1Test
     {
         private readonly IAccountStateDelta _initialStates;
         private readonly Currency _ncgCurrency;
@@ -28,7 +28,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
 
-        public EventDungeonBattleTest()
+        public EventDungeonBattleV1Test()
         {
             _initialStates = new State();
 
@@ -158,10 +158,8 @@ namespace Lib9c.Tests.Action
 
             Assert.True(previousStates.GetSheet<EventScheduleSheet>()
                 .TryGetValue(eventScheduleId, out var newScheduleRow));
-            var ncgHas = newScheduleRow.GetDungeonTicketCost(
-                numberOfTicketPurchases,
-                _ncgCurrency);
-            previousStates = previousStates.MintAsset(_agentAddress, ncgHas);
+            var ncgHas = newScheduleRow.GetDungeonTicketCostV1(numberOfTicketPurchases);
+            previousStates = previousStates.MintAsset(_agentAddress, ncgHas * _ncgCurrency);
 
             var nextStates = Execute(
                 previousStates,
@@ -300,10 +298,8 @@ namespace Lib9c.Tests.Action
 
             Assert.True(_tableSheets.EventScheduleSheet
                 .TryGetValue(eventScheduleId, out var scheduleRow));
-            var ncgHas = scheduleRow.GetDungeonTicketCost(
-                numberOfTicketPurchases,
-                _ncgCurrency) - 1 * _ncgCurrency;
-            previousStates = previousStates.MintAsset(_agentAddress, ncgHas);
+            var ncgHas = scheduleRow.GetDungeonTicketCostV1(numberOfTicketPurchases) - 1;
+            previousStates = previousStates.MintAsset(_agentAddress, ncgHas * _ncgCurrency);
 
             Assert.Throws<InsufficientBalanceException>(() =>
                 Execute(
@@ -349,7 +345,7 @@ namespace Lib9c.Tests.Action
                 previousAvatarState.inventory.AddItem(equipment, iLock: null);
             }
 
-            var action = new EventDungeonBattle
+            var action = new EventDungeonBattleV1
             {
                 AvatarAddress = _avatarAddress,
                 EventScheduleId = eventScheduleId,
