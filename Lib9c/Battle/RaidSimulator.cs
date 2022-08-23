@@ -72,6 +72,8 @@ namespace Nekoyume.Battle
             Log.newlyCleared = false;
             Player.Spawn();
             TurnNumber = 0;
+
+            var turnLimitExceeded = false;
             for (var i = 0; i < _waves.Count; i++)
             {
                 Characters = new SimplePriorityQueue<CharacterBase, decimal>();
@@ -82,11 +84,15 @@ namespace Nekoyume.Battle
 
                 var currentWaveBoss = _waves[i];
                 SpawnBoss(currentWaveBoss);
+
+                var waveStatData = currentWaveBoss.RowData.WaveStats
+                    .FirstOrDefault(x => x.Wave == WaveNumber);
                 while (true)
                 {
                     // On turn limit exceeded, player loses.
-                    if (TurnNumber > TurnLimit)
+                    if (TurnNumber > waveStatData.TurnLimit)
                     {
+                        turnLimitExceeded = true;
                         if (i == 0)
                         {
                             Result = BattleLog.Result.Lose;
@@ -102,8 +108,6 @@ namespace Nekoyume.Battle
                         break;
 
                     // Boss enrages on EnrageTurn. (EnrageTurn is counted in individual waves.)
-                    var waveStatData = currentWaveBoss.RowData.WaveStats
-                        .FirstOrDefault(x => x.Wave == WaveNumber);
                     if (WaveTurn >= waveStatData.EnrageTurn &&
                         !currentWaveBoss.Enraged)
                     {
@@ -161,8 +165,7 @@ namespace Nekoyume.Battle
                 }
 
                 // If turn limit exceeded or player died
-                if (TurnNumber > TurnLimit ||
-                    Player.IsDead)
+                if (turnLimitExceeded || Player.IsDead)
                     break;
             }
 
