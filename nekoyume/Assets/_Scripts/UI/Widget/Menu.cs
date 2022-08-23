@@ -200,8 +200,8 @@ namespace Nekoyume.UI
                 var ncgCost =
                     RxProps.EventScheduleRowForDungeon.Value
                         .GetDungeonTicketCost(
-                            RxProps.EventDungeonInfo.Value?.NumberOfTicketPurchases ?? 0) *
-                    States.Instance.GoldBalanceState.Gold.Currency;
+                            RxProps.EventDungeonInfo.Value?.NumberOfTicketPurchases ?? 0,
+                            States.Instance.GoldBalanceState.Gold.Currency);
                 if (ncgHas >= ncgCost)
                 {
                     // FIXME: `UI_CONFIRM_PAYMENT_CURRENCY_FORMAT_FOR_BATTLE_ARENA` key
