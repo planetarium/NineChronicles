@@ -15,8 +15,19 @@ namespace Nekoyume.TableData.Event
             public long DungeonEndBlockIndex { get; private set; }
             public int DungeonTicketsMax { get; private set; }
             public int DungeonTicketsResetIntervalBlockRange { get; private set; }
+
+            /// <summary>
+            /// This value is divided by 10 and used.
+            /// e.g., DecimalMath.DecimalEx.Floor(row.DungeonTicketPrice * .1m, 2);
+            /// </summary>
             public int DungeonTicketPrice { get; private set; }
+
+            /// <summary>
+            /// This value is divided by 10 and used.
+            /// e.g., DecimalMath.DecimalEx.Floor(row.DungeonTicketAdditionalPrice * .1m, 2);
+            /// </summary>
             public int DungeonTicketAdditionalPrice { get; private set; }
+
             public int DungeonExpSeedValue { get; private set; }
             public long RecipeEndBlockIndex { get; private set; }
 
