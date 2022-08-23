@@ -341,8 +341,6 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<StakingPopup>());
             yield return null;
-            secondWidgets.Add(Widget.Create<StakingPopupNone>());
-            yield return null;
             secondWidgets.Add(Widget.Create<BuffBonusResultPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<SuperCraftPopup>());
