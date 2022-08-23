@@ -117,13 +117,22 @@ namespace Lib9c.Tests.Extensions
         [InlineData(-1)]
         [InlineData(int.MinValue)]
         public void GetDungeonTicketCost_Throw_ArgumentException(
-            int numberOfTicketPurchases) =>
+            int numberOfTicketPurchases)
+        {
             Assert.Throws<ArgumentException>(() =>
                 GetDungeonTicketCostV1(
                     default,
                     default,
                     numberOfTicketPurchases,
                     default));
+            Assert.Throws<ArgumentException>(() =>
+                GetDungeonTicketCost(
+                    default,
+                    default,
+                    numberOfTicketPurchases,
+                    default,
+                    default));
+        }
 
         [Theory]
         [InlineData(1001, 1, 1, 1, 1)]
