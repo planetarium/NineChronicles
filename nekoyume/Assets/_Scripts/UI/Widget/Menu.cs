@@ -534,7 +534,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            Find<StakingPopupNew>().Show();
+            Find<StakingPopup>().Show();
         }
 
         public void UpdateGuideQuest(AvatarState avatarState)

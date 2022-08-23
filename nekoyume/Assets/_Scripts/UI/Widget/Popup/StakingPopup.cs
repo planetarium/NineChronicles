@@ -3,7 +3,6 @@ using System.Linq;
 using System.Numerics;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
-using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
@@ -15,7 +14,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    public class StakingPopupNew : PopupWidget
+    public class StakingPopup : PopupWidget
     {
         [SerializeField] private GameObject none;
         [SerializeField] private GameObject content;

@@ -339,7 +339,7 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<SweepResultPopup>());
             yield return null;
-            secondWidgets.Add(Widget.Create<StakingPopupNew>());
+            secondWidgets.Add(Widget.Create<StakingPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<BuffBonusResultPopup>());
             yield return null;
