@@ -7,14 +7,14 @@ namespace Nekoyume.Model.BattleStatus
     [Serializable]
     public class BlowAttack : Skill
     {
-        public BlowAttack(CharacterBase character, IEnumerable<SkillInfo> skillInfos, IEnumerable<SkillInfo> buffInfos)
-            : base(character, skillInfos, buffInfos)
+        public BlowAttack(int skillId, CharacterBase character, IEnumerable<SkillInfo> skillInfos, IEnumerable<SkillInfo> buffInfos)
+            : base(skillId, character, skillInfos, buffInfos)
         {
         }
 
         public override IEnumerator CoExecute(IStage stage)
         {
-            yield return stage.CoBlowAttack(Character, SkillInfos, BuffInfos);
+            yield return stage.CoBlowAttack(Character, SkillId, SkillInfos, BuffInfos);
         }
     }
 }

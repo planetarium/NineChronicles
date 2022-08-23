@@ -16,6 +16,7 @@ namespace Nekoyume.TableData
         {
             public int Wave { get; set; }
             public int EnrageTurn { get; set; }
+            public int EnrageSkillId { get; set; }
             public ElementalType ElementalType { get; set; }
             public int Level { get; set; }
             public decimal HP { get; set; }
@@ -40,16 +41,17 @@ namespace Nekoyume.TableData
                 {
                     Wave = int.Parse(fields[1], CultureInfo.InvariantCulture),
                     EnrageTurn = int.Parse(fields[2], CultureInfo.InvariantCulture),
-                    ElementalType = Enum.TryParse<ElementalType>(fields[3], out var elementalType)
+                    EnrageSkillId = int.Parse(fields[3], CultureInfo.InvariantCulture),
+                    ElementalType = Enum.TryParse<ElementalType>(fields[4], out var elementalType)
                         ? elementalType
                         : ElementalType.Normal,
-                    Level = int.Parse(fields[4], CultureInfo.InvariantCulture),
-                    HP = TryParseDecimal(fields[5], out var hp) ? hp : 0m,
-                    ATK = TryParseDecimal(fields[6], out var damage) ? damage : 0m,
-                    DEF = TryParseDecimal(fields[7], out var defense) ? defense : 0m,
-                    CRI = TryParseDecimal(fields[8], out var cri) ? cri : 0m,
-                    HIT = TryParseDecimal(fields[9], out var hit) ? hit : 0m,
-                    SPD = TryParseDecimal(fields[10], out var spd) ? spd : 0m,
+                    Level = int.Parse(fields[5], CultureInfo.InvariantCulture),
+                    HP = TryParseDecimal(fields[6], out var hp) ? hp : 0m,
+                    ATK = TryParseDecimal(fields[7], out var damage) ? damage : 0m,
+                    DEF = TryParseDecimal(fields[8], out var defense) ? defense : 0m,
+                    CRI = TryParseDecimal(fields[9], out var cri) ? cri : 0m,
+                    HIT = TryParseDecimal(fields[10], out var hit) ? hit : 0m,
+                    SPD = TryParseDecimal(fields[11], out var spd) ? spd : 0m,
                 };
                 WaveStats = new List<WaveStatData> { statData };
             }

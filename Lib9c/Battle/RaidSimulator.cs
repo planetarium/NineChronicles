@@ -79,10 +79,12 @@ namespace Nekoyume.Battle
 
                 WaveNumber = i + 1;
                 WaveTurn = 1;
-                SpawnBoss(_waves[i]);
+
+                var currentWaveBoss = _waves[i];
+                SpawnBoss(currentWaveBoss);
                 while (true)
                 {
-                    // 제한 턴을 넘어서는 경우 break.
+                    // On turn limit exceeded, player loses.
                     if (TurnNumber > TurnLimit)
                     {
                         if (i == 0)
@@ -96,13 +98,20 @@ namespace Nekoyume.Battle
                         break;
                     }
 
-                    // 캐릭터 큐가 비어 있는 경우 break.
                     if (!Characters.TryDequeue(out var character))
                         break;
 
+                    // Boss enrages on EnrageTurn. (EnrageTurn is counted in individual waves.)
+                    var waveStatData = currentWaveBoss.RowData.WaveStats
+                        .FirstOrDefault(x => x.Wave == WaveNumber);
+                    if (WaveTurn >= waveStatData.EnrageTurn &&
+                        !currentWaveBoss.Enraged)
+                    {
+                        currentWaveBoss.Enrage();
+                    }
+
                     character.Tick();
 
-                    // 플레이어가 죽은 경우 break;
                     if (Player.IsDead)
                     {
                         if (i == 0)
@@ -116,7 +125,7 @@ namespace Nekoyume.Battle
                         break;
                     }
 
-                    // 플레이어의 타겟(적)이 없는 경우 break.
+                    // If targets are all gone
                     if (!Player.Targets.Any())
                     {
                         Result = BattleLog.Result.Win;
@@ -151,7 +160,7 @@ namespace Nekoyume.Battle
                     Characters.Enqueue(character, TurnPriority / character.SPD);
                 }
 
-                // 제한 턴을 넘거나 플레이어가 죽은 경우 break;
+                // If turn limit exceeded or player died
                 if (TurnNumber > TurnLimit ||
                     Player.IsDead)
                     break;

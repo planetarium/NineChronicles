@@ -18,8 +18,11 @@ namespace Nekoyume.Model
         public WorldBossActionPatternSheet.Row PatternRowData { get; }
 
         private List<Skill.Skill> _orderedSkills = new List<Skill.Skill>();
+        private Skill.Skill _enrageSkill;
         private int _actionCount;
         private int _wave;
+
+        public bool Enraged { get; protected set; }
 
         public RaidBoss(
             CharacterBase player,
@@ -43,7 +46,11 @@ namespace Nekoyume.Model
             RaidSimulator = value.RaidSimulator;
             RowData = value.RowData;
             PatternRowData = value.PatternRowData;
+            _orderedSkills = value._orderedSkills;
+            _enrageSkill = value._enrageSkill;
+            _actionCount = value._actionCount;
             _wave = value._wave;
+            Enraged = value.Enraged;
         }
 
         public override object Clone() => new RaidBoss(this);
@@ -63,6 +70,16 @@ namespace Nekoyume.Model
                 var skill = SkillFactory.Get(skillRow, dmg, 100);
                 _orderedSkills.Add(skill);
             }
+
+            var enrageSkillId = RowData.WaveStats
+                .FirstOrDefault(x => x.Wave == _wave).EnrageSkillId;
+            if (!Simulator.SkillSheet.TryGetValue(enrageSkillId, out var enrageSkillRow))
+            {
+                throw new SheetRowNotFoundException(nameof(SkillSheet), enrageSkillId);
+            }
+
+            var enrageSkill = SkillFactory.Get(enrageSkillRow, dmg, 100);
+            _enrageSkill = enrageSkill;
         }
 
         protected override void UseSkill()
@@ -74,6 +91,30 @@ namespace Nekoyume.Model
                 Simulator.WaveTurn,
                 BuffFactory.GetBuffs(
                     skill,
+                    Simulator.SkillBuffSheet,
+                    Simulator.BuffSheet
+                )
+            );
+
+            Simulator.Log.Add(usedSkill);
+            foreach (var info in usedSkill.SkillInfos)
+            {
+                if (!info.Target.IsDead)
+                    continue;
+                
+                var target = Targets.FirstOrDefault(i => i.Id == info.Target.Id);
+                target?.Die();
+            }
+        }
+
+        public void Enrage()
+        {
+            Enraged = true;
+            var usedSkill = _enrageSkill.Use(
+                this,
+                Simulator.WaveTurn,
+                BuffFactory.GetBuffs(
+                    _enrageSkill,
                     Simulator.SkillBuffSheet,
                     Simulator.BuffSheet
                 )
