@@ -303,9 +303,12 @@ namespace Nekoyume.BlockChain
                     ? TableSheets.Instance.EventScheduleSheet.TryGetValue(
                         eventScheduleId,
                         out var scheduleRow)
-                        ? scheduleRow.GetDungeonTicketCost(numberOfTicketPurchases)
-                        : 0
-                    : 0,
+                        ? scheduleRow.GetDungeonTicketCost(
+                            numberOfTicketPurchases,
+                            States.Instance.GoldBalanceState.Gold.Currency)
+                            .GetQuantityString(true)
+                        : "0"
+                    : "0",
             });
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;

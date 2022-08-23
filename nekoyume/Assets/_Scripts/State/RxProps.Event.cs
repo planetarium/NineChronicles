@@ -193,7 +193,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            var value = _eventScheduleRowForDungeon.Value.RecipeEndBlockIndex - blockIndex;
+            var value = _eventScheduleRowForDungeon.Value.DungeonEndBlockIndex - blockIndex;
             var time = value.BlockRangeToTimeSpanString();
             _eventDungeonRemainingTimeText.SetValueAndForceNotify($"{value}({time})");
         }
