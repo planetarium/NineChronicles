@@ -76,15 +76,15 @@ namespace Lib9c.Tests.Extensions
         [InlineData(0, 0, 0, 0, 0)]
         [InlineData(0, 0, 1, 0, 0)]
         [InlineData(0, 0, 10, 0, 0)]
-        [InlineData(999_999, 0, 0, 99_999, 9)]
-        [InlineData(999_999, 0, 1, 99_999, 9)]
-        [InlineData(999_999, 0, 10, 99_999, 9)]
+        [InlineData(999_999, 0, 0, 99_999, 90)]
+        [InlineData(999_999, 0, 1, 99_999, 90)]
+        [InlineData(999_999, 0, 10, 99_999, 90)]
         [InlineData(0, 999_999, 0, 0, 0)]
-        [InlineData(0, 999_999, 1, 99_999, 9)]
+        [InlineData(0, 999_999, 1, 99_999, 90)]
         [InlineData(0, 999_999, 10, 999_999, 0)]
-        [InlineData(999_999, 999_999, 0, 99_999, 9)]
-        [InlineData(999_999, 999_999, 1, 199_999, 8)]
-        [InlineData(999_999, 999_999, 10, 1_099_999, 8)]
+        [InlineData(999_999, 999_999, 0, 99_999, 90)]
+        [InlineData(999_999, 999_999, 1, 199_999, 80)]
+        [InlineData(999_999, 999_999, 10, 1_099_998, 90)]
         public void GetDungeonTicketCost(
             int dungeonTicketPriceOnSheet,
             int dungeonTicketAdditionalPriceOnSheet,
@@ -109,6 +109,7 @@ namespace Lib9c.Tests.Extensions
             var cost = scheduleRow.GetDungeonTicketCost(
                 numberOfTicketPurchases,
                 currency);
+            Assert.Equal(currency, cost.Currency);
             Assert.Equal(expectedIntegralDigits, cost.MajorUnit);
             Assert.Equal(expectedFractionalDigits, cost.MinorUnit);
         }
