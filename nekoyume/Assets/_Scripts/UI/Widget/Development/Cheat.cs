@@ -138,7 +138,8 @@ namespace Nekoyume
             IImmutableDictionary<string, string> tableSheets = GetCurrentTableCSV(tableCsvAssets.Keys.ToList()).ToImmutableDictionary();
             if (tableSheets.TryGetValue(tableName, out string onChainTableCsv))
             {
-                Display(nameof(OnChainTableSheet), onChainTableCsv);
+                // Display(nameof(OnChainTableSheet), onChainTableCsv);
+                Display(nameof(OnChainTableSheet), "...");
             }
             else
             {
@@ -147,11 +148,12 @@ namespace Nekoyume
 
             if (TableAssets.TryGetValue(tableName, out string localTableCsv))
             {
-                Display(nameof(LocalTableSheet), localTableCsv);
+                // Display(nameof(LocalTableSheet), localTableCsv);
             }
             else
             {
-                Display(nameof(LocalTableSheet), "No content.");
+                // Display(nameof(LocalTableSheet), "No content.");
+                Display(nameof(LocalTableSheet), "...");
             }
 
             PatchButton.SetActive(onChainTableCsv != localTableCsv);
@@ -197,8 +199,12 @@ namespace Nekoyume
         public void Patch()
         {
             var tableName = GetTableName();
-            var csv = LocalTableSheet.Find("TextRect/Text").GetComponent<TextMeshProUGUI>().text;
-            Game.Game.instance.ActionManager.PatchTableSheet(tableName, csv).Subscribe();
+            if (TableAssets.TryGetValue(tableName, out var localTableCsv))
+            {
+                Game.Game.instance.ActionManager
+                    .PatchTableSheet(tableName, localTableCsv)
+                    .Subscribe();
+            }
         }
 
         private string GetTableName()
