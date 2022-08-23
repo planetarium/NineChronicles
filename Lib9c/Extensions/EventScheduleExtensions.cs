@@ -24,6 +24,7 @@ namespace Nekoyume.Extensions
             return eventDungeonOrRecipeId / 10_000;
         }
 
+        [Obsolete("Use `GetDungeonTicketCost()` instead.")]
         public static long GetDungeonTicketCostV1(
             this EventScheduleSheet.Row row,
             int numberOfTicketPurchases)
