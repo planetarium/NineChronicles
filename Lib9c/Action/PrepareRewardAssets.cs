@@ -20,6 +20,10 @@ namespace Nekoyume.Action
             Assets = assets;
         }
 
+        public PrepareRewardAssets()
+        {
+        }
+
         public override IValue PlainValue => Dictionary.Empty
             .Add("r", RewardPoolAddress.Serialize())
             .Add("a", Assets.Select(a => a.Serialize()));

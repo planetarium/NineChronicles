@@ -103,6 +103,7 @@ namespace Lib9c.Tests.Action
         [InlineData(typeof(Raid))]
         [InlineData(typeof(ClaimRaidReward))]
         [InlineData(typeof(ClaimWordBossKillReward))]
+        [InlineData(typeof(PrepareRewardAssets))]
         public void Serialize_With_MessagePack(Type actionType)
         {
             var action = GetAction(actionType);
@@ -300,6 +301,14 @@ namespace Lib9c.Tests.Action
                 ClaimWordBossKillReward _ => new ClaimWordBossKillReward
                 {
                     AvatarAddress = _sender,
+                },
+                PrepareRewardAssets _ => new PrepareRewardAssets
+                {
+                    RewardPoolAddress = _sender,
+                    Assets = new List<FungibleAssetValue>
+                    {
+                        _currency * 100,
+                    },
                 },
                 _ => throw new InvalidCastException(),
             };
