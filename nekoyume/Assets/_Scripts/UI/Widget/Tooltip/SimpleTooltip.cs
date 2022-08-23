@@ -10,7 +10,6 @@ namespace Nekoyume.UI.Module
         [SerializeField] private TextMeshProUGUI tooltipText;
 
         private RectTransform _rectTransform;
-        private Coroutine _waitCoroutine;
 
         protected override void Awake()
         {
@@ -35,7 +34,7 @@ namespace Nekoyume.UI.Module
 
         private IEnumerator CoWaitClose()
         {
-            while (gameObject.activeSelf)
+            while (Input.GetMouseButtonDown(0))
             {
                 if (Input.GetMouseButtonDown(0))
                 {
@@ -45,7 +44,6 @@ namespace Nekoyume.UI.Module
 
                 yield return null;
             }
-
         }
     }
 }

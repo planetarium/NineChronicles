@@ -71,6 +71,7 @@ namespace Nekoyume.UI
         private const string RemainingBlockFormat = "<Style=G5>{0}({1})";
         private const int RewardBlockInterval = 50400;
 
+        [SerializeField] private StakeIconDataScriptableObject stakeIconData;
         protected override void Awake()
         {
             base.Awake();
@@ -154,7 +155,7 @@ namespace Nekoyume.UI
             var sheets = TableSheets.Instance;
             var regularSheet = sheets.StakeRegularRewardSheet;
 
-            levelIconImage.sprite = SpriteHelper.GetStakingIcon(level, IconType.Small);
+            levelIconImage.sprite = stakeIconData.GetIcon(level, IconType.Small);
             for (var i = 0; i < levelImages.Length; i++)
             {
                 levelImages[i].enabled = i < level;

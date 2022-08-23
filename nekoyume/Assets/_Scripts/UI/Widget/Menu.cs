@@ -88,6 +88,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button playerButton;
 
+        [SerializeField]
+        private StakeIconDataScriptableObject stakeIconData;
+
         private Coroutine _coLazyClose;
 
         private readonly List<IDisposable> _disposablesAtShow = new();
@@ -129,7 +132,7 @@ namespace Nekoyume.UI
 
             MonsterCollectionStateSubject.Level
                 .Subscribe(level =>
-                    stakingLevelIcon.sprite = SpriteHelper.GetStakingIcon(level, IconType.Bubble))
+                    stakingLevelIcon.sprite = stakeIconData.GetIcon(level, IconType.Small))
                 .AddTo(gameObject);
         }
 
@@ -555,7 +558,7 @@ namespace Nekoyume.UI
             StartCoroutine(CoStartSpeeches());
             UpdateButtons();
             stakingLevelIcon.sprite =
-                SpriteHelper.GetStakingIcon(States.Instance.StakingLevel, IconType.Bubble);
+                stakeIconData.GetIcon(States.Instance.StakingLevel, IconType.Small);
         }
 
         private void SubscribeAtShow()

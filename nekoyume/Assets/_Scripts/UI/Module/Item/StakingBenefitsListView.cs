@@ -44,12 +44,14 @@ namespace Nekoyume.UI.Module
         private const string ArenaTicketBuffFormat = "<Style=G3>{0}%";
         private const string CrystalBuffFormat = "<Style=G1>{0}%";
         private const string ActionPointBuffFormat = "<Style=G4>x{0}";
+        [SerializeField] private StakeIconDataScriptableObject stakeIconData;
 
         public void Set(int modelLevel, Model viewModel)
         {
+            var levelIcon = stakeIconData.GetIcon(modelLevel, IconType.Small);
             foreach (var textList in textLists)
             {
-                textList.iconImage.sprite = SpriteHelper.GetStakingIcon(modelLevel, IconType.Small);
+                textList.iconImage.sprite = levelIcon;
                 textList.benefitRateText.text = $"{viewModel.BenefitRate}%";
                 textList.requiredDepositText.text =
                     string.Format(RequiredDepositFormat, viewModel.RequiredDeposit);
@@ -60,7 +62,7 @@ namespace Nekoyume.UI.Module
                 textList.arenaTicketBuffText.text = viewModel.ArenaRewardBuff == 0
                     ? "-"
                     : string.Format(ArenaTicketBuffFormat, viewModel.ArenaRewardBuff);
-                textList.crystalBuffText.text =viewModel.CrystalBuff == 0
+                textList.crystalBuffText.text = viewModel.CrystalBuff == 0
                     ? "-"
                     : string.Format(CrystalBuffFormat, viewModel.CrystalBuff);
                 textList.actionPointBuffText.text =

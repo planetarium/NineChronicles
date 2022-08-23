@@ -70,7 +70,7 @@ namespace Nekoyume.UI
             var regularFixedSheet = sheets.StakeRegularFixedRewardSheet;
             var stakingMultiplierSheet = sheets.CrystalMonsterCollectionMultiplierSheet;
 
-            stepImage.sprite = SpriteHelper.GetStakingIcon(level);
+            // stepImage.sprite = SpriteHelper.GetStakingIcon(level);
             stepText.text = $"Step {level}";
             systemRewardArea.SetActive(false);
 

@@ -155,13 +155,6 @@ namespace Nekoyume.Helper
             return result ? result : Resources.Load<Sprite>(MailIconDefaultPath);
         }
 
-        public static Sprite GetStakingIcon(int level, IconType iconType = IconType.Default)
-        {
-            var data = Resources.Load<StakeIconDataScriptableObject>(
-                        "ScriptableObject/UI_StakeIconData");
-            return data.GetIcon(level, iconType);
-        }
-
         public static Sprite GetWorldMapBackground(string imageKey, int pageIndex)
         {
             var path = string.Format(WorldmapBackgroundPathFormat, imageKey, pageIndex);
