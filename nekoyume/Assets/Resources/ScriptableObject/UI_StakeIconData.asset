@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: UI_StakeIconData
   m_EditorClassIdentifier: 
   fallbackIconSprite: {fileID: 21300000, guid: 0fd932e603eb03049a100b49a122e8ea, type: 3}
-  fallbackSmallIconSprite: {fileID: 21300000, guid: 6b91210c23919614c818c79210422a62,
+  fallbackSmallIconSprite: {fileID: 21300000, guid: 946a840ff480143048f6914738451d2a,
+    type: 3}
+  fallbackBubbleIconSprite: {fileID: 21300000, guid: 6b91210c23919614c818c79210422a62,
     type: 3}
   iconList:
   - Level: 0
@@ -29,6 +31,19 @@ MonoBehaviour:
   - Level: 5
     IconSprite: {fileID: 21300000, guid: d0d333d99f2ce394f841e9ac89a71ef9, type: 3}
   smallIconList:
+  - Level: 0
+    IconSprite: {fileID: 21300000, guid: 6b91210c23919614c818c79210422a62, type: 3}
+  - Level: 1
+    IconSprite: {fileID: 21300000, guid: 946a840ff480143048f6914738451d2a, type: 3}
+  - Level: 2
+    IconSprite: {fileID: 21300000, guid: 7ae8bd7862d1e49e69ac5b00a093bb12, type: 3}
+  - Level: 3
+    IconSprite: {fileID: 21300000, guid: 9c118b2f0c5d5453da4cca84acd35acc, type: 3}
+  - Level: 4
+    IconSprite: {fileID: 21300000, guid: a4e70e24b9d9342c9bc6f16b1793a235, type: 3}
+  - Level: 5
+    IconSprite: {fileID: 21300000, guid: 8efd7a17ae635458c812966d604e1b9c, type: 3}
+  bubbleIconList:
   - Level: 0
     IconSprite: {fileID: 21300000, guid: 6b91210c23919614c818c79210422a62, type: 3}
   - Level: 1
