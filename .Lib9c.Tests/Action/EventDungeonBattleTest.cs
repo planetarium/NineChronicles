@@ -175,6 +175,14 @@ namespace Lib9c.Tests.Action
             Assert.Equal(
                 numberOfTicketPurchases + 1,
                 nextEventDungeonInfoList[2].ToInteger());
+            Assert.True(
+                nextStates.TryGetGoldBalance(
+                    _agentAddress,
+                    _ncgCurrency,
+                    out FungibleAssetValue balance
+                )
+            );
+            Assert.Equal(0 * _ncgCurrency, balance);
         }
 
         [Theory]
