@@ -555,14 +555,13 @@ namespace Nekoyume.UI
                             .ShowWithAddCost("UI_TOTAL_COST", "UI_BOSS_JOIN_THE_SEASON",
                                 CostType.Crystal, cost,
                                 CostType.WorldBossTicket, 1,
-                                () => StartCoroutine(CoRaid(false)));
+                                () => StartCoroutine(CoRaid()));
                     }
                     else
                     {
-                        Debug.Log($"[RAID] Ticket : {_headerMenu.WorldBossTickets.RemainTicket}");
                         if (_headerMenu.WorldBossTickets.RemainTicket > 0)
                         {
-                            StartCoroutine(CoRaid(false));
+                            StartCoroutine(CoRaid());
                         }
                         else
                         {
@@ -603,12 +602,12 @@ namespace Nekoyume.UI
             Close();
         }
 
-        private IEnumerator CoRaid(bool payNcg)
+        private IEnumerator CoRaid()
         {
             coverToBlockClick.SetActive(true);
             var itemMoveAnimation = ShowMoveAnimation();
             yield return new WaitWhile(() => itemMoveAnimation.IsPlaying);
-            Raid(payNcg);
+            Raid(false);
         }
 
         private ItemMoveAnimation ShowMoveAnimation()
@@ -626,7 +625,7 @@ namespace Nekoyume.UI
 
         private void Raid(bool payNcg)
         {
-            (var equipments, var costumes, var foods) = SaveCurrentEquipment();
+            var (equipments, costumes, foods) = SaveCurrentEquipment();
             ActionManager.Instance.Raid(costumes, equipments, foods, payNcg);
             Find<LoadingScreen>().Show();
             Close();
