@@ -36,7 +36,7 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            button.onClick.AddListener(() => { Application.OpenURL(MaterialTooltip.StakingDescriptionUrl); });
+            button.onClick.AddListener(() => Widget.Find<StakingPopup>().Show());
         }
 
         public void SetBonusTextFunc(Func<int, string> bonusTextFunc)
