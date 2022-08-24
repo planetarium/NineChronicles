@@ -575,13 +575,13 @@ namespace Nekoyume.Game
                 _battleResultModel.NextState = BattleResultPopup.NextState.GoToMain;
                 _battleResultModel.ActionPointNotEnough = false;
             }
-            else if (_battleResultModel.ActionPointNotEnough)
-            {
-                _battleResultModel.NextState = BattleResultPopup.NextState.GoToMain;
-            }
             else if (isMulti)
             {
                 _battleResultModel.NextState = BattleResultPopup.NextState.None;
+            }
+            else if (_battleResultModel.ActionPointNotEnough)
+            {
+                _battleResultModel.NextState = BattleResultPopup.NextState.GoToMain;
             }
             else if (isClear)
             {

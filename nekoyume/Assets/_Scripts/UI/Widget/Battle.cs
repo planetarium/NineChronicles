@@ -152,7 +152,6 @@ namespace Nekoyume.UI
                         .First(i => i.Id == stageId)
                         .CostAP;
                     boostCountText.text = $"<sprite name=UI_main_icon_star><size=75%>{boostCost}</size>";
-                    exitToggle.isOn = boostCost > cost;
                     break;
                 }
                 case StageType.EventDungeon:
