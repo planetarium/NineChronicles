@@ -6,6 +6,7 @@
 [Bb]uild/
 [Bb]uilds/
 [Uu]serSettings/
+[Ss]erverData/
 Assets/AssetStoreTools*
 
 # Visual Studio cache directory
@@ -69,15 +70,7 @@ nekoyume/compose/results
 /nekoyume/Assets/StreamingAsset/clo_copy.json
 /nekoyume/test_*
 
-# AddressableAssets
-# 꼭 필요한 설정파일 이외에 에셋 빌드로 생성되는 불특정 파일들 모두를 무시하기 위해서 아래처럼 설정함.
-/nekoyume/Assets/AddressableAssetsData/
-!nekoyume/Assets/AddressableAssetsData/AddressableAssetSettings*
-!nekoyume/Assets/AddressableAssetsData/AnalyzeData*
-!nekoyume/Assets/AddressableAssetsData/AssetGroups*
-!nekoyume/Assets/AddressableAssetsData/AssetGroupTemplates*
-!nekoyume/Assets/AddressableAssetsData/DataBuilders*
-!nekoyume/Assets/AddressableAssetsData/DefaultObject*
+
 /nekoyume/Assets/StreamingAssets/aa*
 
 # TextMesh Pro

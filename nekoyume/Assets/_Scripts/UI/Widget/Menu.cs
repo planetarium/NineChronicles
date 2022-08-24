@@ -19,6 +19,7 @@ using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Lobby;
 using Nekoyume.UI.Module.WorldBoss;
+using TMPro;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -37,37 +38,56 @@ namespace Nekoyume.UI
         private const string FirstOpenQuestKeyFormat = "Nekoyume.UI.Menu.FirstOpenQuestKey_{0}";
         private const string FirstOpenMimisbrunnrKeyFormat = "Nekoyume.UI.Menu.FirstOpenMimisbrunnrKeyKey_{0}";
 
-        [SerializeField] private MainMenu btnQuest;
+        [SerializeField]
+        private MainMenu btnQuest;
 
-        [SerializeField] private MainMenu btnCombination;
+        [SerializeField]
+        private MainMenu btnCombination;
 
-        [SerializeField] private MainMenu btnShop;
+        [SerializeField]
+        private MainMenu btnShop;
 
-        [SerializeField] private MainMenu btnRanking;
+        [SerializeField]
+        private MainMenu btnRanking;
 
-        [SerializeField] private MainMenu btnMimisbrunnr;
+        [SerializeField]
+        private MainMenu btnMimisbrunnr;
 
-        [SerializeField] private MainMenu btnStaking;
+        [SerializeField]
+        private MainMenu btnStaking;
 
-        [SerializeField] private MainMenu btnWorldBoss = null;
+        [SerializeField]
+        private MainMenu btnWorldBoss = null;
 
-        [SerializeField] private SpeechBubble[] speechBubbles = null;
+        [SerializeField]
+        private SpeechBubble[] speechBubbles = null;
 
-        [SerializeField] private GameObject shopExclamationMark;
+        [SerializeField]
+        private GameObject shopExclamationMark;
 
-        [SerializeField] private GameObject combinationExclamationMark;
+        [SerializeField]
+        private GameObject combinationExclamationMark;
 
-        [SerializeField] private GameObject questExclamationMark;
+        [SerializeField]
+        private GameObject questExclamationMark;
 
-        [SerializeField] private GameObject mimisbrunnrExclamationMark;
+        [SerializeField]
+        private GameObject mimisbrunnrExclamationMark;
 
-        [SerializeField] private GameObject eventDungeonExclamationMark;
+        [SerializeField]
+        private GameObject eventDungeonExclamationMark;
 
-        [SerializeField] private Image stakingLevelIcon;
+        [SerializeField]
+        private TextMeshProUGUI eventDungeonTicketsText;
 
-        [SerializeField] private GuidedQuest guidedQuest;
+        [SerializeField]
+        private Image stakingLevelIcon;
 
-        [SerializeField] private Button playerButton;
+        [SerializeField]
+        private GuidedQuest guidedQuest;
+
+        [SerializeField]
+        private Button playerButton;
 
         private Coroutine _coLazyClose;
 
@@ -141,8 +161,12 @@ namespace Nekoyume.UI
             player.StartRun();
             ActionCamera.instance.ChaseX(player.transform);
             ActionRenderHandler.Instance.Pending = true;
-            Game.Game.instance.ActionManager.HackAndSlash(player, worldId, stageId).Subscribe();
-            LocalLayerModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address,
+
+            Game.Game.instance.ActionManager
+                .HackAndSlash(player, worldId, stageId)
+                .Subscribe();
+            LocalLayerModifier.ModifyAvatarActionPoint(
+                States.Instance.CurrentAvatarState.address,
                 -requiredCost);
             var props = new Value
             {

@@ -552,13 +552,14 @@ namespace Nekoyume.Game
                     {
                         _battleResultModel.NextState = IsRepeatStage
                             ? BattleResultPopup.NextState.RepeatStage
-                            : BattleResultPopup.NextState.GoToMain;
+                            : BattleResultPopup.NextState.None;
                     }
                 }
             }
 
-            Widget.Find<BattleResultPopup>().Show(_battleResultModel, PlayCount > 1);
+            var isMulti = PlayCount > 1;
 
+            Widget.Find<BattleResultPopup>().Show(_battleResultModel, isMulti);
             yield return null;
 
             var characterSheet = Game.instance.TableSheets.CharacterSheet;

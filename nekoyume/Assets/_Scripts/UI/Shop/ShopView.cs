@@ -267,5 +267,17 @@ namespace Nekoyume.UI.Module
                 model.Expired.Value = isExpired;
             }
         }
+
+        public void SetLoading(List<OrderDigest> digests, bool isLoading = true)
+        {
+            var items = _items[ItemSubTypeFilter.All];
+            foreach (var digest in digests)
+            {
+                var item = items.Find(x => x.OrderDigest.OrderId == digest.OrderId);
+                if (item is null) continue;
+
+                item.Loading.Value = isLoading;
+            }
+        }
     }
 }

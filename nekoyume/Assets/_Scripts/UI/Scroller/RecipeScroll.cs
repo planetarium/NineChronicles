@@ -13,13 +13,14 @@ using Nekoyume.EnumType;
 using Nekoyume.L10n;
 using Nekoyume.State;
 using System.Numerics;
+using Nekoyume.UI.Module.Common;
 using TMPro;
 
 namespace Nekoyume.UI.Scroller
 {
     using mixpanel;
-    using Nekoyume.State.Subjects;
-    using Nekoyume.UI.Module;
+    using State.Subjects;
+    using Module;
     using UniRx;
 
     public class RecipeScroll : RectScroll<RecipeRow.Model, RecipeScroll.ContextModel>
@@ -43,31 +44,52 @@ namespace Nekoyume.UI.Scroller
             public StatType Type;
         }
 
-        [SerializeField] private List<EquipmentCategoryToggle> equipmentCategoryToggles = null;
+        [SerializeField]
+        private List<EquipmentCategoryToggle> equipmentCategoryToggles;
 
-        [SerializeField] private List<ConsumableCategoryToggle> consumableCategoryToggles = null;
+        [SerializeField]
+        private List<ConsumableCategoryToggle> consumableCategoryToggles;
 
-        [SerializeField] private GameObject equipmentTab = null;
+        [SerializeField]
+        private GameObject equipmentTab;
 
-        [SerializeField] private GameObject consumableTab = null;
+        [SerializeField]
+        private GameObject consumableTab;
 
-        [SerializeField] private GameObject emptyObject = null;
+        [SerializeField]
+        private GameObject eventScheduleTab;
 
-        [SerializeField] private GameObject openAllRecipeArea = null;
+        [SerializeField]
+        private BlocksAndDatesPeriod eventScheduleTabEntireBlocksAndDatesPeriod;
 
-        [SerializeField] private Button openAllRecipeButton = null;
+        [SerializeField]
+        private TextMeshProUGUI eventScheduleTabRemainingTimeText;
 
-        [SerializeField] private TextMeshProUGUI openAllRecipeCostText = null;
+        [SerializeField]
+        private GameObject emptyObject;
 
-        [SerializeField] private float animationInterval = 0.3f;
+        [SerializeField]
+        private TextMeshProUGUI emptyObjectText;
 
-        private Coroutine _animationCoroutine = null;
+        [SerializeField]
+        private GameObject openAllRecipeArea;
+
+        [SerializeField]
+        private Button openAllRecipeButton;
+
+        [SerializeField]
+        private TextMeshProUGUI openAllRecipeCostText;
+
+        [SerializeField]
+        private float animationInterval = 0.3f;
+
+        private Coroutine _animationCoroutine;
 
         private BigInteger _openCost;
 
         private List<int> _unlockableRecipeIds = new List<int>();
 
-        private List<IDisposable> _disposablesOnDisabled = new List<IDisposable>();
+        private List<IDisposable> _disposablesAtShow = new List<IDisposable>();
 
         protected void Awake()
         {
@@ -98,7 +120,7 @@ namespace Nekoyume.UI.Scroller
 
         private void OnDisable()
         {
-            _disposablesOnDisabled.DisposeAllAndClear();
+            _disposablesAtShow.DisposeAllAndClear();
         }
 
         private void OpenEveryAvailableRecipes()
@@ -162,14 +184,16 @@ namespace Nekoyume.UI.Scroller
 
         public void ShowAsEquipment(ItemSubType type, bool updateToggle = false)
         {
-            _disposablesOnDisabled.DisposeAllAndClear();
+            _disposablesAtShow.DisposeAllAndClear();
             Craft.SharedModel.DisplayingItemSubtype = type;
             Craft.SharedModel.SelectedRow.Value = null;
             equipmentTab.SetActive(true);
             consumableTab.SetActive(false);
+            eventScheduleTab.SetActive(false);
             if (updateToggle)
             {
-                var toggle = equipmentCategoryToggles.Find(x => x.Type == type);
+                var toggle = equipmentCategoryToggles
+                    .Find(x => x.Type == type);
                 if (toggle.Toggle.isOn)
                 {
                     ShowAsEquipment(type);
@@ -181,34 +205,35 @@ namespace Nekoyume.UI.Scroller
             }
 
             var items = Craft.SharedModel.EquipmentRecipeMap.Values
-                            .Where(x => x.ItemSubType == type)
-                        ?? Enumerable.Empty<RecipeRow.Model>();
-
+                .Where(x => x.ItemSubType == type)
+                .ToList();
             emptyObject.SetActive(!items.Any());
             Show(items, true);
             AnimateScroller();
 
             Craft.SharedModel.NotifiedRow
                 .Subscribe(SubscribeNotifiedRow)
-                .AddTo(_disposablesOnDisabled);
+                .AddTo(_disposablesAtShow);
             Craft.SharedModel.UnlockedRecipes
                 .Subscribe(_ => UpdateUnlockAllButton())
-                .AddTo(_disposablesOnDisabled);
+                .AddTo(_disposablesAtShow);
             AgentStateSubject.Crystal
                 .Subscribe(_ => UpdateUnlockAllButton())
-                .AddTo(_disposablesOnDisabled);
+                .AddTo(_disposablesAtShow);
         }
 
         public void ShowAsFood(StatType type, bool updateToggle = false)
         {
-            _disposablesOnDisabled.DisposeAllAndClear();
+            _disposablesAtShow.DisposeAllAndClear();
             openAllRecipeArea.SetActive(false);
             Craft.SharedModel.SelectedRow.Value = null;
             equipmentTab.SetActive(false);
             consumableTab.SetActive(true);
+            eventScheduleTab.SetActive(false);
             if (updateToggle)
             {
-                var toggle = consumableCategoryToggles.Find(x => x.Type == type);
+                var toggle = consumableCategoryToggles
+                    .Find(x => x.Type == type);
                 if (toggle.Toggle.isOn)
                 {
                     ShowAsFood(type);
@@ -220,17 +245,15 @@ namespace Nekoyume.UI.Scroller
             }
 
             var items = Craft.SharedModel.ConsumableRecipeMap.Values
-                            .Where(x => x.StatType == type)
-                        ?? Enumerable.Empty<RecipeRow.Model>();
-
+                .Where(x => x.StatType == type)
+                .ToList();
             emptyObject.SetActive(!items.Any());
             Show(items, true);
             AnimateScroller();
 
-
             Craft.SharedModel.NotifiedRow
                 .Subscribe(SubscribeNotifiedRow)
-                .AddTo(_disposablesOnDisabled);
+                .AddTo(_disposablesAtShow);
         }
 
         private void UpdateUnlockAllButton()
