@@ -89,7 +89,6 @@ namespace Nekoyume.Game
         public AvatarState AvatarState { get; set; }
         public bool IsShowHud { get; set; }
         public bool IsExitReserved { get; set; }
-        public bool IsRepeatStage { get; set; }
         public bool IsAvatarStateUpdatedAfterBattle { get; set; }
         public int PlayCount { get; set; }
 
@@ -605,7 +604,7 @@ namespace Nekoyume.Game
             {
                 ["StageId"] = log.stageId,
                 ["ClearedWave"] = log.clearedWaveNumber,
-                ["Repeat"] = IsRepeatStage,
+                ["Repeat"] = false, // Todo
                 ["CP"] = cp,
                 ["FoodCount"] = foodCount
             };
@@ -702,7 +701,6 @@ namespace Nekoyume.Game
             battle.Show(
                 StageType,
                 stageId,
-                IsRepeatStage,
                 IsExitReserved,
                 isTutorial,
                 apCost * PlayCount);

@@ -632,7 +632,6 @@ namespace Nekoyume.UI
             StopCoUpdateBottomText();
             StartCoroutine(CoFadeOut());
             var stage = Game.Game.instance.Stage;
-            stage.IsRepeatStage = false;
             stage.IsExitReserved = false;
             var stageLoadingScreen = Find<StageLoadingEffect>();
             stageLoadingScreen.Show(

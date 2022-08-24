@@ -96,7 +96,7 @@ namespace Nekoyume.UI
         private StageSheet.Row _stageRow;
         private int _worldId;
         private bool _useSweep = true;
-        private Action<StageType, bool, int, bool> _repeatBattleAction;
+        private Action<StageType, int, bool> _repeatBattleAction;
 
         protected override void Awake()
         {
@@ -116,7 +116,6 @@ namespace Nekoyume.UI
                     {
                         _repeatBattleAction(
                             StageType.HackAndSlash,
-                            false,
                             _ap.Value / _stageRow.CostAP,
                             false);
                         Close();
@@ -134,7 +133,7 @@ namespace Nekoyume.UI
         public void Show(
             int worldId,
             int stageId,
-            Action<StageType, bool, int, bool> repeatBattleAction,
+            Action<StageType, int, bool> repeatBattleAction,
             bool ignoreShowAnimation = false)
         {
             if (!Game.Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var stageRow))

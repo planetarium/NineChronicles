@@ -159,9 +159,6 @@ namespace Nekoyume.UI
             _roundData = roundData;
             _chooseAvatarState = chooseAvatarState;
 
-            var stage = Game.Game.instance.Stage;
-            stage.IsRepeatStage = false;
-
             UpdateArenaAvatarState();
             var avatarState = RxProps.PlayersArenaParticipant.Value.AvatarState;
             if (!_player)

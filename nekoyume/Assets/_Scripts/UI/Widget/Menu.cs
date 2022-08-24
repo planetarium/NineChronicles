@@ -168,7 +168,6 @@ namespace Nekoyume.UI
 
             var stage = Game.Game.instance.Stage;
             stage.IsExitReserved = false;
-            stage.IsRepeatStage = false;
             var player = stage.GetPlayer();
             player.StartRun();
             ActionCamera.instance.ChaseX(player.transform);
@@ -251,7 +250,6 @@ namespace Nekoyume.UI
 
                 var stage = Game.Game.instance.Stage;
                 stage.IsExitReserved = false;
-                stage.IsRepeatStage = false;
                 var player = stage.GetPlayer();
                 player.StartRun();
                 ActionCamera.instance.ChaseX(player.transform);
