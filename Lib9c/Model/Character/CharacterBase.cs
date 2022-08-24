@@ -353,6 +353,27 @@ namespace Nekoyume.Model
             Stats.AddBuff(clone, updateImmediate);
         }
 
+        public void RemoveRecentBuff()
+        {
+            Buff.Buff removedBuff = null;
+            var minDuration = int.MaxValue;
+            foreach (var buff in Buffs.Values)
+            {
+                var elapsedTurn = buff.originalDuration - buff.remainedDuration;
+                if (elapsedTurn < minDuration)
+                {
+                    minDuration = elapsedTurn;
+                    removedBuff = buff;
+                }
+            }
+
+            if (removedBuff != null)
+            {
+                Stats.RemoveBuff(removedBuff);
+                Buffs.Remove(removedBuff.RowData.GroupId);
+            }
+        }
+
         #endregion
 
         public bool IsCritical(bool considerAttackCount = true)
