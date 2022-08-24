@@ -569,43 +569,32 @@ namespace Nekoyume.Game
             avatarState.worldInformation.TryGetLastClearedStageId(out var lasStageId);
             _battleResultModel.LastClearedStageId = lasStageId;
             _battleResultModel.IsClear = log.IsClear;
+            var isMulti = PlayCount > 1;
 
             if (IsExitReserved)
             {
                 _battleResultModel.NextState = BattleResultPopup.NextState.GoToMain;
                 _battleResultModel.ActionPointNotEnough = false;
             }
+            else if (_battleResultModel.ActionPointNotEnough)
+            {
+                _battleResultModel.NextState = BattleResultPopup.NextState.GoToMain;
+            }
+            else if (isMulti)
+            {
+                _battleResultModel.NextState = BattleResultPopup.NextState.None;
+            }
+            else if (isClear)
+            {
+                _battleResultModel.NextState = _battleResultModel.IsEndStage
+                    ? BattleResultPopup.NextState.GoToMain
+                    : BattleResultPopup.NextState.NextStage;
+            }
             else
             {
-                if (_battleResultModel.ActionPointNotEnough)
-                {
-                    _battleResultModel.NextState = BattleResultPopup.NextState.GoToMain;
-                }
-                else
-                {
-                    if (isClear)
-                    {
-                        _battleResultModel.NextState = IsRepeatStage
-                            ? BattleResultPopup.NextState.RepeatStage
-                            : BattleResultPopup.NextState.NextStage;
-
-                        if (_battleResultModel.IsEndStage)
-                        {
-                            _battleResultModel.NextState = IsRepeatStage
-                                ? BattleResultPopup.NextState.RepeatStage
-                                : BattleResultPopup.NextState.GoToMain;
-                        }
-                    }
-                    else
-                    {
-                        _battleResultModel.NextState = IsRepeatStage
-                            ? BattleResultPopup.NextState.RepeatStage
-                            : BattleResultPopup.NextState.None;
-                    }
-                }
+                _battleResultModel.NextState = BattleResultPopup.NextState.None;
             }
 
-            var isMulti = PlayCount > 1;
             Widget.Find<BattleResultPopup>().Show(_battleResultModel, isMulti);
             yield return null;
 

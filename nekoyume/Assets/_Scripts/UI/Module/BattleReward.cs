@@ -116,22 +116,25 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            rewardItems.gameObject.SetActive(false);
-            failedText.text = GetFailedText();
-            _stageClearText = L10nManager.Localize("UI_BATTLE_RESULT_CLEAR");
-            _star = starArea.stars[index];
-            StartCoroutine(_star.Set(false));
-            failedText.gameObject.SetActive(true);
-            for (var i = 0; i < starArea.stars.Length; i++)
+            if (index > -1)
             {
-                var star = starArea.stars[i];
-                if (i != index)
+                rewardItems.gameObject.SetActive(false);
+                failedText.text = GetFailedText();
+                _stageClearText = L10nManager.Localize("UI_BATTLE_RESULT_CLEAR");
+                _star = starArea.stars[index];
+                StartCoroutine(_star.Set(false));
+                failedText.gameObject.SetActive(true);
+                for (var i = 0; i < starArea.stars.Length; i++)
                 {
-                    star.Disable();
-                }
-                else
-                {
-                    StartCoroutine(star.Set(false));
+                    var star = starArea.stars[i];
+                    if (i != index)
+                    {
+                        star.Disable();
+                    }
+                    else
+                    {
+                        StartCoroutine(star.Set(false));
+                    }
                 }
             }
 
@@ -186,9 +189,8 @@ namespace Nekoyume.UI.Module
             {
                 starForMulti.WaveStarTexts[i].text = clearedWaves[i].ToString();
             }
-            starForMulti.RemainingStarText.text = string.Format(
-                    "Collect {0} more, you can use the buff.",
-                    maxStarCount - starCount);
+            starForMulti.RemainingStarText.text = L10nManager.Localize(
+                "UI_REMAINING_STAR_TO_BUFF", maxStarCount - starCount);
         }
 
         private string GetFailedText()

@@ -494,7 +494,10 @@ namespace Nekoyume.UI
                 yield return new WaitForSeconds(0.5f);
 
                 view.gameObject.SetActive(true);
-                view.EnableStar(cleared);
+                if (i < 2 || !isNotClearedInMulti)
+                {
+                    view.EnableStar(cleared);
+                }
                 yield return null;
                 AudioController.instance.PlaySfx(AudioController.SfxCode.RewardItem);
             }
