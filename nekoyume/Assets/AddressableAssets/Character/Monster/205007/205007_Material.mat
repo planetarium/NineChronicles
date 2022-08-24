@@ -27,20 +27,32 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Cutoff: 0.1
+    - _CanvasGroupCompatible: 0
+    - _ColorMask: 15
+    - _Cutoff: 0.081
     - _DarkColorAlphaAdditive: 0
     - _DoubleSidedLighting: 0
+    - _FillPhase: 0
+    - _LightAffectsAdditive: 0
     - _OutlineMipLevel: 0
     - _OutlineReferenceTexWidth: 1024
     - _OutlineSmoothness: 1
     - _OutlineWidth: 3
+    - _ReceiveShadows: 0
+    - _ShadowAlphaCutoff: 0.1
+    - _Stencil: 0
     - _StencilComp: 8
+    - _StencilOp: 0
+    - _StencilReadMask: 255
     - _StencilRef: 1
+    - _StencilWriteMask: 255
     - _StraightAlphaInput: 0
     - _ThresholdEnd: 0.25
     - _Use8Neighbourhood: 1
+    - _UseUIAlphaClip: 0
     m_Colors:
     - _Black: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _OutlineColor: {r: 1, g: 1, b: 0, a: 1}
+    - _FillColor: {r: 1, g: 1, b: 1, a: 1}
+    - _OutlineColor: {r: 0.03773582, g: 0.03773582, b: 0, a: 1}
   m_BuildTextureStacks: []
