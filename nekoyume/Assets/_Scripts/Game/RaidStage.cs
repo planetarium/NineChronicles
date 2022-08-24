@@ -220,17 +220,18 @@ namespace Nekoyume.Game
 
         public IEnumerator CoNormalAttack(
             CharacterBase caster,
+            int skillId,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
             Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
             target.Set(caster);
-            var actionParams = new Character.RaidActionParams(target, skillInfos, buffInfos, target.CoNormalAttack);
+            var actionParams = new Character.RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoNormalAttack);
             _actionQueue.Enqueue(actionParams);
             yield break;
         }
 
-        public IEnumerator CoSpecialAttack(
+        public IEnumerator CoBlowAttack(
             CharacterBase caster,
             int skillId,
             IEnumerable<Skill.SkillInfo> skillInfos,
@@ -238,67 +239,59 @@ namespace Nekoyume.Game
         {
             Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
             target.Set(caster);
-            target.NextSpecialSkillId = skillId;
-            skillInfos = skillInfos.Concat(buffInfos);
-            yield return target.CoSpecialAttack(skillInfos.ToList());
-        }
-
-        public IEnumerator CoBlowAttack(
-            CharacterBase caster,
-            IEnumerable<Skill.SkillInfo> skillInfos,
-            IEnumerable<Skill.SkillInfo> buffInfos)
-        {
-            Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
-            target.Set(caster);
-            var actionParams = new Character.RaidActionParams(target, skillInfos, buffInfos, target.CoBlowAttack);
+            var actionParams = new Character.RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoBlowAttack);
             _actionQueue.Enqueue(actionParams);
             yield break;
         }
 
         public IEnumerator CoDoubleAttack(
             CharacterBase caster,
+            int skillId,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
             Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
             target.Set(caster);
-            var actionParams = new Character.RaidActionParams(target, skillInfos, buffInfos, target.CoDoubleAttack);
+            var actionParams = new Character.RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoDoubleAttack);
             _actionQueue.Enqueue(actionParams);
             yield break;
         }
 
         public IEnumerator CoAreaAttack(
             CharacterBase caster,
+            int skillId,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
             Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
             target.Set(caster);
-            var actionParams = new Character.RaidActionParams(target, skillInfos, buffInfos, target.CoAreaAttack);
+            var actionParams = new Character.RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoAreaAttack);
             _actionQueue.Enqueue(actionParams);
             yield break;
         }
 
         public IEnumerator CoHeal(
             CharacterBase caster,
+            int skillId,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
             Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
             target.Set(caster);
-            var actionParams = new Character.RaidActionParams(target, skillInfos, buffInfos, target.CoHeal);
+            var actionParams = new Character.RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoHeal);
             _actionQueue.Enqueue(actionParams);
             yield break;
         }
 
         public IEnumerator CoBuff(
             CharacterBase caster,
+            int skillId,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
             Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
             target.Set(caster);
-            var actionParams = new Character.RaidActionParams(target, skillInfos, buffInfos, target.CoBuff);
+            var actionParams = new Character.RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoBuff);
             _actionQueue.Enqueue(actionParams);
             yield break;
         }

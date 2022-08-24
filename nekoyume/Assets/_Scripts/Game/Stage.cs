@@ -668,20 +668,6 @@ namespace Nekoyume.Game
 
         public IEnumerator CoNormalAttack(
             CharacterBase caster,
-            IEnumerable<Skill.SkillInfo> skillInfos,
-            IEnumerable<Skill.SkillInfo> buffInfos)
-        {
-            var character = GetCharacter(caster);
-            if (character)
-            {
-                var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoNormalAttack);
-                character.actions.Add(actionParams);
-                yield return null;
-            }
-        }
-
-        public IEnumerator CoSpecialAttack(
-            CharacterBase caster,
             int skillId,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
@@ -697,6 +683,7 @@ namespace Nekoyume.Game
 
         public IEnumerator CoBlowAttack(
             CharacterBase caster,
+            int skillId,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
@@ -711,6 +698,7 @@ namespace Nekoyume.Game
 
         public IEnumerator CoDoubleAttack(
             CharacterBase caster,
+            int skillId,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
@@ -726,6 +714,7 @@ namespace Nekoyume.Game
 
         public IEnumerator CoAreaAttack(
             CharacterBase caster,
+            int skillId,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
@@ -741,6 +730,7 @@ namespace Nekoyume.Game
 
         public IEnumerator CoHeal(
             CharacterBase caster,
+            int skillId,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
@@ -755,6 +745,7 @@ namespace Nekoyume.Game
 
         public IEnumerator CoBuff(
             CharacterBase caster,
+            int skillId,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
