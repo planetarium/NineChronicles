@@ -113,10 +113,12 @@ namespace Nekoyume.Battle
 
                 foreach (var skill in _skillsOnWaveStart)
                 {
-                    var buffs = BuffFactory.GetBuffs(
+                    var buffs = BuffFactory.GetBuffsV2(
                         skill,
                         SkillBuffSheet,
-                        StatBuffSheet
+                        StatBuffSheet,
+                        SkillActionBuffSheet,
+                        ActionBuffSheet
                     );
 
                     var usedSkill = skill.Use(Player, 0, buffs);
