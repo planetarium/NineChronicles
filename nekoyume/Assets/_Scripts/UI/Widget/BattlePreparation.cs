@@ -325,6 +325,7 @@ namespace Nekoyume.UI
             _shouldResetPlayer = true;
             consumableSlots.Clear();
             _disposables.DisposeAllAndClear();
+            Analyzer.Instance.GuideQuestStageId = 0;
             base.Close(ignoreCloseAnimation);
         }
 

@@ -149,11 +149,7 @@ namespace Nekoyume.UI
             {
                 CloseWithOtherWidgets();
                 ShortcutHelper.ShortcutActionForStage(worldRow.Id, stageId);
-                var props = new Value
-                {
-                    ["StageID"] = stageId,
-                };
-                Analyzer.Instance.Track("Unity/Click Guided Quest Enter Dungeon", props);
+                Analyzer.Instance.GuideQuestStageId = stageId;
             }
             else if(ShortcutHelper.CheckUIStateForUsingShortcut(ShortcutHelper.PlaceType.Stage))
             {
@@ -177,13 +173,7 @@ namespace Nekoyume.UI
             {
                 CloseWithOtherWidgets();
                 ShortcutHelper.ShortcutActionForEventStage(eventDungeonStageId);
-                var props = new Value
-                {
-                    ["EventScheduleID"] = RxProps.EventScheduleRowForDungeon.Value.Id,
-                    ["EventDungeonID"] = RxProps.EventDungeonRow.Id,
-                    ["EventDungeonStageID"] = eventDungeonStageId,
-                };
-                Analyzer.Instance.Track("Unity/Click Guided Quest Enter Event Dungeon", props);
+                Analyzer.Instance.GuideQuestStageId = eventDungeonStageId;
             }
             else if (ShortcutHelper.CheckUIStateForUsingShortcut(ShortcutHelper.PlaceType
                          .EventDungeonStage))
