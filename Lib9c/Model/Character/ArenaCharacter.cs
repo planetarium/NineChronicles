@@ -256,7 +256,7 @@ namespace Nekoyume.Model
             foreach (var pair in Buffs)
 #pragma warning restore LAA1002
             {
-                pair.Value.remainedDuration--;
+                pair.Value.RemainedDuration--;
             }
         }
 
@@ -311,7 +311,7 @@ namespace Nekoyume.Model
             foreach (var key in Buffs.Keys.ToList())
             {
                 var buff = Buffs[key];
-                if (buff.remainedDuration > 0)
+                if (buff.RemainedDuration > 0)
                 {
                     continue;
                 }
@@ -335,7 +335,7 @@ namespace Nekoyume.Model
             foreach (var key in Buffs.Keys.ToList())
             {
                 var buff = Buffs[key];
-                if (buff.remainedDuration > 0)
+                if (buff.RemainedDuration > 0)
                 {
                     continue;
                 }

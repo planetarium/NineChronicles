@@ -1,29 +1,21 @@
 using System;
-using System.Collections.Generic;
-using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model.Buff
 {
     [Serializable]
-    public class StatBuff : ICloneable
+    public class StatBuff : Buff
     {
-        public int originalDuration;
-        public int remainedDuration;
-
         public StatBuffSheet.Row RowData { get; }
 
-        protected StatBuff(StatBuffSheet.Row row)
+        protected StatBuff(StatBuffSheet.Row row) : base(row.TargetType, row.Duration)
         {
-            originalDuration = remainedDuration = row.Duration;
             RowData = row;
         }
 
-        protected StatBuff(StatBuff value)
+        protected StatBuff(StatBuff value) : base(value)
         {
-            originalDuration = value.RowData.Duration;
-            remainedDuration = value.remainedDuration;
             RowData = value.RowData;
         }
 
@@ -57,12 +49,7 @@ namespace Nekoyume.Model.Buff
             return RowData.StatModifier.GetModifiedAll(value);
         }
 
-        public IEnumerable<CharacterBase> GetTarget(CharacterBase caster)
-        {
-            return RowData.TargetType.GetTarget(caster);
-        }
-
-        public object Clone()
+        public override object Clone()
         {
             return new StatBuff(this);
         }
