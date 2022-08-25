@@ -30,7 +30,8 @@ namespace Nekoyume.Model
 
         public readonly Skills Skills = new Skills();
         public readonly Skills BuffSkills = new Skills();
-        public readonly Dictionary<int, Buff.StatBuff> Buffs = new Dictionary<int, Buff.StatBuff>();
+        public readonly Dictionary<int, StatBuff> StatBuffs = new Dictionary<int, StatBuff>();
+        public readonly Dictionary<int, ActionBuff> ActionBuffs = new Dictionary<int, ActionBuff>();
         public readonly List<CharacterBase> Targets = new List<CharacterBase>();
 
         public CharacterSheet.Row RowData { get; }
@@ -130,13 +131,22 @@ namespace Nekoyume.Model
             // 스킬은 변하지 않는다는 가정 하에 얕은 복사.
             Skills = value.Skills;
             // 버프는 컨테이너도 옮기고,
-            Buffs = new Dictionary<int, Buff.StatBuff>();
+            StatBuffs = new Dictionary<int, StatBuff>();
 #pragma warning disable LAA1002
-            foreach (var pair in value.Buffs)
+            foreach (var pair in value.StatBuffs)
 #pragma warning restore LAA1002
             {
                 // 깊은 복사까지 꼭.
-                Buffs.Add(pair.Key, (Buff.StatBuff) pair.Value.Clone());
+                StatBuffs.Add(pair.Key, (StatBuff) pair.Value.Clone());
+            }
+
+            ActionBuffs = new Dictionary<int, ActionBuff>();
+#pragma warning disable LAA1002
+            foreach (var pair in value.ActionBuffs)
+#pragma warning restore LAA1002
+            {
+                // 깊은 복사까지 꼭.
+                ActionBuffs.Add(pair.Key, (ActionBuff)pair.Value.Clone());
             }
 
             // 타갯은 컨테이너만 옮기기.
@@ -204,7 +214,14 @@ namespace Nekoyume.Model
         private void ReduceDurationOfBuffs()
         {
 #pragma warning disable LAA1002
-            foreach (var pair in Buffs)
+            foreach (var pair in StatBuffs)
+#pragma warning restore LAA1002
+            {
+                pair.Value.RemainedDuration--;
+            }
+
+#pragma warning disable LAA1002
+            foreach (var pair in ActionBuffs)
 #pragma warning restore LAA1002
             {
                 pair.Value.RemainedDuration--;
@@ -311,23 +328,34 @@ namespace Nekoyume.Model
 
         private void RemoveBuffs()
         {
-            var isDirtyMySelf = false;
+            var isBuffRemoved = false;
 
-            var keyList = Buffs.Keys.ToList();
-            foreach (var key in keyList)
+            var statKeyList = StatBuffs.Keys.ToList();
+            foreach (var key in statKeyList)
             {
-                var buff = Buffs[key];
+                var buff = StatBuffs[key];
                 if (buff.RemainedDuration > 0)
                     continue;
 
-                Buffs.Remove(key);
-                isDirtyMySelf = true;
+                StatBuffs.Remove(key);
+                isBuffRemoved = true;
             }
 
-            if (!isDirtyMySelf)
+            var actionKeyList = ActionBuffs.Keys.ToList();
+            foreach (var key in actionKeyList)
+            {
+                var buff = ActionBuffs[key];
+                if (buff.RemainedDuration > 0)
+                    continue;
+
+                ActionBuffs.Remove(key);
+                isBuffRemoved = true;
+            }
+
+            if (!isBuffRemoved)
                 return;
 
-            Stats.SetBuffs(Buffs.Values);
+            Stats.SetBuffs(StatBuffs.Values);
             Simulator.Log.Add(new RemoveBuffs((CharacterBase) Clone()));
         }
 
@@ -342,15 +370,27 @@ namespace Nekoyume.Model
 
         #region Buff
 
-        public void AddBuff(Buff.StatBuff buff, bool updateImmediate = true)
+        public void AddBuff(Buff.Buff buff, bool updateImmediate = true)
         {
-            if (Buffs.TryGetValue(buff.RowData.GroupId, out var outBuff) &&
-                outBuff.RowData.Id > buff.RowData.Id)
-                return;
+            if (buff is StatBuff stat)
+            {
+                if (StatBuffs.TryGetValue(stat.RowData.GroupId, out var outBuff) &&
+                    outBuff.RowData.Id > stat.RowData.Id)
+                    return;
 
-            var clone = (Buff.StatBuff) buff.Clone();
-            Buffs[buff.RowData.GroupId] = clone;
-            Stats.AddBuff(clone, updateImmediate);
+                var clone = (StatBuff)stat.Clone();
+                StatBuffs[stat.RowData.GroupId] = clone;
+                Stats.AddBuff(clone, updateImmediate);
+            }
+            else if (buff is ActionBuff action)
+            {
+                if (ActionBuffs.TryGetValue(action.RowData.GroupId, out var outBuff) &&
+                    outBuff.RowData.Id > action.RowData.Id)
+                    return;
+
+                var clone = (ActionBuff)action.Clone();
+                ActionBuffs[action.RowData.GroupId] = clone;
+            }
         }
 
         #endregion

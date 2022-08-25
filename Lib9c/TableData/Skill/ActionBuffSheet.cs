@@ -14,6 +14,7 @@ namespace Nekoyume.TableData
             public override int Key => Id;
 
             public int Id { get; private set; }
+            public int GroupId { get; private set; }
 
             public SkillTargetType TargetType { get; private set; }
 
@@ -27,9 +28,10 @@ namespace Nekoyume.TableData
             public override void Set(IReadOnlyList<string> fields)
             {
                 Id = ParseInt(fields[0]);
-                TargetType = (SkillTargetType)Enum.Parse(typeof(SkillTargetType), fields[4]);
-                ActionBuffType = (ActionBuffType)Enum.Parse(typeof(ActionBuffType), fields[2]);
-                Duration = ParseInt(fields[3]);
+                GroupId = ParseInt(fields[1]);
+                TargetType = (SkillTargetType)Enum.Parse(typeof(SkillTargetType), fields[2]);
+                ActionBuffType = (ActionBuffType)Enum.Parse(typeof(ActionBuffType), fields[3]);
+                Duration = ParseInt(fields[4]);
             }
         }
 
