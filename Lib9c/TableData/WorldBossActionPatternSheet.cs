@@ -31,9 +31,11 @@ namespace Nekoyume.TableData
 
                 for (int i = 2; i < fields.Count; ++i)
                 {
-                    var skillId = ParseInt(fields[i]);
+                    var field = fields[i].Trim('\"');
+                    var skillId = ParseInt(field);
                     patternData.SkillIds.Add(skillId);
                 }
+
                 Patterns = new List<ActionPatternData>() { patternData };
             }
 

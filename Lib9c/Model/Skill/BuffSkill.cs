@@ -17,7 +17,7 @@ namespace Nekoyume.Model.Skill
             var clone = (CharacterBase) caster.Clone();
             var buff = ProcessBuff(caster, simulatorWaveTurn, buffs);
 
-            return new BattleStatus.Buff(clone, buff);
+            return new BattleStatus.Buff(SkillRow.Id, clone, buff);
         }
     }
 }
