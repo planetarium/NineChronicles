@@ -810,7 +810,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_PlayableAsset
       value: 
-      objectReference: {fileID: 11400000, guid: 644d45699be4e6945991f8ab2e1c184f,
+      objectReference: {fileID: 11400000, guid: 136c99213c48349e7a21643be807eba5,
         type: 2}
     - target: {fileID: 3932926034676862881, guid: b31b2cee292be9a4da74d5fded034343,
         type: 3}
@@ -2007,6 +2007,56 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 92307620}
     m_Modifications:
+    - target: {fileID: 588840327662997799, guid: 717216517b03d4c57bae5a9a59286335,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5055211629077272062, guid: 717216517b03d4c57bae5a9a59286335,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6943882959391779113, guid: 717216517b03d4c57bae5a9a59286335,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6956614315362787450, guid: 717216517b03d4c57bae5a9a59286335,
+        type: 3}
+      propertyPath: InitialModule.maxNumParticles
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6956614315362787450, guid: 717216517b03d4c57bae5a9a59286335,
+        type: 3}
+      propertyPath: InitialModule.startSize.scalar
+      value: 1.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6956614315362787450, guid: 717216517b03d4c57bae5a9a59286335,
+        type: 3}
+      propertyPath: InitialModule.startSizeY.scalar
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6956614315362787450, guid: 717216517b03d4c57bae5a9a59286335,
+        type: 3}
+      propertyPath: InitialModule.startSizeZ.scalar
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6956614315362787450, guid: 717216517b03d4c57bae5a9a59286335,
+        type: 3}
+      propertyPath: EmissionModule.rateOverTime.scalar
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7110870608211263451, guid: 717216517b03d4c57bae5a9a59286335,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7161670136073590875, guid: 717216517b03d4c57bae5a9a59286335,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7171611368931243746, guid: 717216517b03d4c57bae5a9a59286335,
         type: 3}
       propertyPath: m_Name
