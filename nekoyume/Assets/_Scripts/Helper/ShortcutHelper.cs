@@ -39,8 +39,7 @@ namespace Nekoyume.Helper
                 acquisitionPlaceList.Add(
                     MakeAcquisitionPlaceModelByPlaceType(
                         caller,
-                        PlaceType.Arena,
-                        itemBase)
+                        PlaceType.Arena)
                 );
             }
             else if (itemBase.ItemSubType is ItemSubType.EquipmentMaterial
@@ -62,7 +61,6 @@ namespace Nekoyume.Helper
                         return MakeAcquisitionPlaceModelByPlaceType(
                             caller,
                             PlaceType.Stage,
-                            itemBase,
                             worldRow.Id,
                             stage);
                     }));
@@ -88,7 +86,6 @@ namespace Nekoyume.Helper
                                 MakeAcquisitionPlaceModelByPlaceType(
                                     caller,
                                     PlaceType.EventDungeonStage,
-                                    itemBase,
                                     RxProps.EventDungeonRow.Id,
                                     stage))
                             );
@@ -109,16 +106,14 @@ namespace Nekoyume.Helper
                         }.Select(type =>
                             MakeAcquisitionPlaceModelByPlaceType(
                                 caller,
-                                type,
-                                itemBase))
+                                type))
                     );
                 }
                 else
                 {
                     acquisitionPlaceList.Add(
                         MakeAcquisitionPlaceModelByPlaceType(caller,
-                            PlaceType.Quest,
-                            itemBase)
+                            PlaceType.Quest)
                     );
                 }
             }
@@ -134,8 +129,7 @@ namespace Nekoyume.Helper
                     acquisitionPlaceList.Add(
                         MakeAcquisitionPlaceModelByPlaceType(
                             caller,
-                            PlaceType.Quest,
-                            itemBase));
+                            PlaceType.Quest));
                 }
             }
 
@@ -145,7 +139,6 @@ namespace Nekoyume.Helper
         public static AcquisitionPlaceButton.Model MakeAcquisitionPlaceModelByPlaceType(
             Widget caller,
             PlaceType type,
-            ItemBase itemBase,
             int worldId = 0,
             StageSheet.Row stageRow = null)
         {
