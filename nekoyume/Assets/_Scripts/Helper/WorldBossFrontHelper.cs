@@ -164,5 +164,11 @@ namespace Nekoyume.Helper
         {
             return rank * 10000;
         }
+
+        public static Sprite GetRankIcon(int rank)
+        {
+            var index = rank - 1;
+            return ScriptableObject.Rank[index];
+        }
     }
 }
