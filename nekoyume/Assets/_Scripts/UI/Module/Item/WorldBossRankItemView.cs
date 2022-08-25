@@ -58,12 +58,17 @@ namespace Nekoyume.UI
             }
 
             portrait.sprite = SpriteHelper.GetItemIcon(model.Portrait);
-            avatarName.text = model.AvatarName;
+
+            var nameWithHash = model.AvatarName
+                .Replace(" <size=80%><color=#A68F7E>", string.Empty)
+                .Replace("</color></size>", string.Empty);
+            avatarName.text = nameWithHash.Substring(0, nameWithHash.Length - 5);
+            address.text = nameWithHash.Substring(nameWithHash.Length - 6, 5);
             level.text = $"{model.Level}";
-            rank.text = model.Ranking > 0 ? $"{model.Ranking}" : "-";
+            rank.text = $"{model.Ranking}";
             cp.text = $"{model.Cp:#,0}";
-            highScore.text = model.HighScore > 0 ? $"{model.HighScore:#,0}" : "-";
-            totalScore.text = model.TotalScore > 0 ? $"{model.TotalScore:#,0}" : "-";
+            highScore.text = $"{model.HighScore:#,0}";
+            totalScore.text = $"{model.TotalScore:#,0}";
         }
     }
 }
