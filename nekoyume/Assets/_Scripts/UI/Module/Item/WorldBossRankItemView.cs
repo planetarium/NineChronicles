@@ -72,7 +72,7 @@ namespace Nekoyume.UI
                 .Replace(" <size=80%><color=#A68F7E>", string.Empty)
                 .Replace("</color></size>", string.Empty);
             avatarName.text = nameWithHash.Substring(0, nameWithHash.Length - 5);
-            address.text = nameWithHash.Substring(nameWithHash.Length - 6, 5);
+            address.text = nameWithHash.Substring(nameWithHash.Length - 5, 5);
             level.text = $"{model.Level}";
             cp.text = $"{model.Cp:#,0}";
             highScore.text = $"{model.HighScore:#,0}";
