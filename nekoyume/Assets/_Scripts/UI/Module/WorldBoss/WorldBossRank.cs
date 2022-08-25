@@ -33,9 +33,6 @@ namespace Nekoyume.UI.Module.WorldBoss
         private Image bossImage;
 
         [SerializeField]
-        private TextMeshProUGUI bossName;
-
-        [SerializeField]
         private TextMeshProUGUI rankTitle;
 
         [SerializeField]
@@ -51,6 +48,9 @@ namespace Nekoyume.UI.Module.WorldBoss
         private GameObject noSeasonInfo;
 
         [SerializeField]
+        private Transform bossNameContainer;
+
+        [SerializeField]
         private List<GameObject> queryLoadingObjects;
 
         [SerializeField]
@@ -58,6 +58,7 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         private readonly Dictionary<Status, WorldBossRankItems> _cachedItems = new();
         private Status _status;
+        private GameObject _bossNameObject;
         private Address currentAvatarAddress;
 
         private void Awake()
@@ -74,7 +75,12 @@ namespace Nekoyume.UI.Module.WorldBoss
             var raidId = GetRaidId(status);
             if (!WorldBossFrontHelper.TryGetRaid(raidId, out _))
             {
+                if (_bossNameObject != null)
+                {
+                    Destroy(_bossNameObject);
+                }
                 noSeasonInfo.SetActive(true);
+                bossImage.enabled = false;
                 return;
             }
 
@@ -115,10 +121,14 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         private void ResetInformation(Status status)
         {
+            if (_bossNameObject != null)
+            {
+                Destroy(_bossNameObject);
+            }
+
             rankTitle.text = status == Status.PreviousSeason
                 ? L10nManager.Localize("UI_PREVIOUS_SEASON_RANK")
                 : L10nManager.Localize("UI_LEADERBOARD");
-            bossName.text = string.Empty;
             totalUsers.text = string.Empty;
             bossImage.enabled = false;
             scroll.UpdateData(new List<WorldBossRankItem>());
@@ -140,7 +150,13 @@ namespace Nekoyume.UI.Module.WorldBoss
                 return;
             }
 
-            bossName.text = data.name;
+            if (_bossNameObject != null)
+            {
+                Destroy(_bossNameObject);
+            }
+
+            _bossNameObject = Instantiate(data.nameWithBackgroundPrefab, bossNameContainer);
+
             bossImage.enabled = true;
             bossImage.sprite = data.illustration;
         }

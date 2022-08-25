@@ -46,7 +46,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (_gradeObject is not null)
+            if (_gradeObject != null)
             {
                 Destroy(_gradeObject);
             }

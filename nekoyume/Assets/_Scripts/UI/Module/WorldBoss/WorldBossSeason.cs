@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Numerics;
 using Nekoyume.Helper;
+using Nekoyume.UI.Model;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -38,6 +39,15 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         [SerializeField]
         private Transform gradeContainer;
+
+        [SerializeField]
+        private GameObject myRankContainer;
+
+        [SerializeField]
+        private GameObject apiMissingContainer;
+
+        [SerializeField]
+        private GameObject emptyRecordContainer;
 
         [SerializeField]
         private List<Image> runeIcons;
@@ -84,13 +94,36 @@ namespace Nekoyume.UI.Module.WorldBoss
             }
         }
 
-        public void UpdateMyInformation(int totalScore, int highScore, int rank)
+        public void PrepareRefresh()
         {
-            myTotalScoreText.text = totalScore > 0 ? $"{totalScore:#,0}" : string.Empty;;
-            myBestRecordText.text = highScore > 0 ? $"{highScore:#,0}" : string.Empty;;
-            myRankText.text = rank > 0 ? $"{rank:#,0}" : string.Empty;;
+            raidersText.text = string.Empty;
+            myTotalScoreText.text = string.Empty;
+            myBestRecordText.text = string.Empty;
+            myRankText.text = string.Empty;
+        }
 
-            UpdateGrade(highScore);
+        public void UpdateMyInformation(WorldBossRankingRecord record)
+        {
+            myRankContainer.SetActive(false);
+            emptyRecordContainer.SetActive(false);
+            apiMissingContainer.SetActive(!Game.Game.instance.ApiClient.IsInitialized);
+            if (!Game.Game.instance.ApiClient.IsInitialized)
+            {
+                return;
+            }
+
+            if (record != null)
+            {
+                myRankContainer.SetActive(true);
+                myTotalScoreText.text = $"{record.TotalScore:#,0}";
+                myBestRecordText.text = $"{record.HighScore:#,0}";
+                myRankText.text = $"{record.Ranking:#,0}";
+                UpdateGrade(record.HighScore);
+            }
+            else
+            {
+                emptyRecordContainer.SetActive(true);
+            }
         }
 
         private void UpdateGrade(int highScore)

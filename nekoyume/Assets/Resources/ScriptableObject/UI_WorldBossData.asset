@@ -18,12 +18,16 @@ MonoBehaviour:
     illustration: {fileID: 21300000, guid: 9b7b4ed9c234188499f361b1bd822bad, type: 3}
     namePrefab: {fileID: 7177679302177427472, guid: 9077ce1b0e2a349479de63699ea19926,
       type: 3}
+    nameWithBackgroundPrefab: {fileID: 5837576388610129117, guid: 81ae0fa672d25934ba774628688f57c8,
+      type: 3}
     spinePrefab: {fileID: 7353096591528320530, guid: ba316703c4bf8134f8a8ebea259de773,
       type: 3}
   - id: 900002
     name: serimnir of the abyss
     illustration: {fileID: 21300000, guid: 1242f629318f1db4bac418b773e128c9, type: 3}
     namePrefab: {fileID: 8173047061470112773, guid: 02d0bdb57bfdd1d45b1d67f46ca666ea,
+      type: 3}
+    nameWithBackgroundPrefab: {fileID: 8482975693156328557, guid: ce12f0230a1316140b147babd7fbf80d,
       type: 3}
     spinePrefab: {fileID: 9063561474706172066, guid: e1c34daccc27ab84b8fb301d0fc87d41,
       type: 3}

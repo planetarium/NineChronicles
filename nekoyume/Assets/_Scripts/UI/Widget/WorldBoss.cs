@@ -45,9 +45,6 @@ namespace Nekoyume.UI
         public Button runeButton;
 
         [SerializeField]
-        private Button apiMissingButton;
-
-        [SerializeField]
         private Button refreshButton;
 
         [SerializeField]
@@ -74,8 +71,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private BlocksAndDatesPeriod blocksAndDatesPeriod;
 
-        [SerializeField]
-        private GameObject apiMissing;
+
 
         [SerializeField]
         private List<GameObject> queryLoadingObjects;
@@ -139,8 +135,6 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
             runeButton.OnClickAsObservable()
                 .Subscribe(_ => ShowDetail(WorldBossDetail.ToggleType.Rune)).AddTo(gameObject);
-            apiMissingButton.OnClickAsObservable()
-                .Subscribe(_ => apiMissing.SetActive(false)).AddTo(gameObject);
             refreshButton.OnClickAsObservable()
                 .Subscribe(_ => RefreshMyInformationAsync()).AddTo(gameObject);
 
@@ -204,13 +198,14 @@ namespace Nekoyume.UI
                             ShowHeaderMenu(HeaderMenuStatic.AssetVisibleState.CurrencyOnly,
                                 ignoreHeaderMenuAnimation);
                         }
+
                         UpdateOffSeason(currentBlockIndex);
                         break;
                     case WorldBossStatus.Season:
                         if (!ignoreHeaderMenu)
                         {
                             ShowHeaderMenu(HeaderMenuStatic.AssetVisibleState.WorldBoss,
-                            ignoreHeaderMenuAnimation);
+                                ignoreHeaderMenuAnimation);
                         }
 
                         if (!WorldBossFrontHelper.TryGetCurrentRow(currentBlockIndex, out var row))
@@ -218,7 +213,7 @@ namespace Nekoyume.UI
                             return;
                         }
 
-                        ResetSeason();
+                        season.PrepareRefresh();
                         var (worldBoss, raider, myRecord, userCount) = await GetStatesAsync(row);
                         UpdateSeason(row, worldBoss, raider, myRecord, userCount);
 
@@ -256,12 +251,6 @@ namespace Nekoyume.UI
             UpdateBossPrefab(nextRow, true);
         }
 
-        private void ResetSeason()
-        {
-            UpdateMyInformation(null);
-            UpdateUserCount(0);
-        }
-
         private void UpdateSeason(
             WorldBossListSheet.Row row,
             WorldBossState worldBoss,
@@ -273,7 +262,6 @@ namespace Nekoyume.UI
 
             offSeasonContainer.SetActive(false);
             seasonContainer.SetActive(true);
-            apiMissing.SetActive(!Game.Game.instance.ApiClient.IsInitialized);
             rankButton.gameObject.SetActive(true);
             enterButton.Text = L10nManager.Localize("UI_WORLD_MAP_ENTER");
             _period = (row.StartedBlockIndex, row.EndedBlockIndex);
@@ -281,8 +269,8 @@ namespace Nekoyume.UI
 
             UpdateBossPrefab(row);
             UpdateBossInformationAsync(worldBoss);
-            UpdateMyInformation(myRecord);
-            UpdateUserCount(userCount);
+            season.UpdateMyInformation(myRecord);
+            season.UpdateUserCount(userCount);
         }
 
         private void UpdateBossPrefab(WorldBossListSheet.Row row, bool isOffSeason = false)
@@ -367,14 +355,10 @@ namespace Nekoyume.UI
         {
             var response = await WorldBossQuery.QueryRankingAsync(row.Id, avatarAddress);
             var records = response?.WorldBossRanking ?? new List<WorldBossRankingRecord>();
-            var myRecord = records.FirstOrDefault(record => record.Address == avatarAddress.ToHex());
+            var myRecord =
+                records.FirstOrDefault(record => record.Address == avatarAddress.ToHex());
             var userCount = response?.WorldBossTotalUsers ?? 0;
             return (myRecord, userCount);
-        }
-
-        private void UpdateUserCount(int count)
-        {
-            season.UpdateUserCount(count);
         }
 
         private void UpdateBossInformationAsync(WorldBossState state)
@@ -391,14 +375,6 @@ namespace Nekoyume.UI
                 : string.Empty;
 
             season.UpdateBossInformation(bossId, bossName, level, curHp, maxHp);
-        }
-
-        private void UpdateMyInformation( WorldBossRankingRecord record)
-        {
-            var totalScore = record?.TotalScore ?? 0;
-            var highScore = record?.HighScore ?? 0;
-            var rank = record?.Ranking ?? 0;
-            season.UpdateMyInformation(totalScore, highScore, rank);
         }
 
         private async void RefreshMyInformationAsync()

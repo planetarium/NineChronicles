@@ -30,6 +30,7 @@ namespace Nekoyume
             public string name;
             public Sprite illustration;
             public GameObject namePrefab;
+            public GameObject nameWithBackgroundPrefab;
             public GameObject spinePrefab;
         }
 

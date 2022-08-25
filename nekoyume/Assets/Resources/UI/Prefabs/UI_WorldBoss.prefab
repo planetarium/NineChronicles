@@ -4795,7 +4795,7 @@ GameObject:
   - component: {fileID: 7031855299139393356}
   - component: {fileID: 4830816067456598409}
   m_Layer: 15
-  m_Name: RankingNoContainer
+  m_Name: EmptyRecordContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12969,7 +12969,6 @@ MonoBehaviour:
   informationButton: {fileID: 2810049449839990626}
   prevRankButton: {fileID: 587638803008553473}
   runeButton: {fileID: 7277333978495071757}
-  apiMissingButton: {fileID: 1118646872049355205}
   refreshButton: {fileID: 6276601177561108679}
   enterButton: {fileID: 8811684776548993440}
   offSeasonContainer: {fileID: 7916253040827682814}
@@ -12979,7 +12978,6 @@ MonoBehaviour:
   timerSlider: {fileID: 5083658049772709017}
   timeBlock: {fileID: 3787493603026106412}
   blocksAndDatesPeriod: {fileID: 4671676950301706617}
-  apiMissing: {fileID: 2361100179607856833}
   queryLoadingObjects:
   - {fileID: 2846205069070236859}
   - {fileID: 7965326612532702510}
@@ -16204,6 +16202,9 @@ MonoBehaviour:
   myBestRecordText: {fileID: 4800466405530625192}
   myTotalScoreText: {fileID: 4435842645187387513}
   gradeContainer: {fileID: 5091538498712567520}
+  myRankContainer: {fileID: 587638802754812874}
+  apiMissingContainer: {fileID: 2361100179607856833}
+  emptyRecordContainer: {fileID: 4307306351019656839}
   runeIcons:
   - {fileID: 3882330065522627513}
   - {fileID: 8579404630304436620}
@@ -16388,7 +16389,7 @@ PrefabInstance:
     - target: {fileID: 2653412128968902211, guid: a355d939a3380434f93d18dfbb4e50d2,
         type: 3}
       propertyPath: m_Name
-      value: RankingNotShowingContainer
+      value: ApiMissing
       objectReference: {fileID: 0}
     - target: {fileID: 2653412128968902211, guid: a355d939a3380434f93d18dfbb4e50d2,
         type: 3}
@@ -16599,18 +16600,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 294563972513046658}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1118646872049355205 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 833371782082603335, guid: a355d939a3380434f93d18dfbb4e50d2,
-    type: 3}
-  m_PrefabInstance: {fileID: 294563972513046658}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2361100179607856833 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2653412128968902211, guid: a355d939a3380434f93d18dfbb4e50d2,
@@ -18152,7 +18141,7 @@ PrefabInstance:
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 88
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
@@ -19161,7 +19150,7 @@ PrefabInstance:
     - target: {fileID: 464432051908297147, guid: b57a64a33fd16c143a93a22e1b4bee69,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 57.76
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 464432051908297147, guid: b57a64a33fd16c143a93a22e1b4bee69,
         type: 3}

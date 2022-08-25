@@ -68,7 +68,7 @@ namespace Nekoyume.Helper
         {
             var sheet = Game.Game.instance.TableSheets.WorldBossListSheet;
             row = sheet.Values.FirstOrDefault(x => x.Id.Equals(raidId));
-            return row is not null;
+            return row != null;
         }
 
         public static bool TryGetRunes(int bossId, out List<RuneSheet.Row> rows)
@@ -106,7 +106,7 @@ namespace Nekoyume.Helper
             var sheet = Game.Game.instance.TableSheets.WorldBossListSheet;
             row = sheet.Values.FirstOrDefault(x => x.StartedBlockIndex <= currentBlockIndex &&
                                              currentBlockIndex <= x.EndedBlockIndex);
-            return row is not null;
+            return row != null;
         }
 
         public static bool TryGetPreviousRow(long currentBlockIndex, out WorldBossListSheet.Row row)
