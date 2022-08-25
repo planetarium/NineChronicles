@@ -15,23 +15,21 @@ namespace Nekoyume.TableData
 
             public int Id { get; private set; }
             public int GroupId { get; private set; }
-
+            public int Chance { get; private set; }
+            public int Duration { get; private set; }
             public SkillTargetType TargetType { get; private set; }
 
             public ActionBuffType ActionBuffType { get; private set; }
 
-            /// <summary>
-            /// Turn count.
-            /// </summary>
-            public int Duration { get; private set; }
 
             public override void Set(IReadOnlyList<string> fields)
             {
                 Id = ParseInt(fields[0]);
                 GroupId = ParseInt(fields[1]);
-                TargetType = (SkillTargetType)Enum.Parse(typeof(SkillTargetType), fields[2]);
-                ActionBuffType = (ActionBuffType)Enum.Parse(typeof(ActionBuffType), fields[3]);
-                Duration = ParseInt(fields[4]);
+                Chance = ParseInt(fields[2]);
+                Duration = ParseInt(fields[3]);
+                TargetType = (SkillTargetType)Enum.Parse(typeof(SkillTargetType), fields[4]);
+                ActionBuffType = (ActionBuffType)Enum.Parse(typeof(ActionBuffType), fields[5]);
             }
         }
 

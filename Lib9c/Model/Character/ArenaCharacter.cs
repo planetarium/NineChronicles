@@ -23,6 +23,8 @@ namespace Nekoyume.Model
         private readonly SkillSheet _skillSheet;
         private readonly SkillBuffSheet _skillBuffSheet;
         private readonly StatBuffSheet _statBuffSheet;
+        private readonly SkillActionBuffSheet _skillActionBuffSheet;
+        private readonly ActionBuffSheet _actionBuffSheet;
         private readonly ArenaSimulator _simulator;
         private readonly CharacterStats _stats;
         private readonly ArenaSkills _skills;
@@ -83,6 +85,8 @@ namespace Nekoyume.Model
             _skillSheet = sheets.SkillSheet;
             _skillBuffSheet = sheets.SkillBuffSheet;
             _statBuffSheet = sheets.StatBuffSheet;
+            _skillActionBuffSheet = sheets.SkillActionBuffSheet;
+            _actionBuffSheet = sheets.ActionBuffSheet;
 
             _simulator = simulator;
             _stats = GetStat(digest, sheets);

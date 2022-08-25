@@ -1,2 +1,2 @@
-id,group,_name,target_type,buff_type,duration
-100000,100000,출혈,Enemy,Bleed,10
+id,group,_name,chance,duration,target_type,buff_type
+100000,100000,출혈,100,10,Enemy,Bleed

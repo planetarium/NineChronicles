@@ -8,7 +8,8 @@ namespace Nekoyume.Model.Buff
     {
         public ActionBuffSheet.Row RowData { get; }
 
-        protected ActionBuff(ActionBuffSheet.Row row) : base(row.TargetType, row.Duration)
+        public ActionBuff(ActionBuffSheet.Row row) : base(
+            new BuffInfo(row.Id, row.GroupId, row.Chance, row.Duration, row.TargetType))
         {
             RowData = row;
         }

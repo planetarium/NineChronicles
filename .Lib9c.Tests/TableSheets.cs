@@ -177,6 +177,10 @@ namespace Lib9c.Tests
 
         public WorldBossRankingRewardSheet WorldBossRankingRewardSheet { get; private set; }
 
+        public SkillActionBuffSheet SkillActionBuffSheet { get; private set; }
+
+        public ActionBuffSheet ActionBuffSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet ??= new ItemSheet();
@@ -209,6 +213,8 @@ namespace Lib9c.Tests
                 SkillSheet,
                 SkillBuffSheet,
                 StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
                 CharacterSheet,
                 CharacterLevelSheet,
                 EquipmentItemSetEffectSheet
@@ -222,6 +228,8 @@ namespace Lib9c.Tests
                 SkillSheet,
                 SkillBuffSheet,
                 StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
                 CharacterSheet,
                 CharacterLevelSheet,
                 EquipmentItemSetEffectSheet,
@@ -238,6 +246,8 @@ namespace Lib9c.Tests
                 SkillSheet,
                 SkillBuffSheet,
                 StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
                 CharacterSheet,
                 CharacterLevelSheet,
                 EquipmentItemSetEffectSheet,
@@ -252,6 +262,8 @@ namespace Lib9c.Tests
                 SkillSheet,
                 SkillBuffSheet,
                 StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
                 CharacterSheet,
                 CharacterLevelSheet,
                 EquipmentItemSetEffectSheet,
@@ -267,6 +279,8 @@ namespace Lib9c.Tests
                 SkillSheet,
                 SkillBuffSheet,
                 StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
                 CharacterSheet,
                 CharacterLevelSheet,
                 EquipmentItemSetEffectSheet,

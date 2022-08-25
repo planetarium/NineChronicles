@@ -23,6 +23,8 @@ namespace Nekoyume.Battle
         public readonly SkillSheet SkillSheet;
         public readonly SkillBuffSheet SkillBuffSheet;
         public readonly StatBuffSheet StatBuffSheet;
+        public readonly SkillActionBuffSheet SkillActionBuffSheet;
+        public readonly ActionBuffSheet ActionBuffSheet;
         public readonly CharacterSheet CharacterSheet;
         public readonly CharacterLevelSheet CharacterLevelSheet;
         public readonly EquipmentItemSetEffectSheet EquipmentItemSetEffectSheet;
@@ -53,6 +55,8 @@ namespace Nekoyume.Battle
             SkillSheet = simulatorSheets.SkillSheet;
             SkillBuffSheet = simulatorSheets.SkillBuffSheet;
             StatBuffSheet = simulatorSheets.StatBuffSheet;
+            SkillActionBuffSheet = simulatorSheets.SkillActionBuffSheet;
+            ActionBuffSheet = simulatorSheets.ActionBuffSheet;
             CharacterSheet = simulatorSheets.CharacterSheet;
             CharacterLevelSheet = simulatorSheets.CharacterLevelSheet;
             EquipmentItemSetEffectSheet = simulatorSheets.EquipmentItemSetEffectSheet;
