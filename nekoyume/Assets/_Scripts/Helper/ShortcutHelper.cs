@@ -10,12 +10,23 @@ using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI;
 using Nekoyume.UI.Module;
+using static Nekoyume.Helper.ShortcutHelper;
 
 namespace Nekoyume.Helper
 {
     public static class ShortcutHelper
     {
         private const int MaxCountOfAcquisitionStages = 2;
+
+        public enum PlaceType
+        {
+            Stage,
+            Shop = 3,
+            Arena = 4,
+            Quest = 5,
+            Staking = 7,
+            EventDungeonStage = 8,
+        }
 
         public static List<AcquisitionPlaceButton.Model> GetAcquisitionPlaceList(
             Widget caller,
@@ -28,7 +39,7 @@ namespace Nekoyume.Helper
                 acquisitionPlaceList.Add(
                     MakeAcquisitionPlaceModelByPlaceType(
                         caller,
-                        AcquisitionPlaceButton.PlaceType.Arena,
+                        PlaceType.Arena,
                         itemBase)
                 );
             }
@@ -50,7 +61,7 @@ namespace Nekoyume.Helper
                             out var worldRow);
                         return MakeAcquisitionPlaceModelByPlaceType(
                             caller,
-                            AcquisitionPlaceButton.PlaceType.Stage,
+                            PlaceType.Stage,
                             itemBase,
                             worldRow.Id,
                             stage);
@@ -76,7 +87,7 @@ namespace Nekoyume.Helper
                             acquisitionPlaceList.AddRange(eventStages.Select(stage =>
                                 MakeAcquisitionPlaceModelByPlaceType(
                                     caller,
-                                    AcquisitionPlaceButton.PlaceType.EventDungeonStage,
+                                    PlaceType.EventDungeonStage,
                                     itemBase,
                                     RxProps.EventDungeonRow.Id,
                                     stage))
@@ -93,8 +104,8 @@ namespace Nekoyume.Helper
                     acquisitionPlaceList.AddRange(
                         new[]
                         {
-                            AcquisitionPlaceButton.PlaceType.Shop,
-                            AcquisitionPlaceButton.PlaceType.Staking
+                            PlaceType.Shop,
+                            PlaceType.Staking
                         }.Select(type =>
                             MakeAcquisitionPlaceModelByPlaceType(
                                 caller,
@@ -106,7 +117,7 @@ namespace Nekoyume.Helper
                 {
                     acquisitionPlaceList.Add(
                         MakeAcquisitionPlaceModelByPlaceType(caller,
-                            AcquisitionPlaceButton.PlaceType.Quest,
+                            PlaceType.Quest,
                             itemBase)
                     );
                 }
@@ -114,7 +125,7 @@ namespace Nekoyume.Helper
 
             if (!acquisitionPlaceList.Any() ||
                 acquisitionPlaceList.All(model =>
-                    model.Type != AcquisitionPlaceButton.PlaceType.Quest))
+                    model.Type != PlaceType.Quest))
             {
                 // If can get this item from quest...
                 if (States.Instance.CurrentAvatarState.questList.Any(quest =>
@@ -123,7 +134,7 @@ namespace Nekoyume.Helper
                     acquisitionPlaceList.Add(
                         MakeAcquisitionPlaceModelByPlaceType(
                             caller,
-                            AcquisitionPlaceButton.PlaceType.Quest,
+                            PlaceType.Quest,
                             itemBase));
                 }
             }
@@ -133,7 +144,7 @@ namespace Nekoyume.Helper
 
         public static AcquisitionPlaceButton.Model MakeAcquisitionPlaceModelByPlaceType(
             Widget caller,
-            AcquisitionPlaceButton.PlaceType type,
+            PlaceType type,
             ItemBase itemBase,
             int worldId = 0,
             StageSheet.Row stageRow = null)
@@ -142,17 +153,17 @@ namespace Nekoyume.Helper
             string guideText;
             switch (type)
             {
-                case AcquisitionPlaceButton.PlaceType.Stage:
+                case PlaceType.Stage:
                     if (stageRow is null)
                     {
                         throw new Exception($"{nameof(stageRow)} is null");
                     }
 
-                    shortcutAction += () => ShortcutActionForStage(worldId, stageRow);
+                    shortcutAction += () => ShortcutActionForStage(worldId, stageRow.Id);
                     guideText =
                         $"{L10nManager.LocalizeWorldName(worldId)} {stageRow.Id % 10_000_000}";
                     break;
-                case AcquisitionPlaceButton.PlaceType.EventDungeonStage:
+                case PlaceType.EventDungeonStage:
                     if (stageRow is null)
                     {
                         throw new Exception($"{nameof(stageRow)} is null");
@@ -162,7 +173,7 @@ namespace Nekoyume.Helper
                     guideText =
                         $"{RxProps.EventDungeonRow.GetLocalizedName()} {stageRow.Id.ToEventDungeonStageNumber()}";
                     break;
-                case AcquisitionPlaceButton.PlaceType.Shop:
+                case PlaceType.Shop:
                     shortcutAction += () =>
                     {
                         Widget.Find<HeaderMenuStatic>()
@@ -172,7 +183,7 @@ namespace Nekoyume.Helper
                     };
                     guideText = L10nManager.Localize("UI_MAIN_MENU_SHOP");
                     break;
-                case AcquisitionPlaceButton.PlaceType.Arena:
+                case PlaceType.Arena:
                     shortcutAction += () =>
                     {
                         Widget.Find<HeaderMenuStatic>()
@@ -181,7 +192,7 @@ namespace Nekoyume.Helper
                     };
                     guideText = L10nManager.Localize("UI_MAIN_MENU_RANKING");
                     break;
-                case AcquisitionPlaceButton.PlaceType.Quest:
+                case PlaceType.Quest:
                     shortcutAction += () =>
                     {
                         Widget.Find<AvatarInfoPopup>().Close();
@@ -189,7 +200,7 @@ namespace Nekoyume.Helper
                     };
                     guideText = L10nManager.Localize("UI_QUEST");
                     break;
-                case AcquisitionPlaceButton.PlaceType.Staking:
+                case PlaceType.Staking:
                     shortcutAction += () => Widget.Find<StakingPopup>().Show();
                     guideText = L10nManager.Localize("UI_PLACE_STAKING");
                     break;
@@ -201,18 +212,17 @@ namespace Nekoyume.Helper
                 type,
                 shortcutAction,
                 guideText,
-                itemBase,
-                stageRow
+                stageRow?.Id ?? 0
             );
         }
 
         public static void ShortcutActionForStage(
             int worldId,
-            StageSheet.Row stageRow)
+            int stageId)
         {
             Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
             var worldMap = Widget.Find<WorldMap>();
-            worldMap.Show(worldId, stageRow.Id, false);
+            worldMap.Show(worldId, stageId, false);
             worldMap.SharedViewModel.WorldInformation.TryGetWorld(worldId,
                 out var worldModel);
             var isMimisbrunnrWorld = worldId == GameConfig.MimisbrunnrWorldId;
@@ -250,6 +260,80 @@ namespace Nekoyume.Helper
                     true);
             Widget.Find<HeaderMenuStatic>()
                 .UpdateAssets(HeaderMenuStatic.AssetVisibleState.EventDungeon);
+        }
+
+        /// <summary>
+        /// Check the shortcut of model is available.
+        /// </summary>
+        public static bool CheckConditionOfShortcut(PlaceType type, int stageId = 0)
+        {
+            switch (type)
+            {
+                case PlaceType.EventDungeonStage:
+                    if (RxProps.EventDungeonInfo.Value is not null)
+                    {
+                        return stageId <=
+                               RxProps.EventDungeonInfo.Value.ClearedStageId + 1;
+                    }
+
+                    return stageId.ToEventDungeonStageNumber() <= 1;
+                case PlaceType.Stage:
+                    var sharedViewModel = Widget.Find<WorldMap>().SharedViewModel;
+                    if (sharedViewModel.WorldInformation
+                        .TryGetWorldByStageId(stageId, out var world))
+                    {
+                        return stageId <= world.StageClearedId + 1 &&
+                               sharedViewModel.UnlockedWorldIds.Contains(world.Id);
+                    }
+
+                    return false;
+                case PlaceType.Shop:
+                {
+                    if (States.Instance.CurrentAvatarState.worldInformation
+                        .TryGetLastClearedStageId(out var lastClearedStage))
+                    {
+                        return lastClearedStage >=
+                               GameConfig.RequireClearedStageLevel.UIMainMenuShop;
+                    }
+
+                    return false;
+                }
+
+                case PlaceType.Arena:
+                {
+                    if (States.Instance.CurrentAvatarState.worldInformation
+                        .TryGetLastClearedStageId(out var lastClearedStage))
+                    {
+                        return lastClearedStage >=
+                               GameConfig.RequireClearedStageLevel.UIMainMenuRankingBoard;
+                    }
+
+                    return false;
+                }
+                case PlaceType.Quest:
+                case PlaceType.Staking:
+                    return true;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
+        }
+
+        /// <summary>
+        /// Check condition to use shortcut by other UI.
+        /// </summary>
+        public static bool CheckUIStateForUsingShortcut(PlaceType type)
+        {
+            return type switch
+            {
+                PlaceType.Stage => !Game.Game.instance.IsInWorld,
+                PlaceType.EventDungeonStage => !Game.Game.instance.IsInWorld,
+                PlaceType.Shop => !Game.Game.instance.IsInWorld,
+                PlaceType.Arena => !Game.Game.instance.IsInWorld,
+                PlaceType.Quest => !Widget.Find<BattleResultPopup>().IsActive() &&
+                                   !Widget.Find<RankingBattleResultPopup>().IsActive(),
+                PlaceType.Staking => true,
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+            };
         }
 
         /// <summary>
