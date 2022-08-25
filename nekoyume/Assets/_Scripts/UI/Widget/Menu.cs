@@ -155,7 +155,7 @@ namespace Nekoyume.UI
                 };
                 Analyzer.Instance.Track("Unity/Click Guided Quest Enter Dungeon", props);
             }
-            else
+            else if(ShortcutHelper.CheckUIStateForUsingShortcut(ShortcutHelper.PlaceType.Stage))
             {
                 Find<Menu>().QuestClick();
             }
@@ -185,7 +185,8 @@ namespace Nekoyume.UI
                 };
                 Analyzer.Instance.Track("Unity/Click Guided Quest Enter Event Dungeon", props);
             }
-            else
+            else if (ShortcutHelper.CheckUIStateForUsingShortcut(ShortcutHelper.PlaceType
+                         .EventDungeonStage))
             {
                 Find<Menu>().QuestClick();
             }
