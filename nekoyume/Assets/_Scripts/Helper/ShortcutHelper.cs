@@ -162,7 +162,7 @@ namespace Nekoyume.Helper
                         throw new Exception($"{nameof(stageRow)} is null");
                     }
 
-                    shortcutAction += () => ShortcutActionForEventStage(stageRow);
+                    shortcutAction += () => ShortcutActionForEventStage(stageRow.Id);
                     guideText =
                         $"{RxProps.EventDungeonRow.GetLocalizedName()} {stageRow.Id.ToEventDungeonStageNumber()}";
                     break;
@@ -236,7 +236,7 @@ namespace Nekoyume.Helper
         }
 
         public static void ShortcutActionForEventStage(
-            StageSheet.Row stageRow)
+            int eventDungeonStageId)
         {
             Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
             var worldMap = Widget.Find<WorldMap>();
@@ -248,8 +248,8 @@ namespace Nekoyume.Helper
                 .Show(
                     StageType.EventDungeon,
                     worldMap.SharedViewModel.SelectedWorldId.Value,
-                    stageRow.Id,
-                    $"{RxProps.EventDungeonRow?.GetLocalizedName()} {stageRow.Id.ToEventDungeonStageNumber()}",
+                    eventDungeonStageId,
+                    $"{RxProps.EventDungeonRow?.GetLocalizedName()} {eventDungeonStageId.ToEventDungeonStageNumber()}",
                     true);
             Widget.Find<HeaderMenuStatic>()
                 .UpdateAssets(HeaderMenuStatic.AssetVisibleState.EventDungeon);
@@ -271,6 +271,11 @@ namespace Nekoyume.Helper
 
                     return stageId.ToEventDungeonStageNumber() <= 1;
                 case PlaceType.Stage:
+                    if (stageId == 1)
+                    {
+                        return true;
+                    }
+
                     var sharedViewModel = Widget.Find<WorldMap>().SharedViewModel;
                     if (sharedViewModel.WorldInformation
                         .TryGetWorldByStageId(stageId, out var world))
