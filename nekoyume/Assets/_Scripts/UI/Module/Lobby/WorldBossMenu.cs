@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
+using Libplanet;
+using mixpanel;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using Nekoyume.State;
@@ -8,6 +12,7 @@ using Nekoyume.TableData;
 using Nekoyume.UI.Module.WorldBoss;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module.Lobby
@@ -37,6 +42,9 @@ namespace Nekoyume.UI.Module.Lobby
         [SerializeField]
         private TimeBlock timeBlock;
 
+        [SerializeField]
+        private Button claimRewardButton;
+
         private RaiderState _cachedRaiderState;
         private bool _isDone;
         private readonly List<IDisposable> _disposables = new();
@@ -44,7 +52,36 @@ namespace Nekoyume.UI.Module.Lobby
         private void Awake()
         {
             Game.Event.OnRoomEnter.AddListener(_ => Set());
+            claimRewardButton.OnClickAsObservable()
+                .Subscribe(_ => ClaimSeasonReward()).AddTo(gameObject);
         }
+
+        private void ClaimSeasonReward()
+        {
+            var agentAddress = States.Instance.AgentState.address;
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            Debug.Log("OnClick claim button");
+            Debug.Log($"Agent : {agentAddress}");
+            Debug.Log($"Avatar : {avatarAddress}");
+            StartCoroutine(CoClaimSeasonReward(3, agentAddress, avatarAddress));
+        }
+
+        private IEnumerator CoClaimSeasonReward(int raidId, Address agentAddress, Address avatarAddress)
+        {
+            const string url = "http://a93dd1d705f7a43149125438c63d092e-1911438231.us-east-2.elb.amazonaws.com:8080/raid/reward";
+            var form = new WWWForm();
+            form.AddField("raid_id", raidId);
+            form.AddField("avatar_address", avatarAddress.ToHex());
+            form.AddField("agent_Address", agentAddress.ToHex());
+            using (var request = UnityWebRequest.Post(url, form))
+            {
+                yield return request.SendWebRequest();
+                Debug.Log(request.result != UnityWebRequest.Result.Success
+                    ? request.error
+                    : "Form upload complete");
+            }
+        }
+
 
         private void OnEnable()
         {

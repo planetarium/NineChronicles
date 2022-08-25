@@ -46,7 +46,7 @@ namespace Nekoyume.UI
             seasonBestObject.SetActive(isBest);
             var grade = (WorldBossGrade) WorldBossHelper.CalculateRank(score);
 
-            if (WorldBossFrontHelper.TryGetGrade(grade, out var prefab))
+            if (WorldBossFrontHelper.TryGetGrade(grade, false, out var prefab))
             {
                 _gradeObject = Instantiate(prefab, gradeParent);
                 _gradeObject.transform.localScale = Vector3.one;

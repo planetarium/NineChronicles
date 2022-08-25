@@ -25,7 +25,7 @@ namespace Nekoyume.Helper
             }
         }
 
-        public static bool TryGetGrade(WorldBossGrade grade, out GameObject prefab)
+        public static bool TryGetGrade(WorldBossGrade grade, bool isSmall, out GameObject prefab)
         {
             var result = ScriptableObject.Grades.FirstOrDefault(x => x.grade == grade);
             if (result is null)
@@ -34,7 +34,7 @@ namespace Nekoyume.Helper
                 return false;
             }
 
-            prefab = result.prefab;
+            prefab = isSmall ? result.smallPrefab : result.prefab;
             return true;
         }
 

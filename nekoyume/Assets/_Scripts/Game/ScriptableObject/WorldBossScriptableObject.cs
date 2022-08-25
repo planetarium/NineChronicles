@@ -20,6 +20,7 @@ namespace Nekoyume
         {
             public WorldBossGrade grade;
             public GameObject prefab;
+            public GameObject smallPrefab;
         }
 
         [Serializable]

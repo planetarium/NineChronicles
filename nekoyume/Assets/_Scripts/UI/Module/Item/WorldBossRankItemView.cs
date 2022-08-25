@@ -52,7 +52,7 @@ namespace Nekoyume.UI
             }
 
             var grade = (WorldBossGrade)WorldBossHelper.CalculateRank(model.HighScore);
-            if (WorldBossFrontHelper.TryGetGrade(grade, out var prefab))
+            if (WorldBossFrontHelper.TryGetGrade(grade, true, out var prefab))
             {
                 _gradeObject = Instantiate(prefab, gradeContainer);
             }

@@ -218,6 +218,7 @@ namespace Nekoyume.UI
                             return;
                         }
 
+                        ResetSeason();
                         var (worldBoss, raider, myRecord, userCount) = await GetStatesAsync(row);
                         UpdateSeason(row, worldBoss, raider, myRecord, userCount);
 
@@ -253,6 +254,12 @@ namespace Nekoyume.UI
             _period = (begin, nextRow.StartedBlockIndex);
 
             UpdateBossPrefab(nextRow, true);
+        }
+
+        private void ResetSeason()
+        {
+            UpdateMyInformation(null);
+            UpdateUserCount(0);
         }
 
         private void UpdateSeason(

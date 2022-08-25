@@ -46,8 +46,7 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         public void UpdateUserCount(int count)
         {
-            Debug.Log("[WorldBossSeason] UpdateUserCount");
-            raidersText.text = count > 0 ? $"{count:#,0}" : "-";
+            raidersText.text = count > 0 ? $"{count:#,0}" : string.Empty;;
         }
         public void UpdateBossInformation(
             int bossId,
@@ -56,7 +55,6 @@ namespace Nekoyume.UI.Module.WorldBoss
             BigInteger curHp,
             BigInteger maxHp)
         {
-            Debug.Log("[WorldBossSeason] UpdateBossInformation");
             bossNameText.text = bossName;
             bossLevelText.text = $"<size=18>LV.</size>{level}";
             bossHpText.text = $"{curHp:#,0}/{maxHp:#,0}";
@@ -88,11 +86,9 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         public void UpdateMyInformation(int totalScore, int highScore, int rank)
         {
-            Debug.Log("[WorldBossSeason] UpdateMyInformation");
-
-            myTotalScoreText.text = totalScore > 0 ? $"{totalScore:#,0}" : "-";
-            myBestRecordText.text = highScore > 0 ? $"{highScore:#,0}" : "-";
-            myRankText.text = rank > 0 ? $"{rank:#,0}" : "-";
+            myTotalScoreText.text = totalScore > 0 ? $"{totalScore:#,0}" : string.Empty;;
+            myBestRecordText.text = highScore > 0 ? $"{highScore:#,0}" : string.Empty;;
+            myRankText.text = rank > 0 ? $"{rank:#,0}" : string.Empty;;
 
             UpdateGrade(highScore);
         }
@@ -105,7 +101,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             }
 
             var grade = (WorldBossGrade)WorldBossHelper.CalculateRank(highScore);
-            if (WorldBossFrontHelper.TryGetGrade(grade, out var prefab))
+            if (WorldBossFrontHelper.TryGetGrade(grade, false, out var prefab))
             {
                 _gradeObject = Instantiate(prefab, gradeContainer);
             }

@@ -118,9 +118,10 @@ namespace Nekoyume.UI.Module.WorldBoss
             rankTitle.text = status == Status.PreviousSeason
                 ? L10nManager.Localize("UI_PREVIOUS_SEASON_RANK")
                 : L10nManager.Localize("UI_LEADERBOARD");
-            bossName.text = "-";
-            totalUsers.text = $"-";
+            bossName.text = string.Empty;
+            totalUsers.text = string.Empty;
             bossImage.enabled = false;
+            scroll.UpdateData(new List<WorldBossRankItem>());
             myInfo.gameObject.SetActive(false);
             noSeasonInfo.SetActive(false);
             apiMissing.SetActive(false);
@@ -178,7 +179,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             myInfo.gameObject.SetActive(items.MyItem != null);
             myInfo.Set(items.MyItem, null);
             scroll.UpdateData(items.UserItems);
-            totalUsers.text = items.UserCount > 0 ? $"{items.UserCount:#,0}" : "-";
+            totalUsers.text = items.UserCount > 0 ? $"{items.UserCount:#,0}" : string.Empty;;
         }
 
         private void SetActiveQueryLoading(bool value)

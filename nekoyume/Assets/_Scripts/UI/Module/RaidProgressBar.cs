@@ -106,7 +106,7 @@ namespace Nekoyume.UI.Module
             scoreText.text = score.ToString("N0");
             var grade = (WorldBossGrade) WorldBossHelper.CalculateRank(score);
             if (_currentGrade != grade &&
-                WorldBossFrontHelper.TryGetGrade(grade, out var prefab))
+                WorldBossFrontHelper.TryGetGrade(grade, false, out var prefab))
             {
                 Destroy(gradeObject);
                 gradeObject = Instantiate(prefab, gradeParent);
@@ -159,7 +159,7 @@ namespace Nekoyume.UI.Module
             {
                 AudioController.instance.PlaySfx(AudioController.SfxCode.RewardItem);
             }
-            
+
             for (int i = 0; i < star; ++i)
             {
                 var emissionVFX = starEmissionVFXList[i];
