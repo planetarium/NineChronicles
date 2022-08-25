@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Libplanet;
 using Nekoyume.Extensions;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.State;
@@ -35,6 +36,7 @@ namespace Nekoyume.UI.Module.WorldBoss
         private List<CategoryToggle> categoryToggles = null;
 
         private readonly ReactiveProperty<ToggleType> _selectedItemSubType = new();
+        private Address _cachedAvatarAddress;
 
         protected void Awake()
         {
@@ -69,6 +71,17 @@ namespace Nekoyume.UI.Module.WorldBoss
             if (States.Instance.CurrentAvatarState is null)
             {
                 return;
+            }
+
+            if (_cachedAvatarAddress != States.Instance.CurrentAvatarState.address)
+            {
+                foreach (var toggle in categoryToggles)
+                {
+                    toggle.Item.gameObject.SetActive(false);
+                    toggle.Item.Reset();
+                }
+
+                _cachedAvatarAddress = States.Instance.CurrentAvatarState.address;
             }
 
             if (isReset)

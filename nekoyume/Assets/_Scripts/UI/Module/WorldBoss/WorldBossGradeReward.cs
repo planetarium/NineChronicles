@@ -44,6 +44,11 @@ namespace Nekoyume.UI.Module.WorldBoss
                 }).AddTo(gameObject);
         }
 
+        public override void Reset()
+        {
+
+        }
+
         public void Set(RaiderState raiderState, int raidId)
         {
             if (!WorldBossFrontHelper.TryGetRaid(raidId, out var row))

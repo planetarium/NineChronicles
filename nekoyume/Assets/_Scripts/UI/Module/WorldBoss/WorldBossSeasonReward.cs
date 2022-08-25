@@ -9,6 +9,14 @@ namespace Nekoyume.UI.Module.WorldBoss
         [SerializeField]
         private List<WorldBossBattleRewardItem> Items;
 
+        public override void Reset()
+        {
+            foreach (var item in Items)
+            {
+                item.Reset();
+            }
+        }
+
         public void Set(int raidId, int myRank, int userCount)
         {
             foreach (var item in Items)

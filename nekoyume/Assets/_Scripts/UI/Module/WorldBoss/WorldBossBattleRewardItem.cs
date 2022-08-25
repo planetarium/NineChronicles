@@ -30,6 +30,11 @@ namespace Nekoyume.UI.Module.WorldBoss
         [SerializeField]
         private GameObject selected;
 
+        public void Reset()
+        {
+            selected.SetActive(false);
+        }
+
         public void Set(WorldBossKillRewardSheet.Row row, bool isSelected)
         {
             rune.text = $"{row.RuneMin:#,0}~{row.RuneMax:#,0}";

@@ -1,9 +1,10 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Nekoyume.UI
 {
-    public class WorldBossRewardItem : MonoBehaviour
+    public abstract class WorldBossRewardItem : MonoBehaviour
     {
-
+        public abstract void Reset();
     }
 }
