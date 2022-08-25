@@ -16,7 +16,7 @@ namespace Nekoyume.Model.Skill.Arena
             ArenaCharacter caster,
             ArenaCharacter target,
             int turn,
-            IEnumerable<Buff.Buff> buffs)
+            IEnumerable<Buff.StatBuff> buffs)
         {
             var clone = (ArenaCharacter)caster.Clone();
             var heal = ProcessHeal(caster, turn);
@@ -30,7 +30,7 @@ namespace Nekoyume.Model.Skill.Arena
             ArenaCharacter caster,
             ArenaCharacter target,
             int turn,
-            IEnumerable<Buff.Buff> buffs)
+            IEnumerable<Buff.StatBuff> buffs)
         {
             var clone = (ArenaCharacter)caster.Clone();
             var heal = ProcessHeal(caster, turn);

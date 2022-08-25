@@ -5,7 +5,7 @@ namespace Nekoyume.TableData
         public readonly MaterialItemSheet MaterialItemSheet;
         public readonly SkillSheet SkillSheet;
         public readonly SkillBuffSheet SkillBuffSheet;
-        public readonly BuffSheet BuffSheet;
+        public readonly StatBuffSheet StatBuffSheet;
         public readonly CharacterSheet CharacterSheet;
         public readonly CharacterLevelSheet CharacterLevelSheet;
         public readonly EquipmentItemSetEffectSheet EquipmentItemSetEffectSheet;
@@ -14,7 +14,7 @@ namespace Nekoyume.TableData
             MaterialItemSheet materialItemSheet,
             SkillSheet skillSheet,
             SkillBuffSheet skillBuffSheet,
-            BuffSheet buffSheet,
+            StatBuffSheet statBuffSheet,
             CharacterSheet characterSheet,
             CharacterLevelSheet characterLevelSheet,
             EquipmentItemSetEffectSheet equipmentItemSetEffectSheet
@@ -23,7 +23,7 @@ namespace Nekoyume.TableData
             MaterialItemSheet = materialItemSheet;
             SkillSheet = skillSheet;
             SkillBuffSheet = skillBuffSheet;
-            BuffSheet = buffSheet;
+            StatBuffSheet = statBuffSheet;
             CharacterSheet = characterSheet;
             CharacterLevelSheet = characterLevelSheet;
             EquipmentItemSetEffectSheet = equipmentItemSetEffectSheet;
@@ -40,7 +40,7 @@ namespace Nekoyume.TableData
             MaterialItemSheet materialItemSheet,
             SkillSheet skillSheet,
             SkillBuffSheet skillBuffSheet,
-            BuffSheet buffSheet,
+            StatBuffSheet statBuffSheet,
             CharacterSheet characterSheet,
             CharacterLevelSheet characterLevelSheet,
             EquipmentItemSetEffectSheet equipmentItemSetEffectSheet,
@@ -51,7 +51,7 @@ namespace Nekoyume.TableData
             materialItemSheet,
             skillSheet,
             skillBuffSheet,
-            buffSheet,
+            statBuffSheet,
             characterSheet,
             characterLevelSheet,
             equipmentItemSetEffectSheet
@@ -71,7 +71,7 @@ namespace Nekoyume.TableData
             MaterialItemSheet materialItemSheet,
             SkillSheet skillSheet,
             SkillBuffSheet skillBuffSheet,
-            BuffSheet buffSheet,
+            StatBuffSheet statBuffSheet,
             CharacterSheet characterSheet,
             CharacterLevelSheet characterLevelSheet,
             EquipmentItemSetEffectSheet equipmentItemSetEffectSheet,
@@ -80,7 +80,7 @@ namespace Nekoyume.TableData
             materialItemSheet,
             skillSheet,
             skillBuffSheet,
-            buffSheet,
+            statBuffSheet,
             characterSheet,
             characterLevelSheet,
             equipmentItemSetEffectSheet
@@ -99,7 +99,7 @@ namespace Nekoyume.TableData
             MaterialItemSheet materialItemSheet,
             SkillSheet skillSheet,
             SkillBuffSheet skillBuffSheet,
-            BuffSheet buffSheet,
+            StatBuffSheet statBuffSheet,
             CharacterSheet characterSheet,
             CharacterLevelSheet characterLevelSheet,
             EquipmentItemSetEffectSheet equipmentItemSetEffectSheet,
@@ -108,7 +108,7 @@ namespace Nekoyume.TableData
         ) : base(materialItemSheet,
             skillSheet,
             skillBuffSheet,
-            buffSheet,
+            statBuffSheet,
             characterSheet,
             characterLevelSheet,
             equipmentItemSetEffectSheet)
@@ -128,7 +128,7 @@ namespace Nekoyume.TableData
             MaterialItemSheet materialItemSheet,
             SkillSheet skillSheet,
             SkillBuffSheet skillBuffSheet,
-            BuffSheet buffSheet,
+            StatBuffSheet statBuffSheet,
             CharacterSheet characterSheet,
             CharacterLevelSheet characterLevelSheet,
             EquipmentItemSetEffectSheet equipmentItemSetEffectSheet,
@@ -137,7 +137,7 @@ namespace Nekoyume.TableData
         ) : base(materialItemSheet,
             skillSheet,
             skillBuffSheet,
-            buffSheet,
+            statBuffSheet,
             characterSheet,
             characterLevelSheet,
             equipmentItemSetEffectSheet)

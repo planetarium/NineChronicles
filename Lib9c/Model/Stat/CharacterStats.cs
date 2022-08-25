@@ -283,7 +283,7 @@ namespace Nekoyume.Model.Stat
         /// <param name="value"></param>
         /// <param name="updateImmediate"></param>
         /// <returns></returns>
-        public CharacterStats SetBuffs(IEnumerable<Buff.Buff> value, bool updateImmediate = true)
+        public CharacterStats SetBuffs(IEnumerable<Buff.StatBuff> value, bool updateImmediate = true)
         {
             _buffStatModifiers.Clear();
             if (!(value is null))
@@ -302,7 +302,7 @@ namespace Nekoyume.Model.Stat
             return this;
         }
 
-        public void AddBuff(Buff.Buff buff, bool updateImmediate = true)
+        public void AddBuff(Buff.StatBuff buff, bool updateImmediate = true)
         {
             _buffStatModifiers[buff.RowData.GroupId] = buff.RowData.StatModifier;
 
@@ -312,7 +312,7 @@ namespace Nekoyume.Model.Stat
             }
         }
 
-        public void RemoveBuff(Buff.Buff buff, bool updateImmediate = true)
+        public void RemoveBuff(Buff.StatBuff buff, bool updateImmediate = true)
         {
             if (!_buffStatModifiers.ContainsKey(buff.RowData.GroupId))
                 return;

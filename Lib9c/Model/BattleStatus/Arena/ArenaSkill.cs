@@ -21,11 +21,11 @@ namespace Nekoyume.Model.BattleStatus.Arena
             public readonly int Turn;
 
             [CanBeNull]
-            public readonly Model.Buff.Buff Buff;
+            public readonly Model.Buff.StatBuff Buff;
 
             public ArenaSkillInfo(ArenaCharacter character, int effect, bool critical, SkillCategory skillCategory,
                 int turn, ElementalType elementalType = ElementalType.Normal,
-                SkillTargetType targetType = SkillTargetType.Enemy, [CanBeNull] Model.Buff.Buff buff = null)
+                SkillTargetType targetType = SkillTargetType.Enemy, [CanBeNull] Model.Buff.StatBuff buff = null)
             {
                 Target = character;
                 Effect = effect;

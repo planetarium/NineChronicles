@@ -116,7 +116,7 @@ namespace Nekoyume.Battle
                     var buffs = BuffFactory.GetBuffs(
                         skill,
                         SkillBuffSheet,
-                        BuffSheet
+                        StatBuffSheet
                     );
 
                     var usedSkill = skill.Use(Player, 0, buffs);

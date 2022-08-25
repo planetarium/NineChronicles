@@ -25,7 +25,7 @@ namespace Nekoyume.Model.Skill
         public abstract BattleStatus.Skill Use(
             CharacterBase caster,
             int simulatorWaveTurn,
-            IEnumerable<Buff.Buff> buffs
+            IEnumerable<Buff.StatBuff> buffs
         );
 
         protected bool Equals(Skill other)
@@ -55,7 +55,7 @@ namespace Nekoyume.Model.Skill
         protected IEnumerable<Model.BattleStatus.Skill.SkillInfo> ProcessBuff(
             CharacterBase caster,
             int simulatorWaveTurn,
-            IEnumerable<Buff.Buff> buffs
+            IEnumerable<Buff.StatBuff> buffs
         )
         {
             var infos = new List<Model.BattleStatus.Skill.SkillInfo>();

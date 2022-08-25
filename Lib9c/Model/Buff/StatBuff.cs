@@ -7,20 +7,20 @@ using Nekoyume.TableData;
 namespace Nekoyume.Model.Buff
 {
     [Serializable]
-    public class Buff : ICloneable
+    public class StatBuff : ICloneable
     {
         public int originalDuration;
         public int remainedDuration;
 
-        public BuffSheet.Row RowData { get; }
+        public StatBuffSheet.Row RowData { get; }
 
-        protected Buff(BuffSheet.Row row)
+        protected StatBuff(StatBuffSheet.Row row)
         {
             originalDuration = remainedDuration = row.Duration;
             RowData = row;
         }
 
-        protected Buff(Buff value)
+        protected StatBuff(StatBuff value)
         {
             originalDuration = value.RowData.Duration;
             remainedDuration = value.remainedDuration;
@@ -64,7 +64,7 @@ namespace Nekoyume.Model.Buff
 
         public object Clone()
         {
-            return new Buff(this);
+            return new StatBuff(this);
         }
     }
 }

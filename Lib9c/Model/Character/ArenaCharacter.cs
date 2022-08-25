@@ -22,7 +22,7 @@ namespace Nekoyume.Model
 
         private readonly SkillSheet _skillSheet;
         private readonly SkillBuffSheet _skillBuffSheet;
-        private readonly BuffSheet _buffSheet;
+        private readonly StatBuffSheet _statBuffSheet;
         private readonly ArenaSimulator _simulator;
         private readonly CharacterStats _stats;
         private readonly ArenaSkills _skills;
@@ -61,7 +61,7 @@ namespace Nekoyume.Model
         public int SPD => _stats.SPD;
         public bool IsDead => CurrentHP <= 0;
 
-        public Dictionary<int, Buff.Buff> Buffs { get; } = new Dictionary<int, Buff.Buff>();
+        public Dictionary<int, Buff.StatBuff> Buffs { get; } = new Dictionary<int, Buff.StatBuff>();
 
         public object Clone() => new ArenaCharacter(this);
 
@@ -82,7 +82,7 @@ namespace Nekoyume.Model
 
             _skillSheet = sheets.SkillSheet;
             _skillBuffSheet = sheets.SkillBuffSheet;
-            _buffSheet = sheets.BuffSheet;
+            _statBuffSheet = sheets.StatBuffSheet;
 
             _simulator = simulator;
             _stats = GetStat(digest, sheets);
@@ -104,17 +104,17 @@ namespace Nekoyume.Model
 
             _skillSheet = value._skillSheet;
             _skillBuffSheet = value._skillBuffSheet;
-            _buffSheet = value._buffSheet;
+            _statBuffSheet = value._statBuffSheet;
 
             _simulator = value._simulator;
             _stats = new CharacterStats(value._stats);
             _skills = value._skills;
-            Buffs = new Dictionary<int, Buff.Buff>();
+            Buffs = new Dictionary<int, Buff.StatBuff>();
 #pragma warning disable LAA1002
             foreach (var pair in value.Buffs)
 #pragma warning restore LAA1002
             {
-                Buffs.Add(pair.Key, (Buff.Buff) pair.Value.Clone());
+                Buffs.Add(pair.Key, (Buff.StatBuff) pair.Value.Clone());
             }
 
             _attackCountMax = value._attackCount;
@@ -272,7 +272,7 @@ namespace Nekoyume.Model
                 this,
                 _target,
                 _simulator.Turn,
-                BuffFactory.GetBuffs(selectedSkill, _skillBuffSheet, _buffSheet)
+                BuffFactory.GetBuffs(selectedSkill, _skillBuffSheet, _statBuffSheet)
             );
 
             if (!_skillSheet.TryGetValue(selectedSkill.SkillRow.Id, out var row))
@@ -292,7 +292,7 @@ namespace Nekoyume.Model
                 this,
                 _target,
                 _simulator.Turn,
-                BuffFactory.GetBuffs(selectedSkill, _skillBuffSheet, _buffSheet)
+                BuffFactory.GetBuffs(selectedSkill, _skillBuffSheet, _statBuffSheet)
             );
 
             if (!_skillSheet.TryGetValue(selectedSkill.SkillRow.Id, out var row))
@@ -369,26 +369,26 @@ namespace Nekoyume.Model
             InitAIV1();
         }
 
-        public void AddBuff(Buff.Buff buff, bool updateImmediate = true)
+        public void AddBuff(Buff.StatBuff buff, bool updateImmediate = true)
         {
             if (Buffs.TryGetValue(buff.RowData.GroupId, out var outBuff) &&
                 outBuff.RowData.Id > buff.RowData.Id)
                 return;
 
-            var clone = (Buff.Buff) buff.Clone();
+            var clone = (Buff.StatBuff) buff.Clone();
             Buffs[buff.RowData.GroupId] = clone;
             _stats.AddBuff(clone, updateImmediate);
             _stats.IncreaseHpForArena();
         }
 
         [Obsolete("Use AddBuff")]
-        public void AddBuffV1(Buff.Buff buff, bool updateImmediate = true)
+        public void AddBuffV1(Buff.StatBuff buff, bool updateImmediate = true)
         {
             if (Buffs.TryGetValue(buff.RowData.GroupId, out var outBuff) &&
                 outBuff.RowData.Id > buff.RowData.Id)
                 return;
 
-            var clone = (Buff.Buff) buff.Clone();
+            var clone = (Buff.StatBuff) buff.Clone();
             Buffs[buff.RowData.GroupId] = clone;
             _stats.AddBuff(clone, updateImmediate);
         }

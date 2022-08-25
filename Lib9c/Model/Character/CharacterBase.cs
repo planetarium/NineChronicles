@@ -30,7 +30,7 @@ namespace Nekoyume.Model
 
         public readonly Skills Skills = new Skills();
         public readonly Skills BuffSkills = new Skills();
-        public readonly Dictionary<int, Buff.Buff> Buffs = new Dictionary<int, Buff.Buff>();
+        public readonly Dictionary<int, Buff.StatBuff> Buffs = new Dictionary<int, Buff.StatBuff>();
         public readonly List<CharacterBase> Targets = new List<CharacterBase>();
 
         public CharacterSheet.Row RowData { get; }
@@ -130,13 +130,13 @@ namespace Nekoyume.Model
             // 스킬은 변하지 않는다는 가정 하에 얕은 복사.
             Skills = value.Skills;
             // 버프는 컨테이너도 옮기고,
-            Buffs = new Dictionary<int, Buff.Buff>();
+            Buffs = new Dictionary<int, Buff.StatBuff>();
 #pragma warning disable LAA1002
             foreach (var pair in value.Buffs)
 #pragma warning restore LAA1002
             {
                 // 깊은 복사까지 꼭.
-                Buffs.Add(pair.Key, (Buff.Buff) pair.Value.Clone());
+                Buffs.Add(pair.Key, (Buff.StatBuff) pair.Value.Clone());
             }
 
             // 타갯은 컨테이너만 옮기기.
@@ -231,7 +231,7 @@ namespace Nekoyume.Model
                 BuffFactory.GetBuffs(
                     selectedSkill,
                     Simulator.SkillBuffSheet,
-                    Simulator.BuffSheet
+                    Simulator.StatBuffSheet
                 )
             );
 
@@ -264,7 +264,7 @@ namespace Nekoyume.Model
                 BuffFactory.GetBuffs(
                     selectedSkill,
                     Simulator.SkillBuffSheet,
-                    Simulator.BuffSheet
+                    Simulator.StatBuffSheet
                 )
             );
 
@@ -292,7 +292,7 @@ namespace Nekoyume.Model
                 BuffFactory.GetBuffs(
                     selectedSkill,
                     Simulator.SkillBuffSheet,
-                    Simulator.BuffSheet
+                    Simulator.StatBuffSheet
                 )
             );
 
@@ -342,13 +342,13 @@ namespace Nekoyume.Model
 
         #region Buff
 
-        public void AddBuff(Buff.Buff buff, bool updateImmediate = true)
+        public void AddBuff(Buff.StatBuff buff, bool updateImmediate = true)
         {
             if (Buffs.TryGetValue(buff.RowData.GroupId, out var outBuff) &&
                 outBuff.RowData.Id > buff.RowData.Id)
                 return;
 
-            var clone = (Buff.Buff) buff.Clone();
+            var clone = (Buff.StatBuff) buff.Clone();
             Buffs[buff.RowData.GroupId] = clone;
             Stats.AddBuff(clone, updateImmediate);
         }

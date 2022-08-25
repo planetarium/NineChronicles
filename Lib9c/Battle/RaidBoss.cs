@@ -92,7 +92,7 @@ namespace Nekoyume.Model
                 BuffFactory.GetBuffs(
                     skill,
                     Simulator.SkillBuffSheet,
-                    Simulator.BuffSheet
+                    Simulator.StatBuffSheet
                 )
             );
 
@@ -116,7 +116,7 @@ namespace Nekoyume.Model
                 BuffFactory.GetBuffs(
                     _enrageSkill,
                     Simulator.SkillBuffSheet,
-                    Simulator.BuffSheet
+                    Simulator.StatBuffSheet
                 )
             );
 
