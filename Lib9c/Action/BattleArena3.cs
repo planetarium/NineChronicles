@@ -24,6 +24,7 @@ namespace Nekoyume.Action
     /// Introduced at https://github.com/planetarium/lib9c/pull/1190
     /// </summary>
     [Serializable]
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100290ObsoleteIndex)]
     [ActionType("battle_arena3")]
     public class BattleArena3 : GameAction
     {
