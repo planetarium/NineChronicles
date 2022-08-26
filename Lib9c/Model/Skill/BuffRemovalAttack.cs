@@ -22,7 +22,7 @@ namespace Nekoyume.Model.Skill
             var targets = SkillRow.SkillTargetType.GetTarget(caster);
             foreach (var target in targets)
             {
-                target.RemoveRecentBuff();
+                target.RemoveRecentStatBuff();
             }
 
             return new Model.BattleStatus.BuffRemovalAttack(SkillRow.Id, clone, damage, buff);

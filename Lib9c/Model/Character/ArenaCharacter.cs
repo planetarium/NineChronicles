@@ -6,6 +6,7 @@ using BTAI;
 using Nekoyume.Arena;
 using Nekoyume.Battle;
 using Nekoyume.Model.Arena;
+using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Buff;
 using Nekoyume.Model.Character;
 using Nekoyume.Model.Elemental;
@@ -63,7 +64,8 @@ namespace Nekoyume.Model
         public int SPD => _stats.SPD;
         public bool IsDead => CurrentHP <= 0;
 
-        public Dictionary<int, Buff.StatBuff> Buffs { get; } = new Dictionary<int, Buff.StatBuff>();
+        public Dictionary<int, Buff.StatBuff> StatBuffs { get; } = new Dictionary<int, Buff.StatBuff>();
+        public Dictionary<int, ActionBuff> ActionBuffs { get; } = new Dictionary<int, ActionBuff>();
 
         public object Clone() => new ArenaCharacter(this);
 
@@ -113,12 +115,12 @@ namespace Nekoyume.Model
             _simulator = value._simulator;
             _stats = new CharacterStats(value._stats);
             _skills = value._skills;
-            Buffs = new Dictionary<int, Buff.StatBuff>();
+            StatBuffs = new Dictionary<int, Buff.StatBuff>();
 #pragma warning disable LAA1002
-            foreach (var pair in value.Buffs)
+            foreach (var pair in value.StatBuffs)
 #pragma warning restore LAA1002
             {
-                Buffs.Add(pair.Key, (Buff.StatBuff) pair.Value.Clone());
+                StatBuffs.Add(pair.Key, (Buff.StatBuff) pair.Value.Clone());
             }
 
             _attackCountMax = value._attackCount;
@@ -257,7 +259,7 @@ namespace Nekoyume.Model
         private void ReduceDurationOfBuffs()
         {
 #pragma warning disable LAA1002
-            foreach (var pair in Buffs)
+            foreach (var pair in StatBuffs)
 #pragma warning restore LAA1002
             {
                 pair.Value.RemainedDuration--;
@@ -312,21 +314,21 @@ namespace Nekoyume.Model
         {
             var isApply = false;
 
-            foreach (var key in Buffs.Keys.ToList())
+            foreach (var key in StatBuffs.Keys.ToList())
             {
-                var buff = Buffs[key];
+                var buff = StatBuffs[key];
                 if (buff.RemainedDuration > 0)
                 {
                     continue;
                 }
 
-                Buffs.Remove(key);
+                StatBuffs.Remove(key);
                 isApply = true;
             }
 
             if (isApply)
             {
-                _stats.SetBuffs(Buffs.Values);
+                _stats.SetBuffs(StatBuffs.Values);
                 _stats.IncreaseHpForArena();
             }
         }
@@ -336,21 +338,21 @@ namespace Nekoyume.Model
         {
             var isApply = false;
 
-            foreach (var key in Buffs.Keys.ToList())
+            foreach (var key in StatBuffs.Keys.ToList())
             {
-                var buff = Buffs[key];
+                var buff = StatBuffs[key];
                 if (buff.RemainedDuration > 0)
                 {
                     continue;
                 }
 
-                Buffs.Remove(key);
+                StatBuffs.Remove(key);
                 isApply = true;
             }
 
             if (isApply)
             {
-                _stats.SetBuffs(Buffs.Values);
+                _stats.SetBuffs(StatBuffs.Values);
             }
         }
 
@@ -373,48 +375,69 @@ namespace Nekoyume.Model
             InitAIV1();
         }
 
-        public void AddBuff(Buff.StatBuff buff, bool updateImmediate = true)
+        public void AddBuff(Buff.Buff buff, bool updateImmediate = true)
         {
-            if (Buffs.TryGetValue(buff.RowData.GroupId, out var outBuff) &&
-                outBuff.RowData.Id > buff.RowData.Id)
-                return;
+            if (buff is StatBuff stat)
+            {
+                if (StatBuffs.TryGetValue(stat.RowData.GroupId, out var outBuff) &&
+                    outBuff.RowData.Id > stat.RowData.Id)
+                    return;
 
-            var clone = (Buff.StatBuff) buff.Clone();
-            Buffs[buff.RowData.GroupId] = clone;
-            _stats.AddBuff(clone, updateImmediate);
-            _stats.IncreaseHpForArena();
+                var clone = (StatBuff)stat.Clone();
+                StatBuffs[stat.RowData.GroupId] = clone;
+                _stats.AddBuff(clone, updateImmediate);
+                _stats.IncreaseHpForArena();
+            }
+            else if (buff is ActionBuff action)
+            {
+                if (ActionBuffs.TryGetValue(action.RowData.GroupId, out var outBuff) &&
+                    outBuff.RowData.Id > action.RowData.Id)
+                    return;
+
+                var clone = (ActionBuff)action.Clone();
+                ActionBuffs[action.RowData.GroupId] = clone;
+            }
         }
 
         [Obsolete("Use AddBuff")]
         public void AddBuffV1(Buff.StatBuff buff, bool updateImmediate = true)
         {
-            if (Buffs.TryGetValue(buff.RowData.GroupId, out var outBuff) &&
+            if (StatBuffs.TryGetValue(buff.RowData.GroupId, out var outBuff) &&
                 outBuff.RowData.Id > buff.RowData.Id)
                 return;
 
             var clone = (Buff.StatBuff) buff.Clone();
-            Buffs[buff.RowData.GroupId] = clone;
+            StatBuffs[buff.RowData.GroupId] = clone;
             _stats.AddBuff(clone, updateImmediate);
         }
 
-        public void RemoveRecentBuff()
+        public void RemoveRecentStatBuff()
         {
-            Buff.Buff removedBuff = null;
+            StatBuff removedBuff = null;
             var minDuration = int.MaxValue;
-            foreach (var buff in Buffs.Values)
+            foreach (var buff in StatBuffs.Values)
             {
-                var elapsedTurn = buff.originalDuration - buff.remainedDuration;
-                if (elapsedTurn < minDuration)
+                var elapsedTurn = buff.OriginalDuration - buff.RemainedDuration;
+                if (removedBuff is null)
                 {
                     minDuration = elapsedTurn;
                     removedBuff = buff;
                 }
+
+                if (elapsedTurn > minDuration ||
+                    buff.RowData.Id >= removedBuff.RowData.Id)
+                {
+                    continue;
+                }
+
+                minDuration = elapsedTurn;
+                removedBuff = buff;
             }
 
             if (removedBuff != null)
             {
                 _stats.RemoveBuff(removedBuff);
-                Buffs.Remove(removedBuff.RowData.GroupId);
+                StatBuffs.Remove(removedBuff.RowData.GroupId);
                 _stats.IncreaseHpForArena();
             }
         }

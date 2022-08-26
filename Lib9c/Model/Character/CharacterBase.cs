@@ -395,13 +395,13 @@ namespace Nekoyume.Model
             }
         }
 
-        public void RemoveRecentBuff()
+        public void RemoveRecentStatBuff()
         {
-            Buff.Buff removedBuff = null;
+            StatBuff removedBuff = null;
             var minDuration = int.MaxValue;
-            foreach (var buff in Buffs.Values)
+            foreach (var buff in StatBuffs.Values)
             {
-                var elapsedTurn = buff.originalDuration - buff.remainedDuration;
+                var elapsedTurn = buff.OriginalDuration - buff.RemainedDuration;
                 if (removedBuff is null)
                 {
                     minDuration = elapsedTurn;
@@ -421,7 +421,7 @@ namespace Nekoyume.Model
             if (removedBuff != null)
             {
                 Stats.RemoveBuff(removedBuff);
-                Buffs.Remove(removedBuff.RowData.GroupId);
+                StatBuffs.Remove(removedBuff.RowData.GroupId);
             }
         }
 

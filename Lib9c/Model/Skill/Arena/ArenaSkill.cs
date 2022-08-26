@@ -25,7 +25,7 @@ namespace Nekoyume.Model.Skill.Arena
             ArenaCharacter caster,
             ArenaCharacter target,
             int turn,
-            IEnumerable<Buff.StatBuff> buffs
+            IEnumerable<Buff.Buff> buffs
         );
 
         [Obsolete("Use Use")]
@@ -64,13 +64,13 @@ namespace Nekoyume.Model.Skill.Arena
             ArenaCharacter caster,
             ArenaCharacter target,
             int turn,
-            IEnumerable<Buff.StatBuff> buffs
+            IEnumerable<Buff.Buff> buffs
         )
         {
             var infos = new List<BattleStatus.Arena.ArenaSkill.ArenaSkillInfo>();
             foreach (var buff in buffs)
             {
-                switch (buff.RowData.TargetType)
+                switch (buff.BuffInfo.SkillTargetType)
                 {
                     case SkillTargetType.Enemy:
                     case SkillTargetType.Enemies:
@@ -123,7 +123,7 @@ namespace Nekoyume.Model.Skill.Arena
             return infos;
         }
 
-        private BattleStatus.Arena.ArenaSkill.ArenaSkillInfo GetSkillInfo(ICloneable target, int turn, Buff.StatBuff buff)
+        private BattleStatus.Arena.ArenaSkill.ArenaSkillInfo GetSkillInfo(ICloneable target, int turn, Buff.Buff buff)
         {
             return new BattleStatus.Arena.ArenaSkill.ArenaSkillInfo(
                 (ArenaCharacter) target.Clone(),
