@@ -75,6 +75,8 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100290ObsoleteIndex, context);
+
             var addressesHex =
                 GetSignerAndOtherAddressesHex(context, myAvatarAddress, enemyAvatarAddress);
 
