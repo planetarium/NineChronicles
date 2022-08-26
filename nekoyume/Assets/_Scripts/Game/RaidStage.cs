@@ -244,6 +244,19 @@ namespace Nekoyume.Game
             yield break;
         }
 
+        public IEnumerator CoBuffRemovalAttack(
+            CharacterBase caster,
+            int skillId,
+            IEnumerable<Skill.SkillInfo> skillInfos,
+            IEnumerable<Skill.SkillInfo> buffInfos)
+        {
+            Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
+            target.Set(caster);
+            var actionParams = new Character.RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoBlowAttack);
+            _actionQueue.Enqueue(actionParams);
+            yield break;
+        }
+
         public IEnumerator CoDoubleAttack(
             CharacterBase caster,
             int skillId,
