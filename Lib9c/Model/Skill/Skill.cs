@@ -67,7 +67,7 @@ namespace Nekoyume.Model.Skill
                     target.AddBuff(buff);
                     infos.Add(new Model.BattleStatus.Skill.SkillInfo((CharacterBase) target.Clone(), 0, false,
                         SkillRow.SkillCategory, simulatorWaveTurn, ElementalType.Normal, SkillRow.SkillTargetType,
-                        null));
+                        buff));
                 }
             }
 

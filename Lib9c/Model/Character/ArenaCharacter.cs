@@ -5,7 +5,6 @@ using System.Linq;
 using BTAI;
 using Nekoyume.Arena;
 using Nekoyume.Battle;
-using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Buff;
 using Nekoyume.Model.Character;
@@ -63,9 +62,9 @@ namespace Nekoyume.Model
         public int HIT => _stats.HIT;
         public int SPD => _stats.SPD;
         public bool IsDead => CurrentHP <= 0;
-
-        public Dictionary<int, Buff.StatBuff> StatBuffs { get; } = new Dictionary<int, Buff.StatBuff>();
-        public Dictionary<int, ActionBuff> ActionBuffs { get; } = new Dictionary<int, ActionBuff>();
+        public Dictionary<int, Buff.Buff> Buffs { get; } = new Dictionary<int, Buff.Buff>();
+        public IEnumerable<StatBuff> StatBuffs => Buffs.Values.OfType<StatBuff>();
+        public IEnumerable<ActionBuff> ActionBuffs => Buffs.Values.OfType<ActionBuff>();
 
         public object Clone() => new ArenaCharacter(this);
 
@@ -111,16 +110,18 @@ namespace Nekoyume.Model
             _skillSheet = value._skillSheet;
             _skillBuffSheet = value._skillBuffSheet;
             _statBuffSheet = value._statBuffSheet;
+            _skillActionBuffSheet = value._skillActionBuffSheet;
+            _actionBuffSheet = value._actionBuffSheet;
 
             _simulator = value._simulator;
             _stats = new CharacterStats(value._stats);
             _skills = value._skills;
-            StatBuffs = new Dictionary<int, Buff.StatBuff>();
+            Buffs = new Dictionary<int, Buff.Buff>();
 #pragma warning disable LAA1002
-            foreach (var pair in value.StatBuffs)
+            foreach (var pair in value.Buffs)
 #pragma warning restore LAA1002
             {
-                StatBuffs.Add(pair.Key, (Buff.StatBuff) pair.Value.Clone());
+                Buffs.Add(pair.Key, (Buff.Buff) pair.Value.Clone());
             }
 
             _attackCountMax = value._attackCount;
@@ -259,7 +260,7 @@ namespace Nekoyume.Model
         private void ReduceDurationOfBuffs()
         {
 #pragma warning disable LAA1002
-            foreach (var pair in StatBuffs)
+            foreach (var pair in Buffs)
 #pragma warning restore LAA1002
             {
                 pair.Value.RemainedDuration--;
@@ -312,25 +313,24 @@ namespace Nekoyume.Model
 
         private void RemoveBuffs()
         {
-            var isApply = false;
+            var isBuffRemoved = false;
 
-            foreach (var key in StatBuffs.Keys.ToList())
+            var keyList = Buffs.Keys.ToList();
+            foreach (var key in keyList)
             {
-                var buff = StatBuffs[key];
+                var buff = Buffs[key];
                 if (buff.RemainedDuration > 0)
-                {
                     continue;
-                }
 
-                StatBuffs.Remove(key);
-                isApply = true;
+                Buffs.Remove(key);
+                isBuffRemoved = true;
             }
 
-            if (isApply)
-            {
-                _stats.SetBuffs(StatBuffs.Values);
-                _stats.IncreaseHpForArena();
-            }
+            if (!isBuffRemoved)
+                return;
+
+            _stats.SetBuffs(StatBuffs);
+            _stats.IncreaseHpForArena();
         }
 
         [Obsolete("Use RemoveBuffs")]
@@ -338,21 +338,21 @@ namespace Nekoyume.Model
         {
             var isApply = false;
 
-            foreach (var key in StatBuffs.Keys.ToList())
+            foreach (var key in Buffs.Keys.ToList())
             {
-                var buff = StatBuffs[key];
+                var buff = Buffs[key];
                 if (buff.RemainedDuration > 0)
                 {
                     continue;
                 }
 
-                StatBuffs.Remove(key);
+                Buffs.Remove(key);
                 isApply = true;
             }
 
             if (isApply)
             {
-                _stats.SetBuffs(StatBuffs.Values);
+                _stats.SetBuffs(StatBuffs);
             }
         }
 
@@ -377,37 +377,33 @@ namespace Nekoyume.Model
 
         public void AddBuff(Buff.Buff buff, bool updateImmediate = true)
         {
+            if (Buffs.TryGetValue(buff.BuffInfo.GroupId, out var outBuff) &&
+                outBuff.BuffInfo.Id > buff.BuffInfo.Id)
+                return;
+
             if (buff is StatBuff stat)
             {
-                if (StatBuffs.TryGetValue(stat.RowData.GroupId, out var outBuff) &&
-                    outBuff.RowData.Id > stat.RowData.Id)
-                    return;
-
                 var clone = (StatBuff)stat.Clone();
-                StatBuffs[stat.RowData.GroupId] = clone;
+                Buffs[stat.RowData.GroupId] = clone;
                 _stats.AddBuff(clone, updateImmediate);
                 _stats.IncreaseHpForArena();
             }
             else if (buff is ActionBuff action)
             {
-                if (ActionBuffs.TryGetValue(action.RowData.GroupId, out var outBuff) &&
-                    outBuff.RowData.Id > action.RowData.Id)
-                    return;
-
                 var clone = (ActionBuff)action.Clone();
-                ActionBuffs[action.RowData.GroupId] = clone;
+                Buffs[action.RowData.GroupId] = clone;
             }
         }
 
         [Obsolete("Use AddBuff")]
         public void AddBuffV1(Buff.StatBuff buff, bool updateImmediate = true)
         {
-            if (StatBuffs.TryGetValue(buff.RowData.GroupId, out var outBuff) &&
-                outBuff.RowData.Id > buff.RowData.Id)
+            if (Buffs.TryGetValue(buff.RowData.GroupId, out var outBuff) &&
+                outBuff.BuffInfo.Id > buff.RowData.Id)
                 return;
 
             var clone = (Buff.StatBuff) buff.Clone();
-            StatBuffs[buff.RowData.GroupId] = clone;
+            Buffs[buff.RowData.GroupId] = clone;
             _stats.AddBuff(clone, updateImmediate);
         }
 
@@ -415,7 +411,7 @@ namespace Nekoyume.Model
         {
             StatBuff removedBuff = null;
             var minDuration = int.MaxValue;
-            foreach (var buff in StatBuffs.Values)
+            foreach (var buff in StatBuffs)
             {
                 var elapsedTurn = buff.OriginalDuration - buff.RemainedDuration;
                 if (removedBuff is null)
@@ -437,7 +433,7 @@ namespace Nekoyume.Model
             if (removedBuff != null)
             {
                 _stats.RemoveBuff(removedBuff);
-                StatBuffs.Remove(removedBuff.RowData.GroupId);
+                Buffs.Remove(removedBuff.RowData.GroupId);
                 _stats.IncreaseHpForArena();
             }
         }

@@ -29,12 +29,12 @@ namespace Nekoyume.Model.Buff
             }
         }
 
-        public static ActionBuff GetActionBuff(ActionBuffSheet.Row row)
+        public static ActionBuff GetActionBuff(int power, ActionBuffSheet.Row row)
         {
             switch (row.ActionBuffType)
             {
                 case ActionBuffType.Bleed:
-                    return new ActionBuff(row);
+                    return new Bleed(row, power);
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -61,6 +61,7 @@ namespace Nekoyume.Model.Buff
         }
 
         public static IList<Buff> GetBuffsV2(
+            int power,
             ISkill skill,
             SkillBuffSheet skillBuffSheet,
             StatBuffSheet statBuffSheet,
@@ -68,26 +69,27 @@ namespace Nekoyume.Model.Buff
             ActionBuffSheet actionBuffSheet)
         {
             var buffs = new List<Buff>();
-            if (!skillBuffSheet.TryGetValue(skill.SkillRow.Id, out var skillStatBuffRow))
-                return buffs;
 
-            foreach (var buffId in skillStatBuffRow.BuffIds)
+            if (skillBuffSheet.TryGetValue(skill.SkillRow.Id, out var skillStatBuffRow))
             {
-                if (!statBuffSheet.TryGetValue(buffId, out var buffRow))
-                    continue;
+                foreach (var buffId in skillStatBuffRow.BuffIds)
+                {
+                    if (!statBuffSheet.TryGetValue(buffId, out var buffRow))
+                        continue;
 
-                buffs.Add(GetStatBuff(buffRow));
+                    buffs.Add(GetStatBuff(buffRow));
+                }
             }
 
-            if (!skillActionBuffSheet.TryGetValue(skill.SkillRow.Id, out var skillActionBuffRow))
-                return buffs;
-
-            foreach (var buffId in skillActionBuffRow.BuffIds)
+            if (skillActionBuffSheet.TryGetValue(skill.SkillRow.Id, out var skillActionBuffRow))
             {
-                if (!actionBuffSheet.TryGetValue(buffId, out var buffRow))
-                    continue;
+                foreach (var buffId in skillActionBuffRow.BuffIds)
+                {
+                    if (!actionBuffSheet.TryGetValue(buffId, out var buffRow))
+                        continue;
 
-                buffs.Add(GetActionBuff(buffRow));
+                    buffs.Add(GetActionBuff(power, buffRow));
+                }
             }
 
             return buffs;

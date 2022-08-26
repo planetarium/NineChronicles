@@ -90,6 +90,7 @@ namespace Nekoyume.Model
                 this,
                 Simulator.WaveTurn,
                 BuffFactory.GetBuffsV2(
+                    ATK,
                     skill,
                     Simulator.SkillBuffSheet,
                     Simulator.StatBuffSheet,
@@ -116,6 +117,7 @@ namespace Nekoyume.Model
                 this,
                 Simulator.WaveTurn,
                 BuffFactory.GetBuffsV2(
+                    ATK,
                     _enrageSkill,
                     Simulator.SkillBuffSheet,
                     Simulator.StatBuffSheet,

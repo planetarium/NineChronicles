@@ -1,10 +1,11 @@
 using System;
+using System.Collections.Generic;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model.Buff
 {
     [Serializable]
-    public class ActionBuff : Buff
+    public abstract class ActionBuff : Buff
     {
         public ActionBuffSheet.Row RowData { get; }
 
@@ -19,9 +20,8 @@ namespace Nekoyume.Model.Buff
             RowData = value.RowData;
         }
 
-        public override object Clone()
-        {
-            return new ActionBuff(this);
-        }
+        public abstract BattleStatus.Skill GiveEffect(
+            CharacterBase caster,
+            int simulatorWaveTurn);
     }
 }

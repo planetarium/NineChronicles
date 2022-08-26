@@ -30,8 +30,9 @@ namespace Nekoyume.Model
 
         public readonly Skills Skills = new Skills();
         public readonly Skills BuffSkills = new Skills();
-        public readonly Dictionary<int, StatBuff> StatBuffs = new Dictionary<int, StatBuff>();
-        public readonly Dictionary<int, ActionBuff> ActionBuffs = new Dictionary<int, ActionBuff>();
+        public readonly Dictionary<int, Buff.Buff> Buffs = new Dictionary<int, Buff.Buff>();
+        public IEnumerable<StatBuff> StatBuffs => Buffs.Values.OfType<StatBuff>();
+        public IEnumerable<ActionBuff> ActionBuffs => Buffs.Values.OfType<ActionBuff>();
         public readonly List<CharacterBase> Targets = new List<CharacterBase>();
 
         public CharacterSheet.Row RowData { get; }
@@ -131,22 +132,13 @@ namespace Nekoyume.Model
             // 스킬은 변하지 않는다는 가정 하에 얕은 복사.
             Skills = value.Skills;
             // 버프는 컨테이너도 옮기고,
-            StatBuffs = new Dictionary<int, StatBuff>();
+            Buffs = new Dictionary<int, Buff.Buff>();
 #pragma warning disable LAA1002
-            foreach (var pair in value.StatBuffs)
+            foreach (var pair in value.Buffs)
 #pragma warning restore LAA1002
             {
                 // 깊은 복사까지 꼭.
-                StatBuffs.Add(pair.Key, (StatBuff) pair.Value.Clone());
-            }
-
-            ActionBuffs = new Dictionary<int, ActionBuff>();
-#pragma warning disable LAA1002
-            foreach (var pair in value.ActionBuffs)
-#pragma warning restore LAA1002
-            {
-                // 깊은 복사까지 꼭.
-                ActionBuffs.Add(pair.Key, (ActionBuff)pair.Value.Clone());
+                Buffs.Add(pair.Key, (Buff.Buff) pair.Value.Clone());
             }
 
             // 타갯은 컨테이너만 옮기기.
@@ -214,14 +206,7 @@ namespace Nekoyume.Model
         private void ReduceDurationOfBuffs()
         {
 #pragma warning disable LAA1002
-            foreach (var pair in StatBuffs)
-#pragma warning restore LAA1002
-            {
-                pair.Value.RemainedDuration--;
-            }
-
-#pragma warning disable LAA1002
-            foreach (var pair in ActionBuffs)
+            foreach (var pair in Buffs)
 #pragma warning restore LAA1002
             {
                 pair.Value.RemainedDuration--;
@@ -246,6 +231,7 @@ namespace Nekoyume.Model
                 this,
                 Simulator.WaveTurn,
                 BuffFactory.GetBuffsV2(
+                    ATK,
                     selectedSkill,
                     Simulator.SkillBuffSheet,
                     Simulator.StatBuffSheet,
@@ -269,6 +255,12 @@ namespace Nekoyume.Model
 
                 var target = Targets.FirstOrDefault(i => i.Id == info.Target.Id);
                 target?.Die();
+            }
+
+            foreach (var bleed in Buffs.Values.OfType<Bleed>())
+            {
+                var effect = bleed.GiveEffect(this, Simulator.WaveTurn);
+                Simulator.Log.Add(effect);
             }
         }
 
@@ -332,32 +324,21 @@ namespace Nekoyume.Model
         {
             var isBuffRemoved = false;
 
-            var statKeyList = StatBuffs.Keys.ToList();
-            foreach (var key in statKeyList)
+            var keyList = Buffs.Keys.ToList();
+            foreach (var key in keyList)
             {
-                var buff = StatBuffs[key];
+                var buff = Buffs[key];
                 if (buff.RemainedDuration > 0)
                     continue;
 
-                StatBuffs.Remove(key);
-                isBuffRemoved = true;
-            }
-
-            var actionKeyList = ActionBuffs.Keys.ToList();
-            foreach (var key in actionKeyList)
-            {
-                var buff = ActionBuffs[key];
-                if (buff.RemainedDuration > 0)
-                    continue;
-
-                ActionBuffs.Remove(key);
+                Buffs.Remove(key);
                 isBuffRemoved = true;
             }
 
             if (!isBuffRemoved)
                 return;
 
-            Stats.SetBuffs(StatBuffs.Values);
+            Stats.SetBuffs(StatBuffs);
             Simulator.Log.Add(new RemoveBuffs((CharacterBase) Clone()));
         }
 
@@ -374,24 +355,20 @@ namespace Nekoyume.Model
 
         public void AddBuff(Buff.Buff buff, bool updateImmediate = true)
         {
+            if (Buffs.TryGetValue(buff.BuffInfo.GroupId, out var outBuff) &&
+                outBuff.BuffInfo.Id > buff.BuffInfo.Id)
+                return;
+
             if (buff is StatBuff stat)
             {
-                if (StatBuffs.TryGetValue(stat.RowData.GroupId, out var outBuff) &&
-                    outBuff.RowData.Id > stat.RowData.Id)
-                    return;
-
                 var clone = (StatBuff)stat.Clone();
-                StatBuffs[stat.RowData.GroupId] = clone;
+                Buffs[stat.RowData.GroupId] = clone;
                 Stats.AddBuff(clone, updateImmediate);
             }
             else if (buff is ActionBuff action)
             {
-                if (ActionBuffs.TryGetValue(action.RowData.GroupId, out var outBuff) &&
-                    outBuff.RowData.Id > action.RowData.Id)
-                    return;
-
                 var clone = (ActionBuff)action.Clone();
-                ActionBuffs[action.RowData.GroupId] = clone;
+                Buffs[action.RowData.GroupId] = clone;
             }
         }
 
@@ -399,7 +376,7 @@ namespace Nekoyume.Model
         {
             StatBuff removedBuff = null;
             var minDuration = int.MaxValue;
-            foreach (var buff in StatBuffs.Values)
+            foreach (var buff in StatBuffs)
             {
                 var elapsedTurn = buff.OriginalDuration - buff.RemainedDuration;
                 if (removedBuff is null)
@@ -421,7 +398,7 @@ namespace Nekoyume.Model
             if (removedBuff != null)
             {
                 Stats.RemoveBuff(removedBuff);
-                StatBuffs.Remove(removedBuff.RowData.GroupId);
+                Buffs.Remove(removedBuff.RowData.GroupId);
             }
         }
 
