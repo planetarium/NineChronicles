@@ -189,8 +189,11 @@ namespace Nekoyume.UI.Module
             {
                 starForMulti.WaveStarTexts[i].text = clearedWaves[i].ToString();
             }
-            starForMulti.RemainingStarText.text = L10nManager.Localize(
-                "UI_REMAINING_STAR_TO_BUFF", maxStarCount - starCount);
+
+            starForMulti.RemainingStarText.text =
+                starCount >= maxStarCount
+                    ? L10nManager.Localize("UI_REMAINING_STAR_TO_BUFF", maxStarCount - starCount)
+                    : L10nManager.Localize("UI_ENOUGH_STAR_TO_BUFF");
         }
 
         private string GetFailedText()
