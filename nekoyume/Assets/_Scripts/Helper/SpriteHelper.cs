@@ -31,7 +31,7 @@ namespace Nekoyume.Helper
         private const string TitleFramePathFormat = "UI/Textures/00_TitleFrames/{0}";
         private static readonly string TitleFrameDefaultPath = string.Format(TitleFramePathFormat, 49900001);
 
-        private const string MenuIllustratePathFormat = "UI/Textures/MenuIllustrates/{0}";
+        private const string MenuIllustratePathFormat = "UI/Textures/00_MenuIllustrates/{0}";
 
         private static readonly string MenuIllustrateDefaultPath =
             string.Format(MenuIllustratePathFormat, "UI_bg_combination");
