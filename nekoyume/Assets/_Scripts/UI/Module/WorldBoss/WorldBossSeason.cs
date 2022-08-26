@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Numerics;
+using Nekoyume.Game.Character;
 using Nekoyume.Helper;
 using Nekoyume.UI.Model;
 using TMPro;
@@ -8,6 +10,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module.WorldBoss
 {
+    using UniRx;
     public class WorldBossSeason : MonoBehaviour
     {
         [SerializeField]
@@ -50,9 +53,42 @@ namespace Nekoyume.UI.Module.WorldBoss
         private GameObject emptyRecordContainer;
 
         [SerializeField]
+        private TouchHandler runeIcon;
+
+        [SerializeField]
+        private TouchHandler crystalIcon;
+
+        [SerializeField]
+        private GameObject runeInformation;
+
+        [SerializeField]
+        private GameObject crystalInformation;
+
+        [SerializeField]
         private List<Image> runeIcons;
 
         private GameObject _gradeObject;
+
+        private readonly List<IDisposable> _disposables = new();
+
+        private void Awake()
+        {
+            runeIcon.OnClick
+                .Subscribe(_ =>
+                {
+                    runeInformation.SetActive(!runeInformation.activeSelf);
+                    crystalInformation.SetActive(false);
+                })
+                .AddTo(_disposables);
+
+            crystalIcon.OnClick
+                .Subscribe(_ =>
+                {
+                    crystalInformation.SetActive(!crystalInformation.activeSelf);
+                    runeInformation.SetActive(false);
+                })
+                .AddTo(_disposables);
+        }
 
         public void UpdateUserCount(int count)
         {
