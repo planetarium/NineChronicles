@@ -360,8 +360,12 @@ namespace Nekoyume.Model
             foreach (var buff in Buffs.Values)
             {
                 var elapsedTurn = buff.originalDuration - buff.remainedDuration;
-                if (elapsedTurn < minDuration &&
-                    (removedBuff is null || buff.RowData.Id < removedBuff.RowData.Id))
+                if (removedBuff is null)
+                {
+                    minDuration = elapsedTurn;
+                    removedBuff = buff;
+                }
+                else if (elapsedTurn < minDuration && buff.RowData.Id < removedBuff.RowData.Id)
                 {
                     minDuration = elapsedTurn;
                     removedBuff = buff;
