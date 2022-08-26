@@ -32,7 +32,10 @@ namespace Lib9c.Tests.Action
             var goldDistributionCsvPath = GoldDistributionTest.CreateFixtureCsvFile();
             var goldDistributions = GoldDistribution.LoadInDescendingEndBlockOrder(goldDistributionCsvPath);
             var minterKey = new PrivateKey();
-            var ncg = new Currency("NCG", 2, minterKey.ToAddress());
+#pragma warning disable CS0618
+            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+            var ncg = Currency.Legacy("NCG", 2, minterKey.ToAddress());
+#pragma warning restore CS0618
             var nonce = new byte[] { 0x00, 0x01, 0x02, 0x03 };
             var privateKey = new PrivateKey();
             (ActivationKey activationKey, PendingActivationState pendingActivation) =
@@ -90,7 +93,10 @@ namespace Lib9c.Tests.Action
             var goldDistributionCsvPath = GoldDistributionTest.CreateFixtureCsvFile();
             var goldDistributions = GoldDistribution.LoadInDescendingEndBlockOrder(goldDistributionCsvPath);
             var minterKey = new PrivateKey();
-            var ncg = new Currency("NCG", 2, minterKey.ToAddress());
+#pragma warning disable CS0618
+            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+            var ncg = Currency.Legacy("NCG", 2, minterKey.ToAddress());
+#pragma warning restore CS0618
             var nonce = new byte[] { 0x00, 0x01, 0x02, 0x03 };
             var privateKey = new PrivateKey();
             (ActivationKey activationKey, PendingActivationState pendingActivation) =
@@ -142,7 +148,10 @@ namespace Lib9c.Tests.Action
             var goldDistributionCsvPath = GoldDistributionTest.CreateFixtureCsvFile();
             var goldDistributions = GoldDistribution.LoadInDescendingEndBlockOrder(goldDistributionCsvPath);
             var minterKey = new PrivateKey();
-            var ncg = new Currency("NCG", 2, minterKey.ToAddress());
+#pragma warning disable CS0618
+            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+            var ncg = Currency.Legacy("NCG", 2, minterKey.ToAddress());
+#pragma warning restore CS0618
             var nonce = new byte[] { 0x00, 0x01, 0x02, 0x03 };
             var privateKey = new PrivateKey();
             (ActivationKey activationKey, PendingActivationState pendingActivation) =
@@ -184,7 +193,10 @@ namespace Lib9c.Tests.Action
             var goldDistributionCsvPath = GoldDistributionTest.CreateFixtureCsvFile();
             var goldDistributions = GoldDistribution.LoadInDescendingEndBlockOrder(goldDistributionCsvPath);
             var minterKey = new PrivateKey();
-            var ncg = new Currency("NCG", 2, minterKey.ToAddress());
+#pragma warning disable CS0618
+            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+            var ncg = Currency.Legacy("NCG", 2, minterKey.ToAddress());
+#pragma warning restore CS0618
             var nonce = new byte[] { 0x00, 0x01, 0x02, 0x03 };
             var adminAddress = new Address("F9A15F870701268Bd7bBeA6502eB15F4997f32f9");
             var creditState = new CreditsState(
@@ -233,7 +245,10 @@ namespace Lib9c.Tests.Action
             var goldDistributions =
                 GoldDistribution.LoadInDescendingEndBlockOrder(goldDistributionCsvPath);
             var minterKey = new PrivateKey();
-            var ncg = new Currency("NCG", 2, minterKey.ToAddress());
+#pragma warning disable CS0618
+            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+            var ncg = Currency.Legacy("NCG", 2, minterKey.ToAddress());
+#pragma warning restore CS0618
             var nonce = new byte[] { 0x00, 0x01, 0x02, 0x03 };
             var privateKey = new PrivateKey();
             (ActivationKey activationKey, PendingActivationState pendingActivation) =
