@@ -455,17 +455,22 @@ namespace Nekoyume.UI
         private IEnumerator CoUpdateRewards()
         {
             rewardsArea.root.SetActive(true);
+            var isNotClearedInMulti =
+                SharedModel.ClearedWaves[3] <= 0 && SharedModel.ClearedWaves.Sum() > 1;
             for (var i = 0; i < rewardsArea.rewards.Length; i++)
             {
-                var isNotClearedInMulti = SharedModel.ClearedWaves[3] <= 0 &&
-                                          SharedModel.ClearedWaves.Sum() > 1;
-
                 var view = i == 2 && isNotClearedInMulti
                     ? rewardsArea.rewardForMulti
                     : rewardsArea.rewards[i];
 
                 view.StartShowAnimation();
-                var cleared = SharedModel.ClearedWaveNumber > i;
+
+                var sum = 0;
+                for (int j = i; j < 3; j++)
+                {
+                    sum += SharedModel.ClearedWaves[j + 1];
+                }
+                var cleared = sum > 0;
                 switch (i)
                 {
                     case 0:
@@ -486,7 +491,7 @@ namespace Nekoyume.UI
                         }
                         else
                         {
-                            view.Set(SharedModel.State == BattleLog.Result.Win && cleared);
+                            view.Set(cleared);
                         }
                         break;
                 }
