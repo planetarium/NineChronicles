@@ -575,6 +575,8 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(SkillSheet));
                 sheetTypeList.Add(typeof(SkillBuffSheet));
                 sheetTypeList.Add(typeof(StatBuffSheet));
+                sheetTypeList.Add(typeof(SkillActionBuffSheet));
+                sheetTypeList.Add(typeof(ActionBuffSheet));
                 sheetTypeList.Add(typeof(CharacterSheet));
                 sheetTypeList.Add(typeof(CharacterLevelSheet));
                 sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
@@ -586,6 +588,8 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(SkillSheet));
                 sheetTypeList.Add(typeof(SkillBuffSheet));
                 sheetTypeList.Add(typeof(StatBuffSheet));
+                sheetTypeList.Add(typeof(SkillActionBuffSheet));
+                sheetTypeList.Add(typeof(ActionBuffSheet));
                 sheetTypeList.Add(typeof(CharacterSheet));
                 sheetTypeList.Add(typeof(CharacterLevelSheet));
                 sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
@@ -600,6 +604,8 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(SkillSheet));
                 sheetTypeList.Add(typeof(SkillBuffSheet));
                 sheetTypeList.Add(typeof(StatBuffSheet));
+                sheetTypeList.Add(typeof(SkillActionBuffSheet));
+                sheetTypeList.Add(typeof(ActionBuffSheet));
                 sheetTypeList.Add(typeof(CharacterSheet));
                 sheetTypeList.Add(typeof(CharacterLevelSheet));
                 sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
@@ -612,6 +618,8 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(SkillSheet));
                 sheetTypeList.Add(typeof(SkillBuffSheet));
                 sheetTypeList.Add(typeof(StatBuffSheet));
+                sheetTypeList.Add(typeof(SkillActionBuffSheet));
+                sheetTypeList.Add(typeof(ActionBuffSheet));
                 sheetTypeList.Add(typeof(CharacterSheet));
                 sheetTypeList.Add(typeof(CharacterLevelSheet));
                 sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
@@ -625,6 +633,8 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(SkillSheet));
                 sheetTypeList.Add(typeof(SkillBuffSheet));
                 sheetTypeList.Add(typeof(StatBuffSheet));
+                sheetTypeList.Add(typeof(SkillActionBuffSheet));
+                sheetTypeList.Add(typeof(ActionBuffSheet));
                 sheetTypeList.Add(typeof(CharacterSheet));
                 sheetTypeList.Add(typeof(CharacterLevelSheet));
                 sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));

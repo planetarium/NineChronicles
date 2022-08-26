@@ -214,7 +214,8 @@ namespace Lib9c.Tests.Action
                     random,
                     avatarState,
                     action.FoodIds,
-                    _tableSheets.GetRaidSimulatorSheets());
+                    _tableSheets.GetRaidSimulatorSheets(),
+                    _tableSheets.CostumeStatSheet);
                 simulator.Simulate();
                 var score = simulator.DamageDealt;
 
@@ -411,7 +412,8 @@ namespace Lib9c.Tests.Action
                 random,
                 avatarState,
                 action.FoodIds,
-                _tableSheets.GetRaidSimulatorSheets());
+                _tableSheets.GetRaidSimulatorSheets(),
+                _tableSheets.CostumeStatSheet);
             simulator.Simulate();
             Assert.Equal(simulator.DamageDealt, nextRaiderState.HighScore);
 

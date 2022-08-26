@@ -148,7 +148,8 @@ namespace Nekoyume.Action
                 context.Random,
                 avatarState,
                 FoodIds,
-                sheets.GetRaidSimulatorSheets());
+                sheets.GetRaidSimulatorSheets(),
+                sheets.GetSheet<CostumeStatSheet>());
             simulator.Simulate();
 
             int score = simulator.DamageDealt;
