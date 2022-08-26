@@ -1131,7 +1131,7 @@ namespace Nekoyume.Game
                 menuNames.Add("Mimisbrunnr");
             }
 
-            if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuRaid)
+            if (stageId == GameConfig.RequireClearedStageLevel.ActionsInRaid)
             {
                 menuNames.Add(nameof(Raid));
             }
