@@ -91,7 +91,7 @@ namespace Nekoyume.UI
             get
             {
                 var avatarAddress = States.Instance.CurrentAvatarState.address;
-                return _cachedRaiderStates[avatarAddress];
+                return _cachedRaiderStates.ContainsKey(avatarAddress) ? _cachedRaiderStates[avatarAddress] : null;
             }
             private set
             {
