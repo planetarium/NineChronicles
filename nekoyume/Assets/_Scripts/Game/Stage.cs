@@ -604,7 +604,6 @@ namespace Nekoyume.Game
             {
                 ["StageId"] = log.stageId,
                 ["ClearedWave"] = log.clearedWaveNumber,
-                ["Repeat"] = false, // Todo
                 ["CP"] = cp,
                 ["FoodCount"] = foodCount
             };
