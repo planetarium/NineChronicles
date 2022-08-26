@@ -7,6 +7,7 @@ using System.Linq;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using mixpanel;
+using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Character;
@@ -1128,6 +1129,11 @@ namespace Nekoyume.Game
             if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuMimisbrunnr)
             {
                 menuNames.Add("Mimisbrunnr");
+            }
+
+            if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuRaid)
+            {
+                menuNames.Add(nameof(Raid));
             }
 
             var celebratesPopup = Widget.Find<CelebratesPopup>();
