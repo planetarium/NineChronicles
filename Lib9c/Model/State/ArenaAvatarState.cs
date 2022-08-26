@@ -40,11 +40,16 @@ namespace Nekoyume.Model.State
 
         public IValue Serialize()
         {
-            return List.Empty
+            var result = List.Empty
                 .Add(Address.Serialize())
                 .Add(Costumes.OrderBy(x => x).Select(x => x.Serialize()).Serialize())
-                .Add(Equipments.OrderBy(x => x).Select(x => x.Serialize()).Serialize())
-                .Add(LastBattleBlockIndex.Serialize());
+                .Add(Equipments.OrderBy(x => x).Select(x => x.Serialize()).Serialize());
+            if (LastBattleBlockIndex != 0)
+            {
+                result = result.Add(LastBattleBlockIndex.Serialize());
+            }
+
+            return result;
         }
 
         public void UpdateCostumes([NotNull] List<Guid> costumes)

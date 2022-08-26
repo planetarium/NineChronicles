@@ -170,6 +170,13 @@ namespace Nekoyume.Action
                 throw new ArenaAvatarStateNotFoundException(
                     $"[{nameof(BattleArena)}] my avatar address : {myAvatarAddress}");
             }
+            
+            if (context.BlockIndex - myArenaAvatarState.LastBattleBlockIndex < 2)
+            {
+                throw new CoolDownBlockException(
+                    $"[{nameof(BattleArena)}] LastBattleBlockIndex : {myArenaAvatarState.LastBattleBlockIndex} " +
+                    $"CurrentBlockIndex : {context.BlockIndex}");
+            }
 
             var enemyArenaAvatarStateAdr = ArenaAvatarState.DeriveAddress(enemyAvatarAddress);
             if (!states.TryGetArenaAvatarState(enemyArenaAvatarStateAdr,
@@ -204,13 +211,6 @@ namespace Nekoyume.Action
                 throw new ArenaInformationNotFoundException(
                     $"[{nameof(BattleArena)}] my avatar address : {myAvatarAddress}" +
                     $" - ChampionshipId({roundData.ChampionshipId}) - round({roundData.Round})");
-            }
-
-            if (context.BlockIndex - myArenaAvatarState.LastBattleBlockIndex < 2)
-            {
-                throw new CoolDownBlockException(
-                    $"[{nameof(BattleArena)}] LastBattleBlockIndex : {myArenaAvatarState.LastBattleBlockIndex} " +
-                    $"CurrentBlockIndex : {context.BlockIndex}");
             }
 
             if (!ArenaHelper.ValidateScoreDifference(ArenaHelper.ScoreLimits, roundData.ArenaType,
