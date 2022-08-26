@@ -17,7 +17,10 @@ namespace Lib9c.Tests.Action
         {
             var orderId = new Guid("F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4");
             var tradableId = new Guid("936DA01F-9ABD-4d9d-80C7-02AF85C822A8");
-            var price = new FungibleAssetValue(new Currency("NCG", 2, minter: null), 100, 0);
+#pragma warning disable CS0618
+            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+            var price = Currency.Legacy("NCG", 2, null) * 100;
+#pragma warning restore CS0618
             var purchaseInfo = new PurchaseInfo(
                 orderId,
                 tradableId,

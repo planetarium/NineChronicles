@@ -13,7 +13,10 @@ namespace Lib9c.Tests.Model.State
         [Fact]
         public void Serialize()
         {
-            var currency = new Currency("NCG", 2, default(Address));
+#pragma warning disable CS0618
+            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+            var currency = Currency.Legacy("NCG", 2, default(Address));
+#pragma warning restore CS0618
             var state = new GoldCurrencyState(currency);
             var serialized = (Dictionary)state.Serialize();
             GoldCurrencyState deserialized = new GoldCurrencyState(serialized);
@@ -24,7 +27,10 @@ namespace Lib9c.Tests.Model.State
         [Fact]
         public void SerializeWithDotnetAPI()
         {
-            var currency = new Currency("NCG", 2, default(Address));
+#pragma warning disable CS0618
+            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+            var currency = Currency.Legacy("NCG", 2, default(Address));
+#pragma warning restore CS0618
             var state = new GoldCurrencyState(currency);
             var formatter = new BinaryFormatter();
 
