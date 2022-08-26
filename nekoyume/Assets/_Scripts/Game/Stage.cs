@@ -696,6 +696,21 @@ namespace Nekoyume.Game
             }
         }
 
+        public IEnumerator CoBuffRemovalAttack(
+            CharacterBase caster,
+            int skillId,
+            IEnumerable<Skill.SkillInfo> skillInfos,
+            IEnumerable<Skill.SkillInfo> buffInfos)
+        {
+            var character = GetCharacter(caster);
+            if (character)
+            {
+                var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoBlowAttack);
+                character.actions.Add(actionParams);
+                yield return null;
+            }
+        }
+
         public IEnumerator CoDoubleAttack(
             CharacterBase caster,
             int skillId,
