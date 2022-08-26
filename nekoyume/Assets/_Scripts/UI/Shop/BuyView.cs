@@ -379,7 +379,7 @@ namespace Nekoyume
             _selectedSortFilter.SetValueAndForceNotify(ShopSortFilter.CP);
             _selectedItemIds.Value.Clear();
             _isAscending.SetValueAndForceNotify(false);
-            _levelLimit.SetValueAndForceNotify(false);
+            _levelLimit.SetValueAndForceNotify(levelLimitToggle.isOn);
             _mode.SetValueAndForceNotify(BuyMode.Single);
 
             ClearSelectedItems();
@@ -446,11 +446,6 @@ namespace Nekoyume
                 _sortAnimator.Play(hash);
                 _sortOrderAnimator.Play(hash);
                 _levelLimitAnimator.Play(hash);
-
-                if (models.Count == 0)
-                {
-                    levelLimitToggle.isOn = false;
-                }
             }
 
             return loading.activeSelf;
