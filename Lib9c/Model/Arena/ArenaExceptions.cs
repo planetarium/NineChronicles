@@ -180,4 +180,17 @@ namespace Nekoyume.Model.Arena
         {
         }
     }
+
+    [Serializable]
+    public class CoolDownBlockException : Exception
+    {
+        public CoolDownBlockException(string message) : base(message)
+        {
+        }
+
+        protected CoolDownBlockException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+    }
 }
