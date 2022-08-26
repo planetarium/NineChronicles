@@ -10,14 +10,14 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Module.WorldBoss
 {
-    public class WorldBossRuneInventory : WorldBossDetailItem
+    public class WorldBossRuneStoneInventory : WorldBossDetailItem
     {
         [SerializeField]
-        private RuneInventoryScroll scroll;
+        private RuneStoneInventoryScroll scroll;
 
         public async void ShowAsync()
         {
-            var items = new List<RuneInventoryItem>();
+            var items = new List<RuneStoneInventoryItem>();
             var worldBossSheet = Game.Game.instance.TableSheets.WorldBossListSheet;
             await foreach (var row in worldBossSheet.Values)
             {
@@ -27,7 +27,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 }
 
                 var runes = await GetRunes(runeRows);
-                var item = new RuneInventoryItem(runes, row.BossId);
+                var item = new RuneStoneInventoryItem(runes, row.BossId);
                 items.Add(item);
             }
 

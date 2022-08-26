@@ -9,21 +9,24 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    public class RuneInventoryItemView : MonoBehaviour
+    public class RuneStoneInventoryItemView : MonoBehaviour
     {
         [SerializeField]
         private Image bossImage;
 
-        [SerializeField]
-        private List<Image> runeIcons;
-
-        [SerializeField]
-        private List<TextMeshProUGUI> runeCounts;
+        // [SerializeField]
+        // private List<Image> runeIcons;
+        //
+        // [SerializeField]
+        // private List<TextMeshProUGUI> runeCounts;
 
         [SerializeField]
         private TextMeshProUGUI bossName;
 
-        public void Set(RuneInventoryItem model, RuneInventoryScroll.ContextModel context)
+        [SerializeField]
+        private List<RuneStoneItem> runeStones;
+
+        public void Set(RuneStoneInventoryItem model, RuneStoneInventoryScroll.ContextModel context)
         {
             if (WorldBossFrontHelper.TryGetBossData(model.BoosId, out var data))
             {
@@ -36,9 +39,12 @@ namespace Nekoyume.UI
                 var ticker = model.Runes[i].Currency.Ticker;
                 if (WorldBossFrontHelper.TryGetRuneIcon(ticker, out var icon))
                 {
-                    runeIcons[i].sprite = icon;
+                    // runeIcons[i].sprite = icon;
+                    // runeCounts[i].text = $"{count:#,0}";
+
+                    //
                     var count = Convert.ToInt32(model.Runes[i].GetQuantityString());
-                    runeCounts[i].text = $"{count:#,0}";
+                    runeStones[i].Set(icon, count);
                 }
             }
         }
