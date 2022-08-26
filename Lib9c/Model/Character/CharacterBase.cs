@@ -365,11 +365,15 @@ namespace Nekoyume.Model
                     minDuration = elapsedTurn;
                     removedBuff = buff;
                 }
-                else if (elapsedTurn < minDuration && buff.RowData.Id < removedBuff.RowData.Id)
+
+                if (elapsedTurn > minDuration ||
+                    buff.RowData.Id >= removedBuff.RowData.Id)
                 {
-                    minDuration = elapsedTurn;
-                    removedBuff = buff;
+                    continue;
                 }
+
+                minDuration = elapsedTurn;
+                removedBuff = buff;
             }
 
             if (removedBuff != null)
