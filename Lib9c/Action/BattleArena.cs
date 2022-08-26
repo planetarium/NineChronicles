@@ -206,6 +206,13 @@ namespace Nekoyume.Action
                     $" - ChampionshipId({roundData.ChampionshipId}) - round({roundData.Round})");
             }
 
+            if (context.BlockIndex - myArenaAvatarState.LastBattleBlockIndex < 2)
+            {
+                throw new CoolDownBlockException(
+                    $"[{nameof(BattleArena)}] LastBattleBlockIndex : {myArenaAvatarState.LastBattleBlockIndex} " +
+                    $"CurrentBlockIndex : {context.BlockIndex}");
+            }
+
             if (!ArenaHelper.ValidateScoreDifference(ArenaHelper.ScoreLimits, roundData.ArenaType,
                     myArenaScore.Score, enemyArenaScore.Score))
             {
@@ -249,6 +256,7 @@ namespace Nekoyume.Action
             // update arena avatar state
             myArenaAvatarState.UpdateEquipment(equipments);
             myArenaAvatarState.UpdateCostumes(costumes);
+            myArenaAvatarState.LastBattleBlockIndex = context.BlockIndex;
 
             // simulate
             var enemyAvatarState = states.GetEnemyAvatarState(enemyAvatarAddress);
