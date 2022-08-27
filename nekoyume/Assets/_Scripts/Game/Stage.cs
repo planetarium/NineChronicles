@@ -618,7 +618,8 @@ namespace Nekoyume.Game
                 ["ClearedWave"] = log.clearedWaveNumber,
                 ["Repeat"] = IsRepeatStage,
                 ["CP"] = cp,
-                ["FoodCount"] = foodCount
+                ["FoodCount"] = foodCount,
+                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
             };
             Analyzer.Instance.Track("Unity/Stage End", props);
         }

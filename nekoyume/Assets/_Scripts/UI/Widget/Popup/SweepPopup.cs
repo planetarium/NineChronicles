@@ -419,6 +419,7 @@ namespace Nekoyume.UI
                 ["stageId"] = stageRow.Id,
                 ["apStoneCount"] = apStoneCount,
                 ["playCount"] = totalPlayCount,
+                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
             });
 
             Close();

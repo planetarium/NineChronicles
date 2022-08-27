@@ -633,6 +633,7 @@ namespace Nekoyume.Game.Character
                 Analyzer.Instance.Track("Unity/User Level Up", new Value
                 {
                     ["code"] = level,
+                    ["AvatarAddress"] = Game.instance.States.CurrentAvatarState.address.ToString(),
                 });
 
                 Widget.Find<LevelUpCelebratePopup>()?.Show(level, Level);

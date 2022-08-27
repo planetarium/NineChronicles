@@ -12,6 +12,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
+using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.Game;
 using Nekoyume.Helper;

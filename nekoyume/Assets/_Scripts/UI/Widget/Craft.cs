@@ -501,6 +501,7 @@ namespace Nekoyume.UI
                                 ["MaterialCount"] = insufficientMaterials
                                     .Sum(x => x.Value),
                                 ["BurntCrystal"] = (long)recipeInfo.CostCrystal,
+                                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                             });
 
                         ActionManager.Instance

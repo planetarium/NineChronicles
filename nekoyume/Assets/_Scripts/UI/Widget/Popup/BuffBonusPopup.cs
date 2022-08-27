@@ -166,6 +166,7 @@ namespace Nekoyume.UI
             {
                 ["BurntCrystal"] = (long) (advanced ? _advancedCost : _normalCost),
                 ["isAdvanced"] = advanced,
+                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
             });
 
             ActionManager.Instance.HackAndSlashRandomBuff(advanced).Subscribe();

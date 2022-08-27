@@ -33,7 +33,10 @@ namespace Nekoyume.Game
 
         private IEnumerator CoStartPrologue()
         {
-            Analyzer.Instance.Track("Unity/Prologuebattle Start");
+            Analyzer.Instance.Track("Unity/Prologuebattle Start", new Value
+            {
+                ["AvatarAddress"] = Game.instance.States.CurrentAvatarState.address.ToString(),
+            });
             StartCoroutine(Widget.Find<Blind>().FadeOut(2f));
             ActionCamera.instance.InPrologue = true;
             AudioController.instance.PlayMusic(AudioController.MusicCode.PrologueBattle);

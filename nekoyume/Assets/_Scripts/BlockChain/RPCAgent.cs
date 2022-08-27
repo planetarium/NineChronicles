@@ -18,6 +18,7 @@ using Libplanet.Crypto;
 using Libplanet.Tx;
 using MagicOnion.Client;
 using MessagePack;
+using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.BlockChain.Policy;
 using Nekoyume.Extensions;
@@ -254,23 +255,38 @@ namespace Nekoyume.BlockChain
         {
             OnDisconnected
                 .ObserveOnMainThread()
-                .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Disconnected"))
+                .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Disconnected", new Value
+                {
+                    ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                }))
                 .AddTo(_disposables);
             OnRetryStarted
                 .ObserveOnMainThread()
-                .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Retry Connect Started"))
+                .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Retry Connect Started", new Value
+                {
+                    ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                }))
                 .AddTo(_disposables);
             OnRetryEnded
                 .ObserveOnMainThread()
-                .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Retry Connect Ended"))
+                .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Retry Connect Ended", new Value
+                {
+                    ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                }))
                 .AddTo(_disposables);
             OnPreloadStarted
                 .ObserveOnMainThread()
-                .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Preload Started"))
+                .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Preload Started", new Value
+                {
+                    ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                }))
                 .AddTo(_disposables);
             OnPreloadEnded
                 .ObserveOnMainThread()
-                .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Preload Ended"))
+                .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Preload Ended", new Value
+                {
+                    ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                }))
                 .AddTo(_disposables);
             OnRetryAttempt
                 .ObserveOnMainThread()
