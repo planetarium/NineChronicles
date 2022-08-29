@@ -40108,6 +40108,11 @@ PrefabInstance:
       propertyPath: m_text
       value: UI_TOOLTIP_RUNESTONE
       objectReference: {fileID: 0}
+    - target: {fileID: 2540435998773594643, guid: cb606263bd9f00b428478c8c0dea3094,
+        type: 3}
+      propertyPath: m_lineSpacing
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2693942996815207238, guid: cb606263bd9f00b428478c8c0dea3094,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -40864,6 +40869,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: UI_TOOLTIP_CRYSTAL
+      objectReference: {fileID: 0}
+    - target: {fileID: 2540435998773594643, guid: cb606263bd9f00b428478c8c0dea3094,
+        type: 3}
+      propertyPath: m_lineSpacing
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2693942996815207238, guid: cb606263bd9f00b428478c8c0dea3094,
         type: 3}
@@ -42198,7 +42208,7 @@ PrefabInstance:
     - target: {fileID: 464432051908297147, guid: b57a64a33fd16c143a93a22e1b4bee69,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 57.76
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 464432051908297147, guid: b57a64a33fd16c143a93a22e1b4bee69,
         type: 3}
