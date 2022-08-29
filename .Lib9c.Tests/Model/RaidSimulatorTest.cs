@@ -42,7 +42,8 @@ namespace Lib9c.Tests.Model
                 _random,
                 _avatarState,
                 new List<Guid>(),
-                _tableSheets.GetRaidSimulatorSheets());
+                _tableSheets.GetRaidSimulatorSheets(),
+                _tableSheets.CostumeStatSheet);
             Assert.Equal(_random, simulator.Random);
 
             var log = simulator.Simulate();
