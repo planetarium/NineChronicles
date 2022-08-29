@@ -170,6 +170,8 @@ namespace Lib9c.Tests
 
         public EventConsumableItemRecipeSheet EventConsumableItemRecipeSheet { get; private set; }
 
+        public StakeActionPointCoefficientSheet StakeActionPointCoefficientSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet ??= new ItemSheet();
