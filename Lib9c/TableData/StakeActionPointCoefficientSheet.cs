@@ -1,13 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
 {
+    [Serializable]
     public class StakeActionPointCoefficientSheet : Sheet<int, StakeActionPointCoefficientSheet.Row>, IStakeRewardSheet
     {
-        [Serializable]
+        public IReadOnlyList<IStakeRewardRow> OrderedRows => OrderedList;
+        public StakeActionPointCoefficientSheet() : base(nameof(StakeActionPointCoefficientSheet)) { }
+
+        protected override void AddRow(int key, Row value)
+        {
+            if (!TryGetValue(key, out _))
+            {
+                Add(key, value);
+            }
+        }
+
         public class Row : SheetRow<int>, IStakeRewardRow
         {
             public override int Key => Level;
@@ -26,7 +36,5 @@ namespace Nekoyume.TableData
                 Coefficient = ParseInt(fields[2]);
             }
         }
-
-        public IReadOnlyList<IStakeRewardRow> OrderedRows => OrderedList;
     }
 }

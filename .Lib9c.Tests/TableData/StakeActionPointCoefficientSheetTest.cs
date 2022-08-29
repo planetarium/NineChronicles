@@ -22,7 +22,7 @@
 
             _sheet = new StakeActionPointCoefficientSheet();
             _sheet.Set(tableContent);
-            _currency = new Currency("NCG", 2, minters: null);
+            _currency = Currency.Legacy("NCG", 2, null);
         }
 
         [Fact]
@@ -74,6 +74,18 @@
         {
             Assert.Throws<InsufficientBalanceException>(
                 () => _sheet.FindLevelByStakedAmount(default, balance * _currency));
+        }
+
+        [Theory]
+        [InlineData(1, 5)]
+        [InlineData(2, 5)]
+        [InlineData(3, 4)]
+        [InlineData(4, 4)]
+        [InlineData(5, 3)]
+        public void GetActionPointByStaking(int level, int expectedAp)
+        {
+            var actual = _sheet.GetActionPointByStaking(5, 1, level);
+            Assert.Equal(expectedAp, actual);
         }
     }
 }

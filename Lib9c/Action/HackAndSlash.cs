@@ -20,7 +20,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1338
     /// </summary>
     [Serializable]
     [ActionType("hack_and_slash18")]
@@ -171,16 +171,17 @@ namespace Nekoyume.Action
             sw.Restart();
             var costAp = sheets.GetSheet<StageSheet>()[StageId].CostAP;
             var currency = states.GetGoldCurrency();
-            var apCoefficient = 100;
             if (states.TryGetStakeState(signer, out var stakeState))
             {
                 var stakedAmount = states.GetBalance(stakeState.address, currency);
                 var actionPointCoefficientSheet = sheets.GetSheet<StakeActionPointCoefficientSheet>();
                 var level = actionPointCoefficientSheet.FindLevelByStakedAmount(signer, stakedAmount);
-                apCoefficient = actionPointCoefficientSheet[level].Coefficient;
+                costAp = actionPointCoefficientSheet.GetActionPointByStaking(
+                    costAp,
+                    PlayCount,
+                    level);
             }
 
-            costAp = (int)(apCoefficient * 0.01m * costAp * PlayCount);
             avatarState.actionPoint -= costAp;
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS use ActionPoint: {Elapsed}", addressesHex, sw.Elapsed);
