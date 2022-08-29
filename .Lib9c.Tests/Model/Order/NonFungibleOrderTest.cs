@@ -26,7 +26,10 @@ namespace Lib9c.Tests.Model.Order
         public NonFungibleOrderTest()
         {
             _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
-            _currency = new Currency("NCG", 2, minter: null);
+#pragma warning disable CS0618
+            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+            _currency = Currency.Legacy("NCG", 2, null);
+#pragma warning restore CS0618
             _avatarState = new AvatarState(
                 Addresses.Blacksmith,
                 Addresses.Admin,
@@ -72,7 +75,10 @@ namespace Lib9c.Tests.Model.Order
         {
             Guid orderId = new Guid("6d460c1a-755d-48e4-ad67-65d5f519dbc8");
             Guid itemId = new Guid("15396359-04db-68d5-f24a-d89c18665900");
-            Currency currency = new Currency("NCG", 2, minter: null);
+#pragma warning disable CS0618
+            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+            Currency currency = Currency.Legacy("NCG", 2, null);
+#pragma warning restore CS0618
             NonFungibleOrder order = OrderFactory.CreateNonFungibleOrder(
                 Addresses.Admin,
                 Addresses.Blacksmith,

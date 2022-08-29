@@ -41,7 +41,10 @@ namespace Lib9c.Tests.Action
                 name = "test",
             };
 
-            var gold = new GoldCurrencyState(new Currency("NCG", 2, minter: null));
+#pragma warning disable CS0618
+            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+            var gold = new GoldCurrencyState(Currency.Legacy("NCG", 2, null));
+#pragma warning restore CS0618
             var ranking = new RankingState0();
             for (var i = 0; i < RankingState0.RankingMapCapacity; i++)
             {
@@ -227,7 +230,10 @@ namespace Lib9c.Tests.Action
                 name = "test",
             };
 
-            var gold = new GoldCurrencyState(new Currency("NCG", 2, minter: null));
+#pragma warning disable CS0618
+            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+            var gold = new GoldCurrencyState(Currency.Legacy("NCG", 2, null));
+#pragma warning restore CS0618
             var updatedAddresses = new List<Address>()
             {
                 agentAddress,

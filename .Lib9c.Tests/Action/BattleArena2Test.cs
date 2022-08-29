@@ -21,7 +21,7 @@ namespace Lib9c.Tests.Action
     using Xunit.Abstractions;
     using static Lib9c.SerializeKeys;
 
-    public class BattleArenaTest2
+    public class BattleArena2Test
     {
         private readonly Dictionary<string, string> _sheets;
         private readonly TableSheets _tableSheets;
@@ -42,7 +42,7 @@ namespace Lib9c.Tests.Action
         private readonly Currency _ncg;
         private IAccountStateDelta _state;
 
-        public BattleArenaTest2(ITestOutputHelper outputHelper)
+        public BattleArena2Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -59,8 +59,11 @@ namespace Lib9c.Tests.Action
             }
 
             _tableSheets = new TableSheets(_sheets);
-            _crystal = new Currency("CRYSTAL", 18, minters: null);
-            _ncg = new Currency("NCG", 2, minters: null);
+#pragma warning disable CS0618
+            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+            _crystal = Currency.Legacy("CRYSTAL", 18, null);
+            _ncg = Currency.Legacy("NCG", 2, null);
+#pragma warning restore CS0618
             var goldCurrencyState = new GoldCurrencyState(_ncg);
 
             var rankingMapAddress = new PrivateKey().ToAddress();

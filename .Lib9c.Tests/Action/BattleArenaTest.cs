@@ -59,8 +59,11 @@ namespace Lib9c.Tests.Action
             }
 
             _tableSheets = new TableSheets(_sheets);
-            _crystal = new Currency("CRYSTAL", 18, minters: null);
-            _ncg = new Currency("NCG", 2, minters: null);
+#pragma warning disable CS0618
+            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+            _crystal = Currency.Legacy("CRYSTAL", 18, null);
+            _ncg = Currency.Legacy("NCG", 2, null);
+#pragma warning restore CS0618
             var goldCurrencyState = new GoldCurrencyState(_ncg);
 
             var rankingMapAddress = new PrivateKey().ToAddress();
@@ -233,12 +236,9 @@ namespace Lib9c.Tests.Action
             int arenaInterval,
             int randomSeed)
         {
-            var arenaSheet = _state.GetSheet<ArenaSheet>();
-            if (!arenaSheet.TryGetValue(championshipId, out var row))
-            {
-                throw new SheetRowNotFoundException(
-                    nameof(ArenaSheet), $"championship Id : {championshipId}");
-            }
+            Assert.True(_state.GetSheet<ArenaSheet>().TryGetValue(
+                championshipId,
+                out var row));
 
             if (!row.TryGetRound(round, out var roundData))
             {
@@ -535,12 +535,10 @@ namespace Lib9c.Tests.Action
         {
             var championshipId = 1;
             var round = 1;
-            var arenaSheet = _state.GetSheet<ArenaSheet>();
-            if (!arenaSheet.TryGetValue(championshipId, out var row))
-            {
-                throw new SheetRowNotFoundException(
-                    nameof(ArenaSheet), $"championship Id : {championshipId}");
-            }
+
+            Assert.True(_state.GetSheet<ArenaSheet>().TryGetValue(
+                championshipId,
+                out var row));
 
             if (!row.TryGetRound(round, out var roundData))
             {
@@ -580,12 +578,10 @@ namespace Lib9c.Tests.Action
         {
             var championshipId = 1;
             var round = 2;
-            var arenaSheet = _state.GetSheet<ArenaSheet>();
-            if (!arenaSheet.TryGetValue(championshipId, out var row))
-            {
-                throw new SheetRowNotFoundException(
-                    nameof(ArenaSheet), $"championship Id : {championshipId}");
-            }
+
+            Assert.True(_state.GetSheet<ArenaSheet>().TryGetValue(
+                championshipId,
+                out var row));
 
             if (!row.TryGetRound(round, out var roundData))
             {
@@ -628,12 +624,10 @@ namespace Lib9c.Tests.Action
         {
             var championshipId = 1;
             var round = 2;
-            var arenaSheet = _state.GetSheet<ArenaSheet>();
-            if (!arenaSheet.TryGetValue(championshipId, out var row))
-            {
-                throw new SheetRowNotFoundException(
-                    nameof(ArenaSheet), $"championship Id : {championshipId}");
-            }
+
+            Assert.True(_state.GetSheet<ArenaSheet>().TryGetValue(
+                championshipId,
+                out var row));
 
             if (!row.TryGetRound(round, out var roundData))
             {
@@ -680,12 +674,10 @@ namespace Lib9c.Tests.Action
         {
             var championshipId = 1;
             var round = 2;
-            var arenaSheet = _state.GetSheet<ArenaSheet>();
-            if (!arenaSheet.TryGetValue(championshipId, out var row))
-            {
-                throw new SheetRowNotFoundException(
-                    nameof(ArenaSheet), $"championship Id : {championshipId}");
-            }
+
+            Assert.True(_state.GetSheet<ArenaSheet>().TryGetValue(
+                championshipId,
+                out var row));
 
             if (!row.TryGetRound(round, out var roundData))
             {
@@ -729,12 +721,10 @@ namespace Lib9c.Tests.Action
         {
             var championshipId = 1;
             var round = 2;
-            var arenaSheet = _state.GetSheet<ArenaSheet>();
-            if (!arenaSheet.TryGetValue(championshipId, out var row))
-            {
-                throw new SheetRowNotFoundException(
-                    nameof(ArenaSheet), $"championship Id : {championshipId}");
-            }
+
+            Assert.True(_state.GetSheet<ArenaSheet>().TryGetValue(
+                championshipId,
+                out var row));
 
             if (!row.TryGetRound(round, out var roundData))
             {
@@ -779,6 +769,72 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = blockIndex,
                 PreviousStates = _state,
+                Signer = _agent1Address,
+                Random = new TestRandom(),
+            }));
+        }
+
+        [Fact]
+        public void Execute_CoolDownBlockException()
+        {
+            var championshipId = 1;
+            var round = 2;
+
+            Assert.True(_state.GetSheet<ArenaSheet>().TryGetValue(
+                championshipId,
+                out var row));
+
+            if (!row.TryGetRound(round, out var roundData))
+            {
+                throw new RoundNotFoundException(
+                    $"[{nameof(BattleArena)}] ChampionshipId({row.ChampionshipId}) - round({round})");
+            }
+
+            var random = new TestRandom();
+            _state = JoinArena(_agent1Address, _avatar1Address, roundData.StartBlockIndex, championshipId, round, random);
+            _state = JoinArena(_agent2Address, _avatar2Address, roundData.StartBlockIndex, championshipId, round, random);
+
+            var arenaInfoAdr = ArenaInformation.DeriveAddress(_avatar1Address, championshipId, round);
+            if (!_state.TryGetArenaInformation(arenaInfoAdr, out var beforeInfo))
+            {
+                throw new ArenaInformationNotFoundException($"arenaInfoAdr : {arenaInfoAdr}");
+            }
+
+            beforeInfo.UseTicket(ArenaInformation.MaxTicketCount);
+            var max = ArenaHelper.GetMaxPurchasedTicketCount(roundData);
+            _state = _state.SetState(arenaInfoAdr, beforeInfo.Serialize());
+            for (var i = 0; i < max; i++)
+            {
+                var price = ArenaHelper.GetTicketPrice(roundData, beforeInfo, _state.GetGoldCurrency());
+                _state = _state.MintAsset(_agent1Address, price);
+                beforeInfo.BuyTicket(roundData);
+            }
+
+            var action = new BattleArena()
+            {
+                myAvatarAddress = _avatar1Address,
+                enemyAvatarAddress = _avatar2Address,
+                championshipId = championshipId,
+                round = round,
+                ticket = 1,
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+            };
+
+            var blockIndex = roundData.StartBlockIndex + 1;
+
+            var newState = action.Execute(new ActionContext()
+            {
+                BlockIndex = blockIndex,
+                PreviousStates = _state,
+                Signer = _agent1Address,
+                Random = new TestRandom(),
+            });
+
+            Assert.Throws<CoolDownBlockException>(() => action.Execute(new ActionContext()
+            {
+                BlockIndex = blockIndex + 1,
+                PreviousStates = newState,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             }));

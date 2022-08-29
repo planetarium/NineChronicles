@@ -59,7 +59,10 @@ namespace Lib9c.Tests.Action
                         adminAddress,
                         avatarAddress,
                         Guid.NewGuid(),
-                        new FungibleAssetValue(new Currency("NCG", 2, minter: null), 100, 0),
+#pragma warning disable CS0618
+                    // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+                        Currency.Legacy("NCG", 2, null) * 100,
+#pragma warning restore CS0618
                         item);
                     shopState.Register(shopItem);
                     itemIds.Add(item.TradableId);
