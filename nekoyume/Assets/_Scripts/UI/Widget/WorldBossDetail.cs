@@ -121,7 +121,7 @@ namespace Nekoyume.UI
                     }
                     break;
                 case ToggleType.Rune:
-                    if (categoryToggle.Item is WorldBossRuneInventory inventory)
+                    if (categoryToggle.Item is WorldBossRuneStoneInventory inventory)
                     {
                         inventory.ShowAsync();
                     }

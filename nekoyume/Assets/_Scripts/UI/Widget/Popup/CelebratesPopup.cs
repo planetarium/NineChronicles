@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Nekoyume.Action;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
@@ -104,9 +105,6 @@ namespace Nekoyume.UI
 
             switch (menuName)
             {
-                default:
-                    menuText.text = string.Empty;
-                    break;
                 case nameof(ArenaJoin):
                     menuText.text = L10nManager.Localize("UI_MAIN_MENU_RANKING");
                     break;
@@ -115,6 +113,12 @@ namespace Nekoyume.UI
                     break;
                 case "Mimisbrunnr":
                     menuText.text = L10nManager.Localize("UI_MAIN_MENU_MIMISBRUNNR");
+                    break;
+                case nameof(Raid):
+                    menuText.text = L10nManager.Localize("UI_WORLD_BOSS");
+                    break;
+                default:
+                    menuText.text = string.Empty;
                     break;
             }
 

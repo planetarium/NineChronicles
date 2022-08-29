@@ -90,6 +90,11 @@ namespace Nekoyume.UI.Module.WorldBoss
                 .AddTo(_disposables);
         }
 
+        private void OnDestroy()
+        {
+            _disposables.DisposeAllAndClear();
+        }
+
         public void UpdateUserCount(int count)
         {
             raidersText.text = count > 0 ? $"{count:#,0}" : string.Empty;;
