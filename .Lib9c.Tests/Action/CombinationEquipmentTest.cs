@@ -372,6 +372,7 @@
         [InlineData(typeof(NotEnoughFungibleAssetValueException), true, true, 1)]
         [InlineData(null, true, true, 1)]
         [InlineData(typeof(ArgumentException), true, false, 1)]
+        [InlineData(typeof(NotEnoughHammerPointException), true, true, 1)]
         public void ExecuteBySuperCraft(
             Type exc,
             bool doSuperCraft,
@@ -438,6 +439,11 @@
                     state = state.MintAsset(
                         _agentAddress,
                         costCrystal);
+                }
+                else if (exc.FullName!.Contains(nameof(NotEnoughHammerPointException)))
+                {
+                    hammerPointState.ResetHammerPoint();
+                    state = state.SetState(hammerPointAddress, hammerPointState.Serialize());
                 }
             }
 
