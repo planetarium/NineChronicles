@@ -21,7 +21,7 @@ namespace Nekoyume.Model.Skill.Arena
             var clone = (ArenaCharacter)caster.Clone();
             var damage = ProcessDamage(caster, target, turn);
             var buff = ProcessBuff(caster, target, turn, buffs);
-            target.RemoveRecentBuff();
+            target.RemoveRecentStatBuff();
 
             return new BattleStatus.Arena.ArenaBuffRemovalAttack(clone, damage, buff);
         }
@@ -36,7 +36,7 @@ namespace Nekoyume.Model.Skill.Arena
             var clone = (ArenaCharacter)caster.Clone();
             var damage = ProcessDamage(caster, target, turn);
             var buff = ProcessBuffV1(caster, target, turn, buffs);
-            target.RemoveRecentBuff();
+            target.RemoveRecentStatBuff();
 
             return new BattleStatus.Arena.ArenaBuffRemovalAttack(clone, damage, buff);
         }

@@ -8,7 +8,7 @@ namespace Nekoyume.Model.Buff
 {
     public static class BuffFactory
     {
-        public static Buff Get(BuffSheet.Row row)
+        public static StatBuff GetStatBuff(StatBuffSheet.Row row)
         {
             switch (row.StatModifier.StatType)
             {
@@ -29,21 +29,47 @@ namespace Nekoyume.Model.Buff
             }
         }
 
+        public static ActionBuff GetActionBuff(int power, ActionBuffSheet.Row row)
+        {
+            switch (row.ActionBuffType)
+            {
+                case ActionBuffType.Bleed:
+                    return new Bleed(row, power);
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
         public static IList<Buff> GetBuffs(
+            int power,
             ISkill skill,
             SkillBuffSheet skillBuffSheet,
-            BuffSheet buffSheet)
+            StatBuffSheet statBuffSheet,
+            SkillActionBuffSheet skillActionBuffSheet,
+            ActionBuffSheet actionBuffSheet)
         {
             var buffs = new List<Buff>();
-            if (!skillBuffSheet.TryGetValue(skill.SkillRow.Id, out var skillBuffRow))
-                return buffs;
 
-            foreach (var buffId in skillBuffRow.BuffIds)
+            if (skillBuffSheet.TryGetValue(skill.SkillRow.Id, out var skillStatBuffRow))
             {
-                if (!buffSheet.TryGetValue(buffId, out var buffRow))
-                    continue;
+                foreach (var buffId in skillStatBuffRow.BuffIds)
+                {
+                    if (!statBuffSheet.TryGetValue(buffId, out var buffRow))
+                        continue;
 
-                buffs.Add(Get(buffRow));
+                    buffs.Add(GetStatBuff(buffRow));
+                }
+            }
+
+            if (skillActionBuffSheet.TryGetValue(skill.SkillRow.Id, out var skillActionBuffRow))
+            {
+                foreach (var buffId in skillActionBuffRow.BuffIds)
+                {
+                    if (!actionBuffSheet.TryGetValue(buffId, out var buffRow))
+                        continue;
+
+                    buffs.Add(GetActionBuff(power, buffRow));
+                }
             }
 
             return buffs;

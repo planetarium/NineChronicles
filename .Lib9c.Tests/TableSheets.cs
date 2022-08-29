@@ -53,7 +53,7 @@ namespace Lib9c.Tests
 
         public SkillSheet SkillSheet { get; private set; }
 
-        public BuffSheet BuffSheet { get; private set; }
+        public StatBuffSheet StatBuffSheet { get; private set; }
 
         public ItemSheet ItemSheet { get; private set; }
 
@@ -177,6 +177,10 @@ namespace Lib9c.Tests
 
         public WorldBossRankingRewardSheet WorldBossRankingRewardSheet { get; private set; }
 
+        public SkillActionBuffSheet SkillActionBuffSheet { get; private set; }
+
+        public ActionBuffSheet ActionBuffSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet ??= new ItemSheet();
@@ -208,7 +212,9 @@ namespace Lib9c.Tests
                 MaterialItemSheet,
                 SkillSheet,
                 SkillBuffSheet,
-                BuffSheet,
+                StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
                 CharacterSheet,
                 CharacterLevelSheet,
                 EquipmentItemSetEffectSheet
@@ -221,7 +227,9 @@ namespace Lib9c.Tests
                 MaterialItemSheet,
                 SkillSheet,
                 SkillBuffSheet,
-                BuffSheet,
+                StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
                 CharacterSheet,
                 CharacterLevelSheet,
                 EquipmentItemSetEffectSheet,
@@ -237,7 +245,9 @@ namespace Lib9c.Tests
                 MaterialItemSheet,
                 SkillSheet,
                 SkillBuffSheet,
-                BuffSheet,
+                StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
                 CharacterSheet,
                 CharacterLevelSheet,
                 EquipmentItemSetEffectSheet,
@@ -251,7 +261,9 @@ namespace Lib9c.Tests
                 MaterialItemSheet,
                 SkillSheet,
                 SkillBuffSheet,
-                BuffSheet,
+                StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
                 CharacterSheet,
                 CharacterLevelSheet,
                 EquipmentItemSetEffectSheet,
@@ -266,7 +278,9 @@ namespace Lib9c.Tests
                 MaterialItemSheet,
                 SkillSheet,
                 SkillBuffSheet,
-                BuffSheet,
+                StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
                 CharacterSheet,
                 CharacterLevelSheet,
                 EquipmentItemSetEffectSheet,

@@ -24,8 +24,10 @@ namespace Nekoyume.Battle
             IRandom random,
             AvatarState avatarState,
             List<Guid> foods,
-            RaidSimulatorSheets simulatorSheets) : base(random, avatarState, foods, simulatorSheets)
+            RaidSimulatorSheets simulatorSheets,
+            CostumeStatSheet costumeStatSheet) : base(random, avatarState, foods, simulatorSheets)
         {
+            Player.SetCostumeStat(costumeStatSheet);
             BossId = bossId;
             _waves = new List<RaidBoss>();
 

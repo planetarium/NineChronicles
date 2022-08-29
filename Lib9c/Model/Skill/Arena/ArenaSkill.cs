@@ -70,7 +70,7 @@ namespace Nekoyume.Model.Skill.Arena
             var infos = new List<BattleStatus.Arena.ArenaSkill.ArenaSkillInfo>();
             foreach (var buff in buffs)
             {
-                switch (buff.RowData.TargetType)
+                switch (buff.BuffInfo.SkillTargetType)
                 {
                     case SkillTargetType.Enemy:
                     case SkillTargetType.Enemies:
@@ -102,7 +102,7 @@ namespace Nekoyume.Model.Skill.Arena
             var infos = new List<BattleStatus.Arena.ArenaSkill.ArenaSkillInfo>();
             foreach (var buff in buffs)
             {
-                switch (buff.RowData.TargetType)
+                switch (buff.BuffInfo.SkillTargetType)
                 {
                     case SkillTargetType.Enemy:
                     case SkillTargetType.Enemies:

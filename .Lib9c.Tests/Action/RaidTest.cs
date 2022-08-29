@@ -148,7 +148,7 @@ namespace Lib9c.Tests.Action
                     raiderState.RefillBlockIndex = refillBlockIndex;
                     raiderState.RemainChallengeCount = remainChallengeCount;
                     raiderState.TotalScore = 1_000;
-                    raiderState.HighScore = 1;
+                    raiderState.HighScore = 0;
                     raiderState.TotalChallengeCount = 1;
                     raiderState.PurchaseCount = purchaseCount;
                     raiderState.Cp = 0;
@@ -187,7 +187,7 @@ namespace Lib9c.Tests.Action
                 var bossState =
                     new WorldBossState(worldBossRow, _tableSheets.WorldBossGlobalHpSheet[level])
                         {
-                            CurrentHp = 1,
+                            CurrentHp = 0,
                             Level = level,
                         };
                 state = state.SetState(bossAddress, bossState.Serialize());
@@ -214,11 +214,12 @@ namespace Lib9c.Tests.Action
                     random,
                     avatarState,
                     action.FoodIds,
-                    _tableSheets.GetRaidSimulatorSheets());
+                    _tableSheets.GetRaidSimulatorSheets(),
+                    _tableSheets.CostumeStatSheet);
                 simulator.Simulate();
                 var score = simulator.DamageDealt;
 
-                if (levelUp && rewardRecordExist)
+                if (rewardRecordExist)
                 {
                     Assert.True(state.TryGetState(bossAddress, out List prevRawBoss));
                     var prevBossState = new WorldBossState(prevRawBoss);
@@ -271,10 +272,6 @@ namespace Lib9c.Tests.Action
                 if (kill)
                 {
                     Assert.Equal(hpSheet[expectedLevel].Hp, bossState.CurrentHp);
-                }
-                else
-                {
-                    Assert.True(bossState.CurrentHp < hpSheet[level].Hp);
                 }
 
                 if (payNcg)
@@ -386,7 +383,7 @@ namespace Lib9c.Tests.Action
             var bossState =
                 new WorldBossState(worldBossRow, _tableSheets.WorldBossGlobalHpSheet[2])
                     {
-                        CurrentHp = 1,
+                        CurrentHp = 0,
                         Level = 2,
                     };
             state = state.SetState(bossAddress, bossState.Serialize());
@@ -411,7 +408,8 @@ namespace Lib9c.Tests.Action
                 random,
                 avatarState,
                 action.FoodIds,
-                _tableSheets.GetRaidSimulatorSheets());
+                _tableSheets.GetRaidSimulatorSheets(),
+                _tableSheets.CostumeStatSheet);
             simulator.Simulate();
             Assert.Equal(simulator.DamageDealt, nextRaiderState.HighScore);
 

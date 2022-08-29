@@ -31,6 +31,8 @@ namespace Nekoyume.Model
         public readonly Skills Skills = new Skills();
         public readonly Skills BuffSkills = new Skills();
         public readonly Dictionary<int, Buff.Buff> Buffs = new Dictionary<int, Buff.Buff>();
+        public IEnumerable<StatBuff> StatBuffs => Buffs.Values.OfType<StatBuff>();
+        public IEnumerable<ActionBuff> ActionBuffs => Buffs.Values.OfType<ActionBuff>();
         public readonly List<CharacterBase> Targets = new List<CharacterBase>();
 
         public CharacterSheet.Row RowData { get; }
@@ -207,7 +209,7 @@ namespace Nekoyume.Model
             foreach (var pair in Buffs)
 #pragma warning restore LAA1002
             {
-                pair.Value.remainedDuration--;
+                pair.Value.RemainedDuration--;
             }
         }
 
@@ -229,9 +231,12 @@ namespace Nekoyume.Model
                 this,
                 Simulator.WaveTurn,
                 BuffFactory.GetBuffs(
+                    ATK,
                     selectedSkill,
                     Simulator.SkillBuffSheet,
-                    Simulator.BuffSheet
+                    Simulator.StatBuffSheet,
+                    Simulator.SkillActionBuffSheet,
+                    Simulator.ActionBuffSheet
                 )
             );
 
@@ -262,9 +267,12 @@ namespace Nekoyume.Model
                 this,
                 Simulator.WaveTurn,
                 BuffFactory.GetBuffs(
+                    ATK,
                     selectedSkill,
                     Simulator.SkillBuffSheet,
-                    Simulator.BuffSheet
+                    Simulator.StatBuffSheet,
+                    Simulator.SkillActionBuffSheet,
+                    Simulator.ActionBuffSheet
                 )
             );
 
@@ -290,9 +298,12 @@ namespace Nekoyume.Model
                 this,
                 Simulator.WaveTurn,
                 BuffFactory.GetBuffs(
+                    ATK,
                     selectedSkill,
                     Simulator.SkillBuffSheet,
-                    Simulator.BuffSheet
+                    Simulator.StatBuffSheet,
+                    Simulator.SkillActionBuffSheet,
+                    Simulator.ActionBuffSheet
                 )
             );
 
@@ -311,23 +322,23 @@ namespace Nekoyume.Model
 
         private void RemoveBuffs()
         {
-            var isDirtyMySelf = false;
+            var isBuffRemoved = false;
 
             var keyList = Buffs.Keys.ToList();
             foreach (var key in keyList)
             {
                 var buff = Buffs[key];
-                if (buff.remainedDuration > 0)
+                if (buff.RemainedDuration > 0)
                     continue;
 
                 Buffs.Remove(key);
-                isDirtyMySelf = true;
+                isBuffRemoved = true;
             }
 
-            if (!isDirtyMySelf)
+            if (!isBuffRemoved)
                 return;
 
-            Stats.SetBuffs(Buffs.Values);
+            Stats.SetBuffs(StatBuffs);
             Simulator.Log.Add(new RemoveBuffs((CharacterBase) Clone()));
         }
 
@@ -344,22 +355,30 @@ namespace Nekoyume.Model
 
         public void AddBuff(Buff.Buff buff, bool updateImmediate = true)
         {
-            if (Buffs.TryGetValue(buff.RowData.GroupId, out var outBuff) &&
-                outBuff.RowData.Id > buff.RowData.Id)
+            if (Buffs.TryGetValue(buff.BuffInfo.GroupId, out var outBuff) &&
+                outBuff.BuffInfo.Id > buff.BuffInfo.Id)
                 return;
 
-            var clone = (Buff.Buff) buff.Clone();
-            Buffs[buff.RowData.GroupId] = clone;
-            Stats.AddBuff(clone, updateImmediate);
+            if (buff is StatBuff stat)
+            {
+                var clone = (StatBuff)stat.Clone();
+                Buffs[stat.RowData.GroupId] = clone;
+                Stats.AddBuff(clone, updateImmediate);
+            }
+            else if (buff is ActionBuff action)
+            {
+                var clone = (ActionBuff)action.Clone();
+                Buffs[action.RowData.GroupId] = clone;
+            }
         }
 
-        public void RemoveRecentBuff()
+        public void RemoveRecentStatBuff()
         {
-            Buff.Buff removedBuff = null;
+            StatBuff removedBuff = null;
             var minDuration = int.MaxValue;
-            foreach (var buff in Buffs.Values)
+            foreach (var buff in StatBuffs)
             {
-                var elapsedTurn = buff.originalDuration - buff.remainedDuration;
+                var elapsedTurn = buff.OriginalDuration - buff.RemainedDuration;
                 if (removedBuff is null)
                 {
                     minDuration = elapsedTurn;
@@ -478,7 +497,9 @@ namespace Nekoyume.Model
             {
                 ReduceDurationOfBuffs();
                 ReduceSkillCooldown();
+                OnPreSkill();
                 UseSkill();
+                OnPostSkill();
                 RemoveBuffs();
             }
             EndTurn();
@@ -491,7 +512,9 @@ namespace Nekoyume.Model
             {
                 ReduceDurationOfBuffs();
                 ReduceSkillCooldownV1();
+                OnPreSkill();
                 UseSkillV1();
+                OnPostSkill();
                 RemoveBuffs();
             }
             EndTurn();
@@ -504,10 +527,32 @@ namespace Nekoyume.Model
             {
                 ReduceDurationOfBuffs();
                 ReduceSkillCooldownV1();
+                OnPreSkill();
                 UseSkillV2();
+                OnPostSkill();
                 RemoveBuffs();
             }
             EndTurn();
+        }
+
+        protected virtual void OnPreSkill()
+        {
+
+        }
+
+        protected virtual void OnPostSkill()
+        {
+            var bleeds = Buffs.Values.OfType<Bleed>().OrderBy(x => x.BuffInfo.Id);
+            foreach (var bleed in bleeds)
+            {
+                var effect = bleed.GiveEffect(this, Simulator.WaveTurn);
+                Simulator.Log.Add(effect);
+            }
+
+            if (IsDead)
+            {
+                Die();
+            }
         }
     }
 }

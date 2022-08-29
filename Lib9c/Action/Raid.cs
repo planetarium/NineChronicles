@@ -54,7 +54,7 @@ namespace Nekoyume.Action
                 typeof(MaterialItemSheet),
                 typeof(SkillSheet),
                 typeof(SkillBuffSheet),
-                typeof(BuffSheet),
+                typeof(StatBuffSheet),
                 typeof(CharacterLevelSheet),
                 typeof(EquipmentItemSetEffectSheet),
                 typeof(ItemRequirementSheet),
@@ -148,7 +148,8 @@ namespace Nekoyume.Action
                 context.Random,
                 avatarState,
                 FoodIds,
-                sheets.GetRaidSimulatorSheets());
+                sheets.GetRaidSimulatorSheets(),
+                sheets.GetSheet<CostumeStatSheet>());
             simulator.Simulate();
 
             int score = simulator.DamageDealt;

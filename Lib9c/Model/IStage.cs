@@ -18,6 +18,7 @@ namespace Nekoyume.Model
         IEnumerator CoBuffRemovalAttack(CharacterBase caster, int skillId, IEnumerable<BattleStatus.Skill.SkillInfo> skillInfos, IEnumerable<BattleStatus.Skill.SkillInfo> buffInfos);
         IEnumerator CoHeal(CharacterBase caster, int skillId, IEnumerable<BattleStatus.Skill.SkillInfo> skillInfos, IEnumerable<BattleStatus.Skill.SkillInfo> buffInfos);
         IEnumerator CoBuff(CharacterBase caster, int skillId, IEnumerable<BattleStatus.Skill.SkillInfo> skillInfos, IEnumerable<BattleStatus.Skill.SkillInfo> buffInfos);
+        IEnumerator CoTickDamage(CharacterBase affectedCharacter, int skillId, IEnumerable<BattleStatus.Skill.SkillInfo> skillInfos);
         
         #endregion
         
