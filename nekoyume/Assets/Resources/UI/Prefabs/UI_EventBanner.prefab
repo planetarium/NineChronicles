@@ -83,6 +83,7 @@ GameObject:
   - component: {fileID: 8303867653666053432}
   - component: {fileID: 3346648944212853194}
   - component: {fileID: 173403041}
+  - component: {fileID: 2977373581670964454}
   m_Layer: 5
   m_Name: PageView
   m_TagString: Untagged
@@ -138,6 +139,18 @@ MonoBehaviour:
   dragPercentThreshold: 0.35
   animationTime: 0.2
   movePageInterval: 4
+--- !u!225 &2977373581670964454
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8047452530001500731}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &8242088530355959280
 GameObject:
   m_ObjectHideFlags: 0
