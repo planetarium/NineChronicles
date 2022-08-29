@@ -40,27 +40,7 @@ namespace Nekoyume.Model.Buff
             }
         }
 
-        public static IList<StatBuff> GetBuffs(
-            ISkill skill,
-            SkillBuffSheet skillBuffSheet,
-            StatBuffSheet statBuffSheet)
-        {
-            var buffs = new List<StatBuff>();
-            if (!skillBuffSheet.TryGetValue(skill.SkillRow.Id, out var skillStatBuffRow))
-                return buffs;
-
-            foreach (var buffId in skillStatBuffRow.BuffIds)
-            {
-                if (!statBuffSheet.TryGetValue(buffId, out var buffRow))
-                    continue;
-
-                buffs.Add(GetStatBuff(buffRow));
-            }
-
-            return buffs;
-        }
-
-        public static IList<Buff> GetBuffsV2(
+        public static IList<Buff> GetBuffs(
             int power,
             ISkill skill,
             SkillBuffSheet skillBuffSheet,

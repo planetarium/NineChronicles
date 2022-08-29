@@ -89,7 +89,7 @@ namespace Nekoyume.Model
             var usedSkill = skill.Use(
                 this,
                 Simulator.WaveTurn,
-                BuffFactory.GetBuffsV2(
+                BuffFactory.GetBuffs(
                     ATK,
                     skill,
                     Simulator.SkillBuffSheet,
@@ -116,7 +116,7 @@ namespace Nekoyume.Model
             var usedSkill = _enrageSkill.Use(
                 this,
                 Simulator.WaveTurn,
-                BuffFactory.GetBuffsV2(
+                BuffFactory.GetBuffs(
                     ATK,
                     _enrageSkill,
                     Simulator.SkillBuffSheet,

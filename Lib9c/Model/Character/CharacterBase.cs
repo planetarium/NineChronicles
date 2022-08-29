@@ -230,7 +230,7 @@ namespace Nekoyume.Model
             var usedSkill = selectedSkill.Use(
                 this,
                 Simulator.WaveTurn,
-                BuffFactory.GetBuffsV2(
+                BuffFactory.GetBuffs(
                     ATK,
                     selectedSkill,
                     Simulator.SkillBuffSheet,
@@ -273,9 +273,12 @@ namespace Nekoyume.Model
                 this,
                 Simulator.WaveTurn,
                 BuffFactory.GetBuffs(
+                    ATK,
                     selectedSkill,
                     Simulator.SkillBuffSheet,
-                    Simulator.StatBuffSheet
+                    Simulator.StatBuffSheet,
+                    Simulator.SkillActionBuffSheet,
+                    Simulator.ActionBuffSheet
                 )
             );
 
@@ -301,9 +304,12 @@ namespace Nekoyume.Model
                 this,
                 Simulator.WaveTurn,
                 BuffFactory.GetBuffs(
+                    ATK,
                     selectedSkill,
                     Simulator.SkillBuffSheet,
-                    Simulator.StatBuffSheet
+                    Simulator.StatBuffSheet,
+                    Simulator.SkillActionBuffSheet,
+                    Simulator.ActionBuffSheet
                 )
             );
 

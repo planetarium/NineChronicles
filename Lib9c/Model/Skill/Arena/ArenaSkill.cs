@@ -33,7 +33,7 @@ namespace Nekoyume.Model.Skill.Arena
             ArenaCharacter caster,
             ArenaCharacter target,
             int turn,
-            IEnumerable<Buff.StatBuff> buffs
+            IEnumerable<Buff.Buff> buffs
         );
 
         protected bool Equals(Skill other)
@@ -96,13 +96,13 @@ namespace Nekoyume.Model.Skill.Arena
             ArenaCharacter caster,
             ArenaCharacter target,
             int turn,
-            IEnumerable<Buff.StatBuff> buffs
+            IEnumerable<Buff.Buff> buffs
         )
         {
             var infos = new List<BattleStatus.Arena.ArenaSkill.ArenaSkillInfo>();
             foreach (var buff in buffs)
             {
-                switch (buff.RowData.TargetType)
+                switch (buff.BuffInfo.SkillTargetType)
                 {
                     case SkillTargetType.Enemy:
                     case SkillTargetType.Enemies:

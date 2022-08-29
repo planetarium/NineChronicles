@@ -279,7 +279,13 @@ namespace Nekoyume.Model
                 this,
                 _target,
                 _simulator.Turn,
-                BuffFactory.GetBuffs(selectedSkill, _skillBuffSheet, _statBuffSheet)
+                BuffFactory.GetBuffs(
+                    ATK,
+                    selectedSkill,
+                    _skillBuffSheet,
+                    _statBuffSheet,
+                    _skillActionBuffSheet,
+                    _actionBuffSheet)
             );
 
             if (!_skillSheet.TryGetValue(selectedSkill.SkillRow.Id, out var row))
@@ -299,7 +305,13 @@ namespace Nekoyume.Model
                 this,
                 _target,
                 _simulator.Turn,
-                BuffFactory.GetBuffs(selectedSkill, _skillBuffSheet, _statBuffSheet)
+                BuffFactory.GetBuffs(
+                    ATK,
+                    selectedSkill,
+                    _skillBuffSheet,
+                    _statBuffSheet,
+                    _skillActionBuffSheet,
+                    _actionBuffSheet)
             );
 
             if (!_skillSheet.TryGetValue(selectedSkill.SkillRow.Id, out var row))
@@ -396,14 +408,14 @@ namespace Nekoyume.Model
         }
 
         [Obsolete("Use AddBuff")]
-        public void AddBuffV1(Buff.StatBuff buff, bool updateImmediate = true)
+        public void AddBuffV1(Buff.Buff buff, bool updateImmediate = true)
         {
-            if (Buffs.TryGetValue(buff.RowData.GroupId, out var outBuff) &&
-                outBuff.BuffInfo.Id > buff.RowData.Id)
+            if (Buffs.TryGetValue(buff.BuffInfo.GroupId, out var outBuff) &&
+                outBuff.BuffInfo.Id > buff.BuffInfo.Id)
                 return;
 
             var clone = (Buff.StatBuff) buff.Clone();
-            Buffs[buff.RowData.GroupId] = clone;
+            Buffs[buff.BuffInfo.GroupId] = clone;
             _stats.AddBuff(clone, updateImmediate);
         }
 

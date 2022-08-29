@@ -29,7 +29,7 @@ namespace Nekoyume.Model.Skill.Arena
             ArenaCharacter caster,
             ArenaCharacter target,
             int turn,
-            IEnumerable<Buff.StatBuff> buffs)
+            IEnumerable<Buff.Buff> buffs)
         {
             var clone = (ArenaCharacter)caster.Clone();
             var buff = ProcessBuffV1(caster, target, turn, buffs);
