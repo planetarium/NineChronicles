@@ -21,7 +21,7 @@ namespace Nekoyume.TableData
             public SkillTargetType TargetType { get; private set; }
             public ActionBuffType ActionBuffType { get; private set; }
             public ElementalType ElementalType { get; private set; }
-            public decimal ATKDamageRatio { get; private set; }
+            public decimal ATKPowerRatio { get; private set; }
 
 
             public override void Set(IReadOnlyList<string> fields)
@@ -33,7 +33,7 @@ namespace Nekoyume.TableData
                 TargetType = (SkillTargetType)Enum.Parse(typeof(SkillTargetType), fields[4]);
                 ActionBuffType = (ActionBuffType)Enum.Parse(typeof(ActionBuffType), fields[5]);
                 ElementalType = (ElementalType)Enum.Parse(typeof(ElementalType), fields[6]);
-                ATKDamageRatio = ParseDecimal(fields[7]);
+                ATKPowerRatio = ParseDecimal(fields[7]);
             }
         }
 

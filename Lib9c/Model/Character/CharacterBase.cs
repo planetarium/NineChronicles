@@ -256,12 +256,6 @@ namespace Nekoyume.Model
                 var target = Targets.FirstOrDefault(i => i.Id == info.Target.Id);
                 target?.Die();
             }
-
-            foreach (var bleed in Buffs.Values.OfType<Bleed>())
-            {
-                var effect = bleed.GiveEffect(this, Simulator.WaveTurn);
-                Simulator.Log.Add(effect);
-            }
         }
 
         [Obsolete("Use UseSkill")]
@@ -503,7 +497,9 @@ namespace Nekoyume.Model
             {
                 ReduceDurationOfBuffs();
                 ReduceSkillCooldown();
+                OnPreSkill();
                 UseSkill();
+                OnPostSkill();
                 RemoveBuffs();
             }
             EndTurn();
@@ -516,7 +512,9 @@ namespace Nekoyume.Model
             {
                 ReduceDurationOfBuffs();
                 ReduceSkillCooldownV1();
+                OnPreSkill();
                 UseSkillV1();
+                OnPostSkill();
                 RemoveBuffs();
             }
             EndTurn();
@@ -529,10 +527,32 @@ namespace Nekoyume.Model
             {
                 ReduceDurationOfBuffs();
                 ReduceSkillCooldownV1();
+                OnPreSkill();
                 UseSkillV2();
+                OnPostSkill();
                 RemoveBuffs();
             }
             EndTurn();
+        }
+
+        protected virtual void OnPreSkill()
+        {
+
+        }
+
+        protected virtual void OnPostSkill()
+        {
+            var bleeds = Buffs.Values.OfType<Bleed>().OrderBy(x => x.BuffInfo.Id);
+            foreach (var bleed in bleeds)
+            {
+                var effect = bleed.GiveEffect(this, Simulator.WaveTurn);
+                Simulator.Log.Add(effect);
+            }
+
+            if (IsDead)
+            {
+                Die();
+            }
         }
     }
 }
