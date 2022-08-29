@@ -20,6 +20,8 @@ namespace Nekoyume.Helper
 
         public enum PlaceType
         {
+            // Assigned values are used to load sprites.
+            // Not used values: 1, 2, 6, etc.
             Stage,
             Shop = 3,
             Arena = 4,
@@ -263,13 +265,14 @@ namespace Nekoyume.Helper
             switch (type)
             {
                 case PlaceType.EventDungeonStage:
-                    if (RxProps.EventDungeonInfo.Value is not null)
-                    {
-                        return stageId <=
-                               RxProps.EventDungeonInfo.Value.ClearedStageId + 1;
-                    }
-
-                    return stageId.ToEventDungeonStageNumber() <= 1;
+                    var playableStageId =
+                        RxProps.EventDungeonInfo.Value is null ||
+                        RxProps.EventDungeonInfo.Value.ClearedStageId == 0
+                            ? RxProps.EventDungeonRow.StageBegin
+                            : Math.Min(
+                                RxProps.EventDungeonInfo.Value.ClearedStageId + 1,
+                                RxProps.EventDungeonRow.StageEnd);
+                    return stageId <= playableStageId;
                 case PlaceType.Stage:
                     if (stageId == 1)
                     {
