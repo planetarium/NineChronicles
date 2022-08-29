@@ -219,12 +219,19 @@ namespace Lib9c.Tests.Action
                 simulator.Simulate();
                 var score = simulator.DamageDealt;
 
+                Dictionary<Currency, FungibleAssetValue> rewardMap
+                    = new Dictionary<Currency, FungibleAssetValue>();
+                foreach (var reward in simulator.AssetReward)
+                {
+                    rewardMap[reward.Currency] = reward;
+                }
+
                 if (rewardRecordExist)
                 {
                     Assert.True(state.TryGetState(bossAddress, out List prevRawBoss));
                     var prevBossState = new WorldBossState(prevRawBoss);
                     int rank = WorldBossHelper.CalculateRank(raiderStateExist ? 1_000 : 0);
-                    List<FungibleAssetValue> rewards = RuneHelper.CalculateReward(
+                    var rewards = RuneHelper.CalculateReward(
                         rank,
                         prevBossState.Id,
                         _tableSheets.RuneWeightSheet,
@@ -235,11 +242,23 @@ namespace Lib9c.Tests.Action
 
                     foreach (var reward in rewards)
                     {
-                        Assert.Equal(reward, nextState.GetBalance(_avatarAddress, reward.Currency));
+                        if (!rewardMap.ContainsKey(reward.Currency))
+                        {
+                            rewardMap[reward.Currency] = reward;
+                        }
+                        else
+                        {
+                            rewardMap[reward.Currency] += reward;
+                        }
+                    }
+
+                    foreach (var reward in rewardMap)
+                    {
+                        Assert.Equal(reward.Value, nextState.GetBalance(_avatarAddress, reward.Key));
                     }
                 }
 
-                Assert.Equal(0 * crystal, nextState.GetBalance(_agentAddress, crystal));
+                Assert.Equal(rewardMap[crystal], nextState.GetBalance(_agentAddress, crystal));
                 if (crystalExist)
                 {
                     Assert.Equal(fee * crystal, nextState.GetBalance(bossAddress, crystal));
@@ -313,7 +332,7 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void Execute_With_KillReward()
+        public void Execute_With_Reward()
         {
             var action = new Raid
             {
@@ -388,20 +407,8 @@ namespace Lib9c.Tests.Action
                     };
             state = state.SetState(bossAddress, bossState.Serialize());
             var randomSeed = 0;
-            var nextState = action.Execute(new ActionContext
-            {
-                BlockIndex = blockIndex,
-                PreviousStates = state,
-                Random = new TestRandom(randomSeed),
-                Rehearsal = false,
-                Signer = _agentAddress,
-            });
-
-            Assert.Equal(0 * crystal, nextState.GetBalance(_agentAddress, crystal));
-            Assert.True(nextState.TryGetState(raiderAddress, out List rawRaider));
-            var nextRaiderState = new RaiderState(rawRaider);
-            var bossRow = _tableSheets.WorldBossListSheet.FindRowByBlockIndex(blockIndex);
             var random = new TestRandom(randomSeed);
+            var bossRow = _tableSheets.WorldBossListSheet.FindRowByBlockIndex(blockIndex);
 
             var simulator = new RaidSimulator(
                 bossRow.BossId,
@@ -411,9 +418,15 @@ namespace Lib9c.Tests.Action
                 _tableSheets.GetRaidSimulatorSheets(),
                 _tableSheets.CostumeStatSheet);
             simulator.Simulate();
-            Assert.Equal(simulator.DamageDealt, nextRaiderState.HighScore);
 
-            List<FungibleAssetValue> rewards = RuneHelper.CalculateReward(
+            Dictionary<Currency, FungibleAssetValue> rewardMap
+                    = new Dictionary<Currency, FungibleAssetValue>();
+            foreach (var reward in simulator.AssetReward)
+            {
+                rewardMap[reward.Currency] = reward;
+            }
+
+            List<FungibleAssetValue> killRewards = RuneHelper.CalculateReward(
                 0,
                 bossState.Id,
                 _tableSheets.RuneWeightSheet,
@@ -422,9 +435,35 @@ namespace Lib9c.Tests.Action
                 random
             );
 
-            foreach (var reward in rewards)
+            var nextState = action.Execute(new ActionContext
             {
-                Assert.Equal(reward, nextState.GetBalance(_avatarAddress, reward.Currency));
+                BlockIndex = blockIndex,
+                PreviousStates = state,
+                Random = new TestRandom(randomSeed),
+                Rehearsal = false,
+                Signer = _agentAddress,
+            });
+
+            Assert.Equal(rewardMap[crystal], nextState.GetBalance(_agentAddress, crystal));
+            Assert.True(nextState.TryGetState(raiderAddress, out List rawRaider));
+            var nextRaiderState = new RaiderState(rawRaider);
+            Assert.Equal(simulator.DamageDealt, nextRaiderState.HighScore);
+
+            foreach (var reward in killRewards)
+            {
+                if (!rewardMap.ContainsKey(reward.Currency))
+                {
+                    rewardMap[reward.Currency] = reward;
+                }
+                else
+                {
+                    rewardMap[reward.Currency] += reward;
+                }
+            }
+
+            foreach (var reward in rewardMap)
+            {
+                Assert.Equal(reward.Value, nextState.GetBalance(_avatarAddress, reward.Key));
             }
 
             Assert.Equal(1, nextRaiderState.Level);

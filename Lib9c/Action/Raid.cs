@@ -169,9 +169,23 @@ namespace Nekoyume.Action
             }
 
             // Update State.
+
+            // battle reward
+            foreach (var battleReward in simulator.AssetReward)
+            {
+                if (battleReward.Currency.Equals(CrystalCalculator.CRYSTAL))
+                {
+                    states = states.MintAsset(context.Signer, battleReward);
+                }
+                else
+                {
+                    states = states.MintAsset(AvatarAddress, battleReward);
+                }
+            }
+
             if (raiderState.LatestBossLevel < bossState.Level)
             {
-                // reward
+                // kill reward
                 var worldBossKillRewardRecordAddress = Addresses.GetWorldBossKillRewardRecordAddress(AvatarAddress, raidId);
                 WorldBossKillRewardRecord rewardRecord;
                 if (states.TryGetState(worldBossKillRewardRecordAddress, out List rawList))
@@ -188,7 +202,8 @@ namespace Nekoyume.Action
                         sheets.GetSheet<WorldBossKillRewardSheet>(),
                         sheets.GetSheet<RuneSheet>(),
                         context.Random,
-                        AvatarAddress
+                        AvatarAddress,
+                        context.Signer
                     );
                 }
                 else

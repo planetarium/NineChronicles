@@ -58,7 +58,8 @@ namespace Nekoyume.Action
                 sheets.GetSheet<WorldBossKillRewardSheet>(),
                 sheets.GetSheet<RuneSheet>(),
                 context.Random,
-                    AvatarAddress
+                AvatarAddress,
+                context.Signer
             );
         }
 
