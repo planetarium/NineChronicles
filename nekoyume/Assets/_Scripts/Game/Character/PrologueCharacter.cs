@@ -211,7 +211,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public IEnumerator CoBuff(Buff buff)
+        public IEnumerator CoBuff(StatBuff buff)
         {
             yield return StartCoroutine(CoAnimationBuffCast(buff));
             Animator.CastAttack();
@@ -221,7 +221,7 @@ namespace Nekoyume.Game.Character
             yield return new WaitForSeconds(0.6f);
         }
 
-        private IEnumerator CoAnimationBuffCast(Buff buff)
+        private IEnumerator CoAnimationBuffCast(StatBuff buff)
         {
             AttackEndCalled = false;
             var sfxCode = AudioController.GetElementalCastingSFX(ElementalType.Normal);

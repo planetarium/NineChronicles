@@ -1893,7 +1893,8 @@ namespace Nekoyume.BlockChain
                 random,
                 clonedAvatarState,
                 eval.Action.FoodIds,
-                TableSheets.Instance.GetRaidSimulatorSheets()
+                TableSheets.Instance.GetRaidSimulatorSheets(),
+                TableSheets.Instance.CostumeStatSheet
             );
             simulator.Simulate();
             BattleLog log = simulator.Log;

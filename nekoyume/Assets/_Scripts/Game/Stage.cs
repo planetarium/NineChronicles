@@ -758,6 +758,18 @@ namespace Nekoyume.Game
             }
         }
 
+        public IEnumerator CoTickDamage(CharacterBase affectedCharacter,
+            int skillId,
+            IEnumerable<Skill.SkillInfo> skillInfos)
+        {
+            var character = GetCharacter(affectedCharacter);
+
+            foreach (var info in skillInfos)
+            {
+                yield return StartCoroutine(character.CoProcessDamage(info, true, true));
+            }
+        }
+
         public IEnumerator CoBuff(
             CharacterBase caster,
             int skillId,

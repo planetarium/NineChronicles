@@ -3,6 +3,7 @@ using System.Linq;
 using Nekoyume.L10n;
 using Nekoyume.Model.Buff;
 using Nekoyume.Model.Skill;
+using Nekoyume.TableData;
 using UniRx;
 using UnityEngine;
 
@@ -22,11 +23,17 @@ namespace Nekoyume.UI.Model
             if (skill is BuffSkill buffSkill)
             {
                 var sheets = Game.Game.instance.TableSheets;
-                var buffs = BuffFactory.GetBuffs(skill, sheets.SkillBuffSheet, sheets.BuffSheet);
-                if (buffs.Count > 0)
+                var buffs = BuffFactory.GetBuffs(
+                    default,
+                    skill,
+                    sheets.SkillBuffSheet,
+                    sheets.StatBuffSheet,
+                    sheets.SkillActionBuffSheet,
+                    sheets.ActionBuffSheet).OfType<StatBuff>();
+                if (buffs.Count() > 0)
                 {
                     var buff = buffs.First();
-                    var powerValue = buff.RowData.StatModifier.Value;
+                    var powerValue = buff.RowData.StatModifier.ToString();
                     power.Value = $"{L10nManager.Localize("UI_SKILL_EFFECT")}: {powerValue}%";
                 }
             }
@@ -40,10 +47,16 @@ namespace Nekoyume.UI.Model
         {
             var powerValue = string.Empty;
             var sheets = Game.Game.instance.TableSheets;
-            var buffs = BuffFactory.GetBuffs(skill, sheets.SkillBuffSheet, sheets.BuffSheet);
-            if (buffs.Count > 0)
+            var buffs = BuffFactory.GetBuffs(
+                default,
+                skill,
+                sheets.SkillBuffSheet,
+                sheets.StatBuffSheet,
+                sheets.SkillActionBuffSheet,
+                sheets.ActionBuffSheet).OfType<StatBuff>();
+            if (buffs.Count() > 0)
             {
-                var buff = buffs[0];
+                var buff = buffs.First();
                 powerValue = buff.RowData.StatModifier.ToString();
             }
 

@@ -24,6 +24,9 @@ namespace Nekoyume.Game
         [SerializeField]
         private float delayOnBattleFinished = 3f;
 
+        [SerializeField]
+        private float skillDelay = 0.3f;
+
         private WaitForSeconds _delayOnBattleFinished;
         private Character.RaidPlayer _player;
         private Character.RaidBoss _boss;
@@ -34,7 +37,6 @@ namespace Nekoyume.Game
         private readonly Queue<Character.RaidActionParams> _actionQueue = new();
 
         private RaidTimelineContainer container;
-        private const float SkillDelay = 0.1f;
         private Coroutine _battleCoroutine;
         private int _waveTurn;
         private int _wave;
@@ -100,7 +102,7 @@ namespace Nekoyume.Game
             yield return StartCoroutine(CoEnter(bossId, player));
 
             var actionDelay = new WaitForSeconds(StageConfig.instance.actionDelay);
-            var skillDelay = new WaitForSeconds(SkillDelay);
+            var skillDelay = new WaitForSeconds(this.skillDelay);
             var waveIndex = 0;
 
             foreach (var e in log)
@@ -122,12 +124,14 @@ namespace Nekoyume.Game
                         param.SkillInfos.Any(i => i.SkillCategory != Model.Skill.SkillCategory.NormalAttack))
                     {
                         yield return _player.CurrentAction;
+                        yield return new WaitUntil(() => _boss.Animator.IsIdle());
                         yield return StartCoroutine(container.CoPlaySkillCutscene());
                     }
 
                     caster.CurrentAction = StartCoroutine(CoAct(param));
-                    yield return skillDelay;
                 }
+
+                yield return skillDelay;
             }
 
             yield return StartCoroutine(CoFinish(damageDealt, isNewRecord, isPractice));
@@ -294,6 +298,20 @@ namespace Nekoyume.Game
             var actionParams = new Character.RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoHeal);
             _actionQueue.Enqueue(actionParams);
             yield break;
+        }
+
+        public IEnumerator CoTickDamage(CharacterBase affectedCharacter,
+            int skillId,
+            IEnumerable<Skill.SkillInfo> skillInfos)
+        {
+            Character.RaidCharacter target = affectedCharacter.Id == _player.Id ? _player : _boss;
+            target.Set(affectedCharacter);
+
+            yield return target.CurrentAction;
+            foreach (var info in skillInfos)
+            {
+                yield return StartCoroutine(target.CoProcessDamage(info, true));
+            }
         }
 
         public IEnumerator CoBuff(

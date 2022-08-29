@@ -580,12 +580,16 @@ namespace Nekoyume.UI
         {
             (_, _, var foods) = SaveCurrentEquipment();
             var currentAvatarState = States.Instance.CurrentAvatarState;
+
+            var tableSheets = Game.Game.instance.TableSheets;
+
             var simulator = new RaidSimulator(
                 _bossId,
                 new PracticeRandom(),
                 currentAvatarState,
                 foods,
-                Game.Game.instance.TableSheets.GetRaidSimulatorSheets()
+                tableSheets.GetRaidSimulatorSheets(),
+                tableSheets.CostumeStatSheet
             );
             var log = simulator.Simulate();
             var digest = new ArenaPlayerDigest(currentAvatarState);

@@ -6,8 +6,8 @@ namespace Nekoyume
 {
     public static class SkillSheetExtensions
     {
-        private static readonly Dictionary<int, List<BuffSheet.Row>> SkillBuffs =
-            new Dictionary<int, List<BuffSheet.Row>>();
+        private static readonly Dictionary<int, List<StatBuffSheet.Row>> SkillBuffs =
+            new Dictionary<int, List<StatBuffSheet.Row>>();
 
         public static string GetLocalizedName(this SkillSheet.Row row)
         {
