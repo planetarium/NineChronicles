@@ -6,6 +6,7 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Nekoyume.BlockChain.Policy;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
@@ -23,6 +24,7 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1264
     /// </summary>
     [Serializable]
+    [ActionObsolete(BlockPolicySource.V100282ObsoleteIndex)]
     [ActionType("combination_equipment13")]
     public class CombinationEquipment13 : GameAction
     {
@@ -83,6 +85,8 @@ namespace Nekoyume.Action
             {
                 return states;
             }
+
+            CheckObsolete(BlockPolicySource.V100282ObsoleteIndex, context);
 
             if (recipeId != 1)
             {
