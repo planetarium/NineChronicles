@@ -52,6 +52,7 @@ namespace Lib9c.Tests.Action
                 LatestRewardRank = latestRank,
             };
             IAccountStateDelta state = _state.SetState(raiderAddress, raiderState.Serialize());
+            var randomSeed = 0;
 
             var action = new ClaimRaidReward(avatarAddress);
             if (exc is null)
@@ -60,7 +61,7 @@ namespace Lib9c.Tests.Action
                 {
                     Signer = default,
                     BlockIndex = 1,
-                    Random = new TestRandom(),
+                    Random = new TestRandom(randomSeed),
                     PreviousStates = state,
                 });
 
@@ -85,7 +86,7 @@ namespace Lib9c.Tests.Action
                 {
                     Signer = default,
                     BlockIndex = 1,
-                    Random = new TestRandom(),
+                    Random = new TestRandom(randomSeed),
                     PreviousStates = state,
                 }));
             }
