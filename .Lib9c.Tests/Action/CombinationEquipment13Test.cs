@@ -23,7 +23,7 @@
     using Xunit.Abstractions;
     using static Lib9c.SerializeKeys;
 
-    public class CombinationEquipmentTest
+    public class CombinationEquipment13Test
     {
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
@@ -34,7 +34,7 @@
         private readonly AgentState _agentState;
         private readonly AvatarState _avatarState;
 
-        public CombinationEquipmentTest(ITestOutputHelper outputHelper)
+        public CombinationEquipment13Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -68,10 +68,7 @@
                 default
             );
 
-#pragma warning disable CS0618
-            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-            var gold = new GoldCurrencyState(Currency.Legacy("NCG", 2, null));
-#pragma warning restore CS0618
+            var gold = new GoldCurrencyState(new Currency("NCG", 2, minter: null));
 
             var combinationSlotState = new CombinationSlotState(
                 _slotAddress,
@@ -276,7 +273,7 @@
             Assert.Null(state.GetState(dailyCostAddress));
             Assert.Null(state.GetState(weeklyCostAddress));
 
-            var action = new CombinationEquipment
+            var action = new CombinationEquipment13
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = slotIndex,
@@ -375,7 +372,6 @@
         [InlineData(typeof(NotEnoughFungibleAssetValueException), true, true, 1)]
         [InlineData(null, true, true, 1)]
         [InlineData(typeof(ArgumentException), true, false, 1)]
-        [InlineData(typeof(NotEnoughHammerPointException), true, true, 1)]
         public void ExecuteBySuperCraft(
             Type exc,
             bool doSuperCraft,
@@ -443,14 +439,9 @@
                         _agentAddress,
                         costCrystal);
                 }
-                else if (exc.FullName!.Contains(nameof(NotEnoughHammerPointException)))
-                {
-                    hammerPointState.ResetHammerPoint();
-                    state = state.SetState(hammerPointAddress, hammerPointState.Serialize());
-                }
             }
 
-            var action = new CombinationEquipment
+            var action = new CombinationEquipment13
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = 0,
@@ -510,7 +501,7 @@
                 Guid.NewGuid(),
                 default);
             Assert.Equal(0, equipment.optionCountFromCombination);
-            CombinationEquipment.AddAndUnlockOption(
+            CombinationEquipment13.AddAndUnlockOption(
                 _agentState,
                 equipment,
                 _random,

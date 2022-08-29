@@ -6,6 +6,7 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Nekoyume.BlockChain.Policy;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
@@ -20,11 +21,12 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1334
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1264
     /// </summary>
     [Serializable]
-    [ActionType("combination_equipment14")]
-    public class CombinationEquipment : GameAction
+    [ActionObsolete(BlockPolicySource.V100282ObsoleteIndex)]
+    [ActionType("combination_equipment13")]
+    public class CombinationEquipment13 : GameAction
     {
         public const string AvatarAddressKey = "a";
         public Address avatarAddress;
@@ -83,6 +85,8 @@ namespace Nekoyume.Action
             {
                 return states;
             }
+
+            CheckObsolete(BlockPolicySource.V100282ObsoleteIndex, context);
 
             if (recipeId != 1)
             {
@@ -296,12 +300,6 @@ namespace Nekoyume.Action
                 {
                     throw new ArgumentException(
                         $"Can not super craft with mimisbrunnr recipe. Subrecipe id: {subRecipeId}");
-                }
-
-                if (hammerPointState.HammerPoint < hammerPointRow.MaxPoint)
-                {
-                    throw new NotEnoughHammerPointException(
-                        $"Not enough hammer points. Need : {hammerPointRow.MaxPoint}, own : {hammerPointState.HammerPoint}");
                 }
 
                 states = UseAssetsBySuperCraft(
