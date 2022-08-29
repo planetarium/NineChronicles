@@ -23,7 +23,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("hack_and_slash17")]
-    public class HackAndSlash : GameAction
+    public class HackAndSlash17 : GameAction
     {
         public List<Guid> Costumes;
         public List<Guid> Equipments;

@@ -22,7 +22,7 @@
     using Xunit;
     using static Lib9c.SerializeKeys;
 
-    public class HackAndSlashTest
+    public class HackAndSlash17Test
     {
         private readonly Dictionary<string, string> _sheets;
         private readonly TableSheets _tableSheets;
@@ -41,7 +41,7 @@
         private readonly WeeklyArenaState _weeklyArenaState;
         private readonly IAccountStateDelta _initialState;
 
-        public HackAndSlashTest()
+        public HackAndSlash17Test()
         {
             _sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(_sheets);
@@ -183,7 +183,7 @@
                 List.Empty.Add(worldId.Serialize())
             );
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash17
             {
                 Costumes = costumes,
                 Equipments = equipments.Select(e => e.NonFungibleId).ToList(),
@@ -253,7 +253,7 @@
             Assert.Equal(equipments.Count, avatarState.inventory.Items.Count);
 
             // HackAndSlash
-            var action = new HackAndSlash
+            var action = new HackAndSlash17
             {
                 Costumes = new List<Guid>(),
                 Equipments = equipments.Select(e => e.NonFungibleId).ToList(),
@@ -325,7 +325,7 @@
 
             var state = _initialState.SetState(_avatarAddress, previousAvatarState.SerializeV2());
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash17
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -386,7 +386,7 @@
                 .SetState(_avatarAddress, previousAvatarState.SerializeV2())
                 .SetState(_inventoryAddress, previousAvatarState.inventory.Serialize());
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash17
             {
                 Costumes = new List<Guid>(),
                 Equipments = equipments,
@@ -412,7 +412,7 @@
         [InlineData(false)]
         public void Execute_Throw_FailedLoadStateException(bool backward)
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash17
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -447,7 +447,7 @@
         [InlineData(51)]
         public void ExecuteThrowSheetRowColumnException(int stageId)
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash17
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -470,7 +470,7 @@
         [Fact]
         public void ExecuteThrowSheetRowNotFoundExceptionByStage()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash17
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -496,7 +496,7 @@
         [Fact]
         public void ExecuteThrowFailedAddWorldException()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash17
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -535,7 +535,7 @@
         [InlineData(2, 51, true)]
         public void Execute_Throw_InvalidWorldException(int worldId, int stageId, bool unlockedIdsExist)
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash17
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -567,7 +567,7 @@
         [Fact]
         public void ExecuteThrowInvalidStageException()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash17
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -607,7 +607,7 @@
         [Fact]
         public void ExecuteThrowInvalidStageExceptionUnlockedWorld()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash17
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -643,7 +643,7 @@
             var equipment = ItemFactory.CreateItemUsable(equipRow, Guid.NewGuid(), 100);
             avatarState.inventory.AddItem(equipment);
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash17
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>
@@ -690,7 +690,7 @@
             avatarState.inventory.AddItem(equipment);
             state = state.SetState(_inventoryAddress, avatarState.inventory.Serialize());
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash17
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>
@@ -724,7 +724,7 @@
                 actionPoint = ap,
             };
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash17
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -791,7 +791,7 @@
                     _avatarAddress.Derive(LegacyQuestListKey),
                     previousAvatarState.questList.Serialize());
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash17
             {
                 Costumes = costumes,
                 Equipments = equipments,
@@ -860,7 +860,7 @@
                             avatarState.address.Derive(LegacyInventoryKey),
                             avatarState.inventory.Serialize());
 
-                    var action = new HackAndSlash
+                    var action = new HackAndSlash17
                     {
                         Costumes = costumes,
                         Equipments = equipments,
@@ -894,7 +894,7 @@
                 };
 
                 var state = _initialState;
-                var action = new HackAndSlash
+                var action = new HackAndSlash17
                 {
                     Costumes = new List<Guid>(),
                     Equipments = new List<Guid>(),
@@ -1001,7 +1001,7 @@
                 Enumerable.Range(1, worldId).ToList().Select(i => i.Serialize()).Serialize()
             );
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash17
             {
                 Costumes = costumes,
                 Equipments = equipments.Select(e => e.NonFungibleId).ToList(),
@@ -1146,7 +1146,7 @@
                 state = state.SetState(skillStateAddress, skillState.Serialize());
             }
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash17
             {
                 Costumes = clear ? costumes : new List<Guid>(),
                 Equipments = clear
