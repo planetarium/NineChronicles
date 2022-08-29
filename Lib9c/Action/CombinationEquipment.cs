@@ -301,7 +301,7 @@ namespace Nekoyume.Action
                 if (hammerPointState.HammerPoint < hammerPointRow.MaxPoint)
                 {
                     throw new NotEnoughHammerPointException(
-                        $"Not enough gathered stars. Need : {hammerPointRow.MaxPoint}, own : {hammerPointState.HammerPoint}");
+                        $"Not enough hammer points. Need : {hammerPointRow.MaxPoint}, own : {hammerPointState.HammerPoint}");
                 }
 
                 states = UseAssetsBySuperCraft(
