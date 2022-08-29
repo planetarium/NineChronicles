@@ -97,7 +97,7 @@ jobs:
           - macOS
           - Linux
     needs: build-unity
-    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/rc-') || github.ref == 'refs/heads/previewnet' || github.ref == 'refs/heads/2022q2' }}
+    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/rc-') || github.ref == 'refs/heads/previewnet' || github.ref == 'refs/heads/2022q2' || github.ref == 'refs/heads/chore/upload-without-acl' }}
     steps:
       - uses: actions/checkout@v2
 
@@ -153,14 +153,12 @@ jobs:
         if: success()
         shell: bash
 
-      - uses: shallwefootball/s3-upload-action@master
-        if: success()
-        with:
-          source_dir: package
-          destination_dir: ${{ github.sha }}
-          aws_bucket: 9c-artifacts
-          aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Upload Artifacts
+        run: aws s3 cp package s3://9c-artifacts/${{ github.sha }}/ --recursive
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
 
       - if: success()
         uses: chrnorm/deployment-status@releases/v1
