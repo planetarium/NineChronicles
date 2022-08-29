@@ -45,6 +45,7 @@ namespace Nekoyume.UI.Module
             countText.text = count.ToString("N0", CultureInfo.CurrentCulture);
         }
 
+        // Call at Event Trigger Component
         public void ShowTooltip()
         {
             Widget.Find<VanilaTooltip>()

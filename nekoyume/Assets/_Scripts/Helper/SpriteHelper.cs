@@ -31,7 +31,7 @@ namespace Nekoyume.Helper
         private const string TitleFramePathFormat = "UI/Textures/00_TitleFrames/{0}";
         private static readonly string TitleFrameDefaultPath = string.Format(TitleFramePathFormat, 49900001);
 
-        private const string MenuIllustratePathFormat = "UI/Textures/MenuIllustrates/{0}";
+        private const string MenuIllustratePathFormat = "UI/Textures/00_MenuIllustrates/{0}";
 
         private static readonly string MenuIllustrateDefaultPath =
             string.Format(MenuIllustratePathFormat, "UI_bg_combination");
@@ -153,13 +153,6 @@ namespace Nekoyume.Helper
             }
 
             return result ? result : Resources.Load<Sprite>(MailIconDefaultPath);
-        }
-
-        public static Sprite GetStakingIcon(int level, bool smallIcon = false)
-        {
-            var data = Resources.Load<StakeIconDataScriptableObject>(
-                        "ScriptableObject/UI_StakeIconData");
-            return data.GetIcon(level, smallIcon);
         }
 
         public static Sprite GetWorldMapBackground(string imageKey, int pageIndex)
