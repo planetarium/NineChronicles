@@ -1,10 +1,10 @@
+using Libplanet.Assets;
 using Nekoyume.Helper;
-using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.WorldBoss;
-using System.Collections;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,6 +24,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button closeButton;
 
+        [SerializeField]
+        private List<RuneStoneItem> rewardViews;
+
         private GameObject _gradeObject;
 
         protected override void Awake()
@@ -38,7 +41,7 @@ namespace Nekoyume.UI
             base.OnDisable();
         }
 
-        public void Show(int bossId, int score, bool isBest)
+        public void Show(int bossId, int score, bool isBest, List<FungibleAssetValue> rewards)
         {
             base.Show();
 
@@ -53,6 +56,26 @@ namespace Nekoyume.UI
                 {
                     _gradeObject = Instantiate(prefab, gradeParent);
                     _gradeObject.transform.localScale = Vector3.one;
+                }
+            }
+
+            foreach (var view in rewardViews)
+            {
+                view.gameObject.SetActive(false);
+            }
+
+            if (rewards is not null && rewards.Any())
+            {
+                foreach (var reward in rewards)
+                {
+                    var ticker = reward.Currency.Ticker;
+                    if (WorldBossFrontHelper.TryGetRuneIcon(ticker, out var icon))
+                    {
+                        var view = rewardViews.First(x => !x.gameObject.activeSelf);
+                        var count = Convert.ToInt32(reward.GetQuantityString());
+                        view.Set(icon, count);
+                        view.gameObject.SetActive(true);
+                    }
                 }
             }
         }

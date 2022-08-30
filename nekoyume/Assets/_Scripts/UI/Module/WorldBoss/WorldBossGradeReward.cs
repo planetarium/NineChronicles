@@ -74,7 +74,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             var highScore = raiderState?.HighScore ?? 0;
             var currentRank = WorldBossHelper.CalculateRank(characterRow, highScore);
             var maxRankCount = rows.Count;
-            UpdateItems(rows, latestRewardRank, currentRank);
+            UpdateItems(characterRow, rows, latestRewardRank, currentRank);
             UpdateGauges(currentRank, maxRankCount);
             UpdateRecord(highScore);
 
@@ -88,13 +88,14 @@ namespace Nekoyume.UI.Module.WorldBoss
         }
 
         private void UpdateItems(
+            WorldBossCharacterSheet.Row bossRow,
             IReadOnlyList<WorldBossRankRewardSheet.Row> rows,
             int latestRewardRank,
             int currentRank)
         {
             for (var i = 0; i < items.Count; i++)
             {
-                var score = WorldBossFrontHelper.GetScoreInRank(i + 1);
+                var score = WorldBossFrontHelper.GetScoreInRank(i + 1, bossRow);
                 items[i].Set(score, rows[i].Rune, rows[i].Crystal);
 
                 if (i + 1 <= latestRewardRank)

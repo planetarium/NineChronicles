@@ -1913,7 +1913,9 @@ namespace Nekoyume.BlockChain
                 log,
                 playerDigest,
                 simulator.DamageDealt,
-                isNewRecord);
+                isNewRecord,
+                false,
+                simulator.AssetReward);
         }
 
         private void ResponseClaimRaidReward(ActionBase.ActionEvaluation<ClaimRaidReward> eval)

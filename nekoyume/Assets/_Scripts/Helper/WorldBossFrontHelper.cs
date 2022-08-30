@@ -160,9 +160,11 @@ namespace Nekoyume.Helper
             return refillable ? WorldBossHelper.MaxChallengeCount : state.RemainChallengeCount;
         }
 
-        public static int GetScoreInRank(int rank)
+        public static int GetScoreInRank(int rank, WorldBossCharacterSheet.Row bossRow)
         {
-            return rank * 10000;
+            return (int)bossRow.WaveStats
+                .Where(x => x.Wave <= rank)
+                .Sum(x => x.HP);
         }
 
         public static Sprite GetRankIcon(int rank)

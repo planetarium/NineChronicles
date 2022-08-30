@@ -601,7 +601,8 @@ namespace Nekoyume.UI
                 digest,
                 simulator.DamageDealt,
                 false,
-                true);
+                true,
+                null);
 
             Find<WorldBoss>().Close();
             Close();

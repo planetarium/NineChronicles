@@ -1,3 +1,4 @@
+using Libplanet.Assets;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Util;
@@ -67,7 +68,8 @@ namespace Nekoyume.Game
             ArenaPlayerDigest player,
             int damageDealt,
             bool isNewRecord,
-            bool isPractice = false)
+            bool isPractice,
+            List<FungibleAssetValue> rewards)
         {
             if (!_isPlaying)
             {
@@ -83,7 +85,7 @@ namespace Nekoyume.Game
                 if (log?.Count > 0)
                 {
                     _battleCoroutine = StartCoroutine(
-                        CoPlay(bossId, log, player, damageDealt, isNewRecord, isPractice));
+                        CoPlay(bossId, log, player, damageDealt, isNewRecord, isPractice, rewards));
                 }
             }
             else
@@ -98,7 +100,8 @@ namespace Nekoyume.Game
             ArenaPlayerDigest player,
             int damageDealt,
             bool isNewRecord,
-            bool isPractice)
+            bool isPractice,
+            List<FungibleAssetValue> rewards)
         {
             yield return StartCoroutine(CoEnter(bossId, player));
 
@@ -135,7 +138,7 @@ namespace Nekoyume.Game
                 yield return skillDelay;
             }
 
-            yield return StartCoroutine(CoFinish(damageDealt, isNewRecord, isPractice));
+            yield return StartCoroutine(CoFinish(damageDealt, isNewRecord, isPractice, rewards));
         }
 
         private IEnumerator CoEnter(int bossId, ArenaPlayerDigest playerDigest)
@@ -176,7 +179,7 @@ namespace Nekoyume.Game
             _boss.UpdateStatusUI();
         }
 
-        private IEnumerator CoFinish(int damageDealt, bool isNewRecord, bool isPractice)
+        private IEnumerator CoFinish(int damageDealt, bool isNewRecord, bool isPractice, List<FungibleAssetValue> rewards)
         {
             IsAvatarStateUpdatedAfterBattle = false;
             _onBattleEnded.OnNext(this);
@@ -202,7 +205,7 @@ namespace Nekoyume.Game
             MainCanvas.instance.Canvas.worldCamera = ActionCamera.instance.Cam;
 
             container.Close();
-            Widget.Find<WorldBossResultPopup>().Show(_currentBossId, damageDealt, isNewRecord);
+            Widget.Find<WorldBossResultPopup>().Show(_currentBossId, damageDealt, isNewRecord, rewards);
 
             if (container)
             {
