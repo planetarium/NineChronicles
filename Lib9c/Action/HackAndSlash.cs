@@ -170,9 +170,9 @@ namespace Nekoyume.Action
 
             sw.Restart();
             var costAp = sheets.GetSheet<StageSheet>()[StageId].CostAP;
-            var currency = states.GetGoldCurrency();
             if (states.TryGetStakeState(signer, out var stakeState))
             {
+                var currency = states.GetGoldCurrency();
                 var stakedAmount = states.GetBalance(stakeState.address, currency);
                 var actionPointCoefficientSheet = sheets.GetSheet<StakeActionPointCoefficientSheet>();
                 var level = actionPointCoefficientSheet.FindLevelByStakedAmount(signer, stakedAmount);
