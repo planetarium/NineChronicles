@@ -31,15 +31,15 @@ namespace Lib9c.Tests.Action
 
             var runeWeightSheet = new RuneWeightSheet();
             runeWeightSheet.Set(@"id,boss_id,rank,rune_id,weight
-1,205007,0,1001,100
+1,900001,0,1001,100
 ");
             var killRewardSheet = new WorldBossKillRewardSheet();
             killRewardSheet.Set(@"id,boss_id,rank,rune_min,rune_max,crystal
-1,205007,0,1,1,100
+1,900001,0,1,1,100
 ");
             var worldBossListSheet = new WorldBossListSheet();
             worldBossListSheet.Set(@"id,boss_id,started_block_index,ended_block_index,fee,ticket_price,additional_ticket_price,max_purchase_count
-1,205007,0,100,300,200,100,10
+1,900001,0,100,300,200,100,10
 ");
             var worldBossKillRewardRecordAddress = Addresses.GetWorldBossKillRewardRecordAddress(avatarAddress, 1);
             var worldBossKillRewardRecord = new WorldBossKillRewardRecord();
@@ -69,6 +69,7 @@ namespace Lib9c.Tests.Action
                 .SetState(Addresses.GetSheetAddress<WorldBossListSheet>(), worldBossListSheet.Serialize())
                 .SetState(Addresses.GetSheetAddress<WorldBossKillRewardSheet>(), killRewardSheet.Serialize())
                 .SetState(Addresses.GetSheetAddress<RuneSheet>(), tableSheets.RuneSheet.Serialize())
+                .SetState(Addresses.GetSheetAddress<WorldBossCharacterSheet>(), tableSheets.WorldBossCharacterSheet.Serialize())
                 .SetState(Addresses.GameConfig, gameConfigState.Serialize())
                 .SetState(avatarAddress, avatarState.Serialize())
                 .SetState(worldBossKillRewardRecordAddress, worldBossKillRewardRecord.Serialize())

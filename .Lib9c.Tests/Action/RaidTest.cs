@@ -208,13 +208,14 @@ namespace Lib9c.Tests.Action
                 var nextState = action.Execute(ctx);
 
                 var random = new TestRandom(randomSeed);
-                var bossRow = _tableSheets.WorldBossListSheet.FindRowByBlockIndex(ctx.BlockIndex);
+                var bossListRow = _tableSheets.WorldBossListSheet.FindRowByBlockIndex(ctx.BlockIndex);
+                var raidSimulatorSheets = _tableSheets.GetRaidSimulatorSheets();
                 var simulator = new RaidSimulator(
-                    bossRow.BossId,
+                    bossListRow.BossId,
                     random,
                     avatarState,
                     action.FoodIds,
-                    _tableSheets.GetRaidSimulatorSheets(),
+                    raidSimulatorSheets,
                     _tableSheets.CostumeStatSheet);
                 simulator.Simulate();
                 var score = simulator.DamageDealt;
@@ -228,9 +229,10 @@ namespace Lib9c.Tests.Action
 
                 if (rewardRecordExist)
                 {
+                    var bossRow = raidSimulatorSheets.WorldBossCharacterSheet[bossListRow.BossId];
                     Assert.True(state.TryGetState(bossAddress, out List prevRawBoss));
                     var prevBossState = new WorldBossState(prevRawBoss);
-                    int rank = WorldBossHelper.CalculateRank(raiderStateExist ? 1_000 : 0);
+                    int rank = WorldBossHelper.CalculateRank(bossRow, raiderStateExist ? 1_000 : 0);
                     var rewards = RuneHelper.CalculateReward(
                         rank,
                         prevBossState.Id,

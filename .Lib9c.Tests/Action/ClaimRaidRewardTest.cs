@@ -34,14 +34,13 @@ namespace Lib9c.Tests.Action
         // Already Claim.
         [InlineData(typeof(NotEnoughRankException), 10_000, 1, 0, 0)]
         // Skip previous reward.
-        [InlineData(null, 50_000, 1, 645_000, 1_100)]
+        [InlineData(null, 2_055_000, 1, 645_000, 1_100)]
         // Claim all reward.
-        [InlineData(null, 10_000, 0, 30_000, 50)]
-        [InlineData(null, 20_000, 0, 97_500, 150)]
-        [InlineData(null, 30_000, 0, 217_500, 350)]
-        [InlineData(null, 40_000, 0, 405_000, 650)]
-        [InlineData(null, 50_000, 0, 675_000, 1_150)]
-        [InlineData(null, 90_000, 0, 675_000, 1_150)]
+        [InlineData(null, 30_000, 0, 30_000, 50)]
+        [InlineData(null, 105_000, 0, 97_500, 150)]
+        [InlineData(null, 305_000, 0, 217_500, 350)]
+        [InlineData(null, 805_000, 0, 405_000, 650)]
+        [InlineData(null, 2_055_000, 0, 675_000, 1_150)]
         public void Execute(Type exc, int highScore, int latestRank, int expectedCrystal, int expectedRune)
         {
             Address avatarAddress = new PrivateKey().ToAddress();

@@ -39,6 +39,7 @@ namespace Nekoyume.Action
             Dictionary<Type, (Address, ISheet)> sheets = states.GetSheets(sheetTypes: new[] {
                 typeof(RuneWeightSheet),
                 typeof(WorldBossRankRewardSheet),
+                typeof(WorldBossCharacterSheet),
                 typeof(WorldBossListSheet),
                 typeof(RuneSheet),
             });
@@ -54,9 +55,10 @@ namespace Nekoyume.Action
                 raidId = worldBossListSheet.FindPreviousRaidIdByBlockIndex(context.BlockIndex);
             }
             var row = sheets.GetSheet<WorldBossListSheet>().Values.First(r => r.Id == raidId);
+            var bossRow = sheets.GetSheet<WorldBossCharacterSheet>().Values.First(x => x.BossId == row.BossId);
             var raiderAddress = Addresses.GetRaiderAddress(AvatarAddress, raidId);
             RaiderState raiderState = states.GetRaiderState(raiderAddress);
-            int rank = WorldBossHelper.CalculateRank(raiderState.HighScore);
+            int rank = WorldBossHelper.CalculateRank(bossRow, raiderState.HighScore);
             if (raiderState.LatestRewardRank < rank)
             {
                 for (int i = raiderState.LatestRewardRank; i < rank; i++)

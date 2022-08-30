@@ -142,13 +142,15 @@ namespace Nekoyume.Action
                 sheets.GetSheet<EquipmentItemOptionSheet>(),
                 addressesHex);
 
+            var raidSimulatorSheets = sheets.GetRaidSimulatorSheets();
+
             // Simulate.
             var simulator = new RaidSimulator(
                 row.BossId,
                 context.Random,
                 avatarState,
                 FoodIds,
-                sheets.GetRaidSimulatorSheets(),
+                raidSimulatorSheets,
                 sheets.GetSheet<CostumeStatSheet>());
             simulator.Simulate();
 
@@ -190,9 +192,10 @@ namespace Nekoyume.Action
                 WorldBossKillRewardRecord rewardRecord;
                 if (states.TryGetState(worldBossKillRewardRecordAddress, out List rawList))
                 {
+                    var bossRow = raidSimulatorSheets.WorldBossCharacterSheet[row.BossId];
                     rewardRecord = new WorldBossKillRewardRecord(rawList);
                     // calculate with previous high score.
-                    int rank = WorldBossHelper.CalculateRank(previousHighScore);
+                    int rank = WorldBossHelper.CalculateRank(bossRow, previousHighScore);
                     states = states.SetWorldBossKillReward(
                         worldBossKillRewardRecordAddress,
                         rewardRecord,
