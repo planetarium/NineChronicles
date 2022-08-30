@@ -640,6 +640,9 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
                 sheetTypeList.Add(typeof(WorldBossCharacterSheet));
                 sheetTypeList.Add(typeof(EnemySkillSheet));
+                sheetTypeList.Add(typeof(WorldBossBattleRewardSheet));
+                sheetTypeList.Add(typeof(RuneWeightSheet));
+                sheetTypeList.Add(typeof(RuneSheet));
             }
 
             return states.GetSheets(sheetTypeList.Distinct().ToArray());
@@ -1048,7 +1051,8 @@ namespace Nekoyume.Action
             WorldBossKillRewardSheet worldBossKillRewardSheet,
             RuneSheet runeSheet,
             IRandom random,
-            Address avatarAddress)
+            Address avatarAddress,
+            Address agentAddress)
         {
             if (!rewardRecord.IsClaimable(bossState.Level))
             {
@@ -1072,7 +1076,14 @@ namespace Nekoyume.Action
                 rewardRecord[level] = true;
                 foreach (var reward in rewards)
                 {
-                    states = states.MintAsset(avatarAddress, reward);
+                    if (reward.Currency.Equals(CrystalCalculator.CRYSTAL))
+                    {
+                        states = states.MintAsset(agentAddress, reward);
+                    }
+                    else
+                    {
+                        states = states.MintAsset(avatarAddress, reward);
+                    }
                 }
             }
 

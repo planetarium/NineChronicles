@@ -1,4 +1,6 @@
 using Libplanet.Action;
+using Libplanet.Assets;
+using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
@@ -15,9 +17,14 @@ namespace Nekoyume.Battle
     {
         public int BossId { get; private set; }
         public int DamageDealt { get; private set; }
+        public List<FungibleAssetValue> AssetReward { get; private set; } = new List<FungibleAssetValue>();
         public override IEnumerable<ItemBase> Reward => new List<ItemBase>();
         private const int TurnLimit = 150;
         private readonly List<RaidBoss> _waves;
+
+        private WorldBossBattleRewardSheet _worldBossBattleRewardSheet;
+        private RuneWeightSheet _runeWeightSheet;
+        private RuneSheet _runeSheet;
 
         public RaidSimulator(
             int bossId,
@@ -36,6 +43,10 @@ namespace Nekoyume.Battle
 
             if (!simulatorSheets.WorldBossActionPatternSheet.TryGetValue(bossId, out var patternRow))
                 throw new SheetRowNotFoundException(nameof(WorldBossActionPatternSheet), bossId);
+
+            _worldBossBattleRewardSheet = simulatorSheets.WorldBossBattleRewardSheet;
+            _runeWeightSheet = simulatorSheets.RuneWeightSheet;
+            _runeSheet = simulatorSheets.RuneSheet;
 
             SetEnemies(bossRow, patternRow);
         }
@@ -136,23 +147,6 @@ namespace Nekoyume.Battle
                     {
                         Result = BattleLog.Result.Win;
                         Log.clearedWaveNumber = WaveNumber;
-
-                        //switch (WaveNumber)
-                        //{
-                        //    case 1:
-                        //        break;
-                        //    case 2:
-                        //        break;
-                        //    case 3:
-                        //        break;
-                        //    case 4:
-                        //        break;
-                        //    case 5:
-                        //        break;
-                        //    default:
-                        //        break;
-                        //}
-
                         break;
                     }
 
@@ -176,6 +170,16 @@ namespace Nekoyume.Battle
                 var leftHp = wave.CurrentHP > 0 ? wave.CurrentHP : 0;
                 DamageDealt += wave.HP - leftHp;
             }
+
+            var rank = Result == BattleLog.Result.Lose ?
+                0 : WaveNumber;
+            AssetReward = RuneHelper.CalculateReward(
+                rank,
+                BossId,
+                _runeWeightSheet,
+                _worldBossBattleRewardSheet,
+                _runeSheet,
+                Random);
 
             Log.result = Result;
             return Log;

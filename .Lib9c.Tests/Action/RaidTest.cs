@@ -208,23 +208,32 @@ namespace Lib9c.Tests.Action
                 var nextState = action.Execute(ctx);
 
                 var random = new TestRandom(randomSeed);
-                var bossRow = _tableSheets.WorldBossListSheet.FindRowByBlockIndex(ctx.BlockIndex);
+                var bossListRow = _tableSheets.WorldBossListSheet.FindRowByBlockIndex(ctx.BlockIndex);
+                var raidSimulatorSheets = _tableSheets.GetRaidSimulatorSheets();
                 var simulator = new RaidSimulator(
-                    bossRow.BossId,
+                    bossListRow.BossId,
                     random,
                     avatarState,
                     action.FoodIds,
-                    _tableSheets.GetRaidSimulatorSheets(),
+                    raidSimulatorSheets,
                     _tableSheets.CostumeStatSheet);
                 simulator.Simulate();
                 var score = simulator.DamageDealt;
 
+                Dictionary<Currency, FungibleAssetValue> rewardMap
+                    = new Dictionary<Currency, FungibleAssetValue>();
+                foreach (var reward in simulator.AssetReward)
+                {
+                    rewardMap[reward.Currency] = reward;
+                }
+
                 if (rewardRecordExist)
                 {
+                    var bossRow = raidSimulatorSheets.WorldBossCharacterSheet[bossListRow.BossId];
                     Assert.True(state.TryGetState(bossAddress, out List prevRawBoss));
                     var prevBossState = new WorldBossState(prevRawBoss);
-                    int rank = WorldBossHelper.CalculateRank(raiderStateExist ? 1_000 : 0);
-                    List<FungibleAssetValue> rewards = RuneHelper.CalculateReward(
+                    int rank = WorldBossHelper.CalculateRank(bossRow, raiderStateExist ? 1_000 : 0);
+                    var rewards = RuneHelper.CalculateReward(
                         rank,
                         prevBossState.Id,
                         _tableSheets.RuneWeightSheet,
@@ -235,11 +244,30 @@ namespace Lib9c.Tests.Action
 
                     foreach (var reward in rewards)
                     {
-                        Assert.Equal(reward, nextState.GetBalance(_avatarAddress, reward.Currency));
+                        if (!rewardMap.ContainsKey(reward.Currency))
+                        {
+                            rewardMap[reward.Currency] = reward;
+                        }
+                        else
+                        {
+                            rewardMap[reward.Currency] += reward;
+                        }
+                    }
+
+                    foreach (var reward in rewardMap)
+                    {
+                        if (reward.Key.Equals(CrystalCalculator.CRYSTAL))
+                        {
+                            Assert.Equal(reward.Value, nextState.GetBalance(_agentAddress, reward.Key));
+                        }
+                        else
+                        {
+                            Assert.Equal(reward.Value, nextState.GetBalance(_avatarAddress, reward.Key));
+                        }
                     }
                 }
 
-                Assert.Equal(0 * crystal, nextState.GetBalance(_agentAddress, crystal));
+                Assert.Equal(rewardMap[crystal], nextState.GetBalance(_agentAddress, crystal));
                 if (crystalExist)
                 {
                     Assert.Equal(fee * crystal, nextState.GetBalance(bossAddress, crystal));
@@ -313,7 +341,7 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void Execute_With_KillReward()
+        public void Execute_With_Reward()
         {
             var action = new Raid
             {
@@ -323,7 +351,6 @@ namespace Lib9c.Tests.Action
                 FoodIds = new List<Guid>(),
                 PayNcg = false,
             };
-            Currency crystal = CrystalCalculator.CRYSTAL;
             long blockIndex = 1;
             int raidId = _tableSheets.WorldBossListSheet.FindRaidIdByBlockIndex(blockIndex);
             Address raiderAddress = Addresses.GetRaiderAddress(_avatarAddress, raidId);
@@ -388,20 +415,8 @@ namespace Lib9c.Tests.Action
                     };
             state = state.SetState(bossAddress, bossState.Serialize());
             var randomSeed = 0;
-            var nextState = action.Execute(new ActionContext
-            {
-                BlockIndex = blockIndex,
-                PreviousStates = state,
-                Random = new TestRandom(randomSeed),
-                Rehearsal = false,
-                Signer = _agentAddress,
-            });
-
-            Assert.Equal(0 * crystal, nextState.GetBalance(_agentAddress, crystal));
-            Assert.True(nextState.TryGetState(raiderAddress, out List rawRaider));
-            var nextRaiderState = new RaiderState(rawRaider);
-            var bossRow = _tableSheets.WorldBossListSheet.FindRowByBlockIndex(blockIndex);
             var random = new TestRandom(randomSeed);
+            var bossRow = _tableSheets.WorldBossListSheet.FindRowByBlockIndex(blockIndex);
 
             var simulator = new RaidSimulator(
                 bossRow.BossId,
@@ -411,9 +426,15 @@ namespace Lib9c.Tests.Action
                 _tableSheets.GetRaidSimulatorSheets(),
                 _tableSheets.CostumeStatSheet);
             simulator.Simulate();
-            Assert.Equal(simulator.DamageDealt, nextRaiderState.HighScore);
 
-            List<FungibleAssetValue> rewards = RuneHelper.CalculateReward(
+            Dictionary<Currency, FungibleAssetValue> rewardMap
+                    = new Dictionary<Currency, FungibleAssetValue>();
+            foreach (var reward in simulator.AssetReward)
+            {
+                rewardMap[reward.Currency] = reward;
+            }
+
+            List<FungibleAssetValue> killRewards = RuneHelper.CalculateReward(
                 0,
                 bossState.Id,
                 _tableSheets.RuneWeightSheet,
@@ -422,9 +443,41 @@ namespace Lib9c.Tests.Action
                 random
             );
 
-            foreach (var reward in rewards)
+            var nextState = action.Execute(new ActionContext
             {
-                Assert.Equal(reward, nextState.GetBalance(_avatarAddress, reward.Currency));
+                BlockIndex = blockIndex,
+                PreviousStates = state,
+                Random = new TestRandom(randomSeed),
+                Rehearsal = false,
+                Signer = _agentAddress,
+            });
+
+            Assert.True(nextState.TryGetState(raiderAddress, out List rawRaider));
+            var nextRaiderState = new RaiderState(rawRaider);
+            Assert.Equal(simulator.DamageDealt, nextRaiderState.HighScore);
+
+            foreach (var reward in killRewards)
+            {
+                if (!rewardMap.ContainsKey(reward.Currency))
+                {
+                    rewardMap[reward.Currency] = reward;
+                }
+                else
+                {
+                    rewardMap[reward.Currency] += reward;
+                }
+            }
+
+            foreach (var reward in rewardMap)
+            {
+                if (reward.Key.Equals(CrystalCalculator.CRYSTAL))
+                {
+                    Assert.Equal(reward.Value, nextState.GetBalance(_agentAddress, reward.Key));
+                }
+                else
+                {
+                    Assert.Equal(reward.Value, nextState.GetBalance(_avatarAddress, reward.Key));
+                }
             }
 
             Assert.Equal(1, nextRaiderState.Level);

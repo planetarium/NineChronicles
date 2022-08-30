@@ -36,9 +36,10 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            Dictionary<Type, (Address, ISheet)> sheets = states.GetSheets(sheetTypes: new [] {
+            Dictionary<Type, (Address, ISheet)> sheets = states.GetSheets(sheetTypes: new[] {
                 typeof(RuneWeightSheet),
                 typeof(WorldBossRankRewardSheet),
+                typeof(WorldBossCharacterSheet),
                 typeof(WorldBossListSheet),
                 typeof(RuneSheet),
             });
@@ -54,9 +55,10 @@ namespace Nekoyume.Action
                 raidId = worldBossListSheet.FindPreviousRaidIdByBlockIndex(context.BlockIndex);
             }
             var row = sheets.GetSheet<WorldBossListSheet>().Values.First(r => r.Id == raidId);
+            var bossRow = sheets.GetSheet<WorldBossCharacterSheet>().Values.First(x => x.BossId == row.BossId);
             var raiderAddress = Addresses.GetRaiderAddress(AvatarAddress, raidId);
             RaiderState raiderState = states.GetRaiderState(raiderAddress);
-            int rank = WorldBossHelper.CalculateRank(raiderState.HighScore);
+            int rank = WorldBossHelper.CalculateRank(bossRow, raiderState.HighScore);
             if (raiderState.LatestRewardRank < rank)
             {
                 for (int i = raiderState.LatestRewardRank; i < rank; i++)
@@ -69,9 +71,17 @@ namespace Nekoyume.Action
                         sheets.GetSheet<RuneSheet>(),
                         context.Random
                     );
+
                     foreach (var reward in rewards)
                     {
-                        states = states.MintAsset(AvatarAddress, reward);
+                        if (reward.Currency.Equals(CrystalCalculator.CRYSTAL))
+                        {
+                            states = states.MintAsset(context.Signer, reward);
+                        }
+                        else
+                        {
+                            states = states.MintAsset(AvatarAddress, reward);
+                        }
                     }
                 }
 

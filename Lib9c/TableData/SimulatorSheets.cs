@@ -141,6 +141,9 @@ namespace Nekoyume.TableData
     {
         public WorldBossCharacterSheet WorldBossCharacterSheet { get; }
         public WorldBossActionPatternSheet WorldBossActionPatternSheet { get; }
+        public WorldBossBattleRewardSheet WorldBossBattleRewardSheet { get; }
+        public RuneWeightSheet RuneWeightSheet { get; }
+        public RuneSheet RuneSheet { get; }
 
         public RaidSimulatorSheets(
             MaterialItemSheet materialItemSheet,
@@ -153,7 +156,10 @@ namespace Nekoyume.TableData
             CharacterLevelSheet characterLevelSheet,
             EquipmentItemSetEffectSheet equipmentItemSetEffectSheet,
             WorldBossCharacterSheet worldBossCharacterSheet,
-            WorldBossActionPatternSheet worldBossActionPatternSheet
+            WorldBossActionPatternSheet worldBossActionPatternSheet,
+            WorldBossBattleRewardSheet worldBossBattleRewardSheet,
+            RuneWeightSheet runeWeightSheet,
+            RuneSheet runeSheet
         ) : base(materialItemSheet,
             skillSheet,
             skillBuffSheet,
@@ -166,6 +172,9 @@ namespace Nekoyume.TableData
         {
             WorldBossCharacterSheet = worldBossCharacterSheet;
             WorldBossActionPatternSheet = worldBossActionPatternSheet;
+            WorldBossBattleRewardSheet = worldBossBattleRewardSheet;
+            RuneWeightSheet = runeWeightSheet;
+            RuneSheet = runeSheet;
         }
     }
 }

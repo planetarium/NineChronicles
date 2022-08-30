@@ -246,7 +246,10 @@ namespace Nekoyume.Extensions
                 sheets.GetSheet<CharacterLevelSheet>(),
                 sheets.GetSheet<EquipmentItemSetEffectSheet>(),
                 sheets.GetSheet<WorldBossCharacterSheet>(),
-                sheets.GetSheet<WorldBossActionPatternSheet>()
+                sheets.GetSheet<WorldBossActionPatternSheet>(),
+                sheets.GetSheet<WorldBossBattleRewardSheet>(),
+                sheets.GetSheet<RuneWeightSheet>(),
+                sheets.GetSheet<RuneSheet>()
             );
         }
 
