@@ -41,6 +41,9 @@ namespace Nekoyume.UI.Module.WorldBoss
         private TextMeshProUGUI myTotalScoreText;
 
         [SerializeField]
+        private TextMeshProUGUI lastUpdatedText;
+
+        [SerializeField]
         private Transform gradeContainer;
 
         [SerializeField]
@@ -141,9 +144,10 @@ namespace Nekoyume.UI.Module.WorldBoss
             myTotalScoreText.text = string.Empty;
             myBestRecordText.text = string.Empty;
             myRankText.text = string.Empty;
+            lastUpdatedText.text = string.Empty;
         }
 
-        public void UpdateMyInformation(int bossId, WorldBossRankingRecord record)
+        public void UpdateMyInformation(int bossId, WorldBossRankingRecord record, long blockIndex)
         {
             myRankContainer.SetActive(false);
             emptyRecordContainer.SetActive(false);
@@ -159,6 +163,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 myTotalScoreText.text = $"{record.TotalScore:#,0}";
                 myBestRecordText.text = $"{record.HighScore:#,0}";
                 myRankText.text = $"{record.Ranking:#,0}";
+                lastUpdatedText.text = $"{blockIndex:#,0}";
                 UpdateGrade(bossId, record.HighScore);
             }
             else

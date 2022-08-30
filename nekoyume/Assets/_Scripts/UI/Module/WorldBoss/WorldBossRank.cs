@@ -41,6 +41,9 @@ namespace Nekoyume.UI.Module.WorldBoss
         private TextMeshProUGUI totalUsers;
 
         [SerializeField]
+        private TextMeshProUGUI lastUpdatedText;
+
+        [SerializeField]
         private Button refreshButton;
 
         [SerializeField]
@@ -132,6 +135,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 ? L10nManager.Localize("UI_PREVIOUS_SEASON_RANK")
                 : L10nManager.Localize("UI_LEADERBOARD");
             totalUsers.text = string.Empty;
+            lastUpdatedText.text = string.Empty;
             bossImage.enabled = false;
             scroll.UpdateData(new List<WorldBossRankItem>());
             myInfo.gameObject.SetActive(false);
@@ -174,6 +178,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             var response = await WorldBossQuery.QueryRankingAsync(row.Id, avatarAddress);
             var records = response?.WorldBossRanking.RankingInfo ?? new List<WorldBossRankingRecord>();
             var userCount = response?.WorldBossTotalUsers ?? 0;
+            var blockIndex = response?.WorldBossRanking?.BlockIndex ?? 0;
             var myRecord = records.FirstOrDefault(record => record.Address == avatarAddress.ToHex());
 
             if (records.Count > LimitCount)
@@ -182,14 +187,16 @@ namespace Nekoyume.UI.Module.WorldBoss
                     .ToList();
             }
 
+
             if (Game.Game.instance.TableSheets
-                .WorldBossCharacterSheet.TryGetValue(row.BossId, out var bossrow))
+                .WorldBossCharacterSheet.TryGetValue(row.BossId, out var bossRow))
             {
                 var items = new WorldBossRankItems(
-                    records.Select(record => new WorldBossRankItem(bossrow, record)).ToList(),
-                    myRecord != null ? new WorldBossRankItem(bossrow, myRecord) : null,
-                    avatarAddress,
-                    userCount);
+                records.Select(record => new WorldBossRankItem(bossRow, record)).ToList(),
+                myRecord != null ? new WorldBossRankItem(bossRow, myRecord) : null,
+                avatarAddress,
+                blockIndex,
+                userCount);
 
                 _cachedItems[status] = items;
             }
@@ -202,6 +209,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             myInfo.Set(items.MyItem, null);
             scroll.UpdateData(items.UserItems);
             totalUsers.text = items.UserCount > 0 ? $"{items.UserCount:#,0}" : string.Empty;;
+            lastUpdatedText.text = $"{items.LastUpdatedBlockIndex:#,0}";
         }
 
         private void SetActiveQueryLoading(bool value)
