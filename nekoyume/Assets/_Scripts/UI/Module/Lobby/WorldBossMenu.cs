@@ -17,6 +17,12 @@ namespace Nekoyume.UI.Module.Lobby
     public class WorldBossMenu : MainMenu
     {
         [SerializeField]
+        private GameObject onSeason;
+
+        [SerializeField]
+        private GameObject offSeason;
+
+        [SerializeField]
         private GameObject ticketContainer;
 
         [SerializeField]
@@ -77,6 +83,8 @@ namespace Nekoyume.UI.Module.Lobby
         {
             Game.Game.instance.Agent.BlockIndexSubject.Subscribe(UpdateBlockIndex)
                 .AddTo(_disposables);
+
+            UpdateBlockIndex(Game.Game.instance.Agent.BlockIndex);
         }
 
         private void OnDestroy()
@@ -90,6 +98,8 @@ namespace Nekoyume.UI.Module.Lobby
             switch (curStatus)
             {
                 case WorldBossStatus.OffSeason:
+                    onSeason.SetActive(false);
+                    offSeason.SetActive(true);
                     timeContainer.SetActive(false);
                     ticketContainer.SetActive(false);
                     break;
@@ -99,6 +109,8 @@ namespace Nekoyume.UI.Module.Lobby
                         return;
                     }
 
+                    onSeason.SetActive(true);
+                    offSeason.SetActive(false);
                     timeContainer.SetActive(true);
                     timeBlock.SetTimeBlock($"{row.EndedBlockIndex - currentBlockIndex:#,0}",
                         Util.GetBlockToTime(row.EndedBlockIndex - currentBlockIndex));
