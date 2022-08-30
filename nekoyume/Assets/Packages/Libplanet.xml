@@ -23,15 +23,13 @@
             An internal implementation of <see cref="T:Libplanet.Action.IAccountStateDelta"/>.
             </summary>
         </member>
-        <member name="M:Libplanet.Action.AccountStateDeltaImpl.#ctor(Libplanet.Action.AccountStateGetter,Libplanet.Action.AccountBalanceGetter,Libplanet.Action.TotalSupplyGetter,Libplanet.Address)">
+        <member name="M:Libplanet.Action.AccountStateDeltaImpl.#ctor(Libplanet.Action.AccountStateGetter,Libplanet.Action.AccountBalanceGetter,Libplanet.Address)">
             <summary>
             Creates a null delta from the given <paramref name="accountStateGetter"/>.
             </summary>
             <param name="accountStateGetter">A view to the &#x201c;epoch&#x201d; states.</param>
             <param name="accountBalanceGetter">A view to the &#x201c;epoch&#x201d; asset balances.
             </param>
-            <param name="totalSupplyGetter">A view to the &#x201c;epoch&#x201d; total supplies of
-            currencies.</param>
             <param name="signer">A signer address. Used for authenticating if a signer is allowed
             to mint a currency.</param>
         </member>
@@ -56,9 +54,6 @@
         <member name="M:Libplanet.Action.AccountStateDeltaImpl.GetBalance(Libplanet.Address,Libplanet.Assets.Currency)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Action.AccountStateDeltaImpl.GetTotalSupply(Libplanet.Assets.Currency)">
-            <inheritdoc/>
-        </member>
         <member name="M:Libplanet.Action.AccountStateDeltaImpl.MintAsset(Libplanet.Address,Libplanet.Assets.FungibleAssetValue)">
             <inheritdoc/>
         </member>
@@ -67,24 +62,6 @@
         </member>
         <member name="M:Libplanet.Action.AccountStateDeltaImpl.BurnAsset(Libplanet.Address,Libplanet.Assets.FungibleAssetValue)">
             <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Action.AccountStateDeltaImpl.ChooseVersion(System.Int32,Libplanet.Action.AccountStateGetter,Libplanet.Action.AccountBalanceGetter,Libplanet.Action.TotalSupplyGetter,Libplanet.Address)">
-            <summary>
-            Creates a null delta from the given <paramref name="accountStateGetter"/>,
-            <paramref name="accountBalanceGetter"/>, and <paramref name="totalSupplyGetter"/>,
-            with a subtype of <see cref="T:Libplanet.Action.AccountStateDeltaImpl"/> that corresponds to the
-            <paramref name="protocolVersion"/>.
-            </summary>
-            <param name="protocolVersion">The protocol version of which to create a delta.</param>
-            <param name="accountStateGetter">A view to the &#x201c;epoch&#x201d; states.</param>
-            <param name="accountBalanceGetter">A view to the &#x201c;epoch&#x201d; asset balances.
-            </param>
-            <param name="totalSupplyGetter">A view to the &#x201c;epoch&#x201d; total supplies of
-            currencies.</param>
-            <param name="signer">A signer address. Used for authenticating if a signer is allowed
-            to mint a currency.</param>
-            <returns>A instance of a subtype of <see cref="T:Libplanet.Action.AccountStateDeltaImpl"/> which
-            corresponds to the <paramref name="protocolVersion"/>.</returns>
         </member>
         <member name="T:Libplanet.Action.AccountStateDeltaImplV0">
             <summary>
@@ -425,17 +402,17 @@
             <seealso cref="M:Libplanet.Action.IAccountStateDelta.MintAsset(Libplanet.Address,Libplanet.Assets.FungibleAssetValue)"/>
             <seealso cref="M:Libplanet.Action.IAccountStateDelta.BurnAsset(Libplanet.Address,Libplanet.Assets.FungibleAssetValue)"/>
         </member>
-        <member name="M:Libplanet.Action.CurrencyPermissionException.#ctor(System.String,Libplanet.Address,Libplanet.Assets.Currency)">
+        <member name="M:Libplanet.Action.CurrencyPermissionException.#ctor(Libplanet.Address,Libplanet.Assets.Currency,System.String)">
             <summary>
             Creates a new <see cref="T:Libplanet.Action.CurrencyPermissionException"/> object.
             </summary>
-            <param name="message">Specifies a <see cref="P:System.Exception.Message"/>.</param>
             <param name="transactionSigner"> The address of the account who tried to mint or burn
             assets of a <paramref name="currency"/>.  Corresponds to
             the <see cref="P:Libplanet.Action.CurrencyPermissionException.TransactionSigner"/> property.</param>
             <param name="currency"> The <see cref="T:Libplanet.Assets.Currency"/> to be tried to be minted
             or burned by the <paramref name="transactionSigner"/>.  Corresponds to
             the <see cref="P:Libplanet.Action.CurrencyPermissionException.Currency"/> property.</param>
+            <param name="message">Specifies a <see cref="P:System.Exception.Message"/>.</param>
         </member>
         <member name="P:Libplanet.Action.CurrencyPermissionException.TransactionSigner">
             <summary>
@@ -456,16 +433,16 @@
             <remarks>Note this cannot be serialized as it holds a set of <see cref="T:System.Type"/> objects
             which are not serializable either.</remarks>
         </member>
-        <member name="M:Libplanet.Action.DuplicateActionTypeIdentifierException.#ctor(System.String,System.String,System.Collections.Immutable.IImmutableSet{System.Type})">
+        <member name="M:Libplanet.Action.DuplicateActionTypeIdentifierException.#ctor(System.String,System.Collections.Immutable.IImmutableSet{System.Type},System.String)">
             <summary>
             Creates a new <see cref="T:Libplanet.Action.DuplicateActionTypeIdentifierException"/> instance.
             </summary>
-            <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.  Note that extra
-            informative text will be appended to this.</param>
             <param name="typeIdentifier">The <see cref="P:Libplanet.Action.ActionTypeAttribute.TypeIdentifier"/> string
             that the <paramref name="duplicateActionTypes"/> are associated with.</param>
             <param name="duplicateActionTypes">The set of multiple action types that are associated
             with the same <paramref name="typeIdentifier"/>.</param>
+            <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.  Note that extra
+            informative text will be appended to this.</param>
         </member>
         <member name="P:Libplanet.Action.DuplicateActionTypeIdentifierException.TypeIdentifier">
             <summary>
@@ -543,11 +520,6 @@
             <c>{ [A] = { FOO }, [B] = { FOO, BAR }, [C] = { BAR } }</c>.</para>
             </summary>
         </member>
-        <member name="P:Libplanet.Action.IAccountStateDelta.TotalSupplyUpdatedCurrencies">
-            <summary>
-            <seealso cref="T:Libplanet.Assets.Currency">Currencies</seealso> with their total supplies updated.
-            </summary>
-        </member>
         <member name="M:Libplanet.Action.IAccountStateDelta.SetState(Libplanet.Address,Bencodex.Types.IValue)">
             <summary>
             Gets a new instance that the account state of the given
@@ -580,10 +552,6 @@
             <exception cref="T:Libplanet.Action.CurrencyPermissionException">Thrown when a transaction signer
             (or a miner in case of block actions) is not a member of the <see
             cref="F:Libplanet.Assets.FungibleAssetValue.Currency"/>'s <see cref="F:Libplanet.Assets.Currency.Minters"/>.</exception>
-            <exception cref="T:Libplanet.Action.SupplyOverflowException">Thrown when the sum of the
-            <paramref name="value"/> to be minted and the current total supply amount of the
-            <see cref="F:Libplanet.Assets.FungibleAssetValue.Currency"/> exceeds the
-            <see cref="P:Libplanet.Assets.Currency.MaximumSupply"/>.</exception>
         </member>
         <member name="M:Libplanet.Action.IAccountStateDelta.TransferAsset(Libplanet.Address,Libplanet.Address,Libplanet.Assets.FungibleAssetValue,System.Boolean)">
             <summary>
@@ -678,17 +646,6 @@
             <returns>
             The <paramref name="address"/>'s balance of the <paramref name="currency"/>.
             </returns>
-        </member>
-        <member name="M:Libplanet.Action.IAccountStateView.GetTotalSupply(Libplanet.Assets.Currency)">
-            <summary>
-            Returns the total supply of a <paramref name="currency"/>.
-            </summary>
-            <param name="currency">The currency type to query.</param>
-            <returns>The total supply of the <paramref name="currency"/>.
-            </returns>
-            <exception cref="T:Libplanet.Action.TotalSupplyNotTrackableException">Thrown when the total supply of the
-            given <paramref name="currency"/> is not trackable.</exception>
-            <seealso cref="P:Libplanet.Assets.Currency.MaximumSupply"/>
         </member>
         <member name="T:Libplanet.Action.IAction">
             <summary>
@@ -1045,15 +1002,15 @@
             <seealso cref="M:Libplanet.Action.IAccountStateDelta.TransferAsset(Libplanet.Address,Libplanet.Address,Libplanet.Assets.FungibleAssetValue,System.Boolean)"/>
             <seealso cref="M:Libplanet.Action.IAccountStateDelta.BurnAsset(Libplanet.Address,Libplanet.Assets.FungibleAssetValue)"/>
         </member>
-        <member name="M:Libplanet.Action.InsufficientBalanceException.#ctor(System.String,Libplanet.Address,Libplanet.Assets.FungibleAssetValue)">
+        <member name="M:Libplanet.Action.InsufficientBalanceException.#ctor(Libplanet.Address,Libplanet.Assets.FungibleAssetValue,System.String)">
             <summary>
             Creates a new <see cref="T:Libplanet.Action.InsufficientBalanceException"/> object.
             </summary>
-            <param name="message">Specifies a <see cref="P:System.Exception.Message"/>.</param>
             <param name="address">The owner of the insufficient <paramref name="balance"/>.
             Corresponds to the <see cref="P:Libplanet.Action.InsufficientBalanceException.Address"/> property.</param>
             <param name="balance">The account's current balance.
             Corresponds to the <see cref="P:Libplanet.Action.InsufficientBalanceException.Balance"/> property.</param>
+            <param name="message">Specifies a <see cref="P:System.Exception.Message"/>.</param>
         </member>
         <member name="P:Libplanet.Action.InsufficientBalanceException.Address">
             <summary>
@@ -1145,14 +1102,15 @@
             </summary>
             <seealso cref="T:Libplanet.Action.PolymorphicAction`1"/>
         </member>
-        <member name="M:Libplanet.Action.MissingActionTypeException.#ctor(System.String,System.Type)">
+        <member name="M:Libplanet.Action.MissingActionTypeException.#ctor(System.Type,System.String)">
             <summary>
             Creates a new <see cref="T:Libplanet.Action.MissingActionTypeException"/> object.
             </summary>
-            <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.</param>
             <param name="actionType">The action type that lacks
             <see cref="T:Libplanet.Action.ActionTypeAttribute"/>.  It is automatically included to
             the <see cref="P:System.Exception.Message"/> string.</param>
+            <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.
+            </param>
         </member>
         <member name="P:Libplanet.Action.MissingActionTypeException.ActionType">
             <summary>
@@ -1367,26 +1325,6 @@
             </returns>
             <seealso cref="T:Libplanet.Action.IRandom"/>
         </member>
-        <member name="T:Libplanet.Action.SupplyOverflowException">
-            <summary>
-            The exception thrown when a minter tries to mint a currency such that the resulting total
-            supply exceed the maximum amount.
-            </summary>
-            <seealso cref="M:Libplanet.Action.IAccountStateDelta.MintAsset(Libplanet.Address,Libplanet.Assets.FungibleAssetValue)"/>
-        </member>
-        <member name="M:Libplanet.Action.SupplyOverflowException.#ctor(System.String,Libplanet.Assets.FungibleAssetValue)">
-            <summary>
-            Creates a new <see cref="T:Libplanet.Action.SupplyOverflowException"/> object.
-            </summary>
-            <param name="message">Specifies a <see cref="P:System.Exception.Message"/>.</param>
-            <param name="amount">The attempted amount to be minted.
-            Corresponds to the <see cref="P:Libplanet.Action.SupplyOverflowException.Amount"/> property.</param>
-        </member>
-        <member name="P:Libplanet.Action.SupplyOverflowException.Amount">
-            <summary>
-            The attempted amount to be minted.
-            </summary>
-        </member>
         <member name="T:Libplanet.Action.Sys.Mint">
             <summary>
             A system action that mints specified <see cref="P:Libplanet.Action.Sys.Mint.Amount"/> of tokens to a given
@@ -1454,42 +1392,6 @@
         <member name="M:Libplanet.Action.Sys.Transfer.Execute(Libplanet.Action.IActionContext)">
             <inheritdoc cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/>
         </member>
-        <member name="T:Libplanet.Action.TotalSupplyGetter">
-            <summary>
-            An delegate to provide a view of total supply of a currency.
-            <para>Gets the total supply of the given <paramref name="currency"/>.
-            </para>
-            </summary>
-            <param name="currency">The currency type to query the total supply.
-            </param>
-            <returns>The total supply value of the <paramref name="currency"/> in
-            <see cref="T:Libplanet.Assets.FungibleAssetValue"/>.
-            <exception cref="T:Libplanet.Action.TotalSupplyNotTrackableException">Thrown when the total supply of the
-            given <paramref name="currency"/> is not trackable.</exception>
-            </returns>
-        </member>
-        <member name="T:Libplanet.Action.TotalSupplyNotTrackableException">
-            <summary>
-            The exception thrown when <see cref="M:Libplanet.Action.IAccountStateView.GetTotalSupply(Libplanet.Assets.Currency)"/> was called on a
-            legacy untracked currency with <see cref="F:Libplanet.Assets.Currency.TotalSupplyTrackable"/> set to
-            <c>false</c>.
-            </summary>
-            <seealso cref="M:Libplanet.Action.IAccountStateView.GetTotalSupply(Libplanet.Assets.Currency)"/>
-        </member>
-        <member name="M:Libplanet.Action.TotalSupplyNotTrackableException.#ctor(System.String,Libplanet.Assets.Currency)">
-            <summary>
-            Creates a new <see cref="T:Libplanet.Action.TotalSupplyNotTrackableException"/> object.
-            </summary>
-            <param name="message">Specifies a <see cref="P:System.Exception.Message"/>.</param>
-            <param name="currency">The currency queried for the total supply.
-            Corresponds to the <see cref="P:Libplanet.Action.TotalSupplyNotTrackableException.Currency"/> property.
-            </param>
-        </member>
-        <member name="P:Libplanet.Action.TotalSupplyNotTrackableException.Currency">
-            <summary>
-            The currency queried for the total supply.
-            </summary>
-        </member>
         <member name="T:Libplanet.Action.UnexpectedlyTerminatedActionException">
             <summary>
             The exception that is thrown during an <see cref="T:Libplanet.Action.IAction"/> is being evaluated.
@@ -1497,11 +1399,10 @@
             is stored in the <see cref="P:System.Exception.InnerException"/> property.</para>
             </summary>
         </member>
-        <member name="M:Libplanet.Action.UnexpectedlyTerminatedActionException.#ctor(System.String,System.Nullable{System.Collections.Immutable.ImmutableArray{System.Byte}},System.Nullable{System.Int64},System.Nullable{Libplanet.Tx.TxId},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},Libplanet.Action.IAction,System.Exception)">
+        <member name="M:Libplanet.Action.UnexpectedlyTerminatedActionException.#ctor(System.Nullable{System.Collections.Immutable.ImmutableArray{System.Byte}},System.Nullable{System.Int64},System.Nullable{Libplanet.Tx.TxId},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},Libplanet.Action.IAction,System.String,System.Exception)">
             <summary>
             Creates a new <see cref="T:Libplanet.Action.UnexpectedlyTerminatedActionException"/> object.
             </summary>
-            <param name="message">Specifies a <see cref="P:System.Exception.Message"/>.</param>
             <param name="preEvaluationHash">The <see cref="P:Libplanet.Blocks.Block`1.PreEvaluationHash"/> of the
             <see cref="T:Libplanet.Blocks.Block`1"/> that <paramref name="action"/> belongs to.
             This can be <c>null</c> on rehearsal mode.</param>
@@ -1517,6 +1418,7 @@
             <param name="previousStateRootHash">The <see cref="P:Libplanet.Store.Trie.ITrie.Hash"/> of states until
             previous action execution.  This can be null on rehearsal mode or if the chain which
             executed the action, was not using <see cref="T:Libplanet.Store.TrieStateStore"/>.</param>
+            <param name="message">Specifies a <see cref="P:System.Exception.Message"/>.</param>
             <param name="innerException">The actual exception that the <see cref="P:Libplanet.Action.UnexpectedlyTerminatedActionException.Action"/> threw.
             </param>
         </member>
@@ -1755,25 +1657,12 @@
             Here is how US Dollar can be represented using <see cref="T:Libplanet.Assets.Currency"/>:
             <code>
             var USMint = new PrivateKey();
-            var USD = Currency.Uncapped(ticker: "USD", decimalPlaces: 2, minter: USMint.ToAddress());
+            var USD = new Currency(ticker: "USD", decimalPlace: 2, minter: USMint.ToAddress());
             var twentyThreeBucks = 23 * USD;
             // Or alternatively: USD * 23;
             // Or explicitly: new FungibleAssetValue(USD, 23, 0)
             </code>
             </example>
-            <remarks>There are two types of <see cref="T:Libplanet.Assets.Currency">Currencies</see>: capped and uncapped.
-            Capped currencies have a hard limit on the maximum minted amount, and uncapped currencies
-            do not have the said limit. To define a <see cref="T:Libplanet.Assets.Currency"/> you may call either of the
-            following.
-            <list type="bullet">
-            <item><see
-            cref="M:Libplanet.Assets.Currency.Capped(System.String,System.Byte,System.ValueTuple{System.Numerics.BigInteger,System.Numerics.BigInteger},System.Collections.Immutable.IImmutableSet{Libplanet.Address})"/>
-            </item>
-            <item><see cref="M:Libplanet.Assets.Currency.Capped(System.String,System.Byte,System.ValueTuple{System.Numerics.BigInteger,System.Numerics.BigInteger},Libplanet.Address)"/></item>
-            <item><see cref="M:Libplanet.Assets.Currency.Uncapped(System.String,System.Byte,System.Collections.Immutable.IImmutableSet{Libplanet.Address})"/></item>
-            <item><see cref="M:Libplanet.Assets.Currency.Uncapped(System.String,System.Byte,Libplanet.Address)"/></item>
-            </list>
-            </remarks>
             <seealso cref="T:Libplanet.Assets.FungibleAssetValue"/>
         </member>
         <member name="F:Libplanet.Assets.Currency.Ticker">
@@ -1803,10 +1692,31 @@
             The deterministic hash derived from other fields.
             </summary>
         </member>
-        <member name="F:Libplanet.Assets.Currency.TotalSupplyTrackable">
+        <member name="M:Libplanet.Assets.Currency.#ctor(System.String,System.Byte,System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
             <summary>
-            Whether the total supply of this instance of <see cref="T:Libplanet.Assets.Currency"/> is trackable.
+            Defines a <see cref="T:Libplanet.Assets.Currency"/> type.
             </summary>
+            <param name="ticker">The ticker symbol, e.g., <c>&quot;USD&quot;</c>.</param>
+            <param name="decimalPlaces">The number of digits to treat as <a
+            href="https://w.wiki/ZXv#Treatment_of_minor_currency_units_(the_%22exponent%22)">minor
+            units (i.e., exponent)</a>.</param>
+            <param name="minters">The <see cref="T:Libplanet.Address"/>es who can mint the currency.
+            See also <see cref="F:Libplanet.Assets.Currency.Minters"/> field which corresponds to this.</param>
+            <exception cref="T:System.ArgumentException">Thrown when the given <paramref name="ticker"/>
+            is an empty string.</exception>
+        </member>
+        <member name="M:Libplanet.Assets.Currency.#ctor(System.String,System.Byte,System.Nullable{Libplanet.Address})">
+            <summary>
+            Defines a <see cref="T:Libplanet.Assets.Currency"/> type.
+            </summary>
+            <param name="ticker">The ticker symbol, e.g., <c>&quot;USD&quot;</c>.</param>
+            <param name="decimalPlaces">The number of digits to treat as <a
+            href="https://w.wiki/ZXv#Treatment_of_minor_currency_units_(the_%22exponent%22)">minor
+            units (i.e., exponent)</a>.</param>
+            <param name="minter">The address who can mint the currency.  To specify multiple
+            minters, use the <see cref="M:Libplanet.Assets.Currency.#ctor(System.String,System.Byte,System.Collections.Immutable.IImmutableSet{Libplanet.Address})"/> constructor
+            instead.  See also <see cref="F:Libplanet.Assets.Currency.Minters"/> field which corresponds to this.</param>
+            <seealso cref="M:Libplanet.Assets.Currency.#ctor(System.String,System.Byte,System.Collections.Immutable.IImmutableSet{Libplanet.Address})"/>
         </member>
         <member name="M:Libplanet.Assets.Currency.#ctor(Bencodex.Types.IValue)">
             <summary>
@@ -1815,48 +1725,6 @@
             <param name="serialized">The Bencodex value serialized by <see cref="M:Libplanet.Assets.Currency.Serialize"/>
             method.</param>
             <seealso cref="M:Libplanet.Assets.Currency.Serialize"/>
-        </member>
-        <member name="M:Libplanet.Assets.Currency.#ctor(System.String,System.Byte,System.ValueTuple{System.Numerics.BigInteger,System.Numerics.BigInteger},System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
-            <summary>
-            Private implementation to create a capped instance of <see cref="T:Libplanet.Assets.Currency"/>.
-            </summary>
-            <param name="ticker">The ticker symbol, e.g., <c>&quot;USD&quot;</c>.</param>
-            <param name="decimalPlaces">The number of digits to treat as <a
-            href="https://w.wiki/ZXv#Treatment_of_minor_currency_units_(the_%22exponent%22)">minor
-            units (i.e., exponent)</a>.</param>
-            <param name="maximumSupply">The uppermost quantity of currency allowed to exist. For
-            example, a <paramref name="maximumSupply"/> parameter of <c>(123, 45)</c> means that the
-            token of the currency can be minted up to <c>123.45</c>. See also
-            <see cref="P:Libplanet.Assets.Currency.MaximumSupply"/> field which corresponds to this.</param>
-            <param name="minters">The <see cref="T:Libplanet.Address"/>es who can mint the currency.
-            See also <see cref="F:Libplanet.Assets.Currency.Minters"/> field which corresponds to this.</param>
-            <exception cref="T:System.ArgumentException">Thrown when the given <paramref name="ticker"/>
-            is an empty string, or when either the Major or the Minor values of
-            <paramref name="maximumSupply"/> is a negative number, or when the given Minor unit for
-            the <paramref name="maximumSupply"/> is too big for the given
-            <paramref name="decimalPlaces"/>.</exception>
-        </member>
-        <member name="M:Libplanet.Assets.Currency.#ctor(System.String,System.Byte,System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Boolean)">
-            <summary>
-            Private implementation to create a general instance of <see cref="T:Libplanet.Assets.Currency"/>.
-            </summary>
-            <param name="ticker">The ticker symbol, e.g., <c>&quot;USD&quot;</c>.</param>
-            <param name="decimalPlaces">The number of digits to treat as <a
-            href="https://w.wiki/ZXv#Treatment_of_minor_currency_units_(the_%22exponent%22)">minor
-            units (i.e., exponent)</a>.</param>
-            <param name="minters">The <see cref="T:Libplanet.Address"/>es who can mint the currency.
-            See also <see cref="F:Libplanet.Assets.Currency.Minters"/> field which corresponds to this.</param>
-            <param name="totalSupplyTrackable">A feature flag whether this instance of
-            <see cref="T:Libplanet.Assets.Currency"/> supports total supply tracking. Legacy behavior is characterized
-            with a value of false.</param>
-            <exception cref="T:System.ArgumentException">Thrown when the given <paramref name="ticker"/>
-            is an empty string.</exception>
-        </member>
-        <member name="P:Libplanet.Assets.Currency.MaximumSupply">
-            <summary>
-            The uppermost quantity of currency allowed to exist.
-            <c>null</c> means unlimited supply.
-            </summary>
         </member>
         <member name="M:Libplanet.Assets.Currency.op_Multiply(Libplanet.Assets.Currency,System.Numerics.BigInteger)">
             <summary>
@@ -1885,122 +1753,6 @@
             <remarks>This cannot specify <see cref="P:Libplanet.Assets.FungibleAssetValue.MinorUnit"/> but only
             <see cref="P:Libplanet.Assets.FungibleAssetValue.MajorUnit"/>.  For more precision, directly use <see
             cref="T:Libplanet.Assets.FungibleAssetValue"/>'s constructors instead.</remarks>
-        </member>
-        <member name="M:Libplanet.Assets.Currency.Capped(System.String,System.Byte,System.ValueTuple{System.Numerics.BigInteger,System.Numerics.BigInteger},System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
-            <summary>
-            Define a <see cref="T:Libplanet.Assets.Currency"/> with a maximum supply limit.
-            </summary>
-            <param name="ticker">The ticker symbol, e.g., <c>&quot;USD&quot;</c>.</param>
-            <param name="decimalPlaces">The number of digits to treat as <a
-            href="https://w.wiki/ZXv#Treatment_of_minor_currency_units_(the_%22exponent%22)">minor
-            units (i.e., exponent)</a>.</param>
-            <param name="maximumSupply">The uppermost quantity of currency allowed to exist. For
-            example, the <paramref name="maximumSupply"/> parameter in <c>Currency.Capped("ABC", 2,
-            (123, 45), ...)</c> means that the token <c>ABC</c> can be minted up to <c>123.45 ABC
-            </c>. See also <see cref="P:Libplanet.Assets.Currency.MaximumSupply"/> field which corresponds to this.</param>
-            <param name="minters">The <see cref="T:Libplanet.Address"/>es who can mint the currency.
-            See also <see cref="F:Libplanet.Assets.Currency.Minters"/> field which corresponds to this.</param>
-            <returns>An instance of <see cref="T:Libplanet.Assets.Currency"/> with a maximum supply limit.</returns>
-            <exception cref="T:System.ArgumentException">Thrown when the given <paramref name="ticker"/>
-            is an empty string, or when either the Major or the Minor values of
-            <paramref name="maximumSupply"/> is a negative number, or when the given Minor unit for
-            the <paramref name="maximumSupply"/> is too big for the given
-            <paramref name="decimalPlaces"/>.</exception>
-        </member>
-        <member name="M:Libplanet.Assets.Currency.Capped(System.String,System.Byte,System.ValueTuple{System.Numerics.BigInteger,System.Numerics.BigInteger},Libplanet.Address)">
-            <summary>
-            Define a <see cref="T:Libplanet.Assets.Currency"/> with a maximum supply limit.
-            </summary>
-            <param name="ticker">The ticker symbol, e.g., <c>&quot;USD&quot;</c>.</param>
-            <param name="decimalPlaces">The number of digits to treat as <a
-            href="https://w.wiki/ZXv#Treatment_of_minor_currency_units_(the_%22exponent%22)">minor
-            units (i.e., exponent)</a>.</param>
-            <param name="maximumSupply">The uppermost quantity of currency allowed to exist. For
-            example, the <paramref name="maximumSupply"/> parameter in <c>Currency.Capped("ABC", 2,
-            (123, 45), ...)</c> means that the token <c>ABC</c> can be minted up to <c>123.45 ABC
-            </c>. See also <see cref="P:Libplanet.Assets.Currency.MaximumSupply"/> field which corresponds to this.</param>
-            <param name="minter">The address who can mint the currency.  To specify multiple
-            minters, use the <see
-            cref="M:Libplanet.Assets.Currency.Capped(System.String,System.Byte,System.ValueTuple{System.Numerics.BigInteger,System.Numerics.BigInteger},System.Collections.Immutable.IImmutableSet{Libplanet.Address})"/>
-            See also <see cref="F:Libplanet.Assets.Currency.Minters"/> field which corresponds to this.</param>
-            <returns>An instance of <see cref="T:Libplanet.Assets.Currency"/> with a maximum supply limit.</returns>
-            <seealso
-            cref="M:Libplanet.Assets.Currency.Capped(System.String,System.Byte,System.ValueTuple{System.Numerics.BigInteger,System.Numerics.BigInteger},System.Collections.Immutable.IImmutableSet{Libplanet.Address})"/>
-            <exception cref="T:System.ArgumentException">Thrown when the given <paramref name="ticker"/>
-            is an empty string, or when either the Major or the Minor values of
-            <paramref name="maximumSupply"/> is a negative number, or when the given Minor unit for
-            the <paramref name="maximumSupply"/> is too big for the given
-            <paramref name="decimalPlaces"/>.</exception>
-        </member>
-        <member name="M:Libplanet.Assets.Currency.Uncapped(System.String,System.Byte,System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
-            <summary>
-            Define a <see cref="T:Libplanet.Assets.Currency"/> without a maximum supply limit.
-            </summary>
-            <param name="ticker">The ticker symbol, e.g., <c>&quot;USD&quot;</c>.</param>
-            <param name="decimalPlaces">The number of digits to treat as <a
-            href="https://w.wiki/ZXv#Treatment_of_minor_currency_units_(the_%22exponent%22)">minor
-            units (i.e., exponent)</a>.</param>
-            <param name="minters">The <see cref="T:Libplanet.Address"/>es who can mint the currency.
-            See also <see cref="F:Libplanet.Assets.Currency.Minters"/> field which corresponds to this.</param>
-            <returns>An instance of <see cref="T:Libplanet.Assets.Currency"/> without a maximum supply limit.</returns>
-            <exception cref="T:System.ArgumentException">Thrown when the given <paramref name="ticker"/>
-            is an empty string.</exception>
-        </member>
-        <member name="M:Libplanet.Assets.Currency.Uncapped(System.String,System.Byte,Libplanet.Address)">
-            <summary>
-            Define a <see cref="T:Libplanet.Assets.Currency"/> without a maximum supply limit.
-            </summary>
-            <param name="ticker">The ticker symbol, e.g., <c>&quot;USD&quot;</c>.</param>
-            <param name="decimalPlaces">The number of digits to treat as <a
-            href="https://w.wiki/ZXv#Treatment_of_minor_currency_units_(the_%22exponent%22)">minor
-            units (i.e., exponent)</a>.</param>
-            <param name="minter">The address who can mint the currency.  To specify multiple
-            minters, use the <see cref="M:Libplanet.Assets.Currency.Uncapped(System.String,System.Byte,System.Collections.Immutable.IImmutableSet{Libplanet.Address})"/>
-            See also <see cref="F:Libplanet.Assets.Currency.Minters"/> field which corresponds to this.</param>
-            <returns>An instance of <see cref="T:Libplanet.Assets.Currency"/> without a maximum supply limit.</returns>
-            <seealso cref="M:Libplanet.Assets.Currency.Uncapped(System.String,System.Byte,System.Collections.Immutable.IImmutableSet{Libplanet.Address})"/>
-            <exception cref="T:System.ArgumentException">Thrown when the given <paramref name="ticker"/>
-            is an empty string.</exception>
-        </member>
-        <member name="M:Libplanet.Assets.Currency.Legacy(System.String,System.Byte,System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
-            <summary>
-            <b>OBSOLETE! DO NOT USE.</b><br/><br/>(unless you are upgrading your project from an old
-            version of Libplanet that did not support total supply tracking for
-            <see cref="T:Libplanet.Assets.Currency">Currencies</see> and had a legacy <see cref="T:Libplanet.Assets.Currency"/> defined.)
-            <br/><br/>Define a legacy <see cref="T:Libplanet.Assets.Currency"/> without total supply tracking, which is
-            internally compatible with the legacy version.
-            </summary>
-            <param name="ticker">The ticker symbol, e.g., <c>&quot;USD&quot;</c>.</param>
-            <param name="decimalPlaces">The number of digits to treat as <a
-            href="https://w.wiki/ZXv#Treatment_of_minor_currency_units_(the_%22exponent%22)">minor
-            units (i.e., exponent)</a>.</param>
-            <param name="minters">The <see cref="T:Libplanet.Address"/>es who can mint the currency.
-            See also <see cref="F:Libplanet.Assets.Currency.Minters"/> field which corresponds to this.</param>
-            <returns>An instance of legacy <see cref="T:Libplanet.Assets.Currency"/> without total supply tracking.
-            </returns>
-            <exception cref="T:System.ArgumentException">Thrown when the given <paramref name="ticker"/>
-            is an empty string.</exception>
-        </member>
-        <member name="M:Libplanet.Assets.Currency.Legacy(System.String,System.Byte,Libplanet.Address)">
-            <summary>
-            <b>OBSOLETE! DO NOT USE.</b><br/><br/>(unless you are upgrading your project from an old
-            version of Libplanet that did not support total supply tracking for
-            <see cref="T:Libplanet.Assets.Currency">Currencies</see> and had a legacy <see cref="T:Libplanet.Assets.Currency"/> defined.)
-            <br/><br/>Define a legacy <see cref="T:Libplanet.Assets.Currency"/> without total supply tracking, which is
-            internally compatible with the legacy version.
-            </summary>
-            <param name="ticker">The ticker symbol, e.g., <c>&quot;USD&quot;</c>.</param>
-            <param name="decimalPlaces">The number of digits to treat as <a
-            href="https://w.wiki/ZXv#Treatment_of_minor_currency_units_(the_%22exponent%22)">minor
-            units (i.e., exponent)</a>.</param>
-            <param name="minter">The address who can mint the currency.  To specify multiple
-            minters, use the <see cref="M:Libplanet.Assets.Currency.Legacy(System.String,System.Byte,System.Collections.Immutable.IImmutableSet{Libplanet.Address})"/>
-            See also <see cref="F:Libplanet.Assets.Currency.Minters"/> field which corresponds to this.</param>
-            <returns>An instance of legacy <see cref="T:Libplanet.Assets.Currency"/> without total supply tracking.
-            </returns>
-            <seealso cref="M:Libplanet.Assets.Currency.Legacy(System.String,System.Byte,System.Collections.Immutable.IImmutableSet{Libplanet.Address})"/>
-            <exception cref="T:System.ArgumentException">Thrown when the given <paramref name="ticker"/>
-            is an empty string.</exception>
         </member>
         <member name="M:Libplanet.Assets.Currency.AllowsToMint(Libplanet.Address)">
             <summary>
@@ -2645,29 +2397,6 @@
         <member name="M:Libplanet.Blockchain.BlockChain`1.GetBalance(Libplanet.Address,Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash,Libplanet.Blockchain.FungibleAssetStateCompleter{`0})">
             <inheritdoc cref="M:Libplanet.Blockchain.IBlockChainStates`1.GetBalance(Libplanet.Address,Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash,Libplanet.Blockchain.FungibleAssetStateCompleter{`0})"/>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.GetTotalSupply(Libplanet.Assets.Currency,System.Nullable{Libplanet.Blocks.BlockHash},Libplanet.Blockchain.TotalSupplyStateCompleter{`0})">
-            <summary>
-            Gets the total supply of a <paramref name="currency"/> in the
-            <see cref="T:Libplanet.Blockchain.BlockChain`1"/> from <paramref name="offset"/>, and if not found, derive
-            from the sum of all balances.
-            </summary>
-            <param name="currency">The currency type to query.</param>
-            <param name="offset">The <see cref="T:Libplanet.HashDigest`1"/> of the block to
-            start finding the state.</param>
-            <param name="stateCompleter">When the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> instance does not
-            contain states of the block, this delegate is called and its return values are used
-            instead.
-            <para><see cref="F:Libplanet.Blockchain.FungibleAssetStateCompleters`1.Recalculate"/> makes the incomplete
-            states recalculated and filled on the fly.</para>
-            <para><see cref="F:Libplanet.Blockchain.FungibleAssetStateCompleters`1.Reject"/> makes the incomplete states
-            (if needed) to cause <see cref="T:Libplanet.Blockchain.IncompleteBlockStatesException"/> instead.</para>
-            </param>
-            <returns>The total supply value of <paramref name="currency"/> at
-            <paramref name="offset"/> in <see cref="T:Libplanet.Assets.FungibleAssetValue"/>.</returns>
-        </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.GetTotalSupply(Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash,Libplanet.Blockchain.TotalSupplyStateCompleter{`0})">
-            <inheritdoc cref="M:Libplanet.Blockchain.IBlockChainStates`1.GetTotalSupply(Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash,Libplanet.Blockchain.TotalSupplyStateCompleter{`0})"/>
-        </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.GetTxExecution(Libplanet.Blocks.BlockHash,Libplanet.Tx.TxId)">
             <summary>
             Queries the recorded <see cref="T:Libplanet.Tx.TxExecution"/> for a successful or failed
@@ -3143,25 +2872,6 @@
             <paramref name="offset"/>) of the <paramref name="currency"/>.
             </returns>
         </member>
-        <member name="M:Libplanet.Blockchain.IBlockChainStates`1.GetTotalSupply(Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash,Libplanet.Blockchain.TotalSupplyStateCompleter{`0})">
-            <summary>
-            Gets the total supply of a <paramref name="currency"/> in the
-            <see cref="T:Libplanet.Blockchain.BlockChain`1"/> from <paramref name="offset"/>, and if not found, return 0.
-            </summary>
-            <param name="currency">The currency type to query.</param>
-            <param name="offset">The <see cref="T:Libplanet.HashDigest`1"/> of the block to
-            start finding the state.</param>
-            <param name="stateCompleter">When the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> instance does not
-            contain states of the block, this delegate is called and its return values are used
-            instead.
-            <para><see cref="F:Libplanet.Blockchain.FungibleAssetStateCompleters`1.Recalculate"/> makes the incomplete
-            states recalculated and filled on the fly.</para>
-            <para><see cref="F:Libplanet.Blockchain.FungibleAssetStateCompleters`1.Reject"/> makes the incomplete states
-            (if needed) to cause <see cref="T:Libplanet.Blockchain.IncompleteBlockStatesException"/> instead.</para>
-            </param>
-            <returns>The total supply value of <paramref name="currency"/> at
-            <paramref name="offset"/> in <see cref="T:Libplanet.Assets.FungibleAssetValue"/>.</returns>
-        </member>
         <member name="T:Libplanet.Blockchain.IncompleteBlockStatesException">
             <summary>
             An exception thrown when a <see cref="T:Libplanet.Blockchain.BlockChain`1"/> have
@@ -3371,7 +3081,7 @@
         <member name="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.NativeTokens">
             <summary>
             A fixed set of <see cref="T:Libplanet.Assets.Currency"/> objects that are supported by the blockchain
-            as first-class assets.
+            as first-class citizens.
             </summary>
         </member>
         <member name="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.ValidateNextBlockTx(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.Transaction{`0})">
@@ -3824,12 +3534,12 @@
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match to
             <see cref="T:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer`1"/>'s type parameter.</typeparam>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.Debug.InvalidRenderException`1.#ctor(System.String,System.Collections.Generic.IReadOnlyList{Libplanet.Blockchain.Renderers.Debug.RenderRecord{`0}})">
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.InvalidRenderException`1.#ctor(System.Collections.Generic.IReadOnlyList{Libplanet.Blockchain.Renderers.Debug.RenderRecord{`0}},System.String)">
             <summary>
             Creates a new <see cref="T:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer`1"/> instance.
             </summary>
-            <param name="message">The exception message string.</param>
             <param name="records">Recorded render events.</param>
+            <param name="message">The exception message string.</param>
         </member>
         <member name="P:Libplanet.Blockchain.Renderers.Debug.InvalidRenderException`1.Records">
             <summary>
@@ -4863,9 +4573,8 @@
         </member>
         <member name="T:Libplanet.Blockchain.StateCompleterSet`1">
             <summary>
-            Groups three kinds of state completers, <see cref="T:Libplanet.Blockchain.StateCompleters`1"/>,
-            <see cref="T:Libplanet.Blockchain.FungibleAssetStateCompleters`1"/>, and
-            <see cref="T:Libplanet.Blockchain.TotalSupplyStateCompleters`1"/>.
+            Groups two kinds of state completers, <see cref="T:Libplanet.Blockchain.StateCompleters`1"/>
+            and <see cref="T:Libplanet.Blockchain.FungibleAssetStateCompleters`1"/>.
             </summary>
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
             to <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
@@ -4914,11 +4623,6 @@
             Holds a <see cref="T:Libplanet.Blockchain.FungibleAssetStateCompleter`1"/>.
             </summary>
         </member>
-        <member name="P:Libplanet.Blockchain.StateCompleterSet`1.TotalSupplyStateCompleter">
-            <summary>
-            Holds a <see cref="T:Libplanet.Blockchain.TotalSupplyStateCompleter`1"/>.
-            </summary>
-        </member>
         <member name="T:Libplanet.Blockchain.TotalDifficultyComparer">
             <summary>
             The default canonical chain comparer (which purpose to be a <see
@@ -4938,51 +4642,6 @@
         </member>
         <member name="M:Libplanet.Blockchain.TotalDifficultyComparer.Compare(Libplanet.Blocks.IBlockExcerpt,Libplanet.Blocks.IBlockExcerpt)">
             <inheritdoc cref="M:System.Collections.Generic.IComparer`1.Compare(`0,`0)"/>
-        </member>
-        <member name="T:Libplanet.Blockchain.TotalSupplyStateCompleter`1">
-            <summary>
-            A delegate to be called when <see cref="M:Libplanet.Blockchain.IBlockChainStates`1.GetTotalSupply(Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash,Libplanet.Blockchain.TotalSupplyStateCompleter{`0})"/>
-            method encounters a block having incomplete dirty states.
-            <see cref="M:Libplanet.Blockchain.IBlockChainStates`1.GetTotalSupply(Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash,Libplanet.Blockchain.TotalSupplyStateCompleter{`0})"/> method returns this delegate's
-            return value instead for such case.
-            </summary>
-            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
-            the type parameter of <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.</typeparam>
-            <param name="blockChain">The blockchain to query.</param>
-            <param name="blockHash">The hash of a block lacking its dirty states.</param>
-            <param name="currency">The currency to query.</param>
-            <returns>The total supply value of <paramref name="currency"/> in
-            <see cref="T:Libplanet.Assets.FungibleAssetValue"/>.</returns>
-            <seealso cref="T:Libplanet.Blockchain.FungibleAssetStateCompleters`1"/>
-        </member>
-        <member name="T:Libplanet.Blockchain.TotalSupplyStateCompleters`1">
-            <summary>
-            Predefined built-in state completers that satisfy the
-            <see cref="T:Libplanet.Blockchain.TotalSupplyStateCompleter`1"/> delegate.
-            </summary>
-            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type. It should match the
-            <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
-        </member>
-        <member name="F:Libplanet.Blockchain.TotalSupplyStateCompleters`1.Recalculate">
-            <summary>
-            See <see cref="F:Libplanet.Blockchain.StateCompleterSet`1.Recalculate"/>.
-            </summary>
-        </member>
-        <member name="F:Libplanet.Blockchain.TotalSupplyStateCompleters`1.ComplementAll">
-            <summary>
-            See <see cref="F:Libplanet.Blockchain.StateCompleterSet`1.ComplementAll"/>.
-            </summary>
-        </member>
-        <member name="F:Libplanet.Blockchain.TotalSupplyStateCompleters`1.ComplementLatest">
-            <summary>
-            See <see cref="F:Libplanet.Blockchain.StateCompleterSet`1.ComplementLatest"/>.
-            </summary>
-        </member>
-        <member name="F:Libplanet.Blockchain.TotalSupplyStateCompleters`1.Reject">
-            <summary>
-            Rejects to complement incomplete state and throws
-            an <see cref="T:Libplanet.Blockchain.IncompleteBlockStatesException"/>.
-            </summary>
         </member>
         <member name="T:Libplanet.Blocks.Block`1">
             <summary>
@@ -5906,7 +5565,7 @@
         <member name="P:Libplanet.Blocks.IBlockMetadata.PreviousHash">
             <summary>
             The previous block's hash.  If it's a genesis block (i.e., its <see cref="P:Libplanet.Blocks.IBlockMetadata.Index"/> is 0)
-            this must be <see langword="null"/>.
+            this should be <c>null</c>.
             </summary>
         </member>
         <member name="P:Libplanet.Blocks.IBlockMetadata.TxHash">
@@ -5955,16 +5614,16 @@
             <see cref="P:Libplanet.Blocks.Block`1.PreEvaluationHash"/> is invalid.
             </summary>
         </member>
-        <member name="M:Libplanet.Blocks.InvalidBlockPreEvaluationHashException.#ctor(System.String,System.Collections.Immutable.ImmutableArray{System.Byte},System.Collections.Immutable.ImmutableArray{System.Byte})">
+        <member name="M:Libplanet.Blocks.InvalidBlockPreEvaluationHashException.#ctor(System.Collections.Immutable.ImmutableArray{System.Byte},System.Collections.Immutable.ImmutableArray{System.Byte},System.String)">
             <summary>
             Initializes a new instance of the
             <see cref="T:Libplanet.Blocks.InvalidBlockPreEvaluationHashException"/> class.
             </summary>
-            <param name="message">The message that describes the error.</param>
             <param name="actualPreEvaluationHash">The hash recorded as
             <see cref="P:Libplanet.Blocks.Block`1.PreEvaluationHash"/>.</param>
             <param name="expectedPreEvaluationHash">The hash calculated from the block except
             <see cref="P:Libplanet.Blocks.Block`1.StateRootHash"/>.</param>
+            <param name="message">The message that describes the error.</param>
         </member>
         <member name="P:Libplanet.Blocks.InvalidBlockPreEvaluationHashException.ActualPreEvaluationHash">
             <summary>
@@ -5983,13 +5642,13 @@
             <see cref="P:Libplanet.Blocks.BlockHeader.ProtocolVersion"/>) is invalid.
             </summary>
         </member>
-        <member name="M:Libplanet.Blocks.InvalidBlockProtocolVersionException.#ctor(System.String,System.Int32)">
+        <member name="M:Libplanet.Blocks.InvalidBlockProtocolVersionException.#ctor(System.Int32,System.String)">
             <summary>
             Initializes a new instance of <see cref="T:Libplanet.Blocks.InvalidBlockProtocolVersionException"/> class.
             </summary>
-            <param name="message">The message that describes the error.</param>
             <param name="actualProtocolVersion">The actual block protocol version which is invalid.
             </param>
+            <param name="message">The message that describes the error.</param>
         </member>
         <member name="P:Libplanet.Blocks.InvalidBlockProtocolVersionException.ActualProtocolVersion">
             <summary>
@@ -6004,13 +5663,13 @@
             An exception thrown when a block's public key is invalid.
             </summary>
         </member>
-        <member name="M:Libplanet.Blocks.InvalidBlockPublicKeyException.#ctor(System.String,Libplanet.Crypto.PublicKey)">
+        <member name="M:Libplanet.Blocks.InvalidBlockPublicKeyException.#ctor(Libplanet.Crypto.PublicKey,System.String)">
             <summary>
             Creates a new <see cref="T:Libplanet.Blocks.InvalidBlockPublicKeyException"/> instance.
             </summary>
-            <param name="message">A message that describes the error.</param>
             <param name="invalidPublicKey">The invalid public key tried to be used
             in the block.</param>
+            <param name="message">A message that describes the error.</param>
         </member>
         <member name="P:Libplanet.Blocks.InvalidBlockPublicKeyException.InvalidPublicKey">
             <summary>
@@ -6022,13 +5681,13 @@
             An exception thrown when a block's signature is invalid.
             </summary>
         </member>
-        <member name="M:Libplanet.Blocks.InvalidBlockSignatureException.#ctor(System.String,Libplanet.Crypto.PublicKey,System.Nullable{System.Collections.Immutable.ImmutableArray{System.Byte}})">
+        <member name="M:Libplanet.Blocks.InvalidBlockSignatureException.#ctor(Libplanet.Crypto.PublicKey,System.Nullable{System.Collections.Immutable.ImmutableArray{System.Byte}},System.String)">
             <summary>
             Creates a new <see cref="T:Libplanet.Blocks.InvalidBlockPublicKeyException"/> instance.
             </summary>
-            <param name="message">A message that describes the error.</param>
             <param name="publicKey">The public key used for signing the block.</param>
             <param name="invalidSignature">The block signature which is invalid.</param>
+            <param name="message">A message that describes the error.</param>
         </member>
         <member name="P:Libplanet.Blocks.InvalidBlockSignatureException.PublicKey">
             <summary>
@@ -6046,15 +5705,15 @@
             mismatches to the state root hash of the trie on the block executed in local.
             </summary>
         </member>
-        <member name="M:Libplanet.Blocks.InvalidBlockStateRootHashException.#ctor(System.String,Libplanet.HashDigest{System.Security.Cryptography.SHA256},Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+        <member name="M:Libplanet.Blocks.InvalidBlockStateRootHashException.#ctor(Libplanet.HashDigest{System.Security.Cryptography.SHA256},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.String)">
             <summary>
             Initializes a new instance of the
             <see cref="T:Libplanet.Blocks.InvalidBlockStateRootHashException"/> class.
             </summary>
-            <param name="message">The message that describes the error.</param>
             <param name="expectedStateRootHash">The hash recorded as
             <see cref="P:Libplanet.Blocks.Block`1.StateRootHash"/>>.</param>
             <param name="actualStateRootHash">The hash of state trie on the block executed.</param>
+            <param name="message">The message that describes the error.</param>
         </member>
         <member name="P:Libplanet.Blocks.InvalidBlockStateRootHashException.ActualStateRootHash">
             <summary>
@@ -6100,10 +5759,10 @@
             <summary>
             Initializes a new instance of <see cref="T:Libplanet.Blocks.InvalidBlockTxHashException"/> class.
             </summary>
-            <param name="message">The message that describes the error.</param>
             <param name="blockTxHash">The hash digest of <see cref="P:Libplanet.Blocks.Block`1.TxHash"/>.</param>
             <param name="calculatedTxHash">The calculated hash digest from
             <see cref="P:Libplanet.Blocks.Block`1.Transactions"/>.</param>
+            <param name="message">The message that describes the error.</param>
         </member>
         <member name="P:Libplanet.Blocks.InvalidBlockTxHashException.BlockTxHash">
             <summary>
@@ -6124,15 +5783,15 @@
             the genesis block in other network.
             </summary>
         </member>
-        <member name="M:Libplanet.Blocks.InvalidGenesisBlockException.#ctor(System.String,Libplanet.Blocks.BlockHash,Libplanet.Blocks.BlockHash)">
+        <member name="M:Libplanet.Blocks.InvalidGenesisBlockException.#ctor(Libplanet.Blocks.BlockHash,Libplanet.Blocks.BlockHash,System.String)">
             <summary>
             Initializes a new instance of the
             <see cref="T:Libplanet.Blocks.InvalidGenesisBlockException"/> class.
             </summary>
-            <param name="message">The message that describes the error.</param>
             <param name="networkExpected">The genesis block that the network expects.</param>
             <param name="stored">The genesis block that a local <see cref="T:Libplanet.Store.IStore"/> contains.
             </param>
+            <param name="message">The message that describes the error.</param>
         </member>
         <member name="P:Libplanet.Blocks.InvalidGenesisBlockException.NetworkExpected">
             <summary>
@@ -7991,16 +7650,16 @@
             with a given key ID in an <see cref="T:Libplanet.KeyStore.IKeyStore"/>.
             </summary>
         </member>
-        <member name="M:Libplanet.KeyStore.NoKeyException.#ctor(System.String,System.Guid)">
+        <member name="M:Libplanet.KeyStore.NoKeyException.#ctor(System.Guid,System.String)">
             <summary>
             Instantiates a new exception object with proper metadata.
             </summary>
-            <param name="message">A descriptive error message for programmers.
-            Goes to <see cref="P:System.Exception.Message"/>.</param>
             <param name="keyId">The key ID tried to look for.
             It is automatically included to the <see cref="P:System.Exception.Message"/>
             string.
             </param>
+            <param name="message">A descriptive error message for programmers.
+            Goes to <see cref="P:System.Exception.Message"/>.</param>
         </member>
         <member name="P:Libplanet.KeyStore.NoKeyException.KeyId">
             <summary>
@@ -8888,10 +8547,16 @@
         <member name="M:Libplanet.Store.DefaultStore.ForkBlockIndexes(System.Guid,System.Guid,Libplanet.Blocks.BlockHash)">
             <inheritdoc cref="M:Libplanet.Store.BaseStore.ForkBlockIndexes(System.Guid,System.Guid,Libplanet.Blocks.BlockHash)"/>
         </member>
+        <member name="M:Libplanet.Store.DefaultStore.IterateTransactionIds">
+            <inheritdoc/>
+        </member>
         <member name="M:Libplanet.Store.DefaultStore.GetTransaction``1(Libplanet.Tx.TxId)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.DefaultStore.PutTransaction``1(Libplanet.Tx.Transaction{``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.DeleteTransaction(Libplanet.Tx.TxId)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.DefaultStore.ContainsTransaction(Libplanet.Tx.TxId)">
@@ -8946,6 +8611,9 @@
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.DefaultStore.PruneOutdatedChains(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.CountTransactions">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.DefaultStore.CountBlocks">
@@ -9981,25 +9649,25 @@
             <see cref="M:Libplanet.Tx.Transaction`1.Validate"/>.
             </summary>
         </member>
-        <member name="M:Libplanet.Tx.InvalidTxException.#ctor(System.String,Libplanet.Tx.TxId)">
+        <member name="M:Libplanet.Tx.InvalidTxException.#ctor(Libplanet.Tx.TxId,System.String)">
             <summary>
             Instantiates a new exception object with proper metadata. Use
-            <see cref="M:Libplanet.Tx.InvalidTxException.#ctor(System.String,Libplanet.Tx.TxId,System.Exception)"/> if innerException
+            <see cref="M:Libplanet.Tx.InvalidTxException.#ctor(Libplanet.Tx.TxId,System.String,System.Exception)"/> if innerException
             is required.
             </summary>
-            <param name="message">A descriptive error message for programmers.
-            </param>
             <param name="txid">The invalid <see cref="T:Libplanet.Tx.Transaction`1"/>'s
             <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.  It is automatically included to
             the <see cref="P:System.Exception.Message"/> string.</param>
+            <param name="message">A descriptive error message for programmers.
+            </param>
         </member>
-        <member name="M:Libplanet.Tx.InvalidTxException.#ctor(System.String,Libplanet.Tx.TxId,System.Exception)">
-            <inheritdoc cref="M:Libplanet.Tx.InvalidTxException.#ctor(System.String,Libplanet.Tx.TxId)"/>
-            <param name="message">A descriptive error message for programmers.
-            </param>
+        <member name="M:Libplanet.Tx.InvalidTxException.#ctor(Libplanet.Tx.TxId,System.String,System.Exception)">
+            <inheritdoc cref="M:Libplanet.Tx.InvalidTxException.#ctor(Libplanet.Tx.TxId,System.String)"/>
             <param name="txid">The invalid <see cref="T:Libplanet.Tx.Transaction`1"/>'s
             <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.  It is automatically included to
             the <see cref="P:System.Exception.Message"/> string.</param>
+            <param name="message">A descriptive error message for programmers.
+            </param>
             <param name="innerException">The <see cref="T:System.Exception"/> for
             <see cref="P:System.Exception.InnerException"/>.</param>
         </member>
@@ -10015,12 +9683,11 @@
             <see cref="P:Libplanet.Blockchain.BlockChain`1.Genesis"/>.
             </summary>
         </member>
-        <member name="M:Libplanet.Tx.InvalidTxGenesisHashException.#ctor(System.String,Libplanet.Tx.TxId,Libplanet.Blocks.BlockHash,System.Nullable{Libplanet.Blocks.BlockHash})">
+        <member name="M:Libplanet.Tx.InvalidTxGenesisHashException.#ctor(Libplanet.Tx.TxId,Libplanet.Blocks.BlockHash,System.Nullable{Libplanet.Blocks.BlockHash},System.String)">
             <summary>
             Initializes a new instance of the
             <see cref="T:Libplanet.Tx.InvalidTxGenesisHashException"/> class.
             </summary>
-            <param name="message">The message that describes the error.</param>
             <param name="txid">The invalid <see cref="T:Libplanet.Tx.Transaction`1"/>'s
             <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.  It is automatically included to
             the <see cref="P:System.Exception.Message"/> string.</param>
@@ -10028,6 +9695,7 @@
             value of <see cref="P:Libplanet.Blockchain.BlockChain`1.Genesis"/>.</param>
             <param name="improperGenesisHash">The actual
             <see cref="P:Libplanet.Tx.Transaction`1.GenesisHash"/>.  This can be <c>null</c>.</param>
+            <param name="message">The message that describes the error.</param>
         </member>
         <member name="P:Libplanet.Tx.InvalidTxGenesisHashException.ExpectedGenesisHash">
             <summary>
@@ -10049,15 +9717,15 @@
             encoding of <see cref="T:Libplanet.Tx.TxId"/>, but there is no corresponding entry to
             a given <see cref="T:Libplanet.Tx.TxId"/>, which is <em>valid</em>.</remarks>
         </member>
-        <member name="M:Libplanet.Tx.InvalidTxIdException.#ctor(System.String,Libplanet.Tx.TxId)">
+        <member name="M:Libplanet.Tx.InvalidTxIdException.#ctor(Libplanet.Tx.TxId,System.String)">
             <summary>
             Creates a new <see cref="T:Libplanet.Tx.InvalidTxIdException"/> object.
             </summary>
-            <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.
-            </param>
             <param name="txid">The invalid <see cref="T:Libplanet.Tx.TxId"/>.
             It is automatically included to the <see cref="P:System.Exception.Message"/>
             string.</param>
+            <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.
+            </param>
         </member>
         <member name="T:Libplanet.Tx.InvalidTxNonceException">
             <summary>
@@ -10066,12 +9734,11 @@
             the <see cref="P:Libplanet.Tx.Transaction`1.Signer"/>.
             </summary>
         </member>
-        <member name="M:Libplanet.Tx.InvalidTxNonceException.#ctor(System.String,Libplanet.Tx.TxId,System.Int64,System.Int64)">
+        <member name="M:Libplanet.Tx.InvalidTxNonceException.#ctor(Libplanet.Tx.TxId,System.Int64,System.Int64,System.String)">
             <summary>
             Initializes a new instance of the
             <see cref="T:Libplanet.Tx.InvalidTxNonceException"/> class.
             </summary>
-            <param name="message">The message that describes the error.</param>
             <param name="txid">The invalid <see cref="T:Libplanet.Tx.Transaction`1"/>'s
             <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.  It is automatically included to
             the <see cref="P:System.Exception.Message"/> string.</param>
@@ -10079,6 +9746,7 @@
             result of the <see cref="P:Libplanet.Tx.Transaction`1.Signer"/>.</param>
             <param name="improperNonce">The actual
             <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/>.</param>
+            <param name="message">The message that describes the error.</param>
         </member>
         <member name="P:Libplanet.Tx.InvalidTxNonceException.ExpectedNonce">
             <summary>
@@ -10097,14 +9765,15 @@
             <see cref="P:Libplanet.Tx.Transaction`1.Signature"/> is invalid.
             </summary>
         </member>
-        <member name="M:Libplanet.Tx.InvalidTxSignatureException.#ctor(System.String,Libplanet.Tx.TxId)">
+        <member name="M:Libplanet.Tx.InvalidTxSignatureException.#ctor(Libplanet.Tx.TxId,System.String)">
             <summary>
             Creates a new <see cref="T:Libplanet.Tx.InvalidTxSignatureException"/> object.
             </summary>
-            <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.</param>
             <param name="txid">The invalid <see cref="T:Libplanet.Tx.Transaction`1"/>'s
             <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.  It is automatically included to
             the <see cref="P:System.Exception.Message"/> string.</param>
+            <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.
+            </param>
         </member>
         <member name="T:Libplanet.Tx.ITxExcerpt">
             <summary>
@@ -10850,26 +10519,26 @@
             a <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>.
             </summary>
         </member>
-        <member name="M:Libplanet.Tx.TxPolicyViolationException.#ctor(System.String,Libplanet.Tx.TxId)">
+        <member name="M:Libplanet.Tx.TxPolicyViolationException.#ctor(Libplanet.Tx.TxId,System.String)">
             <summary>
             Creates a new <see cref="T:Libplanet.Tx.TxPolicyViolationException"/> instance. Use
-            <see cref="M:Libplanet.Tx.TxPolicyViolationException.#ctor(System.String,Libplanet.Tx.TxId,System.Exception)"/> if innerException
+            <see cref="M:Libplanet.Tx.TxPolicyViolationException.#ctor(Libplanet.Tx.TxId,System.String,System.Exception)"/> if innerException
             is required.
             </summary>
+            <param name="txid">The <see cref="P:Libplanet.Tx.Transaction`1.Id"/> of the
+            <see cref="T:Libplanet.Tx.Transaction`1"/> violating a <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>.
+            Gets prepended to <paramref name="message"/>.</param>
             <param name="message">A description for the reason of violation
             given by an implementation of <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>.
             </param>
+        </member>
+        <member name="M:Libplanet.Tx.TxPolicyViolationException.#ctor(Libplanet.Tx.TxId,System.String,System.Exception)">
+            <inheritdoc cref="M:Libplanet.Tx.TxPolicyViolationException.#ctor(Libplanet.Tx.TxId,System.String)"/>
             <param name="txid">The <see cref="P:Libplanet.Tx.Transaction`1.Id"/> of the
             <see cref="T:Libplanet.Tx.Transaction`1"/> violating a <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>.
             Gets prepended to <paramref name="message"/>.</param>
-        </member>
-        <member name="M:Libplanet.Tx.TxPolicyViolationException.#ctor(System.String,Libplanet.Tx.TxId,System.Exception)">
-            <inheritdoc cref="M:Libplanet.Tx.TxPolicyViolationException.#ctor(System.String,Libplanet.Tx.TxId)"/>
             <param name="message">A description for the reason of violation
             given by an implementation of <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>. </param>
-            <param name="txid">The <see cref="P:Libplanet.Tx.Transaction`1.Id"/> of the
-            <see cref="T:Libplanet.Tx.Transaction`1"/> violating a <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>.
-            Gets prepended to <paramref name="message"/>.</param>
             <param name="innerException">The <see cref="T:System.Exception"/> for
             <see cref="P:System.Exception.InnerException"/>.</param>
         </member>

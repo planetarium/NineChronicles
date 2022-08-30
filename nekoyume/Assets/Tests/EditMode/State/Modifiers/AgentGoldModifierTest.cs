@@ -17,10 +17,7 @@ namespace Tests.EditMode.State.Modifiers
         [SetUp]
         public void SetUp()
         {
-#pragma warning disable CS0618
-            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-            _currency = Currency.Legacy("NCG", 2, null);
-#pragma warning restore CS0618
+            _currency = new Currency("NCG", 2, minters: null);
             _goldBalanceState = new GoldBalanceState(
                 new PrivateKey().ToAddress(),
                 new FungibleAssetValue(_currency));
