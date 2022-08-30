@@ -50,10 +50,7 @@
                 rankingMapAddress);
             agentState.avatarAddresses[0] = _avatarAddress;
 
-#pragma warning disable CS0618
-            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-            var currency = Currency.Legacy("NCG", 2, null);
-#pragma warning restore CS0618
+            var currency = new Currency("NCG", 2, minters: null);
             var goldCurrencyState = new GoldCurrencyState(currency);
 
             _state = _state

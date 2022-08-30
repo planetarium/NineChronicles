@@ -95,10 +95,8 @@ namespace Nekoyume.Action
 
             if (balance < requiredGold)
             {
-                throw new InsufficientBalanceException(
-                    $"There is no sufficient balance for {context.Signer}: {balance} < {requiredGold}",
-                    context.Signer,
-                    requiredGold);
+                throw new InsufficientBalanceException(context.Signer, requiredGold,
+                    $"There is no sufficient balance for {context.Signer}: {balance} < {requiredGold}");
             }
             states = states.TransferAsset(context.Signer, monsterCollectionAddress, requiredGold);
             states = states.SetState(monsterCollectionAddress, monsterCollectionState.Serialize());

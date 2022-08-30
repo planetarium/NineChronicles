@@ -32,10 +32,7 @@ namespace Lib9c.Tests.Action
             }
         );
 
-#pragma warning disable CS0618
-        // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-        private static readonly Currency _currency = Currency.Legacy("NCG", 2, null);
-#pragma warning restore CS0618
+        private static readonly Currency _currency = new Currency("NCG", 2, default(Address?));
 
         [Fact]
         public void Constructor_ThrowsMemoLengthOverflowException()
@@ -171,10 +168,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteWithMinterAsSender()
         {
-#pragma warning disable CS0618
-            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-            var currencyBySender = Currency.Legacy("NCG", 2, _sender);
-#pragma warning restore CS0618
+            var currencyBySender = new Currency("NCG", 2, _sender);
             var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
                 .Add((_sender, currencyBySender), _currency * 1000)
                 .Add((_recipient, currencyBySender), _currency * 10);
@@ -205,10 +199,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteWithMinterAsRecipient()
         {
-#pragma warning disable CS0618
-            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-            var currencyByRecipient = Currency.Legacy("NCG", 2, _sender);
-#pragma warning restore CS0618
+            var currencyByRecipient = new Currency("NCG", 2, _sender);
             var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
                 .Add((_sender, currencyByRecipient), _currency * 1000)
                 .Add((_recipient, currencyByRecipient), _currency * 10);

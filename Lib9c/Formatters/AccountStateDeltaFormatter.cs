@@ -41,17 +41,11 @@ namespace Lib9c.Formatters
                     )
                 ).Cast<IValue>()
             );
-            var totalSupply = new Dictionary(
-                value.TotalSupplyUpdatedCurrencies.Select(currency =>
-                    new KeyValuePair<IKey, IValue>(
-                        (Binary)(IValue)CurrencyExtensions.Serialize(currency),
-                        (Integer)value.GetTotalSupply(currency).RawValue)));
 
             var bdict = new Dictionary(new[]
             {
                 new KeyValuePair<IKey, IValue>((Text) "states", state),
                 new KeyValuePair<IKey, IValue>((Text) "balances", balance),
-                new KeyValuePair<IKey, IValue>((Text) "totalSupplies", totalSupply),
             });
 
             writer.Write(new Codec().Encode(bdict));

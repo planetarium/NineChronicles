@@ -24,10 +24,7 @@ namespace Lib9c.Tests.Model.Order
                 1,
                 orderId,
                 tradableId,
-#pragma warning disable CS0618
-            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-                Currency.Legacy("NCG", 2, null) * 1,
-#pragma warning restore CS0618
+                new FungibleAssetValue(new Currency("NCG", 2, minter: null), 1, 0),
                 2,
                 3,
                 4,

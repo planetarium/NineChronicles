@@ -39,7 +39,6 @@ namespace Nekoyume.Action
         {
             private IImmutableDictionary<Address, IValue> _states;
             private IImmutableDictionary<(Address, Currency), BigInteger> _balances;
-            private IImmutableDictionary<Currency, BigInteger> _totalSupplies;
 
             public IImmutableSet<Address> UpdatedAddresses => _states.Keys.ToImmutableHashSet();
 
@@ -53,21 +52,16 @@ namespace Nekoyume.Action
                 );
 #pragma warning restore LAA1002
 
-            public IImmutableSet<Currency> TotalSupplyUpdatedCurrencies =>
-                _totalSupplies.Keys.ToImmutableHashSet();
-
             public AccountStateDelta(
                 IImmutableDictionary<Address, IValue> states,
-                IImmutableDictionary<(Address, Currency), BigInteger> balances,
-                IImmutableDictionary<Currency, BigInteger> totalSupplies
+                IImmutableDictionary<(Address, Currency), BigInteger> balances
             )
             {
                 _states = states;
                 _balances = balances;
-                _totalSupplies = totalSupplies;
             }
 
-            public AccountStateDelta(Dictionary states, List balances, Dictionary totalSupplies)
+            public AccountStateDelta(Dictionary states, List balances)
             {
                 // This assumes `states` consists of only Binary keys:
                 _states = states.ToImmutableDictionary(
@@ -79,19 +73,12 @@ namespace Nekoyume.Action
                     record => (record["address"].ToAddress(), CurrencyExtensions.Deserialize((Dictionary)record["currency"])),
                     record => record["amount"].ToBigInteger()
                 );
-
-                // This assumes `totalSupplies` consists of only Binary keys:
-                _totalSupplies = totalSupplies.ToImmutableDictionary(
-                    kv => CurrencyExtensions.Deserialize((Dictionary)((Binary)kv.Key as IValue)),
-                    kv => kv.Value.ToBigInteger()
-                );
             }
 
             public AccountStateDelta(IValue serialized)
                 : this(
                     (Dictionary)((Dictionary)serialized)["states"],
-                    (List)((Dictionary)serialized)["balances"],
-                    (Dictionary)((Dictionary)serialized)["totalSupplies"]
+                    (List)((Dictionary)serialized)["balances"]
                 )
             {
             }
@@ -108,7 +95,7 @@ namespace Nekoyume.Action
                 addresses.Select(_states.GetValueOrDefault).ToArray();
 
             public IAccountStateDelta SetState(Address address, IValue state) =>
-                new AccountStateDelta(_states.SetItem(address, state), _balances, _totalSupplies);
+                new AccountStateDelta(_states.SetItem(address, state), _balances);
 
             public FungibleAssetValue GetBalance(Address address, Currency currency)
             {
@@ -120,68 +107,24 @@ namespace Nekoyume.Action
                 return FungibleAssetValue.FromRawValue(currency, rawValue);
             }
 
-            public FungibleAssetValue GetTotalSupply(Currency currency)
-            {
-                if (!currency.TotalSupplyTrackable)
-                {
-                    var msg =
-                        $"The total supply value of the currency {currency} is not trackable"
-                        + " because it is a legacy untracked currency which might have been"
-                        + " established before the introduction of total supply tracking support.";
-                    throw new TotalSupplyNotTrackableException(msg, currency);
-                }
-
-                // Return dirty state if it exists.
-                if (_totalSupplies.TryGetValue(currency, out var totalSupplyValue))
-                {
-                    return FungibleAssetValue.FromRawValue(currency, totalSupplyValue);
-                }
-
-                throw new TotalSupplyDoesNotExistException(currency);
-            }
-
             public IAccountStateDelta MintAsset(Address recipient, FungibleAssetValue value)
             {
                 // FIXME: 트랜잭션 서명자를 알아내 currency.AllowsToMint() 확인해서 CurrencyPermissionException
                 // 던지는 처리를 해야하는데 여기서 트랜잭션 서명자를 무슨 수로 가져올지 잘 모르겠음.
 
-                var currency = value.Currency;
-
-                if (value <= currency * 0)
+                if (value <= new FungibleAssetValue(value.Currency))
                 {
                     throw new ArgumentOutOfRangeException(nameof(value));
                 }
 
                 var nextAmount = GetBalance(recipient, value.Currency) + value;
 
-                if (currency.TotalSupplyTrackable)
-                {
-                    var currentTotalSupply = GetTotalSupply(currency);
-                    if (currency.MaximumSupply < currentTotalSupply + value)
-                    {
-                        var msg = $"The amount {value} attempted to be minted added to the current"
-                                  + $" total supply of {currentTotalSupply} exceeds the"
-                                  + $" maximum allowed supply of {currency.MaximumSupply}.";
-                        throw new SupplyOverflowException(msg, value);
-                    }
-
-                    return new AccountStateDelta(
-                        _states,
-                        _balances.SetItem(
-                            (recipient, value.Currency),
-                            nextAmount.RawValue
-                        ),
-                        _totalSupplies.SetItem(currency, (currentTotalSupply + value).RawValue)
-                    );
-                }
-
                 return new AccountStateDelta(
                     _states,
                     _balances.SetItem(
                         (recipient, value.Currency),
                         nextAmount.RawValue
-                    ),
-                    _totalSupplies
+                    )
                 );
             }
 
@@ -200,9 +143,9 @@ namespace Nekoyume.Action
                 if (senderBalance < value)
                 {
                     throw new InsufficientBalanceException(
-                        $"There is no sufficient balance for {sender}: {senderBalance} < {value}",
                         sender,
-                        senderBalance
+                        senderBalance,
+                        $"There is no sufficient balance for {sender}: {senderBalance} < {value}"
                     );
                 }
 
@@ -212,7 +155,7 @@ namespace Nekoyume.Action
                 var balances = _balances
                     .SetItem((sender, currency), senderRemains.RawValue)
                     .SetItem((recipient, currency), recipientRemains.RawValue);
-                return new AccountStateDelta(_states, balances, _totalSupplies);
+                return new AccountStateDelta(_states, balances);
             }
 
             public IAccountStateDelta BurnAsset(Address owner, FungibleAssetValue value)
@@ -220,20 +163,18 @@ namespace Nekoyume.Action
                 // FIXME: 트랜잭션 서명자를 알아내 currency.AllowsToMint() 확인해서 CurrencyPermissionException
                 // 던지는 처리를 해야하는데 여기서 트랜잭션 서명자를 무슨 수로 가져올지 잘 모르겠음.
 
-                var currency = value.Currency;
-
-                if (value <= currency * 0)
+                if (value <= new FungibleAssetValue(value.Currency))
                 {
                     throw new ArgumentOutOfRangeException(nameof(value));
                 }
 
-                FungibleAssetValue balance = GetBalance(owner, currency);
+                FungibleAssetValue balance = GetBalance(owner, value.Currency);
                 if (balance < value)
                 {
                     throw new InsufficientBalanceException(
-                        $"There is no sufficient balance for {owner}: {balance} < {value}",
                         owner,
-                        value
+                        value,
+                        $"There is no sufficient balance for {owner}: {balance} < {value}"
                     );
                 }
 
@@ -241,14 +182,9 @@ namespace Nekoyume.Action
                 return new AccountStateDelta(
                     _states,
                     _balances.SetItem(
-                        (owner, currency),
+                        (owner, value.Currency),
                         nextValue.RawValue
-                    ),
-                    currency.TotalSupplyTrackable
-                        ? _totalSupplies.SetItem(
-                            currency,
-                            (GetTotalSupply(currency) - value).RawValue)
-                        : _totalSupplies
+                    )
                 );
             }
         }
@@ -331,17 +267,11 @@ namespace Nekoyume.Action
                         )
                     ).Cast<IValue>()
                 );
-                var totalSupply = new Dictionary(
-                    delta.TotalSupplyUpdatedCurrencies.Select(currency =>
-                        new KeyValuePair<IKey, IValue>(
-                            (Binary)(IValue)CurrencyExtensions.Serialize(currency),
-                            (Integer)delta.GetTotalSupply(currency).RawValue)));
 
                 var bdict = new Dictionary(new[]
                 {
                     new KeyValuePair<IKey, IValue>((Text) "states", state),
                     new KeyValuePair<IKey, IValue>((Text) "balances", balance),
-                    new KeyValuePair<IKey, IValue>((Text) "totalSupplies", totalSupply),
                 });
 
                 return new Codec().Encode(bdict);

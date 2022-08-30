@@ -41,10 +41,7 @@ namespace Lib9c.Tests.Action
 
             _tableSheets = new TableSheets(sheets);
 
-#pragma warning disable CS0618
-            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-            _currency = Currency.Legacy("NCG", 2, null);
-#pragma warning restore CS0618
+            _currency = new Currency("NCG", 2, minters: null);
             _goldCurrencyState = new GoldCurrencyState(_currency);
 
             _signerAddress = new PrivateKey().ToAddress();
