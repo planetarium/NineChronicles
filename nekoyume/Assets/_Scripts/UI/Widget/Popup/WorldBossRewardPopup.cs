@@ -10,6 +10,8 @@ using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;
+using Nekoyume.State;
+using Nekoyume.UI.Module.WorldBoss;
 using Nekoyume.UI.Tween;
 using TMPro;
 using UnityEngine;
@@ -69,7 +71,8 @@ namespace Nekoyume.UI
             base.Show();
             var rewards = GetRewards(random);
             UpdateRewardItems(rewards);
-            Find<WorldBossDetail>().UpdateReward();
+            Find<WorldBossDetail>().GotRewards();
+
             graphicAlphaTweener.Play();
             PlayEffects();
             _coCloseCoroutine = StartCoroutine(CoClose());

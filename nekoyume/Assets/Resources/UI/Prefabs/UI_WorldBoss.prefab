@@ -31683,6 +31683,7 @@ MonoBehaviour:
   bossSpineContainer: {fileID: 6646270248756184270}
   timerSlider: {fileID: 5083658049772709017}
   timeBlock: {fileID: 3787493603026106412}
+  notification: {fileID: 2872807006292006066}
   blocksAndDatesPeriod: {fileID: 4671676950301706617}
   queryLoadingObjects:
   - {fileID: 2846205069070236859}
@@ -41199,7 +41200,7 @@ PrefabInstance:
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 88
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
@@ -41381,6 +41382,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: ExclamationMarkImage
       objectReference: {fileID: 0}
+    - target: {fileID: 1600884221499168615, guid: cc8b8626f2b35e3469e6330b2b6d79c2,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3131441457089952479, guid: cc8b8626f2b35e3469e6330b2b6d79c2,
         type: 3}
       propertyPath: m_Sprite
@@ -41502,6 +41508,12 @@ PrefabInstance:
 --- !u!224 &103813606156902238 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3502085939140762763, guid: cc8b8626f2b35e3469e6330b2b6d79c2,
+    type: 3}
+  m_PrefabInstance: {fileID: 3596468964633707477}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2872807006292006066 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1600884221499168615, guid: cc8b8626f2b35e3469e6330b2b6d79c2,
     type: 3}
   m_PrefabInstance: {fileID: 3596468964633707477}
   m_PrefabAsset: {fileID: 0}

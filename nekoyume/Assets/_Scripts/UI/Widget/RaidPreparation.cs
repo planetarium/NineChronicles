@@ -108,7 +108,6 @@ namespace Nekoyume.UI
 
         private readonly List<IDisposable> _disposables = new();
         private HeaderMenuStatic _headerMenu;
-        private RaiderState _cachedRaiderState;
 
         public override bool CanHandleInputEvent =>
             base.CanHandleInputEvent && startButton.Interactable;
@@ -163,21 +162,21 @@ namespace Nekoyume.UI
             toggle.gameObject.SetActive(GameConfig.IsEditor);
         }
 
-        public void Show(RaiderState raiderState, int bossId, bool ignoreShowAnimation = false)
+        public void Show(int bossId, bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
 
             _bossId = bossId;
             _headerMenu = Find<HeaderMenuStatic>();
-            _cachedRaiderState = raiderState;
 
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
             var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+            var raiderState = WorldBossStates.GetRaiderState(currentAvatarState.address);
             startButton.gameObject.SetActive(true);
             startButton.Interactable = true;
             if (WorldBossFrontHelper.IsItInSeason(currentBlockIndex))
             {
-                if (_cachedRaiderState is null)
+                if (raiderState is null)
                 {
                     var cost = GetEntranceFee(currentAvatarState);
                     startButton.SetCost(CostType.Crystal, cost);
@@ -548,9 +547,11 @@ namespace Nekoyume.UI
                     PracticeRaid();
                     break;
                 case WorldBossStatus.Season:
-                    if (_cachedRaiderState is null)
+                    var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+                    var raiderState = WorldBossStates.GetRaiderState(currentAvatarState.address);
+                    if (raiderState is null)
                     {
-                        var cost = GetEntranceFee(Game.Game.instance.States.CurrentAvatarState);
+                        var cost = GetEntranceFee(currentAvatarState);
                         Find<PaymentPopup>()
                             .ShowWithAddCost("UI_TOTAL_COST", "UI_BOSS_JOIN_THE_SEASON",
                                 CostType.Crystal, cost,
@@ -659,15 +660,17 @@ namespace Nekoyume.UI
                 return;
             }
 
+            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            var raiderState = WorldBossStates.GetRaiderState(currentAvatarState.address);
             var cur = States.Instance.GoldBalanceState.Gold.Currency;
-            var cost = WorldBossHelper.CalculateTicketPrice(row, _cachedRaiderState, cur);
+            var cost = WorldBossHelper.CalculateTicketPrice(row, raiderState, cur);
             var balance = States.Instance.GoldBalanceState;
             Find<TicketPurchasePopup>().Show(
                 CostType.WorldBossTicket,
                 CostType.NCG,
                 balance.Gold,
                 cost,
-                _cachedRaiderState.PurchaseCount,
+                raiderState.PurchaseCount,
                 row.MaxPurchaseCount,
                 () =>
                 {

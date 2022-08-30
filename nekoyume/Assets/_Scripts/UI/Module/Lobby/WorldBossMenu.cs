@@ -31,9 +31,6 @@ namespace Nekoyume.UI.Module.Lobby
         private GameObject notification;
 
         [SerializeField]
-        private GameObject ticket;
-
-        [SerializeField]
         private Image timeImage;
 
         [SerializeField]
@@ -45,7 +42,6 @@ namespace Nekoyume.UI.Module.Lobby
         [SerializeField]
         private Button claimRewardButton;
 
-        private RaiderState _cachedRaiderState;
         private bool _isDone;
         private readonly List<IDisposable> _disposables = new();
 
@@ -99,26 +95,10 @@ namespace Nekoyume.UI.Module.Lobby
 
         private async void Set()
         {
-            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
-            var curStatus = WorldBossFrontHelper.GetStatus(currentBlockIndex);
-            switch (curStatus)
-            {
-                case WorldBossStatus.OffSeason:
-                    break;
-                case WorldBossStatus.Season:
-                    if (!WorldBossFrontHelper.TryGetCurrentRow(currentBlockIndex, out var row))
-                    {
-                        break;
-                    }
-
-                    _isDone = false;
-                    _cachedRaiderState = await GetStatesAsync(row);
-                    _isDone = true;
-                    break;
-                case WorldBossStatus.None:
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            _isDone = false;
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            await WorldBossStates.Set(avatarAddress);
+            _isDone = true;
         }
 
         private async Task<RaiderState> GetStatesAsync(WorldBossListSheet.Row row)
@@ -172,18 +152,18 @@ namespace Nekoyume.UI.Module.Lobby
                         return;
                     }
 
-                    ticketContainer.SetActive(true);
                     timeContainer.SetActive(false);
-                    if (_cachedRaiderState is null)
+
+                    var avatarAddress = States.Instance.CurrentAvatarState.address;
+                    var raiderState = WorldBossStates.GetRaiderState(avatarAddress);
+                    if (raiderState is null)
                     {
-                        notification.SetActive(true);
-                        ticket.SetActive(false);
+                        ticketContainer.SetActive(false);
                     }
                     else
                     {
-                        notification.SetActive(false);
-                        ticket.SetActive(true);
-                        var count = WorldBossFrontHelper.GetRemainTicket(_cachedRaiderState, currentBlockIndex);
+                        ticketContainer.SetActive(true);
+                        var count = WorldBossFrontHelper.GetRemainTicket(raiderState, currentBlockIndex);
                         ticketText.text = $"{count}";
                     }
 

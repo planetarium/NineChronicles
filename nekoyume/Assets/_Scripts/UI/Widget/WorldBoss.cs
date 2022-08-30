@@ -16,6 +16,7 @@ using Nekoyume.UI.Module.WorldBoss;
 using Nekoyume.ValueControlComponents.Shader;
 using UnityEngine;
 using UnityEngine.UI;
+using WorldBossState = Nekoyume.Model.State.WorldBossState;
 
 namespace Nekoyume.UI
 {
@@ -69,6 +70,9 @@ namespace Nekoyume.UI
         private TimeBlock timeBlock;
 
         [SerializeField]
+        private GameObject notification;
+
+        [SerializeField]
         private BlocksAndDatesPeriod blocksAndDatesPeriod;
 
 
@@ -85,27 +89,6 @@ namespace Nekoyume.UI
         private HeaderMenuStatic _headerMenu;
         private readonly List<IDisposable> _disposables = new();
         private readonly Dictionary<Address, RaiderState> _cachedRaiderStates = new();
-
-        public RaiderState CachedRaiderState
-        {
-            get
-            {
-                var avatarAddress = States.Instance.CurrentAvatarState.address;
-                return _cachedRaiderStates.ContainsKey(avatarAddress) ? _cachedRaiderStates[avatarAddress] : null;
-            }
-            private set
-            {
-                var avatarAddress = States.Instance.CurrentAvatarState.address;
-                if (_cachedRaiderStates.ContainsKey(avatarAddress))
-                {
-                    _cachedRaiderStates[avatarAddress] = value;
-                }
-                else
-                {
-                    _cachedRaiderStates.Add(avatarAddress, value);
-                }
-            }
-        }
 
         protected override void Awake()
         {
@@ -139,6 +122,7 @@ namespace Nekoyume.UI
                 .Subscribe(_ => RefreshMyInformationAsync()).AddTo(gameObject);
 
             enterButton.OnSubmitSubject.Subscribe(_ => OnClickEnter()).AddTo(gameObject);
+            WorldBossStates.SubscribeNotification((b) => notification.SetActive(b));
         }
 
         protected override void OnCompleteOfShowAnimationInternal()
@@ -199,6 +183,7 @@ namespace Nekoyume.UI
                                 ignoreHeaderMenuAnimation);
                         }
 
+                        WorldBossStates.ClearRaiderState();
                         UpdateOffSeason(currentBlockIndex);
                         break;
                     case WorldBossStatus.Season:
@@ -215,7 +200,8 @@ namespace Nekoyume.UI
 
                         season.PrepareRefresh();
                         var (worldBoss, raider, myRecord, userCount) = await GetStatesAsync(row);
-                        UpdateSeason(row, worldBoss, raider, myRecord, userCount);
+                        WorldBossStates.UpdateRaiderState(States.Instance.CurrentAvatarState.address, raider);
+                        UpdateSeason(row, worldBoss, myRecord, userCount);
 
                         break;
                     case WorldBossStatus.None:
@@ -224,7 +210,9 @@ namespace Nekoyume.UI
                 }
             }
 
-            _headerMenu.WorldBossTickets.UpdateTicket(CachedRaiderState, currentBlockIndex);
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var raiderState = WorldBossStates.GetRaiderState(avatarAddress);
+            _headerMenu.WorldBossTickets.UpdateTicket(raiderState, currentBlockIndex);
             UpdateRemainTimer(_period, currentBlockIndex);
             SetActiveQueryLoading(false);
         }
@@ -254,7 +242,6 @@ namespace Nekoyume.UI
         private void UpdateSeason(
             WorldBossListSheet.Row row,
             WorldBossState worldBoss,
-            RaiderState myRaiderState,
             WorldBossRankingRecord myRecord,
             int userCount)
         {
@@ -265,8 +252,6 @@ namespace Nekoyume.UI
             rankButton.gameObject.SetActive(true);
             enterButton.Text = L10nManager.Localize("UI_WORLD_MAP_ENTER");
             _period = (row.StartedBlockIndex, row.EndedBlockIndex);
-            CachedRaiderState = myRaiderState;
-
             UpdateBossPrefab(row);
             UpdateBossInformationAsync(worldBoss);
             season.UpdateMyInformation(myRecord);
@@ -315,7 +300,7 @@ namespace Nekoyume.UI
 
         private void OnClickEnter()
         {
-            Find<RaidPreparation>().Show(CachedRaiderState, _bossId);
+            Find<RaidPreparation>().Show(_bossId);
         }
 
         private async Task<(

@@ -29,6 +29,7 @@ using Nekoyume.Game;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.EnumType;
+using Nekoyume.UI.Module.WorldBoss;
 using Skill = Nekoyume.Model.Skill.Skill;
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
@@ -1875,11 +1876,12 @@ namespace Nekoyume.BlockChain
             clonedAvatarState.EquipItems(items);
 
             var random = new LocalRandom(eval.RandomSeed);
-
-            if (worldBoss.CachedRaiderState != null)
+            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            var raiderState = WorldBossStates.GetRaiderState(currentAvatarState.address);
+            if (raiderState != null)
             {
                 var rewards = RuneHelper.CalculateReward(
-                        worldBoss.CachedRaiderState.LatestRewardRank,
+                        raiderState.LatestRewardRank,
                         row.BossId,
                         Game.Game.instance.TableSheets.RuneWeightSheet,
                         Game.Game.instance.TableSheets.WorldBossKillRewardSheet,
@@ -1897,13 +1899,13 @@ namespace Nekoyume.BlockChain
                 TableSheets.Instance.CostumeStatSheet
             );
             simulator.Simulate();
-            BattleLog log = simulator.Log;
+            var log = simulator.Log;
             Widget.Find<Menu>().Close();
             var playerDigest = new ArenaPlayerDigest(clonedAvatarState);
             Widget.Find<LoadingScreen>().Close();
 
-            var isNewRecord = worldBoss.CachedRaiderState is null ||
-                worldBoss.CachedRaiderState.HighScore < simulator.DamageDealt;
+            var isNewRecord = raiderState is null ||
+                              raiderState.HighScore < simulator.DamageDealt;
             worldBoss.Close();
             await worldBoss.UpdateViewAsync(Game.Game.instance.Agent.BlockIndex, true, ignoreHeaderMenu: true);
 

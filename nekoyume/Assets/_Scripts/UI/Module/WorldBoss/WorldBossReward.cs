@@ -11,6 +11,7 @@ using Nekoyume.State;
 using Nekoyume.UI.Model;
 using UnityEngine;
 
+
 namespace Nekoyume.UI.Module.WorldBoss
 {
     using UniRx;
@@ -35,6 +36,9 @@ namespace Nekoyume.UI.Module.WorldBoss
         [SerializeField]
         private List<CategoryToggle> categoryToggles = null;
 
+        [SerializeField]
+        private List<GameObject> notifications;
+
         private readonly ReactiveProperty<ToggleType> _selectedItemSubType = new();
         private Address _cachedAvatarAddress;
 
@@ -57,6 +61,14 @@ namespace Nekoyume.UI.Module.WorldBoss
                     toggle.Item.gameObject.SetActive(toggle.Type.Equals(toggleType));
                 }
             }).AddTo(gameObject);
+
+            WorldBossStates.SubscribeNotification((b) =>
+            {
+                foreach (var notification in notifications)
+                {
+                    notification.SetActive(b);
+                }
+            });
         }
 
         private IEnumerator CoSetFirstCategory()
@@ -128,7 +140,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             var task = Task.Run(async () =>
             {
                 int raidId;
-                try
+                try // If the current raidId cannot be found, it will look for the previous raidId.
                 {
                     raidId = bossSheet.FindRaidIdByBlockIndex(blockIndex);
                 }
