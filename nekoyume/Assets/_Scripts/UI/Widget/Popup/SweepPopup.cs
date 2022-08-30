@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
+using Nekoyume.Extensions;
+using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -289,7 +291,7 @@ namespace Nekoyume.UI
             }
 
             var (apPlayCount, apStonePlayCount) =
-                GetPlayCount(_stageRow, _apStoneCount.Value, _ap.Value);
+                GetPlayCount(_stageRow, _apStoneCount.Value, _ap.Value, States.Instance.StakingLevel);
             UpdateRewardView(avatarState, _stageRow, apPlayCount, apStonePlayCount);
 
             var totalPlayCount = apPlayCount + apStonePlayCount;
@@ -329,7 +331,7 @@ namespace Nekoyume.UI
             return sheet.TryGetValue(stageId, out row);
         }
 
-        private static (int, int) GetPlayCount(StageSheet.Row row, int apStoneCount, int ap)
+        private static (int, int) GetPlayCount(StageSheet.Row row, int apStoneCount, int ap, int stakingLevel = 0)
         {
             if (row is null)
             {
@@ -337,8 +339,15 @@ namespace Nekoyume.UI
             }
 
             var actionMaxPoint = States.Instance.GameConfigState.ActionPointMax;
-            var apStonePlayCount = actionMaxPoint / row.CostAP * apStoneCount;
-            var apPlayCount = ap / row.CostAP;
+            var costAp = row.CostAP;
+            if (stakingLevel > 0)
+            {
+                costAp = TableSheets.Instance.StakeActionPointCoefficientSheet.GetActionPointByStaking(
+                    costAp, 1, stakingLevel);
+            }
+
+            var apStonePlayCount = actionMaxPoint / costAp * apStoneCount;
+            var apPlayCount = ap / costAp;
             return (apPlayCount, apStonePlayCount);
         }
 
@@ -381,7 +390,8 @@ namespace Nekoyume.UI
         private void Sweep(int apStoneCount, int ap, int worldId, StageSheet.Row stageRow)
         {
             var avatarState = States.Instance.CurrentAvatarState;
-            var (apPlayCount, apStonePlayCount) = GetPlayCount(stageRow, apStoneCount, ap);
+            var (apPlayCount, apStonePlayCount)
+                = GetPlayCount(stageRow, apStoneCount, ap, States.Instance.StakingLevel);
             var totalPlayCount = apPlayCount + apStonePlayCount;
             var actionPoint = apPlayCount * stageRow.CostAP;
             if (totalPlayCount <= 0)
