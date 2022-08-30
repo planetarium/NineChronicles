@@ -17,62 +17,44 @@ namespace Lib9c.Tests.Action
             yield return new object[]
             {
                 new GoldCurrencyState(
-#pragma warning disable CS0618
-                    // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-                    Currency.Legacy("NCG", 2, new Address("47d082a115c63e7b58b1532d20e631538eafadde"))),
-#pragma warning restore CS0618
+                    new Currency("NCG", 2, new Address("47d082a115c63e7b58b1532d20e631538eafadde"))),
                 true,
             };
 
             yield return new object[]
             {
                 new GoldCurrencyState(
-#pragma warning disable CS0618
-                    // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-                    Currency.Legacy("NCG", 18, new Address("47d082a115c63e7b58b1532d20e631538eafadde"))),
-#pragma warning restore CS0618
+                    new Currency("NCG", 18, new Address("47d082a115c63e7b58b1532d20e631538eafadde"))),
                 false,
             };
 
             yield return new object[]
             {
                 new GoldCurrencyState(
-#pragma warning disable CS0618
-                    // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-                    Currency.Legacy("NCG", 2, new PrivateKey().ToAddress())),
-#pragma warning restore CS0618
+                    new Currency("NCG", 2, new PrivateKey().ToAddress())),
                 false,
             };
 
             yield return new object[]
             {
                 new GoldCurrencyState(
-#pragma warning disable CS0618
-                    // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-                    Currency.Legacy("ETH", 2, new Address("47d082a115c63e7b58b1532d20e631538eafadde"))),
-#pragma warning restore CS0618
+                    new Currency("ETH", 2, new Address("47d082a115c63e7b58b1532d20e631538eafadde"))),
                 false,
             };
 
             yield return new object[]
             {
                 new GoldCurrencyState(
-#pragma warning disable CS0618
-                    // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-                    Currency.Legacy("BTC", 18, new Address("47d082a115c63e7b58b1532d20e631538eafadde"))),
-#pragma warning restore CS0618
+                    new Currency("BTC", 18, new Address("47d082a115c63e7b58b1532d20e631538eafadde"))),
                 false,
             };
 
             yield return new object[]
             {
                 new GoldCurrencyState(
-#pragma warning disable CS0618
-                    // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-                    Currency.Legacy("BTC", 2, new Address("47d082a115c63e7b58b1532d20e631538eafadde"))),
+                    new Currency("BTC", 2, new Address("47d082a115c63e7b58b1532d20e631538eafadde"))),
                 false,
             };
-            #pragma warning restore CS0618
         }
 
         public static IEnumerable<object[]> IsPreviewNetTestcases()
@@ -80,60 +62,42 @@ namespace Lib9c.Tests.Action
             yield return new object[]
             {
                 new GoldCurrencyState(
-#pragma warning disable CS0618
-                    // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-                    Currency.Legacy("NCG", 2, new Address("340f110b91d0577a9ae0ea69ce15269436f217da"))),
-#pragma warning restore CS0618
+                    new Currency("NCG", 2, new Address("340f110b91d0577a9ae0ea69ce15269436f217da"))),
                 true,
             };
 
             yield return new object[]
             {
                 new GoldCurrencyState(
-#pragma warning disable CS0618
-                    // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-                    Currency.Legacy("NCG", 18, new Address("340f110b91d0577a9ae0ea69ce15269436f217da"))),
-#pragma warning restore CS0618
+                    new Currency("NCG", 18, new Address("340f110b91d0577a9ae0ea69ce15269436f217da"))),
                 false,
             };
 
             yield return new object[]
             {
                 new GoldCurrencyState(
-#pragma warning disable CS0618
-                    // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-                    Currency.Legacy("NCG", 2, new PrivateKey().ToAddress())),
-#pragma warning restore CS0618
+                    new Currency("NCG", 2, new PrivateKey().ToAddress())),
                 false,
             };
 
             yield return new object[]
             {
                 new GoldCurrencyState(
-#pragma warning disable CS0618
-                    // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-                    Currency.Legacy("ETH", 2, new Address("340f110b91d0577a9ae0ea69ce15269436f217da"))),
-#pragma warning restore CS0618
+                    new Currency("ETH", 2, new Address("340f110b91d0577a9ae0ea69ce15269436f217da"))),
                 false,
             };
 
             yield return new object[]
             {
                 new GoldCurrencyState(
-#pragma warning disable CS0618
-                    // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-                    Currency.Legacy("BTC", 18, new Address("340f110b91d0577a9ae0ea69ce15269436f217da"))),
-#pragma warning restore CS0618
+                    new Currency("BTC", 18, new Address("340f110b91d0577a9ae0ea69ce15269436f217da"))),
                 false,
             };
 
             yield return new object[]
             {
                 new GoldCurrencyState(
-#pragma warning disable CS0618
-                    // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-                    Currency.Legacy("BTC", 2, new Address("340f110b91d0577a9ae0ea69ce15269436f217da"))),
-#pragma warning restore CS0618
+                    new Currency("BTC", 2, new Address("340f110b91d0577a9ae0ea69ce15269436f217da"))),
                 false,
             };
         }

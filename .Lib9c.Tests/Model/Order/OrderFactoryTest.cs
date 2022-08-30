@@ -57,10 +57,7 @@ namespace Lib9c.Tests.Model.Order
                     throw new ArgumentOutOfRangeException(nameof(itemType), itemType, null);
             }
 
-#pragma warning disable CS0618
-            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-            var currency = Currency.Legacy("NCG", 2, null);
-#pragma warning restore CS0618
+            var currency = new Currency("NCG", 2, minter: null);
             Guid orderId = new Guid("6d460c1a-755d-48e4-ad67-65d5f519dbc8");
 
             Order order = OrderFactory.Create(
@@ -134,10 +131,7 @@ namespace Lib9c.Tests.Model.Order
                     throw new ArgumentOutOfRangeException(nameof(itemType), itemType, null);
             }
 
-#pragma warning disable CS0618
-            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-            var currency = Currency.Legacy("NCG", 2, null);
-#pragma warning restore CS0618
+            var currency = new Currency("NCG", 2, minter: null);
             Order order = OrderFactory.Create(
                 Addresses.Admin,
                 Addresses.Blacksmith,

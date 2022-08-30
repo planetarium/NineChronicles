@@ -15,10 +15,7 @@ namespace Nekoyume.Helper
 {
     public static class CrystalCalculator
     {
-#pragma warning disable CS0618
-        // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-        public static readonly Currency CRYSTAL = Currency.Legacy("CRYSTAL", 18, minters: null);
-#pragma warning restore CS0618
+        public static readonly Currency CRYSTAL = new Currency("CRYSTAL", 18, minters: null);
 
         public static FungibleAssetValue CalculateRecipeUnlockCost(IEnumerable<int> recipeIds, EquipmentItemRecipeSheet equipmentItemRecipeSheet)
         {

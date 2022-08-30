@@ -63,10 +63,7 @@ namespace Lib9c.Tests.Action
                 default
             );
 
-#pragma warning disable CS0618
-            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-            var gold = new GoldCurrencyState(Currency.Legacy("NCG", 2, null));
-#pragma warning restore CS0618
+            var gold = new GoldCurrencyState(new Currency("NCG", 2, minter: null));
 
             _initialState = new State()
                 .SetState(_agentAddress, agentState.Serialize())
@@ -191,10 +188,7 @@ namespace Lib9c.Tests.Action
             int? subRecipeId,
             bool isMadeWithMimisbrunnrRecipe)
         {
-#pragma warning disable CS0618
-            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-            var currency = Currency.Legacy("NCG", 2, null);
-#pragma warning restore CS0618
+            var currency = new Currency("NCG", 2, minter: null);
             var row = _tableSheets.EquipmentItemRecipeSheet[recipeId];
             var requiredStage = row.UnlockStage;
             var materialRow = _tableSheets.MaterialItemSheet[row.MaterialId];
@@ -266,10 +260,7 @@ namespace Lib9c.Tests.Action
 
         private void Execute(bool backward, int recipeId, int? subRecipeId, int mintNCG)
         {
-#pragma warning disable CS0618
-            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-            var currency = Currency.Legacy("NCG", 2, null);
-#pragma warning restore CS0618
+            var currency = new Currency("NCG", 2, minter: null);
             var row = _tableSheets.EquipmentItemRecipeSheet[recipeId];
             var requiredStage = row.UnlockStage;
             var costActionPoint = row.RequiredActionPoint;

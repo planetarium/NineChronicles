@@ -385,10 +385,7 @@ namespace Lib9c.Tests.Action
                 _weeklyArenaAddress,
                 previousWeeklyArenaState.Serialize());
 
-#pragma warning disable CS0618
-            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-            var goldCurrency = Currency.Legacy("NCG", 2, Addresses.GoldCurrency);
-#pragma warning restore CS0618
+            var goldCurrency = new Currency("NCG", 2, Addresses.GoldCurrency);
             var previousAgentGoldState = _initialState.GetBalance(
                 _agent1Address,
                 goldCurrency);

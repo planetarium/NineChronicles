@@ -74,10 +74,7 @@
 
         public static MakeInitialStateResult MakeInitialState()
         {
-#pragma warning disable CS0618
-            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-            var goldCurrencyState = new GoldCurrencyState(Currency.Legacy("NCG", 2, null));
-#pragma warning restore CS0618
+            var goldCurrencyState = new GoldCurrencyState(new Currency("NCG", 2, minter: null));
             var ranking = new RankingState1();
             for (var i = 0; i < RankingState1.RankingMapCapacity; i++)
             {

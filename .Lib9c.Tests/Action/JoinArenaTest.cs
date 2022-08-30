@@ -87,15 +87,9 @@ namespace Lib9c.Tests.Action
                     1),
             };
             agent2State.avatarAddresses[0] = _avatar2Address;
-#pragma warning disable CS0618
-            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-            var currency = Currency.Legacy("NCG", 2, null);
-#pragma warning restore CS0618
+            var currency = new Currency("NCG", 2, minters: null);
             var goldCurrencyState = new GoldCurrencyState(currency);
-#pragma warning disable CS0618
-            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-            _currency = Currency.Legacy("CRYSTAL", 18, null);
-#pragma warning restore CS0618
+            _currency = new Currency("CRYSTAL", 18, minters: null);
 
             _state = _state
                 .SetState(_signer, agentState.Serialize())
