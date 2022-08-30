@@ -82,7 +82,11 @@ namespace Nekoyume.Helper
 #pragma warning restore LAA1002
                 .Select(kv => ToFungibleAssetValue(runeSheet[kv.Key], kv.Value))
                 .ToList();
-            result.Add(rewardRow.Crystal * CrystalCalculator.CRYSTAL);
+
+            if (rewardRow.Crystal > 0)
+            {
+                result.Add(rewardRow.Crystal * CrystalCalculator.CRYSTAL);
+            }
             return result;
         }
     }
