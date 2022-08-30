@@ -84,8 +84,8 @@ namespace Nekoyume.BlockChain
         protected BaseStore store;
         private IStagePolicy<NCAction> _stagePolicy;
         private IStateStore _stateStore;
-        private ImmutableList<Peer> _seedPeers;
-        private ImmutableList<Peer> _peerList;
+        private ImmutableList<BoundPeer> _seedPeers;
+        private ImmutableList<BoundPeer> _peerList;
 
         private static CancellationTokenSource _cancellationTokenSource;
 
@@ -156,7 +156,7 @@ namespace Nekoyume.BlockChain
         private void Init(
             PrivateKey privateKey,
             string path,
-            IEnumerable<Peer> peers,
+            IEnumerable<BoundPeer> peers,
             IEnumerable<IceServer> iceServers,
             string host,
             int? port,
@@ -656,7 +656,7 @@ namespace Nekoyume.BlockChain
         }
 
         private void DifferentAppProtocolVersionEncountered(
-            Peer peer,
+            BoundPeer peer,
             AppProtocolVersion peerVersion,
             AppProtocolVersion localVersion
         )
