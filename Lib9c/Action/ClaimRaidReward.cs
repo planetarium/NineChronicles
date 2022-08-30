@@ -36,7 +36,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            Dictionary<Type, (Address, ISheet)> sheets = states.GetSheets(sheetTypes: new [] {
+            Dictionary<Type, (Address, ISheet)> sheets = states.GetSheets(sheetTypes: new[] {
                 typeof(RuneWeightSheet),
                 typeof(WorldBossRankRewardSheet),
                 typeof(WorldBossListSheet),
@@ -69,9 +69,17 @@ namespace Nekoyume.Action
                         sheets.GetSheet<RuneSheet>(),
                         context.Random
                     );
+
                     foreach (var reward in rewards)
                     {
-                        states = states.MintAsset(AvatarAddress, reward);
+                        if (reward.Currency.Equals(CrystalCalculator.CRYSTAL))
+                        {
+                            states = states.MintAsset(context.Signer, reward);
+                        }
+                        else
+                        {
+                            states = states.MintAsset(AvatarAddress, reward);
+                        }
                     }
                 }
 

@@ -4,6 +4,7 @@ namespace Lib9c.Tests.Action
     using System.Linq;
     using Libplanet;
     using Libplanet.Action;
+    using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Helper;
@@ -43,7 +44,7 @@ namespace Lib9c.Tests.Action
         [InlineData(null, 90_000, 0, 675_000, 1_150)]
         public void Execute(Type exc, int highScore, int latestRank, int expectedCrystal, int expectedRune)
         {
-            Address avatarAddress = default;
+            Address avatarAddress = new PrivateKey().ToAddress();
             var bossRow = _tableSheets.WorldBossListSheet.OrderedList.First();
             var raiderAddress = Addresses.GetRaiderAddress(avatarAddress, bossRow.Id);
             var raiderState = new RaiderState
