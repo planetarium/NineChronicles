@@ -162,7 +162,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                     : null;
 
                 var response = await WorldBossQuery.QueryRankingAsync(raidId, avatarAddress);
-                var records = response?.WorldBossRanking ?? new List<WorldBossRankingRecord>();
+                var records = response?.WorldBossRanking.RankingInfo ?? new List<WorldBossRankingRecord>();
                 var userCount = response?.WorldBossTotalUsers ?? 0;
                 var myRecord = records.FirstOrDefault(record => record.Address == avatarAddress.ToHex());
                 return (raider, killReward, raidId, myRecord, userCount);

@@ -336,7 +336,7 @@ namespace Nekoyume.UI
             Address avatarAddress)
         {
             var response = await WorldBossQuery.QueryRankingAsync(row.Id, avatarAddress);
-            var records = response?.WorldBossRanking ?? new List<WorldBossRankingRecord>();
+            var records = response?.WorldBossRanking.RankingInfo ?? new List<WorldBossRankingRecord>();
             var myRecord =
                 records.FirstOrDefault(record => record.Address == avatarAddress.ToHex());
             var userCount = response?.WorldBossTotalUsers ?? 0;

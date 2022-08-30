@@ -14,9 +14,21 @@ namespace Nekoyume.UI.Model
         public int TotalScore;
     }
 
+    public class worldBossRanking
+    {
+        public long BlockIndex;
+        public List<WorldBossRankingRecord> RankingInfo;
+    }
+
     public class WorldBossRankingResponse
     {
-        public List<WorldBossRankingRecord> WorldBossRanking;
         public int WorldBossTotalUsers;
+        public worldBossRanking WorldBossRanking;
     }
+
+    // public class WorldBossRankingResponse
+    // {
+    //     public List<WorldBossRankingRecord> WorldBossRanking;
+    //     public int WorldBossTotalUsers;
+    // }
 }
