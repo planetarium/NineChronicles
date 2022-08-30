@@ -254,7 +254,14 @@ namespace Lib9c.Tests.Action
 
                     foreach (var reward in rewardMap)
                     {
-                        Assert.Equal(reward.Value, nextState.GetBalance(_avatarAddress, reward.Key));
+                        if (reward.Key.Equals(CrystalCalculator.CRYSTAL))
+                        {
+                            Assert.Equal(reward.Value, nextState.GetBalance(_agentAddress, reward.Key));
+                        }
+                        else
+                        {
+                            Assert.Equal(reward.Value, nextState.GetBalance(_avatarAddress, reward.Key));
+                        }
                     }
                 }
 
@@ -342,7 +349,6 @@ namespace Lib9c.Tests.Action
                 FoodIds = new List<Guid>(),
                 PayNcg = false,
             };
-            Currency crystal = CrystalCalculator.CRYSTAL;
             long blockIndex = 1;
             int raidId = _tableSheets.WorldBossListSheet.FindRaidIdByBlockIndex(blockIndex);
             Address raiderAddress = Addresses.GetRaiderAddress(_avatarAddress, raidId);
@@ -444,7 +450,6 @@ namespace Lib9c.Tests.Action
                 Signer = _agentAddress,
             });
 
-            Assert.Equal(rewardMap[crystal], nextState.GetBalance(_agentAddress, crystal));
             Assert.True(nextState.TryGetState(raiderAddress, out List rawRaider));
             var nextRaiderState = new RaiderState(rawRaider);
             Assert.Equal(simulator.DamageDealt, nextRaiderState.HighScore);
@@ -463,7 +468,14 @@ namespace Lib9c.Tests.Action
 
             foreach (var reward in rewardMap)
             {
-                Assert.Equal(reward.Value, nextState.GetBalance(_avatarAddress, reward.Key));
+                if (reward.Key.Equals(CrystalCalculator.CRYSTAL))
+                {
+                    Assert.Equal(reward.Value, nextState.GetBalance(_agentAddress, reward.Key));
+                }
+                else
+                {
+                    Assert.Equal(reward.Value, nextState.GetBalance(_avatarAddress, reward.Key));
+                }
             }
 
             Assert.Equal(1, nextRaiderState.Level);
