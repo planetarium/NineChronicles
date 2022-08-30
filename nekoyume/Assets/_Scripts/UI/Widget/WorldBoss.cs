@@ -196,9 +196,9 @@ namespace Nekoyume.UI
                         }
 
                         season.PrepareRefresh();
-                        var (worldBoss, raider, myRecord, userCount) = await GetStatesAsync(row);
+                        var (worldBoss, raider, myRecord, blockIndex, userCount) = await GetStatesAsync(row);
                         WorldBossStates.UpdateRaiderState(States.Instance.CurrentAvatarState.address, raider);
-                        UpdateSeason(row, worldBoss, myRecord, userCount);
+                        UpdateSeason(row, worldBoss, myRecord, blockIndex, userCount);
 
                         break;
                     case WorldBossStatus.None:
@@ -240,6 +240,7 @@ namespace Nekoyume.UI
             WorldBossListSheet.Row row,
             WorldBossState worldBoss,
             WorldBossRankingRecord myRecord,
+            long blockIndex,
             int userCount)
         {
             Debug.Log("[UpdateSeason]");
@@ -251,7 +252,7 @@ namespace Nekoyume.UI
             _period = (row.StartedBlockIndex, row.EndedBlockIndex);
             UpdateBossPrefab(row);
             UpdateBossInformationAsync(worldBoss);
-            season.UpdateMyInformation(row.BossId, myRecord);
+            season.UpdateMyInformation(row.BossId, myRecord, blockIndex);
             season.UpdateUserCount(userCount);
         }
 
@@ -301,10 +302,11 @@ namespace Nekoyume.UI
         }
 
         private async Task<(
-                WorldBossState worldBoss,
-                RaiderState raiderState,
-                WorldBossRankingRecord myRecord,
-                int userCount)>
+            WorldBossState worldBoss,
+            RaiderState raiderState,
+            WorldBossRankingRecord myRecord,
+            long blockIndex,
+            int userCount)>
             GetStatesAsync(WorldBossListSheet.Row row)
         {
             var task = Task.Run(async () =>
@@ -323,24 +325,27 @@ namespace Nekoyume.UI
                     ? new RaiderState(raiderList)
                     : null;
 
-                var (record, userCount) = await QueryRankingAsync(row, avatarAddress);
-                return (worldBoss, raider, record, userCount);
+                var (record, blockIndex, userCount) = await QueryRankingAsync(row, avatarAddress);
+                return (worldBoss, raider, record, blockIndex, userCount);
             });
 
             await task;
             return task.Result;
         }
 
-        private static async Task<(WorldBossRankingRecord, int)> QueryRankingAsync(
-            WorldBossListSheet.Row row,
-            Address avatarAddress)
+        private static async Task<(
+            WorldBossRankingRecord myRecord,
+            long blockIndex,
+            int userCount)>
+            QueryRankingAsync(WorldBossListSheet.Row row, Address avatarAddress)
         {
             var response = await WorldBossQuery.QueryRankingAsync(row.Id, avatarAddress);
-            var records = response?.WorldBossRanking.RankingInfo ?? new List<WorldBossRankingRecord>();
+            var records = response?.WorldBossRanking?.RankingInfo ?? new List<WorldBossRankingRecord>();
             var myRecord =
                 records.FirstOrDefault(record => record.Address == avatarAddress.ToHex());
             var userCount = response?.WorldBossTotalUsers ?? 0;
-            return (myRecord, userCount);
+            var blockIndex = response?.WorldBossRanking?.BlockIndex ?? 0;
+            return (myRecord, blockIndex, userCount);
         }
 
         private void UpdateBossInformationAsync(WorldBossState state)

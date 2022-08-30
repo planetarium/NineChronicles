@@ -25,10 +25,4 @@ namespace Nekoyume.UI.Model
         public int WorldBossTotalUsers;
         public worldBossRanking WorldBossRanking;
     }
-
-    // public class WorldBossRankingResponse
-    // {
-    //     public List<WorldBossRankingRecord> WorldBossRanking;
-    //     public int WorldBossTotalUsers;
-    // }
 }

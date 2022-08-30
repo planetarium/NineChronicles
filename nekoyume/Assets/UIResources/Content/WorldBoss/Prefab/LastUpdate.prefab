@@ -253,7 +253,6 @@ GameObject:
   - component: {fileID: 464432051908297147}
   - component: {fileID: 8582865943340418631}
   - component: {fileID: 1916439003407532762}
-  - component: {fileID: 6014221696747525222}
   - component: {fileID: 982451177957004013}
   m_Layer: 5
   m_Name: Text_Number
@@ -279,7 +278,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 57.76, y: 0}
+  m_AnchoredPosition: {x: 14, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &8582865943340418631
@@ -310,7 +309,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 15,950
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: da30528eb07f14a528ca47d39cfc648a, type: 2}
@@ -379,37 +378,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &6014221696747525222
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4320645971704512584}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fixedFontAsset: 0
-  fixedFontStyle: 0
-  fixedFontSizeOffset: 0
-  fixedSpacingOption: 0
-  fixedMarginOption: 0
-  fontMaterialType: 30
-  l10nKey: 
-  fontMaterialIndexInitialized: 0
-  fontMaterialIndex: 0
-  defaultFontStylesInitialized: 0
-  defaultFontStyles: 0
-  defaultFontSizeInitialized: 0
-  defaultFontSize: 0
-  defaultCharacterSpacingInitialized: 0
-  defaultCharacterSpacing: 0
-  defaultWordSpacingInitialized: 0
-  defaultWordSpacing: 0
-  defaultLineSpacingInitialized: 0
-  defaultLineSpacing: 0
 --- !u!114 &982451177957004013
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -492,7 +460,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: LastUpdate
+  m_text: UI_LAST_UPDATED
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: da30528eb07f14a528ca47d39cfc648a, type: 2}
@@ -579,7 +547,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 30
-  l10nKey: 
+  l10nKey: UI_LAST_UPDATED
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
