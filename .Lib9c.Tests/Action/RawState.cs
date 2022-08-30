@@ -59,7 +59,7 @@ namespace Lib9c.Tests.Action
                     $"The total supply value of the currency {currency} is not trackable"
                     + " because it is a legacy untracked currency which might have been"
                     + " established before the introduction of total supply tracking support.";
-                throw new TotalSupplyNotTrackableException(currency, msg);
+                throw new TotalSupplyNotTrackableException(msg, currency);
             }
 
             // Return dirty state if it exists.
@@ -110,7 +110,7 @@ namespace Lib9c.Tests.Action
             {
                 var msg = $"The account {sender}'s balance of {currency} is insufficient to " +
                           $"transfer: {senderBalance} < {value}.";
-                throw new InsufficientBalanceException(sender, senderBalance, msg);
+                throw new InsufficientBalanceException(msg, sender, senderBalance);
             }
 
             IImmutableDictionary<string, IValue> newRawStates = _rawStates
