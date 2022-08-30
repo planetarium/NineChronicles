@@ -1,4 +1,4 @@
-﻿using Nekoyume.Helper;
+using Nekoyume.Helper;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module.WorldBoss;
 using Nekoyume.UI.Scroller;
@@ -60,7 +60,7 @@ namespace Nekoyume.UI
                 Destroy(_gradeObject);
             }
 
-            var grade = (WorldBossGrade)WorldBossHelper.CalculateRank(model.HighScore);
+            var grade = (WorldBossGrade)WorldBossHelper.CalculateRank(model.BossRow, model.HighScore);
             if (WorldBossFrontHelper.TryGetGrade(grade, true, out var prefab))
             {
                 _gradeObject = Instantiate(prefab, gradeContainer);

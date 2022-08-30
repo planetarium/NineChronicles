@@ -251,7 +251,7 @@ namespace Nekoyume.UI
             _period = (row.StartedBlockIndex, row.EndedBlockIndex);
             UpdateBossPrefab(row);
             UpdateBossInformationAsync(worldBoss);
-            season.UpdateMyInformation(myRecord);
+            season.UpdateMyInformation(row.BossId, myRecord);
             season.UpdateUserCount(userCount);
         }
 

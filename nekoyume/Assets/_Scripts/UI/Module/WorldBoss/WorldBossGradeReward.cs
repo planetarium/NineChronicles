@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.BlockChain;
 using Nekoyume.Helper;
@@ -63,10 +63,16 @@ namespace Nekoyume.UI.Module.WorldBoss
                 return;
             }
 
+            if (Game.Game.instance.TableSheets.WorldBossCharacterSheet
+                .TryGetValue(row.BossId, out var characterRow))
+            {
+                return;
+            }
+
             Widget.Find<WorldBossRewardPopup>().CachingInformation(raiderState, row.BossId);
             var latestRewardRank = raiderState?.LatestRewardRank ?? 0;
             var highScore = raiderState?.HighScore ?? 0;
-            var currentRank = WorldBossHelper.CalculateRank(highScore);
+            var currentRank = WorldBossHelper.CalculateRank(characterRow, highScore);
             var maxRankCount = rows.Count;
             UpdateItems(rows, latestRewardRank, currentRank);
             UpdateGauges(currentRank, maxRankCount);

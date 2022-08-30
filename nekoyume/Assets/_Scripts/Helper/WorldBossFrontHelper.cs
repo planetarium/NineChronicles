@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -171,12 +171,24 @@ namespace Nekoyume.Helper
             return ScriptableObject.Rank[index];
         }
 
-        public static bool IsEnableNotification(RaiderState raiderState)
+        public static bool IsEnableNotification(WorldBossCharacterSheet.Row bossRow, RaiderState raiderState)
         {
             var latestRewardRank = raiderState?.LatestRewardRank ?? 0;
             var highScore = raiderState?.HighScore ?? 0;
-            var currentRank = WorldBossHelper.CalculateRank(highScore);
+            var currentRank = WorldBossHelper.CalculateRank(bossRow, highScore);
             return latestRewardRank < currentRank;
+        }
+
+        public static bool TryGetBossRowByRaidId(
+            int raidId,
+            WorldBossListSheet listSheet,
+            WorldBossCharacterSheet characterSheet,
+            out WorldBossCharacterSheet.Row result)
+        {
+            result = null;
+
+            return listSheet.TryGetValue(raidId, out var raidRow) &&
+                characterSheet.TryGetValue(raidRow.BossId, out result);
         }
     }
 }

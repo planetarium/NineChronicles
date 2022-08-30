@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Nekoyume.Helper;
 using Nekoyume.UI.Model;
 using UnityEngine;
@@ -38,12 +38,18 @@ namespace Nekoyume.UI.Module.WorldBoss
                 return;
             }
 
+            if (Game.Game.instance.TableSheets.WorldBossCharacterSheet
+                .TryGetValue(row.BossId, out var characterRow))
+            {
+                return;
+            }
+
             foreach (var item in killRewardItems)
             {
                 item.gameObject.SetActive(false);
             }
 
-            var grade = record != null ? WorldBossHelper.CalculateRank(record.HighScore) : -1;
+            var grade = record != null ? WorldBossHelper.CalculateRank(characterRow, record.HighScore) : -1;
             rewards.Reverse();
             for (var i = 0; i < rewards.Count; i++)
             {

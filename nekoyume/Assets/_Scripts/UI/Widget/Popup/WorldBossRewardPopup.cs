@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -107,7 +107,11 @@ namespace Nekoyume.UI
             var runeWeightSheet = Game.Game.instance.TableSheets.RuneWeightSheet;
             var rewardSheet = Game.Game.instance.TableSheets.WorldBossRankRewardSheet;
             var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
-            var rank = WorldBossHelper.CalculateRank(_cachedRaiderState.HighScore);
+            var characterSheet = Game.Game.instance.TableSheets.WorldBossCharacterSheet;
+            var rank = WorldBossHelper.CalculateRank(
+                characterSheet[_cachedBossId],
+                _cachedRaiderState.HighScore);
+
             var totalRewards = new List<FungibleAssetValue>();
             for (var i = _cachedRaiderState.LatestRewardRank; i < rank; i++)
             {

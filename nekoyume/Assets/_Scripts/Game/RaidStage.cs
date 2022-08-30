@@ -42,6 +42,7 @@ namespace Nekoyume.Game
         private int _wave;
         private bool _isPlaying;
         private int _currentScore;
+        private int _currentBossId;
 
         public SkillController SkillController { get; private set; }
         public BuffController BuffController { get; private set; }
@@ -139,6 +140,7 @@ namespace Nekoyume.Game
 
         private IEnumerator CoEnter(int bossId, ArenaPlayerDigest playerDigest)
         {
+            _currentBossId = bossId;
             Widget.Find<HeaderMenuStatic>().Close(true);
             ActionCamera.instance.gameObject.SetActive(false);
             _actionQueue.Clear();
@@ -200,7 +202,7 @@ namespace Nekoyume.Game
             MainCanvas.instance.Canvas.worldCamera = ActionCamera.instance.Cam;
 
             container.Close();
-            Widget.Find<WorldBossResultPopup>().Show(damageDealt, isNewRecord);
+            Widget.Find<WorldBossResultPopup>().Show(_currentBossId, damageDealt, isNewRecord);
 
             if (container)
             {
@@ -213,7 +215,7 @@ namespace Nekoyume.Game
             _player.Spawn(character);
 
             var player = Widget.Find<RaidPreparation>().Player;
-            Widget.Find<WorldBossBattle>().Show(player);
+            Widget.Find<WorldBossBattle>().Show(_currentBossId, player);
             yield break;
         }
 

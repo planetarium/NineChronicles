@@ -143,7 +143,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             myRankText.text = string.Empty;
         }
 
-        public void UpdateMyInformation(WorldBossRankingRecord record)
+        public void UpdateMyInformation(int bossId, WorldBossRankingRecord record)
         {
             myRankContainer.SetActive(false);
             emptyRecordContainer.SetActive(false);
@@ -159,7 +159,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 myTotalScoreText.text = $"{record.TotalScore:#,0}";
                 myBestRecordText.text = $"{record.HighScore:#,0}";
                 myRankText.text = $"{record.Ranking:#,0}";
-                UpdateGrade(record.HighScore);
+                UpdateGrade(bossId, record.HighScore);
             }
             else
             {
@@ -167,17 +167,21 @@ namespace Nekoyume.UI.Module.WorldBoss
             }
         }
 
-        private void UpdateGrade(int highScore)
+        private void UpdateGrade(int bossId, int highScore)
         {
             if (_gradeObject != null)
             {
                 Destroy(_gradeObject);
             }
 
-            var grade = (WorldBossGrade)WorldBossHelper.CalculateRank(highScore);
-            if (WorldBossFrontHelper.TryGetGrade(grade, false, out var prefab))
+            if (Game.Game.instance.TableSheets.WorldBossCharacterSheet
+                .TryGetValue(bossId, out var row))
             {
-                _gradeObject = Instantiate(prefab, gradeContainer);
+                var grade = (WorldBossGrade)WorldBossHelper.CalculateRank(row, highScore);
+                if (WorldBossFrontHelper.TryGetGrade(grade, false, out var prefab))
+                {
+                    _gradeObject = Instantiate(prefab, gradeContainer);
+                }
             }
         }
     }

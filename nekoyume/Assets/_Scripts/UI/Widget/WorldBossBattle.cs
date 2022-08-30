@@ -27,13 +27,14 @@ namespace Nekoyume.UI
         }
 
         public void Show(
+            int bossId,
             Game.Character.Player player,
             bool ignoreShowAnimation = false)
         {
             comboText.comboMax = AttackCountHelper.GetCountMax(player.Level);
             comboText.Close();
             playerStatus.SetData(player);
-            progressBar.Show();
+            progressBar.Show(bossId);
             base.Show(ignoreShowAnimation);
         }
 

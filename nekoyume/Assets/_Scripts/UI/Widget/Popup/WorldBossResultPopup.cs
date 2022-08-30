@@ -38,18 +38,22 @@ namespace Nekoyume.UI
             base.OnDisable();
         }
 
-        public void Show(int score, bool isBest)
+        public void Show(int bossId, int score, bool isBest)
         {
             base.Show();
 
             scoreText.text = score.ToString("N0");
             seasonBestObject.SetActive(isBest);
-            var grade = (WorldBossGrade) WorldBossHelper.CalculateRank(score);
 
-            if (WorldBossFrontHelper.TryGetGrade(grade, false, out var prefab))
+            if (Game.Game.instance.TableSheets.WorldBossCharacterSheet.TryGetValue(bossId, out var row))
             {
-                _gradeObject = Instantiate(prefab, gradeParent);
-                _gradeObject.transform.localScale = Vector3.one;
+                var grade = (WorldBossGrade)WorldBossHelper.CalculateRank(row, score);
+
+                if (WorldBossFrontHelper.TryGetGrade(grade, false, out var prefab))
+                {
+                    _gradeObject = Instantiate(prefab, gradeParent);
+                    _gradeObject.transform.localScale = Vector3.one;
+                }
             }
         }
 

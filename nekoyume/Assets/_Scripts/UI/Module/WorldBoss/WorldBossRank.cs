@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,6 +14,8 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module.WorldBoss
 {
+    using Cysharp.Threading.Tasks;
+    using Nekoyume.TableData;
     using UniRx;
 
     public class WorldBossRank : WorldBossDetailItem
@@ -73,7 +75,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             ResetInformation(status);
 
             var raidId = GetRaidId(status);
-            if (!WorldBossFrontHelper.TryGetRaid(raidId, out _))
+            if (!WorldBossFrontHelper.TryGetRaid(raidId, out var raidRow))
             {
                 if (_bossNameObject != null)
                 {
@@ -91,7 +93,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             }
 
             SetActiveQueryLoading(true);
-            await SetItemsAsync(raidId, status);
+            await SetItemsAsync(raidRow, status);
             UpdateBossInformation(raidId);
             UpdateRecord(status);
             SetActiveQueryLoading(false);
@@ -161,7 +163,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             bossImage.sprite = data.illustration;
         }
 
-        private async Task SetItemsAsync(int raidId, Status status)
+        private async Task SetItemsAsync(WorldBossListSheet.Row row, Status status)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             if (_cachedItems.ContainsKey(status) && _cachedItems[status].AvatarAddress == avatarAddress)
@@ -169,7 +171,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 return;
             }
 
-            var response = await WorldBossQuery.QueryRankingAsync(raidId, avatarAddress);
+            var response = await WorldBossQuery.QueryRankingAsync(row.Id, avatarAddress);
             var records = response?.WorldBossRanking ?? new List<WorldBossRankingRecord>();
             var userCount = response?.WorldBossTotalUsers ?? 0;
             var myRecord = records.FirstOrDefault(record => record.Address == avatarAddress.ToHex());
@@ -180,13 +182,17 @@ namespace Nekoyume.UI.Module.WorldBoss
                     .ToList();
             }
 
-            var items = new WorldBossRankItems(
-                records.Select(record => new WorldBossRankItem(record)).ToList(),
-                myRecord != null ? new WorldBossRankItem(myRecord) : null,
-                avatarAddress,
-                userCount);
+            if (Game.Game.instance.TableSheets
+                .WorldBossCharacterSheet.TryGetValue(row.BossId, out var bossrow))
+            {
+                var items = new WorldBossRankItems(
+                    records.Select(record => new WorldBossRankItem(bossrow, record)).ToList(),
+                    myRecord != null ? new WorldBossRankItem(bossrow, myRecord) : null,
+                    avatarAddress,
+                    userCount);
 
-            _cachedItems[status] = items;
+                _cachedItems[status] = items;
+            }
         }
 
         private void UpdateRecord(Status status)

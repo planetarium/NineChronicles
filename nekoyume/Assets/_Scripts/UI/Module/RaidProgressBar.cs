@@ -1,6 +1,7 @@
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
+using Nekoyume.TableData;
 using Nekoyume.UI.Module.WorldBoss;
 using System.Collections;
 using System.Collections.Generic;
@@ -46,6 +47,7 @@ namespace Nekoyume.UI.Module
 
         private Coroutine _smoothenCoroutine = null;
         private WorldBossGrade _currentGrade;
+        private WorldBossCharacterSheet.Row _currentRow;
 
         private void Awake()
         {
@@ -53,10 +55,18 @@ namespace Nekoyume.UI.Module
             _currentStar.Subscribe(PlayVFX).AddTo(gameObject);
         }
 
-        public void Show()
+        public void Show(int bossId)
         {
-            Clear();
-            gameObject.SetActive(true);
+            if (Game.Game.instance.TableSheets.WorldBossCharacterSheet
+                .TryGetValue(bossId, out _currentRow))
+            {
+                Clear();
+                gameObject.SetActive(true);
+            }
+            else
+            {
+                gameObject.SetActive(false);
+            }
         }
 
         public void Close()
@@ -104,7 +114,7 @@ namespace Nekoyume.UI.Module
         public void UpdateScore(int score)
         {
             scoreText.text = score.ToString("N0");
-            var grade = (WorldBossGrade) WorldBossHelper.CalculateRank(score);
+            var grade = (WorldBossGrade) WorldBossHelper.CalculateRank(_currentRow, score);
             if (_currentGrade != grade &&
                 WorldBossFrontHelper.TryGetGrade(grade, false, out var prefab))
             {

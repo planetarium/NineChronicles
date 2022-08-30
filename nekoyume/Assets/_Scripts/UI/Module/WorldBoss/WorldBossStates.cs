@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,6 +10,7 @@ using Nekoyume.State;
 
 namespace Nekoyume.UI.Module.WorldBoss
 {
+    using Nekoyume.TableData;
     using UniRx;
     public static class WorldBossStates
     {
@@ -32,7 +33,7 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         public static async Task Set(Address avatarAddress)
         {
-            var (raidId, raider, isOnSeason) = await GetDataAsync();
+            var (raidRow, raider, isOnSeason) = await GetDataAsync();
             if (isOnSeason)
             {
                 UpdateRaiderState(avatarAddress, raider);
@@ -42,7 +43,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 ClearRaiderState();
             }
 
-            var hasNotification = IsExistReward(raidId, raider);
+            var hasNotification = IsExistReward(raidRow, raider);
             HasNotification.SetValueAndForceNotify(hasNotification);
         }
 
@@ -63,16 +64,18 @@ namespace Nekoyume.UI.Module.WorldBoss
             }
         }
 
-        private static bool IsExistReward(int raidId, RaiderState raiderState)
+        private static bool IsExistReward(WorldBossListSheet.Row row, RaiderState raiderState)
         {
-            if (!WorldBossFrontHelper.TryGetRaid(raidId, out var row))
+            var tableSheets = Game.Game.instance.TableSheets;
+            var rewardSheet = tableSheets.WorldBossRankRewardSheet;
+            var rows = rewardSheet.Values.Where(x => x.BossId.Equals(row.BossId)).ToList();
+            if (!rows.Any())
             {
                 return false;
             }
 
-            var rewardSheet = Game.Game.instance.TableSheets.WorldBossRankRewardSheet;
-            var rows = rewardSheet.Values.Where(x => x.BossId.Equals(row.BossId)).ToList();
-            if (!rows.Any())
+
+            if (!tableSheets.WorldBossCharacterSheet.TryGetValue(row.BossId, out var characterRow))
             {
                 return false;
             }
@@ -80,11 +83,11 @@ namespace Nekoyume.UI.Module.WorldBoss
             Widget.Find<WorldBossRewardPopup>().CachingInformation(raiderState, row.BossId);
             var latestRewardRank = raiderState?.LatestRewardRank ?? 0;
             var highScore = raiderState?.HighScore ?? 0;
-            var currentRank = WorldBossHelper.CalculateRank(highScore);
+            var currentRank = WorldBossHelper.CalculateRank(characterRow, highScore);
             return latestRewardRank < currentRank;
         }
 
-        private static async Task<(int raidId, RaiderState raider, bool isOnSeason)> GetDataAsync()
+        private static async Task<(WorldBossListSheet.Row raidRow, RaiderState raider, bool isOnSeason)> GetDataAsync()
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var bossSheet = Game.Game.instance.TableSheets.WorldBossListSheet;
@@ -92,24 +95,24 @@ namespace Nekoyume.UI.Module.WorldBoss
 
             var task = Task.Run(async () =>
             {
-                int raidId;
+                WorldBossListSheet.Row raidRow;
                 bool isOnSeason = false;
                 try // If the current raidId cannot be found, it will look for the previous raidId.
                 {
-                    raidId = bossSheet.FindRaidIdByBlockIndex(blockIndex);
+                    raidRow = bossSheet.FindRowByBlockIndex(blockIndex);
                 }
                 catch (InvalidOperationException)
                 {
-                    raidId = bossSheet.FindPreviousRaidIdByBlockIndex(blockIndex);
+                    raidRow = bossSheet.FindPreviousRowByBlockIndex(blockIndex);
                 }
 
-                var raiderAddress = Addresses.GetRaiderAddress(avatarAddress, raidId);
+                var raiderAddress = Addresses.GetRaiderAddress(avatarAddress, raidRow.Id);
                 var raiderState = await Game.Game.instance.Agent.GetStateAsync(raiderAddress);
                 var raider = raiderState is Bencodex.Types.List raiderList
                     ? new RaiderState(raiderList)
                     : null;
 
-                return (raidId, raider, isOnSeason);
+                return (raidRow, raider, isOnSeason);
             });
 
             await task;
