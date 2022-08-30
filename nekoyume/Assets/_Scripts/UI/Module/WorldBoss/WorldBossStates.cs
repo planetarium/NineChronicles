@@ -37,6 +37,10 @@ namespace Nekoyume.UI.Module.WorldBoss
             {
                 UpdateRaiderState(avatarAddress, raider);
             }
+            else
+            {
+                ClearRaiderState();
+            }
 
             var hasNotification = IsExistReward(raidId, raider);
             HasNotification.SetValueAndForceNotify(hasNotification);

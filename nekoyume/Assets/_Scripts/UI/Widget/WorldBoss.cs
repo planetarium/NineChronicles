@@ -75,8 +75,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private BlocksAndDatesPeriod blocksAndDatesPeriod;
 
-
-
         [SerializeField]
         private List<GameObject> queryLoadingObjects;
 
@@ -88,7 +86,6 @@ namespace Nekoyume.UI
         private WorldBossStatus _status = WorldBossStatus.None;
         private HeaderMenuStatic _headerMenu;
         private readonly List<IDisposable> _disposables = new();
-        private readonly Dictionary<Address, RaiderState> _cachedRaiderStates = new();
 
         protected override void Awake()
         {
@@ -160,7 +157,7 @@ namespace Nekoyume.UI
             _headerMenu.Show(assetVisibleState, showHeaderMenuAnimation);
         }
 
-        public async Task UpdateViewAsync(long currentBlockIndex
+        private async Task UpdateViewAsync(long currentBlockIndex
             , bool forceUpdate = false
             , bool ignoreHeaderMenuAnimation = false
             , bool ignoreHeaderMenu = false)

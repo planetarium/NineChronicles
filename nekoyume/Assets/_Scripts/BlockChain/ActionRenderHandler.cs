@@ -1836,7 +1836,6 @@ namespace Nekoyume.BlockChain
             if (Widget.Find<RaidPreparation>().IsSkipRender)
             {
                 Widget.Find<LoadingScreen>().Close();
-                worldBoss.UpdateViewAsync(eval.BlockIndex, true);
                 worldBoss.Close();
                 Game.Event.OnRoomEnter.Invoke(true);
                 return;
@@ -1876,8 +1875,9 @@ namespace Nekoyume.BlockChain
             clonedAvatarState.EquipItems(items);
 
             var random = new LocalRandom(eval.RandomSeed);
-            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
-            var raiderState = WorldBossStates.GetRaiderState(currentAvatarState.address);
+            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            await WorldBossStates.Set(avatarAddress);
+            var raiderState = WorldBossStates.GetRaiderState(avatarAddress);
             if (raiderState != null)
             {
                 var rewards = RuneHelper.CalculateReward(
@@ -1907,7 +1907,6 @@ namespace Nekoyume.BlockChain
             var isNewRecord = raiderState is null ||
                               raiderState.HighScore < simulator.DamageDealt;
             worldBoss.Close();
-            await worldBoss.UpdateViewAsync(Game.Game.instance.Agent.BlockIndex, true, ignoreHeaderMenu: true);
 
             Game.Game.instance.RaidStage.Play(
                 simulator.BossId,
