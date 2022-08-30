@@ -16,10 +16,10 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Introduced at https://github.com/planetarium/lib9c/pull/1173
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1338
     /// </summary>
     [Serializable]
-    [ActionType("hack_and_slash_sweep5")]
+    [ActionType("hack_and_slash_sweep6")]
     public class HackAndSlashSweep : GameAction
     {
         public const int UsableApStoneCount = 10;
@@ -98,6 +98,7 @@ namespace Nekoyume.Action
                     typeof(CharacterSheet),
                     typeof(CostumeStatSheet),
                     typeof(SweepRequiredCPSheet),
+                    typeof(StakeActionPointCoefficientSheet),
                 });
 
             var worldSheet = sheets.GetSheet<WorldSheet>();
@@ -194,10 +195,22 @@ namespace Nekoyume.Action
 
             // burn ap
             avatarState.actionPoint -= actionPoint;
+            var costAp = sheets.GetSheet<StageSheet>()[stageId].CostAP;
+            if (states.TryGetStakeState(context.Signer, out var stakeState))
+            {
+                var currency = states.GetGoldCurrency();
+                var stakedAmount = states.GetBalance(stakeState.address, currency);
+                var actionPointCoefficientSheet = sheets.GetSheet<StakeActionPointCoefficientSheet>();
+                var stakingLevel = actionPointCoefficientSheet.FindLevelByStakedAmount(context.Signer, stakedAmount);
+                costAp = actionPointCoefficientSheet.GetActionPointByStaking(
+                    costAp,
+                    1,
+                    stakingLevel);
+            }
 
-            var apMaxPlayCount = stageRow.CostAP > 0 ? gameConfigState.ActionPointMax / stageRow.CostAP : 0;
+            var apMaxPlayCount = costAp > 0 ? gameConfigState.ActionPointMax / costAp : 0;
             var apStonePlayCount = apMaxPlayCount * apStoneCount;
-            var apPlayCount = stageRow.CostAP > 0 ? actionPoint / stageRow.CostAP : 0;
+            var apPlayCount = costAp > 0 ? actionPoint / costAp : 0;
             var playCount = apStonePlayCount + apPlayCount;
             if (playCount <= 0)
             {
