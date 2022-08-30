@@ -128,7 +128,7 @@ namespace Nekoyume.Action
                         $"The total supply value of the currency {currency} is not trackable"
                         + " because it is a legacy untracked currency which might have been"
                         + " established before the introduction of total supply tracking support.";
-                    throw new TotalSupplyNotTrackableException(msg, currency);
+                    throw new TotalSupplyNotTrackableException(currency, msg);
                 }
 
                 // Return dirty state if it exists.
@@ -162,7 +162,7 @@ namespace Nekoyume.Action
                         var msg = $"The amount {value} attempted to be minted added to the current"
                                   + $" total supply of {currentTotalSupply} exceeds the"
                                   + $" maximum allowed supply of {currency.MaximumSupply}.";
-                        throw new SupplyOverflowException(msg, value);
+                        throw new SupplyOverflowException(value, msg);
                     }
 
                     return new AccountStateDelta(
@@ -200,9 +200,9 @@ namespace Nekoyume.Action
                 if (senderBalance < value)
                 {
                     throw new InsufficientBalanceException(
-                        $"There is no sufficient balance for {sender}: {senderBalance} < {value}",
                         sender,
-                        senderBalance
+                        senderBalance,
+                        $"There is no sufficient balance for {sender}: {senderBalance} < {value}"
                     );
                 }
 
@@ -231,9 +231,9 @@ namespace Nekoyume.Action
                 if (balance < value)
                 {
                     throw new InsufficientBalanceException(
-                        $"There is no sufficient balance for {owner}: {balance} < {value}",
                         owner,
-                        value
+                        value,
+                        $"There is no sufficient balance for {owner}: {balance} < {value}"
                     );
                 }
 
