@@ -116,7 +116,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                         season.Set(raidId, rank, userCount);
                         break;
                     case WorldBossBattleReward battle:
-                        battle.Set(raidId, record);
+                        battle.Set(raidId);
                         break;
                     case WorldBossGradeReward grade:
                         grade.Set(raider, raidId);

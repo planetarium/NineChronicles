@@ -94,6 +94,13 @@ namespace Nekoyume.Helper
             return rows.Any();
         }
 
+        public static bool TryGetBattleRewards(int bossId, out List<WorldBossBattleRewardSheet.Row> rows)
+        {
+            var sheet = Game.Game.instance.TableSheets.WorldBossBattleRewardSheet;
+            rows = sheet.Values.Where(x => x.BossId == bossId).ToList();
+            return rows.Any();
+        }
+
         public static bool IsItInSeason(long currentBlockIndex)
         {
             var sheet = Game.Game.instance.TableSheets.WorldBossListSheet;
