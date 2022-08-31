@@ -68,9 +68,13 @@ namespace Nekoyume
             var track = asset.GetRootTracks()
                 .FirstOrDefault(x => x.name.Equals("Spine_Player"))
                 .GetChildTracks()
-                .First();
-            director.SetGenericBinding(track, player.GetComponentInChildren<SkeletonAnimation>());
+                .FirstOrDefault();
+            if (!track)
+            {
+                yield break;
+            }
 
+            director.SetGenericBinding(track, player.GetComponentInChildren<SkeletonAnimation>());
             IsCutscenePlaying = true;
             director.playableAsset = asset;
             director.RebuildGraph();
