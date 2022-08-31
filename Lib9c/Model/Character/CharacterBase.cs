@@ -539,6 +539,11 @@ namespace Nekoyume.Model
                 Die();
             }
 
+            FinishTargetIfKilled(usedSkill);
+        }
+
+        private void FinishTargetIfKilled(BattleStatus.Skill usedSkill)
+        {
             foreach (var info in usedSkill.SkillInfos)
             {
                 if (!info.Target.IsDead)
