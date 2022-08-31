@@ -12,6 +12,7 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
+using TMPro;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -42,6 +43,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private WorldButton _eventDungeonButton;
+        
+        [SerializeField]
+        private TextMeshProUGUI _eventDungeonTicketsText;
 
         public ViewModel SharedViewModel { get; private set; }
 

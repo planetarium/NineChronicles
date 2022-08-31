@@ -37,14 +37,14 @@ namespace Nekoyume.UI
         {
             public PracticeRandom() : base(Guid.NewGuid().GetHashCode())
             {
-                
+
             }
 
             public int Seed => throw new NotImplementedException();
         }
 
         private static readonly Vector3 PlayerPosition = new(1999.8f, 1999.3f, 3f);
-        private const string RAID_EQUIPMENT_KEY = "RAID_EQUIPMENT_KEY";
+        private const string RAID_EQUIPMENT_KEY = "RAID_EQUIPMENT";
 
         [SerializeField]
         private Toggle toggle;
@@ -108,7 +108,6 @@ namespace Nekoyume.UI
 
         private readonly List<IDisposable> _disposables = new();
         private HeaderMenuStatic _headerMenu;
-        private RaiderState _cachedRaiderState;
 
         public override bool CanHandleInputEvent =>
             base.CanHandleInputEvent && startButton.Interactable;
@@ -163,21 +162,21 @@ namespace Nekoyume.UI
             toggle.gameObject.SetActive(GameConfig.IsEditor);
         }
 
-        public void Show(RaiderState raiderState, int bossId, bool ignoreShowAnimation = false)
+        public void Show(int bossId, bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
 
             _bossId = bossId;
             _headerMenu = Find<HeaderMenuStatic>();
-            _cachedRaiderState = raiderState;
 
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
             var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+            var raiderState = WorldBossStates.GetRaiderState(currentAvatarState.address);
             startButton.gameObject.SetActive(true);
             startButton.Interactable = true;
             if (WorldBossFrontHelper.IsItInSeason(currentBlockIndex))
             {
-                if (_cachedRaiderState is null)
+                if (raiderState is null)
                 {
                     var cost = GetEntranceFee(currentAvatarState);
                     startButton.SetCost(CostType.Crystal, cost);
@@ -548,21 +547,22 @@ namespace Nekoyume.UI
                     PracticeRaid();
                     break;
                 case WorldBossStatus.Season:
-                    if (_cachedRaiderState is null)
+                    var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+                    var raiderState = WorldBossStates.GetRaiderState(currentAvatarState.address);
+                    if (raiderState is null)
                     {
-                        var cost = GetEntranceFee(Game.Game.instance.States.CurrentAvatarState);
+                        var cost = GetEntranceFee(currentAvatarState);
                         Find<PaymentPopup>()
                             .ShowWithAddCost("UI_TOTAL_COST", "UI_BOSS_JOIN_THE_SEASON",
                                 CostType.Crystal, cost,
                                 CostType.WorldBossTicket, 1,
-                                () => StartCoroutine(CoRaid(false)));
+                                () => StartCoroutine(CoRaid()));
                     }
                     else
                     {
-                        Debug.Log($"[RAID] Ticket : {_headerMenu.WorldBossTickets.RemainTicket}");
                         if (_headerMenu.WorldBossTickets.RemainTicket > 0)
                         {
-                            StartCoroutine(CoRaid(false));
+                            StartCoroutine(CoRaid());
                         }
                         else
                         {
@@ -581,12 +581,16 @@ namespace Nekoyume.UI
         {
             (_, _, var foods) = SaveCurrentEquipment();
             var currentAvatarState = States.Instance.CurrentAvatarState;
+
+            var tableSheets = Game.Game.instance.TableSheets;
+
             var simulator = new RaidSimulator(
                 _bossId,
                 new PracticeRandom(),
                 currentAvatarState,
                 foods,
-                Game.Game.instance.TableSheets.GetRaidSimulatorSheets()
+                tableSheets.GetRaidSimulatorSheets(),
+                tableSheets.CostumeStatSheet
             );
             var log = simulator.Simulate();
             var digest = new ArenaPlayerDigest(currentAvatarState);
@@ -597,18 +601,19 @@ namespace Nekoyume.UI
                 digest,
                 simulator.DamageDealt,
                 false,
-                true);
+                true,
+                null);
 
             Find<WorldBoss>().Close();
             Close();
         }
 
-        private IEnumerator CoRaid(bool payNcg)
+        private IEnumerator CoRaid()
         {
             coverToBlockClick.SetActive(true);
             var itemMoveAnimation = ShowMoveAnimation();
             yield return new WaitWhile(() => itemMoveAnimation.IsPlaying);
-            Raid(payNcg);
+            Raid(false);
         }
 
         private ItemMoveAnimation ShowMoveAnimation()
@@ -626,7 +631,7 @@ namespace Nekoyume.UI
 
         private void Raid(bool payNcg)
         {
-            (var equipments, var costumes, var foods) = SaveCurrentEquipment();
+            var (equipments, costumes, foods) = SaveCurrentEquipment();
             ActionManager.Instance.Raid(costumes, equipments, foods, payNcg);
             Find<LoadingScreen>().Show();
             Close();
@@ -656,15 +661,17 @@ namespace Nekoyume.UI
                 return;
             }
 
+            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            var raiderState = WorldBossStates.GetRaiderState(currentAvatarState.address);
             var cur = States.Instance.GoldBalanceState.Gold.Currency;
-            var cost = WorldBossHelper.CalculateTicketPrice(row, _cachedRaiderState, cur);
+            var cost = WorldBossHelper.CalculateTicketPrice(row, raiderState, cur);
             var balance = States.Instance.GoldBalanceState;
             Find<TicketPurchasePopup>().Show(
                 CostType.WorldBossTicket,
                 CostType.NCG,
                 balance.Gold,
                 cost,
-                _cachedRaiderState.PurchaseCount,
+                raiderState.PurchaseCount,
                 row.MaxPurchaseCount,
                 () =>
                 {
@@ -751,12 +758,14 @@ namespace Nekoyume.UI
 
         public List<Guid> LoadEquipment()
         {
-            if (!PlayerPrefs.HasKey(RAID_EQUIPMENT_KEY))
+            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            var key = $"{RAID_EQUIPMENT_KEY}_{avatarAddress}";
+            if (!PlayerPrefs.HasKey(key))
             {
                 return new List<Guid>();
             }
 
-            var json = PlayerPrefs.GetString(RAID_EQUIPMENT_KEY);
+            var json = PlayerPrefs.GetString(key);
             var data =  JsonUtility.FromJson<EquipmentData>(json);
             return data.Guids.Select(Guid.Parse).ToList();
         }
@@ -765,7 +774,9 @@ namespace Nekoyume.UI
         {
             var e = new EquipmentData(guids.Select(x=> x.ToString()).ToArray());
             var json = JsonUtility.ToJson(e);
-            PlayerPrefs.SetString(RAID_EQUIPMENT_KEY, json);
+            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            var key = $"{RAID_EQUIPMENT_KEY}_{avatarAddress}";
+            PlayerPrefs.SetString(key, json);
         }
 
         [Serializable]

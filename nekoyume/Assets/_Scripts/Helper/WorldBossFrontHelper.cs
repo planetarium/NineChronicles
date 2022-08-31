@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -25,7 +25,7 @@ namespace Nekoyume.Helper
             }
         }
 
-        public static bool TryGetGrade(WorldBossGrade grade, out GameObject prefab)
+        public static bool TryGetGrade(WorldBossGrade grade, bool isSmall, out GameObject prefab)
         {
             var result = ScriptableObject.Grades.FirstOrDefault(x => x.grade == grade);
             if (result is null)
@@ -34,7 +34,7 @@ namespace Nekoyume.Helper
                 return false;
             }
 
-            prefab = result.prefab;
+            prefab = isSmall ? result.smallPrefab : result.prefab;
             return true;
         }
 
@@ -68,7 +68,7 @@ namespace Nekoyume.Helper
         {
             var sheet = Game.Game.instance.TableSheets.WorldBossListSheet;
             row = sheet.Values.FirstOrDefault(x => x.Id.Equals(raidId));
-            return row is not null;
+            return row != null;
         }
 
         public static bool TryGetRunes(int bossId, out List<RuneSheet.Row> rows)
@@ -94,6 +94,13 @@ namespace Nekoyume.Helper
             return rows.Any();
         }
 
+        public static bool TryGetBattleRewards(int bossId, out List<WorldBossBattleRewardSheet.Row> rows)
+        {
+            var sheet = Game.Game.instance.TableSheets.WorldBossBattleRewardSheet;
+            rows = sheet.Values.Where(x => x.BossId == bossId).ToList();
+            return rows.Any();
+        }
+
         public static bool IsItInSeason(long currentBlockIndex)
         {
             var sheet = Game.Game.instance.TableSheets.WorldBossListSheet;
@@ -106,7 +113,7 @@ namespace Nekoyume.Helper
             var sheet = Game.Game.instance.TableSheets.WorldBossListSheet;
             row = sheet.Values.FirstOrDefault(x => x.StartedBlockIndex <= currentBlockIndex &&
                                              currentBlockIndex <= x.EndedBlockIndex);
-            return row is not null;
+            return row != null;
         }
 
         public static bool TryGetPreviousRow(long currentBlockIndex, out WorldBossListSheet.Row row)
@@ -158,6 +165,39 @@ namespace Nekoyume.Helper
             var refillable = WorldBossHelper.CanRefillTicket(
                 currentBlockIndex, refillBlockIndex, startBlockIndex);
             return refillable ? WorldBossHelper.MaxChallengeCount : state.RemainChallengeCount;
+        }
+
+        public static int GetScoreInRank(int rank, WorldBossCharacterSheet.Row bossRow)
+        {
+            return (int)bossRow.WaveStats
+                .Where(x => x.Wave <= rank)
+                .Sum(x => x.HP);
+        }
+
+        public static Sprite GetRankIcon(int rank)
+        {
+            var index = rank - 1;
+            return ScriptableObject.Rank[index];
+        }
+
+        public static bool IsEnableNotification(WorldBossCharacterSheet.Row bossRow, RaiderState raiderState)
+        {
+            var latestRewardRank = raiderState?.LatestRewardRank ?? 0;
+            var highScore = raiderState?.HighScore ?? 0;
+            var currentRank = WorldBossHelper.CalculateRank(bossRow, highScore);
+            return latestRewardRank < currentRank;
+        }
+
+        public static bool TryGetBossRowByRaidId(
+            int raidId,
+            WorldBossListSheet listSheet,
+            WorldBossCharacterSheet characterSheet,
+            out WorldBossCharacterSheet.Row result)
+        {
+            result = null;
+
+            return listSheet.TryGetValue(raidId, out var raidRow) &&
+                characterSheet.TryGetValue(raidRow.BossId, out result);
         }
     }
 }

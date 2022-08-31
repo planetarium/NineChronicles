@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Libplanet;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.State;
@@ -13,6 +14,8 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module.WorldBoss
 {
+    using Cysharp.Threading.Tasks;
+    using Nekoyume.TableData;
     using UniRx;
 
     public class WorldBossRank : WorldBossDetailItem
@@ -32,13 +35,13 @@ namespace Nekoyume.UI.Module.WorldBoss
         private Image bossImage;
 
         [SerializeField]
-        private TextMeshProUGUI bossName;
-
-        [SerializeField]
         private TextMeshProUGUI rankTitle;
 
         [SerializeField]
         private TextMeshProUGUI totalUsers;
+
+        [SerializeField]
+        private TextMeshProUGUI lastUpdatedText;
 
         [SerializeField]
         private Button refreshButton;
@@ -50,6 +53,9 @@ namespace Nekoyume.UI.Module.WorldBoss
         private GameObject noSeasonInfo;
 
         [SerializeField]
+        private Transform bossNameContainer;
+
+        [SerializeField]
         private List<GameObject> queryLoadingObjects;
 
         [SerializeField]
@@ -57,21 +63,29 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         private readonly Dictionary<Status, WorldBossRankItems> _cachedItems = new();
         private Status _status;
+        private GameObject _bossNameObject;
+        private Address currentAvatarAddress;
 
         private void Awake()
         {
             refreshButton.OnClickAsObservable()
-                .Subscribe(_ => RefreshMyInformationAsync()).AddTo(gameObject);
+                .Subscribe(_ => RefreshAsync()).AddTo(gameObject);
         }
 
         public async void ShowAsync(Status status)
         {
-            Reset(status);
+            _status = status;
+            ResetInformation(status);
 
             var raidId = GetRaidId(status);
-            if (!WorldBossFrontHelper.TryGetRaid(raidId, out _))
+            if (!WorldBossFrontHelper.TryGetRaid(raidId, out var raidRow))
             {
+                if (_bossNameObject != null)
+                {
+                    Destroy(_bossNameObject);
+                }
                 noSeasonInfo.SetActive(true);
+                bossImage.enabled = false;
                 return;
             }
 
@@ -82,13 +96,13 @@ namespace Nekoyume.UI.Module.WorldBoss
             }
 
             SetActiveQueryLoading(true);
-            await SetItemsAsync(raidId, status);
+            await SetItemsAsync(raidRow, status);
             UpdateBossInformation(raidId);
             UpdateRecord(status);
             SetActiveQueryLoading(false);
         }
 
-        private void RefreshMyInformationAsync()
+        private void RefreshAsync()
         {
             _cachedItems.Remove(_status);
             ShowAsync(_status);
@@ -110,15 +124,20 @@ namespace Nekoyume.UI.Module.WorldBoss
             };
         }
 
-        private void Reset(Status status)
+        private void ResetInformation(Status status)
         {
-            _status = status;
+            if (_bossNameObject != null)
+            {
+                Destroy(_bossNameObject);
+            }
+
             rankTitle.text = status == Status.PreviousSeason
                 ? L10nManager.Localize("UI_PREVIOUS_SEASON_RANK")
                 : L10nManager.Localize("UI_LEADERBOARD");
-            bossName.text = "-";
-            totalUsers.text = $"-";
+            totalUsers.text = string.Empty;
+            lastUpdatedText.text = string.Empty;
             bossImage.enabled = false;
+            scroll.UpdateData(new List<WorldBossRankItem>());
             myInfo.gameObject.SetActive(false);
             noSeasonInfo.SetActive(false);
             apiMissing.SetActive(false);
@@ -137,38 +156,50 @@ namespace Nekoyume.UI.Module.WorldBoss
                 return;
             }
 
-            bossName.text = data.name;
+            if (_bossNameObject != null)
+            {
+                Destroy(_bossNameObject);
+            }
+
+            _bossNameObject = Instantiate(data.nameWithBackgroundPrefab, bossNameContainer);
+
             bossImage.enabled = true;
             bossImage.sprite = data.illustration;
         }
 
-        private async Task SetItemsAsync(int raidId, Status status)
+        private async Task SetItemsAsync(WorldBossListSheet.Row row, Status status)
         {
-            if (_cachedItems.ContainsKey(status))
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            if (_cachedItems.ContainsKey(status) && _cachedItems[status].AvatarAddress == avatarAddress)
             {
                 return;
             }
 
-            var avatarState = States.Instance.CurrentAvatarState;
-            var response = await WorldBossQuery.QueryRankingAsync(raidId, avatarState.address);
-            var records = response?.WorldBossRanking ?? new List<WorldBossRankingRecord>();
+            var response = await WorldBossQuery.QueryRankingAsync(row.Id, avatarAddress);
+            var records = response?.WorldBossRanking.RankingInfo ?? new List<WorldBossRankingRecord>();
             var userCount = response?.WorldBossTotalUsers ?? 0;
-
-            var avatarAddress = avatarState.address.ToHex();
-            var myRecord = records.FirstOrDefault(record => record.Address == avatarAddress);
+            var blockIndex = response?.WorldBossRanking?.BlockIndex ?? 0;
+            var myRecord = records.FirstOrDefault(record => record.Address == avatarAddress.ToHex());
 
             if (records.Count > LimitCount)
             {
-                records = records.Where(record => record.Address != avatarAddress)
+                records = records.Where(record => record.Address != avatarAddress.ToHex())
                     .ToList();
             }
 
-            var items = new WorldBossRankItems(
-                records.Select(record => new WorldBossRankItem(record)).ToList(),
-                myRecord != null ? new WorldBossRankItem(myRecord) : null,
+
+            if (Game.Game.instance.TableSheets
+                .WorldBossCharacterSheet.TryGetValue(row.BossId, out var bossRow))
+            {
+                var items = new WorldBossRankItems(
+                records.Select(record => new WorldBossRankItem(bossRow, record)).ToList(),
+                myRecord != null ? new WorldBossRankItem(bossRow, myRecord) : null,
+                avatarAddress,
+                blockIndex,
                 userCount);
 
-            _cachedItems[status] = items;
+                _cachedItems[status] = items;
+            }
         }
 
         private void UpdateRecord(Status status)
@@ -177,7 +208,8 @@ namespace Nekoyume.UI.Module.WorldBoss
             myInfo.gameObject.SetActive(items.MyItem != null);
             myInfo.Set(items.MyItem, null);
             scroll.UpdateData(items.UserItems);
-            totalUsers.text = items.UserCount > 0 ? $"{items.UserCount:#,0}" : "-";
+            totalUsers.text = items.UserCount > 0 ? $"{items.UserCount:#,0}" : string.Empty;;
+            lastUpdatedText.text = $"{items.LastUpdatedBlockIndex:#,0}";
         }
 
         private void SetActiveQueryLoading(bool value)

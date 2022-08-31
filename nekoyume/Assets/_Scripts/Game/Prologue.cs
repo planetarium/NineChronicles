@@ -208,7 +208,7 @@ namespace Nekoyume.Game
             _player.Ready();
             _player.Animator.Cast();
             AudioController.instance.PlaySfx(AudioController.SfxCode.Heal);
-            var buffRow = Game.instance.TableSheets.BuffSheet.Values.First(r =>
+            var buffRow = Game.instance.TableSheets.StatBuffSheet.Values.First(r =>
                 r.StatModifier.Value > 0 && r.StatModifier.StatType == StatType.HP);
             var buff = new HPBuff(buffRow);
             var castingEffect = Game.instance.Stage.BuffController.Get(_player.transform.position, buff);
@@ -225,7 +225,7 @@ namespace Nekoyume.Game
         }
         private IEnumerator CoBattle()
         {
-            var buffRow = Game.instance.TableSheets.BuffSheet.Values.First(r =>
+            var buffRow = Game.instance.TableSheets.StatBuffSheet.Values.First(r =>
                 r.StatModifier.Value < 0 && r.StatModifier.StatType == StatType.DEF);
             yield return StartCoroutine(_fenrir.CoBuff(new DefenseBuff(buffRow)));
             yield return new WaitForSeconds(0.7f);

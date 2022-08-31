@@ -3,12 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Libplanet;
 using Nekoyume.Extensions;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using UnityEngine;
+
 
 namespace Nekoyume.UI.Module.WorldBoss
 {
@@ -34,8 +36,11 @@ namespace Nekoyume.UI.Module.WorldBoss
         [SerializeField]
         private List<CategoryToggle> categoryToggles = null;
 
+        [SerializeField]
+        private List<GameObject> notifications;
+
         private readonly ReactiveProperty<ToggleType> _selectedItemSubType = new();
-        private RaiderState _cachedRaiderState;
+        private Address _cachedAvatarAddress;
 
         protected void Awake()
         {
@@ -56,6 +61,14 @@ namespace Nekoyume.UI.Module.WorldBoss
                     toggle.Item.gameObject.SetActive(toggle.Type.Equals(toggleType));
                 }
             }).AddTo(gameObject);
+
+            WorldBossStates.SubscribeNotification((b) =>
+            {
+                foreach (var notification in notifications)
+                {
+                    notification.SetActive(b);
+                }
+            });
         }
 
         private IEnumerator CoSetFirstCategory()
@@ -70,6 +83,17 @@ namespace Nekoyume.UI.Module.WorldBoss
             if (States.Instance.CurrentAvatarState is null)
             {
                 return;
+            }
+
+            if (_cachedAvatarAddress != States.Instance.CurrentAvatarState.address)
+            {
+                foreach (var toggle in categoryToggles)
+                {
+                    toggle.Item.gameObject.SetActive(false);
+                    toggle.Item.Reset();
+                }
+
+                _cachedAvatarAddress = States.Instance.CurrentAvatarState.address;
             }
 
             if (isReset)
@@ -92,7 +116,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                         season.Set(raidId, rank, userCount);
                         break;
                     case WorldBossBattleReward battle:
-                        battle.Set(raidId, record);
+                        battle.Set(raidId);
                         break;
                     case WorldBossGradeReward grade:
                         grade.Set(raider, raidId);
@@ -116,7 +140,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             var task = Task.Run(async () =>
             {
                 int raidId;
-                try
+                try // If the current raidId cannot be found, it will look for the previous raidId.
                 {
                     raidId = bossSheet.FindRaidIdByBlockIndex(blockIndex);
                 }
@@ -138,7 +162,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                     : null;
 
                 var response = await WorldBossQuery.QueryRankingAsync(raidId, avatarAddress);
-                var records = response?.WorldBossRanking ?? new List<WorldBossRankingRecord>();
+                var records = response?.WorldBossRanking.RankingInfo ?? new List<WorldBossRankingRecord>();
                 var userCount = response?.WorldBossTotalUsers ?? 0;
                 var myRecord = records.FirstOrDefault(record => record.Address == avatarAddress.ToHex());
                 return (raider, killReward, raidId, myRecord, userCount);

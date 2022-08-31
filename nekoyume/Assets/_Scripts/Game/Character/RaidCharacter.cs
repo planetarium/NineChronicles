@@ -260,6 +260,11 @@ namespace Nekoyume.Game.Character
             }
         }
 
+        private bool CheckAttackEnd()
+        {
+            return AttackEndCalled || Animator.IsIdle();
+        }
+
         public IEnumerator CoAreaAttack(IReadOnlyList<Skill.SkillInfo> skillInfos)
         {
             if (skillInfos is null ||
@@ -380,6 +385,7 @@ namespace Nekoyume.Game.Character
 
         protected IEnumerator CoAnimationAttack(bool isCritical)
         {
+            AttackEndCalled = false;
             if (isCritical)
             {
                 Animator.CriticalAttack();
@@ -389,7 +395,8 @@ namespace Nekoyume.Game.Character
                 Animator.Attack();
             }
 
-            yield return new WaitForSeconds(isCritical ? _criticalAttackTime : _attackTime);
+            yield return new WaitForEndOfFrame();
+            yield return new WaitUntil(CheckAttackEnd);
         }
 
         private IEnumerator CoAnimationCastAttack(bool isCritical)
@@ -571,7 +578,7 @@ namespace Nekoyume.Game.Character
             VFXController.instance.CreateAndChase<BattleHeal01VFX>(transform, HealOffset);
         }
 
-        protected virtual IEnumerator CoProcessDamage(Skill.SkillInfo info, bool isConsiderElementalType)
+        public virtual IEnumerator CoProcessDamage(Skill.SkillInfo info, bool isConsiderElementalType)
         {
             var dmg = info.Effect;
 

@@ -14,6 +14,7 @@ namespace Nekoyume.UI.Model
 
         public readonly ReactiveProperty<bool> Selected;
         public readonly ReactiveProperty<bool> Expired;
+        public readonly ReactiveProperty<bool> Loading;
 
         public RectTransform View { get; set; }
 
@@ -26,6 +27,7 @@ namespace Nekoyume.UI.Model
             LevelLimited = limited;
             Selected = new ReactiveProperty<bool>(false);
             Expired = new ReactiveProperty<bool>(false);
+            Loading = new ReactiveProperty<bool>(false);
         }
     }
 }

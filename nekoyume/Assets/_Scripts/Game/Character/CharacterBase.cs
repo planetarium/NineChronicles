@@ -247,7 +247,7 @@ namespace Nekoyume.Game.Character
             return true;
         }
 
-        protected virtual IEnumerator CoProcessDamage(
+        public virtual IEnumerator CoProcessDamage(
             Model.BattleStatus.Skill.SkillInfo info,
             bool isConsiderDie,
             bool isConsiderElementalType)

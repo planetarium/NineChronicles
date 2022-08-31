@@ -19,14 +19,17 @@ namespace Nekoyume.UI.Module.WorldBoss
             var query = @$"query {{
                 worldBossTotalUsers(raidId: {raidId})
                 worldBossRanking(raidId: {raidId}, avatarAddress: ""{address}"") {{
-                    highScore
-                    address
-                    ranking
-                    level
-                    cp
-                    iconId
-                    avatarName
-                    totalScore
+                    blockIndex
+                    rankingInfo {{
+                        highScore
+                        address
+                        ranking
+                        level
+                        cp
+                        iconId
+                        avatarName
+                        totalScore
+                    }}
                 }}
             }}";
 

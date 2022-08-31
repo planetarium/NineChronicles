@@ -14,12 +14,14 @@ namespace Nekoyume
         public List<MonsterData> Monsters;
         public List<GradeData> Grades;
         public List<RuneData> Runes;
+        public List<Sprite> Rank;
 
         [Serializable]
         public class GradeData
         {
             public WorldBossGrade grade;
             public GameObject prefab;
+            public GameObject smallPrefab;
         }
 
         [Serializable]
@@ -29,6 +31,7 @@ namespace Nekoyume
             public string name;
             public Sprite illustration;
             public GameObject namePrefab;
+            public GameObject nameWithBackgroundPrefab;
             public GameObject spinePrefab;
         }
 
