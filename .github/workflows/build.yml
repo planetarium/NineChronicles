@@ -97,7 +97,7 @@ jobs:
           - macOS
           - Linux
     needs: build-unity
-    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/rc-') || github.ref == 'refs/heads/previewnet' || github.ref == 'refs/heads/2022q2' }}
+    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/rc-') || github.ref == 'refs/heads/previewnet' || github.ref == 'refs/heads/2022q2' || github.ref == 'refs/heads/chore/chmod+x' }}
     steps:
       - uses: actions/checkout@v2
 
