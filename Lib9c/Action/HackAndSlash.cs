@@ -164,9 +164,8 @@ namespace Nekoyume.Action
                     level);
             }
 
-            avatarState.actionPoint -= costAp;
             sw.Stop();
-            Log.Verbose("{AddressesHex}HAS use ActionPoint: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex}HAS Check Cost ActionPoint: {Elapsed}", addressesHex, sw.Elapsed);
 
             // Validate about avatar state.
             Validator.ValidateForHackAndSlash(avatarState,
@@ -179,8 +178,9 @@ namespace Nekoyume.Action
                 sw,
                 blockIndex,
                 addressesHex,
-                costAp,
+                costAp / PlayCount,
                 PlayCount);
+            avatarState.actionPoint -= costAp;
 
             var items = Equipments.Concat(Costumes);
             avatarState.EquipItems(items);
