@@ -247,6 +247,7 @@ namespace Nekoyume.Model
 
             Skills.SetCooldown(selectedSkill.SkillRow.Id, sheetSkill.Cooldown);
             Simulator.Log.Add(usedSkill);
+            OnPostSkill();
 
             foreach (var info in usedSkill.SkillInfos)
             {
@@ -499,7 +500,6 @@ namespace Nekoyume.Model
                 ReduceSkillCooldown();
                 OnPreSkill();
                 UseSkill();
-                OnPostSkill();
                 RemoveBuffs();
             }
             EndTurn();
