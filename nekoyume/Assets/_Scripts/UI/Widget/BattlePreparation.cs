@@ -100,6 +100,9 @@ namespace Nekoyume.UI
         private Button sweepPopupButton;
 
         [SerializeField]
+        private TextMeshProUGUI sweepButtonText;
+
+        [SerializeField]
         private Button boostPopupButton;
 
         [SerializeField]
@@ -261,6 +264,10 @@ namespace Nekoyume.UI
             UpdateRandomBuffButton();
 
             closeButtonText.text = closeButtonName;
+            sweepButtonText.text =
+                States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(stageId)
+                    ? "Sweep"
+                    : "Repeat";
             startButton.gameObject.SetActive(true);
             startButton.Interactable = true;
             coverToBlockClick.SetActive(false);
