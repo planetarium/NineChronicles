@@ -9,25 +9,25 @@ namespace Nekoyume.Helper
 {
     public static class WorldBossFrontHelper
     {
-        private static WorldBossScriptableObject _scriptableObject;
+        private static WorldBossScriptableObject _worldBossData;
 
-        private static WorldBossScriptableObject ScriptableObject
+        private static WorldBossScriptableObject WorldBossData
         {
             get
             {
-                if (_scriptableObject == null)
+                if (_worldBossData == null)
                 {
-                    _scriptableObject = Resources.Load<WorldBossScriptableObject>(
+                    _worldBossData = Resources.Load<WorldBossScriptableObject>(
                         "ScriptableObject/UI_WorldBossData");
                 }
 
-                return _scriptableObject;
+                return _worldBossData;
             }
         }
 
         public static bool TryGetGrade(WorldBossGrade grade, bool isSmall, out GameObject prefab)
         {
-            var result = ScriptableObject.Grades.FirstOrDefault(x => x.grade == grade);
+            var result = WorldBossData.Grades.FirstOrDefault(x => x.grade == grade);
             if (result is null)
             {
                 prefab = null;
@@ -40,7 +40,7 @@ namespace Nekoyume.Helper
 
         public static bool TryGetBossData(int bossId, out WorldBossScriptableObject.MonsterData data)
         {
-            var result = ScriptableObject.Monsters.FirstOrDefault(x => x.id == bossId);
+            var result = WorldBossData.Monsters.FirstOrDefault(x => x.id == bossId);
             if (result is null)
             {
                 data = null;
@@ -53,7 +53,7 @@ namespace Nekoyume.Helper
 
         public static bool TryGetRuneIcon(string ticker, out Sprite icon)
         {
-            var result = ScriptableObject.Runes.FirstOrDefault(x => x.ticker == ticker);
+            var result = WorldBossData.Runes.FirstOrDefault(x => x.ticker == ticker);
             if (result is null)
             {
                 icon = null;
@@ -177,7 +177,7 @@ namespace Nekoyume.Helper
         public static Sprite GetRankIcon(int rank)
         {
             var index = rank - 1;
-            return ScriptableObject.Rank[index];
+            return WorldBossData.Rank[index];
         }
 
         public static bool IsEnableNotification(WorldBossCharacterSheet.Row bossRow, RaiderState raiderState)

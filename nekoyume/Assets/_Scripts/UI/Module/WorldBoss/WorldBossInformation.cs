@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.TableData;
@@ -46,9 +47,13 @@ namespace Nekoyume.UI.Module.WorldBoss
         [SerializeField]
         private Button leftButton;
 
+        [SerializeField]
+        private Transform skillContainer;
+
         private int _wave;
         private int _bossId;
         private List<WorldBossCharacterSheet.WaveStatData> _cachedData = new();
+        private List<GameObject> _cachedIconObjects = new();
 
         private void Awake()
         {
@@ -125,6 +130,13 @@ namespace Nekoyume.UI.Module.WorldBoss
                 return;
             }
 
+            if (!Game.Game.instance.TableSheets.WorldBossActionPatternSheet
+                    .TryGetValue(_bossId, out var patternRow))
+            {
+                return;
+            }
+
+
             bossImage.sprite = bossData.illustration;
             bossName.text = bossData.name;
 
@@ -138,6 +150,23 @@ namespace Nekoyume.UI.Module.WorldBoss
             def.text = $"{data.DEF:#,0}";
             cri.text = $"{data.CRI:#,0}";
             hit.text = $"{data.HIT:#,0}";
+
+            var icons = new List<Sprite> { SkillIconHelper.GetSkillIcon(data.EnrageSkillId) };
+            icons.AddRange(patternRow.Patterns[_wave].SkillIds.Distinct()
+                 .Select(SkillIconHelper.GetSkillIcon));
+
+            foreach (var iconObject in _cachedIconObjects)
+            {
+                Destroy(iconObject);
+            }
+
+            var prefab = SkillIconHelper.GetSkillIconPrefab();
+            foreach (var icon in icons)
+            {
+                var clone = Instantiate(prefab, skillContainer);
+                clone.GetComponent<SkillIcon>().Set(icon);
+                _cachedIconObjects.Add(clone);
+            }
         }
     }
 }
