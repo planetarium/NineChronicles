@@ -1833,10 +1833,12 @@ namespace Nekoyume.BlockChain
             }
 
             var worldBoss = Widget.Find<WorldBoss>();
+            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
             if (Widget.Find<RaidPreparation>().IsSkipRender)
             {
                 Widget.Find<LoadingScreen>().Close();
                 worldBoss.Close();
+                await WorldBossStates.Set(avatarAddress);
                 Game.Event.OnRoomEnter.Invoke(true);
                 return;
             }
@@ -1873,9 +1875,7 @@ namespace Nekoyume.BlockChain
             var clonedAvatarState = (AvatarState)States.Instance.CurrentAvatarState.Clone();
             var items = Widget.Find<RaidPreparation>().LoadEquipment();
             clonedAvatarState.EquipItems(items);
-
             var random = new LocalRandom(eval.RandomSeed);
-            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
             await WorldBossStates.Set(avatarAddress);
             var raiderState = WorldBossStates.GetRaiderState(avatarAddress);
             if (raiderState != null)
