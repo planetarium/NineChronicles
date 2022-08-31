@@ -150,6 +150,20 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Get Sheets: {Elapsed}", addressesHex, sw.Elapsed);
 
+            sw.Restart();
+            var stakingLevel = 0;
+            StakeActionPointCoefficientSheet actionPointCoefficientSheet = null;
+            if (states.TryGetStakeState(signer, out var stakeState) &&
+                sheets.TryGetSheet(out actionPointCoefficientSheet))
+            {
+                var currency = states.GetGoldCurrency();
+                var stakedAmount = states.GetBalance(stakeState.address, currency);
+                stakingLevel = actionPointCoefficientSheet.FindLevelByStakedAmount(signer, stakedAmount);
+            }
+
+            sw.Stop();
+            Log.Verbose("{AddressesHex}HAS Check StakeState: {Elapsed}", addressesHex, sw.Elapsed);
+
             // Validate about avatar state.
             Validator.ValidateForHackAndSlash(avatarState,
                 sheets,
@@ -161,30 +175,27 @@ namespace Nekoyume.Action
                 sw,
                 blockIndex,
                 addressesHex,
-                PlayCount);
+                PlayCount,
+                stakingLevel);
+            var costAp = sheets.GetSheet<StageSheet>()[StageId].CostAP;
+            if (actionPointCoefficientSheet != null && stakingLevel > 0)
+            {
+                costAp = actionPointCoefficientSheet.GetActionPointByStaking(
+                    costAp,
+                    PlayCount,
+                    stakingLevel);
+            }
+            else
+            {
+                costAp *= PlayCount;
+            }
+
+            avatarState.actionPoint -= costAp;
 
             var items = Equipments.Concat(Costumes);
             avatarState.EquipItems(items);
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Unequip items: {Elapsed}", addressesHex, sw.Elapsed);
-
-            sw.Restart();
-            var costAp = sheets.GetSheet<StageSheet>()[StageId].CostAP;
-            if (states.TryGetStakeState(signer, out var stakeState))
-            {
-                var currency = states.GetGoldCurrency();
-                var stakedAmount = states.GetBalance(stakeState.address, currency);
-                var actionPointCoefficientSheet = sheets.GetSheet<StakeActionPointCoefficientSheet>();
-                var level = actionPointCoefficientSheet.FindLevelByStakedAmount(signer, stakedAmount);
-                costAp = actionPointCoefficientSheet.GetActionPointByStaking(
-                    costAp,
-                    PlayCount,
-                    level);
-            }
-
-            avatarState.actionPoint -= costAp;
-            sw.Stop();
-            Log.Verbose("{AddressesHex}HAS use ActionPoint: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
             var questSheet = sheets.GetQuestSheet();
