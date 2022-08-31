@@ -151,17 +151,14 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}HAS Get Sheets: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-            var costAp = sheets.GetSheet<StageSheet>()[StageId].CostAP;
-            if (states.TryGetStakeState(signer, out var stakeState))
+            var stakingLevel = 0;
+            StakeActionPointCoefficientSheet actionPointCoefficientSheet = null;
+            if (states.TryGetStakeState(signer, out var stakeState) &&
+                sheets.TryGetSheet(out actionPointCoefficientSheet))
             {
                 var currency = states.GetGoldCurrency();
                 var stakedAmount = states.GetBalance(stakeState.address, currency);
-                var actionPointCoefficientSheet = sheets.GetSheet<StakeActionPointCoefficientSheet>();
-                var level = actionPointCoefficientSheet.FindLevelByStakedAmount(signer, stakedAmount);
-                costAp = actionPointCoefficientSheet.GetActionPointByStaking(
-                    costAp,
-                    PlayCount,
-                    level);
+                stakingLevel = actionPointCoefficientSheet.FindLevelByStakedAmount(signer, stakedAmount);
             }
 
             sw.Stop();
@@ -178,8 +175,21 @@ namespace Nekoyume.Action
                 sw,
                 blockIndex,
                 addressesHex,
-                costAp / PlayCount,
-                PlayCount);
+                PlayCount,
+                stakingLevel);
+            var costAp = sheets.GetSheet<StageSheet>()[StageId].CostAP;
+            if (actionPointCoefficientSheet != null && stakingLevel > 0)
+            {
+                costAp = actionPointCoefficientSheet.GetActionPointByStaking(
+                    costAp,
+                    PlayCount,
+                    stakingLevel);
+            }
+            else
+            {
+                costAp *= PlayCount;
+            }
+
             avatarState.actionPoint -= costAp;
 
             var items = Equipments.Concat(Costumes);
