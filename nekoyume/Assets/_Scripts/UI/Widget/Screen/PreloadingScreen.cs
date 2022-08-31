@@ -5,6 +5,7 @@ using System.Linq;
 using Cysharp.Threading.Tasks;
 using Nekoyume.Helper;
 using Nekoyume.State;
+using Nekoyume.UI.Module.WorldBoss;
 using UnityEngine;
 using UnityEngine.Video;
 
@@ -67,6 +68,7 @@ namespace Nekoyume.UI
                         await UniTask.WhenAll(
                             States.Instance.SelectAvatarAsync(slotIndex),
                             RxProps.ArenaInfoTuple.UpdateAsync());
+                        await WorldBossStates.Set(States.Instance.CurrentAvatarState.address);
                         Game.Event.OnRoomEnter.Invoke(false);
                         Game.Event.OnUpdateAddresses.Invoke();
                     }

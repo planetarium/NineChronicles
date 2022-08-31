@@ -16,6 +16,7 @@ using Nekoyume.L10n;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Nekoyume.Helper;
+using Nekoyume.UI.Module.WorldBoss;
 
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
 using Microsoft.Win32;
@@ -390,6 +391,7 @@ namespace Nekoyume.UI
                     await UniTask.WhenAll(
                         States.Instance.SelectAvatarAsync(slotIndex),
                         RxProps.ArenaInfoTuple.UpdateAsync());
+                    await WorldBossStates.Set(States.Instance.CurrentAvatarState.address);
                     loadingScreen.Close();
                     Game.Event.OnRoomEnter.Invoke(false);
                     Game.Event.OnUpdateAddresses.Invoke();

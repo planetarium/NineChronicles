@@ -188,7 +188,6 @@ namespace Nekoyume.UI
             var results = await UniTask.WhenAll(
                 States.Instance.SelectAvatarAsync(_selectedIndex),
                 RxProps.ArenaInfoTuple.UpdateAsync());
-
             await WorldBossStates.Set(States.Instance.CurrentAvatarState.address);
             loadingScreen.Close();
             OnDidAvatarStateLoaded(results.Item1);
