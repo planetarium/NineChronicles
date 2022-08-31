@@ -13,7 +13,6 @@ using Random = UnityEngine.Random;
 using mixpanel;
 using Nekoyume.EnumType;
 using Nekoyume.Extensions;
-using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Mail;
@@ -132,7 +131,7 @@ namespace Nekoyume.UI
 
             MonsterCollectionStateSubject.Level
                 .Subscribe(level =>
-                    stakingLevelIcon.sprite = stakeIconData.GetIcon(level, IconType.Small))
+                    stakingLevelIcon.sprite = stakeIconData.GetIcon(level, IconType.Bubble))
                 .AddTo(gameObject);
         }
 
@@ -556,7 +555,7 @@ namespace Nekoyume.UI
             StartCoroutine(CoStartSpeeches());
             UpdateButtons();
             stakingLevelIcon.sprite =
-                stakeIconData.GetIcon(States.Instance.StakingLevel, IconType.Small);
+                stakeIconData.GetIcon(States.Instance.StakingLevel, IconType.Bubble);
         }
 
         private void SubscribeAtShow()
