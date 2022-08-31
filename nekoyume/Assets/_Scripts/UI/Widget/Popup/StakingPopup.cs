@@ -71,6 +71,8 @@ namespace Nekoyume.UI
         private const string ActionPointBuffFormat = "{0} <color=#1FFF00>{1}% DC</color>";
         private const string BuffBenefitRateFormat = "{0} <color=#1FFF00>+{1}%</color>";
         private const string RemainingBlockFormat = "<Style=G5>{0}({1})";
+        private const string StakingUrl =
+            "https://ninechronicles.medium.com/monster-collection-v2-update-6cde770c9f31";
         private const int RewardBlockInterval = 50400;
 
         protected override void Awake()
@@ -92,27 +94,27 @@ namespace Nekoyume.UI
 
             stakingButtonNone.OnClickSubject.Subscribe(_ =>
             {
-                // Move to Staking
                 AudioController.PlayClick();
+                Application.OpenURL(StakingUrl);
             }).AddTo(gameObject);
             closeButtonNone.onClick.AddListener(() =>
             {
-                Close();
                 AudioController.PlayClick();
+                Close();
             });
             stakingButton.onClick.AddListener(() =>
             {
-                // Move to Staking
                 AudioController.PlayClick();
+                Application.OpenURL(StakingUrl);
             });
             closeButton.onClick.AddListener(() =>
             {
-                Close();
                 AudioController.PlayClick();
+                Close();
             });
             archiveButton.OnClickSubject.Subscribe(_ =>
             {
-                // Move to Archive
+                // TODO: Invoke ActionManager.Instance.ClaimStakeReward()
                 AudioController.PlayClick();
             }).AddTo(gameObject);
 
