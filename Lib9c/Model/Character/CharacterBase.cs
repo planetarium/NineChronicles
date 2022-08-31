@@ -271,15 +271,6 @@ namespace Nekoyume.Model
             Skills.SetCooldown(selectedSkill.SkillRow.Id, selectedSkill.SkillRow.Cooldown);
             Simulator.Log.Add(usedSkill);
             return usedSkill;
-
-            foreach (var info in usedSkill.SkillInfos)
-            {
-                if (!info.Target.IsDead)
-                    continue;
-
-                var target = Targets.FirstOrDefault(i => i.Id == info.Target.Id);
-                target?.Die();
-            }
         }
 
         [Obsolete("Use UseSkill")]
@@ -303,15 +294,6 @@ namespace Nekoyume.Model
             Skills.SetCooldown(selectedSkill.SkillRow.Id, selectedSkill.SkillRow.Cooldown);
             Simulator.Log.Add(usedSkill);
             return usedSkill;
-
-            foreach (var info in usedSkill.SkillInfos)
-            {
-                if (!info.Target.IsDead)
-                    continue;
-
-                var target = Targets.FirstOrDefault(i => i.Id == info.Target.Id);
-                target?.Die();
-            }
         }
 
         private void RemoveBuffs()
