@@ -63,7 +63,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 return;
             }
 
-            if (Game.Game.instance.TableSheets.WorldBossCharacterSheet
+            if (!Game.Game.instance.TableSheets.WorldBossCharacterSheet
                 .TryGetValue(row.BossId, out var characterRow))
             {
                 return;

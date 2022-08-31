@@ -53,6 +53,9 @@ namespace Nekoyume.UI.Module.WorldBoss
         private GameObject noSeasonInfo;
 
         [SerializeField]
+        private GameObject updateContainer;
+
+        [SerializeField]
         private Transform bossNameContainer;
 
         [SerializeField]
@@ -85,6 +88,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                     Destroy(_bossNameObject);
                 }
                 noSeasonInfo.SetActive(true);
+                updateContainer.SetActive(false);
                 bossImage.enabled = false;
                 return;
             }
@@ -92,6 +96,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             if (!Game.Game.instance.ApiClient.IsInitialized)
             {
                 apiMissing.SetActive(true);
+                updateContainer.SetActive(false);
                 return;
             }
 
@@ -141,6 +146,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             myInfo.gameObject.SetActive(false);
             noSeasonInfo.SetActive(false);
             apiMissing.SetActive(false);
+            updateContainer.SetActive(true);
             SetActiveQueryLoading(false);
         }
 
