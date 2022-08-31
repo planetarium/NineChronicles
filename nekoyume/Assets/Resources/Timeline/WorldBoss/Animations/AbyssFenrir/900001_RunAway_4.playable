@@ -2449,7 +2449,7 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: a3652fffcd19b1c46aca96f4f8bec04d,
+    animationReference: {fileID: 11400000, guid: 82ed08f640fcf224ea1f006b70d1cb5c,
       type: 2}
     loop: 0
     customDuration: 0
@@ -2473,7 +2473,7 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip(Clone)(Clone)
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: 8c20d0387326bc343a1958cdc3a5a107,
+    animationReference: {fileID: 11400000, guid: dba5577637b832742a5aa322b198db53,
       type: 2}
     loop: 0
     customDuration: 0
@@ -2695,7 +2695,7 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip(Clone)(Clone)
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: a81d8b3dd48072d4abffc9fdba85afbb,
+    animationReference: {fileID: 11400000, guid: 49e83cab2bfe6354da3087d5d233de5d,
       type: 2}
     loop: 0
     customDuration: 1
@@ -3230,7 +3230,7 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: 8c20d0387326bc343a1958cdc3a5a107,
+    animationReference: {fileID: 11400000, guid: dba5577637b832742a5aa322b198db53,
       type: 2}
     loop: 0
     customDuration: 0

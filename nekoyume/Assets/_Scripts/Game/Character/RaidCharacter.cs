@@ -45,8 +45,8 @@ namespace Nekoyume.Game.Character
 
         private void LateUpdate()
         {
-            _hudContainer.UpdatePosition(gameObject, HUDOffset);
-            _speechBubble.UpdatePosition(gameObject, HUDOffset);
+            _hudContainer?.UpdatePosition(gameObject, HUDOffset);
+            _speechBubble?.UpdatePosition(gameObject, HUDOffset);
         }
 
         private void OnDisable()

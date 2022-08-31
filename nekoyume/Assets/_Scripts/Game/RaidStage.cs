@@ -149,6 +149,7 @@ namespace Nekoyume.Game
             _actionQueue.Clear();
 
             CreateContainer(bossId);
+            container.Show();
             MainCanvas.instance.Canvas.worldCamera = container.Camera;
 
             _player = container.Player;
@@ -156,7 +157,6 @@ namespace Nekoyume.Game
 
             _player.Init(playerDigest, _boss);
             _boss.Init(_player);
-            container.Show();
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.StageBlue);
             Widget.Find<LoadingScreen>().Close();
@@ -386,7 +386,7 @@ namespace Nekoyume.Game
 
             if (raidCharacter is Character.RaidPlayer player)
             {
-                yield return StartCoroutine(container.CoPlayFallDownCutscene());
+                yield return StartCoroutine(container.CoPlayPlayerDefeatCutscene());
             }
             else if (raidCharacter is Character.RaidBoss boss)
             {
