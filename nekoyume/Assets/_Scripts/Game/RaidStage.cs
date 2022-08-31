@@ -382,7 +382,8 @@ namespace Nekoyume.Game
             Character.RaidCharacter raidCharacter =
                 character.Id == _player.Id ? _player : _boss;
             raidCharacter.Set(character);
-            yield return raidCharacter.TargetAction;
+            yield return _player.CurrentAction;
+            yield return _boss.CurrentAction;
 
             if (raidCharacter is Character.RaidPlayer player)
             {
