@@ -2461,6 +2461,20 @@ PlayableDirector:
     value: {fileID: 0}
   - key: {fileID: 5238029511708123914, guid: 9a344bfb59796e8458291034d729bb9e, type: 2}
     value: {fileID: 0}
+  - key: {fileID: -6723840175830902819, guid: df5d23711e506f04aa0b1dafe7f66f1c, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: 3584974688806241054, guid: df5d23711e506f04aa0b1dafe7f66f1c, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: -8692280961425738964, guid: df5d23711e506f04aa0b1dafe7f66f1c, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: 4240194630265971670, guid: df5d23711e506f04aa0b1dafe7f66f1c, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: -4096064165345455973, guid: df5d23711e506f04aa0b1dafe7f66f1c, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: -8638768229843197864, guid: df5d23711e506f04aa0b1dafe7f66f1c, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: 5406545224966542374, guid: df5d23711e506f04aa0b1dafe7f66f1c, type: 2}
+    value: {fileID: 0}
   m_ExposedReferences:
     m_References: []
 --- !u!114 &4940065230274820996
@@ -2482,12 +2496,12 @@ MonoBehaviour:
   appearCutscene: {fileID: 11400000, guid: df5d23711e506f04aa0b1dafe7f66f1c, type: 2}
   skillCutscene: {fileID: 11400000, guid: 89602c37addce934b9787b4e9b0da066, type: 2}
   runAwayCutscenes:
-  - {fileID: 11400000, guid: 9a344bfb59796e8458291034d729bb9e, type: 2}
-  - {fileID: 11400000, guid: 9a344bfb59796e8458291034d729bb9e, type: 2}
-  - {fileID: 11400000, guid: 9a344bfb59796e8458291034d729bb9e, type: 2}
-  - {fileID: 11400000, guid: 9a344bfb59796e8458291034d729bb9e, type: 2}
+  - {fileID: 11400000, guid: 644d45699be4e6945991f8ab2e1c184f, type: 2}
+  - {fileID: 11400000, guid: 0080a4ef280a24a57b013dd0e8aa21a9, type: 2}
+  - {fileID: 11400000, guid: e8b7a6145038647698be2000ae74ce7c, type: 2}
+  - {fileID: 11400000, guid: 7214ff1dfd9384e27b7be6cf5e580661, type: 2}
   fallDownCutscene: {fileID: 11400000, guid: 9a344bfb59796e8458291034d729bb9e, type: 2}
-  playerDefeatCutscene: {fileID: 11400000, guid: 9a344bfb59796e8458291034d729bb9e,
+  playerDefeatCutscene: {fileID: 11400000, guid: fda428784a083449a95a8b2a7d2e64ba,
     type: 2}
 --- !u!114 &1292220910054991738
 MonoBehaviour:

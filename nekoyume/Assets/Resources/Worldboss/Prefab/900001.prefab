@@ -793,6 +793,24 @@ PlayableDirector:
     value: {fileID: 1292220910054991738}
   - key: {fileID: 9183671771033094777, guid: 644d45699be4e6945991f8ab2e1c184f, type: 2}
     value: {fileID: 6063278470799193287}
+  - key: {fileID: 6431082573943500882, guid: 9a344bfb59796e8458291034d729bb9e, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: -5020081803025316771, guid: 9a344bfb59796e8458291034d729bb9e, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: -938373765632619079, guid: 9a344bfb59796e8458291034d729bb9e, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: -4888609996945527062, guid: 9a344bfb59796e8458291034d729bb9e, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: 3902644384149834231, guid: 9a344bfb59796e8458291034d729bb9e, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: 5238029511708123914, guid: 9a344bfb59796e8458291034d729bb9e, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: 4977029264642174562, guid: 9a344bfb59796e8458291034d729bb9e, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: -2089925524644377490, guid: 9a344bfb59796e8458291034d729bb9e, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: -760238049331414496, guid: 9a344bfb59796e8458291034d729bb9e, type: 2}
+    value: {fileID: 0}
   m_ExposedReferences:
     m_References: []
 --- !u!114 &4940065230274820996
@@ -819,6 +837,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 644d45699be4e6945991f8ab2e1c184f, type: 2}
   - {fileID: 11400000, guid: 644d45699be4e6945991f8ab2e1c184f, type: 2}
   fallDownCutscene: {fileID: 11400000, guid: 9a344bfb59796e8458291034d729bb9e, type: 2}
+  playerDefeatCutscene: {fileID: 0}
 --- !u!114 &1292220910054991738
 MonoBehaviour:
   m_ObjectHideFlags: 0
