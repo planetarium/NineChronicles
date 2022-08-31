@@ -662,7 +662,7 @@ AnimationClip:
         outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
       - serializedVersion: 3
         time: 5.7833333
-        value: {x: -2.68, y: 0, z: 0}
+        value: {x: -2.2, y: 0, z: 0}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
         tangentMode: 0
@@ -671,7 +671,7 @@ AnimationClip:
         outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
       - serializedVersion: 3
         time: 6.2
-        value: {x: -2.68, y: 0, z: 0}
+        value: {x: -2.2, y: 0, z: 0}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
         tangentMode: 0
@@ -680,7 +680,7 @@ AnimationClip:
         outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
       - serializedVersion: 3
         time: 9.65
-        value: {x: -1.8800001, y: 0, z: 0}
+        value: {x: -2.2, y: 0, z: 0}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
         tangentMode: 0
@@ -744,7 +744,7 @@ AnimationClip:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 5.7833333
-        value: -2.68
+        value: -2.2
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -753,7 +753,7 @@ AnimationClip:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 6.2
-        value: -2.68
+        value: -2.2
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -762,7 +762,7 @@ AnimationClip:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 9.65
-        value: -1.8800001
+        value: -2.2
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -1875,30 +1875,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fde0d25a170598d46a0b9dc16b4527a5, type: 3}
   m_Name: ActivationPlayableAsset
   m_EditorClassIdentifier: 
---- !u!114 &-2655582737539910832
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 585e20c924ba86a44926c850aa8e1d84, type: 3}
-  m_Name: SpineAnimationStateClip
-  m_EditorClassIdentifier: 
-  template:
-    animationReference: {fileID: 11400000, guid: 17bf007801f59cb4ea49670224dc9e76,
-      type: 2}
-    loop: 0
-    customDuration: 0
-    useBlendDuration: 1
-    isInitialized: 1
-    mixDuration: 0.2
-    holdPrevious: 0
-    attachmentThreshold: 0.5
-    eventThreshold: 0.5
-    drawOrderThreshold: 0.5
 --- !u!114 &-1992069788707932602
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2481,45 +2457,12 @@ MonoBehaviour:
     m_Start: 0
     m_ClipIn: 0
     m_Asset: {fileID: 1774121911355265246}
-    m_Duration: 8.233333333333333
+    m_Duration: 10
     m_TimeScale: 1
     m_ParentTrack: {fileID: 3571689768587824734}
     m_EaseInDuration: 0
     m_EaseOutDuration: 0
     m_BlendInDuration: -1
-    m_BlendOutDuration: 0.1999999999999993
-    m_MixInCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    m_MixOutCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    m_BlendInCurveMode: 0
-    m_BlendOutCurveMode: 0
-    m_ExposedParameterNames: []
-    m_AnimationCurves: {fileID: 0}
-    m_Recordable: 0
-    m_PostExtrapolationMode: 0
-    m_PreExtrapolationMode: 0
-    m_PostExtrapolationTime: 0
-    m_PreExtrapolationTime: 0
-    m_DisplayName: Run
-  - m_Version: 1
-    m_Start: 8.033333333333333
-    m_ClipIn: 0
-    m_Asset: {fileID: -2655582737539910832}
-    m_Duration: 1.9833333333333343
-    m_TimeScale: 1
-    m_ParentTrack: {fileID: 3571689768587824734}
-    m_EaseInDuration: 0
-    m_EaseOutDuration: 0
-    m_BlendInDuration: 0.1999999999999993
     m_BlendOutDuration: -1
     m_MixInCurve:
       serializedVersion: 2
@@ -2560,7 +2503,7 @@ MonoBehaviour:
     m_PreExtrapolationMode: 0
     m_PostExtrapolationTime: 0
     m_PreExtrapolationTime: 0
-    m_DisplayName: Idle
+    m_DisplayName: Run
   m_Markers:
     m_Objects: []
   trackIndex: 0
