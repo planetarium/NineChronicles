@@ -682,6 +682,16 @@ namespace Nekoyume.UI
                     TableSheets.Instance.StageSheet.TryGetValue(
                         _stageId, out var stage, true);
                     _requiredCost = stage.CostAP;
+                    if (_stageType is StageType.HackAndSlash)
+                    {
+                        _requiredCost =
+                            TableSheets.Instance.StakeActionPointCoefficientSheet
+                                .GetActionPointByStaking(
+                                    _requiredCost,
+                                    1,
+                                    States.Instance.StakingLevel);
+                    }
+
                     startButton.SetCost(CostType.ActionPoint, _requiredCost);
                     break;
                 }
