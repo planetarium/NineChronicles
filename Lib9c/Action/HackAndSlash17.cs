@@ -148,6 +148,7 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Get Sheets: {Elapsed}", addressesHex, sw.Elapsed);
 
+            var costAp = sheets.GetSheet<StageSheet>()[StageId].CostAP;
             // Validate about avatar state.
             Validator.ValidateForHackAndSlash(avatarState,
                 sheets,
@@ -159,11 +160,12 @@ namespace Nekoyume.Action
                 sw,
                 blockIndex,
                 addressesHex,
+                costAp,
                 PlayCount);
 
             var items = Equipments.Concat(Costumes);
             avatarState.EquipItems(items);
-            avatarState.actionPoint -= sheets.GetSheet<StageSheet>()[StageId].CostAP * PlayCount;
+            avatarState.actionPoint -= costAp * PlayCount;
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Unequip items: {Elapsed}", addressesHex, sw.Elapsed);
 

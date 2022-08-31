@@ -150,24 +150,6 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Get Sheets: {Elapsed}", addressesHex, sw.Elapsed);
 
-            // Validate about avatar state.
-            Validator.ValidateForHackAndSlash(avatarState,
-                sheets,
-                WorldId,
-                StageId,
-                Equipments,
-                Costumes,
-                Foods,
-                sw,
-                blockIndex,
-                addressesHex,
-                PlayCount);
-
-            var items = Equipments.Concat(Costumes);
-            avatarState.EquipItems(items);
-            sw.Stop();
-            Log.Verbose("{AddressesHex}HAS Unequip items: {Elapsed}", addressesHex, sw.Elapsed);
-
             sw.Restart();
             var costAp = sheets.GetSheet<StageSheet>()[StageId].CostAP;
             if (states.TryGetStakeState(signer, out var stakeState))
@@ -185,6 +167,25 @@ namespace Nekoyume.Action
             avatarState.actionPoint -= costAp;
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS use ActionPoint: {Elapsed}", addressesHex, sw.Elapsed);
+
+            // Validate about avatar state.
+            Validator.ValidateForHackAndSlash(avatarState,
+                sheets,
+                WorldId,
+                StageId,
+                Equipments,
+                Costumes,
+                Foods,
+                sw,
+                blockIndex,
+                addressesHex,
+                costAp,
+                PlayCount);
+
+            var items = Equipments.Concat(Costumes);
+            avatarState.EquipItems(items);
+            sw.Stop();
+            Log.Verbose("{AddressesHex}HAS Unequip items: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
             var questSheet = sheets.GetQuestSheet();

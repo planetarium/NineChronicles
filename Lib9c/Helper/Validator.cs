@@ -24,6 +24,7 @@ namespace Nekoyume.Helper
             Stopwatch sw,
             long blockIndex,
             string addressesHex,
+            int costAp,
             int playCount = 1)
         {
             var worldSheet = sheets.GetSheet<WorldSheet>();
@@ -88,11 +89,11 @@ namespace Nekoyume.Helper
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Validate Items: {Elapsed}", addressesHex, sw.Elapsed);
 
-            if (avatarState.actionPoint < stageRow.CostAP * playCount)
+            if (avatarState.actionPoint < costAp * playCount)
             {
                 throw new NotEnoughActionPointException(
                     $"{addressesHex}Aborted due to insufficient action point: " +
-                    $"{avatarState.actionPoint} < cost({stageRow.CostAP * playCount}))"
+                    $"{avatarState.actionPoint} < cost({costAp * playCount}))"
                 );
             }
 
