@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Nekoyume.Helper;
-using Nekoyume.UI.Model;
 using UnityEngine;
 
 namespace Nekoyume.UI.Module.WorldBoss
@@ -8,29 +7,66 @@ namespace Nekoyume.UI.Module.WorldBoss
     public class WorldBossBattleReward : WorldBossRewardItem
     {
         [SerializeField]
-        private List<WorldBossBattleRewardItem> individualRewardItems;
+        private List<WorldBossBattleRewardItem> battleRewardItems;
 
         [SerializeField]
         private List<WorldBossBattleRewardItem> killRewardItems;
 
-        public void Set(int raidId, WorldBossRankingRecord record)
+        public override void Reset()
         {
-            if (!WorldBossFrontHelper.TryGetRaid(raidId, out var row))
+        }
+
+        public void Set(int raidId)
+        {
+            if (!WorldBossFrontHelper.TryGetRaid(raidId, out var bossListRow))
             {
                 return;
             }
 
-            if (!WorldBossFrontHelper.TryGetKillRewards(row.BossId, out var rewards))
+            UpdateBattleRewards(bossListRow.BossId);
+            UpdateKillRewards(bossListRow.BossId);
+        }
+
+        private void UpdateBattleRewards(int bossId)
+        {
+
+            if (!WorldBossFrontHelper.TryGetBattleRewards(bossId, out var battleRewards))
             {
                 return;
             }
 
-            var grade = record != null ? WorldBossHelper.CalculateRank(record.HighScore) : -1;
-            rewards.Reverse();
-            for (var i = 0; i < rewards.Count; i++)
+            foreach (var item in battleRewardItems)
             {
-                var g = rewards.Count - i - 1;
-                killRewardItems[i].Set(rewards[i], g == grade);
+                item.gameObject.SetActive(false);
+            }
+
+            battleRewards.Reverse();
+            for (var i = 0; i < battleRewards.Count; i++)
+            {
+                var g = battleRewards.Count - i - 1;
+                battleRewardItems[i].Set(battleRewards[i]);
+                battleRewardItems[i].gameObject.SetActive(true);
+            }
+        }
+
+        private void UpdateKillRewards(int bossId)
+        {
+            if (!WorldBossFrontHelper.TryGetKillRewards(bossId, out var killRewards))
+            {
+                return;
+            }
+
+            foreach (var item in killRewardItems)
+            {
+                item.gameObject.SetActive(false);
+            }
+
+            killRewards.Reverse();
+            for (var i = 0; i < killRewards.Count; i++)
+            {
+                var g = killRewards.Count - i - 1;
+                killRewardItems[i].Set(killRewards[i]);
+                killRewardItems[i].gameObject.SetActive(true);
             }
         }
     }

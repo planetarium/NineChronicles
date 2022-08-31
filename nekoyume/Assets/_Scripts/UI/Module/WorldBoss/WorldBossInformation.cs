@@ -71,7 +71,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                         return;
                     }
 
-                    set(sheet, nextRow);
+                    Set(sheet, nextRow);
                     break;
                 case WorldBossStatus.Season:
                     if (!WorldBossFrontHelper.TryGetCurrentRow(currentBlockIndex, out var row))
@@ -79,7 +79,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                         return;
                     }
 
-                    set(sheet, row);
+                    Set(sheet, row);
                     break;
                 case WorldBossStatus.None:
                 default:
@@ -89,7 +89,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             UpdateView();
         }
 
-        private void set(WorldBossCharacterSheet sheet, WorldBossListSheet.Row row)
+        private void Set(WorldBossCharacterSheet sheet, WorldBossListSheet.Row row)
         {
             if (!sheet.TryGetValue(row.BossId, out var bossRow))
             {

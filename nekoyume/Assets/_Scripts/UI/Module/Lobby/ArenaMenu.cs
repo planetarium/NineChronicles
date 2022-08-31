@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using Nekoyume.Game;
+using Nekoyume.Model.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using TMPro;
 using UnityEngine;
 
@@ -66,8 +68,19 @@ namespace Nekoyume.UI.Module.Lobby
 
         private void UpdateArenaSeasonTitle(long blockIndex)
         {
-            var currentRoundData =
-                TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(blockIndex);
+            ArenaSheet.RoundData currentRoundData;
+            try
+            {
+                currentRoundData =
+                    TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(blockIndex);
+            }
+            catch(RoundNotFoundException)
+            {
+                _seasonGameObject.SetActive(false);
+                _championshipGameObject.SetActive(false);
+                return;
+            }
+
             switch (currentRoundData.ArenaType)
             {
                 case ArenaType.OffSeason:

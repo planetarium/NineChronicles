@@ -38,6 +38,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button backButton;
 
+        [SerializeField]
+        private GameObject notification;
+
         private readonly ReactiveProperty<ToggleType> _selectedItemSubType = new(ToggleType.Reward);
 
         protected override void Awake()
@@ -57,6 +60,7 @@ namespace Nekoyume.UI
             }
 
             _selectedItemSubType.Subscribe(UpdateView).AddTo(gameObject);
+            WorldBossStates.SubscribeNotification((b) => notification.SetActive(b));
         }
 
         public void Show(ToggleType toggleType)
@@ -68,13 +72,16 @@ namespace Nekoyume.UI
             _selectedItemSubType.SetValueAndForceNotify(toggleType);
         }
 
-        public void UpdateReward()
+        public void GotRewards() // For ClaimRaidReward Action Render
         {
             var reward = categoryToggles.FirstOrDefault(x => x.Type == ToggleType.Reward);
-            if (reward.Item is WorldBossReward worldBossReward)
+            if (reward.Item is not WorldBossReward worldBossReward)
             {
-                worldBossReward.ShowAsync(false);
+                return;
             }
+
+            WorldBossStates.HasNotification.SetValueAndForceNotify(false);
+            worldBossReward.ShowAsync(false);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -121,7 +128,7 @@ namespace Nekoyume.UI
                     }
                     break;
                 case ToggleType.Rune:
-                    if (categoryToggle.Item is WorldBossRuneInventory inventory)
+                    if (categoryToggle.Item is WorldBossRuneStoneInventory inventory)
                     {
                         inventory.ShowAsync();
                     }

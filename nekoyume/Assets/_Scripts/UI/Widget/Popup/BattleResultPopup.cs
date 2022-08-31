@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using mixpanel;
-using Nekoyume.Action;
 using Nekoyume.BlockChain;
+using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
@@ -15,7 +15,6 @@ using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -36,6 +35,7 @@ namespace Nekoyume.UI
         public class Model
         {
             private readonly List<CountableItem> _rewards = new List<CountableItem>();
+            public int[] ClearedWaves = new int[4];
 
             public NextState NextState;
             public BattleLog.Result State;
@@ -112,6 +112,9 @@ namespace Nekoyume.UI
         private Button closeButton = null;
 
         [SerializeField]
+        private Button stagePreparationButton = null;
+
+        [SerializeField]
         private Button nextButton = null;
 
         [SerializeField]
@@ -145,6 +148,8 @@ namespace Nekoyume.UI
 
         public Model SharedModel { get; private set; }
 
+        public Model ModelForMultiHackAndSlash { get; set; }
+
         public StageProgressBar StageProgressBar => stageProgressBar;
 
         protected override void Awake()
@@ -163,6 +168,11 @@ namespace Nekoyume.UI
                         }
                     }
                 }).AddTo(gameObject);
+
+            stagePreparationButton.OnClickAsObservable().Subscribe(_ =>
+            {
+                OnClickStage();
+            }).AddTo(gameObject);
 
             nextButton.OnClickAsObservable().Subscribe(_ =>
                 {
@@ -190,6 +200,13 @@ namespace Nekoyume.UI
                 yield return CoDialog(SharedModel.StageID);
             }
             GoToMain();
+        }
+
+        private void OnClickStage()
+        {
+            _IsAlreadyOut = true;
+            AudioController.PlayClick();
+            GoToPreparation();
         }
 
         private IEnumerator OnClickNext()
@@ -237,6 +254,30 @@ namespace Nekoyume.UI
         {
             canvasGroup.alpha = 1f;
             canvasGroup.blocksRaycasts = true;
+            if (isBoosted && model.WorldID < GameConfig.MimisbrunnrWorldId)
+            {
+                model = new Model
+                {
+                    NextState = model.NextState,
+                    State = model.State,
+                    WorldName = model.WorldName,
+                    Exp = ModelForMultiHackAndSlash.Exp,
+                    WorldID = model.WorldID,
+                    StageID = model.StageID,
+                    ClearedWaveNumber = model.ClearedWaveNumber,
+                    ActionPoint = model.ActionPoint,
+                    LastClearedStageId = model.LastClearedStageId,
+                    ActionPointNotEnough = model.ActionPointNotEnough,
+                    IsClear = model.IsClear,
+                    IsEndStage = model.IsEndStage,
+                    ClearedWaves = ModelForMultiHackAndSlash.ClearedWaves,
+                };
+                foreach (var item in ModelForMultiHackAndSlash.Rewards)
+                {
+                    model.AddReward(item);
+                }
+            }
+
             SharedModel = model;
             _IsAlreadyOut = false;
 
@@ -251,6 +292,7 @@ namespace Nekoyume.UI
 
             base.Show();
             closeButton.gameObject.SetActive(model.StageID >= 3 || model.LastClearedStageId >= 3);
+            stagePreparationButton.gameObject.SetActive(false);
             repeatButton.gameObject.SetActive(false);
             nextButton.gameObject.SetActive(false);
 
@@ -302,8 +344,8 @@ namespace Nekoyume.UI
             StartCoroutine(EmitBattleWinVFX());
 
             victoryImageContainer.SetActive(true);
-            // 4 is index of animation about boost.
-            // if not use boost, set animation index to SharedModel.ClearedWaveNumber (1/2/3).
+            // 4 is index of animation about multi-has.
+            // if not use multi-has, set animation index to SharedModel.ClearedWaveNumber (1/2/3).
             _victoryImageAnimator.SetInteger(ClearedWave,
                 isBoosted ? 4 : SharedModel.ClearedWaveNumber);
 
@@ -411,6 +453,12 @@ namespace Nekoyume.UI
             string fullFormat = string.Empty;
             closeButton.interactable = true;
 
+            if (!SharedModel.IsClear)
+            {
+                stagePreparationButton.gameObject.SetActive(true);
+                stagePreparationButton.interactable = true;
+            }
+
             if (!SharedModel.ActionPointNotEnough)
             {
                 var value = SharedModel.StageID >= 3 || SharedModel.LastClearedStageId >= 3;
@@ -440,6 +488,9 @@ namespace Nekoyume.UI
                     SubmitWidget = nextButton.onClick.Invoke;
                     fullFormat = L10nManager.Localize("UI_BATTLE_RESULT_NEXT_STAGE_FORMAT");
                     break;
+                default:
+                    bottomText.text = string.Empty;
+                    yield break;
             }
 
             // for tutorial
@@ -447,6 +498,7 @@ namespace Nekoyume.UI
                 SharedModel.LastClearedStageId == 3 &&
                 SharedModel.State == BattleLog.Result.Win)
             {
+                stagePreparationButton.gameObject.SetActive(false);
                 nextButton.gameObject.SetActive(false);
                 repeatButton.gameObject.SetActive(false);
                 bottomText.text = string.Empty;
@@ -502,6 +554,7 @@ namespace Nekoyume.UI
             }
 
             closeButton.interactable = false;
+            stagePreparationButton.interactable = false;
             repeatButton.interactable = false;
             nextButton.interactable = false;
             actionPoint.SetEventTriggerEnabled(false);
@@ -556,6 +609,7 @@ namespace Nekoyume.UI
             }
 
             closeButton.interactable = false;
+            stagePreparationButton.interactable = false;
             repeatButton.interactable = false;
             nextButton.interactable = false;
             actionPoint.SetEventTriggerEnabled(false);
@@ -673,6 +727,56 @@ namespace Nekoyume.UI
                     });
                 }
             }
+        }
+
+        private void GoToPreparation()
+        {
+            Find<Battle>().Close(true);
+            Game.Game.instance.Stage.DestroyBackground();
+            Game.Event.OnRoomEnter.Invoke(true);
+            Close();
+
+            var worldMapLoading = Find<WorldMapLoadingScreen>();
+            worldMapLoading.Show();
+            Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
+            {
+                CloseWithOtherWidgets();
+                Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
+
+                if (SharedModel.WorldID > 10000)
+                {
+                    var viewModel = new WorldMap.ViewModel
+                    {
+                        WorldInformation = States.Instance.CurrentAvatarState.worldInformation,
+                    };
+                    viewModel.SelectedStageId.SetValueAndForceNotify(SharedModel.WorldID);
+                    viewModel.SelectedStageId.SetValueAndForceNotify(SharedModel.StageID);
+                    Game.Game.instance.TableSheets.WorldSheet.TryGetValue(SharedModel.WorldID,
+                        out var worldRow);
+
+                    Find<StageInformation>().Show(viewModel, worldRow, StageType.Mimisbrunnr);
+
+                    Find<BattlePreparation>().Show(
+                        StageType.Mimisbrunnr,
+                        GameConfig.MimisbrunnrWorldId,
+                        SharedModel.StageID,
+                        $"{SharedModel.WorldName.ToUpper()} {SharedModel.StageID % 10000000}",
+                        true);
+                }
+                else
+                {
+                    Find<WorldMap>().Show(SharedModel.WorldID, SharedModel.StageID, false);
+
+                    Find<BattlePreparation>().Show(
+                        StageType.HackAndSlash,
+                        SharedModel.WorldID,
+                        SharedModel.StageID,
+                        $"{SharedModel.WorldName.ToUpper()} {SharedModel.StageID}",
+                        true);
+                }
+
+                worldMapLoading.Close(true);
+            });
         }
 
         private void StopCoUpdateBottomText()

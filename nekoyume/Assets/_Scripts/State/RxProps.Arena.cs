@@ -529,22 +529,16 @@ namespace Nekoyume.State
             ArenaType arenaType,
             int playerScore)
         {
-            switch (arenaType)
+            if (!ArenaHelper.ScoreLimits.ContainsKey(arenaType))
             {
-                case ArenaType.OffSeason:
-                    return tuples;
-                case ArenaType.Season:
-                case ArenaType.Championship:
-                    var bounds = ArenaHelper.ScoreLimits[arenaType];
-                    bounds = (bounds.Item1 + playerScore, bounds.Item2 + playerScore);
-                    return tuples
-                        .Where(tuple =>
-                            tuple.score <= bounds.Item1 &&
-                            tuple.score >= bounds.Item2)
-                        .ToArray();
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(arenaType), arenaType, null);
+                throw new ArgumentOutOfRangeException(nameof(arenaType), arenaType, null);
             }
+
+            var bounds = ArenaHelper.ScoreLimits[arenaType];
+            bounds = (bounds.upper + playerScore, bounds.lower + playerScore);
+            return tuples
+                .Where(tuple => tuple.score <= bounds.upper && tuple.score >= bounds.lower)
+                .ToArray();
         }
     }
 }

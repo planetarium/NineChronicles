@@ -198,6 +198,8 @@ namespace Nekoyume.UI.Module
                     var inventory = States.Instance.CurrentAvatarState.inventory;
                     var count = Util.GetHourglassCount(inventory, Game.Game.instance.Agent.BlockIndex);
                     return count >= cost;
+                case CostType.WorldBossTicket:
+                    return Widget.Find<HeaderMenuStatic>().WorldBossTickets.RemainTicket > 0;
                 default:
                     return true;
             }

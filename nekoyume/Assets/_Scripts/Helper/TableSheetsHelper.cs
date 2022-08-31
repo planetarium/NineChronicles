@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Nekoyume.Extension;
 using Nekoyume.Game;
-using Nekoyume.TableData;
 using UnityEngine;
 
 namespace Nekoyume.Helper

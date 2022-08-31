@@ -1,9 +1,11 @@
-﻿using UnityEngine;
+using Nekoyume.TableData;
+using UnityEngine;
 
 namespace Nekoyume.UI.Model
 {
     public class WorldBossRankItem : IItemViewModel
     {
+        public WorldBossCharacterSheet.Row BossRow;
         public RectTransform View { get; set; }
         public int Ranking { get; }
         public string AvatarName { get; }
@@ -13,8 +15,9 @@ namespace Nekoyume.UI.Model
         public int Level { get; }
         public int Portrait { get; }
 
-        public WorldBossRankItem(WorldBossRankingRecord record)
+        public WorldBossRankItem(WorldBossCharacterSheet.Row row, WorldBossRankingRecord record)
         {
+            BossRow = row;
             AvatarName = record.AvatarName;
             Ranking = record.Ranking;
             HighScore = record.HighScore;
