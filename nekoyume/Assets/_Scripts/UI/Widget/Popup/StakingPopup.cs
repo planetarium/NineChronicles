@@ -114,11 +114,11 @@ namespace Nekoyume.UI
                 AudioController.PlayClick();
             }).AddTo(gameObject);
 
+            SetBenefitsListViews();
             _deposit.Subscribe(OnDepositEdited).AddTo(gameObject);
             Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
                 .Where(_ => gameObject.activeSelf).Subscribe(OnBlockUpdated)
                 .AddTo(gameObject);
-            SetBenefitsListViews();
         }
 
         public override void Show(bool ignoreStartAnimation = false)
