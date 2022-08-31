@@ -77,5 +77,5 @@ id,group,_name,chance,duration,target_type,stat_type,modify_type,modify_value,ic
 306010,306000,속도 강화 (20),100,150,Self,SPD,Percentage,20,icon_buff_plus_speed
 306011,306000,속도 강화 (35),100,150,Self,SPD,Percentage,35,icon_buff_plus_speed
 306012,306000,속도 강화 (70),100,150,Self,SPD,Percentage,70,icon_buff_plus_speed
-901001,901001,공격 강화 (분노),100,10,Self,ATK,Percentage,20,icon_buff_plus_attack
-902001,902001,속도 강화 (분노),100,10,Self,SPD,Percentage,20,icon_buff_plus_speed
+501001,501001,공격 강화 (펜리르 분노),100,10,Self,ATK,Percentage,20,icon_buff_plus_attack
+502001,502001,속도 강화 (펜리르 분노),100,10,Self,SPD,Percentage,20,icon_buff_plus_speed
