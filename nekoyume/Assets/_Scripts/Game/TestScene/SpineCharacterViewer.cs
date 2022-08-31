@@ -325,7 +325,8 @@ namespace Nekoyume.TestScene
 
         public static bool IsMonster(string prefabName)
         {
-            return prefabName.StartsWith("2");
+            return prefabName.StartsWith("2") ||
+                prefabName.StartsWith("9");
         }
 
         public static bool IsNPC(string prefabName)
