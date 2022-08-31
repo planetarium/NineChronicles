@@ -24,8 +24,8 @@ namespace Nekoyume.Helper
             Stopwatch sw,
             long blockIndex,
             string addressesHex,
-            int costAp,
-            int playCount = 1)
+            int playCount = 1,
+            int stakingLevel = 0)
         {
             var worldSheet = sheets.GetSheet<WorldSheet>();
             if (!worldSheet.TryGetValue(worldId, out var worldRow, false))
@@ -88,6 +88,12 @@ namespace Nekoyume.Helper
             var costumeIds = avatarState.ValidateCostume(costumes);
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Validate Items: {Elapsed}", addressesHex, sw.Elapsed);
+
+            var costAp = stageRow.CostAP;
+            if (stakingLevel > 0 && sheets.TryGetSheet<StakeActionPointCoefficientSheet>(out var apSheet))
+            {
+                costAp = apSheet.GetActionPointByStaking(costAp, 1, stakingLevel);
+            }
 
             if (avatarState.actionPoint < costAp * playCount)
             {
