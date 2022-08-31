@@ -82,7 +82,7 @@ namespace Nekoyume.Model
             _enrageSkill = enrageSkill;
         }
 
-        protected override void UseSkill()
+        protected override BattleStatus.Skill UseSkill()
         {
             var index = _actionCount % _orderedSkills.Count;
             var skill = _orderedSkills[index];
@@ -100,14 +100,7 @@ namespace Nekoyume.Model
             );
 
             Simulator.Log.Add(usedSkill);
-            foreach (var info in usedSkill.SkillInfos)
-            {
-                if (!info.Target.IsDead)
-                    continue;
-                
-                var target = Targets.FirstOrDefault(i => i.Id == info.Target.Id);
-                target?.Die();
-            }
+            return usedSkill;
         }
 
         public void Enrage()
