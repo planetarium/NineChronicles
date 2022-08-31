@@ -24,6 +24,7 @@ using TMPro;
 using Nekoyume.Model;
 using Libplanet.Action;
 using Nekoyume.Battle;
+using Nekoyume.EnumType;
 using Inventory = Nekoyume.UI.Module.Inventory;
 using Toggle = UnityEngine.UI.Toggle;
 using Player = Nekoyume.Game.Character.Player;
@@ -68,10 +69,7 @@ namespace Nekoyume.UI
         private AvatarStats stats;
 
         [SerializeField]
-        private ParticleSystem[] particles;
-
-        [SerializeField]
-        private ConditionalCostButton startButton;
+        private Button startButton;
 
         [SerializeField]
         private Button closeButton;
@@ -80,7 +78,16 @@ namespace Nekoyume.UI
         private TextMeshProUGUI closeButtonText;
 
         [SerializeField]
-        private Transform buttonStarImageTransform;
+        private TextMeshProUGUI crystalText;
+
+        [SerializeField]
+        private TextMeshProUGUI ticketText;
+
+        [SerializeField]
+        private Transform crystalImage;
+
+        [SerializeField]
+        private Transform ticketImage;
 
         [SerializeField, Range(.5f, 3.0f)]
         private float animationTime = 1f;
@@ -98,6 +105,12 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject blockStartingTextObject;
 
+        [SerializeField]
+        private GameObject crystalContainer;
+
+        [SerializeField]
+        private GameObject currencyContainer;
+
         public Player Player { get; private set; }
         private EquipmentSlot _weaponSlot;
         private EquipmentSlot _armorSlot;
@@ -110,7 +123,7 @@ namespace Nekoyume.UI
         private HeaderMenuStatic _headerMenu;
 
         public override bool CanHandleInputEvent =>
-            base.CanHandleInputEvent && startButton.Interactable;
+            base.CanHandleInputEvent && startButton.enabled;
 
         public bool IsSkipRender => toggle.isOn;
 
@@ -153,10 +166,7 @@ namespace Nekoyume.UI
 
             CloseWidget = () => Close(true);
 
-            startButton.OnSubmitSubject
-                .ThrottleFirst(TimeSpan.FromSeconds(2f))
-                .Subscribe(_ => OnClickStartButton())
-                .AddTo(gameObject);
+            startButton.onClick.AddListener(OnClickStartButton);
 
             Game.Event.OnRoomEnter.AddListener(b => Close());
             toggle.gameObject.SetActive(GameConfig.IsEditor);
@@ -173,23 +183,27 @@ namespace Nekoyume.UI
             var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
             var raiderState = WorldBossStates.GetRaiderState(currentAvatarState.address);
             startButton.gameObject.SetActive(true);
-            startButton.Interactable = true;
+            startButton.enabled = true;
             if (WorldBossFrontHelper.IsItInSeason(currentBlockIndex))
             {
+                currencyContainer.SetActive(true);
+                ticketText.color = _headerMenu.WorldBossTickets.RemainTicket > 0 ?
+                    Palette.GetColor(ColorType.ButtonEnabled) :
+                    Palette.GetColor(ColorType.TextDenial);
                 if (raiderState is null)
                 {
-                    var cost = GetEntranceFee(currentAvatarState);
-                    startButton.SetCost(CostType.Crystal, cost);
+                    crystalContainer.SetActive(true);
+                    UpdateCrystalCost();
                 }
                 else
                 {
-                    startButton.SetCost(CostType.WorldBossTicket, 1);
-                    startButton.SetCostColor(_headerMenu.WorldBossTickets.RemainTicket > 0);
+                    crystalContainer.SetActive(false);
                 }
             }
             else
             {
-                startButton.SetCost(CostType.None, 0);
+                currencyContainer.SetActive(false);
+                crystalContainer.SetActive(false);
             }
 
             closeButtonText.text = L10nManager.LocalizeCharacterName(bossId);
@@ -227,8 +241,18 @@ namespace Nekoyume.UI
             }).AddTo(_disposables);
 
             AgentStateSubject.Crystal
-                .Subscribe(_ => startButton.UpdateObjects())
+                .Subscribe(_ => UpdateCrystalCost())
                 .AddTo(_disposables);
+        }
+
+        private void UpdateCrystalCost()
+        {
+            var crystalCost = GetEntranceFee(Game.Game.instance.States.CurrentAvatarState);
+            crystalText.text = $"{crystalCost:#,0}";
+            crystalText.color = States.Instance.CrystalBalance.MajorUnit >= crystalCost ?
+                Palette.GetColor(ColorType.ButtonEnabled) :
+                Palette.GetColor(ColorType.TextDenial);
+            startButton.enabled = States.Instance.CrystalBalance.MajorUnit >= crystalCost;
         }
 
         private static int GetEntranceFee(AvatarState currentAvatarState)
@@ -610,18 +634,42 @@ namespace Nekoyume.UI
 
         private IEnumerator CoRaid()
         {
+            startButton.enabled = false;
             coverToBlockClick.SetActive(true);
-            var itemMoveAnimation = ShowMoveAnimation();
-            yield return new WaitWhile(() => itemMoveAnimation.IsPlaying);
+            var ticketAnimation = ShowMoveTicketAnimation();
+            var raiderState = WorldBossStates.GetRaiderState(States.Instance.CurrentAvatarState.address);
+            if (raiderState is null)
+            {
+                var crystalAnimation = ShowMoveCrystalAnimation();
+                yield return new WaitWhile(() => ticketAnimation.IsPlaying || crystalAnimation.IsPlaying);
+            }
+            else
+            {
+                yield return new WaitWhile(() => ticketAnimation.IsPlaying);
+            }
+
             Raid(false);
         }
 
-        private ItemMoveAnimation ShowMoveAnimation()
+        private ItemMoveAnimation ShowMoveTicketAnimation()
         {
             var tickets = _headerMenu.WorldBossTickets;
             return ItemMoveAnimation.Show(tickets.IconImage.sprite,
                 tickets.transform.position,
-                buttonStarImageTransform.position,
+                ticketImage.position,
+                Vector2.one,
+                moveToLeft,
+                true,
+                animationTime,
+                middleXGap);
+        }
+
+        private ItemMoveAnimation ShowMoveCrystalAnimation()
+        {
+            var crystal = _headerMenu.Crystal;
+            return ItemMoveAnimation.Show(crystal.IconImage.sprite,
+                crystal.transform.position,
+                crystalImage.position,
                 Vector2.one,
                 moveToLeft,
                 true,
@@ -735,18 +783,6 @@ namespace Nekoyume.UI
 
         private void UpdateStartButton(AvatarState avatarState)
         {
-            foreach (var particle in particles)
-            {
-                if (startButton.IsSubmittable)
-                {
-                    particle.Play();
-                }
-                else
-                {
-                    particle.Stop();
-                }
-            }
-
             Player.Set(avatarState);
             var foodIds = consumableSlots
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)
