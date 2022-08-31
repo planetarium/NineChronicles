@@ -224,7 +224,7 @@ namespace Nekoyume.Model
             Skills.ReduceCooldownV1();
         }
 
-        protected virtual void UseSkill()
+        protected virtual BattleStatus.Skill UseSkill()
         {
             var selectedSkill = Skills.Select(Simulator.Random);
             var usedSkill = selectedSkill.Use(
@@ -247,20 +247,11 @@ namespace Nekoyume.Model
 
             Skills.SetCooldown(selectedSkill.SkillRow.Id, sheetSkill.Cooldown);
             Simulator.Log.Add(usedSkill);
-            OnPostSkill();
-
-            foreach (var info in usedSkill.SkillInfos)
-            {
-                if (!info.Target.IsDead)
-                    continue;
-
-                var target = Targets.FirstOrDefault(i => i.Id == info.Target.Id);
-                target?.Die();
-            }
+            return usedSkill;
         }
 
         [Obsolete("Use UseSkill")]
-        private void UseSkillV1()
+        private BattleStatus.Skill UseSkillV1()
         {
             var selectedSkill = Skills.SelectV1(Simulator.Random);
 
@@ -279,6 +270,7 @@ namespace Nekoyume.Model
 
             Skills.SetCooldown(selectedSkill.SkillRow.Id, selectedSkill.SkillRow.Cooldown);
             Simulator.Log.Add(usedSkill);
+            return usedSkill;
 
             foreach (var info in usedSkill.SkillInfos)
             {
@@ -291,7 +283,7 @@ namespace Nekoyume.Model
         }
 
         [Obsolete("Use UseSkill")]
-        private void UseSkillV2()
+        private BattleStatus.Skill UseSkillV2()
         {
             var selectedSkill = Skills.SelectV2(Simulator.Random);
 
@@ -310,6 +302,7 @@ namespace Nekoyume.Model
 
             Skills.SetCooldown(selectedSkill.SkillRow.Id, selectedSkill.SkillRow.Cooldown);
             Simulator.Log.Add(usedSkill);
+            return usedSkill;
 
             foreach (var info in usedSkill.SkillInfos)
             {
@@ -499,7 +492,11 @@ namespace Nekoyume.Model
                 ReduceDurationOfBuffs();
                 ReduceSkillCooldown();
                 OnPreSkill();
-                UseSkill();
+                var usedSkill = UseSkill();
+                if (usedSkill != null)
+                {
+                    OnPostSkill(usedSkill);
+                }
                 RemoveBuffs();
             }
             EndTurn();
@@ -513,8 +510,11 @@ namespace Nekoyume.Model
                 ReduceDurationOfBuffs();
                 ReduceSkillCooldownV1();
                 OnPreSkill();
-                UseSkillV1();
-                OnPostSkill();
+                var usedSkill = UseSkillV1();
+                if (usedSkill != null)
+                {
+                    OnPostSkill(usedSkill);
+                }
                 RemoveBuffs();
             }
             EndTurn();
@@ -528,8 +528,11 @@ namespace Nekoyume.Model
                 ReduceDurationOfBuffs();
                 ReduceSkillCooldownV1();
                 OnPreSkill();
-                UseSkillV2();
-                OnPostSkill();
+                var usedSkill = UseSkillV2();
+                if (usedSkill != null)
+                {
+                    OnPostSkill(usedSkill);
+                }
                 RemoveBuffs();
             }
             EndTurn();
@@ -540,7 +543,7 @@ namespace Nekoyume.Model
 
         }
 
-        protected virtual void OnPostSkill()
+        protected virtual void OnPostSkill(BattleStatus.Skill usedSkill)
         {
             var bleeds = Buffs.Values.OfType<Bleed>().OrderBy(x => x.BuffInfo.Id);
             foreach (var bleed in bleeds)
@@ -552,6 +555,15 @@ namespace Nekoyume.Model
             if (IsDead)
             {
                 Die();
+            }
+
+            foreach (var info in usedSkill.SkillInfos)
+            {
+                if (!info.Target.IsDead)
+                    continue;
+
+                var target = Targets.FirstOrDefault(i => i.Id == info.Target.Id);
+                target?.Die();
             }
         }
     }
