@@ -162,7 +162,7 @@ namespace Nekoyume.Action
             }
 
             sw.Stop();
-            Log.Verbose("{AddressesHex}HAS Check Cost ActionPoint: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex}HAS Check StakeState: {Elapsed}", addressesHex, sw.Elapsed);
 
             // Validate about avatar state.
             Validator.ValidateForHackAndSlash(avatarState,
