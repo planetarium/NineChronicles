@@ -777,7 +777,25 @@ MonoBehaviour:
       m_RotationOrder: 4
     m_MixOutCurve:
       serializedVersion: 2
-      m_Curve: []
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -1025,7 +1043,7 @@ MonoBehaviour:
   m_Muted: 0
   m_CustomPlayableFullTypename: 
   m_Curves: {fileID: 0}
-  m_Parent: {fileID: 11400000}
+  m_Parent: {fileID: -163078575709169204}
   m_Children: []
   m_Clips:
   - m_Version: 1
@@ -1227,7 +1245,25 @@ MonoBehaviour:
       m_RotationOrder: 4
     m_MixOutCurve:
       serializedVersion: 2
-      m_Curve: []
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -1494,7 +1530,7 @@ MonoBehaviour:
   m_Muted: 0
   m_CustomPlayableFullTypename: 
   m_Curves: {fileID: 0}
-  m_Parent: {fileID: 11400000}
+  m_Parent: {fileID: -163078575709169204}
   m_Children: []
   m_Clips:
   - m_Version: 1
@@ -1707,6 +1743,9 @@ MonoBehaviour:
   m_Parent: {fileID: 11400000}
   m_Children:
   - {fileID: -8150698350735233901}
+  - {fileID: 6431082573943500882}
+  - {fileID: -5020081803025316771}
+  - {fileID: -938373765632619079}
   m_Clips: []
   m_Markers:
     m_Objects: []
@@ -1725,9 +1764,6 @@ MonoBehaviour:
   m_Version: 0
   m_Tracks:
   - {fileID: -163078575709169204}
-  - {fileID: 6431082573943500882}
-  - {fileID: -5020081803025316771}
-  - {fileID: -938373765632619079}
   - {fileID: -3923465064369048866}
   - {fileID: 5082136249686850379}
   - {fileID: 3226793838221161427}
@@ -3467,7 +3503,7 @@ MonoBehaviour:
   m_Muted: 0
   m_CustomPlayableFullTypename: 
   m_Curves: {fileID: 0}
-  m_Parent: {fileID: 11400000}
+  m_Parent: {fileID: -163078575709169204}
   m_Children: []
   m_Clips: []
   m_Markers:
