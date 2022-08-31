@@ -29,9 +29,6 @@ namespace Nekoyume.UI.Module.WorldBoss
         [SerializeField]
         private Image middleGaugeImage;
 
-        [SerializeField]
-        private Image endGaugeImage;
-
         private void Start()
         {
             claimButton.OnSubmitSubject
@@ -73,9 +70,8 @@ namespace Nekoyume.UI.Module.WorldBoss
             var latestRewardRank = raiderState?.LatestRewardRank ?? 0;
             var highScore = raiderState?.HighScore ?? 0;
             var currentRank = WorldBossHelper.CalculateRank(characterRow, highScore);
-            var maxRankCount = rows.Count;
             UpdateItems(characterRow, rows, latestRewardRank, currentRank);
-            UpdateGauges(currentRank, maxRankCount);
+            UpdateGauges(characterRow, highScore, currentRank);
             UpdateRecord(highScore);
 
             claimButton.Interactable = latestRewardRank < currentRank;
@@ -111,12 +107,28 @@ namespace Nekoyume.UI.Module.WorldBoss
             }
         }
 
-        private void UpdateGauges(int currentRank, int maxRankCount)
+        private void UpdateGauges(WorldBossCharacterSheet.Row bossRow, int highScore, int currentRank)
         {
-            // todo : 스코어나오면 fillAmount normalize 해줘야함
-            startGaugeImage.fillAmount = currentRank < 1 ? 0 : 1;
-            middleGaugeImage.fillAmount = (0.25f * currentRank) - 0.25f;
-            endGaugeImage.gameObject.SetActive(currentRank == maxRankCount);
+            switch (currentRank)
+            {
+                case (int)WorldBossGrade.None:
+                    var d = WorldBossFrontHelper.GetScoreInRank((int)WorldBossGrade.D, bossRow);
+                    startGaugeImage.fillAmount = d > 0 ? highScore / (float)d : 0;
+                    middleGaugeImage.fillAmount = 0;
+                    break;
+                case (int)WorldBossGrade.S:
+                    startGaugeImage.fillAmount = 1;
+                    middleGaugeImage.fillAmount = 1;
+                    break;
+                default:
+                    var curRankScore = WorldBossFrontHelper.GetScoreInRank(currentRank, bossRow);
+                    var nextRankScore = WorldBossFrontHelper.GetScoreInRank(currentRank + 1, bossRow);
+                    var max = nextRankScore - curRankScore;
+                    var cur = highScore - curRankScore;
+                    startGaugeImage.fillAmount = 1;
+                    middleGaugeImage.fillAmount = (0.25f * (currentRank - 1)) + (0.25f * (cur / (float)max));
+                    break;
+            }
         }
 
         private void UpdateRecord(int highScore)
