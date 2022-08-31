@@ -48,13 +48,16 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject currentBenefitsTab;
         [SerializeField] private GameObject levelBenefitsTab;
 
+        [SerializeField] private StakeIconDataScriptableObject stakeIconData;
+
         private readonly ReactiveProperty<BigInteger> _deposit = new();
         private readonly Module.ToggleGroup _toggleGroup = new ();
 
         // temporary table - buff benefits (HAS ap, arena ranking)
+        // TODO: THIS IS TEMPORARY TABLE. IT MUST CHANGE TO TABLESHEETS.
         private readonly Dictionary<int, (int ap, int arena)> _buffBenefits = new()
         {
-            {1, (5, 0)}, {2, (4, 100)}, {3, (4, 200)}, {4, (3, 200)}, {5, (3, 200)}
+            {1, (0, 0)}, {2, (0, 100)}, {3, (20, 200)}, {4, (20, 200)}, {5, (40, 200)}
         };
         // temporary table - benefits rate
         private readonly Dictionary<int, int> _benefitRates = new()
@@ -65,12 +68,11 @@ namespace Nekoyume.UI
         private readonly StakingBenefitsListView.Model[] _cachedModel =
             new StakingBenefitsListView.Model[6];
 
-        private const string BuffBenefitFormat = "{0} <color=#1FFF00>+{1}</color>";
+        private const string ActionPointBuffFormat = "{0} <color=#1FFF00>{1}% DC</color>";
         private const string BuffBenefitRateFormat = "{0} <color=#1FFF00>+{1}%</color>";
         private const string RemainingBlockFormat = "<Style=G5>{0}({1})";
         private const int RewardBlockInterval = 50400;
 
-        [SerializeField] private StakeIconDataScriptableObject stakeIconData;
         protected override void Awake()
         {
             base.Awake();
@@ -179,7 +181,7 @@ namespace Nekoyume.UI
                 string.Format(BuffBenefitRateFormat, L10nManager.Localize("GRINDING_CRYSTAL_BONUS"),
                     _cachedModel[level].CrystalBuff), _benefitRates[level]);
             buffBenefitsViews[2].Set(
-                string.Format(BuffBenefitFormat, L10nManager.Localize("STAGE_AP_BONUS"),
+                string.Format(ActionPointBuffFormat, L10nManager.Localize("STAGE_AP_BONUS"),
                     _cachedModel[level].ActionPointBuff), _benefitRates[level]);
 
             for (int i = 0; i <= 5; i++)

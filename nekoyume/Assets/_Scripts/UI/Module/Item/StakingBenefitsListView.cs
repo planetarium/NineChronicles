@@ -43,7 +43,7 @@ namespace Nekoyume.UI.Module
         private const string ApPotionInterestFormat = "<Style=G6>x{0}";
         private const string ArenaTicketBuffFormat = "<Style=G0>{0}%";
         private const string CrystalBuffFormat = "<Style=G1>{0}%";
-        private const string ActionPointBuffFormat = "<Style=G4>x{0}";
+        private const string ActionPointBuffFormat = "<Style=G4>{0}% DC";
         [SerializeField] private StakeIconDataScriptableObject stakeIconData;
 
         public void Set(int modelLevel, Model viewModel)
@@ -65,8 +65,9 @@ namespace Nekoyume.UI.Module
                 textList.crystalBuffText.text = viewModel.CrystalBuff == 0
                     ? "-"
                     : string.Format(CrystalBuffFormat, viewModel.CrystalBuff);
-                textList.actionPointBuffText.text =
-                    string.Format(ActionPointBuffFormat, viewModel.ActionPointBuff);
+                textList.actionPointBuffText.text = viewModel.ActionPointBuff != 0
+                    ? string.Format(ActionPointBuffFormat, viewModel.ActionPointBuff)
+                    : "-";
             }
         }
 
