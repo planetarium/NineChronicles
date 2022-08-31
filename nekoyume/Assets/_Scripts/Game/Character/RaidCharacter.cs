@@ -49,14 +49,6 @@ namespace Nekoyume.Game.Character
             _speechBubble?.UpdatePosition(gameObject, HUDOffset);
         }
 
-        private void OnDisable()
-        {
-            if (!_isAppQuitting)
-            {
-                DisableHUD();
-            }
-        }
-
         private void OnApplicationQuit()
         {
             _isAppQuitting = true;

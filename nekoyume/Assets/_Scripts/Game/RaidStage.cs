@@ -396,7 +396,6 @@ namespace Nekoyume.Game
                 if (_wave < 4)
                 {
                     yield return StartCoroutine(container.CoPlayRunAwayCutscene(_wave));
-                    yield return StartCoroutine(container.CoPlayAppearCutscene());
                     _boss.Animator.Idle();
                 }
                 else
