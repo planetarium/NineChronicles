@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.brunomikoski.animationsequencer": "0.1.6",
+    "com.brunomikoski.animationsequencer": "https://github.com/brunomikoski/Animation-Sequencer.git#v0.1.6",
     "com.coffee.softmask-for-ugui": "https://github.com/mob-sakai/SoftMaskForUGUI.git#upm",
     "com.coffee.ui-effect": "https://github.com/mob-sakai/UIEffect.git#upm",
     "com.coffee.ui-particle": "https://github.com/mob-sakai/ParticleEffectForUGUI.git#main",
@@ -24,7 +24,7 @@
     "com.unity.textmeshpro": "3.0.6",
     "com.unity.timeline": "1.6.4",
     "com.unity.ugui": "1.0.0",
-    "com.unity.uiextensions": "2.2.7",
+    "com.unity.uiextensions": "https://github.com/JohannesDeml/unity-ui-extensions.git#2.2.7",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
@@ -62,11 +62,8 @@
       "name": "package.openupm.com",
       "url": "https://package.openupm.com",
       "scopes": [
-        "com.brunomikoski.animationsequencer",
-        "com.demigiant.dotween",
         "com.laicasaane.texttyper",
-        "com.openupm",
-        "com.unity.uiextensions"
+        "com.openupm"
       ]
     }
   ]

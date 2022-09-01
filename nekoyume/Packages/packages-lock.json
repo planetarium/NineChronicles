@@ -1,11 +1,11 @@
 {
   "dependencies": {
     "com.brunomikoski.animationsequencer": {
-      "version": "0.1.6",
+      "version": "https://github.com/brunomikoski/Animation-Sequencer.git#v0.1.6",
       "depth": 0,
-      "source": "registry",
+      "source": "git",
       "dependencies": {},
-      "url": "https://package.openupm.com"
+      "hash": "b1717eb21dfd01c214d5eb8c934e3a768f6594ba"
     },
     "com.coffee.softmask-for-ugui": {
       "version": "https://github.com/mob-sakai/SoftMaskForUGUI.git#upm",
@@ -239,11 +239,11 @@
       }
     },
     "com.unity.uiextensions": {
-      "version": "2.2.7",
+      "version": "https://github.com/JohannesDeml/unity-ui-extensions.git#2.2.7",
       "depth": 0,
-      "source": "registry",
+      "source": "git",
       "dependencies": {},
-      "url": "https://package.openupm.com"
+      "hash": "136c081a87fb810006c20d69a1405e4b14f5ed0a"
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",
