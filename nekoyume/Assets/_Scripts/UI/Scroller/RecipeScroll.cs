@@ -180,6 +180,7 @@ namespace Nekoyume.UI.Scroller
             Analyzer.Instance.Track("Unity/UnlockEquipmentRecipe", new Value
             {
                 ["BurntCrystal"] = (long)_openCost,
+                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
             });
             Game.Game.instance.ActionManager
                 .UnlockEquipmentRecipe(_unlockableRecipeIds, _openCost)

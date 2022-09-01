@@ -280,7 +280,10 @@ namespace Nekoyume.UI
 
             if (worldId == 1)
             {
-                Analyzer.Instance.Track("Unity/Click Yggdrasil");
+                Analyzer.Instance.Track("Unity/Click Yggdrasil", new Value
+                {
+                    ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                });
             }
 
             Push();
@@ -396,6 +399,7 @@ namespace Nekoyume.UI
                     Analyzer.Instance.Track("Unity/UnlockWorld", new Value
                     {
                         ["BurntCrystal"] = (long)cost,
+                        ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                     });
                     ActionManager.Instance.UnlockWorld(new List<int> { worldId }).Subscribe();
                 },
@@ -431,6 +435,7 @@ namespace Nekoyume.UI
                             Analyzer.Instance.Track("Unity/UnlockWorld", new Value
                             {
                                 ["BurntCrystal"] = (long)cost,
+                                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                             });
                             ActionManager.Instance.UnlockWorld(worldIdListForUnlock).Subscribe();
                         },

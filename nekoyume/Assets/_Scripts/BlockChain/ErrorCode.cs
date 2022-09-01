@@ -231,7 +231,9 @@ namespace Nekoyume.BlockChain
             Analyzer.Instance.Track(
                 "Unity/Error",
                 ("code", code),
-                ("key", key));
+                ("key", key),
+                ("AgentAddress", Game.Game.instance.Agent.Address.ToString()),
+                ("AvatarAddress", Game.Game.instance.States.CurrentAvatarState.address.ToString()));
 
             errorMsg = errorMsg == string.Empty
                 ? string.Format(

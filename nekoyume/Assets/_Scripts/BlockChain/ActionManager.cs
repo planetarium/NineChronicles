@@ -225,6 +225,7 @@ namespace Nekoyume.BlockChain
                 ["WorldId"] = worldId,
                 ["StageId"] = stageId,
                 ["PlayCount"] = playCount,
+                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
             });
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
@@ -381,6 +382,7 @@ namespace Nekoyume.BlockChain
             Analyzer.Instance.Track("Unity/Create CombinationConsumable", new Value
             {
                 ["RecipeId"] = recipeInfo.RecipeId,
+                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
             });
 
             var action = new CombinationConsumable
@@ -663,7 +665,10 @@ namespace Nekoyume.BlockChain
             LocalLayerModifier.SetItemEquip(avatarAddress, baseEquipment.NonFungibleId, false);
             LocalLayerModifier.SetItemEquip(avatarAddress, materialEquipment.NonFungibleId, false);
 
-            Analyzer.Instance.Track("Unity/Item Enhancement");
+            Analyzer.Instance.Track("Unity/Item Enhancement", new Value
+            {
+                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+            });
 
             var action = new ItemEnhancement
             {
@@ -698,7 +703,10 @@ namespace Nekoyume.BlockChain
                 throw new NullReferenceException(nameof(weeklyArenaAddress));
             }
 
-            Analyzer.Instance.Track("Unity/Ranking Battle");
+            Analyzer.Instance.Track("Unity/Ranking Battle", new Value
+            {
+                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+            });
             var action = new RankingBattle
             {
                 avatarAddress = States.Instance.CurrentAvatarState.address,
@@ -825,6 +833,7 @@ namespace Nekoyume.BlockChain
             Analyzer.Instance.Track("Unity/Create CombinationEquipment", new Value
             {
                 ["RecipeId"] = recipeInfo.RecipeId,
+                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
             });
 
             var agentAddress = States.Instance.AgentState.address;
@@ -892,6 +901,7 @@ namespace Nekoyume.BlockChain
             Analyzer.Instance.Track("Unity/Rapid Combination", new Value
             {
                 ["HourglassCount"] = cost,
+                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
             });
 
             var action = new RapidCombination

@@ -17,6 +17,7 @@ using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using mixpanel;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -225,7 +226,10 @@ namespace Nekoyume.UI
             string closeButtonName,
             bool ignoreShowAnimation = false)
         {
-            Analyzer.Instance.Track("Unity/Click Stage");
+            Analyzer.Instance.Track("Unity/Click Stage", new Value
+            {
+                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+            });
 
             var stage = Game.Game.instance.Stage;
             repeatToggle.isOn = false;

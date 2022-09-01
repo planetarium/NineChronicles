@@ -180,6 +180,7 @@ namespace Nekoyume.UI
             var props = new Value
             {
                 ["StageID"] = stageId,
+                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
             };
             Analyzer.Instance.Track("Unity/Click Guided Quest Enter Dungeon", props);
         }
@@ -292,7 +293,10 @@ namespace Nekoyume.UI
         private void GoToCombinationEquipmentRecipe(int recipeId)
         {
             AudioController.PlayClick();
-            Analyzer.Instance.Track("Unity/Click Guided Quest Combination Equipment");
+            Analyzer.Instance.Track("Unity/Click Guided Quest Combination Equipment", new Value
+            {
+                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+            });
             CombinationClickInternal(() =>
                 Find<Craft>().ShowWithEquipmentRecipeId(recipeId));
         }
@@ -451,7 +455,10 @@ namespace Nekoyume.UI
 
             Close(true);
             Find<ArenaJoin>().ShowAsync().Forget();
-            Analyzer.Instance.Track("Unity/Enter arena page");
+            Analyzer.Instance.Track("Unity/Enter arena page", new Value
+            {
+                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+            });
             AudioController.PlayClick();
         }
 
