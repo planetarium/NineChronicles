@@ -106,7 +106,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 StartCoroutine(CoSetFirstCategory());
             }
 
-            var (raider, killRewardRecord, raidId, record, userCount) = await GetDataAsync();
+            var (raider, raidId, record, userCount) = await GetDataAsync();
             foreach (var toggle in categoryToggles)
             {
                 switch (toggle.Item)
@@ -127,7 +127,6 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         private async Task<(
             RaiderState raider,
-            WorldBossKillRewardRecord killReward,
             int raidId,
             WorldBossRankingRecord record,
             int userCount)>
@@ -140,13 +139,21 @@ namespace Nekoyume.UI.Module.WorldBoss
             var task = Task.Run(async () =>
             {
                 int raidId;
-                try // If the current raidId cannot be found, it will look for the previous raidId.
+
+                try
                 {
                     raidId = bossSheet.FindRaidIdByBlockIndex(blockIndex);
                 }
                 catch (InvalidOperationException)
                 {
-                    raidId = bossSheet.FindPreviousRaidIdByBlockIndex(blockIndex);
+                    try
+                    {
+                        raidId = bossSheet.FindPreviousRaidIdByBlockIndex(blockIndex);
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        return (null, 0, null, 0);
+                    }
                 }
 
                 var raiderAddress = Addresses.GetRaiderAddress(avatarAddress, raidId);
@@ -155,17 +162,11 @@ namespace Nekoyume.UI.Module.WorldBoss
                     ? new RaiderState(raiderList)
                     : null;
 
-                var killRewardAddress = Addresses.GetWorldBossKillRewardRecordAddress(avatarAddress, raidId);
-                var killRewardState = await Game.Game.instance.Agent.GetStateAsync(killRewardAddress);
-                var killReward = killRewardState is Bencodex.Types.List killRewardList
-                    ? new WorldBossKillRewardRecord(killRewardList)
-                    : null;
-
                 var response = await WorldBossQuery.QueryRankingAsync(raidId, avatarAddress);
                 var records = response?.WorldBossRanking.RankingInfo ?? new List<WorldBossRankingRecord>();
                 var userCount = response?.WorldBossTotalUsers ?? 0;
                 var myRecord = records.FirstOrDefault(record => record.Address == avatarAddress.ToHex());
-                return (raider, killReward, raidId, myRecord, userCount);
+                return (raider, raidId, myRecord, userCount);
             });
 
             await task;

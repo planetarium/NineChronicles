@@ -66,6 +66,11 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         private static bool IsExistReward(WorldBossListSheet.Row row, RaiderState raiderState)
         {
+            if (row is null || raiderState is null)
+            {
+                return false;
+            }
+
             var tableSheets = Game.Game.instance.TableSheets;
             var rewardSheet = tableSheets.WorldBossRankRewardSheet;
             var rows = rewardSheet.Values.Where(x => x.BossId.Equals(row.BossId)).ToList();
@@ -96,14 +101,23 @@ namespace Nekoyume.UI.Module.WorldBoss
             var task = Task.Run(async () =>
             {
                 WorldBossListSheet.Row raidRow;
-                bool isOnSeason = false;
-                try // If the current raidId cannot be found, it will look for the previous raidId.
+                var isOnSeason = false;
+
+                try
                 {
                     raidRow = bossSheet.FindRowByBlockIndex(blockIndex);
+                    isOnSeason = true;
                 }
                 catch (InvalidOperationException)
                 {
-                    raidRow = bossSheet.FindPreviousRowByBlockIndex(blockIndex);
+                    try
+                    {
+                        raidRow = bossSheet.FindPreviousRowByBlockIndex(blockIndex);
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        return (null, null, false);
+                    }
                 }
 
                 var raiderAddress = Addresses.GetRaiderAddress(avatarAddress, raidRow.Id);

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.WorldBoss;
 using UnityEngine;
@@ -93,6 +94,11 @@ namespace Nekoyume.UI
 
         private void UpdateView(ToggleType toggleType)
         {
+            var rankToggle = categoryToggles.FirstOrDefault(x => x.Type == ToggleType.Rank);
+            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+            var itInSeason = WorldBossFrontHelper.IsItInSeason(currentBlockIndex);
+            rankToggle.Toggle.gameObject.SetActive(itInSeason);
+
             foreach (var toggle in categoryToggles.Where(toggle => toggle.Type != toggleType))
             {
                 toggle.Item.gameObject.SetActive(false);
