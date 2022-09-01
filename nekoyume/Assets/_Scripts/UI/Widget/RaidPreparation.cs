@@ -23,6 +23,7 @@ using Nekoyume.UI.Scroller;
 using TMPro;
 using Nekoyume.Model;
 using Libplanet.Action;
+using Libplanet.Assets;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Inventory = Nekoyume.UI.Module.Inventory;
@@ -626,7 +627,8 @@ namespace Nekoyume.UI
                 simulator.DamageDealt,
                 false,
                 true,
-                null);
+                null,
+                new List<FungibleAssetValue>());
 
             Find<WorldBoss>().Close();
             Close();
