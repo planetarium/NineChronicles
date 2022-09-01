@@ -834,7 +834,7 @@ MonoBehaviour:
     m_Start: 7.233333333333333
     m_ClipIn: 0
     m_Asset: {fileID: -5527513516979188931}
-    m_Duration: 2.45
+    m_Duration: 2.7666666666666666
     m_TimeScale: 1
     m_ParentTrack: {fileID: -5565407023259597301}
     m_EaseInDuration: 0
@@ -1669,7 +1669,7 @@ MonoBehaviour:
     m_Start: 0
     m_ClipIn: 0
     m_Asset: {fileID: 7407716705798936609}
-    m_Duration: 9.683333333333334
+    m_Duration: 10
     m_TimeScale: 1
     m_ParentTrack: {fileID: -2753859715464737007}
     m_EaseInDuration: 0
@@ -2049,7 +2049,7 @@ MonoBehaviour:
     m_Start: 0
     m_ClipIn: 0
     m_Asset: {fileID: 2206980651955864198}
-    m_Duration: 9.683333333333334
+    m_Duration: 10.016666666666667
     m_TimeScale: 1
     m_ParentTrack: {fileID: -1778403213789967611}
     m_EaseInDuration: 0
@@ -2397,7 +2397,7 @@ MonoBehaviour:
     m_Start: 0
     m_ClipIn: 0
     m_Asset: {fileID: 2767445786868513005}
-    m_Duration: 9.683333333333334
+    m_Duration: 10
     m_TimeScale: 1
     m_ParentTrack: {fileID: 5150841167161367046}
     m_EaseInDuration: 0
@@ -2490,7 +2490,7 @@ MonoBehaviour:
     m_Start: 7.683366672197977
     m_ClipIn: 0
     m_Asset: {fileID: 2349193638978929525}
-    m_Duration: 1.9999666611353568
+    m_Duration: 2.3166333278020232
     m_TimeScale: 1
     m_ParentTrack: {fileID: 5563303422097073527}
     m_EaseInDuration: 0
@@ -2765,7 +2765,7 @@ MonoBehaviour:
     m_Start: 0
     m_ClipIn: 0
     m_Asset: {fileID: -4560742521535853201}
-    m_Duration: 9.683333333333334
+    m_Duration: 10
     m_TimeScale: 1
     m_ParentTrack: {fileID: 6810833101738660127}
     m_EaseInDuration: 0
@@ -3090,7 +3090,7 @@ MonoBehaviour:
     m_Start: 0
     m_ClipIn: 0
     m_Asset: {fileID: -5823644756654037135}
-    m_Duration: 8.383333333333333
+    m_Duration: 10
     m_TimeScale: 1
     m_ParentTrack: {fileID: 7511503528767969518}
     m_EaseInDuration: 0
@@ -3155,75 +3155,6 @@ MonoBehaviour:
     m_PostExtrapolationTime: 0
     m_PreExtrapolationTime: 0
     m_DisplayName: Run
-  - m_Version: 1
-    m_Start: 8.383333333333333
-    m_ClipIn: 0
-    m_Asset: {fileID: 8828720302472083675}
-    m_Duration: 1.3000000000000007
-    m_TimeScale: 1
-    m_ParentTrack: {fileID: 7511503528767969518}
-    m_EaseInDuration: 0
-    m_EaseOutDuration: 0
-    m_BlendInDuration: -1
-    m_BlendOutDuration: -1
-    m_MixInCurve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    m_MixOutCurve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    m_BlendInCurveMode: 0
-    m_BlendOutCurveMode: 0
-    m_ExposedParameterNames: []
-    m_AnimationCurves: {fileID: 0}
-    m_Recordable: 0
-    m_PostExtrapolationMode: 0
-    m_PreExtrapolationMode: 0
-    m_PostExtrapolationTime: 0
-    m_PreExtrapolationTime: 0
-    m_DisplayName: Idle
   m_Markers:
     m_Objects: []
   trackIndex: 0
@@ -3271,30 +3202,6 @@ MonoBehaviour:
     animationReference: {fileID: 11400000, guid: dba5577637b832742a5aa322b198db53,
       type: 2}
     loop: 0
-    customDuration: 0
-    useBlendDuration: 1
-    isInitialized: 1
-    mixDuration: 0.1
-    holdPrevious: 0
-    attachmentThreshold: 0.5
-    eventThreshold: 0.5
-    drawOrderThreshold: 0.5
---- !u!114 &8828720302472083675
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 585e20c924ba86a44926c850aa8e1d84, type: 3}
-  m_Name: SpineAnimationStateClip(Clone)(Clone)
-  m_EditorClassIdentifier: 
-  template:
-    animationReference: {fileID: 11400000, guid: 17bf007801f59cb4ea49670224dc9e76,
-      type: 2}
-    loop: 1
     customDuration: 0
     useBlendDuration: 1
     isInitialized: 1
