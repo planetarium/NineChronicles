@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Libplanet.Assets;
 using Nekoyume.Helper;
@@ -19,15 +20,16 @@ namespace Nekoyume.UI.Module.WorldBoss
         {
             var items = new List<RuneStoneInventoryItem>();
             var worldBossSheet = Game.Game.instance.TableSheets.WorldBossListSheet;
-            await foreach (var row in worldBossSheet.Values)
+            var bossIds = worldBossSheet.Values.Select(x => x.BossId).Distinct();
+            await foreach (var bossId in bossIds)
             {
-                if (!WorldBossFrontHelper.TryGetRunes(row.BossId, out var runeRows))
+                if (!WorldBossFrontHelper.TryGetRunes(bossId, out var runeRows))
                 {
                     continue;
                 }
 
                 var runes = await GetRunes(runeRows);
-                var item = new RuneStoneInventoryItem(runes, row.BossId);
+                var item = new RuneStoneInventoryItem(runes, bossId);
                 items.Add(item);
             }
 
