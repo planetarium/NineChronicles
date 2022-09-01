@@ -29,23 +29,35 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         // rank 0
-        [InlineData(typeof(NotEnoughRankException), 0, 0, 0, 0)]
-        [InlineData(typeof(NotEnoughRankException), 9_000, 0, 0, 0)]
+        [InlineData(typeof(NotEnoughRankException), 0, 0)]
         // Already Claim.
-        [InlineData(typeof(NotEnoughRankException), 10_000, 1, 0, 0)]
+        [InlineData(typeof(NotEnoughRankException), 1, 1)]
         // Skip previous reward.
-        [InlineData(null, 2_055_000, 1, 645_000, 1_100)]
+        [InlineData(null, 5, 1)]
         // Claim all reward.
-        [InlineData(null, 30_000, 0, 30_000, 50)]
-        [InlineData(null, 105_000, 0, 97_500, 150)]
-        [InlineData(null, 305_000, 0, 217_500, 350)]
-        [InlineData(null, 805_000, 0, 405_000, 650)]
-        [InlineData(null, 2_055_000, 0, 675_000, 1_150)]
-        public void Execute(Type exc, int highScore, int latestRank, int expectedCrystal, int expectedRune)
+        [InlineData(null, 1, 0)]
+        [InlineData(null, 2, 0)]
+        [InlineData(null, 3, 0)]
+        [InlineData(null, 4, 0)]
+        [InlineData(null, 5, 0)]
+        public void Execute(Type exc, int rank, int latestRank)
         {
+            Address agentAddress = default;
             Address avatarAddress = new PrivateKey().ToAddress();
             var bossRow = _tableSheets.WorldBossListSheet.OrderedList.First();
             var raiderAddress = Addresses.GetRaiderAddress(avatarAddress, bossRow.Id);
+            var highScore = 0;
+            var characterRow = _tableSheets.WorldBossCharacterSheet[bossRow.BossId];
+            foreach (var waveInfo in characterRow.WaveStats)
+            {
+                if (waveInfo.Wave > rank)
+                {
+                    continue;
+                }
+
+                highScore += (int)waveInfo.HP;
+            }
+
             var raiderState = new RaiderState
             {
                 HighScore = highScore,
@@ -54,19 +66,37 @@ namespace Lib9c.Tests.Action
             IAccountStateDelta state = _state.SetState(raiderAddress, raiderState.Serialize());
             var randomSeed = 0;
 
+            var rows = _tableSheets.WorldBossRankRewardSheet.Values
+                .Where(x => x.BossId == bossRow.BossId);
+            var expectedCrystal = 0;
+            var expectedRune = 0;
+            foreach (var row in rows)
+            {
+                if (row.Rank <= latestRank ||
+                    row.Rank > rank)
+                {
+                    continue;
+                }
+
+                expectedCrystal += row.Crystal;
+                expectedRune += row.Rune;
+            }
+
             var action = new ClaimRaidReward(avatarAddress);
             if (exc is null)
             {
                 var nextState = action.Execute(new ActionContext
                 {
-                    Signer = default,
+                    Signer = agentAddress,
                     BlockIndex = 1,
                     Random = new TestRandom(randomSeed),
                     PreviousStates = state,
                 });
 
                 var crystalCurrency = CrystalCalculator.CRYSTAL;
-                Assert.Equal(expectedCrystal * crystalCurrency, nextState.GetBalance(default, crystalCurrency));
+                Assert.Equal(
+                    expectedCrystal * crystalCurrency,
+                    nextState.GetBalance(agentAddress, crystalCurrency));
 
                 var rune = 0;
                 var runeIds = _tableSheets.RuneWeightSheet.Values
