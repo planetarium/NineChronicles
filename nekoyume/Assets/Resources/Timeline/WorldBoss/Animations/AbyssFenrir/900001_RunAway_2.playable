@@ -467,7 +467,7 @@ MonoBehaviour:
     m_Start: 6.016666666666666
     m_ClipIn: 0
     m_Asset: {fileID: 6277268639674252751}
-    m_Duration: 1.666700005531311
+    m_Duration: 4.000000000000002
     m_TimeScale: 1
     m_ParentTrack: {fileID: -8150698350735233901}
     m_EaseInDuration: 0
@@ -2651,7 +2651,7 @@ MonoBehaviour:
   template:
     animationReference: {fileID: 11400000, guid: a81d8b3dd48072d4abffc9fdba85afbb,
       type: 2}
-    loop: 0
+    loop: 1
     customDuration: 1
     useBlendDuration: 0
     isInitialized: 1
