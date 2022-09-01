@@ -15,17 +15,27 @@ MonoBehaviour:
   Icons:
   - id: 100000
     icon: {fileID: 21300000, guid: 029a98b00e749e34f9d20aec4e022213, type: 3}
+  - id: 100001
+    icon: {fileID: 21300000, guid: e08fac2f55a71427ca0e7317ed54a54f, type: 3}
   - id: 100003
     icon: {fileID: 21300000, guid: 4472327e45f92434083ec7000463ca5f, type: 3}
   - id: 220002
     icon: {fileID: 21300000, guid: 4537cb95832134896930efed2d215e00, type: 3}
-  - id: 900001
+  - id: 500001
     icon: {fileID: 21300000, guid: 3e5169ea9ba910043b16cb67206a87c8, type: 3}
-  - id: 900002
+  - id: 500002
     icon: {fileID: 21300000, guid: 898177a4368e56e47ba5b77d717a295f, type: 3}
-  - id: 900003
+  - id: 500003
     icon: {fileID: 21300000, guid: dccce543515df254883518bd95c1d143, type: 3}
-  - id: 910001
+  - id: 510001
+    icon: {fileID: 21300000, guid: ff9e36fba4ade284f84cac52ae4e0eb6, type: 3}
+  - id: 510002
+    icon: {fileID: 21300000, guid: ff9e36fba4ade284f84cac52ae4e0eb6, type: 3}
+  - id: 510003
+    icon: {fileID: 21300000, guid: ff9e36fba4ade284f84cac52ae4e0eb6, type: 3}
+  - id: 510004
+    icon: {fileID: 21300000, guid: ff9e36fba4ade284f84cac52ae4e0eb6, type: 3}
+  - id: 510005
     icon: {fileID: 21300000, guid: ff9e36fba4ade284f84cac52ae4e0eb6, type: 3}
   DefaultIcon: {fileID: 21300000, guid: 9394f8da5938042989eb6405a94b396f, type: 3}
   SkillIconPrefab: {fileID: 2934662316635872679, guid: fead0faa3c3652e409823a147dfcafb5,
