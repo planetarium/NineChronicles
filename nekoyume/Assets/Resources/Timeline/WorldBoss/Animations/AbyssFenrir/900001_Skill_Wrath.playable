@@ -178,7 +178,7 @@ MonoBehaviour:
     m_Start: 0
     m_ClipIn: 0
     m_Asset: {fileID: -516207431506127810}
-    m_Duration: 1
+    m_Duration: 0.5
     m_TimeScale: 1
     m_ParentTrack: {fileID: -6126831602640794007}
     m_EaseInDuration: 0
@@ -1370,7 +1370,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   template:
     timeScale: 0
-  timeScale: 0.45
+  timeScale: 0.8
 --- !u!114 &-304402644346317622
 MonoBehaviour:
   m_ObjectHideFlags: 1
