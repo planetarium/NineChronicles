@@ -12,12 +12,15 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private BattleTimerView battleTimerView = null;
 
-        private const int RaidTurnLimit = 150;
-
-        public void SetData(Player player)
+        public void SetData(Player player, int turnLimit)
         {
             characterView.SetByPlayer(player);
-            battleTimerView.Show(RaidTurnLimit);
+            battleTimerView.Show(turnLimit);
+        }
+
+        public void UpdateTurnLimit(int turnLimit)
+        {
+            battleTimerView.UpdateTurnLimit(turnLimit);
         }
     }
 }
