@@ -120,16 +120,16 @@ namespace Nekoyume.Game
                     var caster = param.RaidCharacter;
 
                     // Wait for caster idle
-                    if (caster.CurrentAction != null)
+                    if (caster.IsActing)
                     {
-                        yield return caster.CurrentAction;
+                        yield return new WaitWhile(() => caster.IsActing);
                         yield return actionDelay;
                     }
 
                     if (caster is Character.RaidBoss boss)
                     {
-                        yield return _player.CurrentAction;
-                        yield return new WaitUntil(() => _boss.Animator.IsIdle());
+                        yield return new WaitWhile(() => _player.IsActing);
+                        yield return new WaitWhile(() => _boss.IsActing);
                         if (container.SkillCutsceneExists(param.SkillId))
                         {
                             container.OnAttackPoint = () =>
@@ -197,8 +197,8 @@ namespace Nekoyume.Game
         {
             IsAvatarStateUpdatedAfterBattle = false;
             _onBattleEnded.OnNext(this);
-            yield return _player.CurrentAction;
-            yield return _boss.CurrentAction;
+            yield return new WaitWhile(() => _player.IsActing);
+            yield return new WaitWhile(() => _boss.IsActing);
             yield return delayOnBattleFinished;
 
             if (!isPractice)
@@ -326,7 +326,7 @@ namespace Nekoyume.Game
             Character.RaidCharacter target = affectedCharacter.Id == _player.Id ? _player : _boss;
             target.Set(affectedCharacter);
 
-            yield return target.CurrentAction;
+            yield return new WaitWhile(() => target.IsActing);
             foreach (var info in skillInfos)
             {
                 target.ProcessDamage(info, true);
@@ -396,8 +396,8 @@ namespace Nekoyume.Game
             Character.RaidCharacter raidCharacter =
                 character.Id == _player.Id ? _player : _boss;
             raidCharacter.Set(character);
-            yield return _player.CurrentAction;
-            yield return _boss.CurrentAction;
+            yield return new WaitWhile(() => _player.IsActing);
+            yield return new WaitWhile(() => _boss.IsActing);
 
             if (raidCharacter is Character.RaidPlayer player)
             {
@@ -406,7 +406,6 @@ namespace Nekoyume.Game
             else if (raidCharacter is Character.RaidBoss boss)
             {
                 Widget.Find<WorldBossBattle>().OnWaveCompleted();
-                yield return new WaitUntil(() => boss.Animator.IsIdle());
 
                 if (_wave < 4)
                 {

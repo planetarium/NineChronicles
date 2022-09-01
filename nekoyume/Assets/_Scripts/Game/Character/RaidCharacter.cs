@@ -32,8 +32,9 @@ namespace Nekoyume.Game.Character
         protected RaidCharacter _target;
         public bool IsDead => _currentHp <= 0;
         public Model.CharacterBase Model => _characterModel;
-        public Coroutine CurrentAction { get; set; }
+        public Coroutine CurrentAction { protected get; set; }
         public Coroutine TargetAction => _target.CurrentAction;
+        public bool IsActing => CurrentAction != null;
 
         private bool _isAppQuitting = false;
 
