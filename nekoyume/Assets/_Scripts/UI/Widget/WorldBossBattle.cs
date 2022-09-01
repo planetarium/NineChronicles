@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.Battle;
 using Nekoyume.Model;
 using Nekoyume.UI.Module;
@@ -33,7 +34,15 @@ namespace Nekoyume.UI
         {
             comboText.comboMax = AttackCountHelper.GetCountMax(player.Level);
             comboText.Close();
-            playerStatus.SetData(player);
+
+            var turnLimit = 150;
+            var sheet = Game.Game.instance.TableSheets.WorldBossCharacterSheet;
+            if (sheet.TryGetValue(bossId, out var boss))
+            {
+                turnLimit = boss.WaveStats.FirstOrDefault().TurnLimit;
+            }
+
+            playerStatus.SetData(player, turnLimit);
             progressBar.Show(bossId);
             base.Show(ignoreShowAnimation);
         }
@@ -55,10 +64,11 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        public void SetBossProfile(Enemy enemy)
+        public void SetBossProfile(Enemy enemy, int turnLimit)
         {
             bossStatus.SetProfile(enemy);
             bossStatus.Show();
+            playerStatus.UpdateTurnLimit(turnLimit);
         }
 
         public void UpdateStatus(

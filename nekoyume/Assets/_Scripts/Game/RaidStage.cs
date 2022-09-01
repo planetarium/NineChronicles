@@ -375,7 +375,15 @@ namespace Nekoyume.Game
         public IEnumerator CoSpawnWave(int waveNumber, int waveTurn, List<Enemy> enemies, bool hasBoss)
         {
             _boss.Spawn(enemies.First());
-            Widget.Find<WorldBossBattle>().SetBossProfile(_boss.Model as Enemy);
+
+            var turnLimit = 150;
+            var sheet = Game.instance.TableSheets.WorldBossCharacterSheet;
+            if (sheet.TryGetValue(_currentBossId, out var boss))
+            {
+                turnLimit = boss.WaveStats.FirstOrDefault(x => x.Wave == waveNumber).TurnLimit;
+            }
+
+            Widget.Find<WorldBossBattle>().SetBossProfile(_boss.Model as Enemy, turnLimit);
             yield break;
         }
 
