@@ -705,7 +705,7 @@ namespace Spine {
 			frameIndex *= ENTRIES;
 			frames[frameIndex] = time;
 			frames[frameIndex + R] = r;
-			frames[frameIndex + G] = g;
+			frames[frameIndex + G] = g; 
 			frames[frameIndex + B] = b;
 			frames[frameIndex + A] = a;
 		}

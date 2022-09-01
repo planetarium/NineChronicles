@@ -32,9 +32,9 @@ namespace Nekoyume.Game.Character
         protected RaidCharacter _target;
         public bool IsDead => _currentHp <= 0;
         public Model.CharacterBase Model => _characterModel;
-        public Coroutine CurrentAction { get; set; }
-        public int NextSpecialSkillId { get; set; }
+        public Coroutine CurrentAction { protected get; set; }
         public Coroutine TargetAction => _target.CurrentAction;
+        public bool IsActing => CurrentAction != null;
 
         private bool _isAppQuitting = false;
 
@@ -45,8 +45,8 @@ namespace Nekoyume.Game.Character
 
         private void LateUpdate()
         {
-            _hudContainer.UpdatePosition(gameObject, HUDOffset);
-            _speechBubble.UpdatePosition(gameObject, HUDOffset);
+            _hudContainer?.UpdatePosition(Game.instance.RaidStage.Camera.Cam, gameObject, HUDOffset);
+            _speechBubble?.UpdatePosition(Game.instance.RaidStage.Camera.Cam, gameObject, HUDOffset);
         }
 
         private void OnDisable()
@@ -110,7 +110,7 @@ namespace Nekoyume.Game.Character
                 _hudContainer.UpdateAlpha(1);
             }
 
-            _hudContainer.UpdatePosition(gameObject, HUDOffset);
+            _hudContainer.UpdatePosition(Game.instance.RaidStage.Camera.Cam, gameObject, HUDOffset);
             HPBar.Set(_currentHp, _characterModel.Stats.BuffStats.HP, _characterModel.HP);
             HPBar.SetBuffs(_characterModel.Buffs);
             HPBar.SetLevel(_characterModel.Level);
@@ -149,7 +149,7 @@ namespace Nekoyume.Game.Character
                 return;
 
             UpdateHpBar();
-            _hudContainer.UpdatePosition(gameObject, HUDOffset);
+            _hudContainer.UpdatePosition(Game.instance.RaidStage.Camera.Cam, gameObject, HUDOffset);
         }
 
         private void AddNextBuff(Model.Buff.Buff buff)
@@ -164,33 +164,8 @@ namespace Nekoyume.Game.Character
                 yield break;
             }
 
-            ActionPoint = () => ApplyDamage(skillInfos);
-            yield return StartCoroutine(CoAnimationAttack(skillInfos.Any(x => x.Critical)));
-        }
-
-        public virtual IEnumerator CoSpecialAttack(
-            IReadOnlyList<Skill.SkillInfo> skillInfos)
-        {
-            if (skillInfos is null || skillInfos.Count == 0)
-            {
-                yield break;
-            }
-
             yield return StartCoroutine(CoAnimationAttack(skillInfos.Any(x => x.Critical)));
             ApplyDamage(skillInfos);
-
-            foreach (var info in skillInfos)
-            {
-                if (info.Buff is null)
-                {
-                    continue;
-                }
-
-                var target = info.Target.Id == Id ? this : _target;
-                target.ProcessBuff(target, info);
-            }
-
-            NextSpecialSkillId = 0;
         }
 
         public IEnumerator CoBlowAttack(IReadOnlyList<Skill.SkillInfo> skillInfos)
@@ -505,7 +480,7 @@ namespace Nekoyume.Game.Character
 
             if (info.Critical)
             {
-                ActionCamera.instance.Shake();
+                Game.instance.RaidStage.Camera.Shake();
                 AudioController.PlayDamagedCritical();
                 CriticalText.Show(position, force, dmg, group);
                 if (info.SkillCategory == Nekoyume.Model.Skill.SkillCategory.NormalAttack)
@@ -516,7 +491,7 @@ namespace Nekoyume.Game.Character
                 AudioController.PlayDamaged(isConsiderElementalType
                     ? info.ElementalType
                     : ElementalType.Normal);
-                DamageText.Show(position, force, dmg, group);
+                DamageText.Show(Game.instance.RaidStage.Camera.Cam, position, force, dmg, group);
                 if (info.SkillCategory == Nekoyume.Model.Skill.SkillCategory.NormalAttack)
                     VFXController.instance.Create<BattleAttack01VFX>(pos);
             }
@@ -541,14 +516,14 @@ namespace Nekoyume.Game.Character
             return info.Target.Id == Id ? this : _target;
         }
 
-        private void ProcessAttack(RaidCharacter target, Skill.SkillInfo skill, bool isConsiderElementalType)
+        protected void ProcessAttack(RaidCharacter target, Skill.SkillInfo skill, bool isConsiderElementalType)
         {
             ShowSpeech("PLAYER_SKILL", (int)skill.ElementalType, (int)skill.SkillCategory);
-            StartCoroutine(target.CoProcessDamage(skill, isConsiderElementalType));
+            target.ProcessDamage(skill, isConsiderElementalType);
             ShowSpeech("PLAYER_ATTACK");
         }
 
-        public void ProcessBuff(RaidCharacter target, Skill.SkillInfo info)
+        protected void ProcessBuff(RaidCharacter target, Skill.SkillInfo info)
         {
             if (IsDead)
             {
@@ -562,7 +537,7 @@ namespace Nekoyume.Game.Character
             target.UpdateStatusUI();
         }
 
-        private void ProcessHeal(Skill.SkillInfo info)
+        protected void ProcessHeal(Skill.SkillInfo info)
         {
             if (IsDead)
             {
@@ -574,11 +549,11 @@ namespace Nekoyume.Game.Character
             var position = transform.TransformPoint(0f, 1.7f, 0f);
             var force = new Vector3(-0.1f, 0.5f);
             var txt = info.Effect.ToString();
-            DamageText.Show(position, force, txt, DamageText.TextGroupState.Heal);
+            DamageText.Show(Game.instance.RaidStage.Camera.Cam, position, force, txt, DamageText.TextGroupState.Heal);
             VFXController.instance.CreateAndChase<BattleHeal01VFX>(transform, HealOffset);
         }
 
-        public virtual IEnumerator CoProcessDamage(Skill.SkillInfo info, bool isConsiderElementalType)
+        public virtual void ProcessDamage(Skill.SkillInfo info, bool isConsiderElementalType)
         {
             var dmg = info.Effect;
 
@@ -588,8 +563,8 @@ namespace Nekoyume.Game.Character
             if (dmg <= 0)
             {
                 var index = _characterModel is Model.Player ? 1 : 0;
-                MissText.Show(position, force, index);
-                yield break;
+                MissText.Show(Game.instance.RaidStage.Camera.Cam, position, force, index);
+                return;
             }
 
             var value = _currentHp - dmg;
@@ -615,38 +590,6 @@ namespace Nekoyume.Game.Character
 
         protected virtual void OnDeadEnd()
         {
-            Animator.Idle();
-        }
-
-        public void ToggleRunning()
-        {
-            if (Animator.IsIdle())
-            {
-                Animator.Run();
-            }
-            else
-            {
-                Animator.Idle();
-            }
-        }
-
-        public void SetRunning()
-        {
-            if (!Application.isPlaying)
-            {
-                return;
-            }
-
-            Animator.Run();
-        }
-
-        public void SetIdle()
-        {
-            if (!Application.isPlaying)
-            {
-                return;
-            }
-
             Animator.Idle();
         }
     }

@@ -12,11 +12,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.Game
 {
+    using UniRx;
+
     public class RaidStage : MonoBehaviour, IStage
     {
         [SerializeField]
@@ -48,6 +49,7 @@ namespace Nekoyume.Game
         public SkillController SkillController { get; private set; }
         public BuffController BuffController { get; private set; }
         public bool IsAvatarStateUpdatedAfterBattle { get; set; }
+        public RaidCamera Camera => container.Camera;
         public int TurnNumber => _waveTurn;
 
         private void Awake()
@@ -118,21 +120,33 @@ namespace Nekoyume.Game
                     var caster = param.RaidCharacter;
 
                     // Wait for caster idle
-                    if (caster.CurrentAction != null)
+                    if (caster.IsActing)
                     {
-                        yield return caster.CurrentAction;
+                        yield return new WaitWhile(() => caster.IsActing);
                         yield return actionDelay;
                     }
 
-                    if (caster is Character.RaidBoss &&
-                        param.SkillInfos.Any(i => i.SkillCategory != Model.Skill.SkillCategory.NormalAttack))
+                    if (caster is Character.RaidBoss boss)
                     {
-                        yield return _player.CurrentAction;
-                        yield return new WaitUntil(() => _boss.Animator.IsIdle());
-                        yield return StartCoroutine(container.CoPlaySkillCutscene());
+                        yield return new WaitWhile(() => _player.IsActing);
+                        yield return new WaitWhile(() => _boss.IsActing);
+                        if (container.SkillCutsceneExists(param.SkillId))
+                        {
+                            container.OnAttackPoint = () =>
+                                boss.ProcessSkill(param.SkillId, param.SkillInfos);
+                            yield return StartCoroutine(container.CoPlaySkillCutscene(param.SkillId));
+                            _player.UpdateStatusUI();
+                            _boss.UpdateStatusUI();
+                        }
+                        else
+                        {
+                            caster.CurrentAction = StartCoroutine(CoAct(param));
+                        }
                     }
-
-                    caster.CurrentAction = StartCoroutine(CoAct(param));
+                    else
+                    {
+                        caster.CurrentAction = StartCoroutine(CoAct(param));
+                    }
                 }
 
                 yield return skillDelay;
@@ -150,7 +164,7 @@ namespace Nekoyume.Game
 
             CreateContainer(bossId);
             container.Show();
-            MainCanvas.instance.Canvas.worldCamera = container.Camera;
+            MainCanvas.instance.Canvas.worldCamera = container.Camera.Cam;
 
             _player = container.Player;
             _boss = container.Boss;
@@ -183,8 +197,8 @@ namespace Nekoyume.Game
         {
             IsAvatarStateUpdatedAfterBattle = false;
             _onBattleEnded.OnNext(this);
-            yield return _player.CurrentAction;
-            yield return _boss.CurrentAction;
+            yield return new WaitWhile(() => _player.IsActing);
+            yield return new WaitWhile(() => _boss.IsActing);
             yield return delayOnBattleFinished;
 
             if (!isPractice)
@@ -312,10 +326,10 @@ namespace Nekoyume.Game
             Character.RaidCharacter target = affectedCharacter.Id == _player.Id ? _player : _boss;
             target.Set(affectedCharacter);
 
-            yield return target.CurrentAction;
+            yield return new WaitWhile(() => target.IsActing);
             foreach (var info in skillInfos)
             {
-                yield return StartCoroutine(target.CoProcessDamage(info, true));
+                target.ProcessDamage(info, true);
             }
         }
 
@@ -382,21 +396,20 @@ namespace Nekoyume.Game
             Character.RaidCharacter raidCharacter =
                 character.Id == _player.Id ? _player : _boss;
             raidCharacter.Set(character);
-            yield return raidCharacter.TargetAction;
+            yield return new WaitWhile(() => _player.IsActing);
+            yield return new WaitWhile(() => _boss.IsActing);
 
             if (raidCharacter is Character.RaidPlayer player)
             {
-                yield return StartCoroutine(player.CoDie());
+                yield return StartCoroutine(container.CoPlayPlayerDefeatCutscene());
             }
             else if (raidCharacter is Character.RaidBoss boss)
             {
                 Widget.Find<WorldBossBattle>().OnWaveCompleted();
-                yield return new WaitUntil(() => boss.Animator.IsIdle());
 
                 if (_wave < 4)
                 {
                     yield return StartCoroutine(container.CoPlayRunAwayCutscene(_wave));
-                    yield return StartCoroutine(container.CoPlayAppearCutscene());
                     _boss.Animator.Idle();
                 }
                 else

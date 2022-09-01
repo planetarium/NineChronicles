@@ -8,35 +8,61 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: 40100006_Material
-  m_Shader: {fileID: 4800000, guid: 1e8a610c9e01c3648bac42585e5fc676, type: 3}
-  m_ValidKeywords: []
+  m_Shader: {fileID: 4800000, guid: 64005298b9a80bb4899eabd5140dc4a8, type: 3}
+  m_ValidKeywords:
+  - _ALPHAPREMULTIPLY_ON
   m_InvalidKeywords:
+  - _OLD_HARD_RAMP
   - _USE8NEIGHBOURHOOD_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
+  m_CustomRenderQueue: 3000
+  stringTagMap:
+    AlphaDepth: true
+    IGNOREPROJECTOR: true
+    RenderType: Transparent
   disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _BlendTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 2800000, guid: ee8386b0eb5529846aa07703c9e89b7d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - PixelSnap: 0
+    - _BlendAmount: 0
+    - _Brightness: 1
+    - _Cull: 0
+    - _CustomRenderQueue: 0
     - _Cutoff: 0.1
+    - _DoubleSidedLighting: 0
+    - _DstBlend: 10
+    - _Hue: 0
+    - _LightAffectsAdditive: 0
     - _OutlineMipLevel: 0
     - _OutlineReferenceTexWidth: 1024
     - _OutlineSmoothness: 1
     - _OutlineWidth: 3
+    - _ReceiveShadows: 0
+    - _RenderQueue: 0
+    - _Saturation: 1
+    - _ShadowAlphaCutoff: 0.1
+    - _SrcBlend: 1
     - _StencilComp: 8
     - _StencilRef: 1
     - _StraightAlphaInput: 0
     - _ThresholdEnd: 0.25
     - _Use8Neighbourhood: 1
+    - _ZWrite: 0
     m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _OutlineColor: {r: 1, g: 1, b: 0, a: 1}
+    - _OverlayColor: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []

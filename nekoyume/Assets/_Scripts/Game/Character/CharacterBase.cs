@@ -160,12 +160,12 @@ namespace Nekoyume.Game.Character
         {
             if (HudContainer)
             {
-                HudContainer.UpdatePosition(gameObject, HUDOffset);
+                HudContainer.UpdatePosition(ActionCamera.instance.Cam, gameObject, HUDOffset);
             }
 
             if (SpeechBubble)
             {
-                SpeechBubble.UpdatePosition(gameObject, HUDOffset);
+                SpeechBubble.UpdatePosition(ActionCamera.instance.Cam, gameObject, HUDOffset);
             }
         }
 
@@ -203,7 +203,7 @@ namespace Nekoyume.Game.Character
                 HudContainer.UpdateAlpha(1);
             }
 
-            HudContainer.UpdatePosition(gameObject, HUDOffset);
+            HudContainer.UpdatePosition(ActionCamera.instance.Cam, gameObject, HUDOffset);
             HPBar.Set(CurrentHP, CharacterModel.Stats.BuffStats.HP, HP);
             HPBar.SetBuffs(CharacterModel.Buffs);
             HPBar.SetLevel(Level);
@@ -265,7 +265,7 @@ namespace Nekoyume.Game.Character
                     index = 1;
                 }
 
-                MissText.Show(position, force, index);
+                MissText.Show(ActionCamera.instance.Cam, position, force, index);
                 yield break;
             }
 
@@ -315,7 +315,7 @@ namespace Nekoyume.Game.Character
                 AudioController.PlayDamaged(isConsiderElementalType
                     ? info.ElementalType
                     : ElementalType.Normal);
-                DamageText.Show(position, force, dmg, group);
+                DamageText.Show(ActionCamera.instance.Cam, position, force, dmg, group);
                 if (info.SkillCategory == SkillCategory.NormalAttack)
                     VFXController.instance.Create<BattleAttack01VFX>(pos);
             }
@@ -530,7 +530,7 @@ namespace Nekoyume.Game.Character
 
         private void PopUpHeal(Vector3 position, Vector3 force, string dmg, bool critical)
         {
-            DamageText.Show(position, force, dmg, DamageText.TextGroupState.Heal);
+            DamageText.Show(ActionCamera.instance.Cam, position, force, dmg, DamageText.TextGroupState.Heal);
             VFXController.instance.CreateAndChase<BattleHeal01VFX>(transform, HealOffset);
         }
 
