@@ -38,7 +38,6 @@ namespace Nekoyume.UI
         public class Model
         {
             private readonly List<CountableItem> _rewards = new();
-            public int[] ClearedWaves = new int[4];
 
             public StageType StageType;
             public NextState NextState;
@@ -53,6 +52,14 @@ namespace Nekoyume.UI
             public bool ActionPointNotEnough;
             public bool IsClear;
             public bool IsEndStage;
+
+            /// <summary>
+            /// [0]: The number of times a `BattleLog.clearedWaveNumber` is 0.
+            /// [1]: The number of times a `BattleLog.clearedWaveNumber` is 1.
+            /// [2]: The number of times a `BattleLog.clearedWaveNumber` is 2.
+            /// [3]: The number of times a `BattleLog.clearedWaveNumber` is 3.
+            /// </summary>
+            public int[] ClearedCountForEachWaves = new int[4];
 
             public IReadOnlyList<CountableItem> Rewards => _rewards;
 
@@ -285,7 +292,7 @@ namespace Nekoyume.UI
         {
             canvasGroup.alpha = 1f;
             canvasGroup.blocksRaycasts = true;
-            if (isBoosted && model.WorldID < GameConfig.MimisbrunnrWorldId)
+            if (isBoosted && model.StageType == StageType.HackAndSlash)
             {
                 model = new Model
                 {
@@ -301,7 +308,7 @@ namespace Nekoyume.UI
                     ActionPointNotEnough = model.ActionPointNotEnough,
                     IsClear = model.IsClear,
                     IsEndStage = model.IsEndStage,
-                    ClearedWaves = ModelForMultiHackAndSlash.ClearedWaves,
+                    ClearedCountForEachWaves = ModelForMultiHackAndSlash.ClearedCountForEachWaves,
                 };
                 foreach (var item in ModelForMultiHackAndSlash.Rewards)
                 {
@@ -455,21 +462,24 @@ namespace Nekoyume.UI
         private IEnumerator CoUpdateRewards()
         {
             rewardsArea.root.SetActive(true);
-            var isNotClearedInMulti =
-                SharedModel.ClearedWaves[3] <= 0 && SharedModel.ClearedWaves.Sum() > 1;
+            var isNotClearedInMulti = SharedModel.ClearedCountForEachWaves[3] <= 0 &&
+                                      SharedModel.ClearedCountForEachWaves.Sum() > 1;
             for (var i = 0; i < rewardsArea.rewards.Length; i++)
             {
-                var view = i == 2 && isNotClearedInMulti
-                    ? rewardsArea.rewardForMulti
-                    : rewardsArea.rewards[i];
+                var view =
+                    i == 2 &&
+                    isNotClearedInMulti
+                        ? rewardsArea.rewardForMulti
+                        : rewardsArea.rewards[i];
 
                 view.StartShowAnimation();
 
                 var sum = 0;
-                for (int j = i; j < 3; j++)
+                for (var j = i; j < 3; j++)
                 {
-                    sum += SharedModel.ClearedWaves[j + 1];
+                    sum += SharedModel.ClearedCountForEachWaves[j + 1];
                 }
+
                 var cleared = sum > 0;
                 switch (i)
                 {
@@ -487,12 +497,13 @@ namespace Nekoyume.UI
                             var starCount = States.Instance.CrystalRandomSkillState?.StarCount ?? 0;
                             var maxStarCount = row?.MaxStar ?? 0;
 
-                            view.Set(SharedModel.ClearedWaves, starCount, maxStarCount);
+                            view.Set(SharedModel.ClearedCountForEachWaves, starCount, maxStarCount);
                         }
                         else
                         {
                             view.Set(cleared);
                         }
+
                         break;
                 }
 
@@ -503,6 +514,7 @@ namespace Nekoyume.UI
                 {
                     view.EnableStar(cleared);
                 }
+
                 yield return null;
                 AudioController.instance.PlaySfx(AudioController.SfxCode.RewardItem);
             }
@@ -514,6 +526,7 @@ namespace Nekoyume.UI
                 reward.StopShowAnimation();
                 reward.StartScaleTween();
             }
+
             rewardsArea.rewardForMulti.StopShowAnimation();
             rewardsArea.rewardForMulti.StartScaleTween();
         }
