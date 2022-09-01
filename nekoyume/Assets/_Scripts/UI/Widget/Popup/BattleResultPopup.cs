@@ -54,7 +54,7 @@ namespace Nekoyume.UI
             public bool IsEndStage;
 
             /// <summary>
-            /// [0]: The number of times no wave was cleared.
+            /// [0]: The number of times a `BattleLog.clearedWaveNumber` is 0.
             /// [1]: The number of times a `BattleLog.clearedWaveNumber` is 1.
             /// [2]: The number of times a `BattleLog.clearedWaveNumber` is 2.
             /// [3]: The number of times a `BattleLog.clearedWaveNumber` is 3.
