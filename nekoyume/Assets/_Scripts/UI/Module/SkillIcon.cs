@@ -15,6 +15,7 @@ namespace Nekoyume.UI.Module
         public void Set(Sprite icon)
         {
             skillIcon.sprite = icon;
+            skillIcon.SetNativeSize();
         }
     }
 }
