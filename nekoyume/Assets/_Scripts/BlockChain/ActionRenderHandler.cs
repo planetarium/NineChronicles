@@ -1844,6 +1844,7 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
+            UpdateCrystalBalance(eval);
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd =
                 Game.Game.instance.RaidStage.OnBattleEnded
