@@ -12,11 +12,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.Game
 {
+    using UniRx;
+
     public class RaidStage : MonoBehaviour, IStage
     {
         [SerializeField]
@@ -125,15 +126,27 @@ namespace Nekoyume.Game
                         yield return actionDelay;
                     }
 
-                    if (caster is Character.RaidBoss &&
-                        param.SkillInfos.Any(i => i.SkillCategory != Model.Skill.SkillCategory.NormalAttack))
+                    if (caster is Character.RaidBoss boss)
                     {
                         yield return _player.CurrentAction;
                         yield return new WaitUntil(() => _boss.Animator.IsIdle());
-                        yield return StartCoroutine(container.CoPlaySkillCutscene());
+                        if (container.SkillCutsceneExists(param.SkillId))
+                        {
+                            container.OnAttackPoint = () =>
+                                boss.ProcessSkill(param.SkillId, param.SkillInfos);
+                            yield return StartCoroutine(container.CoPlaySkillCutscene(param.SkillId));
+                            _player.UpdateStatusUI();
+                            _boss.UpdateStatusUI();
+                        }
+                        else
+                        {
+                            caster.CurrentAction = StartCoroutine(CoAct(param));
+                        }
                     }
-
-                    caster.CurrentAction = StartCoroutine(CoAct(param));
+                    else
+                    {
+                        caster.CurrentAction = StartCoroutine(CoAct(param));
+                    }
                 }
 
                 yield return skillDelay;
@@ -316,7 +329,7 @@ namespace Nekoyume.Game
             yield return target.CurrentAction;
             foreach (var info in skillInfos)
             {
-                yield return StartCoroutine(target.CoProcessDamage(info, true));
+                target.ProcessDamage(info, true);
             }
         }
 

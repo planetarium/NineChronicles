@@ -1,27 +1,18 @@
 using Nekoyume.Model.BattleStatus;
+using Nekoyume.Model.Skill;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Timeline;
 
 namespace Nekoyume.Game.Character
 {
     public class RaidBoss : RaidCharacter
     {
-        [Serializable]
-        public class SpecialAttackAnimationInfo
-        {
-            public int SkillId;
-            public CharacterAnimation.Type AnimationType;
-            public float AnimationTime;
-        }
-
         [SerializeField]
         private SpineController controller;
-
-        [SerializeField]
-        private List<SpecialAttackAnimationInfo> skillAnimationInfos;
 
         protected override void Awake()
         {
@@ -48,7 +39,9 @@ namespace Nekoyume.Game.Character
             _worldBossBattle.UpdateStatus(_currentHp, _characterModel.HP, _characterModel.Buffs);
         }
 
-        public override IEnumerator CoProcessDamage(Skill.SkillInfo info, bool isConsiderElementalType)
+        public override void ProcessDamage(
+            Model.BattleStatus.Skill.SkillInfo info,
+            bool isConsiderElementalType)
         {
             var dmg = info.Effect;
             if (_currentHp - dmg < 0)
@@ -57,39 +50,47 @@ namespace Nekoyume.Game.Character
                 dmg -= exceeded;
             }
             Game.instance.RaidStage.AddScore(dmg);
-            yield return base.CoProcessDamage(info, isConsiderElementalType);
+            base.ProcessDamage(info, isConsiderElementalType);
         }
 
-        public override IEnumerator CoSpecialAttack(IReadOnlyList<Skill.SkillInfo> skillInfos)
+        public void ProcessSkill(
+            int skillId,
+            IEnumerable<Model.BattleStatus.Skill.SkillInfo> infos)
         {
-            if (skillInfos is null || skillInfos.Count == 0)
+            if (!Game.instance.TableSheets.SkillSheet.TryGetValue(skillId, out var skillRow))
             {
-                yield break;
+                return;
             }
 
-            ActionPoint = () => ApplyDamage(skillInfos);
-            var animationInfo = skillAnimationInfos.FirstOrDefault(x => x.SkillId == NextSpecialSkillId);
-            NextSpecialSkillId = 0;
-
-            if (animationInfo is null)
+            switch (skillRow.SkillCategory)
             {
-                yield return StartCoroutine(CoAnimationAttack(skillInfos.Any(x => x.Critical)));
-            }
-            else
-            {
-                Animator.Play(animationInfo.AnimationType);
-                yield return new WaitForSeconds(animationInfo.AnimationTime);
-            }
-
-            foreach (var info in skillInfos)
-            {
-                if (info.Buff is null)
-                {
-                    continue;
-                }
-
-                var target = info.Target.Id == Id ? this : _target;
-                target.ProcessBuff(target, info);
+                case SkillCategory.Buff:
+                case SkillCategory.Debuff:
+                case SkillCategory.AttackBuff:
+                case SkillCategory.HPBuff:
+                case SkillCategory.DefenseBuff:
+                case SkillCategory.CriticalBuff:
+                case SkillCategory.SpeedBuff:
+                case SkillCategory.HitBuff:
+                    foreach (var info in infos)
+                    {
+                        var buffTarget = info.Target.Id == Id ? this : _target;
+                        ProcessBuff(buffTarget, info);
+                    }
+                    break;
+                case SkillCategory.Heal:
+                    foreach (var info in infos)
+                    {
+                        ProcessHeal(info);
+                    }
+                    break;
+                default:
+                    foreach (var info in infos)
+                    {
+                        var attackTarget = info.Target.Id == Id ? this : _target;
+                        ProcessAttack(attackTarget, info, true);
+                    }
+                    break;
             }
         }
     }

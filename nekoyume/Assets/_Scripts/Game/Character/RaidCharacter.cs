@@ -33,7 +33,6 @@ namespace Nekoyume.Game.Character
         public bool IsDead => _currentHp <= 0;
         public Model.CharacterBase Model => _characterModel;
         public Coroutine CurrentAction { get; set; }
-        public int NextSpecialSkillId { get; set; }
         public Coroutine TargetAction => _target.CurrentAction;
 
         private bool _isAppQuitting = false;
@@ -166,31 +165,6 @@ namespace Nekoyume.Game.Character
 
             yield return StartCoroutine(CoAnimationAttack(skillInfos.Any(x => x.Critical)));
             ApplyDamage(skillInfos);
-        }
-
-        public virtual IEnumerator CoSpecialAttack(
-            IReadOnlyList<Skill.SkillInfo> skillInfos)
-        {
-            if (skillInfos is null || skillInfos.Count == 0)
-            {
-                yield break;
-            }
-
-            yield return StartCoroutine(CoAnimationAttack(skillInfos.Any(x => x.Critical)));
-            ApplyDamage(skillInfos);
-
-            foreach (var info in skillInfos)
-            {
-                if (info.Buff is null)
-                {
-                    continue;
-                }
-
-                var target = info.Target.Id == Id ? this : _target;
-                target.ProcessBuff(target, info);
-            }
-
-            NextSpecialSkillId = 0;
         }
 
         public IEnumerator CoBlowAttack(IReadOnlyList<Skill.SkillInfo> skillInfos)
@@ -541,14 +515,14 @@ namespace Nekoyume.Game.Character
             return info.Target.Id == Id ? this : _target;
         }
 
-        private void ProcessAttack(RaidCharacter target, Skill.SkillInfo skill, bool isConsiderElementalType)
+        protected void ProcessAttack(RaidCharacter target, Skill.SkillInfo skill, bool isConsiderElementalType)
         {
             ShowSpeech("PLAYER_SKILL", (int)skill.ElementalType, (int)skill.SkillCategory);
-            StartCoroutine(target.CoProcessDamage(skill, isConsiderElementalType));
+            target.ProcessDamage(skill, isConsiderElementalType);
             ShowSpeech("PLAYER_ATTACK");
         }
 
-        public void ProcessBuff(RaidCharacter target, Skill.SkillInfo info)
+        protected void ProcessBuff(RaidCharacter target, Skill.SkillInfo info)
         {
             if (IsDead)
             {
@@ -562,7 +536,7 @@ namespace Nekoyume.Game.Character
             target.UpdateStatusUI();
         }
 
-        private void ProcessHeal(Skill.SkillInfo info)
+        protected void ProcessHeal(Skill.SkillInfo info)
         {
             if (IsDead)
             {
@@ -578,7 +552,7 @@ namespace Nekoyume.Game.Character
             VFXController.instance.CreateAndChase<BattleHeal01VFX>(transform, HealOffset);
         }
 
-        public virtual IEnumerator CoProcessDamage(Skill.SkillInfo info, bool isConsiderElementalType)
+        public virtual void ProcessDamage(Skill.SkillInfo info, bool isConsiderElementalType)
         {
             var dmg = info.Effect;
 
@@ -589,7 +563,7 @@ namespace Nekoyume.Game.Character
             {
                 var index = _characterModel is Model.Player ? 1 : 0;
                 MissText.Show(Game.instance.RaidStage.Camera.Cam, position, force, index);
-                yield break;
+                return;
             }
 
             var value = _currentHp - dmg;

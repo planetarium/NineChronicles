@@ -1,7 +1,9 @@
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Spine.Unity;
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Playables;
@@ -11,6 +13,16 @@ namespace Nekoyume
 {
     public class RaidTimelineContainer : MonoBehaviour
     {
+        [Serializable]
+        public class SkillCutsceneInfo
+        {
+            public int SkillId;
+            public TimelineAsset Playable;
+        }
+
+        [SerializeField]
+        private List<SkillCutsceneInfo> skillCutsceneInfos;
+
         [SerializeField]
         private PlayableDirector director = null;
 
@@ -42,6 +54,7 @@ namespace Nekoyume
         public RaidBoss Boss => boss;
         public RaidCamera Camera => camera;
         public bool IsCutscenePlaying { get; private set; }
+        public System.Action OnAttackPoint { private get; set; } 
 
         public void Show()
         {
@@ -62,6 +75,18 @@ namespace Nekoyume
         public IEnumerator CoPlayFallDownCutscene() => CoPlayCutscene(fallDownCutscene);
 
         public IEnumerator CoPlayPlayerDefeatCutscene() => CoPlayCutscene(playerDefeatCutscene);
+
+        public bool SkillCutsceneExists(int skillId)
+        {
+            var info = skillCutsceneInfos.FirstOrDefault(x => x.SkillId == skillId);
+            return info != null && info.Playable != null;
+        }
+
+        public IEnumerator CoPlaySkillCutscene(int skillId)
+        {
+            var info = skillCutsceneInfos.FirstOrDefault(x => x.SkillId == skillId);
+            yield return CoPlayCutscene(info.Playable);
+        }
 
         private IEnumerator CoPlayCutscene(TimelineAsset asset)
         {
@@ -91,6 +116,12 @@ namespace Nekoyume
                 -transform.localScale.x,
                 transform.localScale.y,
                 transform.localScale.z);
+        }
+
+        public void AttackPoint()
+        {
+            OnAttackPoint?.Invoke();
+            OnAttackPoint = null;
         }
     }
 }
