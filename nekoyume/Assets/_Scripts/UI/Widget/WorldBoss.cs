@@ -171,6 +171,11 @@ namespace Nekoyume.UI
             if (_status != curStatus)
             {
                 _status = curStatus;
+                if (Find<WorldBossDetail>().isActiveAndEnabled)
+                {
+                    Find<WorldBossDetail>().Close();
+                }
+
                 switch (_status)
                 {
                     case WorldBossStatus.OffSeason:

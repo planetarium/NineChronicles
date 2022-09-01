@@ -18,6 +18,9 @@ namespace Nekoyume.UI.Module.WorldBoss
         private Image bossImage;
 
         [SerializeField]
+        private TextMeshProUGUI title;
+
+        [SerializeField]
         private TextMeshProUGUI bossName;
 
         [SerializeField]
@@ -50,6 +53,7 @@ namespace Nekoyume.UI.Module.WorldBoss
         [SerializeField]
         private Transform skillContainer;
 
+        private WorldBossStatus _status;
         private int _wave;
         private int _bossId;
         private List<WorldBossCharacterSheet.WaveStatData> _cachedData = new();
@@ -68,6 +72,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
             var sheet = Game.Game.instance.TableSheets.WorldBossCharacterSheet;
             var status = WorldBossFrontHelper.GetStatus(currentBlockIndex);
+            WorldBossListSheet.Row row;
             switch (status)
             {
                 case WorldBossStatus.OffSeason:
@@ -76,25 +81,29 @@ namespace Nekoyume.UI.Module.WorldBoss
                         return;
                     }
 
-                    Set(sheet, nextRow);
+                    row = nextRow;
                     break;
                 case WorldBossStatus.Season:
-                    if (!WorldBossFrontHelper.TryGetCurrentRow(currentBlockIndex, out var row))
+                    if (!WorldBossFrontHelper.TryGetCurrentRow(currentBlockIndex, out var curRow))
                     {
                         return;
                     }
 
-                    Set(sheet, row);
+                    row = curRow;
                     break;
                 case WorldBossStatus.None:
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
+            Set(sheet, row, status);
             UpdateView();
         }
 
-        private void Set(WorldBossCharacterSheet sheet, WorldBossListSheet.Row row)
+        private void Set(
+            WorldBossCharacterSheet sheet,
+            WorldBossListSheet.Row row,
+            WorldBossStatus status)
         {
             if (!sheet.TryGetValue(row.BossId, out var bossRow))
             {
@@ -104,6 +113,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             _cachedData = bossRow.WaveStats;
             _wave = 0;
             _bossId = row.BossId;
+            _status = status;
         }
 
         private void UpdatePage(int value)
@@ -140,6 +150,9 @@ namespace Nekoyume.UI.Module.WorldBoss
             bossImage.sprite = bossData.illustration;
             bossName.text = bossData.name;
 
+            title.text = _status == WorldBossStatus.Season
+                ? L10nManager.Localize("UI_WORLD_BOSS")
+                : $"{L10nManager.Localize("UI_NEXT")} {L10nManager.Localize("UI_WORLD_BOSS")}";
             var waveNumber = _wave + 1;
             wave.text = L10nManager.Localize("UI_WAVE_PHASE", waveNumber);
             content.text = L10nManager.Localize($"UI_BOSS_{_bossId}_INFO_WAVE{waveNumber}");
@@ -153,7 +166,7 @@ namespace Nekoyume.UI.Module.WorldBoss
 
             var icons = new List<Sprite> { SkillIconHelper.GetSkillIcon(data.EnrageSkillId) };
             icons.AddRange(patternRow.Patterns[_wave].SkillIds.Distinct()
-                 .Select(SkillIconHelper.GetSkillIcon));
+                .Select(SkillIconHelper.GetSkillIcon));
 
             foreach (var iconObject in _cachedIconObjects)
             {

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.BlockChain;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using TMPro;
@@ -39,6 +40,8 @@ namespace Nekoyume.UI.Module.WorldBoss
                 .Subscribe(_ =>
                 {
                 }).AddTo(gameObject);
+
+            claimButton.Interactable = false;
         }
 
         public override void Reset()

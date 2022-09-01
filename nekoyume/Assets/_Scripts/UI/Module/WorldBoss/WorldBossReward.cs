@@ -6,9 +6,12 @@ using System.Threading.Tasks;
 using Libplanet;
 using Nekoyume.Extensions;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
+using TMPro;
 using UnityEngine;
 
 
@@ -39,9 +42,14 @@ namespace Nekoyume.UI.Module.WorldBoss
         [SerializeField]
         private List<GameObject> notifications;
 
+        [SerializeField]
+        private GameObject emptyContainer;
+
+        [SerializeField]
+        private TextMeshProUGUI title;
+
         private readonly ReactiveProperty<ToggleType> _selectedItemSubType = new();
         private Address _cachedAvatarAddress;
-
         protected void Awake()
         {
             foreach (var categoryToggle in categoryToggles)
@@ -56,6 +64,11 @@ namespace Nekoyume.UI.Module.WorldBoss
 
             _selectedItemSubType.Subscribe(toggleType =>
             {
+                if (emptyContainer.activeSelf)
+                {
+                    return;
+                }
+
                 foreach (var toggle in categoryToggles)
                 {
                     toggle.Item.gameObject.SetActive(toggle.Type.Equals(toggleType));
@@ -107,6 +120,9 @@ namespace Nekoyume.UI.Module.WorldBoss
             }
 
             var (raider, raidId, record, userCount) = await GetDataAsync();
+            CheckRaidId(raidId);
+            UpdateTitle();
+
             foreach (var toggle in categoryToggles)
             {
                 switch (toggle.Item)
@@ -123,6 +139,31 @@ namespace Nekoyume.UI.Module.WorldBoss
                         break;
                 }
             }
+        }
+
+        private void CheckRaidId(int raidId)
+        {
+            if (WorldBossFrontHelper.TryGetRaid(raidId, out _))
+            {
+                emptyContainer.SetActive(false);
+            }
+            else
+            {
+                emptyContainer.SetActive(true);
+                foreach (var toggle in categoryToggles)
+                {
+                    toggle.Item.gameObject.SetActive(false);
+                }
+            }
+        }
+
+        private void UpdateTitle()
+        {
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            var status = WorldBossFrontHelper.GetStatus(blockIndex);
+            title.text = status == WorldBossStatus.Season
+                ? L10nManager.Localize("UI_REWARDS")
+                : $"{L10nManager.Localize("UI_PREVIOUS")} {L10nManager.Localize("UI_REWARDS")}";
         }
 
         private async Task<(

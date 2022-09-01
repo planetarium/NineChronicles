@@ -682,6 +682,7 @@ namespace Nekoyume.UI
             var (equipments, costumes, foods) = SaveCurrentEquipment();
             ActionManager.Instance.Raid(costumes, equipments, foods, payNcg);
             Find<LoadingScreen>().Show();
+            Find<WorldBoss>().Close();
             Close();
         }
 
