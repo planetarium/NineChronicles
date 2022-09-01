@@ -10,8 +10,6 @@ using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;
-using Nekoyume.State;
-using Nekoyume.UI.Module.WorldBoss;
 using Nekoyume.UI.Tween;
 using TMPro;
 using UnityEngine;
@@ -35,6 +33,9 @@ namespace Nekoyume.UI
         private GraphicAlphaTweener graphicAlphaTweener;
 
         [SerializeField]
+        private TextMeshProUGUI titleText;
+
+        [SerializeField]
         private TextMeshProUGUI continueText;
 
         [SerializeField]
@@ -48,6 +49,8 @@ namespace Nekoyume.UI
         private Coroutine _coCloseCoroutine;
         private int _cachedBossId;
         private int timer;
+
+        private System.Action _closeCallback;
 
         protected override void Awake()
         {
@@ -70,11 +73,23 @@ namespace Nekoyume.UI
         {
             base.Show();
             var rewards = GetRewards(random);
+            titleText.text = L10nManager.Localize("UI_BOSS_BATTLE_GRADE_REWARDS");
             UpdateRewardItems(rewards);
             Find<WorldBossDetail>().GotRewards();
 
             graphicAlphaTweener.Play();
             PlayEffects();
+            _coCloseCoroutine = StartCoroutine(CoClose());
+        }
+
+        public void Show(IReadOnlyList<FungibleAssetValue> killRewards, System.Action closeCallback)
+        {
+            base.Show();
+            titleText.text = L10nManager.Localize("UI_BOSS_KILL_REWARDS");
+            UpdateRewardItems(killRewards);
+            graphicAlphaTweener.Play();
+            PlayEffects();
+            _closeCallback = closeCallback;
             _coCloseCoroutine = StartCoroutine(CoClose());
         }
 
@@ -86,6 +101,7 @@ namespace Nekoyume.UI
                 StopCoroutine(_coCloseCoroutine);
             }
 
+            _closeCallback?.Invoke();
             base.Close(ignoreCloseAnimation);
         }
 

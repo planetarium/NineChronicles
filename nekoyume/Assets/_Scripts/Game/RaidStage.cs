@@ -71,7 +71,8 @@ namespace Nekoyume.Game
             int damageDealt,
             bool isNewRecord,
             bool isPractice,
-            List<FungibleAssetValue> rewards)
+            List<FungibleAssetValue> battleRewards,
+            List<FungibleAssetValue> killRewards)
         {
             if (!_isPlaying)
             {
@@ -87,7 +88,7 @@ namespace Nekoyume.Game
                 if (log?.Count > 0)
                 {
                     _battleCoroutine = StartCoroutine(
-                        CoPlay(bossId, log, player, damageDealt, isNewRecord, isPractice, rewards));
+                        CoPlay(bossId, log, player, damageDealt, isNewRecord, isPractice, battleRewards, killRewards));
                 }
             }
             else
@@ -103,7 +104,8 @@ namespace Nekoyume.Game
             int damageDealt,
             bool isNewRecord,
             bool isPractice,
-            List<FungibleAssetValue> rewards)
+            List<FungibleAssetValue> rewards,
+            List<FungibleAssetValue> killRewards)
         {
             yield return StartCoroutine(CoEnter(bossId, player));
 
@@ -152,7 +154,7 @@ namespace Nekoyume.Game
                 yield return skillDelay;
             }
 
-            yield return StartCoroutine(CoFinish(damageDealt, isNewRecord, isPractice, rewards));
+            yield return StartCoroutine(CoFinish(damageDealt, isNewRecord, isPractice, rewards, killRewards));
         }
 
         private IEnumerator CoEnter(int bossId, ArenaPlayerDigest playerDigest)
@@ -193,7 +195,12 @@ namespace Nekoyume.Game
             _boss.UpdateStatusUI();
         }
 
-        private IEnumerator CoFinish(int damageDealt, bool isNewRecord, bool isPractice, List<FungibleAssetValue> rewards)
+        private IEnumerator CoFinish(
+            int damageDealt,
+            bool isNewRecord,
+            bool isPractice,
+            List<FungibleAssetValue> rewards,
+            List<FungibleAssetValue> killRewards)
         {
             IsAvatarStateUpdatedAfterBattle = false;
             _onBattleEnded.OnNext(this);
@@ -219,7 +226,7 @@ namespace Nekoyume.Game
             MainCanvas.instance.Canvas.worldCamera = ActionCamera.instance.Cam;
 
             container.Close();
-            Widget.Find<WorldBossResultPopup>().Show(_currentBossId, damageDealt, isNewRecord, rewards);
+            Widget.Find<WorldBossResultPopup>().Show(_currentBossId, damageDealt, isNewRecord, rewards, killRewards);
 
             if (container)
             {
