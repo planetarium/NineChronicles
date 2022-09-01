@@ -1061,7 +1061,8 @@ namespace Nekoyume.Action
 #pragma warning disable LAA1002
             var filtered = rewardRecord
                 .Where(kv => !kv.Value)
-                .Select(kv => kv.Key);
+                .Select(kv => kv.Key)
+                .ToList();
 #pragma warning restore LAA1002
             foreach (var level in filtered)
             {
