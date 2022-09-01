@@ -23,6 +23,7 @@ using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
+using Libplanet.Assets;
 using mixpanel;
 using Nekoyume.Arena;
 using Nekoyume.Game;
@@ -1843,8 +1844,6 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            Debug.Log("[RENDER_RAID]");
-
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd =
                 Game.Game.instance.RaidStage.OnBattleEnded
@@ -1876,19 +1875,10 @@ namespace Nekoyume.BlockChain
             var items = Widget.Find<RaidPreparation>().LoadEquipment();
             clonedAvatarState.EquipItems(items);
             var random = new LocalRandom(eval.RandomSeed);
-            await WorldBossStates.Set(avatarAddress);
-            var raiderState = WorldBossStates.GetRaiderState(avatarAddress);
-            if (raiderState != null)
-            {
-                var rewards = RuneHelper.CalculateReward(
-                        raiderState.LatestRewardRank,
-                        row.BossId,
-                        Game.Game.instance.TableSheets.RuneWeightSheet,
-                        Game.Game.instance.TableSheets.WorldBossKillRewardSheet,
-                        Game.Game.instance.TableSheets.RuneSheet,
-                        random
-                    );
-            }
+
+            var preRaiderState = WorldBossStates.GetRaiderState(avatarAddress);
+            var preKillReward = WorldBossStates.GetKillReward(avatarAddress);
+            var latestBossLevel = preRaiderState?.LatestBossLevel ?? 0;
 
             var simulator = new RaidSimulator(
                 row.BossId,
@@ -1904,6 +1894,38 @@ namespace Nekoyume.BlockChain
             var playerDigest = new ArenaPlayerDigest(clonedAvatarState);
             Widget.Find<LoadingScreen>().Close();
 
+            await WorldBossStates.Set(avatarAddress);
+            var raiderState = WorldBossStates.GetRaiderState(avatarAddress);
+            var killRewards = new List<FungibleAssetValue>();
+            if (latestBossLevel < raiderState.LatestBossLevel)
+            {
+                if (preKillReward != null && preKillReward.IsClaimable(raiderState.LatestBossLevel))
+                {
+                    var filtered = preKillReward
+                        .Where(kv => !kv.Value)
+                        .Select(kv => kv.Key)
+                        .ToList();
+
+                    var bossRow = Game.Game.instance.TableSheets.WorldBossCharacterSheet[row.BossId];
+                    var rank = WorldBossHelper.CalculateRank(bossRow, preRaiderState.HighScore);
+
+
+                    foreach (var level in filtered)
+                    {
+                        var rewards = RuneHelper.CalculateReward(
+                            rank,
+                            row.BossId,
+                            Game.Game.instance.TableSheets.RuneWeightSheet,
+                            Game.Game.instance.TableSheets.WorldBossKillRewardSheet,
+                            Game.Game.instance.TableSheets.RuneSheet,
+                            random
+                        );
+
+                        killRewards.AddRange(rewards);
+                    }
+                }
+            }
+
             var isNewRecord = raiderState is null ||
                               raiderState.HighScore < simulator.DamageDealt;
             worldBoss.Close();
@@ -1915,7 +1937,8 @@ namespace Nekoyume.BlockChain
                 simulator.DamageDealt,
                 isNewRecord,
                 false,
-                simulator.AssetReward);
+                simulator.AssetReward,
+                killRewards);
         }
 
         private void ResponseClaimRaidReward(ActionBase.ActionEvaluation<ClaimRaidReward> eval)

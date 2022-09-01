@@ -167,6 +167,7 @@ namespace Nekoyume.UI
                 _status = WorldBossStatus.None;
             }
 
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
             var curStatus = WorldBossFrontHelper.GetStatus(currentBlockIndex);
             if (_status != curStatus)
             {
@@ -201,8 +202,9 @@ namespace Nekoyume.UI
                         }
 
                         season.PrepareRefresh();
-                        var (worldBoss, raider, myRecord, blockIndex, userCount) = await GetStatesAsync(row);
-                        WorldBossStates.UpdateRaiderState(States.Instance.CurrentAvatarState.address, raider);
+                        var (worldBoss, raider, killReward, myRecord, blockIndex, userCount)
+                            = await GetStatesAsync(row);
+                        WorldBossStates.UpdateState(avatarAddress, raider, killReward);
                         UpdateSeason(row, worldBoss, myRecord, blockIndex, userCount);
 
                         break;
@@ -212,7 +214,6 @@ namespace Nekoyume.UI
                 }
             }
 
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
             var raiderState = WorldBossStates.GetRaiderState(avatarAddress);
             _headerMenu.WorldBossTickets.UpdateTicket(raiderState, currentBlockIndex);
             UpdateRemainTimer(_period, currentBlockIndex);
@@ -309,6 +310,7 @@ namespace Nekoyume.UI
         private async Task<(
             WorldBossState worldBoss,
             RaiderState raiderState,
+            WorldBossKillRewardRecord killReward,
             WorldBossRankingRecord myRecord,
             long blockIndex,
             int userCount)>
@@ -322,7 +324,6 @@ namespace Nekoyume.UI
                     ? new WorldBossState(worldBossList)
                     : null;
 
-
                 var avatarAddress = States.Instance.CurrentAvatarState.address;
                 var raiderAddress = Addresses.GetRaiderAddress(avatarAddress, row.Id);
                 var raiderState = await Game.Game.instance.Agent.GetStateAsync(raiderAddress);
@@ -330,8 +331,14 @@ namespace Nekoyume.UI
                     ? new RaiderState(raiderList)
                     : null;
 
+                var killRewardAddress = Addresses.GetWorldBossKillRewardRecordAddress(avatarAddress, row.Id);
+                var killRewardState = await Game.Game.instance.Agent.GetStateAsync(killRewardAddress);
+                var killReward = killRewardState is Bencodex.Types.List killRewardList
+                    ? new WorldBossKillRewardRecord(killRewardList)
+                    : null;
+
                 var (record, blockIndex, userCount) = await QueryRankingAsync(row, avatarAddress);
-                return (worldBoss, raider, record, blockIndex, userCount);
+                return (worldBoss, raider, killReward, record, blockIndex, userCount);
             });
 
             await task;

@@ -29,6 +29,8 @@ namespace Nekoyume.UI
 
         private GameObject _gradeObject;
 
+        private List<FungibleAssetValue> _killRewards;
+
         protected override void Awake()
         {
             base.Awake();
@@ -41,7 +43,12 @@ namespace Nekoyume.UI
             base.OnDisable();
         }
 
-        public void Show(int bossId, int score, bool isBest, List<FungibleAssetValue> rewards)
+        public void Show(
+            int bossId,
+            int score,
+            bool isBest,
+            List<FungibleAssetValue> battleRewards,
+            List<FungibleAssetValue> killRewards)
         {
             base.Show();
 
@@ -64,9 +71,10 @@ namespace Nekoyume.UI
                 view.gameObject.SetActive(false);
             }
 
-            if (rewards is not null && rewards.Any())
+            _killRewards = killRewards;
+            if (battleRewards is not null && battleRewards.Any())
             {
-                foreach (var reward in rewards)
+                foreach (var reward in battleRewards)
                 {
                     var ticker = reward.Currency.Ticker;
                     if (WorldBossFrontHelper.TryGetRuneIcon(ticker, out var icon))
@@ -82,7 +90,16 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            Find<WorldBoss>().ShowAsync().Forget();
+            if (_killRewards is not null && _killRewards.Any())
+            {
+                Find<WorldBossRewardPopup>().Show(_killRewards,
+                    () =>Find<WorldBoss>().ShowAsync().Forget());
+            }
+            else
+            {
+                Find<WorldBoss>().ShowAsync().Forget();
+            }
+
             base.Close(ignoreCloseAnimation);
         }
     }
