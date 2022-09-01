@@ -81,13 +81,11 @@ namespace Nekoyume.UI
             }
         }
 
-        public void UpdatePosition(GameObject target, Vector3 offset = new Vector3())
+        public void UpdatePosition(Camera camera, GameObject target, Vector3 offset = new Vector3())
         {
             var targetPosition = target.transform.position + offset;
             RectTransform.anchoredPosition =
-                targetPosition.ToCanvasPosition(
-                    ActionCamera.instance.Cam,
-                    MainCanvas.instance.Canvas);
+                targetPosition.ToCanvasPosition(camera, MainCanvas.instance.Canvas);
         }
 
         public bool SetKey(string value)

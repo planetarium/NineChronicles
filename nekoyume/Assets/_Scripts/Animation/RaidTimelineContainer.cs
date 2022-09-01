@@ -1,3 +1,4 @@
+using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Spine.Unity;
 using System.Collections;
@@ -20,7 +21,7 @@ namespace Nekoyume
         private RaidBoss boss = null;
 
         [SerializeField]
-        private new Camera camera = null;
+        private new RaidCamera camera = null;
 
         [SerializeField]
         private TimelineAsset appearCutscene = null;
@@ -39,7 +40,7 @@ namespace Nekoyume
 
         public RaidPlayer Player => player;
         public RaidBoss Boss => boss;
-        public Camera Camera => camera;
+        public RaidCamera Camera => camera;
         public bool IsCutscenePlaying { get; private set; }
 
         public void Show()

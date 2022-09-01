@@ -48,6 +48,7 @@ namespace Nekoyume.Game
         public SkillController SkillController { get; private set; }
         public BuffController BuffController { get; private set; }
         public bool IsAvatarStateUpdatedAfterBattle { get; set; }
+        public RaidCamera Camera => container.Camera;
         public int TurnNumber => _waveTurn;
 
         private void Awake()
@@ -150,7 +151,7 @@ namespace Nekoyume.Game
 
             CreateContainer(bossId);
             container.Show();
-            MainCanvas.instance.Canvas.worldCamera = container.Camera;
+            MainCanvas.instance.Canvas.worldCamera = container.Camera.Cam;
 
             _player = container.Player;
             _boss = container.Boss;

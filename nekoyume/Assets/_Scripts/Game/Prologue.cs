@@ -134,7 +134,7 @@ namespace Nekoyume.Game
             else
             {
                 AudioController.PlayDamaged(elementalType);
-                DamageText.Show(position, force, dmg, group);
+                DamageText.Show(ActionCamera.instance.Cam, position, force, dmg, group);
                 VFXController.instance.Create<BattleAttack01VFX>(pos);
             }
         }
@@ -218,7 +218,7 @@ namespace Nekoyume.Game
             effect.Play();
             var position = _player.transform.TransformPoint(0f, 1.7f, 0f);
             var force = new Vector3(-0.1f, 0.5f);
-            DamageText.Show(position, force, 64000.ToString(), DamageText.TextGroupState.Heal);
+            DamageText.Show(ActionCamera.instance.Cam, position, force, 64000.ToString(), DamageText.TextGroupState.Heal);
             yield return new WaitForSeconds(1f);
             _player.Animator.Idle();
             yield return new WaitForSeconds(1f);
