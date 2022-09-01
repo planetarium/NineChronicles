@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.BlockChain;
@@ -30,6 +31,8 @@ namespace Nekoyume.UI.Module.WorldBoss
         [SerializeField]
         private Image middleGaugeImage;
 
+        private bool _canReceive;
+
         private void Start()
         {
             claimButton.OnSubmitSubject
@@ -41,7 +44,11 @@ namespace Nekoyume.UI.Module.WorldBoss
                 {
                 }).AddTo(gameObject);
 
-            claimButton.Interactable = false;
+        }
+
+        private void OnEnable()
+        {
+            claimButton.Interactable = _canReceive;
         }
 
         public override void Reset()
@@ -73,17 +80,18 @@ namespace Nekoyume.UI.Module.WorldBoss
             var latestRewardRank = raiderState?.LatestRewardRank ?? 0;
             var highScore = raiderState?.HighScore ?? 0;
             var currentRank = WorldBossHelper.CalculateRank(characterRow, highScore);
+            _canReceive = latestRewardRank < currentRank;
             UpdateItems(characterRow, rows, latestRewardRank, currentRank);
             UpdateGauges(characterRow, highScore, currentRank);
             UpdateRecord(highScore);
-
-            claimButton.Interactable = latestRewardRank < currentRank;
         }
 
         private void ClaimRaidReward()
         {
             Widget.Find<GrayLoadingScreen>().Show("UI_LOADING_REWARD", true, 0.7f);
             ActionManager.Instance.ClaimRaidReward();
+            _canReceive = false;
+            claimButton.Interactable = _canReceive;
         }
 
         private void UpdateItems(
