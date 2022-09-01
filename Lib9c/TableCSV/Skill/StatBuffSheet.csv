@@ -77,5 +77,26 @@ id,group,_name,chance,duration,target_type,stat_type,modify_type,modify_value,ic
 306010,306000,속도 강화 (20),100,150,Self,SPD,Percentage,20,icon_buff_plus_speed
 306011,306000,속도 강화 (35),100,150,Self,SPD,Percentage,35,icon_buff_plus_speed
 306012,306000,속도 강화 (70),100,150,Self,SPD,Percentage,70,icon_buff_plus_speed
-901001,901001,공격 강화 (분노),100,10,Self,ATK,Percentage,20,icon_buff_plus_attack
-902001,902001,속도 강화 (분노),100,10,Self,SPD,Percentage,20,icon_buff_plus_speed
+501001,501001,공격 강화 (분노),100,10,Self,ATK,Percentage,20,icon_buff_plus_attack
+502001,502001,속도 강화 (분노),100,10,Self,SPD,Percentage,20,icon_buff_plus_speed
+503011,503011,Berserk ATK(60) Wave 1,100,150,Self,ATK,Percentage,60,icon_buff_plus_attack
+503012,503012,Berserk DEF(60) Wave 1,100,150,Self,DEF,Percentage,60,icon_buff_plus_defense
+503013,503013,Berserk HIT(60) Wave 1,100,150,Self,HIT,Percentage,60,icon_buff_plus_hit
+503014,503014,Berserk SPD(60) Wave 1,100,150,Self,SPD,Percentage,60,icon_buff_plus_speed
+503021,503011,Berserk ATK(80) Wave 2,100,150,Self,ATK,Percentage,80,icon_buff_plus_attack
+503022,503012,Berserk DEF(80) Wave 2,100,150,Self,DEF,Percentage,80,icon_buff_plus_defense
+503023,503013,Berserk HIT(80) Wave 2,100,150,Self,HIT,Percentage,80,icon_buff_plus_hit
+503024,503014,Berserk SPD(80) Wave 2,100,150,Self,SPD,Percentage,80,icon_buff_plus_speed
+503031,503011,Berserk ATK(100) Wave 3,100,150,Self,ATK,Percentage,100,icon_buff_plus_attack
+503032,503012,Berserk DEF(100) Wave 3,100,150,Self,DEF,Percentage,100,icon_buff_plus_defense
+503033,503013,Berserk HIT(100) Wave 3,100,150,Self,HIT,Percentage,100,icon_buff_plus_hit
+503034,503014,Berserk SPD(100) Wave 3,100,150,Self,SPD,Percentage,100,icon_buff_plus_speed
+503041,503011,Berserk ATK(120) Wave 4,100,150,Self,ATK,Percentage,120,icon_buff_plus_attack
+503042,503012,Berserk DEF(120) Wave 4,100,150,Self,DEF,Percentage,120,icon_buff_plus_defense
+503043,503013,Berserk HIT(120) Wave 4,100,150,Self,HIT,Percentage,120,icon_buff_plus_hit
+503044,503014,Berserk SPD(120) Wave 4,100,150,Self,SPD,Percentage,120,icon_buff_plus_speed
+503051,503011,Berserk ATK(150) Wave 5,100,150,Self,ATK,Percentage,150,icon_buff_plus_attack
+503052,503012,Berserk DEF(150) Wave 5,100,150,Self,DEF,Percentage,150,icon_buff_plus_defense
+503053,503013,Berserk HIT(150) Wave 5,100,150,Self,HIT,Percentage,150,icon_buff_plus_hit
+503054,503014,Berserk SPD(150) Wave 5,100,150,Self,SPD,Percentage,150,icon_buff_plus_speed
+503015,503015,Berserk CRI(1500),100,150,Self,CRI,Percentage,1500,icon_buff_plus_critical

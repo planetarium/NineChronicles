@@ -113,7 +113,11 @@ _300001,힐(전체),Normal,Heal,Heal,Ally,1,1 // 미구현
 400053,B 방어명중 치명,Normal,Buff,DefenseBuff,Self,1,999
 400054,B 방어 속도 치명,Normal,Buff,DefenseBuff,Self,1,999
 400055,B 명중 속도 치명,Normal,Buff,SpeedBuff,Self,1,999
-900001,분노,Normal,Attack,BlowAttack,Enemy,1,0
-900002,할퀴기,Normal,Attack,BlowAttack,Enemy,1,0
-900003,물어뜯기,Normal,Attack,BuffRemovalAttack,Enemy,1,0
-910001,광폭화,Normal,Buff,Buff,Self,1,0
+500001,분노,Normal,Attack,BlowAttack,Enemy,1,0
+500002,할퀴기,Normal,Attack,BlowAttack,Enemy,1,0
+500003,물어뜯기,Normal,Attack,BuffRemovalAttack,Enemy,1,0
+510001,광폭화 Wave 1,Normal,Buff,Buff,Self,1,0
+510002,광폭화 Wave 2,Normal,Buff,Buff,Self,1,0
+510003,광폭화 Wave 3,Normal,Buff,Buff,Self,1,0
+510004,광폭화 Wave 4,Normal,Buff,Buff,Self,1,0
+510005,광폭화 Wave 5,Normal,Buff,Buff,Self,1,0
