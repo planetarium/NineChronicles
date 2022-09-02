@@ -24,12 +24,8 @@ namespace Nekoyume.Game
         private ObjectPool objectPool;
 
         [SerializeField]
-        private float delayOnBattleFinished = 3f;
-
-        [SerializeField]
         private float skillDelay = 0.3f;
 
-        private WaitForSeconds _delayOnBattleFinished;
         private Character.RaidPlayer _player;
         private Character.RaidBoss _boss;
 
@@ -51,11 +47,6 @@ namespace Nekoyume.Game
         public bool IsAvatarStateUpdatedAfterBattle { get; set; }
         public RaidCamera Camera => container.Camera;
         public int TurnNumber => _waveTurn;
-
-        private void Awake()
-        {
-            _delayOnBattleFinished = new WaitForSeconds(delayOnBattleFinished);
-        }
 
         public void Initialize()
         {
@@ -204,9 +195,6 @@ namespace Nekoyume.Game
         {
             IsAvatarStateUpdatedAfterBattle = false;
             _onBattleEnded.OnNext(this);
-            yield return new WaitWhile(() => _player.IsActing);
-            yield return new WaitWhile(() => _boss.IsActing);
-            yield return delayOnBattleFinished;
 
             if (!isPractice)
             {
