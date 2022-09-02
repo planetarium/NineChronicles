@@ -32,6 +32,8 @@ namespace Lib9c.Tests.Action
         [InlineData(150L, 80L, 0L, true)]
         [InlineData(200L, 199L, 0L, true)]
         [InlineData(150L, 110L, 0L, false)]
+        [InlineData(10100L, 10003L, 10000L, true)]
+        [InlineData(10099L, 10003L, 10000L, false)]
         public void CanRefillTicket(long blockIndex, long refilledBlockIndex, long startedBlockIndex, bool expected)
         {
             Assert.Equal(expected, WorldBossHelper.CanRefillTicket(blockIndex, refilledBlockIndex, startedBlockIndex));
