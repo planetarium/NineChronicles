@@ -1893,7 +1893,6 @@ namespace Nekoyume.BlockChain
             var log = simulator.Log;
             Widget.Find<Menu>().Close();
             var playerDigest = new ArenaPlayerDigest(clonedAvatarState);
-            Widget.Find<LoadingScreen>().Close();
 
             await WorldBossStates.Set(avatarAddress);
             var raiderState = WorldBossStates.GetRaiderState(avatarAddress);
@@ -1931,6 +1930,7 @@ namespace Nekoyume.BlockChain
                               raiderState.HighScore < simulator.DamageDealt;
             worldBoss.Close();
 
+            Widget.Find<LoadingScreen>().Close();
             Game.Game.instance.RaidStage.Play(
                 simulator.BossId,
                 log,
