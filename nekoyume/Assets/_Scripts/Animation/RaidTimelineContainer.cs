@@ -123,5 +123,10 @@ namespace Nekoyume
             OnAttackPoint?.Invoke();
             OnAttackPoint = null;
         }
+
+        public void KillPlayer()
+        {
+            player.Animator.Die();
+        }
     }
 }
