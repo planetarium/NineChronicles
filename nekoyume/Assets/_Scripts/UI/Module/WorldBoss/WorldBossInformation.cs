@@ -4,6 +4,7 @@ using System.Linq;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.TableData;
+using Nekoyume.UI.Module.Common;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -45,6 +46,9 @@ namespace Nekoyume.UI.Module.WorldBoss
         private TextMeshProUGUI hit;
 
         [SerializeField]
+        private TextMeshProUGUI spd;
+
+        [SerializeField]
         private Button rightButton;
 
         [SerializeField]
@@ -53,11 +57,18 @@ namespace Nekoyume.UI.Module.WorldBoss
         [SerializeField]
         private Transform skillContainer;
 
+        [SerializeField]
+        private Transform tooltipContainer;
+
+        [SerializeField]
+        private PositionTooltip tooltip;
+
         private WorldBossStatus _status;
         private int _wave;
         private int _bossId;
+
         private List<WorldBossCharacterSheet.WaveStatData> _cachedData = new();
-        private List<GameObject> _cachedIconObjects = new();
+        private readonly List<GameObject> _cachedIconObjects = new();
 
         private void Awake()
         {
@@ -69,6 +80,7 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         public void Show()
         {
+            tooltip.gameObject.SetActive(false);
             var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
             var sheet = Game.Game.instance.TableSheets.WorldBossCharacterSheet;
             var status = WorldBossFrontHelper.GetStatus(currentBlockIndex);
@@ -163,10 +175,14 @@ namespace Nekoyume.UI.Module.WorldBoss
             def.text = $"{data.DEF:#,0}";
             cri.text = $"{data.CRI:#,0}";
             hit.text = $"{data.HIT:#,0}";
+            spd.text = $"{data.SPD:#,0}";
 
-            var icons = new List<Sprite> { SkillIconHelper.GetSkillIcon(data.EnrageSkillId) };
-            icons.AddRange(patternRow.Patterns[_wave].SkillIds.Distinct()
-                .Select(SkillIconHelper.GetSkillIcon));
+            var icons = new Dictionary<int, Sprite>();
+            icons.Add(data.EnrageSkillId, SkillIconHelper.GetSkillIcon(data.EnrageSkillId));
+            foreach (var skillId in patternRow.Patterns[_wave].SkillIds.Distinct())
+            {
+                icons.Add(skillId, SkillIconHelper.GetSkillIcon(skillId));
+            }
 
             foreach (var iconObject in _cachedIconObjects)
             {
@@ -174,10 +190,18 @@ namespace Nekoyume.UI.Module.WorldBoss
             }
 
             var prefab = SkillIconHelper.GetSkillIconPrefab();
-            foreach (var icon in icons)
+            foreach (var (skillId, icon) in icons)
             {
                 var clone = Instantiate(prefab, skillContainer);
-                clone.GetComponent<SkillIcon>().Set(icon);
+                clone.GetComponent<SkillIcon>().Set(icon, () =>
+                {
+                    tooltip.Set(L10nManager.Localize($"SKILL_NAME_{skillId}"),
+                        L10nManager.Localize($"SKILL_DESCRIPTION_{skillId}"));
+                    tooltip.transform.SetParent(clone.transform);
+                    tooltip.transform.localPosition = Vector3.zero;
+                    tooltip.transform.SetParent(tooltipContainer);
+                    tooltip.gameObject.SetActive(true);
+                });
                 _cachedIconObjects.Add(clone);
             }
         }
