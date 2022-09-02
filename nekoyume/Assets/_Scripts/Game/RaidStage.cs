@@ -214,6 +214,7 @@ namespace Nekoyume.Game
             MainCanvas.instance.Canvas.worldCamera = ActionCamera.instance.Cam;
 
             container.Close();
+            Game.instance.IsInWorld = false;
             Widget.Find<WorldBossResultPopup>().Show(_currentBossId, damageDealt, isNewRecord, rewards, killRewards);
 
             if (container)
