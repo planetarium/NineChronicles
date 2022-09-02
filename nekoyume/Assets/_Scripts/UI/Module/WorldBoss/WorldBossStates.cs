@@ -18,8 +18,6 @@ namespace Nekoyume.UI.Module.WorldBoss
         private static readonly Dictionary<Address, WorldBossKillRewardRecord> _killRewards = new();
         private static readonly List<IDisposable> _disposables = new();
 
-
-
         public static ReactiveProperty<bool> HasNotification { get; } = new();
 
         public static RaiderState GetRaiderState(Address avatarAddress)

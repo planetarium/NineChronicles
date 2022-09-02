@@ -83,7 +83,11 @@ namespace Nekoyume.UI.Module.Lobby
         {
             Game.Game.instance.Agent.BlockIndexSubject.Subscribe(UpdateBlockIndex)
                 .AddTo(_disposables);
+            UpdateBlockIndex(Game.Game.instance.Agent.BlockIndex);
+        }
 
+        private void OnEnable()
+        {
             UpdateBlockIndex(Game.Game.instance.Agent.BlockIndex);
         }
 
@@ -105,6 +109,11 @@ namespace Nekoyume.UI.Module.Lobby
                     break;
                 case WorldBossStatus.Season:
                     if (!WorldBossFrontHelper.TryGetCurrentRow(currentBlockIndex, out var row))
+                    {
+                        return;
+                    }
+
+                    if (States.Instance.CurrentAvatarState is null)
                     {
                         return;
                     }
