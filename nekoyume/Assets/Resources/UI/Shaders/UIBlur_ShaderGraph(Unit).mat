@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: UIBlur_ShaderGraph(Unit)
-  m_Shader: {fileID: -6465566751694194690, guid: 463066324ac9050408c5e7b94808904a,
+  m_Shader: {fileID: -6465566751694194690, guid: 8bc37e815a07e49489ae2b2b33373b49,
     type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords:
@@ -68,6 +68,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - Vector1_1844C1E0: 1
     - Vector1_CCD8714A: 0.48
     m_Colors: []
   m_BuildTextureStacks: []
