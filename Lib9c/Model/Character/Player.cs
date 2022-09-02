@@ -164,23 +164,23 @@ namespace Nekoyume.Model
         {
         }
 
-        public Player(ArenaPlayerDigest enemyPlayerDigest, ArenaSimulatorSheets simulatorSheets)
+        public Player(ArenaPlayerDigest enemyArenaPlayerDigest, ArenaSimulatorSheets simulatorSheets)
              : base(null,
                  simulatorSheets.CharacterSheet,
-                 enemyPlayerDigest.CharacterId,
-                 enemyPlayerDigest.Level)
+                 enemyArenaPlayerDigest.CharacterId,
+                 enemyArenaPlayerDigest.Level)
         {
             Inventory = new Inventory();
             monsterMap = new CollectionMap();
             eventMap = new CollectionMap();
-            hairIndex = enemyPlayerDigest.HairIndex;
-            lensIndex = enemyPlayerDigest.LensIndex;
-            earIndex = enemyPlayerDigest.EarIndex;
-            tailIndex = enemyPlayerDigest.TailIndex;
+            hairIndex = enemyArenaPlayerDigest.HairIndex;
+            lensIndex = enemyArenaPlayerDigest.LensIndex;
+            earIndex = enemyArenaPlayerDigest.EarIndex;
+            tailIndex = enemyArenaPlayerDigest.TailIndex;
             AttackCountMax = AttackCountHelper.GetCountMax(Level);
             characterLevelSheet = simulatorSheets.CharacterLevelSheet;
             UpdateExp();
-            SetItems(enemyPlayerDigest.Costumes, enemyPlayerDigest.Equipments,
+            SetItems(enemyArenaPlayerDigest.Costumes, enemyArenaPlayerDigest.Equipments,
                 simulatorSheets.EquipmentItemSetEffectSheet, simulatorSheets.CostumeStatSheet);
         }
 
@@ -231,7 +231,7 @@ namespace Nekoyume.Model
 
         public void RemoveTarget(Enemy enemy)
         {
-            monsterMap.Add(new KeyValuePair<int, int>(enemy.RowData.Id, 1));
+            monsterMap.Add(new KeyValuePair<int, int>(enemy.CharacterId, 1));
             Targets.Remove(enemy);
             Simulator.Characters.TryRemove(enemy);
         }

@@ -57,7 +57,7 @@ namespace Nekoyume.Battle
         /// <returns></returns>
         public static int GetCP(Player player, CostumeStatSheet costumeStatSheet)
         {
-            var levelStatsCP = GetStatsCP(player.Stats.LevelStats, player.Level);
+            var levelStatsCP = GetStatsCP(player.Stats.BaseStats, player.Level);
             var equipmentsCP = player.Equipments.Sum(GetCP);
             var costumeCP = player.Costumes.Sum(c => GetCP(c, costumeStatSheet));
 
@@ -72,7 +72,7 @@ namespace Nekoyume.Battle
         /// <returns></returns>
         public static int GetCP(Enemy enemy)
         {
-            var levelStatsCP = GetStatsCP(enemy.Stats.LevelStats, enemy.Level);
+            var levelStatsCP = GetStatsCP(enemy.Stats.BaseStats, enemy.Level);
             var skills = enemy.Skills.Concat(enemy.BuffSkills).ToArray();
             return DecimalToInt(levelStatsCP * GetSkillsMultiplier(skills.Length));
         }

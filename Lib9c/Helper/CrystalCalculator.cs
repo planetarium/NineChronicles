@@ -131,5 +131,10 @@ namespace Nekoyume.Helper
 
             return crystal;
         }
+
+        public static FungibleAssetValue CalculateEntranceFee(int level, BigInteger entranceFee)
+        {
+            return entranceFee * level * level * CRYSTAL;
+        }
     }
 }

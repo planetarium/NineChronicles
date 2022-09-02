@@ -20,7 +20,7 @@ namespace Nekoyume.Model.Skill
             var damage = ProcessDamage(caster, simulatorWaveTurn);
             var buff = ProcessBuff(caster, simulatorWaveTurn, buffs);
 
-            return new Model.BattleStatus.DoubleAttack(clone, damage, buff);
+            return new Model.BattleStatus.DoubleAttack(SkillRow.Id, clone, damage, buff);
         }
     }
 }

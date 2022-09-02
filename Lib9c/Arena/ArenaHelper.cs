@@ -76,7 +76,7 @@ namespace Nekoyume.Arena
             long currentBlockIndex,
             int avatarLevel)
         {
-            var fee = roundData.EntranceFee * avatarLevel * avatarLevel * CrystalCalculator.CRYSTAL;
+            var fee = CrystalCalculator.CalculateEntranceFee(avatarLevel, roundData.EntranceFee);
             return roundData.IsTheRoundOpened(currentBlockIndex)
                 ? fee
                 : fee.DivRem(100, out _) * 50;
