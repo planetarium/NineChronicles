@@ -208,7 +208,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &4436215481754264271
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10734,7 +10734,6 @@ MonoBehaviour:
   m_Particles:
   - {fileID: 3009091692188722714}
   - {fileID: 3873848409135579246}
-  - {fileID: 0}
   m_ShrinkByMaterial: 0
 --- !u!1 &3019977687136283767
 GameObject:
@@ -10968,7 +10967,6 @@ MonoBehaviour:
   - {fileID: 9116808659782879648}
   - {fileID: 2387168810046378344}
   - {fileID: 3873848409135579246}
-  - {fileID: 0}
   m_ShrinkByMaterial: 0
 --- !u!1 &3257153060661125593
 GameObject:
@@ -11063,7 +11061,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &8518307687244593514
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11140,7 +11138,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &3534129999601048858
 RectTransform:
   m_ObjectHideFlags: 0
@@ -17029,7 +17027,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &8318714806598100523
 RectTransform:
   m_ObjectHideFlags: 0
