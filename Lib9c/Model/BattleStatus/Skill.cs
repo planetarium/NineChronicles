@@ -38,14 +38,17 @@ namespace Nekoyume.Model.BattleStatus
             }
         }
 
+        public readonly int SkillId;
+
         public readonly IEnumerable<SkillInfo> SkillInfos;
 
         [CanBeNull]
         public readonly IEnumerable<SkillInfo> BuffInfos;
 
-        protected Skill(CharacterBase character, IEnumerable<SkillInfo> skillInfos,
+        protected Skill(int skillId, CharacterBase character, IEnumerable<SkillInfo> skillInfos,
             IEnumerable<SkillInfo> buffInfos) : base(character)
         {
+            SkillId = skillId;
             SkillInfos = skillInfos;
             BuffInfos = buffInfos;
         }

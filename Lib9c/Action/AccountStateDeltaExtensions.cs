@@ -535,6 +535,7 @@ namespace Nekoyume.Action
             bool containRankingSimulatorSheets = false,
             bool containArenaSimulatorSheets = false,
             bool containValidateItemRequirementSheets = false,
+            bool containRaidSimulatorSheets = false,
             IEnumerable<Type> sheetTypes = null)
         {
             var sheetTypeList = sheetTypes?.ToList() ?? new List<Type>();
@@ -577,7 +578,9 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(MaterialItemSheet));
                 sheetTypeList.Add(typeof(SkillSheet));
                 sheetTypeList.Add(typeof(SkillBuffSheet));
-                sheetTypeList.Add(typeof(BuffSheet));
+                sheetTypeList.Add(typeof(StatBuffSheet));
+                sheetTypeList.Add(typeof(SkillActionBuffSheet));
+                sheetTypeList.Add(typeof(ActionBuffSheet));
                 sheetTypeList.Add(typeof(CharacterSheet));
                 sheetTypeList.Add(typeof(CharacterLevelSheet));
                 sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
@@ -588,7 +591,9 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(MaterialItemSheet));
                 sheetTypeList.Add(typeof(SkillSheet));
                 sheetTypeList.Add(typeof(SkillBuffSheet));
-                sheetTypeList.Add(typeof(BuffSheet));
+                sheetTypeList.Add(typeof(StatBuffSheet));
+                sheetTypeList.Add(typeof(SkillActionBuffSheet));
+                sheetTypeList.Add(typeof(ActionBuffSheet));
                 sheetTypeList.Add(typeof(CharacterSheet));
                 sheetTypeList.Add(typeof(CharacterLevelSheet));
                 sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
@@ -602,7 +607,9 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(MaterialItemSheet));
                 sheetTypeList.Add(typeof(SkillSheet));
                 sheetTypeList.Add(typeof(SkillBuffSheet));
-                sheetTypeList.Add(typeof(BuffSheet));
+                sheetTypeList.Add(typeof(StatBuffSheet));
+                sheetTypeList.Add(typeof(SkillActionBuffSheet));
+                sheetTypeList.Add(typeof(ActionBuffSheet));
                 sheetTypeList.Add(typeof(CharacterSheet));
                 sheetTypeList.Add(typeof(CharacterLevelSheet));
                 sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
@@ -614,7 +621,9 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(MaterialItemSheet));
                 sheetTypeList.Add(typeof(SkillSheet));
                 sheetTypeList.Add(typeof(SkillBuffSheet));
-                sheetTypeList.Add(typeof(BuffSheet));
+                sheetTypeList.Add(typeof(StatBuffSheet));
+                sheetTypeList.Add(typeof(SkillActionBuffSheet));
+                sheetTypeList.Add(typeof(ActionBuffSheet));
                 sheetTypeList.Add(typeof(CharacterSheet));
                 sheetTypeList.Add(typeof(CharacterLevelSheet));
                 sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
@@ -628,6 +637,24 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(EquipmentItemRecipeSheet));
                 sheetTypeList.Add(typeof(EquipmentItemSubRecipeSheetV2));
                 sheetTypeList.Add(typeof(EquipmentItemOptionSheet));
+            }
+
+            if (containRaidSimulatorSheets)
+            {
+                sheetTypeList.Add(typeof(MaterialItemSheet));
+                sheetTypeList.Add(typeof(SkillSheet));
+                sheetTypeList.Add(typeof(SkillBuffSheet));
+                sheetTypeList.Add(typeof(StatBuffSheet));
+                sheetTypeList.Add(typeof(SkillActionBuffSheet));
+                sheetTypeList.Add(typeof(ActionBuffSheet));
+                sheetTypeList.Add(typeof(CharacterSheet));
+                sheetTypeList.Add(typeof(CharacterLevelSheet));
+                sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
+                sheetTypeList.Add(typeof(WorldBossCharacterSheet));
+                sheetTypeList.Add(typeof(EnemySkillSheet));
+                sheetTypeList.Add(typeof(WorldBossBattleRewardSheet));
+                sheetTypeList.Add(typeof(RuneWeightSheet));
+                sheetTypeList.Add(typeof(RuneSheet));
             }
 
             return states.GetSheets(sheetTypeList.Distinct().ToArray());
@@ -721,7 +748,9 @@ namespace Nekoyume.Action
                 GetSheet<MaterialItemSheet>(states),
                 GetSheet<SkillSheet>(states),
                 GetSheet<SkillBuffSheet>(states),
-                GetSheet<BuffSheet>(states),
+                GetSheet<StatBuffSheet>(states),
+                GetSheet<SkillActionBuffSheet>(states),
+                GetSheet<ActionBuffSheet>(states),
                 GetSheet<CharacterSheet>(states),
                 GetSheet<CharacterLevelSheet>(states),
                 GetSheet<EquipmentItemSetEffectSheet>(states),
@@ -737,7 +766,9 @@ namespace Nekoyume.Action
                 GetSheet<MaterialItemSheet>(states),
                 GetSheet<SkillSheet>(states),
                 GetSheet<SkillBuffSheet>(states),
-                GetSheet<BuffSheet>(states),
+                GetSheet<StatBuffSheet>(states),
+                GetSheet<SkillActionBuffSheet>(states),
+                GetSheet<ActionBuffSheet>(states),
                 GetSheet<CharacterSheet>(states),
                 GetSheet<CharacterLevelSheet>(states),
                 GetSheet<EquipmentItemSetEffectSheet>(states),
@@ -1003,6 +1034,73 @@ namespace Nekoyume.Action
                     throw new InvalidWorldException();
                 }
             }
+        }
+
+        public static RaiderState GetRaiderState(this IAccountStateDelta states,
+            Address avatarAddress, int raidId)
+        {
+            return GetRaiderState(states, Addresses.GetRaiderAddress(avatarAddress, raidId));
+        }
+
+        public static RaiderState GetRaiderState(this IAccountStateDelta states,
+            Address raiderAddress)
+        {
+            if (states.TryGetState(raiderAddress, out List rawRaider))
+            {
+                return new RaiderState(rawRaider);
+            }
+
+            throw new FailedLoadStateException("can't find RaiderState.");
+        }
+
+        public static IAccountStateDelta SetWorldBossKillReward(
+            this IAccountStateDelta states,
+            Address rewardInfoAddress,
+            WorldBossKillRewardRecord rewardRecord,
+            int rank,
+            WorldBossState bossState,
+            RuneWeightSheet runeWeightSheet,
+            WorldBossKillRewardSheet worldBossKillRewardSheet,
+            RuneSheet runeSheet,
+            IRandom random,
+            Address avatarAddress,
+            Address agentAddress)
+        {
+            if (!rewardRecord.IsClaimable(bossState.Level))
+            {
+                throw new InvalidClaimException();
+            }
+#pragma warning disable LAA1002
+            var filtered = rewardRecord
+                .Where(kv => !kv.Value)
+                .Select(kv => kv.Key)
+                .ToList();
+#pragma warning restore LAA1002
+            foreach (var level in filtered)
+            {
+                List<FungibleAssetValue> rewards = RuneHelper.CalculateReward(
+                    rank,
+                    bossState.Id,
+                    runeWeightSheet,
+                    worldBossKillRewardSheet,
+                    runeSheet,
+                    random
+                );
+                rewardRecord[level] = true;
+                foreach (var reward in rewards)
+                {
+                    if (reward.Currency.Equals(CrystalCalculator.CRYSTAL))
+                    {
+                        states = states.MintAsset(agentAddress, reward);
+                    }
+                    else
+                    {
+                        states = states.MintAsset(avatarAddress, reward);
+                    }
+                }
+            }
+
+            return states.SetState(rewardInfoAddress, rewardRecord.Serialize());
         }
     }
 }

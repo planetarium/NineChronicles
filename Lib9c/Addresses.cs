@@ -30,6 +30,7 @@ namespace Nekoyume
         public static readonly Address Arena                 = new Address("0000000000000000000000000000000000000012");
         public static readonly Address SuperCraft            = new Address("0000000000000000000000000000000000000013");
         public static readonly Address EventDungeon          = new Address("0000000000000000000000000000000000000014");
+        public static readonly Address Raid                  = new Address("0000000000000000000000000000000000000015");
 
         public static Address GetSheetAddress<T>() where T : ISheet => GetSheetAddress(typeof(T).Name);
 
@@ -58,5 +59,9 @@ namespace Nekoyume
 
         public static Address GetHammerPointStateAddress(Address avatarAddress, int recipeId) =>
             avatarAddress.Derive($"hammer_{recipeId}");
+
+        public static Address GetWorldBossAddress(int raidId) => Raid.Derive($"{raidId}");
+        public static Address GetWorldBossKillRewardRecordAddress(Address avatarAddress, int raidId) => avatarAddress.Derive($"reward_info_{raidId}");
+        public static Address GetRaiderAddress(Address avatarAddress, int raidId) => avatarAddress.Derive($"{raidId}");
     }
 }

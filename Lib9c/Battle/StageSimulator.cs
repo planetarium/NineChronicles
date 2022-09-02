@@ -1,4 +1,4 @@
-﻿// #define TEST_LOG
+// #define TEST_LOG
 
 using System;
 using System.Collections.Generic;
@@ -114,9 +114,12 @@ namespace Nekoyume.Battle
                 foreach (var skill in _skillsOnWaveStart)
                 {
                     var buffs = BuffFactory.GetBuffs(
+                        Player.ATK,
                         skill,
                         SkillBuffSheet,
-                        BuffSheet
+                        StatBuffSheet,
+                        SkillActionBuffSheet,
+                        ActionBuffSheet
                     );
 
                     var usedSkill = skill.Use(Player, 0, buffs);

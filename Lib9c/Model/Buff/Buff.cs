@@ -1,70 +1,54 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.Model.Skill;
-using Nekoyume.Model.Stat;
-using Nekoyume.TableData;
 
 namespace Nekoyume.Model.Buff
 {
     [Serializable]
-    public class Buff : ICloneable
+    public abstract class Buff : ICloneable
     {
-        public int originalDuration;
-        public int remainedDuration;
+        public BuffInfo BuffInfo { get; }
+        public int OriginalDuration { get; }
+        public int RemainedDuration { get; set; }
 
-        public BuffSheet.Row RowData { get; }
-
-        protected Buff(BuffSheet.Row row)
+        protected Buff(BuffInfo buffInfo)
         {
-            originalDuration = remainedDuration = row.Duration;
-            RowData = row;
+            BuffInfo = buffInfo;
+            OriginalDuration = RemainedDuration = buffInfo.Duration;
         }
 
         protected Buff(Buff value)
         {
-            originalDuration = value.RowData.Duration;
-            remainedDuration = value.remainedDuration;
-            RowData = value.RowData;
+            BuffInfo = value.BuffInfo;
+            OriginalDuration = value.OriginalDuration;
+            RemainedDuration = value.RemainedDuration;
         }
 
-        public int Use(CharacterBase characterBase)
+        public virtual IEnumerable<CharacterBase> GetTarget(CharacterBase caster)
         {
-            var value = 0;
-            switch (RowData.StatModifier.StatType)
-            {
-                case StatType.HP:
-                    value = characterBase.HP;
-                    break;
-                case StatType.ATK:
-                    value = characterBase.ATK;
-                    break;
-                case StatType.DEF:
-                    value = characterBase.DEF;
-                    break;
-                case StatType.CRI:
-                    value = characterBase.CRI;
-                    break;
-                case StatType.HIT:
-                    value = characterBase.HIT;
-                    break;
-                case StatType.SPD:
-                    value = characterBase.SPD;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
-            return RowData.StatModifier.GetModifiedAll(value);
+            return BuffInfo.SkillTargetType.GetTarget(caster);
         }
 
-        public IEnumerable<CharacterBase> GetTarget(CharacterBase caster)
-        {
-            return RowData.TargetType.GetTarget(caster);
-        }
+        public abstract object Clone();
+    }
 
-        public object Clone()
+    [Serializable]
+    public struct BuffInfo
+    {
+        public int Id;
+        public int GroupId;
+        public int Chance;
+        public int Duration;
+        public SkillTargetType SkillTargetType;
+
+        public BuffInfo(int id, int groupId, int chance, int duration, SkillTargetType skillTargetType)
         {
-            return new Buff(this);
+            Id = id;
+            GroupId = groupId;
+            Chance = chance;
+            Duration = duration;
+            SkillTargetType = skillTargetType;
         }
     }
+
 }
