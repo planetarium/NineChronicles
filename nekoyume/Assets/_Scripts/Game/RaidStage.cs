@@ -230,7 +230,7 @@ namespace Nekoyume.Game
 
             if (container)
             {
-                Destroy(container);
+                Destroy(container.gameObject);
             }
         }
 
