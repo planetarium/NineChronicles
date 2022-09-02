@@ -1928,7 +1928,7 @@ namespace Nekoyume.BlockChain
 
             var isNewRecord = raiderState is null ||
                               raiderState.HighScore < simulator.DamageDealt;
-            worldBoss.Close();
+            worldBoss.Close(true);
 
             Widget.Find<LoadingScreen>().Close();
             Game.Game.instance.RaidStage.Play(
