@@ -185,9 +185,8 @@ namespace Nekoyume.UI.Module
 
         private void Clear()
         {
-            _currentGrade = WorldBossGrade.None;
+            SetStarProgress(0);
             UpdateScore(0);
-            _currentStar.Value = 0;
             slider.value = 0.0f;
             foreach (var activated in activatedObjects)
             {
@@ -197,7 +196,6 @@ namespace Nekoyume.UI.Module
             {
                 vfx.Stop();
             }
-            SetStarProgress(0);
         }
     }
 }
