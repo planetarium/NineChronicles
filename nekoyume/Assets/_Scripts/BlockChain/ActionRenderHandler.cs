@@ -1949,7 +1949,7 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            Debug.Log("[RENDER_CLAIM_RAID_REWARD]");
+            UpdateCrystalBalance(eval);
             Widget.Find<GrayLoadingScreen>().Close();
             Widget.Find<WorldBossRewardPopup>().Show(new LocalRandom(eval.RandomSeed));
         }
