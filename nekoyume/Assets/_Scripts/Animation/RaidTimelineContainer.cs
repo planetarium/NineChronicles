@@ -100,7 +100,12 @@ namespace Nekoyume
                 yield break;
             }
 
-            director.SetGenericBinding(track, player.GetComponentInChildren<SkeletonAnimation>());
+            var appearance = player.GetComponent<CharacterAppearance>();
+            if (appearance)
+            {
+                director.SetGenericBinding(track, appearance.SpineController.SkeletonAnimation);
+            }
+
             IsCutscenePlaying = true;
             director.playableAsset = asset;
             director.RebuildGraph();
