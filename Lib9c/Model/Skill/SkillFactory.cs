@@ -22,6 +22,8 @@ namespace Nekoyume.Model.Skill
                             return new BlowAttack(skillRow, power, chance);
                         case SkillCategory.AreaAttack:
                             return new AreaAttack(skillRow, power, chance);
+                        case SkillCategory.BuffRemovalAttack:
+                            return new BuffRemovalAttack(skillRow, power, chance);
                         default:
                             return new NormalAttack(skillRow, power, chance);
                     }
@@ -53,6 +55,8 @@ namespace Nekoyume.Model.Skill
                             return new ArenaBlowAttack(skillRow, power, chance);
                         case SkillCategory.AreaAttack:
                             return new ArenaAreaAttack(skillRow, power, chance);
+                        case SkillCategory.BuffRemovalAttack:
+                            return new ArenaBuffRemovalAttack(skillRow, power, chance);
                         default:
                             return new ArenaNormalAttack(skillRow, power, chance);
                     }

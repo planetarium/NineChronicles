@@ -14,13 +14,13 @@ namespace Lib9c.Tests.Model.Arena
     using Nekoyume.Model.State;
     using Xunit;
 
-    public class ArenaPlayerDigestTest
+    public class PlayerDigestTest
     {
         private readonly AvatarState _avatarState;
         private readonly ArenaAvatarState _arenaAvatarState;
         private readonly TableSheets _tableSheets;
 
-        public ArenaPlayerDigestTest()
+        public PlayerDigestTest()
         {
             _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
             var avatarState = new AvatarState(

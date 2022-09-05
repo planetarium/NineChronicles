@@ -62,7 +62,7 @@ namespace Nekoyume.Model.Skill
             foreach (var buff in buffs)
             {
                 var targets = buff.GetTarget(caster);
-                foreach (var target in targets.Where(target => target.GetChance(buff.RowData.Chance)))
+                foreach (var target in targets.Where(target => target.GetChance(buff.BuffInfo.Chance)))
                 {
                     target.AddBuff(buff);
                     infos.Add(new Model.BattleStatus.Skill.SkillInfo((CharacterBase) target.Clone(), 0, false,
