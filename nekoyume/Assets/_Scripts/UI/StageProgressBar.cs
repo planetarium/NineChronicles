@@ -16,7 +16,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private Slider slider = null;
         [SerializeField]
-        private Image[] activatedStarImages = null;
+        private GameObject[] activatedObjects = null;
         [SerializeField]
         private RectTransform vfxClamper = null;
         [SerializeField]
@@ -96,7 +96,7 @@ namespace Nekoyume.UI
                 UpdateSliderValue(sliderValue);
                 for (int i = 0; i < star; ++i)
                 {
-                    activatedStarImages[i].enabled = true;
+                    activatedObjects[i].SetActive(true);
                 }
             }
         }
@@ -192,7 +192,7 @@ namespace Nekoyume.UI
             {
                 var starVFX = starVFXList[i];
                 var emissionVFX = starEmissionVFXList[i];
-                var isStarEnabled = activatedStarImages[i].enabled;
+                var isStarEnabled = activatedObjects[i].activeSelf;
 
                 if (!isStarEnabled)
                 {
@@ -201,7 +201,7 @@ namespace Nekoyume.UI
                         starVFX.Play();
                         emissionVFX.Play();
                     }
-                    activatedStarImages[i].enabled = true;
+                    activatedObjects[i].SetActive(true);
                 }
             }
         }
@@ -210,9 +210,9 @@ namespace Nekoyume.UI
         {
             _currentStar.Value = 0;
             slider.value = 0.0f;
-            foreach (var image in activatedStarImages)
+            foreach (var activated in activatedObjects)
             {
-                image.enabled = false;
+                activated.SetActive(false);
             }
             foreach (var vfx in starVFXList)
             {

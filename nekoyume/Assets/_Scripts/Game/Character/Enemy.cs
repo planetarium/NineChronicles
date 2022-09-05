@@ -87,7 +87,7 @@ namespace Nekoyume.Game.Character
             battle.BossStatus.SetBuff(CharacterModel.Buffs);
         }
 
-        protected override IEnumerator CoProcessDamage(Model.BattleStatus.Skill.SkillInfo info, bool isConsiderDie,
+        public override IEnumerator CoProcessDamage(Model.BattleStatus.Skill.SkillInfo info, bool isConsiderDie,
             bool isConsiderElementalType)
         {
             yield return StartCoroutine(base.CoProcessDamage(info, isConsiderDie, isConsiderElementalType));

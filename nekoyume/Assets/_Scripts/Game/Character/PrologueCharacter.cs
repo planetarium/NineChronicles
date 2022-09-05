@@ -211,17 +211,17 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public IEnumerator CoBuff(Buff buff)
+        public IEnumerator CoBuff(StatBuff buff)
         {
             yield return StartCoroutine(CoAnimationBuffCast(buff));
             Animator.CastAttack();
             AudioController.instance.PlaySfx(AudioController.SfxCode.FenrirGrowlCastingAttack);
-            var effect = Game.instance.Stage.BuffController.Get<BuffVFX>(_target, buff);
+            var effect = Game.instance.Stage.BuffController.Get<Player, BuffVFX>(_target, buff);
             effect.Play();
             yield return new WaitForSeconds(0.6f);
         }
 
-        private IEnumerator CoAnimationBuffCast(Buff buff)
+        private IEnumerator CoAnimationBuffCast(StatBuff buff)
         {
             AttackEndCalled = false;
             var sfxCode = AudioController.GetElementalCastingSFX(ElementalType.Normal);

@@ -8,11 +8,23 @@ namespace Nekoyume.UI
 {
     public class PaymentPopup : ConfirmPopup
     {
-        [SerializeField] private CostIconDataScriptableObject costIconData;
+        [SerializeField]
+        private CostIconDataScriptableObject costIconData;
 
-        [SerializeField] private Image costIcon;
+        [SerializeField]
+        private Image costIcon;
 
-        [SerializeField] private TextMeshProUGUI costText;
+        [SerializeField]
+        private Image addCostIcon;
+
+        [SerializeField]
+        private TextMeshProUGUI costText;
+
+        [SerializeField]
+        private TextMeshProUGUI addCostText;
+
+        [SerializeField]
+        private GameObject addCostContainer;
 
         public void Show(
             CostType costType,
@@ -23,6 +35,7 @@ namespace Nekoyume.UI
             System.Action onPaymentSucceed,
             System.Action onAttract)
         {
+            addCostContainer.SetActive(false);
             var popupTitle = L10nManager.Localize("UI_TOTAL_COST");
             var enoughBalance = balance >= cost;
             costText.text = cost.ToString();
@@ -50,6 +63,32 @@ namespace Nekoyume.UI
             Show(popupTitle, enoughMessage, yes, no, false);
         }
 
+        public void ShowWithAddCost(
+            string title,
+            string content,
+            CostType costType,
+            int cost,
+            CostType addCostType,
+            int addCost,
+            System.Action onConfirm)
+        {
+            addCostContainer.SetActive(true);
+            costIcon.overrideSprite = costIconData.GetIcon(costType);
+            costText.text = $"{cost:#,0}";
+
+            addCostIcon.overrideSprite = costIconData.GetIcon(addCostType);
+            addCostText.text = $"{addCost:#,0}";
+
+            CloseCallback = result =>
+            {
+                if (result == ConfirmResult.Yes)
+                {
+                    onConfirm?.Invoke();
+                }
+            };
+            Show(title, content);
+        }
+
         public void ShowAttract(
             CostType costType,
             BigInteger cost,
@@ -65,6 +104,7 @@ namespace Nekoyume.UI
             string attractMessage,
             System.Action onAttract)
         {
+            addCostContainer.SetActive(false);
             costIcon.overrideSprite = costIconData.GetIcon(costType);
             var title = L10nManager.Localize("UI_TOTAL_COST");
             costText.text = cost;

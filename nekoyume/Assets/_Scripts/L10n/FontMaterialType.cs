@@ -37,5 +37,7 @@ namespace Nekoyume.L10n
 	PopupTitleRed,
 	PopupTitleYellow,
 	Descinfo,
+	None_0,
+	Shadow_0,
     }
 }

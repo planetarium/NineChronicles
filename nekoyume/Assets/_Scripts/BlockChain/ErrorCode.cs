@@ -226,6 +226,11 @@ namespace Nekoyume.BlockChain
                     code = "45";
                     key = "ERROR_COMBINATION_SLOT_UNLOCK_EXCEPTION";
                     break;
+
+                case NotEnoughRankException _:
+                    code = "42";
+                    key = "NOT_ENOUGH_RANK_EXCEPTION";
+                    break;
             }
 
             Analyzer.Instance.Track(

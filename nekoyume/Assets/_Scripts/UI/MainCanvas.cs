@@ -221,6 +221,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<ArenaBattle>());
             yield return null;
+            secondWidgets.Add(Widget.Create<WorldBossBattle>());
+            yield return null;
             secondWidgets.Add(Widget.Create<Blind>());
             yield return null;
             secondWidgets.Add(Widget.Create<ShopSell>());
@@ -231,9 +233,15 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<StageInformation>());
             yield return null;
+            secondWidgets.Add(Widget.Create<WorldBoss>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<WorldBossDetail>());
+            yield return null;
             secondWidgets.Add(Widget.Create<BattlePreparation>());
             yield return null;
             secondWidgets.Add(Widget.Create<ArenaBattlePreparation>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<RaidPreparation>());
             yield return null;
             secondWidgets.Add(Widget.Create<Status>());
             yield return null;
@@ -303,6 +311,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<ItemCountableAndPricePopup>());
             yield return null;
+            secondWidgets.Add(Widget.Create<WorldBossResultPopup>());
+            yield return null;
 
             // popup
             secondWidgets.Add(Widget.Create<CombinationSlotPopup>());
@@ -344,6 +354,10 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<BuffBonusResultPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<SuperCraftPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<TicketPurchasePopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<WorldBossRewardPopup>());
             yield return null;
 
             // tooltip

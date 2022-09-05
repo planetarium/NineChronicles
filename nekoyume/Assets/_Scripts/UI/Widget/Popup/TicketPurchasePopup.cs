@@ -101,8 +101,16 @@ namespace Nekoyume.UI
                 {
                     onConfirm?.Invoke();
                 }
-
-                Close();
+                else
+                {
+                    Find<PaymentPopup>().ShowAttract(
+                        CostType.NCG,
+                        cost.GetQuantityString(),
+                        L10nManager.Localize("UI_NOT_ENOUGH_NCG_WITH_SUPPLIER_INFO"),
+                        L10nManager.Localize("UI_GO_TO_MARKET"),
+                        GoToMarket);
+                }
+                Close(!enoughBalance);
             };
         }
 
@@ -128,6 +136,14 @@ namespace Nekoyume.UI
                 CostType.WorldBossTicket => L10nManager.Localize("UI_WORLD_BOSS"),
                 _ => string.Empty
             };
+        }
+
+        private void GoToMarket()
+        {
+            Find<WorldBoss>().Close(true);
+            Find<RaidPreparation>().Close(true);
+            Find<ShopBuy>().Show();
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
         }
     }
 }
