@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using TMPro;
 using Nekoyume.L10n;
 using Nekoyume.Model.Buff;
@@ -22,11 +22,11 @@ namespace Nekoyume.UI.Module
 
         public void UpdateText(Buff data)
         {
-            var name = data.RowData.GetLocalizedName();
-            var description = data.RowData.GetLocalizedDescription();
+            var name = data.GetLocalizedName();
+            var description = data.GetLocalizedDescription();
 
             descriptionText.text = string.Format(descriptionFormat, name, description);
-            durationText.text = string.Format(durationFormat, data.remainedDuration);
+            durationText.text = string.Format(durationFormat, data.RemainedDuration);
         }
     }
 }

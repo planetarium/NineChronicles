@@ -16,7 +16,7 @@ namespace Nekoyume.UI
         public CanvasGroup group;
         public Image[] images;
 
-        public static MissText Show(Vector3 position, Vector3 force, int index)
+        public static MissText Show(Camera camera, Vector3 position, Vector3 force, int index)
         {
             var result = Create<MissText>(true);
             for (var i = 0; i < result.images.Length; i++)
@@ -29,10 +29,10 @@ namespace Nekoyume.UI
             }
 
             var rect = result.RectTransform;
-            rect.anchoredPosition = position.ToCanvasPosition(ActionCamera.instance.Cam, MainCanvas.instance.Canvas);
+            rect.anchoredPosition = position.ToCanvasPosition(camera, MainCanvas.instance.Canvas);
             rect.localScale = LocalScaleBefore;
 
-            var tweenPos = (position + force).ToCanvasPosition(ActionCamera.instance.Cam, MainCanvas.instance.Canvas);
+            var tweenPos = (position + force).ToCanvasPosition(camera, MainCanvas.instance.Canvas);
             rect.DOScale(LocalScaleAfter, TweenDuration).SetEase(Ease.OutCubic);
             rect.DOAnchorPos(tweenPos, TweenDuration * 2.0f).SetEase(Ease.InOutQuad).SetDelay(TweenDuration);
             result.group.DOFade(0.0f, TweenDuration * 2.0f).SetDelay(TweenDuration).SetEase(Ease.InCirc);

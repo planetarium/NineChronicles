@@ -23,6 +23,7 @@ using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
+using Libplanet.Assets;
 using mixpanel;
 using Nekoyume.Arena;
 using Nekoyume.EnumType;
@@ -31,6 +32,7 @@ using Nekoyume.Game;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.EnumType;
+using Nekoyume.UI.Module.WorldBoss;
 using Skill = Nekoyume.Model.Skill.Skill;
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
@@ -39,6 +41,7 @@ using Lib9c.DevExtensions.Action;
 
 namespace Nekoyume.BlockChain
 {
+    using Nekoyume.Model;
     using UI.Scroller;
     using UniRx;
 
@@ -140,6 +143,10 @@ namespace Nekoyume.BlockChain
 
             // Arena
             InitializeArenaActions();
+
+            // World Boss
+            Raid();
+            ClaimRaidReward();
         }
 
         public void Stop()
@@ -411,6 +418,24 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseEventConsumableItemCrafts)
+                .AddTo(_disposables);
+        }
+
+        private void Raid()
+        {
+            _actionRenderer.EveryRender<Raid>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseRaidAsync)
+                .AddTo(_disposables);
+        }
+
+        private void ClaimRaidReward()
+        {
+            _actionRenderer.EveryRender<ClaimRaidReward>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseClaimRaidReward)
                 .AddTo(_disposables);
         }
 
@@ -1973,6 +1998,135 @@ namespace Nekoyume.BlockChain
                     myDigest.Value,
                     enemyDigest.Value);
             }
+        }
+
+        private async void ResponseRaidAsync(ActionBase.ActionEvaluation<Raid> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                Game.Game.BackToMainAsync(eval.Exception.InnerException, false).Forget();
+                return;
+            }
+
+            var worldBoss = Widget.Find<WorldBoss>();
+            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            if (Widget.Find<RaidPreparation>().IsSkipRender)
+            {
+                Widget.Find<LoadingScreen>().Close();
+                worldBoss.Close();
+                await WorldBossStates.Set(avatarAddress);
+                Game.Event.OnRoomEnter.Invoke(true);
+                return;
+            }
+
+            UpdateCrystalBalance(eval);
+            _disposableForBattleEnd?.Dispose();
+            _disposableForBattleEnd =
+                Game.Game.instance.RaidStage.OnBattleEnded
+                    .First()
+                    .Subscribe(stage =>
+                    {
+                        var task = UniTask.Run(() =>
+                        {
+                            UpdateCurrentAvatarStateAsync(eval).Forget();
+                            var avatarState = States.Instance.CurrentAvatarState;
+                            RenderQuest(eval.Action.AvatarAddress,
+                                avatarState.questList.completedQuestIds);
+                            _disposableForBattleEnd = null;
+                            stage.IsAvatarStateUpdatedAfterBattle = true;
+                        });
+                        task.ToObservable()
+                            .First()
+                            // ReSharper disable once ConvertClosureToMethodGroup
+                            .DoOnError(e => Debug.LogException(e));
+                    });
+
+            if (!WorldBossFrontHelper.TryGetCurrentRow(eval.BlockIndex, out var row))
+            {
+                Debug.LogError($"[Raid] Failed to get current world boss row. BlockIndex : {eval.BlockIndex}");
+                return;
+            }
+
+            var clonedAvatarState = (AvatarState)States.Instance.CurrentAvatarState.Clone();
+            var items = Widget.Find<RaidPreparation>().LoadEquipment();
+            clonedAvatarState.EquipItems(items);
+            var random = new LocalRandom(eval.RandomSeed);
+
+            var preRaiderState = WorldBossStates.GetRaiderState(avatarAddress);
+            var preKillReward = WorldBossStates.GetKillReward(avatarAddress);
+            var latestBossLevel = preRaiderState?.LatestBossLevel ?? 0;
+
+            var simulator = new RaidSimulator(
+                row.BossId,
+                random,
+                clonedAvatarState,
+                eval.Action.FoodIds,
+                TableSheets.Instance.GetRaidSimulatorSheets(),
+                TableSheets.Instance.CostumeStatSheet
+            );
+            simulator.Simulate();
+            var log = simulator.Log;
+            Widget.Find<Menu>().Close();
+            var playerDigest = new ArenaPlayerDigest(clonedAvatarState);
+
+            await WorldBossStates.Set(avatarAddress);
+            var raiderState = WorldBossStates.GetRaiderState(avatarAddress);
+            var killRewards = new List<FungibleAssetValue>();
+            if (latestBossLevel < raiderState.LatestBossLevel)
+            {
+                if (preKillReward != null && preKillReward.IsClaimable(raiderState.LatestBossLevel))
+                {
+                    var filtered = preKillReward
+                        .Where(kv => !kv.Value)
+                        .Select(kv => kv.Key)
+                        .ToList();
+
+                    var bossRow = Game.Game.instance.TableSheets.WorldBossCharacterSheet[row.BossId];
+                    var rank = WorldBossHelper.CalculateRank(bossRow, preRaiderState.HighScore);
+
+
+                    foreach (var level in filtered)
+                    {
+                        var rewards = RuneHelper.CalculateReward(
+                            rank,
+                            row.BossId,
+                            Game.Game.instance.TableSheets.RuneWeightSheet,
+                            Game.Game.instance.TableSheets.WorldBossKillRewardSheet,
+                            Game.Game.instance.TableSheets.RuneSheet,
+                            random
+                        );
+
+                        killRewards.AddRange(rewards);
+                    }
+                }
+            }
+
+            var isNewRecord = raiderState is null ||
+                              raiderState.HighScore < simulator.DamageDealt;
+            worldBoss.Close(true);
+
+            Widget.Find<LoadingScreen>().Close();
+            Game.Game.instance.RaidStage.Play(
+                simulator.BossId,
+                log,
+                playerDigest,
+                simulator.DamageDealt,
+                isNewRecord,
+                false,
+                simulator.AssetReward,
+                killRewards);
+        }
+
+        private void ResponseClaimRaidReward(ActionBase.ActionEvaluation<ClaimRaidReward> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                return;
+            }
+
+            UpdateCrystalBalance(eval);
+            Widget.Find<GrayLoadingScreen>().Close();
+            Widget.Find<WorldBossRewardPopup>().Show(new LocalRandom(eval.RandomSeed));
         }
     }
 }

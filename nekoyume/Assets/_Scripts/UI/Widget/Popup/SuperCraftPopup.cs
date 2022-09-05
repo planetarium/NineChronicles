@@ -76,7 +76,7 @@ namespace Nekoyume.UI
             var sheets = TableSheets.Instance;
             var isBuffSkill = row.SkillDamageMax == 0;
             var buffRow = isBuffSkill
-                ? sheets.BuffSheet[sheets.SkillBuffSheet[row.SkillId].BuffIds.First()]
+                ? sheets.StatBuffSheet[sheets.SkillBuffSheet[row.SkillId].BuffIds.First()]
                 : null;
             skillPowerText.text = isBuffSkill
                 ? $"{L10nManager.Localize("UI_SKILL_EFFECT")}: {buffRow.StatModifier}"

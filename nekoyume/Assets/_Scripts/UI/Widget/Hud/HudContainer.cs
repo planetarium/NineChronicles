@@ -1,4 +1,4 @@
-﻿using Nekoyume.Game;
+using Nekoyume.Game;
 using UnityEngine;
 
 namespace Nekoyume.UI
@@ -7,10 +7,10 @@ namespace Nekoyume.UI
     {
         [SerializeField] private CanvasGroup canvasGroup;
 
-        public void UpdatePosition(GameObject target, Vector3 offset = new Vector3())
+        public void UpdatePosition(Camera camera, GameObject target, Vector3 offset = new Vector3())
         {
             var targetPosition = target.transform.position + offset;
-            RectTransform.anchoredPosition = targetPosition.ToCanvasPosition(ActionCamera.instance.Cam, MainCanvas.instance.Canvas);
+            RectTransform.anchoredPosition = targetPosition.ToCanvasPosition(camera, MainCanvas.instance.Canvas);
             RectTransform.localScale = new Vector3(1, 1);
         }
 

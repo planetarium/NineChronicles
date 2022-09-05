@@ -1,4 +1,5 @@
 using System;
+using Nekoyume.Action;
 using Nekoyume.Model.Mail;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
@@ -121,6 +122,10 @@ namespace Nekoyume.Helper
                 case "Mimisbrunnr":
                     result = Resources.Load<Sprite>(
                         string.Format(MenuIllustratePathFormat, "UI_bg_mimisbrunnr"));
+                    break;
+                case nameof(Raid):
+                    result = Resources.Load<Sprite>(
+                        string.Format(MenuIllustratePathFormat, "UI_bg_worldboss"));
                     break;
             }
 

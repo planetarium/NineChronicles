@@ -58,7 +58,7 @@ namespace Nekoyume.Game
 
         public SkillSheet SkillSheet { get; private set; }
 
-        public BuffSheet BuffSheet { get; private set; }
+        public StatBuffSheet StatBuffSheet { get; private set; }
 
         public ItemSheet ItemSheet { get; private set; }
 
@@ -176,6 +176,30 @@ namespace Nekoyume.Game
 
         public StakeActionPointCoefficientSheet StakeActionPointCoefficientSheet { get; private set; }
 
+        public WorldBossListSheet WorldBossListSheet { get; private set; }
+
+        public WorldBossRankRewardSheet WorldBossRankRewardSheet { get; private set; }
+
+        public WorldBossKillRewardSheet WorldBossKillRewardSheet { get; private set; }
+
+        public WorldBossRankingRewardSheet WorldBossRankingRewardSheet { get; private set; }
+
+        public WorldBossGlobalHpSheet WorldBossGlobalHpSheet { get; private set; }
+
+        public WorldBossCharacterSheet WorldBossCharacterSheet { get; private set; }
+
+        public WorldBossActionPatternSheet WorldBossActionPatternSheet { get; private set; }
+
+        public WorldBossBattleRewardSheet WorldBossBattleRewardSheet { get; private set; }
+
+        public RuneWeightSheet RuneWeightSheet { get; private set; }
+
+        public RuneSheet RuneSheet { get; private set; }
+
+        public SkillActionBuffSheet SkillActionBuffSheet { get; private set; }
+
+        public ActionBuffSheet ActionBuffSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet = new ItemSheet();
@@ -207,7 +231,9 @@ namespace Nekoyume.Game
                 MaterialItemSheet,
                 SkillSheet,
                 SkillBuffSheet,
-                BuffSheet,
+                StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
                 CharacterSheet,
                 CharacterLevelSheet,
                 EquipmentItemSetEffectSheet
@@ -220,7 +246,9 @@ namespace Nekoyume.Game
                 MaterialItemSheet,
                 SkillSheet,
                 SkillBuffSheet,
-                BuffSheet,
+                StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
                 CharacterSheet,
                 CharacterLevelSheet,
                 EquipmentItemSetEffectSheet,
@@ -236,7 +264,9 @@ namespace Nekoyume.Game
                 MaterialItemSheet,
                 SkillSheet,
                 SkillBuffSheet,
-                BuffSheet,
+                StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
                 CharacterSheet,
                 CharacterLevelSheet,
                 EquipmentItemSetEffectSheet,
@@ -262,12 +292,34 @@ namespace Nekoyume.Game
                 MaterialItemSheet,
                 SkillSheet,
                 SkillBuffSheet,
-                BuffSheet,
+                StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
                 CharacterSheet,
                 CharacterLevelSheet,
                 EquipmentItemSetEffectSheet,
                 CostumeStatSheet,
                 WeeklyArenaRewardSheet
+            );
+        }
+
+        public RaidSimulatorSheets GetRaidSimulatorSheets()
+        {
+            return new RaidSimulatorSheets(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
+                EquipmentItemSetEffectSheet,
+                WorldBossCharacterSheet,
+                WorldBossActionPatternSheet,
+                WorldBossBattleRewardSheet,
+                RuneWeightSheet,
+                RuneSheet
             );
         }
     }

@@ -13,6 +13,7 @@ using Random = UnityEngine.Random;
 using mixpanel;
 using Nekoyume.EnumType;
 using Nekoyume.Extensions;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Mail;
@@ -20,6 +21,7 @@ using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Lobby;
+using Nekoyume.UI.Module.WorldBoss;
 using TMPro;
 using UnityEngine.UI;
 
@@ -58,7 +60,10 @@ namespace Nekoyume.UI
         private MainMenu btnStaking;
 
         [SerializeField]
-        private SpeechBubble[] speechBubbles;
+        private MainMenu btnWorldBoss = null;
+
+        [SerializeField]
+        private SpeechBubble[] speechBubbles = null;
 
         [SerializeField]
         private GameObject shopExclamationMark;
@@ -125,6 +130,7 @@ namespace Nekoyume.UI
                     btnRanking.GetComponent<Button>(),
                     btnShop.GetComponent<Button>(),
                     btnStaking.GetComponent<Button>(),
+                    btnWorldBoss.GetComponent<Button>(),
                 };
                 buttonList.ForEach(button => button.interactable = stateType == AnimationStateType.Shown);
             }).AddTo(gameObject);
@@ -327,6 +333,7 @@ namespace Nekoyume.UI
             btnRanking.Update();
             btnMimisbrunnr.Update();
             btnStaking.Update();
+            btnWorldBoss.Update();
 
             var addressHex = States.Instance.CurrentAvatarState.address.ToHex();
             var firstOpenCombinationKey
@@ -539,6 +546,35 @@ namespace Nekoyume.UI
             }
 
             Find<StakingPopup>().Show();
+        }
+
+        public void WorldBossClick()
+        {
+            if (!btnWorldBoss.IsUnlocked)
+            {
+                btnWorldBoss.JingleTheCat();
+                return;
+            }
+
+            AudioController.PlayClick();
+
+            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+            var curStatus = WorldBossFrontHelper.GetStatus(currentBlockIndex);
+            if (curStatus == WorldBossStatus.OffSeason)
+            {
+                if (!WorldBossFrontHelper.TryGetNextRow(currentBlockIndex, out _))
+                {
+                    OneLineSystem.Push(
+                        MailType.System,
+                        "There is no world boss schedule.",
+                        NotificationCell.NotificationType.Alert);
+                    return;
+                }
+            }
+
+            Close(true);
+            Find<WorldBoss>().ShowAsync().Forget();
+            Analyzer.Instance.Track("Unity/Enter world boss page");
         }
 
         public void UpdateGuideQuest(AvatarState avatarState)

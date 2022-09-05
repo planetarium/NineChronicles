@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Nekoyume.Helper;
+using Nekoyume.Model.State;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,8 +11,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private Image iconImage;
 
-        public Image IconImage => iconImage;
-
         [SerializeField]
         private Slider slider;
 
@@ -22,11 +20,29 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI timespanText;
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        public Image IconImage => iconImage;
+        public int RemainTicket { get; private set; }
 
-        private void OnDestroy()
+        private void Set(long remainBlockIndex, int remainTicket, int maxTicket)
         {
-            _disposables.DisposeAllAndClear();
+            timespanText.text = Util.GetBlockToTime(remainBlockIndex);
+
+            fillText.text = $"{remainTicket}/{maxTicket}";
+            slider.normalizedValue = remainTicket / (float)maxTicket;
+        }
+
+        public void UpdateTicket(RaiderState state, long current)
+        {
+            if (!WorldBossFrontHelper.TryGetCurrentRow(current, out var row))
+            {
+                return;
+            }
+
+            RemainTicket = WorldBossFrontHelper.GetRemainTicket(state, current);
+            var start = row.StartedBlockIndex;
+            var reminder = (current - start) % WorldBossHelper.RefillInterval;
+            var remain = WorldBossHelper.RefillInterval - reminder;
+            Set(remain, RemainTicket, WorldBossHelper.MaxChallengeCount);
         }
     }
 }
