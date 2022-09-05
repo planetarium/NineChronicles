@@ -115,7 +115,7 @@ namespace Nekoyume
         protected override IEnumerable<ShopItem> GetSortedModels(
             Dictionary<ItemSubTypeFilter, List<ShopItem>> items)
         {
-            var models = items[_selectedSubTypeFilter.Value];
+            var models = items[_selectedSubTypeFilter.Value].Distinct();
             return _selectedSortFilter.Value switch
             {
                 ShopSortFilter.CP => models.OrderByDescending(x => x.OrderDigest.CombatPoint)

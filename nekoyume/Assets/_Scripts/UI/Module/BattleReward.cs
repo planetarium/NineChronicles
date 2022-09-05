@@ -192,8 +192,8 @@ namespace Nekoyume.UI.Module
 
             starForMulti.RemainingStarText.text =
                 starCount >= maxStarCount
-                    ? L10nManager.Localize("UI_REMAINING_STAR_TO_BUFF", maxStarCount - starCount)
-                    : L10nManager.Localize("UI_ENOUGH_STAR_TO_BUFF");
+                    ? L10nManager.Localize("UI_ENOUGH_STAR_TO_BUFF")
+                    : L10nManager.Localize("UI_REMAINING_STAR_TO_BUFF", maxStarCount - starCount);
         }
 
         private string GetFailedText()

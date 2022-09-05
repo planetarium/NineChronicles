@@ -70,7 +70,7 @@ namespace Nekoyume.Helper
                     if (scheduleRow is not null)
                     {
                         var eventStages =
-                            SelectStagesByRecommendationPriority(eventDungeonRows, itemBase.Id);
+                            SelectStagesByRecommendationPriority(eventDungeonRows, itemBase.Id, true);
                         if (eventStages.Any())
                         {
                             acquisitionPlaceList.AddRange(eventStages.Select(stage =>

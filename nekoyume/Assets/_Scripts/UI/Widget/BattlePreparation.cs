@@ -101,6 +101,9 @@ namespace Nekoyume.UI
         private Button sweepPopupButton;
 
         [SerializeField]
+        private TextMeshProUGUI sweepButtonText;
+
+        [SerializeField]
         private Button boostPopupButton;
 
         [SerializeField]
@@ -265,6 +268,10 @@ namespace Nekoyume.UI
             UpdateRandomBuffButton();
 
             closeButtonText.text = closeButtonName;
+            sweepButtonText.text =
+                States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(stageId)
+                    ? "Sweep"
+                    : "Repeat";
             startButton.gameObject.SetActive(true);
             startButton.Interactable = true;
             coverToBlockClick.SetActive(false);
@@ -686,14 +693,15 @@ namespace Nekoyume.UI
                     TableSheets.Instance.StageSheet.TryGetValue(
                         _stageId, out var stage, true);
                     _requiredCost = stage.CostAP;
-                    if (_stageType is StageType.HackAndSlash)
+                    var stakingLevel = States.Instance.StakingLevel;
+                    if (_stageType is StageType.HackAndSlash && stakingLevel > 0)
                     {
                         _requiredCost =
                             TableSheets.Instance.StakeActionPointCoefficientSheet
                                 .GetActionPointByStaking(
                                     _requiredCost,
                                     1,
-                                    States.Instance.StakingLevel);
+                                    stakingLevel);
                     }
 
                     startButton.SetCost(CostType.ActionPoint, _requiredCost);

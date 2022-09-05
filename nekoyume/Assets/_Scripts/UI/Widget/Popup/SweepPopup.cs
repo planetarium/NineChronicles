@@ -97,6 +97,7 @@ namespace Nekoyume.UI
 
         private StageSheet.Row _stageRow;
         private int _worldId;
+        private int _costAp;
         private bool _useSweep = true;
         private Action<StageType, int, bool> _repeatBattleAction;
 
@@ -118,7 +119,7 @@ namespace Nekoyume.UI
                     {
                         _repeatBattleAction(
                             StageType.HackAndSlash,
-                            _ap.Value / _stageRow.CostAP,
+                            _ap.Value / _costAp,
                             false);
                         Close();
                     }
@@ -240,9 +241,15 @@ namespace Nekoyume.UI
                 haveApText.text = haveApCount.ToString();
                 haveApStoneText.text = haveApStoneCount.ToString();
 
-                apSlider.Set(haveApCount / _stageRow.CostAP, haveApCount / _stageRow.CostAP,
-                    States.Instance.GameConfigState.ActionPointMax, _stageRow.CostAP,
-                    x => _ap.Value = x * _stageRow.CostAP);
+                _costAp = States.Instance.StakingLevel > 0
+                    ? TableSheets.Instance.StakeActionPointCoefficientSheet.GetActionPointByStaking(
+                        _stageRow.CostAP, 1, States.Instance.StakingLevel)
+                    : _stageRow.CostAP;
+                apSlider.Set(haveApCount / _costAp,
+                    haveApCount / _costAp,
+                    States.Instance.GameConfigState.ActionPointMax,
+                    _costAp,
+                    x => _ap.Value = x * _costAp);
 
                 apStoneSlider.Set(Math.Min(haveApStoneCount, HackAndSlashSweep.UsableApStoneCount),
                     0,
@@ -331,7 +338,11 @@ namespace Nekoyume.UI
             return sheet.TryGetValue(stageId, out row);
         }
 
-        private static (int, int) GetPlayCount(StageSheet.Row row, int apStoneCount, int ap, int stakingLevel = 0)
+        private static (int, int) GetPlayCount(
+            StageSheet.Row row,
+            int apStoneCount,
+            int ap,
+            int stakingLevel)
         {
             if (row is null)
             {
@@ -393,7 +404,7 @@ namespace Nekoyume.UI
             var (apPlayCount, apStonePlayCount)
                 = GetPlayCount(stageRow, apStoneCount, ap, States.Instance.StakingLevel);
             var totalPlayCount = apPlayCount + apStonePlayCount;
-            var actionPoint = apPlayCount * stageRow.CostAP;
+            var actionPoint = apPlayCount * _costAp;
             if (totalPlayCount <= 0)
             {
                 NotificationSystem.Push(MailType.System,

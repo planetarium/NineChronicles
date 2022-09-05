@@ -595,6 +595,7 @@ namespace Nekoyume.Game
                 _battleResultModel.NextState = BattleResultPopup.NextState.None;
             }
 
+            _battleResultModel.ClearedCountForEachWaves[log.clearedWaveNumber] = 1;
             Widget.Find<BattleResultPopup>().Show(_battleResultModel, isMulti);
             yield return null;
 

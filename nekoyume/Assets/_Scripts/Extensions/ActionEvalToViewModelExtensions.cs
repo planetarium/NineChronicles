@@ -57,7 +57,7 @@ namespace Nekoyume
                 avatarState.Update(simulator);
                 firstStageSimulator ??= simulator;
                 model.Exp += simulator.Player.Exp.Current - prevExp;
-                model.ClearedWaves[simulator.Log.clearedWaveNumber]++;
+                model.ClearedCountForEachWaves[simulator.Log.clearedWaveNumber]++;
                 foreach (var itemBase in simulator.Reward)
                 {
                     model.AddReward(new CountableItem(itemBase, 1));
