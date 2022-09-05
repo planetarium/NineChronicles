@@ -24,7 +24,8 @@ namespace Nekoyume.Helper
             Stopwatch sw,
             long blockIndex,
             string addressesHex,
-            int playCount = 1)
+            int playCount = 1,
+            int stakingLevel = 0)
         {
             var worldSheet = sheets.GetSheet<WorldSheet>();
             if (!worldSheet.TryGetValue(worldId, out var worldRow, false))
@@ -88,11 +89,17 @@ namespace Nekoyume.Helper
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Validate Items: {Elapsed}", addressesHex, sw.Elapsed);
 
-            if (avatarState.actionPoint < stageRow.CostAP * playCount)
+            var costAp = stageRow.CostAP;
+            if (stakingLevel > 0 && sheets.TryGetSheet<StakeActionPointCoefficientSheet>(out var apSheet))
+            {
+                costAp = apSheet.GetActionPointByStaking(costAp, 1, stakingLevel);
+            }
+
+            if (avatarState.actionPoint < costAp * playCount)
             {
                 throw new NotEnoughActionPointException(
                     $"{addressesHex}Aborted due to insufficient action point: " +
-                    $"{avatarState.actionPoint} < cost({stageRow.CostAP * playCount}))"
+                    $"{avatarState.actionPoint} < cost({costAp * playCount}))"
                 );
             }
 

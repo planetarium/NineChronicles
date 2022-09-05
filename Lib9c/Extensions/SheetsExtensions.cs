@@ -249,5 +249,13 @@ namespace Nekoyume.Extensions
             // Return maximum level when balance > maximum RequiredGold
             return orderedRows.Last().Level;
         }
+
+        public static int GetActionPointByStaking(this StakeActionPointCoefficientSheet sheet,
+            int originAp,
+            int playCount,
+            int level)
+        {
+            return (int)(originAp * playCount * sheet[level].Coefficient * 0.01m);
+        }
     }
 }

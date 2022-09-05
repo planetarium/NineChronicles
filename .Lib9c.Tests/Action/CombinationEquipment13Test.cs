@@ -68,8 +68,7 @@
                 default
             );
 
-            var gold = new GoldCurrencyState(new Currency("NCG", 2, minter: null));
-
+            var gold = new GoldCurrencyState(new Currency("NCG", 2, minters: null));
             var combinationSlotState = new CombinationSlotState(
                 _slotAddress,
                 GameConfig.RequireClearedStageLevel.CombinationEquipmentAction);
