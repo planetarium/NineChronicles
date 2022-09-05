@@ -287,14 +287,14 @@ namespace Nekoyume.UI
                 SubmitWidget = () => reregisterButton.OnSubmitSubject.OnNext(default);
             }
 
-            var isMulti = data.Item.Value.MaxCount.Value > 1;
+            var isCountableItem = data.Item.Value.MaxCount.Value > 1;
 
             countInputField.textComponent.color =
-                ColorHelper.HexToColorRGB(isSell && isMulti ? "ebceb1" : "292520");
-            countInputField.enabled = isSell && isMulti;
-            addCountButton.gameObject.SetActive(isSell && isMulti);
-            addMaximumCountButton.gameObject.SetActive(isSell && isMulti);
-            removeCountButton.gameObject.SetActive(isSell && isMulti);
+                ColorHelper.HexToColorRGB(isSell && isCountableItem ? "ebceb1" : "292520");
+            countInputField.enabled = isSell && isCountableItem;
+            addCountButton.gameObject.SetActive(isSell && isCountableItem);
+            addMaximumCountButton.gameObject.SetActive(isSell && isCountableItem);
+            removeCountButton.gameObject.SetActive(isSell && isCountableItem);
             submitButton.gameObject.SetActive(isSell);
             reregisterButton.gameObject.SetActive(!isSell);
             notificationButton.gameObject.SetActive(!isSell);
