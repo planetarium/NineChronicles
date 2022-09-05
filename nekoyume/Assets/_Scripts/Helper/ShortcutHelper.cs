@@ -213,7 +213,8 @@ namespace Nekoyume.Helper
 
         public static void ShortcutActionForStage(
             int worldId,
-            int stageId)
+            int stageId,
+            bool showByGuideQuest = false)
         {
             Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
             var worldMap = Widget.Find<WorldMap>();
@@ -232,13 +233,15 @@ namespace Nekoyume.Helper
                     worldMap.SharedViewModel.SelectedWorldId.Value,
                     worldMap.SharedViewModel.SelectedStageId.Value,
                     $"{L10nManager.Localize($"WORLD_NAME_{worldModel.Name.ToUpper()}")} {stageNum}",
-                    true);
+                    true,
+                    showByGuideQuest);
             Widget.Find<HeaderMenuStatic>()
                 .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
         }
 
         public static void ShortcutActionForEventStage(
-            int eventDungeonStageId)
+            int eventDungeonStageId,
+            bool showByGuideQuest = false)
         {
             Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
             var worldMap = Widget.Find<WorldMap>();
@@ -252,7 +255,8 @@ namespace Nekoyume.Helper
                     worldMap.SharedViewModel.SelectedWorldId.Value,
                     eventDungeonStageId,
                     $"{RxProps.EventDungeonRow?.GetLocalizedName()} {eventDungeonStageId.ToEventDungeonStageNumber()}",
-                    true);
+                    true,
+                    showByGuideQuest);
             Widget.Find<HeaderMenuStatic>()
                 .UpdateAssets(HeaderMenuStatic.AssetVisibleState.EventDungeon);
         }

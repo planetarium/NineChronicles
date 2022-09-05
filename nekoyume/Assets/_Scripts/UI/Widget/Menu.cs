@@ -148,8 +148,7 @@ namespace Nekoyume.UI
                     stageId))
             {
                 CloseWithOtherWidgets();
-                ShortcutHelper.ShortcutActionForStage(worldRow.Id, stageId);
-                Analyzer.Instance.GuideQuestStageId = stageId;
+                ShortcutHelper.ShortcutActionForStage(worldRow.Id, stageId, true);
             }
             else if(ShortcutHelper.CheckUIStateForUsingShortcut(ShortcutHelper.PlaceType.Stage))
             {
@@ -172,8 +171,7 @@ namespace Nekoyume.UI
                     eventDungeonStageId))
             {
                 CloseWithOtherWidgets();
-                ShortcutHelper.ShortcutActionForEventStage(eventDungeonStageId);
-                Analyzer.Instance.GuideQuestStageId = eventDungeonStageId;
+                ShortcutHelper.ShortcutActionForEventStage(eventDungeonStageId, true);
             }
             else if (ShortcutHelper.CheckUIStateForUsingShortcut(ShortcutHelper.PlaceType
                          .EventDungeonStage))

@@ -12,8 +12,6 @@ namespace Nekoyume
 
         private readonly MixpanelValueFactory _mixpanelValueFactory;
 
-        public int GuideQuestStageId { get; set; }
-
         public Analyzer(
             string uniqueId = "none",
             string rpcServerHost = null,
