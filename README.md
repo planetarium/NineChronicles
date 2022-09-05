@@ -4,6 +4,7 @@ Nine Chronicles
 
 [![CircleCI][ci-badge]][ci]
 [![Discord][Discord-badge]][Discord]
+[![Planetarium-Dev Discord Invite](https://img.shields.io/discord/928926944937013338?color=6278DA&label=Planetarium-dev&logo=discord&logoColor=white)](https://discord.gg/RYJDyFRYY7)
 
 [Nine Chronicles][9c] is a fully open-sourced online RPG without servers — like Bitcoin or BitTorrent,
 the gamers and miners connect to each other to power a distributed game network.

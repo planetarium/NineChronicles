@@ -89,7 +89,6 @@ namespace Nekoyume.Game
         public AvatarState AvatarState { get; set; }
         public bool IsShowHud { get; set; }
         public bool IsExitReserved { get; set; }
-        public bool IsRepeatStage { get; set; }
         public bool IsAvatarStateUpdatedAfterBattle { get; set; }
         public int PlayCount { get; set; }
 
@@ -569,43 +568,33 @@ namespace Nekoyume.Game
             avatarState.worldInformation.TryGetLastClearedStageId(out var lasStageId);
             _battleResultModel.LastClearedStageId = lasStageId;
             _battleResultModel.IsClear = log.IsClear;
+            var isMulti = PlayCount > 1;
 
             if (IsExitReserved)
             {
                 _battleResultModel.NextState = BattleResultPopup.NextState.GoToMain;
                 _battleResultModel.ActionPointNotEnough = false;
             }
+            else if (isMulti)
+            {
+                _battleResultModel.NextState = BattleResultPopup.NextState.None;
+            }
+            else if (_battleResultModel.ActionPointNotEnough)
+            {
+                _battleResultModel.NextState = BattleResultPopup.NextState.GoToMain;
+            }
+            else if (isClear)
+            {
+                _battleResultModel.NextState = _battleResultModel.IsEndStage
+                    ? BattleResultPopup.NextState.GoToMain
+                    : BattleResultPopup.NextState.NextStage;
+            }
             else
             {
-                if (_battleResultModel.ActionPointNotEnough)
-                {
-                    _battleResultModel.NextState = BattleResultPopup.NextState.GoToMain;
-                }
-                else
-                {
-                    if (isClear)
-                    {
-                        _battleResultModel.NextState = IsRepeatStage
-                            ? BattleResultPopup.NextState.RepeatStage
-                            : BattleResultPopup.NextState.NextStage;
-
-                        if (_battleResultModel.IsEndStage)
-                        {
-                            _battleResultModel.NextState = IsRepeatStage
-                                ? BattleResultPopup.NextState.RepeatStage
-                                : BattleResultPopup.NextState.GoToMain;
-                        }
-                    }
-                    else
-                    {
-                        _battleResultModel.NextState = IsRepeatStage
-                            ? BattleResultPopup.NextState.RepeatStage
-                            : BattleResultPopup.NextState.None;
-                    }
-                }
+                _battleResultModel.NextState = BattleResultPopup.NextState.None;
             }
 
-            var isMulti = PlayCount > 1;
+            _battleResultModel.ClearedCountForEachWaves[log.clearedWaveNumber] = 1;
             Widget.Find<BattleResultPopup>().Show(_battleResultModel, isMulti);
             yield return null;
 
@@ -616,7 +605,6 @@ namespace Nekoyume.Game
             {
                 ["StageId"] = log.stageId,
                 ["ClearedWave"] = log.clearedWaveNumber,
-                ["Repeat"] = IsRepeatStage,
                 ["CP"] = cp,
                 ["FoodCount"] = foodCount
             };
@@ -713,7 +701,6 @@ namespace Nekoyume.Game
             battle.Show(
                 StageType,
                 stageId,
-                IsRepeatStage,
                 IsExitReserved,
                 isTutorial,
                 apCost * PlayCount);

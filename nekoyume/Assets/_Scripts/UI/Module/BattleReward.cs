@@ -23,6 +23,7 @@ namespace Nekoyume.UI.Module
         public RewardItems rewardItems;
         public TextMeshProUGUI rewardText;
         public TextMeshProUGUI failedText;
+        public StarForMulti starForMulti;
         public Animator animator;
 
         private Star _star;
@@ -105,24 +106,35 @@ namespace Nekoyume.UI.Module
             }
         }
 
+        [Serializable]
+        public struct StarForMulti
+        {
+            public TextMeshProUGUI StarCountText;
+            public TextMeshProUGUI[] WaveStarTexts;
+            public TextMeshProUGUI RemainingStarText;
+        }
+
         private void Awake()
         {
-            rewardItems.gameObject.SetActive(false);
-            failedText.text = GetFailedText();
-            _stageClearText = L10nManager.Localize("UI_BATTLE_RESULT_CLEAR");
-            _star = starArea.stars[index];
-            StartCoroutine(_star.Set(false));
-            failedText.gameObject.SetActive(true);
-            for (var i = 0; i < starArea.stars.Length; i++)
+            if (index > -1)
             {
-                var star = starArea.stars[i];
-                if (i != index)
+                rewardItems.gameObject.SetActive(false);
+                failedText.text = GetFailedText();
+                _stageClearText = L10nManager.Localize("UI_BATTLE_RESULT_CLEAR");
+                _star = starArea.stars[index];
+                StartCoroutine(_star.Set(false));
+                failedText.gameObject.SetActive(true);
+                for (var i = 0; i < starArea.stars.Length; i++)
                 {
-                    star.Disable();
-                }
-                else
-                {
-                    StartCoroutine(star.Set(false));
+                    var star = starArea.stars[i];
+                    if (i != index)
+                    {
+                        star.Disable();
+                    }
+                    else
+                    {
+                        StartCoroutine(star.Set(false));
+                    }
                 }
             }
 
@@ -168,6 +180,20 @@ namespace Nekoyume.UI.Module
 
             rewardText.gameObject.SetActive(cleared);
             failedText.gameObject.SetActive(!cleared);
+        }
+
+        public void Set(int[] clearedWaves, int starCount, int maxStarCount)
+        {
+            starForMulti.StarCountText.text = $"{starCount}/{maxStarCount}";
+            for (int i = 0; i < starForMulti.WaveStarTexts.Length; i++)
+            {
+                starForMulti.WaveStarTexts[i].text = clearedWaves[i].ToString();
+            }
+
+            starForMulti.RemainingStarText.text =
+                starCount >= maxStarCount
+                    ? L10nManager.Localize("UI_ENOUGH_STAR_TO_BUFF")
+                    : L10nManager.Localize("UI_REMAINING_STAR_TO_BUFF", maxStarCount - starCount);
         }
 
         private string GetFailedText()

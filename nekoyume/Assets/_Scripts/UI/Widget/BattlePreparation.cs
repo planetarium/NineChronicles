@@ -100,6 +100,9 @@ namespace Nekoyume.UI
         private Button sweepPopupButton;
 
         [SerializeField]
+        private TextMeshProUGUI sweepButtonText;
+
+        [SerializeField]
         private Button boostPopupButton;
 
         [SerializeField]
@@ -195,7 +198,7 @@ namespace Nekoyume.UI
             startButton.OnSubmitSubject
                 .Where(_ => !Game.Game.instance.IsInWorld)
                 .ThrottleFirst(TimeSpan.FromSeconds(1f))
-                .Subscribe(_ => OnClickBattle(repeatToggle.isOn))
+                .Subscribe(_ => OnClickBattle())
                 .AddTo(gameObject);
 
             sweepPopupButton.OnClickAsObservable()
@@ -228,7 +231,6 @@ namespace Nekoyume.UI
             Analyzer.Instance.Track("Unity/Click Stage");
 
             var stage = Game.Game.instance.Stage;
-            stage.IsRepeatStage = false;
             repeatToggle.isOn = false;
             repeatToggle.interactable = true;
 
@@ -262,6 +264,10 @@ namespace Nekoyume.UI
             UpdateRandomBuffButton();
 
             closeButtonText.text = closeButtonName;
+            sweepButtonText.text =
+                States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(stageId)
+                    ? "Sweep"
+                    : "Repeat";
             startButton.gameObject.SetActive(true);
             startButton.Interactable = true;
             coverToBlockClick.SetActive(false);
@@ -683,6 +689,17 @@ namespace Nekoyume.UI
                     TableSheets.Instance.StageSheet.TryGetValue(
                         _stageId, out var stage, true);
                     _requiredCost = stage.CostAP;
+                    var stakingLevel = States.Instance.StakingLevel;
+                    if (_stageType is StageType.HackAndSlash && stakingLevel > 0)
+                    {
+                        _requiredCost =
+                            TableSheets.Instance.StakeActionPointCoefficientSheet
+                                .GetActionPointByStaking(
+                                    _requiredCost,
+                                    1,
+                                    stakingLevel);
+                    }
+
                     startButton.SetCost(CostType.ActionPoint, _requiredCost);
                     break;
                 }
@@ -697,7 +714,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private void OnClickBattle(bool repeat)
+        private void OnClickBattle()
         {
             AudioController.PlayClick();
 
@@ -712,8 +729,7 @@ namespace Nekoyume.UI
                 {
                     StartCoroutine(CoBattleStart(
                         _stageType,
-                        CostType.ActionPoint,
-                        repeat));
+                        CostType.ActionPoint));
                     break;
                 }
                 case StageType.Mimisbrunnr:
@@ -729,8 +745,7 @@ namespace Nekoyume.UI
 
                     StartCoroutine(CoBattleStart(
                         _stageType,
-                        CostType.ActionPoint,
-                        repeat));
+                        CostType.ActionPoint));
                     break;
                 }
                 case StageType.EventDungeon:
@@ -750,8 +765,7 @@ namespace Nekoyume.UI
                     {
                         StartCoroutine(CoBattleStart(
                             _stageType,
-                            CostType.EventDungeonTicket,
-                            repeat));
+                            CostType.EventDungeonTicket));
                         break;
                     }
 
@@ -776,7 +790,6 @@ namespace Nekoyume.UI
                                 CoBattleStart(
                                     StageType.EventDungeon,
                                     CostType.NCG,
-                                    false,
                                     true)));
 
                         return;
@@ -803,7 +816,6 @@ namespace Nekoyume.UI
         private IEnumerator CoBattleStart(
             StageType stageType,
             CostType costType,
-            bool repeat,
             bool buyTicketIfNeeded = false)
         {
             var game = Game.Game.instance;
@@ -836,7 +848,6 @@ namespace Nekoyume.UI
 
             SendBattleAction(
                 stageType,
-                repeat,
                 buyTicketIfNeeded: buyTicketIfNeeded);
         }
 
@@ -859,7 +870,6 @@ namespace Nekoyume.UI
 
             var stage = Game.Game.instance.Stage;
             stage.IsExitReserved = false;
-            stage.IsRepeatStage = false;
             stage.foodCount = consumables.Count;
             ActionRenderHandler.Instance.Pending = true;
 
@@ -928,7 +938,6 @@ namespace Nekoyume.UI
 
         private void SendBattleAction(
             StageType stageType,
-            bool repeat,
             int playCount = 1,
             bool buyTicketIfNeeded = false)
         {
@@ -948,7 +957,6 @@ namespace Nekoyume.UI
 
             var stage = Game.Game.instance.Stage;
             stage.IsExitReserved = false;
-            stage.IsRepeatStage = repeat;
             stage.foodCount = consumables.Count;
             ActionRenderHandler.Instance.Pending = true;
 

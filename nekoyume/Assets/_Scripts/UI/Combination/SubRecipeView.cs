@@ -190,7 +190,7 @@ namespace Nekoyume.UI
                 {
                     isEquipment = true;
                     var resultItem = equipmentRow.GetResultEquipmentItemRow();
-                    title = resultItem.GetLocalizedName(true, false);
+                    title = resultItem.GetLocalizedName(false, false);
 
                     for (var i = 0; i < mainStatTexts.Length; i++)
                     {
@@ -215,7 +215,7 @@ namespace Nekoyume.UI
                 case ConsumableItemRecipeSheet.Row consumableRow:
                 {
                     var resultItem = consumableRow.GetResultConsumableItemRow();
-                    title = resultItem.GetLocalizedName();
+                    title = resultItem.GetLocalizedName(false);
 
                     var statsCount = resultItem.Stats.Count;
                     for (var i = 0; i < mainStatTexts.Length; i++)

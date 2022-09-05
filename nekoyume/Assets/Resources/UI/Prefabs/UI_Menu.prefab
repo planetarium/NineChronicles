@@ -3455,6 +3455,7 @@ MonoBehaviour:
   stakingLevelIcon: {fileID: 4456344417387748107}
   guidedQuest: {fileID: 8354548078518022176}
   playerButton: {fileID: 1107625710520463300}
+  stakeIconData: {fileID: 11400000, guid: 09a4839f75f3f7244aae388772ba2dfe, type: 2}
 --- !u!95 &2103180334685861810
 Animator:
   serializedVersion: 4
@@ -4919,11 +4920,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 4041911374520933821, guid: 9c3d233eb0a5b44be817eb9d0d14c468,
-        type: 3}
-      propertyPath: showingAndHidingTweener
-      value: 
-      objectReference: {fileID: 5052674803275110872}
     - target: {fileID: 4330307022097444192, guid: 9c3d233eb0a5b44be817eb9d0d14c468,
         type: 3}
       propertyPath: m_IsActive
@@ -5119,40 +5115,11 @@ PrefabInstance:
       propertyPath: showingAndHidingTweener
       value: 
       objectReference: {fileID: 6485250848487064516}
-    - target: {fileID: 8948459338718410110, guid: 9c3d233eb0a5b44be817eb9d0d14c468,
-        type: 3}
-      propertyPath: showingAndHidingTweener
-      value: 
-      objectReference: {fileID: 154851197541396763}
     m_RemovedComponents:
     - {fileID: 1153520454605527093, guid: 9c3d233eb0a5b44be817eb9d0d14c468, type: 3}
     - {fileID: 886033140566410569, guid: 9c3d233eb0a5b44be817eb9d0d14c468, type: 3}
     - {fileID: 5220589867227377034, guid: 9c3d233eb0a5b44be817eb9d0d14c468, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 9c3d233eb0a5b44be817eb9d0d14c468, type: 3}
---- !u!114 &154851197541396763 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 838276281236377148, guid: 9c3d233eb0a5b44be817eb9d0d14c468,
-    type: 3}
-  m_PrefabInstance: {fileID: 685676899623862055}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2cca3fcde07a4a65b290c49ca74a2b8b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &5052674803275110872 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5736098799252858623, guid: 9c3d233eb0a5b44be817eb9d0d14c468,
-    type: 3}
-  m_PrefabInstance: {fileID: 685676899623862055}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2cca3fcde07a4a65b290c49ca74a2b8b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &5796834009682541697 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6482507596812157862, guid: 9c3d233eb0a5b44be817eb9d0d14c468,

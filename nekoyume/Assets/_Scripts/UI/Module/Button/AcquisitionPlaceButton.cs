@@ -26,7 +26,10 @@ namespace Nekoyume.UI.Module
 
         public class Model
         {
-            public Model(PlaceType type, Action onClick, string guideText, ItemBase itemBase,
+            public Model(PlaceType type,
+                Action onClick,
+                string guideText,
+                ItemBase itemBase,
                 StageSheet.Row stageRow = null)
             {
                 Type = type;
