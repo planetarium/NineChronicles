@@ -1220,12 +1220,12 @@
         }
 
         [Theory]
-        [InlineData(1)]
-        [InlineData(2)]
-        [InlineData(3)]
-        [InlineData(4)]
-        [InlineData(5)]
-        public void CheckUsedApByStaking(int level)
+        [InlineData(1, 24)]
+        [InlineData(2, 24)]
+        [InlineData(3, 30)]
+        [InlineData(4, 30)]
+        [InlineData(5, 40)]
+        public void CheckUsedApByStaking(int level, int playCount)
         {
             const int worldId = 1;
             const int stageId = 5;
@@ -1261,7 +1261,7 @@
 
             var expectedAp = previousAvatarState.actionPoint -
                              _tableSheets.StakeActionPointCoefficientSheet.GetActionPointByStaking(
-                                 _tableSheets.StageSheet[stageId].CostAP, 1, level);
+                                 _tableSheets.StageSheet[stageId].CostAP, playCount, level);
             var action = new HackAndSlash
             {
                 Costumes = new List<Guid>(),
@@ -1271,6 +1271,7 @@
                 StageId = stageId,
                 AvatarAddress = _avatarAddress,
                 StageBuffId = null,
+                PlayCount = playCount,
             };
 
             var ctx = new ActionContext
