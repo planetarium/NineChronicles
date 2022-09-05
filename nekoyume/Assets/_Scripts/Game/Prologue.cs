@@ -33,7 +33,10 @@ namespace Nekoyume.Game
 
         private IEnumerator CoStartPrologue()
         {
-            Analyzer.Instance.Track("Unity/Prologuebattle Start");
+            Analyzer.Instance.Track("Unity/Prologuebattle Start", new Value
+            {
+                ["AvatarAddress"] = Game.instance.States.CurrentAvatarState.address.ToString(),
+            });
             StartCoroutine(Widget.Find<Blind>().FadeOut(2f));
             ActionCamera.instance.InPrologue = true;
             AudioController.instance.PlayMusic(AudioController.MusicCode.PrologueBattle);
@@ -134,7 +137,7 @@ namespace Nekoyume.Game
             else
             {
                 AudioController.PlayDamaged(elementalType);
-                DamageText.Show(position, force, dmg, group);
+                DamageText.Show(ActionCamera.instance.Cam, position, force, dmg, group);
                 VFXController.instance.Create<BattleAttack01VFX>(pos);
             }
         }
@@ -208,7 +211,7 @@ namespace Nekoyume.Game
             _player.Ready();
             _player.Animator.Cast();
             AudioController.instance.PlaySfx(AudioController.SfxCode.Heal);
-            var buffRow = Game.instance.TableSheets.BuffSheet.Values.First(r =>
+            var buffRow = Game.instance.TableSheets.StatBuffSheet.Values.First(r =>
                 r.StatModifier.Value > 0 && r.StatModifier.StatType == StatType.HP);
             var buff = new HPBuff(buffRow);
             var castingEffect = Game.instance.Stage.BuffController.Get(_player.transform.position, buff);
@@ -218,14 +221,14 @@ namespace Nekoyume.Game
             effect.Play();
             var position = _player.transform.TransformPoint(0f, 1.7f, 0f);
             var force = new Vector3(-0.1f, 0.5f);
-            DamageText.Show(position, force, 64000.ToString(), DamageText.TextGroupState.Heal);
+            DamageText.Show(ActionCamera.instance.Cam, position, force, 64000.ToString(), DamageText.TextGroupState.Heal);
             yield return new WaitForSeconds(1f);
             _player.Animator.Idle();
             yield return new WaitForSeconds(1f);
         }
         private IEnumerator CoBattle()
         {
-            var buffRow = Game.instance.TableSheets.BuffSheet.Values.First(r =>
+            var buffRow = Game.instance.TableSheets.StatBuffSheet.Values.First(r =>
                 r.StatModifier.Value < 0 && r.StatModifier.StatType == StatType.DEF);
             yield return StartCoroutine(_fenrir.CoBuff(new DefenseBuff(buffRow)));
             yield return new WaitForSeconds(0.7f);

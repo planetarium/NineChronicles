@@ -21,7 +21,7 @@ namespace Nekoyume.UI
             Data = buff;
             gameObject.SetActive(true);
             remainedDurationText.enabled = true;
-            var sprite = Data.RowData.GetIcon();
+            var sprite = Data.GetIcon();
             image.overrideSprite = sprite;
             UpdateStatus(Data);
 
@@ -36,7 +36,7 @@ namespace Nekoyume.UI
         public void UpdateStatus(Buff buff)
         {
             Data = buff;
-            remainedDurationText.text = Data.remainedDuration.ToString();
+            remainedDurationText.text = Data.RemainedDuration.ToString();
         }
 
         public void Hide()

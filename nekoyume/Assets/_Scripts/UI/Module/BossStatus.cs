@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Nekoyume.Model.Buff;
+using Nekoyume.Model;
+using Nekoyume.L10n;
+using Nekoyume.Helper;
 
 namespace Nekoyume.UI.Module
 {
@@ -39,6 +42,15 @@ namespace Nekoyume.UI.Module
             current = Mathf.Max(current, 0);
             hpBar.fillAmount = (float) current / max;
             hpText.text = $"{current}/{max}";
+        }
+
+        public void SetProfile(Enemy enemy)
+        {
+            var level = enemy.Level;
+            var name = L10nManager.LocalizeCharacterName(enemy.CharacterId);
+            var sprite = SpriteHelper.GetCharacterIcon(enemy.CharacterId);
+            SetProfile(level, name, sprite);
+            SetHp(enemy.HP, enemy.HP);
         }
 
         public void SetProfile(int level, string name, Sprite sprite = null)

@@ -15,6 +15,7 @@ using Libplanet.Assets;
 using LruCacheNet;
 using MessagePack;
 using MessagePack.Resolvers;
+using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
@@ -42,6 +43,8 @@ namespace Nekoyume.Game
 
         [SerializeField] private Arena arena = null;
 
+        [SerializeField] private RaidStage raidStage = null;
+
         [SerializeField] private bool useSystemLanguage = true;
 
         [SerializeField] private LanguageTypeReactiveProperty languageType = default;
@@ -60,6 +63,7 @@ namespace Nekoyume.Game
 
         public Stage Stage => stage;
         public Arena Arena => arena;
+        public RaidStage RaidStage => raidStage;
 
         // FIXME Action.PatchTableSheet.Execute()에 의해서만 갱신됩니다.
         // 액션 실행 여부와 상관 없이 최신 상태를 반영하게끔 수정해야합니다.
@@ -195,6 +199,8 @@ namespace Nekoyume.Game
             // Initialize Stage
             Stage.Initialize();
             Arena.Initialize();
+            RaidStage.Initialize();
+
 
             Widget.Find<VersionSystem>().SetVersion(Agent.AppProtocolVersion);
 

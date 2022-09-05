@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Linq;
 using Nekoyume.Helper;
+using Nekoyume.Model;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.Item;
 using Nekoyume.TableData;

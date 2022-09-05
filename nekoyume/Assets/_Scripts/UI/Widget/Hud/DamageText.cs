@@ -23,7 +23,7 @@ namespace Nekoyume.UI
         public TextMeshProUGUI[] labels;
         public TextMeshProUGUI[] shadows;
 
-        public static DamageText Show(Vector3 position, Vector3 force, string text, TextGroupState group)
+        public static DamageText Show(Camera camera, Vector3 position, Vector3 force, string text, TextGroupState group)
         {
             var result = Create<DamageText>(true);
             for (var i = 0; i < result.labels.Length; i++)
@@ -39,10 +39,10 @@ namespace Nekoyume.UI
                 }
             }
             var rect = result.RectTransform;
-            rect.anchoredPosition = position.ToCanvasPosition(ActionCamera.instance.Cam, MainCanvas.instance.Canvas);
+            rect.anchoredPosition = position.ToCanvasPosition(camera, MainCanvas.instance.Canvas);
             rect.localScale = LocalScaleBefore;
 
-            var tweenPos = (position + force).ToCanvasPosition(ActionCamera.instance.Cam, MainCanvas.instance.Canvas);
+            var tweenPos = (position + force).ToCanvasPosition(camera, MainCanvas.instance.Canvas);
             rect.DOScale(LocalScaleAfter, TweenDuration).SetEase(Ease.OutCubic);
             rect.DOAnchorPos(tweenPos, TweenDuration * 2.0f).SetEase(Ease.InOutQuad).SetDelay(TweenDuration);
             result.group.DOFade(0.0f, TweenDuration * 2.0f).SetDelay(TweenDuration).SetEase(Ease.InCirc);

@@ -6,7 +6,8 @@ namespace Nekoyume.UI.Module.Timer
     public class BattleTimerView : TimerView
     {
         private const string TimerFormat = "{0:N0}/{1:N0}";
-        protected double _timeLimit;
+        protected int _timeLimit;
+        private int _currentTime;
 
         protected virtual void Awake()
         {
@@ -19,7 +20,7 @@ namespace Nekoyume.UI.Module.Timer
             base.Show();
         }
 
-        public virtual void Show(double timeLimit)
+        public virtual void Show(int timeLimit)
         {
             _timeLimit = timeLimit;
             SetTimer(0);
@@ -28,8 +29,16 @@ namespace Nekoyume.UI.Module.Timer
 
         protected virtual void SetTimer(int time)
         {
-            time = (int) Math.Min(time, _timeLimit);
+            _currentTime = time;
+            time = Math.Min(time, _timeLimit);
             var text = string.Format(TimerFormat, time, _timeLimit);
+            timeText.text = text;
+        }
+
+        public virtual void UpdateTurnLimit(int turnLimit)
+        {
+            _timeLimit = turnLimit;
+            var text = string.Format(TimerFormat, _currentTime, _timeLimit);
             timeText.text = text;
         }
     }
