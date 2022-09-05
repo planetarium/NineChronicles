@@ -421,7 +421,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 14, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &5674209218819314754
@@ -1197,7 +1197,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 86.72, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &6198649259493914212
@@ -4444,6 +4444,7 @@ MonoBehaviour:
   totalUsers: {fileID: 6299417258606450371}
   lastUpdatedText: {fileID: 2538393291644014815}
   refreshButton: {fileID: 5753851216646700204}
+  refreshBlocker: {fileID: 9217664884832250193}
   apiMissing: {fileID: 946240378551983199}
   noSeasonInfo: {fileID: 4397347728728410274}
   updateContainer: {fileID: 8392381644483113118}

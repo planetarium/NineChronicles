@@ -87,8 +87,20 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            var header = Find<HeaderMenuStatic>();
-            header.Show(HeaderMenuStatic.AssetVisibleState.WorldBoss);
+            var headerMenu = Find<HeaderMenuStatic>();
+            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+            switch (WorldBossFrontHelper.GetStatus(currentBlockIndex))
+            {
+                case WorldBossStatus.OffSeason:
+                    headerMenu.Show(HeaderMenuStatic.AssetVisibleState.CurrencyOnly);
+                    break;
+                case WorldBossStatus.Season:
+                    headerMenu.Show(HeaderMenuStatic.AssetVisibleState.WorldBoss);
+                    break;
+                case WorldBossStatus.None:
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
             base.Close(ignoreCloseAnimation);
         }
 
