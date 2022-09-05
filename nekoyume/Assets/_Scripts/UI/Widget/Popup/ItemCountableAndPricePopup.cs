@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.UI.Module;
@@ -31,9 +32,6 @@ namespace Nekoyume.UI
         [SerializeField] private List<Button> addPriceButton = null;
 
         [SerializeField] private TextMeshProUGUI unitPrice;
-
-        [SerializeField] private GameObject positiveMessage;
-        [SerializeField] private GameObject warningMessage;
 
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
         private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
@@ -215,8 +213,6 @@ namespace Nekoyume.UI
                     var isValid = IsValid();
                     submitButton.Interactable = isValid;
                     reregisterButton.Interactable = isValid;
-                    positiveMessage.SetActive(isValid);
-                    warningMessage.SetActive(!isValid);
                 })
                 .AddTo(_disposablesForSetData);
 
@@ -291,10 +287,14 @@ namespace Nekoyume.UI
                 SubmitWidget = () => reregisterButton.OnSubmitSubject.OnNext(default);
             }
 
-            countInputField.enabled = isSell;
-            addCountButton.gameObject.SetActive(isSell);
-            addMaximumCountButton.gameObject.SetActive(isSell);
-            removeCountButton.gameObject.SetActive(isSell);
+            var isMulti = data.Item.Value.MaxCount.Value > 1;
+
+            countInputField.textComponent.color =
+                ColorHelper.HexToColorRGB(isSell && isMulti ? "ebceb1" : "292520");
+            countInputField.enabled = isSell && isMulti;
+            addCountButton.gameObject.SetActive(isSell && isMulti);
+            addMaximumCountButton.gameObject.SetActive(isSell && isMulti);
+            removeCountButton.gameObject.SetActive(isSell && isMulti);
             submitButton.gameObject.SetActive(isSell);
             reregisterButton.gameObject.SetActive(!isSell);
             notificationButton.gameObject.SetActive(!isSell);
