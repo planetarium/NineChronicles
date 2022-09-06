@@ -141,58 +141,21 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
         }
 
-        // TODO: QuestPreparation.Quest(bool repeat) 와 로직이 흡사하기 때문에 정리할 여지가 있습니다.
-        private static void HackAndSlash(int stageId)
+        private void HackAndSlash(int stageId)
         {
-            var sheets = Game.Game.instance.TableSheets;
-            var stageRow = sheets.StageSheet.OrderedList.FirstOrDefault(row => row.Id == stageId);
-            if (stageRow is null)
+            if (TableSheets.Instance.WorldSheet.TryGetByStageId(stageId, out var worldRow) &&
+                ShortcutHelper.CheckConditionOfShortcut(ShortcutHelper.PlaceType.Stage,
+                    stageId))
             {
-                return;
+                CloseWithOtherWidgets();
+                ShortcutHelper.ShortcutActionForStage(worldRow.Id, stageId, true);
             }
-
-            var requiredCost = stageRow.CostAP;
-            if (States.Instance.CurrentAvatarState.actionPoint < requiredCost)
+            else if(ShortcutHelper.CheckUIStateForUsingShortcut(ShortcutHelper.PlaceType.Stage))
             {
-                OneLineSystem.Push(
-                    MailType.System,
-                    L10nManager.Localize("ERROR_ACTION_POINT"),
-                    NotificationCell.NotificationType.Alert);
-                return;
+                Find<Menu>().QuestClick();
             }
-
-            if (!sheets.WorldSheet.TryGetByStageId(stageId, out var worldRow))
-            {
-                return;
-            }
-
-            var worldId = worldRow.Id;
-
-            Find<LoadingScreen>().Show();
-            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
-
-            var stage = Game.Game.instance.Stage;
-            stage.IsExitReserved = false;
-            var player = stage.GetPlayer();
-            player.StartRun();
-            ActionCamera.instance.ChaseX(player.transform);
-            ActionRenderHandler.Instance.Pending = true;
-            Game.Game.instance.ActionManager
-                .HackAndSlash(player, worldId, stageId)
-                .Subscribe();
-            LocalLayerModifier.ModifyAvatarActionPoint(
-                States.Instance.CurrentAvatarState.address,
-                -requiredCost);
-            var props = new Value
-            {
-                ["StageID"] = stageId,
-                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-            };
-            Analyzer.Instance.Track("Unity/Click Guided Quest Enter Dungeon", props);
         }
 
-        // NOTE: This method is almost same with part of
-        //       the `BattlePreparation.OnClickBattle()` method.
         private void EventDungeonBattle(int eventDungeonStageId)
         {
             if (RxProps.EventScheduleRowForDungeon.Value is null)
@@ -204,80 +167,16 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (RxProps.EventDungeonTicketProgress.Value.currentTickets == 0)
+            if (ShortcutHelper.CheckConditionOfShortcut(ShortcutHelper.PlaceType.EventDungeonStage,
+                    eventDungeonStageId))
             {
-                var ncgHas = States.Instance.GoldBalanceState.Gold;
-                var ncgCost =
-                    RxProps.EventScheduleRowForDungeon.Value
-                        .GetDungeonTicketCost(
-                            RxProps.EventDungeonInfo.Value?.NumberOfTicketPurchases ?? 0,
-                            States.Instance.GoldBalanceState.Gold.Currency);
-                if (ncgHas >= ncgCost)
-                {
-                    // FIXME: `UI_CONFIRM_PAYMENT_CURRENCY_FORMAT_FOR_BATTLE_ARENA` key
-                    //        is temporary.
-                    var notEnoughTicketMsg = L10nManager.Localize(
-                        "UI_CONFIRM_PAYMENT_CURRENCY_FORMAT_FOR_BATTLE_ARENA",
-                        ncgCost.ToString());
-                    Find<PaymentPopup>().ShowAttract(
-                        CostType.EventDungeonTicket,
-                        "1",
-                        notEnoughTicketMsg,
-                        L10nManager.Localize("UI_YES"),
-                        () => SendEventDungeonBattleAction(
-                            eventDungeonStageId,
-                            true));
-
-                    return;
-                }
-
-                var notEnoughNCGMsg =
-                    L10nManager.Localize("UI_NOT_ENOUGH_NCG_WITH_SUPPLIER_INFO");
-                Find<PaymentPopup>().ShowAttract(
-                    CostType.NCG,
-                    ncgCost.GetQuantityString(),
-                    notEnoughNCGMsg,
-                    L10nManager.Localize("UI_GO_TO_MARKET"),
-                    () => GoToMarket(TradeType.Sell));
-
-                return;
+                CloseWithOtherWidgets();
+                ShortcutHelper.ShortcutActionForEventStage(eventDungeonStageId, true);
             }
-
-            SendEventDungeonBattleAction(
-                eventDungeonStageId,
-                false);
-
-            void SendEventDungeonBattleAction(
-                int eventDungeonStageId,
-                bool buyTicketIfNeeded)
+            else if (ShortcutHelper.CheckUIStateForUsingShortcut(ShortcutHelper.PlaceType
+                         .EventDungeonStage))
             {
-                Find<LoadingScreen>().Show();
-                Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.EventDungeon);
-
-                var stage = Game.Game.instance.Stage;
-                stage.IsExitReserved = false;
-                var player = stage.GetPlayer();
-                player.StartRun();
-                ActionCamera.instance.ChaseX(player.transform);
-                ActionRenderHandler.Instance.Pending = true;
-
-                var scheduleId = RxProps.EventScheduleRowForDungeon.Value.Id;
-                var eventDungeonId = RxProps.EventDungeonRow.Id;
-                Game.Game.instance.ActionManager
-                    .EventDungeonBattle(
-                        scheduleId,
-                        eventDungeonId,
-                        eventDungeonStageId,
-                        player,
-                        buyTicketIfNeeded)
-                    .Subscribe();
-                var props = new Value
-                {
-                    ["EventScheduleID"] = scheduleId,
-                    ["EventDungeonID"] = eventDungeonId,
-                    ["EventDungeonStageID"] = eventDungeonStageId,
-                };
-                Analyzer.Instance.Track("Unity/Click Guided Quest Enter Event Dungeon", props);
+                Find<Menu>().QuestClick();
             }
         }
 
@@ -698,8 +597,13 @@ namespace Nekoyume.UI
             playerButton.onClick.AddListener(() => callback?.Invoke());
         }
 
-        public void TutorialActionHackAndSlash() => HackAndSlash(GuidedQuest.WorldQuest?.Goal ?? 1);
+        // Invoke from TutorialController.PlayAction()
+        public void TutorialActionHackAndSlash()
+        {
+            HackAndSlash(GuidedQuest.WorldQuest?.Goal ?? 1);
+        }
 
+        // Invoke from TutorialController.PlayAction()
         public void TutorialActionGoToFirstRecipeCellView()
         {
             var firstRecipeRow = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.OrderedList
@@ -714,6 +618,7 @@ namespace Nekoyume.UI
             GoToCombinationEquipmentRecipe(firstRecipeRow.Id);
         }
 
+        // Invoke from TutorialController.PlayAction()
         public void TutorialActionClickGuidedQuestWorldStage2()
         {
             var player = Game.Game.instance.Stage.GetPlayer();

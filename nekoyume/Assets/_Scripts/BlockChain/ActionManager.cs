@@ -218,8 +218,17 @@ namespace Nekoyume.BlockChain
             int worldId,
             int stageId,
             int? stageBuffId = null,
-            int playCount = 1)
+            int playCount = 1,
+            bool trackGuideQuest = false)
         {
+            if (trackGuideQuest)
+            {
+                Analyzer.Instance.Track("Unity/Click Guided Quest Enter Dungeon", new Value
+                {
+                    ["StageID"] = stageId,
+                });
+            }
+
             Analyzer.Instance.Track("Unity/HackAndSlash", new Value
             {
                 ["WorldId"] = worldId,
@@ -286,8 +295,19 @@ namespace Nekoyume.BlockChain
             List<Equipment> equipments,
             List<Costume> costumes,
             List<Consumable> foods,
-            bool buyTicketIfNeeded)
+            bool buyTicketIfNeeded,
+            bool trackGuideQuest = false)
         {
+            if (trackGuideQuest)
+            {
+                Analyzer.Instance.Track("Unity/Click Guided Quest Enter Event Dungeon", new Value
+                {
+                    ["EventScheduleID"] = eventScheduleId,
+                    ["EventDungeonID"] = eventDungeonId,
+                    ["EventDungeonStageID"] = eventDungeonStageId,
+                });
+            }
+
             var numberOfTicketPurchases =
                 RxProps.EventDungeonInfo.Value?.NumberOfTicketPurchases ?? 0;
             Analyzer.Instance.Track("Unity/EventDungeonBattle", new Value
