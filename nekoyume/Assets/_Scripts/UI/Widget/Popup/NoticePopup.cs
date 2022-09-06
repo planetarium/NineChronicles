@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Linq;
 using UnityEngine.UI;
 using UnityEngine;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.ScriptableObject;
 using Nekoyume.Helper;
+using UnityEngine.AddressableAssets;
 
 namespace Nekoyume.UI
 {
@@ -28,10 +29,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button closeButton;
 
-        [SerializeField]
-        private NoticeInfo[] noticeList;
-
         private const string LastNoticeDayKeyFormat = "LAST_NOTICE_DAY_{0}";
+
+        private NoticeInfo _usingNoticeInfo;
 
         private static bool CanShowNoticePopup(NoticeInfo notice)
         {
@@ -86,21 +86,29 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreStartAnimation = false)
         {
-            var firstNotice = noticeList.FirstOrDefault();
-            if (!CanShowNoticePopup(firstNotice))
-            {
-                return;
-            }
+            Addressables.LoadAssetAsync<NoticeInfoScriptableObject>("notice").Completed +=
+                operationHandle =>
+                {
+                    if (operationHandle.IsValid())
+                    {
+                        _usingNoticeInfo = operationHandle.Result.noticeInfo;
+                        if (!CanShowNoticePopup(_usingNoticeInfo))
+                        {
+                            return;
+                        }
 
-            contentImage.sprite = firstNotice?.contentImage
-                ? firstNotice.contentImage
-                : contentImage.sprite;
+                        contentImage.sprite = _usingNoticeInfo.contentImage
+                            ? _usingNoticeInfo.contentImage
+                            : contentImage.sprite;
+                    }
+                };
+
             base.Show(ignoreStartAnimation);
         }
 
         private void GoToNoticePage()
         {
-            Application.OpenURL(noticeList.FirstOrDefault()?.pageUrlFormat);
+            Application.OpenURL(_usingNoticeInfo.pageUrlFormat);
         }
     }
 }
