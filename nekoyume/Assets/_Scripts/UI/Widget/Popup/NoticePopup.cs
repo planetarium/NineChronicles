@@ -84,7 +84,7 @@ namespace Nekoyume.UI
             });
         }
 
-        public override void Show(bool ignoreStartAnimation = false)
+        public override void Initialize()
         {
             Addressables.LoadAssetAsync<NoticeInfoScriptableObject>("notice").Completed +=
                 operationHandle =>
@@ -92,16 +92,21 @@ namespace Nekoyume.UI
                     if (operationHandle.IsValid())
                     {
                         _usingNoticeInfo = operationHandle.Result.noticeInfo;
-                        if (!CanShowNoticePopup(_usingNoticeInfo))
-                        {
-                            return;
-                        }
-
-                        contentImage.sprite = _usingNoticeInfo.contentImage
-                            ? _usingNoticeInfo.contentImage
-                            : contentImage.sprite;
                     }
+                    base.Initialize();
                 };
+        }
+
+        public override void Show(bool ignoreStartAnimation = false)
+        {
+            if (!CanShowNoticePopup(_usingNoticeInfo))
+            {
+                return;
+            }
+
+            contentImage.sprite = _usingNoticeInfo.contentImage
+                ? _usingNoticeInfo.contentImage
+                : contentImage.sprite;
 
             base.Show(ignoreStartAnimation);
         }
