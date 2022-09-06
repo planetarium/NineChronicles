@@ -425,6 +425,11 @@ namespace Nekoyume.Model
             var minDuration = int.MaxValue;
             foreach (var buff in StatBuffs)
             {
+                if (buff.RowData.StatModifier.Value < 0)
+                {
+                    continue;
+                }
+
                 var elapsedTurn = buff.OriginalDuration - buff.RemainedDuration;
                 if (removedBuff is null)
                 {

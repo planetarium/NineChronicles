@@ -88,7 +88,7 @@ namespace Lib9c.Tests.Action
                 var nextState = action.Execute(new ActionContext
                 {
                     Signer = agentAddress,
-                    BlockIndex = 1,
+                    BlockIndex = 10000,
                     Random = new TestRandom(randomSeed),
                     PreviousStates = state,
                 });
@@ -115,7 +115,7 @@ namespace Lib9c.Tests.Action
                 Assert.Throws(exc, () => action.Execute(new ActionContext
                 {
                     Signer = default,
-                    BlockIndex = 1,
+                    BlockIndex = 10000,
                     Random = new TestRandom(randomSeed),
                     PreviousStates = state,
                 }));
