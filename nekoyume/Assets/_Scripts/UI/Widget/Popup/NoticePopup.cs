@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine.UI;
 using UnityEngine;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.ScriptableObject;
 using Nekoyume.Helper;
 using UnityEngine.AddressableAssets;
+using UnityEngine.Networking;
 
 namespace Nekoyume.UI
 {
@@ -30,8 +32,11 @@ namespace Nekoyume.UI
         private Button closeButton;
 
         private const string LastNoticeDayKeyFormat = "LAST_NOTICE_DAY_{0}";
+        private const string BucketUrl =
+            "https://9c-asset-bundle.s3.us-east-2.amazonaws.com/Images/Notice_";
 
         private NoticeInfo _usingNoticeInfo;
+        private bool _spriteIsInitialized;
 
         private static bool CanShowNoticePopup(NoticeInfo notice)
         {
@@ -104,16 +109,35 @@ namespace Nekoyume.UI
                 return;
             }
 
-            contentImage.sprite = _usingNoticeInfo.contentImage
-                ? _usingNoticeInfo.contentImage
-                : contentImage.sprite;
-
             base.Show(ignoreStartAnimation);
+            if (!_spriteIsInitialized)
+            {
+                StartCoroutine(CoSetTexture());
+            }
         }
 
         private void GoToNoticePage()
         {
             Application.OpenURL(_usingNoticeInfo.pageUrlFormat);
+        }
+
+        private IEnumerator CoSetTexture()
+        {
+            var www = UnityWebRequestTexture.GetTexture($"{BucketUrl}{_usingNoticeInfo.name}.png");
+            yield return www.SendWebRequest();
+            if (www.result != UnityWebRequest.Result.Success)
+            {
+                Debug.Log(www.error);
+            }
+            else
+            {
+                var myTexture = ((DownloadHandlerTexture)www.downloadHandler).texture;
+                contentImage.sprite = Sprite.Create(
+                    myTexture,
+                    new Rect(0, 0, myTexture.width, myTexture.height),
+                    new Vector2(0.5f, 0.5f));
+                _spriteIsInitialized = true;
+            }
         }
     }
 }
