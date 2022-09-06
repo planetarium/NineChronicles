@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Libplanet;
 using Nekoyume.Helper;
@@ -47,6 +48,9 @@ namespace Nekoyume.UI.Module.WorldBoss
         private Button refreshButton;
 
         [SerializeField]
+        private GameObject refreshBlocker;
+
+        [SerializeField]
         private GameObject apiMissing;
 
         [SerializeField]
@@ -67,11 +71,12 @@ namespace Nekoyume.UI.Module.WorldBoss
         private readonly Dictionary<Status, WorldBossRankItems> _cachedItems = new();
         private Status _status;
         private GameObject _bossNameObject;
-        private Address currentAvatarAddress;
+        private Address _currentAvatarAddress;
 
         private void Awake()
         {
             refreshButton.OnClickAsObservable()
+                .Where(_=> !refreshBlocker.activeSelf)
                 .Subscribe(_ => RefreshAsync()).AddTo(gameObject);
         }
 
@@ -220,6 +225,7 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         private void SetActiveQueryLoading(bool value)
         {
+            refreshBlocker.SetActive(value);
             foreach (var o in queryLoadingObjects)
             {
                 o.SetActive(value);

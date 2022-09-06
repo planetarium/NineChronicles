@@ -49,6 +49,9 @@ namespace Nekoyume.UI
         private Button refreshButton;
 
         [SerializeField]
+        private GameObject refreshBlocker;
+
+        [SerializeField]
         private ConditionalButton enterButton;
 
         [SerializeField]
@@ -115,7 +118,9 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
             runeButton.OnClickAsObservable()
                 .Subscribe(_ => ShowDetail(WorldBossDetail.ToggleType.Rune)).AddTo(gameObject);
-            refreshButton.OnClickAsObservable()
+            refreshButton
+                .OnClickAsObservable()
+                .Where(_=> !refreshBlocker.activeSelf)
                 .Subscribe(_ => RefreshMyInformationAsync()).AddTo(gameObject);
 
             enterButton.OnSubmitSubject.Subscribe(_ => OnClickEnter()).AddTo(gameObject);
@@ -386,6 +391,7 @@ namespace Nekoyume.UI
 
         private void SetActiveQueryLoading(bool value)
         {
+            refreshBlocker.SetActive(value);
             foreach (var o in queryLoadingObjects)
             {
                 o.SetActive(value);
