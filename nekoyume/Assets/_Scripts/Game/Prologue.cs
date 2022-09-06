@@ -35,7 +35,7 @@ namespace Nekoyume.Game
         {
             Analyzer.Instance.Track("Unity/Prologuebattle Start", new Value
             {
-                ["AvatarAddress"] = Game.instance.States.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = Game.instance.States.AgentState.address.ToString(),
             });
             StartCoroutine(Widget.Find<Blind>().FadeOut(2f));
             ActionCamera.instance.InPrologue = true;
