@@ -19,6 +19,7 @@ namespace Nekoyume.Action
     [ActionType("raid")]
     public class Raid : GameAction
     {
+        public const long RequiredInterval = 5L;
         public Address AvatarAddress;
         public List<Guid> EquipmentIds;
         public List<Guid> CostumeIds;
@@ -89,6 +90,11 @@ namespace Nekoyume.Action
                 states = states.TransferAsset(context.Signer, worldBossAddress, crystalCost);
             }
 
+            if (context.BlockIndex - raiderState.UpdatedBlockIndex < RequiredInterval)
+            {
+                throw new RequiredBlockIndexException($"wait for interval. {context.BlockIndex - raiderState.UpdatedBlockIndex}");
+            }
+
             if (WorldBossHelper.CanRefillTicket(context.BlockIndex, raiderState.RefillBlockIndex, row.StartedBlockIndex))
             {
                 raiderState.RemainChallengeCount = WorldBossHelper.MaxChallengeCount;
@@ -157,7 +163,7 @@ namespace Nekoyume.Action
             int score = simulator.DamageDealt;
             int cp = CPHelper.GetCPV2(avatarState, sheets.GetSheet<CharacterSheet>(),
                 sheets.GetSheet<CostumeStatSheet>());
-            raiderState.Update(avatarState, cp, score, PayNcg);
+            raiderState.Update(avatarState, cp, score, PayNcg, context.BlockIndex);
 
             // Reward.
             bossState.CurrentHp -= score;
