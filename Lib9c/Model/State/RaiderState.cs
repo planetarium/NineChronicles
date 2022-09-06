@@ -25,6 +25,7 @@ namespace Nekoyume.Model.State
         public Address AvatarAddress;
         public string AvatarNameWithHash;
         public int LatestBossLevel;
+        public long UpdatedBlockIndex;
 
         public RaiderState()
         {
@@ -51,9 +52,10 @@ namespace Nekoyume.Model.State
             AvatarAddress = rawState[11].ToAddress();
             AvatarNameWithHash = rawState[12].ToDotnetString();
             LatestBossLevel = rawState[13].ToInteger();
+            UpdatedBlockIndex = rawState[14].ToLong();
         }
 
-        public void Update(AvatarState avatarState, int cp, int score, bool payNcg)
+        public void Update(AvatarState avatarState, int cp, int score, bool payNcg, long blockIndex)
         {
             Level = avatarState.level;
             AvatarAddress = avatarState.address;
@@ -71,6 +73,7 @@ namespace Nekoyume.Model.State
             }
             TotalChallengeCount++;
             IconId = avatarState.inventory.GetEquippedFullCostumeOrArmorId();
+            UpdatedBlockIndex = blockIndex;
         }
 
         public IValue Serialize()
@@ -89,7 +92,8 @@ namespace Nekoyume.Model.State
                 .Add(IconId.Serialize())
                 .Add(AvatarAddress.Serialize())
                 .Add(AvatarNameWithHash.Serialize())
-                .Add(LatestBossLevel.Serialize());
+                .Add(LatestBossLevel.Serialize())
+                .Add(UpdatedBlockIndex.Serialize());
         }
     }
 }
