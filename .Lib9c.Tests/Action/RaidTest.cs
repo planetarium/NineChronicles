@@ -38,41 +38,40 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         // Join new raid.
-        [InlineData(null, true, true, 10005L, true, false, 0, 10005L, false, false, 0, false, false, false, 0L)]
+        [InlineData(null, true, true, true, false, 0, 5L, false, false, 0, false, false, false, 0L)]
         // Refill by interval.
-        [InlineData(null, true, true, 11000L, false, true, 0, 10000L, false, false, 0, false, false, false, 0L)]
+        [InlineData(null, true, true, false, true, 0, 0L, false, false, 0, false, false, false, 0L)]
         // Refill by NCG.
-        [InlineData(null, true, true, 10000L, false, true, 0, 10200L, true, true, 0, false, false, false, 0L)]
-        [InlineData(null, true, true, 10000L, false, true, 0, 10200L, true, true, 1, false, false, false, 0L)]
+        [InlineData(null, true, true, false, true, 0, 200L, true, true, 0, false, false, false, 0L)]
+        [InlineData(null, true, true, false, true, 0, 200L, true, true, 1, false, false, false, 0L)]
         // Boss level up.
-        [InlineData(null, true, true, 10000L, false, true, 3, 10100L, false, false, 0, true, true, false, 0L)]
+        [InlineData(null, true, true, false, true, 3, 100L, false, false, 0, true, true, false, 0L)]
         // Update RaidRewardInfo.
-        [InlineData(null, true, true, 10000L, false, true, 3, 10100L, false, false, 0, true, true, true, 0L)]
+        [InlineData(null, true, true, false, true, 3, 100L, false, false, 0, true, true, true, 0L)]
         // Boss skip level up.
-        [InlineData(null, true, true, 10000L, false, true, 3, 10100L, false, false, 0, true, false, false, 0L)]
+        [InlineData(null, true, true, false, true, 3, 100L, false, false, 0, true, false, false, 0L)]
         // AvatarState null.
-        [InlineData(typeof(FailedLoadStateException), false, false, 10000L, false, false, 0, 10000L, false, false, 0, false, false, false, 0L)]
+        [InlineData(typeof(FailedLoadStateException), false, false, false, false, 0, 0L, false, false, 0, false, false, false, 0L)]
         // Stage not cleared.
-        [InlineData(typeof(NotEnoughClearedStageLevelException), true, false, 10000L, false, false, 0, 10000L, false, false, 0, false, false, false, 0L)]
+        [InlineData(typeof(NotEnoughClearedStageLevelException), true, false, false, false, 0, 0L, false, false, 0, false, false, false, 0L)]
         // Insufficient CRYSTAL.
-        [InlineData(typeof(InsufficientBalanceException), true, true, 10000L, false, false, 0, 10000L, false, false, 0, false, false, false, 0L)]
+        [InlineData(typeof(InsufficientBalanceException), true, true, false, false, 0, 0L, false, false, 0, false, false, false, 0L)]
         // Insufficient NCG.
-        [InlineData(typeof(InsufficientBalanceException), true, true, 10000L, false, true, 0, 10010L, true, false, 0, false, false, false, 0L)]
+        [InlineData(typeof(InsufficientBalanceException), true, true, false, true, 0, 10L, true, false, 0, false, false, false, 0L)]
         // Wait interval.
-        [InlineData(typeof(RequiredBlockIndexException), true, true, 10000L, false, true, 0, 10000L, true, false, 0, false, false, false, 9L)]
+        [InlineData(typeof(RequiredBlockIndexException), true, true, false, true, 0, 0L, true, false, 0, false, false, false, 9L)]
         // Exceed purchase limit.
-        [InlineData(typeof(ExceedTicketPurchaseLimitException), true, true, 10000L, false, true, 0, 10010L, true, false, 1_000, false, false, false, 0L)]
+        [InlineData(typeof(ExceedTicketPurchaseLimitException), true, true, false, true, 0, 10L, true, false, 1_000, false, false, false, 0L)]
         // Exceed challenge count.
-        [InlineData(typeof(ExceedPlayCountException), true, true, 10000L, false, true, 0, 10000L, false, false, 0, false, false, false, 0L)]
+        [InlineData(typeof(ExceedPlayCountException), true, true, false, true, 0, 0L, false, false, 0, false, false, false, 0L)]
         public void Execute(
             Type exc,
             bool avatarExist,
             bool stageCleared,
-            long blockIndex,
             bool crystalExist,
             bool raiderStateExist,
             int remainChallengeCount,
-            long refillBlockIndex,
+            long refillBlockIndexOffset,
             bool payNcg,
             bool ncgExist,
             int purchaseCount,
@@ -82,6 +81,11 @@ namespace Lib9c.Tests.Action
             long updatedBlockIndex
         )
         {
+            var blockIndex = _tableSheets.WorldBossListSheet.Values
+                .OrderBy(x => x.StartedBlockIndex)
+                .First()
+                .StartedBlockIndex;
+
             var action = new Raid
             {
                 AvatarAddress = _avatarAddress,
@@ -149,7 +153,7 @@ namespace Lib9c.Tests.Action
                 if (raiderStateExist)
                 {
                     var raiderState = new RaiderState();
-                    raiderState.RefillBlockIndex = refillBlockIndex;
+                    raiderState.RefillBlockIndex = blockIndex + refillBlockIndexOffset;
                     raiderState.RemainChallengeCount = remainChallengeCount;
                     raiderState.TotalScore = 1_000;
                     raiderState.HighScore = 0;
