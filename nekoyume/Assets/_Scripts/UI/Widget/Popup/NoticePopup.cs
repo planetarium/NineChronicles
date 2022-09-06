@@ -87,6 +87,7 @@ namespace Nekoyume.UI
                 Close();
                 AudioController.PlayClick();
             });
+            closeButton.interactable = false;
         }
 
         public override void Initialize()
@@ -125,6 +126,7 @@ namespace Nekoyume.UI
         {
             var www = UnityWebRequestTexture.GetTexture($"{BucketUrl}{_usingNoticeInfo.name}.png");
             yield return www.SendWebRequest();
+            closeButton.interactable = true;
             if (www.result != UnityWebRequest.Result.Success)
             {
                 Debug.Log(www.error);
