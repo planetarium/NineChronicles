@@ -158,7 +158,7 @@ namespace Lib9c.Tests.Action
                     raiderState.Cp = 0;
                     raiderState.Level = 0;
                     raiderState.IconId = 0;
-                    raiderState.AvatarNameWithHash = "hash";
+                    raiderState.AvatarName = "hash";
                     raiderState.AvatarAddress = _avatarAddress;
                     raiderState.UpdatedBlockIndex = updatedBlockIndex;
 
@@ -396,7 +396,7 @@ namespace Lib9c.Tests.Action
             raiderState.Cp = 0;
             raiderState.Level = 0;
             raiderState.IconId = 0;
-            raiderState.AvatarNameWithHash = "hash";
+            raiderState.AvatarName = "hash";
             raiderState.AvatarAddress = _avatarAddress;
             state = state.SetState(raiderAddress, raiderState.Serialize());
 

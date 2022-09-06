@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
 using Bencodex.Types;
 using Libplanet;
-using Libplanet.Assets;
-using Nekoyume.Battle;
 using Nekoyume.Helper;
 
 namespace Nekoyume.Model.State
@@ -23,7 +20,7 @@ namespace Nekoyume.Model.State
         public int Level;
         public int IconId;
         public Address AvatarAddress;
-        public string AvatarNameWithHash;
+        public string AvatarName;
         public int LatestBossLevel;
         public long UpdatedBlockIndex;
 
@@ -33,7 +30,7 @@ namespace Nekoyume.Model.State
             HighScore = 0;
             TotalChallengeCount = 0;
             RemainChallengeCount = WorldBossHelper.MaxChallengeCount;
-            AvatarNameWithHash = "";
+            AvatarName = "";
         }
 
         public RaiderState(List rawState)
@@ -50,7 +47,7 @@ namespace Nekoyume.Model.State
             Level = rawState[9].ToInteger();
             IconId = rawState[10].ToInteger();
             AvatarAddress = rawState[11].ToAddress();
-            AvatarNameWithHash = rawState[12].ToDotnetString();
+            AvatarName = rawState[12].ToDotnetString();
             LatestBossLevel = rawState[13].ToInteger();
             UpdatedBlockIndex = rawState[14].ToLong();
         }
@@ -59,7 +56,7 @@ namespace Nekoyume.Model.State
         {
             Level = avatarState.level;
             AvatarAddress = avatarState.address;
-            AvatarNameWithHash = avatarState.NameWithHash;
+            AvatarName = avatarState.name;
             Cp = cp;
             if (HighScore < score)
             {
@@ -91,7 +88,7 @@ namespace Nekoyume.Model.State
                 .Add(Level.Serialize())
                 .Add(IconId.Serialize())
                 .Add(AvatarAddress.Serialize())
-                .Add(AvatarNameWithHash.Serialize())
+                .Add(AvatarName.Serialize())
                 .Add(LatestBossLevel.Serialize())
                 .Add(UpdatedBlockIndex.Serialize());
         }
