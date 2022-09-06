@@ -79,6 +79,7 @@ namespace Nekoyume.Game
         public const string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
 
         public NineChroniclesAPIClient ApiClient => _apiClient;
+        public NineChroniclesAPIClient RpcClient => _rpcClient;
 
         public readonly LruCache<Address, IValue> CachedStates = new LruCache<Address, IValue>();
 
@@ -92,6 +93,8 @@ namespace Nekoyume.Game
         private AmazonCloudWatchLogsClient _logsClient;
 
         private NineChroniclesAPIClient _apiClient;
+
+        private NineChroniclesAPIClient _rpcClient;
 
         private PlayableDirector _activeDirector;
 
@@ -194,6 +197,11 @@ namespace Nekoyume.Game
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
             // Initialize NineChroniclesAPIClient.
             _apiClient = new NineChroniclesAPIClient(_options.ApiServerHost);
+            if (!string.IsNullOrEmpty(_options.RpcServerHost))
+            {
+                _rpcClient = new NineChroniclesAPIClient($"http://{_options.RpcServerHost}/graphql");
+            }
+
             // Initialize Rank.SharedModel
             RankPopup.UpdateSharedModel();
             // Initialize Stage

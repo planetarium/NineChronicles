@@ -10,6 +10,7 @@ using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Tween;
 using TMPro;
 using UnityEngine;
@@ -82,14 +83,24 @@ namespace Nekoyume.UI
             _coCloseCoroutine = StartCoroutine(CoClose());
         }
 
-        public void Show(IReadOnlyList<FungibleAssetValue> killRewards, System.Action closeCallback)
+        public void Show(IReadOnlyList<FungibleAssetValue> rewards, System.Action closeCallback)
         {
             base.Show();
             titleText.text = L10nManager.Localize("UI_BOSS_KILL_REWARDS");
-            UpdateRewardItems(killRewards);
+            UpdateRewardItems(rewards);
             graphicAlphaTweener.Play();
             PlayEffects();
             _closeCallback = closeCallback;
+            _coCloseCoroutine = StartCoroutine(CoClose());
+        }
+
+        public void Show(IReadOnlyList<SeasonRewards> rewards)
+        {
+            base.Show();
+            titleText.text = L10nManager.Localize("UI_BOSS_SEASON_REWARDS");
+            UpdateRewardItems(rewards);
+            graphicAlphaTweener.Play();
+            PlayEffects();
             _coCloseCoroutine = StartCoroutine(CoClose());
         }
 
@@ -168,6 +179,43 @@ namespace Nekoyume.UI
 
                 var count = Convert.ToInt32(runeReward.GetQuantityString());
                 totalRuneRewards[key] += count;
+            }
+
+            var index = 0;
+            foreach (var (ticker, count) in totalRuneRewards)
+            {
+                runes[index].Object.SetActive(true);
+                runes[index].Count.text = $"{count:#,0}";
+                if (WorldBossFrontHelper.TryGetRuneIcon(ticker, out var icon))
+                {
+                    runes[index].Icon.sprite = icon;
+                }
+                index++;
+            }
+        }
+
+        private void UpdateRewardItems(IReadOnlyList<SeasonRewards> rewards)
+        {
+            var crystalReward = rewards
+                .Where(x => x.ticker == "CRYSTAL")
+                .Sum(x => Convert.ToInt32(x.amount));
+            crystalCountText.text = $"{crystalReward:#,0}";
+
+            foreach (var rune in runes)
+            {
+                rune.Object.SetActive(false);
+            }
+
+            var totalRuneRewards = new Dictionary<string, int>();
+            foreach (var runeReward in rewards.Where(x => x.ticker != "CRYSTAL"))
+            {
+                var key = runeReward.ticker;
+                if (!totalRuneRewards.ContainsKey(key))
+                {
+                    totalRuneRewards.Add(key, 0);
+                }
+
+                totalRuneRewards[key] += runeReward.amount;
             }
 
             var index = 0;
