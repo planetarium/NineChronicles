@@ -152,7 +152,7 @@ namespace Nekoyume.Game
         {
             _currentBossId = bossId;
             Widget.Find<HeaderMenuStatic>().Close(true);
-            ActionCamera.instance.gameObject.SetActive(false);
+            ActionCamera.instance.Cam.gameObject.SetActive(false);
             _actionQueue.Clear();
 
             CreateContainer(bossId);
@@ -208,13 +208,15 @@ namespace Nekoyume.Game
             }
             _isPlaying = false;
             ActionRenderHandler.Instance.Pending = false;
+            Game.instance.IsInWorld = false;
             Widget.Find<WorldBossBattle>().Close();
 
-            ActionCamera.instance.gameObject.SetActive(true);
-            MainCanvas.instance.Canvas.worldCamera = ActionCamera.instance.Cam;
-
             container.Close();
-            Game.instance.IsInWorld = false;
+
+            var actionCam = ActionCamera.instance;
+            actionCam.Cam.gameObject.SetActive(true);
+            actionCam.RerunFSM();
+            MainCanvas.instance.Canvas.worldCamera = ActionCamera.instance.Cam;
             Widget.Find<WorldBossResultPopup>().Show(_currentBossId, damageDealt, isNewRecord, rewards, killRewards);
 
             if (container)

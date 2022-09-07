@@ -112,9 +112,16 @@ namespace Nekoyume.Game
             _fsm.Run(State.Idle);
         }
 
+        public void RerunFSM() => _fsm.Run(State.Idle);
+
         private void Update()
         {
             UpdateScreenResolution();
+        }
+
+        protected void OnDisable()
+        {
+            _fsm.Kill();
         }
 
         protected override void OnDestroy()
