@@ -7678,6 +7678,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 553648112077217407}
     m_Modifications:
+    - target: {fileID: 24083207468950827, guid: 2d793ad4fed23994fad4b7fd5c99b304,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 196
+      objectReference: {fileID: 0}
+    - target: {fileID: 24083207468950827, guid: 2d793ad4fed23994fad4b7fd5c99b304,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 24083207468950827, guid: 2d793ad4fed23994fad4b7fd5c99b304,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2044772974871969620, guid: 2d793ad4fed23994fad4b7fd5c99b304,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -7695,9 +7710,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4185026623474472912, guid: 2d793ad4fed23994fad4b7fd5c99b304,
         type: 3}
+      propertyPath: test
+      value: '{"agentAddress":"20e78852273c252e33354C04b4eC38184e551c34","avatarAddress":"C10829c95248D91caE25129C05e35326eeD2842E","raidId":1,"ranking":4,"rewards":[{"amount":250000,"ticker":"CRYSTAL","tx_id":"851db5ba24786200f8d1f34122e39b3118ed06e9b90b1df15cf4c0306d6256ec"},{"amount":1000,"ticker":"RUNE_FENRIR1","tx_id":"6e8769861982d269739a72b9ab3f1a329fe6de458a39ff01535517393b0e97fb"},{"amount":330,"ticker":"RUNE_FENRIR2","tx_id":"ae3140f0531bf2cb76ccb271d7133401e1a8e10fbd18193ddc51a30fcf78015d"},{"amount":70,"ticker":"RUNE_FENRIR3","tx_id":"3e8e97ead751ff8444d03ee934c6fa052907c3b2bdaaf62d766290f1292cbe2a"}]}'
+      objectReference: {fileID: 0}
+    - target: {fileID: 4185026623474472912, guid: 2d793ad4fed23994fad4b7fd5c99b304,
+        type: 3}
       propertyPath: speechBubble
       value: 
       objectReference: {fileID: 2894346975772333054}
+    - target: {fileID: 4912332099590422159, guid: 2d793ad4fed23994fad4b7fd5c99b304,
+        type: 3}
+      propertyPath: m_Name
+      value: ClaimButton
+      objectReference: {fileID: 0}
     - target: {fileID: 6684225965647263715, guid: 2d793ad4fed23994fad4b7fd5c99b304,
         type: 3}
       propertyPath: m_Pivot.x

@@ -7,6 +7,7 @@ using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using Nekoyume.State;
+using UnityEngine;
 
 namespace Nekoyume.UI.Module.WorldBoss
 {
@@ -18,7 +19,8 @@ namespace Nekoyume.UI.Module.WorldBoss
         private static readonly Dictionary<Address, WorldBossKillRewardRecord> _killRewards = new();
         private static readonly List<IDisposable> _disposables = new();
 
-        public static ReactiveProperty<bool> HasNotification { get; } = new();
+        public static ReactiveProperty<bool> HasKillRewards { get; } = new();
+        public static ReactiveProperty<bool> HasSeasonRewards { get; } = new();
 
         public static RaiderState GetRaiderState(Address avatarAddress)
         {
@@ -49,16 +51,21 @@ namespace Nekoyume.UI.Module.WorldBoss
             }
             else
             {
+                HasSeasonRewards.SetValueAndForceNotify(IsExistSeasonReward(raidRow, raider));
                 ClearRaiderState();
             }
 
-            var hasNotification = IsExistGradeReward(raidRow, raider);
-            HasNotification.SetValueAndForceNotify(hasNotification);
+            HasKillRewards.SetValueAndForceNotify(IsExistGradeReward(raidRow, raider));
         }
 
-        public static void SubscribeNotification(Action<bool> callback)
+        public static void SubscribeKillRewards(Action<bool> callback)
         {
-            HasNotification.Subscribe(callback).AddTo(_disposables);
+            HasKillRewards.Subscribe(callback).AddTo(_disposables);
+        }
+
+        public static void SubscribeSeasonRewards(Action<bool> callback)
+        {
+            HasSeasonRewards.Subscribe(callback).AddTo(_disposables);
         }
 
         public static void UpdateState(
@@ -111,6 +118,16 @@ namespace Nekoyume.UI.Module.WorldBoss
             var highScore = raiderState?.HighScore ?? 0;
             var currentRank = WorldBossHelper.CalculateRank(characterRow, highScore);
             return latestRewardRank < currentRank;
+        }
+
+        private static bool IsExistSeasonReward(WorldBossListSheet.Row row, RaiderState raiderState)
+        {
+            if (row == null)
+            {
+                return false;
+            }
+
+            return raiderState != null;
         }
 
         private static async Task<(

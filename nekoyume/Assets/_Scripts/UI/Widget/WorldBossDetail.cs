@@ -61,7 +61,7 @@ namespace Nekoyume.UI
             }
 
             _selectedItemSubType.Subscribe(UpdateView).AddTo(gameObject);
-            WorldBossStates.SubscribeNotification((b) => notification.SetActive(b));
+            WorldBossStates.SubscribeKillRewards((b) => notification.SetActive(b));
         }
 
         public void Show(ToggleType toggleType)
@@ -81,7 +81,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            WorldBossStates.HasNotification.SetValueAndForceNotify(false);
+            WorldBossStates.HasKillRewards.SetValueAndForceNotify(false);
             worldBossReward.ShowAsync(false);
         }
 
