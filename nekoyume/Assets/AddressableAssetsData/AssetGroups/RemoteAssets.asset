@@ -67,6 +67,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - banner
+  - m_GUID: a5fe9e23b027a8c4eaefe44424ef1aa1
+    m_Address: Assets/AddressableAssets/NoticeInfo/NoticeData_v100300.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - notice
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ac541e2ce40a4e441b1e4fe7bb752ac7, type: 2}
   m_SchemaSet:
