@@ -90,12 +90,16 @@ namespace Nekoyume.BlockChain
                 {
                     var actionType = gameAction.GetActionTypeAttribute();
                     var elapsed = (DateTime.Now - enqueuedDateTime).TotalSeconds;
-                    Analyzer.Instance.Track("Unity/ActionRender", new Value
+
+                    if (States.Instance.CurrentAvatarState is not null)
                     {
-                        ["ActionType"] = actionType.TypeIdentifier,
-                        ["Elapsed"] = elapsed,
-                        ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                    });
+                        Analyzer.Instance.Track("Unity/ActionRender", new Value
+                        {
+                            ["ActionType"] = actionType.TypeIdentifier,
+                            ["Elapsed"] = elapsed,
+                            ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                        });
+                    }
                 }
             }).AddTo(_disposables);
 
