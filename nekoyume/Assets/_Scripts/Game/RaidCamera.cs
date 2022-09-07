@@ -3,7 +3,6 @@ using System.Collections;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Util;
 using Nekoyume.Pattern;
-using UniRx;
 using Unity.Mathematics;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -11,8 +10,6 @@ using Random = UnityEngine.Random;
 
 namespace Nekoyume.Game
 {
-    // NOTE: ActionCamera는 처음에 카메라 연출을 위해 작성했는데, 이제는 게임의 메인 카메라 역할을 하고 있다.
-    // 이번에는 스크린 해상도 코드가 추가됐는데, 이들을 적절히 분리하는 구조를 고민해보면 좋겠다.
     [RequireComponent(typeof(Camera))]
     public class RaidCamera : MonoBehaviour
     {
@@ -75,8 +72,6 @@ namespace Nekoyume.Game
         private float _defaultOrthographicSize;
         private Resolution _resolution;
 
-        private Fsm<State> _fsm;
-
         private Transform _target;
         private Transform _targetTemp;
         private float _shakeDuration;
@@ -99,12 +94,6 @@ namespace Nekoyume.Game
         protected void Awake()
         {
             InitScreenResolution();
-
-            _fsm = new Fsm<State>(this);
-            _fsm.RegisterStateCoroutine(State.Idle, CoIdle);
-            _fsm.RegisterStateCoroutine(State.ChaseX, CoChaseX);
-            _fsm.RegisterStateCoroutine(State.Shake, CoShake);
-            _fsm.Run(State.Idle);
         }
 
         private void Update()
@@ -112,28 +101,7 @@ namespace Nekoyume.Game
             UpdateScreenResolution();
         }
 
-        protected void OnDestroy()
-        {
-            _fsm.Kill();
-        }
-
         #endregion
-
-        #region Fsm
-
-        public void Idle()
-        {
-            _target = null;
-            _targetTemp = null;
-            _shakeDuration = 0f;
-        }
-
-        public void ChaseX(Transform target)
-        {
-            _target = target;
-            _targetTemp = null;
-            _shakeDuration = 0f;
-        }
 
         public void Shake()
         {
@@ -145,226 +113,6 @@ namespace Nekoyume.Game
             _target = null;
             _shakeDuration = shakeData.duration;
         }
-
-        private IEnumerator CoIdle()
-        {
-            while (true)
-            {
-                if (_target)
-                {
-                    _fsm.next = State.ChaseX;
-                    break;
-                }
-
-                if (_shakeDuration > 0f)
-                {
-                    _fsm.next = State.Shake;
-                    break;
-                }
-
-                yield return null;
-            }
-        }
-
-        private IEnumerator CoChaseX()
-        {
-            var data = InPrologue ? prologueChaseData : chaseData;
-            while (_target &&
-                   _target.gameObject.activeSelf)
-            {
-                var pos = Transform.position;
-                var desiredPosX = _target.position.x + data.offsetX;
-                var smoothedPosX = Mathf.Lerp(
-                    pos.x,
-                    desiredPosX,
-                    data.smoothSpeed * Time.deltaTime);
-                pos.x = smoothedPosX;
-                Transform.position = pos;
-                OnTranslate?.Invoke(Transform);
-
-                yield return null;
-            }
-
-            _fsm.next = _shakeDuration > 0f
-                ? State.Shake
-                : State.Idle;
-        }
-
-        private IEnumerator CoShake()
-        {
-            var pos = Transform.position;
-            var data = InPrologue ? prologueShakeData : shakeData;
-
-            while (_shakeDuration > 0f)
-            {
-                var x = Random.Range(-1f, 1f) * data.magnitudeX;
-                var y = Random.Range(-1f, 1f) * data.magnitudeY;
-
-                Transform.position = new Vector3(pos.x + x, pos.y + y, pos.z);
-                OnTranslate?.Invoke(Transform);
-
-                _shakeDuration -= Time.deltaTime;
-
-                yield return null;
-            }
-
-            Transform.position = pos;
-            OnTranslate?.Invoke(Transform);
-
-            if (_target)
-            {
-                _fsm.next = State.ChaseX;
-            }
-            else if (_targetTemp)
-            {
-                _target = _targetTemp;
-                _targetTemp = null;
-                _fsm.next = State.ChaseX;
-            }
-            else
-            {
-                _fsm.next = State.Idle;
-            }
-        }
-
-        #endregion
-
-        #region Position
-
-        public void SetPosition(float x, float y)
-        {
-            var pos = Transform.position;
-            pos.x = x;
-            pos.y = y;
-            Transform.position = pos;
-            OnTranslate?.Invoke(Transform);
-        }
-
-        /// <summary>
-        /// 스크린의 특정 피봇 위치에 대한 타겟의 위치를 구한다.
-        /// </summary>
-        /// <param name="targetTransform">위치를 얻고자 하는 타겟의 Transform</param>
-        /// <param name="screenPivot">타겟의 스크린에 대한 PivotPresetType</param>
-        /// <returns></returns>
-        public Vector3 GetWorldPosition(
-            Transform targetTransform,
-            PivotPresetType screenPivot)
-        {
-            if (targetTransform is null)
-            {
-                throw new ArgumentNullException(nameof(targetTransform));
-            }
-
-            float2 viewport2;
-            switch (screenPivot)
-            {
-                case PivotPresetType.TopLeft:
-                    viewport2 = Float2.ZeroOne;
-                    break;
-                case PivotPresetType.TopCenter:
-                    viewport2 = Float2.HalfOne;
-                    break;
-                case PivotPresetType.TopRight:
-                    viewport2 = Float2.OneOne;
-                    break;
-                case PivotPresetType.MiddleLeft:
-                    viewport2 = Float2.ZeroHalf;
-                    break;
-                case PivotPresetType.MiddleCenter:
-                    viewport2 = Float2.HalfHalf;
-                    break;
-                case PivotPresetType.MiddleRight:
-                    viewport2 = Float2.OneHalf;
-                    break;
-                case PivotPresetType.BottomLeft:
-                    viewport2 = Float2.ZeroZero;
-                    break;
-                case PivotPresetType.BottomCenter:
-                    viewport2 = Float2.HalfZero;
-                    break;
-                case PivotPresetType.BottomRight:
-                    viewport2 = Float2.OneZero;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(screenPivot), screenPivot, null);
-            }
-
-            var viewport3 = new float3(
-                viewport2.x,
-                viewport2.y,
-                (targetTransform.position - Transform.position).magnitude);
-            return Cam.ViewportToWorldPoint(viewport3);
-        }
-
-        /// <summary>
-        /// 스크린의 특정 피봇 위치에 대한 타겟의 위치를 구한다. 이때 타겟 스프라이트의 피봇 또한 고려한다.
-        /// </summary>
-        /// <param name="targetTransform">위치를 얻고자 하는 타겟의 Transform</param>
-        /// <param name="screenPivot">타겟 Sprite의 PivotPresetType</param>
-        /// <param name="targetSprite">위치를 얻고자자 하는 타겟의 전체 영역을 자치하는 SpriteRenderer</param>
-        /// <param name="spritePivot">타겟의 스크린에 대한 PivotPresetType</param>
-        /// <returns></returns>
-        public Vector3 GetWorldPosition(
-            Transform targetTransform,
-            PivotPresetType screenPivot,
-            Sprite targetSprite,
-            PivotPresetType spritePivot
-        )
-        {
-            if (targetTransform is null)
-            {
-                throw new ArgumentNullException(nameof(targetTransform));
-            }
-
-            if (targetSprite is null)
-            {
-                throw new ArgumentNullException(nameof(targetSprite));
-            }
-
-            var position = GetWorldPosition(targetTransform, screenPivot);
-            var lossyScale = targetTransform.lossyScale;
-            var ppu = targetSprite.pixelsPerUnit;
-            var halfSizeAsUnit = new Vector3(
-                lossyScale.x * targetSprite.rect.width / ppu / 2f,
-                lossyScale.y * targetSprite.rect.height / ppu / 2f);
-            Vector3 spritePivotPosition;
-            switch (spritePivot)
-            {
-                case PivotPresetType.TopLeft:
-                    spritePivotPosition = new Vector3(-halfSizeAsUnit.x, halfSizeAsUnit.y);
-                    break;
-                case PivotPresetType.TopCenter:
-                    spritePivotPosition = new Vector3(0f, halfSizeAsUnit.y);
-                    break;
-                case PivotPresetType.TopRight:
-                    spritePivotPosition = new Vector3(halfSizeAsUnit.x, halfSizeAsUnit.y);
-                    break;
-                case PivotPresetType.MiddleLeft:
-                    spritePivotPosition = new Vector3(-halfSizeAsUnit.x, 0f);
-                    break;
-                case PivotPresetType.MiddleCenter:
-                    spritePivotPosition = Vector3.zero;
-                    break;
-                case PivotPresetType.MiddleRight:
-                    spritePivotPosition = new Vector3(halfSizeAsUnit.x, 0f);
-                    break;
-                case PivotPresetType.BottomLeft:
-                    spritePivotPosition = new Vector3(-halfSizeAsUnit.x, -halfSizeAsUnit.y);
-                    break;
-                case PivotPresetType.BottomCenter:
-                    spritePivotPosition = new Vector3(0f, -halfSizeAsUnit.y);
-                    break;
-                case PivotPresetType.BottomRight:
-                    spritePivotPosition = new Vector3(halfSizeAsUnit.x, -halfSizeAsUnit.y);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(spritePivot), spritePivot, null);
-            }
-
-            return position - spritePivotPosition;
-        }
-
-        #endregion
 
         #region Screen Resolution
 
