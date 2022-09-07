@@ -20,7 +20,10 @@
 
         public ShopItemTest()
         {
-            _currency = new Currency("NCG", 2, minters: null);
+#pragma warning disable CS0618
+            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+            _currency = Currency.Legacy("NCG", 2, null);
+#pragma warning restore CS0618
             _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
         }
 

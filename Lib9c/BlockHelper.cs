@@ -46,7 +46,10 @@ namespace Nekoyume
                 privateKey = new PrivateKey();
             }
 
-            var ncg = new Currency("NCG", 2, privateKey.ToAddress());
+#pragma warning disable CS0618
+            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+            var ncg = Currency.Legacy("NCG", 2, privateKey.ToAddress());
+#pragma warning restore CS0618
             activatedAccounts = activatedAccounts ?? ImmutableHashSet<Address>.Empty;
             var initialStatesAction = new InitializeStates
             (

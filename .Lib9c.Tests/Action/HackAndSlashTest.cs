@@ -71,7 +71,10 @@
             _questListAddress = _avatarAddress.Derive(LegacyQuestListKey);
             agentState.avatarAddresses.Add(0, _avatarAddress);
             _weeklyArenaState = new WeeklyArenaState(0);
-            var currency = new Currency("NCG", 2, minters: null);
+#pragma warning disable CS0618
+            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+            var currency = Currency.Legacy("NCG", 2, null);
+#pragma warning restore CS0618
             var goldCurrencyState = new GoldCurrencyState(currency);
             _initialState = new State()
                 .SetState(Addresses.GoldCurrency, goldCurrencyState.Serialize())
