@@ -229,6 +229,9 @@ namespace Nekoyume.UI.Module.Lobby
         {
             Debug.Log("[GetReward] ShowRewardPopup!");
             var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var agentAddress = States.Instance.AgentState.address;
+            var crystal = await Game.Game.instance.Agent.GetBalanceAsync(agentAddress, CrystalCalculator.CRYSTAL);
+            States.Instance.SetCrystalBalance(crystal);
             await WorldBossStates.Set(avatarAddress);
             Widget.Find<GrayLoadingScreen>().Close();
             Widget.Find<WorldBossRewardPopup>().Show(_seasonRewards);
