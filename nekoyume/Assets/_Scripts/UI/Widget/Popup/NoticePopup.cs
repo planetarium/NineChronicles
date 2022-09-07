@@ -1,9 +1,12 @@
 ﻿using System;
-using System.Linq;
+using System.Collections;
 using UnityEngine.UI;
 using UnityEngine;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.ScriptableObject;
 using Nekoyume.Helper;
+using UnityEngine.AddressableAssets;
+using UnityEngine.Networking;
 
 namespace Nekoyume.UI
 {
@@ -28,10 +31,12 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button closeButton;
 
-        [SerializeField]
-        private NoticeInfo[] noticeList;
-
         private const string LastNoticeDayKeyFormat = "LAST_NOTICE_DAY_{0}";
+        private const string BucketUrl =
+            "https://9c-asset-bundle.s3.us-east-2.amazonaws.com/Images/Notice_";
+
+        private NoticeInfo _usingNoticeInfo;
+        private bool _spriteIsInitialized;
 
         private static bool CanShowNoticePopup(NoticeInfo notice)
         {
@@ -82,25 +87,59 @@ namespace Nekoyume.UI
                 Close();
                 AudioController.PlayClick();
             });
+            closeButton.interactable = false;
+        }
+
+        public override void Initialize()
+        {
+            Addressables.LoadAssetAsync<NoticeInfoScriptableObject>("notice").Completed +=
+                operationHandle =>
+                {
+                    if (operationHandle.IsValid())
+                    {
+                        _usingNoticeInfo = operationHandle.Result.noticeInfo;
+                    }
+                    base.Initialize();
+                };
         }
 
         public override void Show(bool ignoreStartAnimation = false)
         {
-            var firstNotice = noticeList.FirstOrDefault();
-            if (!CanShowNoticePopup(firstNotice))
+            if (!CanShowNoticePopup(_usingNoticeInfo))
             {
                 return;
             }
 
-            contentImage.sprite = firstNotice?.contentImage
-                ? firstNotice.contentImage
-                : contentImage.sprite;
             base.Show(ignoreStartAnimation);
+            if (!_spriteIsInitialized)
+            {
+                StartCoroutine(CoSetTexture());
+            }
         }
 
         private void GoToNoticePage()
         {
-            Application.OpenURL(noticeList.FirstOrDefault()?.pageUrlFormat);
+            Application.OpenURL(_usingNoticeInfo.pageUrlFormat);
+        }
+
+        private IEnumerator CoSetTexture()
+        {
+            var www = UnityWebRequestTexture.GetTexture($"{BucketUrl}{_usingNoticeInfo.name}.png");
+            yield return www.SendWebRequest();
+            closeButton.interactable = true;
+            if (www.result != UnityWebRequest.Result.Success)
+            {
+                Debug.Log(www.error);
+            }
+            else
+            {
+                var myTexture = ((DownloadHandlerTexture)www.downloadHandler).texture;
+                contentImage.sprite = Sprite.Create(
+                    myTexture,
+                    new Rect(0, 0, myTexture.width, myTexture.height),
+                    new Vector2(0.5f, 0.5f));
+                _spriteIsInitialized = true;
+            }
         }
     }
 }
