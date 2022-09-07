@@ -49,7 +49,8 @@ namespace Nekoyume.UI.Module.Lobby
         [SerializeField]
         private Button claimRewardButton;
 
-        private int _retryCount = 0;
+        private int _getRewardRetryCount = 0;
+        private int _requestRetryCount = 0;
         private bool _isExistSeasonReward;
 
         private readonly List<IDisposable> _disposables = new();
@@ -69,6 +70,7 @@ namespace Nekoyume.UI.Module.Lobby
             Game.Game.instance.Agent.BlockIndexSubject.Subscribe(UpdateBlockIndex)
                 .AddTo(_disposables);
             UpdateBlockIndex(Game.Game.instance.Agent.BlockIndex);
+            _requestRetryCount = 0;
             InitButton();
         }
 
@@ -84,6 +86,10 @@ namespace Nekoyume.UI.Module.Lobby
 
         private void InitButton()
         {
+            if (_requestRetryCount > MaxRetryCount)
+            {
+                return;
+            }
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             if (!WorldBossFrontHelper.TryGetPreviousRow(blockIndex, out var row))
@@ -91,12 +97,15 @@ namespace Nekoyume.UI.Module.Lobby
                 return;
             }
 
+            _requestRetryCount++;
+            Debug.Log($"[InitButton] retry count :{_requestRetryCount}");
             StartCoroutine(WorldBossQuery.CoIsExistSeasonReward(row.Id, avatarAddress,
                 (b) =>
                 {
                     _isExistSeasonReward = b.Contains("true");
                     UpdateClaimButton(_isExistSeasonReward);
-                }));
+                },
+                InitButton));
         }
 
         private void UpdateClaimButton(bool value)
@@ -196,7 +205,7 @@ namespace Nekoyume.UI.Module.Lobby
             var result = JsonUtility.FromJson<SeasonRewardRecord>(json);
             var rewards = result.rewards.ToList();
 
-            _retryCount = 0;
+            _getRewardRetryCount = 0;
             _seasonRewards.Clear();
             _seasonRewards.AddRange(result.rewards);
 
@@ -229,7 +238,7 @@ namespace Nekoyume.UI.Module.Lobby
 
         private IEnumerator CoCheckTxAgain(List<SeasonRewards> rewards)
         {
-            if (_retryCount > MaxRetryCount)
+            if (_getRewardRetryCount > MaxRetryCount)
             {
                 OneLineSystem.Push(
                     MailType.System,
@@ -239,7 +248,7 @@ namespace Nekoyume.UI.Module.Lobby
             }
 
             yield return new WaitForSeconds(RetryTime);
-            _retryCount++;
+            _getRewardRetryCount++;
             GetRewardAgain(rewards);
         }
 

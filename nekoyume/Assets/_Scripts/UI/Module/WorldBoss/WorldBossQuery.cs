@@ -111,13 +111,20 @@ namespace Nekoyume.UI.Module.WorldBoss
         public static IEnumerator CoIsExistSeasonReward(
             int raidId,
             Address avatarAddress,
-            System.Action<string> onSuccess)
+            System.Action<string> onSuccess,
+            System.Action onFailed)
         {
-            using var request = UnityWebRequest.Get($"{URL}/{raidId}/{avatarAddress}");
+            var url = $"{URL}/{raidId}/{avatarAddress}";
+            using var request = UnityWebRequest.Get(url);
             yield return request.SendWebRequest();
+            Debug.Log($"[GET] ({url}) RESULT : {request.result}");
             if (request.result == UnityWebRequest.Result.Success)
             {
                 onSuccess?.Invoke(request.downloadHandler.text);
+            }
+            else
+            {
+                onFailed?.Invoke();
             }
         }
     }
