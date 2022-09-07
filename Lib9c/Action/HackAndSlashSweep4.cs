@@ -76,7 +76,7 @@ namespace Nekoyume.Action
             if (arenaSheetState != null)
             {
                 // exception handling for v100240.
-                if (context.BlockIndex > 4374125 && context.BlockIndex > 4374249)
+                if (context.BlockIndex > 4374125 && context.BlockIndex < 4374249)
                 {
                 }
                 else
