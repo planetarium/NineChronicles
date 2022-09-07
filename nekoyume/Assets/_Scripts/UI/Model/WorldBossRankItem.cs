@@ -9,6 +9,7 @@ namespace Nekoyume.UI.Model
         public RectTransform View { get; set; }
         public int Ranking { get; }
         public string AvatarName { get; }
+        public string Address { get; }
         public int HighScore { get; }
         public int TotalScore { get; }
         public int Cp { get; }
@@ -19,6 +20,7 @@ namespace Nekoyume.UI.Model
         {
             BossRow = row;
             AvatarName = record.AvatarName;
+            Address = record.Address;
             Ranking = record.Ranking;
             HighScore = record.HighScore;
             TotalScore = record.TotalScore;
