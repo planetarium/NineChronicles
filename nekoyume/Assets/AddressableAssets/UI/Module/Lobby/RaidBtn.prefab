@@ -29404,7 +29404,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: UI_WORLD_BOSS
+  m_text: UI_MAIN_MENU_WORLDBOSS
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 4f57ca6e7d2e44cc587af4449010a5f2, type: 2}
@@ -65624,7 +65624,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f6ffc04bc6441bdbeeaefad3821d368, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  localizationKey: UI_WORLD_BOSS
+  localizationKey: UI_MAIN_MENU_WORLDBOSS
   type: 6
   speechBubble: {fileID: 0}
   lockObjects:
