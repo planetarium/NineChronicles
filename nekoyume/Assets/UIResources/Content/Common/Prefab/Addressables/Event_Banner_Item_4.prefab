@@ -131,9 +131,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af0e98724d4944a18a798de468789289, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  useDateTime: 0
-  beginDateTime: 
-  endDateTime: 
-  url: https://ninechronicles.medium.com/monster-collection-v2-update-6cde770c9f31
+  useDateTime: 1
+  beginDateTime: '2022-08-23T00:00:00 '
+  endDateTime: 2022-09-30T23:59:59
+  url: "https://ninechronicles.medium.com/update-world-6-jountheim-\uFE0F-summer-event-super-carfting-v100280-40901ee2c7c4"
   useAgentAddress: 0
   image: {fileID: 6509251453474955261}
