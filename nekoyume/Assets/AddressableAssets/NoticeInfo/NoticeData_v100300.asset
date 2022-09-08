@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: NoticeData_v100300
   m_EditorClassIdentifier: 
   noticeInfo:
-    name: PFP Date Announce
+    name: PFPDateAnnounce
     contentImage: {fileID: 21300000, guid: 38d59416434cb894c8e45a1bd3268045, type: 3}
-    beginTime: 2022-09-09 00:00:00
-    endTime: 2022-09-26 23:59:59
+    beginTime: 2022/09/09 00:00:00
+    endTime: 2022/09/26 23:59:59
     pageUrlFormat: https://bit.ly/DCCNFTRaffleandMinting
