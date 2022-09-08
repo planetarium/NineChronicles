@@ -10,17 +10,6 @@ namespace Nekoyume.UI
     {
         public override WidgetType WidgetType => WidgetType.System;
 
-        [SerializeField]
-        private Button bgImageButton = null;
-
-        protected override void Awake()
-        {
-            base.Awake();
-            bgImageButton.OnClickAsObservable()
-                .Subscribe(_ => Close())
-                .AddTo(gameObject);
-        }
-
         public override void Show(string title, string content, string labelOK = "UI_OK", bool localize = true)
         {
             Analyzer.Instance.Track("Unity/SystemPopupImpression");

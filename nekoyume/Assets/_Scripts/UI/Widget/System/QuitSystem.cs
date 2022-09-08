@@ -19,6 +19,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private EventSubject closeEventSubject = null;
 
+        [SerializeField]
+        private UIBackground background;
+
         protected override void Awake()
         {
             base.Awake();
@@ -49,6 +52,8 @@ namespace Nekoyume.UI
             {
                 Close();
             };
+
+            background.OnClick = CloseWidget;
         }
 
         public void Show(float blurRadius = 2, bool ignoreShowAnimation = false)
