@@ -14597,6 +14597,7 @@ GameObject:
   m_Component:
   - component: {fileID: 693824846270741026}
   - component: {fileID: 9057469646765352316}
+  - component: {fileID: 4081636115754677827}
   m_Layer: 5
   m_Name: UI_RaidProgressBar
   m_TagString: Untagged
@@ -14666,6 +14667,26 @@ MonoBehaviour:
   - {fileID: 8862661924699841122}
   - {fileID: 7273969615270359384}
   - {fileID: 4516598285057090244}
+--- !u!95 &4081636115754677827
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 693824846270741029}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 7e56e9cadf7a240c5b572ef08d6aae0a, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &693824846569763400
 GameObject:
   m_ObjectHideFlags: 0
