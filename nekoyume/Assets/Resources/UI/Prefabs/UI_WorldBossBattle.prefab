@@ -54770,7 +54770,7 @@ RectTransform:
   m_GameObject: {fileID: 3352708898250583405}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8532253367048528866}
@@ -54782,7 +54782,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -568, y: 0}
+  m_AnchoredPosition: {x: -515, y: 0}
   m_SizeDelta: {x: 1136, y: 640}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1649699253964173054
@@ -94890,6 +94890,7 @@ GameObject:
   - component: {fileID: 3822439270563747571}
   - component: {fileID: 1082098115733077626}
   - component: {fileID: 2028078520468994907}
+  - component: {fileID: 8621810968221418987}
   m_Layer: 5
   m_Name: UI_WorldBossBattle
   m_TagString: Untagged
@@ -94947,6 +94948,26 @@ MonoBehaviour:
   playerStatus: {fileID: 4759371085321157785}
   comboText: {fileID: 7267992914800759509}
   progressBar: {fileID: 9057469646765352316}
+--- !u!95 &8621810968221418987
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6047670682509854055}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: e19dd2ec5bdc64783af2108122e9b7b1, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &6105169211563443723
 GameObject:
   m_ObjectHideFlags: 0
