@@ -12,7 +12,10 @@ using Debug = UnityEngine.Debug;
 using static Lib9c.SerializeKeys;
 using StateExtensions = Nekoyume.Model.State.StateExtensions;
 using Libplanet.Assets;
+using Nekoyume.Game;
 using Nekoyume.Helper;
+using Nekoyume.UI;
+using UniRx;
 
 namespace Nekoyume.State
 {
@@ -50,6 +53,35 @@ namespace Nekoyume.State
 
         private readonly Dictionary<int, CombinationSlotState> _combinationSlotStates =
             new Dictionary<int, CombinationSlotState>();
+
+        private static ReactiveDictionary<int, HammerPointState> _hammerPointStates;
+
+        /// <summary>
+        /// Hammer point state dictionary of current avatar.
+        /// </summary>
+        public static ReactiveDictionary<int, HammerPointState> HammerPointStates
+        {
+            get
+            {
+                if (_hammerPointStates is not null)
+                {
+                    return _hammerPointStates;
+                }
+
+                UniTask.Run(async () =>
+                {
+                    var states = await InitializeHammerPointStates();
+                    if (states is null)
+                    {
+                        return;
+                    }
+
+                    _hammerPointStates =
+                        new ReactiveDictionary<int, HammerPointState>(states);
+                });
+                return _hammerPointStates;
+            }
+        }
 
         public States()
         {
@@ -444,5 +476,60 @@ namespace Nekoyume.State
 
             ReactiveAvatarState.Initialize(CurrentAvatarState);
         }
+
+        public static void UpdateHammerPointStates(int recipeId, HammerPointState state)
+        {
+            if (Addresses.GetHammerPointStateAddress(
+                    Instance.CurrentAvatarState.address,
+                    recipeId) == state.Address)
+            {
+                if (_hammerPointStates.ContainsKey(recipeId))
+                {
+                    _hammerPointStates[recipeId] = state;
+                }
+                else
+                {
+                    _hammerPointStates.Add(recipeId, state);
+                }
+            }
+        }
+
+        public static async UniTask<Dictionary<int, HammerPointState>> UpdateHammerPointStates(
+            IEnumerable<int> recipeIds)
+        {
+            if (TableSheets.Instance.CrystalHammerPointSheet is null)
+            {
+                return null;
+            }
+
+            var hammerPointStateAddresses =
+                recipeIds.Select(recipeId =>
+                        (Addresses.GetHammerPointStateAddress(
+                            Instance.CurrentAvatarState.address,
+                            recipeId), recipeId))
+                    .ToList();
+            var states =
+                await Game.Game.instance.Agent.GetStateBulk(
+                    hammerPointStateAddresses.Select(tuple => tuple.Item1));
+            var joinedStates = states.Join(
+                hammerPointStateAddresses,
+                state => state.Key,
+                tuple => tuple.Item1,
+                (state, tuple) => (state, tuple.recipeId));
+
+            return joinedStates
+                .Select(tuple =>
+                {
+                    var state = tuple.state;
+                    return state.Value is List list
+                        ? new HammerPointState(state.Key, list)
+                        : new HammerPointState(state.Key, tuple.recipeId);
+                })
+                .ToDictionary(value => value.RecipeId, value => value);
+        }
+
+        private static async UniTask<Dictionary<int, HammerPointState>>
+            InitializeHammerPointStates() => await
+            UpdateHammerPointStates(Craft.SharedModel.UnlockedRecipes.Value);
     }
 }

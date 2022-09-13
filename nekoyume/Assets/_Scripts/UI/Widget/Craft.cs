@@ -248,9 +248,9 @@ namespace Nekoyume.UI
                     OnClickConsumableToggle(eventConsumableToggle.isOn);
                 })
                 .AddTo(_disposablesAtShow);
-            if (RxProps.HammerPointStates is not null)
+            if (States.HammerPointStates is not null)
             {
-                RxProps.HammerPointStates.ObserveReplace().Subscribe(_ =>
+                States.HammerPointStates.ObserveReplace().Subscribe(_ =>
                 {
                     if (equipmentSubRecipeView.gameObject.activeSelf)
                     {
