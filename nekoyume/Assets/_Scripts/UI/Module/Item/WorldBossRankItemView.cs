@@ -47,6 +47,7 @@ namespace Nekoyume.UI
         private GameObject rankTextContainer;
 
         private GameObject _gradeObject;
+        private GameObject _rankObject;
 
         public void Set(WorldBossRankItem model, WorldBossRankScroll.ContextModel context)
         {
@@ -58,6 +59,11 @@ namespace Nekoyume.UI
             if (_gradeObject != null)
             {
                 Destroy(_gradeObject);
+            }
+
+            if (_rankObject != null)
+            {
+                Destroy(_rankObject);
             }
 
             var grade = (WorldBossGrade)WorldBossHelper.CalculateRank(model.BossRow, model.HighScore);
@@ -85,7 +91,8 @@ namespace Nekoyume.UI
             else
             {
                 rankImageContainer.SetActive(true);
-                rankImage.sprite = WorldBossFrontHelper.GetRankIcon(model.Ranking);
+                var rankPrefab = WorldBossFrontHelper.GetRankPrefab(model.Ranking);
+                _rankObject = Instantiate(rankPrefab, rankImageContainer.transform);
             }
         }
     }
