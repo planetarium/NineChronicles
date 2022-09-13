@@ -35,9 +35,9 @@ namespace Nekoyume.State
 
         public StakeState StakeState { get; private set; }
 
-        public CrystalRandomSkillState CrystalRandomSkillState { get; set; }
+        public CrystalRandomSkillState CrystalRandomSkillState { get; private set; }
 
-        private readonly Dictionary<int, AvatarState> _avatarStates = new Dictionary<int, AvatarState>();
+        private readonly Dictionary<int, AvatarState> _avatarStates = new();
 
         public IReadOnlyDictionary<int, AvatarState> AvatarStates => _avatarStates;
 
@@ -226,7 +226,7 @@ namespace Nekoyume.State
         {
             var agent = Game.Game.instance.Agent;
             var avatarStateValue = await agent.GetStateAsync(address);
-            if (!(avatarStateValue is Bencodex.Types.Dictionary dict))
+            if (avatarStateValue is not Dictionary dict)
             {
                 Debug.LogWarning("Failed to get AvatarState");
                 throw new FailedLoadStateException($"Failed to get AvatarState: {address.ToHex()}");
@@ -258,7 +258,7 @@ namespace Nekoyume.State
                 {
                     if (allowBrokenState && dict.ContainsKey(key))
                     {
-                        dict = new Bencodex.Types.Dictionary(dict.Remove((Text)key));
+                        dict = new Dictionary(dict.Remove((Text)key));
                     }
 
                     continue;
@@ -359,13 +359,14 @@ namespace Nekoyume.State
                     1,
                     GameConfig.MimisbrunnrWorldId,
                 };
-            UI.Widget.Find<UI.WorldMap>().SharedViewModel.UnlockedWorldIds = unlockedIds;
+            Widget.Find<WorldMap>().SharedViewModel.UnlockedWorldIds = unlockedIds;
 
             if (isNewlySelected)
             {
                 // NOTE: commit c1b7f0dc2e8fd922556b83f0b9b2d2d2b2626603 에서 코드 수정이 생기면서
                 // SetCombinationSlotStatesAsync()가 호출이 안되는 이슈가 있어서 revert했습니다. 재수정 필요
                 _combinationSlotStates.Clear();
+                _hammerPointStates = null;
                 await UniTask.Run(async () =>
                 {
                     var (exist, curAvatarState) = await TryGetAvatarStateAsync(avatarState.address);
