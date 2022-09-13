@@ -12,6 +12,7 @@ using Nekoyume.Helper;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
@@ -159,6 +160,7 @@ namespace Nekoyume.Action
                 raidSimulatorSheets,
                 sheets.GetSheet<CostumeStatSheet>());
             simulator.Simulate();
+            avatarState.inventory = simulator.Player.Inventory;
 
             int score = simulator.DamageDealt;
             int cp = CPHelper.GetCPV2(avatarState, sheets.GetSheet<CharacterSheet>(),
@@ -228,7 +230,11 @@ namespace Nekoyume.Action
                 }
                 states = states.SetState(worldBossKillRewardRecordAddress, rewardRecord.Serialize());
             }
+
+            var inventoryAddress = AvatarAddress.Derive(LegacyInventoryKey);
             return states
+                .SetState(AvatarAddress, avatarState.SerializeV2())
+                .SetState(inventoryAddress, avatarState.inventory.Serialize())
                 .SetState(worldBossAddress, bossState.Serialize())
                 .SetState(raiderAddress, raiderState.Serialize());
         }
