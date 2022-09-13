@@ -19,6 +19,7 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.TableData;
+using Nekoyume.UI.Module.WorldBoss;
 
 namespace Nekoyume.UI
 {
@@ -187,6 +188,7 @@ namespace Nekoyume.UI
             loadingScreen.Show();
             var results =
                 await RxProps.SelectAvatarAsync(_selectedIndex);
+            await WorldBossStates.Set(States.Instance.CurrentAvatarState.address);
             loadingScreen.Close();
             OnDidAvatarStateLoaded(results.selectedAvatarState);
         }
