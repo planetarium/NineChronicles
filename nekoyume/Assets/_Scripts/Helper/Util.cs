@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -304,9 +305,15 @@ namespace Nekoyume.Helper
                 end = $"{now.Year}/{end}";
             }
 
-            var bDt = DateTime.ParseExact(begin, "yyyy/MM/dd HH:mm:ss", null);
-            var eDt = DateTime.ParseExact(end, "yyyy/MM/dd HH:mm:ss", null);
-            return now.IsInTime(bDt, eDt);
+            if (DateTime.TryParseExact(begin, "yyyy-MM-ddTHH:mm:ss", null, DateTimeStyles.None,
+                    out var bDt) &&
+                DateTime.TryParseExact(end, "yyyy-MM-ddTHH:mm:ss", null, DateTimeStyles.None,
+                    out var eDt))
+            {
+                return now.IsInTime(bDt, eDt);
+            }
+
+            return false;
         }
     }
 }
