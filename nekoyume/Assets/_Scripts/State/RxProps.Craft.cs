@@ -63,13 +63,18 @@ namespace Nekoyume.State
 
         public static void UpdateHammerPointStates(int recipeId, HammerPointState state)
         {
-            if (_hammerPointStates.ContainsKey(recipeId))
+            if (_currentAvatarAddr.HasValue &&
+                Addresses.GetHammerPointStateAddress(_currentAvatarAddr.Value, recipeId) ==
+                state.Address)
             {
-                _hammerPointStates[recipeId] = state;
-            }
-            else
-            {
-                _hammerPointStates.Add(recipeId, state);
+                if (_hammerPointStates.ContainsKey(recipeId))
+                {
+                    _hammerPointStates[recipeId] = state;
+                }
+                else
+                {
+                    _hammerPointStates.Add(recipeId, state);
+                }
             }
         }
 
