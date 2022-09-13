@@ -174,7 +174,7 @@ namespace Nekoyume.Helper
                 .Sum(x => x.HP);
         }
 
-        public static Sprite GetRankIcon(int rank)
+        public static GameObject GetRankPrefab(int rank)
         {
             var index = rank - 1;
             return WorldBossData.Rank[index];
