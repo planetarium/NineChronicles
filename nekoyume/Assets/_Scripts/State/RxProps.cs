@@ -98,6 +98,7 @@ namespace Nekoyume.State
             }
 
             _currentAvatarAddr = avatarAddr;
+            _hammerPointStates = null;
             OnAvatarChangedArena();
             OnAvatarChangedEvent();
         }
