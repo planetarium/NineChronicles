@@ -16,11 +16,12 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1376
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/602
+    /// Updated at https://github.com/planetarium/lib9c/pull/957
     /// </summary>
     [Serializable]
-    [ActionType("sell11")]
-    public class Sell : GameAction
+    [ActionType("sell10")]
+    public class Sell10 : GameAction
     {
         public Address sellerAvatarAddress;
         public Guid tradableId;
@@ -82,21 +83,18 @@ namespace Nekoyume.Action
             var started = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}Sell exec started", addressesHex);
 
-            var ncg = states.GetGoldCurrency();
-            if (!price.Currency.Equals(ncg) ||
-                !price.MinorUnit.IsZero ||
-                price.Sign < 0)
+            if (price.Sign < 0)
             {
                 throw new InvalidPriceException(
                     $"{addressesHex}Aborted as the price is less than zero: {price}.");
             }
 
             if (!states.TryGetAgentAvatarStatesV2(
-                    context.Signer,
-                    sellerAvatarAddress,
-                    out _,
-                    out var avatarState,
-                    out _))
+                context.Signer,
+                sellerAvatarAddress,
+                out _,
+                out var avatarState,
+                out _))
             {
                 throw new FailedLoadStateException(
                     $"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
@@ -110,7 +108,7 @@ namespace Nekoyume.Action
             sw.Restart();
 
             if (!avatarState.worldInformation.IsStageCleared(
-                    GameConfig.RequireClearedStageLevel.ActionsInShop))
+                GameConfig.RequireClearedStageLevel.ActionsInShop))
             {
                 avatarState.worldInformation.TryGetLastClearedStageId(out var current);
                 throw new NotEnoughClearedStageLevelException(
@@ -123,8 +121,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}Sell IsStageCleared: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            Order order = OrderFactory.Create(context.Signer, sellerAvatarAddress, orderId, price,
-                tradableId,
+            Order order = OrderFactory.Create(context.Signer, sellerAvatarAddress, orderId, price, tradableId,
                 context.BlockIndex, itemSubType, count);
             order.Validate(avatarState, count);
 
@@ -148,10 +145,9 @@ namespace Nekoyume.Action
             avatarState.updatedAt = context.BlockIndex;
             avatarState.blockIndex = context.BlockIndex;
 
-            var orderReceiptList =
-                states.TryGetState(orderReceiptAddress, out Dictionary receiptDict)
-                    ? new OrderDigestListState(receiptDict)
-                    : new OrderDigestListState(orderReceiptAddress);
+            var orderReceiptList = states.TryGetState(orderReceiptAddress, out Dictionary receiptDict)
+                ? new OrderDigestListState(receiptDict)
+                : new OrderDigestListState(orderReceiptAddress);
 
             orderReceiptList.Add(orderDigest);
 
