@@ -19,6 +19,7 @@ using Nekoyume.Model.Quest;
 using System.Linq;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
+using Nekoyume.State.Subjects;
 using Nekoyume.TableData.Event;
 using NUnit.Framework;
 
@@ -248,7 +249,7 @@ namespace Nekoyume.UI
                     OnClickConsumableToggle(eventConsumableToggle.isOn);
                 })
                 .AddTo(_disposablesAtShow);
-            HammerPointStatesSubject.ObservableHammerPointStates.Subscribe(_ =>
+            HammerPointStatesSubject.HammerPointSubject.Subscribe(_ =>
             {
                 if (equipmentSubRecipeView.gameObject.activeSelf)
                 {

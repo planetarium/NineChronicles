@@ -471,7 +471,7 @@ namespace Nekoyume.State
                 }
             }
 
-            HammerPointStatesSubject.UpdateHammerPointStates(recipeId, state);
+            HammerPointStatesSubject.OnReplaceHammerPointState(recipeId, state);
         }
 
         public void UpdateHammerPointStates(IEnumerable<int> recipeIds)
@@ -513,7 +513,7 @@ namespace Nekoyume.State
                         _hammerPointStates.Add(tuple.recipeId, state);
                     }
 
-                    HammerPointStatesSubject.UpdateHammerPointStates(tuple.recipeId, state);
+                    HammerPointStatesSubject.OnReplaceHammerPointState(tuple.recipeId, state);
                 }
             }).Forget();
         }
