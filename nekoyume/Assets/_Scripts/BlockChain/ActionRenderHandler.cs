@@ -2129,8 +2129,8 @@ namespace Nekoyume.BlockChain
             }
 
             UpdateCrystalBalance(eval);
-            Widget.Find<GrayLoadingScreen>().Close();
-            Widget.Find<WorldBossRewardPopup>().Show(new LocalRandom(eval.RandomSeed));
+            WorldBossStates.ReceivingGradeRewards.SetValueAndForceNotify(false);
+            Widget.Find<WorldBossRewardScreen>().Show(new LocalRandom(eval.RandomSeed));
         }
     }
 }

@@ -18,7 +18,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    public class WorldBossRewardPopup : PopupWidget
+    public class WorldBossRewardScreen : ScreenWidget
     {
         private const float ContinueTime = 3f;
 
@@ -60,7 +60,6 @@ namespace Nekoyume.UI
             CloseWidget = () =>
             {
                 Close(true);
-                Game.Event.OnRoomEnter.Invoke(true);
             };
         }
 
