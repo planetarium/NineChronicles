@@ -223,7 +223,16 @@ namespace Nekoyume.Game
             actionCam.Cam.gameObject.SetActive(true);
             actionCam.RerunFSM();
             MainCanvas.instance.Canvas.worldCamera = ActionCamera.instance.Cam;
-            Widget.Find<WorldBossResultPopup>().Show(_currentBossId, damageDealt, isNewRecord, rewards, killRewards);
+
+            if (isPractice)
+            {
+                Widget.Find<WorldBossResultPopup>().ShowAsPractice(_currentBossId, damageDealt);
+            }
+            else
+            {
+                Widget.Find<WorldBossResultPopup>().Show(
+                    _currentBossId, damageDealt, isNewRecord, rewards, killRewards);
+            }
 
             if (container)
             {
