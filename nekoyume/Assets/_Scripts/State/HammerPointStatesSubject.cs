@@ -1,30 +1,22 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Bencodex.Types;
-using Cysharp.Threading.Tasks;
-using Nekoyume.Game;
+﻿using System;
+using System.Collections.Generic;
 using Nekoyume.Model.State;
-using Nekoyume.UI;
 using UniRx;
 
 namespace Nekoyume.State
 {
-    public static class ReactiveHammerPointStates
+    public static class HammerPointStatesSubject
     {
         private static ReactiveDictionary<int, HammerPointState> _hammerPointStates;
 
-        public static ReactiveDictionary<int, HammerPointState> HammerPointStates
+        public static IObservable<DictionaryReplaceEvent<int, HammerPointState>> ObservableHammerPointStates
         {
             get
             {
-                if (_hammerPointStates is not null)
-                {
-                    return _hammerPointStates;
-                }
+                _hammerPointStates ??= new ReactiveDictionary<int, HammerPointState>(
+                    (Dictionary<int, HammerPointState>) States.Instance.HammerPointStates);
 
-                return _hammerPointStates =
-                    new ReactiveDictionary<int, HammerPointState>(
-                        (Dictionary<int, HammerPointState>) States.Instance.HammerPointStates);
+                return _hammerPointStates.ObserveReplace();
             }
         }
 
