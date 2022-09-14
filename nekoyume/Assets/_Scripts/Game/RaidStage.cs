@@ -37,6 +37,7 @@ namespace Nekoyume.Game
         private RaidTimelineContainer container;
         private Coroutine _battleCoroutine;
         private int _waveTurn;
+        private int _turnLimit;
         private int _wave;
         private bool _isPlaying;
         private int _currentScore;
@@ -193,6 +194,11 @@ namespace Nekoyume.Game
             List<FungibleAssetValue> rewards,
             List<FungibleAssetValue> killRewards)
         {
+            if (TurnNumber >= _turnLimit && !_boss.IsDead)
+            {
+                yield return container.CoPlayPlayerDefeatCutscene();
+            }
+
             IsAvatarStateUpdatedAfterBattle = false;
             _onBattleEnded.OnNext(this);
 
@@ -374,14 +380,14 @@ namespace Nekoyume.Game
         {
             _boss.Spawn(enemies.First());
 
-            var turnLimit = 150;
+            _turnLimit = 150;
             var sheet = Game.instance.TableSheets.WorldBossCharacterSheet;
             if (sheet.TryGetValue(_currentBossId, out var boss))
             {
-                turnLimit = boss.WaveStats.FirstOrDefault(x => x.Wave == waveNumber).TurnLimit;
+                _turnLimit = boss.WaveStats.FirstOrDefault(x => x.Wave == waveNumber).TurnLimit;
             }
 
-            Widget.Find<WorldBossBattle>().SetBossProfile(_boss.Model as Enemy, turnLimit);
+            Widget.Find<WorldBossBattle>().SetBossProfile(_boss.Model as Enemy, _turnLimit);
             yield break;
         }
 
