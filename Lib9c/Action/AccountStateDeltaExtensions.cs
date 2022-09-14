@@ -872,7 +872,10 @@ namespace Nekoyume.Action
             return (arenaInfoAddress, arenaInfo, isNew);
         }
 
-        public static bool TryGetStakeState(this IAccountStateDelta states, Address agentAddress, out StakeState stakeState)
+        public static bool TryGetStakeState(
+            this IAccountStateDelta states,
+            Address agentAddress,
+            out StakeState stakeState)
         {
             if (states.TryGetState(StakeState.DeriveAddress(agentAddress), out Dictionary dictionary))
             {
