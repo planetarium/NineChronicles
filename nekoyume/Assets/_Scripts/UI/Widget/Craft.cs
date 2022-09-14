@@ -248,16 +248,13 @@ namespace Nekoyume.UI
                     OnClickConsumableToggle(eventConsumableToggle.isOn);
                 })
                 .AddTo(_disposablesAtShow);
-            if (ReactiveHammerPointStates.HammerPointStates is not null)
+            HammerPointStatesSubject.ObservableHammerPointStates.Subscribe(_ =>
             {
-                ReactiveHammerPointStates.HammerPointStates.ObserveReplace().Subscribe(_ =>
+                if (equipmentSubRecipeView.gameObject.activeSelf)
                 {
-                    if (equipmentSubRecipeView.gameObject.activeSelf)
-                    {
-                        equipmentSubRecipeView.UpdateView();
-                    }
-                }).AddTo(_disposablesAtShow);
-            }
+                    equipmentSubRecipeView.UpdateView();
+                }
+            }).AddTo(_disposablesAtShow);
         }
 
         public override void Show(bool ignoreShowAnimation = false)

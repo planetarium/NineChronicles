@@ -866,7 +866,7 @@ namespace Nekoyume.BlockChain
             {
                 var recipeId = recipeInfo.RecipeId;
                 var originHammerPointState = States.Instance.HammerPointStates[recipeId];
-                States.Instance.UpdateHammerPointStatesAsync(
+                States.Instance.UpdateHammerPointStates(
                     recipeId, new HammerPointState(originHammerPointState.Address, recipeId));
             }
 

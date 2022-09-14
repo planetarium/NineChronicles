@@ -455,7 +455,7 @@ namespace Nekoyume.State
             ReactiveAvatarState.Initialize(CurrentAvatarState);
         }
 
-        public void UpdateHammerPointStatesAsync(int recipeId, HammerPointState state)
+        public void UpdateHammerPointStates(int recipeId, HammerPointState state)
         {
             if (Addresses.GetHammerPointStateAddress(
                     Instance.CurrentAvatarState.address,
@@ -471,47 +471,51 @@ namespace Nekoyume.State
                 }
             }
 
-            ReactiveHammerPointStates.UpdateHammerPointStates(recipeId, state);
+            HammerPointStatesSubject.UpdateHammerPointStates(recipeId, state);
         }
 
-        public async UniTaskVoid UpdateHammerPointStatesAsync(
-            IEnumerable<int> recipeIds)
+        public void UpdateHammerPointStates(IEnumerable<int> recipeIds)
         {
-            if (TableSheets.Instance.CrystalHammerPointSheet is null)
+            UniTask.Run(async () =>
             {
-                return;
-            }
-
-            var hammerPointStateAddresses =
-                recipeIds.Select(recipeId =>
-                        (Addresses.GetHammerPointStateAddress(
-                            CurrentAvatarState.address,
-                            recipeId), recipeId))
-                    .ToList();
-            var states =
-                await Game.Game.instance.Agent.GetStateBulk(
-                    hammerPointStateAddresses.Select(tuple => tuple.Item1));
-            var joinedStates = states.Join(
-                hammerPointStateAddresses,
-                state => state.Key,
-                tuple => tuple.Item1,
-                (state, tuple) => (state, tuple.recipeId));
-
-            _hammerPointStates ??= new Dictionary<int, HammerPointState>();
-            foreach (var tuple in joinedStates)
-            {
-                var state = tuple.state.Value is List list
-                    ? new HammerPointState(tuple.state.Key, list)
-                    : new HammerPointState(tuple.state.Key, tuple.recipeId);
-                if (_hammerPointStates.ContainsKey(tuple.recipeId))
+                if (TableSheets.Instance.CrystalHammerPointSheet is null)
                 {
-                    _hammerPointStates[tuple.recipeId] = state;
+                    return;
                 }
-                else
+
+                var hammerPointStateAddresses =
+                    recipeIds.Select(recipeId =>
+                            (Addresses.GetHammerPointStateAddress(
+                                CurrentAvatarState.address,
+                                recipeId), recipeId))
+                        .ToList();
+                var states =
+                    await Game.Game.instance.Agent.GetStateBulk(
+                        hammerPointStateAddresses.Select(tuple => tuple.Item1));
+                var joinedStates = states.Join(
+                    hammerPointStateAddresses,
+                    state => state.Key,
+                    tuple => tuple.Item1,
+                    (state, tuple) => (state, tuple.recipeId));
+
+                _hammerPointStates ??= new Dictionary<int, HammerPointState>();
+                foreach (var tuple in joinedStates)
                 {
-                    _hammerPointStates.Add(tuple.recipeId, state);
+                    var state = tuple.state.Value is List list
+                        ? new HammerPointState(tuple.state.Key, list)
+                        : new HammerPointState(tuple.state.Key, tuple.recipeId);
+                    if (_hammerPointStates.ContainsKey(tuple.recipeId))
+                    {
+                        _hammerPointStates[tuple.recipeId] = state;
+                    }
+                    else
+                    {
+                        _hammerPointStates.Add(tuple.recipeId, state);
+                    }
+
+                    HammerPointStatesSubject.UpdateHammerPointStates(tuple.recipeId, state);
                 }
-            }
+            }).Forget();
         }
     }
 }

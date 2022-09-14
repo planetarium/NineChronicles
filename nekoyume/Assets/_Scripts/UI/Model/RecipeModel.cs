@@ -165,7 +165,7 @@ namespace Nekoyume.UI.Model
                 ? recipeState.ToList(StateExtensions.ToInteger)
                 : new List<int> { 1 };
             SetUnlockedRecipes(result);
-            States.Instance.UpdateHammerPointStatesAsync(result).Forget();
+            States.Instance.UpdateHammerPointStates(result);
         }
 
         public void SetUnlockedRecipes(List<int> recipeIds)
