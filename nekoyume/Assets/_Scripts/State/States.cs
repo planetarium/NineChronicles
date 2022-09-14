@@ -2,11 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Threading.Tasks;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Libplanet;
-using Libplanet.Action;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
@@ -17,7 +15,6 @@ using Libplanet.Assets;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.UI;
-using UniRx;
 
 namespace Nekoyume.State
 {
@@ -57,27 +54,11 @@ namespace Nekoyume.State
             new Dictionary<int, CombinationSlotState>();
 
         private Dictionary<int, HammerPointState> _hammerPointStates;
+
         /// <summary>
         /// Hammer point state dictionary of current avatar.
         /// </summary>
-        public IReadOnlyDictionary<int, HammerPointState> HammerPointStates
-        {
-            get
-            {
-                if (_hammerPointStates is null)
-                {
-                    Task.Run(async () =>
-                    {
-                        // Lazy initializing
-                        _hammerPointStates = await Instance.InitializeHammerPointStates();
-                    }).Wait();
-                }
-
-                return _hammerPointStates;
-            }
-
-            private set => _hammerPointStates = (Dictionary<int, HammerPointState>) value;
-        }
+        public IReadOnlyDictionary<int, HammerPointState> HammerPointStates => _hammerPointStates;
 
         public States()
         {
@@ -362,7 +343,7 @@ namespace Nekoyume.State
                 // NOTE: commit c1b7f0dc2e8fd922556b83f0b9b2d2d2b2626603 에서 코드 수정이 생기면서
                 // SetCombinationSlotStatesAsync()가 호출이 안되는 이슈가 있어서 revert했습니다. 재수정 필요
                 _combinationSlotStates.Clear();
-                HammerPointStates = null;
+                _hammerPointStates = null;
                 await UniTask.Run(async () =>
                 {
                     var (exist, curAvatarState) = await TryGetAvatarStateAsync(avatarState.address);
@@ -493,12 +474,12 @@ namespace Nekoyume.State
             ReactiveHammerPointStates.UpdateHammerPointStates(recipeId, state);
         }
 
-        private async UniTask<Dictionary<int, HammerPointState>> UpdateHammerPointStatesAsync(
+        public async UniTaskVoid UpdateHammerPointStatesAsync(
             IEnumerable<int> recipeIds)
         {
             if (TableSheets.Instance.CrystalHammerPointSheet is null)
             {
-                return null;
+                return;
             }
 
             var hammerPointStateAddresses =
@@ -516,19 +497,21 @@ namespace Nekoyume.State
                 tuple => tuple.Item1,
                 (state, tuple) => (state, tuple.recipeId));
 
-            return joinedStates
-                .Select(tuple =>
+            _hammerPointStates ??= new Dictionary<int, HammerPointState>();
+            foreach (var tuple in joinedStates)
+            {
+                var state = tuple.state.Value is List list
+                    ? new HammerPointState(tuple.state.Key, list)
+                    : new HammerPointState(tuple.state.Key, tuple.recipeId);
+                if (_hammerPointStates.ContainsKey(tuple.recipeId))
                 {
-                    var state = tuple.state;
-                    return state.Value is List list
-                        ? new HammerPointState(state.Key, list)
-                        : new HammerPointState(state.Key, tuple.recipeId);
-                })
-                .ToDictionary(value => value.RecipeId, value => value);
+                    _hammerPointStates[tuple.recipeId] = state;
+                }
+                else
+                {
+                    _hammerPointStates.Add(tuple.recipeId, state);
+                }
+            }
         }
-
-        private async UniTask<Dictionary<int, HammerPointState>>
-            InitializeHammerPointStates() => await
-            UpdateHammerPointStatesAsync(Craft.SharedModel.UnlockedRecipes.Value);
     }
 }
