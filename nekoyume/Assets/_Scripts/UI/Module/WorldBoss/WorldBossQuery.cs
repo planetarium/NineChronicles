@@ -10,8 +10,11 @@ namespace Nekoyume.UI.Module.WorldBoss
 {
     public static class WorldBossQuery
     {
-        private const string URL =
-            "http://a93dd1d705f7a43149125438c63d092e-1911438231.us-east-2.elb.amazonaws.com:8080/raid";
+        private static string _url;
+        public static void SetUrl(string host, int port)
+        {
+            _url = $"{host}:{port}/raid";
+        }
 
         public static async Task<WorldBossRankingResponse> QueryRankingAsync(
             int raidId,
@@ -91,7 +94,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             form.AddField("avatar_address", avatarAddress.ToHex());
             form.AddField("agent_address", agentAddress.ToHex());
 
-            using var request = UnityWebRequest.Post($"{URL}/reward", form);
+            using var request = UnityWebRequest.Post($"{_url}/reward", form);
             yield return request.SendWebRequest();
 
             Debug.Log(request.result != UnityWebRequest.Result.Success
@@ -114,7 +117,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             System.Action<string> onSuccess,
             System.Action onFailed)
         {
-            var url = $"{URL}/{raidId}/{avatarAddress}";
+            var url = $"{_url}/{raidId}/{avatarAddress}";
             using var request = UnityWebRequest.Get(url);
             yield return request.SendWebRequest();
             Debug.Log($"[GET] ({url}) RESULT : {request.result}");
