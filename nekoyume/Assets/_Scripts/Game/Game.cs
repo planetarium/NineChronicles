@@ -26,6 +26,7 @@ using Nekoyume.Model.State;
 using Nekoyume.Pattern;
 using Nekoyume.State;
 using Nekoyume.UI;
+using Nekoyume.UI.Module.WorldBoss;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
 using UnityEngine.Playables;
@@ -201,6 +202,8 @@ namespace Nekoyume.Game
             {
                 _rpcClient = new NineChroniclesAPIClient($"http://{_options.RpcServerHost}/graphql");
             }
+
+            WorldBossQuery.SetUrl(_options.OnBoardingHost);
 
             // Initialize Rank.SharedModel
             RankPopup.UpdateSharedModel();
