@@ -16,7 +16,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static SerializeKeys;
 
-    public class HackAndSlashSweepTest3
+    public class HackAndSlashSweep4Test
     {
         private readonly Dictionary<string, string> _sheets;
         private readonly TableSheets _tableSheets;
@@ -36,7 +36,7 @@ namespace Lib9c.Tests.Action
         private readonly IAccountStateDelta _initialState;
         private readonly IRandom _random;
 
-        public HackAndSlashSweepTest3()
+        public HackAndSlashSweep4Test()
         {
             _random = new TestRandom();
             _sheets = TableSheetsImporter.ImportSheets();
@@ -118,13 +118,34 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(1, 1, 1, true)]
-        [InlineData(1, 1, 1, false)]
-        [InlineData(2, 1, 2, true)]
-        [InlineData(2, 1, 2, false)]
-        public void Execute(int apStoneCount, int worldId, int stageId, bool backward)
+        [InlineData(1, 1, 1, false, true)]
+        [InlineData(1, 1, 1, false, false)]
+        [InlineData(2, 1, 2, false, true)]
+        [InlineData(2, 1, 2, false, false)]
+        [InlineData(2, 2, 51, false, true)]
+        [InlineData(2, 2, 51, false, false)]
+        [InlineData(2, 2, 52, false, true)]
+        [InlineData(2, 2, 52, false, false)]
+        [InlineData(2, 1, 1, true, true)]
+        [InlineData(2, 1, 1, true, false)]
+        [InlineData(2, 1, 2, true, true)]
+        [InlineData(2, 1, 2, true, false)]
+        [InlineData(2, 2, 51, true, true)]
+        [InlineData(2, 2, 51, true, false)]
+        [InlineData(2, 2, 52, true, true)]
+        [InlineData(2, 2, 52, true, false)]
+        public void Execute(int apStoneCount, int worldId, int stageId, bool challenge, bool backward)
         {
             var gameConfigState = _initialState.GetGameConfigState();
+            var prevStageId = stageId - 1;
+            var worldInformation = new WorldInformation(
+                    0, _initialState.GetSheet<WorldSheet>(), challenge ? prevStageId : stageId);
+
+            if (challenge)
+            {
+                worldInformation.UnlockWorld(worldId, 0,  _tableSheets.WorldSheet);
+            }
+
             var avatarState = new AvatarState(
                 _avatarAddress,
                 _agentAddress,
@@ -133,8 +154,7 @@ namespace Lib9c.Tests.Action
                 gameConfigState,
                 _rankingMapAddress)
             {
-                worldInformation =
-                    new WorldInformation(0, _initialState.GetSheet<WorldSheet>(), stageId),
+                worldInformation = worldInformation,
                 level = 400,
             };
 
@@ -170,17 +190,17 @@ namespace Lib9c.Tests.Action
                 var itemPlayCount = gameConfigState.ActionPointMax / stageRow.CostAP * apStoneCount;
                 var apPlayCount = avatarState.actionPoint / stageRow.CostAP;
                 var playCount = apPlayCount + itemPlayCount;
-                (expectedLevel, expectedExp) = avatarState.GetLevelAndExpV1(
+                (expectedLevel, expectedExp) = avatarState.GetLevelAndExp(
                     _tableSheets.CharacterLevelSheet,
                     stageId,
                     playCount);
 
                 var random = new TestRandom(_random.Seed);
                 var expectedRewardItems =
-                    HackAndSlashSweep3.GetRewardItems(random, playCount, stageRow, _tableSheets.MaterialItemSheet);
+                    HackAndSlashSweep4.GetRewardItems(random, playCount, stageRow, _tableSheets.MaterialItemSheet);
 
                 var (equipments, costumes) = GetDummyItems(avatarState);
-                var action = new HackAndSlashSweep3
+                var action = new HackAndSlashSweep4
                 {
                     actionPoint = avatarState.actionPoint,
                     costumes = costumes,
@@ -218,7 +238,7 @@ namespace Lib9c.Tests.Action
         [InlineData(false)]
         public void Execute_FailedLoadStateException(bool backward)
         {
-            var action = new HackAndSlashSweep3
+            var action = new HackAndSlashSweep4
             {
                 apStoneCount = 1,
                 avatarAddress = _avatarAddress,
@@ -248,7 +268,7 @@ namespace Lib9c.Tests.Action
         [InlineData(100, 1)]
         public void Execute_SheetRowNotFoundException(int worldId, int stageId)
         {
-            var action = new HackAndSlashSweep3
+            var action = new HackAndSlashSweep4
             {
                 apStoneCount = 1,
                 avatarAddress = _avatarAddress,
@@ -266,9 +286,10 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         [InlineData(1, 999)]
+        [InlineData(2, 50)]
         public void Execute_SheetRowColumnException(int worldId, int stageId)
         {
-            var action = new HackAndSlashSweep3
+            var action = new HackAndSlashSweep4
             {
                 apStoneCount = 1,
                 avatarAddress = _avatarAddress,
@@ -284,41 +305,24 @@ namespace Lib9c.Tests.Action
             }));
         }
 
-        [Fact]
-        public void Execute_StageClearedException()
-        {
-            var action = new HackAndSlashSweep3
-            {
-                apStoneCount = 1,
-                avatarAddress = _avatarAddress,
-                worldId = 1,
-                stageId = 50,
-            };
-
-            Assert.Throws<StageNotClearedException>(() => action.Execute(new ActionContext()
-            {
-                PreviousStates = _initialState,
-                Signer = _agentAddress,
-                Random = new TestRandom(),
-            }));
-        }
-
         [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void Execute_InvalidStageException(bool backward)
+        [InlineData(1, 48, 1, 50, true)]
+        [InlineData(1, 48, 1, 50, false)]
+        [InlineData(1, 49, 2, 51, true)]
+        [InlineData(1, 49, 2, 51, false)]
+        public void Execute_InvalidStageException(int clearedWorldId, int clearedStageId, int worldId, int stageId, bool backward)
         {
-            var action = new HackAndSlashSweep3
+            var action = new HackAndSlashSweep4
             {
                 apStoneCount = 1,
                 avatarAddress = _avatarAddress,
-                worldId = 1,
-                stageId = 50,
+                worldId = worldId,
+                stageId = stageId,
             };
             var worldSheet = _initialState.GetSheet<WorldSheet>();
             var worldUnlockSheet = _initialState.GetSheet<WorldUnlockSheet>();
 
-            _avatarState.worldInformation.ClearStage(1, 2, 1, worldSheet, worldUnlockSheet);
+            _avatarState.worldInformation.ClearStage(clearedWorldId, clearedStageId, 1, worldSheet, worldUnlockSheet);
 
             var state = _initialState;
             if (backward)
@@ -379,7 +383,7 @@ namespace Lib9c.Tests.Action
                         avatarState.questList.Serialize());
             }
 
-            var action = new HackAndSlashSweep3
+            var action = new HackAndSlashSweep4
             {
                 apStoneCount = 1,
                 avatarAddress = _avatarAddress,
@@ -433,7 +437,7 @@ namespace Lib9c.Tests.Action
                         avatarState.questList.Serialize());
             }
 
-            var action = new HackAndSlashSweep3
+            var action = new HackAndSlashSweep4
             {
                 apStoneCount = apStoneCount,
                 avatarAddress = _avatarAddress,
@@ -501,14 +505,14 @@ namespace Lib9c.Tests.Action
                     gameConfigState.ActionPointMax / stageRow.CostAP * useApStoneCount;
                 var apPlayCount = avatarState.actionPoint / stageRow.CostAP;
                 var playCount = apPlayCount + itemPlayCount;
-                (expectedLevel, expectedExp) = avatarState.GetLevelAndExpV1(
+                (expectedLevel, expectedExp) = avatarState.GetLevelAndExp(
                     _tableSheets.CharacterLevelSheet,
                     2,
                     playCount);
 
                 var (equipments, costumes) = GetDummyItems(avatarState);
 
-                var action = new HackAndSlashSweep3
+                var action = new HackAndSlashSweep4
                 {
                     equipments = equipments,
                     costumes = costumes,
@@ -576,13 +580,13 @@ namespace Lib9c.Tests.Action
                     gameConfigState.ActionPointMax / stageRow.CostAP * 1;
                 var apPlayCount = avatarState.actionPoint / stageRow.CostAP;
                 var playCount = apPlayCount + itemPlayCount;
-                (expectedLevel, expectedExp) = avatarState.GetLevelAndExpV1(
+                (expectedLevel, expectedExp) = avatarState.GetLevelAndExp(
                     _tableSheets.CharacterLevelSheet,
                     2,
                     playCount);
 
                 var (equipments, costumes) = GetDummyItems(avatarState);
-                var action = new HackAndSlashSweep3
+                var action = new HackAndSlashSweep4
                 {
                     costumes = costumes,
                     equipments = equipments,
@@ -651,13 +655,13 @@ namespace Lib9c.Tests.Action
                     gameConfigState.ActionPointMax / stageRow.CostAP * 1;
                 var apPlayCount = avatarState.actionPoint / stageRow.CostAP;
                 var playCount = apPlayCount + itemPlayCount;
-                (expectedLevel, expectedExp) = avatarState.GetLevelAndExpV1(
+                (expectedLevel, expectedExp) = avatarState.GetLevelAndExp(
                     _tableSheets.CharacterLevelSheet,
                     2,
                     playCount);
 
                 var (equipments, costumes) = GetDummyItems(avatarState);
-                var action = new HackAndSlashSweep3
+                var action = new HackAndSlashSweep4
                 {
                     costumes = costumes,
                     equipments = equipments,
@@ -726,12 +730,12 @@ namespace Lib9c.Tests.Action
                     gameConfigState.ActionPointMax / stageRow.CostAP * 1;
                 var apPlayCount = avatarState.actionPoint / stageRow.CostAP;
                 var playCount = apPlayCount + itemPlayCount;
-                (expectedLevel, expectedExp) = avatarState.GetLevelAndExpV1(
+                (expectedLevel, expectedExp) = avatarState.GetLevelAndExp(
                     _tableSheets.CharacterLevelSheet,
                     stageId,
                     playCount);
 
-                var action = new HackAndSlashSweep3
+                var action = new HackAndSlashSweep4
                 {
                     costumes = new List<Guid>(),
                     equipments = new List<Guid>(),
@@ -755,7 +759,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_ActionObsoletedException()
         {
-            var action = new HackAndSlashSweep3
+            var action = new HackAndSlashSweep4
             {
                 apStoneCount = 1,
                 avatarAddress = _avatarAddress,

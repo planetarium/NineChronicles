@@ -16,10 +16,10 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1338
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1374
     /// </summary>
     [Serializable]
-    [ActionType("hack_and_slash_sweep6")]
+    [ActionType("hack_and_slash_sweep7")]
     public class HackAndSlashSweep : GameAction
     {
         public const int UsableApStoneCount = 10;
@@ -27,8 +27,8 @@ namespace Nekoyume.Action
         public List<Guid> costumes;
         public List<Guid> equipments;
         public Address avatarAddress;
-        public int apStoneCount = 0;
-        public int actionPoint = 0;
+        public int apStoneCount;
+        public int actionPoint;
         public int worldId;
         public int stageId;
 
@@ -59,8 +59,6 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             var states = context.PreviousStates;
-            var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
-            var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
             if (context.Rehearsal)
             {
                 return states;
@@ -70,20 +68,24 @@ namespace Nekoyume.Action
 
             if (apStoneCount > UsableApStoneCount)
             {
-                throw new UsageLimitExceedException($"Exceeded the amount of ap stones that can be used " +
-                                                    $"apStoneCount : {apStoneCount} > UsableApStoneCount : {UsableApStoneCount}");
+                throw new UsageLimitExceedException(
+                    $"Exceeded the amount of ap stones that can be used " +
+                    $"apStoneCount : {apStoneCount} > UsableApStoneCount : {UsableApStoneCount}");
             }
 
             states.ValidateWorldId(avatarAddress, worldId);
 
-            if (!states.TryGetAvatarStateV2(context.Signer, avatarAddress, out var avatarState, out var migrationRequired))
+            if (!states.TryGetAvatarStateV2(
+                    context.Signer,
+                    avatarAddress,
+                    out var avatarState,
+                    out var migrationRequired))
             {
-                throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
+                throw new FailedLoadStateException(
+                    $"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
             }
 
             var sheets = states.GetSheets(
-                containQuestSheet: false,
-                containStageSimulatorSheets: false,
                 sheetTypes: new[]
                 {
                     typeof(WorldSheet),
@@ -155,7 +157,8 @@ namespace Nekoyume.Action
             var sweepRequiredCpSheet = sheets.GetSheet<SweepRequiredCPSheet>();
             if (!sweepRequiredCpSheet.TryGetValue(stageId, out var cpRow))
             {
-                throw new SheetRowColumnException($"{addressesHex}There is no row in SweepRequiredCPSheet: {stageId}");
+                throw new SheetRowColumnException(
+                    $"{addressesHex}There is no row in SweepRequiredCPSheet: {stageId}");
             }
 
             var characterSheet = sheets.GetSheet<CharacterSheet>();
@@ -163,7 +166,8 @@ namespace Nekoyume.Action
             var cp = CPHelper.GetCPV2(avatarState, characterSheet, costumeStatSheet);
             if (cp < cpRow.RequiredCP)
             {
-                throw new NotEnoughCombatPointException($"{addressesHex}Aborted due to lack of player cp ({cp} < {cpRow.RequiredCP})");
+                throw new NotEnoughCombatPointException(
+                    $"{addressesHex}Aborted due to lack of player cp ({cp} < {cpRow.RequiredCP})");
             }
 
             var materialItemSheet = sheets.GetSheet<MaterialItemSheet>();
@@ -171,7 +175,8 @@ namespace Nekoyume.Action
             {
                 // use apStone
                 var row = materialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.ApStone);
-                if (!avatarState.inventory.RemoveFungibleItem(row.ItemId, context.BlockIndex, count: apStoneCount))
+                if (!avatarState.inventory.RemoveFungibleItem(row.ItemId, context.BlockIndex,
+                        count: apStoneCount))
                 {
                     throw new NotEnoughMaterialException(
                         $"{addressesHex}Aborted as the player has no enough material ({row.Id})");
@@ -200,8 +205,11 @@ namespace Nekoyume.Action
             {
                 var currency = states.GetGoldCurrency();
                 var stakedAmount = states.GetBalance(stakeState.address, currency);
-                var actionPointCoefficientSheet = sheets.GetSheet<StakeActionPointCoefficientSheet>();
-                var stakingLevel = actionPointCoefficientSheet.FindLevelByStakedAmount(context.Signer, stakedAmount);
+                var actionPointCoefficientSheet =
+                    sheets.GetSheet<StakeActionPointCoefficientSheet>();
+                var stakingLevel =
+                    actionPointCoefficientSheet.FindLevelByStakedAmount(context.Signer,
+                        stakedAmount);
                 costAp = actionPointCoefficientSheet.GetActionPointByStaking(
                     costAp,
                     1,
@@ -214,43 +222,40 @@ namespace Nekoyume.Action
             var playCount = apStonePlayCount + apPlayCount;
             if (playCount <= 0)
             {
-                throw new PlayCountIsZeroException($"{addressesHex}playCount must be greater than 0. " +
-                                                   $"current playCount : {playCount}");
+                throw new PlayCountIsZeroException(
+                    $"{addressesHex}playCount must be greater than 0. " +
+                    $"current playCount : {playCount}");
             }
 
             var stageWaveSheet = sheets.GetSheet<StageWaveSheet>();
             avatarState.UpdateMonsterMap(stageWaveSheet, stageId);
 
-            var rewardItems = GetRewardItems(context.Random, playCount, stageRow, materialItemSheet);
+            var rewardItems = HackAndSlashSweep6.GetRewardItems(
+                context.Random,
+                playCount,
+                stageRow,
+                materialItemSheet);
             avatarState.UpdateInventory(rewardItems);
 
             var levelSheet = sheets.GetSheet<CharacterLevelSheet>();
             var (level, exp) = avatarState.GetLevelAndExp(levelSheet, stageId, playCount);
             avatarState.UpdateExp(level, exp);
 
-            return states
-                .SetState(inventoryAddress, avatarState.inventory.Serialize())
-                .SetState(questListAddress, avatarState.questList.Serialize())
-                .SetState(avatarAddress, avatarState.SerializeV2());
-        }
-
-        public static List<ItemBase> GetRewardItems(IRandom random,
-            int playCount,
-            StageSheet.Row stageRow,
-            MaterialItemSheet materialItemSheet)
-        {
-            var rewardItems = new List<ItemBase>();
-            var maxCount = random.Next(stageRow.DropItemMin, stageRow.DropItemMax + 1);
-            for (var i = 0; i < playCount; i++)
+            if (migrationRequired)
             {
-                var selector = StageSimulatorV1.SetItemSelector(stageRow, random);
-                var rewards = Simulator.SetRewardV2(selector, maxCount, random,
-                    materialItemSheet);
-                rewardItems.AddRange(rewards);
+                states = states.SetState(
+                    avatarAddress.Derive(LegacyWorldInformationKey),
+                    avatarState.worldInformation.Serialize());
             }
 
-            rewardItems = rewardItems.OrderBy(x => x.Id).ToList();
-            return rewardItems;
+            return states
+                .SetState(avatarAddress, avatarState.SerializeV2())
+                .SetState(
+                    avatarAddress.Derive(LegacyInventoryKey),
+                    avatarState.inventory.Serialize())
+                .SetState(
+                    avatarAddress.Derive(LegacyQuestListKey),
+                    avatarState.questList.Serialize());
         }
     }
 }

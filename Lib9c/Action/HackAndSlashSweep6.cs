@@ -16,13 +16,11 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Introduced at https://github.com/planetarium/lib9c/pull/1017
-    /// Updated at https://github.com/planetarium/lib9c/pull/1176
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1338
     /// </summary>
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100210ObsoleteIndex)]
-    [ActionType("hack_and_slash_sweep3")]
-    public class HackAndSlashSweep3 : GameAction
+    [ActionType("hack_and_slash_sweep6")]
+    public class HackAndSlashSweep6 : GameAction
     {
         public const int UsableApStoneCount = 10;
 
@@ -65,21 +63,8 @@ namespace Nekoyume.Action
             var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
             if (context.Rehearsal)
             {
-                return states
-                    .SetState(inventoryAddress, MarkChanged)
-                    .SetState(questListAddress, MarkChanged)
-                    .SetState(avatarAddress, MarkChanged)
-                    .SetState(context.Signer, MarkChanged);
+                return states;
             }
-
-            var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
-            var arenaSheetState = states.GetState(arenaSheetAddress);
-            if (arenaSheetState != null)
-            {
-                throw new ActionObsoletedException(nameof(HackAndSlashSweep3));
-            }
-
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100210ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
@@ -89,11 +74,7 @@ namespace Nekoyume.Action
                                                     $"apStoneCount : {apStoneCount} > UsableApStoneCount : {UsableApStoneCount}");
             }
 
-            if (worldId == GameConfig.MimisbrunnrWorldId)
-            {
-                throw new InvalidWorldException(
-                    $"{addressesHex} [{worldId}] can't execute HackAndSlashSweep action.");
-            }
+            states.ValidateWorldId(avatarAddress, worldId);
 
             if (!states.TryGetAvatarStateV2(context.Signer, avatarAddress, out var avatarState, out var migrationRequired))
             {
@@ -117,6 +98,7 @@ namespace Nekoyume.Action
                     typeof(CharacterSheet),
                     typeof(CostumeStatSheet),
                     typeof(SweepRequiredCPSheet),
+                    typeof(StakeActionPointCoefficientSheet),
                 });
 
             var worldSheet = sheets.GetSheet<WorldSheet>();
@@ -141,19 +123,19 @@ namespace Nekoyume.Action
             var worldInformation = avatarState.worldInformation;
             if (!worldInformation.TryGetWorld(worldId, out var world))
             {
-                throw new SheetRowColumnException($"{addressesHex}world is not contains in world information: {worldId}");
+                // NOTE: Add new World from WorldSheet
+                worldInformation.AddAndUnlockNewWorld(worldRow, context.BlockIndex, worldSheet);
+                if (!worldInformation.TryGetWorld(worldId, out world))
+                {
+                    // Do nothing.
+                }
             }
 
-            if (!world.IsStageCleared)
-            {
-                throw new StageNotClearedException($"{addressesHex}There is no stage cleared in that world (worldId:{worldId})");
-            }
-
-            if (stageId > world.StageClearedId)
+            if (!world.IsPlayable(stageId))
             {
                 throw new InvalidStageException(
-                    $"{addressesHex}Aborted as the stage ({worldId}/{stageId}) is not cleared; " +
-                    $"cleared stage: {world.StageClearedId}"
+                    $"{addressesHex}Aborted as the stage isn't playable;" +
+                    $"StageClearedId: {world.StageClearedId}"
                 );
             }
 
@@ -213,10 +195,22 @@ namespace Nekoyume.Action
 
             // burn ap
             avatarState.actionPoint -= actionPoint;
+            var costAp = sheets.GetSheet<StageSheet>()[stageId].CostAP;
+            if (states.TryGetStakeState(context.Signer, out var stakeState))
+            {
+                var currency = states.GetGoldCurrency();
+                var stakedAmount = states.GetBalance(stakeState.address, currency);
+                var actionPointCoefficientSheet = sheets.GetSheet<StakeActionPointCoefficientSheet>();
+                var stakingLevel = actionPointCoefficientSheet.FindLevelByStakedAmount(context.Signer, stakedAmount);
+                costAp = actionPointCoefficientSheet.GetActionPointByStaking(
+                    costAp,
+                    1,
+                    stakingLevel);
+            }
 
-            var apMaxPlayCount = stageRow.CostAP > 0 ? gameConfigState.ActionPointMax / stageRow.CostAP : 0;
+            var apMaxPlayCount = costAp > 0 ? gameConfigState.ActionPointMax / costAp : 0;
             var apStonePlayCount = apMaxPlayCount * apStoneCount;
-            var apPlayCount = stageRow.CostAP > 0 ? actionPoint / stageRow.CostAP : 0;
+            var apPlayCount = costAp > 0 ? actionPoint / costAp : 0;
             var playCount = apStonePlayCount + apPlayCount;
             if (playCount <= 0)
             {
@@ -231,7 +225,7 @@ namespace Nekoyume.Action
             avatarState.UpdateInventory(rewardItems);
 
             var levelSheet = sheets.GetSheet<CharacterLevelSheet>();
-            var (level, exp) = avatarState.GetLevelAndExpV1(levelSheet, stageId, playCount);
+            var (level, exp) = avatarState.GetLevelAndExp(levelSheet, stageId, playCount);
             avatarState.UpdateExp(level, exp);
 
             return states
