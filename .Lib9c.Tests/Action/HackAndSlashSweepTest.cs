@@ -203,8 +203,11 @@ namespace Lib9c.Tests.Action
                     playCount);
 
                 var random = new TestRandom(_random.Seed);
-                var expectedRewardItems =
-                    HackAndSlashSweep.GetRewardItems(random, playCount, stageRow, _tableSheets.MaterialItemSheet);
+                var expectedRewardItems = HackAndSlashSweep6.GetRewardItems(
+                    random,
+                    playCount,
+                    stageRow,
+                    _tableSheets.MaterialItemSheet);
 
                 var (equipments, costumes) = GetDummyItems(avatarState);
                 var action = new HackAndSlashSweep
