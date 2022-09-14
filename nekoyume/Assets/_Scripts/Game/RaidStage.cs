@@ -36,6 +36,8 @@ namespace Nekoyume.Game
 
         private RaidTimelineContainer container;
         private Coroutine _battleCoroutine;
+        private IEnumerator _nextWaveCoroutine;
+        private Character.Player _playerCharacter;
         private int _waveTurn;
         private int _turnLimit;
         private int _wave;
@@ -103,7 +105,6 @@ namespace Nekoyume.Game
 
             var actionDelay = new WaitForSeconds(StageConfig.instance.actionDelay);
             var skillDelay = new WaitForSeconds(this.skillDelay);
-            var waveIndex = 0;
 
             foreach (var e in log)
             {
@@ -152,6 +153,7 @@ namespace Nekoyume.Game
         private IEnumerator CoEnter(int bossId, ArenaPlayerDigest playerDigest)
         {
             _currentBossId = bossId;
+            _nextWaveCoroutine = null;
             Widget.Find<HeaderMenuStatic>().Close(true);
             ActionCamera.instance.Cam.gameObject.SetActive(false);
             _actionQueue.Clear();
@@ -160,6 +162,7 @@ namespace Nekoyume.Game
             container.Show();
             MainCanvas.instance.Canvas.worldCamera = container.Camera.Cam;
 
+            _playerCharacter = Widget.Find<RaidPreparation>().Player;
             _player = container.Player;
             _boss = container.Boss;
 
@@ -234,9 +237,7 @@ namespace Nekoyume.Game
         public IEnumerator CoSpawnPlayer(Player character)
         {
             _player.Spawn(character);
-
-            var player = Widget.Find<RaidPreparation>().Player;
-            Widget.Find<WorldBossBattle>().Show(_currentBossId, player);
+            Widget.Find<WorldBossBattle>().SetData(_currentBossId, _playerCharacter);
             yield break;
         }
 
@@ -379,6 +380,11 @@ namespace Nekoyume.Game
         public IEnumerator CoSpawnWave(int waveNumber, int waveTurn, List<Enemy> enemies, bool hasBoss)
         {
             _boss.Spawn(enemies.First());
+            if (_nextWaveCoroutine != null)
+            {
+                yield return StartCoroutine(_nextWaveCoroutine);
+            }
+            Widget.Find<WorldBossBattle>().Show();
 
             _turnLimit = 150;
             var sheet = Game.instance.TableSheets.WorldBossCharacterSheet;
@@ -388,7 +394,6 @@ namespace Nekoyume.Game
             }
 
             Widget.Find<WorldBossBattle>().SetBossProfile(_boss.Model as Enemy, _turnLimit);
-            yield break;
         }
 
         public IEnumerator CoGetExp(long exp)
@@ -411,6 +416,7 @@ namespace Nekoyume.Game
             yield return new WaitWhile(() => _player.IsActing);
             yield return new WaitWhile(() => _boss.IsActing);
 
+            Widget.Find<WorldBossBattle>().Close();
             if (raidCharacter is Character.RaidPlayer player)
             {
                 yield return StartCoroutine(container.CoPlayPlayerDefeatCutscene());
@@ -421,8 +427,7 @@ namespace Nekoyume.Game
 
                 if (_wave < 4)
                 {
-                    yield return StartCoroutine(container.CoPlayRunAwayCutscene(_wave));
-                    _boss.Animator.Idle();
+                    _nextWaveCoroutine = container.CoPlayRunAwayCutscene(_wave);
                 }
                 else
                 {
