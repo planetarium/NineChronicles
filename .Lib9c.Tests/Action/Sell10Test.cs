@@ -21,7 +21,7 @@ namespace Lib9c.Tests.Action
     using Xunit.Abstractions;
     using static Lib9c.SerializeKeys;
 
-    public class SellTest
+    public class Sell10Test
     {
         private const long ProductPrice = 100;
 
@@ -32,7 +32,7 @@ namespace Lib9c.Tests.Action
         private readonly TableSheets _tableSheets;
         private IAccountStateDelta _initialState;
 
-        public SellTest(ITestOutputHelper outputHelper)
+        public Sell10Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -149,7 +149,7 @@ namespace Lib9c.Tests.Action
             long blockIndex = 1;
             Assert.Null(previousStates.GetState(shardedShopAddress));
 
-            var sellAction = new Sell
+            var sellAction = new Sell10
             {
                 sellerAvatarAddress = _avatarAddress,
                 tradableId = tradableItem.TradableId,
@@ -217,17 +217,14 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void Execute_Throw_InvalidPriceException_DueTo_InvalidCurrencyPrice()
+        public void Execute_Throw_InvalidPriceException()
         {
-            var action = new Sell
+            var action = new Sell10
             {
                 sellerAvatarAddress = _avatarAddress,
                 tradableId = default,
                 count = 1,
-                price = new FungibleAssetValue(
-                    new Currency("KRW", 0, minter: null),
-                    1,
-                    0),
+                price = -1 * _currency,
                 itemSubType = default,
                 orderId = default,
             };
@@ -241,51 +238,9 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void Execute_Throw_InvalidPriceException_DueTo_NonZeroMinorUnitPrice()
+        public void Execute_Throw_FailedLoadStateException()
         {
-            var action = new Sell
-            {
-                sellerAvatarAddress = _avatarAddress,
-                tradableId = default,
-                count = 1,
-                price = new FungibleAssetValue(_currency, 1, 1),
-                itemSubType = default,
-                orderId = default,
-            };
-
-            Assert.Throws<InvalidPriceException>(() => action.Execute(new ActionContext
-            {
-                BlockIndex = 0,
-                PreviousStates = _initialState,
-                Signer = _agentAddress,
-            }));
-        }
-
-        [Fact]
-        public void Execute_Throw_InvalidPriceException_DueTo_NegativePrice()
-        {
-            var action = new Sell
-            {
-                sellerAvatarAddress = _avatarAddress,
-                tradableId = default,
-                count = 1,
-                price = new FungibleAssetValue(_currency, -1, 0),
-                itemSubType = default,
-                orderId = default,
-            };
-
-            Assert.Throws<InvalidPriceException>(() => action.Execute(new ActionContext
-            {
-                BlockIndex = 0,
-                PreviousStates = _initialState,
-                Signer = _agentAddress,
-            }));
-        }
-
-        [Fact]
-        public void Execute_Throw_InvalidOperationException_DueTo_EmptyState()
-        {
-            var action = new Sell
+            var action = new Sell10
             {
                 sellerAvatarAddress = _avatarAddress,
                 tradableId = default,
@@ -295,7 +250,7 @@ namespace Lib9c.Tests.Action
                 orderId = default,
             };
 
-            Assert.Throws<InvalidOperationException>(() => action.Execute(new ActionContext
+            Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = 0,
                 PreviousStates = new State(),
@@ -317,7 +272,7 @@ namespace Lib9c.Tests.Action
 
             _initialState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
-            var action = new Sell
+            var action = new Sell10
             {
                 sellerAvatarAddress = _avatarAddress,
                 tradableId = default,
@@ -356,7 +311,7 @@ namespace Lib9c.Tests.Action
                 );
             }
 
-            var action = new Sell
+            var action = new Sell10
             {
                 sellerAvatarAddress = _avatarAddress,
                 tradableId = tradableId,
@@ -387,7 +342,7 @@ namespace Lib9c.Tests.Action
 
             _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
 
-            var action = new Sell
+            var action = new Sell10
             {
                 sellerAvatarAddress = _avatarAddress,
                 tradableId = equipmentId,
@@ -438,7 +393,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(shardedShopAddress, shardedShopState.Serialize());
 
-            var action = new Sell
+            var action = new Sell10
             {
                 sellerAvatarAddress = _avatarAddress,
                 tradableId = tradableId,
@@ -462,7 +417,7 @@ namespace Lib9c.Tests.Action
         {
             Guid tradableId = Guid.NewGuid();
             Guid orderId = Guid.NewGuid();
-            var action = new Sell
+            var action = new Sell10
             {
                 sellerAvatarAddress = _avatarAddress,
                 tradableId = tradableId,
