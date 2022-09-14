@@ -7,18 +7,11 @@ namespace Nekoyume.State
 {
     public static class HammerPointStatesSubject
     {
-        private static ReactiveDictionary<int, HammerPointState> _hammerPointStates;
+        private static readonly ReactiveDictionary<int, HammerPointState> HammerPointStates = new(
+            (Dictionary<int, HammerPointState>) States.Instance.HammerPointStates);
 
-        public static IObservable<DictionaryReplaceEvent<int, HammerPointState>> ObservableHammerPointStates
-        {
-            get
-            {
-                _hammerPointStates ??= new ReactiveDictionary<int, HammerPointState>(
-                    (Dictionary<int, HammerPointState>) States.Instance.HammerPointStates);
-
-                return _hammerPointStates.ObserveReplace();
-            }
-        }
+        public static IObservable<DictionaryReplaceEvent<int, HammerPointState>>
+            ObservableHammerPointStates => HammerPointStates.ObserveReplace();
 
         public static void UpdateHammerPointStates(int recipeId, HammerPointState state)
         {
@@ -26,13 +19,13 @@ namespace Nekoyume.State
                     States.Instance.CurrentAvatarState.address,
                     recipeId) == state.Address)
             {
-                if (_hammerPointStates.ContainsKey(recipeId))
+                if (HammerPointStates.ContainsKey(recipeId))
                 {
-                    _hammerPointStates[recipeId] = state;
+                    HammerPointStates[recipeId] = state;
                 }
                 else
                 {
-                    _hammerPointStates.Add(recipeId, state);
+                    HammerPointStates.Add(recipeId, state);
                 }
             }
         }
