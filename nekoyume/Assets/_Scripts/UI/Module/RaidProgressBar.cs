@@ -55,12 +55,11 @@ namespace Nekoyume.UI.Module
             _currentStar.Subscribe(PlayVFX).AddTo(gameObject);
         }
 
-        public void Show(int bossId)
+        public void Show()
         {
-            if (Game.Game.instance.TableSheets.WorldBossCharacterSheet
-                .TryGetValue(bossId, out _currentRow))
+            if (_currentRow != null)
             {
-                Clear();
+                SetStarProgress(_currentStar.Value);
                 gameObject.SetActive(true);
             }
             else
@@ -77,7 +76,6 @@ namespace Nekoyume.UI.Module
                 _smoothenCoroutine = null;
             }
 
-            Clear();
             gameObject.SetActive(false);
         }
 
@@ -183,8 +181,14 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void Clear()
+        public void Clear(int bossId)
         {
+            if (!Game.Game.instance.TableSheets.WorldBossCharacterSheet
+                .TryGetValue(bossId, out _currentRow))
+            {
+                return;
+            }
+
             SetStarProgress(0);
             UpdateScore(0);
             slider.value = 0.0f;

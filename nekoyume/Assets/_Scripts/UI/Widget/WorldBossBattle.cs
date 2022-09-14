@@ -27,14 +27,10 @@ namespace Nekoyume.UI
             CloseWidget = null;
         }
 
-        public void Show(
+        public void SetData(
             int bossId,
-            Game.Character.Player player,
-            bool ignoreShowAnimation = false)
+            Game.Character.Player player)
         {
-            comboText.comboMax = AttackCountHelper.GetCountMax(player.Level);
-            comboText.Close();
-
             var turnLimit = 150;
             var sheet = Game.Game.instance.TableSheets.WorldBossCharacterSheet;
             if (sheet.TryGetValue(bossId, out var boss))
@@ -42,9 +38,16 @@ namespace Nekoyume.UI
                 turnLimit = boss.WaveStats.FirstOrDefault().TurnLimit;
             }
 
+            comboText.comboMax = AttackCountHelper.GetCountMax(player.Level);
+            comboText.Close();
             playerStatus.SetData(player, turnLimit);
-            progressBar.Show(bossId);
+            progressBar.Clear(bossId);
+        }
+
+        public override void Show(bool ignoreShowAnimation = false)
+        {
             base.Show(ignoreShowAnimation);
+            progressBar.Show();
         }
 
         public void UpdateScore(int score)
@@ -57,11 +60,10 @@ namespace Nekoyume.UI
             progressBar.CompleteWave();
         }
 
-        public override void Close(bool ignoreCloseAnimation = false)
+        protected override void OnCompleteOfCloseAnimationInternal()
         {
-            bossStatus.Close(ignoreCloseAnimation);
+            base.OnCompleteOfCloseAnimationInternal();
             progressBar.Close();
-            base.Close(ignoreCloseAnimation);
         }
 
         public void SetBossProfile(Enemy enemy, int turnLimit)
