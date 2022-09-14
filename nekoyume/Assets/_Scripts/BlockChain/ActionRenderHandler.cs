@@ -621,7 +621,7 @@ namespace Nekoyume.BlockChain
                 UpdateAgentStateAsync(eval).Forget();
                 UpdateCurrentAvatarStateAsync(eval).Forget();
                 RenderQuest(avatarAddress, avatarState.questList?.completedQuestIds);
-                States.UpdateHammerPointStates(result.recipeId, hammerPointState);
+                States.Instance.UpdateHammerPointStates(result.recipeId, hammerPointState);
 
                 if (!(nextQuest is null))
                 {
@@ -1633,12 +1633,15 @@ namespace Nekoyume.BlockChain
             foreach (var id in recipeIds)
             {
                 sharedModel.UnlockingRecipes.Remove(id);
+                States.Instance.UpdateHammerPointStates(
+                    id,
+                    new HammerPointState(
+                        Addresses.GetHammerPointStateAddress(eval.Action.AvatarAddress, id), id));
             }
 
             recipeIds.AddRange(sharedModel.UnlockedRecipes.Value);
             sharedModel.SetUnlockedRecipes(recipeIds);
             sharedModel.UpdateUnlockableRecipes();
-            States.UpdateHammerPointStates(eval.Action.RecipeIds).Forget();
         }
 
         private void ResponseUnlockWorld(ActionBase.ActionEvaluation<UnlockWorld> eval)

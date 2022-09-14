@@ -11,7 +11,6 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Game;
 using Nekoyume.TableData.Event;
 using UniRx;
 using UnityEngine;

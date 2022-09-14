@@ -64,7 +64,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private CanvasGroup canvasGroup;
 
-        public static RecipeModel SharedModel;
+        public static RecipeModel SharedModel { get; set; }
 
         private readonly List<IDisposable> _disposablesAtShow = new();
 
@@ -248,9 +248,9 @@ namespace Nekoyume.UI
                     OnClickConsumableToggle(eventConsumableToggle.isOn);
                 })
                 .AddTo(_disposablesAtShow);
-            if (States.HammerPointStates is not null)
+            if (ReactiveHammerPointStates.HammerPointStates is not null)
             {
-                States.HammerPointStates.ObserveReplace().Subscribe(_ =>
+                ReactiveHammerPointStates.HammerPointStates.ObserveReplace().Subscribe(_ =>
                 {
                     if (equipmentSubRecipeView.gameObject.activeSelf)
                     {
