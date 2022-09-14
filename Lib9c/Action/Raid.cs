@@ -233,7 +233,6 @@ namespace Nekoyume.Action
 
             var inventoryAddress = AvatarAddress.Derive(LegacyInventoryKey);
             return states
-                .SetState(AvatarAddress, avatarState.SerializeV2())
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
                 .SetState(worldBossAddress, bossState.Serialize())
                 .SetState(raiderAddress, raiderState.Serialize());
