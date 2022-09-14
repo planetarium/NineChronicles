@@ -75,7 +75,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 }
             }).AddTo(gameObject);
 
-            WorldBossStates.SubscribeKillRewards((b) =>
+            WorldBossStates.SubscribeGradeRewards((b) =>
             {
                 foreach (var notification in notifications)
                 {

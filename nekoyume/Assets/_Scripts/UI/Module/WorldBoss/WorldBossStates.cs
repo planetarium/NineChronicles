@@ -19,8 +19,10 @@ namespace Nekoyume.UI.Module.WorldBoss
         private static readonly Dictionary<Address, WorldBossKillRewardRecord> _killRewards = new();
         private static readonly List<IDisposable> _disposables = new();
 
-        public static ReactiveProperty<bool> HasKillRewards { get; } = new();
-        public static ReactiveProperty<bool> HasSeasonRewards { get; } = new();
+        public static ReactiveProperty<bool> HasGradeRewards { get; } = new();
+        private static ReactiveProperty<bool> HasSeasonRewards { get; } = new();
+        public static ReactiveProperty<bool> ReceivingGradeRewards { get; } = new();
+        public static ReactiveProperty<bool> ReceivingSeasonRewards { get; } = new();
 
         public static RaiderState GetRaiderState(Address avatarAddress)
         {
@@ -55,17 +57,27 @@ namespace Nekoyume.UI.Module.WorldBoss
                 ClearRaiderState();
             }
 
-            HasKillRewards.SetValueAndForceNotify(IsExistGradeReward(raidRow, raider));
+            HasGradeRewards.SetValueAndForceNotify(IsExistGradeReward(raidRow, raider));
         }
 
-        public static void SubscribeKillRewards(Action<bool> callback)
+        public static void SubscribeGradeRewards(Action<bool> callback)
         {
-            HasKillRewards.Subscribe(callback).AddTo(_disposables);
+            HasGradeRewards.Subscribe(callback).AddTo(_disposables);
         }
 
         public static void SubscribeSeasonRewards(Action<bool> callback)
         {
             HasSeasonRewards.Subscribe(callback).AddTo(_disposables);
+        }
+
+        public static void SubscribeReceivingGradeRewards(Action<bool> callback)
+        {
+            ReceivingGradeRewards.Subscribe(callback).AddTo(_disposables);
+        }
+
+        public static void SubscribeReceivingSeasonRewards(Action<bool> callback)
+        {
+            ReceivingSeasonRewards.Subscribe(callback).AddTo(_disposables);
         }
 
         public static void UpdateState(
@@ -113,7 +125,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 return false;
             }
 
-            Widget.Find<WorldBossRewardPopup>().CachingInformation(raiderState, row.BossId);
+            Widget.Find<WorldBossRewardScreen>().CachingInformation(raiderState, row.BossId);
             var latestRewardRank = raiderState?.LatestRewardRank ?? 0;
             var highScore = raiderState?.HighScore ?? 0;
             var currentRank = WorldBossHelper.CalculateRank(characterRow, highScore);

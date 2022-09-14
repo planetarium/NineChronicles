@@ -124,7 +124,7 @@ namespace Nekoyume.UI
                 .Subscribe(_ => RefreshMyInformationAsync()).AddTo(gameObject);
 
             enterButton.OnSubmitSubject.Subscribe(_ => OnClickEnter()).AddTo(gameObject);
-            WorldBossStates.SubscribeKillRewards((b) => notification.SetActive(b));
+            WorldBossStates.SubscribeGradeRewards((b) => notification.SetActive(b));
         }
 
         protected override void OnCompleteOfShowAnimationInternal()
