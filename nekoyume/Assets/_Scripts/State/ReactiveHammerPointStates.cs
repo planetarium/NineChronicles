@@ -24,7 +24,7 @@ namespace Nekoyume.State
 
                 return _hammerPointStates =
                     new ReactiveDictionary<int, HammerPointState>(
-                        States.Instance.HammerPointStates);
+                        (Dictionary<int, HammerPointState>) States.Instance.HammerPointStates);
             }
         }
 

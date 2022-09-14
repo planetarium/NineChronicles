@@ -60,7 +60,7 @@ namespace Nekoyume.State
         /// <summary>
         /// Hammer point state dictionary of current avatar.
         /// </summary>
-        public Dictionary<int, HammerPointState> HammerPointStates
+        public IReadOnlyDictionary<int, HammerPointState> HammerPointStates
         {
             get
             {
@@ -76,7 +76,7 @@ namespace Nekoyume.State
                 return _hammerPointStates;
             }
 
-            private set => _hammerPointStates = value;
+            private set => _hammerPointStates = (Dictionary<int, HammerPointState>) value;
         }
 
         public States()
@@ -474,26 +474,26 @@ namespace Nekoyume.State
             ReactiveAvatarState.Initialize(CurrentAvatarState);
         }
 
-        public void UpdateHammerPointStates(int recipeId, HammerPointState state)
+        public void UpdateHammerPointStatesAsync(int recipeId, HammerPointState state)
         {
             if (Addresses.GetHammerPointStateAddress(
                     Instance.CurrentAvatarState.address,
                     recipeId) == state.Address)
             {
-                if (HammerPointStates.ContainsKey(recipeId))
+                if (_hammerPointStates.ContainsKey(recipeId))
                 {
-                    HammerPointStates[recipeId] = state;
+                    _hammerPointStates[recipeId] = state;
                 }
                 else
                 {
-                    HammerPointStates.Add(recipeId, state);
+                    _hammerPointStates.Add(recipeId, state);
                 }
             }
 
             ReactiveHammerPointStates.UpdateHammerPointStates(recipeId, state);
         }
 
-        private async UniTask<Dictionary<int, HammerPointState>> UpdateHammerPointStates(
+        private async UniTask<Dictionary<int, HammerPointState>> UpdateHammerPointStatesAsync(
             IEnumerable<int> recipeIds)
         {
             if (TableSheets.Instance.CrystalHammerPointSheet is null)
@@ -504,7 +504,7 @@ namespace Nekoyume.State
             var hammerPointStateAddresses =
                 recipeIds.Select(recipeId =>
                         (Addresses.GetHammerPointStateAddress(
-                            Instance.CurrentAvatarState.address,
+                            CurrentAvatarState.address,
                             recipeId), recipeId))
                     .ToList();
             var states =
@@ -529,6 +529,6 @@ namespace Nekoyume.State
 
         private async UniTask<Dictionary<int, HammerPointState>>
             InitializeHammerPointStates() => await
-            UpdateHammerPointStates(Craft.SharedModel.UnlockedRecipes.Value);
+            UpdateHammerPointStatesAsync(Craft.SharedModel.UnlockedRecipes.Value);
     }
 }

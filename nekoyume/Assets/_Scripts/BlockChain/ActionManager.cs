@@ -864,9 +864,10 @@ namespace Nekoyume.BlockChain
             LocalLayerModifier.ModifyAvatarActionPoint(agentAddress, -recipeInfo.CostAP);
             if (useHammerPoint)
             {
-                States.Instance.HammerPointStates[recipeInfo.RecipeId].ResetHammerPoint();
-                ReactiveHammerPointStates.HammerPointStates[recipeInfo.RecipeId] =
-                    States.Instance.HammerPointStates[recipeInfo.RecipeId];
+                var recipeId = recipeInfo.RecipeId;
+                var originHammerPointState = States.Instance.HammerPointStates[recipeId];
+                States.Instance.UpdateHammerPointStatesAsync(
+                    recipeId, new HammerPointState(originHammerPointState.Address, recipeId));
             }
 
             foreach (var pair in recipeInfo.Materials)
