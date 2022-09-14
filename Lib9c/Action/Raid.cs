@@ -37,7 +37,7 @@ namespace Nekoyume.Action
 
             if (!states.TryGetAvatarStateV2(context.Signer, AvatarAddress,
                     out AvatarState avatarState,
-                    out _))
+                    out var migrationRequired))
             {
                 throw new FailedLoadStateException(
                     $"Aborted as the avatar state of the signer was failed to load.");
@@ -232,6 +232,15 @@ namespace Nekoyume.Action
             }
 
             var inventoryAddress = AvatarAddress.Derive(LegacyInventoryKey);
+            var worldInfoAddress = AvatarAddress.Derive(LegacyWorldInformationKey);
+            if (migrationRequired)
+            {
+                states = states
+                    .SetState(AvatarAddress, avatarState.SerializeV2())
+                    .SetState(inventoryAddress, avatarState.inventory.Serialize())
+                    .SetState(worldInfoAddress, avatarState.worldInformation.Serialize());
+            }
+
             return states
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
                 .SetState(worldBossAddress, bossState.Serialize())
