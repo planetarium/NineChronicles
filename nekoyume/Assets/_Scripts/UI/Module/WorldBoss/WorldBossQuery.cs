@@ -11,9 +11,9 @@ namespace Nekoyume.UI.Module.WorldBoss
     public static class WorldBossQuery
     {
         private static string _url;
-        public static void SetUrl(string host, int port)
+        public static void SetUrl(string host)
         {
-            _url = $"{host}:{port}/raid";
+            _url = $"{host}/raid";
         }
 
         public static async Task<WorldBossRankingResponse> QueryRankingAsync(

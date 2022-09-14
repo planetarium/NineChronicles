@@ -61,8 +61,6 @@ namespace Nekoyume.Helper
 
         private string onBoardingHost;
 
-        private int onBoardingPort;
-
         public bool Empty { get; private set; } = true;
 
         public string genesisBlockPath;
@@ -344,17 +342,6 @@ namespace Nekoyume.Helper
             set
             {
                 onBoardingHost = value;
-                Empty = false;
-            }
-        }
-
-        [Option("on-boarding-port", Required = false, HelpText = "on boarding port")]
-        public int OnBoardingPort
-        {
-            get => onBoardingPort;
-            set
-            {
-                onBoardingPort = value;
                 Empty = false;
             }
         }
