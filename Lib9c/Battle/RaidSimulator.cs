@@ -25,6 +25,7 @@ namespace Nekoyume.Battle
         private WorldBossBattleRewardSheet _worldBossBattleRewardSheet;
         private RuneWeightSheet _runeWeightSheet;
         private RuneSheet _runeSheet;
+        private WorldBossCharacterSheet.Row _currentBossRow;
 
         public RaidSimulator(
             int bossId,
@@ -38,7 +39,7 @@ namespace Nekoyume.Battle
             BossId = bossId;
             _waves = new List<RaidBoss>();
 
-            if (!simulatorSheets.WorldBossCharacterSheet.TryGetValue(bossId, out var bossRow))
+            if (!simulatorSheets.WorldBossCharacterSheet.TryGetValue(bossId, out _currentBossRow))
                 throw new SheetRowNotFoundException(nameof(WorldBossCharacterSheet), bossId);
 
             if (!simulatorSheets.WorldBossActionPatternSheet.TryGetValue(bossId, out var patternRow))
@@ -48,7 +49,7 @@ namespace Nekoyume.Battle
             _runeWeightSheet = simulatorSheets.RuneWeightSheet;
             _runeSheet = simulatorSheets.RuneSheet;
 
-            SetEnemies(bossRow, patternRow);
+            SetEnemies(_currentBossRow, patternRow);
         }
 
         private void SetEnemies(
@@ -171,8 +172,7 @@ namespace Nekoyume.Battle
                 DamageDealt += wave.HP - leftHp;
             }
 
-            var rank = Result == BattleLog.Result.Lose ?
-                0 : WaveNumber;
+            var rank =  WorldBossHelper.CalculateRank(_currentBossRow, DamageDealt);
             AssetReward = RuneHelper.CalculateReward(
                 rank,
                 BossId,

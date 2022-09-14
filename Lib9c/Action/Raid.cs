@@ -12,6 +12,7 @@ using Nekoyume.Helper;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
@@ -36,7 +37,7 @@ namespace Nekoyume.Action
 
             if (!states.TryGetAvatarStateV2(context.Signer, AvatarAddress,
                     out AvatarState avatarState,
-                    out _))
+                    out var migrationRequired))
             {
                 throw new FailedLoadStateException(
                     $"Aborted as the avatar state of the signer was failed to load.");
@@ -159,6 +160,7 @@ namespace Nekoyume.Action
                 raidSimulatorSheets,
                 sheets.GetSheet<CostumeStatSheet>());
             simulator.Simulate();
+            avatarState.inventory = simulator.Player.Inventory;
 
             int score = simulator.DamageDealt;
             int cp = CPHelper.GetCPV2(avatarState, sheets.GetSheet<CharacterSheet>(),
@@ -228,7 +230,22 @@ namespace Nekoyume.Action
                 }
                 states = states.SetState(worldBossKillRewardRecordAddress, rewardRecord.Serialize());
             }
+
+            var inventoryAddress = AvatarAddress.Derive(LegacyInventoryKey);
+            var worldInfoAddress = AvatarAddress.Derive(LegacyWorldInformationKey);
+            var questListAddress = AvatarAddress.Derive(LegacyQuestListKey);
+
+            if (migrationRequired)
+            {
+                states = states
+                    .SetState(AvatarAddress, avatarState.SerializeV2())
+                    .SetState(inventoryAddress, avatarState.inventory.Serialize())
+                    .SetState(worldInfoAddress, avatarState.worldInformation.Serialize())
+                    .SetState(questListAddress, avatarState.questList.Serialize());
+            }
+
             return states
+                .SetState(inventoryAddress, avatarState.inventory.Serialize())
                 .SetState(worldBossAddress, bossState.Serialize())
                 .SetState(raiderAddress, raiderState.Serialize());
         }
