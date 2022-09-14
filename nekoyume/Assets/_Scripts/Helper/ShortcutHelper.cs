@@ -188,8 +188,9 @@ namespace Nekoyume.Helper
                     guideText = L10nManager.Localize("UI_MAIN_MENU_RANKING");
                     break;
                 case PlaceType.Quest:
-                    shortcutAction += () =>
+                    shortcutAction = () =>
                     {
+                        caller.Close();
                         Widget.Find<AvatarInfoPopup>().Close();
                         Widget.Find<QuestPopup>().Show();
                     };
