@@ -233,12 +233,15 @@ namespace Nekoyume.Action
 
             var inventoryAddress = AvatarAddress.Derive(LegacyInventoryKey);
             var worldInfoAddress = AvatarAddress.Derive(LegacyWorldInformationKey);
+            var questListAddress = AvatarAddress.Derive(LegacyQuestListKey);
+
             if (migrationRequired)
             {
                 states = states
                     .SetState(AvatarAddress, avatarState.SerializeV2())
                     .SetState(inventoryAddress, avatarState.inventory.Serialize())
-                    .SetState(worldInfoAddress, avatarState.worldInformation.Serialize());
+                    .SetState(worldInfoAddress, avatarState.worldInformation.Serialize())
+                    .SetState(questListAddress, avatarState.questList.Serialize());
             }
 
             return states
