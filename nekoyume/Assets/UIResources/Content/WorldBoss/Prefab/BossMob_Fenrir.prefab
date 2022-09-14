@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &3004614107983743536
+--- !u!1 &1421066814767493044
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,25 +8,25 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 9173085659651867525}
-  - component: {fileID: 5804032477897895650}
-  - component: {fileID: 608441945735036825}
+  - component: {fileID: 8086856945495599625}
+  - component: {fileID: 1684807839698439386}
+  - component: {fileID: 7084359303195817761}
   m_Layer: 0
-  m_Name: SkeletonGraphic (main_illu05)
+  m_Name: SkeletonGraphic (main_illu05_W2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!224 &9173085659651867525
+--- !u!224 &8086856945495599625
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3004614107983743536}
+  m_GameObject: {fileID: 1421066814767493044}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 8000}
   m_LocalScale: {x: 0.29, y: 0.29, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -36,23 +36,23 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -245, y: -292}
-  m_SizeDelta: {x: 2487.8027, y: 2364.2368}
-  m_Pivot: {x: 0.06771357, y: 0.108267404}
---- !u!222 &5804032477897895650
+  m_SizeDelta: {x: 2697.5205, y: 2358.843}
+  m_Pivot: {x: 0.06680886, y: 0.0978773}
+--- !u!222 &1684807839698439386
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3004614107983743536}
+  m_GameObject: {fileID: 1421066814767493044}
   m_CullTransparentMesh: 1
---- !u!114 &608441945735036825
+--- !u!114 &7084359303195817761
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3004614107983743536}
+  m_GameObject: {fileID: 1421066814767493044}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d85b887af7e6c3f45a2e2d2920d641bc, type: 3}
@@ -66,7 +66,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  skeletonDataAsset: {fileID: 11400000, guid: b4b5feb2476abfd43aece379d9212eaf, type: 2}
+  skeletonDataAsset: {fileID: 11400000, guid: 78d94895f51077b48bf604fc70013ad1, type: 2}
   initialSkinName: default
   initialFlipX: 0
   initialFlipY: 0
@@ -120,7 +120,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 9173085659651867525}
+  - {fileID: 8086856945495599625}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
