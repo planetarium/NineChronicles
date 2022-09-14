@@ -43,7 +43,7 @@ namespace Nekoyume
         public const int ArenaScoreDefault = 1000;
         public const int ArenaChallengeCountMax = 5;
         public const int MaximumProbability = 10000;
-        public const int RequiredAppraiseBlock = 50;
+        public const int RequiredAppraiseBlock = 10;
 
         #endregion
 
