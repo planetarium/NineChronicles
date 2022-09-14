@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Libplanet;
 using Nekoyume.Helper;
@@ -67,6 +66,12 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         [SerializeField]
         private WorldBossRankItemView myInfo;
+
+        [SerializeField]
+        private GameObject myInfoObject;
+
+        [SerializeField]
+        private GameObject noneObject;
 
         private readonly Dictionary<Status, WorldBossRankItems> _cachedItems = new();
         private Status _status;
@@ -148,7 +153,8 @@ namespace Nekoyume.UI.Module.WorldBoss
             lastUpdatedText.text = string.Empty;
             bossImage.enabled = false;
             scroll.UpdateData(new List<WorldBossRankItem>());
-            myInfo.gameObject.SetActive(false);
+            myInfoObject.gameObject.SetActive(false);
+            noneObject.gameObject.SetActive(false);
             noSeasonInfo.SetActive(false);
             apiMissing.SetActive(false);
             updateContainer.SetActive(true);
@@ -216,7 +222,8 @@ namespace Nekoyume.UI.Module.WorldBoss
         private void UpdateRecord(Status status)
         {
             var items = _cachedItems[status];
-            myInfo.gameObject.SetActive(items.MyItem != null);
+            myInfoObject.SetActive(items.MyItem != null);
+            noneObject.gameObject.SetActive(items.MyItem == null);
             myInfo.Set(items.MyItem, null);
             scroll.UpdateData(items.UserItems);
             totalUsers.text = items.UserCount > 0 ? $"{items.UserCount:#,0}" : string.Empty;;

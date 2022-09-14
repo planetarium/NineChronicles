@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.BlockChain;
@@ -31,7 +30,12 @@ namespace Nekoyume.UI.Module.WorldBoss
         [SerializeField]
         private Image middleGaugeImage;
 
+        [SerializeField]
+        private GameObject loadingIndicator;
+
         private bool _canReceive;
+        private RaiderState _raiderState;
+        private int _raidId;
 
         private void Start()
         {
@@ -40,20 +44,27 @@ namespace Nekoyume.UI.Module.WorldBoss
                 .AddTo(gameObject);
 
             claimButton.OnClickDisabledSubject
-                .Subscribe(_ =>
-                {
-                }).AddTo(gameObject);
+                .Subscribe(_ => { }).AddTo(gameObject);
 
+            WorldBossStates.SubscribeReceivingGradeRewards((b) =>
+            {
+                loadingIndicator.SetActive(b);
+                if (b)
+                {
+                    Set(_raiderState, _raidId);
+                }
+
+                UpdateClaimButton();
+            });
         }
 
         private void OnEnable()
         {
-            claimButton.Interactable = _canReceive;
+            UpdateClaimButton();
         }
 
         public override void Reset()
         {
-
         }
 
         public void Set(RaiderState raiderState, int raidId)
@@ -71,15 +82,21 @@ namespace Nekoyume.UI.Module.WorldBoss
             }
 
             if (!Game.Game.instance.TableSheets.WorldBossCharacterSheet
-                .TryGetValue(row.BossId, out var characterRow))
+                    .TryGetValue(row.BossId, out var characterRow))
             {
                 return;
             }
 
-            Widget.Find<WorldBossRewardPopup>().CachingInformation(raiderState, row.BossId);
-            var latestRewardRank = raiderState?.LatestRewardRank ?? 0;
+            _raiderState = raiderState;
+            _raidId = raidId;
+
+            Widget.Find<WorldBossRewardScreen>().CachingInformation(raiderState, row.BossId);
             var highScore = raiderState?.HighScore ?? 0;
             var currentRank = WorldBossHelper.CalculateRank(characterRow, highScore);
+            var latestRewardRank = WorldBossStates.ReceivingGradeRewards.Value
+                ? currentRank
+                : raiderState?.LatestRewardRank ?? 0;
+
             _canReceive = latestRewardRank < currentRank;
             UpdateItems(characterRow, rows, latestRewardRank, currentRank);
             UpdateGauges(characterRow, highScore, currentRank);
@@ -88,10 +105,11 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         private void ClaimRaidReward()
         {
-            Widget.Find<GrayLoadingScreen>().Show("UI_LOADING_REWARD", true, 0.7f);
+            WorldBossStates.ReceivingGradeRewards.SetValueAndForceNotify(true);
+            WorldBossStates.HasGradeRewards.SetValueAndForceNotify(false);
             ActionManager.Instance.ClaimRaidReward();
             _canReceive = false;
-            claimButton.Interactable = _canReceive;
+            UpdateClaimButton();
         }
 
         private void UpdateItems(
@@ -118,7 +136,8 @@ namespace Nekoyume.UI.Module.WorldBoss
             }
         }
 
-        private void UpdateGauges(WorldBossCharacterSheet.Row bossRow, int highScore, int currentRank)
+        private void UpdateGauges(WorldBossCharacterSheet.Row bossRow, int highScore,
+            int currentRank)
         {
             switch (currentRank)
             {
@@ -133,11 +152,13 @@ namespace Nekoyume.UI.Module.WorldBoss
                     break;
                 default:
                     var curRankScore = WorldBossFrontHelper.GetScoreInRank(currentRank, bossRow);
-                    var nextRankScore = WorldBossFrontHelper.GetScoreInRank(currentRank + 1, bossRow);
+                    var nextRankScore =
+                        WorldBossFrontHelper.GetScoreInRank(currentRank + 1, bossRow);
                     var max = nextRankScore - curRankScore;
                     var cur = highScore - curRankScore;
                     startGaugeImage.fillAmount = 1;
-                    middleGaugeImage.fillAmount = (0.25f * (currentRank - 1)) + (0.25f * (cur / (float)max));
+                    middleGaugeImage.fillAmount =
+                        (0.25f * (currentRank - 1)) + (0.25f * (cur / (float)max));
                     break;
             }
         }
@@ -145,6 +166,14 @@ namespace Nekoyume.UI.Module.WorldBoss
         private void UpdateRecord(int highScore)
         {
             myBestRecordText.text = $"{highScore:#,0}";
+        }
+
+        private void UpdateClaimButton()
+        {
+            claimButton.Interactable = _canReceive;
+            claimButton.Text = WorldBossStates.ReceivingGradeRewards.Value
+                ? string.Empty
+                : L10nManager.Localize("UI_CLAIM_REWARD");
         }
     }
 }

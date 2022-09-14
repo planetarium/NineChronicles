@@ -347,9 +347,9 @@ namespace Nekoyume.UI
 
                     SetOptions(options);
 
-                    var showHammerPoint = RxProps.HammerPointStates is not null &&
-                                          RxProps.HammerPointStates.TryGetValue(
-                                              recipeId,
+                    var hammerPointStates = States.Instance.HammerPointStates;
+                    var showHammerPoint = hammerPointStates is not null &&
+                                          hammerPointStates.TryGetValue(recipeId,
                                               out _hammerPointState) &&
                                           index != MimisbrunnrRecipeIndex;
                     hammerPointView.parentObject.SetActive(showHammerPoint);

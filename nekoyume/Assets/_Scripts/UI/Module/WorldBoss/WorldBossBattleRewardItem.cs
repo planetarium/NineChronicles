@@ -3,7 +3,6 @@ using Nekoyume.Helper;
 using Nekoyume.TableData;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module.WorldBoss
 {
@@ -19,16 +18,15 @@ namespace Nekoyume.UI.Module.WorldBoss
         private TextMeshProUGUI rankText;
 
         [SerializeField]
-        private Image rankingIcon;
-
-        [SerializeField]
         private GameObject rankTextContainer;
 
         [SerializeField]
-        private GameObject rankingIconContainer;
+        private GameObject rankingImageContainer;
 
         [SerializeField]
         private GameObject selected;
+
+        private GameObject _rankObject;
 
         public void Reset()
         {
@@ -49,19 +47,25 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         public void Set(WorldBossRankingRewardSheet.Row row, int myRank, int userCount)
         {
+            if (_rankObject != null)
+            {
+                Destroy(_rankObject);
+            }
+
             rankTextContainer.gameObject.SetActive(false);
-            rankingIconContainer.gameObject.SetActive(false);
+            rankingImageContainer.gameObject.SetActive(false);
             switch (row.RankingMin)
             {
                 case 1:
                 case 2:
                 case 3:
-                    rankTextContainer.gameObject.SetActive(true);
-                    rankingIcon.sprite = SpriteHelper.GetRankIcon(row.RankingMin);
+                    rankingImageContainer.gameObject.SetActive(true);
+                    var rankPrefab = WorldBossFrontHelper.GetRankPrefab(row.RankingMin);
+                    _rankObject = Instantiate(rankPrefab, rankingImageContainer.transform);
                     selected.SetActive(row.RankingMin == myRank);
                     break;
                 default:
-                    rankingIconContainer.gameObject.SetActive(true);
+                    rankTextContainer.gameObject.SetActive(true);
                     if (row.RankingMin == 0)
                     {
                         rankText.text = row.RateMin > 1

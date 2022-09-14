@@ -11,10 +11,10 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Game;
 using Nekoyume.TableData.Event;
 using UniRx;
 using UnityEngine;
+using StateExtensions = Nekoyume.Model.State.StateExtensions;
 
 namespace Nekoyume.UI.Model
 {
@@ -165,6 +165,7 @@ namespace Nekoyume.UI.Model
                 ? recipeState.ToList(StateExtensions.ToInteger)
                 : new List<int> { 1 };
             SetUnlockedRecipes(result);
+            States.Instance.UpdateHammerPointStates(result);
         }
 
         public void SetUnlockedRecipes(List<int> recipeIds)

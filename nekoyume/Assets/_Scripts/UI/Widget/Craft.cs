@@ -19,6 +19,7 @@ using Nekoyume.Model.Quest;
 using System.Linq;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
+using Nekoyume.State.Subjects;
 using Nekoyume.TableData.Event;
 using NUnit.Framework;
 
@@ -64,7 +65,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private CanvasGroup canvasGroup;
 
-        public static RecipeModel SharedModel;
+        public static RecipeModel SharedModel { get; set; }
 
         private readonly List<IDisposable> _disposablesAtShow = new();
 
@@ -248,16 +249,13 @@ namespace Nekoyume.UI
                     OnClickConsumableToggle(eventConsumableToggle.isOn);
                 })
                 .AddTo(_disposablesAtShow);
-            if (RxProps.HammerPointStates is not null)
+            HammerPointStatesSubject.HammerPointSubject.Subscribe(_ =>
             {
-                RxProps.HammerPointStates.ObserveReplace().Subscribe(_ =>
+                if (equipmentSubRecipeView.gameObject.activeSelf)
                 {
-                    if (equipmentSubRecipeView.gameObject.activeSelf)
-                    {
-                        equipmentSubRecipeView.UpdateView();
-                    }
-                }).AddTo(_disposablesAtShow);
-            }
+                    equipmentSubRecipeView.UpdateView();
+                }
+            }).AddTo(_disposablesAtShow);
         }
 
         public override void Show(bool ignoreShowAnimation = false)

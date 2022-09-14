@@ -173,6 +173,7 @@ namespace Nekoyume.UI
                 Widget.Create<UnlockWorldLoadingScreen>(),
                 Widget.Create<BuffBonusLoadingScreen>(),
                 Widget.Create<PreloadingScreen>(),
+                Widget.Create<WorldBossRewardScreen>(),
 
                 // 팝업 영역.
                 Widget.Create<SettingPopup>(),
@@ -356,8 +357,6 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<SuperCraftPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<TicketPurchasePopup>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<WorldBossRewardPopup>());
             yield return null;
 
             // tooltip
