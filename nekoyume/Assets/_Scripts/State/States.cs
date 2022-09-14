@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Libplanet;
+using Libplanet.Action;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
@@ -54,33 +56,27 @@ namespace Nekoyume.State
         private readonly Dictionary<int, CombinationSlotState> _combinationSlotStates =
             new Dictionary<int, CombinationSlotState>();
 
-        private static ReactiveDictionary<int, HammerPointState> _hammerPointStates;
-
+        private Dictionary<int, HammerPointState> _hammerPointStates;
         /// <summary>
         /// Hammer point state dictionary of current avatar.
         /// </summary>
-        public static ReactiveDictionary<int, HammerPointState> HammerPointStates
+        public Dictionary<int, HammerPointState> HammerPointStates
         {
             get
             {
-                if (_hammerPointStates is not null)
+                if (_hammerPointStates is null)
                 {
-                    return _hammerPointStates;
+                    Task.Run(async () =>
+                    {
+                        // Lazy initializing
+                        _hammerPointStates = await Instance.InitializeHammerPointStates();
+                    }).Wait();
                 }
 
-                UniTask.Run(async () =>
-                {
-                    var states = await InitializeHammerPointStates();
-                    if (states is null)
-                    {
-                        return;
-                    }
-
-                    _hammerPointStates =
-                        new ReactiveDictionary<int, HammerPointState>(states);
-                });
                 return _hammerPointStates;
             }
+
+            private set => _hammerPointStates = value;
         }
 
         public States()
@@ -366,7 +362,7 @@ namespace Nekoyume.State
                 // NOTE: commit c1b7f0dc2e8fd922556b83f0b9b2d2d2b2626603 에서 코드 수정이 생기면서
                 // SetCombinationSlotStatesAsync()가 호출이 안되는 이슈가 있어서 revert했습니다. 재수정 필요
                 _combinationSlotStates.Clear();
-                _hammerPointStates = null;
+                HammerPointStates = null;
                 await UniTask.Run(async () =>
                 {
                     var (exist, curAvatarState) = await TryGetAvatarStateAsync(avatarState.address);
@@ -478,24 +474,26 @@ namespace Nekoyume.State
             ReactiveAvatarState.Initialize(CurrentAvatarState);
         }
 
-        public static void UpdateHammerPointStates(int recipeId, HammerPointState state)
+        public void UpdateHammerPointStates(int recipeId, HammerPointState state)
         {
             if (Addresses.GetHammerPointStateAddress(
                     Instance.CurrentAvatarState.address,
                     recipeId) == state.Address)
             {
-                if (_hammerPointStates.ContainsKey(recipeId))
+                if (HammerPointStates.ContainsKey(recipeId))
                 {
-                    _hammerPointStates[recipeId] = state;
+                    HammerPointStates[recipeId] = state;
                 }
                 else
                 {
-                    _hammerPointStates.Add(recipeId, state);
+                    HammerPointStates.Add(recipeId, state);
                 }
             }
+
+            ReactiveHammerPointStates.UpdateHammerPointStates(recipeId, state);
         }
 
-        public static async UniTask<Dictionary<int, HammerPointState>> UpdateHammerPointStates(
+        private async UniTask<Dictionary<int, HammerPointState>> UpdateHammerPointStates(
             IEnumerable<int> recipeIds)
         {
             if (TableSheets.Instance.CrystalHammerPointSheet is null)
@@ -529,7 +527,7 @@ namespace Nekoyume.State
                 .ToDictionary(value => value.RecipeId, value => value);
         }
 
-        private static async UniTask<Dictionary<int, HammerPointState>>
+        private async UniTask<Dictionary<int, HammerPointState>>
             InitializeHammerPointStates() => await
             UpdateHammerPointStates(Craft.SharedModel.UnlockedRecipes.Value);
     }
