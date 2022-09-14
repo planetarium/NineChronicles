@@ -19,7 +19,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static Lib9c.SerializeKeys;
 
-    public class HackAndSlashSweepTest
+    public class HackAndSlashSweep6Test
     {
         private readonly Dictionary<string, string> _sheets;
         private readonly TableSheets _tableSheets;
@@ -39,7 +39,7 @@ namespace Lib9c.Tests.Action
         private readonly IAccountStateDelta _initialState;
         private readonly IRandom _random;
 
-        public HackAndSlashSweepTest()
+        public HackAndSlashSweep6Test()
         {
             _random = new TestRandom();
             _sheets = TableSheetsImporter.ImportSheets();
@@ -203,14 +203,11 @@ namespace Lib9c.Tests.Action
                     playCount);
 
                 var random = new TestRandom(_random.Seed);
-                var expectedRewardItems = HackAndSlashSweep6.GetRewardItems(
-                    random,
-                    playCount,
-                    stageRow,
-                    _tableSheets.MaterialItemSheet);
+                var expectedRewardItems =
+                    HackAndSlashSweep6.GetRewardItems(random, playCount, stageRow, _tableSheets.MaterialItemSheet);
 
                 var (equipments, costumes) = GetDummyItems(avatarState);
-                var action = new HackAndSlashSweep
+                var action = new HackAndSlashSweep6
                 {
                     actionPoint = avatarState.actionPoint,
                     costumes = costumes,
@@ -248,7 +245,7 @@ namespace Lib9c.Tests.Action
         [InlineData(false)]
         public void Execute_FailedLoadStateException(bool backward)
         {
-            var action = new HackAndSlashSweep
+            var action = new HackAndSlashSweep6
             {
                 apStoneCount = 1,
                 avatarAddress = _avatarAddress,
@@ -278,7 +275,7 @@ namespace Lib9c.Tests.Action
         [InlineData(100, 1)]
         public void Execute_SheetRowNotFoundException(int worldId, int stageId)
         {
-            var action = new HackAndSlashSweep
+            var action = new HackAndSlashSweep6
             {
                 apStoneCount = 1,
                 avatarAddress = _avatarAddress,
@@ -304,7 +301,7 @@ namespace Lib9c.Tests.Action
         [InlineData(2, 50)]
         public void Execute_SheetRowColumnException(int worldId, int stageId)
         {
-            var action = new HackAndSlashSweep
+            var action = new HackAndSlashSweep6
             {
                 apStoneCount = 1,
                 avatarAddress = _avatarAddress,
@@ -332,7 +329,7 @@ namespace Lib9c.Tests.Action
         [InlineData(1, 49, 2, 51, false)]
         public void Execute_InvalidStageException(int clearedWorldId, int clearedStageId, int worldId, int stageId, bool backward)
         {
-            var action = new HackAndSlashSweep
+            var action = new HackAndSlashSweep6
             {
                 apStoneCount = 1,
                 avatarAddress = _avatarAddress,
@@ -418,7 +415,7 @@ namespace Lib9c.Tests.Action
                 );
             }
 
-            var action = new HackAndSlashSweep
+            var action = new HackAndSlashSweep6
             {
                 apStoneCount = 1,
                 avatarAddress = _avatarAddress,
@@ -472,7 +469,7 @@ namespace Lib9c.Tests.Action
                         avatarState.questList.Serialize());
             }
 
-            var action = new HackAndSlashSweep
+            var action = new HackAndSlashSweep6
             {
                 apStoneCount = apStoneCount,
                 avatarAddress = _avatarAddress,
@@ -547,7 +544,7 @@ namespace Lib9c.Tests.Action
 
                 var (equipments, costumes) = GetDummyItems(avatarState);
 
-                var action = new HackAndSlashSweep
+                var action = new HackAndSlashSweep6
                 {
                     equipments = equipments,
                     costumes = costumes,
@@ -621,7 +618,7 @@ namespace Lib9c.Tests.Action
                     playCount);
 
                 var (equipments, costumes) = GetDummyItems(avatarState);
-                var action = new HackAndSlashSweep
+                var action = new HackAndSlashSweep6
                 {
                     costumes = costumes,
                     equipments = equipments,
@@ -696,7 +693,7 @@ namespace Lib9c.Tests.Action
                     playCount);
 
                 var (equipments, costumes) = GetDummyItems(avatarState);
-                var action = new HackAndSlashSweep
+                var action = new HackAndSlashSweep6
                 {
                     costumes = costumes,
                     equipments = equipments,
@@ -770,7 +767,7 @@ namespace Lib9c.Tests.Action
                     stageId,
                     playCount);
 
-                var action = new HackAndSlashSweep
+                var action = new HackAndSlashSweep6
                 {
                     costumes = new List<Guid>(),
                     equipments = new List<Guid>(),
@@ -842,7 +839,7 @@ namespace Lib9c.Tests.Action
                     stageId,
                     playCount);
 
-                var action = new HackAndSlashSweep
+                var action = new HackAndSlashSweep6
                 {
                     costumes = new List<Guid>(),
                     equipments = new List<Guid>(),
