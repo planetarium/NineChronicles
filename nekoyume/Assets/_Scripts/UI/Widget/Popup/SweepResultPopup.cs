@@ -164,7 +164,7 @@ namespace Nekoyume.UI
             }
 
             var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
-            var rewards = Action.HackAndSlashSweep.GetRewardItems(rand,
+            var rewards = Action.HackAndSlashSweep6.GetRewardItems(rand,
                 _apPlayCount + _apStonePlayCount, _stageRow, materialSheet);
 
             var bundle = new Dictionary<ItemBase, int>();
