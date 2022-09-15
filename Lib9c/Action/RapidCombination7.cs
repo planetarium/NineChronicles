@@ -18,8 +18,8 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1194
     /// </summary>
     [Serializable]
-    [ActionType("rapid_combination8")]
-    public class RapidCombination : GameAction
+    [ActionType("rapid_combination7")]
+    public class RapidCombination7 : GameAction
     {
         public Address avatarAddress;
         public int slotIndex;
@@ -83,13 +83,12 @@ namespace Nekoyume.Action
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the GameConfigState was failed to load.");
             }
 
-            var actionableBlockIndex = slotState.StartBlockIndex +
-                                       states.GetGameConfigState().RequiredAppraiseBlock;
-            if (context.BlockIndex < actionableBlockIndex)
+            if (context.BlockIndex < slotState.StartBlockIndex + GameConfig.RequiredAppraiseBlockV1)
             {
                 throw new AppraiseBlockNotReachedException(
                     $"{addressesHex}Aborted as Item appraisal block section. " +
-                    $"context block index: {context.BlockIndex}, actionable block index : {actionableBlockIndex}");
+                    $"context block index: {context.BlockIndex}, " +
+                    $"actionable block index : {slotState.StartBlockIndex + GameConfig.RequiredAppraiseBlockV1}");
             }
 
             var count = RapidCombination0.CalculateHourglassCount(gameConfigState, diff);
