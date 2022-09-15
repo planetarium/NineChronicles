@@ -1,3 +1,5 @@
+using System;
+
 namespace Nekoyume
 {
     public static class GameConfig
@@ -43,7 +45,8 @@ namespace Nekoyume
         public const int ArenaScoreDefault = 1000;
         public const int ArenaChallengeCountMax = 5;
         public const int MaximumProbability = 10000;
-        public const int RequiredAppraiseBlockV1 = 50;
+        [Obsolete("Use GameConfigState.RequiredAppraiseBlock")]
+        public const int RequiredAppraiseBlock = 50;
 
         #endregion
 
