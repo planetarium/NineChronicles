@@ -92,12 +92,12 @@ namespace Nekoyume.Action
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the GameConfigState was failed to load.");
             }
 
-            if (context.BlockIndex < slotState.StartBlockIndex + GameConfig.RequiredAppraiseBlock)
+            if (context.BlockIndex < slotState.StartBlockIndex + GameConfig.RequiredAppraiseBlockV1)
             {
                 throw new AppraiseBlockNotReachedException(
                     $"{addressesHex}Aborted as Item appraisal block section. " +
                     $"context block index: {context.BlockIndex}, " +
-                    $"actionable block index : {slotState.StartBlockIndex + GameConfig.RequiredAppraiseBlock}");
+                    $"actionable block index : {slotState.StartBlockIndex + GameConfig.RequiredAppraiseBlockV1}");
             }
 
             var count = RapidCombination0.CalculateHourglassCount(gameConfigState, diff);
