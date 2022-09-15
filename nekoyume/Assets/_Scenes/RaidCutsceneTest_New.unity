@@ -3402,26 +3402,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: 900001
       objectReference: {fileID: 0}
-    - target: {fileID: 6009956138237780869, guid: 8b2c2a7a09cfb304a89c47cab267b616,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -1.4329967
-      objectReference: {fileID: 0}
-    - target: {fileID: 6009956138237780869, guid: 8b2c2a7a09cfb304a89c47cab267b616,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 2.2005153
-      objectReference: {fileID: 0}
-    - target: {fileID: 6009956138237780869, guid: 8b2c2a7a09cfb304a89c47cab267b616,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.14468889
-      objectReference: {fileID: 0}
-    - target: {fileID: 6009956138237780869, guid: 8b2c2a7a09cfb304a89c47cab267b616,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.9894772
-      objectReference: {fileID: 0}
     - target: {fileID: 6303180702232065857, guid: 8b2c2a7a09cfb304a89c47cab267b616,
         type: 3}
       propertyPath: m_Mesh
