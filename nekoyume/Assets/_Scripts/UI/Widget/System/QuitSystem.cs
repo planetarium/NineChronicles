@@ -2,6 +2,9 @@ using System.Linq;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
+using Nekoyume.Model.Mail;
+using Nekoyume.State;
+using Nekoyume.UI.Module.WorldBoss;
 using UnityEngine;
 using UniRx;
 using Nekoyume.UI.Scroller;
@@ -28,6 +31,17 @@ namespace Nekoyume.UI
             characterSelectEventSubject.GetEvent("Click")
                 .Subscribe(_ =>
                 {
+                    var address = States.Instance.CurrentAvatarState.address;
+                    if (WorldBossStates.IsReceivingGradeRewards(address) ||
+                        WorldBossStates.IsReceivingSeasonRewards(address))
+                    {
+                        OneLineSystem.Push(
+                            MailType.System,
+                            L10nManager.Localize("UI_CAN_NOT_CHANGE_CHARACTER"),
+                            NotificationCell.NotificationType.Alert);
+                        return;
+                    }
+
                     Game.Game.instance.BackToNest();
                     Close();
                     AudioController.PlayClick();
@@ -48,10 +62,7 @@ namespace Nekoyume.UI
                 })
                 .AddTo(gameObject);
 
-            CloseWidget = () =>
-            {
-                Close();
-            };
+            CloseWidget = () => { Close(); };
 
             background.OnClick = CloseWidget;
         }

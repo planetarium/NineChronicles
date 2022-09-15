@@ -79,6 +79,10 @@ namespace Nekoyume.UI
 
             graphicAlphaTweener.Play();
             PlayEffects();
+            if (_coCloseCoroutine != null)
+            {
+                StopCoroutine(_coCloseCoroutine);
+            }
             _coCloseCoroutine = StartCoroutine(CoClose());
         }
 
@@ -90,6 +94,10 @@ namespace Nekoyume.UI
             graphicAlphaTweener.Play();
             PlayEffects();
             _closeCallback = closeCallback;
+            if (_coCloseCoroutine != null)
+            {
+                StopCoroutine(_coCloseCoroutine);
+            }
             _coCloseCoroutine = StartCoroutine(CoClose());
         }
 
@@ -100,6 +108,10 @@ namespace Nekoyume.UI
             UpdateRewardItems(rewards);
             graphicAlphaTweener.Play();
             PlayEffects();
+            if (_coCloseCoroutine != null)
+            {
+                StopCoroutine(_coCloseCoroutine);
+            }
             _coCloseCoroutine = StartCoroutine(CoClose());
         }
 
@@ -121,7 +133,7 @@ namespace Nekoyume.UI
             while (timer >= 0)
             {
                 continueText.text = L10nManager.Localize("UI_PRESS_TO_CONTINUE_FORMAT", timer);
-                yield return new WaitForSeconds(1f);
+                yield return new WaitForSecondsRealtime(1f);
                 timer--;
             }
 

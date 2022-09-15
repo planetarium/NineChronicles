@@ -2132,7 +2132,8 @@ namespace Nekoyume.BlockChain
             }
 
             UpdateCrystalBalance(eval);
-            WorldBossStates.ReceivingGradeRewards.SetValueAndForceNotify(false);
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            WorldBossStates.SetReceivingGradeRewards(avatarAddress, false);
             Widget.Find<WorldBossRewardScreen>().Show(new LocalRandom(eval.RandomSeed));
         }
     }
