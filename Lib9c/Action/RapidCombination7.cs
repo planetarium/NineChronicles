@@ -15,14 +15,12 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/682
-    /// Updated at https://github.com/planetarium/lib9c/pull/957
-    /// Updated at https://github.com/planetarium/lib9c/pull/1194
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1194
     /// </summary>
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100310ObsoleteIndex)]
-    [ActionType("rapid_combination6")]
-    public class RapidCombination6 : GameAction
+    [ActionType("rapid_combination7")]
+    public class RapidCombination7 : GameAction
     {
         public Address avatarAddress;
         public int slotIndex;
@@ -64,13 +62,6 @@ namespace Nekoyume.Action
             }
 
             var slotState = states.GetCombinationSlotState(avatarAddress, slotIndex);
-
-            // exception handling for v100240.
-            if (context.BlockIndex > 4377159 && context.BlockIndex < 4377430 && slotState.Result is ItemEnhancement9.ResultModel)
-            {
-                return states;
-            }
-
             if (slotState?.Result is null)
             {
                 throw new CombinationSlotResultNullException($"{addressesHex}CombinationSlot Result is null. ({avatarAddress}), ({slotIndex})");
@@ -112,9 +103,9 @@ namespace Nekoyume.Action
                     $"{addressesHex}Aborted as the player has no enough material ({row.Id} * {count})");
             }
 
-            if (slotState.TryGetResultIdV1(out var resultId) &&
+            if (slotState.TryGetResultId(out var resultId) &&
                 avatarState.mailBox.All(mail => mail.id != resultId) &&
-                slotState.TryGetMailV1(
+                slotState.TryGetMail(
                     context.BlockIndex,
                     context.BlockIndex,
                     out var combinationMail,
@@ -127,30 +118,6 @@ namespace Nekoyume.Action
                 else if (itemEnhanceMail != null)
                 {
                     avatarState.Update(itemEnhanceMail);
-                }
-            }
-            else
-            {
-                // exception handling for v100240.
-                if (context.BlockIndex > 4133442 && context.BlockIndex < 4374195)
-                {
-                    if (slotState.TryGetResultId(out var resultIdFix) &&
-                        avatarState.mailBox.All(mail => mail.id != resultIdFix) &&
-                        slotState.TryGetMail(
-                            context.BlockIndex,
-                            context.BlockIndex,
-                            out var combinationMailFix,
-                            out var itemEnhanceMailFix))
-                    {
-                        if (combinationMailFix != null)
-                        {
-                            avatarState.Update(combinationMailFix);
-                        }
-                        else if (itemEnhanceMailFix != null)
-                        {
-                            avatarState.Update(itemEnhanceMailFix);
-                        }
-                    }
                 }
             }
 
