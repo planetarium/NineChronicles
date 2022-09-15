@@ -396,7 +396,8 @@ namespace Nekoyume.UI.Module
                 return false;
             }
 
-            var isAppraise = currentBlockIndex < state.StartBlockIndex + GameConfig.RequiredAppraiseBlock;
+            var isAppraise = currentBlockIndex < state.StartBlockIndex +
+                States.Instance.GameConfigState.RequiredAppraiseBlock;
             if (isAppraise)
             {
                 return false;
