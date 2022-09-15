@@ -54366,7 +54366,7 @@ RectTransform:
   m_GameObject: {fileID: 3133595901058342992}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.65, y: 0.65, z: 1}
+  m_LocalScale: {x: 0.6, y: 0.6, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 264078028827411918}
@@ -65070,7 +65070,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9029475546411700199}
-  - component: {fileID: 5170730002091069129}
   m_Layer: 5
   m_Name: VFXOffset
   m_TagString: Untagged
@@ -65098,14 +65097,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 3}
   m_SizeDelta: {x: 22, y: 16}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &5170730002091069129
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4509605356949022588}
-  m_CullTransparentMesh: 0
 --- !u!1 &4598910524521012673
 GameObject:
   m_ObjectHideFlags: 0
@@ -126700,7 +126691,7 @@ PrefabInstance:
     - target: {fileID: 8450124591751355583, guid: a4c32b853a22ea042b73b98d476b5a0f,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -143
+      value: 24.166649
       objectReference: {fileID: 0}
     - target: {fileID: 8450124591751355583, guid: a4c32b853a22ea042b73b98d476b5a0f,
         type: 3}
@@ -127560,6 +127551,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: HelpButtonS
+      objectReference: {fileID: 0}
+    - target: {fileID: 432179639104244028, guid: d51c47110019c477f8b064ebd28712f1,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2092428802851178608, guid: d51c47110019c477f8b064ebd28712f1,
         type: 3}
