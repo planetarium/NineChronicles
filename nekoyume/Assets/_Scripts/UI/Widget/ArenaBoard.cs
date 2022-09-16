@@ -87,10 +87,11 @@ namespace Nekoyume.UI
             UpdateBillboard();
             UpdateScrolls();
 
-            // NOTE: If `_playerScroll.Data` does not contains player, fix below.
+            // NOTE: This code assumes that '_playerScroll.Data' contains local player
+            //       If `_playerScroll.Data` does not contains local player, change `2` in the line below to `1`.
             //       Not use `_boundedData` here because there is the case to
             //       use the mock data from `_so`.
-            _noJoinedPlayersGameObject.SetActive(_playerScroll.Data.Count == 1);
+            _noJoinedPlayersGameObject.SetActive(_playerScroll.Data.Count < 2);
 
             base.Show(ignoreShowAnimation);
         }
