@@ -47,7 +47,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             return response;
         }
 
-        public static async Task<TxResultResponse> QueryTxResultAsync(string txId)
+        private static async Task<TxResultResponse> QueryTxResultAsync(string txId)
         {
             var rpcClient = Game.Game.instance.RpcClient;
             if (!rpcClient.IsInitialized)
@@ -93,14 +93,8 @@ namespace Nekoyume.UI.Module.WorldBoss
             form.AddField("raid_id", raidId);
             form.AddField("avatar_address", avatarAddress.ToHex());
             form.AddField("agent_address", agentAddress.ToHex());
-
             using var request = UnityWebRequest.Post($"{_url}/reward", form);
             yield return request.SendWebRequest();
-
-            Debug.Log(request.result != UnityWebRequest.Result.Success
-                ? request.error
-                : "Form upload complete");
-
             if (request.result == UnityWebRequest.Result.Success)
             {
                 onSuccess?.Invoke(request.downloadHandler.text);
@@ -115,19 +109,18 @@ namespace Nekoyume.UI.Module.WorldBoss
             int raidId,
             Address avatarAddress,
             System.Action<string> onSuccess,
-            System.Action onFailed)
+            System.Action<int, Address> onFailed)
         {
             var url = $"{_url}/{raidId}/{avatarAddress}";
             using var request = UnityWebRequest.Get(url);
             yield return request.SendWebRequest();
-            Debug.Log($"[GET] ({url}) RESULT : {request.result}");
             if (request.result == UnityWebRequest.Result.Success)
             {
                 onSuccess?.Invoke(request.downloadHandler.text);
             }
             else
             {
-                onFailed?.Invoke();
+                onFailed?.Invoke(raidId, avatarAddress);
             }
         }
     }

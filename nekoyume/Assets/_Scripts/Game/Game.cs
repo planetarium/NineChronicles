@@ -203,6 +203,8 @@ namespace Nekoyume.Game
                 _rpcClient = new NineChroniclesAPIClient($"http://{_options.RpcServerHost}/graphql");
             }
 
+            gameObject.AddComponent<RequestManager>();
+
             WorldBossQuery.SetUrl(_options.OnBoardingHost);
 
             // Initialize Rank.SharedModel

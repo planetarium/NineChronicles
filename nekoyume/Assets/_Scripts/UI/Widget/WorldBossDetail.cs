@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
+using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.WorldBoss;
 using UnityEngine;
@@ -81,7 +82,8 @@ namespace Nekoyume.UI
                 return;
             }
 
-            WorldBossStates.HasGradeRewards.SetValueAndForceNotify(false);
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            WorldBossStates.SetHasGradeRewards(avatarAddress, false);
             worldBossReward.ShowAsync(false);
         }
 

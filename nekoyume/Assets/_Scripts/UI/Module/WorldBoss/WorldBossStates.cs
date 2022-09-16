@@ -7,7 +7,6 @@ using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using Nekoyume.State;
-using UnityEngine;
 
 namespace Nekoyume.UI.Module.WorldBoss
 {
@@ -19,10 +18,89 @@ namespace Nekoyume.UI.Module.WorldBoss
         private static readonly Dictionary<Address, WorldBossKillRewardRecord> _killRewards = new();
         private static readonly List<IDisposable> _disposables = new();
 
-        public static ReactiveProperty<bool> HasGradeRewards { get; } = new();
-        private static ReactiveProperty<bool> HasSeasonRewards { get; } = new();
-        public static ReactiveProperty<bool> ReceivingGradeRewards { get; } = new();
-        public static ReactiveProperty<bool> ReceivingSeasonRewards { get; } = new();
+
+        private static ReactiveDictionary<Address, bool> _hasSeasonRewards { get; } = new();
+        private static ReactiveDictionary<Address, bool> _canReceiveSeasonRewards { get; } = new();
+        private static ReactiveDictionary<Address, bool> _receivingSeasonRewards { get; } = new();
+        private static ReactiveDictionary<Address, bool> _hasGradeRewards { get; } = new();
+        private static ReactiveDictionary<Address, bool> _receivingGradeRewards { get; } = new();
+
+
+        public static bool HasSeasonRewards(Address avatarAddress)
+        {
+            return _hasSeasonRewards.ContainsKey(avatarAddress) && _hasSeasonRewards[avatarAddress];
+        }
+
+        public static void SetHasSeasonRewards(Address avatarAddress, bool value)
+        {
+            if (_hasSeasonRewards.ContainsKey(avatarAddress))
+            {
+                _hasSeasonRewards.Remove(avatarAddress);
+            }
+
+            _hasSeasonRewards.Add(avatarAddress, value);
+        }
+
+        public static bool CanReceiveSeasonRewards(Address avatarAddress)
+        {
+            return _canReceiveSeasonRewards.ContainsKey(avatarAddress) && _canReceiveSeasonRewards[avatarAddress];
+        }
+
+        private static void SetCanReceiveSeasonRewards(Address avatarAddress, bool value)
+        {
+            if (_canReceiveSeasonRewards.ContainsKey(avatarAddress))
+            {
+                _canReceiveSeasonRewards.Remove(avatarAddress);
+            }
+
+            _canReceiveSeasonRewards.Add(avatarAddress, value);
+        }
+
+        public static bool IsReceivingSeasonRewards(Address avatarAddress)
+        {
+            return _receivingSeasonRewards.ContainsKey(avatarAddress) && _receivingSeasonRewards[avatarAddress];
+        }
+
+        public static void SetReceivingSeasonRewards(Address avatarAddress, bool value)
+        {
+            if (_receivingSeasonRewards.ContainsKey(avatarAddress))
+            {
+                _receivingSeasonRewards.Remove(avatarAddress);
+            }
+
+            _receivingSeasonRewards.Add(avatarAddress, value);
+        }
+
+        public static void SetHasGradeRewards(Address avatarAddress, bool value)
+        {
+            if (_hasGradeRewards.ContainsKey(avatarAddress))
+            {
+                _hasGradeRewards.Remove(avatarAddress);
+            }
+
+            _hasGradeRewards.Add(avatarAddress, value);
+        }
+
+        public static bool IsReceivingGradeRewards(Address avatarAddress)
+        {
+            if (!_receivingGradeRewards.ContainsKey(avatarAddress))
+            {
+                _receivingGradeRewards.Add(avatarAddress, false);
+            }
+
+            return _receivingGradeRewards[avatarAddress];
+        }
+
+        public static void SetReceivingGradeRewards(Address avatarAddress, bool value)
+        {
+            if (_receivingGradeRewards.ContainsKey(avatarAddress))
+            {
+                _receivingGradeRewards.Remove(avatarAddress);
+            }
+
+            _receivingGradeRewards.Add(avatarAddress, value);
+        }
+
 
         public static RaiderState GetRaiderState(Address avatarAddress)
         {
@@ -50,34 +128,57 @@ namespace Nekoyume.UI.Module.WorldBoss
             if (isOnSeason)
             {
                 UpdateState(avatarAddress, raider, killReward);
+                SetCanReceiveSeasonRewards(avatarAddress, false);
             }
             else
             {
-                HasSeasonRewards.SetValueAndForceNotify(IsExistSeasonReward(raidRow, raider));
+                SetCanReceiveSeasonRewards(avatarAddress, CanReceivedSeasonReward(raidRow, raider));
                 ClearRaiderState();
             }
 
-            HasGradeRewards.SetValueAndForceNotify(IsExistGradeReward(raidRow, raider));
+            SetHasGradeRewards(avatarAddress, IsExistGradeReward(raidRow, raider));
+        }
+
+        public static void SubscribeHasSeasonRewards(System.Action callback)
+        {
+            _hasSeasonRewards.ObserveAdd().Subscribe(x =>
+            {
+                callback?.Invoke();
+            }).AddTo(_disposables);
+        }
+
+        public static void SubscribeCanReceivedSeasonRewards(System.Action callback)
+        {
+            _canReceiveSeasonRewards.ObserveAdd().Subscribe(x =>
+            {
+                callback?.Invoke();
+            }).AddTo(_disposables);
+        }
+
+        public static void SubscribeReceivingSeasonRewards(System.Action callback)
+        {
+            _receivingSeasonRewards.ObserveAdd().Subscribe(x =>
+            {
+                callback?.Invoke();
+            }).AddTo(_disposables);
         }
 
         public static void SubscribeGradeRewards(Action<bool> callback)
         {
-            HasGradeRewards.Subscribe(callback).AddTo(_disposables);
-        }
-
-        public static void SubscribeSeasonRewards(Action<bool> callback)
-        {
-            HasSeasonRewards.Subscribe(callback).AddTo(_disposables);
+            _hasGradeRewards.ObserveAdd().Subscribe(x =>
+            {
+                var address = States.Instance.CurrentAvatarState.address;
+                callback?.Invoke(address == x.Key && x.Value);
+            }).AddTo(_disposables);
         }
 
         public static void SubscribeReceivingGradeRewards(Action<bool> callback)
         {
-            ReceivingGradeRewards.Subscribe(callback).AddTo(_disposables);
-        }
-
-        public static void SubscribeReceivingSeasonRewards(Action<bool> callback)
-        {
-            ReceivingSeasonRewards.Subscribe(callback).AddTo(_disposables);
+            _receivingGradeRewards.ObserveAdd().Subscribe(x =>
+            {
+                var address = States.Instance.CurrentAvatarState.address;
+                callback?.Invoke(address == x.Key && x.Value);
+            }).AddTo(_disposables);
         }
 
         public static void UpdateState(
@@ -132,7 +233,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             return latestRewardRank < currentRank;
         }
 
-        private static bool IsExistSeasonReward(WorldBossListSheet.Row row, RaiderState raiderState)
+        private static bool CanReceivedSeasonReward(WorldBossListSheet.Row row, RaiderState raiderState)
         {
             if (row == null)
             {
