@@ -16,6 +16,8 @@ using UnityEngine;
 
 namespace Nekoyume.Game
 {
+    using Nekoyume.L10n;
+    using Nekoyume.UI.Scroller;
     using UniRx;
 
     public class RaidStage : MonoBehaviour, IStage
@@ -25,6 +27,9 @@ namespace Nekoyume.Game
 
         [SerializeField]
         private float skillDelay = 0.3f;
+
+        [SerializeField]
+        private int alertTurn = 10;
 
         private Character.RaidPlayer _player;
         private Character.RaidBoss _boss;
@@ -226,7 +231,16 @@ namespace Nekoyume.Game
             actionCam.Cam.gameObject.SetActive(true);
             actionCam.RerunFSM();
             MainCanvas.instance.Canvas.worldCamera = ActionCamera.instance.Cam;
-            Widget.Find<WorldBossResultPopup>().Show(_currentBossId, damageDealt, isNewRecord, rewards, killRewards);
+
+            if (isPractice)
+            {
+                Widget.Find<WorldBossResultPopup>().ShowAsPractice(_currentBossId, damageDealt);
+            }
+            else
+            {
+                Widget.Find<WorldBossResultPopup>().Show(
+                    _currentBossId, damageDealt, isNewRecord, rewards, killRewards);
+            }
 
             if (container)
             {
@@ -405,6 +419,11 @@ namespace Nekoyume.Game
         {
             _waveTurn = waveTurn;
             Event.OnPlayerTurnEnd.Invoke(turnNumber);
+            if (_turnLimit - _waveTurn == alertTurn)
+            {
+                var message = L10nManager.Localize("UI_MESSAGE_TURNS_LEFT_FORMAT", alertTurn);
+                OneLineSystem.Push(Model.Mail.MailType.System, message, NotificationCell.NotificationType.Alert);
+            }
             yield break;
         }
 

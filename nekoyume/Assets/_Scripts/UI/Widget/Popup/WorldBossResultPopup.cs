@@ -27,6 +27,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private List<RuneStoneItem> rewardViews;
 
+        [SerializeField]
+        private GameObject _practiceText;
+
         private GameObject _gradeObject;
 
         private List<FungibleAssetValue> _killRewards;
@@ -51,7 +54,7 @@ namespace Nekoyume.UI
             List<FungibleAssetValue> killRewards)
         {
             base.Show();
-
+            _practiceText.SetActive(false);
             scoreText.text = score.ToString("N0");
             seasonBestObject.SetActive(isBest);
 
@@ -84,6 +87,25 @@ namespace Nekoyume.UI
                         view.Set(icon, count);
                         view.gameObject.SetActive(true);
                     }
+                }
+            }
+        }
+
+        public void ShowAsPractice(int bossId, int score)
+        {
+            base.Show();
+            _practiceText.SetActive(true);
+            scoreText.text = score.ToString("N0");
+            seasonBestObject.SetActive(false);
+
+            if (Game.Game.instance.TableSheets.WorldBossCharacterSheet.TryGetValue(bossId, out var row))
+            {
+                var grade = (WorldBossGrade)WorldBossHelper.CalculateRank(row, score);
+
+                if (WorldBossFrontHelper.TryGetGrade(grade, false, out var prefab))
+                {
+                    _gradeObject = Instantiate(prefab, gradeParent);
+                    _gradeObject.transform.localScale = Vector3.one;
                 }
             }
         }
