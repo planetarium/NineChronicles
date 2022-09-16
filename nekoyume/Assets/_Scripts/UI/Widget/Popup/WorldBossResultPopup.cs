@@ -4,6 +4,7 @@ using Nekoyume.UI.Module.WorldBoss;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Game.Controller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -54,6 +55,7 @@ namespace Nekoyume.UI
             List<FungibleAssetValue> killRewards)
         {
             base.Show();
+            AudioController.instance.PlayMusic(AudioController.MusicCode.WorldBossBattleResult);
             // _practiceText.SetActive(false);
             scoreText.text = score.ToString("N0");
             seasonBestObject.SetActive(isBest);
@@ -94,6 +96,7 @@ namespace Nekoyume.UI
         public void ShowAsPractice(int bossId, int score)
         {
             base.Show();
+            AudioController.instance.PlayMusic(AudioController.MusicCode.WorldBossBattleResult);
             // _practiceText.SetActive(true);
             scoreText.text = score.ToString("N0");
             seasonBestObject.SetActive(false);

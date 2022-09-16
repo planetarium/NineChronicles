@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Libplanet;
+using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;
@@ -147,6 +148,7 @@ namespace Nekoyume.UI
 
         public async UniTaskVoid ShowAsync(bool ignoreShowAnimation = false)
         {
+            AudioController.instance.PlayMusic(AudioController.MusicCode.WorldBossTitle);
             var loading = Find<DataLoadingScreen>();
             loading.Show();
             await UpdateViewAsync(Game.Game.instance.Agent.BlockIndex, forceUpdate: true);
@@ -254,8 +256,6 @@ namespace Nekoyume.UI
             long blockIndex,
             int userCount)
         {
-            Debug.Log("[UpdateSeason]");
-
             offSeasonContainer.SetActive(false);
             seasonContainer.SetActive(true);
             rankButton.gameObject.SetActive(true);
