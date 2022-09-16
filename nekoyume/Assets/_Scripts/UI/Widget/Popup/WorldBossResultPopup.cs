@@ -27,8 +27,8 @@ namespace Nekoyume.UI
         [SerializeField]
         private List<RuneStoneItem> rewardViews;
 
-        [SerializeField]
-        private GameObject _practiceText;
+        // [SerializeField]
+        // private GameObject _practiceText;
 
         private GameObject _gradeObject;
 
@@ -54,7 +54,7 @@ namespace Nekoyume.UI
             List<FungibleAssetValue> killRewards)
         {
             base.Show();
-            _practiceText.SetActive(false);
+            // _practiceText.SetActive(false);
             scoreText.text = score.ToString("N0");
             seasonBestObject.SetActive(isBest);
 
@@ -94,7 +94,7 @@ namespace Nekoyume.UI
         public void ShowAsPractice(int bossId, int score)
         {
             base.Show();
-            _practiceText.SetActive(true);
+            // _practiceText.SetActive(true);
             scoreText.text = score.ToString("N0");
             seasonBestObject.SetActive(false);
 
