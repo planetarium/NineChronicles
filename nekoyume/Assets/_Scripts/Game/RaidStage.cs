@@ -174,7 +174,7 @@ namespace Nekoyume.Game
             _player.Init(playerDigest, _boss);
             _boss.Init(_player);
 
-            AudioController.instance.PlayMusic(AudioController.MusicCode.StageBlue);
+            AudioController.instance.PlayMusic(AudioController.MusicCode.WorldBossBattle01);
             Widget.Find<LoadingScreen>().Close();
             Game.instance.IsInWorld = true;
             _waveTurn = 1;
