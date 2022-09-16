@@ -93,6 +93,11 @@ namespace Nekoyume.UI
 
         public void ShowAsPractice(int bossId, int score)
         {
+            foreach (var view in rewardViews)
+            {
+                view.gameObject.SetActive(false);
+            }
+
             base.Show();
             _practiceText.SetActive(true);
             scoreText.text = score.ToString("N0");
