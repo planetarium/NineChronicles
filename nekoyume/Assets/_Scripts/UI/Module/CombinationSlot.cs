@@ -294,9 +294,10 @@ namespace Nekoyume.UI.Module
                 return SlotType.Empty;
             }
 
-            return currentBlockIndex < state.StartBlockIndex + GameConfig.RequiredAppraiseBlock
-                ? SlotType.Appraise
-                : SlotType.Working;
+            return currentBlockIndex < state.StartBlockIndex +
+                States.Instance.GameConfigState.RequiredAppraiseBlock
+                    ? SlotType.Appraise
+                    : SlotType.Working;
         }
 
         private void UpdateRequiredBlockInformation(
