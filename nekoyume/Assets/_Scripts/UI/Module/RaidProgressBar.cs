@@ -26,6 +26,8 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Slider slider = null;
         [SerializeField]
+        private Slider currentWaveSlider = null;
+        [SerializeField]
         private GameObject[] activatedObjects = null;
         [SerializeField]
         private RectTransform vfxClamper = null;
@@ -89,14 +91,14 @@ namespace Nekoyume.UI.Module
                 TerminateCurrentSmoothen();
             }
 
-            var sliderValue = (float)_currentStar.Value / MaxWave;
+            (var prev, var current) = GetSliderValue(_currentStar.Value, MaxWave);
             if (isActiveAndEnabled)
             {
-                _smoothenCoroutine = StartCoroutine(LerpProgressBar(sliderValue, lerpSpeed));
+                _smoothenCoroutine = StartCoroutine(LerpProgressBar(prev, current, lerpSpeed));
             }
             else
             {
-                UpdateSliderValue(sliderValue);
+                UpdateSliderValue(prev, current);
                 for (int i = 0; i < star; ++i)
                 {
                     activatedObjects[i].SetActive(true);
@@ -123,20 +125,23 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private IEnumerator LerpProgressBar(float value, float additionalSpeed = 1.0f)
+        private IEnumerator LerpProgressBar(float prevValue, float currentValue, float additionalSpeed = 1.0f)
         {
             stageProgressBarVFX.Play();
-            var current = slider.value;
+            var prev = slider.value;
+            var current = currentWaveSlider.value;
             var speed = smoothenSpeed * additionalSpeed;
 
-            while (current < value - smoothenFinishThreshold)
+            while (prev < prevValue - smoothenFinishThreshold)
             {
-                current = Mathf.Lerp(current, value, Time.deltaTime * speed);
-                slider.value = current;
+                prev = Mathf.Lerp(prev, prevValue, Time.deltaTime * speed);
+                current = Mathf.Lerp(current, currentValue, Time.deltaTime * speed);
+                slider.value = prev;
+                currentWaveSlider.value = current;
                 yield return null;
             }
 
-            UpdateSliderValue(value);
+            UpdateSliderValue(prevValue, currentValue);
         }
 
         private void TerminateCurrentSmoothen()
@@ -153,11 +158,11 @@ namespace Nekoyume.UI.Module
             stageProgressBarVFX.transform.position = vfxOffset.transform.position;
         }
 
-        private void UpdateSliderValue(float value)
+        private void UpdateSliderValue(float prevValue, float currentValue)
         {
-            var vfxValue = (float) Mathf.Clamp(_currentStar.Value + 1, 0, MaxWave) / MaxWave;
-            vfxOffset.anchoredPosition = new Vector2(vfxValue * _xLength, vfxOffset.anchoredPosition.y);
-            slider.value = value;
+            vfxOffset.anchoredPosition = new Vector2(currentValue * _xLength, vfxOffset.anchoredPosition.y);
+            slider.value = prevValue;
+            currentWaveSlider.value = currentValue;
             _smoothenCoroutine = null;
         }
 
@@ -192,6 +197,7 @@ namespace Nekoyume.UI.Module
             SetStarProgress(0);
             UpdateScore(0);
             slider.value = 0.0f;
+            currentWaveSlider.value = 1.0f / MaxWave;
             foreach (var activated in activatedObjects)
             {
                 activated.SetActive(false);
@@ -200,6 +206,13 @@ namespace Nekoyume.UI.Module
             {
                 vfx.Stop();
             }
+        }
+
+        private (float prev, float current) GetSliderValue(int wave, int maxWave)
+        {
+            var prev = (float)wave / maxWave;
+            var current = (float)Mathf.Clamp(wave + 1, 0, maxWave) / maxWave;
+            return (prev, current);
         }
     }
 }
