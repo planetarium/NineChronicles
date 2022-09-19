@@ -179,6 +179,7 @@ namespace Nekoyume.UI
 
             _bossId = bossId;
             _headerMenu = Find<HeaderMenuStatic>();
+            _headerMenu.SetActiveAvatarInfo(false);
 
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
             var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
@@ -269,6 +270,7 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            Find<HeaderMenuStatic>().SetActiveAvatarInfo(true);
             consumableSlots.Clear();
             _disposables.DisposeAllAndClear();
 

@@ -308,6 +308,7 @@ namespace Nekoyume.UI
                 UpdateStartButton(States.Instance.CurrentAvatarState);
             }).AddTo(_disposables);
 
+            Find<HeaderMenuStatic>().SetActiveAvatarInfo(false);
             base.Show(ignoreShowAnimation);
         }
 
@@ -328,6 +329,7 @@ namespace Nekoyume.UI
             _shouldResetPlayer = true;
             consumableSlots.Clear();
             _disposables.DisposeAllAndClear();
+            Find<HeaderMenuStatic>().SetActiveAvatarInfo(true);
             base.Close(ignoreCloseAnimation);
         }
 
