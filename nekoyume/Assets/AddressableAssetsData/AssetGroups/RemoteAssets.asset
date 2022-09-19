@@ -16,62 +16,7 @@ MonoBehaviour:
   m_Data:
     m_SerializedData: []
   m_GUID: d720a709b22a1384c924a2234e80c83d
-  m_SerializeEntries:
-  - m_GUID: abdd8b3d704e8e244b9eb24fd01ffbe7
-    m_Address: Assets/UIResources/Content/Common/Prefab/Addressables/Event_Banner_Item_9.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - banner
-  - m_GUID: 599ddbc59f798e64999f6c2e783fa1ff
-    m_Address: Assets/UIResources/Content/Common/Prefab/Addressables/Event_Banner_Item_8.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - banner
-  - m_GUID: c92f6d7a3bae0d64e8578da38d7f4f47
-    m_Address: Assets/UIResources/Content/Common/Prefab/Addressables/Event_Banner_Item_7.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - banner
-  - m_GUID: 86751a7b601cbf04c9945a3e7373c068
-    m_Address: Assets/UIResources/Content/Common/Prefab/Addressables/Event_Banner_Item_6.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - banner
-  - m_GUID: eb85bd626e4fdcd4585fae53c9c1beea
-    m_Address: Assets/UIResources/Content/Common/Prefab/Addressables/Event_Banner_Item_5.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - banner
-  - m_GUID: c704f226b84c46d43b41bd468d780e21
-    m_Address: Assets/UIResources/Content/Common/Prefab/Addressables/Event_Banner_Item_4.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - banner
-  - m_GUID: 3f08fe4f6b4b9234480316036e736902
-    m_Address: Assets/UIResources/Content/Common/Prefab/Addressables/Event_Banner_Item_3.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - banner
-  - m_GUID: 180292e0dc335fb4792b36b3306056ec
-    m_Address: Assets/UIResources/Content/Common/Prefab/Addressables/Event_Banner_Item_2.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - banner
-  - m_GUID: 07384cd3c8a45fa4485c12ab5e749060
-    m_Address: Assets/UIResources/Content/Common/Prefab/Addressables/Event_Banner_Item_1.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - banner
-  - m_GUID: 5c41ac2f97101b943a94753c8681a15d
-    m_Address: Assets/UIResources/Content/Common/Prefab/Addressables/Event_Banner_Item_10.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - banner
-  - m_GUID: a5fe9e23b027a8c4eaefe44424ef1aa1
-    m_Address: Assets/AddressableAssets/NoticeInfo/NoticeData_v100300.asset
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - notice
+  m_SerializeEntries: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ac541e2ce40a4e441b1e4fe7bb752ac7, type: 2}
   m_SchemaSet:

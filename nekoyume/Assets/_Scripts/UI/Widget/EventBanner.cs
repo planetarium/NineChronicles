@@ -1,9 +1,11 @@
-using System.Collections.Generic;
-using Nekoyume.Helper;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.UI;
+using Nekoyume.UI.Model;
+using System.Text.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace Nekoyume.UI.Module
 {
@@ -29,38 +31,28 @@ namespace Nekoyume.UI.Module
 
         private AsyncOperationHandle _handle;
 
-        private readonly List<GameObject> banners = new();
+        private const string Url =
+            "https://raw.githubusercontent.com/planetarium/NineChronicles/feature/banner-test/nekoyume/Assets/Dynamic/Json/Banner.json";
 
-        protected override void Awake()
+        private void Start()
         {
-            base.Awake();
-            AddressablesHelper.LoadAssets("banner", banners, Set);
+            StartCoroutine(RequestManager.instance.GetJson(Url, Set));
         }
 
-        private void Set()
+        private void Set(string json)
         {
-            foreach (var banner in banners)
+            var eb = JsonSerializer.Deserialize<EventBanners>(json);
+            var dataList = eb.Banners.OrderBy(x => x.Priority);
+            foreach (var data in dataList)
             {
-                Instantiate(banner, content);
-            }
-            var destroyList = new List<GameObject>();
-            for (var i = 0; i < content.childCount; i++)
-            {
-                var eventBannerItem = content.GetChild(i).GetComponent<EventBannerItem>();
-                if (eventBannerItem is null)
+                if (data.UseDateTime &&
+                    !DateTime.UtcNow.IsInTime(data.BeginDateTime, data.EndDateTime))
                 {
                     continue;
                 }
 
-                if (!eventBannerItem.IsInTime())
-                {
-                    destroyList.Add(content.GetChild(i).gameObject);
-                }
-            }
-
-            foreach (var item in destroyList)
-            {
-                DestroyImmediate(item);
+                var ba= Instantiate(Banner, content);
+                ba.GetComponent<EventBannerItem>().Set(data);
             }
 
             for (var i = 0; i < content.childCount; i++)
