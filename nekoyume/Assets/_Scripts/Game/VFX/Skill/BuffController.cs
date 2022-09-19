@@ -41,7 +41,7 @@ namespace Nekoyume.Game.VFX.Skill
             }
             else if (buff is ActionBuff actionBuff)
             {
-                resourceName = $"buff_{actionBuff.RowData.ActionBuffType}";
+                resourceName = $"actionBuff_{actionBuff.RowData.ActionBuffType}";
             }
 
             var go = _pool.Get(resourceName, false, position) ??
@@ -101,7 +101,7 @@ namespace Nekoyume.Game.VFX.Skill
             }
             else if (buff is ActionBuff actionBuff)
             {
-                resourceName = $"icon_{actionBuff.RowData.ActionBuffType}";
+                resourceName = $"actionBuff_{actionBuff.RowData.ActionBuffType}";
             }
             var go = _pool.Get(resourceName, false, position) ??
                      _pool.Get(resourceName, true, position);

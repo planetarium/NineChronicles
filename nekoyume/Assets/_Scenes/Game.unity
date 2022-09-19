@@ -370,6 +370,10 @@ MonoBehaviour:
       type: 3}
     InitCount: 1
     AddCount: 1
+  - Prefab: {fileID: 7171611368931243746, guid: 717216517b03d4c57bae5a9a59286335,
+      type: 3}
+    InitCount: 2
+    AddCount: 2
 --- !u!114 &76869998
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -881,7 +885,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectPool: {fileID: 1333831684}
-  delayOnBattleFinished: 3
+  skillDelay: 0.3
+  alertTurn: 10
 --- !u!1001 &582310248
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2059,10 +2064,10 @@ MonoBehaviour:
       type: 3}
     InitCount: 1
     AddCount: 1
-  - Prefab: {fileID: 1996707557506405315, guid: 27dbf0d932fea8b4f89fef585ac53e6e,
+  - Prefab: {fileID: 7171611368931243746, guid: 717216517b03d4c57bae5a9a59286335,
       type: 3}
-    InitCount: 1
-    AddCount: 1
+    InitCount: 2
+    AddCount: 2
 --- !u!114 &1333831685
 MonoBehaviour:
   m_ObjectHideFlags: 0
