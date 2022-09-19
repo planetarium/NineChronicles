@@ -417,6 +417,12 @@ namespace Nekoyume.UI.Module
             _toggleNotifications[ToggleType.AvatarInfo].Value = hasNotification;
         }
 
+        public void SetActiveAvatarInfo(bool value)
+        {
+            var avatarInfo = toggles.FirstOrDefault(x => x.Type == ToggleType.AvatarInfo);
+            avatarInfo?.Toggle.gameObject.SetActive(value);
+        }
+
         public void TutorialActionClickBottomMenuWorkShopButton()
         {
             var info = toggles.FirstOrDefault(x => x.Type.Equals(ToggleType.CombinationSlots));
