@@ -21,9 +21,17 @@ namespace Nekoyume.BlockChain
             var errorMsg = string.Empty;
             switch (exc)
             {
-                case RequiredBlockIndexException _:
-                    key = "ERROR_REQUIRE_BLOCK";
-                    code = "01";
+                case RequiredBlockIndexException rb:
+                    if (rb is RequiredBlockIntervalException _)
+                    {
+                        key = "ERROR_NO_CONTINUOUS_BATTLES";
+                        code = "46";
+                    }
+                    else
+                    {
+                        key = "ERROR_REQUIRE_BLOCK";
+                        code = "01";
+                    }
                     break;
                 case EquipmentSlotUnlockException _:
                     key = "ERROR_SLOT_UNLOCK";
