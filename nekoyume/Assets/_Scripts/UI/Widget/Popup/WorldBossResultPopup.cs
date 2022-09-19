@@ -28,8 +28,8 @@ namespace Nekoyume.UI
         [SerializeField]
         private List<RuneStoneItem> rewardViews;
 
-        // [SerializeField]
-        // private GameObject _practiceText;
+        [SerializeField]
+        private GameObject _practiceText;
 
         private GameObject _gradeObject;
 
@@ -56,7 +56,7 @@ namespace Nekoyume.UI
         {
             base.Show();
             AudioController.instance.PlayMusic(AudioController.MusicCode.WorldBossBattleResult);
-            // _practiceText.SetActive(false);
+            _practiceText.SetActive(false);
             scoreText.text = score.ToString("N0");
             seasonBestObject.SetActive(isBest);
 
@@ -97,9 +97,14 @@ namespace Nekoyume.UI
         {
             base.Show();
             AudioController.instance.PlayMusic(AudioController.MusicCode.WorldBossBattleResult);
-            // _practiceText.SetActive(true);
+            _practiceText.SetActive(true);
             scoreText.text = score.ToString("N0");
             seasonBestObject.SetActive(false);
+
+            foreach (var view in rewardViews)
+            {
+                view.gameObject.SetActive(false);
+            }
 
             if (Game.Game.instance.TableSheets.WorldBossCharacterSheet.TryGetValue(bossId, out var row))
             {
