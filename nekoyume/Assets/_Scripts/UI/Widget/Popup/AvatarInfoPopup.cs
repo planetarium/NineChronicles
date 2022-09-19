@@ -288,15 +288,15 @@ namespace Nekoyume.UI
                 return;
             }
 
+            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
+            var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+            var prevCp = CPHelper.GetCPV2(currentAvatarState, characterSheet, costumeStatSheet);
             if (!slot.IsEmpty)
             {
                 Unequip(slot, true);
             }
 
-            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
-            var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
-            var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
-            var prevCp = CPHelper.GetCPV2(currentAvatarState, characterSheet, costumeStatSheet);
             slot.Set(itemBase, OnClickSlot, OnDoubleClickSlot);
             LocalLayerModifier.SetItemEquip(currentAvatarState.address, slot.Item, true);
 
