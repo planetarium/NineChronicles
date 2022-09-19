@@ -93,7 +93,7 @@ namespace Nekoyume.Action
 
             if (context.BlockIndex - raiderState.UpdatedBlockIndex < RequiredInterval)
             {
-                throw new RequiredBlockIndexException($"wait for interval. {context.BlockIndex - raiderState.UpdatedBlockIndex}");
+                throw new RequiredBlockIntervalException($"wait for interval. {context.BlockIndex - raiderState.UpdatedBlockIndex}");
             }
 
             if (WorldBossHelper.CanRefillTicket(context.BlockIndex, raiderState.RefillBlockIndex, row.StartedBlockIndex))
