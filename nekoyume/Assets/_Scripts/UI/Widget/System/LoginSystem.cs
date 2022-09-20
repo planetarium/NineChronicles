@@ -64,9 +64,11 @@ namespace Nekoyume.UI
         private string _privateKeyString;
         private PrivateKey _privateKey;
         private States _prevState;
+        private CapturedImage _capturedImage;
 
         protected override void Awake()
         {
+            _capturedImage = GetComponentInChildren<CapturedImage>();
             State.Value = States.Show;
             State.Subscribe(SubscribeState).AddTo(gameObject);
             strongText.gameObject.SetActive(false);
@@ -307,6 +309,11 @@ namespace Nekoyume.UI
 
         public void Show(string path, string privateKeyString)
         {
+            if (_capturedImage != null)
+            {
+                _capturedImage.Show();
+            }
+
             KeyStore = path is null ? Web3KeyStore.DefaultKeyStore : new Web3KeyStore(path);
             _privateKeyString = privateKeyString;
             //Auto login for miner, seed, launcher
