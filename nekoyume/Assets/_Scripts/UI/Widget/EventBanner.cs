@@ -32,7 +32,7 @@ namespace Nekoyume.UI.Module
         private AsyncOperationHandle _handle;
 
         private const string Url =
-            "https://raw.githubusercontent.com/planetarium/NineChronicles/feature/banner-test/nekoyume/Assets/Dynamic/Json/Banner.json";
+            "https://raw.githubusercontent.com/planetarium/NineChronicles/feature/development/nekoyume/Assets/Dynamic/Json/Banner.json";
 
         private void Start()
         {
