@@ -185,7 +185,6 @@ namespace Nekoyume.UI
             AgentStateSubject.Crystal
                 .Subscribe(_ => ReadyToBattle())
                 .AddTo(_disposables);
-            Find<HeaderMenuStatic>().SetActiveAvatarInfo(false);
             base.Show(ignoreShowAnimation);
         }
 
@@ -197,7 +196,6 @@ namespace Nekoyume.UI
             }
 
             _disposables.DisposeAllAndClear();
-            Find<HeaderMenuStatic>().SetActiveAvatarInfo(true);
             base.Close(ignoreCloseAnimation);
         }
 
