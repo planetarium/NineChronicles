@@ -17,7 +17,7 @@ namespace Nekoyume.UI.Module
         private Button button;
 
         private const string Url =
-            "https://raw.githubusercontent.com/planetarium/NineChronicles/feature/development/nekoyume/Assets/Dynamic/Images/Banner";
+            "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Images/Banner";
 
         public void Set(EventBannerData data)
         {

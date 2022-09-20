@@ -22,10 +22,10 @@ namespace Nekoyume.UI
 
         private const string LastNoticeDayKeyFormat = "LAST_NOTICE_DAY_{0}";
         private const string JsonUrl =
-            "https://raw.githubusercontent.com/planetarium/NineChronicles/feature/development/nekoyume/Assets/Dynamic/Json/Notice.json";
+            "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/Notice.json";
 
         private const string ImageUrl =
-            "https://raw.githubusercontent.com/planetarium/NineChronicles/feature/development/nekoyume/Assets/Dynamic/Images/Notice";
+            "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Images/Notice";
 
         private Notice _data;
 
