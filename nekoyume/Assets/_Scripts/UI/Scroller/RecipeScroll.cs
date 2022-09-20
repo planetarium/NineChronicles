@@ -227,7 +227,9 @@ namespace Nekoyume.UI.Scroller
                     max = Mathf.Max(max, items.IndexOf(item));
                 }
             }
-            cellInterval = 0.2588997f;
+            // `Scroller.ViewportSize`(viewport.rect.size.x,y) was not initialized.
+            const float viewportSizeVertical = 458f;  // in `UI_Craft` prefab
+            AdjustCellIntervalAndScrollOffset(viewportSizeVertical);
             JumpTo(max-1);
 
             AnimateScroller();
