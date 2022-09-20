@@ -80530,6 +80530,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8822888979465370497}
+  - component: {fileID: 6727153358650752519}
   m_Layer: 5
   m_Name: Icon
   m_TagString: Untagged
@@ -80558,6 +80559,18 @@ RectTransform:
   m_AnchoredPosition: {x: -10, y: 36}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!225 &6727153358650752519
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8111842937645243098}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &8153362086083100049
 GameObject:
   m_ObjectHideFlags: 0
