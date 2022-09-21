@@ -177,7 +177,7 @@ namespace Lib9c.Tests.Action
                 .Where(i => i.ItemSubType == itemSubType && i.Id != 1 && i.UnlockStage != 999);
 
             // Clear Stage
-            for (int i = 1; i < 6; i++)
+            for (int i = 1; i <= 6; i++)
             {
                 var worldRow = _tableSheets.WorldSheet[i];
                 for (int v = worldRow.StageBegin; v < worldRow.StageEnd + 1; v++)
