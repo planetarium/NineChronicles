@@ -254,7 +254,6 @@ namespace Nekoyume.UI
             crystalText.color = States.Instance.CrystalBalance.MajorUnit >= crystalCost ?
                 Palette.GetColor(ColorType.ButtonEnabled) :
                 Palette.GetColor(ColorType.TextDenial);
-            startButton.enabled = States.Instance.CrystalBalance.MajorUnit >= crystalCost;
         }
 
         private static int GetEntranceFee(AvatarState currentAvatarState)
@@ -579,11 +578,28 @@ namespace Nekoyume.UI
                     if (raiderState is null)
                     {
                         var cost = GetEntranceFee(currentAvatarState);
-                        Find<PaymentPopup>()
-                            .ShowWithAddCost("UI_TOTAL_COST", "UI_BOSS_JOIN_THE_SEASON",
-                                CostType.Crystal, cost,
-                                CostType.WorldBossTicket, 1,
-                                () => StartCoroutine(CoRaid()));
+                        if (States.Instance.CrystalBalance.MajorUnit < cost)
+                        {
+                            Find<PaymentPopup>().ShowAttract(
+                                CostType.Crystal,
+                                cost,
+                                L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL"),
+                                L10nManager.Localize("UI_GO_GRINDING"),
+                                () =>
+                                {
+                                    Find<Grind>().Show();
+                                    Find<WorldBoss>().Close();
+                                    Close();
+                                });
+                        }
+                        else
+                        {
+                            Find<PaymentPopup>()
+                                .ShowWithAddCost("UI_TOTAL_COST", "UI_BOSS_JOIN_THE_SEASON",
+                                    CostType.Crystal, cost,
+                                    CostType.WorldBossTicket, 1,
+                                    () => StartCoroutine(CoRaid()));
+                        }
                     }
                     else
                     {
