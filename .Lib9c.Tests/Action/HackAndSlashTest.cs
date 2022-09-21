@@ -1164,6 +1164,11 @@
                 Assert.NotNull(stageBuffId);
             }
 
+            if (clear)
+            {
+                previousAvatarState.EquipItems(costumes.Concat(equipments.Select(e => e.ItemId)));
+            }
+
             var action = new HackAndSlash
             {
                 Costumes = clear ? costumes : new List<Guid>(),
@@ -1228,7 +1233,6 @@
             Assert.NotNull(serialized);
             var nextSkillState = new CrystalRandomSkillState(skillStateAddress, serialized);
             Assert.Equal(skillStateAddress, nextSkillState.Address);
-
             if (log.IsClear)
             {
                 Assert.Equal(stageId + 1, nextSkillState.StageId);
@@ -1237,7 +1241,8 @@
             else
             {
                 Assert.Equal(stageId, nextSkillState.StageId);
-                Assert.Equal(log.clearedWaveNumber, nextSkillState.StarCount);
+                skillState?.Update(log.clearedWaveNumber, _tableSheets.CrystalStageBuffGachaSheet);
+                Assert.Equal(skillState?.StarCount ?? log.clearedWaveNumber, nextSkillState.StarCount);
             }
 
             Assert.Empty(nextSkillState.SkillIds);
