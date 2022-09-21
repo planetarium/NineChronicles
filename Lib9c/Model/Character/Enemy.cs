@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
+using Nekoyume.Model.Character;
+using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
@@ -12,11 +14,14 @@ namespace Nekoyume.Model
     public class Enemy : CharacterBase, ICloneable
     {
         public int spawnIndex = -1;
-
+        
         [NonSerialized]
-        public StageSimulator StageSimulator;
+        private IStageSimulator _stageSimulator;
 
-        public Enemy(CharacterBase player, CharacterSheet.Row rowData, int monsterLevel,
+        public Enemy(
+            CharacterBase player,
+            CharacterSheet.Row rowData,
+            int monsterLevel,
             IEnumerable<StatModifier> optionalStatModifiers = null)
             : base(
                 player.Simulator,
@@ -25,8 +30,23 @@ namespace Nekoyume.Model
                 monsterLevel,
                 optionalStatModifiers)
         {
+            _stageSimulator = (IStageSimulator)player.Simulator;
             Targets.Add(player);
-            StageSimulator = (StageSimulator) Simulator;
+            PostConstruction();
+        }
+
+        public Enemy(
+            CharacterBase player,
+            CharacterStats stat,
+            int characterId,
+            ElementalType elementalType)
+            : base(
+                player.Simulator,
+                stat,
+                characterId,
+                elementalType)
+        {
+            Targets.Add(player);
             PostConstruction();
         }
 
@@ -49,18 +69,21 @@ namespace Nekoyume.Model
         protected override void OnDead()
         {
             base.OnDead();
-            var player = (Player) Targets[0];
+            var player = (Player)Targets[0];
             player.RemoveTarget(this);
         }
 
-        protected sealed override void SetSkill()
+        protected override void SetSkill()
         {
             base.SetSkill();
 
-            var dmg = (int) (ATK * 0.3m);
-            var skillIds = StageSimulator.EnemySkillSheet.Values.Where(r => r.characterId == RowData.Id)
-                .Select(r => r.skillId).ToList();
-            var enemySkills = Simulator.SkillSheet.Values.Where(r => skillIds.Contains(r.Id))
+            var dmg = (int)(ATK * 0.3m);
+            var skillIds = _stageSimulator.EnemySkillSheet.Values
+                .Where(r => r.characterId == RowData.Id)
+                .Select(r => r.skillId)
+                .ToList();
+            var enemySkills = Simulator.SkillSheet.Values
+                .Where(r => skillIds.Contains(r.Id))
                 .ToList();
             foreach (var skillRow in enemySkills)
             {

@@ -203,7 +203,7 @@ namespace Nekoyume.Action
             
             sw.Restart();
             var costumeStatSheet = states.GetSheet<CostumeStatSheet>();
-            var simulator = new StageSimulator(
+            var simulator = new StageSimulatorV1(
                 ctx.Random,
                 avatarState,
                 foods,

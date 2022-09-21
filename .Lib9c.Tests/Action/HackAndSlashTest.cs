@@ -1,18 +1,19 @@
-namespace Lib9c.Tests.Action
+﻿namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.Immutable;
     using System.IO;
     using System.Linq;
     using System.Runtime.Serialization.Formatters.Binary;
     using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
+    using Libplanet.Assets;
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Battle;
+    using Nekoyume.Extensions;
     using Nekoyume.Model;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
@@ -69,10 +70,11 @@ namespace Lib9c.Tests.Action
             _worldInformationAddress = _avatarAddress.Derive(LegacyWorldInformationKey);
             _questListAddress = _avatarAddress.Derive(LegacyQuestListKey);
             agentState.avatarAddresses.Add(0, _avatarAddress);
-
             _weeklyArenaState = new WeeklyArenaState(0);
-
+            var currency = new Currency("NCG", 2, minters: null);
+            var goldCurrencyState = new GoldCurrencyState(currency);
             _initialState = new State()
+                .SetState(Addresses.GoldCurrency, goldCurrencyState.Serialize())
                 .SetState(_weeklyArenaState.address, _weeklyArenaState.Serialize())
                 .SetState(_agentAddress, agentState.SerializeV2())
                 .SetState(_avatarAddress, _avatarState.SerializeV2())
@@ -186,12 +188,12 @@ namespace Lib9c.Tests.Action
 
             var action = new HackAndSlash
             {
-                costumes = costumes,
-                equipments = equipments.Select(e => e.NonFungibleId).ToList(),
-                foods = new List<Guid>(),
-                worldId = worldId,
-                stageId = stageId,
-                avatarAddress = _avatarAddress,
+                Costumes = costumes,
+                Equipments = equipments.Select(e => e.NonFungibleId).ToList(),
+                Foods = new List<Guid>(),
+                WorldId = worldId,
+                StageId = stageId,
+                AvatarAddress = _avatarAddress,
             };
 
             var nextState = action.Execute(new ActionContext
@@ -256,12 +258,12 @@ namespace Lib9c.Tests.Action
             // HackAndSlash
             var action = new HackAndSlash
             {
-                costumes = new List<Guid>(),
-                equipments = equipments.Select(e => e.NonFungibleId).ToList(),
-                foods = new List<Guid>(),
-                worldId = worldId,
-                stageId = stageId,
-                avatarAddress = avatarState.address,
+                Costumes = new List<Guid>(),
+                Equipments = equipments.Select(e => e.NonFungibleId).ToList(),
+                Foods = new List<Guid>(),
+                WorldId = worldId,
+                StageId = stageId,
+                AvatarAddress = avatarState.address,
             };
 
             avatarState = state.GetAvatarStateV2(avatarState.address);
@@ -328,12 +330,12 @@ namespace Lib9c.Tests.Action
 
             var action = new HackAndSlash
             {
-                costumes = new List<Guid>(),
-                equipments = new List<Guid>(),
-                foods = new List<Guid>(),
-                worldId = worldId,
-                stageId = stageId,
-                avatarAddress = _avatarAddress,
+                Costumes = new List<Guid>(),
+                Equipments = new List<Guid>(),
+                Foods = new List<Guid>(),
+                WorldId = worldId,
+                StageId = stageId,
+                AvatarAddress = _avatarAddress,
             };
 
             var nextState = action.Execute(new ActionContext
@@ -389,12 +391,12 @@ namespace Lib9c.Tests.Action
 
             var action = new HackAndSlash
             {
-                costumes = new List<Guid>(),
-                equipments = equipments,
-                foods = new List<Guid>(),
-                worldId = 1,
-                stageId = 1,
-                avatarAddress = _avatarAddress,
+                Costumes = new List<Guid>(),
+                Equipments = equipments,
+                Foods = new List<Guid>(),
+                WorldId = 1,
+                StageId = 1,
+                AvatarAddress = _avatarAddress,
             };
 
             var exec = Assert.Throws<DuplicateEquipmentException>(() => action.Execute(new ActionContext
@@ -415,12 +417,12 @@ namespace Lib9c.Tests.Action
         {
             var action = new HackAndSlash
             {
-                costumes = new List<Guid>(),
-                equipments = new List<Guid>(),
-                foods = new List<Guid>(),
-                worldId = 1,
-                stageId = 1,
-                avatarAddress = _avatarAddress,
+                Costumes = new List<Guid>(),
+                Equipments = new List<Guid>(),
+                Foods = new List<Guid>(),
+                WorldId = 1,
+                StageId = 1,
+                AvatarAddress = _avatarAddress,
             };
 
             IAccountStateDelta state = backward ? new State() : _initialState;
@@ -450,12 +452,12 @@ namespace Lib9c.Tests.Action
         {
             var action = new HackAndSlash
             {
-                costumes = new List<Guid>(),
-                equipments = new List<Guid>(),
-                foods = new List<Guid>(),
-                worldId = 1,
-                stageId = stageId,
-                avatarAddress = _avatarAddress,
+                Costumes = new List<Guid>(),
+                Equipments = new List<Guid>(),
+                Foods = new List<Guid>(),
+                WorldId = 1,
+                StageId = stageId,
+                AvatarAddress = _avatarAddress,
             };
 
             var exec = Assert.Throws<SheetRowColumnException>(() => action.Execute(new ActionContext
@@ -473,12 +475,12 @@ namespace Lib9c.Tests.Action
         {
             var action = new HackAndSlash
             {
-                costumes = new List<Guid>(),
-                equipments = new List<Guid>(),
-                foods = new List<Guid>(),
-                worldId = 1,
-                stageId = 1,
-                avatarAddress = _avatarAddress,
+                Costumes = new List<Guid>(),
+                Equipments = new List<Guid>(),
+                Foods = new List<Guid>(),
+                WorldId = 1,
+                StageId = 1,
+                AvatarAddress = _avatarAddress,
             };
 
             var state = _initialState;
@@ -499,12 +501,12 @@ namespace Lib9c.Tests.Action
         {
             var action = new HackAndSlash
             {
-                costumes = new List<Guid>(),
-                equipments = new List<Guid>(),
-                foods = new List<Guid>(),
-                worldId = 1,
-                stageId = 1,
-                avatarAddress = _avatarAddress,
+                Costumes = new List<Guid>(),
+                Equipments = new List<Guid>(),
+                Foods = new List<Guid>(),
+                WorldId = 1,
+                StageId = 1,
+                AvatarAddress = _avatarAddress,
             };
 
             var state = _initialState;
@@ -538,12 +540,12 @@ namespace Lib9c.Tests.Action
         {
             var action = new HackAndSlash
             {
-                costumes = new List<Guid>(),
-                equipments = new List<Guid>(),
-                foods = new List<Guid>(),
-                worldId = worldId,
-                stageId = stageId,
-                avatarAddress = _avatarAddress,
+                Costumes = new List<Guid>(),
+                Equipments = new List<Guid>(),
+                Foods = new List<Guid>(),
+                WorldId = worldId,
+                StageId = stageId,
+                AvatarAddress = _avatarAddress,
             };
 
             IAccountStateDelta state = _initialState;
@@ -570,12 +572,12 @@ namespace Lib9c.Tests.Action
         {
             var action = new HackAndSlash
             {
-                costumes = new List<Guid>(),
-                equipments = new List<Guid>(),
-                foods = new List<Guid>(),
-                worldId = 1,
-                stageId = 3,
-                avatarAddress = _avatarAddress,
+                Costumes = new List<Guid>(),
+                Equipments = new List<Guid>(),
+                Foods = new List<Guid>(),
+                WorldId = 1,
+                StageId = 3,
+                AvatarAddress = _avatarAddress,
             };
 
             var avatarState = new AvatarState(_avatarState);
@@ -610,12 +612,12 @@ namespace Lib9c.Tests.Action
         {
             var action = new HackAndSlash
             {
-                costumes = new List<Guid>(),
-                equipments = new List<Guid>(),
-                foods = new List<Guid>(),
-                worldId = 1,
-                stageId = 2,
-                avatarAddress = _avatarAddress,
+                Costumes = new List<Guid>(),
+                Equipments = new List<Guid>(),
+                Foods = new List<Guid>(),
+                WorldId = 1,
+                StageId = 2,
+                AvatarAddress = _avatarAddress,
             };
 
             _avatarState.worldInformation.TryGetWorld(1, out var world);
@@ -646,15 +648,15 @@ namespace Lib9c.Tests.Action
 
             var action = new HackAndSlash
             {
-                costumes = new List<Guid>(),
-                equipments = new List<Guid>
+                Costumes = new List<Guid>(),
+                Equipments = new List<Guid>
                 {
                     equipment.ItemId,
                 },
-                foods = new List<Guid>(),
-                worldId = 1,
-                stageId = 1,
-                avatarAddress = _avatarAddress,
+                Foods = new List<Guid>(),
+                WorldId = 1,
+                StageId = 1,
+                AvatarAddress = _avatarAddress,
             };
 
             var state = _initialState
@@ -693,15 +695,15 @@ namespace Lib9c.Tests.Action
 
             var action = new HackAndSlash
             {
-                costumes = new List<Guid>(),
-                equipments = new List<Guid>
+                Costumes = new List<Guid>(),
+                Equipments = new List<Guid>
                 {
                     equipment.ItemId,
                 },
-                foods = new List<Guid>(),
-                worldId = 1,
-                stageId = 1,
-                avatarAddress = _avatarAddress,
+                Foods = new List<Guid>(),
+                WorldId = 1,
+                StageId = 1,
+                AvatarAddress = _avatarAddress,
             };
 
             var exec = Assert.Throws<EquipmentSlotUnlockException>(() => action.Execute(new ActionContext
@@ -714,22 +716,26 @@ namespace Lib9c.Tests.Action
             SerializeException<EquipmentSlotUnlockException>(exec);
         }
 
-        [Fact]
-        public void ExecuteThrowNotEnoughActionPointException()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(5, 2)]
+        [InlineData(120, 25)]
+        public void ExecuteThrowNotEnoughActionPointException(int ap, int playCount = 1)
         {
             var avatarState = new AvatarState(_avatarState)
             {
-                actionPoint = 0,
+                actionPoint = ap,
             };
 
             var action = new HackAndSlash
             {
-                costumes = new List<Guid>(),
-                equipments = new List<Guid>(),
-                foods = new List<Guid>(),
-                worldId = 1,
-                stageId = 1,
-                avatarAddress = _avatarAddress,
+                Costumes = new List<Guid>(),
+                Equipments = new List<Guid>(),
+                Foods = new List<Guid>(),
+                WorldId = 1,
+                StageId = 1,
+                AvatarAddress = _avatarAddress,
+                PlayCount = playCount,
             };
 
             var state = _initialState;
@@ -777,19 +783,25 @@ namespace Lib9c.Tests.Action
             }
 
             IAccountStateDelta state = _initialState
-            .SetState(_avatarAddress, previousAvatarState.SerializeV2())
-            .SetState(_avatarAddress.Derive(LegacyInventoryKey), previousAvatarState.inventory.Serialize())
-            .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), previousAvatarState.worldInformation.Serialize())
-            .SetState(_avatarAddress.Derive(LegacyQuestListKey), previousAvatarState.questList.Serialize());
+                .SetState(_avatarAddress, previousAvatarState.SerializeV2())
+                .SetState(
+                    _avatarAddress.Derive(LegacyInventoryKey),
+                    previousAvatarState.inventory.Serialize())
+                .SetState(
+                    _avatarAddress.Derive(LegacyWorldInformationKey),
+                    previousAvatarState.worldInformation.Serialize())
+                .SetState(
+                    _avatarAddress.Derive(LegacyQuestListKey),
+                    previousAvatarState.questList.Serialize());
 
             var action = new HackAndSlash
             {
-                costumes = costumes,
-                equipments = equipments,
-                foods = new List<Guid>(),
-                worldId = 1,
-                stageId = 1,
-                avatarAddress = _avatarAddress,
+                Costumes = costumes,
+                Equipments = equipments,
+                Foods = new List<Guid>(),
+                WorldId = 1,
+                StageId = 1,
+                AvatarAddress = _avatarAddress,
             };
 
             var nextState = action.Execute(new ActionContext
@@ -853,12 +865,12 @@ namespace Lib9c.Tests.Action
 
                     var action = new HackAndSlash
                     {
-                        costumes = costumes,
-                        equipments = equipments,
-                        foods = new List<Guid>(),
-                        worldId = 1,
-                        stageId = 1,
-                        avatarAddress = avatarState.address,
+                        Costumes = costumes,
+                        Equipments = equipments,
+                        Foods = new List<Guid>(),
+                        WorldId = 1,
+                        StageId = 1,
+                        AvatarAddress = avatarState.address,
                     };
 
                     var exec = Assert.Throws<NotEnoughAvatarLevelException>(() => action.Execute(new ActionContext
@@ -870,6 +882,40 @@ namespace Lib9c.Tests.Action
 
                     SerializeException<NotEnoughAvatarLevelException>(exec);
                 }
+            }
+        }
+
+        [Fact]
+        public void ExecuteThrowPlayCountIsZeroException()
+        {
+            for (var playCount = -10; playCount <= 0; playCount++)
+            {
+                var avatarState = new AvatarState(_avatarState)
+                {
+                    actionPoint = 99999999,
+                    level = 1,
+                };
+
+                var state = _initialState;
+                var action = new HackAndSlash
+                {
+                    Costumes = new List<Guid>(),
+                    Equipments = new List<Guid>(),
+                    Foods = new List<Guid>(),
+                    WorldId = 1,
+                    StageId = 1,
+                    AvatarAddress = avatarState.address,
+                    PlayCount = playCount,
+                };
+
+                var exec = Assert.Throws<PlayCountIsZeroException>(() => action.Execute(new ActionContext
+                {
+                    PreviousStates = state,
+                    Signer = avatarState.agentAddress,
+                    Random = new TestRandom(),
+                }));
+
+                SerializeException<PlayCountIsZeroException>(exec);
             }
         }
 
@@ -960,12 +1006,12 @@ namespace Lib9c.Tests.Action
 
             var action = new HackAndSlash
             {
-                costumes = costumes,
-                equipments = equipments.Select(e => e.NonFungibleId).ToList(),
-                foods = new List<Guid>(),
-                worldId = worldId,
-                stageId = stageId,
-                avatarAddress = _avatarAddress,
+                Costumes = costumes,
+                Equipments = equipments.Select(e => e.NonFungibleId).ToList(),
+                Foods = new List<Guid>(),
+                WorldId = worldId,
+                StageId = stageId,
+                AvatarAddress = _avatarAddress,
             };
 
             var nextState = action.Execute(new ActionContext
@@ -1120,8 +1166,8 @@ namespace Lib9c.Tests.Action
 
             var action = new HackAndSlash
             {
-                costumes = clear ? costumes : new List<Guid>(),
-                equipments = clear
+                Costumes = clear ? costumes : new List<Guid>(),
+                Equipments = clear
                     ? equipments.Select(e => e.NonFungibleId).ToList()
                     : new List<Guid>(),
                 foods = new List<Guid>(),
@@ -1155,17 +1201,26 @@ namespace Lib9c.Tests.Action
                 }
             }
 
+            var contextRandom = new TestRandom(ctx.Random.Seed);
             var simulator = new StageSimulator(
-                new TestRandom(ctx.Random.Seed),
+                contextRandom,
                 previousAvatarState,
                 new List<Guid>(),
                 skillsOnWaveStart,
                 worldId,
                 stageId,
-                _tableSheets.GetStageSimulatorSheets(),
+                _tableSheets.StageSheet[stageId],
+                _tableSheets.StageWaveSheet[stageId],
+                false,
+                20,
+                _tableSheets.GetSimulatorSheets(),
+                _tableSheets.EnemySkillSheet,
                 _tableSheets.CostumeStatSheet,
-                StageSimulator.ConstructorVersionV100080);
-            simulator.Simulate(1);
+                StageSimulator.GetWaveRewards(
+                    contextRandom,
+                    _tableSheets.StageSheet[stageId],
+                    _tableSheets.MaterialItemSheet));
+            simulator.Simulate();
             var log = simulator.Log;
             var skillStateIValue =
                 nextState.GetState(skillStateAddress);
@@ -1174,7 +1229,7 @@ namespace Lib9c.Tests.Action
             var nextSkillState = new CrystalRandomSkillState(skillStateAddress, serialized);
             Assert.Equal(skillStateAddress, nextSkillState.Address);
 
-            if (clear)
+            if (log.IsClear)
             {
                 Assert.Equal(stageId + 1, nextSkillState.StageId);
                 Assert.Equal(0, nextSkillState.StarCount);
@@ -1186,6 +1241,74 @@ namespace Lib9c.Tests.Action
             }
 
             Assert.Empty(nextSkillState.SkillIds);
+        }
+
+        [Theory]
+        [InlineData(1, 24)]
+        [InlineData(2, 24)]
+        [InlineData(3, 30)]
+        [InlineData(4, 30)]
+        [InlineData(5, 40)]
+        public void CheckUsedApByStaking(int level, int playCount)
+        {
+            const int worldId = 1;
+            const int stageId = 5;
+            const int clearedStageId = 4;
+            var previousAvatarState = _initialState.GetAvatarStateV2(_avatarAddress);
+            previousAvatarState.actionPoint = 120;
+            previousAvatarState.level = 400;
+            previousAvatarState.worldInformation = new WorldInformation(
+                0,
+                _tableSheets.WorldSheet,
+                clearedStageId);
+
+            var stakeStateAddress = StakeState.DeriveAddress(_agentAddress);
+            var stakeState = new StakeState(stakeStateAddress, 1);
+            var requiredGold = _tableSheets.StakeRegularRewardSheet.OrderedRows
+                .FirstOrDefault(r => r.Level == level)?.RequiredGold ?? 0;
+            var state = _initialState
+                .SetState(_avatarAddress, previousAvatarState.SerializeV2())
+                .SetState(
+                    _avatarAddress.Derive(LegacyInventoryKey),
+                    previousAvatarState.inventory.Serialize())
+                .SetState(
+                    _avatarAddress.Derive(LegacyWorldInformationKey),
+                    previousAvatarState.worldInformation.Serialize())
+                .SetState(
+                    _avatarAddress.Derive(LegacyQuestListKey),
+                    previousAvatarState.questList.Serialize())
+                .SetState(stakeStateAddress, stakeState.SerializeV2())
+                .SetState(
+                    _avatarAddress.Derive("world_ids"),
+                    List.Empty.Add(worldId.Serialize()))
+                .MintAsset(stakeStateAddress, requiredGold * _initialState.GetGoldCurrency());
+
+            var expectedAp = previousAvatarState.actionPoint -
+                             _tableSheets.StakeActionPointCoefficientSheet.GetActionPointByStaking(
+                                 _tableSheets.StageSheet[stageId].CostAP, playCount, level);
+            var action = new HackAndSlash
+            {
+                Costumes = new List<Guid>(),
+                Equipments = new List<Guid>(),
+                Foods = new List<Guid>(),
+                WorldId = worldId,
+                StageId = stageId,
+                AvatarAddress = _avatarAddress,
+                StageBuffId = null,
+                PlayCount = playCount,
+            };
+
+            var ctx = new ActionContext
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+                Rehearsal = false,
+                BlockIndex = 1,
+            };
+            var nextState = action.Execute(ctx);
+            var nextAvatar = nextState.GetAvatarStateV2(_avatarAddress);
+            Assert.Equal(expectedAp, nextAvatar.actionPoint);
         }
 
         private static void SerializeException<T>(Exception exec)

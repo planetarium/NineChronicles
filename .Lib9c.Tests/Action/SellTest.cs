@@ -217,14 +217,17 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void Execute_Throw_InvalidPriceException()
+        public void Execute_Throw_InvalidPriceException_DueTo_InvalidCurrencyPrice()
         {
             var action = new Sell
             {
                 sellerAvatarAddress = _avatarAddress,
                 tradableId = default,
                 count = 1,
-                price = -1 * _currency,
+                price = new FungibleAssetValue(
+                    new Currency("KRW", 0, minter: null),
+                    1,
+                    0),
                 itemSubType = default,
                 orderId = default,
             };
@@ -238,7 +241,49 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void Execute_Throw_FailedLoadStateException()
+        public void Execute_Throw_InvalidPriceException_DueTo_NonZeroMinorUnitPrice()
+        {
+            var action = new Sell
+            {
+                sellerAvatarAddress = _avatarAddress,
+                tradableId = default,
+                count = 1,
+                price = new FungibleAssetValue(_currency, 1, 1),
+                itemSubType = default,
+                orderId = default,
+            };
+
+            Assert.Throws<InvalidPriceException>(() => action.Execute(new ActionContext
+            {
+                BlockIndex = 0,
+                PreviousStates = _initialState,
+                Signer = _agentAddress,
+            }));
+        }
+
+        [Fact]
+        public void Execute_Throw_InvalidPriceException_DueTo_NegativePrice()
+        {
+            var action = new Sell
+            {
+                sellerAvatarAddress = _avatarAddress,
+                tradableId = default,
+                count = 1,
+                price = new FungibleAssetValue(_currency, -1, 0),
+                itemSubType = default,
+                orderId = default,
+            };
+
+            Assert.Throws<InvalidPriceException>(() => action.Execute(new ActionContext
+            {
+                BlockIndex = 0,
+                PreviousStates = _initialState,
+                Signer = _agentAddress,
+            }));
+        }
+
+        [Fact]
+        public void Execute_Throw_InvalidOperationException_DueTo_EmptyState()
         {
             var action = new Sell
             {
@@ -250,7 +295,7 @@ namespace Lib9c.Tests.Action
                 orderId = default,
             };
 
-            Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
+            Assert.Throws<InvalidOperationException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = 0,
                 PreviousStates = new State(),

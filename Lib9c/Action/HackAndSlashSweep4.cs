@@ -15,11 +15,12 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
-    [Serializable]
     /// <summary>
     /// Introduced at https://github.com/planetarium/lib9c/pull/1017
     /// Updated at https://github.com/planetarium/lib9c/pull/1176
     /// </summary>
+    [Serializable]
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100300ObsoleteIndex)]
     [ActionType("hack_and_slash_sweep4")]
     public class HackAndSlashSweep4 : GameAction
     {
@@ -71,11 +72,20 @@ namespace Nekoyume.Action
                     .SetState(context.Signer, MarkChanged);
             }
 
+            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100300ObsoleteIndex, context);
+
             var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
             var arenaSheetState = states.GetState(arenaSheetAddress);
             if (arenaSheetState != null)
             {
-                throw new ActionObsoletedException(nameof(HackAndSlashSweep4));
+                // exception handling for v100240.
+                if (context.BlockIndex > 4374125 && context.BlockIndex < 4374249)
+                {
+                }
+                else
+                {
+                    throw new ActionObsoletedException(nameof(HackAndSlashSweep4));
+                }
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
@@ -246,7 +256,7 @@ namespace Nekoyume.Action
             var maxCount = random.Next(stageRow.DropItemMin, stageRow.DropItemMax + 1);
             for (var i = 0; i < playCount; i++)
             {
-                var selector = StageSimulator.SetItemSelector(stageRow, random);
+                var selector = StageSimulatorV1.SetItemSelector(stageRow, random);
                 var rewards = Simulator.SetRewardV2(selector, maxCount, random,
                     materialItemSheet);
                 rewardItems.AddRange(rewards);

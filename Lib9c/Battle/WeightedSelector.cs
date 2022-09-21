@@ -156,7 +156,7 @@ namespace Nekoyume.Battle
 
     public class ListEmptyException : InvalidOperationException
     {
-        public ListEmptyException() : base("list is empty. add value first")
+        public ListEmptyException(string message = "list is empty. add value first") : base(message)
         {
         }
     }

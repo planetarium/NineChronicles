@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Immutable;
 using Bencodex.Types;
 using Libplanet;
@@ -11,9 +10,14 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
-    [ActionType("claim_stake_reward")]
+    /// <summary>
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1371
+    /// </summary>
+    [ActionType(ActionTypeText)]
     public class ClaimStakeReward : GameAction
     {
+        private const string ActionTypeText = "claim_stake_reward2";
+
         internal Address AvatarAddress { get; private set; }
 
         public ClaimStakeReward(Address avatarAddress)
@@ -21,16 +25,47 @@ namespace Nekoyume.Action
             AvatarAddress = avatarAddress;
         }
 
-        public ClaimStakeReward() : base()
+        public ClaimStakeReward()
         {
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            if (context.Rehearsal)
+            {
+                return context.PreviousStates;
+            }
+
             var states = context.PreviousStates;
+            var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             if (!states.TryGetStakeState(context.Signer, out StakeState stakeState))
             {
-                throw new FailedLoadStateException(nameof(StakeState));
+                throw new FailedLoadStateException(
+                    ActionTypeText,
+                    addressesHex,
+                    typeof(StakeState),
+                    StakeState.DeriveAddress(context.Signer));
+            }
+
+            if (!stakeState.IsClaimable(context.BlockIndex))
+            {
+                throw new RequiredBlockIndexException(
+                    ActionTypeText,
+                    addressesHex,
+                    context.BlockIndex);
+            }
+
+            if (!states.TryGetAvatarStateV2(
+                    context.Signer,
+                    AvatarAddress,
+                    out var avatarState,
+                    out var migrationRequired))
+            {
+                throw new FailedLoadStateException(
+                    ActionTypeText,
+                    addressesHex,
+                    typeof(AvatarState),
+                    AvatarAddress);
             }
 
             var sheets = states.GetSheets(sheetTypes: new[]
@@ -42,18 +77,11 @@ namespace Nekoyume.Action
                 typeof(MaterialItemSheet),
             });
 
-            var stakeRegularRewardSheet = sheets.GetSheet<StakeRegularRewardSheet>();
-
             var currency = states.GetGoldCurrency();
             var stakedAmount = states.GetBalance(stakeState.address, currency);
-
-            if (!stakeState.IsClaimable(context.BlockIndex))
-            {
-                throw new RequiredBlockIndexException();
-            }
-
-            var avatarState = states.GetAvatarStateV2(AvatarAddress);
-            int level = stakeRegularRewardSheet.FindLevelByStakedAmount(context.Signer, stakedAmount);
+            var stakeRegularRewardSheet = sheets.GetSheet<StakeRegularRewardSheet>();
+            int level =
+                stakeRegularRewardSheet.FindLevelByStakedAmount(context.Signer, stakedAmount);
             var rewards = stakeRegularRewardSheet[level].Rewards;
             ItemSheet itemSheet = sheets.GetItemSheet();
             var accumulatedRewards = stakeState.CalculateAccumulatedRewards(context.BlockIndex);
@@ -70,7 +98,7 @@ namespace Nekoyume.Action
                 ItemBase item = row is MaterialItemSheet.Row materialRow
                     ? ItemFactory.CreateTradableMaterial(materialRow)
                     : ItemFactory.CreateItem(row, context.Random);
-                avatarState.inventory.AddItem(item, (int) quantity * accumulatedRewards);
+                avatarState.inventory.AddItem(item, (int)quantity * accumulatedRewards);
             }
 
             if (states.TryGetSheet<StakeRegularFixedRewardSheet>(
@@ -88,8 +116,21 @@ namespace Nekoyume.Action
             }
 
             stakeState.Claim(context.BlockIndex);
-            return states.SetState(stakeState.address, stakeState.Serialize())
-                .SetState(avatarState.address, avatarState.SerializeV2())
+
+            if (migrationRequired)
+            {
+                states = states
+                    .SetState(avatarState.address, avatarState.SerializeV2())
+                    .SetState(
+                        avatarState.address.Derive(LegacyWorldInformationKey),
+                        avatarState.worldInformation.Serialize())
+                    .SetState(
+                        avatarState.address.Derive(LegacyQuestListKey),
+                        avatarState.questList.Serialize());
+            }
+
+            return states
+                .SetState(stakeState.address, stakeState.Serialize())
                 .SetState(
                     avatarState.address.Derive(LegacyInventoryKey),
                     avatarState.inventory.Serialize());
@@ -99,7 +140,8 @@ namespace Nekoyume.Action
             ImmutableDictionary<string, IValue>.Empty
                 .Add(AvatarAddressKey, AvatarAddress.Serialize());
 
-        protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
+        protected override void LoadPlainValueInternal(
+            IImmutableDictionary<string, IValue> plainValue)
         {
             AvatarAddress = plainValue[AvatarAddressKey].ToAddress();
         }

@@ -31,18 +31,20 @@ namespace Nekoyume.Model
         public readonly Skills Skills = new Skills();
         public readonly Skills BuffSkills = new Skills();
         public readonly Dictionary<int, Buff.Buff> Buffs = new Dictionary<int, Buff.Buff>();
+        public IEnumerable<StatBuff> StatBuffs => Buffs.Values.OfType<StatBuff>();
+        public IEnumerable<ActionBuff> ActionBuffs => Buffs.Values.OfType<ActionBuff>();
         public readonly List<CharacterBase> Targets = new List<CharacterBase>();
 
         public CharacterSheet.Row RowData { get; }
         public int CharacterId { get; }
-        public SizeType SizeType => RowData?.SizeType ?? SizeType.S;
-        public float RunSpeed => RowData?.RunSpeed ?? 1f;
+        public SizeType SizeType { get; }
+        public float RunSpeed { get; }
         public CharacterStats Stats { get; }
 
         public int Level
         {
             get => Stats.Level;
-            set => Stats.SetLevel(value);
+            set => Stats.SetStats(value);
         }
 
         public int HP => Stats.HP;
@@ -81,9 +83,35 @@ namespace Nekoyume.Model
 
             Skills.Clear();
 
+            SizeType = RowData.SizeType;
             atkElementType = RowData.ElementalType;
-            attackRange = RowData.AttackRange;
             defElementType = RowData.ElementalType;
+            RunSpeed = RowData.RunSpeed;
+            attackRange = RowData.AttackRange;
+            CurrentHP = HP;
+            AttackCountMax = 0;
+        }
+
+        protected CharacterBase(
+            Simulator simulator,
+            CharacterStats stat,
+            int characterId,
+            ElementalType elementalType,
+            SizeType sizeType = SizeType.XL,
+            float attackRange = 4,
+            float runSpeed = 0.3f)
+        {
+            Simulator = simulator;
+            Stats = stat;
+
+            CharacterId = characterId;
+            SizeType = sizeType;
+            atkElementType = elementalType;
+            defElementType = elementalType;
+            this.attackRange = attackRange;
+            RunSpeed = runSpeed;
+
+            Skills.Clear();
             CurrentHP = HP;
             AttackCountMax = 0;
         }
@@ -93,9 +121,14 @@ namespace Nekoyume.Model
             _root = value._root;
             Id = value.Id;
             Simulator = value.Simulator;
+
+            CharacterId = value.CharacterId;
+            SizeType = value.SizeType;
             atkElementType = value.atkElementType;
-            attackRange = value.attackRange;
             defElementType = value.defElementType;
+            attackRange = value.attackRange;
+            RunSpeed = value.RunSpeed;
+
             // 스킬은 변하지 않는다는 가정 하에 얕은 복사.
             Skills = value.Skills;
             // 버프는 컨테이너도 옮기고,
@@ -114,7 +147,6 @@ namespace Nekoyume.Model
             RowData = value.RowData;
             Stats = new CharacterStats(value.Stats);
             AttackCountMax = value.AttackCountMax;
-            CharacterId = value.CharacterId;
         }
 
         public abstract object Clone();
@@ -129,7 +161,7 @@ namespace Nekoyume.Model
             RowData = row;
         }
 
-        public void InitAI()
+        public virtual void InitAI()
         {
             SetSkill();
 
@@ -177,7 +209,7 @@ namespace Nekoyume.Model
             foreach (var pair in Buffs)
 #pragma warning restore LAA1002
             {
-                pair.Value.remainedDuration--;
+                pair.Value.RemainedDuration--;
             }
         }
 
@@ -192,16 +224,19 @@ namespace Nekoyume.Model
             Skills.ReduceCooldownV1();
         }
 
-        private void UseSkill()
+        protected virtual BattleStatus.Skill UseSkill()
         {
             var selectedSkill = Skills.Select(Simulator.Random);
             var usedSkill = selectedSkill.Use(
                 this,
                 Simulator.WaveTurn,
                 BuffFactory.GetBuffs(
+                    ATK,
                     selectedSkill,
                     Simulator.SkillBuffSheet,
-                    Simulator.BuffSheet
+                    Simulator.StatBuffSheet,
+                    Simulator.SkillActionBuffSheet,
+                    Simulator.ActionBuffSheet
                 )
             );
 
@@ -212,19 +247,11 @@ namespace Nekoyume.Model
 
             Skills.SetCooldown(selectedSkill.SkillRow.Id, sheetSkill.Cooldown);
             Simulator.Log.Add(usedSkill);
-
-            foreach (var info in usedSkill.SkillInfos)
-            {
-                if (!info.Target.IsDead)
-                    continue;
-
-                var target = Targets.FirstOrDefault(i => i.Id == info.Target.Id);
-                target?.Die();
-            }
+            return usedSkill;
         }
 
         [Obsolete("Use UseSkill")]
-        private void UseSkillV1()
+        private BattleStatus.Skill UseSkillV1()
         {
             var selectedSkill = Skills.SelectV1(Simulator.Random);
 
@@ -232,27 +259,22 @@ namespace Nekoyume.Model
                 this,
                 Simulator.WaveTurn,
                 BuffFactory.GetBuffs(
+                    ATK,
                     selectedSkill,
                     Simulator.SkillBuffSheet,
-                    Simulator.BuffSheet
+                    Simulator.StatBuffSheet,
+                    Simulator.SkillActionBuffSheet,
+                    Simulator.ActionBuffSheet
                 )
             );
 
             Skills.SetCooldown(selectedSkill.SkillRow.Id, selectedSkill.SkillRow.Cooldown);
             Simulator.Log.Add(usedSkill);
-
-            foreach (var info in usedSkill.SkillInfos)
-            {
-                if (!info.Target.IsDead)
-                    continue;
-
-                var target = Targets.FirstOrDefault(i => i.Id == info.Target.Id);
-                target?.Die();
-            }
+            return usedSkill;
         }
 
         [Obsolete("Use UseSkill")]
-        private void UseSkillV2()
+        private BattleStatus.Skill UseSkillV2()
         {
             var selectedSkill = Skills.SelectV2(Simulator.Random);
 
@@ -260,44 +282,39 @@ namespace Nekoyume.Model
                 this,
                 Simulator.WaveTurn,
                 BuffFactory.GetBuffs(
+                    ATK,
                     selectedSkill,
                     Simulator.SkillBuffSheet,
-                    Simulator.BuffSheet
+                    Simulator.StatBuffSheet,
+                    Simulator.SkillActionBuffSheet,
+                    Simulator.ActionBuffSheet
                 )
             );
 
             Skills.SetCooldown(selectedSkill.SkillRow.Id, selectedSkill.SkillRow.Cooldown);
             Simulator.Log.Add(usedSkill);
-
-            foreach (var info in usedSkill.SkillInfos)
-            {
-                if (!info.Target.IsDead)
-                    continue;
-
-                var target = Targets.FirstOrDefault(i => i.Id == info.Target.Id);
-                target?.Die();
-            }
+            return usedSkill;
         }
 
         private void RemoveBuffs()
         {
-            var isDirtyMySelf = false;
+            var isBuffRemoved = false;
 
             var keyList = Buffs.Keys.ToList();
             foreach (var key in keyList)
             {
                 var buff = Buffs[key];
-                if (buff.remainedDuration > 0)
+                if (buff.RemainedDuration > 0)
                     continue;
 
                 Buffs.Remove(key);
-                isDirtyMySelf = true;
+                isBuffRemoved = true;
             }
 
-            if (!isDirtyMySelf)
+            if (!isBuffRemoved)
                 return;
 
-            Stats.SetBuffs(Buffs.Values);
+            Stats.SetBuffs(StatBuffs);
             Simulator.Log.Add(new RemoveBuffs((CharacterBase) Clone()));
         }
 
@@ -314,13 +331,56 @@ namespace Nekoyume.Model
 
         public void AddBuff(Buff.Buff buff, bool updateImmediate = true)
         {
-            if (Buffs.TryGetValue(buff.RowData.GroupId, out var outBuff) &&
-                outBuff.RowData.Id > buff.RowData.Id)
+            if (Buffs.TryGetValue(buff.BuffInfo.GroupId, out var outBuff) &&
+                outBuff.BuffInfo.Id > buff.BuffInfo.Id)
                 return;
 
-            var clone = (Buff.Buff) buff.Clone();
-            Buffs[buff.RowData.GroupId] = clone;
-            Stats.AddBuff(clone, updateImmediate);
+            if (buff is StatBuff stat)
+            {
+                var clone = (StatBuff)stat.Clone();
+                Buffs[stat.RowData.GroupId] = clone;
+                Stats.AddBuff(clone, updateImmediate);
+            }
+            else if (buff is ActionBuff action)
+            {
+                var clone = (ActionBuff)action.Clone();
+                Buffs[action.RowData.GroupId] = clone;
+            }
+        }
+
+        public void RemoveRecentStatBuff()
+        {
+            StatBuff removedBuff = null;
+            var minDuration = int.MaxValue;
+            foreach (var buff in StatBuffs)
+            {
+                if (buff.RowData.StatModifier.Value < 0)
+                {
+                    continue;
+                }
+
+                var elapsedTurn = buff.OriginalDuration - buff.RemainedDuration;
+                if (removedBuff is null)
+                {
+                    minDuration = elapsedTurn;
+                    removedBuff = buff;
+                }
+
+                if (elapsedTurn > minDuration ||
+                    buff.RowData.Id >= removedBuff.RowData.Id)
+                {
+                    continue;
+                }
+
+                minDuration = elapsedTurn;
+                removedBuff = buff;
+            }
+
+            if (removedBuff != null)
+            {
+                Stats.RemoveBuff(removedBuff);
+                Buffs.Remove(removedBuff.RowData.GroupId);
+            }
         }
 
         #endregion
@@ -418,7 +478,12 @@ namespace Nekoyume.Model
             {
                 ReduceDurationOfBuffs();
                 ReduceSkillCooldown();
-                UseSkill();
+                OnPreSkill();
+                var usedSkill = UseSkill();
+                if (usedSkill != null)
+                {
+                    OnPostSkill(usedSkill);
+                }
                 RemoveBuffs();
             }
             EndTurn();
@@ -431,7 +496,12 @@ namespace Nekoyume.Model
             {
                 ReduceDurationOfBuffs();
                 ReduceSkillCooldownV1();
-                UseSkillV1();
+                OnPreSkill();
+                var usedSkill = UseSkillV1();
+                if (usedSkill != null)
+                {
+                    OnPostSkill(usedSkill);
+                }
                 RemoveBuffs();
             }
             EndTurn();
@@ -444,10 +514,49 @@ namespace Nekoyume.Model
             {
                 ReduceDurationOfBuffs();
                 ReduceSkillCooldownV1();
-                UseSkillV2();
+                OnPreSkill();
+                var usedSkill = UseSkillV2();
+                if (usedSkill != null)
+                {
+                    OnPostSkill(usedSkill);
+                }
                 RemoveBuffs();
             }
             EndTurn();
+        }
+
+        protected virtual void OnPreSkill()
+        {
+
+        }
+
+        protected virtual void OnPostSkill(BattleStatus.Skill usedSkill)
+        {
+            var bleeds = Buffs.Values.OfType<Bleed>().OrderBy(x => x.BuffInfo.Id);
+            foreach (var bleed in bleeds)
+            {
+                var effect = bleed.GiveEffect(this, Simulator.WaveTurn);
+                Simulator.Log.Add(effect);
+            }
+
+            if (IsDead)
+            {
+                Die();
+            }
+
+            FinishTargetIfKilled(usedSkill);
+        }
+
+        private void FinishTargetIfKilled(BattleStatus.Skill usedSkill)
+        {
+            foreach (var info in usedSkill.SkillInfos)
+            {
+                if (!info.Target.IsDead)
+                    continue;
+
+                var target = Targets.FirstOrDefault(i => i.Id == info.Target.Id);
+                target?.Die();
+            }
         }
     }
 }

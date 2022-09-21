@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
@@ -13,7 +13,10 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
-    [ActionType("unlock_world")]
+    /// <summary>
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1309
+    /// </summary>
+    [ActionType("unlock_world2")]
     public class UnlockWorld: GameAction
     {
         public List<int> WorldIds;
@@ -90,7 +93,8 @@ namespace Nekoyume.Action
                 }
 
                 // Check stage cleared in HackAndSlash.
-                if (!worldInformation.IsWorldUnlocked(worldId))
+                // If world is unlocked or can unlock, Execute it.
+                if (!worldInformation.IsWorldUnlocked(worldId) && !worldInformation.IsStageCleared(row.StageId))
                 {
                     throw new FailedToUnlockWorldException($"{worldId} is locked.");
                 }

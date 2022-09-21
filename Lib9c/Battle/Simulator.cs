@@ -11,25 +11,27 @@ using Priority_Queue;
 
 namespace Nekoyume.Battle
 {
-    public abstract class Simulator
+    public abstract class Simulator : ISimulator
     {
         public readonly IRandom Random;
-        public readonly BattleLog Log;
-        public readonly Player Player;
+        public BattleLog Log { get; }
+        public Player Player { get; }
         public BattleLog.Result Result { get; protected set; }
-        public SimplePriorityQueue<CharacterBase, decimal> Characters;
+        public SimplePriorityQueue<CharacterBase, decimal> Characters { get; set; }
         public const decimal TurnPriority = 100m;
         public readonly MaterialItemSheet MaterialItemSheet;
         public readonly SkillSheet SkillSheet;
         public readonly SkillBuffSheet SkillBuffSheet;
-        public readonly BuffSheet BuffSheet;
+        public readonly StatBuffSheet StatBuffSheet;
+        public readonly SkillActionBuffSheet SkillActionBuffSheet;
+        public readonly ActionBuffSheet ActionBuffSheet;
         public readonly CharacterSheet CharacterSheet;
         public readonly CharacterLevelSheet CharacterLevelSheet;
         public readonly EquipmentItemSetEffectSheet EquipmentItemSetEffectSheet;
         protected const int MaxTurn = 200;
         public int TurnNumber;
-        public int WaveNumber;
-        public int WaveTurn;
+        public int WaveNumber { get; protected set; }
+        public int WaveTurn { get; set; }
         public abstract IEnumerable<ItemBase> Reward { get; }
 
         protected Simulator(
@@ -52,7 +54,9 @@ namespace Nekoyume.Battle
             MaterialItemSheet = simulatorSheets.MaterialItemSheet;
             SkillSheet = simulatorSheets.SkillSheet;
             SkillBuffSheet = simulatorSheets.SkillBuffSheet;
-            BuffSheet = simulatorSheets.BuffSheet;
+            StatBuffSheet = simulatorSheets.StatBuffSheet;
+            SkillActionBuffSheet = simulatorSheets.SkillActionBuffSheet;
+            ActionBuffSheet = simulatorSheets.ActionBuffSheet;
             CharacterSheet = simulatorSheets.CharacterSheet;
             CharacterLevelSheet = simulatorSheets.CharacterLevelSheet;
             EquipmentItemSetEffectSheet = simulatorSheets.EquipmentItemSetEffectSheet;

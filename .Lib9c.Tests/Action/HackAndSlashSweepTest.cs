@@ -6,9 +6,11 @@ namespace Lib9c.Tests.Action
     using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
+    using Libplanet.Assets;
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Extensions;
     using Nekoyume.Helper;
     using Nekoyume.Model;
     using Nekoyume.Model.Item;
@@ -66,8 +68,9 @@ namespace Lib9c.Tests.Action
             _questListAddress = _avatarAddress.Derive(LegacyQuestListKey);
             agentState.avatarAddresses.Add(0, _avatarAddress);
 
+            var currency = new Currency("NCG", 2, minters: null);
+            var goldCurrencyState = new GoldCurrencyState(currency);
             _weeklyArenaState = new WeeklyArenaState(0);
-
             _initialState = new State()
                 .SetState(_weeklyArenaState.address, _weeklyArenaState.Serialize())
                 .SetState(_agentAddress, agentState.SerializeV2())
@@ -75,7 +78,8 @@ namespace Lib9c.Tests.Action
                 .SetState(_inventoryAddress, _avatarState.inventory.Serialize())
                 .SetState(_worldInformationAddress, _avatarState.worldInformation.Serialize())
                 .SetState(_questListAddress, _avatarState.questList.Serialize())
-                .SetState(gameConfigState.address, gameConfigState.Serialize());
+                .SetState(gameConfigState.address, gameConfigState.Serialize())
+                .SetState(Addresses.GoldCurrency, goldCurrencyState.Serialize());
 
             foreach (var (key, value) in _sheets)
             {
@@ -199,8 +203,11 @@ namespace Lib9c.Tests.Action
                     playCount);
 
                 var random = new TestRandom(_random.Seed);
-                var expectedRewardItems =
-                    HackAndSlashSweep.GetRewardItems(random, playCount, stageRow, _tableSheets.MaterialItemSheet);
+                var expectedRewardItems = HackAndSlashSweep6.GetRewardItems(
+                    random,
+                    playCount,
+                    stageRow,
+                    _tableSheets.MaterialItemSheet);
 
                 var (equipments, costumes) = GetDummyItems(avatarState);
                 var action = new HackAndSlashSweep
@@ -781,6 +788,84 @@ namespace Lib9c.Tests.Action
                         Signer = _agentAddress,
                         Random = new TestRandom(),
                     }));
+            }
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        [InlineData(4)]
+        [InlineData(5)]
+        public void ExecuteWithStake(int stakingLevel)
+        {
+            const int worldId = 1;
+            const int stageId = 1;
+            var gameConfigState = _initialState.GetGameConfigState();
+            var avatarState = new AvatarState(
+                _avatarAddress,
+                _agentAddress,
+                0,
+                _initialState.GetAvatarSheets(),
+                gameConfigState,
+                _rankingMapAddress)
+            {
+                worldInformation =
+                    new WorldInformation(0, _initialState.GetSheet<WorldSheet>(), 25),
+                actionPoint = 120,
+                level = 3,
+            };
+            var itemRow = _tableSheets.MaterialItemSheet.Values.First(r =>
+                r.ItemSubType == ItemSubType.ApStone);
+            var apStone = ItemFactory.CreateTradableMaterial(itemRow);
+            avatarState.inventory.AddItem(apStone);
+
+            var stakeStateAddress = StakeState.DeriveAddress(_agentAddress);
+            var stakeState = new StakeState(stakeStateAddress, 1);
+            var requiredGold = _tableSheets.StakeRegularRewardSheet.OrderedRows
+                .FirstOrDefault(r => r.Level == stakingLevel)?.RequiredGold ?? 0;
+            var state = _initialState
+                .SetState(_avatarAddress, avatarState.Serialize())
+                .SetState(stakeStateAddress, stakeState.Serialize())
+                .MintAsset(stakeStateAddress, requiredGold * _initialState.GetGoldCurrency());
+            var stageSheet = _initialState.GetSheet<StageSheet>();
+            if (stageSheet.TryGetValue(stageId, out var stageRow))
+            {
+                var apSheet = _initialState.GetSheet<StakeActionPointCoefficientSheet>();
+                var costAp = apSheet.GetActionPointByStaking(stageRow.CostAP, 1, stakingLevel);
+                var itemPlayCount =
+                    gameConfigState.ActionPointMax / costAp * 1;
+                var apPlayCount = avatarState.actionPoint / costAp;
+                var playCount = apPlayCount + itemPlayCount;
+                var (expectedLevel, expectedExp) = avatarState.GetLevelAndExp(
+                    _initialState.GetSheet<CharacterLevelSheet>(),
+                    stageId,
+                    playCount);
+
+                var action = new HackAndSlashSweep
+                {
+                    costumes = new List<Guid>(),
+                    equipments = new List<Guid>(),
+                    avatarAddress = _avatarAddress,
+                    actionPoint = avatarState.actionPoint,
+                    apStoneCount = 1,
+                    worldId = worldId,
+                    stageId = stageId,
+                };
+
+                var nextState = action.Execute(new ActionContext
+                {
+                    PreviousStates = state,
+                    Signer = _agentAddress,
+                    Random = new TestRandom(),
+                });
+                var nextAvatar = nextState.GetAvatarStateV2(_avatarAddress);
+                Assert.Equal(expectedLevel, nextAvatar.level);
+                Assert.Equal(expectedExp, nextAvatar.exp);
+            }
+            else
+            {
+                throw new SheetRowNotFoundException(nameof(StageSheet), stageId);
             }
         }
     }

@@ -5,6 +5,7 @@ namespace Lib9c.Tests
     using System.Text;
     using Nekoyume.TableData;
     using Nekoyume.TableData.Crystal;
+    using Nekoyume.TableData.Event;
 
     public class TableSheets
     {
@@ -53,7 +54,7 @@ namespace Lib9c.Tests
 
         public SkillSheet SkillSheet { get; private set; }
 
-        public BuffSheet BuffSheet { get; private set; }
+        public StatBuffSheet StatBuffSheet { get; private set; }
 
         public ItemSheet ItemSheet { get; private set; }
 
@@ -157,6 +158,44 @@ namespace Lib9c.Tests
 
         public CrystalFluctuationSheet CrystalFluctuationSheet { get; private set; }
 
+        public CrystalHammerPointSheet CrystalHammerPointSheet { get; private set; }
+
+        public EventScheduleSheet EventScheduleSheet { get; private set; }
+
+        public EventDungeonSheet EventDungeonSheet { get; private set; }
+
+        public EventDungeonStageSheet EventDungeonStageSheet { get; private set; }
+
+        public EventDungeonStageWaveSheet EventDungeonStageWaveSheet { get; private set; }
+
+        public EventConsumableItemRecipeSheet EventConsumableItemRecipeSheet { get; private set; }
+
+        public StakeActionPointCoefficientSheet StakeActionPointCoefficientSheet { get; private set; }
+
+        public WorldBossListSheet WorldBossListSheet { get; private set; }
+
+        public WorldBossRankRewardSheet WorldBossRankRewardSheet { get; private set; }
+
+        public RuneWeightSheet RuneWeightSheet { get; private set; }
+
+        public WorldBossGlobalHpSheet WorldBossGlobalHpSheet { get; private set; }
+
+        public WorldBossCharacterSheet WorldBossCharacterSheet { get; private set; }
+
+        public WorldBossActionPatternSheet WorldBossActionPatternSheet { get; private set; }
+
+        public WorldBossBattleRewardSheet WorldBossBattleRewardSheet { get; private set; }
+
+        public RuneSheet RuneSheet { get; private set; }
+
+        public WorldBossKillRewardSheet WorldBossKillRewardSheet { get; private set; }
+
+        public WorldBossRankingRewardSheet WorldBossRankingRewardSheet { get; private set; }
+
+        public SkillActionBuffSheet SkillActionBuffSheet { get; private set; }
+
+        public ActionBuffSheet ActionBuffSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet ??= new ItemSheet();
@@ -182,13 +221,30 @@ namespace Lib9c.Tests
             QuestSheet.Set(CombinationEquipmentQuestSheet);
         }
 
+        public SimulatorSheets GetSimulatorSheets()
+        {
+            return new SimulatorSheets(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
+                EquipmentItemSetEffectSheet
+            );
+        }
+
         public StageSimulatorSheets GetStageSimulatorSheets()
         {
             return new StageSimulatorSheets(
                 MaterialItemSheet,
                 SkillSheet,
                 SkillBuffSheet,
-                BuffSheet,
+                StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
                 CharacterSheet,
                 CharacterLevelSheet,
                 EquipmentItemSetEffectSheet,
@@ -204,7 +260,9 @@ namespace Lib9c.Tests
                 MaterialItemSheet,
                 SkillSheet,
                 SkillBuffSheet,
-                BuffSheet,
+                StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
                 CharacterSheet,
                 CharacterLevelSheet,
                 EquipmentItemSetEffectSheet,
@@ -218,12 +276,34 @@ namespace Lib9c.Tests
                 MaterialItemSheet,
                 SkillSheet,
                 SkillBuffSheet,
-                BuffSheet,
+                StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
                 CharacterSheet,
                 CharacterLevelSheet,
                 EquipmentItemSetEffectSheet,
                 CostumeStatSheet,
                 WeeklyArenaRewardSheet
+            );
+        }
+
+        public RaidSimulatorSheets GetRaidSimulatorSheets()
+        {
+            return new RaidSimulatorSheets(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
+                EquipmentItemSetEffectSheet,
+                WorldBossCharacterSheet,
+                WorldBossActionPatternSheet,
+                WorldBossBattleRewardSheet,
+                RuneWeightSheet,
+                RuneSheet
             );
         }
 

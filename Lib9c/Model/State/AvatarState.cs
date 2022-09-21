@@ -249,7 +249,7 @@ namespace Nekoyume.Model.State
             NameWithHash = $"{name} <size=80%><color=#A68F7E>#{address.ToHex().Substring(0, 4)}</color></size>";
         }
 
-        public void Update(StageSimulator stageSimulator)
+        public void Update(IStageSimulator stageSimulator)
         {
             var player = stageSimulator.Player;
             characterId = player.RowData.Id;
@@ -284,6 +284,15 @@ namespace Nekoyume.Model.State
             }
 
             UpdateStageQuest(stageSimulator.Reward);
+        }
+
+        public void Apply(Player player, long blockIndex)
+        {
+            characterId = player.RowData.Id;
+            level = player.Level;
+            exp = player.Exp.Current;
+            inventory = player.Inventory;
+            updatedAt = blockIndex;
         }
 
         public object Clone()

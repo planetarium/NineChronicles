@@ -15,11 +15,11 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
-    [Serializable]
-    /// <summary>0
+    /// <summary>
     /// Introduced at https://github.com/planetarium/lib9c/pull/1017
     /// Updated at https://github.com/planetarium/lib9c/pull/1176
     /// </summary>
+    [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100210ObsoleteIndex)]
     [ActionType("hack_and_slash_sweep3")]
     public class HackAndSlashSweep3 : GameAction
@@ -249,7 +249,7 @@ namespace Nekoyume.Action
             var maxCount = random.Next(stageRow.DropItemMin, stageRow.DropItemMax + 1);
             for (var i = 0; i < playCount; i++)
             {
-                var selector = StageSimulator.SetItemSelector(stageRow, random);
+                var selector = StageSimulatorV1.SetItemSelector(stageRow, random);
                 var rewards = Simulator.SetRewardV2(selector, maxCount, random,
                     materialItemSheet);
                 rewardItems.AddRange(rewards);

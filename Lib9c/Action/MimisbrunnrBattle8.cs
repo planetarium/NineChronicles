@@ -15,10 +15,17 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
+    /// <summary>
+    /// Obsoleted at https://github.com/planetarium/lib9c/pull/1241
+    /// </summary>
     [Serializable]
     [ActionType("mimisbrunnr_battle8")]
+    [ActionObsolete(ObsoletedBlockIndex)]
     public class MimisbrunnrBattle8 : GameAction
     {
+        private const long ObsoletedBlockIndex =
+            BlockChain.Policy.BlockPolicySource.V100270ObsoleteIndex;
+
         public List<Guid> costumes;
         public List<Guid> equipments;
         public List<Guid> foods;
@@ -66,6 +73,8 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, MarkChanged);
                 return states.SetState(ctx.Signer, MarkChanged);
             }
+
+            CheckObsolete(ObsoletedBlockIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
@@ -202,7 +211,7 @@ namespace Nekoyume.Action
 
             sw.Restart();
             var costumeStatSheet = states.GetSheet<CostumeStatSheet>();
-            var simulator = new StageSimulator(
+            var simulator = new StageSimulatorV1(
                 ctx.Random,
                 avatarState,
                 foods,
@@ -210,7 +219,7 @@ namespace Nekoyume.Action
                 stageId,
                 states.GetStageSimulatorSheets(),
                 costumeStatSheet,
-                StageSimulator.ConstructorVersionV100080,
+                StageSimulatorV1.ConstructorVersionV100080,
                 playCount);
             sw.Stop();
             Log.Verbose("{AddressesHex}Mimisbrunnr Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
