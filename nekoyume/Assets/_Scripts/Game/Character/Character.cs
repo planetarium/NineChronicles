@@ -10,7 +10,7 @@ namespace Nekoyume.Game.Character
         public Guid Id {get; protected set; }
         public SizeType SizeType { get; protected set; }
         public CharacterAnimator Animator { get; protected set; }
-        protected Vector3 HUDOffset => Animator.GetHUDPosition();
+        protected Vector3 HUDOffset => Animator.GetHUDPosition() + new Vector3(0f, 0.5f, 0f);
         protected Vector3 HealOffset => Animator.HealPosition;
         protected bool AttackEndCalled { get; set; }
 
