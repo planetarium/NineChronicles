@@ -190,6 +190,11 @@ namespace Nekoyume.UI.Module.Lobby
             var agentAddress = States.Instance.AgentState.address;
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
 
+            if (!IsUnlocked)
+            {
+                return;
+            }
+
             if (WorldBossStates.IsReceivingSeasonRewards(avatarAddress))
             {
                 return;
