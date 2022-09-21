@@ -405,18 +405,27 @@ namespace Nekoyume.Game.Character
 
         protected IEnumerator CoAnimationAttack(bool isCritical)
         {
-            AttackEndCalled = false;
-            if (isCritical)
+            while (true)
             {
-                Animator.CriticalAttack();
-            }
-            else
-            {
-                Animator.Attack();
-            }
+                AttackEndCalled = false;
+                if (isCritical)
+                {
+                    Animator.CriticalAttack();
+                }
+                else
+                {
+                    Animator.Attack();
+                }
 
-            yield return new WaitForEndOfFrame();
-            yield return new WaitUntil(CheckAttackEnd);
+                yield return new WaitForEndOfFrame();
+                yield return new WaitUntil(CheckAttackEnd);
+                if (Animator.IsIdle())
+                {
+                    continue;
+                }
+
+                break;
+            }
         }
 
         private IEnumerator CoAnimationCastAttack(bool isCritical)
