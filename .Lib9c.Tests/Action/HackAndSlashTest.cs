@@ -1170,11 +1170,11 @@
                 Equipments = clear
                     ? equipments.Select(e => e.NonFungibleId).ToList()
                     : new List<Guid>(),
-                foods = new List<Guid>(),
-                worldId = worldId,
-                stageId = stageId,
-                avatarAddress = _avatarAddress,
-                stageBuffId = setSkillByArgument
+                Foods = new List<Guid>(),
+                WorldId = worldId,
+                StageId = stageId,
+                AvatarAddress = _avatarAddress,
+                StageBuffId = setSkillByArgument
                     ? stageBuffId
                     : null,
             };
