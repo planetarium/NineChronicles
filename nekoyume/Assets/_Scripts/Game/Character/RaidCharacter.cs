@@ -59,6 +59,15 @@ namespace Nekoyume.Game.Character
             }
         }
 
+        private void OnDestroy()
+        {
+            foreach (var vfx in _actionBuffVFXMap.Values)
+            {
+                vfx.transform.parent = Game.instance.Stage.transform;
+                vfx.Stop();
+            }
+        }
+
         private void OnApplicationQuit()
         {
             _isAppQuitting = true;
@@ -130,7 +139,8 @@ namespace Nekoyume.Game.Character
 
             foreach (var id in removedVfx)
             {
-                _actionBuffVFXMap[id].transform.parent = Game.instance.Stage.transform;
+                var vfx = _actionBuffVFXMap[id];
+                vfx.transform.parent = Game.instance.Stage.transform;
                 _actionBuffVFXMap.Remove(id);
             }
 

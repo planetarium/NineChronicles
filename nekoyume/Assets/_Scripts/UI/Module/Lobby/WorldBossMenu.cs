@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -63,6 +63,7 @@ namespace Nekoyume.UI.Module.Lobby
             WorldBossStates.SubscribeReceivingSeasonRewards(UpdateIndicator);
             WorldBossStates.SubscribeCanReceivedSeasonRewards(UpdateClaimButton);
             WorldBossStates.SubscribeHasSeasonRewards(UpdateClaimButton);
+            UpdateClaimButton();
 
             Game.Game.instance.Agent.BlockIndexSubject.Subscribe(UpdateBlockIndex).AddTo(_disposables);
             UpdateBlockIndex(Game.Game.instance.Agent.BlockIndex);
