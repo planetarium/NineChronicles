@@ -694,7 +694,8 @@ namespace Nekoyume.Model.Item
                             subRecipeSheet,
                             itemOptionSheet);
                         
-                        if (level < requirementLevel && CPHelper.GetCP(i) < cp)
+
+                        if (level >= requirementLevel && CPHelper.GetCP(i) < cp)
                         {
                             return true;
                         }
