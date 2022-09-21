@@ -377,7 +377,12 @@ namespace Nekoyume.UI.Module
         {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var avatarLevel = States.Instance.CurrentAvatarState?.level ?? 0;
-            var hasNotification = inventory?.HasNotification(avatarLevel, blockIndex) ?? false;
+            var sheets = Game.Game.instance.TableSheets;
+            var hasNotification = inventory?.HasNotification(avatarLevel, blockIndex,
+                sheets.ItemRequirementSheet,
+                sheets.EquipmentItemRecipeSheet,
+                sheets.EquipmentItemSubRecipeSheetV2,
+                sheets.EquipmentItemOptionSheet) ?? false;
             UpdateInventoryNotification(hasNotification);
         }
 
