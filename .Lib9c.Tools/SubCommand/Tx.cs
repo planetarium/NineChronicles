@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using Nekoyume.TableData;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
@@ -89,6 +90,7 @@ namespace Lib9c.Tools.SubCommand
                         nameof(Nekoyume.Action.MigrationAvatarState) => new MigrationAvatarState(),
                         nameof(Nekoyume.Action.CreatePendingActivations) => new CreatePendingActivations(),
                         nameof(Nekoyume.Action.RenewAdminState) => new RenewAdminState(),
+                        nameof(Nekoyume.Action.PrepareRewardAssets) => new PrepareRewardAssets(),
                         _ => throw new CommandExitedException($"Can't determine given action type: {type}", 128),
                     };
                     action.LoadPlainValue(plainValue);
@@ -303,6 +305,36 @@ namespace Lib9c.Tools.SubCommand
                 var (ak, _) = ActivationKey.Create(key, nonce);
                 Console.WriteLine($"{ak.Encode()},{ByteUtil.Hex(nonce)}");
             }
+        }
+
+        [Command(Description = "Create PrepareRewardAssets")]
+        public void CreatePrepareRewardAssets(
+            [Argument("ASSETS")] string[] assets,
+            [Argument("POOL-ADDRESS")] string address
+            )
+        {
+            // 1,CRYSTAL,18
+            // 2,RUNE_FENRIR1
+            var poolAddress = new Address(address);
+            var favs = new List<FungibleAssetValue>();
+            Console.WriteLine($"Pool Address: {poolAddress}");
+            foreach (var asset in assets)
+            {
+                Console.WriteLine($"Asset: {asset}");
+                var args = asset.Split(',');
+                var amount = BigInteger.Parse(args[0]);
+                var ticker = args[1];
+                var decimalPlaces = args.Length == 3 ? (byte)int.Parse(args[2]) : (byte)0;
+                var currency = new Currency(ticker, decimalPlaces, minters: null);
+                favs.Add(amount * currency);
+            }
+            var action = new PrepareRewardAssets(poolAddress, favs);
+            var encoded = new List(
+                (Text) nameof(Nekoyume.Action.PrepareRewardAssets),
+                action.PlainValue
+            );
+            byte[] raw = _codec.Encode(encoded);
+            Console.WriteLine(ByteUtil.Hex(raw));
         }
     }
 }
