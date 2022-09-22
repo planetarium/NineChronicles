@@ -7,6 +7,7 @@ using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
+using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -55,6 +56,7 @@ namespace Nekoyume.UI
                         Guid.Empty,
                         SuperCraftIndex);
                     Find<CombinationSlotsPopup>().SetCaching(
+                        States.Instance.CurrentAvatarState.address,
                         slotIndex,
                         true,
                         SuperCraftIndex,
