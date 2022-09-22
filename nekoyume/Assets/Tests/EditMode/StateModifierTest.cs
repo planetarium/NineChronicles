@@ -28,7 +28,10 @@ namespace Tests.EditMode
         {
             _tableSheets = TableSheetsHelper.MakeTableSheets();
             _agentState = new AgentState(new Address());
-            var currency = new Currency("NCG", 2, minter: null);
+#pragma warning disable CS0618
+            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+            var currency = Currency.Legacy("NCG", 2, null);
+#pragma warning restore CS0618
             var gold = new FungibleAssetValue(currency, 0, 0);
             _goldBalanceState = new GoldBalanceState(_agentState.address, gold);
             _avatarState = new AvatarState(
