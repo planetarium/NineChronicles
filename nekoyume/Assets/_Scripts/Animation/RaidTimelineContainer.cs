@@ -90,6 +90,10 @@ namespace Nekoyume
 
         private IEnumerator CoPlayCutscene(TimelineAsset asset)
         {
+            yield return new WaitForEndOfFrame();
+            yield return new WaitWhile(() => player.IsActing);
+            yield return new WaitWhile(() => boss.IsActing);
+
             director.GetGenericBinding(this);
             var track = asset.GetRootTracks()
                 .FirstOrDefault(x => x.name.Equals("Spine_Player"))
