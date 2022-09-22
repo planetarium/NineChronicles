@@ -23,6 +23,9 @@ namespace Nekoyume.UI.Module
 
     public class CombinationSlot : MonoBehaviour
     {
+        private const int UnlockStage =
+            GameConfig.RequireClearedStageLevel.CombinationEquipmentAction;
+
         public enum SlotType
         {
             Lock,
@@ -91,45 +94,30 @@ namespace Nekoyume.UI.Module
 
 
         private CombinationSlotState _state;
+        private CacheType _cachedType;
         private int _slotIndex;
 
-        private const int UnlockStage =
-            GameConfig.RequireClearedStageLevel.CombinationEquipmentAction;
-
         private readonly List<IDisposable> _disposablesOfOnEnable = new();
-
-        public SlotType Type { get; private set; } = SlotType.Empty;
-        public CacheType CachedType { get; private set; }
-        public bool IsCached
-        {
-            get
-            {
-                var address = States.Instance.CurrentAvatarState.address;
-                return cached.ContainsKey(address) && cached[address];
-            }
-            private set
-            {
-                var address = States.Instance.CurrentAvatarState.address;
-                if (cached.ContainsKey(address))
-                {
-                    cached[address] = value;
-                }
-                else
-                {
-                    cached.Add(address, value);
-                }
-            }
-        }
-
         private readonly Dictionary<Address, bool> cached = new();
 
+        public SlotType Type { get; private set; } = SlotType.Empty;
+
         public void SetCached(
+            Address avatarAddress,
             bool value,
             long requiredBlockIndex,
             SlotType slotType,
             ItemUsable itemUsable = null)
         {
-            IsCached = value;
+            if (cached.ContainsKey(avatarAddress))
+            {
+                cached[avatarAddress] = value;
+            }
+            else
+            {
+                cached.Add(avatarAddress, value);
+            }
+
             var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
             switch (slotType)
             {
@@ -139,7 +127,7 @@ namespace Nekoyume.UI.Module
                         break;
                     }
 
-                    CachedType = CacheType.Appraise;
+                    _cachedType = CacheType.Appraise;
                     UpdateItemInformation(itemUsable, slotType);
                     UpdateRequiredBlockInformation(
                         requiredBlockIndex + currentBlockIndex,
@@ -148,10 +136,15 @@ namespace Nekoyume.UI.Module
                     break;
 
                 case SlotType.WaitingReceive:
-                    CachedType = CacheType.WaitingReceive;
-                    UpdateInformation(Type, currentBlockIndex, _state, IsCached);
+                    _cachedType = CacheType.WaitingReceive;
+                    UpdateInformation(Type, currentBlockIndex, _state, IsCached(avatarAddress));
                     break;
             }
+        }
+
+        private bool IsCached(Address avatarAddress)
+        {
+            return cached.ContainsKey(avatarAddress) && cached[avatarAddress];
         }
 
         private void Awake()
@@ -181,20 +174,22 @@ namespace Nekoyume.UI.Module
         }
 
         public void SetSlot(
+            Address avatarAddress,
             long currentBlockIndex,
             int slotIndex,
             CombinationSlotState state = null)
         {
             _slotIndex = slotIndex;
             _state = state;
-            Type = GetSlotType(state, currentBlockIndex, IsCached);
-            UpdateInformation(Type, currentBlockIndex, state, IsCached);
+            Type = GetSlotType(state, currentBlockIndex, IsCached(avatarAddress));
+            UpdateInformation(Type, currentBlockIndex, state, IsCached(avatarAddress));
         }
 
         private void SubscribeOnBlockIndex(long currentBlockIndex)
         {
-            Type = GetSlotType(_state, currentBlockIndex, IsCached);
-            UpdateInformation(Type, currentBlockIndex, _state, IsCached);
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            Type = GetSlotType(_state, currentBlockIndex, IsCached(avatarAddress));
+            UpdateInformation(Type, currentBlockIndex, _state, IsCached(avatarAddress));
         }
 
         private void UpdateInformation(
@@ -284,7 +279,7 @@ namespace Nekoyume.UI.Module
 
             if (isCached)
             {
-                return CachedType == CacheType.Appraise
+                return _cachedType == CacheType.Appraise
                     ? SlotType.Appraise
                     : SlotType.WaitingReceive;
             }

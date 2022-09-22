@@ -388,7 +388,13 @@ namespace Nekoyume.UI.Module
 
         private void UpdateCombinationNotification(long currentBlockIndex)
         {
-            var states = States.Instance.GetCombinationSlotState(currentBlockIndex);
+            var avatarState = States.Instance.CurrentAvatarState;
+            if (avatarState is null)
+            {
+                return;
+            }
+
+            var states = States.Instance.GetCombinationSlotState(avatarState, currentBlockIndex);
             var hasNotification = states?.Any(state =>
                 HasCombinationNotification(state.Value, currentBlockIndex)) ?? false;
             _toggleNotifications[ToggleType.CombinationSlots].Value = hasNotification;
