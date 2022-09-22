@@ -14,13 +14,17 @@ namespace Lib9c.Tests.Action
     {
         private readonly IImmutableDictionary<Address, IValue> _state;
         private readonly IImmutableDictionary<(Address, Currency), FungibleAssetValue> _balance;
+        private readonly IImmutableDictionary<Currency, FungibleAssetValue> _totalSupplies;
 
         public State(
             IImmutableDictionary<Address, IValue> state = null,
-            IImmutableDictionary<(Address Address, Currency Currency), FungibleAssetValue> balance = null)
+            IImmutableDictionary<(Address Address, Currency Currency), FungibleAssetValue> balance = null,
+            IImmutableDictionary<Currency, FungibleAssetValue> totalSupplies = null)
         {
             _state = state ?? ImmutableDictionary<Address, IValue>.Empty;
             _balance = balance ?? ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty;
+            _totalSupplies =
+                totalSupplies ?? ImmutableDictionary<Currency, FungibleAssetValue>.Empty;
         }
 
         public IImmutableSet<Address> UpdatedAddresses =>
@@ -35,6 +39,9 @@ namespace Lib9c.Tests.Action
                 g => (IImmutableSet<Currency>)g.Select(kv => kv.Key.Item2).ToImmutableHashSet()
             );
 
+        public IImmutableSet<Currency> TotalSupplyUpdatedCurrencies =>
+            _totalSupplies.Keys.ToImmutableHashSet();
+
         public IValue GetState(Address address) =>
             _state.TryGetValue(address, out IValue value) ? value : null;
 
@@ -47,11 +54,58 @@ namespace Lib9c.Tests.Action
         public FungibleAssetValue GetBalance(Address address, Currency currency) =>
             _balance.TryGetValue((address, currency), out FungibleAssetValue balance) ? balance : currency * 0;
 
-        public IAccountStateDelta MintAsset(Address recipient, FungibleAssetValue value) =>
-            new State(_state, _balance.SetItem((recipient, value.Currency), GetBalance(recipient, value.Currency) + value));
+        public FungibleAssetValue GetTotalSupply(Currency currency)
+        {
+            if (!currency.TotalSupplyTrackable)
+            {
+                var msg =
+                    $"The total supply value of the currency {currency} is not trackable"
+                    + " because it is a legacy untracked currency which might have been"
+                    + " established before the introduction of total supply tracking support.";
+                throw new TotalSupplyNotTrackableException(msg, currency);
+            }
 
-        public IAccountStateDelta BurnAsset(Address owner, FungibleAssetValue value) =>
-            new State(_state, _balance.SetItem((owner, value.Currency), GetBalance(owner, value.Currency) - value));
+            // Return dirty state if it exists.
+            if (_totalSupplies.TryGetValue(currency, out var totalSupplyValue))
+            {
+                return totalSupplyValue;
+            }
+
+            return currency * 0;
+        }
+
+        public IAccountStateDelta MintAsset(Address recipient, FungibleAssetValue value)
+        {
+            var totalSupplies =
+                value.Currency.TotalSupplyTrackable
+                    ? _totalSupplies.SetItem(
+                        value.Currency,
+                        GetTotalSupply(value.Currency) + value)
+                    : _totalSupplies;
+            return new State(
+                _state,
+                _balance.SetItem(
+                    (recipient, value.Currency),
+                    GetBalance(recipient, value.Currency) + value),
+                totalSupplies
+            );
+        }
+
+        public IAccountStateDelta BurnAsset(Address owner, FungibleAssetValue value)
+        {
+            var totalSupplies =
+                value.Currency.TotalSupplyTrackable
+                    ? _totalSupplies.SetItem(
+                        value.Currency,
+                        GetTotalSupply(value.Currency) - value)
+                    : _totalSupplies;
+            return new State(
+                _state,
+                _balance.SetItem(
+                    (owner, value.Currency),
+                    GetBalance(owner, value.Currency) - value),
+                totalSupplies);
+        }
 
         public IAccountStateDelta TransferAsset(
             Address sender,
@@ -77,7 +131,7 @@ namespace Lib9c.Tests.Action
             {
                 var msg = $"The account {sender}'s balance of {currency} is insufficient to " +
                           $"transfer: {senderBalance} < {value}.";
-                throw new InsufficientBalanceException(sender, senderBalance, msg);
+                throw new InsufficientBalanceException(msg, sender, senderBalance);
             }
 
             IImmutableDictionary<(Address, Currency), FungibleAssetValue> newBalance = _balance

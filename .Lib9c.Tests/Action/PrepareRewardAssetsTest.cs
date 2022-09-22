@@ -31,7 +31,10 @@ namespace Lib9c.Tests.Action
             if (includeNcg)
             {
                 var minters = ImmutableHashSet.Create(default(Address));
-                assets.Add(new Currency("NCG", 2, minters: minters) * 1);
+#pragma warning disable CS0618
+                // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+                assets.Add(Currency.Legacy("NCG", 2, minters) * 1);
+#pragma warning restore CS0618
             }
 
             IAccountStateDelta state = new State()

@@ -52,7 +52,7 @@ namespace Nekoyume.Action
                 // Prevent mint NCG.
                 if (!(asset.Currency.Minters is null))
                 {
-                    throw new CurrencyPermissionException(context.Signer, asset.Currency, null);
+                    throw new CurrencyPermissionException(null, context.Signer, asset.Currency);
                 }
                 states = states.MintAsset(RewardPoolAddress, asset);
             }
