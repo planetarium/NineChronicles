@@ -39,7 +39,8 @@ namespace Nekoyume.Game.Character
 
         private bool _isAppQuitting = false;
         private readonly Dictionary<int, VFX.VFX> _actionBuffVFXMap = new();
-            
+        protected override Vector3 HUDOffset => base.HUDOffset + new Vector3(0f, 0.35f, 0f);
+
         protected virtual void Awake()
         {
             Animator.OnEvent.Subscribe(OnAnimatorEvent);
