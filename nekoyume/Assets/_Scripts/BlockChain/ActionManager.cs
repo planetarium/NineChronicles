@@ -869,25 +869,27 @@ namespace Nekoyume.BlockChain
                 States.Instance.UpdateHammerPointStates(
                     recipeId, new HammerPointState(originHammerPointState.Address, recipeId));
             }
-
-            foreach (var pair in recipeInfo.Materials)
+            else
             {
-                var id = pair.Key;
-                var count = pair.Value;
-
-                if (!Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(id, out var row))
+                foreach (var pair in recipeInfo.Materials)
                 {
-                    continue;
-                }
+                    var id = pair.Key;
+                    var count = pair.Value;
 
-                if (recipeInfo.ReplacedMaterials.ContainsKey(row.Id))
-                {
-                    count = avatarState.inventory.TryGetFungibleItems(row.ItemId, out var items)
-                        ? items.Sum(x => x.count)
-                        : 0;
-                }
+                    if (!Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(id, out var row))
+                    {
+                        continue;
+                    }
 
-                LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId, count);
+                    if (recipeInfo.ReplacedMaterials.ContainsKey(row.Id))
+                    {
+                        count = avatarState.inventory.TryGetFungibleItems(row.ItemId, out var items)
+                            ? items.Sum(x => x.count)
+                            : 0;
+                    }
+
+                    LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId, count);
+                }
             }
 
             var action = new CombinationEquipment
