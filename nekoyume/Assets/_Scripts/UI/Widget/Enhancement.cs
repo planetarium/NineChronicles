@@ -182,7 +182,6 @@ namespace Nekoyume.UI
                 L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START"),
                 NotificationCell.NotificationType.Information);
 
-            Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
             Game.Game.instance.ActionManager
                 .ItemEnhancement(baseItem, materialItem, slotIndex, _costNcg).Subscribe();
 
