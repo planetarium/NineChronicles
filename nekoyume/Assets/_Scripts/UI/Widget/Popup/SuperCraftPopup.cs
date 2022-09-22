@@ -47,7 +47,6 @@ namespace Nekoyume.UI
                         slotIndex,
                         false,
                         true);
-
                     var sheets = TableSheets.Instance;
                     var equipmentRow = sheets
                         .EquipmentItemRecipeSheet[_recipeInfo.RecipeId];
@@ -55,7 +54,11 @@ namespace Nekoyume.UI
                         equipmentRow.GetResultEquipmentItemRow(),
                         Guid.Empty,
                         SuperCraftIndex);
-
+                    Find<CombinationSlotsPopup>().SetCaching(
+                        slotIndex,
+                        true,
+                        SuperCraftIndex,
+                        itemUsable: equipment);
                     StartCoroutine(CoCombineNpcAnimation(equipment));
                 }
             }).AddTo(gameObject);
