@@ -68,7 +68,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            var starCount = skillState != null ? skillState.StarCount : 0;
+            var starCount = skillState?.StarCount ?? 0;
             _hasEnoughStars = starCount >= row.MaxStar;
             if (_hasEnoughStars)
             {
