@@ -549,12 +549,21 @@ namespace Nekoyume.Model
 
         private void FinishTargetIfKilled(BattleStatus.Skill usedSkill)
         {
+            var killedTargets = new HashSet<CharacterBase>();
             foreach (var info in usedSkill.SkillInfos)
             {
                 if (!info.Target.IsDead)
                     continue;
 
                 var target = Targets.FirstOrDefault(i => i.Id == info.Target.Id);
+                if (!killedTargets.Contains(target))
+                {
+                    killedTargets.Add(target);
+                }
+            }
+
+            foreach (var target in killedTargets)
+            {
                 target?.Die();
             }
         }
