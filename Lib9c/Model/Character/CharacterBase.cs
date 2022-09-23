@@ -562,7 +562,7 @@ namespace Nekoyume.Model
                 }
             }
 
-            foreach (var target in killedTargets.ToList())
+            foreach (var target in killedTargets.OrderBy(x => x))
             {
                 target?.Die();
             }
