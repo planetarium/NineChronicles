@@ -17,7 +17,7 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/957
     /// </summary>
     [Serializable]
-    [ActionType("transfer_asset2")]
+    [ActionType("transfer_asset3")]
     public class TransferAsset : ActionBase, ISerializable
     {
         private const int MemoMaxLength = 80;
@@ -82,9 +82,7 @@ namespace Nekoyume.Action
                 throw new InvalidTransferSignerException(context.Signer, Sender, Recipient);
             }
 
-            // This works for block after 380000. Please take a look at
-            // https://github.com/planetarium/libplanet/pull/1133
-            if (context.BlockIndex > 380000 && Sender == Recipient)
+            if (Sender == Recipient)
             {
                 throw new InvalidTransferRecipientException(Sender, Recipient);
             }
@@ -92,13 +90,19 @@ namespace Nekoyume.Action
             Address recipientAddress = Recipient.Derive(ActivationKey.DeriveKey);
 
             // Check new type of activation first.
-            if (state.GetState(recipientAddress) is null && state.GetState(Addresses.ActivatedAccount) is Dictionary asDict )
+            // If result of GetState is not null, it is assumed that it has been activated.
+            if (
+                state.GetState(recipientAddress) is null &&
+                state.GetState(Addresses.ActivatedAccount) is Dictionary asDict &&
+                state.GetState(Recipient) is null
+            )
             {
                 var activatedAccountsState = new ActivatedAccountsState(asDict);
                 var activatedAccounts = activatedAccountsState.Accounts;
                 // if ActivatedAccountsState is empty, all user is activate.
                 if (activatedAccounts.Count != 0
-                    && !activatedAccounts.Contains(Recipient))
+                    && !activatedAccounts.Contains(Recipient)
+                    && state.GetState(Recipient) is null)
                 {
                     throw new InvalidTransferUnactivatedRecipientException(Sender, Recipient);
                 }

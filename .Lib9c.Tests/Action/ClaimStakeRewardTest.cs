@@ -22,6 +22,7 @@ namespace Lib9c.Tests.Action
         private readonly TableSheets _tableSheets;
         private readonly Address _signerAddress;
         private readonly Address _avatarAddress;
+        private readonly Address _avatarAddressForBackwardCompatibility;
 
         public ClaimStakeRewardTest(ITestOutputHelper outputHelper)
         {
@@ -47,8 +48,7 @@ namespace Lib9c.Tests.Action
             _signerAddress = new PrivateKey().ToAddress();
             var stakeStateAddress = StakeState.DeriveAddress(_signerAddress);
             var agentState = new AgentState(_signerAddress);
-            _avatarAddress = new PrivateKey().ToAddress();
-            var rankingMapAddress = _avatarAddress.Derive("ranking_map");
+            _avatarAddress = _signerAddress.Derive("0");
             agentState.avatarAddresses.Add(0, _avatarAddress);
             var avatarState = new AvatarState(
                 _avatarAddress,
@@ -56,11 +56,26 @@ namespace Lib9c.Tests.Action
                 0,
                 _tableSheets.GetAvatarSheets(),
                 new GameConfigState(sheets[nameof(GameConfigSheet)]),
-                rankingMapAddress
+                new PrivateKey().ToAddress()
             )
             {
                 level = 100,
             };
+
+            _avatarAddressForBackwardCompatibility = _signerAddress.Derive("1");
+            agentState.avatarAddresses.Add(1, _avatarAddressForBackwardCompatibility);
+            var avatarStateForBackwardCompatibility = new AvatarState(
+                _avatarAddressForBackwardCompatibility,
+                _signerAddress,
+                0,
+                _tableSheets.GetAvatarSheets(),
+                new GameConfigState(sheets[nameof(GameConfigSheet)]),
+                new PrivateKey().ToAddress()
+            )
+            {
+                level = 100,
+            };
+
             _initialState = _initialState
                 .SetState(_signerAddress, agentState.Serialize())
                 .SetState(_avatarAddress, avatarState.SerializeV2())
@@ -73,31 +88,12 @@ namespace Lib9c.Tests.Action
                 .SetState(
                     _avatarAddress.Derive(LegacyQuestListKey),
                     avatarState.questList.Serialize())
+                .SetState(
+                    _avatarAddressForBackwardCompatibility,
+                    avatarStateForBackwardCompatibility.Serialize())
                 .SetState(GoldCurrencyState.Address, _goldCurrencyState.Serialize())
                 .SetState(stakeStateAddress, new StakeState(stakeStateAddress, 0).Serialize())
                 .MintAsset(stakeStateAddress, _currency * 100);
-        }
-
-        [Fact]
-        public void Execute()
-        {
-            var action = new ClaimStakeReward(_avatarAddress);
-            var states = action.Execute(new ActionContext
-            {
-                PreviousStates = _initialState,
-                Signer = _signerAddress,
-                BlockIndex = StakeState.LockupInterval,
-            });
-
-            AvatarState avatarState = states.GetAvatarStateV2(_avatarAddress);
-            // regular (100 / 10) * 4
-            Assert.Equal(40, avatarState.inventory.Items.First(x => x.item.Id == 400000).count);
-            // regular ((100 / 800) + 1) * 4
-            // It must be never added into the inventory if the amount is 0.
-            Assert.Equal(4, avatarState.inventory.Items.First(x => x.item.Id == 500000).count);
-
-            Assert.True(states.TryGetStakeState(_signerAddress, out StakeState stakeState));
-            Assert.Equal(StakeState.LockupInterval, stakeState.ReceivedBlockIndex);
         }
 
         [Fact]
@@ -107,6 +103,39 @@ namespace Lib9c.Tests.Action
             var deserialized = new ClaimStakeReward();
             deserialized.LoadPlainValue(action.PlainValue);
             Assert.Equal(action.AvatarAddress, deserialized.AvatarAddress);
+        }
+
+        [Fact]
+        public void Execute_Success()
+        {
+            Execute(_avatarAddress);
+        }
+
+        [Fact]
+        public void Execute_With_Old_AvatarState_Success()
+        {
+            Execute(_avatarAddressForBackwardCompatibility);
+        }
+
+        private void Execute(Address avatarAddress)
+        {
+            var action = new ClaimStakeReward(avatarAddress);
+            var states = action.Execute(new ActionContext
+            {
+                PreviousStates = _initialState,
+                Signer = _signerAddress,
+                BlockIndex = StakeState.LockupInterval,
+            });
+
+            AvatarState avatarState = states.GetAvatarStateV2(avatarAddress);
+            // regular (100 / 10) * 4
+            Assert.Equal(40, avatarState.inventory.Items.First(x => x.item.Id == 400000).count);
+            // regular ((100 / 800) + 1) * 4
+            // It must be never added into the inventory if the amount is 0.
+            Assert.Equal(4, avatarState.inventory.Items.First(x => x.item.Id == 500000).count);
+
+            Assert.True(states.TryGetStakeState(_signerAddress, out StakeState stakeState));
+            Assert.Equal(StakeState.LockupInterval, stakeState.ReceivedBlockIndex);
         }
     }
 }

@@ -7,14 +7,14 @@ namespace Nekoyume.Model.BattleStatus
     [Serializable]
     public class HealSkill : Skill
     {
-        public HealSkill(CharacterBase character, IEnumerable<SkillInfo> skillInfos, IEnumerable<SkillInfo> buffInfos)
-            : base(character, skillInfos, buffInfos)
+        public HealSkill(int skillId, CharacterBase character, IEnumerable<SkillInfo> skillInfos, IEnumerable<SkillInfo> buffInfos)
+            : base(skillId, character, skillInfos, buffInfos)
         {
         }
 
         public override IEnumerator CoExecute(IStage stage)
         {
-            yield return stage.CoHeal(Character, SkillInfos, BuffInfos);
+            yield return stage.CoHeal(Character, SkillId, SkillInfos, BuffInfos);
         }
     }
 }

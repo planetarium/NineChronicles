@@ -20,7 +20,7 @@ namespace Nekoyume.Model.Skill
             var heal = ProcessHeal(caster, simulatorWaveTurn);
             var buff = ProcessBuff(caster, simulatorWaveTurn, buffs);
             
-            return new BattleStatus.HealSkill(clone, heal, buff);
+            return new BattleStatus.HealSkill(SkillRow.Id, clone, heal, buff);
         }
 
         protected IEnumerable<BattleStatus.Skill.SkillInfo> ProcessHeal(CharacterBase caster, int simulatorWaveTurn)

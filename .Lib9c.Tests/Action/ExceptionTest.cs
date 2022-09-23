@@ -62,6 +62,8 @@ namespace Lib9c.Tests.Action
         [InlineData(typeof(AlreadyWorldUnlockedException))]
         [InlineData(typeof(InvalidActionFieldException))]
         [InlineData(typeof(NotEnoughEventDungeonTicketsException))]
+        [InlineData(typeof(InvalidClaimException))]
+        [InlineData(typeof(RequiredBlockIntervalException))]
         public void Exception_Serializable(Type excType)
         {
             if (Activator.CreateInstance(excType, "for testing") is Exception exc)

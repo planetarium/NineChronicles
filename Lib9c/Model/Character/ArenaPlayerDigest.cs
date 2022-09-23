@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 
-namespace Nekoyume.Model.Arena
+namespace Nekoyume.Model
 {
     /// <summary>
     /// Introduced at https://github.com/planetarium/lib9c/pull/1156
@@ -35,6 +35,26 @@ namespace Nekoyume.Model.Arena
             Level = avatarState.level;
             Costumes = avatarState.GetNonFungibleItems<Costume>(arenaAvatarState.Costumes);
             Equipments = avatarState.GetNonFungibleItems<Equipment>(arenaAvatarState.Equipments);;
+        }
+
+        public ArenaPlayerDigest(AvatarState avatarState)
+        {
+            NameWithHash = avatarState.NameWithHash;
+            CharacterId = avatarState.characterId;
+            HairIndex = avatarState.hair;
+            LensIndex = avatarState.lens;
+            EarIndex = avatarState.ear;
+            TailIndex = avatarState.tail;
+            Level = avatarState.level;
+
+            var costumes = avatarState.inventory.Costumes
+                .Where(x => x.equipped)
+                .ToList();
+            Costumes = costumes;
+            var equipments = avatarState.inventory.Equipments
+                .Where(x => x.equipped)
+                .ToList();
+            Equipments = equipments;
         }
 
         public ArenaPlayerDigest(List serialized)

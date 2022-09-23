@@ -77,7 +77,7 @@ namespace Lib9c.Tests.Model.Skill
             var battleStatusSkill = normalAttack.Use(
                 player,
                 0,
-                new List<Buff>());
+                new List<StatBuff>());
             Assert.NotNull(battleStatusSkill);
             Assert.Single(battleStatusSkill.SkillInfos);
 
