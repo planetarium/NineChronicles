@@ -23,6 +23,7 @@ using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
+using Libplanet.Assets;
 using mixpanel;
 using Nekoyume.Arena;
 using Nekoyume.EnumType;
@@ -31,6 +32,7 @@ using Nekoyume.Game;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.EnumType;
+using Nekoyume.UI.Module.WorldBoss;
 using Skill = Nekoyume.Model.Skill.Skill;
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
@@ -39,6 +41,7 @@ using Lib9c.DevExtensions.Action;
 
 namespace Nekoyume.BlockChain
 {
+    using Nekoyume.Model;
     using UI.Scroller;
     using UniRx;
 
@@ -87,11 +90,16 @@ namespace Nekoyume.BlockChain
                 {
                     var actionType = gameAction.GetActionTypeAttribute();
                     var elapsed = (DateTime.Now - enqueuedDateTime).TotalSeconds;
-                    Analyzer.Instance.Track("Unity/ActionRender", new Value
+
+                    if (States.Instance.CurrentAvatarState is not null)
                     {
-                        ["ActionType"] = actionType.TypeIdentifier,
-                        ["Elapsed"] = elapsed,
-                    });
+                        Analyzer.Instance.Track("Unity/ActionRender", new Value
+                        {
+                            ["ActionType"] = actionType.TypeIdentifier,
+                            ["Elapsed"] = elapsed,
+                            ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                        });
+                    }
                 }
             }).AddTo(_disposables);
 
@@ -139,6 +147,10 @@ namespace Nekoyume.BlockChain
 
             // Arena
             InitializeArenaActions();
+
+            // World Boss
+            Raid();
+            ClaimRaidReward();
         }
 
         public void Stop()
@@ -413,6 +425,24 @@ namespace Nekoyume.BlockChain
                 .AddTo(_disposables);
         }
 
+        private void Raid()
+        {
+            _actionRenderer.EveryRender<Raid>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseRaidAsync)
+                .AddTo(_disposables);
+        }
+
+        private void ClaimRaidReward()
+        {
+            _actionRenderer.EveryRender<ClaimRaidReward>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseClaimRaidReward)
+                .AddTo(_disposables);
+        }
+
         private async UniTaskVoid ResponseCreateAvatar(ActionBase.ActionEvaluation<CreateAvatar> eval)
         {
             if (eval.Exception != null)
@@ -509,6 +539,7 @@ namespace Nekoyume.BlockChain
                                 {
                                     ["GainedCrystal"] = (long)enhancementResultModel.CRYSTAL.MajorUnit,
                                     ["BurntNCG"] = (long)enhancementResultModel.gold,
+                                    ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                                 });
                                 formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_FAIL";
                                 break;
@@ -590,7 +621,7 @@ namespace Nekoyume.BlockChain
                 UpdateAgentStateAsync(eval).Forget();
                 UpdateCurrentAvatarStateAsync(eval).Forget();
                 RenderQuest(avatarAddress, avatarState.questList?.completedQuestIds);
-                RxProps.UpdateHammerPointStates(result.recipeId, hammerPointState);
+                States.Instance.UpdateHammerPointStates(result.recipeId, hammerPointState);
 
                 if (!(nextQuest is null))
                 {
@@ -790,6 +821,7 @@ namespace Nekoyume.BlockChain
                         {
                             ["GainedCrystal"] = (long)result.CRYSTAL.MajorUnit,
                             ["BurntNCG"] = (long)result.gold,
+                            ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                         });
                         formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_FAIL";
                         break;
@@ -1115,6 +1147,7 @@ namespace Nekoyume.BlockChain
                     {
                         ["RandomSkillId"] = eval.Action.StageBuffId,
                         ["IsCleared"] = simulator.Log.IsClear,
+                        ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                     });
                 }
 
@@ -1600,12 +1633,15 @@ namespace Nekoyume.BlockChain
             foreach (var id in recipeIds)
             {
                 sharedModel.UnlockingRecipes.Remove(id);
+                States.Instance.UpdateHammerPointStates(
+                    id,
+                    new HammerPointState(
+                        Addresses.GetHammerPointStateAddress(eval.Action.AvatarAddress, id), id));
             }
 
             recipeIds.AddRange(sharedModel.UnlockedRecipes.Value);
             sharedModel.SetUnlockedRecipes(recipeIds);
             sharedModel.UpdateUnlockableRecipes();
-            RxProps.UpdateHammerPointStates(eval.Action.RecipeIds).Forget();
         }
 
         private void ResponseUnlockWorld(ActionBase.ActionEvaluation<UnlockWorld> eval)
@@ -1969,6 +2005,136 @@ namespace Nekoyume.BlockChain
                     myDigest.Value,
                     enemyDigest.Value);
             }
+        }
+
+        private async void ResponseRaidAsync(ActionBase.ActionEvaluation<Raid> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                Game.Game.BackToMainAsync(eval.Exception.InnerException, false).Forget();
+                return;
+            }
+
+            var worldBoss = Widget.Find<WorldBoss>();
+            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            if (Widget.Find<RaidPreparation>().IsSkipRender)
+            {
+                Widget.Find<LoadingScreen>().Close();
+                worldBoss.Close();
+                await WorldBossStates.Set(avatarAddress);
+                Game.Event.OnRoomEnter.Invoke(true);
+                return;
+            }
+
+            UpdateCrystalBalance(eval);
+            _disposableForBattleEnd?.Dispose();
+            _disposableForBattleEnd =
+                Game.Game.instance.RaidStage.OnBattleEnded
+                    .First()
+                    .Subscribe(stage =>
+                    {
+                        var task = UniTask.Run(() =>
+                        {
+                            UpdateCurrentAvatarStateAsync(eval).Forget();
+                            var avatarState = States.Instance.CurrentAvatarState;
+                            RenderQuest(eval.Action.AvatarAddress,
+                                avatarState.questList.completedQuestIds);
+                            _disposableForBattleEnd = null;
+                            stage.IsAvatarStateUpdatedAfterBattle = true;
+                        });
+                        task.ToObservable()
+                            .First()
+                            // ReSharper disable once ConvertClosureToMethodGroup
+                            .DoOnError(e => Debug.LogException(e));
+                    });
+
+            if (!WorldBossFrontHelper.TryGetCurrentRow(eval.BlockIndex, out var row))
+            {
+                Debug.LogError($"[Raid] Failed to get current world boss row. BlockIndex : {eval.BlockIndex}");
+                return;
+            }
+
+            var clonedAvatarState = (AvatarState)States.Instance.CurrentAvatarState.Clone();
+            var items = Widget.Find<RaidPreparation>().LoadEquipment();
+            clonedAvatarState.EquipItems(items);
+            var random = new LocalRandom(eval.RandomSeed);
+
+            var preRaiderState = WorldBossStates.GetRaiderState(avatarAddress);
+            var preKillReward = WorldBossStates.GetKillReward(avatarAddress);
+            var latestBossLevel = preRaiderState?.LatestBossLevel ?? 0;
+
+            var simulator = new RaidSimulator(
+                row.BossId,
+                random,
+                clonedAvatarState,
+                eval.Action.FoodIds,
+                TableSheets.Instance.GetRaidSimulatorSheets(),
+                TableSheets.Instance.CostumeStatSheet
+            );
+            simulator.Simulate();
+            var log = simulator.Log;
+            Widget.Find<Menu>().Close();
+            var playerDigest = new ArenaPlayerDigest(clonedAvatarState);
+
+            await WorldBossStates.Set(avatarAddress);
+            var raiderState = WorldBossStates.GetRaiderState(avatarAddress);
+            var killRewards = new List<FungibleAssetValue>();
+            if (latestBossLevel < raiderState.LatestBossLevel)
+            {
+                if (preKillReward != null && preKillReward.IsClaimable(raiderState.LatestBossLevel))
+                {
+                    var filtered = preKillReward
+                        .Where(kv => !kv.Value)
+                        .Select(kv => kv.Key)
+                        .ToList();
+
+                    var bossRow = Game.Game.instance.TableSheets.WorldBossCharacterSheet[row.BossId];
+                    var rank = WorldBossHelper.CalculateRank(bossRow, preRaiderState.HighScore);
+
+
+                    foreach (var level in filtered)
+                    {
+                        var rewards = RuneHelper.CalculateReward(
+                            rank,
+                            row.BossId,
+                            Game.Game.instance.TableSheets.RuneWeightSheet,
+                            Game.Game.instance.TableSheets.WorldBossKillRewardSheet,
+                            Game.Game.instance.TableSheets.RuneSheet,
+                            random
+                        );
+
+                        killRewards.AddRange(rewards);
+                    }
+                }
+            }
+
+            var isNewRecord = raiderState is null ||
+                              raiderState.HighScore < simulator.DamageDealt;
+            worldBoss.Close(true);
+
+            Widget.Find<LoadingScreen>().Close();
+            Game.Game.instance.RaidStage.Play(
+                simulator.BossId,
+                log,
+                playerDigest,
+                simulator.DamageDealt,
+                isNewRecord,
+                false,
+                simulator.AssetReward,
+                killRewards);
+        }
+
+        private void ResponseClaimRaidReward(ActionBase.ActionEvaluation<ClaimRaidReward> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                return;
+            }
+
+            UpdateCrystalBalance(eval);
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            WorldBossStates.SetReceivingGradeRewards(avatarAddress, false);
+            Widget.Find<WorldBossRewardScreen>().Show(new LocalRandom(eval.RandomSeed));
         }
     }
 }

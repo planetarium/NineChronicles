@@ -23,13 +23,13 @@ namespace Updater
 {
     class Program
     {
-        const string MacOSLatestBinaryUrl = "https://download.nine-chronicles.com/latest/macOS.tar.gz";
-        const string WindowsLatestBinaryUrl = "https://download.nine-chronicles.com/latest/Windows.zip";
+        const string MacOSLatestBinaryUrl = "https://release.nine-chronicles.com/latest/macOS.tar.gz";
+        const string WindowsLatestBinaryUrl = "https://release.nine-chronicles.com/latest/Windows.zip";
 
         private const string SnapshotUrl = "https://download.nine-chronicles.com/v100034/9c-main-snapshot.zip";
 
-        const string MacOSUpdaterLatestBinaryUrl = "https://download.nine-chronicles.com/latest/NineChroniclesUpdater";
-        const string WindowsUpdaterLatestBinaryUrl = "https://download.nine-chronicles.com/latest/NineChroniclesUpdater.exe";
+        const string MacOSUpdaterLatestBinaryUrl = "https://release.nine-chronicles.com/latest/NineChroniclesUpdater";
+        const string WindowsUpdaterLatestBinaryUrl = "https://release.nine-chronicles.com/latest/NineChroniclesUpdater.exe";
 
 
         static async Task Main(string[] args)

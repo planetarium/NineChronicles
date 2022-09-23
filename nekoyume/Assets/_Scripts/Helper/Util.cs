@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -191,50 +192,19 @@ namespace Nekoyume.Helper
 
         public static bool IsUsableItem(ItemBase itemBase)
         {
-            var sheets = Game.Game.instance.TableSheets;
-            var requirementSheet = sheets.ItemRequirementSheet;
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
             if (currentAvatarState is null || itemBase is null)
             {
                 return false;
             }
 
-            switch (itemBase.ItemType)
-            {
-                case ItemType.Equipment:
-                    var equipment = (Equipment)itemBase;
-                    if (!requirementSheet.TryGetValue(itemBase.Id, out var equipmentRow))
-                    {
-                        Debug.LogError($"[ItemRequirementSheet] item id does not exist {itemBase.Id}");
-                        return false;
-                    }
-
-                    var recipeSheet = sheets.EquipmentItemRecipeSheet;
-                    var subRecipeSheet = sheets.EquipmentItemSubRecipeSheetV2;
-                    var itemOptionSheet = sheets.EquipmentItemOptionSheet;
-                    var isMadeWithMimisbrunnrRecipe = equipment.IsMadeWithMimisbrunnrRecipe(
-                        recipeSheet,
-                        subRecipeSheet,
-                        itemOptionSheet
-                    );
-
-                    var requirementLevel = isMadeWithMimisbrunnrRecipe ? equipmentRow.MimisLevel : equipmentRow.Level;
-                    return currentAvatarState.level >= requirementLevel;
-
-                default:
-                    if (!requirementSheet.TryGetValue(itemBase.Id, out var row))
-                    {
-                        // Debug.LogError($"[ItemRequirementSheet] item id does not exist {itemBase.Id}");
-                        return false;
-                    }
-
-                    return currentAvatarState.level >= row.Level;
-            }
+            return currentAvatarState.level >= GetItemRequirementLevel(itemBase);
         }
 
         public static int GetItemRequirementLevel(ItemBase itemBase)
         {
-            var sheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
+            var sheets = Game.Game.instance.TableSheets;
+            var requirementSheet = sheets.ItemRequirementSheet;
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
             if (currentAvatarState is null)
             {
@@ -244,9 +214,7 @@ namespace Nekoyume.Helper
             switch (itemBase.ItemType)
             {
                 case ItemType.Equipment:
-                    var sheets = Game.Game.instance.TableSheets;
                     var equipment = (Equipment)itemBase;
-                    var requirementSheet = sheets.ItemRequirementSheet;
                     if (!requirementSheet.TryGetValue(itemBase.Id, out var equipmentRow))
                     {
                         Debug.LogError($"[ItemRequirementSheet] item id does not exist {itemBase.Id}");
@@ -262,10 +230,9 @@ namespace Nekoyume.Helper
                         itemOptionSheet
                     );
 
-                    var requirementLevel = isMadeWithMimisbrunnrRecipe ? equipmentRow.MimisLevel : equipmentRow.Level;
-                    return requirementLevel;
+                    return isMadeWithMimisbrunnrRecipe ? equipmentRow.MimisLevel : equipmentRow.Level;
                 default:
-                    return sheet.TryGetValue(itemBase.Id, out var value) ? value.Level : 0;
+                    return requirementSheet.TryGetValue(itemBase.Id, out var row) ? row.Level : 0;
             }
         }
 
@@ -338,9 +305,15 @@ namespace Nekoyume.Helper
                 end = $"{now.Year}/{end}";
             }
 
-            var bDt = DateTime.ParseExact(begin, "yyyy/MM/dd HH:mm:ss", null);
-            var eDt = DateTime.ParseExact(end, "yyyy/MM/dd HH:mm:ss", null);
-            return now.IsInTime(bDt, eDt);
+            if (DateTime.TryParseExact(begin, "yyyy-MM-ddTHH:mm:ss", null, DateTimeStyles.None,
+                    out var bDt) &&
+                DateTime.TryParseExact(end, "yyyy-MM-ddTHH:mm:ss", null, DateTimeStyles.None,
+                    out var eDt))
+            {
+                return now.IsInTime(bDt, eDt);
+            }
+
+            return false;
         }
     }
 }

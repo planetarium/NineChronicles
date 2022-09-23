@@ -12,7 +12,9 @@ using Debug = UnityEngine.Debug;
 using static Lib9c.SerializeKeys;
 using StateExtensions = Nekoyume.Model.State.StateExtensions;
 using Libplanet.Assets;
+using Nekoyume.Game;
 using Nekoyume.Helper;
+using Nekoyume.UI;
 
 namespace Nekoyume.State
 {
@@ -32,9 +34,9 @@ namespace Nekoyume.State
 
         public StakeState StakeState { get; private set; }
 
-        public CrystalRandomSkillState CrystalRandomSkillState { get; set; }
+        public CrystalRandomSkillState CrystalRandomSkillState { get; private set; }
 
-        private readonly Dictionary<int, AvatarState> _avatarStates = new Dictionary<int, AvatarState>();
+        private readonly Dictionary<int, AvatarState> _avatarStates = new();
 
         public IReadOnlyDictionary<int, AvatarState> AvatarStates => _avatarStates;
 
@@ -50,6 +52,13 @@ namespace Nekoyume.State
 
         private readonly Dictionary<int, CombinationSlotState> _combinationSlotStates =
             new Dictionary<int, CombinationSlotState>();
+
+        private Dictionary<int, HammerPointState> _hammerPointStates;
+
+        /// <summary>
+        /// Hammer point state dictionary of current avatar.
+        /// </summary>
+        public IReadOnlyDictionary<int, HammerPointState> HammerPointStates => _hammerPointStates;
 
         public States()
         {
@@ -194,7 +203,7 @@ namespace Nekoyume.State
         {
             var agent = Game.Game.instance.Agent;
             var avatarStateValue = await agent.GetStateAsync(address);
-            if (!(avatarStateValue is Bencodex.Types.Dictionary dict))
+            if (avatarStateValue is not Dictionary dict)
             {
                 Debug.LogWarning("Failed to get AvatarState");
                 throw new FailedLoadStateException($"Failed to get AvatarState: {address.ToHex()}");
@@ -226,7 +235,7 @@ namespace Nekoyume.State
                 {
                     if (allowBrokenState && dict.ContainsKey(key))
                     {
-                        dict = new Bencodex.Types.Dictionary(dict.Remove((Text)key));
+                        dict = new Dictionary(dict.Remove((Text)key));
                     }
 
                     continue;
@@ -327,13 +336,14 @@ namespace Nekoyume.State
                     1,
                     GameConfig.MimisbrunnrWorldId,
                 };
-            UI.Widget.Find<UI.WorldMap>().SharedViewModel.UnlockedWorldIds = unlockedIds;
+            Widget.Find<WorldMap>().SharedViewModel.UnlockedWorldIds = unlockedIds;
 
             if (isNewlySelected)
             {
                 // NOTE: commit c1b7f0dc2e8fd922556b83f0b9b2d2d2b2626603 에서 코드 수정이 생기면서
                 // SetCombinationSlotStatesAsync()가 호출이 안되는 이슈가 있어서 revert했습니다. 재수정 필요
                 _combinationSlotStates.Clear();
+                _hammerPointStates = null;
                 await UniTask.Run(async () =>
                 {
                     var (exist, curAvatarState) = await TryGetAvatarStateAsync(avatarState.address);
@@ -443,6 +453,69 @@ namespace Nekoyume.State
             }
 
             ReactiveAvatarState.Initialize(CurrentAvatarState);
+        }
+
+        public void UpdateHammerPointStates(int recipeId, HammerPointState state)
+        {
+            if (Addresses.GetHammerPointStateAddress(
+                    Instance.CurrentAvatarState.address,
+                    recipeId) == state.Address)
+            {
+                if (_hammerPointStates.ContainsKey(recipeId))
+                {
+                    _hammerPointStates[recipeId] = state;
+                }
+                else
+                {
+                    _hammerPointStates.Add(recipeId, state);
+                }
+            }
+
+            HammerPointStatesSubject.OnReplaceHammerPointState(recipeId, state);
+        }
+
+        public void UpdateHammerPointStates(IEnumerable<int> recipeIds)
+        {
+            UniTask.Run(async () =>
+            {
+                if (TableSheets.Instance.CrystalHammerPointSheet is null)
+                {
+                    return;
+                }
+
+                var hammerPointStateAddresses =
+                    recipeIds.Select(recipeId =>
+                            (Addresses.GetHammerPointStateAddress(
+                                CurrentAvatarState.address,
+                                recipeId), recipeId))
+                        .ToList();
+                var states =
+                    await Game.Game.instance.Agent.GetStateBulk(
+                        hammerPointStateAddresses.Select(tuple => tuple.Item1));
+                var joinedStates = states.Join(
+                    hammerPointStateAddresses,
+                    state => state.Key,
+                    tuple => tuple.Item1,
+                    (state, tuple) => (state, tuple.recipeId));
+
+                _hammerPointStates ??= new Dictionary<int, HammerPointState>();
+                foreach (var tuple in joinedStates)
+                {
+                    var state = tuple.state.Value is List list
+                        ? new HammerPointState(tuple.state.Key, list)
+                        : new HammerPointState(tuple.state.Key, tuple.recipeId);
+                    if (_hammerPointStates.ContainsKey(tuple.recipeId))
+                    {
+                        _hammerPointStates[tuple.recipeId] = state;
+                    }
+                    else
+                    {
+                        _hammerPointStates.Add(tuple.recipeId, state);
+                    }
+
+                    HammerPointStatesSubject.OnReplaceHammerPointState(tuple.recipeId, state);
+                }
+            }).Forget();
         }
     }
 }

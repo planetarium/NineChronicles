@@ -1,5 +1,6 @@
-﻿using Nekoyume.Helper;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.Buff;
 using Nekoyume.TableData;
 using UnityEngine;
 
@@ -7,20 +8,37 @@ namespace Nekoyume
 {
     public static class BuffSheetRowExtension
     {
-        public static string GetLocalizedName(this BuffSheet.Row row)
+        public static string GetLocalizedName(this Buff buff)
         {
-            return L10nManager.Localize($"BUFF_NAME_{row.Id}");
+            return L10nManager.Localize($"BUFF_NAME_{buff.BuffInfo.Id}");
         }
 
-        public static string GetLocalizedDescription(this BuffSheet.Row row)
+        public static string GetLocalizedDescription(this Buff buff)
         {
-            var desc = L10nManager.Localize($"BUFF_DESCRIPTION_{row.Id}");
-            return string.Format(desc, row.StatModifier.Value);
+            var desc = L10nManager.Localize($"BUFF_DESCRIPTION_{buff.BuffInfo.Id}");
+            if (buff is StatBuff stat)
+            {
+                return string.Format(desc, stat.RowData.StatModifier.Value);
+            }
+            else if (buff is ActionBuff action)
+            {
+                return desc;
+            }
+            return $"!{buff.BuffInfo.Id}!";
         }
 
-        public static Sprite GetIcon(this BuffSheet.Row row)
+        public static Sprite GetIcon(this Buff buff)
         {
-            return SpriteHelper.GetBuffIcon(row.IconResource);
+            if (buff is StatBuff stat)
+            {
+                return SpriteHelper.GetBuffIcon(stat.RowData.IconResource);
+            }
+            else if (buff is ActionBuff action)
+            {
+                return SpriteHelper.GetBuffIcon($"icon_{action.RowData.ActionBuffType}");
+            }
+
+            return null;
         }
     }
 }

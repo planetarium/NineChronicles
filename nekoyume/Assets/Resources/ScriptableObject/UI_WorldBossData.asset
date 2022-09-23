@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 815d8c9e4741267489cf27b98dde2b01, type: 3}
+  m_Name: UI_WorldBossData
+  m_EditorClassIdentifier: 
+  Monsters:
+  - id: 900001
+    name: fenrir of the abyss
+    illustration: {fileID: 21300000, guid: 9b7b4ed9c234188499f361b1bd822bad, type: 3}
+    namePrefab: {fileID: 7177679302177427472, guid: 9077ce1b0e2a349479de63699ea19926,
+      type: 3}
+    nameWithBackgroundPrefab: {fileID: 5837576388610129117, guid: 81ae0fa672d25934ba774628688f57c8,
+      type: 3}
+    spinePrefab: {fileID: 7353096591528320530, guid: ba316703c4bf8134f8a8ebea259de773,
+      type: 3}
+  - id: 900002
+    name: serimnir of the abyss
+    illustration: {fileID: 21300000, guid: 1242f629318f1db4bac418b773e128c9, type: 3}
+    namePrefab: {fileID: 8173047061470112773, guid: 02d0bdb57bfdd1d45b1d67f46ca666ea,
+      type: 3}
+    nameWithBackgroundPrefab: {fileID: 8482975693156328557, guid: ce12f0230a1316140b147babd7fbf80d,
+      type: 3}
+    spinePrefab: {fileID: 9063561474706172066, guid: e1c34daccc27ab84b8fb301d0fc87d41,
+      type: 3}
+  Grades:
+  - grade: 0
+    prefab: {fileID: 2544424707153549116, guid: 4c9186057d81d974c9fbafe8e56645d5,
+      type: 3}
+    smallPrefab: {fileID: 6047984770994580154, guid: 3087f332849b71d48a266e23b35ee002,
+      type: 3}
+  - grade: 1
+    prefab: {fileID: 7825031141907631365, guid: 6f0ad2be7f708d04ea9b9f3c4fbec7be,
+      type: 3}
+    smallPrefab: {fileID: 6047984770994580154, guid: 36d9cb59c4b785b4898f6d25fb0ede82,
+      type: 3}
+  - grade: 2
+    prefab: {fileID: 7777030125085106758, guid: 7de5f8246c39c6a459983d3ca713d0cd,
+      type: 3}
+    smallPrefab: {fileID: 6047984770994580154, guid: 13653ae316f80c94ea0970a8e74e1727,
+      type: 3}
+  - grade: 3
+    prefab: {fileID: 28927322215549232, guid: 71f125d730d72364cb292b8d8b338f7f, type: 3}
+    smallPrefab: {fileID: 6047984770994580154, guid: 62b5c6e2fc27a3c4d9797357d2ed09a8,
+      type: 3}
+  - grade: 4
+    prefab: {fileID: 6119651842402142078, guid: c6fa71d5b67de79418607e248d8566ba,
+      type: 3}
+    smallPrefab: {fileID: 6047984770994580154, guid: 340e3546bbaa1214195cec6d6a029cb5,
+      type: 3}
+  - grade: 5
+    prefab: {fileID: 2013082671546982576, guid: e43cb968e8032c44db2988c1ee1c1117,
+      type: 3}
+    smallPrefab: {fileID: 6047984770994580154, guid: faaf6eb0d01628040ba60b57ad07d02f,
+      type: 3}
+  Runes:
+  - ticker: RUNE_FENRIR1
+    icon: {fileID: 21300000, guid: d6667769127c0ce46bbc124fcaa6252c, type: 3}
+  - ticker: RUNE_FENRIR2
+    icon: {fileID: 21300000, guid: 88c80e541a31e0b4ba550de7e7f5cf5d, type: 3}
+  - ticker: RUNE_FENRIR3
+    icon: {fileID: 21300000, guid: 000b7b5b45f709f4782b1ec62f9f9f56, type: 3}
+  - ticker: RUNE_SERIMNIR1
+    icon: {fileID: 21300000, guid: 08c5c16491d019c4b9855c73648f4054, type: 3}
+  - ticker: RUNE_SERIMNIR2
+    icon: {fileID: 21300000, guid: 3d08304794b882b4887cac13c56bd287, type: 3}
+  - ticker: RUNE_SERIMNIR3
+    icon: {fileID: 21300000, guid: d81052ddf736a394f83b9155f2004a1d, type: 3}
+  Rank:
+  - {fileID: 4434525153944058049, guid: 2a046eeb2a3ef45fd819efbd79359c86, type: 3}
+  - {fileID: 4006865679272897052, guid: b3cd73df47091476db6e000cfb2b3a4f, type: 3}
+  - {fileID: 4321098728331142309, guid: 15f56a153d72e4739af2c8f397259349, type: 3}

@@ -21,9 +21,17 @@ namespace Nekoyume.BlockChain
             var errorMsg = string.Empty;
             switch (exc)
             {
-                case RequiredBlockIndexException _:
-                    key = "ERROR_REQUIRE_BLOCK";
-                    code = "01";
+                case RequiredBlockIndexException rb:
+                    if (rb is RequiredBlockIntervalException _)
+                    {
+                        key = "ERROR_NO_CONTINUOUS_BATTLES";
+                        code = "46";
+                    }
+                    else
+                    {
+                        key = "ERROR_REQUIRE_BLOCK";
+                        code = "01";
+                    }
                     break;
                 case EquipmentSlotUnlockException _:
                     key = "ERROR_SLOT_UNLOCK";
@@ -226,12 +234,19 @@ namespace Nekoyume.BlockChain
                     code = "45";
                     key = "ERROR_COMBINATION_SLOT_UNLOCK_EXCEPTION";
                     break;
+
+                case NotEnoughRankException _:
+                    code = "42";
+                    key = "NOT_ENOUGH_RANK_EXCEPTION";
+                    break;
             }
 
             Analyzer.Instance.Track(
                 "Unity/Error",
                 ("code", code),
-                ("key", key));
+                ("key", key),
+                ("AgentAddress", Game.Game.instance.Agent.Address.ToString()),
+                ("AvatarAddress", Game.Game.instance.States.CurrentAvatarState.address.ToString()));
 
             errorMsg = errorMsg == string.Empty
                 ? string.Format(

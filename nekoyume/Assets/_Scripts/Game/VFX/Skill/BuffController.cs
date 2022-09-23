@@ -21,7 +21,9 @@ namespace Nekoyume.Game.VFX.Skill
             }
         }
 
-        public T Get<T>(CharacterBase target, Buff buff) where T : BuffVFX
+        public V Get<T, V>(T target, Buff buff)
+            where T : Character.Character
+            where V : BuffVFX
         {
             if (target is null)
             {
@@ -30,43 +32,40 @@ namespace Nekoyume.Game.VFX.Skill
 
             var position = target.transform.position;
             position.y += 0.55f;
-            var resource = buff.RowData.IconResource;
-            var resourceName = resource.Replace("icon_", "");
-            var go = _pool.Get(resourceName, false, position) ??
-                     _pool.Get(resourceName, true, position);
 
-            return GetEffect<T>(go);
-        }
-
-        public T Get<T>(ArenaCharacter target, Buff buff) where T : BuffVFX
-        {
-            if (target is null)
+            string resourceName = string.Empty;
+            if (buff is StatBuff statBuff)
             {
-                return null;
+                var resource = statBuff.RowData.IconResource;
+                resourceName = resource.Replace("icon_", "");
+            }
+            else if (buff is ActionBuff actionBuff)
+            {
+                resourceName = $"actionBuff_{actionBuff.RowData.ActionBuffType}";
             }
 
-            var position = target.transform.position;
-            position.y += 0.55f;
-            var resource = buff.RowData.IconResource;
-            var resourceName = resource.Replace("icon_", "");
             var go = _pool.Get(resourceName, false, position) ??
                      _pool.Get(resourceName, true, position);
 
-            return GetEffect<T>(go);
+            return GetEffect<V>(go);
         }
 
         public BuffCastingVFX Get(Vector3 position, Buff buff)
         {
-            string buffName;
+            string buffName = string.Empty;
             if (buff is HPBuff)
             {
                 buffName = "buff_hp_casting";
             }
-            else
+            else if (buff is StatBuff statBuff)
             {
-                buffName = buff.RowData.StatModifier.Value > 0
+                buffName = statBuff.RowData.StatModifier.Value > 0
                     ? "buff_plus_casting"
                     : "buff_minus_casting";
+            }
+            else if (buff is ActionBuff actionBuff)
+            {
+                buffName = $"{actionBuff.RowData.ActionBuffType}_casting";
             }
 
             position.y += 0.55f;
@@ -93,8 +92,17 @@ namespace Nekoyume.Game.VFX.Skill
         {
             var position = target.transform.position;
             position.y += 0.55f;
-            var resource = buff.RowData.IconResource;
-            var resourceName = resource.Replace("icon_", "");
+
+            var resourceName = string.Empty;
+            if (buff is StatBuff statBuff)
+            {
+                var resource = statBuff.RowData.IconResource;
+                resourceName = resource.Replace("icon_", "");
+            }
+            else if (buff is ActionBuff actionBuff)
+            {
+                resourceName = $"actionBuff_{actionBuff.RowData.ActionBuffType}";
+            }
             var go = _pool.Get(resourceName, false, position) ??
                      _pool.Get(resourceName, true, position);
 

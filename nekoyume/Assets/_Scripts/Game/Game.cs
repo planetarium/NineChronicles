@@ -15,6 +15,7 @@ using Libplanet.Assets;
 using LruCacheNet;
 using MessagePack;
 using MessagePack.Resolvers;
+using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
@@ -25,6 +26,7 @@ using Nekoyume.Model.State;
 using Nekoyume.Pattern;
 using Nekoyume.State;
 using Nekoyume.UI;
+using Nekoyume.UI.Module.WorldBoss;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
 using UnityEngine.Playables;
@@ -41,6 +43,8 @@ namespace Nekoyume.Game
         [SerializeField] private Stage stage = null;
 
         [SerializeField] private Arena arena = null;
+
+        [SerializeField] private RaidStage raidStage = null;
 
         [SerializeField] private bool useSystemLanguage = true;
 
@@ -60,6 +64,7 @@ namespace Nekoyume.Game
 
         public Stage Stage => stage;
         public Arena Arena => arena;
+        public RaidStage RaidStage => raidStage;
 
         // FIXME Action.PatchTableSheet.Execute()에 의해서만 갱신됩니다.
         // 액션 실행 여부와 상관 없이 최신 상태를 반영하게끔 수정해야합니다.
@@ -75,6 +80,7 @@ namespace Nekoyume.Game
         public const string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
 
         public NineChroniclesAPIClient ApiClient => _apiClient;
+        public NineChroniclesAPIClient RpcClient => _rpcClient;
 
         public readonly LruCache<Address, IValue> CachedStates = new LruCache<Address, IValue>();
 
@@ -88,6 +94,8 @@ namespace Nekoyume.Game
         private AmazonCloudWatchLogsClient _logsClient;
 
         private NineChroniclesAPIClient _apiClient;
+
+        private NineChroniclesAPIClient _rpcClient;
 
         private PlayableDirector _activeDirector;
 
@@ -190,11 +198,22 @@ namespace Nekoyume.Game
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
             // Initialize NineChroniclesAPIClient.
             _apiClient = new NineChroniclesAPIClient(_options.ApiServerHost);
+            if (!string.IsNullOrEmpty(_options.RpcServerHost))
+            {
+                _rpcClient = new NineChroniclesAPIClient($"http://{_options.RpcServerHost}/graphql");
+            }
+
+            gameObject.AddComponent<RequestManager>();
+
+            WorldBossQuery.SetUrl(_options.OnBoardingHost);
+
             // Initialize Rank.SharedModel
             RankPopup.UpdateSharedModel();
             // Initialize Stage
             Stage.Initialize();
             Arena.Initialize();
+            RaidStage.Initialize();
+
 
             Widget.Find<VersionSystem>().SetVersion(Agent.AppProtocolVersion);
 
@@ -578,7 +597,7 @@ namespace Nekoyume.Game
 
         private static void PlayMouseOnClickVFX(Vector3 position)
         {
-            position = ActionCamera.instance.Cam.ScreenToWorldPoint(position);
+            position = MainCanvas.instance.Canvas.worldCamera.ScreenToWorldPoint(position);
             var vfx = VFXController.instance.CreateAndChaseCam<MouseClickVFX>(position);
             vfx.Play();
         }

@@ -1,9 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Extensions;
-using Nekoyume.Model.Item;
-using Nekoyume.State;
-using Nekoyume.TableData;
+using Nekoyume.Helper;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,36 +11,23 @@ namespace Nekoyume.UI.Module
 
     public class AcquisitionPlaceButton : MonoBehaviour
     {
-        public enum PlaceType
-        {
-            Stage,
-            Shop = 3,
-            Arena = 4,
-            Quest = 5,
-            Staking = 7,
-            EventDungeonStage = 8,
-        }
-
         public class Model
         {
-            public Model(PlaceType type,
+            public Model(ShortcutHelper.PlaceType type,
                 Action onClick,
                 string guideText,
-                ItemBase itemBase,
-                StageSheet.Row stageRow = null)
+                int stageId = 0)
             {
                 Type = type;
                 OnClick = onClick;
                 GuideText = guideText;
-                ItemBase = itemBase;
-                StageRow = stageRow;
+                StageId = stageId;
             }
 
-            public PlaceType Type { get; }
+            public ShortcutHelper.PlaceType Type { get; }
             public Action OnClick { get; }
             public string GuideText { get; }
-            public ItemBase ItemBase { get; }
-            public StageSheet.Row StageRow { get; }
+            public int StageId { get; }
         }
 
         [SerializeField]
@@ -64,8 +48,6 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private GameObject disableObject;
 
-        private Model _model;
-
         private static Dictionary<string, Sprite> _iconDictionary;
 
         private const string IconNameFormat = "icon_Navigation_{0}";
@@ -74,12 +56,12 @@ namespace Nekoyume.UI.Module
 
         public void Set(Model model)
         {
-            _model = model;
             lockedText.text = guideText.text = model.GuideText;
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() =>
             {
-                if (CanGoToAcquisitionPlace(model.Type) && enableObject.activeSelf)
+                if (ShortcutHelper.CheckUIStateForUsingShortcut(model.Type) &&
+                    !disableObject.activeSelf)
                 {
                     model.OnClick?.Invoke();
                 }
@@ -89,8 +71,8 @@ namespace Nekoyume.UI.Module
 
             switch (model.Type)
             {
-                case PlaceType.Stage:
-                    if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(model.StageRow.Id,
+                case ShortcutHelper.PlaceType.Stage:
+                    if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(model.StageId,
                         out var worldRow))
                     {
                         if (_iconDictionary.TryGetValue(
@@ -106,19 +88,17 @@ namespace Nekoyume.UI.Module
                     }
 
                     break;
-                case PlaceType.Shop:
-                case PlaceType.Arena:
-                case PlaceType.Quest:
-                case PlaceType.Staking:
-                case PlaceType.EventDungeonStage:
+                case ShortcutHelper.PlaceType.Shop:
+                case ShortcutHelper.PlaceType.Arena:
+                case ShortcutHelper.PlaceType.Quest:
+                case ShortcutHelper.PlaceType.Staking:
+                case ShortcutHelper.PlaceType.EventDungeonStage:
                     if (_iconDictionary.TryGetValue(
                         string.Format(IconNameFormat, $"00{(int)model.Type}"),
                         out var sprite))
                     {
                         iconImage.sprite = sprite;
                     }
-
-                    enableObject.SetActive(true);
 
                     break;
                 default:
@@ -128,116 +108,11 @@ namespace Nekoyume.UI.Module
             EnableSettingByPlaceType(model.Type, model);
         }
 
-        private void EnableSettingByPlaceType(PlaceType type, Model model)
+        private void EnableSettingByPlaceType(ShortcutHelper.PlaceType type, Model model)
         {
-            switch (type)
-            {
-                case PlaceType.EventDungeonStage:
-                    bool canTryStage;
-                    if (RxProps.EventDungeonInfo.Value is not null)
-                    {
-                        canTryStage = model.StageRow.Id <=
-                                      RxProps.EventDungeonInfo.Value.ClearedStageId + 1;
-                    }
-                    else
-                    {
-                        canTryStage = model.StageRow.Id.ToEventDungeonStageNumber() <= 1;
-                    }
-                    disableObject.SetActive(!canTryStage);
-                    enableObject.SetActive(canTryStage);
-
-                    break;
-                case PlaceType.Stage:
-                    var sharedViewModel = Widget.Find<WorldMap>().SharedViewModel;
-                    var successToGetUnlockedWorld = sharedViewModel.WorldInformation
-                        .TryGetWorldByStageId(model.StageRow.Id, out var world);
-                    if (successToGetUnlockedWorld)
-                    {
-                        if (model.StageRow.Id > world.StageClearedId + 1 ||
-                            !sharedViewModel.UnlockedWorldIds.Contains(world.Id))
-                        {
-                            disableObject.SetActive(true);
-                        }
-                        else
-                        {
-                            enableObject.SetActive(true);
-                        }
-                    }
-                    else
-                    {
-                        disableObject.SetActive(true);
-                    }
-
-                    break;
-                case PlaceType.Shop:
-                {
-                    if (States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(out var stageId))
-                    {
-                        if (stageId < GameConfig.RequireClearedStageLevel.UIMainMenuShop)
-                        {
-                            disableObject.SetActive(true);
-                        }
-                        else
-                        {
-                            enableObject.SetActive(true);
-                        }
-                    }
-                    else
-                    {
-                        disableObject.SetActive(true);
-                    }
-
-                    break;
-                }
-
-                case PlaceType.Arena:
-                {
-                    if (States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(out var stageId))
-                    {
-                        if (stageId <
-                            GameConfig.RequireClearedStageLevel.UIMainMenuRankingBoard)
-                        {
-                            disableObject.SetActive(true);
-                        }
-                        else
-                        {
-                            enableObject.SetActive(true);
-                        }
-                    }
-                    else
-                    {
-                        disableObject.SetActive(true);
-                    }
-
-                    break;
-                }
-                case PlaceType.Quest:
-                case PlaceType.Staking:
-                    enableObject.SetActive(true);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
-            }
-        }
-
-        private bool CanGoToAcquisitionPlace(PlaceType type)
-        {
-            if (disableObject.activeSelf)
-            {
-                return false;
-            }
-
-            return type switch
-            {
-                PlaceType.Stage => !Game.Game.instance.IsInWorld,
-                PlaceType.EventDungeonStage => !Game.Game.instance.IsInWorld,
-                PlaceType.Shop => !Game.Game.instance.IsInWorld,
-                PlaceType.Arena => !Game.Game.instance.IsInWorld,
-                PlaceType.Quest => !Widget.Find<BattleResultPopup>().IsActive() &&
-                                   !Widget.Find<RankingBattleResultPopup>().IsActive(),
-                PlaceType.Staking => true,
-                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
-            };
+            var enable = ShortcutHelper.CheckConditionOfShortcut(type, model.StageId);
+            enableObject.SetActive(enable);
+            disableObject.SetActive(!enable);
         }
 
         private void Awake()

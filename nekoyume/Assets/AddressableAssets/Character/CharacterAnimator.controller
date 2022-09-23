@@ -89,6 +89,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Win_03
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -131,6 +132,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: CastingAttack
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -160,6 +162,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Run
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -177,6 +180,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Idle
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 1
@@ -222,6 +226,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Die
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -239,6 +244,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Attack
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -256,6 +262,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Touch
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -273,6 +280,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Win_02
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -346,6 +354,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: CastingAttack
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -416,6 +425,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Die
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -433,6 +443,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: TurnOver_02
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -450,6 +461,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Hit
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -467,6 +479,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Attack
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -484,6 +497,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Skill_02
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -501,6 +515,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Win
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -518,6 +533,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Appear
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -560,6 +576,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Idle
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 1
@@ -577,6 +594,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: CriticalAttack
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -594,6 +612,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Casting
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 1
@@ -1049,7 +1068,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 0}
+  m_Motion: {fileID: 7400000, guid: 54f7cd99871c445f3b30f9cde852e2f6, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -1133,7 +1152,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 0}
+  m_Motion: {fileID: 7400000, guid: 64234b5555418406ea2c6908885490ad, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -1263,6 +1282,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Appear
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -1305,6 +1325,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Disappear
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -1347,6 +1368,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Casting
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -1364,6 +1386,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: CriticalAttack
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -1534,6 +1557,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: StandingToIdle
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -1551,6 +1575,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Greeting
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -1568,6 +1593,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Idle
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -1613,6 +1639,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Win
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -1655,6 +1682,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: CriticalAttack
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -1672,6 +1700,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Run
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 1
@@ -1745,6 +1774,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Emotion
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -1789,6 +1819,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Hit
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -1806,6 +1837,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Attack
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -1823,6 +1855,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Disappear
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -1868,6 +1901,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Dissapear
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -1885,6 +1919,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Appear
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -1902,6 +1937,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Casting
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -1947,6 +1983,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: TurnOver_01
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -1989,6 +2026,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Hit
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -2006,6 +2044,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Standing
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 1
@@ -2023,6 +2062,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Skill_01
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -2040,6 +2080,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: CastingAttack
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -2057,6 +2098,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Die
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -2101,6 +2143,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layer: 0
   animationClip: Run
+  animationAsset: {fileID: 0}
   timeScale: 1
   exitTime: 1
   loop: 1

@@ -69,7 +69,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: cb7d04a9e008f47fead8086913791eba, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 6ca33495efcd448acad7095905ef87d4, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1347,6 +1347,7 @@ GameObject:
   - component: {fileID: 6467622665363244468}
   - component: {fileID: 60599638029987515}
   - component: {fileID: 8015176442441877684}
+  - component: {fileID: 3251558087254079956}
   m_Layer: 5
   m_Name: Icon
   m_TagString: Untagged
@@ -1412,6 +1413,23 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &3251558087254079956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5924635460818133822}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efe700dddcd8341ff8607ac2c827b4b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_TargetColor: {r: 1, g: 0, b: 0, a: 1}
+  m_Range: 1
+  m_Hue: -0.2
+  m_Saturation: 0
+  m_Value: 0
 --- !u!1 &6656707262268546537
 GameObject:
   m_ObjectHideFlags: 0
@@ -2381,7 +2399,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: cb7d04a9e008f47fead8086913791eba,
+      objectReference: {fileID: 21300000, guid: 6ca33495efcd448acad7095905ef87d4,
         type: 3}
     - target: {fileID: 3131441457089952479, guid: cc8b8626f2b35e3469e6330b2b6d79c2,
         type: 3}

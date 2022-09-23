@@ -138,6 +138,11 @@ def main() -> None:
     os.makedirs(args.out_dir, exist_ok=True)
     if args.platform.lower() == 'macos':
         archive_path = os.path.join(args.out_dir, 'macOS.tar.gz')
+        executable_path = os.path.join(
+            temp_dir,
+            '9c.app/Contents/MacOS/9c'
+        )
+        os.chmod(executable_path, 0o755)
         with tarfile.open(archive_path, 'w:gz') as archive:
             for arcname in os.listdir(temp_dir):
                 name = os.path.join(temp_dir, arcname)
@@ -145,6 +150,11 @@ def main() -> None:
                 logging.info('Added: %s <- %s', arcname, name)
     elif args.platform.lower() == 'linux':
         archive_path = os.path.join(args.out_dir, 'Linux.tar.gz')
+        executable_path = os.path.join(
+            temp_dir,
+            '9c'
+        )
+        os.chmod(executable_path, 0o755)
         with tarfile.open(archive_path, 'w:gz') as archive:
             for arcname in os.listdir(temp_dir):
                 name = os.path.join(temp_dir, arcname)

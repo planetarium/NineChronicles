@@ -3,7 +3,6 @@ using System.Collections;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Util;
 using Nekoyume.Pattern;
-using UniRx;
 using Unity.Mathematics;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -113,9 +112,16 @@ namespace Nekoyume.Game
             _fsm.Run(State.Idle);
         }
 
+        public void RerunFSM() => _fsm.Run(State.Idle);
+
         private void Update()
         {
             UpdateScreenResolution();
+        }
+
+        protected void OnDisable()
+        {
+            _fsm.Kill();
         }
 
         protected override void OnDestroy()

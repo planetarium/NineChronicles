@@ -41,6 +41,7 @@ namespace Nekoyume.UI.Module
             Arena,
             EventDungeon,
             WorldBoss,
+            CurrencyOnly,
         }
 
         [Serializable]
@@ -305,7 +306,10 @@ namespace Nekoyume.UI.Module
                     SetActiveAssets(isNcgActive: true, isActionPointActive: true, isEventDungeonTicketsActive: true);
                     break;
                 case AssetVisibleState.WorldBoss:
-                    SetActiveAssets(isNcgActive: true, isActionPointActive: true, isEventWorldBossTicketsActive: true);
+                    SetActiveAssets(isNcgActive: true, isEventWorldBossTicketsActive: true);
+                    break;
+                case AssetVisibleState.CurrencyOnly:
+                    SetActiveAssets(isNcgActive:true);
                     break;
             }
         }
@@ -411,6 +415,12 @@ namespace Nekoyume.UI.Module
         public void UpdateInventoryNotification(bool hasNotification)
         {
             _toggleNotifications[ToggleType.AvatarInfo].Value = hasNotification;
+        }
+
+        public void SetActiveAvatarInfo(bool value)
+        {
+            var avatarInfo = toggles.FirstOrDefault(x => x.Type == ToggleType.AvatarInfo);
+            avatarInfo?.Toggle.gameObject.SetActive(value);
         }
 
         public void TutorialActionClickBottomMenuWorkShopButton()

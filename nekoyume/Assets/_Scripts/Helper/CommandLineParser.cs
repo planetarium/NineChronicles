@@ -59,6 +59,8 @@ namespace Nekoyume.Helper
 
         private string apiServerHost;
 
+        private string onBoardingHost;
+
         public bool Empty { get; private set; } = true;
 
         public string genesisBlockPath;
@@ -329,6 +331,17 @@ namespace Nekoyume.Helper
             set
             {
                 apiServerHost = value;
+                Empty = false;
+            }
+        }
+
+        [Option("on-boarding-host", Required = false, HelpText = "on boarding host")]
+        public string OnBoardingHost
+        {
+            get => onBoardingHost;
+            set
+            {
+                onBoardingHost = value;
                 Empty = false;
             }
         }

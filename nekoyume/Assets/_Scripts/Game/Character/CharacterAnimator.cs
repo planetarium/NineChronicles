@@ -73,6 +73,12 @@ namespace Nekoyume.Game.Character
                 case CharacterAnimation.Type.Run:
                     Run();
                     break;
+                case CharacterAnimation.Type.Skill_01:
+                    Skill(1);
+                    break;
+                case CharacterAnimation.Type.Skill_02:
+                    Skill(2);
+                    break;
                 default:
                     Animator.Rebind();
                     Animator.Play(type.ToString(), BaseLayerIndex, 0f);

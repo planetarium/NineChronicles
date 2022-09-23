@@ -24,10 +24,15 @@ namespace Nekoyume
                 return;
             }
 
-            _mixpanelValueFactory = new MixpanelValueFactory(rpcServerHost);
+            _mixpanelValueFactory = new MixpanelValueFactory(
+                rpcServerHost,
+                uniqueId);
 
             Mixpanel.SetToken("80a1e14b57d050536185c7459d45195a");
             Mixpanel.Identify(uniqueId);
+            Mixpanel.Register("AgentAddress", uniqueId);
+            Mixpanel.People.Set("AgentAddress", uniqueId);
+            Mixpanel.People.Name = uniqueId;
             Mixpanel.Init();
 
             Debug.Log($"Analyzer initialized: {uniqueId}");

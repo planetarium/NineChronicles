@@ -57,6 +57,12 @@ namespace Nekoyume.UI
             string message,
             NotificationCell.NotificationType notificationType)
         {
+            if (AddQueue.Any() &&
+                AddQueue.FirstOrDefault(x => x.message == message) != null)
+            {
+                return;
+            }
+
             AddQueue.Enqueue(new NotificationCell.ViewModel
             {
                 mailType = mailType,
