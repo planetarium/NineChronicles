@@ -62,7 +62,7 @@ namespace Lib9c.Tests.Action
         // Insufficient NCG.
         [InlineData(typeof(InsufficientBalanceException), true, true, false, true, 0, 0L, true, false, 0, false, false, false, -Raid.RequiredInterval)]
         // Wait interval.
-        [InlineData(typeof(RequiredBlockIndexException), true, true, false, true, 3, 10L, false, false, 0, false, false, false, -Raid.RequiredInterval + 4L)]
+        [InlineData(typeof(RequiredBlockIntervalException), true, true, false, true, 3, 10L, false, false, 0, false, false, false, -Raid.RequiredInterval + 4L)]
         // Exceed purchase limit.
         [InlineData(typeof(ExceedTicketPurchaseLimitException), true, true, false, true, 0, 100L, true, false, 1_000, false, false, false, -Raid.RequiredInterval)]
         // Exceed challenge count.
@@ -363,7 +363,7 @@ namespace Lib9c.Tests.Action
                 FoodIds = new List<Guid>(),
                 PayNcg = false,
             };
-            long blockIndex = 4994805L;
+            long blockIndex = 5055201L;
             int raidId = _tableSheets.WorldBossListSheet.FindRaidIdByBlockIndex(blockIndex);
             Address raiderAddress = Addresses.GetRaiderAddress(_avatarAddress, raidId);
             var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
