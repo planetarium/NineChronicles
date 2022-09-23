@@ -8,7 +8,10 @@ namespace Lib9c.Tests.Model.Mail
 
     public class GrindingMailTest
     {
-        private readonly Currency _currency = new Currency("CRYSTAL", 18, minters: null);
+#pragma warning disable CS0618
+        // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+        private readonly Currency _currency = Currency.Legacy("CRYSTAL", 18, null);
+#pragma warning restore CS0618
 
         [Fact]
         public void Serialize()
