@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Battle;
 using Nekoyume.Helper;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
@@ -251,6 +252,26 @@ namespace Nekoyume.Extensions
                 default:
                     return false;
             }
+        }
+
+        public static int GetRequirementLevel(this Equipment equipment,
+            ItemRequirementSheet requirementSheet,
+            EquipmentItemRecipeSheet recipeSheet,
+            EquipmentItemSubRecipeSheetV2 subRecipeSheet,
+            EquipmentItemOptionSheet itemOptionSheet)
+        {
+            if (!requirementSheet.TryGetValue(equipment.Id, out var row))
+            {
+                throw new SheetRowNotFoundException(nameof(ItemRequirementSheet), equipment.Id);
+            }
+
+            var isMadeWithMimisbrunnrRecipe = equipment.IsMadeWithMimisbrunnrRecipe(
+                recipeSheet,
+                subRecipeSheet,
+                itemOptionSheet
+            );
+            
+            return isMadeWithMimisbrunnrRecipe ? row.MimisLevel : row.Level;
         }
     }
 }

@@ -264,7 +264,7 @@ namespace Nekoyume.Extensions
             {
                 var msg = $"The account {agentAddress}'s balance of {balance.Currency} is insufficient to " +
                           $"staked minimum amount: {balance} < {minimumRequired}.";
-                throw new InsufficientBalanceException(agentAddress, balance, msg);
+                throw new InsufficientBalanceException(msg, agentAddress, balance);
             }
             for (int i = 0; i < orderedRows.Count - 1; ++i)
             {

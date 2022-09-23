@@ -175,9 +175,9 @@ namespace Nekoyume.Action
             if (agentBalance < states.GetGoldCurrency() * requiredGold)
             {
                 throw new InsufficientBalanceException(
+                    $"{addressesHex}Aborted as the agent ({ctx.Signer}) has no sufficient gold: {agentBalance} < {requiredGold}",
                     ctx.Signer,
-                    agentBalance,
-                    $"{addressesHex}Aborted as the agent ({ctx.Signer}) has no sufficient gold: {agentBalance} < {requiredGold}"
+                    agentBalance
                 );
             }
 

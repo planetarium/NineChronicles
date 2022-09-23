@@ -22,7 +22,7 @@
 
             _sheet = new StakeActionPointCoefficientSheet();
             _sheet.Set(tableContent);
-            _currency = new Currency("NCG", 2, minters: null);
+            _currency = Currency.Legacy("NCG", 2, null);
         }
 
         [Fact]

@@ -34,7 +34,10 @@ namespace Lib9c.Tests
         public BlockPolicyTest()
         {
             _privateKey = new PrivateKey();
-            _currency = new Currency("NCG", 2, minter: _privateKey.ToAddress());
+#pragma warning disable CS0618
+            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+            _currency = Currency.Legacy("NCG", 2, _privateKey.ToAddress());
+#pragma warning restore CS0618
         }
 
         [Fact]

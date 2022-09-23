@@ -36,7 +36,10 @@ namespace Lib9c.Tests.Action
             _tableSheets = new TableSheets(sheets);
             _agentAddress = new PrivateKey().ToAddress();
             _avatarAddress = new PrivateKey().ToAddress();
-            _crystalCurrency = new Currency("CRYSTAL", 18, minters: null);
+#pragma warning disable CS0618
+            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+            _crystalCurrency = Currency.Legacy("CRYSTAL", 18, null);
+#pragma warning restore CS0618
             var gameConfigState = new GameConfigState(sheets[nameof(GameConfigSheet)]);
 
             _agentState = new AgentState(_agentAddress);
@@ -51,7 +54,10 @@ namespace Lib9c.Tests.Action
 
             _agentState.avatarAddresses.Add(0, _avatarAddress);
 
-            _ncgCurrency = new Currency("NCG", 2, minters: null);
+#pragma warning disable CS0618
+            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+            _ncgCurrency = Currency.Legacy("NCG", 2, null);
+#pragma warning restore CS0618
             var goldCurrencyState = new GoldCurrencyState(_ncgCurrency);
 
             _initialState = new State()
