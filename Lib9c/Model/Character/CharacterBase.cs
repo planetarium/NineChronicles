@@ -549,7 +549,7 @@ namespace Nekoyume.Model
 
         private void FinishTargetIfKilled(BattleStatus.Skill usedSkill)
         {
-            var killedTargets = new HashSet<CharacterBase>();
+            var killedTargets = new List<CharacterBase>();
             foreach (var info in usedSkill.SkillInfos)
             {
                 if (!info.Target.IsDead)
@@ -562,7 +562,7 @@ namespace Nekoyume.Model
                 }
             }
 
-            foreach (var target in killedTargets.OrderBy(x => x))
+            foreach (var target in killedTargets)
             {
                 target?.Die();
             }
