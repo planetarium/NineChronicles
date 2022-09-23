@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Libplanet;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
@@ -39,13 +40,14 @@ namespace Nekoyume.UI
         }
 
         public void SetCaching(
+            Address avatarAddress,
             int slotIndex,
             bool value,
             long requiredBlockIndex = 0,
             CombinationSlot.SlotType slotType = CombinationSlot.SlotType.Appraise,
             ItemUsable itemUsable = null)
         {
-            slots[slotIndex].SetCached(value, requiredBlockIndex, slotType, itemUsable);
+            slots[slotIndex].SetCached(avatarAddress, value, requiredBlockIndex, slotType, itemUsable);
             UpdateSlots(Game.Game.instance.Agent.BlockIndex);
         }
 
@@ -69,17 +71,24 @@ namespace Nekoyume.UI
 
         private void UpdateSlots(long blockIndex)
         {
-            var states =
-                States.Instance.GetCombinationSlotState(blockIndex);
+            var avatarState = States.Instance.CurrentAvatarState;
+            var states = States.Instance.GetCombinationSlotState(avatarState, blockIndex);
             for (var i = 0; i < slots.Count; i++)
             {
-                if (states != null && states.TryGetValue(i, out var state))
+                if (states.ContainsKey(i))
                 {
-                    slots[i].SetSlot(blockIndex, i, state);
+                    if (states.TryGetValue(i, out var state))
+                    {
+                        slots[i].SetSlot(avatarState.address, blockIndex, i, state);
+                    }
+                    else
+                    {
+                        slots[i].SetSlot(avatarState.address, blockIndex, i);
+                    }
                 }
                 else
                 {
-                    slots[i].SetSlot(blockIndex, i);
+                    slots[i].SetSlot(avatarState.address, blockIndex, i);
                 }
             }
         }

@@ -479,6 +479,7 @@ namespace Nekoyume.UI
 
             equipmentSubRecipeView.UpdateView();
             var insufficientMaterials = recipeInfo.ReplacedMaterials;
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
             if (insufficientMaterials.Any())
             {
                 Find<ReplaceMaterialPopup>().Show(insufficientMaterials,
@@ -486,6 +487,7 @@ namespace Nekoyume.UI
                     {
                         var slots = Find<CombinationSlotsPopup>();
                         slots.SetCaching(
+                            avatarAddress,
                             slotIndex,
                             true,
                             requiredBlockIndex,
@@ -516,6 +518,7 @@ namespace Nekoyume.UI
             {
                 var slots = Find<CombinationSlotsPopup>();
                 slots.SetCaching(
+                    avatarAddress,
                     slotIndex,
                     true,
                     requiredBlockIndex,
@@ -551,8 +554,9 @@ namespace Nekoyume.UI
                 Guid.Empty,
                 default);
             var requiredBlockIndex = consumableRow.RequiredBlockIndex;
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
             var slots = Find<CombinationSlotsPopup>();
-            slots.SetCaching(slotIndex, true, requiredBlockIndex, itemUsable: consumable);
+            slots.SetCaching(avatarAddress, slotIndex, true, requiredBlockIndex, itemUsable: consumable);
 
             consumableSubRecipeView.UpdateView();
             ActionManager.Instance.CombinationConsumable(recipeInfo, slotIndex).Subscribe();
@@ -580,8 +584,10 @@ namespace Nekoyume.UI
                 Guid.Empty,
                 default);
             var requiredBlockIndex = consumableRow.RequiredBlockIndex;
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
             var slots = Find<CombinationSlotsPopup>();
             slots.SetCaching(
+                avatarAddress,
                 slotIndex,
                 true,
                 requiredBlockIndex,
