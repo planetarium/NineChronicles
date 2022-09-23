@@ -12,6 +12,7 @@ using System;
 
 namespace Nekoyume.Game.Character
 {
+    using Nekoyume.Model.Buff;
     using UniRx;
 
     public class RaidCharacter : Character
@@ -37,6 +38,8 @@ namespace Nekoyume.Game.Character
         public bool IsActing => CurrentAction != null;
 
         private bool _isAppQuitting = false;
+        private readonly Dictionary<int, VFX.VFX> _actionBuffVFXMap = new();
+        protected override Vector3 HUDOffset => base.HUDOffset + new Vector3(0f, 0.35f, 0f);
 
         protected virtual void Awake()
         {
@@ -54,6 +57,15 @@ namespace Nekoyume.Game.Character
             if (!_isAppQuitting)
             {
                 DisableHUD();
+            }
+        }
+
+        private void OnDestroy()
+        {
+            foreach (var vfx in _actionBuffVFXMap.Values)
+            {
+                vfx.transform.parent = Game.instance.Stage.transform;
+                vfx.Stop();
             }
         }
 
@@ -113,6 +125,40 @@ namespace Nekoyume.Game.Character
             _hudContainer.UpdatePosition(Game.instance.RaidStage.Camera.Cam, gameObject, HUDOffset);
             HPBar.Set(_currentHp, _characterModel.Stats.BuffStats.HP, _characterModel.HP);
             HPBar.SetBuffs(_characterModel.Buffs);
+
+            // delete existing vfx
+
+            var removedVfx = new List<int>();
+            foreach (var buff in _actionBuffVFXMap.Keys)
+            {
+                if (!_characterModel.Buffs.Keys.Contains(buff))
+                {
+                    _actionBuffVFXMap[buff].Stop();
+                    removedVfx.Add(buff);
+                }
+            }
+
+            foreach (var id in removedVfx)
+            {
+                var vfx = _actionBuffVFXMap[id];
+                vfx.transform.parent = Game.instance.Stage.transform;
+                _actionBuffVFXMap.Remove(id);
+            }
+
+            // apply new vfx
+            foreach (var buff in _characterModel.Buffs.Values.OfType<ActionBuff>())
+            {
+                var id = buff.BuffInfo.GroupId;
+                if (!_actionBuffVFXMap.ContainsKey(id))
+                {
+                    var vfx = Game.instance.RaidStage.BuffController.Get<BleedVFX>(gameObject, buff);
+                    _actionBuffVFXMap[id] = vfx;
+                    vfx.transform.parent = transform;
+                    vfx.transform.localPosition = Vector3.zero;
+                    vfx.Play();
+                }
+            }
+
             HPBar.SetLevel(_characterModel.Level);
 
             //OnUpdateHPBar.OnNext(this);
@@ -194,7 +240,7 @@ namespace Nekoyume.Game.Character
                 if (target == null)
                     continue;
 
-                var effect = Game.instance.Stage.SkillController.Get<SkillBlowVFX>(target, info);
+                var effect = Game.instance.RaidStage.SkillController.Get<SkillBlowVFX>(target, info);
                 if (effect is null)
                     continue;
 
@@ -360,18 +406,27 @@ namespace Nekoyume.Game.Character
 
         protected IEnumerator CoAnimationAttack(bool isCritical)
         {
-            AttackEndCalled = false;
-            if (isCritical)
+            while (true)
             {
-                Animator.CriticalAttack();
-            }
-            else
-            {
-                Animator.Attack();
-            }
+                AttackEndCalled = false;
+                if (isCritical)
+                {
+                    Animator.CriticalAttack();
+                }
+                else
+                {
+                    Animator.Attack();
+                }
 
-            yield return new WaitForEndOfFrame();
-            yield return new WaitUntil(CheckAttackEnd);
+                yield return new WaitForEndOfFrame();
+                yield return new WaitUntil(CheckAttackEnd);
+                if (Animator.IsIdle())
+                {
+                    continue;
+                }
+
+                break;
+            }
         }
 
         private IEnumerator CoAnimationCastAttack(bool isCritical)

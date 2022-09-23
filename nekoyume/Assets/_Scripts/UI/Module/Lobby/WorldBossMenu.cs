@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -51,7 +51,7 @@ namespace Nekoyume.UI.Module.Lobby
 
         private readonly List<IDisposable> _disposables = new();
 
-        private void Awake()
+        private void Start()
         {
             claimRewardButton.OnClickAsObservable()
                 .Subscribe(_ =>
@@ -63,10 +63,8 @@ namespace Nekoyume.UI.Module.Lobby
             WorldBossStates.SubscribeReceivingSeasonRewards(UpdateIndicator);
             WorldBossStates.SubscribeCanReceivedSeasonRewards(UpdateClaimButton);
             WorldBossStates.SubscribeHasSeasonRewards(UpdateClaimButton);
-        }
+            UpdateClaimButton();
 
-        private void Start()
-        {
             Game.Game.instance.Agent.BlockIndexSubject.Subscribe(UpdateBlockIndex).AddTo(_disposables);
             UpdateBlockIndex(Game.Game.instance.Agent.BlockIndex);
             CheckSeasonRewards();
@@ -192,6 +190,11 @@ namespace Nekoyume.UI.Module.Lobby
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var agentAddress = States.Instance.AgentState.address;
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
+
+            if (!IsUnlocked)
+            {
+                return;
+            }
 
             if (WorldBossStates.IsReceivingSeasonRewards(avatarAddress))
             {

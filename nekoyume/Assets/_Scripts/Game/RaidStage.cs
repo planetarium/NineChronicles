@@ -128,8 +128,6 @@ namespace Nekoyume.Game
 
                     if (caster is Character.RaidBoss boss)
                     {
-                        yield return new WaitWhile(() => _player.IsActing);
-                        yield return new WaitWhile(() => _boss.IsActing);
                         if (container.SkillCutsceneExists(param.SkillId))
                         {
                             container.OnAttackPoint = () =>
@@ -432,8 +430,6 @@ namespace Nekoyume.Game
             Character.RaidCharacter raidCharacter =
                 character.Id == _player.Id ? _player : _boss;
             raidCharacter.Set(character);
-            yield return new WaitWhile(() => _player.IsActing);
-            yield return new WaitWhile(() => _boss.IsActing);
 
             Widget.Find<WorldBossBattle>().Close();
             if (raidCharacter is Character.RaidPlayer player)

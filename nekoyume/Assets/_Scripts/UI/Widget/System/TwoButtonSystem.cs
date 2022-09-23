@@ -30,11 +30,6 @@ namespace Nekoyume.UI
             cancelButton.OnClick = Cancel;
         }
 
-        public override void Show(bool ignoreStartAnimation = false)
-        {
-            base.Show(ignoreStartAnimation);
-        }
-
         public void Show(string content, string confirmText, string cancelText,
             System.Action confirmCallback, System.Action cancelCallback = null)
         {
@@ -53,7 +48,7 @@ namespace Nekoyume.UI
 
             confirmButton.Text = confirmText;
             cancelButton.Text = cancelText;
-            Show();
+            base.Show();
         }
 
         private void Confirm()
