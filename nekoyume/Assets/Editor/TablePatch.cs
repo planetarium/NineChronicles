@@ -84,7 +84,7 @@ namespace NekoyumeEditor
                 sb.AppendLine(hex);
                 sb.AppendLine("\n[Deserialized]");
                 sb.AppendLine(decoded.ToString());
-                sb.AppendLine("\n[Equals Check] (Serialized == Deserialized)");
+                sb.AppendLine("\n[Equals Check] (Action Data == Deserialized)");
                 sb.AppendLine(equalsCheck.ToString());
 
                 Debug.Log(sb);
