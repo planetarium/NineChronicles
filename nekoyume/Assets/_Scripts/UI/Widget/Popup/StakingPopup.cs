@@ -68,11 +68,11 @@ namespace Nekoyume.UI
         private readonly StakingBenefitsListView.Model[] _cachedModel =
             new StakingBenefitsListView.Model[6];
 
+        public const string StakingUrl =
+            "ninechronicles-launcher://open/monster-collection";
         private const string ActionPointBuffFormat = "{0} <color=#1FFF00>{1}% DC</color>";
         private const string BuffBenefitRateFormat = "{0} <color=#1FFF00>+{1}%</color>";
         private const string RemainingBlockFormat = "<Style=G5>{0}({1})";
-        private const string StakingUrl =
-            "https://ninechronicles.medium.com/monster-collection-v2-update-6cde770c9f31";
         private const int RewardBlockInterval = 50400;
 
         protected override void Awake()
@@ -114,8 +114,8 @@ namespace Nekoyume.UI
             });
             archiveButton.OnClickSubject.Subscribe(_ =>
             {
-                // TODO: Invoke ActionManager.Instance.ClaimStakeReward()
                 AudioController.PlayClick();
+                Application.OpenURL(StakingUrl);
             }).AddTo(gameObject);
 
             SetBenefitsListViews();

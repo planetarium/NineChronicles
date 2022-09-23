@@ -10,6 +10,7 @@ using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI;
 using Nekoyume.UI.Module;
+using UnityEngine;
 using static Nekoyume.Helper.ShortcutHelper;
 
 namespace Nekoyume.Helper
@@ -197,7 +198,11 @@ namespace Nekoyume.Helper
                     guideText = L10nManager.Localize("UI_QUEST");
                     break;
                 case PlaceType.Staking:
-                    shortcutAction += () => Widget.Find<StakingPopup>().Show();
+                    shortcutAction = () =>
+                    {
+                        caller.Close();
+                        Application.OpenURL(StakingPopup.StakingUrl);
+                    };
                     guideText = L10nManager.Localize("UI_PLACE_STAKING");
                     break;
                 default:
