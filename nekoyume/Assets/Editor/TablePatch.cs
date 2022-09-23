@@ -20,10 +20,10 @@ namespace NekoyumeEditor
         [MenuItem("Tools/Print TablePatch Action Hash")]
         public static void PrintTablePatchActionHash()
         {
-            const string tableSheetResourcePath = "ScriptableObject/TableSheets";
+            const string tableSheetResourcePath = "ScriptableObject/TableSheetsForPatch";
             var hashFilePath = Path.Combine(Application.dataPath, "Editor/TablePatch Action Hash.txt");
             // **Table sheets to be patched must be entered in ScriptableObject.**
-            var tableSheets = Resources.Load<TableSheetsScriptableObject>(tableSheetResourcePath).TableSheets.Distinct();
+            var tableSheets = Resources.Load<TableSheetsForPatchScriptableObject>(tableSheetResourcePath).TableSheets.Distinct();
 
             using var writer = new StreamWriter(hashFilePath);
             foreach (var tableSheet in tableSheets)
