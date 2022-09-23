@@ -360,7 +360,7 @@ namespace Lib9c.Tests.Action
                 FoodIds = new List<Guid>(),
                 PayNcg = false,
             };
-            long blockIndex = 4994805L;
+            long blockIndex = 5055201L;
             int raidId = _tableSheets.WorldBossListSheet.FindRaidIdByBlockIndex(blockIndex);
             Address raiderAddress = Addresses.GetRaiderAddress(_avatarAddress, raidId);
             var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
