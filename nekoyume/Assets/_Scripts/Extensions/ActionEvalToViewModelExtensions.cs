@@ -62,7 +62,7 @@ namespace Nekoyume
                 foreach (var (id, count) in simulator.ItemMap)
                 {
                     model.AddReward(new CountableItem(
-                        ItemFactory.CreateItem(TableSheets.Instance.MaterialItemSheet[id], null),
+                        ItemFactory.CreateMaterial(TableSheets.Instance.MaterialItemSheet[id]),
                         count));
                 }
             }
