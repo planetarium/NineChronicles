@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Nekoyume.Game.Character;
 using Nekoyume.L10n;
@@ -25,6 +25,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private TouchHandler touchHandler;
 
+        [SerializeField]
+        private bool showMessage = true;
+
         private readonly List<IDisposable> _disposables = new();
 
         private string _message;
@@ -33,9 +36,12 @@ namespace Nekoyume.UI
             touchHandler.OnClick
                 .Subscribe(_ =>
                 {
-                    OneLineSystem.Push(MailType.System,
-                        _message,
-                        NotificationCell.NotificationType.Alert);
+                    if (showMessage)
+                    {
+                        OneLineSystem.Push(MailType.System,
+                            _message,
+                            NotificationCell.NotificationType.Alert);
+                    }
                 })
                 .AddTo(_disposables);
         }

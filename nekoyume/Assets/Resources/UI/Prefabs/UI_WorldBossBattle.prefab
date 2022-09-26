@@ -14650,6 +14650,7 @@ MonoBehaviour:
   gradeObject: {fileID: 4219502642336396591}
   gradeParent: {fileID: 7938210994047853293}
   slider: {fileID: 693824846569763398}
+  currentWaveSlider: {fileID: 4369431881608047592}
   activatedObjects:
   - {fileID: 1466750548022419923}
   - {fileID: 7443873102250399284}
@@ -110853,7 +110854,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -115771,12 +115772,12 @@ GameObject:
   - component: {fileID: 4112478191514265792}
   - component: {fileID: 4369431881608047592}
   m_Layer: 5
-  m_Name: ProgressBar_Ing
+  m_Name: ProgressBar_CurrentWave
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &4112478191514265792
 RectTransform:
   m_ObjectHideFlags: 0

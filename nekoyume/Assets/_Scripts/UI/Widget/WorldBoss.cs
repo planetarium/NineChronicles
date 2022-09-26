@@ -269,18 +269,23 @@ namespace Nekoyume.UI
 
         private void UpdateBossPrefab(WorldBossListSheet.Row row, bool isOffSeason = false)
         {
-            if (_bossNamePrefab != null)
-            {
-                Destroy(_bossNamePrefab);
-            }
-
-            if (_bossSpinePrefab != null)
-            {
-                Destroy(_bossSpinePrefab);
-            }
-
             if (WorldBossFrontHelper.TryGetBossData(row.BossId, out var data))
             {
+                if(_bossId == row.BossId)
+                {
+                    return;
+                }
+
+                if (_bossNamePrefab != null)
+                {
+                    Destroy(_bossNamePrefab);
+                }
+
+                if (_bossSpinePrefab != null)
+                {
+                    Destroy(_bossSpinePrefab);
+                }
+
                 if (isOffSeason)
                 {
                     _bossNamePrefab = Instantiate(data.namePrefab, bossNameContainer);

@@ -166,7 +166,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 ? L10nManager.Localize("UI_BOSS_INFORMATION")
                 : $"{L10nManager.Localize("UI_NEXT")} {L10nManager.Localize("UI_BOSS_INFORMATION")}";
             var waveNumber = _wave + 1;
-            wave.text = L10nManager.Localize("UI_WAVE_PHASE", waveNumber);
+            wave.text = $"Wave {waveNumber}";
             content.text = L10nManager.Localize($"UI_BOSS_{_bossId}_INFO_WAVE{waveNumber}");
 
             var data = _cachedData[_wave];
