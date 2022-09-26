@@ -406,7 +406,7 @@ namespace Nekoyume.Helper
                 rowList = stageRows.ToList();
                 var rowCount = rowList.Count;
                 for (var i = rowCount - 1;
-                     i >= 0 && result.Count >= MaxCountOfAcquisitionStages;
+                     i >= 0 && result.Count < MaxCountOfAcquisitionStages;
                      i--)
                 {
                     if (!result.Contains(rowList[i]))
