@@ -320,7 +320,6 @@ namespace Nekoyume.UI
             }
 
             randomBuffButton.SetData(States.Instance.CrystalRandomSkillState, _stageId);
-            randomBuffButton.gameObject.SetActive(true);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
