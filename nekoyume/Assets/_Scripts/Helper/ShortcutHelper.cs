@@ -366,7 +366,7 @@ namespace Nekoyume.Helper
                     {
                         if (RxProps.EventDungeonInfo.Value is not null)
                         {
-                            return stageRow.Id <= RxProps.EventDungeonInfo.Value.ClearedStageId;
+                            return stageRow.Id <= RxProps.EventDungeonInfo.Value.ClearedStageId + 1;
                         }
 
                         return stageRow.Id.ToEventDungeonStageNumber() <= 1;
@@ -374,7 +374,7 @@ namespace Nekoyume.Helper
 
                     States.Instance.CurrentAvatarState.worldInformation
                         .TryGetLastClearedStageId(out var lastClearedStageId);
-                    return stageRow.Id <= lastClearedStageId;
+                    return stageRow.Id <= lastClearedStageId + 1;
                 }
             ).ToList();
 
