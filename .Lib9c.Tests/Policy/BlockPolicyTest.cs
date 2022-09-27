@@ -48,7 +48,7 @@ namespace Lib9c.Tests
 
             var blockPolicySource = new BlockPolicySource(Logger.None);
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
-                10_000, null, null, null, null, null, null);
+                10_000, null, null, null, null, null, null, null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
@@ -140,7 +140,7 @@ namespace Lib9c.Tests
 
             var blockPolicySource = new BlockPolicySource(Logger.None);
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
-                10_000, null, null, null, null, null, null);
+                10_000, null, null, null, null, null, null, null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
@@ -187,7 +187,7 @@ namespace Lib9c.Tests
 
             var blockPolicySource = new BlockPolicySource(Logger.None);
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
-                10_000, null, null, null, null, null, null);
+                10_000, null, null, null, null, null, null, null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
@@ -246,7 +246,8 @@ namespace Lib9c.Tests
                         endIndex: 4,
                         filter: index => index % 2 == 0,
                         value: miners.ToImmutableHashSet())),
-                permissionedMinersPolicy: null);
+                permissionedMinersPolicy: null,
+                minBlockProtocolVersionPolicy: null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
@@ -333,7 +334,8 @@ namespace Lib9c.Tests
                         endIndex: 6,
                         filter: index => index % 2 == 0,
                         value: miners.ToImmutableHashSet())),
-                permissionedMinersPolicy: null);
+                permissionedMinersPolicy: null,
+                minBlockProtocolVersionPolicy: null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
@@ -462,7 +464,8 @@ namespace Lib9c.Tests
                     .Add(new SpannedSubPolicy<int>(0, null, null, 10)),
                 maxTransactionsPerSignerPerBlockPolicy: null,
                 authorizedMinersPolicy: null,
-                permissionedMinersPolicy: null);
+                permissionedMinersPolicy: null,
+                minBlockProtocolVersionPolicy: null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             Block<PolymorphicAction<ActionBase>> genesis =
@@ -559,7 +562,8 @@ namespace Lib9c.Tests
                     .Default
                     .Add(new SpannedSubPolicy<int>(2, null, null, 5)),
                 authorizedMinersPolicy: null,
-                permissionedMinersPolicy: null);
+                permissionedMinersPolicy: null,
+                minBlockProtocolVersionPolicy: null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             Block<PolymorphicAction<ActionBase>> genesis =
@@ -649,6 +653,73 @@ namespace Lib9c.Tests
         }
 
         [Fact]
+        public void ValidateNextBlockWithLowBlockProtocolVersion()
+        {
+            var adminPrivateKey = new PrivateKey();
+            var adminPublicKey = adminPrivateKey.PublicKey;
+            var blockPolicySource = new BlockPolicySource(Logger.None);
+            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
+                minimumDifficulty: 10_000,
+                maxTransactionsBytesPolicy: null,
+                minTransactionsPerBlockPolicy: null,
+                maxTransactionsPerBlockPolicy: null,
+                maxTransactionsPerSignerPerBlockPolicy: null,
+                authorizedMinersPolicy: null,
+                permissionedMinersPolicy: null,
+                minBlockProtocolVersionPolicy: MinBlockProtocolVersionPolicy
+                    .Default
+                    .Add(new SpannedSubPolicy<int>(2, null, null, 4)));
+            IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
+                new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
+            Block<PolymorphicAction<ActionBase>> genesis =
+                MakeGenesisBlock(adminPublicKey.ToAddress(), ImmutableHashSet<Address>.Empty);
+
+            using var store = new DefaultStore(null);
+            var stateStore = new TrieStateStore(new MemoryKeyValueStore());
+            var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
+                policy,
+                stagePolicy,
+                store,
+                stateStore,
+                genesis
+            );
+
+            Assert.Equal(1, blockChain.Count);
+            Block<PolymorphicAction<ActionBase>> block1 = new BlockContent<PolymorphicAction<ActionBase>>(
+                new BlockMetadata(
+                    index: 1L,
+                    timestamp: DateTimeOffset.UtcNow,
+                    publicKey: adminPublicKey,
+                    difficulty: policy.GetNextBlockDifficulty(blockChain),
+                    totalDifficulty: blockChain.Tip.Difficulty + policy.GetNextBlockDifficulty(blockChain),
+                    previousHash: blockChain.Tip.Hash,
+                    txHash: null)).Mine().Evaluate(adminPrivateKey, blockChain);
+
+            // Should be fine since policy hasn't kicked in yet.
+            blockChain.Append(block1);
+            Assert.Equal(2, blockChain.Count);
+            Assert.True(blockChain.ContainsBlock(block1.Hash));
+            Assert.Equal(3, block1.ProtocolVersion);
+
+            Block<PolymorphicAction<ActionBase>> block2 = new BlockContent<PolymorphicAction<ActionBase>>(
+                new BlockMetadata(
+                    index: 2L,
+                    timestamp: DateTimeOffset.UtcNow,
+                    publicKey: adminPublicKey,
+                    difficulty: policy.GetNextBlockDifficulty(blockChain),
+                    totalDifficulty: blockChain.Tip.Difficulty + policy.GetNextBlockDifficulty(blockChain),
+                    previousHash: blockChain.Tip.Hash,
+                    txHash: null)).Mine().Evaluate(adminPrivateKey, blockChain);
+
+            // Subpolicy kicks in.
+            Assert.Throws<BlockPolicyViolationException>(() => blockChain.Append(block2));
+            Assert.Equal(2, blockChain.Count);
+            Assert.False(blockChain.ContainsBlock(block2.Hash));
+            Assert.Equal(3, block2.ProtocolVersion);
+            Assert.Equal(4, blockChain.Policy.GetMinBlockProtocolVersion(block2.Index));
+        }
+
+        [Fact]
         public async Task PermissionedBlockPolicy()
         {
             // This creates genesis with _privateKey as its miner.
@@ -683,7 +754,8 @@ namespace Lib9c.Tests
                             endIndex: null,
                             filter: null,
                             value: new Address[] { permissionedMinerKey.ToAddress() }
-                                .ToImmutableHashSet()))),
+                                .ToImmutableHashSet())),
+                    minBlockProtocolVersionPolicy: null),
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>(),
                 store,
                 stateStore,
@@ -770,7 +842,8 @@ namespace Lib9c.Tests
                             endIndex: 10,
                             filter: index => index % 3 == 0,
                             value: new Address[] { permissionedMinerKey.ToAddress() }
-                                .ToImmutableHashSet()))),
+                                .ToImmutableHashSet())),
+                    minBlockProtocolVersionPolicy: null),
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>(),
                 store,
                 stateStore,
@@ -884,7 +957,8 @@ namespace Lib9c.Tests
                             endIndex: 20,
                             filter: index => index % 3 == 0,
                             value: new Address[] { permissionedMinerKey.ToAddress() }
-                                .ToImmutableHashSet())));
+                                .ToImmutableHashSet())),
+                    minBlockProtocolVersionPolicy: null);
 
             // For genesis, any miner is allowed.
             Assert.All(addresses, address => Assert.True(policy.IsAllowedToMine(address, 0)));

@@ -57,6 +57,25 @@ namespace Nekoyume.BlockChain.Policy
             return allAuthorizedMiners.Contains(transaction.Signer);
         }
 
+        private static BlockPolicyViolationException ValidateBlockProtocolVersionRaw(
+            Block<NCAction> block,
+            IVariableSubPolicy<int> minBlockProtocolVersionPolicy)
+        {
+            int minBlockProtocolVersion = minBlockProtocolVersionPolicy.Getter(block.Index);
+            if (block.ProtocolVersion < minBlockProtocolVersion)
+            {
+                // NOTE: InvalidBlockProtocolVersionException would be more appropriate,
+                // but it is not a BlockPolicyViolationException; as this is a temporary
+                // solution to allow migration, we just use BlockPolicyViolationException.
+                return new BlockPolicyViolationException(
+                    $"The minimum block protocol version of block #{block.Index} is " +
+                    $"{minBlockProtocolVersion} while the given block has " +
+                    $"block protocol versoin {block.ProtocolVersion}.");
+            }
+
+            return null;
+        }
+
         private static InvalidBlockBytesLengthException ValidateTransactionsBytesRaw(
             Block<NCAction> block,
             IVariableSubPolicy<long> maxTransactionsBytesPolicy)
