@@ -92,9 +92,8 @@ namespace Nekoyume.UI
         private static void ShowTooltip(StageRewardItemView view)
         {
             AudioController.PlayClick();
-            var material = new Nekoyume.Model.Item.Material(view.Data as MaterialItemSheet.Row);
-            ItemTooltip.Find(material.ItemType)
-                .Show(material, string.Empty, false, null, target: view.RectTransform);
+            ItemTooltip.Find(view.Data.ItemType)
+                .Show(view.Data, string.Empty, false, null, target: view.RectTransform);
         }
 
         private void OnClickClose()

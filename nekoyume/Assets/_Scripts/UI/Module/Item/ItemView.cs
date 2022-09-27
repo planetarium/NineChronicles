@@ -121,30 +121,9 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            ItemSheet.Row row;
+            base.SetData(model.ItemBase.Value, onClick);
 
-            row = Game.Game.instance.TableSheets.ItemSheet.Values
-                .FirstOrDefault(r => r.Id == model.ItemBase.Value.Id);
-
-            if (row is null)
-            {
-                if (model.ItemBase.Value.ItemSubType == ItemSubType.TailCostume ||
-                    model.ItemBase.Value.ItemSubType == ItemSubType.EarCostume)
-                {
-                    row = Game.Game.instance.TableSheets.ItemSheet.Values.FirstOrDefault(x =>
-                        x.ItemSubType == model.ItemBase.Value.ItemSubType);
-                }
-
-                if (row is null)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(ItemSheet.Row),
-                        model.ItemBase.Value.Id, null);
-                }
-            }
-
-            base.SetData(row, onClick);
-
-            var viewData = base.itemViewData.GetItemViewData(row.Grade);
+            var viewData = GetItemViewData(model.ItemBase.Value);
             enhancementImage.GetComponent<Image>().material = viewData.EnhancementMaterial;
 
             _disposablesAtSetData.DisposeAllAndClear();
@@ -169,28 +148,9 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            ItemSheet.Row row;
+            base.SetData(model.ItemBase.Value);
 
-            if (isConsumable)
-            {
-                row = Game.Game.instance.TableSheets.ConsumableItemSheet.Values
-                    .FirstOrDefault(r => r.Id == model.ItemBase.Value.Id);
-            }
-            else
-            {
-                row = Game.Game.instance.TableSheets.EquipmentItemSheet.Values
-                    .FirstOrDefault(r => r.Id == model.ItemBase.Value.Id);
-            }
-
-            if (row is null)
-            {
-                throw new ArgumentOutOfRangeException(nameof(ItemSheet.Row),
-                    model.ItemBase.Value.Id, null);
-            }
-
-            base.SetData(row, null);
-
-            var viewData = itemViewData.GetItemViewData(row.Grade);
+            var viewData = GetItemViewData(model.ItemBase.Value);
             _disposablesAtSetData.DisposeAllAndClear();
             Model = model;
             Model.GradeEnabled.SubscribeTo(gradeImage).AddTo(_disposablesAtSetData);
@@ -213,20 +173,9 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            ItemSheet.Row row;
+            base.SetData(model.ItemBase.Value);
 
-            row = Game.Game.instance.TableSheets.ItemSheet.Values
-                .FirstOrDefault(r => r.Id == model.ItemBase.Value.Id);
-
-            if (row is null)
-            {
-                throw new ArgumentOutOfRangeException(nameof(ItemSheet.Row),
-                    model.ItemBase.Value.Id, null);
-            }
-
-            base.SetData(row, null);
-
-            var viewData = base.itemViewData.GetItemViewData(row.Grade);
+            var viewData = GetItemViewData(model.ItemBase.Value);
             enhancementImage.GetComponent<Image>().material = viewData.EnhancementMaterial;
 
             _disposablesAtSetData.DisposeAllAndClear();

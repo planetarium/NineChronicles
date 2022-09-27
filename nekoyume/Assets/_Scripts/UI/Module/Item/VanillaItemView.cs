@@ -1,7 +1,9 @@
 using Coffee.UIEffects;
 using DG.Tweening;
 using Nekoyume.Game;
+using Nekoyume.Game.ScriptableObject;
 using Nekoyume.Helper;
+using Nekoyume.Model.Item;
 using Nekoyume.TableData;
 using UnityEngine;
 using UnityEngine.UI;
@@ -50,15 +52,15 @@ namespace Nekoyume.UI.Module
             gameObject.SetActive(false);
         }
 
-        public virtual void SetData(ItemSheet.Row itemRow, System.Action onClick = null)
+        public virtual void SetData(ItemBase itemBase, System.Action onClick = null)
         {
-            if (itemRow is null)
+            if (itemBase is null)
             {
                 Clear();
                 return;
             }
 
-            var data = itemViewData.GetItemViewData(itemRow.Grade);
+            var data = GetItemViewData(itemBase);
             gradeImage.overrideSprite = data.GradeBackground;
 
             gradeHsv.range = data.GradeHsvRange;
@@ -66,8 +68,7 @@ namespace Nekoyume.UI.Module
             gradeHsv.saturation = data.GradeHsvSaturation;
             gradeHsv.value = data.GradeHsvValue;
 
-            var iconResourceId =
-                itemRow.GetIconResourceId(TableSheets.Instance.ArenaSheet);
+            var iconResourceId = itemBase.Id.GetIconResourceId(TableSheets.Instance.ArenaSheet);
             var itemSprite = SpriteHelper.GetItemIcon(iconResourceId);
             if (itemSprite is null)
             {
@@ -77,6 +78,19 @@ namespace Nekoyume.UI.Module
             iconImage.enabled = true;
             iconImage.overrideSprite = itemSprite;
             iconImage.SetNativeSize();
+        }
+
+        public void SetData(ItemSheet.Row itemRow, System.Action onClick = null)
+        {
+            var material = new Nekoyume.Model.Item.Material(itemRow as MaterialItemSheet.Row);
+            SetData(material, onClick);
+        }
+
+        protected ItemViewData GetItemViewData(ItemBase itemBase)
+        {
+            // if itemBase is TradableMaterial, upgrade view data.
+            var upgrade = itemBase is TradableMaterial ? 1 : 0;
+            return itemViewData.GetItemViewData(itemBase.Grade + upgrade);
         }
 
         public virtual void Clear()
