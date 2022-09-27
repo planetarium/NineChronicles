@@ -70,7 +70,10 @@ namespace Lib9c.Tests.Action
                 default
             );
 
-            var gold = new GoldCurrencyState(new Currency("NCG", 2, minter: null));
+#pragma warning disable CS0618
+            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+            var gold = new GoldCurrencyState(Currency.Legacy("NCG", 2, null));
+#pragma warning restore CS0618
             _baseState = (State)new State()
                 .SetState(GoldCurrencyState.Address, gold.Serialize())
                 .SetState(Addresses.GoldDistribution, GoldDistributionTest.Fixture.Select(v => v.Serialize()).Serialize())
@@ -358,7 +361,10 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void GoldDistributedEachAccount()
         {
-            Currency currency = new Currency("NCG", 2, minters: null);
+#pragma warning disable CS0618
+            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+            Currency currency = Currency.Legacy("NCG", 2, null);
+#pragma warning restore CS0618
             Address fund = GoldCurrencyState.Address;
             Address address1 = new Address("F9A15F870701268Bd7bBeA6502eB15F4997f32f9");
             Address address2 = new Address("Fb90278C67f9b266eA309E6AE8463042f5461449");
@@ -508,7 +514,10 @@ namespace Lib9c.Tests.Action
                     ),
                     adminAddressState: new AdminState(adminAddress, 1500000),
                     activatedAccountsState: new ActivatedAccountsState(activatedAccounts),
-                    goldCurrencyState: new GoldCurrencyState(new Currency("NCG", 2, minter: null)),
+#pragma warning disable CS0618
+                    // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+                    goldCurrencyState: new GoldCurrencyState(Currency.Legacy("NCG", 2, null)),
+#pragma warning restore CS0618
                     goldDistributions: new GoldDistribution[0],
                     tableSheets: TableSheetsImporter.ImportSheets(),
                     pendingActivationStates: pendingActivationStates.ToArray()
