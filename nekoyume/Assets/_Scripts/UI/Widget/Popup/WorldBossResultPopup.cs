@@ -130,7 +130,6 @@ namespace Nekoyume.UI
                 Find<WorldBossRewardScreen>().Show(_killRewards,
                     () =>
                     {
-                        Game.Event.OnRoomEnter.Invoke(true);
                         Find<WorldBoss>().ShowAsync().Forget();
                     });
             }
