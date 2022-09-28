@@ -32,10 +32,18 @@ namespace Nekoyume.UI
         [SerializeField]
         private TMP_Text skillChanceText;
 
-        private EquipmentItemOptionSheet.Row _skillOptionRow;
-        private SubRecipeView.RecipeInfo _recipeInfo;
+        [SerializeField]
+        private Toggle basicRecipeToggle;
+
+        [SerializeField]
+        private Toggle premiumRecipeToggle;
+
+        private EquipmentItemRecipeSheet.Row _recipeRow;
+        private int _subRecipeIndex;
 
         private const int SuperCraftIndex = 20;
+        private const int BasicRecipeIndex = 0;
+        private const int PremiumRecipeIndex = 1;
 
         public override void Initialize()
         {
@@ -67,31 +75,41 @@ namespace Nekoyume.UI
         }
 
         public void Show(
-            EquipmentItemOptionSheet.Row row,
-            SubRecipeView.RecipeInfo recipeInfo,
-            int recipeId,
+            EquipmentItemRecipeSheet.Row recipeRow,
             bool canSuperCraft,
             bool ignoreAnimation = false)
         {
-            _skillOptionRow = row;
-            _recipeInfo = recipeInfo;
+            _recipeRow = recipeRow;
             superCraftButton.Interactable =
                 Find<CombinationSlotsPopup>().TryGetEmptyCombinationSlot(out _) && canSuperCraft;
-            skillName.text = L10nManager.Localize($"SKILL_NAME_{row.SkillId}");
             var sheets = TableSheets.Instance;
-            var isBuffSkill = row.SkillDamageMax == 0;
-            var buffRow = isBuffSkill
-                ? sheets.StatBuffSheet[sheets.SkillBuffSheet[row.SkillId].BuffIds.First()]
-                : null;
-            skillPowerText.text = isBuffSkill
-                ? $"{L10nManager.Localize("UI_SKILL_EFFECT")}: {buffRow.StatModifier}"
-                : $"{L10nManager.Localize("UI_SKILL_POWER")}: {row.SkillDamageMax.ToString()}";
-            skillChanceText.text =
-                $"{L10nManager.Localize("UI_SKILL_CHANCE")}: {row.SkillChanceMin.NormalizeFromTenThousandths() * 100:0%}";
             superCraftButton.SetCost(
                 CostType.Crystal,
-                sheets.CrystalHammerPointSheet[recipeId].CRYSTAL);
+                sheets.CrystalHammerPointSheet[_recipeRow.Id].CRYSTAL);
             base.Show(ignoreAnimation);
+            basicRecipeToggle.isOn = true;
+            SetSkillInfoText(_recipeRow.SubRecipeIds[BasicRecipeIndex]);
+        }
+
+        private void SetSkillInfoText(int subRecipeId)
+        {
+            var sheets = TableSheets.Instance;
+            var subRecipeRow = sheets.EquipmentItemSubRecipeSheetV2[subRecipeId];
+            var optionSheet = sheets.EquipmentItemOptionSheet;
+            var skillOptionRow = subRecipeRow.Options
+                .Select(x => (ratio: x.Ratio, option: optionSheet[x.Id]))
+                .FirstOrDefault(tuple => tuple.option.SkillId != 0)
+                .option;
+            var isBuffSkill = skillOptionRow.SkillDamageMax == 0;
+            var buffRow = isBuffSkill
+                ? sheets.StatBuffSheet[sheets.SkillBuffSheet[skillOptionRow.SkillId].BuffIds.First()]
+                : null;
+            skillName.text = L10nManager.Localize($"SKILL_NAME_{skillOptionRow.SkillId}");
+            skillPowerText.text = isBuffSkill
+                ? $"{L10nManager.Localize("UI_SKILL_EFFECT")}: {buffRow.StatModifier}"
+                : $"{L10nManager.Localize("UI_SKILL_POWER")}: {skillOptionRow.SkillDamageMax.ToString()}";
+            skillChanceText.text =
+                $"{L10nManager.Localize("UI_SKILL_CHANCE")}: {skillOptionRow.SkillChanceMin.NormalizeFromTenThousandths() * 100:0%}";
         }
 
         private IEnumerator CoCombineNpcAnimation(ItemBase itemBase)
