@@ -919,6 +919,102 @@
             }
         }
 
+        [Fact]
+        public void Execute_V100291()
+        {
+            var initialState = _initialState;
+            var keys = new List<string>
+            {
+                nameof(SkillActionBuffSheet),
+                nameof(ActionBuffSheet),
+                nameof(StatBuffSheet),
+            };
+            foreach (var (key, value) in _sheets)
+            {
+                if (keys.Contains(key))
+                {
+                    initialState = initialState.SetState(Addresses.TableSheet.Derive(key), null!);
+                }
+            }
+
+            var previousAvatarState = _initialState.GetAvatarStateV2(_avatarAddress);
+            var costumes = new List<Guid>();
+            IRandom random = new TestRandom();
+            var costumeId = _tableSheets
+                .CostumeItemSheet
+                .Values
+                .First(r => r.ItemSubType == ItemSubType.FullCostume)
+                .Id;
+
+            var costume = (Costume)ItemFactory.CreateItem(
+                    _tableSheets.ItemSheet[costumeId], random);
+            previousAvatarState.inventory.AddItem(costume);
+            costumes.Add(costume.ItemId);
+            var equipments = Doomfist.GetAllParts(_tableSheets, previousAvatarState.level);
+            foreach (var equipment in equipments)
+            {
+                previousAvatarState.inventory.AddItem(equipment);
+            }
+
+            var mailEquipmentRow = _tableSheets.EquipmentItemSheet.Values.First();
+            var mailEquipment = ItemFactory.CreateItemUsable(mailEquipmentRow, default, 0);
+            var result = new CombinationConsumable5.ResultModel
+            {
+                id = default,
+                gold = 0,
+                actionPoint = 0,
+                recipeId = 1,
+                materials = new Dictionary<Material, int>(),
+                itemUsable = mailEquipment,
+            };
+            for (var i = 0; i < 100; i++)
+            {
+                var mail = new CombinationMail(result, i, default, 0);
+                previousAvatarState.Update(mail);
+            }
+
+            initialState = initialState
+                .SetState(_avatarAddress, previousAvatarState.SerializeV2())
+                .SetState(_avatarAddress.Derive(LegacyInventoryKey), previousAvatarState.inventory.Serialize())
+                .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), previousAvatarState.worldInformation.Serialize())
+                .SetState(_avatarAddress.Derive(LegacyQuestListKey), previousAvatarState.questList.Serialize());
+
+            initialState = initialState.SetState(
+                _avatarAddress.Derive("world_ids"),
+                List.Empty.Add(1)
+            );
+
+            foreach (var key in keys)
+            {
+                Assert.Null(initialState.GetState(Addresses.GetSheetAddress(key)));
+            }
+
+            Assert.NotNull(initialState.GetState(Addresses.GetSheetAddress<BuffSheet>()));
+
+            var action = new HackAndSlash
+            {
+                Costumes = costumes,
+                Equipments = equipments.Select(e => e.NonFungibleId).ToList(),
+                Foods = new List<Guid>(),
+                WorldId = 1,
+                StageId = 1,
+                AvatarAddress = _avatarAddress,
+            };
+
+            var nextState = action.Execute(new ActionContext
+            {
+                PreviousStates = initialState,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+                Rehearsal = false,
+                BlockIndex = 1,
+            });
+
+            var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
+
+            Assert.True(nextAvatarState.worldInformation.IsStageCleared(1));
+        }
+
         [Theory]
         [InlineData(true, 1, 15)]
         [InlineData(true, 2, 55)]
