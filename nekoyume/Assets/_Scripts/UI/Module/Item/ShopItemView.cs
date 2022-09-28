@@ -75,7 +75,16 @@ namespace Nekoyume.UI.Module
 
             baseItemView.CountText.gameObject.SetActive(model.ItemBase.ItemType == ItemType.Material);
             baseItemView.CountText.text = model.OrderDigest.ItemCount.ToString();
-            baseItemView.PriceText.text = model.OrderDigest.Price.GetQuantityString();
+
+            if (model.OrderDigest.ItemCount > 1 && decimal.TryParse(model.OrderDigest.Price.GetQuantityString(), out var price))
+            {
+                var priceText = decimal.Ceiling(price / model.OrderDigest.ItemCount * 1000) / 1000;
+                baseItemView.PriceText.text = $"{model.OrderDigest.Price.GetQuantityString()}({priceText})";
+            }
+            else
+            {
+                baseItemView.PriceText.text = model.OrderDigest.Price.GetQuantityString();
+            }
 
             model.Selected.Subscribe(b => baseItemView.SelectObject.SetActive(b)).AddTo(_disposables);
             model.Expired.Subscribe(b => baseItemView.ExpiredObject.SetActive(b)).AddTo(_disposables);
