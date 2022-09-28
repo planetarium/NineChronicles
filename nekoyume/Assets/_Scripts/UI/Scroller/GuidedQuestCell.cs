@@ -235,9 +235,8 @@ namespace Nekoyume.UI.Scroller
         private static void ShowTooltip(StageRewardItemView reward)
         {
             AudioController.PlayClick();
-            var material = new Nekoyume.Model.Item.Material(reward.Data as MaterialItemSheet.Row);
-            ItemTooltip.Find(material.ItemType)
-                .Show(material, string.Empty, false, null, target:reward.RectTransform);
+            ItemTooltip.Find(reward.Data.ItemType)
+                .Show(reward.Data, string.Empty, false, null, target:reward.RectTransform);
         }
 
         private void ClearRewards()
