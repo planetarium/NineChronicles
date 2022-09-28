@@ -88,6 +88,8 @@ MonoBehaviour:
   skillName: {fileID: 2760609118625277589}
   skillPowerText: {fileID: 8286126236900493500}
   skillChanceText: {fileID: 4647558963994349847}
+  basicRecipeToggle: {fileID: 1276498893253174519}
+  premiumRecipeToggle: {fileID: 4588626535414031271}
 --- !u!1 &158038873445042577
 GameObject:
   m_ObjectHideFlags: 0
@@ -509,7 +511,7 @@ MonoBehaviour:
   onClickToggle:
     m_PersistentCalls:
       m_Calls: []
-  allowSwitchOffWhenIsOn: 1
+  allowSwitchOffWhenIsOn: 0
 --- !u!1 &338284742718614231
 GameObject:
   m_ObjectHideFlags: 0
@@ -23911,7 +23913,7 @@ MonoBehaviour:
   onClickToggle:
     m_PersistentCalls:
       m_Calls: []
-  allowSwitchOffWhenIsOn: 1
+  allowSwitchOffWhenIsOn: 0
 --- !u!1 &9180883913581302694
 GameObject:
   m_ObjectHideFlags: 0

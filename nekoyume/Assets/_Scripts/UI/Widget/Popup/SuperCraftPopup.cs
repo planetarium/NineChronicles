@@ -12,12 +12,11 @@ using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
-using UniRx;
 using UnityEngine;
-using ObservableExtensions = UniRx.ObservableExtensions;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
     public class SuperCraftPopup : PopupWidget
     {
         [SerializeField]
@@ -47,18 +46,37 @@ namespace Nekoyume.UI
 
         public override void Initialize()
         {
-            ObservableExtensions.Subscribe(superCraftButton.OnSubmitSubject, _ =>
+            basicRecipeToggle.onValueChanged.AddListener(b =>
+            {
+                _subRecipeIndex = b ? BasicRecipeIndex : PremiumRecipeIndex;
+                SetSkillInfoText(_recipeRow.SubRecipeIds[_subRecipeIndex]);
+            });
+            premiumRecipeToggle.onValueChanged.AddListener(b =>
+            {
+                _subRecipeIndex = b ? PremiumRecipeIndex : BasicRecipeIndex;
+                SetSkillInfoText(_recipeRow.SubRecipeIds[_subRecipeIndex]);
+            });
+            superCraftButton.OnSubmitSubject.Subscribe(_ =>
             {
                 if (Find<CombinationSlotsPopup>().TryGetEmptyCombinationSlot(out var slotIndex))
                 {
                     ActionManager.Instance.CombinationEquipment(
-                        _recipeInfo,
+                        new SubRecipeView.RecipeInfo
+                        {
+                            RecipeId = _recipeRow.Id,
+                            SubRecipeId = _recipeRow.SubRecipeIds[_subRecipeIndex],
+                            CostNCG = default,
+                            CostCrystal = default,
+                            CostAP = 0,
+                            Materials = default,
+                            ReplacedMaterials = null,
+                        },
                         slotIndex,
                         false,
-                        true);
+                        true).Subscribe();
                     var sheets = TableSheets.Instance;
                     var equipmentRow = sheets
-                        .EquipmentItemRecipeSheet[_recipeInfo.RecipeId];
+                        .EquipmentItemRecipeSheet[_recipeRow.Id];
                     var equipment = (Equipment) ItemFactory.CreateItemUsable(
                         equipmentRow.GetResultEquipmentItemRow(),
                         Guid.Empty,
