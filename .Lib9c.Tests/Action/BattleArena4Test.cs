@@ -836,5 +836,139 @@ namespace Lib9c.Tests.Action
                 Random = new TestRandom(),
             }));
         }
+
+        [Fact]
+        public void Execute_v100291()
+        {
+            var keys = new List<string>
+            {
+                nameof(SkillActionBuffSheet),
+                nameof(ActionBuffSheet),
+                nameof(StatBuffSheet),
+            };
+            foreach (var (key, value) in _sheets)
+            {
+                if (keys.Contains(key))
+                {
+                    _state = _state.SetState(Addresses.TableSheet.Derive(key), null!);
+                }
+            }
+
+            int championshipId = 1;
+            int round = 1;
+            Assert.True(_state.GetSheet<ArenaSheet>().TryGetValue(
+                championshipId,
+                out var row));
+
+            Assert.True(row.TryGetRound(1, out var roundData));
+
+            var random = new TestRandom(1);
+            _state = JoinArena(_agent1Address, _avatar1Address, roundData.StartBlockIndex, championshipId, round, random);
+            _state = JoinArena(_agent2Address, _avatar2Address, roundData.StartBlockIndex, championshipId, round, random);
+
+            var arenaInfoAdr = ArenaInformation.DeriveAddress(_avatar1Address, championshipId, round);
+            if (!_state.TryGetArenaInformation(arenaInfoAdr, out var beforeInfo))
+            {
+                throw new ArenaInformationNotFoundException($"arenaInfoAdr : {arenaInfoAdr}");
+            }
+
+            foreach (var key in keys)
+            {
+                Assert.Null(_state.GetState(Addresses.GetSheetAddress(key)));
+            }
+
+            Assert.NotNull(_state.GetState(Addresses.GetSheetAddress<BuffSheet>()));
+
+            var action = new BattleArena4()
+            {
+                myAvatarAddress = _avatar1Address,
+                enemyAvatarAddress = _avatar2Address,
+                championshipId = championshipId,
+                round = round,
+                ticket = 1,
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+            };
+
+            var myScoreAdr = ArenaScore.DeriveAddress(_avatar1Address, championshipId, round);
+            var enemyScoreAdr = ArenaScore.DeriveAddress(_avatar2Address, championshipId, round);
+            if (!_state.TryGetArenaScore(myScoreAdr, out var beforeMyScore))
+            {
+                throw new ArenaScoreNotFoundException($"myScoreAdr : {myScoreAdr}");
+            }
+
+            if (!_state.TryGetArenaScore(enemyScoreAdr, out var beforeEnemyScore))
+            {
+                throw new ArenaScoreNotFoundException($"enemyScoreAdr : {enemyScoreAdr}");
+            }
+
+            Assert.Empty(_avatar1.inventory.Materials);
+
+            var gameConfigState = SetArenaInterval(2);
+            _state = _state.SetState(GameConfigState.Address, gameConfigState.Serialize());
+
+            var blockIndex = roundData.StartBlockIndex + 1;
+            _state = action.Execute(new ActionContext
+            {
+                PreviousStates = _state,
+                Signer = _agent1Address,
+                Random = random,
+                Rehearsal = false,
+                BlockIndex = blockIndex,
+            });
+
+            if (!_state.TryGetArenaScore(myScoreAdr, out var myAfterScore))
+            {
+                throw new ArenaScoreNotFoundException($"myScoreAdr : {myScoreAdr}");
+            }
+
+            if (!_state.TryGetArenaScore(enemyScoreAdr, out var enemyAfterScore))
+            {
+                throw new ArenaScoreNotFoundException($"enemyScoreAdr : {enemyScoreAdr}");
+            }
+
+            if (!_state.TryGetArenaInformation(arenaInfoAdr, out var afterInfo))
+            {
+                throw new ArenaInformationNotFoundException($"arenaInfoAdr : {arenaInfoAdr}");
+            }
+
+            var (myWinScore, myDefeatScore, enemyWinScore) =
+                ArenaHelper.GetScores(beforeMyScore.Score, beforeEnemyScore.Score);
+
+            var addMyScore = (afterInfo.Win * myWinScore) + (afterInfo.Lose * myDefeatScore);
+            var addEnemyScore = afterInfo.Win * enemyWinScore;
+            var expectedMyScore = Math.Max(beforeMyScore.Score + addMyScore, ArenaScore.ArenaScoreDefault);
+            var expectedEnemyScore = Math.Max(beforeEnemyScore.Score + addEnemyScore, ArenaScore.ArenaScoreDefault);
+
+            Assert.Equal(expectedMyScore, myAfterScore.Score);
+            Assert.Equal(expectedEnemyScore, enemyAfterScore.Score);
+            Assert.Equal(0, beforeInfo.Win);
+            Assert.Equal(0, beforeInfo.Lose);
+
+            var balance = _state.GetBalance(_agent1Address, _state.GetGoldCurrency());
+            Assert.Equal(0, balance.RawValue);
+
+            var avatarState = _state.GetAvatarStateV2(_avatar1Address);
+            var medalCount = 0;
+            if (roundData.ArenaType != ArenaType.OffSeason)
+            {
+                var medalId = ArenaHelper.GetMedalItemId(championshipId, round);
+                avatarState.inventory.TryGetItem(medalId, out var medal);
+                if (afterInfo.Win > 0)
+                {
+                    Assert.Equal(afterInfo.Win, medal.count);
+                }
+                else
+                {
+                    Assert.Null(medal);
+                }
+
+                medalCount = medal?.count ?? 0;
+            }
+
+            var materialCount = avatarState.inventory.Materials.Count();
+            var high = ArenaHelper.GetRewardCount(beforeMyScore.Score) * 1 + medalCount;
+            Assert.InRange(materialCount, 0, high);
+        }
     }
 }
