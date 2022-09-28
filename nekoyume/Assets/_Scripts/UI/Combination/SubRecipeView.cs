@@ -569,9 +569,8 @@ namespace Nekoyume.UI
                     ? outFungibleItems.Sum(e => e.count)
                     : 0;
 
-                // when a material is unreplaceable.
-                if (material.Value > itemCount &&
-                    !TableSheets.Instance.CrystalMaterialCostSheet.ContainsKey(material.Key))
+                // consumable materials are basically unreplaceable so unreplaceable check isn't required
+                if (material.Value > itemCount)
                 {
                     submittable = false;
                 }
