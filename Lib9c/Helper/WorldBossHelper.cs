@@ -7,7 +7,7 @@ namespace Nekoyume.Helper
 {
     public static class WorldBossHelper
     {
-        public const long RefillInterval = 100L;
+        public const long RefillInterval = 7200L;
         public const int MaxChallengeCount = 3;
 
         public static int CalculateRank(WorldBossCharacterSheet.Row row, int score)
