@@ -245,6 +245,20 @@ namespace Nekoyume.Extensions
             );
         }
 
+        public static RankingSimulatorSheets GetRankingSimulatorSheetsV100291(
+            this Dictionary<Type, (Address address, ISheet sheet)> sheets)
+        {
+            return new RankingSimulatorSheetsV100291(
+                sheets.GetSheet<MaterialItemSheet>(),
+                sheets.GetSheet<SkillSheet>(),
+                sheets.GetSheet<SkillBuffSheet>(),
+                sheets.GetSheet<BuffSheet>(),
+                sheets.GetSheet<CharacterSheet>(),
+                sheets.GetSheet<CharacterLevelSheet>(),
+                sheets.GetSheet<EquipmentItemSetEffectSheet>(),
+                sheets.GetSheet<WeeklyArenaRewardSheet>()
+            ).ToRankingSimulatorSheets();
+        }
         public static ArenaSimulatorSheets GetArenaSimulatorSheets(
             this Dictionary<Type, (Address address, ISheet sheet)> sheets)
         {

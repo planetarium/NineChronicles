@@ -108,6 +108,16 @@ namespace Nekoyume.TableData
         {
             WeeklyArenaRewardSheet = weeklyArenaRewardSheet;
         }
+
+        public RankingSimulatorSheets ToRankingSimulatorSheets()
+        {
+            var statBuffSheet = new StatBuffSheet();
+            statBuffSheet.Set((Text)BuffSheet.Serialize());
+            return new RankingSimulatorSheets(MaterialItemSheet, SkillSheet, SkillBuffSheet,
+                statBuffSheet,
+                new SkillActionBuffSheet(), new ActionBuffSheet(), CharacterSheet,
+                CharacterLevelSheet, EquipmentItemSetEffectSheet, WeeklyArenaRewardSheet);
+        }
     }
 
     public class ArenaSimulatorSheetsV100291 : SimulatorSheetsV100291
