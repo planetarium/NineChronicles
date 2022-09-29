@@ -108,7 +108,7 @@ namespace Nekoyume.Action
                     world.StageClearedId);
             }
 
-            var sheets = states.GetSheets(
+            var sheets =states.GetSheetsV100291(
                 containArenaSimulatorSheets: true,
                 sheetTypes: new[]
                 {
@@ -238,7 +238,7 @@ namespace Nekoyume.Action
             ExtraMyArenaPlayerDigest = new ArenaPlayerDigest(avatarState, myArenaAvatarState);
             ExtraEnemyArenaPlayerDigest = new ArenaPlayerDigest(enemyAvatarState, enemyArenaAvatarState);
             ExtraPreviousMyScore = myArenaScore.Score;
-            var arenaSheets = sheets.GetArenaSimulatorSheets();
+            var arenaSheets = sheets.GetArenaSimulatorSheets_v100291();
             var winCount = 0;
             var defeatCount = 0;
             var rewards = new List<ItemBase>();

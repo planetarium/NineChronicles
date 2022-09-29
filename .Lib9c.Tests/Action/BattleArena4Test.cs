@@ -10,6 +10,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Arena;
+    using Nekoyume.BlockChain.Policy;
     using Nekoyume.Model;
     using Nekoyume.Model.Arena;
     using Nekoyume.Model.EnumType;
@@ -217,13 +218,13 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(1, 1, 1, false, 1, 2, 3)]
-        [InlineData(1, 1, 1, false, 1, 2, 4)]
-        [InlineData(1, 1, 1, false, 5, 2, 3)]
-        [InlineData(1, 1, 1, true, 1, 2, 3)]
-        [InlineData(1, 1, 1, true, 3, 2, 3)]
-        [InlineData(1, 1, 2, false, 1, 2, 3)]
-        [InlineData(1, 1, 2, true, 1, 2, 3)]
+        [InlineData(1, 2, 3, false, 1, 2, 3)]
+        [InlineData(1, 2, 3, false, 1, 2, 4)]
+        [InlineData(1, 2, 3, false, 5, 2, 3)]
+        [InlineData(1, 2, 3, true, 1, 2, 3)]
+        [InlineData(1, 2, 3, true, 3, 2, 3)]
+        [InlineData(1, 2, 4, false, 1, 2, 3)]
+        [InlineData(1, 2, 4, true, 1, 2, 3)]
         public void Execute(
             long nextBlockIndex,
             int championshipId,
@@ -296,6 +297,9 @@ namespace Lib9c.Tests.Action
             _state = _state.SetState(GameConfigState.Address, gameConfigState.Serialize());
 
             var blockIndex = roundData.StartBlockIndex + nextBlockIndex;
+
+            Assert.True(blockIndex > BlockPolicySource.V100301ExecutedBlockIndex);
+
             _state = action.Execute(new ActionContext
             {
                 PreviousStates = _state,
