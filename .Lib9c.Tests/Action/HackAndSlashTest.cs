@@ -13,6 +13,7 @@
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Battle;
+    using Nekoyume.BlockChain.Policy;
     using Nekoyume.Extensions;
     using Nekoyume.Model;
     using Nekoyume.Model.Item;
@@ -202,7 +203,7 @@
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,
-                BlockIndex = 1,
+                BlockIndex = BlockPolicySource.V100301ExecutedBlockIndex,
             });
 
             var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);

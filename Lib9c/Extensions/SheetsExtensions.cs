@@ -211,6 +211,23 @@ namespace Nekoyume.Extensions
             );
         }
 
+        public static StageSimulatorSheets GetStageSimulatorSheetsV100291(
+            this Dictionary<Type, (Address address, ISheet sheet)> sheets)
+        {
+            return new StageSimulatorSheetsV100291(
+                sheets.GetSheet<MaterialItemSheet>(),
+                sheets.GetSheet<SkillSheet>(),
+                sheets.GetSheet<SkillBuffSheet>(),
+                sheets.GetSheet<BuffSheet>(),
+                sheets.GetSheet<CharacterSheet>(),
+                sheets.GetSheet<CharacterLevelSheet>(),
+                sheets.GetSheet<EquipmentItemSetEffectSheet>(),
+                sheets.GetSheet<StageSheet>(),
+                sheets.GetSheet<StageWaveSheet>(),
+                sheets.GetSheet<EnemySkillSheet>()
+            ).ToStageSimulatorSheets();
+        }
+
         public static RankingSimulatorSheets GetRankingSimulatorSheets(
             this Dictionary<Type, (Address address, ISheet sheet)> sheets)
         {

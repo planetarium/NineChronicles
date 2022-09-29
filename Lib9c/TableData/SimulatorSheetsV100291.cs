@@ -72,6 +72,15 @@ namespace Nekoyume.TableData
             StageWaveSheet = stageWaveSheet;
             EnemySkillSheet = enemySkillSheet;
         }
+
+        public StageSimulatorSheets ToStageSimulatorSheets()
+        {
+            var statBuffSheet = new StatBuffSheet();
+            statBuffSheet.Set((Text)BuffSheet.Serialize());
+            return new StageSimulatorSheets(MaterialItemSheet, SkillSheet, SkillBuffSheet, statBuffSheet,
+                new SkillActionBuffSheet(), new ActionBuffSheet(), CharacterSheet,
+                CharacterLevelSheet, EquipmentItemSetEffectSheet, StageSheet, StageWaveSheet, EnemySkillSheet);
+        }
     }
 
     public class RankingSimulatorSheetsV100291 : SimulatorSheetsV100291
