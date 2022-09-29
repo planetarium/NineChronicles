@@ -1,5 +1,7 @@
+using System;
 using Cocona;
 using Lib9c.Tools.SubCommand;
+using Action = Lib9c.Tools.SubCommand.Action;
 
 namespace Lib9c.Tools
 {
@@ -10,7 +12,13 @@ namespace Lib9c.Tools
     [HasSubCommands(typeof(Action), Description = "Get metadata of actions.")]
     class Program
     {
-        static void Main(string[] args) => CoconaLiteApp.Run<Program>(args);
+        static void Main(string[] args)
+        {
+            Console.Error.WriteLine(
+                "`lib9c.Tools` is deprecated. " +
+                "Please use `NineChronicles.Headless.Executable [command]` instead.");
+            CoconaLiteApp.Run<Program>(args);
+        }
 
         public void Help()
         {
