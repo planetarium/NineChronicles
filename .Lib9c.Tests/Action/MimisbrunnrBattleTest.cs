@@ -9,6 +9,7 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.BlockChain.Policy;
     using Nekoyume.Model;
     using Nekoyume.Model.Elemental;
     using Nekoyume.Model.Item;
@@ -27,18 +28,19 @@ namespace Lib9c.Tests.Action
         private readonly Address _avatarAddress;
 
         private readonly IAccountStateDelta _initialState;
+        private readonly Dictionary<string, string> _sheets;
 
         public MimisbrunnrBattleTest()
         {
-            var sheets = TableSheetsImporter.ImportSheets();
-            _tableSheets = new TableSheets(sheets);
+            _sheets = TableSheetsImporter.ImportSheets();
+            _tableSheets = new TableSheets(_sheets);
 
             var privateKey = new PrivateKey();
             _agentAddress = privateKey.PublicKey.ToAddress();
             var agentState = new AgentState(_agentAddress);
 
             _avatarAddress = _agentAddress.Derive("avatar");
-            var gameConfigState = new GameConfigState(sheets[nameof(GameConfigSheet)]);
+            var gameConfigState = new GameConfigState(_sheets[nameof(GameConfigSheet)]);
             var rankingMapAddress = _avatarAddress.Derive("ranking_map");
             var avatarState = new AvatarState(
                 _avatarAddress,
@@ -61,7 +63,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
                 .SetState(gameConfigState.address, gameConfigState.Serialize());
 
-            foreach (var (key, value) in sheets)
+            foreach (var (key, value) in _sheets)
             {
                 _initialState = _initialState
                     .SetState(Addresses.TableSheet.Derive(key), value.Serialize());
@@ -159,7 +161,7 @@ namespace Lib9c.Tests.Action
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,
-                BlockIndex = 1,
+                BlockIndex = BlockPolicySource.V100301ExecutedBlockIndex,
             });
 
             var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
@@ -604,6 +606,119 @@ namespace Lib9c.Tests.Action
                     Random = random,
                 }));
             }
+        }
+
+        [Fact]
+        public void Execute_v100291()
+        {
+            var avatarLevel = 200;
+            var worldId = GameConfig.MimisbrunnrWorldId;
+            var stageId = GameConfig.MimisbrunnrStartStageId;
+            var playCount = 1;
+            var clearStageId = 140;
+            var backward = false;
+            Assert.True(_tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow));
+            Assert.True(stageId >= worldRow.StageBegin);
+            Assert.True(stageId <= worldRow.StageEnd);
+            Assert.True(_tableSheets.StageSheet.TryGetValue(stageId, out _));
+
+            var previousAvatarState = _initialState.GetAvatarState(_avatarAddress);
+            previousAvatarState.level = avatarLevel;
+            previousAvatarState.worldInformation = new WorldInformation(
+                0,
+                _tableSheets.WorldSheet,
+                clearStageId);
+
+            var costumeId = _tableSheets
+                .CostumeItemSheet
+                .Values
+                .First(r => r.ItemSubType == ItemSubType.FullCostume)
+                .Id;
+            var costume =
+                ItemFactory.CreateItem(_tableSheets.ItemSheet[costumeId], new TestRandom());
+            previousAvatarState.inventory.AddItem(costume);
+
+            var mimisbrunnrSheet = _tableSheets.MimisbrunnrSheet;
+            if (!mimisbrunnrSheet.TryGetValue(stageId, out var mimisbrunnrSheetRow))
+            {
+                throw new SheetRowNotFoundException("MimisbrunnrSheet", stageId);
+            }
+
+            var elementalType = _tableSheets.MimisbrunnrSheet.TryGetValue(stageId, out var mimisbrunnrRow)
+                ? mimisbrunnrRow.ElementalTypes.First()
+                : ElementalType.Normal;
+            var equipments = Doomfist.GetAllParts(_tableSheets, previousAvatarState.level, elementalType);
+            foreach (var equipment in equipments)
+            {
+                previousAvatarState.inventory.AddItem(equipment);
+            }
+
+            var result = new CombinationConsumable5.ResultModel
+            {
+                id = default,
+                gold = 0,
+                actionPoint = 0,
+                recipeId = 1,
+                materials = new Dictionary<Material, int>(),
+                itemUsable = equipments.First(),
+            };
+            for (var i = 0; i < 100; i++)
+            {
+                var mail = new CombinationMail(result, i, default, 0);
+                previousAvatarState.Update(mail);
+            }
+
+            var state = _initialState;
+            if (backward)
+            {
+                state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
+            }
+            else
+            {
+                state = _initialState
+                    .SetState(_avatarAddress.Derive(LegacyInventoryKey), previousAvatarState.inventory.Serialize())
+                    .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), previousAvatarState.worldInformation.Serialize())
+                    .SetState(_avatarAddress.Derive(LegacyQuestListKey), previousAvatarState.questList.Serialize())
+                    .SetState(_avatarAddress, previousAvatarState.SerializeV2());
+            }
+
+            var keys = new List<string>
+            {
+                nameof(SkillActionBuffSheet),
+                nameof(ActionBuffSheet),
+                nameof(StatBuffSheet),
+            };
+            foreach (var (key, value) in _sheets)
+            {
+                if (keys.Contains(key))
+                {
+                    state = state.SetState(Addresses.TableSheet.Derive(key), null!);
+                }
+            }
+
+            var action = new MimisbrunnrBattle
+            {
+                costumes = new List<Guid> { ((Costume)costume).ItemId },
+                equipments = equipments.Select(e => e.NonFungibleId).ToList(),
+                foods = new List<Guid>(),
+                worldId = worldId,
+                stageId = stageId,
+                playCount = playCount,
+                avatarAddress = _avatarAddress,
+            };
+
+            var nextState = action.Execute(new ActionContext
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+                Rehearsal = false,
+                BlockIndex = 1,
+            });
+
+            var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
+            Assert.True(nextAvatarState.worldInformation.IsStageCleared(stageId));
+            Assert.Equal(30, nextAvatarState.mailBox.Count);
         }
 
         [Theory]
