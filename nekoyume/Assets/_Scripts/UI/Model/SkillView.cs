@@ -30,11 +30,11 @@ namespace Nekoyume.UI.Model
                     sheets.StatBuffSheet,
                     sheets.SkillActionBuffSheet,
                     sheets.ActionBuffSheet).OfType<StatBuff>();
-                if (buffs.Count() > 0)
+                if (buffs.Any())
                 {
                     var buff = buffs.First();
                     var powerValue = buff.RowData.StatModifier.ToString();
-                    power.Value = $"{L10nManager.Localize("UI_SKILL_EFFECT")}: {powerValue}%";
+                    power.Value = $"{L10nManager.Localize("UI_SKILL_EFFECT")}: {powerValue}";
                 }
             }
             else
