@@ -106,7 +106,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}HAS Get AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-            var sheets = states.GetSheets(
+            var sheets = states.GetSheetsV100291(
                 containQuestSheet: true,
                 containStageSimulatorSheets: true,
                 sheetTypes: new[]
@@ -283,7 +283,7 @@ namespace Nekoyume.Action
                 skillsOnWaveStart,
                 worldId,
                 stageId,
-                sheets.GetStageSimulatorSheets(),
+                sheets.GetStageSimulatorSheetsV100291(),
                 sheets.GetSheet<CostumeStatSheet>(),
                 StageSimulatorV1.ConstructorVersionV100080);
 

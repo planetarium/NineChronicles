@@ -14,6 +14,7 @@ using Libplanet.Action;
 using Serilog;
 using Nekoyume.Model.State;
 using Libplanet.Assets;
+using Nekoyume.BlockChain.Policy;
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
 #else
@@ -357,6 +358,11 @@ namespace Nekoyume.Action
             {
                 throw new ActionObsoletedException();
             }
+        }
+
+        protected bool UseV100291Sheets(long blockIndex)
+        {
+            return blockIndex < BlockPolicySource.V100301ExecutedBlockIndex;
         }
     }
 }
