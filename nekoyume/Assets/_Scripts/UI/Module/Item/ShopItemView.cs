@@ -78,7 +78,7 @@ namespace Nekoyume.UI.Module
 
             if (model.OrderDigest.ItemCount > 1 && decimal.TryParse(model.OrderDigest.Price.GetQuantityString(), out var price))
             {
-                var priceText = decimal.Ceiling(price / model.OrderDigest.ItemCount * 1000) / 1000;
+                var priceText = decimal.Round(price / model.OrderDigest.ItemCount, 3);
                 baseItemView.PriceText.text = $"{model.OrderDigest.Price.GetQuantityString()}({priceText})";
             }
             else
