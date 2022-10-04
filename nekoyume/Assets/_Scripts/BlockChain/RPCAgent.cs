@@ -244,9 +244,9 @@ namespace Nekoyume.BlockChain
         {
         }
 
-        public void EnqueueAction(GameAction action)
+        public void EnqueueAction(ActionBase actionBase)
         {
-            _queuedActions.Enqueue(action);
+            _queuedActions.Enqueue(actionBase);
         }
 
         #region Mono
