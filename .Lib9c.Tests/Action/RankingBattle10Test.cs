@@ -34,12 +34,21 @@ namespace Lib9c.Tests.Action
         {
             _initialState = new State();
 
+            var keys = new List<string>
+            {
+                nameof(SkillActionBuffSheet),
+                nameof(ActionBuffSheet),
+                nameof(StatBuffSheet),
+            };
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
-                _initialState = _initialState.SetState(
-                    Addresses.TableSheet.Derive(key),
-                    value.Serialize());
+                if (!keys.Contains(key))
+                {
+                    _initialState = _initialState.SetState(
+                        Addresses.TableSheet.Derive(key),
+                        value.Serialize());
+                }
             }
 
             _tableSheets = new TableSheets(sheets);

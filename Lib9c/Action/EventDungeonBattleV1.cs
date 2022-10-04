@@ -137,7 +137,23 @@ namespace Nekoyume.Action
 
             // Get sheets
             sw.Restart();
-            var sheets = states.GetSheets(
+            // FIXME Delete this check next hard fork.
+            bool useV100291Sheets = UseV100291Sheets(context.BlockIndex);
+            var sheets = useV100291Sheets
+            ? states.GetSheetsV100291(
+                containSimulatorSheets: true,
+                containValidateItemRequirementSheets: true,
+                sheetTypes: new[]
+                {
+                    typeof(EventScheduleSheet),
+                    typeof(EventDungeonSheet),
+                    typeof(EventDungeonStageSheet),
+                    typeof(EventDungeonStageWaveSheet),
+                    typeof(EnemySkillSheet),
+                    typeof(CostumeStatSheet),
+                    typeof(MaterialItemSheet),
+                })
+            : states.GetSheets(
                 containSimulatorSheets: true,
                 containValidateItemRequirementSheets: true,
                 sheetTypes: new[]
@@ -280,6 +296,9 @@ namespace Nekoyume.Action
             var exp = scheduleRow.GetStageExp(
                 EventDungeonStageId.ToEventDungeonStageNumber(),
                 PlayCount);
+            var simulatorSheets = useV100291Sheets
+                ? sheets.GetSimulatorSheetsV100291()
+                : sheets.GetSimulatorSheets();
             var simulator = new StageSimulator(
                 context.Random,
                 avatarState,
@@ -291,7 +310,7 @@ namespace Nekoyume.Action
                 sheets.GetSheet<EventDungeonStageWaveSheet>()[EventDungeonStageId],
                 eventDungeonInfo.IsCleared(EventDungeonStageId),
                 exp,
-                sheets.GetSimulatorSheets(),
+                simulatorSheets,
                 sheets.GetSheet<EnemySkillSheet>(),
                 sheets.GetSheet<CostumeStatSheet>(),
                 StageSimulator.GetWaveRewards(

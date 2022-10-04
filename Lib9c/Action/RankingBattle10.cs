@@ -86,7 +86,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}RankingBattle Get AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-            var sheets = states.GetSheets(
+            var sheets = states.GetSheetsV100291(
                 containRankingSimulatorSheets:true,
                 sheetTypes: new[]
                 {
@@ -207,7 +207,7 @@ namespace Nekoyume.Action
 
             ArenaInfo = new ArenaInfo((Dictionary)weeklyArenaMap[arenaKey]);
             EnemyArenaInfo = new ArenaInfo((Dictionary)weeklyArenaMap[enemyKey]);
-            var rankingSheets = sheets.GetRankingSimulatorSheets();
+            var rankingSheets = sheets.GetRankingSimulatorSheetsV100291();
             var player = new Player(avatarState, rankingSheets);
             var enemyPlayerDigest = new EnemyPlayerDigest(enemyAvatarState);
             var simulator = new RankingSimulatorV1(
