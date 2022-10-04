@@ -95,6 +95,11 @@ namespace Nekoyume.UI.Module.Lobby
                 return;
             }
 
+            if (WorldBossStates.GetPreRaiderState(avatarAddress) is null)
+            {
+                return;
+            }
+
             if (!WorldBossStates.IsReceivingSeasonRewards(avatarAddress))
             {
                 RequestManager.instance.IsExistSeasonReward(row.Id, avatarAddress);

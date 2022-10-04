@@ -7,6 +7,7 @@ using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using Nekoyume.State;
+using UnityEngine;
 
 namespace Nekoyume.UI.Module.WorldBoss
 {
@@ -15,6 +16,7 @@ namespace Nekoyume.UI.Module.WorldBoss
     public static class WorldBossStates
     {
         private static readonly Dictionary<Address, RaiderState> _raiderStates = new();
+        private static readonly Dictionary<Address, RaiderState> _preRaiderStates = new();
         private static readonly Dictionary<Address, WorldBossKillRewardRecord> _killRewards = new();
         private static readonly List<IDisposable> _disposables = new();
 
@@ -109,6 +111,13 @@ namespace Nekoyume.UI.Module.WorldBoss
               : null;
         }
 
+        public static RaiderState GetPreRaiderState(Address avatarAddress)
+        {
+            return _preRaiderStates.ContainsKey(avatarAddress)
+                ? _preRaiderStates[avatarAddress]
+                : null;
+        }
+
         public static WorldBossKillRewardRecord GetKillReward(Address avatarAddress)
         {
             return _killRewards.ContainsKey(avatarAddress)
@@ -132,6 +141,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             }
             else
             {
+                UpdatePreRaiderState(avatarAddress, raider);
                 SetCanReceiveSeasonRewards(avatarAddress, CanReceivedSeasonReward(raidRow, raider));
                 ClearRaiderState();
             }
@@ -202,6 +212,18 @@ namespace Nekoyume.UI.Module.WorldBoss
             else
             {
                 _killRewards.Add(avatarAddress, killReward);
+            }
+        }
+
+        private static void UpdatePreRaiderState(Address avatarAddress, RaiderState raiderState)
+        {
+            if (_preRaiderStates.ContainsKey(avatarAddress))
+            {
+                _preRaiderStates[avatarAddress] = raiderState;
+            }
+            else
+            {
+                _preRaiderStates.Add(avatarAddress, raiderState);
             }
         }
 
