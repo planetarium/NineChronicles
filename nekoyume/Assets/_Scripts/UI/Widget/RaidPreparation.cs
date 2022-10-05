@@ -299,7 +299,8 @@ namespace Nekoyume.UI
                     costumeSlots.gameObject.SetActive(true);
                     equipmentSlots.gameObject.SetActive(false);
                 },
-                ElementalTypeExtension.GetAllTypes());
+                ElementalTypeExtension.GetAllTypes(),
+                onUpdateInventory: OnUpdateInventory);
         }
 
         private void UpdateTitle()
@@ -559,6 +560,20 @@ namespace Nekoyume.UI
             }
 
             return (submitText, interactable, submit, blocked);
+        }
+
+        private void OnUpdateInventory(Inventory updatedInventory, Nekoyume.Model.Item.Inventory inventoryModel)
+        {
+            foreach (var consumable in consumableSlots
+                         .Where(consumableSlot =>
+                             !consumableSlot.IsLock && !consumableSlot.IsEmpty)
+                         .Select(slot => slot.Item))
+            {
+                if (updatedInventory.TryGetModel(consumable, out var inventoryItem))
+                {
+                    inventoryItem.Equipped.SetValueAndForceNotify(true);
+                }
+            }
         }
 
         private void OnClickStartButton()
