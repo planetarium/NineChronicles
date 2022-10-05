@@ -53,7 +53,14 @@ namespace Lib9c.Tests.Model
             avatarState.EquipEquipments(equipmentList);
 
             var inventory = avatarState.inventory;
-            var hasNotification = inventory.HasNotification(avatarState.level, 0);
+            var hasNotification = inventory.HasNotification(
+                avatarState.level,
+                0,
+                _tableSheets.ItemRequirementSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheetV2,
+                _tableSheets.EquipmentItemOptionSheet
+            );
             // When inventory is empty.
             Assert.False(hasNotification);
 
@@ -68,7 +75,14 @@ namespace Lib9c.Tests.Model
                     inventory.AddItem(equipment);
                 }
 
-                hasNotification = inventory.HasNotification(avatarState.level, 0);
+                hasNotification = inventory.HasNotification(
+                    avatarState.level,
+                    0,
+                    _tableSheets.ItemRequirementSheet,
+                    _tableSheets.EquipmentItemRecipeSheet,
+                    _tableSheets.EquipmentItemSubRecipeSheetV2,
+                    _tableSheets.EquipmentItemOptionSheet
+                );
                 // When all of the items are unequipped.
                 Assert.True(hasNotification);
 
@@ -79,7 +93,14 @@ namespace Lib9c.Tests.Model
                 var weakest = ordered.First();
                 equipmentList.Add(weakest.ItemId);
                 avatarState.EquipEquipments(equipmentList);
-                hasNotification = inventory.HasNotification(avatarState.level, 0);
+                hasNotification = inventory.HasNotification(
+                    avatarState.level,
+                    0,
+                    _tableSheets.ItemRequirementSheet,
+                    _tableSheets.EquipmentItemRecipeSheet,
+                    _tableSheets.EquipmentItemSubRecipeSheetV2,
+                    _tableSheets.EquipmentItemOptionSheet
+                );
                 // When weakest item is equipped.
                 Assert.True(hasNotification);
 
@@ -88,7 +109,14 @@ namespace Lib9c.Tests.Model
                 var strongest = ordered.Last();
                 equipmentList.Add(strongest.ItemId);
                 avatarState.EquipEquipments(equipmentList);
-                hasNotification = inventory.HasNotification(avatarState.level, 0);
+                hasNotification = inventory.HasNotification(
+                    avatarState.level,
+                    0,
+                    _tableSheets.ItemRequirementSheet,
+                    _tableSheets.EquipmentItemRecipeSheet,
+                    _tableSheets.EquipmentItemSubRecipeSheetV2,
+                    _tableSheets.EquipmentItemOptionSheet
+                );
                 // When strongest item is equipped.
                 Assert.False(hasNotification);
             }
@@ -112,7 +140,14 @@ namespace Lib9c.Tests.Model
             avatarState.EquipEquipments(equipmentList);
 
             var inventory = avatarState.inventory;
-            var hasNotification = inventory.HasNotification(avatarState.level, 0);
+            var hasNotification = inventory.HasNotification(
+                avatarState.level,
+                0,
+                _tableSheets.ItemRequirementSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheetV2,
+                _tableSheets.EquipmentItemOptionSheet
+            );
             // When inventory is empty.
             Assert.False(hasNotification);
 
@@ -125,7 +160,14 @@ namespace Lib9c.Tests.Model
                 inventory.AddItem(equipment);
             }
 
-            hasNotification = inventory.HasNotification(avatarState.level, 0);
+            hasNotification = inventory.HasNotification(
+                avatarState.level,
+                0,
+                _tableSheets.ItemRequirementSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheetV2,
+                _tableSheets.EquipmentItemOptionSheet
+            );
             // When all of the items are unequipped.
             Assert.True(hasNotification);
 
@@ -134,7 +176,14 @@ namespace Lib9c.Tests.Model
             var strongest = ordered.Last();
             equipmentList.Add(strongest.ItemId);
             avatarState.EquipEquipments(equipmentList);
-            hasNotification = inventory.HasNotification(avatarState.level, 0);
+            hasNotification = inventory.HasNotification(
+                avatarState.level,
+                0,
+                _tableSheets.ItemRequirementSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheetV2,
+                _tableSheets.EquipmentItemOptionSheet
+            );
             // When one strongest ring is equipped.
             Assert.True(hasNotification);
 
@@ -143,7 +192,14 @@ namespace Lib9c.Tests.Model
             var strongests = ordered.TakeLast(2).Select(i => i.ItemId);
             equipmentList.AddRange(strongests);
             avatarState.EquipEquipments(equipmentList);
-            hasNotification = inventory.HasNotification(avatarState.level, 0);
+            hasNotification = inventory.HasNotification(
+                avatarState.level,
+                0,
+                _tableSheets.ItemRequirementSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheetV2,
+                _tableSheets.EquipmentItemOptionSheet
+            );
             // When the 1st strongest, the 2nd strongest items are equipped.
             Assert.False(hasNotification);
         }
@@ -168,7 +224,14 @@ namespace Lib9c.Tests.Model
             avatarState.EquipEquipments(equipmentList);
 
             var inventory = avatarState.inventory;
-            var hasNotification = inventory.HasNotification(avatarState.level, blockIndex);
+            var hasNotification = inventory.HasNotification(
+                avatarState.level,
+                blockIndex,
+                _tableSheets.ItemRequirementSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheetV2,
+                _tableSheets.EquipmentItemOptionSheet
+            );
             // When inventory is empty.
             Assert.False(false);
 
@@ -181,7 +244,14 @@ namespace Lib9c.Tests.Model
                 inventory.AddItem(equipment);
             }
 
-            hasNotification = inventory.HasNotification(avatarState.level, 0);
+            hasNotification = inventory.HasNotification(
+                avatarState.level,
+                0,
+                _tableSheets.ItemRequirementSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheetV2,
+                _tableSheets.EquipmentItemOptionSheet
+            );
             Assert.Equal(blockIndex >= requiredBlockIndex, expected);
         }
     }

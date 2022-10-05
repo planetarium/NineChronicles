@@ -143,9 +143,9 @@ namespace Nekoyume.Action
             if (buyerBalance < shopItem.Price)
             {
                 throw new InsufficientBalanceException(
+                    $"{addressesHex}Aborted as the buyer ({ctx.Signer}) has no sufficient gold: {buyerBalance} < {shopItem.Price}",
                     ctx.Signer,
-                    buyerBalance,
-                    $"{addressesHex}Aborted as the buyer ({ctx.Signer}) has no sufficient gold: {buyerBalance} < {shopItem.Price}"
+                    buyerBalance
                 );
             }
 

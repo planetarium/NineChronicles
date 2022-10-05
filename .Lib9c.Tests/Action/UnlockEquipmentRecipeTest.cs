@@ -33,7 +33,10 @@ namespace Lib9c.Tests.Action
             _tableSheets = new TableSheets(sheets);
             _agentAddress = new PrivateKey().ToAddress();
             _avatarAddress = new PrivateKey().ToAddress();
-            _currency = new Currency("CRYSTAL", 18, minters: null);
+#pragma warning disable CS0618
+            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+            _currency = Currency.Legacy("CRYSTAL", 18, null);
+#pragma warning restore CS0618
             var gameConfigState = new GameConfigState(sheets[nameof(GameConfigSheet)]);
 
             var agentState = new AgentState(_agentAddress);
@@ -177,7 +180,7 @@ namespace Lib9c.Tests.Action
                 .Where(i => i.ItemSubType == itemSubType && i.Id != 1 && i.UnlockStage != 999);
 
             // Clear Stage
-            for (int i = 1; i < 6; i++)
+            for (int i = 1; i <= 6; i++)
             {
                 var worldRow = _tableSheets.WorldSheet[i];
                 for (int v = worldRow.StageBegin; v < worldRow.StageEnd + 1; v++)

@@ -10,6 +10,7 @@ namespace Lib9c.Tools.SubCommand
 {
     public class Action
     {
+        [Obsolete("This function is deprecated. Please use `NineChronicles.Headless.Executable action list` command instead.")]
         [Command(Description = "Lists all actions' type ids.")]
         public void List(
             [Option(

@@ -33,7 +33,10 @@ namespace Lib9c.Tests.Action
             _tableSheets = new TableSheets(_sheets);
             _agentAddress = new PrivateKey().ToAddress();
             _avatarAddress = new PrivateKey().ToAddress();
-            _goldCurrency = new Currency("NCG", decimalPlaces: 2, minters: null);
+#pragma warning disable CS0618
+            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+            _goldCurrency = Currency.Legacy("NCG", 2, null);
+#pragma warning restore CS0618
         }
 
         [Theory]

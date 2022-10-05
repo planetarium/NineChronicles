@@ -15,10 +15,10 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1194
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1378
     /// </summary>
     [Serializable]
-    [ActionType("rapid_combination7")]
+    [ActionType("rapid_combination8")]
     public class RapidCombination : GameAction
     {
         public Address avatarAddress;
@@ -83,12 +83,13 @@ namespace Nekoyume.Action
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the GameConfigState was failed to load.");
             }
 
-            if (context.BlockIndex < slotState.StartBlockIndex + GameConfig.RequiredAppraiseBlock)
+            var actionableBlockIndex = slotState.StartBlockIndex +
+                                       states.GetGameConfigState().RequiredAppraiseBlock;
+            if (context.BlockIndex < actionableBlockIndex)
             {
                 throw new AppraiseBlockNotReachedException(
                     $"{addressesHex}Aborted as Item appraisal block section. " +
-                    $"context block index: {context.BlockIndex}, " +
-                    $"actionable block index : {slotState.StartBlockIndex + GameConfig.RequiredAppraiseBlock}");
+                    $"context block index: {context.BlockIndex}, actionable block index : {actionableBlockIndex}");
             }
 
             var count = RapidCombination0.CalculateHourglassCount(gameConfigState, diff);

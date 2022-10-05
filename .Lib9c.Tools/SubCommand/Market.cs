@@ -22,6 +22,7 @@ namespace Lib9c.Tools.SubCommand
 {
     public class Market
     {
+        [Obsolete("This function is deprecated. Please use `NineChronicles.Headless.Executable market` command instead.")]
         [Command(Description = "Query market transactions.")]
         public void Query(
             [Option('v', Description = "Print more logs.")]
