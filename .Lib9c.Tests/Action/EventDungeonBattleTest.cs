@@ -10,6 +10,7 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.BlockChain.Policy;
     using Nekoyume.Exceptions;
     using Nekoyume.Extensions;
     using Nekoyume.Model.Event;
@@ -21,12 +22,12 @@ namespace Lib9c.Tests.Action
 
     public class EventDungeonBattleTest
     {
-        private readonly IAccountStateDelta _initialStates;
         private readonly Currency _ncgCurrency;
         private readonly TableSheets _tableSheets;
 
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
+        private IAccountStateDelta _initialStates;
 
         public EventDungeonBattleTest()
         {
@@ -342,6 +343,50 @@ namespace Lib9c.Tests.Action
                     eventDungeonId,
                     eventDungeonStageId,
                     blockIndex: scheduleRow.StartBlockIndex));
+        }
+
+        [Fact]
+        public void Execute_V100301()
+        {
+            int eventScheduleId = 1001;
+            int eventDungeonId = 10010001;
+            int eventDungeonStageId = 10010001;
+            var csv = $@"id,_name,start_block_index,dungeon_end_block_index,dungeon_tickets_max,dungeon_tickets_reset_interval_block_range,dungeon_ticket_price,dungeon_ticket_additional_price,dungeon_exp_seed_value,recipe_end_block_index
+            1001,2022 Summer Event,{BlockPolicySource.V100301ExecutedBlockIndex},{BlockPolicySource.V100301ExecutedBlockIndex + 100},5,7200,5,2,1,5018000";
+            _initialStates =
+                _initialStates.SetState(
+                    Addresses.GetSheetAddress<EventScheduleSheet>(),
+                    csv.Serialize());
+            var sheet = new EventScheduleSheet();
+            sheet.Set(csv);
+            Assert.True(sheet.TryGetValue(eventScheduleId, out var scheduleRow));
+            var contextBlockIndex = scheduleRow.StartBlockIndex;
+            var nextStates = Execute(
+                _initialStates,
+                eventScheduleId,
+                eventDungeonId,
+                eventDungeonStageId,
+                blockIndex: contextBlockIndex);
+            var eventDungeonInfoAddr =
+                EventDungeonInfo.DeriveAddress(_avatarAddress, eventDungeonId);
+            var eventDungeonInfo =
+                new EventDungeonInfo(nextStates.GetState(eventDungeonInfoAddr));
+            Assert.Equal(
+                scheduleRow.DungeonTicketsMax - 1,
+                eventDungeonInfo.RemainingTickets);
+
+            contextBlockIndex = scheduleRow.DungeonEndBlockIndex;
+            nextStates = Execute(
+                _initialStates,
+                eventScheduleId,
+                eventDungeonId,
+                eventDungeonStageId,
+                blockIndex: contextBlockIndex);
+            eventDungeonInfo =
+                new EventDungeonInfo(nextStates.GetState(eventDungeonInfoAddr));
+            Assert.Equal(
+                scheduleRow.DungeonTicketsMax - 1,
+                eventDungeonInfo.RemainingTickets);
         }
 
         private IAccountStateDelta Execute(

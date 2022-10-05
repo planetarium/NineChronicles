@@ -105,17 +105,30 @@ namespace Nekoyume.Action
                     world.StageClearedId);
             }
 
-            var sheets = states.GetSheets(
-                containArenaSimulatorSheets: true,
-                sheetTypes: new[]
-                {
-                    typeof(ArenaSheet),
-                    typeof(ItemRequirementSheet),
-                    typeof(EquipmentItemRecipeSheet),
-                    typeof(EquipmentItemSubRecipeSheetV2),
-                    typeof(EquipmentItemOptionSheet),
-                    typeof(MaterialItemSheet),
-                });
+            bool useV100291Sheets = UseV100291Sheets(context.BlockIndex);
+            var sheets = useV100291Sheets
+                ? states.GetSheetsV100291(
+                    containArenaSimulatorSheets: true,
+                    sheetTypes: new[]
+                    {
+                        typeof(ArenaSheet),
+                        typeof(ItemRequirementSheet),
+                        typeof(EquipmentItemRecipeSheet),
+                        typeof(EquipmentItemSubRecipeSheetV2),
+                        typeof(EquipmentItemOptionSheet),
+                        typeof(MaterialItemSheet),
+                    })
+                : states.GetSheets(
+                    containArenaSimulatorSheets: true,
+                    sheetTypes: new[]
+                    {
+                        typeof(ArenaSheet),
+                        typeof(ItemRequirementSheet),
+                        typeof(EquipmentItemRecipeSheet),
+                        typeof(EquipmentItemSubRecipeSheetV2),
+                        typeof(EquipmentItemOptionSheet),
+                        typeof(MaterialItemSheet),
+                    });
 
             avatarState.ValidEquipmentAndCostume(costumes, equipments,
                 sheets.GetSheet<ItemRequirementSheet>(),
@@ -263,7 +276,9 @@ namespace Nekoyume.Action
             ExtraMyArenaPlayerDigest = new ArenaPlayerDigest(avatarState, myArenaAvatarState);
             ExtraEnemyArenaPlayerDigest = new ArenaPlayerDigest(enemyAvatarState, enemyArenaAvatarState);
             ExtraPreviousMyScore = myArenaScore.Score;
-            var arenaSheets = sheets.GetArenaSimulatorSheets();
+            var arenaSheets = useV100291Sheets
+                ? sheets.GetArenaSimulatorSheets_v100291()
+                : sheets.GetArenaSimulatorSheets();
             var winCount = 0;
             var defeatCount = 0;
             var rewards = new List<ItemBase>();

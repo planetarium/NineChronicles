@@ -80,10 +80,19 @@
                 .SetState(_questListAddress, _avatarState.questList.Serialize())
                 .SetState(gameConfigState.address, gameConfigState.Serialize());
 
+            var keys = new List<string>
+            {
+                nameof(SkillActionBuffSheet),
+                nameof(ActionBuffSheet),
+                nameof(StatBuffSheet),
+            };
             foreach (var (key, value) in _sheets)
             {
-                _initialState = _initialState
-                    .SetState(Addresses.TableSheet.Derive(key), value.Serialize());
+                if (!keys.Contains(key))
+                {
+                    _initialState = _initialState
+                        .SetState(Addresses.TableSheet.Derive(key), value.Serialize());
+                }
             }
 
             foreach (var address in _avatarState.combinationSlotAddresses)
