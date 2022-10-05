@@ -348,7 +348,8 @@ namespace Nekoyume.UI
                     equipmentSlots.gameObject.SetActive(false);
                 },
                 GetElementalTypes(),
-                useConsumable: useConsumable);
+                useConsumable: useConsumable,
+                onUpdateInventory: OnUpdateInventory);
         }
 
         private void UpdateBackground()
@@ -717,6 +718,20 @@ namespace Nekoyume.UI
                 }
                 default:
                     throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void OnUpdateInventory(Inventory updatedInventory, Nekoyume.Model.Item.Inventory inventoryModel)
+        {
+            foreach (var consumable in consumableSlots
+                         .Where(consumableSlot =>
+                             !consumableSlot.IsLock && !consumableSlot.IsEmpty)
+                         .Select(slot => slot.Item))
+            {
+                if (updatedInventory.TryGetModel(consumable, out var inventoryItem))
+                {
+                    inventoryItem.Equipped.SetValueAndForceNotify(true);
+                }
             }
         }
 
