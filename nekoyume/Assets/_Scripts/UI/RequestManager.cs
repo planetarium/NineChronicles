@@ -19,6 +19,7 @@ namespace Nekoyume.UI
     public class RequestManager : MonoSingleton<RequestManager>
     {
         private const float RetryTime = 20f;
+        private const float ShortRetryTime = 1f;
         private const int MaxRetryCount = 8;
         private int _isExistSeasonRewardRetryCount;
         private int _getSeasonRewardRetryCount;
@@ -64,7 +65,16 @@ namespace Nekoyume.UI
                 {
                     WorldBossStates.SetHasSeasonRewards(avatarAddress, b.Contains("true"));
                 },
-                onFailed: RequestIsExistSeasonReward));
+                onFailed: (id, address) =>
+                {
+                    StartCoroutine(CoRequestIsExistSeasonReward(id, address));
+                }));
+        }
+
+        private IEnumerator CoRequestIsExistSeasonReward(int raidId, Address avatarAddress)
+        {
+            yield return new WaitForSeconds(ShortRetryTime);
+            RequestIsExistSeasonReward(raidId, avatarAddress);
         }
 
         private async Task RequestGetSeasonReward(List<SeasonRewards> rewards)
