@@ -503,5 +503,64 @@ namespace Lib9c.Tests.Action
             var nextRewardInfo = new WorldBossKillRewardRecord(rawRewardInfo);
             Assert.True(nextRewardInfo[1]);
         }
+
+        [Fact]
+        public void Execute_Throw_ActionObsoletedException()
+        {
+            var action = new Raid0
+            {
+                AvatarAddress = _avatarAddress,
+                EquipmentIds = new List<Guid>(),
+                CostumeIds = new List<Guid>(),
+                FoodIds = new List<Guid>(),
+                PayNcg = false,
+            };
+            var row = _tableSheets.WorldBossListSheet.Values.First(r => r.Id > 1);
+            long blockIndex = row.StartedBlockIndex;
+            int raidId = row.Id;
+            Address raiderAddress = Addresses.GetRaiderAddress(_avatarAddress, raidId);
+            var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
+            WorldBossListSheet.Row worldBossRow = _tableSheets.WorldBossListSheet.FindRowByBlockIndex(blockIndex);
+            Address bossAddress = Addresses.GetWorldBossAddress(raidId);
+            Address worldBossKillRewardRecordAddress = Addresses.GetWorldBossKillRewardRecordAddress(_avatarAddress, raidId);
+
+            IAccountStateDelta state = new State()
+                .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
+                .SetState(_agentAddress, new AgentState(_agentAddress).Serialize());
+
+            foreach (var (key, value) in _sheets)
+            {
+                state = state.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
+            }
+
+            var avatarState = new AvatarState(
+                _avatarAddress,
+                _agentAddress,
+                0,
+                _tableSheets.GetAvatarSheets(),
+                new GameConfigState(),
+                default
+            );
+
+            for (int i = 0; i < 50; i++)
+            {
+                avatarState.worldInformation.ClearStage(1, i + 1, 0, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
+            }
+
+            state = state
+                .SetState(_avatarAddress, avatarState.SerializeV2())
+                .SetState(_avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
+                .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), avatarState.worldInformation.Serialize())
+                .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize());
+
+            Assert.Throws<ActionObsoletedException>(() => action.Execute(new ActionContext
+            {
+                BlockIndex = blockIndex,
+                PreviousStates = state,
+                Random = new TestRandom(),
+                Rehearsal = false,
+                Signer = _agentAddress,
+            }));
+        }
     }
 }

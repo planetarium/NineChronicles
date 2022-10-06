@@ -76,6 +76,10 @@ namespace Nekoyume.Action
             var worldBossListSheet = sheets.GetSheet<WorldBossListSheet>();
             var row = worldBossListSheet.FindRowByBlockIndex(context.BlockIndex);
             int raidId = row.Id;
+            if (raidId > 1)
+            {
+                throw new ActionObsoletedException("raid action is obsoleted. please use new action.");
+            }
             Address worldBossAddress = Addresses.GetWorldBossAddress(raidId);
             Address raiderAddress = Addresses.GetRaiderAddress(AvatarAddress, raidId);
             // Check challenge count.
