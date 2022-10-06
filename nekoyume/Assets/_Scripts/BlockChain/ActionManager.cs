@@ -1213,6 +1213,24 @@ namespace Nekoyume.BlockChain
                     }
                 });
         }
+
+        public IObservable<ActionBase.ActionEvaluation<TransferAsset>> TransferAsset(
+            Address sender,
+            Address recipient,
+            FungibleAssetValue amount,
+            string memo)
+        {
+            var action = new TransferAsset(
+                sender,
+                recipient,
+                amount,
+                memo);
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<TransferAsset>()
+                .Timeout(ActionTimeout)
+                .First()
+                .ObserveOnMainThread();
+        }
 #endif
 
         #endregion
