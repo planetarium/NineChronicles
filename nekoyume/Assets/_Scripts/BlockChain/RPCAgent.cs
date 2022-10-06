@@ -490,8 +490,10 @@ namespace Nekoyume.BlockChain
 
             foreach (var action in actions)
             {
-                var ga = (GameAction) action.InnerAction;
-                _transactions.TryAdd(ga.Id, tx.Id);
+                if (action.InnerAction is GameAction gameAction)
+                {
+                    _transactions.TryAdd(gameAction.Id, tx.Id);
+                }
             }
         }
 
