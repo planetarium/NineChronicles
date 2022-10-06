@@ -92,6 +92,14 @@ namespace Nekoyume.Action
                 raiderState = new RaiderState();
                 FungibleAssetValue crystalCost = CrystalCalculator.CalculateEntranceFee(avatarState.level, row.EntranceFee);
                 states = states.TransferAsset(context.Signer, worldBossAddress, crystalCost);
+                Address raiderListAddress = Addresses.GetRaiderListAddress(raidId);
+                List<Address> raiderList =
+                    states.TryGetState(raiderListAddress, out List rawRaiderList)
+                        ? rawRaiderList.ToList(StateExtensions.ToAddress)
+                        : new List<Address>();
+                raiderList.Add(raiderAddress);
+                states = states.SetState(raiderListAddress,
+                    new List(raiderList.Select(a => a.Serialize())));
             }
 
             if (context.BlockIndex - raiderState.UpdatedBlockIndex < RequiredInterval)
