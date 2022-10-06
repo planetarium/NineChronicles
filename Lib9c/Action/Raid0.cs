@@ -16,12 +16,9 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
-    /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1419
-    /// </summary>
     [Serializable]
-    [ActionType("raid2")]
-    public class Raid : GameAction
+    [ActionType("raid")]
+    public class Raid0 : GameAction
     {
         public const long RequiredInterval = 5L;
         public Address AvatarAddress;
