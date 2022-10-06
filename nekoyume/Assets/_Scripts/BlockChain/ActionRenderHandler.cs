@@ -93,10 +93,10 @@ namespace Nekoyume.BlockChain
 
                     if (States.Instance.CurrentAvatarState is not null)
                     {
-                        Analyzer.Instance.Track("Unity/ActionRender", new Value
+                        Tracer.Trace("Unity/ActionRender", new Dictionary<string, string>()
                         {
                             ["ActionType"] = actionType.TypeIdentifier,
-                            ["Elapsed"] = elapsed,
+                            ["Elapsed"] = elapsed.ToString(),
                             ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                             ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                         });
@@ -544,10 +544,10 @@ namespace Nekoyume.BlockChain
                                 formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
                                 break;
                             case Action.ItemEnhancement.EnhancementResult.Fail:
-                                Analyzer.Instance.Track("Unity/ItemEnhancement Failed", new Value
+                                Tracer.Trace("Unity/ItemEnhancement Failed", new Dictionary<string, string>()
                                 {
-                                    ["GainedCrystal"] = (long)enhancementResultModel.CRYSTAL.MajorUnit,
-                                    ["BurntNCG"] = (long)enhancementResultModel.gold,
+                                    ["GainedCrystal"] = enhancementResultModel.CRYSTAL.MajorUnit.ToString(),
+                                    ["BurntNCG"] = enhancementResultModel.gold.ToString(),
                                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                                     ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                                 });

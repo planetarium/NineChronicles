@@ -426,6 +426,14 @@ namespace Nekoyume.UI
                 return;
             }
 
+            var sentryTx = Tracer.Create("Unity/HackAndSlashSweep", new Dictionary<string, string>()
+            {
+                ["stageId"] = stageRow.Id.ToString(),
+                ["apStoneCount"] = apStoneCount.ToString(),
+                ["playCount"] = totalPlayCount.ToString(),
+                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+            });
+
             Game.Game.instance.ActionManager.HackAndSlashSweep(
                 _costumes,
                 _equipments,
@@ -434,14 +442,7 @@ namespace Nekoyume.UI
                 worldId,
                 stageRow.Id);
 
-            Analyzer.Instance.Track("Unity/HackAndSlashSweep", new Value
-            {
-                ["stageId"] = stageRow.Id,
-                ["apStoneCount"] = apStoneCount,
-                ["playCount"] = totalPlayCount,
-                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
-            });
+            Tracer.Finish(sentryTx);
 
             Close();
 

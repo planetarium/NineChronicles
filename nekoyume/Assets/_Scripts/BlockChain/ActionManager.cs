@@ -21,6 +21,7 @@ using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
 using Nekoyume.UI;
 using Nekoyume.UI.Scroller;
+using Sentry;
 using UnityEngine;
 using Material = Nekoyume.Model.Item.Material;
 using RedeemCode = Nekoyume.Action.RedeemCode;
@@ -247,6 +248,14 @@ namespace Nekoyume.BlockChain
             equipments ??= new List<Equipment>();
             foods ??= new List<Consumable>();
 
+            ITransaction sentryTX = Tracer.Create("Unity/HackAndSlash", new Dictionary<string, string>()
+            {
+                ["WorldId"] = worldId.ToString(),
+                ["StageId"] = stageId.ToString(),
+                ["PlayCount"] = playCount.ToString(),
+                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+            });
+
             var action = new HackAndSlash
             {
                 Costumes = costumes.Select(c => c.ItemId).ToList(),
@@ -262,6 +271,9 @@ namespace Nekoyume.BlockChain
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
             _lastBattleActionId = action.Id;
+
+            Tracer.Finish(sentryTX);
+
             return _agent.ActionRenderer.EveryRender<HackAndSlash>()
                 .Timeout(ActionTimeout)
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
@@ -337,6 +349,28 @@ namespace Nekoyume.BlockChain
                     : "0",
             });
 
+            ITransaction sentryTX = Tracer.Create("Unity/EventDungeonBattle", new Dictionary<string, string>()
+            {
+                ["EventScheduleId"] = eventScheduleId.ToString(),
+                ["EventDungeonId"] = eventDungeonId.ToString(),
+                ["EventDungeonStageId"] = eventDungeonStageId.ToString(),
+                ["RemainingTickets"] =
+                    (RxProps.EventDungeonTicketProgress.Value.currentTickets -
+                    Action.EventDungeonBattle.PlayCount).ToString(),
+                ["NumberOfTicketPurchases"] = numberOfTicketPurchases.ToString(),
+                ["BuyTicketIfNeeded"] = buyTicketIfNeeded.ToString(),
+                ["TicketCostIfNeeded"] = buyTicketIfNeeded
+                    ? TableSheets.Instance.EventScheduleSheet.TryGetValue(
+                        eventScheduleId,
+                        out var Row)
+                        ? Row.GetDungeonTicketCost(
+                            numberOfTicketPurchases,
+                            States.Instance.GoldBalanceState.Gold.Currency)
+                            .GetQuantityString(true)
+                        : "0"
+                    : "0",
+            });
+
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             costumes ??= new List<Costume>();
             equipments ??= new List<Equipment>();
@@ -357,6 +391,8 @@ namespace Nekoyume.BlockChain
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
             _lastBattleActionId = action.Id;
+
+            Tracer.Finish(sentryTX);
             return _agent.ActionRenderer.EveryRender<EventDungeonBattle>()
                 .Timeout(ActionTimeout)
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
@@ -435,20 +471,20 @@ namespace Nekoyume.BlockChain
                 SubRecipeView.RecipeInfo recipeInfo,
                 int slotIndex)
         {
-            var trackValue = new Value
+            var trackValue = new Dictionary<string, string>()
             {
-                ["EventScheduleId"] = eventScheduleId,
-                ["RecipeId"] = recipeInfo.RecipeId,
-                ["SubRecipeId"] = recipeInfo.SubRecipeId ?? 0,
+                ["EventScheduleId"] = eventScheduleId.ToString(),
+                ["RecipeId"] = recipeInfo.RecipeId.ToString(),
+                ["SubRecipeId"] = recipeInfo.SubRecipeId.ToString() ?? "0",
             };
             var num = 1;
             foreach (var pair in recipeInfo.Materials)
             {
-                trackValue.Add($"MaterialId_{num:00}", pair.Key);
-                trackValue.Add($"MaterialCount_{num:00}", pair.Value);
+                trackValue.Add($"MaterialId_{num:00}", pair.Key.ToString());
+                trackValue.Add($"MaterialCount_{num:00}", pair.Value.ToString());
                 num++;
             }
-            Analyzer.Instance.Track("Unity/EventConsumableItemCrafts", trackValue);
+            var sentryTx = Tracer.Create("Unity/EventConsumableItemCrafts", trackValue);
 
             var agentAddress = States.Instance.AgentState.address;
             var avatarState = States.Instance.CurrentAvatarState;
@@ -488,6 +524,7 @@ namespace Nekoyume.BlockChain
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
 
+            Tracer.Finish(sentryTx);
             return _agent.ActionRenderer.EveryRender<EventConsumableItemCrafts>()
                 .Timeout(ActionTimeout)
                 .Where(eval => eval.Action.Id.Equals(action.Id))
@@ -691,7 +728,7 @@ namespace Nekoyume.BlockChain
             LocalLayerModifier.SetItemEquip(avatarAddress, baseEquipment.NonFungibleId, false);
             LocalLayerModifier.SetItemEquip(avatarAddress, materialEquipment.NonFungibleId, false);
 
-            Analyzer.Instance.Track("Unity/Item Enhancement", new Value
+            var sentryTx = Tracer.Create("Unity/Item Enhancement", new Dictionary<string, string>()
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
@@ -707,6 +744,7 @@ namespace Nekoyume.BlockChain
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
+            Tracer.Finish(sentryTx);
 
             return _agent.ActionRenderer.EveryRender<ItemEnhancement>()
                 .Timeout(ActionTimeout)
@@ -730,7 +768,7 @@ namespace Nekoyume.BlockChain
                 throw new NullReferenceException(nameof(weeklyArenaAddress));
             }
 
-            Analyzer.Instance.Track("Unity/Ranking Battle", new Value
+            var sentryTx = Tracer.Create("Unity/Ranking Battle", new Dictionary<string, string>()
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
@@ -747,6 +785,8 @@ namespace Nekoyume.BlockChain
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
             _lastBattleActionId = action.Id;
+            Tracer.Finish(sentryTx);
+
             return _agent.ActionRenderer.EveryRender<RankingBattle>()
                 .Timeout(ActionTimeout)
                 .Where(eval => eval.Action.Id.Equals(action.Id))

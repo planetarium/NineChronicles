@@ -62,6 +62,8 @@ namespace Nekoyume.Game
 
         public Analyzer Analyzer { get; private set; }
 
+        public Tracer Tracer { get; private set; }
+
         public Stage Stage => stage;
         public Arena Arena => arena;
         public RaidStage RaidStage => raidStage;
@@ -188,7 +190,7 @@ namespace Nekoyume.Game
 
             yield return new WaitUntil(() => agentInitialized);
             InitializeAnalyzer();
-            Analyzer.Track("Unity/Started");
+            //Tracer.Trace("Unity/Started", new Dictionary<string, string>());
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
             yield return SyncTableSheetsAsync().ToCoroutine();
@@ -830,6 +832,7 @@ namespace Nekoyume.Game
 #if UNITY_EDITOR
             Debug.Log("This is editor mode.");
             Analyzer = new Analyzer(uniqueId, rpcServerHost);
+            Tracer = new Tracer(uniqueId);
             return;
 #endif
             var isTrackable = true;

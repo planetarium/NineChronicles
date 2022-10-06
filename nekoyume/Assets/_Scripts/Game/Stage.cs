@@ -602,16 +602,16 @@ namespace Nekoyume.Game
             var characterSheet = TableSheets.Instance.CharacterSheet;
             var costumeStatSheet = TableSheets.Instance.CostumeStatSheet;
             var cp = CPHelper.GetCPV2(States.Instance.CurrentAvatarState, characterSheet, costumeStatSheet);
-            var props = new Value
+            var props = new Dictionary<string, string>()
             {
-                ["StageId"] = log.stageId,
-                ["ClearedWave"] = log.clearedWaveNumber,
-                ["CP"] = cp,
-                ["FoodCount"] = foodCount,
+                ["StageId"] = log.stageId.ToString(),
+                ["ClearedWave"] = log.clearedWaveNumber.ToString(),
+                ["CP"] = cp.ToString(),
+                ["FoodCount"] = foodCount.ToString(),
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             };
-            Analyzer.Instance.Track("Unity/Stage End", props);
+            Tracer.Trace("Unity/Stage End", props);
         }
 
         private IEnumerator CoSlideBg()

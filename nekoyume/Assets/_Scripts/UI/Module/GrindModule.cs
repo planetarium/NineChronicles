@@ -458,10 +458,10 @@ namespace Nekoyume.UI.Module
             StartCoroutine(CoCombineNPCAnimation(_cachedGrindingRewardCrystal.MajorUnit));
             Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
 
-            Analyzer.Instance.Track("Unity/Grinding", new Value
+            Tracer.Trace("Unity/Grinding", new Dictionary<string, string>()
             {
-                ["EquipmentCount"] = equipments.Count,
-                ["GainedCrystal"] = (long) _cachedGrindingRewardCrystal.MajorUnit,
+                ["EquipmentCount"] = equipments.Count.ToString(),
+                ["GainedCrystal"] = _cachedGrindingRewardCrystal.MajorUnit.ToString(),
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             });

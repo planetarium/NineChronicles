@@ -708,15 +708,15 @@ namespace Nekoyume.UI
             player.DisableHUD();
             ActionRenderHandler.Instance.Pending = true;
 
-            var props = new Value
+            var props = new Dictionary<string, string>()
             {
-                ["StageId"] = SharedModel.StageID,
+                ["StageId"] = SharedModel.StageID.ToString(),
             };
             var eventKey = SharedModel.ClearedWaveNumber == 3
                 ? "Repeat"
                 : "Retry";
             var eventName = $"Unity/Stage Exit {eventKey}";
-            Analyzer.Instance.Track(eventName, props);
+            Tracer.Trace(eventName, props);
 
             yield return StartCoroutine(SendBattleActionAsync(
                 player.Equipments,
@@ -800,13 +800,13 @@ namespace Nekoyume.UI
 
         private void GoToMain()
         {
-            var props = new Value
+            var props = new Dictionary<string, string>()
             {
-                ["StageId"] = Game.Game.instance.Stage.stageId,
+                ["StageId"] = Game.Game.instance.Stage.stageId.ToString(),
             };
             var eventKey = Game.Game.instance.Stage.IsExitReserved ? "Quit" : "Main";
             var eventName = $"Unity/Stage Exit {eventKey}";
-            Analyzer.Instance.Track(eventName, props);
+            Tracer.Trace(eventName, props);
 
             Find<Battle>().Close(true);
             Game.Game.instance.Stage.DestroyBackground();
