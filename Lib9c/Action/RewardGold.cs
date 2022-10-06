@@ -8,6 +8,7 @@ using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Serilog;
 
 namespace Nekoyume.Action
 {
@@ -35,6 +36,9 @@ namespace Nekoyume.Action
         {
             var states = context.PreviousStates;
             states = GenesisGoldDistribution(context, states);
+            var addressesHex = GetSignerAndOtherAddressesHex(context, context.Signer);
+            var started = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}RewardGold exec started", addressesHex);
 
             // Avoid InvalidBlockStateRootHashException before table patch.
             var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
@@ -44,6 +48,8 @@ namespace Nekoyume.Action
                 states = WeeklyArenaRankingBoard2(context, states);
             }
 
+            var ended = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}RewardGold Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return MinerReward(context, states);
         }
 

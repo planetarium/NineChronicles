@@ -12,6 +12,7 @@ using Nekoyume.Helper;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Serilog;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
@@ -38,6 +39,9 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            var addressHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
+            var started = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressHex}Raid exec started", addressHex);
             if (!states.TryGetAvatarStateV2(context.Signer, AvatarAddress,
                     out AvatarState avatarState,
                     out var migrationRequired))
@@ -255,6 +259,8 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, avatarState.questList.Serialize());
             }
 
+            var ended = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressHex}Raid Total Executed Time: {Elapsed}", addressHex, ended - started);
             return states
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
                 .SetState(worldBossAddress, bossState.Serialize())

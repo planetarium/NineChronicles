@@ -12,6 +12,7 @@ using Nekoyume.Model;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Serilog;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
@@ -40,6 +41,9 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, context.Signer, Addresses.UnlockEquipmentRecipe);
             }
 
+            var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
+            var started = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}UnlockEquipmentRecipe exec started", addressesHex);
             if (!RecipeIds.Any() || RecipeIds.Any(i => i < 2))
             {
                 throw new InvalidRecipeIdException();
@@ -91,6 +95,8 @@ namespace Nekoyume.Action
             states = states.SetState(unlockedRecipeIdsAddress,
                     unlockedIds.Aggregate(List.Empty,
                         (current, address) => current.Add(address.Serialize())));
+            var ended = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}UnlockEquipmentRecipe Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states.TransferAsset(context.Signer, Addresses.UnlockEquipmentRecipe,  cost);
         }
 

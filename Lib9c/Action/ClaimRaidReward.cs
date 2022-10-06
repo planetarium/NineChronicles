@@ -10,6 +10,7 @@ using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Serilog;
 
 namespace Nekoyume.Action
 {
@@ -36,6 +37,9 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
+            var started = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}ClaimRaidReward exec started", addressesHex);
             Dictionary<Type, (Address, ISheet)> sheets = states.GetSheets(sheetTypes: new[] {
                 typeof(RuneWeightSheet),
                 typeof(WorldBossRankRewardSheet),
@@ -88,6 +92,8 @@ namespace Nekoyume.Action
                 raiderState.LatestRewardRank = rank;
                 raiderState.ClaimedBlockIndex = context.BlockIndex;
                 states = states.SetState(raiderAddress, raiderState.Serialize());
+                var ended = DateTimeOffset.UtcNow;
+                Log.Debug("{AddressesHex}ClaimRaidReward Total Executed Time: {Elapsed}", addressesHex, ended - started);
                 return states;
             }
 
