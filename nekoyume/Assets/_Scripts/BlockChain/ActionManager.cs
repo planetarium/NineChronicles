@@ -108,13 +108,17 @@ namespace Nekoyume.BlockChain
             return true;
         }
 
-        private void ProcessAction<T>(T gameAction) where T : GameAction
+        private void ProcessAction<T>(T actionBase) where T : ActionBase
         {
-            var actionType = gameAction.GetActionTypeAttribute();
+            var actionType = actionBase.GetActionTypeAttribute();
             Debug.Log($"[{nameof(ActionManager)}] {nameof(ProcessAction)}() called. \"{actionType.TypeIdentifier}\"");
 
-            _agent.EnqueueAction(gameAction);
-            _actionEnqueuedDateTimes[gameAction.Id] = DateTime.Now;
+            _agent.EnqueueAction(actionBase);
+
+            if (actionBase is GameAction gameAction)
+            {
+                _actionEnqueuedDateTimes[gameAction.Id] = DateTime.Now;
+            }
         }
 
         #region Actions

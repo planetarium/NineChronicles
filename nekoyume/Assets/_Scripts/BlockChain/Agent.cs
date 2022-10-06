@@ -278,11 +278,15 @@ namespace Nekoyume.BlockChain
             disposed = true;
         }
 
-        public void EnqueueAction(GameAction gameAction)
+        public void EnqueueAction(ActionBase actionBase)
         {
-            Debug.LogFormat("Enqueue GameAction: {0} Id: {1}", gameAction, gameAction.Id);
-            _queuedActions.Enqueue(gameAction);
-            OnEnqueueOwnGameAction?.Invoke(gameAction.Id);
+            Debug.LogFormat("Enqueue GameAction: {0}", actionBase);
+            _queuedActions.Enqueue(actionBase);
+
+            if (actionBase is GameAction gameAction)
+            {
+                OnEnqueueOwnGameAction?.Invoke(gameAction.Id);
+            }
         }
 
         public IValue GetState(Address address)
