@@ -416,6 +416,20 @@ namespace Nekoyume.Game.Character
 
             var skillInfosCount = skillInfos.Count;
 
+            ActionPoint = () =>
+            {
+                for (var i = 0; i < skillInfosCount; i++)
+                {
+                    var info = skillInfos[i];
+                    var target = info.Target.Id == Id ? this : _target;
+                    var effect = Game.instance.Arena.SkillController.Get<SkillBlowVFX>(target, info);
+                    if (effect is null)
+                        continue;
+
+                    effect.Play();
+                    ProcessAttack(target, info, true);
+                }
+            };
             if (skillInfos.First().SkillTargetType == SkillTargetType.Enemy)
             {
                 yield return StartCoroutine(CoAnimationCast(skillInfos.First()));
@@ -425,21 +439,6 @@ namespace Nekoyume.Game.Character
             else
             {
                 yield return StartCoroutine(CoAnimationCastBlow(skillInfos));
-            }
-
-            for (var i = 0; i < skillInfosCount; i++)
-            {
-                var info = skillInfos[i];
-                var target = info.Target.Id == Id ? this : _target;
-                var effect = Game.instance.Arena.SkillController.Get<SkillBlowVFX>(target, info);
-                if (effect is null)
-                    continue;
-
-                effect.Play();
-                if (info.Target is Model.ArenaCharacter arenaCharacter)
-                {
-                    ProcessAttack(target, info, true);
-                }
             }
         }
 
@@ -455,23 +454,26 @@ namespace Nekoyume.Game.Character
             for (var i = 0; i < skillInfosCount; i++)
             {
                 var info = skillInfos[i];
-                yield return StartCoroutine(CoAnimationAttack(info.Critical));
-
-                var target = info.Target.Id == Id ? this : _target;
-                var effect = Game.instance.Arena.SkillController.Get<SkillDoubleVFX>(target, info);
-                if (effect != null)
+                ActionPoint = () =>
                 {
-                    if (skillInfosFirst == info)
+                    var target = info.Target.Id == Id ? this : _target;
+                    var effect =
+                        Game.instance.Arena.SkillController.Get<SkillDoubleVFX>(target, info);
+                    if (effect != null)
                     {
-                        effect.FirstStrike();
+                        if (skillInfosFirst == info)
+                        {
+                            effect.FirstStrike();
+                        }
+                        else
+                        {
+                            effect.SecondStrike();
+                        }
                     }
-                    else
-                    {
-                        effect.SecondStrike();
-                    }
-                }
 
-                ProcessAttack(target, info, true);
+                    ProcessAttack(target, info, true);
+                };
+                yield return StartCoroutine(CoAnimationAttack(info.Critical));
             }
         }
 
@@ -525,6 +527,10 @@ namespace Nekoyume.Game.Character
                         yield return new WaitForSeconds(0.1f);
                     }
 
+                    ActionPoint = () =>
+                    {
+                        ProcessAttack(target, info,  true);
+                    };
                     var coroutine = StartCoroutine(CoAnimationCastAttack(info.Critical));
                     if (info.ElementalType == ElementalType.Water)
                     {
@@ -534,7 +540,6 @@ namespace Nekoyume.Game.Character
 
                     yield return coroutine;
                     effect.Finisher();
-                    ProcessAttack(target, info,  true);
                     if (info.ElementalType != ElementalType.Fire
                         && info.ElementalType != ElementalType.Water)
                     {
