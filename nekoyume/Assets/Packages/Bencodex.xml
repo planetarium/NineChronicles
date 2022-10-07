@@ -294,6 +294,601 @@
             <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
             later pairs overwrite earlier ones.</param>
         </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Text,Bencodex.Types.IValue}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Text,Bencodex.Types.Boolean}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Text,Bencodex.Types.Integer}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Text,Bencodex.Types.Binary}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Text,Bencodex.Types.Text}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Text,Bencodex.Types.List}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Text,Bencodex.Types.Dictionary}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Text,System.Boolean}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Text,System.Int16}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Text,System.UInt16}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Text,System.Int32}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Text,System.UInt32}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Text,System.Int64}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Text,System.UInt64}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Text,System.Byte[]}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Text,System.Collections.Immutable.ImmutableArray{System.Byte}}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Text,System.String}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Binary,Bencodex.Types.IValue}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Binary,Bencodex.Types.Boolean}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Binary,Bencodex.Types.Integer}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Binary,Bencodex.Types.Binary}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Binary,Bencodex.Types.Text}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Binary,Bencodex.Types.List}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Binary,Bencodex.Types.Dictionary}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Binary,System.Boolean}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Binary,System.Int16}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Binary,System.UInt16}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Binary,System.Int32}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Binary,System.UInt32}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Binary,System.Int64}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Binary,System.UInt64}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Binary,System.Byte[]}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Binary,System.Collections.Immutable.ImmutableArray{System.Byte}}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.Binary,System.String}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,Bencodex.Types.IValue}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,Bencodex.Types.Boolean}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,Bencodex.Types.Integer}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,Bencodex.Types.Binary}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,Bencodex.Types.Text}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,Bencodex.Types.List}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,Bencodex.Types.Dictionary}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Boolean}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Int16}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.UInt16}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Int32}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.UInt32}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Int64}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.UInt64}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Byte[]}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Collections.Immutable.ImmutableArray{System.Byte}}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.String}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Byte[],Bencodex.Types.IValue}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Byte[],Bencodex.Types.Boolean}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Byte[],Bencodex.Types.Integer}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Byte[],Bencodex.Types.Binary}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Byte[],Bencodex.Types.Text}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Byte[],Bencodex.Types.List}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Byte[],Bencodex.Types.Dictionary}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Byte[],System.Boolean}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Byte[],System.Int16}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Byte[],System.UInt16}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Byte[],System.Int32}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Byte[],System.UInt32}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Byte[],System.Int64}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Byte[],System.UInt64}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Byte[],System.Byte[]}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Byte[],System.Collections.Immutable.ImmutableArray{System.Byte}}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Byte[],System.String}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Collections.Immutable.ImmutableArray{System.Byte},Bencodex.Types.IValue}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Collections.Immutable.ImmutableArray{System.Byte},Bencodex.Types.Boolean}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Collections.Immutable.ImmutableArray{System.Byte},Bencodex.Types.Integer}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Collections.Immutable.ImmutableArray{System.Byte},Bencodex.Types.Binary}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Collections.Immutable.ImmutableArray{System.Byte},Bencodex.Types.Text}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Collections.Immutable.ImmutableArray{System.Byte},Bencodex.Types.List}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Collections.Immutable.ImmutableArray{System.Byte},Bencodex.Types.Dictionary}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Collections.Immutable.ImmutableArray{System.Byte},System.Boolean}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Collections.Immutable.ImmutableArray{System.Byte},System.Int16}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Collections.Immutable.ImmutableArray{System.Byte},System.UInt16}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Collections.Immutable.ImmutableArray{System.Byte},System.Int32}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Collections.Immutable.ImmutableArray{System.Byte},System.UInt32}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Collections.Immutable.ImmutableArray{System.Byte},System.Int64}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Collections.Immutable.ImmutableArray{System.Byte},System.UInt64}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Collections.Immutable.ImmutableArray{System.Byte},System.Byte[]}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Collections.Immutable.ImmutableArray{System.Byte},System.Collections.Immutable.ImmutableArray{System.Byte}}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Collections.Immutable.ImmutableArray{System.Byte},System.String}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
         <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.IKey,Bencodex.Types.IndirectValue}},Bencodex.Types.IndirectValue.Loader)">
             <summary>
             Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value
@@ -741,6 +1336,96 @@
             </summary>
             <param name="elements">The element values to include.</param>
         </member>
+        <member name="M:Bencodex.Types.List.#ctor(System.Collections.Generic.IEnumerable{Bencodex.Types.Boolean})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.List"/> instance with <paramref name="elements"/>.
+            </summary>
+            <param name="elements">The element values to include.</param>
+        </member>
+        <member name="M:Bencodex.Types.List.#ctor(System.Collections.Generic.IEnumerable{Bencodex.Types.Integer})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.List"/> instance with <paramref name="elements"/>.
+            </summary>
+            <param name="elements">The element values to include.</param>
+        </member>
+        <member name="M:Bencodex.Types.List.#ctor(System.Collections.Generic.IEnumerable{Bencodex.Types.Binary})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.List"/> instance with <paramref name="elements"/>.
+            </summary>
+            <param name="elements">The element values to include.</param>
+        </member>
+        <member name="M:Bencodex.Types.List.#ctor(System.Collections.Generic.IEnumerable{Bencodex.Types.Text})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.List"/> instance with <paramref name="elements"/>.
+            </summary>
+            <param name="elements">The element values to include.</param>
+        </member>
+        <member name="M:Bencodex.Types.List.#ctor(System.Collections.Generic.IEnumerable{System.Boolean})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.List"/> instance with <paramref name="elements"/>.
+            </summary>
+            <param name="elements">The element values to include.</param>
+        </member>
+        <member name="M:Bencodex.Types.List.#ctor(System.Collections.Generic.IEnumerable{System.Int16})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.List"/> instance with <paramref name="elements"/>.
+            </summary>
+            <param name="elements">The element values to include.</param>
+        </member>
+        <member name="M:Bencodex.Types.List.#ctor(System.Collections.Generic.IEnumerable{System.UInt16})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.List"/> instance with <paramref name="elements"/>.
+            </summary>
+            <param name="elements">The element values to include.</param>
+        </member>
+        <member name="M:Bencodex.Types.List.#ctor(System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.List"/> instance with <paramref name="elements"/>.
+            </summary>
+            <param name="elements">The element values to include.</param>
+        </member>
+        <member name="M:Bencodex.Types.List.#ctor(System.Collections.Generic.IEnumerable{System.UInt32})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.List"/> instance with <paramref name="elements"/>.
+            </summary>
+            <param name="elements">The element values to include.</param>
+        </member>
+        <member name="M:Bencodex.Types.List.#ctor(System.Collections.Generic.IEnumerable{System.Int64})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.List"/> instance with <paramref name="elements"/>.
+            </summary>
+            <param name="elements">The element values to include.</param>
+        </member>
+        <member name="M:Bencodex.Types.List.#ctor(System.Collections.Generic.IEnumerable{System.UInt64})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.List"/> instance with <paramref name="elements"/>.
+            </summary>
+            <param name="elements">The element values to include.</param>
+        </member>
+        <member name="M:Bencodex.Types.List.#ctor(System.Collections.Generic.IEnumerable{System.Numerics.BigInteger})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.List"/> instance with <paramref name="elements"/>.
+            </summary>
+            <param name="elements">The element values to include.</param>
+        </member>
+        <member name="M:Bencodex.Types.List.#ctor(System.Collections.Generic.IEnumerable{System.Byte[]})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.List"/> instance with <paramref name="elements"/>.
+            </summary>
+            <param name="elements">The element values to include.</param>
+        </member>
+        <member name="M:Bencodex.Types.List.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Immutable.ImmutableArray{System.Byte}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.List"/> instance with <paramref name="elements"/>.
+            </summary>
+            <param name="elements">The element values to include.</param>
+        </member>
+        <member name="M:Bencodex.Types.List.#ctor(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.List"/> instance with <paramref name="elements"/>.
+            </summary>
+            <param name="elements">The element values to include.</param>
+        </member>
         <member name="M:Bencodex.Types.List.#ctor(System.Collections.Generic.IEnumerable{Bencodex.Types.IndirectValue},Bencodex.Types.IndirectValue.Loader)">
             <summary>
             Creates a <see cref="T:Bencodex.Types.List"/> instance with <paramref name="indirectValues"/> and
@@ -783,11 +1468,28 @@
             <param name="value">The value to add to the list.</param>
             <returns>A new list with the value added.</returns>
         </member>
-        <member name="M:Bencodex.Types.List.Add(System.String)">
+        <member name="M:Bencodex.Types.List.Add(Bencodex.Types.Boolean)">
             <summary>Makes a copy of the list, and adds the specified <paramref name="value"/>
             to the end of the copied list.</summary>
-            <param name="value">The value to add to the list.  It is automatically turned into
-            a Bencodex <see cref="T:Bencodex.Types.Text"/> instance.</param>
+            <param name="value">The value to add to the list.</param>
+            <returns>A new list with the value added.</returns>
+        </member>
+        <member name="M:Bencodex.Types.List.Add(Bencodex.Types.Integer)">
+            <summary>Makes a copy of the list, and adds the specified <paramref name="value"/>
+            to the end of the copied list.</summary>
+            <param name="value">The value to add to the list.</param>
+            <returns>A new list with the value added.</returns>
+        </member>
+        <member name="M:Bencodex.Types.List.Add(Bencodex.Types.Binary)">
+            <summary>Makes a copy of the list, and adds the specified <paramref name="value"/>
+            to the end of the copied list.</summary>
+            <param name="value">The value to add to the list.</param>
+            <returns>A new list with the value added.</returns>
+        </member>
+        <member name="M:Bencodex.Types.List.Add(Bencodex.Types.Text)">
+            <summary>Makes a copy of the list, and adds the specified <paramref name="value"/>
+            to the end of the copied list.</summary>
+            <param name="value">The value to add to the list.</param>
             <returns>A new list with the value added.</returns>
         </member>
         <member name="M:Bencodex.Types.List.Add(System.Boolean)">
@@ -795,6 +1497,48 @@
             to the end of the copied list.</summary>
             <param name="value">The value to add to the list.  It is automatically turned into
             a Bencodex <see cref="T:Bencodex.Types.Boolean"/> instance.</param>
+            <returns>A new list with the value added.</returns>
+        </member>
+        <member name="M:Bencodex.Types.List.Add(System.Int16)">
+            <summary>Makes a copy of the list, and adds the specified <paramref name="value"/>
+            to the end of the copied list.</summary>
+            <param name="value">The value to add to the list.  It is automatically turned into
+            a Bencodex <see cref="T:Bencodex.Types.Integer"/> instance.</param>
+            <returns>A new list with the value added.</returns>
+        </member>
+        <member name="M:Bencodex.Types.List.Add(System.UInt16)">
+            <summary>Makes a copy of the list, and adds the specified <paramref name="value"/>
+            to the end of the copied list.</summary>
+            <param name="value">The value to add to the list.  It is automatically turned into
+            a Bencodex <see cref="T:Bencodex.Types.Integer"/> instance.</param>
+            <returns>A new list with the value added.</returns>
+        </member>
+        <member name="M:Bencodex.Types.List.Add(System.Int32)">
+            <summary>Makes a copy of the list, and adds the specified <paramref name="value"/>
+            to the end of the copied list.</summary>
+            <param name="value">The value to add to the list.  It is automatically turned into
+            a Bencodex <see cref="T:Bencodex.Types.Integer"/> instance.</param>
+            <returns>A new list with the value added.</returns>
+        </member>
+        <member name="M:Bencodex.Types.List.Add(System.UInt32)">
+            <summary>Makes a copy of the list, and adds the specified <paramref name="value"/>
+            to the end of the copied list.</summary>
+            <param name="value">The value to add to the list.  It is automatically turned into
+            a Bencodex <see cref="T:Bencodex.Types.Integer"/> instance.</param>
+            <returns>A new list with the value added.</returns>
+        </member>
+        <member name="M:Bencodex.Types.List.Add(System.Int64)">
+            <summary>Makes a copy of the list, and adds the specified <paramref name="value"/>
+            to the end of the copied list.</summary>
+            <param name="value">The value to add to the list.  It is automatically turned into
+            a Bencodex <see cref="T:Bencodex.Types.Integer"/> instance.</param>
+            <returns>A new list with the value added.</returns>
+        </member>
+        <member name="M:Bencodex.Types.List.Add(System.UInt64)">
+            <summary>Makes a copy of the list, and adds the specified <paramref name="value"/>
+            to the end of the copied list.</summary>
+            <param name="value">The value to add to the list.  It is automatically turned into
+            a Bencodex <see cref="T:Bencodex.Types.Integer"/> instance.</param>
             <returns>A new list with the value added.</returns>
         </member>
         <member name="M:Bencodex.Types.List.Add(System.Numerics.BigInteger)">
@@ -809,6 +1553,20 @@
             to the end of the copied list.</summary>
             <param name="value">The value to add to the list.  It is automatically turned into
             a Bencodex <see cref="T:Bencodex.Types.Binary"/> instance.</param>
+            <returns>A new list with the value added.</returns>
+        </member>
+        <member name="M:Bencodex.Types.List.Add(System.Collections.Immutable.ImmutableArray{System.Byte})">
+            <summary>Makes a copy of the list, and adds the specified <paramref name="value"/>
+            to the end of the copied list.</summary>
+            <param name="value">The value to add to the list.  It is automatically turned into
+            a Bencodex <see cref="T:Bencodex.Types.Binary"/> instance.</param>
+            <returns>A new list with the value added.</returns>
+        </member>
+        <member name="M:Bencodex.Types.List.Add(System.String)">
+            <summary>Makes a copy of the list, and adds the specified <paramref name="value"/>
+            to the end of the copied list.</summary>
+            <param name="value">The value to add to the list.  It is automatically turned into
+            a Bencodex <see cref="T:Bencodex.Types.Text"/> instance.</param>
             <returns>A new list with the value added.</returns>
         </member>
         <member name="M:Bencodex.Types.List.Inspect(System.Boolean)">
