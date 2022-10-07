@@ -272,9 +272,8 @@ namespace Nekoyume.BlockChain
             ProcessAction(action);
             _lastBattleActionId = action.Id;
 
-            Tracer.Finish(sentryTX);
-
             return _agent.ActionRenderer.EveryRender<HackAndSlash>()
+                .Do(_ => Tracer.Finish(sentryTX))
                 .Timeout(ActionTimeout)
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
                 .First()
@@ -349,7 +348,7 @@ namespace Nekoyume.BlockChain
                     : "0",
             });
 
-            ITransaction sentryTX = Tracer.Create("Unity/EventDungeonBattle", new Dictionary<string, string>()
+            ITransaction sentryTx = Tracer.Create("Unity/EventDungeonBattle", new Dictionary<string, string>()
             {
                 ["EventScheduleId"] = eventScheduleId.ToString(),
                 ["EventDungeonId"] = eventDungeonId.ToString(),
@@ -392,8 +391,8 @@ namespace Nekoyume.BlockChain
             ProcessAction(action);
             _lastBattleActionId = action.Id;
 
-            Tracer.Finish(sentryTX);
             return _agent.ActionRenderer.EveryRender<EventDungeonBattle>()
+                .Do(_ => Tracer.Finish(sentryTx))
                 .Timeout(ActionTimeout)
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
                 .First()
@@ -524,8 +523,8 @@ namespace Nekoyume.BlockChain
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
 
-            Tracer.Finish(sentryTx);
             return _agent.ActionRenderer.EveryRender<EventConsumableItemCrafts>()
+                .Do(_ => Tracer.Finish(sentryTx))
                 .Timeout(ActionTimeout)
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
@@ -744,9 +743,9 @@ namespace Nekoyume.BlockChain
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
-            Tracer.Finish(sentryTx);
 
             return _agent.ActionRenderer.EveryRender<ItemEnhancement>()
+                .Do(_ => Tracer.Finish(sentryTx))
                 .Timeout(ActionTimeout)
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
@@ -785,9 +784,9 @@ namespace Nekoyume.BlockChain
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
             _lastBattleActionId = action.Id;
-            Tracer.Finish(sentryTx);
 
             return _agent.ActionRenderer.EveryRender<RankingBattle>()
+                .Do(_ => Tracer.Finish(sentryTx))
                 .Timeout(ActionTimeout)
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
