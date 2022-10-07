@@ -25,7 +25,7 @@ namespace Nekoyume.BlockChain.Policy
                 validateNextBlockTx = null,
             Func<BlockChain<NCAction>, Block<NCAction>, BlockPolicyViolationException>
                 validateNextBlock = null,
-            Func<long, long> getMaxBlockBytes = null,
+            Func<long, long> getMaxTransactionsBytes = null,
             Func<long, int> getMinTransactionsPerBlock = null,
             Func<long, int> getMaxTransactionsPerBlock = null,
             Func<long, int> getMaxTransactionsPerSignerPerBlock = null,
@@ -39,7 +39,7 @@ namespace Nekoyume.BlockChain.Policy
                 validateNextBlockTx: validateNextBlockTx,
                 validateNextBlock: validateNextBlock,
                 canonicalChainComparer: canonicalChainComparer,
-                getMaxBlockBytes: getMaxBlockBytes,
+                getMaxTransactionsBytes: getMaxTransactionsBytes,
                 getMinTransactionsPerBlock: getMinTransactionsPerBlock,
                 getMaxTransactionsPerBlock: getMaxTransactionsPerBlock,
                 getMaxTransactionsPerSignerPerBlock: getMaxTransactionsPerSignerPerBlock)

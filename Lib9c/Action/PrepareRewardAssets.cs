@@ -26,7 +26,8 @@ namespace Nekoyume.Action
 
         public override IValue PlainValue => Dictionary.Empty
             .Add("r", RewardPoolAddress.Serialize())
-            .Add("a", Assets.Select(a => a.Serialize()));
+            .Add("a", new List(Assets.Select(a => a.Serialize())));
+
         public override void LoadPlainValue(IValue plainValue)
         {
             var serialized = (Dictionary) plainValue;

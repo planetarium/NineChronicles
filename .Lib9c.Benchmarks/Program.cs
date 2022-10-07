@@ -63,7 +63,7 @@ namespace Lib9c.Benchmarks
                 policySource.GetPolicy(
                     // Explicitly set to lowest possible difficulty.
                     minimumDifficulty: BlockPolicySource.DifficultyStability,
-                    maxBlockBytesPolicy: null,
+                    maxTransactionsBytesPolicy: null,
                     minTransactionsPerBlockPolicy: null,
                     maxTransactionsPerBlockPolicy: null,
                     maxTransactionsPerSignerPerBlockPolicy: null,
