@@ -131,7 +131,7 @@ namespace Nekoyume.Action
             else
             {
                 products = (BxList) products.Remove(productSerialized);
-                shopStateDict = shopStateDict.SetItem(ProductsKey, new List<IValue>(products));
+                shopStateDict = shopStateDict.SetItem(ProductsKey, products);
             }
 
             var shopItem = new ShopItem(productSerialized);

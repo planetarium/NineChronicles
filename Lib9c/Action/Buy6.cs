@@ -236,7 +236,7 @@ namespace Nekoyume.Action
                 );
 
                 products = (List) products.Remove(productSerialized);
-                shopStateDict = shopStateDict.SetItem(ProductsKey, new List<IValue>(products));
+                shopStateDict = shopStateDict.SetItem(ProductsKey, products);
 
                 ITradableItem tradableItem;
                 int count = 1;

@@ -57,20 +57,20 @@ namespace Nekoyume.BlockChain.Policy
             return allAuthorizedMiners.Contains(transaction.Signer);
         }
 
-        private static InvalidBlockBytesLengthException ValidateBlockBytesRaw(
+        private static InvalidBlockBytesLengthException ValidateTransactionsBytesRaw(
             Block<NCAction> block,
-            IVariableSubPolicy<long> maxBlockBytesPolicy)
+            IVariableSubPolicy<long> maxTransactionsBytesPolicy)
         {
-            long maxBlockBytes = maxBlockBytesPolicy.Getter(block.Index);
-            long blockBytes = block.MarshalBlock().EncodingLength;
+            long maxTransactionsBytes = maxTransactionsBytesPolicy.Getter(block.Index);
+            long transactionsBytes = block.MarshalBlock().EncodingLength;
 
-            if (blockBytes > maxBlockBytes)
+            if (transactionsBytes > maxTransactionsBytes)
             {
                 return new InvalidBlockBytesLengthException(
-                    $"The size of block #{block.Index} {block.Hash} is too large " +
-                    $"where the maximum number of bytes allowed is {maxBlockBytes}: " +
-                    $"{blockBytes}",
-                    blockBytes);
+                    $"The size of block #{block.Index} {block.Hash} is too large where " +
+                    $"the maximum number of bytes allowed for transactions is " +
+                    $"{maxTransactionsBytes}: {transactionsBytes}",
+                    transactionsBytes);
             }
 
             return null;

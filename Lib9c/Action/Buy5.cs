@@ -227,7 +227,7 @@ namespace Nekoyume.Action
                 );
 
                 products = (List) products.Remove(productSerialized);
-                shopStateDict = shopStateDict.SetItem(ProductsKey, new List<IValue>(products));
+                shopStateDict = shopStateDict.SetItem(ProductsKey, products);
 
                 INonFungibleItem nonFungibleItem = (INonFungibleItem) shopItem.ItemUsable ?? shopItem.Costume;
                 if (!sellerAvatarState.inventory.RemoveNonFungibleItem(nonFungibleItem) && !fromLegacy)
