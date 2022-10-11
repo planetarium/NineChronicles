@@ -61,7 +61,7 @@ namespace Nekoyume.Action
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Verbose("{AddressesHex} updateSell exec started", addressesHex);
+            Log.Debug("{AddressesHex} updateSell exec started", addressesHex);
 
             if (!updateSellInfos.Any())
             {
@@ -196,7 +196,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex} UpdateSell Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
 
             var ended = DateTimeOffset.UtcNow;
-            Log.Verbose("{AddressesHex} UpdateSell Total Executed Time: {Elapsed}", addressesHex, ended - started);
+            Log.Debug("{AddressesHex} UpdateSell Total Executed Time: {Elapsed}", addressesHex, ended - started);
 
             return states;
         }

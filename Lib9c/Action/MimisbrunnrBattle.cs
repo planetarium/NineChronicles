@@ -72,7 +72,7 @@ namespace Nekoyume.Action
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Verbose(
+            Log.Debug(
                 "{AddressesHex}Mimisbrunnr exec started",
                 addressesHex);
 
@@ -369,7 +369,7 @@ namespace Nekoyume.Action
             sw.Restart();
 
             var ended = DateTimeOffset.UtcNow;
-            Log.Verbose(
+            Log.Debug(
                 "{AddressesHex}Mimisbrunnr Total Executed Time: {Elapsed}",
                 addressesHex,
                 ended - started);

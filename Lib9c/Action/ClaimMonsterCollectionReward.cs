@@ -10,6 +10,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Serilog;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
@@ -31,6 +32,9 @@ namespace Nekoyume.Action
             Address inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
             Address worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
             Address questListAddress = avatarAddress.Derive(LegacyQuestListKey);
+            var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
+            var started = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}ClaimMonsterCollection exec started", addressesHex);
 
             if (context.Rehearsal)
             {
@@ -85,6 +89,8 @@ namespace Nekoyume.Action
             }
             monsterCollectionState.Claim(context.BlockIndex);
 
+            var ended = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}ClaimMonsterCollection Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states
                 .SetState(avatarAddress, avatarState.SerializeV2())
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
