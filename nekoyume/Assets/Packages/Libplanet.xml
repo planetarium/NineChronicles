@@ -2755,17 +2755,32 @@
             name="blockExcerpt"/>.  The current time by default.</param>
             <returns>A pair of a block and the time it was perceived.</returns>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.MakeTransaction(Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.MakeTransaction(Libplanet.Crypto.PrivateKey,Libplanet.Action.IAction,System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})">
             <summary>
-            Creates a new <see cref="T:Libplanet.Tx.Transaction`1"/> and stage the transaction.
-            Cannot create new transaction if the genesis block does not exist.
+            Creates a new <see cref="T:Libplanet.Tx.Transaction`1"/> with a system action and stage it.
+            It's available only if the genesis block exists.
             </summary>
             <param name="privateKey">A <see cref="T:Libplanet.Crypto.PrivateKey"/> of the account who creates and
             signs a new transaction.</param>
-            <param name="actions">A list of <see cref="T:Libplanet.Action.IAction"/>s to include to a new transaction.
+            <param name="systemAction">A system action to include to a new transaction.</param>
+            <param name="updatedAddresses"><see cref="T:Libplanet.Address"/>es whose states affected by
+            the <paramref name="systemAction"/>.</param>
+            <param name="timestamp">The time this <see cref="T:Libplanet.Tx.Transaction`1"/> is created and
+            signed.</param>
+            <returns>A created new <see cref="T:Libplanet.Tx.Transaction`1"/> signed by the given
+            <paramref name="privateKey"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.MakeTransaction(Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Tx.Transaction`1"/> with custom actions and stage it.
+            It's available only if the genesis block exists.
+            </summary>
+            <param name="privateKey">A <see cref="T:Libplanet.Crypto.PrivateKey"/> of the account who creates and
+            signs a new transaction.</param>
+            <param name="customActions">A list of custom actions to include to a new transaction.
             </param>
             <param name="updatedAddresses"><see cref="T:Libplanet.Address"/>es whose states affected by
-            <paramref name="actions"/>.</param>
+            <paramref name="customActions"/>.</param>
             <param name="timestamp">The time this <see cref="T:Libplanet.Tx.Transaction`1"/> is created and
             signed.</param>
             <returns>A created new <see cref="T:Libplanet.Tx.Transaction`1"/> signed by the given
@@ -2856,8 +2871,8 @@
             <param name="miner">The miner's <see cref="T:Libplanet.Crypto.PublicKey"/> that mines the block.</param>
             <param name="timestamp">The <see cref="T:System.DateTimeOffset"/> when mining started.</param>
             <param name="append">Whether to append the mined block immediately after mining.</param>
-            <param name="maxBlockBytes">The maximum number of bytes a block can have.
-            See also <see cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxBlockBytes(System.Int64)"/>.</param>
+            <param name="maxTransactionsBytes">The maximum number of bytes a block can have.
+            See also <see cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxTransactionsBytes(System.Int64)"/>.</param>
             <param name="maxTransactions">The maximum number of transactions that a block can
             accept.  See also <see cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxTransactionsPerBlock(System.Int64)"/>.
             </param>
@@ -2879,8 +2894,8 @@
             <param name="miner">The miner's <see cref="T:Libplanet.Crypto.PublicKey"/> that mines the block.</param>
             <param name="timestamp">The <see cref="T:System.DateTimeOffset"/> when mining started.</param>
             <param name="append">Whether to append the mined block immediately after mining.</param>
-            <param name="maxBlockBytes">The maximum number of bytes a block can have.
-            See also <see cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxBlockBytes(System.Int64)"/>.</param>
+            <param name="maxTransactionsBytes">The maximum number of bytes a block can have.
+            See also <see cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxTransactionsBytes(System.Int64)"/>.</param>
             <param name="maxTransactions">The maximum number of transactions that a block can
             accept.  See also <see cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxTransactionsPerBlock(System.Int64)"/>.
             </param>
@@ -2895,13 +2910,12 @@
             <exception cref="T:System.OperationCanceledException">Thrown when
             <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> is changed while mining.</exception>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.GatherTransactionsToMine(Libplanet.Blocks.BlockMetadata,System.Int64,System.Int32,System.Int32,System.Collections.Generic.IComparer{Libplanet.Tx.Transaction{`0}})">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.GatherTransactionsToMine(System.Int64,System.Int32,System.Int32,System.Collections.Generic.IComparer{Libplanet.Tx.Transaction{`0}})">
             <summary>
             Gathers <see cref="T:Libplanet.Tx.Transaction`1"/>s for mining a next block
             from the current set of staged <see cref="T:Libplanet.Tx.Transaction`1"/>s.
             </summary>
-            <param name="metadata">The metadata of the block to be mined.</param>
-            <param name="maxBlockBytes">The maximum number of bytes a block can have.</param>
+            <param name="maxTransactionsBytes">The maximum number of bytes a block can have.</param>
             <param name="maxTransactions">The maximum number of <see cref="T:Libplanet.Tx.Transaction`1"/>s
             allowed.</param>
             <param name="maxTransactionsPerSigner">The maximum number of
@@ -3225,9 +3239,9 @@
             </param>
             <param name="canonicalChainComparer">The custom rule to determine which is the canonical
             chain.  If omitted, <see cref="T:Libplanet.Blockchain.TotalDifficultyComparer"/> is used by default.</param>
-            <param name="getMaxBlockBytes">The function determining the maximum size of
-            a <see cref="T:Libplanet.Blocks.Block`1"/> in number of <c>byte</c>s given
-            its <see cref="P:Libplanet.Blocks.Block`1.Index"/>.  Goes to <see cref="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetMaxBlockBytes(System.Int64)"/>.
+            <param name="getMaxTransactionsBytes">The function determining the maximum size of
+            <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> in number of <c>byte</c>s given
+            its <see cref="P:Libplanet.Blocks.Block`1.Index"/>.  Goes to <see cref="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetMaxTransactionsBytes(System.Int64)"/>.
             Set to a constant size of <c>100</c>KiB, i.e. <c>100 * 1024</c>, by default.</param>
             <param name="getMinTransactionsPerBlock">The function determining the minimum number of
             <see cref="T:Libplanet.Tx.Transaction`1"/>s that must be included in a <see cref="T:Libplanet.Blocks.Block`1"/>.
@@ -3284,7 +3298,7 @@
         <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetNextBlockDifficulty(Libplanet.Blockchain.BlockChain{`0})">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetMaxBlockBytes(System.Int64)">
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetMaxTransactionsBytes(System.Int64)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetMinTransactionsPerBlock(System.Int64)">
@@ -3431,13 +3445,14 @@
             <returns>A right <see cref="P:Libplanet.Blocks.Block`1.Difficulty"/>
             for a new <see cref="T:Libplanet.Blocks.Block`1"/> to be mined.</returns>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxBlockBytes(System.Int64)">
+        <member name="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxTransactionsBytes(System.Int64)">
             <summary>
-            Gets the maximum length of a <see cref="T:Libplanet.Blocks.Block`1"/> in bytes.
+            Gets the maximum length of <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> in bytes.
             </summary>
             <param name="index">The <see cref="P:Libplanet.Blocks.Block`1.Index"/> of the <see cref="T:Libplanet.Blocks.Block`1"/>
             for which this constraint should apply.</param>
-            <returns>The maximum length of a <see cref="T:Libplanet.Blocks.Block`1"/> in bytes to accept.</returns>
+            <returns>The maximum length of <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> in bytes
+            to accept.</returns>
         </member>
         <member name="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMinTransactionsPerBlock(System.Int64)">
             <summary>
@@ -5917,8 +5932,8 @@
         </member>
         <member name="T:Libplanet.Blocks.InvalidBlockBytesLengthException">
             <summary>
-            An exception thrown when a <see cref="T:Libplanet.Blocks.Block`1"/>'s encoded bytes exceeds
-            <see cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxBlockBytes(System.Int64)"/>.
+            An exception thrown when the encoded bytes of <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> exceeds
+            <see cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxTransactionsBytes(System.Int64)"/>.
             </summary>
         </member>
         <member name="M:Libplanet.Blocks.InvalidBlockBytesLengthException.#ctor(System.String,System.Int64)">
@@ -5926,12 +5941,12 @@
             Initializes a new instance of <see cref="T:Libplanet.Blocks.InvalidBlockBytesLengthException"/> class.
             </summary>
             <param name="message">The message that describes the error.</param>
-            <param name="bytesLength">The actual length of the <see cref="T:Libplanet.Blocks.Block`1"/>'s encoded
-            bytes.</param>
+            <param name="bytesLength">The actual encoded length of
+            <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> as bytes.</param>
         </member>
         <member name="P:Libplanet.Blocks.InvalidBlockBytesLengthException.BytesLength">
             <summary>
-            The actual length of the <see cref="T:Libplanet.Blocks.Block`1"/>'s encoded bytes.
+            The actual encoded length of <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> as bytes.
             </summary>
         </member>
         <member name="M:Libplanet.Blocks.InvalidBlockBytesLengthException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
