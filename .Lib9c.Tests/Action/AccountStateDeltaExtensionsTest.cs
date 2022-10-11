@@ -41,7 +41,7 @@ namespace Lib9c.Tests.Action
         [InlineData(0, 0, 0, typeof(InvalidClaimException))]
         [InlineData(1, 1, 100, null)]
         [InlineData(2, 2, 200, null)]
-        public void SetBossKillReward(int level, int expectedRune, int expectedCrystal, Type exc)
+        public void SetWorldBossKillReward(int level, int expectedRune, int expectedCrystal, Type exc)
         {
             IAccountStateDelta states = new State();
             var rewardInfoAddress = new PrivateKey().ToAddress();
