@@ -258,6 +258,7 @@ namespace Nekoyume.BlockChain
                 .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Disconnected", new Value
                 {
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                 }))
                 .AddTo(_disposables);
             OnRetryStarted
@@ -265,6 +266,7 @@ namespace Nekoyume.BlockChain
                 .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Retry Connect Started", new Value
                 {
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                 }))
                 .AddTo(_disposables);
             OnRetryEnded
@@ -272,6 +274,7 @@ namespace Nekoyume.BlockChain
                 .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Retry Connect Ended", new Value
                 {
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                 }))
                 .AddTo(_disposables);
             OnPreloadStarted
@@ -279,6 +282,7 @@ namespace Nekoyume.BlockChain
                 .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Preload Started", new Value
                 {
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                 }))
                 .AddTo(_disposables);
             OnPreloadEnded
@@ -286,6 +290,7 @@ namespace Nekoyume.BlockChain
                 .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Preload Ended", new Value
                 {
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                 }))
                 .AddTo(_disposables);
             OnRetryAttempt
