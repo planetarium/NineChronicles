@@ -634,6 +634,7 @@ namespace Nekoyume.Game.Character
                 {
                     ["code"] = level,
                     ["AvatarAddress"] = Game.instance.States.CurrentAvatarState.address.ToString(),
+                    ["AgentAddress"] = Game.instance.States.AgentState.address.ToString(),
                 });
 
                 Widget.Find<LevelUpCelebratePopup>()?.Show(level, Level);

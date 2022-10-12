@@ -502,6 +502,7 @@ namespace Nekoyume.UI
                                     .Sum(x => x.Value),
                                 ["BurntCrystal"] = (long)recipeInfo.CostCrystal,
                                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                             });
 
                         ActionManager.Instance

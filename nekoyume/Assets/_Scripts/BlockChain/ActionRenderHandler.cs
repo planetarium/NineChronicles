@@ -98,6 +98,7 @@ namespace Nekoyume.BlockChain
                             ["ActionType"] = actionType.TypeIdentifier,
                             ["Elapsed"] = elapsed,
                             ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                            ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                         });
                     }
                 }
@@ -548,6 +549,7 @@ namespace Nekoyume.BlockChain
                                     ["GainedCrystal"] = (long)enhancementResultModel.CRYSTAL.MajorUnit,
                                     ["BurntNCG"] = (long)enhancementResultModel.gold,
                                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                                    ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                                 });
                                 formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_FAIL";
                                 break;
@@ -831,6 +833,7 @@ namespace Nekoyume.BlockChain
                             ["GainedCrystal"] = (long)result.CRYSTAL.MajorUnit,
                             ["BurntNCG"] = (long)result.gold,
                             ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                            ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                         });
                         formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_FAIL";
                         break;
@@ -1157,6 +1160,7 @@ namespace Nekoyume.BlockChain
                         ["RandomSkillId"] = eval.Action.StageBuffId,
                         ["IsCleared"] = simulator.Log.IsClear,
                         ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                        ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                     });
                 }
 

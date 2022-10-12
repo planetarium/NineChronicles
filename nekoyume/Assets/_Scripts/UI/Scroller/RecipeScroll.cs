@@ -181,6 +181,7 @@ namespace Nekoyume.UI.Scroller
             {
                 ["BurntCrystal"] = (long)_openCost,
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             });
             Game.Game.instance.ActionManager
                 .UnlockEquipmentRecipe(_unlockableRecipeIds, _openCost)

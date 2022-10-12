@@ -440,6 +440,7 @@ namespace Nekoyume.UI
                 ["apStoneCount"] = apStoneCount,
                 ["playCount"] = totalPlayCount,
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             });
 
             Close();

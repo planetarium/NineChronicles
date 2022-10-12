@@ -293,6 +293,7 @@ namespace Nekoyume.UI
             {
                 ["Quantity"] = updateSellInfos.Count,
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             });
 
             string message;
@@ -378,6 +379,7 @@ namespace Nekoyume.UI
             Analyzer.Instance.Track("Unity/Sell", new Value
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             });
             ResponseSell();
         }
@@ -429,6 +431,7 @@ namespace Nekoyume.UI
             Analyzer.Instance.Track("Unity/UpdateSell", new Value
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             });
             ResponseSell();
         }
@@ -530,6 +533,7 @@ namespace Nekoyume.UI
                 Analyzer.Instance.Track("Unity/Sell Cancellation", new Value
                 {
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                 });
                 Game.Game.instance.ActionManager.SellCancellation(
                     avatarAddress,

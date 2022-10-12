@@ -235,6 +235,7 @@ namespace Nekoyume.UI
             Analyzer.Instance.Track("Unity/Click Stage", new Value
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             });
 
             var stage = Game.Game.instance.Stage;

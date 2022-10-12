@@ -239,6 +239,7 @@ namespace Nekoyume.BlockChain
                 ["StageId"] = stageId,
                 ["PlayCount"] = playCount,
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             });
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
@@ -407,6 +408,7 @@ namespace Nekoyume.BlockChain
             {
                 ["RecipeId"] = recipeInfo.RecipeId,
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             });
 
             var action = new CombinationConsumable
@@ -692,6 +694,7 @@ namespace Nekoyume.BlockChain
             Analyzer.Instance.Track("Unity/Item Enhancement", new Value
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             });
 
             var action = new ItemEnhancement
@@ -730,6 +733,7 @@ namespace Nekoyume.BlockChain
             Analyzer.Instance.Track("Unity/Ranking Battle", new Value
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             });
             var action = new RankingBattle
             {
@@ -858,6 +862,7 @@ namespace Nekoyume.BlockChain
             {
                 ["RecipeId"] = recipeInfo.RecipeId,
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             });
 
             var agentAddress = States.Instance.AgentState.address;
@@ -931,6 +936,7 @@ namespace Nekoyume.BlockChain
             {
                 ["HourglassCount"] = cost,
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             });
 
             var action = new RapidCombination
