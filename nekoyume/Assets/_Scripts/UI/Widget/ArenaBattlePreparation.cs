@@ -265,7 +265,9 @@ namespace Nekoyume.UI
                     equipmentSlots.gameObject.SetActive(false);
                 },
                 ElementalTypeExtension.GetAllTypes(),
-                isArena: true);
+                Inventory.InventoryType.Arena,
+                RxProps.PlayersArenaParticipant.Value.AvatarState.inventory,
+                useConsumable: true);
         }
 
         private void UpdateTitle()

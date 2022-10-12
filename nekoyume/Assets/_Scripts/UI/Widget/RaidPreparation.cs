@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Bencodex.Types;
 using Nekoyume.BlockChain;
 using Nekoyume.Extensions;
 using Nekoyume.Game.Controller;
@@ -39,7 +40,6 @@ namespace Nekoyume.UI
         {
             public PracticeRandom() : base(Guid.NewGuid().GetHashCode())
             {
-
             }
 
             public int Seed => throw new NotImplementedException();
@@ -116,6 +116,7 @@ namespace Nekoyume.UI
         private EquipmentSlot _weaponSlot;
         private EquipmentSlot _armorSlot;
         private GameObject _cachedCharacterTitle;
+        private AvatarState _avatarState;
 
         private int _requiredCost;
         private int _bossId;
@@ -179,11 +180,15 @@ namespace Nekoyume.UI
 
             _bossId = bossId;
             _headerMenu = Find<HeaderMenuStatic>();
-            _headerMenu.SetActiveAvatarInfo(false);
-
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            var value = currentAvatarState.inventory.Serialize();
+            var cloneInventory = new Nekoyume.Model.Item.Inventory((List)value);
+            _avatarState = new AvatarState(currentAvatarState)
+            {
+                inventory = cloneInventory
+            };
             var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
-            var raiderState = WorldBossStates.GetRaiderState(currentAvatarState.address);
+            var raiderState = WorldBossStates.GetRaiderState(_avatarState.address);
             startButton.gameObject.SetActive(true);
             startButton.enabled = true;
             if (WorldBossFrontHelper.IsItInSeason(currentBlockIndex))
@@ -211,36 +216,31 @@ namespace Nekoyume.UI
             closeButtonText.text = L10nManager.LocalizeCharacterName(bossId);
             if (Player == null)
             {
-                Player = PlayerFactory.Create(currentAvatarState).GetComponent<Player>();
+                Player = PlayerFactory.Create(_avatarState).GetComponent<Player>();
             }
+
 
             Player.transform.position = PlayerPosition;
             Player.SpineController.Appear();
-            Player.Set(currentAvatarState);
+            Player.Set(_avatarState);
             Player.gameObject.SetActive(true);
 
             _cachedEquipment.Clear();
             _cachedEquipment.AddRange(Player.Model.Equipments.Select(x=> x.ItemId).ToList());
             _cachedEquipment.AddRange(Player.Model.Costumes.Select(x=> x.ItemId).ToList());
             var loadEquipment = LoadEquipment();
-            currentAvatarState.EquipItems(loadEquipment);
+            _avatarState.EquipItems(loadEquipment);
 
             UpdateInventory();
             UpdateTitle();
-            UpdateStat(currentAvatarState);
-            UpdateSlot(currentAvatarState, true);
-            UpdateStartButton(currentAvatarState);
+            UpdateStat(_avatarState);
+            UpdateSlot(_avatarState, true);
+            UpdateStartButton(_avatarState);
 
 
             coverToBlockClick.SetActive(false);
             costumeSlots.gameObject.SetActive(false);
             equipmentSlots.gameObject.SetActive(true);
-
-            ReactiveAvatarState.Inventory.Subscribe(_ =>
-            {
-                UpdateSlot(Game.Game.instance.States.CurrentAvatarState);
-                UpdateStartButton(Game.Game.instance.States.CurrentAvatarState);
-            }).AddTo(_disposables);
 
             AgentStateSubject.Crystal
                 .Subscribe(_ => UpdateCrystalCost())
@@ -269,16 +269,8 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            Find<HeaderMenuStatic>().SetActiveAvatarInfo(true);
             consumableSlots.Clear();
             _disposables.DisposeAllAndClear();
-
-            if (Player != null)
-            {
-                var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
-                currentAvatarState.EquipItems(_cachedEquipment);
-            }
-
             base.Close(ignoreCloseAnimation);
         }
 
@@ -300,7 +292,10 @@ namespace Nekoyume.UI
                     equipmentSlots.gameObject.SetActive(false);
                 },
                 ElementalTypeExtension.GetAllTypes(),
-                onUpdateInventory: OnUpdateInventory);
+                inventoryType:Inventory.InventoryType.Raid,
+                _avatarState.inventory,
+                onUpdateInventory:OnUpdateInventory,
+                useConsumable : true);
         }
 
         private void UpdateTitle()
@@ -380,6 +375,10 @@ namespace Nekoyume.UI
             }
 
             var itemBase = inventoryItem.ItemBase;
+            if (!(itemBase is INonFungibleItem nonFungibleItem))
+            {
+                return;
+            }
             if (TryToFindSlotAlreadyEquip(itemBase, out var slot))
             {
                 Unequip(slot, false);
@@ -396,10 +395,15 @@ namespace Nekoyume.UI
                 Unequip(slot, true);
             }
 
-            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
             slot.Set(itemBase, OnClickSlot, OnDoubleClickSlot);
-            LocalLayerModifier.SetItemEquip(currentAvatarState.address, slot.Item, true);
+            if (!inventory.TryGetModel(slot.Item, out var targetInventoryItem) ||
+                targetInventoryItem.ItemBase is not IEquippableItem equippableItem)
+            {
+                return;
+            }
 
+            equippableItem.Equip();
+            inventoryItem.Equipped.Value = true;
             var player = Game.Game.instance.Stage.GetPlayer();
             switch (itemBase)
             {
@@ -451,11 +455,16 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
             var slotItem = slot.Item;
-            slot.Clear();
-            LocalLayerModifier.SetItemEquip(currentAvatarState.address, slotItem, false);
+            if (!inventory.TryGetModel(slot.Item, out var targetInventoryItem) ||
+                targetInventoryItem.ItemBase is not IEquippableItem equippableItem)
+            {
+                return;
+            }
 
+            slot.Clear();
+            targetInventoryItem.Equipped.Value = false;
+            equippableItem.Unequip();
             if (!considerInventoryOnly)
             {
                 var selectedPlayer = Game.Game.instance.Stage.GetPlayer();
@@ -588,11 +597,10 @@ namespace Nekoyume.UI
                     PracticeRaid();
                     break;
                 case WorldBossStatus.Season:
-                    var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
-                    var raiderState = WorldBossStates.GetRaiderState(currentAvatarState.address);
+                    var raiderState = WorldBossStates.GetRaiderState(_avatarState.address);
                     if (raiderState is null)
                     {
-                        var cost = GetEntranceFee(currentAvatarState);
+                        var cost = GetEntranceFee(_avatarState);
                         if (States.Instance.CrystalBalance.MajorUnit < cost)
                         {
                             Find<PaymentPopup>().ShowAttract(
@@ -637,21 +645,19 @@ namespace Nekoyume.UI
 
         private void PracticeRaid()
         {
-            (_, _, var foods) = SaveCurrentEquipment();
-            var currentAvatarState = States.Instance.CurrentAvatarState;
-
+            var (_, _, foods) = SaveCurrentEquipment();
             var tableSheets = Game.Game.instance.TableSheets;
 
             var simulator = new RaidSimulator(
                 _bossId,
                 new PracticeRandom(),
-                currentAvatarState,
+                _avatarState,
                 foods,
                 tableSheets.GetRaidSimulatorSheets(),
                 tableSheets.CostumeStatSheet
             );
             var log = simulator.Simulate();
-            var digest = new ArenaPlayerDigest(currentAvatarState);
+            var digest = new ArenaPlayerDigest(_avatarState);
             var raidStage = Game.Game.instance.RaidStage;
             raidStage.Play(
                 simulator.BossId,
@@ -672,7 +678,7 @@ namespace Nekoyume.UI
             startButton.enabled = false;
             coverToBlockClick.SetActive(true);
             var ticketAnimation = ShowMoveTicketAnimation();
-            var raiderState = WorldBossStates.GetRaiderState(States.Instance.CurrentAvatarState.address);
+            var raiderState = WorldBossStates.GetRaiderState(_avatarState.address);
             if (raiderState is null)
             {
                 var crystalAnimation = ShowMoveCrystalAnimation();
@@ -745,8 +751,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
-            var raiderState = WorldBossStates.GetRaiderState(currentAvatarState.address);
+            var raiderState = WorldBossStates.GetRaiderState(_avatarState.address);
             var cur = States.Instance.GoldBalanceState.Gold.Currency;
             var cost = WorldBossHelper.CalculateTicketPrice(row, raiderState, cur);
             var balance = States.Instance.GoldBalanceState;
@@ -766,7 +771,7 @@ namespace Nekoyume.UI
 
         private void PostEquipOrUnequip(EquipmentSlot slot)
         {
-            UpdateStat(Game.Game.instance.States.CurrentAvatarState);
+            UpdateStat(_avatarState);
             AudioController.instance.PlaySfx(slot.ItemSubType == ItemSubType.Food
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
@@ -830,8 +835,7 @@ namespace Nekoyume.UI
 
         public List<Guid> LoadEquipment()
         {
-            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
-            var key = $"{RAID_EQUIPMENT_KEY}_{avatarAddress}";
+            var key = $"{RAID_EQUIPMENT_KEY}_{_avatarState.address}";
             if (!PlayerPrefs.HasKey(key))
             {
                 return new List<Guid>();
@@ -846,8 +850,7 @@ namespace Nekoyume.UI
         {
             var e = new EquipmentData(guids.Select(x=> x.ToString()).ToArray());
             var json = JsonUtility.ToJson(e);
-            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
-            var key = $"{RAID_EQUIPMENT_KEY}_{avatarAddress}";
+            var key = $"{RAID_EQUIPMENT_KEY}_{_avatarState.address}";
             PlayerPrefs.SetString(key, json);
         }
 
