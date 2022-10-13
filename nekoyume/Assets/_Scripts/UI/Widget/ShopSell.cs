@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Libplanet.Assets;
-using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -289,9 +288,9 @@ namespace Nekoyume.UI
             }
 
             Game.Game.instance.ActionManager.UpdateSell(updateSellInfos).Subscribe();
-            Analyzer.Instance.Track("Unity/UpdateSellAll", new Value
+            Tracer.Trace("Unity/UpdateSellAll", new Dictionary<string, string>()
             {
-                ["Quantity"] = updateSellInfos.Count,
+                ["Quantity"] = updateSellInfos.Count.ToString(),
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             });
@@ -376,7 +375,7 @@ namespace Nekoyume.UI
             var itemSubType = data.Item.Value.ItemBase.Value.ItemSubType;
             Game.Game.instance.ActionManager.Sell(tradableItem, count, totalPrice, itemSubType)
                 .Subscribe();
-            Analyzer.Instance.Track("Unity/Sell", new Value
+            Tracer.Trace("Unity/Sell", new Dictionary<string, string>()
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
@@ -428,7 +427,7 @@ namespace Nekoyume.UI
             );
 
             Game.Game.instance.ActionManager.UpdateSell(new List<UpdateSellInfo> {updateSellInfo}).Subscribe();
-            Analyzer.Instance.Track("Unity/UpdateSell", new Value
+            Tracer.Trace("Unity/UpdateSell", new Dictionary<string, string>()
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
@@ -530,7 +529,7 @@ namespace Nekoyume.UI
                 ReactiveShopState.GetSellDigest(tradableId, requiredBlockIndex, price, count);
             if (digest != null)
             {
-                Analyzer.Instance.Track("Unity/Sell Cancellation", new Value
+                Tracer.Trace("Unity/Sell Cancellation", new Dictionary<string, string>()
                 {
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                     ["AgentAddress"] = States.Instance.AgentState.address.ToString(),

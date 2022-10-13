@@ -117,7 +117,7 @@ namespace Nekoyume.UI
         public void CreateClick()
         {
             AudioController.PlayClick();
-            Analyzer.Instance.Track("Unity/Create Click");
+            Tracer.Trace("Unity/Create Click");
             var inputBox = Find<InputBoxPopup>();
             inputBox.CloseCallback = result =>
             {
@@ -137,7 +137,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            Analyzer.Instance.Track("Unity/Choose Nickname");
+            Tracer.Trace("Unity/Choose Nickname");
             Find<GrayLoadingScreen>().Show();
 
             Game.Game.instance.ActionManager

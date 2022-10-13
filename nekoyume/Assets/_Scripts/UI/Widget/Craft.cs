@@ -494,13 +494,13 @@ namespace Nekoyume.UI
                             itemUsable: equipment);
                         Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
 
-                        Analyzer.Instance.Track(
+                        Tracer.Trace(
                             "Unity/Replace Combination Material",
-                            new Value
+                            new Dictionary<string, string>()
                             {
                                 ["MaterialCount"] = insufficientMaterials
-                                    .Sum(x => x.Value),
-                                ["BurntCrystal"] = (long)recipeInfo.CostCrystal,
+                                    .Sum(x => x.Value).ToString(),
+                                ["BurntCrystal"] = recipeInfo.CostCrystal.ToString(),
                                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                             });

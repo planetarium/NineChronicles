@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Libplanet.Action;
 using Libplanet.Tx;
@@ -241,12 +242,13 @@ namespace Nekoyume.BlockChain
                     break;
             }
 
-            Analyzer.Instance.Track(
-                "Unity/Error",
-                ("code", code),
-                ("key", key),
-                ("AgentAddress", Game.Game.instance.Agent.Address.ToString()),
-                ("AvatarAddress", Game.Game.instance.States.CurrentAvatarState.address.ToString()));
+            Tracer.Trace("Unity/Error", new Dictionary<string, string>()
+            {
+                ["code"] = code,
+                ["key"] = key,
+                ["AgentAddress"] = Game.Game.instance.Agent.Address.ToString(),
+                ["AvatarAddress"] = Game.Game.instance.States.CurrentAvatarState.address.ToString()
+            });
 
             errorMsg = errorMsg == string.Empty
                 ? string.Format(

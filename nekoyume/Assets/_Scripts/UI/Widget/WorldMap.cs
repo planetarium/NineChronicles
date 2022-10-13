@@ -280,7 +280,7 @@ namespace Nekoyume.UI
 
             if (worldId == 1)
             {
-                Analyzer.Instance.Track("Unity/Click Yggdrasil", new Value
+                Tracer.Trace("Unity/Click Yggdrasil", new Dictionary<string, string>()
                 {
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                     ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
@@ -397,9 +397,9 @@ namespace Nekoyume.UI
                 () =>
                 {
                     Find<UnlockWorldLoadingScreen>().Show();
-                    Analyzer.Instance.Track("Unity/UnlockWorld", new Value
+                    Tracer.Trace("Unity/UnlockWorld", new Dictionary<string, string>()
                     {
-                        ["BurntCrystal"] = (long)cost,
+                        ["BurntCrystal"] = cost.ToString(),
                         ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                         ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                     });
@@ -434,9 +434,9 @@ namespace Nekoyume.UI
                         () =>
                         {
                             Find<UnlockWorldLoadingScreen>().Show();
-                            Analyzer.Instance.Track("Unity/UnlockWorld", new Value
+                            Tracer.Trace("Unity/UnlockWorld", new Dictionary<string, string>()
                             {
-                                ["BurntCrystal"] = (long)cost,
+                                ["BurntCrystal"] = cost.ToString(),
                                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                             });

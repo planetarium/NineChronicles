@@ -500,7 +500,7 @@ namespace Nekoyume.Game
         {
             if (Analyzer.Instance != null)
             {
-                Analyzer.Instance.Track("Unity/Player Quit");
+                Tracer.Trace("Unity/Player Quit");
                 Analyzer.Instance.Flush();
             }
 

@@ -44,6 +44,12 @@ namespace Nekoyume
             var tx = Create(eventName, properties);
             Finish(tx);
         }
+
+        public static void Trace(string eventName)
+        {
+            var tx = Create(eventName, new Dictionary<string, string>());
+            Finish(tx);
+        }
     }
 
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -162,10 +163,10 @@ namespace Nekoyume.UI
             Find<BuffBonusLoadingScreen>().Show();
             Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
 
-            Analyzer.Instance.Track("Unity/Purchase Crystal Bonus Skill", new Value
+            Tracer.Trace("Unity/Purchase Crystal Bonus Skill", new Dictionary<string, string>()
             {
-                ["BurntCrystal"] = (long) (advanced ? _advancedCost : _normalCost),
-                ["isAdvanced"] = advanced,
+                ["BurntCrystal"] = (advanced ? _advancedCost : _normalCost).ToString(),
+                ["isAdvanced"] = advanced.ToString(),
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             });

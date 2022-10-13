@@ -828,10 +828,10 @@ namespace Nekoyume.BlockChain
                         formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
                         break;
                     case Action.ItemEnhancement.EnhancementResult.Fail:
-                        Analyzer.Instance.Track("Unity/ItemEnhancement Failed", new Value
+                        Tracer.Trace("Unity/ItemEnhancement Failed", new Dictionary<string, string>()
                         {
-                            ["GainedCrystal"] = (long)result.CRYSTAL.MajorUnit,
-                            ["BurntNCG"] = (long)result.gold,
+                            ["GainedCrystal"] = result.CRYSTAL.MajorUnit.ToString(),
+                            ["BurntNCG"] = result.gold.ToString(),
                             ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                             ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                         });
@@ -1155,10 +1155,10 @@ namespace Nekoyume.BlockChain
 
                 if (eval.Action.StageBuffId.HasValue)
                 {
-                    Analyzer.Instance.Track("Unity/Use Crystal Bonus Skill", new Value
+                    Tracer.Trace("Unity/Use Crystal Bonus Skill", new Dictionary<string, string>()
                     {
-                        ["RandomSkillId"] = eval.Action.StageBuffId,
-                        ["IsCleared"] = simulator.Log.IsClear,
+                        ["RandomSkillId"] = eval.Action.StageBuffId.ToString(),
+                        ["IsCleared"] = simulator.Log.IsClear.ToString(),
                         ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                         ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                     });

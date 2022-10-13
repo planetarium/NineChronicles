@@ -203,11 +203,11 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var props = new Value
+            var props = new Dictionary<string, string>()
             {
-                ["Id"] = id,
+                ["Id"] = id.ToString(),
             };
-            Analyzer.Instance.Track("Unity/Tutorial progress", props);
+            Tracer.Trace("Unity/Tutorial progress", props);
         }
     }
 }

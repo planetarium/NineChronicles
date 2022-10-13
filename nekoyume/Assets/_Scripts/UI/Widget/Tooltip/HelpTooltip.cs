@@ -153,11 +153,11 @@ namespace Nekoyume.UI
             {
                 return;
             }
-            var props = new Value
+            var props = new Dictionary<string, string>()
             {
-                ["HelpPopupId"] = id,
+                ["HelpPopupId"] = id.ToString(),
             };
-            Analyzer.Instance.Track("Unity/Click HelpPopup", props);
+            Tracer.Trace("Unity/Click HelpPopup", props);
 
 #pragma warning disable 618
             Instance.Show();
