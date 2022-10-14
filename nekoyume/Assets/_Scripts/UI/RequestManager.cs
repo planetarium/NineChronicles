@@ -1,17 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Libplanet;
-using Nekoyume.Helper;
-using Nekoyume.L10n;
-using Nekoyume.Model.Mail;
+﻿using System;
+using System.Collections;
 using Nekoyume.Pattern;
-using Nekoyume.State;
-using Nekoyume.UI.Model;
-using Nekoyume.UI.Module.WorldBoss;
-using Nekoyume.UI.Scroller;
-using UnityEngine;
 using UnityEngine.Networking;
 
 namespace Nekoyume.UI
@@ -24,7 +13,7 @@ namespace Nekoyume.UI
         private int _isExistSeasonRewardRetryCount;
         private int _getSeasonRewardRetryCount;
 
-        public IEnumerator GetJson(string url, System.Action<string> onSuccess)
+        public IEnumerator GetJson(string url, Action<string> onSuccess)
         {
             using var request = UnityWebRequest.Get(url);
             yield return request.SendWebRequest();
