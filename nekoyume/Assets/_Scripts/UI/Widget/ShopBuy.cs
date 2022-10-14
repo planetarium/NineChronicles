@@ -222,7 +222,7 @@ namespace Nekoyume.UI
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                     ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                 };
-                Tracer.Trace("Unity/Number of Purchased Items", props);
+                Tracer.Instance.Trace("Unity/Number of Purchased Items", props);
             }
 
             foreach (var model in models)
@@ -233,7 +233,7 @@ namespace Nekoyume.UI
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                     ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                 };
-                Tracer.Trace("Unity/Buy", props);
+                Tracer.Instance.Trace("Unity/Buy", props);
 
                 var count = model.OrderDigest.ItemCount;
                 model.Selected.Value = false;

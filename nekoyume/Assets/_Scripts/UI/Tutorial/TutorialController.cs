@@ -207,7 +207,7 @@ namespace Nekoyume.UI
             {
                 ["Id"] = id.ToString(),
             };
-            Tracer.Trace("Unity/Tutorial progress", props);
+            Tracer.Instance.Trace("Unity/Tutorial progress", props);
         }
     }
 }

@@ -13,14 +13,14 @@ namespace Nekoyume.UI
 
         public override void Show(string title, string content, string labelOK = "UI_OK", bool localize = true)
         {
-            Tracer.Trace("Unity/SystemPopupImpression");
+            Tracer.Instance.Trace("Unity/SystemPopupImpression");
             if (Game.Game.instance.IsInWorld)
             {
                 var props = new Dictionary<string, string>()
                 {
                     ["StageId"] = Game.Game.instance.Stage.stageId.ToString(),
                 };
-                Tracer.Trace("Unity/Stage Exit Crash", props);
+                Tracer.Instance.Trace("Unity/Stage Exit Crash", props);
             }
 
             base.Show(title, content, labelOK, localize);

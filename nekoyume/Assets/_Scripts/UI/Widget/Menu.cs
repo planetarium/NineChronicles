@@ -190,7 +190,7 @@ namespace Nekoyume.UI
         private void GoToCraftWithToggleType(int toggleIndex)
         {
             AudioController.PlayClick();
-            Tracer.Trace("Unity/Click Guided Quest Combination Equipment");
+            Tracer.Instance.Trace("Unity/Click Guided Quest Combination Equipment");
             CombinationClickInternal(() =>
                 Find<Craft>().ShowWithToggleIndex(toggleIndex));
         }
@@ -198,7 +198,7 @@ namespace Nekoyume.UI
         private void GoToCombinationEquipmentRecipe(int recipeId)
         {
             AudioController.PlayClick();
-            Tracer.Trace("Unity/Click Guided Quest Combination Equipment", new Dictionary<string, string>()
+            Tracer.Instance.Trace("Unity/Click Guided Quest Combination Equipment", new Dictionary<string, string>()
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
@@ -362,7 +362,7 @@ namespace Nekoyume.UI
 
             Close(true);
             Find<ArenaJoin>().ShowAsync().Forget();
-            Tracer.Trace("Unity/Enter arena page", new Dictionary<string, string>()
+            Tracer.Instance.Trace("Unity/Enter arena page", new Dictionary<string, string>()
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
@@ -475,7 +475,7 @@ namespace Nekoyume.UI
 
             Close(true);
             Find<WorldBoss>().ShowAsync().Forget();
-            Tracer.Trace("Unity/Enter world boss page");
+            Tracer.Instance.Trace("Unity/Enter world boss page");
         }
 
         public void UpdateGuideQuest(AvatarState avatarState)

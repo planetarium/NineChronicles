@@ -242,7 +242,7 @@ namespace Nekoyume.BlockChain
                     break;
             }
 
-            Tracer.Trace("Unity/Error", new Dictionary<string, string>()
+            Tracer.Instance.Trace("Unity/Error", new Dictionary<string, string>()
             {
                 ["code"] = code,
                 ["key"] = key,

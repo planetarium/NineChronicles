@@ -228,7 +228,7 @@ namespace Nekoyume.BlockChain
         {
             if (trackGuideQuest)
             {
-                Tracer.Trace(
+                Tracer.Instance.Trace(
                     "Unity/Click Guided Quest Enter Dungeon",
                     new Dictionary<string, string>()
                 {
@@ -236,7 +236,7 @@ namespace Nekoyume.BlockChain
                 });
             }
 
-            var sentryTx = Tracer.Create(
+            var sentryTx = Tracer.Instance.Create(
                 "Unity/HackAndSlash",
                 new Dictionary<string, string>()
             {
@@ -273,7 +273,7 @@ namespace Nekoyume.BlockChain
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnCompleted(() => Tracer.Finish(sentryTx))
+                .DoOnCompleted(() => Tracer.Instance.Finish(sentryTx))
                 .DoOnError(e =>
                 {
                     if (_lastBattleActionId == action.Id)
@@ -312,7 +312,7 @@ namespace Nekoyume.BlockChain
         {
             if (trackGuideQuest)
             {
-                Tracer.Trace("Unity/Click Guided Quest Enter Event Dungeon", new Dictionary<string, string>()
+                Tracer.Instance.Trace("Unity/Click Guided Quest Enter Event Dungeon", new Dictionary<string, string>()
                 {
                     ["EventScheduleID"] = eventScheduleId.ToString(),
                     ["EventDungeonID"] = eventDungeonId.ToString(),
@@ -322,7 +322,7 @@ namespace Nekoyume.BlockChain
 
             var numberOfTicketPurchases =
                 RxProps.EventDungeonInfo.Value?.NumberOfTicketPurchases ?? 0;
-            var sentryTx = Tracer.Create("Unity/EventDungeonBattle", new Dictionary<string, string>()
+            var sentryTx = Tracer.Instance.Create("Unity/EventDungeonBattle", new Dictionary<string, string>()
             {
                 ["EventScheduleId"] = eventScheduleId.ToString(),
                 ["EventDungeonId"] = eventDungeonId.ToString(),
@@ -366,12 +366,11 @@ namespace Nekoyume.BlockChain
             _lastBattleActionId = action.Id;
 
             return _agent.ActionRenderer.EveryRender<EventDungeonBattle>()
-                .Do(_ => Tracer.Finish(sentryTx))
                 .Timeout(ActionTimeout)
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnCompleted(() => Tracer.Finish(sentryTx))
+                .DoOnCompleted(() => Tracer.Instance.Finish(sentryTx))
                 .DoOnError(e =>
                 {
                     if (_lastBattleActionId == action.Id)
@@ -414,7 +413,7 @@ namespace Nekoyume.BlockChain
                 LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId, count);
             }
 
-            var sentryTx = Tracer.Create("Unity/Create CombinationConsumable", new Dictionary<string, string>()
+            var sentryTx = Tracer.Instance.Create("Unity/Create CombinationConsumable", new Dictionary<string, string>()
             {
                 ["RecipeId"] = recipeInfo.RecipeId.ToString(),
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
@@ -436,7 +435,7 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnCompleted(() => Tracer.Finish(sentryTx))
+                .DoOnCompleted(() => Tracer.Instance.Finish(sentryTx))
                 .DoOnError(e => throw HandleException(action.Id, e));
         }
 
@@ -450,7 +449,7 @@ namespace Nekoyume.BlockChain
             {
                 ["EventScheduleId"] = eventScheduleId.ToString(),
                 ["RecipeId"] = recipeInfo.RecipeId.ToString(),
-                ["SubRecipeId"] = recipeInfo.SubRecipeId.ToString() ?? "0",
+                ["SubRecipeId"] = recipeInfo.SubRecipeId?.ToString() ?? "0",
             };
             var num = 1;
             foreach (var pair in recipeInfo.Materials)
@@ -459,7 +458,7 @@ namespace Nekoyume.BlockChain
                 trackValue.Add($"MaterialCount_{num:00}", pair.Value.ToString());
                 num++;
             }
-            var sentryTx = Tracer.Create("Unity/EventConsumableItemCrafts", trackValue);
+            var sentryTx = Tracer.Instance.Create("Unity/EventConsumableItemCrafts", trackValue);
 
             var agentAddress = States.Instance.AgentState.address;
             var avatarState = States.Instance.CurrentAvatarState;
@@ -504,7 +503,7 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnCompleted(() => Tracer.Finish(sentryTx))
+                .DoOnCompleted(() => Tracer.Instance.Finish(sentryTx))
                 .DoOnError(e => throw HandleException(action.Id, e));
         }
 
@@ -703,7 +702,7 @@ namespace Nekoyume.BlockChain
             LocalLayerModifier.SetItemEquip(avatarAddress, baseEquipment.NonFungibleId, false);
             LocalLayerModifier.SetItemEquip(avatarAddress, materialEquipment.NonFungibleId, false);
 
-            var sentryTx = Tracer.Create("Unity/Item Enhancement", new Dictionary<string, string>()
+            var sentryTx = Tracer.Instance.Create("Unity/Item Enhancement", new Dictionary<string, string>()
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
@@ -725,7 +724,7 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnCompleted(() => Tracer.Finish(sentryTx))
+                .DoOnCompleted(() => Tracer.Instance.Finish(sentryTx))
                 .DoOnError(e =>
                 {
                     Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
@@ -743,7 +742,7 @@ namespace Nekoyume.BlockChain
                 throw new NullReferenceException(nameof(weeklyArenaAddress));
             }
 
-            var sentryTx = Tracer.Create("Unity/Ranking Battle", new Dictionary<string, string>()
+            var sentryTx = Tracer.Instance.Create("Unity/Ranking Battle", new Dictionary<string, string>()
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
@@ -766,7 +765,7 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnCompleted(() => Tracer.Finish(sentryTx))
+                .DoOnCompleted(() => Tracer.Instance.Finish(sentryTx))
                 .DoOnError(e =>
                 {
                     if (_lastBattleActionId == action.Id)
@@ -873,7 +872,7 @@ namespace Nekoyume.BlockChain
             bool payByCrystal,
             bool useHammerPoint)
         {
-            var sentryTx = Tracer.Create("Unity/Create CombinationEquipment", new Dictionary<string, string>()
+            var sentryTx = Tracer.Instance.Create("Unity/Create CombinationEquipment", new Dictionary<string, string>()
             {
                 ["RecipeId"] = recipeInfo.RecipeId.ToString(),
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
@@ -934,7 +933,7 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnCompleted(() => Tracer.Finish(sentryTx))
+                .DoOnCompleted(() => Tracer.Instance.Finish(sentryTx))
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
@@ -948,7 +947,7 @@ namespace Nekoyume.BlockChain
             var diff = state.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
             var cost = RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
             LocalLayerModifier.RemoveItem(avatarAddress, materialRow.ItemId, cost);
-            var sentryTx = Tracer.Create("Unity/Rapid Combination", new Dictionary<string, string>()
+            var sentryTx = Tracer.Instance.Create("Unity/Rapid Combination", new Dictionary<string, string>()
             {
                 ["HourglassCount"] = cost.ToString(),
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
@@ -969,7 +968,7 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnCompleted(() => Tracer.Finish(sentryTx))
+                .DoOnCompleted(() => Tracer.Instance.Finish(sentryTx))
                 .DoOnError(e => HandleException(action.Id, e));
         }
 

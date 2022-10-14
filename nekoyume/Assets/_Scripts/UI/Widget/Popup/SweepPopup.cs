@@ -426,7 +426,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var sentryTx = Tracer.Create("Unity/HackAndSlashSweep", new Dictionary<string, string>()
+            Tracer.Instance.Trace("Unity/HackAndSlashSweep", new Dictionary<string, string>()
             {
                 ["stageId"] = stageRow.Id.ToString(),
                 ["apStoneCount"] = apStoneCount.ToString(),
@@ -441,8 +441,6 @@ namespace Nekoyume.UI
                 actionPoint,
                 worldId,
                 stageRow.Id);
-
-            Tracer.Finish(sentryTx);
 
             Close();
 

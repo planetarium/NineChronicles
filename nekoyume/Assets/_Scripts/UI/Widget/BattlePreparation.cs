@@ -234,7 +234,7 @@ namespace Nekoyume.UI
             _trackGuideQuest = showByGuideQuest;
 
             // nothing to instrument in transaction
-            Tracer.Trace("Unity/Click Stage", new Dictionary<string, string>()
+            Tracer.Instance.Trace("Unity/Click Stage", new Dictionary<string, string>()
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),

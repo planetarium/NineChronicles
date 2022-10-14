@@ -358,7 +358,7 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            Tracer.Trace("Unity/Synopsis Start");
+            Tracer.Instance.Trace("Unity/Synopsis Start");
             AudioController.instance.PlayMusic(AudioController.MusicCode.Prologue);
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
             var skipPrologue = States.Instance.AgentState.avatarAddresses.Any();
@@ -407,7 +407,7 @@ namespace Nekoyume.UI
                 EnterLogin();
             }
 
-            Tracer.Trace("Unity/Synopsis End");
+            Tracer.Instance.Trace("Unity/Synopsis End");
             Close();
         }
 

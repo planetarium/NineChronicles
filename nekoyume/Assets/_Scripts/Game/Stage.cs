@@ -611,7 +611,7 @@ namespace Nekoyume.Game
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             };
-            Tracer.Trace("Unity/Stage End", props);
+            Tracer.Instance.Trace("Unity/Stage End", props);
         }
 
         private IEnumerator CoSlideBg()

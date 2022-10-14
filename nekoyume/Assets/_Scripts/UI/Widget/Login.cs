@@ -65,7 +65,7 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            Tracer.Trace("Unity/LoginImpression");
+            Tracer.Instance.Trace("Unity/LoginImpression");
 
             for (var i = 0; i < slots.Length; i++)
             {

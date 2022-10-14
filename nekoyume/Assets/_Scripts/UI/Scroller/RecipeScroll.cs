@@ -177,7 +177,7 @@ namespace Nekoyume.UI.Scroller
             }
 
             Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
-            Tracer.Trace("Unity/UnlockEquipmentRecipe", new Dictionary<string, string>()
+            Tracer.Instance.Trace("Unity/UnlockEquipmentRecipe", new Dictionary<string, string>()
             {
                 ["BurntCrystal"] = _openCost.ToString(),
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),

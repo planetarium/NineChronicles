@@ -10,9 +10,18 @@ namespace Nekoyume
 {
     public class Tracer
     {
+        public static Tracer Instance => Game.Game.instance.Tracer;
 
-        public Tracer(string uniqueId = "none")
+        private readonly bool _isTrackable;
+
+        public Tracer(string uniqueId = "none", bool isTrackable = false)
         {
+            _isTrackable = isTrackable;
+            if (!isTrackable)
+            {
+                Debug.Log($"Sentry Tracer does not trace: {nameof(isTrackable)} is false");
+                return;
+            }
             SentrySdk.ConfigureScope(scope =>
             {
                 scope.User = new User()
@@ -24,9 +33,13 @@ namespace Nekoyume
             Debug.Log($"Sentry Tracer Initialized: {uniqueId}");
         }
 
-        public static ITransaction Create(string eventName, Dictionary<string, string> properties)
+        public ITransaction Create(string eventName, Dictionary<string, string> properties)
         {
-            var transaction = SentrySdk.StartTransaction(eventName, "process action");
+            if (!_isTrackable)
+            {
+                return null;
+            }
+            var transaction = SentrySdk.StartTransaction(eventName, eventName);
             foreach (var (key, val) in properties)
             {
                 transaction.SetTag(key, val);
@@ -34,19 +47,30 @@ namespace Nekoyume
             return transaction;
         }
 
-        public static void Finish(ITransaction transaction)
+        public void Finish(ITransaction transaction)
         {
-            transaction.Finish();
+            if (transaction is not null)
+            {
+                transaction.Finish();
+            }
         }
 
-        public static void Trace(string eventName, Dictionary<string, string> properties)
+        public void Trace(string eventName, Dictionary<string, string> properties)
         {
+            if (!_isTrackable)
+            {
+                return;
+            }
             var tx = Create(eventName, properties);
             Finish(tx);
         }
 
-        public static void Trace(string eventName)
+        public void Trace(string eventName)
         {
+            if (!_isTrackable)
+            {
+                return;
+            }
             var tx = Create(eventName, new Dictionary<string, string>());
             Finish(tx);
         }

@@ -190,7 +190,7 @@ namespace Nekoyume.Game
 
             yield return new WaitUntil(() => agentInitialized);
             InitializeAnalyzer();
-            //Tracer.Trace("Unity/Started", new Dictionary<string, string>());
+            Tracer.Trace("Unity/Started");
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
             yield return SyncTableSheetsAsync().ToCoroutine();
@@ -500,7 +500,7 @@ namespace Nekoyume.Game
         {
             if (Analyzer.Instance != null)
             {
-                Tracer.Trace("Unity/Player Quit");
+                Tracer.Instance.Trace("Unity/Player Quit");
                 Analyzer.Instance.Flush();
             }
 
@@ -832,7 +832,7 @@ namespace Nekoyume.Game
 #if UNITY_EDITOR
             Debug.Log("This is editor mode.");
             Analyzer = new Analyzer(uniqueId, rpcServerHost);
-            Tracer = new Tracer(uniqueId);
+            Tracer = new Tracer(uniqueId, true);
             return;
 #endif
             var isTrackable = true;
@@ -851,6 +851,10 @@ namespace Nekoyume.Game
             Analyzer = new Analyzer(
                 uniqueId,
                 rpcServerHost,
+                isTrackable);
+
+            Tracer = new Tracer(
+                uniqueId,
                 isTrackable);
         }
     }

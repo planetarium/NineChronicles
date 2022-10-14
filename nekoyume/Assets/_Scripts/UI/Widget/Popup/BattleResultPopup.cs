@@ -716,7 +716,7 @@ namespace Nekoyume.UI
                 ? "Repeat"
                 : "Retry";
             var eventName = $"Unity/Stage Exit {eventKey}";
-            Tracer.Trace(eventName, props);
+            Tracer.Instance.Trace(eventName, props);
 
             yield return StartCoroutine(SendBattleActionAsync(
                 player.Equipments,
@@ -806,7 +806,7 @@ namespace Nekoyume.UI
             };
             var eventKey = Game.Game.instance.Stage.IsExitReserved ? "Quit" : "Main";
             var eventName = $"Unity/Stage Exit {eventKey}";
-            Tracer.Trace(eventName, props);
+            Tracer.Instance.Trace(eventName, props);
 
             Find<Battle>().Close(true);
             Game.Game.instance.Stage.DestroyBackground();

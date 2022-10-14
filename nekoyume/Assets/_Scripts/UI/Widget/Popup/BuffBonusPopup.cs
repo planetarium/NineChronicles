@@ -163,7 +163,7 @@ namespace Nekoyume.UI
             Find<BuffBonusLoadingScreen>().Show();
             Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
 
-            Tracer.Trace("Unity/Purchase Crystal Bonus Skill", new Dictionary<string, string>()
+            Tracer.Instance.Trace("Unity/Purchase Crystal Bonus Skill", new Dictionary<string, string>()
             {
                 ["BurntCrystal"] = (advanced ? _advancedCost : _normalCost).ToString(),
                 ["isAdvanced"] = advanced.ToString(),

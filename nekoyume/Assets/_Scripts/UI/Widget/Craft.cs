@@ -494,7 +494,7 @@ namespace Nekoyume.UI
                             itemUsable: equipment);
                         Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
 
-                        Tracer.Trace(
+                        Tracer.Instance.Trace(
                             "Unity/Replace Combination Material",
                             new Dictionary<string, string>()
                             {

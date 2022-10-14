@@ -157,7 +157,7 @@ namespace Nekoyume.UI
             {
                 ["HelpPopupId"] = id.ToString(),
             };
-            Tracer.Trace("Unity/Click HelpPopup", props);
+            Tracer.Instance.Trace("Unity/Click HelpPopup", props);
 
 #pragma warning disable 618
             Instance.Show();
