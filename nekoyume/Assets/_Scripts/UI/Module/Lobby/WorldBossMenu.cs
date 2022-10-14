@@ -189,45 +189,5 @@ namespace Nekoyume.UI.Module.Lobby
                     throw new ArgumentOutOfRangeException();
             }
         }
-
-        private void ClaimSeasonReward()
-        {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var agentAddress = States.Instance.AgentState.address;
-            var blockIndex = Game.Game.instance.Agent.BlockIndex;
-
-            if (!IsUnlocked)
-            {
-                return;
-            }
-
-            if (WorldBossStates.IsReceivingSeasonRewards(avatarAddress))
-            {
-                return;
-            }
-
-            if (!WorldBossFrontHelper.TryGetPreviousRow(blockIndex, out var row))
-            {
-                return;
-            }
-
-            WorldBossStates.SetReceivingSeasonRewards(avatarAddress, true);
-            StartCoroutine(WorldBossQuery.CoClaimSeasonReward(
-                row.Id,
-                agentAddress,
-                avatarAddress,
-                (json) =>
-                {
-                    RequestManager.instance.GetSeasonReward(json);
-                },
-                () =>
-                {
-                    WorldBossStates.SetReceivingSeasonRewards(avatarAddress, false);
-                    OneLineSystem.Push(
-                        MailType.System,
-                        L10nManager.Localize("UI_BOSS_SEASON_REWARD_REQUEST_FAIL"),
-                        NotificationCell.NotificationType.Alert);
-                }));
-        }
     }
 }
