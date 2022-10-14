@@ -49,7 +49,8 @@ namespace Nekoyume.UI.Scroller
             var isNew = _mail.New;
 
             button.Interactable = isNew;
-            iconImage.overrideSprite = SpriteHelper.GetMailIcon(_mail.MailType);
+            iconImage.overrideSprite = SpriteHelper.GetLocalMailIcon(_mail) ??
+                                       SpriteHelper.GetMailIcon(_mail.MailType);
 
             content.text = await _mail.ToInfo();
             content.color = isNew
