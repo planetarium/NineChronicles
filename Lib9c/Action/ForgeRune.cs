@@ -82,56 +82,64 @@ namespace Nekoyume.Action
                     $"[{nameof(ForgeRune)}] my avatar address : {AvatarAddress}");
             }
 
-            // calculate
-            var tryCount = GetTryCount(context.Random, cost.LevelUpSuccessRate);
             var ncgCurrency = states.GetGoldCurrency();
             var crystalCurrency = CrystalCalculator.CRYSTAL;
             var runeCurrency = Currency.Legacy(runeRow.Ticker, 0, minters: null);
             var ncgBalance = states.GetBalance(context.Signer, ncgCurrency);
             var crystalBalance = states.GetBalance(context.Signer, crystalCurrency);
             var runeBalance = states.GetBalance(AvatarAddress, runeCurrency);
+            if (TryForge(ncgBalance, crystalBalance, runeBalance,
+                    ncgCurrency, crystalCurrency, runeCurrency,
+                    cost, context.Random, out var tryCount))
+            {
+                runeState.LevelUp();
+            }
 
             var ncgCost = cost.NcgQuantity * tryCount * ncgCurrency;
             var crystalCost = cost.CrystalQuantity * tryCount * crystalCurrency;
             var runeCost = cost.RuneStoneQuantity * tryCount * runeCurrency;
-            if (ncgBalance < ncgCost)
-            {
-                throw new NotEnoughFungibleAssetValueException(
-                    $"{nameof(ForgeRune)} required {ncgCost}, but ncg balance is {ncgBalance}");
-            }
-
-            if (crystalBalance < crystalCost)
-            {
-                throw new NotEnoughFungibleAssetValueException(
-                    $"{nameof(ForgeRune)} required {crystalCost}, but crystal balance is {crystalBalance}");
-            }
-
-            if (runeBalance < runeCost)
-            {
-                throw new NotEnoughFungibleAssetValueException(
-                    $"{nameof(ForgeRune)} required {runeCost}, rune but balance is {runeBalance}");
-            }
-
             var arenaSheet = sheets.GetSheet<ArenaSheet>();
             var arenaData = arenaSheet.GetRoundByBlockIndex(context.BlockIndex);
             var feeStoreAddress = Addresses.GetBlacksmithFeeAddress(arenaData.ChampionshipId, arenaData.Round);
-            runeState.LevelUp();
             return states.SetState(runeStateAddress, runeState.Serialize())
                 .TransferAsset(context.Signer, feeStoreAddress, ncgCost)
                 .TransferAsset(context.Signer, feeStoreAddress, crystalCost)
                 .TransferAsset(AvatarAddress, feeStoreAddress, runeCost);
         }
 
-        private static int GetTryCount(IRandom random, int levelUpSuccessRate)
+        private bool TryForge(
+            FungibleAssetValue ncg,
+            FungibleAssetValue crystal,
+            FungibleAssetValue rune,
+            Currency ncgCurrency,
+            Currency crystalCurrency,
+            Currency runeCurrency,
+            RuneCostSheet.RuneCostData cost,
+            IRandom random,
+            out int tryCount)
         {
-            var tryCount = 1;
-            var value = 0;
-            while (value > levelUpSuccessRate)
+            tryCount = 0;
+            var value = cost.LevelUpSuccessRate + 1;
+            while (value > cost.LevelUpSuccessRate)
             {
                 tryCount++;
+                var ncgCost = cost.NcgQuantity * tryCount * ncgCurrency;
+                var crystalCost = cost.CrystalQuantity * tryCount * crystalCurrency;
+                var runeCost = cost.RuneStoneQuantity * tryCount * runeCurrency;
+                if (ncg < ncgCost || crystal < crystalCost || rune < runeCost)
+                {
+                    tryCount--;
+                    if (tryCount == 0)
+                    {
+                        throw new NotEnoughFungibleAssetValueException($"{nameof(ForgeRune)}" +
+                            $"[ncg:{ncg} < {ncgCost}] [crystal:{crystal} < {crystalCost}] [rune:{rune} < {runeCost}]");
+                    }
+                    return false;
+                }
                 value = random.Next(1, GameConfig.MaximumProbability + 1);
             }
-            return tryCount;
+
+            return true;
         }
     }
 }
