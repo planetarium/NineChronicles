@@ -517,7 +517,6 @@ namespace Nekoyume.UI.Module
                 : null;
             SetInventoryTab(predicateList, inventoryType, inventory, onUpdateInventory, useConsumable);
             _toggleGroup.DisabledFunc = () => false;
-            // _allowMoveTab = true;
         }
 
         public void SetShop(Action<InventoryItem, RectTransform> clickItem)
@@ -526,7 +525,6 @@ namespace Nekoyume.UI.Module
             SetAction(clickItem);
             SetInventoryTab();
             _toggleGroup.DisabledFunc = () => false;
-            // _allowMoveTab = true;
         }
 
         public void SetGrinding(Action<InventoryItem, RectTransform> clickItem,
