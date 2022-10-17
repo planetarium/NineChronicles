@@ -39,5 +39,6 @@ namespace Nekoyume.L10n
 	Descinfo,
 	None_0,
 	Shadow_0,
+	QuestRewardText6,
     }
 }
