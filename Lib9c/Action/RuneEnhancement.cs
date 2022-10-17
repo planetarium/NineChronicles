@@ -14,8 +14,8 @@ using Nekoyume.TableData;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("forgeRune")]
-    public class ForgeRune : GameAction
+    [ActionType("runeEnhancement")]
+    public class RuneEnhancement : GameAction
     {
         public Address AvatarAddress;
         public int RuneId;
@@ -66,20 +66,20 @@ namespace Nekoyume.Action
             if (!costSheet.TryGetValue(runeState.RuneId, out var costRow))
             {
                 throw new RuneCostNotFoundException(
-                    $"[{nameof(ForgeRune)}] my avatar address : {AvatarAddress}");
+                    $"[{nameof(RuneEnhancement)}] my avatar address : {AvatarAddress}");
             }
 
             if (!costRow.TryGetCost(runeState.Level, out var cost))
             {
                 throw new RuneCostDataNotFoundException(
-                    $"[{nameof(ForgeRune)}] my avatar address : {AvatarAddress}");
+                    $"[{nameof(RuneEnhancement)}] my avatar address : {AvatarAddress}");
             }
 
             var runeSheet = sheets.GetSheet<RuneSheet>();
             if (!runeSheet.TryGetValue(cost.RuneStoneId, out var runeRow))
             {
                 throw new RuneNotFoundException(
-                    $"[{nameof(ForgeRune)}] my avatar address : {AvatarAddress}");
+                    $"[{nameof(RuneEnhancement)}] my avatar address : {AvatarAddress}");
             }
 
             var ncgCurrency = states.GetGoldCurrency();
@@ -88,7 +88,7 @@ namespace Nekoyume.Action
             var ncgBalance = states.GetBalance(context.Signer, ncgCurrency);
             var crystalBalance = states.GetBalance(context.Signer, crystalCurrency);
             var runeBalance = states.GetBalance(AvatarAddress, runeCurrency);
-            if (TryForge(ncgBalance, crystalBalance, runeBalance,
+            if (TryEnhancement(ncgBalance, crystalBalance, runeBalance,
                     ncgCurrency, crystalCurrency, runeCurrency,
                     cost, context.Random, out var tryCount))
             {
@@ -107,7 +107,7 @@ namespace Nekoyume.Action
                 .TransferAsset(AvatarAddress, feeStoreAddress, runeCost);
         }
 
-        private bool TryForge(
+        private bool TryEnhancement(
             FungibleAssetValue ncg,
             FungibleAssetValue crystal,
             FungibleAssetValue rune,
@@ -131,7 +131,7 @@ namespace Nekoyume.Action
                     tryCount--;
                     if (tryCount == 0)
                     {
-                        throw new NotEnoughFungibleAssetValueException($"{nameof(ForgeRune)}" +
+                        throw new NotEnoughFungibleAssetValueException($"{nameof(RuneEnhancement)}" +
                             $"[ncg:{ncg} < {ncgCost}] [crystal:{crystal} < {crystalCost}] [rune:{rune} < {runeCost}]");
                     }
                     return false;

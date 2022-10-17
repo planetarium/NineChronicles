@@ -15,7 +15,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.TableData;
     using Xunit;
 
-    public class ForgeRuneTest
+    public class RuneEnhancementTest
     {
         private readonly Dictionary<string, string> _sheets;
         private readonly Address _agentAddress;
@@ -23,7 +23,7 @@ namespace Lib9c.Tests.Action
         private readonly TableSheets _tableSheets;
         private readonly Currency _goldCurrency;
 
-        public ForgeRuneTest()
+        public RuneEnhancementTest()
         {
             _sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(_sheets);
@@ -90,7 +90,7 @@ namespace Lib9c.Tests.Action
             state = state.MintAsset(_agentAddress, cost.CrystalQuantity * crystalCurrency);
             state = state.MintAsset(avatarState.address, cost.RuneStoneQuantity * runeCurrency);
 
-            var action = new ForgeRune()
+            var action = new RuneEnhancement()
             {
                 AvatarAddress = avatarState.address,
                 RuneId = runeId,
@@ -188,7 +188,7 @@ namespace Lib9c.Tests.Action
             state = state.MintAsset(_agentAddress, crystalBal);
             state = state.MintAsset(avatarState.address, runeBal);
 
-            var action = new ForgeRune()
+            var action = new RuneEnhancement()
             {
                 AvatarAddress = avatarState.address,
                 RuneId = runeId,
@@ -256,7 +256,7 @@ namespace Lib9c.Tests.Action
             var runeStateAddress = RuneState.DeriveAddress(avatarState.address, runeId);
             var runeState = new RuneState(128381293);
             state = state.SetState(runeStateAddress, runeState.Serialize());
-            var action = new ForgeRune()
+            var action = new RuneEnhancement()
             {
                 AvatarAddress = avatarState.address,
                 RuneId = runeId,
@@ -316,7 +316,7 @@ namespace Lib9c.Tests.Action
 
             state = state.SetState(runeStateAddress, runeState.Serialize());
 
-            var action = new ForgeRune()
+            var action = new RuneEnhancement()
             {
                 AvatarAddress = avatarState.address,
                 RuneId = runeId,
@@ -373,7 +373,7 @@ namespace Lib9c.Tests.Action
             costSheet.Set(csv);
             state = state.SetState(Addresses.TableSheet.Derive("RuneSheet"), costSheet.Serialize());
 
-            var action = new ForgeRune()
+            var action = new RuneEnhancement()
             {
                 AvatarAddress = avatarState.address,
                 RuneId = runeId,
@@ -461,7 +461,7 @@ namespace Lib9c.Tests.Action
                 state = state.MintAsset(avatarState.address, cost.RuneStoneQuantity * runeCurrency);
             }
 
-            var action = new ForgeRune()
+            var action = new RuneEnhancement()
             {
                 AvatarAddress = avatarState.address,
                 RuneId = runeId,
