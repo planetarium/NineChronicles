@@ -833,6 +833,42 @@
             that this operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
         </member>
+        <member name="P:Libplanet.Net.Protocols.IRoutingTable.Count">
+            <summary>
+            The number of peers in the table.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Protocols.IRoutingTable.Peers">
+            <summary>
+            An <see cref="T:System.Collections.Generic.IReadOnlyList`1"/> of peers in the table.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.IRoutingTable.AddPeer(Libplanet.Net.BoundPeer)">
+            <summary>
+            Adds the <paramref name="peer"/> to the table.
+            </summary>
+            <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to add.</param>
+            <exception cref="T:System.ArgumentException">Thrown when <paramref name="peer"/>'s
+            <see cref="T:Libplanet.Address"/> is equal to the <see cref="T:Libplanet.Address"/> of self.</exception>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.IRoutingTable.RemovePeer(Libplanet.Net.BoundPeer)">
+            <summary>
+            Removes the <paramref name="peer"/> to the table.
+            </summary>
+            <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to remove.</param>
+            <returns><see langword="true"/> if the <paramref name="peer"/> is successfully
+            removed from <see cref="T:Libplanet.Net.Protocols.IRoutingTable"/>.</returns>
+            <exception cref="T:System.ArgumentException">Thrown when <paramref name="peer"/>'s
+            <see cref="T:Libplanet.Address"/> is equal to the <see cref="T:Libplanet.Address"/> of self.</exception>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.IRoutingTable.Contains(Libplanet.Net.BoundPeer)">
+            <summary>
+            Determines whether the <see cref="T:Libplanet.Net.Protocols.IRoutingTable"/> contains the specified key.
+            </summary>
+            <param name="peer">Key to locate in the <see cref="T:Libplanet.Net.Protocols.IRoutingTable"/>.</param>
+            <returns><see langword="true"/> if the <see cref="T:Libplanet.Net.Protocols.IRoutingTable" /> contains
+            an element with the specified key; otherwise, <see langword="false"/>.</returns>
+        </member>
         <member name="T:Libplanet.Net.Protocols.Kademlia">
             <summary>
             Commonly used constants and static functions for Kademlia distributed hash table.
@@ -1248,14 +1284,10 @@
             </summary>
         </member>
         <member name="P:Libplanet.Net.Protocols.RoutingTable.Count">
-            <summary>
-            The number of peers in the table.
-            </summary>
+            <inheritdoc />
         </member>
         <member name="P:Libplanet.Net.Protocols.RoutingTable.Peers">
-            <summary>
-            An <see cref="T:System.Collections.Generic.IReadOnlyList`1"/> of peers in the table.
-            </summary>
+            <inheritdoc />
         </member>
         <member name="P:Libplanet.Net.Protocols.RoutingTable.PeerStates">
             <summary>
@@ -1263,20 +1295,13 @@
             </summary>
         </member>
         <member name="M:Libplanet.Net.Protocols.RoutingTable.AddPeer(Libplanet.Net.BoundPeer)">
-            <summary>
-            Adds the <paramref name="peer"/> to the table.
-            </summary>
-            <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to add.</param>
-            <exception cref="T:System.ArgumentException">Thrown when <paramref name="peer"/>'s
-            <see cref="T:Libplanet.Address"/> is equal to the <see cref="T:Libplanet.Address"/> of self.</exception>
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Net.Protocols.RoutingTable.RemovePeer(Libplanet.Net.BoundPeer)">
+            <inheritdoc />
         </member>
         <member name="M:Libplanet.Net.Protocols.RoutingTable.Contains(Libplanet.Net.BoundPeer)">
-            <summary>
-            Determines whether the <see cref="T:Libplanet.Net.Protocols.RoutingTable"/> contains the specified key.
-            </summary>
-            <param name="peer">Key to locate in the <see cref="T:Libplanet.Net.Protocols.RoutingTable"/>.</param>
-            <returns><see langword="true"/> if the <see cref="T:Libplanet.Net.Protocols.RoutingTable" /> contains
-            an element with the specified key; otherwise, <see langword="false"/>.</returns>
+            <inheritdoc />
         </member>
         <member name="M:Libplanet.Net.Protocols.RoutingTable.GetPeer(Libplanet.Address)">
             <summary>
