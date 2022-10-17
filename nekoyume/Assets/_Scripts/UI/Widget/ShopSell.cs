@@ -288,7 +288,7 @@ namespace Nekoyume.UI
             }
 
             Game.Game.instance.ActionManager.UpdateSell(updateSellInfos).Subscribe();
-            Tracer.Instance.Trace("Unity/UpdateSellAll", new Dictionary<string, string>()
+            Analyzer.Instance.Trace("Unity/UpdateSellAll", new Dictionary<string, string>()
             {
                 ["Quantity"] = updateSellInfos.Count.ToString(),
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
@@ -375,7 +375,7 @@ namespace Nekoyume.UI
             var itemSubType = data.Item.Value.ItemBase.Value.ItemSubType;
             Game.Game.instance.ActionManager.Sell(tradableItem, count, totalPrice, itemSubType)
                 .Subscribe();
-            Tracer.Instance.Trace("Unity/Sell", new Dictionary<string, string>()
+            Analyzer.Instance.Trace("Unity/Sell", new Dictionary<string, string>()
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
@@ -427,7 +427,7 @@ namespace Nekoyume.UI
             );
 
             Game.Game.instance.ActionManager.UpdateSell(new List<UpdateSellInfo> {updateSellInfo}).Subscribe();
-            Tracer.Instance.Trace("Unity/UpdateSell", new Dictionary<string, string>()
+            Analyzer.Instance.Trace("Unity/UpdateSell", new Dictionary<string, string>()
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
@@ -529,7 +529,7 @@ namespace Nekoyume.UI
                 ReactiveShopState.GetSellDigest(tradableId, requiredBlockIndex, price, count);
             if (digest != null)
             {
-                Tracer.Instance.Trace("Unity/Sell Cancellation", new Dictionary<string, string>()
+                Analyzer.Instance.Trace("Unity/Sell Cancellation", new Dictionary<string, string>()
                 {
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                     ["AgentAddress"] = States.Instance.AgentState.address.ToString(),

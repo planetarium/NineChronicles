@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using mixpanel;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.UI;
@@ -630,7 +629,7 @@ namespace Nekoyume.Game.Character
 
             if (Level != level)
             {
-                Tracer.Instance.Trace("Unity/User Level Up", new Dictionary<string, string>()
+                Analyzer.Instance.Trace("Unity/User Level Up", new Dictionary<string, string>()
                 {
                     ["code"] = level.ToString(),
                     ["AvatarAddress"] = Game.instance.States.CurrentAvatarState.address.ToString(),

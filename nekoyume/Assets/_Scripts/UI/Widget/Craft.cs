@@ -25,7 +25,6 @@ using NUnit.Framework;
 
 namespace Nekoyume.UI
 {
-    using mixpanel;
     using UniRx;
     using Toggle = Module.Toggle;
 
@@ -494,7 +493,7 @@ namespace Nekoyume.UI
                             itemUsable: equipment);
                         Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
 
-                        Tracer.Instance.Trace(
+                        Analyzer.Instance.Trace(
                             "Unity/Replace Combination Material",
                             new Dictionary<string, string>()
                             {

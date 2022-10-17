@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using mixpanel;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Extensions;
@@ -716,7 +715,7 @@ namespace Nekoyume.UI
                 ? "Repeat"
                 : "Retry";
             var eventName = $"Unity/Stage Exit {eventKey}";
-            Tracer.Instance.Trace(eventName, props);
+            Analyzer.Instance.Trace(eventName, props);
 
             yield return StartCoroutine(SendBattleActionAsync(
                 player.Equipments,
@@ -806,7 +805,7 @@ namespace Nekoyume.UI
             };
             var eventKey = Game.Game.instance.Stage.IsExitReserved ? "Quit" : "Main";
             var eventName = $"Unity/Stage Exit {eventKey}";
-            Tracer.Instance.Trace(eventName, props);
+            Analyzer.Instance.Trace(eventName, props);
 
             Find<Battle>().Close(true);
             Game.Game.instance.Stage.DestroyBackground();

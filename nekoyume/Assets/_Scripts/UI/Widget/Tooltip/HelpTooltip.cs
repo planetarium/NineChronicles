@@ -13,7 +13,6 @@ using UniRx.Toolkit;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
-using mixpanel;
 using Nekoyume.L10n;
 using System.Text.RegularExpressions;
 using Nekoyume.EnumType;
@@ -157,7 +156,7 @@ namespace Nekoyume.UI
             {
                 ["HelpPopupId"] = id.ToString(),
             };
-            Tracer.Instance.Trace("Unity/Click HelpPopup", props);
+            Analyzer.Instance.Trace("Unity/Click HelpPopup", props);
 
 #pragma warning disable 618
             Instance.Show();

@@ -15,7 +15,6 @@ using Libplanet.Assets;
 using LruCacheNet;
 using MessagePack;
 using MessagePack.Resolvers;
-using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
@@ -61,8 +60,6 @@ namespace Nekoyume.Game
         public IAgent Agent { get; private set; }
 
         public Analyzer Analyzer { get; private set; }
-
-        public Tracer Tracer { get; private set; }
 
         public Stage Stage => stage;
         public Arena Arena => arena;
@@ -190,7 +187,7 @@ namespace Nekoyume.Game
 
             yield return new WaitUntil(() => agentInitialized);
             InitializeAnalyzer();
-            Tracer.Trace("Unity/Started");
+            Analyzer.Trace("Unity/Started");
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
             yield return SyncTableSheetsAsync().ToCoroutine();
@@ -500,8 +497,7 @@ namespace Nekoyume.Game
         {
             if (Analyzer.Instance != null)
             {
-                Tracer.Instance.Trace("Unity/Player Quit");
-                Analyzer.Instance.Flush();
+                Analyzer.Instance.Trace("Unity/Player Quit");
             }
 
             _logsClient?.Dispose();
@@ -831,8 +827,7 @@ namespace Nekoyume.Game
 
 #if UNITY_EDITOR
             Debug.Log("This is editor mode.");
-            Analyzer = new Analyzer(uniqueId, rpcServerHost);
-            Tracer = new Tracer(uniqueId, true);
+            Analyzer = new Analyzer(uniqueId, rpcServerHost, true);
             return;
 #endif
             var isTrackable = true;
@@ -851,10 +846,6 @@ namespace Nekoyume.Game
             Analyzer = new Analyzer(
                 uniqueId,
                 rpcServerHost,
-                isTrackable);
-
-            Tracer = new Tracer(
-                uniqueId,
                 isTrackable);
         }
     }

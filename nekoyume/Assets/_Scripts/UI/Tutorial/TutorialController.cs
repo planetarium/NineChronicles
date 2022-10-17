@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using mixpanel;
 using Nekoyume.L10n;
 using UnityEngine;
 
@@ -24,7 +23,7 @@ namespace Nekoyume.UI
         private const string PresetPath = "Tutorial/Data/TutorialPreset";
         private const string CheckPoint = "Tutorial_Check_Point";
 
-        private readonly List<int> _mixpanelTargets = new List<int>() { 1, 2, 6, 11, 49 };
+        private readonly List<int> _sentryTargets = new List<int>() { 1, 2, 6, 11, 49 };
 
         public bool IsPlaying => _tutorial.IsActive();
 
@@ -101,7 +100,7 @@ namespace Nekoyume.UI
             var scenario = _scenario.FirstOrDefault(x => x.id == id);
             if (scenario != null)
             {
-                SendMixPanel(id);
+                SendSentry(id);
                 SetCheckPoint(scenario.checkPointId);
                 var viewData = GetTutorialData(scenario.data);
                 _tutorial.Play(viewData, scenario.data.presetId, () =>
@@ -196,9 +195,9 @@ namespace Nekoyume.UI
             PlayerPrefs.SetInt(CheckPoint, id);
         }
 
-        private void SendMixPanel(int id)
+        private void SendSentry(int id)
         {
-            if (!_mixpanelTargets.Exists(x => x == id))
+            if (!_sentryTargets.Exists(x => x == id))
             {
                 return;
             }
@@ -207,7 +206,7 @@ namespace Nekoyume.UI
             {
                 ["Id"] = id.ToString(),
             };
-            Tracer.Instance.Trace("Unity/Tutorial progress", props);
+            Analyzer.Instance.Trace("Unity/Tutorial progress", props);
         }
     }
 }

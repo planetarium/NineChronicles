@@ -11,7 +11,6 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    using mixpanel;
     using Nekoyume.BlockChain;
     using System.Linq;
     using UniRx;
@@ -163,7 +162,7 @@ namespace Nekoyume.UI
             Find<BuffBonusLoadingScreen>().Show();
             Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
 
-            Tracer.Instance.Trace("Unity/Purchase Crystal Bonus Skill", new Dictionary<string, string>()
+            Analyzer.Instance.Trace("Unity/Purchase Crystal Bonus Skill", new Dictionary<string, string>()
             {
                 ["BurntCrystal"] = (advanced ? _advancedCost : _normalCost).ToString(),
                 ["isAdvanced"] = advanced.ToString(),

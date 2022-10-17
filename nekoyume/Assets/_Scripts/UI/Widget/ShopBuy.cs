@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Libplanet.Assets;
-using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -222,7 +221,7 @@ namespace Nekoyume.UI
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                     ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                 };
-                Tracer.Instance.Trace("Unity/Number of Purchased Items", props);
+                Analyzer.Instance.Trace("Unity/Number of Purchased Items", props);
             }
 
             foreach (var model in models)
@@ -233,7 +232,7 @@ namespace Nekoyume.UI
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                     ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                 };
-                Tracer.Instance.Trace("Unity/Buy", props);
+                Analyzer.Instance.Trace("Unity/Buy", props);
 
                 var count = model.OrderDigest.ItemCount;
                 model.Selected.Value = false;

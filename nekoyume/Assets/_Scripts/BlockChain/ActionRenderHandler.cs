@@ -24,7 +24,6 @@ using Nekoyume.UI.Module;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using Libplanet.Assets;
-using mixpanel;
 using Nekoyume.Arena;
 using Nekoyume.EnumType;
 using Nekoyume.Extensions;
@@ -93,7 +92,7 @@ namespace Nekoyume.BlockChain
 
                     if (States.Instance.CurrentAvatarState is not null)
                     {
-                        Tracer.Instance.Trace("Unity/ActionRender", new Dictionary<string, string>()
+                        Analyzer.Instance.Trace("Unity/ActionRender", new Dictionary<string, string>()
                         {
                             ["ActionType"] = actionType.TypeIdentifier,
                             ["Elapsed"] = elapsed.ToString(),
@@ -544,7 +543,7 @@ namespace Nekoyume.BlockChain
                                 formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
                                 break;
                             case Action.ItemEnhancement.EnhancementResult.Fail:
-                                Tracer.Instance.Trace("Unity/ItemEnhancement Failed", new Dictionary<string, string>()
+                                Analyzer.Instance.Trace("Unity/ItemEnhancement Failed", new Dictionary<string, string>()
                                 {
                                     ["GainedCrystal"] = enhancementResultModel.CRYSTAL.MajorUnit.ToString(),
                                     ["BurntNCG"] = enhancementResultModel.gold.ToString(),
@@ -828,7 +827,7 @@ namespace Nekoyume.BlockChain
                         formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
                         break;
                     case Action.ItemEnhancement.EnhancementResult.Fail:
-                        Tracer.Instance.Trace("Unity/ItemEnhancement Failed", new Dictionary<string, string>()
+                        Analyzer.Instance.Trace("Unity/ItemEnhancement Failed", new Dictionary<string, string>()
                         {
                             ["GainedCrystal"] = result.CRYSTAL.MajorUnit.ToString(),
                             ["BurntNCG"] = result.gold.ToString(),
@@ -1155,7 +1154,7 @@ namespace Nekoyume.BlockChain
 
                 if (eval.Action.StageBuffId.HasValue)
                 {
-                    Tracer.Instance.Trace("Unity/Use Crystal Bonus Skill", new Dictionary<string, string>()
+                    Analyzer.Instance.Trace("Unity/Use Crystal Bonus Skill", new Dictionary<string, string>()
                     {
                         ["RandomSkillId"] = eval.Action.StageBuffId.ToString(),
                         ["IsCleared"] = simulator.Log.IsClear.ToString(),

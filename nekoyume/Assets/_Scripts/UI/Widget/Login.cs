@@ -5,7 +5,6 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Game.Util;
 using Nekoyume.State;
 using UnityEngine;
-using mixpanel;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.UI.Module;
@@ -65,7 +64,7 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            Tracer.Instance.Trace("Unity/LoginImpression");
+            Analyzer.Instance.Trace("Unity/LoginImpression");
 
             for (var i = 0; i < slots.Length; i++)
             {

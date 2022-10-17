@@ -12,7 +12,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
-using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.Game;
 using Nekoyume.Helper;
@@ -117,7 +116,7 @@ namespace Nekoyume.UI
         public void CreateClick()
         {
             AudioController.PlayClick();
-            Tracer.Instance.Trace("Unity/Create Click");
+            Analyzer.Instance.Trace("Unity/Create Click");
             var inputBox = Find<InputBoxPopup>();
             inputBox.CloseCallback = result =>
             {
@@ -137,7 +136,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            Tracer.Instance.Trace("Unity/Choose Nickname");
+            Analyzer.Instance.Trace("Unity/Choose Nickname");
             Find<GrayLoadingScreen>().Show();
 
             Game.Game.instance.ActionManager

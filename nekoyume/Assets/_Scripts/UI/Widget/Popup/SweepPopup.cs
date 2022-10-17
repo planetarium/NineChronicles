@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Extensions;
@@ -426,7 +425,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            Tracer.Instance.Trace("Unity/HackAndSlashSweep", new Dictionary<string, string>()
+            Analyzer.Instance.Trace("Unity/HackAndSlashSweep", new Dictionary<string, string>()
             {
                 ["stageId"] = stageRow.Id.ToString(),
                 ["apStoneCount"] = apStoneCount.ToString(),

@@ -19,7 +19,6 @@ using UnityEngine;
 namespace Nekoyume.UI.Module
 {
     using Libplanet.Assets;
-    using mixpanel;
     using System.Collections;
     using UniRx;
     using Vector3 = UnityEngine.Vector3;
@@ -458,7 +457,7 @@ namespace Nekoyume.UI.Module
             StartCoroutine(CoCombineNPCAnimation(_cachedGrindingRewardCrystal.MajorUnit));
             Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
 
-            Tracer.Instance.Trace("Unity/Grinding", new Dictionary<string, string>()
+            Analyzer.Instance.Trace("Unity/Grinding", new Dictionary<string, string>()
             {
                 ["EquipmentCount"] = equipments.Count.ToString(),
                 ["GainedCrystal"] = _cachedGrindingRewardCrystal.MajorUnit.ToString(),

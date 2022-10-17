@@ -22,7 +22,6 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    using mixpanel;
     using UniRx;
 
     public class WorldMap : Widget
@@ -280,7 +279,7 @@ namespace Nekoyume.UI
 
             if (worldId == 1)
             {
-                Tracer.Instance.Trace("Unity/Click Yggdrasil", new Dictionary<string, string>()
+                Analyzer.Instance.Trace("Unity/Click Yggdrasil", new Dictionary<string, string>()
                 {
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                     ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
@@ -397,7 +396,7 @@ namespace Nekoyume.UI
                 () =>
                 {
                     Find<UnlockWorldLoadingScreen>().Show();
-                    Tracer.Instance.Trace("Unity/UnlockWorld", new Dictionary<string, string>()
+                    Analyzer.Instance.Trace("Unity/UnlockWorld", new Dictionary<string, string>()
                     {
                         ["BurntCrystal"] = cost.ToString(),
                         ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
@@ -434,7 +433,7 @@ namespace Nekoyume.UI
                         () =>
                         {
                             Find<UnlockWorldLoadingScreen>().Show();
-                            Tracer.Instance.Trace("Unity/UnlockWorld", new Dictionary<string, string>()
+                            Analyzer.Instance.Trace("Unity/UnlockWorld", new Dictionary<string, string>()
                             {
                                 ["BurntCrystal"] = cost.ToString(),
                                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),

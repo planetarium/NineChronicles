@@ -10,7 +10,6 @@ using Nekoyume.State;
 using Nekoyume.Model.BattleStatus;
 using UnityEngine;
 using Random = UnityEngine.Random;
-using mixpanel;
 using Nekoyume.EnumType;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
@@ -190,7 +189,7 @@ namespace Nekoyume.UI
         private void GoToCraftWithToggleType(int toggleIndex)
         {
             AudioController.PlayClick();
-            Tracer.Instance.Trace("Unity/Click Guided Quest Combination Equipment");
+            Analyzer.Instance.Trace("Unity/Click Guided Quest Combination Equipment");
             CombinationClickInternal(() =>
                 Find<Craft>().ShowWithToggleIndex(toggleIndex));
         }
@@ -198,7 +197,7 @@ namespace Nekoyume.UI
         private void GoToCombinationEquipmentRecipe(int recipeId)
         {
             AudioController.PlayClick();
-            Tracer.Instance.Trace("Unity/Click Guided Quest Combination Equipment", new Dictionary<string, string>()
+            Analyzer.Instance.Trace("Unity/Click Guided Quest Combination Equipment", new Dictionary<string, string>()
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
@@ -362,7 +361,7 @@ namespace Nekoyume.UI
 
             Close(true);
             Find<ArenaJoin>().ShowAsync().Forget();
-            Tracer.Instance.Trace("Unity/Enter arena page", new Dictionary<string, string>()
+            Analyzer.Instance.Trace("Unity/Enter arena page", new Dictionary<string, string>()
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
@@ -475,7 +474,7 @@ namespace Nekoyume.UI
 
             Close(true);
             Find<WorldBoss>().ShowAsync().Forget();
-            Tracer.Instance.Trace("Unity/Enter world boss page");
+            Analyzer.Instance.Trace("Unity/Enter world boss page");
         }
 
         public void UpdateGuideQuest(AvatarState avatarState)

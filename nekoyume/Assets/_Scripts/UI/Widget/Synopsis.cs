@@ -5,7 +5,6 @@ using System.Linq;
 using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
-using mixpanel;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
 using Nekoyume.State;
@@ -358,7 +357,7 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            Tracer.Instance.Trace("Unity/Synopsis Start");
+            Analyzer.Instance.Trace("Unity/Synopsis Start");
             AudioController.instance.PlayMusic(AudioController.MusicCode.Prologue);
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
             var skipPrologue = States.Instance.AgentState.avatarAddresses.Any();
@@ -407,7 +406,7 @@ namespace Nekoyume.UI
                 EnterLogin();
             }
 
-            Tracer.Instance.Trace("Unity/Synopsis End");
+            Analyzer.Instance.Trace("Unity/Synopsis End");
             Close();
         }
 

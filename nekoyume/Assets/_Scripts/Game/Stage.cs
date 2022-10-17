@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
-using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.BlockChain;
@@ -611,7 +610,7 @@ namespace Nekoyume.Game
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             };
-            Tracer.Instance.Trace("Unity/Stage End", props);
+            Analyzer.Instance.Trace("Unity/Stage End", props);
         }
 
         private IEnumerator CoSlideBg()

@@ -20,7 +20,6 @@ using TMPro;
 
 namespace Nekoyume.UI.Scroller
 {
-    using mixpanel;
     using State.Subjects;
     using Module;
     using UniRx;
@@ -177,7 +176,7 @@ namespace Nekoyume.UI.Scroller
             }
 
             Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
-            Tracer.Instance.Trace("Unity/UnlockEquipmentRecipe", new Dictionary<string, string>()
+            Analyzer.Instance.Trace("Unity/UnlockEquipmentRecipe", new Dictionary<string, string>()
             {
                 ["BurntCrystal"] = _openCost.ToString(),
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),

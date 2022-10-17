@@ -17,7 +17,6 @@ using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using mixpanel;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -234,7 +233,7 @@ namespace Nekoyume.UI
             _trackGuideQuest = showByGuideQuest;
 
             // nothing to instrument in transaction
-            Tracer.Instance.Trace("Unity/Click Stage", new Dictionary<string, string>()
+            Analyzer.Instance.Trace("Unity/Click Stage", new Dictionary<string, string>()
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
