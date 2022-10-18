@@ -1,3 +1,5 @@
-id,grade,rune_type,required_level,use_place
-250010001,1,1,1,7
-230010001,2,1,1,5
+id,display_index,grade,rune_type,required_level,use_place
+250010001,0,1,1,1,7
+230010001,1,2,1,1,5
+220010001,1,3,1,1,4
+150010001,1,5,2,1,7

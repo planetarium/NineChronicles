@@ -23,8 +23,8 @@ namespace Lib9c.Tests.TableData
         public void SetToSheet()
         {
             const string content =
-                @"id,grade,rune_type,required_level,use_place
-250010001,1,1,1,7
+                @"id,display_index,grade,rune_type,required_level,use_place
+250010001,0,1,1,1,7
         ";
 
             var sheet = new RuneListSheet();
@@ -33,6 +33,7 @@ namespace Lib9c.Tests.TableData
             Assert.Single(sheet);
             Assert.NotNull(sheet.First);
             Assert.Equal(250010001, sheet.First.Id);
+            Assert.Equal(0, sheet.First.DisplayIndex);
             Assert.Equal(1, sheet.First.Grade);
             Assert.Equal(1, sheet.First.RuneType);
             Assert.Equal(1, sheet.First.RequiredLevel);
