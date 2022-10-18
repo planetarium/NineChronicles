@@ -153,7 +153,7 @@ namespace Nekoyume.Action
                 sheets.GetSheet<EquipmentItemOptionSheet>(),
                 addressesHex);
 
-            var raidSimulatorSheets = sheets.GetRaidSimulatorSheets();
+            var raidSimulatorSheets = sheets.GetRaidSimulatorSheetsV1();
 
             // Simulate.
             var simulator = new RaidSimulator(

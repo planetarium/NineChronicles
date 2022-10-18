@@ -42,7 +42,7 @@ namespace Nekoyume.Battle
             StageWaveSheet.Row stageWaveRow,
             bool isCleared,
             int exp,
-            SimulatorSheets simulatorSheets,
+            SimulatorSheetsV1 simulatorSheets,
             EnemySkillSheet enemySkillSheet,
             CostumeStatSheet costumeStatSheet,
             List<ItemBase> waveRewards)

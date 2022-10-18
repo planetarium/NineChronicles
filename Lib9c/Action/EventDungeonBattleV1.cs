@@ -298,7 +298,7 @@ namespace Nekoyume.Action
                 PlayCount);
             var simulatorSheets = useV100291Sheets
                 ? sheets.GetSimulatorSheetsV100291()
-                : sheets.GetSimulatorSheets();
+                : sheets.GetSimulatorSheetsV1();
             var simulator = new StageSimulator(
                 context.Random,
                 avatarState,

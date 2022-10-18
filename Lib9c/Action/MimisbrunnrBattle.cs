@@ -287,7 +287,7 @@ namespace Nekoyume.Action
             sw.Restart();
             var simulatorSheets = useV100291Sheets
                 ? sheets.GetSimulatorSheetsV100291()
-                : sheets.GetSimulatorSheets();
+                : sheets.GetSimulatorSheetsV1();
             var materialSheet = sheets.GetSheet<MaterialItemSheet>();
             var simulator = new StageSimulator(
                 context.Random,

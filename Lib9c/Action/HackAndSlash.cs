@@ -291,7 +291,7 @@ namespace Nekoyume.Action
             // if PlayCount > 1, it is Multi-HAS.
             var simulatorSheets = useV100291Sheets
                 ? sheets.GetSimulatorSheetsV100291()
-                : sheets.GetSimulatorSheets();
+                : sheets.GetSimulatorSheetsV1();
             for (var i = 0; i < PlayCount; i++)
             {
                 sw.Restart();

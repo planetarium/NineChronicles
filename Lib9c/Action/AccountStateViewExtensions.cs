@@ -559,6 +559,7 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(CharacterSheet));
                 sheetTypeList.Add(typeof(CharacterLevelSheet));
                 sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
+                sheetTypeList.Add(typeof(RuneStatSheet));
             }
 
             if (containStageSimulatorSheets)
@@ -575,6 +576,7 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(StageSheet));
                 sheetTypeList.Add(typeof(StageWaveSheet));
                 sheetTypeList.Add(typeof(EnemySkillSheet));
+                sheetTypeList.Add(typeof(RuneStatSheet));
             }
 
             if (containRankingSimulatorSheets)
@@ -589,6 +591,7 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(CharacterLevelSheet));
                 sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
                 sheetTypeList.Add(typeof(WeeklyArenaRewardSheet));
+                sheetTypeList.Add(typeof(RuneStatSheet));
             }
 
             if (containArenaSimulatorSheets)
@@ -604,6 +607,7 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
                 sheetTypeList.Add(typeof(WeeklyArenaRewardSheet));
                 sheetTypeList.Add(typeof(CostumeStatSheet));
+                sheetTypeList.Add(typeof(RuneStatSheet));
             }
 
             if (containValidateItemRequirementSheets)
@@ -630,6 +634,7 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(WorldBossBattleRewardSheet));
                 sheetTypeList.Add(typeof(RuneWeightSheet));
                 sheetTypeList.Add(typeof(RuneSheet));
+                sheetTypeList.Add(typeof(RuneStatSheet));
             }
 
             return states.GetSheets(sheetTypeList.Distinct().ToArray());
@@ -717,9 +722,9 @@ namespace Nekoyume.Action
             return sheet;
         }
 
-        public static StageSimulatorSheets GetStageSimulatorSheets(this IAccountStateView states)
+        public static StageSimulatorSheetsV1 GetStageSimulatorSheetsV1(this IAccountStateView states)
         {
-            return new StageSimulatorSheets(
+            return new StageSimulatorSheetsV1(
                 GetSheet<MaterialItemSheet>(states),
                 GetSheet<SkillSheet>(states),
                 GetSheet<SkillBuffSheet>(states),
@@ -735,6 +740,41 @@ namespace Nekoyume.Action
             );
         }
 
+        public static StageSimulatorSheets GetStageSimulatorSheets(this IAccountStateView states)
+        {
+            return new StageSimulatorSheets(
+                GetSheet<MaterialItemSheet>(states),
+                GetSheet<SkillSheet>(states),
+                GetSheet<SkillBuffSheet>(states),
+                GetSheet<StatBuffSheet>(states),
+                GetSheet<SkillActionBuffSheet>(states),
+                GetSheet<ActionBuffSheet>(states),
+                GetSheet<CharacterSheet>(states),
+                GetSheet<CharacterLevelSheet>(states),
+                GetSheet<EquipmentItemSetEffectSheet>(states),
+                GetSheet<StageSheet>(states),
+                GetSheet<StageWaveSheet>(states),
+                GetSheet<EnemySkillSheet>(states),
+                GetSheet<RuneStatSheet>(states)
+            );
+        }
+
+        public static RankingSimulatorSheetsV1 GetRankingSimulatorSheetsV1(this IAccountStateView states)
+        {
+            return new RankingSimulatorSheetsV1(
+                GetSheet<MaterialItemSheet>(states),
+                GetSheet<SkillSheet>(states),
+                GetSheet<SkillBuffSheet>(states),
+                GetSheet<StatBuffSheet>(states),
+                GetSheet<SkillActionBuffSheet>(states),
+                GetSheet<ActionBuffSheet>(states),
+                GetSheet<CharacterSheet>(states),
+                GetSheet<CharacterLevelSheet>(states),
+                GetSheet<EquipmentItemSetEffectSheet>(states),
+                GetSheet<WeeklyArenaRewardSheet>(states)
+            );
+        }
+
         public static RankingSimulatorSheets GetRankingSimulatorSheets(this IAccountStateView states)
         {
             return new RankingSimulatorSheets(
@@ -747,7 +787,8 @@ namespace Nekoyume.Action
                 GetSheet<CharacterSheet>(states),
                 GetSheet<CharacterLevelSheet>(states),
                 GetSheet<EquipmentItemSetEffectSheet>(states),
-                GetSheet<WeeklyArenaRewardSheet>(states)
+                GetSheet<WeeklyArenaRewardSheet>(states),
+                GetSheet<RuneStatSheet>(states)
             );
         }
 

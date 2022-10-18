@@ -32,7 +32,7 @@ namespace Nekoyume.Battle
             IRandom random,
             AvatarState avatarState,
             List<Guid> foods,
-            RaidSimulatorSheets simulatorSheets,
+            RaidSimulatorSheetsV1 simulatorSheets,
             CostumeStatSheet costumeStatSheet) : base(random, avatarState, foods, simulatorSheets)
         {
             Player.SetCostumeStat(costumeStatSheet);

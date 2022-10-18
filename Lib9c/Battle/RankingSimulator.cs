@@ -30,7 +30,7 @@ namespace Nekoyume.Battle
             Player player,
             EnemyPlayerDigest enemyPlayerDigest,
             List<Guid> foods,
-            RankingSimulatorSheets rankingSimulatorSheets,
+            RankingSimulatorSheetsV1 rankingSimulatorSheets,
             int stageId,
             CostumeStatSheet costumeStatSheet
         ) : base(
@@ -58,7 +58,7 @@ namespace Nekoyume.Battle
             AvatarState avatarState,
             AvatarState enemyAvatarState,
             List<Guid> foods,
-            RankingSimulatorSheets rankingSimulatorSheets,
+            RankingSimulatorSheetsV1 rankingSimulatorSheets,
             int stageId
         ) : this(
             random,
@@ -77,7 +77,7 @@ namespace Nekoyume.Battle
             AvatarState avatarState,
             AvatarState enemyAvatarState,
             List<Guid> foods,
-            RankingSimulatorSheets rankingSimulatorSheets,
+            RankingSimulatorSheetsV1 rankingSimulatorSheets,
             int stageId,
             CostumeStatSheet costumeStatSheet
         ) : this(

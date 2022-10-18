@@ -292,7 +292,7 @@ namespace Nekoyume.Action
             ExtraEnemyArenaPlayerDigest =
                 new ArenaPlayerDigest(enemyAvatarState, enemyArenaAvatarState);
             ExtraPreviousMyScore = myArenaScore.Score;
-            var arenaSheets = sheets.GetArenaSimulatorSheets();
+            var arenaSheets = sheets.GetArenaSimulatorSheetsV1();
             var winCount = 0;
             var defeatCount = 0;
             var rewards = new List<ItemBase>();

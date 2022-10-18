@@ -158,13 +158,13 @@ namespace Nekoyume.Model
             PostConstruction(characterLevelSheet, equipmentItemSetEffectSheet);
         }
 
-        public Player(AvatarState avatarState, SimulatorSheets simulatorSheets) : this(avatarState,
+        public Player(AvatarState avatarState, SimulatorSheetsV1 simulatorSheets) : this(avatarState,
             simulatorSheets.CharacterSheet, simulatorSheets.CharacterLevelSheet,
             simulatorSheets.EquipmentItemSetEffectSheet)
         {
         }
 
-        public Player(ArenaPlayerDigest enemyArenaPlayerDigest, ArenaSimulatorSheets simulatorSheets)
+        public Player(ArenaPlayerDigest enemyArenaPlayerDigest, ArenaSimulatorSheetsV1 simulatorSheets)
              : base(null,
                  simulatorSheets.CharacterSheet,
                  enemyArenaPlayerDigest.CharacterId,
@@ -494,6 +494,30 @@ namespace Nekoyume.Model
             }
             Stats.SetOption(statModifiers);
             Stats.EqualizeCurrentHPWithHP();
+        }
+
+        public void SetRuneStat(
+            List<(int, int)> runes,
+            RuneStatSheet runeStatSheet)
+        {
+            foreach (var (runeId, level) in runes)
+            {
+                if (!runeStatSheet.TryGetValue(runeId, out var row) ||
+                    !row.LevelStatsMap.TryGetValue(level, out var statInfo))
+                {
+                    continue;
+                }
+
+                var statModifiers = new List<StatModifier>();
+                statModifiers.AddRange(
+                    statInfo.Stats.Select(x =>
+                        new StatModifier(
+                            x.statMap.StatType,
+                            x.operationType,
+                            x.statMap.ValueAsInt)));
+                Stats.AddOption(statModifiers);
+                Stats.EqualizeCurrentHPWithHP();
+            }
         }
 
         public override object Clone()

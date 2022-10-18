@@ -217,7 +217,7 @@ namespace Nekoyume.Action
                 foods,
                 worldId,
                 stageId,
-                states.GetStageSimulatorSheets(),
+                states.GetStageSimulatorSheetsV1(),
                 costumeStatSheet,
                 StageSimulatorV1.ConstructorVersionV100080,
                 playCount);
