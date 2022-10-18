@@ -15,7 +15,7 @@ using Priority_Queue;
 
 namespace Nekoyume.Battle
 {
-    public class StageSimulator : Simulator, IStageSimulator
+    public class StageSimulatorV2 : Simulator, IStageSimulator
     {
         private readonly List<Wave> _waves;
         private readonly List<ItemBase> _waveRewards;
@@ -31,7 +31,7 @@ namespace Nekoyume.Battle
         private int TurnLimit { get; }
         public override IEnumerable<ItemBase> Reward => _waveRewards;
 
-        public StageSimulator(
+        public StageSimulatorV2(
             IRandom random,
             AvatarState avatarState,
             List<Guid> foods,
@@ -42,7 +42,7 @@ namespace Nekoyume.Battle
             StageWaveSheet.Row stageWaveRow,
             bool isCleared,
             int exp,
-            SimulatorSheets simulatorSheets,
+            SimulatorSheetsV1 simulatorSheets,
             EnemySkillSheet enemySkillSheet,
             CostumeStatSheet costumeStatSheet,
             List<ItemBase> waveRewards)
