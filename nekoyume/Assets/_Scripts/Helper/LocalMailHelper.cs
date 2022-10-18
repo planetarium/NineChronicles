@@ -9,16 +9,25 @@ namespace Nekoyume.Helper
 {
     using UniRx;
 
-    public static class LocalMailHelper
+    public class LocalMailHelper
     {
-        private static readonly Dictionary<Address, List<Mail>> LocalMailDictionary = new();
-        private static readonly List<IDisposable> Disposables = new();
+        private LocalMailHelper()
+        {
+            _localMailDictionary = new Dictionary<Address, List<Mail>>();
+            _disposables = new List<IDisposable>();
+        }
 
-        public static void Initialize()
+        private readonly Dictionary<Address, List<Mail>> _localMailDictionary;
+        private readonly List<IDisposable> _disposables;
+        private static LocalMailHelper _instance;
+
+        public static LocalMailHelper Instance => _instance ??= new LocalMailHelper();
+
+        public void Initialize()
         {
             ReactiveAvatarState.MailBox.Subscribe(mailBox =>
             {
-                if (LocalMailDictionary.TryGetValue(States.Instance.CurrentAvatarState.address,
+                if (_localMailDictionary.TryGetValue(States.Instance.CurrentAvatarState.address,
                         out var mails))
                 {
                     foreach (var mail in mails.Where(mail => !mailBox.Contains(mail)))
@@ -27,26 +36,26 @@ namespace Nekoyume.Helper
                         mailBox.Add(mail);
                     }
                 }
-            }).AddTo(Disposables);
+            }).AddTo(_disposables);
         }
 
-        public static void Add(Address address, Mail mail, bool notifyUpdate = false)
+        public void Add(Address address, Mail mail, bool notifyUpdate = false)
         {
-            if (!LocalMailDictionary.ContainsKey(address))
+            if (!_localMailDictionary.ContainsKey(address))
             {
-                LocalMailDictionary.Add(address, new List<Mail>());
+                _localMailDictionary.Add(address, new List<Mail>());
             }
 
-            LocalMailDictionary[address].Add(mail);
+            _localMailDictionary[address].Add(mail);
             if (notifyUpdate)
             {
                 ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
             }
         }
 
-        public static void CleanupDisposables()
+        public void CleanupDisposables()
         {
-            Disposables.DisposeAllAndClear();
+            _disposables.DisposeAllAndClear();
         }
     }
 }
