@@ -33,7 +33,7 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void Execute()
+        public void ExecuteOnce()
         {
             var blockIndex = _tableSheets.WorldBossListSheet.Values
                 .OrderBy(x => x.StartedBlockIndex)
@@ -68,18 +68,18 @@ namespace Lib9c.Tests.Action
             var costSheet = state.GetSheet<RuneCostSheet>();
             if (!costSheet.TryGetValue(runeId, out var costRow))
             {
-                throw new RuneCostNotFoundException($"[{nameof(Execute)}] ");
+                throw new RuneCostNotFoundException($"[{nameof(ExecuteOnce)}] ");
             }
 
             if (!costRow.TryGetCost(runeState.Level, out var cost))
             {
-                throw new RuneCostDataNotFoundException($"[{nameof(Execute)}] ");
+                throw new RuneCostDataNotFoundException($"[{nameof(ExecuteOnce)}] ");
             }
 
             var runeSheet = state.GetSheet<RuneSheet>();
             if (!runeSheet.TryGetValue(cost.RuneStoneId, out var runeRow))
             {
-                throw new RuneNotFoundException($"[{nameof(Execute)}] ");
+                throw new RuneNotFoundException($"[{nameof(ExecuteOnce)}] ");
             }
 
             var ncgCurrency = state.GetGoldCurrency();
@@ -94,6 +94,7 @@ namespace Lib9c.Tests.Action
             {
                 AvatarAddress = avatarState.address,
                 RuneId = runeId,
+                Once = true,
             };
             var ctx = new ActionContext
             {
@@ -120,8 +121,10 @@ namespace Lib9c.Tests.Action
             Assert.Equal("0", nextRuneBalance.GetQuantityString());
         }
 
-        [Fact]
-        public void Execute_Ex()
+        [Theory]
+        [InlineData(10000, false)]
+        [InlineData(1, true)]
+        public void ExecuteRepeat(int multiple, bool isEmptyBalance)
         {
             var blockIndex = _tableSheets.WorldBossListSheet.Values
                 .OrderBy(x => x.StartedBlockIndex)
@@ -162,27 +165,27 @@ namespace Lib9c.Tests.Action
             state = state.SetState(Addresses.TableSheet.Derive("RuneCostSheet"), costSheet.Serialize());
             if (!costSheet.TryGetValue(runeId, out var costRow))
             {
-                throw new RuneCostNotFoundException($"[{nameof(Execute)}] ");
+                throw new RuneCostNotFoundException($"[{nameof(ExecuteOnce)}] ");
             }
 
             if (!costRow.TryGetCost(runeState.Level, out var cost))
             {
-                throw new RuneCostDataNotFoundException($"[{nameof(Execute)}] ");
+                throw new RuneCostDataNotFoundException($"[{nameof(ExecuteOnce)}] ");
             }
 
             var runeSheet = state.GetSheet<RuneSheet>();
             if (!runeSheet.TryGetValue(cost.RuneStoneId, out var runeRow))
             {
-                throw new RuneNotFoundException($"[{nameof(Execute)}] ");
+                throw new RuneNotFoundException($"[{nameof(ExecuteOnce)}] ");
             }
 
             var ncgCurrency = state.GetGoldCurrency();
             var crystalCurrency = CrystalCalculator.CRYSTAL;
             var runeCurrency = Currency.Legacy(runeRow.Ticker, 0, minters: null);
 
-            var ncgBal = cost.NcgQuantity * ncgCurrency;
-            var crystalBal = cost.CrystalQuantity * crystalCurrency;
-            var runeBal = cost.RuneStoneQuantity * runeCurrency;
+            var ncgBal = cost.NcgQuantity * ncgCurrency * multiple;
+            var crystalBal = cost.CrystalQuantity * crystalCurrency * multiple;
+            var runeBal = cost.RuneStoneQuantity * runeCurrency * multiple;
 
             state = state.MintAsset(_agentAddress, ncgBal);
             state = state.MintAsset(_agentAddress, crystalBal);
@@ -192,6 +195,7 @@ namespace Lib9c.Tests.Action
             {
                 AvatarAddress = avatarState.address,
                 RuneId = runeId,
+                Once = false,
             };
             var ctx = new ActionContext
             {
@@ -209,19 +213,28 @@ namespace Lib9c.Tests.Action
             }
 
             var nextRunState = new RuneState(nextRuneRawState);
-            Assert.Equal(runeState.Level, nextRunState.Level);
-
             var nextNcgBal = nextState.GetBalance(_agentAddress, ncgCurrency);
-            Assert.NotEqual(ncgBal, nextNcgBal);
-            Assert.Equal("0", nextNcgBal.GetQuantityString());
-
             var nextCrystalBal = nextState.GetBalance(_agentAddress, ncgCurrency);
-            Assert.NotEqual(crystalBal, nextCrystalBal);
-            Assert.Equal("0", nextCrystalBal.GetQuantityString());
-
             var nextRuneBal = nextState.GetBalance(_agentAddress, ncgCurrency);
+
+            Assert.NotEqual(ncgBal, nextNcgBal);
+            Assert.NotEqual(crystalBal, nextCrystalBal);
             Assert.NotEqual(runeBal, nextRuneBal);
-            Assert.Equal("0", nextRuneBal.GetQuantityString());
+
+            if (isEmptyBalance)
+            {
+                Assert.Equal("0", nextNcgBal.GetQuantityString());
+                Assert.Equal("0", nextCrystalBal.GetQuantityString());
+                Assert.Equal("0", nextRuneBal.GetQuantityString());
+                Assert.Equal(runeState.Level, nextRunState.Level);
+            }
+            else
+            {
+                Assert.NotEqual("0", nextNcgBal.GetQuantityString());
+                Assert.NotEqual("0", nextCrystalBal.GetQuantityString());
+                Assert.NotEqual("0", nextRuneBal.GetQuantityString());
+                Assert.Equal(runeState.Level + 1, nextRunState.Level);
+            }
         }
 
         [Fact]
@@ -260,6 +273,7 @@ namespace Lib9c.Tests.Action
             {
                 AvatarAddress = avatarState.address,
                 RuneId = runeId,
+                Once = true,
             };
 
             Assert.Throws<RuneCostNotFoundException>(() =>
@@ -306,7 +320,7 @@ namespace Lib9c.Tests.Action
             var costSheet = state.GetSheet<RuneCostSheet>();
             if (!costSheet.TryGetValue(runeId, out var costRow))
             {
-                throw new RuneCostNotFoundException($"[{nameof(Execute)}] ");
+                throw new RuneCostNotFoundException($"[{nameof(ExecuteOnce)}] ");
             }
 
             for (var i = 0; i < costRow.Cost.Count + 1; i++)
@@ -320,6 +334,7 @@ namespace Lib9c.Tests.Action
             {
                 AvatarAddress = avatarState.address,
                 RuneId = runeId,
+                Once = true,
             };
 
             Assert.Throws<RuneCostDataNotFoundException>(() =>
@@ -377,6 +392,7 @@ namespace Lib9c.Tests.Action
             {
                 AvatarAddress = avatarState.address,
                 RuneId = runeId,
+                Once = true,
             };
 
             Assert.Throws<RuneNotFoundException>(() =>
@@ -428,18 +444,18 @@ namespace Lib9c.Tests.Action
             var costSheet = state.GetSheet<RuneCostSheet>();
             if (!costSheet.TryGetValue(runeId, out var costRow))
             {
-                throw new RuneCostNotFoundException($"[{nameof(Execute)}] ");
+                throw new RuneCostNotFoundException($"[{nameof(ExecuteOnce)}] ");
             }
 
             if (!costRow.TryGetCost(runeState.Level, out var cost))
             {
-                throw new RuneCostDataNotFoundException($"[{nameof(Execute)}] ");
+                throw new RuneCostDataNotFoundException($"[{nameof(ExecuteOnce)}] ");
             }
 
             var runeSheet = state.GetSheet<RuneSheet>();
             if (!runeSheet.TryGetValue(cost.RuneStoneId, out var runeRow))
             {
-                throw new RuneNotFoundException($"[{nameof(Execute)}] ");
+                throw new RuneNotFoundException($"[{nameof(ExecuteOnce)}] ");
             }
 
             var ncgCurrency = state.GetGoldCurrency();
@@ -465,6 +481,7 @@ namespace Lib9c.Tests.Action
             {
                 AvatarAddress = avatarState.address,
                 RuneId = runeId,
+                Once = true,
             };
             var ctx = new ActionContext
             {

@@ -19,12 +19,14 @@ namespace Nekoyume.Action
     {
         public Address AvatarAddress;
         public int RuneId;
+        public bool Once;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
             {
                 ["a"] = AvatarAddress.Serialize(),
                 ["r"] = RuneId.Serialize(),
+                ["o"] = Once.Serialize(),
             }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(
@@ -32,6 +34,7 @@ namespace Nekoyume.Action
         {
             AvatarAddress = plainValue["a"].ToAddress();
             RuneId = plainValue["r"].ToInteger();
+            Once = plainValue["o"].ToBoolean();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -90,7 +93,7 @@ namespace Nekoyume.Action
             var runeBalance = states.GetBalance(AvatarAddress, runeCurrency);
             if (TryEnhancement(ncgBalance, crystalBalance, runeBalance,
                     ncgCurrency, crystalCurrency, runeCurrency,
-                    cost, context.Random, out var tryCount))
+                    cost, context.Random, Once, out var tryCount))
             {
                 runeState.LevelUp();
             }
@@ -116,16 +119,22 @@ namespace Nekoyume.Action
             Currency runeCurrency,
             RuneCostSheet.RuneCostData cost,
             IRandom random,
+            bool once,
             out int tryCount)
         {
             tryCount = 0;
             var value = cost.LevelUpSuccessRate + 1;
             while (value > cost.LevelUpSuccessRate)
             {
+                if (once && tryCount == 1)
+                {
+                    return false;
+                }
+
                 tryCount++;
-                var ncgCost = cost.NcgQuantity * tryCount * ncgCurrency;
-                var crystalCost = cost.CrystalQuantity * tryCount * crystalCurrency;
-                var runeCost = cost.RuneStoneQuantity * tryCount * runeCurrency;
+                var ncgCost = tryCount * cost.NcgQuantity * ncgCurrency;
+                var crystalCost = tryCount * cost.CrystalQuantity * crystalCurrency;
+                var runeCost = tryCount * cost.RuneStoneQuantity * runeCurrency;
                 if (ncg < ncgCost || crystal < crystalCost || rune < runeCost)
                 {
                     tryCount--;
