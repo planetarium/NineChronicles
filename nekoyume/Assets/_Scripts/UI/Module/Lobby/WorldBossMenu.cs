@@ -124,9 +124,9 @@ namespace Nekoyume.UI.Module.Lobby
             void MakeMail(string json, bool isNew)
             {
                 var seasonReward = JsonUtility.FromJson<SeasonRewardRecord>(json);
-                LocalMailHelper.Initialize();
+                LocalMailHelper.Instance.Initialize();
                 var now = Game.Game.instance.Agent.BlockIndex;
-                LocalMailHelper.Add(new Address(seasonReward.avatarAddress),
+                LocalMailHelper.Instance.Add(new Address(seasonReward.avatarAddress),
                     new RaidRewardMail(now, Guid.NewGuid(), now, seasonReward)
                         {New = isNew});
             }
