@@ -9,7 +9,6 @@ namespace Nekoyume.TableData
         public class Row : SheetRow<int>
         {
             public int Id;
-            public int DisplayIndex;
             public int Grade;
             public int RuneType;
             public int RequiredLevel;
@@ -19,11 +18,10 @@ namespace Nekoyume.TableData
             public override void Set(IReadOnlyList<string> fields)
             {
                 Id = ParseInt(fields[0]);
-                DisplayIndex = ParseInt(fields[1]);
-                Grade = ParseInt(fields[2]);
-                RuneType = ParseInt(fields[3]);
-                RequiredLevel = ParseInt(fields[4]);
-                UsePlace = ParseInt(fields[5]);
+                Grade = ParseInt(fields[1]);
+                RuneType = ParseInt(fields[2]);
+                RequiredLevel = ParseInt(fields[3]);
+                UsePlace = ParseInt(fields[4]);
             }
         }
 
