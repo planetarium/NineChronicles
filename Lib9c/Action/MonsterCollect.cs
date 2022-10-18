@@ -8,6 +8,7 @@ using Libplanet.Assets;
 using Nekoyume.BlockChain.Policy;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Serilog;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
@@ -39,6 +40,9 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 3));
             }
 
+            var addressesHex = GetSignerAndOtherAddressesHex(context, context.Signer);
+            var started = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}MonsterCollect exec started", addressesHex);
             if (states.TryGetStakeState(context.Signer, out StakeState _))
             {
                 throw new InvalidOperationException(
@@ -112,6 +116,8 @@ namespace Nekoyume.Action
             }
             states = states.TransferAsset(context.Signer, monsterCollectionAddress, requiredGold);
             states = states.SetState(monsterCollectionAddress, monsterCollectionState.Serialize());
+            var ended = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}MonsterCollect Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states;
         }
 

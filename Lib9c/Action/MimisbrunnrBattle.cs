@@ -72,7 +72,7 @@ namespace Nekoyume.Action
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Verbose(
+            Log.Debug(
                 "{AddressesHex}Mimisbrunnr exec started",
                 addressesHex);
 
@@ -93,23 +93,44 @@ namespace Nekoyume.Action
                 sw.Elapsed);
 
             sw.Restart();
-            var sheets = states.GetSheets(
-                containSimulatorSheets: true,
-                sheetTypes: new[]
-                {
-                    typeof(WorldSheet),
-                    typeof(StageSheet),
-                    typeof(StageWaveSheet),
-                    typeof(EnemySkillSheet),
-                    typeof(CostumeStatSheet),
-                    typeof(WorldUnlockSheet),
-                    typeof(MimisbrunnrSheet),
-                    typeof(ItemRequirementSheet),
-                    typeof(EquipmentItemRecipeSheet),
-                    typeof(EquipmentItemSubRecipeSheetV2),
-                    typeof(EquipmentItemOptionSheet),
-                    typeof(MaterialItemSheet),
-                });
+
+            // FIXME Delete this check next hard fork.
+            bool useV100291Sheets = UseV100291Sheets(context.BlockIndex);
+            var sheets = useV100291Sheets
+                ? states.GetSheetsV100291(
+                    containSimulatorSheets: true,
+                    sheetTypes: new[]
+                    {
+                        typeof(WorldSheet),
+                        typeof(StageSheet),
+                        typeof(StageWaveSheet),
+                        typeof(EnemySkillSheet),
+                        typeof(CostumeStatSheet),
+                        typeof(WorldUnlockSheet),
+                        typeof(MimisbrunnrSheet),
+                        typeof(ItemRequirementSheet),
+                        typeof(EquipmentItemRecipeSheet),
+                        typeof(EquipmentItemSubRecipeSheetV2),
+                        typeof(EquipmentItemOptionSheet),
+                        typeof(MaterialItemSheet),
+                    })
+                : states.GetSheets(
+                    containSimulatorSheets: true,
+                    sheetTypes: new[]
+                    {
+                        typeof(WorldSheet),
+                        typeof(StageSheet),
+                        typeof(StageWaveSheet),
+                        typeof(EnemySkillSheet),
+                        typeof(CostumeStatSheet),
+                        typeof(WorldUnlockSheet),
+                        typeof(MimisbrunnrSheet),
+                        typeof(ItemRequirementSheet),
+                        typeof(EquipmentItemRecipeSheet),
+                        typeof(EquipmentItemSubRecipeSheetV2),
+                        typeof(EquipmentItemOptionSheet),
+                        typeof(MaterialItemSheet),
+                    });
             sw.Stop();
             Log.Verbose(
                 "{AddressesHex}Get Sheets: {Elapsed}",
@@ -264,6 +285,9 @@ namespace Nekoyume.Action
                 sw.Elapsed);
 
             sw.Restart();
+            var simulatorSheets = useV100291Sheets
+                ? sheets.GetSimulatorSheetsV100291()
+                : sheets.GetSimulatorSheets();
             var materialSheet = sheets.GetSheet<MaterialItemSheet>();
             var simulator = new StageSimulator(
                 context.Random,
@@ -276,7 +300,7 @@ namespace Nekoyume.Action
                 sheets.GetSheet<StageWaveSheet>()[stageId],
                 avatarState.worldInformation.IsStageCleared(stageId),
                 0,
-                sheets.GetSimulatorSheets(),
+                simulatorSheets,
                 sheets.GetSheet<EnemySkillSheet>(),
                 sheets.GetSheet<CostumeStatSheet>(),
                 StageSimulator.GetWaveRewards(context.Random, stageRow, materialSheet, playCount));
@@ -345,7 +369,7 @@ namespace Nekoyume.Action
             sw.Restart();
 
             var ended = DateTimeOffset.UtcNow;
-            Log.Verbose(
+            Log.Debug(
                 "{AddressesHex}Mimisbrunnr Total Executed Time: {Elapsed}",
                 addressesHex,
                 ended - started);

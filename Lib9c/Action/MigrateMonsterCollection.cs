@@ -39,6 +39,9 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             var states = context.PreviousStates;
+            var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
+            var started = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}MigrateMonsterCollection exec started", addressesHex);
             if (states.TryGetStakeState(context.Signer, out StakeState _))
             {
                 throw new InvalidOperationException("The user has already staked.");
@@ -78,6 +81,8 @@ namespace Nekoyume.Action
                 monsterCollectionState.ExpiredBlockIndex,
                 new StakeState.StakeAchievements());
 
+            var ended = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}MigrateMonsterCollection Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states.SetState(monsterCollectionState.address, Null.Value)
                 .SetState(migratedStakeStateAddress, migratedStakeState.SerializeV2())
                 .TransferAsset(

@@ -71,7 +71,7 @@ namespace Nekoyume.Action
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Verbose(
+            Log.Debug(
                 "{AddressesHex}RankingBattle exec started. costume: ({CostumeIds}), equipment: ({EquipmentIds})",
                 addressesHex,
                 string.Join(",", costumeIds),
@@ -94,7 +94,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}RankingBattle Get AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-            var sheets = states.GetSheets(
+            var sheets = states.GetSheetsV100291(
                 containRankingSimulatorSheets: true,
                 sheetTypes: new[]
                 {
@@ -191,7 +191,7 @@ namespace Nekoyume.Action
                     addressesHex + NotEnoughWeeklyArenaChallengeCountException.BaseMessage);
             }
 
-            var rankingSheets = sheets.GetRankingSimulatorSheets();
+            var rankingSheets = sheets.GetRankingSimulatorSheetsV100291();
             var player = new Player(avatarState, rankingSheets);
             PreviousEnemyPlayerDigest = new EnemyPlayerDigest(enemyAvatarState);
             var simulator = new RankingSimulator(
@@ -294,7 +294,7 @@ namespace Nekoyume.Action
             sw.Restart();
 
             var ended = DateTimeOffset.UtcNow;
-            Log.Verbose("{AddressesHex}RankingBattle Total Executed Time: {Elapsed}", addressesHex, ended - started);
+            Log.Debug("{AddressesHex}RankingBattle Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states;
         }
 

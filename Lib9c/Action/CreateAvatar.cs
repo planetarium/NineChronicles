@@ -99,7 +99,7 @@ namespace Nekoyume.Action
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Verbose("{AddressesHex}CreateAvatar exec started", addressesHex);
+            Log.Debug("{AddressesHex}CreateAvatar exec started", addressesHex);
             AgentState existingAgentState = states.GetAgentState(ctx.Signer);
             var agentState = existingAgentState ?? new AgentState(ctx.Signer);
             var avatarState = states.GetAvatarState(avatarAddress);
@@ -152,7 +152,7 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Verbose("{AddressesHex}CreateAvatar CreateAvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             var ended = DateTimeOffset.UtcNow;
-            Log.Verbose("{AddressesHex}CreateAvatar Total Executed Time: {Elapsed}", addressesHex, ended - started);
+            Log.Debug("{AddressesHex}CreateAvatar Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states
                 .SetState(ctx.Signer, agentState.Serialize())
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())

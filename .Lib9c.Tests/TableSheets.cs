@@ -196,6 +196,8 @@ namespace Lib9c.Tests
 
         public ActionBuffSheet ActionBuffSheet { get; private set; }
 
+        public BuffSheet BuffSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet ??= new ItemSheet();

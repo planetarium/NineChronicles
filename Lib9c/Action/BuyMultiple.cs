@@ -255,7 +255,7 @@ namespace Nekoyume.Action
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Verbose("{Addresses}BuyMultiple exec started", addressesHex);
+            Log.Debug("{Addresses}BuyMultiple exec started", addressesHex);
 
             if (!states.TryGetAvatarState(ctx.Signer, buyerAvatarAddress, out var buyerAvatarState))
             {
@@ -436,7 +436,7 @@ namespace Nekoyume.Action
             sw.Stop();
             var ended = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}BuyMultiple Set ShopState: {Elapsed}", addressesHex, sw.Elapsed);
-            Log.Verbose("{AddressesHex}BuyMultiple Total Executed Time: {Elapsed}", addressesHex, ended - started);
+            Log.Debug("{AddressesHex}BuyMultiple Total Executed Time: {Elapsed}", addressesHex, ended - started);
 
             return states;
         }

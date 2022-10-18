@@ -10,6 +10,7 @@ using Nekoyume.Extensions;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Serilog;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
@@ -48,6 +49,8 @@ namespace Nekoyume.Action
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
+            var started = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}RapidCombination exec started", addressesHex);
 
             if (!states.TryGetAgentAvatarStatesV2(
                 context.Signer,
@@ -125,6 +128,8 @@ namespace Nekoyume.Action
                 (RapidCombination5.ResultModel)slotState.Result,
                 context.BlockIndex);
 
+            var ended = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}RapidCombination Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states
                 .SetState(avatarAddress, avatarState.SerializeV2())
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())

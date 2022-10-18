@@ -4,22 +4,22 @@ using System.Linq;
 
 namespace Nekoyume.BlockChain.Policy
 {
-    public sealed class MaxBlockBytesPolicy : VariableSubPolicy<long>
+    public sealed class MaxTransactionsBytesPolicy : VariableSubPolicy<long>
     {
-        private MaxBlockBytesPolicy(long defaultValue)
+        private MaxTransactionsBytesPolicy(long defaultValue)
             : base(defaultValue)
         {
         }
 
-        private MaxBlockBytesPolicy(
-            MaxBlockBytesPolicy maxBlockBytesPolicy,
+        private MaxTransactionsBytesPolicy(
+            MaxTransactionsBytesPolicy maxTransactionsBytesPolicy,
             SpannedSubPolicy<long> spannedSubPolicy)
-            : base(maxBlockBytesPolicy, spannedSubPolicy)
+            : base(maxTransactionsBytesPolicy, spannedSubPolicy)
         {
         }
 
         public static IVariableSubPolicy<long> Default =>
-            new MaxBlockBytesPolicy(long.MaxValue);
+            new MaxTransactionsBytesPolicy(long.MaxValue);
 
         public static IVariableSubPolicy<long> Mainnet =>
             Default

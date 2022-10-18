@@ -100,7 +100,7 @@ namespace Nekoyume.Action
 
             var addressesHex = $"[{signer.ToHex()}, {AvatarAddress.ToHex()}]";
             var started = DateTimeOffset.UtcNow;
-            Log.Verbose("{AddressesHex}HAS exec started", addressesHex);
+            Log.Debug("{AddressesHex}HAS exec started", addressesHex);
 
             states.ValidateWorldId(AvatarAddress, WorldId);
 
@@ -123,30 +123,57 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}HAS Get AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-            var sheets = states.GetSheets(
-                containQuestSheet: true,
-                containSimulatorSheets: true,
-                sheetTypes: new[]
-                {
-                    typeof(WorldSheet),
-                    typeof(StageSheet),
-                    typeof(StageWaveSheet),
-                    typeof(EnemySkillSheet),
-                    typeof(CostumeStatSheet),
-                    typeof(SkillSheet),
-                    typeof(QuestRewardSheet),
-                    typeof(QuestItemRewardSheet),
-                    typeof(EquipmentItemRecipeSheet),
-                    typeof(WorldUnlockSheet),
-                    typeof(MaterialItemSheet),
-                    typeof(ItemRequirementSheet),
-                    typeof(EquipmentItemRecipeSheet),
-                    typeof(EquipmentItemSubRecipeSheetV2),
-                    typeof(EquipmentItemOptionSheet),
-                    typeof(CrystalStageBuffGachaSheet),
-                    typeof(CrystalRandomBuffSheet),
-                    typeof(StakeActionPointCoefficientSheet),
-                });
+            // FIXME Delete this check next hard fork.
+            bool useV100291Sheets = UseV100291Sheets(blockIndex);
+            var sheets = useV100291Sheets
+                ? states.GetSheetsV100291(
+                    containQuestSheet: true,
+                    containSimulatorSheets: true,
+                    sheetTypes: new[]
+                    {
+                        typeof(WorldSheet),
+                        typeof(StageSheet),
+                        typeof(StageWaveSheet),
+                        typeof(EnemySkillSheet),
+                        typeof(CostumeStatSheet),
+                        typeof(SkillSheet),
+                        typeof(QuestRewardSheet),
+                        typeof(QuestItemRewardSheet),
+                        typeof(EquipmentItemRecipeSheet),
+                        typeof(WorldUnlockSheet),
+                        typeof(MaterialItemSheet),
+                        typeof(ItemRequirementSheet),
+                        typeof(EquipmentItemRecipeSheet),
+                        typeof(EquipmentItemSubRecipeSheetV2),
+                        typeof(EquipmentItemOptionSheet),
+                        typeof(CrystalStageBuffGachaSheet),
+                        typeof(CrystalRandomBuffSheet),
+                        typeof(StakeActionPointCoefficientSheet),
+                    })
+                : states.GetSheets(
+                    containQuestSheet: true,
+                    containSimulatorSheets: true,
+                    sheetTypes: new[]
+                    {
+                        typeof(WorldSheet),
+                        typeof(StageSheet),
+                        typeof(StageWaveSheet),
+                        typeof(EnemySkillSheet),
+                        typeof(CostumeStatSheet),
+                        typeof(SkillSheet),
+                        typeof(QuestRewardSheet),
+                        typeof(QuestItemRewardSheet),
+                        typeof(EquipmentItemRecipeSheet),
+                        typeof(WorldUnlockSheet),
+                        typeof(MaterialItemSheet),
+                        typeof(ItemRequirementSheet),
+                        typeof(EquipmentItemRecipeSheet),
+                        typeof(EquipmentItemSubRecipeSheetV2),
+                        typeof(EquipmentItemOptionSheet),
+                        typeof(CrystalStageBuffGachaSheet),
+                        typeof(CrystalRandomBuffSheet),
+                        typeof(StakeActionPointCoefficientSheet),
+                    });
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Get Sheets: {Elapsed}", addressesHex, sw.Elapsed);
 
@@ -262,6 +289,9 @@ namespace Nekoyume.Action
             var materialItemSheet = sheets.GetSheet<MaterialItemSheet>();
             sw.Restart();
             // if PlayCount > 1, it is Multi-HAS.
+            var simulatorSheets = useV100291Sheets
+                ? sheets.GetSimulatorSheetsV100291()
+                : sheets.GetSimulatorSheets();
             for (var i = 0; i < PlayCount; i++)
             {
                 sw.Restart();
@@ -278,7 +308,7 @@ namespace Nekoyume.Action
                     sheets.GetSheet<StageWaveSheet>()[StageId],
                     avatarState.worldInformation.IsStageCleared(StageId),
                     StageRewardExpHelper.GetExp(avatarState.level, StageId),
-                    sheets.GetSimulatorSheets(),
+                    simulatorSheets,
                     sheets.GetSheet<EnemySkillSheet>(),
                     sheets.GetSheet<CostumeStatSheet>(),
                     StageSimulator.GetWaveRewards(random, stageRow, materialItemSheet));
@@ -357,8 +387,9 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}HAS Set States: {Elapsed}", addressesHex, sw.Elapsed);
 
             var totalElapsed = DateTimeOffset.UtcNow - started;
-            Log.Verbose("{AddressesHex}HAS Total Executed Time: {Elapsed}", addressesHex, totalElapsed);
+            Log.Debug("{AddressesHex}HAS Total Executed Time: {Elapsed}", addressesHex, totalElapsed);
             return states;
         }
+
     }
 }

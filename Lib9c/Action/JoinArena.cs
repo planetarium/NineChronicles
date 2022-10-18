@@ -12,6 +12,7 @@ using Nekoyume.Model.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Serilog;
 
 namespace Nekoyume.Action
 {
@@ -59,6 +60,8 @@ namespace Nekoyume.Action
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
+            var started = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}JoinArena exec started", addressesHex);
 
             if (!states.TryGetAgentAvatarStatesV2(context.Signer, avatarAddress,
                     out var agentState, out var avatarState, out _))
@@ -173,6 +176,8 @@ namespace Nekoyume.Action
             arenaAvatarState.UpdateCostumes(costumes);
             arenaAvatarState.UpdateEquipment(equipments);
 
+            var ended = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}JoinArena Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states
                 .SetState(arenaScoreAdr, arenaScore.Serialize())
                 .SetState(arenaInformationAdr, arenaInformation.Serialize())
