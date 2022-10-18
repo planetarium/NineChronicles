@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Libplanet;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module.WorldBoss;
@@ -126,9 +127,20 @@ namespace Nekoyume.UI.Module.Lobby
                 var seasonReward = JsonUtility.FromJson<SeasonRewardRecord>(json);
                 LocalMailHelper.Instance.Initialize();
                 var now = Game.Game.instance.Agent.BlockIndex;
-                LocalMailHelper.Instance.Add(new Address(seasonReward.avatarAddress),
-                    new RaidRewardMail(now, Guid.NewGuid(), now, seasonReward)
-                        {New = isNew});
+                foreach (var reward in seasonReward.rewards)
+                {
+                    var currencyName = L10nManager.LocalizeCurrencyName(reward.ticker);
+                    LocalMailHelper.Instance.Add(
+                        new Address(seasonReward.avatarAddress),
+                        new RaidRewardMail(
+                            now,
+                            Guid.NewGuid(),
+                            now,
+                            currencyName,
+                            reward.amount,
+                            seasonReward.raidId) {New = isNew}
+                    );
+                }
             }
 
             if (PlayerPrefs.HasKey(localRewardKey))
