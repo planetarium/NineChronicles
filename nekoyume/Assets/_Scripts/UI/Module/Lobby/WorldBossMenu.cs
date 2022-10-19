@@ -122,7 +122,8 @@ namespace Nekoyume.UI.Module.Lobby
                         now,
                         currencyName,
                         reward.amount,
-                        id) {New = isNew}
+                        id) {New = isNew},
+                    true
                 );
             }
 
