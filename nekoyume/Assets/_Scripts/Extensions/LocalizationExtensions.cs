@@ -195,7 +195,8 @@ namespace Nekoyume
                 case GrindingMail grindingMail:
                     return L10nManager.Localize("UI_GRINDING_CRYSTALMAIL_FORMAT", grindingMail.Asset.ToString());
                 case RaidRewardMail rewardMail:
-                    return $"Season {rewardMail.RaidId} Raid Reward\n{rewardMail.CurrencyName}: {rewardMail.Amount}";
+                    return L10nManager.Localize("UI_RAID_SEASON_REWARD_MAIL_FORMAT",
+                        rewardMail.RaidId, rewardMail.CurrencyName, rewardMail.Amount);
                 default:
                     throw new NotSupportedException(
                         $"Given mail[{mail}] doesn't support {nameof(ToInfo)}() method.");
