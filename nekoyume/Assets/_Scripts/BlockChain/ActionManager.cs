@@ -212,6 +212,7 @@ namespace Nekoyume.BlockChain
                 player.Costumes,
                 player.Equipments,
                 null,
+                player.Runes,
                 worldId,
                 stageId);
 
@@ -219,6 +220,7 @@ namespace Nekoyume.BlockChain
             List<Costume> costumes,
             List<Equipment> equipments,
             List<Consumable> foods,
+            List<int> runes,
             int worldId,
             int stageId,
             int? stageBuffId = null,
@@ -251,6 +253,7 @@ namespace Nekoyume.BlockChain
                 Costumes = costumes.Select(c => c.ItemId).ToList(),
                 Equipments = equipments.Select(e => e.ItemId).ToList(),
                 Foods = foods.Select(f => f.ItemId).ToList(),
+                Runes = runes,
                 WorldId = worldId,
                 StageId = stageId,
                 StageBuffId = stageBuffId,

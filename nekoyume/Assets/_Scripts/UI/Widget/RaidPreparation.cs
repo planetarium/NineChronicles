@@ -647,7 +647,7 @@ namespace Nekoyume.UI
                 new PracticeRandom(),
                 currentAvatarState,
                 foods,
-                tableSheets.GetRaidSimulatorSheets(),
+                tableSheets.GetRaidSimulatorSheetsV1(),
                 tableSheets.CostumeStatSheet
             );
             var log = simulator.Simulate();

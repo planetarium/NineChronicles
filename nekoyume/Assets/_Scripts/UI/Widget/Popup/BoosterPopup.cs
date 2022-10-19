@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Nekoyume.BlockChain;
@@ -44,6 +44,7 @@ namespace Nekoyume.UI
         private List<Costume> _costumes;
         private List<Equipment> _equipments;
         private List<Consumable> _consumables;
+        private List<int> _runes;
         private int _worldId;
         private int _stageId;
 
@@ -64,6 +65,7 @@ namespace Nekoyume.UI
             List<Costume> costumes,
             List<Equipment> equipments,
             List<Consumable> consumables,
+            List<int> runes,
             int maxCount,
             int worldId,
             int stageId)
@@ -72,6 +74,7 @@ namespace Nekoyume.UI
             _costumes = costumes;
             _equipments = equipments;
             _consumables = consumables;
+            _runes = runes;
             _player = _stage.GetPlayer(PlayerPosition);
             _worldId = worldId;
             _stageId = stageId;
@@ -138,6 +141,7 @@ namespace Nekoyume.UI
                     _costumes,
                     _equipments,
                     _consumables,
+                    _runes,
                     _worldId,
                     _stageId
                 ).Subscribe();

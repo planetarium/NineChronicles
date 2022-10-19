@@ -1253,7 +1253,7 @@ namespace Nekoyume.BlockChain
                 var stageRow = sheets.StageSheet[eval.Action.stageId];
                 var avatarState = States.Instance.CurrentAvatarState;
                 var localRandom = new LocalRandom(eval.RandomSeed);
-                var simulator = new StageSimulator(
+                var simulator = new StageSimulatorV2(
                     localRandom,
                     avatarState,
                     eval.Action.foods,
@@ -1264,10 +1264,10 @@ namespace Nekoyume.BlockChain
                     sheets.StageWaveSheet[eval.Action.stageId],
                     avatarState.worldInformation.IsStageCleared(eval.Action.stageId),
                     0,
-                    sheets.GetSimulatorSheets(),
+                    sheets.GetSimulatorSheetsV1(),
                     sheets.EnemySkillSheet,
                     sheets.CostumeStatSheet,
-                    StageSimulator.GetWaveRewards(
+                    StageSimulatorV2.GetWaveRewards(
                         localRandom,
                         stageRow,
                         sheets.MaterialItemSheet,
@@ -1362,7 +1362,7 @@ namespace Nekoyume.BlockChain
             var random = new LocalRandom(eval.RandomSeed);
             var stageId = eval.Action.EventDungeonStageId;
             var stageRow = TableSheets.Instance.EventDungeonStageSheet[stageId];
-            var simulator = new StageSimulator(
+            var simulator = new StageSimulatorV2(
                 random,
                 States.Instance.CurrentAvatarState,
                 eval.Action.Foods,
@@ -1375,10 +1375,10 @@ namespace Nekoyume.BlockChain
                 RxProps.EventScheduleRowForDungeon.Value.GetStageExp(
                     stageId.ToEventDungeonStageNumber(),
                     Action.EventDungeonBattle.PlayCount),
-                TableSheets.Instance.GetSimulatorSheets(),
+                TableSheets.Instance.GetSimulatorSheetsV1(),
                 TableSheets.Instance.EnemySkillSheet,
                 TableSheets.Instance.CostumeStatSheet,
-                StageSimulator.GetWaveRewards(
+                StageSimulatorV2.GetWaveRewards(
                     random,
                     stageRow,
                     TableSheets.Instance.MaterialItemSheet,
@@ -1970,7 +1970,7 @@ namespace Nekoyume.BlockChain
             var log = simulator.Simulate(
                 myDigest.Value,
                 enemyDigest.Value,
-                tableSheets.GetArenaSimulatorSheets());
+                tableSheets.GetArenaSimulatorSheetsV1());
             log.Score = outputMyScore.Value;
 
             var rewards = RewardSelector.Select(
@@ -2077,7 +2077,7 @@ namespace Nekoyume.BlockChain
                 random,
                 clonedAvatarState,
                 eval.Action.FoodIds,
-                TableSheets.Instance.GetRaidSimulatorSheets(),
+                TableSheets.Instance.GetRaidSimulatorSheetsV1(),
                 TableSheets.Instance.CostumeStatSheet
             );
             simulator.Simulate();

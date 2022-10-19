@@ -205,6 +205,7 @@ public class BattleSimulator : Widget
             random,
             avatarState,
             consumables,
+            null,
             new List<Skill>(),
             worldId,
             stageId,
@@ -215,7 +216,7 @@ public class BattleSimulator : Widget
             tableSheets.GetStageSimulatorSheets(),
             tableSheets.EnemySkillSheet,
             tableSheets.CostumeStatSheet,
-            StageSimulator.GetWaveRewards(random, tableSheets.StageSheet[stageId], tableSheets.MaterialItemSheet)
+            StageSimulatorV2.GetWaveRewards(random, tableSheets.StageSheet[stageId], tableSheets.MaterialItemSheet)
         );
 
         simulator.Simulate();
