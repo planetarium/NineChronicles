@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Libplanet;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -46,7 +47,7 @@ namespace Nekoyume.UI.Module.Lobby
         private GameObject loadingIndicator;
 
         private readonly List<IDisposable> _disposables = new();
-        private readonly Dictionary<Address, bool> _madeRaidMail = new();
+        private bool _madeRaidMail;
 
         private const long SettleSeasonRewardInterval = 7200;
 
@@ -114,12 +115,12 @@ namespace Nekoyume.UI.Module.Lobby
             }
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            if (_madeRaidMail.ContainsKey(avatarAddress))
+            if (_madeRaidMail)
             {
                 return;
             }
 
-            _madeRaidMail.Add(avatarAddress, true);
+            _madeRaidMail = true;
             var localRewardKey =
                 $"SeasonRewards_{raidId}_{avatarAddress}";
             void MakeMail(string json, bool isNew)
@@ -127,7 +128,7 @@ namespace Nekoyume.UI.Module.Lobby
                 var seasonReward = JsonUtility.FromJson<SeasonRewardRecord>(json);
                 LocalMailHelper.Instance.Initialize();
                 var now = Game.Game.instance.Agent.BlockIndex;
-                foreach (var reward in seasonReward.rewards)
+                foreach (var reward in seasonReward.rewards.OrderBy(reward => reward.ticker))
                 {
                     var currencyName = L10nManager.LocalizeCurrencyName(reward.ticker);
                     LocalMailHelper.Instance.Add(
@@ -141,6 +142,13 @@ namespace Nekoyume.UI.Module.Lobby
                             seasonReward.raidId) {New = isNew}
                     );
                 }
+
+                ReactiveAvatarState.Address.First(addr => addr != avatarAddress)
+                    .Subscribe(_ =>
+                    {
+                        _madeRaidMail = false;
+                        LocalMailHelper.Instance.CleanupAndDispose(avatarAddress);
+                    });
             }
 
             if (PlayerPrefs.HasKey(localRewardKey))
