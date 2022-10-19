@@ -75,5 +75,6 @@ namespace Nekoyume.UI.Model
         public int amount;
         public string ticker;
         public string tx_id;
+        public string tx_result;
     }
 }
