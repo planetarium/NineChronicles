@@ -497,7 +497,7 @@ namespace Nekoyume.Model
         }
 
         public void SetRuneStat(
-            List<(int, int)> runes,
+            List<(int runeId, int level)> runes,
             RuneStatSheet runeStatSheet)
         {
             foreach (var (runeId, level) in runes)

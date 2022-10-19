@@ -23,13 +23,12 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1338
     /// </summary>
     [Serializable]
-    [ActionType("hack_and_slash19")]
-    public class HackAndSlash : GameAction
+    [ActionType("hack_and_slash18")]
+    public class HackAndSlash18 : GameAction
     {
         public List<Guid> Costumes;
         public List<Guid> Equipments;
         public List<Guid> Foods;
-        public List<int> Runes;
         public int WorldId;
         public int StageId;
         public int? StageBuffId;
@@ -124,7 +123,34 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}HAS Get AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-            var sheets = states.GetSheets(
+            // FIXME Delete this check next hard fork.
+            bool useV100291Sheets = UseV100291Sheets(blockIndex);
+            var sheets = useV100291Sheets
+                ? states.GetSheetsV100291(
+                    containQuestSheet: true,
+                    containSimulatorSheets: true,
+                    sheetTypes: new[]
+                    {
+                        typeof(WorldSheet),
+                        typeof(StageSheet),
+                        typeof(StageWaveSheet),
+                        typeof(EnemySkillSheet),
+                        typeof(CostumeStatSheet),
+                        typeof(SkillSheet),
+                        typeof(QuestRewardSheet),
+                        typeof(QuestItemRewardSheet),
+                        typeof(EquipmentItemRecipeSheet),
+                        typeof(WorldUnlockSheet),
+                        typeof(MaterialItemSheet),
+                        typeof(ItemRequirementSheet),
+                        typeof(EquipmentItemRecipeSheet),
+                        typeof(EquipmentItemSubRecipeSheetV2),
+                        typeof(EquipmentItemOptionSheet),
+                        typeof(CrystalStageBuffGachaSheet),
+                        typeof(CrystalRandomBuffSheet),
+                        typeof(StakeActionPointCoefficientSheet),
+                    })
+                : states.GetSheets(
                     containQuestSheet: true,
                     containSimulatorSheets: true,
                     sheetTypes: new[]
@@ -263,17 +289,18 @@ namespace Nekoyume.Action
             var materialItemSheet = sheets.GetSheet<MaterialItemSheet>();
             sw.Restart();
             // if PlayCount > 1, it is Multi-HAS.
-            var simulatorSheets = sheets.GetSimulatorSheets();
+            var simulatorSheets = useV100291Sheets
+                ? sheets.GetSimulatorSheetsV100291()
+                : sheets.GetSimulatorSheetsV1();
             for (var i = 0; i < PlayCount; i++)
             {
                 sw.Restart();
                 // First simulating will use Foods and Random Skills.
                 // Remainder simulating will not use Foods.
-                var simulator = new StageSimulator(
+                var simulator = new StageSimulatorV2(
                     random,
                     avatarState,
                     i == 0 ? Foods : new List<Guid>(),
-                    Runes,
                     i == 0 ? skillsOnWaveStart : new List<Skill>(),
                     WorldId,
                     StageId,
