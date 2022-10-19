@@ -32,7 +32,7 @@ namespace Nekoyume.UI
             RegistrationAndTransitionToArenaBoard,
         }
 
-        private const int BarScrollCellCount = 8;
+        private const int BarScrollCellCount = 6;
         private static readonly int BarScrollIndexOffset = (int)math.ceil(BarScrollCellCount / 2f) - 1;
 
 #if UNITY_EDITOR

@@ -197,16 +197,16 @@ namespace Nekoyume
                 return false;
             }
 
-            // NOTE: The season number is beginning from 4 when the championship id is 1 or 2.
-            //       So it initialized as 3 when the championship id is 1 or 2 because the first
-            //       season number will be set like `seasonNumber++` in the following code.
-            seasonNumber = championshipId == 1 || championshipId == 2
-                ? 3
-                : 0;
+            // NOTE: The season number is beginning from 4. so it initialized as 3.
+            // because the first season number will be set like `seasonNumber++` in the following code.
+            seasonNumber = 3;
 
-            // NOTE: The championship cycles once over four times.
-            // And each championship includes three seasons.
-            seasonNumber += (championshipId % 4 - 1) * 3;
+            // Add count of last season by id.
+            // championship 1 includes 1 seasons.
+            if (championshipId > 1) seasonNumber += 3;
+            // championship 2 or more includes 2 seasons.
+            if (championshipId > 2) seasonNumber += (championshipId - 2) * 2;
+
             foreach (var roundData in roundDataArray)
             {
                 if (roundData.ArenaType == ArenaType.Season)
@@ -263,22 +263,16 @@ namespace Nekoyume
         public static int GetChampionshipYear(this ArenaSheet.Row row)
         {
             // row.ChampionshipId
-            // 1, 2: 2022
-            // 3, 4, 5, 6: 2023
-            // 7, 8, 9, 10: 2024
+            // 1,  2,  3: 2022
+            // 4,  5,  6,  7,  8,  9: 2023
+            // 10, 11, 12, 13, 14, 15: 2024
             // ...
-            if (row.ChampionshipId <= 2)
+            if (row.ChampionshipId <= 3)
             {
                 return 2022;
             }
 
-            var offset = 0;
-            var i = row.ChampionshipId - 2;
-            while (i > 0)
-            {
-                offset++;
-                i -= 4;
-            }
+            var offset = (row.ChampionshipId - 3) / 6 + 1;
 
             return 2022 + offset;
         }
@@ -331,10 +325,16 @@ namespace Nekoyume
                 return false;
             }
 
-            // NOTE: The season number is beginning from 4.
-            // NOTE: The championship cycles once over four times.
-            // And each championship includes three seasons.
-            var seasonStartNumber = (championshipId % 4 - 1) * 3 + 4;
+            // NOTE: The season number is beginning from 4. so it initialized as 3.
+            // because the first season number will be set like `++seasonStartNumber` in the following code.
+            var seasonStartNumber = 3;
+
+            // Add count of last season by id.
+            // championship 1 includes 1 seasons.
+            if (championshipId > 1) seasonStartNumber += 3;
+            // championship 2 or more includes 2 seasons.
+            if (championshipId > 2) seasonStartNumber += (championshipId - 2) * 2;
+
             foreach (var roundData in roundDataArray)
             {
                 if (roundData.ArenaType != ArenaType.Season)
@@ -342,7 +342,7 @@ namespace Nekoyume
                     continue;
                 }
 
-                seasonNumbers.Add(seasonStartNumber++);
+                seasonNumbers.Add(++seasonStartNumber);
             }
 
             return true;
