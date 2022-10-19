@@ -187,15 +187,12 @@ namespace Nekoyume.UI.Module.Lobby
                         true);
                     PlayerPrefs.SetString(localRewardKey, json);
                 }, null));
+
+            // Delete old-cached data.
+            var oldSeasonCachingKey = string.Format(cachingKey, raidId - 1, avatarAddress);
+            if (PlayerPrefs.HasKey(oldSeasonCachingKey))
             {
-                StartCoroutine(WorldBossQuery.CoGetSeasonRewards(
-                    raidId,
-                    avatarAddress,
-                    json =>
-                    {
-                        MakeMail(json, true);
-                        PlayerPrefs.SetString(localRewardKey, json);
-                    }, null));
+                PlayerPrefs.DeleteKey(oldSeasonCachingKey);
             }
         }
 
