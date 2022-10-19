@@ -107,56 +107,86 @@ namespace Nekoyume.UI.Module.Lobby
             _disposables.DisposeAllAndClear();
         }
 
-        private void AddSeasonRewardMail(int raidId)
+        private void MakeSeasonRewardMail(int id, Address address, IEnumerable<SeasonRewards> rewards, bool isNew)
         {
-            if (States.Instance.CurrentAvatarState == null)
+            LocalMailHelper.Instance.Initialize();
+            var now = Game.Game.instance.Agent.BlockIndex;
+            foreach (var reward in rewards.OrderBy(reward => reward.ticker))
             {
-                return;
+                var currencyName = L10nManager.LocalizeCurrencyName(reward.ticker);
+                LocalMailHelper.Instance.Add(
+                    address,
+                    new RaidRewardMail(
+                        now,
+                        Guid.NewGuid(),
+                        now,
+                        currencyName,
+                        reward.amount,
+                        id) {New = isNew}
+                );
             }
 
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            if (_madeRaidMail)
+            ReactiveAvatarState.Address.First(addr => addr != address)
+                .Subscribe(_ =>
+                {
+                    _madeRaidMail = false;
+                    LocalMailHelper.Instance.CleanupAndDispose(address);
+                });
+        }
+
+        private void AddSeasonRewardMail(int raidId)
+        {
+            const string success = "SUCCESS";
+            const string cachingKey = "SeasonRewards_{0}_{1}";
+            if (States.Instance.CurrentAvatarState == null || _madeRaidMail)
             {
                 return;
             }
 
             _madeRaidMail = true;
-            var localRewardKey =
-                $"SeasonRewards_{raidId}_{avatarAddress}";
-            void MakeMail(string json, bool isNew)
-            {
-                var seasonReward = JsonUtility.FromJson<SeasonRewardRecord>(json);
-                LocalMailHelper.Instance.Initialize();
-                var now = Game.Game.instance.Agent.BlockIndex;
-                foreach (var reward in seasonReward.rewards.OrderBy(reward => reward.ticker))
-                {
-                    var currencyName = L10nManager.LocalizeCurrencyName(reward.ticker);
-                    LocalMailHelper.Instance.Add(
-                        new Address(seasonReward.avatarAddress),
-                        new RaidRewardMail(
-                            now,
-                            Guid.NewGuid(),
-                            now,
-                            currencyName,
-                            reward.amount,
-                            seasonReward.raidId) {New = isNew}
-                    );
-                }
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var localRewardKey = string.Format(cachingKey, raidId, avatarAddress);
 
-                ReactiveAvatarState.Address.First(addr => addr != avatarAddress)
-                    .Subscribe(_ =>
-                    {
-                        _madeRaidMail = false;
-                        LocalMailHelper.Instance.CleanupAndDispose(avatarAddress);
-                    });
-            }
-
+            var receivedRewardTxs = new List<string>();
             if (PlayerPrefs.HasKey(localRewardKey))
             {
                 var json = PlayerPrefs.GetString(localRewardKey);
-                MakeMail(json, false);
+                var seasonReward = JsonUtility.FromJson<SeasonRewardRecord>(json);
+                var receivedRewards = seasonReward.rewards
+                    .Where(reward => reward.tx_result == success)
+                    .ToArray();
+                receivedRewardTxs.AddRange(receivedRewards.Select(reward => reward.tx_id));
+                MakeSeasonRewardMail(
+                    raidId,
+                    new Address(seasonReward.avatarAddress),
+                    receivedRewards,
+                    false);
+
+                // All tx(s) are SUCCESS, do not request.
+                if (seasonReward.rewards.Length == receivedRewards.Length)
+                {
+                    return;
+                }
             }
-            else
+
+            // If have not cached data or have missing reward, Request SeasonRewards.
+            StartCoroutine(WorldBossQuery.CoGetSeasonRewards(
+                raidId,
+                avatarAddress,
+                json =>
+                {
+                    var seasonReward = JsonUtility.FromJson<SeasonRewardRecord>(json);
+                    // only succeed and not cached tx makes mail.
+                    var rewards = seasonReward.rewards.Where(reward =>
+                        reward.tx_result == success &&
+                        !receivedRewardTxs.Contains(reward.tx_id));
+                    MakeSeasonRewardMail(
+                        seasonReward.raidId,
+                        new Address(seasonReward.avatarAddress),
+                        rewards,
+                        true);
+                    PlayerPrefs.SetString(localRewardKey, json);
+                }, null));
             {
                 StartCoroutine(WorldBossQuery.CoGetSeasonRewards(
                     raidId,
