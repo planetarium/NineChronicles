@@ -42,7 +42,7 @@ namespace Lib9c.Tests.Model
                 _random,
                 _avatarState,
                 new List<Guid>(),
-                _tableSheets.GetRaidSimulatorSheets(),
+                _tableSheets.GetRaidSimulatorSheetsV1(),
                 _tableSheets.CostumeStatSheet);
             Assert.Equal(_random, simulator.Random);
 

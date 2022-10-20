@@ -1318,7 +1318,7 @@ namespace Lib9c.Tests.Action
                 _tableSheets.StageWaveSheet[stageId],
                 false,
                 20,
-                _tableSheets.GetSimulatorSheets(),
+                _tableSheets.GetSimulatorSheetsV1(),
                 _tableSheets.EnemySkillSheet,
                 _tableSheets.CostumeStatSheet,
                 StageSimulatorV2.GetWaveRewards(

@@ -1,4 +1,4 @@
-﻿namespace Lib9c.Tests.Action
+namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
@@ -1191,7 +1191,7 @@
                 _tableSheets.StageWaveSheet[stageId],
                 false,
                 20,
-                _tableSheets.GetSimulatorSheets(),
+                _tableSheets.GetSimulatorSheetsV1(),
                 _tableSheets.EnemySkillSheet,
                 _tableSheets.CostumeStatSheet,
                 StageSimulator.GetWaveRewards(

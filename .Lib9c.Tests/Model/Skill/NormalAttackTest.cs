@@ -57,7 +57,7 @@ namespace Lib9c.Tests.Model.Skill
                 tableSheets.StageWaveSheet[1],
                 false,
                 20,
-                tableSheets.GetSimulatorSheets(),
+                tableSheets.GetSimulatorSheetsV1(),
                 tableSheets.EnemySkillSheet,
                 tableSheets.CostumeStatSheet,
                 StageSimulator.GetWaveRewards(

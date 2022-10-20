@@ -221,7 +221,7 @@ namespace Lib9c.Tests.Action
 
                 var random = new TestRandom(randomSeed);
                 var bossListRow = _tableSheets.WorldBossListSheet.FindRowByBlockIndex(ctx.BlockIndex);
-                var raidSimulatorSheets = _tableSheets.GetRaidSimulatorSheets();
+                var raidSimulatorSheets = _tableSheets.GetRaidSimulatorSheetsV1();
                 var simulator = new RaidSimulator(
                     bossListRow.BossId,
                     random,
@@ -435,7 +435,7 @@ namespace Lib9c.Tests.Action
                 random,
                 avatarState,
                 action.FoodIds,
-                _tableSheets.GetRaidSimulatorSheets(),
+                _tableSheets.GetRaidSimulatorSheetsV1(),
                 _tableSheets.CostumeStatSheet);
             simulator.Simulate();
 

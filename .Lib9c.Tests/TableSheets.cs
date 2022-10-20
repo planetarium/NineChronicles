@@ -241,6 +241,21 @@ namespace Lib9c.Tests
             );
         }
 
+        public SimulatorSheetsV1 GetSimulatorSheetsV1()
+        {
+            return new SimulatorSheetsV1(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
+                EquipmentItemSetEffectSheet
+            );
+        }
+
         public StageSimulatorSheets GetStageSimulatorSheets()
         {
             return new StageSimulatorSheets(
@@ -257,6 +272,40 @@ namespace Lib9c.Tests
                 StageWaveSheet,
                 EnemySkillSheet,
                 RuneStatSheet
+            );
+        }
+
+        public StageSimulatorSheetsV1 GetStageSimulatorSheetsV1()
+        {
+            return new StageSimulatorSheetsV1(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
+                EquipmentItemSetEffectSheet,
+                StageSheet,
+                StageWaveSheet,
+                EnemySkillSheet
+            );
+        }
+
+        public RankingSimulatorSheetsV1 GetRankingSimulatorSheetsV1()
+        {
+            return new RankingSimulatorSheetsV1(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
+                EquipmentItemSetEffectSheet,
+                WeeklyArenaRewardSheet
             );
         }
 
@@ -277,6 +326,23 @@ namespace Lib9c.Tests
             );
         }
 
+        public ArenaSimulatorSheetsV1 GetArenaSimulatorSheetsV1()
+        {
+            return new ArenaSimulatorSheetsV1(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
+                EquipmentItemSetEffectSheet,
+                CostumeStatSheet,
+                WeeklyArenaRewardSheet
+            );
+        }
+
         public ArenaSimulatorSheets GetArenaSimulatorSheets()
         {
             return new ArenaSimulatorSheets(
@@ -292,6 +358,26 @@ namespace Lib9c.Tests
                 CostumeStatSheet,
                 WeeklyArenaRewardSheet,
                 RuneStatSheet
+            );
+        }
+
+        public RaidSimulatorSheetsV1 GetRaidSimulatorSheetsV1()
+        {
+            return new RaidSimulatorSheetsV1(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
+                EquipmentItemSetEffectSheet,
+                WorldBossCharacterSheet,
+                WorldBossActionPatternSheet,
+                WorldBossBattleRewardSheet,
+                RuneWeightSheet,
+                RuneSheet
             );
         }
 

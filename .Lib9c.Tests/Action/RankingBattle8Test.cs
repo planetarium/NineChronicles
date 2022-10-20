@@ -234,7 +234,7 @@
                 previousAvatar1State,
                 action.EnemyAvatarState,
                 action.consumableIds,
-                _tableSheets.GetRankingSimulatorSheets(),
+                _tableSheets.GetRankingSimulatorSheetsV1(),
                 RankingBattle8.StageId,
                 action.ArenaInfo,
                 action.EnemyArenaInfo,
