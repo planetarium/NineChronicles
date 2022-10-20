@@ -154,6 +154,12 @@ namespace Lib9c.Tests.Action
                                 throw new ArgumentOutOfRangeException();
                         }
 
+                        if (roundData.ChampionshipId == 2 && roundData.Round == 8)
+                        {
+                            ticketPrice = 100;
+                            additionalTicketPrice = 40;
+                        }
+
                         var sum = ticketPrice + (additionalTicketPrice * arenaInformation.PurchasedTicketCount);
                         var major = sum / 100;
                         var miner = sum % 100;
