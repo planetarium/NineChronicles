@@ -32,8 +32,8 @@ namespace Nekoyume.UI
             RegistrationAndTransitionToArenaBoard,
         }
 
-        private const int BarScrollCellCount = 6;
-        private static readonly int BarScrollIndexOffset = (int)math.ceil(BarScrollCellCount / 2f) - 1;
+        private static int _barScrollCellCount;
+        private static int BarScrollIndexOffset => (int)math.ceil(_barScrollCellCount / 2f) - 1;
 
 #if UNITY_EDITOR
         [SerializeField]
@@ -210,8 +210,9 @@ namespace Nekoyume.UI
                 : null;
             var selectedIndex = selectedRoundData?.Round - 1 ?? 0;
             _scroll.SetData(scrollData, selectedIndex);
+            _barScrollCellCount = scrollData.Count;
             _barScroll.SetData(
-                GetBarScrollData(BarScrollIndexOffset),
+                GetBarScrollData(_barScrollCellCount, BarScrollIndexOffset),
                 ReverseScrollIndex(selectedIndex));
         }
 
@@ -259,9 +260,9 @@ namespace Nekoyume.UI
         }
 
         private static IList<ArenaJoinSeasonBarItemData> GetBarScrollData(
-            int barIndexOffset)
+            int barScrollCellCount, int barIndexOffset)
         {
-            return Enumerable.Range(0, BarScrollCellCount)
+            return Enumerable.Range(0, barScrollCellCount)
                 .Select(index => new ArenaJoinSeasonBarItemData
                 {
                     visible = index == barIndexOffset,
@@ -270,7 +271,7 @@ namespace Nekoyume.UI
         }
 
         private static int ReverseScrollIndex(int scrollIndex) =>
-            BarScrollCellCount - scrollIndex - 1;
+            _barScrollCellCount - scrollIndex - 1;
 
         private void UpdateInfo()
         {

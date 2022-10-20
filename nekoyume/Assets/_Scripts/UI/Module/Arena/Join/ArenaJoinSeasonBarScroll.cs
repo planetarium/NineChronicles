@@ -15,6 +15,8 @@ namespace Nekoyume.UI.Module.Arena.Join
 
         [SerializeField] private GameObject _cellPrefab;
 
+        [SerializeField] private GameObject[] frontGrounds;
+
         protected override GameObject CellPrefab => _cellPrefab;
 
         private readonly Subject<int> _onSelectionChanged = new Subject<int>();
@@ -28,6 +30,12 @@ namespace Nekoyume.UI.Module.Arena.Join
             if (data.Count == 0)
             {
                 return;
+            }
+
+            var frontGroundIndex = Math.Clamp(data.Count, 6, 8) - 6;
+            for (int i = 0; i < frontGrounds.Length; i++)
+            {
+                frontGrounds[i].gameObject.SetActive(i == frontGroundIndex);
             }
 
             if (index.HasValue)
