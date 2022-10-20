@@ -14,7 +14,6 @@ namespace Nekoyume.Model.State
 
         public RuneState(int runeId)
         {
-            Level = 1;
             RuneId = runeId;
         }
 

@@ -72,7 +72,8 @@ namespace Nekoyume.Action
                     $"[{nameof(RuneEnhancement)}] my avatar address : {AvatarAddress}");
             }
 
-            if (!costRow.TryGetCost(runeState.Level, out var cost))
+            var targetLevel = runeState.Level + 1;
+            if (!costRow.TryGetCost(targetLevel, out var cost))
             {
                 throw new RuneCostDataNotFoundException(
                     $"[{nameof(RuneEnhancement)}] my avatar address : {AvatarAddress}");
