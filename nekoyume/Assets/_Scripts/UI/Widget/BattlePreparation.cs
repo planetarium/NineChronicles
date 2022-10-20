@@ -235,6 +235,7 @@ namespace Nekoyume.UI
             Analyzer.Instance.Track("Unity/Click Stage", new Value
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             });
 
             var stage = Game.Game.instance.Stage;
@@ -320,7 +321,6 @@ namespace Nekoyume.UI
             }
 
             randomBuffButton.SetData(States.Instance.CrystalRandomSkillState, _stageId);
-            randomBuffButton.gameObject.SetActive(true);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -349,7 +349,8 @@ namespace Nekoyume.UI
                     equipmentSlots.gameObject.SetActive(false);
                 },
                 GetElementalTypes(),
-                useConsumable: useConsumable);
+                useConsumable: useConsumable,
+                onUpdateInventory: OnUpdateInventory);
         }
 
         private void UpdateBackground()
@@ -718,6 +719,20 @@ namespace Nekoyume.UI
                 }
                 default:
                     throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void OnUpdateInventory(Inventory updatedInventory, Nekoyume.Model.Item.Inventory inventoryModel)
+        {
+            foreach (var consumable in consumableSlots
+                         .Where(consumableSlot =>
+                             !consumableSlot.IsLock && !consumableSlot.IsEmpty)
+                         .Select(slot => slot.Item))
+            {
+                if (updatedInventory.TryGetModel(consumable, out var inventoryItem))
+                {
+                    inventoryItem.Equipped.SetValueAndForceNotify(true);
+                }
             }
         }
 

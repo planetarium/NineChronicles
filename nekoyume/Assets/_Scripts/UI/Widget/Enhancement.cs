@@ -174,7 +174,8 @@ namespace Nekoyume.UI
             var sheet = Game.Game.instance.TableSheets.EnhancementCostSheetV2;
             if (ItemEnhancement.TryGetRow(baseItem, sheet, out var row))
             {
-                slots.SetCaching(slotIndex, true, row.SuccessRequiredBlockIndex,
+                var avatarAddress = States.Instance.CurrentAvatarState.address;
+                slots.SetCaching(avatarAddress, slotIndex, true, row.SuccessRequiredBlockIndex,
                     itemUsable: baseItem);
             }
 
@@ -182,7 +183,6 @@ namespace Nekoyume.UI
                 L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START"),
                 NotificationCell.NotificationType.Information);
 
-            Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
             Game.Game.instance.ActionManager
                 .ItemEnhancement(baseItem, materialItem, slotIndex, _costNcg).Subscribe();
 

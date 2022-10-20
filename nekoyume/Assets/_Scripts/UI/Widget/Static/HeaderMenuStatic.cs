@@ -377,13 +377,24 @@ namespace Nekoyume.UI.Module
         {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var avatarLevel = States.Instance.CurrentAvatarState?.level ?? 0;
-            var hasNotification = inventory?.HasNotification(avatarLevel, blockIndex) ?? false;
+            var sheets = Game.Game.instance.TableSheets;
+            var hasNotification = inventory?.HasNotification(avatarLevel, blockIndex,
+                sheets.ItemRequirementSheet,
+                sheets.EquipmentItemRecipeSheet,
+                sheets.EquipmentItemSubRecipeSheetV2,
+                sheets.EquipmentItemOptionSheet) ?? false;
             UpdateInventoryNotification(hasNotification);
         }
 
         private void UpdateCombinationNotification(long currentBlockIndex)
         {
-            var states = States.Instance.GetCombinationSlotState(currentBlockIndex);
+            var avatarState = States.Instance.CurrentAvatarState;
+            if (avatarState is null)
+            {
+                return;
+            }
+
+            var states = States.Instance.GetCombinationSlotState(avatarState, currentBlockIndex);
             var hasNotification = states?.Any(state =>
                 HasCombinationNotification(state.Value, currentBlockIndex)) ?? false;
             _toggleNotifications[ToggleType.CombinationSlots].Value = hasNotification;
@@ -396,7 +407,8 @@ namespace Nekoyume.UI.Module
                 return false;
             }
 
-            var isAppraise = currentBlockIndex < state.StartBlockIndex + GameConfig.RequiredAppraiseBlock;
+            var isAppraise = currentBlockIndex < state.StartBlockIndex +
+                States.Instance.GameConfigState.RequiredAppraiseBlock;
             if (isAppraise)
             {
                 return false;

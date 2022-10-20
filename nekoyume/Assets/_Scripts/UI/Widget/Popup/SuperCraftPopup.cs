@@ -7,16 +7,16 @@ using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
+using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
-using UniRx;
 using UnityEngine;
-using ObservableExtensions = UniRx.ObservableExtensions;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
     public class SuperCraftPopup : PopupWidget
     {
         [SerializeField]
@@ -31,62 +31,103 @@ namespace Nekoyume.UI
         [SerializeField]
         private TMP_Text skillChanceText;
 
-        private EquipmentItemOptionSheet.Row _skillOptionRow;
-        private SubRecipeView.RecipeInfo _recipeInfo;
+        [SerializeField]
+        private Toggle basicRecipeToggle;
+
+        [SerializeField]
+        private Toggle premiumRecipeToggle;
+
+        private EquipmentItemRecipeSheet.Row _recipeRow;
+        private int _subRecipeIndex;
 
         private const int SuperCraftIndex = 20;
+        private const int BasicRecipeIndex = 0;
+        private const int PremiumRecipeIndex = 1;
 
         public override void Initialize()
         {
-            ObservableExtensions.Subscribe(superCraftButton.OnSubmitSubject, _ =>
+            basicRecipeToggle.onValueChanged.AddListener(b =>
+            {
+                _subRecipeIndex = b ? BasicRecipeIndex : PremiumRecipeIndex;
+                SetSkillInfoText(_recipeRow.SubRecipeIds[_subRecipeIndex]);
+            });
+            premiumRecipeToggle.onValueChanged.AddListener(b =>
+            {
+                _subRecipeIndex = b ? PremiumRecipeIndex : BasicRecipeIndex;
+                SetSkillInfoText(_recipeRow.SubRecipeIds[_subRecipeIndex]);
+            });
+            superCraftButton.OnSubmitSubject.Subscribe(_ =>
             {
                 if (Find<CombinationSlotsPopup>().TryGetEmptyCombinationSlot(out var slotIndex))
                 {
                     ActionManager.Instance.CombinationEquipment(
-                        _recipeInfo,
+                        new SubRecipeView.RecipeInfo
+                        {
+                            RecipeId = _recipeRow.Id,
+                            SubRecipeId = _recipeRow.SubRecipeIds[_subRecipeIndex],
+                            CostNCG = default,
+                            CostCrystal = default,
+                            CostAP = 0,
+                            Materials = default,
+                            ReplacedMaterials = null,
+                        },
                         slotIndex,
                         false,
-                        true);
-
+                        true).Subscribe();
                     var sheets = TableSheets.Instance;
                     var equipmentRow = sheets
-                        .EquipmentItemRecipeSheet[_recipeInfo.RecipeId];
+                        .EquipmentItemRecipeSheet[_recipeRow.Id];
                     var equipment = (Equipment) ItemFactory.CreateItemUsable(
                         equipmentRow.GetResultEquipmentItemRow(),
                         Guid.Empty,
                         SuperCraftIndex);
-
+                    Find<CombinationSlotsPopup>().SetCaching(
+                        States.Instance.CurrentAvatarState.address,
+                        slotIndex,
+                        true,
+                        SuperCraftIndex,
+                        itemUsable: equipment);
                     StartCoroutine(CoCombineNpcAnimation(equipment));
                 }
             }).AddTo(gameObject);
         }
 
         public void Show(
-            EquipmentItemOptionSheet.Row row,
-            SubRecipeView.RecipeInfo recipeInfo,
-            int recipeId,
+            EquipmentItemRecipeSheet.Row recipeRow,
             bool canSuperCraft,
             bool ignoreAnimation = false)
         {
-            _skillOptionRow = row;
-            _recipeInfo = recipeInfo;
+            _recipeRow = recipeRow;
             superCraftButton.Interactable =
                 Find<CombinationSlotsPopup>().TryGetEmptyCombinationSlot(out _) && canSuperCraft;
-            skillName.text = L10nManager.Localize($"SKILL_NAME_{row.SkillId}");
             var sheets = TableSheets.Instance;
-            var isBuffSkill = row.SkillDamageMax == 0;
-            var buffRow = isBuffSkill
-                ? sheets.StatBuffSheet[sheets.SkillBuffSheet[row.SkillId].BuffIds.First()]
-                : null;
-            skillPowerText.text = isBuffSkill
-                ? $"{L10nManager.Localize("UI_SKILL_EFFECT")}: {buffRow.StatModifier}"
-                : $"{L10nManager.Localize("UI_SKILL_POWER")}: {row.SkillDamageMax.ToString()}";
-            skillChanceText.text =
-                $"{L10nManager.Localize("UI_SKILL_CHANCE")}: {row.SkillChanceMin.NormalizeFromTenThousandths() * 100:0%}";
             superCraftButton.SetCost(
                 CostType.Crystal,
-                sheets.CrystalHammerPointSheet[recipeId].CRYSTAL);
+                sheets.CrystalHammerPointSheet[_recipeRow.Id].CRYSTAL);
             base.Show(ignoreAnimation);
+            basicRecipeToggle.isOn = true;
+            SetSkillInfoText(_recipeRow.SubRecipeIds[BasicRecipeIndex]);
+        }
+
+        private void SetSkillInfoText(int subRecipeId)
+        {
+            var sheets = TableSheets.Instance;
+            var subRecipeRow = sheets.EquipmentItemSubRecipeSheetV2[subRecipeId];
+            var optionSheet = sheets.EquipmentItemOptionSheet;
+            var skillOptionRow = subRecipeRow.Options
+                .Select(x => (ratio: x.Ratio, option: optionSheet[x.Id]))
+                .FirstOrDefault(tuple => tuple.option.SkillId != 0)
+                .option;
+            var isBuffSkill = skillOptionRow.SkillDamageMax == 0;
+            var buffRow = isBuffSkill
+                ? sheets.StatBuffSheet[sheets.SkillBuffSheet[skillOptionRow.SkillId].BuffIds.First()]
+                : null;
+            skillName.text = L10nManager.Localize($"SKILL_NAME_{skillOptionRow.SkillId}");
+            skillPowerText.text = isBuffSkill
+                ? $"{L10nManager.Localize("UI_SKILL_EFFECT")}: {buffRow.StatModifier}"
+                : $"{L10nManager.Localize("UI_SKILL_POWER")}: {skillOptionRow.SkillDamageMax.ToString()}";
+            skillChanceText.text =
+                $"{L10nManager.Localize("UI_SKILL_CHANCE")}: {skillOptionRow.SkillChanceMin.NormalizeFromTenThousandths() * 100:0%}";
         }
 
         private IEnumerator CoCombineNpcAnimation(ItemBase itemBase)

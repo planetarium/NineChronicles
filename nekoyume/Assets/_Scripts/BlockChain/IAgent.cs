@@ -50,7 +50,7 @@ namespace Nekoyume.BlockChain
             Action<bool> callback
         );
 
-        void EnqueueAction(GameAction gameAction);
+        void EnqueueAction(ActionBase actionBase);
 
         IValue GetState(Address address);
         Task<IValue> GetStateAsync(Address address);

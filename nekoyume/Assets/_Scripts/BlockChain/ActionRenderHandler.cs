@@ -98,6 +98,7 @@ namespace Nekoyume.BlockChain
                             ["ActionType"] = actionType.TypeIdentifier,
                             ["Elapsed"] = elapsed,
                             ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                            ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                         });
                     }
                 }
@@ -490,7 +491,15 @@ namespace Nekoyume.BlockChain
 
                 var formatKey = string.Empty;
                 var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
-                var combinationSlotState = States.Instance.GetCombinationSlotState(currentBlockIndex);
+
+                var avatarState = States.Instance.AvatarStates.Values.FirstOrDefault(x=> x.address == avatarAddress);
+                if (avatarState is null)
+                {
+                    return;
+                }
+
+                var combinationSlotState
+                    = States.Instance.GetCombinationSlotState(avatarState, currentBlockIndex);
                 var stateResult = combinationSlotState[slotIndex]?.Result;
                 switch (stateResult)
                 {
@@ -540,6 +549,7 @@ namespace Nekoyume.BlockChain
                                     ["GainedCrystal"] = (long)enhancementResultModel.CRYSTAL.MajorUnit,
                                     ["BurntNCG"] = (long)enhancementResultModel.gold,
                                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                                    ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                                 });
                                 formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_FAIL";
                                 break;
@@ -566,12 +576,15 @@ namespace Nekoyume.BlockChain
                     string.Format(format, result.itemUsable.GetLocalizedName()),
                     NotificationCell.NotificationType.Notification);
 
-                UpdateCombinationSlotState(slotIndex, slotState);
+                UpdateCombinationSlotState(avatarAddress, slotIndex, slotState);
                 UpdateAgentStateAsync(eval).Forget();
                 UpdateCurrentAvatarStateAsync(eval).Forget();
-            }
 
-            Widget.Find<CombinationSlotsPopup>().SetCaching(eval.Action.slotIndex, false);
+                Widget.Find<CombinationSlotsPopup>().SetCaching(
+                    avatarAddress,
+                    eval.Action.slotIndex,
+                    false);
+            }
         }
 
         private void ResponseCombinationEquipment(ActionBase.ActionEvaluation<CombinationEquipment> eval)
@@ -617,7 +630,7 @@ namespace Nekoyume.BlockChain
                 var hammerPointState = new HammerPointState(hammerPointStateAddress,
                     eval.OutputStates.GetState(hammerPointStateAddress) as List);
 
-                UpdateCombinationSlotState(slotIndex, slot);
+                UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
                 UpdateAgentStateAsync(eval).Forget();
                 UpdateCurrentAvatarStateAsync(eval).Forget();
                 RenderQuest(avatarAddress, avatarState.questList?.completedQuestIds);
@@ -675,9 +688,9 @@ namespace Nekoyume.BlockChain
                     slot.UnlockBlockIndex,
                     result.itemUsable.TradableId);
                 // ~Notify
-            }
 
-            Widget.Find<CombinationSlotsPopup>().SetCaching(eval.Action.slotIndex, false);
+                Widget.Find<CombinationSlotsPopup>().SetCaching(avatarAddress, eval.Action.slotIndex, false);
+            }
         }
 
         private void ResponseCombinationConsumable(ActionBase.ActionEvaluation<CombinationConsumable> eval)
@@ -705,7 +718,7 @@ namespace Nekoyume.BlockChain
                 LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.ItemId, itemUsable.RequiredBlockIndex, 1);
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
-                UpdateCombinationSlotState(slotIndex, slot);
+                UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
                 UpdateAgentStateAsync(eval).Forget();
                 UpdateCurrentAvatarStateAsync(eval).Forget();
                 RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
@@ -718,9 +731,9 @@ namespace Nekoyume.BlockChain
                     slot.UnlockBlockIndex,
                     result.itemUsable.TradableId);
                 // ~Notify
-            }
 
-            Widget.Find<CombinationSlotsPopup>().SetCaching(eval.Action.slotIndex, false);
+                Widget.Find<CombinationSlotsPopup>().SetCaching(avatarAddress, eval.Action.slotIndex, false);
+            }
         }
 
         private void ResponseEventConsumableItemCrafts(
@@ -728,8 +741,6 @@ namespace Nekoyume.BlockChain
         {
             if (eval.Exception is not null)
             {
-                Widget.Find<CombinationSlotsPopup>()
-                    .SetCaching(eval.Action.SlotIndex, false);
                 return;
             }
 
@@ -754,7 +765,7 @@ namespace Nekoyume.BlockChain
                  1);
             LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
-            UpdateCombinationSlotState(slotIndex, slot);
+            UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
             UpdateAgentStateAsync(eval).Forget();
             UpdateCurrentAvatarStateAsync(eval).Forget();
 
@@ -767,7 +778,7 @@ namespace Nekoyume.BlockChain
                 result.itemUsable.TradableId);
             // ~Notify
 
-            Widget.Find<CombinationSlotsPopup>().SetCaching(eval.Action.SlotIndex, false);
+            Widget.Find<CombinationSlotsPopup>().SetCaching(avatarAddress, eval.Action.SlotIndex, false);
         }
 
         private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)
@@ -801,7 +812,7 @@ namespace Nekoyume.BlockChain
                 LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.TradableId, itemUsable.RequiredBlockIndex, 1);
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
-                UpdateCombinationSlotState(slotIndex, slot);
+                UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
                 UpdateAgentStateAsync(eval).Forget();
                 UpdateCurrentAvatarStateAsync(eval).Forget();
                 RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
@@ -822,6 +833,7 @@ namespace Nekoyume.BlockChain
                             ["GainedCrystal"] = (long)result.CRYSTAL.MajorUnit,
                             ["BurntNCG"] = (long)result.gold,
                             ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                            ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                         });
                         formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_FAIL";
                         break;
@@ -838,9 +850,9 @@ namespace Nekoyume.BlockChain
                     slot.UnlockBlockIndex,
                     result.itemUsable.TradableId);
                 // ~Notify
-            }
 
-            Widget.Find<CombinationSlotsPopup>().SetCaching(eval.Action.slotIndex, false);
+                Widget.Find<CombinationSlotsPopup>().SetCaching(avatarAddress, eval.Action.slotIndex, false);
+            }
         }
 
         private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
@@ -1148,6 +1160,7 @@ namespace Nekoyume.BlockChain
                         ["RandomSkillId"] = eval.Action.StageBuffId,
                         ["IsCleared"] = simulator.Log.IsClear,
                         ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                        ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                     });
                 }
 

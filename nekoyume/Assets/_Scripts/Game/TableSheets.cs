@@ -60,6 +60,8 @@ namespace Nekoyume.Game
 
         public StatBuffSheet StatBuffSheet { get; private set; }
 
+        public BuffSheet BuffSheet { get; private set; }
+
         public ItemSheet ItemSheet { get; private set; }
 
         public ItemRequirementSheet ItemRequirementSheet { get; private set; }

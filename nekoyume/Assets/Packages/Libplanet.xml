@@ -23,13 +23,15 @@
             An internal implementation of <see cref="T:Libplanet.Action.IAccountStateDelta"/>.
             </summary>
         </member>
-        <member name="M:Libplanet.Action.AccountStateDeltaImpl.#ctor(Libplanet.Action.AccountStateGetter,Libplanet.Action.AccountBalanceGetter,Libplanet.Address)">
+        <member name="M:Libplanet.Action.AccountStateDeltaImpl.#ctor(Libplanet.Action.AccountStateGetter,Libplanet.Action.AccountBalanceGetter,Libplanet.Action.TotalSupplyGetter,Libplanet.Address)">
             <summary>
             Creates a null delta from the given <paramref name="accountStateGetter"/>.
             </summary>
             <param name="accountStateGetter">A view to the &#x201c;epoch&#x201d; states.</param>
             <param name="accountBalanceGetter">A view to the &#x201c;epoch&#x201d; asset balances.
             </param>
+            <param name="totalSupplyGetter">A view to the &#x201c;epoch&#x201d; total supplies of
+            currencies.</param>
             <param name="signer">A signer address. Used for authenticating if a signer is allowed
             to mint a currency.</param>
         </member>
@@ -54,6 +56,9 @@
         <member name="M:Libplanet.Action.AccountStateDeltaImpl.GetBalance(Libplanet.Address,Libplanet.Assets.Currency)">
             <inheritdoc/>
         </member>
+        <member name="M:Libplanet.Action.AccountStateDeltaImpl.GetTotalSupply(Libplanet.Assets.Currency)">
+            <inheritdoc/>
+        </member>
         <member name="M:Libplanet.Action.AccountStateDeltaImpl.MintAsset(Libplanet.Address,Libplanet.Assets.FungibleAssetValue)">
             <inheritdoc/>
         </member>
@@ -62,6 +67,24 @@
         </member>
         <member name="M:Libplanet.Action.AccountStateDeltaImpl.BurnAsset(Libplanet.Address,Libplanet.Assets.FungibleAssetValue)">
             <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Action.AccountStateDeltaImpl.ChooseVersion(System.Int32,Libplanet.Action.AccountStateGetter,Libplanet.Action.AccountBalanceGetter,Libplanet.Action.TotalSupplyGetter,Libplanet.Address)">
+            <summary>
+            Creates a null delta from the given <paramref name="accountStateGetter"/>,
+            <paramref name="accountBalanceGetter"/>, and <paramref name="totalSupplyGetter"/>,
+            with a subtype of <see cref="T:Libplanet.Action.AccountStateDeltaImpl"/> that corresponds to the
+            <paramref name="protocolVersion"/>.
+            </summary>
+            <param name="protocolVersion">The protocol version of which to create a delta.</param>
+            <param name="accountStateGetter">A view to the &#x201c;epoch&#x201d; states.</param>
+            <param name="accountBalanceGetter">A view to the &#x201c;epoch&#x201d; asset balances.
+            </param>
+            <param name="totalSupplyGetter">A view to the &#x201c;epoch&#x201d; total supplies of
+            currencies.</param>
+            <param name="signer">A signer address. Used for authenticating if a signer is allowed
+            to mint a currency.</param>
+            <returns>A instance of a subtype of <see cref="T:Libplanet.Action.AccountStateDeltaImpl"/> which
+            corresponds to the <paramref name="protocolVersion"/>.</returns>
         </member>
         <member name="T:Libplanet.Action.AccountStateDeltaImplV0">
             <summary>
@@ -153,6 +176,18 @@
             <param name="nativeTokenPredicate">A predicate function to determine whether
             the specified <see cref="T:Libplanet.Assets.Currency"/> is a native token defined by chain's
             <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.NativeTokens"/> or not.</param>
+        </member>
+        <member name="M:Libplanet.Action.ActionEvaluator`1.GenerateRandomSeed(System.Byte[],System.Byte[],System.Byte[],System.Int32)">
+            <summary>
+            Creates a random seed.
+            </summary>
+            <param name="preEvaluationHashBytes">The previous evaluation hash turned into bytes.
+            </param>
+            <param name="hashedSignature">The hashed signature.</param>
+            <param name="signature">The signature.</param>
+            <param name="actionOffset">The offset of the action.</param>
+            <returns>An integer of the random seed.
+            </returns>
         </member>
         <member name="M:Libplanet.Action.ActionEvaluator`1.Evaluate(Libplanet.Blocks.IPreEvaluationBlock{`0},Libplanet.Blockchain.StateCompleterSet{`0})">
             <summary>
@@ -402,17 +437,17 @@
             <seealso cref="M:Libplanet.Action.IAccountStateDelta.MintAsset(Libplanet.Address,Libplanet.Assets.FungibleAssetValue)"/>
             <seealso cref="M:Libplanet.Action.IAccountStateDelta.BurnAsset(Libplanet.Address,Libplanet.Assets.FungibleAssetValue)"/>
         </member>
-        <member name="M:Libplanet.Action.CurrencyPermissionException.#ctor(Libplanet.Address,Libplanet.Assets.Currency,System.String)">
+        <member name="M:Libplanet.Action.CurrencyPermissionException.#ctor(System.String,Libplanet.Address,Libplanet.Assets.Currency)">
             <summary>
             Creates a new <see cref="T:Libplanet.Action.CurrencyPermissionException"/> object.
             </summary>
+            <param name="message">Specifies a <see cref="P:System.Exception.Message"/>.</param>
             <param name="transactionSigner"> The address of the account who tried to mint or burn
             assets of a <paramref name="currency"/>.  Corresponds to
             the <see cref="P:Libplanet.Action.CurrencyPermissionException.TransactionSigner"/> property.</param>
             <param name="currency"> The <see cref="T:Libplanet.Assets.Currency"/> to be tried to be minted
             or burned by the <paramref name="transactionSigner"/>.  Corresponds to
             the <see cref="P:Libplanet.Action.CurrencyPermissionException.Currency"/> property.</param>
-            <param name="message">Specifies a <see cref="P:System.Exception.Message"/>.</param>
         </member>
         <member name="P:Libplanet.Action.CurrencyPermissionException.TransactionSigner">
             <summary>
@@ -433,16 +468,16 @@
             <remarks>Note this cannot be serialized as it holds a set of <see cref="T:System.Type"/> objects
             which are not serializable either.</remarks>
         </member>
-        <member name="M:Libplanet.Action.DuplicateActionTypeIdentifierException.#ctor(System.String,System.Collections.Immutable.IImmutableSet{System.Type},System.String)">
+        <member name="M:Libplanet.Action.DuplicateActionTypeIdentifierException.#ctor(System.String,System.String,System.Collections.Immutable.IImmutableSet{System.Type})">
             <summary>
             Creates a new <see cref="T:Libplanet.Action.DuplicateActionTypeIdentifierException"/> instance.
             </summary>
+            <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.  Note that extra
+            informative text will be appended to this.</param>
             <param name="typeIdentifier">The <see cref="P:Libplanet.Action.ActionTypeAttribute.TypeIdentifier"/> string
             that the <paramref name="duplicateActionTypes"/> are associated with.</param>
             <param name="duplicateActionTypes">The set of multiple action types that are associated
             with the same <paramref name="typeIdentifier"/>.</param>
-            <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.  Note that extra
-            informative text will be appended to this.</param>
         </member>
         <member name="P:Libplanet.Action.DuplicateActionTypeIdentifierException.TypeIdentifier">
             <summary>
@@ -520,6 +555,11 @@
             <c>{ [A] = { FOO }, [B] = { FOO, BAR }, [C] = { BAR } }</c>.</para>
             </summary>
         </member>
+        <member name="P:Libplanet.Action.IAccountStateDelta.TotalSupplyUpdatedCurrencies">
+            <summary>
+            <seealso cref="T:Libplanet.Assets.Currency">Currencies</seealso> with their total supplies updated.
+            </summary>
+        </member>
         <member name="M:Libplanet.Action.IAccountStateDelta.SetState(Libplanet.Address,Bencodex.Types.IValue)">
             <summary>
             Gets a new instance that the account state of the given
@@ -552,6 +592,10 @@
             <exception cref="T:Libplanet.Action.CurrencyPermissionException">Thrown when a transaction signer
             (or a miner in case of block actions) is not a member of the <see
             cref="F:Libplanet.Assets.FungibleAssetValue.Currency"/>'s <see cref="F:Libplanet.Assets.Currency.Minters"/>.</exception>
+            <exception cref="T:Libplanet.Action.SupplyOverflowException">Thrown when the sum of the
+            <paramref name="value"/> to be minted and the current total supply amount of the
+            <see cref="F:Libplanet.Assets.FungibleAssetValue.Currency"/> exceeds the
+            <see cref="P:Libplanet.Assets.Currency.MaximumSupply"/>.</exception>
         </member>
         <member name="M:Libplanet.Action.IAccountStateDelta.TransferAsset(Libplanet.Address,Libplanet.Address,Libplanet.Assets.FungibleAssetValue,System.Boolean)">
             <summary>
@@ -646,6 +690,17 @@
             <returns>
             The <paramref name="address"/>'s balance of the <paramref name="currency"/>.
             </returns>
+        </member>
+        <member name="M:Libplanet.Action.IAccountStateView.GetTotalSupply(Libplanet.Assets.Currency)">
+            <summary>
+            Returns the total supply of a <paramref name="currency"/>.
+            </summary>
+            <param name="currency">The currency type to query.</param>
+            <returns>The total supply of the <paramref name="currency"/>.
+            </returns>
+            <exception cref="T:Libplanet.Action.TotalSupplyNotTrackableException">Thrown when the total supply of the
+            given <paramref name="currency"/> is not trackable.</exception>
+            <seealso cref="P:Libplanet.Assets.Currency.MaximumSupply"/>
         </member>
         <member name="T:Libplanet.Action.IAction">
             <summary>
@@ -1002,15 +1057,15 @@
             <seealso cref="M:Libplanet.Action.IAccountStateDelta.TransferAsset(Libplanet.Address,Libplanet.Address,Libplanet.Assets.FungibleAssetValue,System.Boolean)"/>
             <seealso cref="M:Libplanet.Action.IAccountStateDelta.BurnAsset(Libplanet.Address,Libplanet.Assets.FungibleAssetValue)"/>
         </member>
-        <member name="M:Libplanet.Action.InsufficientBalanceException.#ctor(Libplanet.Address,Libplanet.Assets.FungibleAssetValue,System.String)">
+        <member name="M:Libplanet.Action.InsufficientBalanceException.#ctor(System.String,Libplanet.Address,Libplanet.Assets.FungibleAssetValue)">
             <summary>
             Creates a new <see cref="T:Libplanet.Action.InsufficientBalanceException"/> object.
             </summary>
+            <param name="message">Specifies a <see cref="P:System.Exception.Message"/>.</param>
             <param name="address">The owner of the insufficient <paramref name="balance"/>.
             Corresponds to the <see cref="P:Libplanet.Action.InsufficientBalanceException.Address"/> property.</param>
             <param name="balance">The account's current balance.
             Corresponds to the <see cref="P:Libplanet.Action.InsufficientBalanceException.Balance"/> property.</param>
-            <param name="message">Specifies a <see cref="P:System.Exception.Message"/>.</param>
         </member>
         <member name="P:Libplanet.Action.InsufficientBalanceException.Address">
             <summary>
@@ -1102,15 +1157,14 @@
             </summary>
             <seealso cref="T:Libplanet.Action.PolymorphicAction`1"/>
         </member>
-        <member name="M:Libplanet.Action.MissingActionTypeException.#ctor(System.Type,System.String)">
+        <member name="M:Libplanet.Action.MissingActionTypeException.#ctor(System.String,System.Type)">
             <summary>
             Creates a new <see cref="T:Libplanet.Action.MissingActionTypeException"/> object.
             </summary>
+            <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.</param>
             <param name="actionType">The action type that lacks
             <see cref="T:Libplanet.Action.ActionTypeAttribute"/>.  It is automatically included to
             the <see cref="P:System.Exception.Message"/> string.</param>
-            <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.
-            </param>
         </member>
         <member name="P:Libplanet.Action.MissingActionTypeException.ActionType">
             <summary>
@@ -1325,6 +1379,26 @@
             </returns>
             <seealso cref="T:Libplanet.Action.IRandom"/>
         </member>
+        <member name="T:Libplanet.Action.SupplyOverflowException">
+            <summary>
+            The exception thrown when a minter tries to mint a currency such that the resulting total
+            supply exceed the maximum amount.
+            </summary>
+            <seealso cref="M:Libplanet.Action.IAccountStateDelta.MintAsset(Libplanet.Address,Libplanet.Assets.FungibleAssetValue)"/>
+        </member>
+        <member name="M:Libplanet.Action.SupplyOverflowException.#ctor(System.String,Libplanet.Assets.FungibleAssetValue)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Action.SupplyOverflowException"/> object.
+            </summary>
+            <param name="message">Specifies a <see cref="P:System.Exception.Message"/>.</param>
+            <param name="amount">The attempted amount to be minted.
+            Corresponds to the <see cref="P:Libplanet.Action.SupplyOverflowException.Amount"/> property.</param>
+        </member>
+        <member name="P:Libplanet.Action.SupplyOverflowException.Amount">
+            <summary>
+            The attempted amount to be minted.
+            </summary>
+        </member>
         <member name="T:Libplanet.Action.Sys.Mint">
             <summary>
             A system action that mints specified <see cref="P:Libplanet.Action.Sys.Mint.Amount"/> of tokens to a given
@@ -1359,6 +1433,18 @@
         <member name="M:Libplanet.Action.Sys.Mint.Execute(Libplanet.Action.IActionContext)">
             <inheritdoc cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/>
         </member>
+        <member name="M:Libplanet.Action.Sys.Mint.Equals(Libplanet.Action.Sys.Mint)">
+            <inheritdoc cref="M:System.IEquatable`1.Equals(`0)"/>
+        </member>
+        <member name="M:Libplanet.Action.Sys.Mint.Equals(Libplanet.Action.IAction)">
+            <inheritdoc cref="M:System.IEquatable`1.Equals(`0)"/>
+        </member>
+        <member name="M:Libplanet.Action.Sys.Mint.Equals(System.Object)">
+            <inheritdoc cref="M:System.Object.Equals(System.Object)"/>
+        </member>
+        <member name="M:Libplanet.Action.Sys.Mint.GetHashCode">
+            <inheritdoc cref="M:System.Object.GetHashCode"/>
+        </member>
         <member name="T:Libplanet.Action.Sys.Transfer">
             <summary>
             A system action that transfers the ownership of specified <see cref="P:Libplanet.Action.Sys.Transfer.Amount"/> of tokens to
@@ -1392,6 +1478,54 @@
         <member name="M:Libplanet.Action.Sys.Transfer.Execute(Libplanet.Action.IActionContext)">
             <inheritdoc cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/>
         </member>
+        <member name="M:Libplanet.Action.Sys.Transfer.Equals(Libplanet.Action.Sys.Transfer)">
+            <inheritdoc cref="M:System.IEquatable`1.Equals(`0)"/>
+        </member>
+        <member name="M:Libplanet.Action.Sys.Transfer.Equals(Libplanet.Action.IAction)">
+            <inheritdoc cref="M:System.IEquatable`1.Equals(`0)"/>
+        </member>
+        <member name="M:Libplanet.Action.Sys.Transfer.Equals(System.Object)">
+            <inheritdoc cref="M:System.Object.Equals(System.Object)"/>
+        </member>
+        <member name="M:Libplanet.Action.Sys.Transfer.GetHashCode">
+            <inheritdoc cref="M:System.Object.GetHashCode"/>
+        </member>
+        <member name="T:Libplanet.Action.TotalSupplyGetter">
+            <summary>
+            An delegate to provide a view of total supply of a currency.
+            <para>Gets the total supply of the given <paramref name="currency"/>.
+            </para>
+            </summary>
+            <param name="currency">The currency type to query the total supply.
+            </param>
+            <returns>The total supply value of the <paramref name="currency"/> in
+            <see cref="T:Libplanet.Assets.FungibleAssetValue"/>.
+            <exception cref="T:Libplanet.Action.TotalSupplyNotTrackableException">Thrown when the total supply of the
+            given <paramref name="currency"/> is not trackable.</exception>
+            </returns>
+        </member>
+        <member name="T:Libplanet.Action.TotalSupplyNotTrackableException">
+            <summary>
+            The exception thrown when <see cref="M:Libplanet.Action.IAccountStateView.GetTotalSupply(Libplanet.Assets.Currency)"/> was called on a
+            legacy untracked currency with <see cref="F:Libplanet.Assets.Currency.TotalSupplyTrackable"/> set to
+            <c>false</c>.
+            </summary>
+            <seealso cref="M:Libplanet.Action.IAccountStateView.GetTotalSupply(Libplanet.Assets.Currency)"/>
+        </member>
+        <member name="M:Libplanet.Action.TotalSupplyNotTrackableException.#ctor(System.String,Libplanet.Assets.Currency)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Action.TotalSupplyNotTrackableException"/> object.
+            </summary>
+            <param name="message">Specifies a <see cref="P:System.Exception.Message"/>.</param>
+            <param name="currency">The currency queried for the total supply.
+            Corresponds to the <see cref="P:Libplanet.Action.TotalSupplyNotTrackableException.Currency"/> property.
+            </param>
+        </member>
+        <member name="P:Libplanet.Action.TotalSupplyNotTrackableException.Currency">
+            <summary>
+            The currency queried for the total supply.
+            </summary>
+        </member>
         <member name="T:Libplanet.Action.UnexpectedlyTerminatedActionException">
             <summary>
             The exception that is thrown during an <see cref="T:Libplanet.Action.IAction"/> is being evaluated.
@@ -1399,10 +1533,11 @@
             is stored in the <see cref="P:System.Exception.InnerException"/> property.</para>
             </summary>
         </member>
-        <member name="M:Libplanet.Action.UnexpectedlyTerminatedActionException.#ctor(System.Nullable{System.Collections.Immutable.ImmutableArray{System.Byte}},System.Nullable{System.Int64},System.Nullable{Libplanet.Tx.TxId},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},Libplanet.Action.IAction,System.String,System.Exception)">
+        <member name="M:Libplanet.Action.UnexpectedlyTerminatedActionException.#ctor(System.String,System.Nullable{System.Collections.Immutable.ImmutableArray{System.Byte}},System.Nullable{System.Int64},System.Nullable{Libplanet.Tx.TxId},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},Libplanet.Action.IAction,System.Exception)">
             <summary>
             Creates a new <see cref="T:Libplanet.Action.UnexpectedlyTerminatedActionException"/> object.
             </summary>
+            <param name="message">Specifies a <see cref="P:System.Exception.Message"/>.</param>
             <param name="preEvaluationHash">The <see cref="P:Libplanet.Blocks.Block`1.PreEvaluationHash"/> of the
             <see cref="T:Libplanet.Blocks.Block`1"/> that <paramref name="action"/> belongs to.
             This can be <c>null</c> on rehearsal mode.</param>
@@ -1418,7 +1553,6 @@
             <param name="previousStateRootHash">The <see cref="P:Libplanet.Store.Trie.ITrie.Hash"/> of states until
             previous action execution.  This can be null on rehearsal mode or if the chain which
             executed the action, was not using <see cref="T:Libplanet.Store.TrieStateStore"/>.</param>
-            <param name="message">Specifies a <see cref="P:System.Exception.Message"/>.</param>
             <param name="innerException">The actual exception that the <see cref="P:Libplanet.Action.UnexpectedlyTerminatedActionException.Action"/> threw.
             </param>
         </member>
@@ -1614,6 +1748,12 @@
         <member name="M:Libplanet.Address.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <inheritdoc />
         </member>
+        <member name="M:Libplanet.Address.CompareTo(Libplanet.Address)">
+            <inheritdoc cref="M:System.IComparable`1.CompareTo(`0)"/>
+        </member>
+        <member name="M:Libplanet.Address.CompareTo(System.Object)">
+            <inheritdoc cref="M:System.IComparable.CompareTo(System.Object)"/>
+        </member>
         <member name="T:Libplanet.AddressExtensions">
             <summary>
             This extension class enables some convenient methods (sugar for
@@ -1657,12 +1797,25 @@
             Here is how US Dollar can be represented using <see cref="T:Libplanet.Assets.Currency"/>:
             <code>
             var USMint = new PrivateKey();
-            var USD = new Currency(ticker: "USD", decimalPlace: 2, minter: USMint.ToAddress());
+            var USD = Currency.Uncapped(ticker: "USD", decimalPlaces: 2, minter: USMint.ToAddress());
             var twentyThreeBucks = 23 * USD;
             // Or alternatively: USD * 23;
             // Or explicitly: new FungibleAssetValue(USD, 23, 0)
             </code>
             </example>
+            <remarks>There are two types of <see cref="T:Libplanet.Assets.Currency">Currencies</see>: capped and uncapped.
+            Capped currencies have a hard limit on the maximum minted amount, and uncapped currencies
+            do not have the said limit. To define a <see cref="T:Libplanet.Assets.Currency"/> you may call either of the
+            following.
+            <list type="bullet">
+            <item><see
+            cref="M:Libplanet.Assets.Currency.Capped(System.String,System.Byte,System.ValueTuple{System.Numerics.BigInteger,System.Numerics.BigInteger},System.Collections.Immutable.IImmutableSet{Libplanet.Address})"/>
+            </item>
+            <item><see cref="M:Libplanet.Assets.Currency.Capped(System.String,System.Byte,System.ValueTuple{System.Numerics.BigInteger,System.Numerics.BigInteger},Libplanet.Address)"/></item>
+            <item><see cref="M:Libplanet.Assets.Currency.Uncapped(System.String,System.Byte,System.Collections.Immutable.IImmutableSet{Libplanet.Address})"/></item>
+            <item><see cref="M:Libplanet.Assets.Currency.Uncapped(System.String,System.Byte,Libplanet.Address)"/></item>
+            </list>
+            </remarks>
             <seealso cref="T:Libplanet.Assets.FungibleAssetValue"/>
         </member>
         <member name="F:Libplanet.Assets.Currency.Ticker">
@@ -1692,31 +1845,10 @@
             The deterministic hash derived from other fields.
             </summary>
         </member>
-        <member name="M:Libplanet.Assets.Currency.#ctor(System.String,System.Byte,System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
+        <member name="F:Libplanet.Assets.Currency.TotalSupplyTrackable">
             <summary>
-            Defines a <see cref="T:Libplanet.Assets.Currency"/> type.
+            Whether the total supply of this instance of <see cref="T:Libplanet.Assets.Currency"/> is trackable.
             </summary>
-            <param name="ticker">The ticker symbol, e.g., <c>&quot;USD&quot;</c>.</param>
-            <param name="decimalPlaces">The number of digits to treat as <a
-            href="https://w.wiki/ZXv#Treatment_of_minor_currency_units_(the_%22exponent%22)">minor
-            units (i.e., exponent)</a>.</param>
-            <param name="minters">The <see cref="T:Libplanet.Address"/>es who can mint the currency.
-            See also <see cref="F:Libplanet.Assets.Currency.Minters"/> field which corresponds to this.</param>
-            <exception cref="T:System.ArgumentException">Thrown when the given <paramref name="ticker"/>
-            is an empty string.</exception>
-        </member>
-        <member name="M:Libplanet.Assets.Currency.#ctor(System.String,System.Byte,System.Nullable{Libplanet.Address})">
-            <summary>
-            Defines a <see cref="T:Libplanet.Assets.Currency"/> type.
-            </summary>
-            <param name="ticker">The ticker symbol, e.g., <c>&quot;USD&quot;</c>.</param>
-            <param name="decimalPlaces">The number of digits to treat as <a
-            href="https://w.wiki/ZXv#Treatment_of_minor_currency_units_(the_%22exponent%22)">minor
-            units (i.e., exponent)</a>.</param>
-            <param name="minter">The address who can mint the currency.  To specify multiple
-            minters, use the <see cref="M:Libplanet.Assets.Currency.#ctor(System.String,System.Byte,System.Collections.Immutable.IImmutableSet{Libplanet.Address})"/> constructor
-            instead.  See also <see cref="F:Libplanet.Assets.Currency.Minters"/> field which corresponds to this.</param>
-            <seealso cref="M:Libplanet.Assets.Currency.#ctor(System.String,System.Byte,System.Collections.Immutable.IImmutableSet{Libplanet.Address})"/>
         </member>
         <member name="M:Libplanet.Assets.Currency.#ctor(Bencodex.Types.IValue)">
             <summary>
@@ -1725,6 +1857,54 @@
             <param name="serialized">The Bencodex value serialized by <see cref="M:Libplanet.Assets.Currency.Serialize"/>
             method.</param>
             <seealso cref="M:Libplanet.Assets.Currency.Serialize"/>
+        </member>
+        <member name="M:Libplanet.Assets.Currency.#ctor(Libplanet.HashDigest{System.Security.Cryptography.SHA1},System.String,System.Byte,System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Boolean,System.Nullable{Libplanet.Assets.FungibleAssetValue})">
+            <summary>
+            An internal constructor for JSON deserialization.  Do not use this directly.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Assets.Currency.#ctor(System.String,System.Byte,System.Nullable{System.ValueTuple{System.Numerics.BigInteger,System.Numerics.BigInteger}},System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
+            <summary>
+            Private implementation to create a capped instance of <see cref="T:Libplanet.Assets.Currency"/> or
+            a deserialized instance.
+            </summary>
+            <param name="ticker">The ticker symbol, e.g., <c>&quot;USD&quot;</c>.</param>
+            <param name="decimalPlaces">The number of digits to treat as <a
+            href="https://w.wiki/ZXv#Treatment_of_minor_currency_units_(the_%22exponent%22)">minor
+            units (i.e., exponent)</a>.</param>
+            <param name="maximumSupply">The uppermost quantity of currency allowed to exist. For
+            example, a <paramref name="maximumSupply"/> parameter of <c>(123, 45)</c> means that the
+            token of the currency can be minted up to <c>123.45</c>. See also
+            <see cref="P:Libplanet.Assets.Currency.MaximumSupply"/> field which corresponds to this.</param>
+            <param name="minters">The <see cref="T:Libplanet.Address"/>es who can mint the currency.
+            See also <see cref="F:Libplanet.Assets.Currency.Minters"/> field which corresponds to this.</param>
+            <exception cref="T:System.ArgumentException">Thrown when the given <paramref name="ticker"/>
+            is an empty string, or when either the Major or the Minor values of
+            <paramref name="maximumSupply"/> is a negative number, or when the given Minor unit for
+            the <paramref name="maximumSupply"/> is too big for the given
+            <paramref name="decimalPlaces"/>.</exception>
+        </member>
+        <member name="M:Libplanet.Assets.Currency.#ctor(System.String,System.Byte,System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Boolean)">
+            <summary>
+            Private implementation to create a general instance of <see cref="T:Libplanet.Assets.Currency"/>.
+            </summary>
+            <param name="ticker">The ticker symbol, e.g., <c>&quot;USD&quot;</c>.</param>
+            <param name="decimalPlaces">The number of digits to treat as <a
+            href="https://w.wiki/ZXv#Treatment_of_minor_currency_units_(the_%22exponent%22)">minor
+            units (i.e., exponent)</a>.</param>
+            <param name="minters">The <see cref="T:Libplanet.Address"/>es who can mint the currency.
+            See also <see cref="F:Libplanet.Assets.Currency.Minters"/> field which corresponds to this.</param>
+            <param name="totalSupplyTrackable">A feature flag whether this instance of
+            <see cref="T:Libplanet.Assets.Currency"/> supports total supply tracking. Legacy behavior is characterized
+            with a value of false.</param>
+            <exception cref="T:System.ArgumentException">Thrown when the given <paramref name="ticker"/>
+            is an empty string.</exception>
+        </member>
+        <member name="P:Libplanet.Assets.Currency.MaximumSupply">
+            <summary>
+            The uppermost quantity of currency allowed to exist.
+            <c>null</c> means unlimited supply.
+            </summary>
         </member>
         <member name="M:Libplanet.Assets.Currency.op_Multiply(Libplanet.Assets.Currency,System.Numerics.BigInteger)">
             <summary>
@@ -1753,6 +1933,122 @@
             <remarks>This cannot specify <see cref="P:Libplanet.Assets.FungibleAssetValue.MinorUnit"/> but only
             <see cref="P:Libplanet.Assets.FungibleAssetValue.MajorUnit"/>.  For more precision, directly use <see
             cref="T:Libplanet.Assets.FungibleAssetValue"/>'s constructors instead.</remarks>
+        </member>
+        <member name="M:Libplanet.Assets.Currency.Capped(System.String,System.Byte,System.ValueTuple{System.Numerics.BigInteger,System.Numerics.BigInteger},System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
+            <summary>
+            Define a <see cref="T:Libplanet.Assets.Currency"/> with a maximum supply limit.
+            </summary>
+            <param name="ticker">The ticker symbol, e.g., <c>&quot;USD&quot;</c>.</param>
+            <param name="decimalPlaces">The number of digits to treat as <a
+            href="https://w.wiki/ZXv#Treatment_of_minor_currency_units_(the_%22exponent%22)">minor
+            units (i.e., exponent)</a>.</param>
+            <param name="maximumSupply">The uppermost quantity of currency allowed to exist. For
+            example, the <paramref name="maximumSupply"/> parameter in <c>Currency.Capped("ABC", 2,
+            (123, 45), ...)</c> means that the token <c>ABC</c> can be minted up to <c>123.45 ABC
+            </c>. See also <see cref="P:Libplanet.Assets.Currency.MaximumSupply"/> field which corresponds to this.</param>
+            <param name="minters">The <see cref="T:Libplanet.Address"/>es who can mint the currency.
+            See also <see cref="F:Libplanet.Assets.Currency.Minters"/> field which corresponds to this.</param>
+            <returns>An instance of <see cref="T:Libplanet.Assets.Currency"/> with a maximum supply limit.</returns>
+            <exception cref="T:System.ArgumentException">Thrown when the given <paramref name="ticker"/>
+            is an empty string, or when either the Major or the Minor values of
+            <paramref name="maximumSupply"/> is a negative number, or when the given Minor unit for
+            the <paramref name="maximumSupply"/> is too big for the given
+            <paramref name="decimalPlaces"/>.</exception>
+        </member>
+        <member name="M:Libplanet.Assets.Currency.Capped(System.String,System.Byte,System.ValueTuple{System.Numerics.BigInteger,System.Numerics.BigInteger},Libplanet.Address)">
+            <summary>
+            Define a <see cref="T:Libplanet.Assets.Currency"/> with a maximum supply limit.
+            </summary>
+            <param name="ticker">The ticker symbol, e.g., <c>&quot;USD&quot;</c>.</param>
+            <param name="decimalPlaces">The number of digits to treat as <a
+            href="https://w.wiki/ZXv#Treatment_of_minor_currency_units_(the_%22exponent%22)">minor
+            units (i.e., exponent)</a>.</param>
+            <param name="maximumSupply">The uppermost quantity of currency allowed to exist. For
+            example, the <paramref name="maximumSupply"/> parameter in <c>Currency.Capped("ABC", 2,
+            (123, 45), ...)</c> means that the token <c>ABC</c> can be minted up to <c>123.45 ABC
+            </c>. See also <see cref="P:Libplanet.Assets.Currency.MaximumSupply"/> field which corresponds to this.</param>
+            <param name="minter">The address who can mint the currency.  To specify multiple
+            minters, use the <see
+            cref="M:Libplanet.Assets.Currency.Capped(System.String,System.Byte,System.ValueTuple{System.Numerics.BigInteger,System.Numerics.BigInteger},System.Collections.Immutable.IImmutableSet{Libplanet.Address})"/>
+            See also <see cref="F:Libplanet.Assets.Currency.Minters"/> field which corresponds to this.</param>
+            <returns>An instance of <see cref="T:Libplanet.Assets.Currency"/> with a maximum supply limit.</returns>
+            <seealso
+            cref="M:Libplanet.Assets.Currency.Capped(System.String,System.Byte,System.ValueTuple{System.Numerics.BigInteger,System.Numerics.BigInteger},System.Collections.Immutable.IImmutableSet{Libplanet.Address})"/>
+            <exception cref="T:System.ArgumentException">Thrown when the given <paramref name="ticker"/>
+            is an empty string, or when either the Major or the Minor values of
+            <paramref name="maximumSupply"/> is a negative number, or when the given Minor unit for
+            the <paramref name="maximumSupply"/> is too big for the given
+            <paramref name="decimalPlaces"/>.</exception>
+        </member>
+        <member name="M:Libplanet.Assets.Currency.Uncapped(System.String,System.Byte,System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
+            <summary>
+            Define a <see cref="T:Libplanet.Assets.Currency"/> without a maximum supply limit.
+            </summary>
+            <param name="ticker">The ticker symbol, e.g., <c>&quot;USD&quot;</c>.</param>
+            <param name="decimalPlaces">The number of digits to treat as <a
+            href="https://w.wiki/ZXv#Treatment_of_minor_currency_units_(the_%22exponent%22)">minor
+            units (i.e., exponent)</a>.</param>
+            <param name="minters">The <see cref="T:Libplanet.Address"/>es who can mint the currency.
+            See also <see cref="F:Libplanet.Assets.Currency.Minters"/> field which corresponds to this.</param>
+            <returns>An instance of <see cref="T:Libplanet.Assets.Currency"/> without a maximum supply limit.</returns>
+            <exception cref="T:System.ArgumentException">Thrown when the given <paramref name="ticker"/>
+            is an empty string.</exception>
+        </member>
+        <member name="M:Libplanet.Assets.Currency.Uncapped(System.String,System.Byte,Libplanet.Address)">
+            <summary>
+            Define a <see cref="T:Libplanet.Assets.Currency"/> without a maximum supply limit.
+            </summary>
+            <param name="ticker">The ticker symbol, e.g., <c>&quot;USD&quot;</c>.</param>
+            <param name="decimalPlaces">The number of digits to treat as <a
+            href="https://w.wiki/ZXv#Treatment_of_minor_currency_units_(the_%22exponent%22)">minor
+            units (i.e., exponent)</a>.</param>
+            <param name="minter">The address who can mint the currency.  To specify multiple
+            minters, use the <see cref="M:Libplanet.Assets.Currency.Uncapped(System.String,System.Byte,System.Collections.Immutable.IImmutableSet{Libplanet.Address})"/>
+            See also <see cref="F:Libplanet.Assets.Currency.Minters"/> field which corresponds to this.</param>
+            <returns>An instance of <see cref="T:Libplanet.Assets.Currency"/> without a maximum supply limit.</returns>
+            <seealso cref="M:Libplanet.Assets.Currency.Uncapped(System.String,System.Byte,System.Collections.Immutable.IImmutableSet{Libplanet.Address})"/>
+            <exception cref="T:System.ArgumentException">Thrown when the given <paramref name="ticker"/>
+            is an empty string.</exception>
+        </member>
+        <member name="M:Libplanet.Assets.Currency.Legacy(System.String,System.Byte,System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
+            <summary>
+            <b>OBSOLETE! DO NOT USE.</b><br/><br/>(unless you are upgrading your project from an old
+            version of Libplanet that did not support total supply tracking for
+            <see cref="T:Libplanet.Assets.Currency">Currencies</see> and had a legacy <see cref="T:Libplanet.Assets.Currency"/> defined.)
+            <br/><br/>Define a legacy <see cref="T:Libplanet.Assets.Currency"/> without total supply tracking, which is
+            internally compatible with the legacy version.
+            </summary>
+            <param name="ticker">The ticker symbol, e.g., <c>&quot;USD&quot;</c>.</param>
+            <param name="decimalPlaces">The number of digits to treat as <a
+            href="https://w.wiki/ZXv#Treatment_of_minor_currency_units_(the_%22exponent%22)">minor
+            units (i.e., exponent)</a>.</param>
+            <param name="minters">The <see cref="T:Libplanet.Address"/>es who can mint the currency.
+            See also <see cref="F:Libplanet.Assets.Currency.Minters"/> field which corresponds to this.</param>
+            <returns>An instance of legacy <see cref="T:Libplanet.Assets.Currency"/> without total supply tracking.
+            </returns>
+            <exception cref="T:System.ArgumentException">Thrown when the given <paramref name="ticker"/>
+            is an empty string.</exception>
+        </member>
+        <member name="M:Libplanet.Assets.Currency.Legacy(System.String,System.Byte,Libplanet.Address)">
+            <summary>
+            <b>OBSOLETE! DO NOT USE.</b><br/><br/>(unless you are upgrading your project from an old
+            version of Libplanet that did not support total supply tracking for
+            <see cref="T:Libplanet.Assets.Currency">Currencies</see> and had a legacy <see cref="T:Libplanet.Assets.Currency"/> defined.)
+            <br/><br/>Define a legacy <see cref="T:Libplanet.Assets.Currency"/> without total supply tracking, which is
+            internally compatible with the legacy version.
+            </summary>
+            <param name="ticker">The ticker symbol, e.g., <c>&quot;USD&quot;</c>.</param>
+            <param name="decimalPlaces">The number of digits to treat as <a
+            href="https://w.wiki/ZXv#Treatment_of_minor_currency_units_(the_%22exponent%22)">minor
+            units (i.e., exponent)</a>.</param>
+            <param name="minter">The address who can mint the currency.  To specify multiple
+            minters, use the <see cref="M:Libplanet.Assets.Currency.Legacy(System.String,System.Byte,System.Collections.Immutable.IImmutableSet{Libplanet.Address})"/>
+            See also <see cref="F:Libplanet.Assets.Currency.Minters"/> field which corresponds to this.</param>
+            <returns>An instance of legacy <see cref="T:Libplanet.Assets.Currency"/> without total supply tracking.
+            </returns>
+            <seealso cref="M:Libplanet.Assets.Currency.Legacy(System.String,System.Byte,System.Collections.Immutable.IImmutableSet{Libplanet.Address})"/>
+            <exception cref="T:System.ArgumentException">Thrown when the given <paramref name="ticker"/>
+            is an empty string.</exception>
         </member>
         <member name="M:Libplanet.Assets.Currency.AllowsToMint(Libplanet.Address)">
             <summary>
@@ -2397,6 +2693,29 @@
         <member name="M:Libplanet.Blockchain.BlockChain`1.GetBalance(Libplanet.Address,Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash,Libplanet.Blockchain.FungibleAssetStateCompleter{`0})">
             <inheritdoc cref="M:Libplanet.Blockchain.IBlockChainStates`1.GetBalance(Libplanet.Address,Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash,Libplanet.Blockchain.FungibleAssetStateCompleter{`0})"/>
         </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.GetTotalSupply(Libplanet.Assets.Currency,System.Nullable{Libplanet.Blocks.BlockHash},Libplanet.Blockchain.TotalSupplyStateCompleter{`0})">
+            <summary>
+            Gets the total supply of a <paramref name="currency"/> in the
+            <see cref="T:Libplanet.Blockchain.BlockChain`1"/> from <paramref name="offset"/>, and if not found, derive
+            from the sum of all balances.
+            </summary>
+            <param name="currency">The currency type to query.</param>
+            <param name="offset">The <see cref="T:Libplanet.HashDigest`1"/> of the block to
+            start finding the state.</param>
+            <param name="stateCompleter">When the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> instance does not
+            contain states of the block, this delegate is called and its return values are used
+            instead.
+            <para><see cref="F:Libplanet.Blockchain.FungibleAssetStateCompleters`1.Recalculate"/> makes the incomplete
+            states recalculated and filled on the fly.</para>
+            <para><see cref="F:Libplanet.Blockchain.FungibleAssetStateCompleters`1.Reject"/> makes the incomplete states
+            (if needed) to cause <see cref="T:Libplanet.Blockchain.IncompleteBlockStatesException"/> instead.</para>
+            </param>
+            <returns>The total supply value of <paramref name="currency"/> at
+            <paramref name="offset"/> in <see cref="T:Libplanet.Assets.FungibleAssetValue"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.GetTotalSupply(Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash,Libplanet.Blockchain.TotalSupplyStateCompleter{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.IBlockChainStates`1.GetTotalSupply(Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash,Libplanet.Blockchain.TotalSupplyStateCompleter{`0})"/>
+        </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.GetTxExecution(Libplanet.Blocks.BlockHash,Libplanet.Tx.TxId)">
             <summary>
             Queries the recorded <see cref="T:Libplanet.Tx.TxExecution"/> for a successful or failed
@@ -2484,17 +2803,32 @@
             name="blockExcerpt"/>.  The current time by default.</param>
             <returns>A pair of a block and the time it was perceived.</returns>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.MakeTransaction(Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.MakeTransaction(Libplanet.Crypto.PrivateKey,Libplanet.Action.IAction,System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})">
             <summary>
-            Creates a new <see cref="T:Libplanet.Tx.Transaction`1"/> and stage the transaction.
-            Cannot create new transaction if the genesis block does not exist.
+            Creates a new <see cref="T:Libplanet.Tx.Transaction`1"/> with a system action and stage it.
+            It's available only if the genesis block exists.
             </summary>
             <param name="privateKey">A <see cref="T:Libplanet.Crypto.PrivateKey"/> of the account who creates and
             signs a new transaction.</param>
-            <param name="actions">A list of <see cref="T:Libplanet.Action.IAction"/>s to include to a new transaction.
+            <param name="systemAction">A system action to include to a new transaction.</param>
+            <param name="updatedAddresses"><see cref="T:Libplanet.Address"/>es whose states affected by
+            the <paramref name="systemAction"/>.</param>
+            <param name="timestamp">The time this <see cref="T:Libplanet.Tx.Transaction`1"/> is created and
+            signed.</param>
+            <returns>A created new <see cref="T:Libplanet.Tx.Transaction`1"/> signed by the given
+            <paramref name="privateKey"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.MakeTransaction(Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Tx.Transaction`1"/> with custom actions and stage it.
+            It's available only if the genesis block exists.
+            </summary>
+            <param name="privateKey">A <see cref="T:Libplanet.Crypto.PrivateKey"/> of the account who creates and
+            signs a new transaction.</param>
+            <param name="customActions">A list of custom actions to include to a new transaction.
             </param>
             <param name="updatedAddresses"><see cref="T:Libplanet.Address"/>es whose states affected by
-            <paramref name="actions"/>.</param>
+            <paramref name="customActions"/>.</param>
             <param name="timestamp">The time this <see cref="T:Libplanet.Tx.Transaction`1"/> is created and
             signed.</param>
             <returns>A created new <see cref="T:Libplanet.Tx.Transaction`1"/> signed by the given
@@ -2585,8 +2919,8 @@
             <param name="miner">The miner's <see cref="T:Libplanet.Crypto.PublicKey"/> that mines the block.</param>
             <param name="timestamp">The <see cref="T:System.DateTimeOffset"/> when mining started.</param>
             <param name="append">Whether to append the mined block immediately after mining.</param>
-            <param name="maxBlockBytes">The maximum number of bytes a block can have.
-            See also <see cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxBlockBytes(System.Int64)"/>.</param>
+            <param name="maxTransactionsBytes">The maximum number of bytes a block can have.
+            See also <see cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxTransactionsBytes(System.Int64)"/>.</param>
             <param name="maxTransactions">The maximum number of transactions that a block can
             accept.  See also <see cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxTransactionsPerBlock(System.Int64)"/>.
             </param>
@@ -2608,8 +2942,8 @@
             <param name="miner">The miner's <see cref="T:Libplanet.Crypto.PublicKey"/> that mines the block.</param>
             <param name="timestamp">The <see cref="T:System.DateTimeOffset"/> when mining started.</param>
             <param name="append">Whether to append the mined block immediately after mining.</param>
-            <param name="maxBlockBytes">The maximum number of bytes a block can have.
-            See also <see cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxBlockBytes(System.Int64)"/>.</param>
+            <param name="maxTransactionsBytes">The maximum number of bytes a block can have.
+            See also <see cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxTransactionsBytes(System.Int64)"/>.</param>
             <param name="maxTransactions">The maximum number of transactions that a block can
             accept.  See also <see cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxTransactionsPerBlock(System.Int64)"/>.
             </param>
@@ -2624,13 +2958,12 @@
             <exception cref="T:System.OperationCanceledException">Thrown when
             <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> is changed while mining.</exception>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.GatherTransactionsToMine(Libplanet.Blocks.BlockMetadata,System.Int64,System.Int32,System.Int32,System.Collections.Generic.IComparer{Libplanet.Tx.Transaction{`0}})">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.GatherTransactionsToMine(System.Int64,System.Int32,System.Int32,System.Collections.Generic.IComparer{Libplanet.Tx.Transaction{`0}})">
             <summary>
             Gathers <see cref="T:Libplanet.Tx.Transaction`1"/>s for mining a next block
             from the current set of staged <see cref="T:Libplanet.Tx.Transaction`1"/>s.
             </summary>
-            <param name="metadata">The metadata of the block to be mined.</param>
-            <param name="maxBlockBytes">The maximum number of bytes a block can have.</param>
+            <param name="maxTransactionsBytes">The maximum number of bytes a block can have.</param>
             <param name="maxTransactions">The maximum number of <see cref="T:Libplanet.Tx.Transaction`1"/>s
             allowed.</param>
             <param name="maxTransactionsPerSigner">The maximum number of
@@ -2872,6 +3205,25 @@
             <paramref name="offset"/>) of the <paramref name="currency"/>.
             </returns>
         </member>
+        <member name="M:Libplanet.Blockchain.IBlockChainStates`1.GetTotalSupply(Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash,Libplanet.Blockchain.TotalSupplyStateCompleter{`0})">
+            <summary>
+            Gets the total supply of a <paramref name="currency"/> in the
+            <see cref="T:Libplanet.Blockchain.BlockChain`1"/> from <paramref name="offset"/>, and if not found, return 0.
+            </summary>
+            <param name="currency">The currency type to query.</param>
+            <param name="offset">The <see cref="T:Libplanet.HashDigest`1"/> of the block to
+            start finding the state.</param>
+            <param name="stateCompleter">When the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> instance does not
+            contain states of the block, this delegate is called and its return values are used
+            instead.
+            <para><see cref="F:Libplanet.Blockchain.FungibleAssetStateCompleters`1.Recalculate"/> makes the incomplete
+            states recalculated and filled on the fly.</para>
+            <para><see cref="F:Libplanet.Blockchain.FungibleAssetStateCompleters`1.Reject"/> makes the incomplete states
+            (if needed) to cause <see cref="T:Libplanet.Blockchain.IncompleteBlockStatesException"/> instead.</para>
+            </param>
+            <returns>The total supply value of <paramref name="currency"/> at
+            <paramref name="offset"/> in <see cref="T:Libplanet.Assets.FungibleAssetValue"/>.</returns>
+        </member>
         <member name="T:Libplanet.Blockchain.IncompleteBlockStatesException">
             <summary>
             An exception thrown when a <see cref="T:Libplanet.Blockchain.BlockChain`1"/> have
@@ -2935,9 +3287,9 @@
             </param>
             <param name="canonicalChainComparer">The custom rule to determine which is the canonical
             chain.  If omitted, <see cref="T:Libplanet.Blockchain.TotalDifficultyComparer"/> is used by default.</param>
-            <param name="getMaxBlockBytes">The function determining the maximum size of
-            a <see cref="T:Libplanet.Blocks.Block`1"/> in number of <c>byte</c>s given
-            its <see cref="P:Libplanet.Blocks.Block`1.Index"/>.  Goes to <see cref="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetMaxBlockBytes(System.Int64)"/>.
+            <param name="getMaxTransactionsBytes">The function determining the maximum size of
+            <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> in number of <c>byte</c>s given
+            its <see cref="P:Libplanet.Blocks.Block`1.Index"/>.  Goes to <see cref="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetMaxTransactionsBytes(System.Int64)"/>.
             Set to a constant size of <c>100</c>KiB, i.e. <c>100 * 1024</c>, by default.</param>
             <param name="getMinTransactionsPerBlock">The function determining the minimum number of
             <see cref="T:Libplanet.Tx.Transaction`1"/>s that must be included in a <see cref="T:Libplanet.Blocks.Block`1"/>.
@@ -2994,7 +3346,7 @@
         <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetNextBlockDifficulty(Libplanet.Blockchain.BlockChain{`0})">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetMaxBlockBytes(System.Int64)">
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetMaxTransactionsBytes(System.Int64)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetMinTransactionsPerBlock(System.Int64)">
@@ -3081,7 +3433,7 @@
         <member name="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.NativeTokens">
             <summary>
             A fixed set of <see cref="T:Libplanet.Assets.Currency"/> objects that are supported by the blockchain
-            as first-class citizens.
+            as first-class assets.
             </summary>
         </member>
         <member name="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.ValidateNextBlockTx(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.Transaction{`0})">
@@ -3141,13 +3493,14 @@
             <returns>A right <see cref="P:Libplanet.Blocks.Block`1.Difficulty"/>
             for a new <see cref="T:Libplanet.Blocks.Block`1"/> to be mined.</returns>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxBlockBytes(System.Int64)">
+        <member name="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxTransactionsBytes(System.Int64)">
             <summary>
-            Gets the maximum length of a <see cref="T:Libplanet.Blocks.Block`1"/> in bytes.
+            Gets the maximum length of <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> in bytes.
             </summary>
             <param name="index">The <see cref="P:Libplanet.Blocks.Block`1.Index"/> of the <see cref="T:Libplanet.Blocks.Block`1"/>
             for which this constraint should apply.</param>
-            <returns>The maximum length of a <see cref="T:Libplanet.Blocks.Block`1"/> in bytes to accept.</returns>
+            <returns>The maximum length of <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> in bytes
+            to accept.</returns>
         </member>
         <member name="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMinTransactionsPerBlock(System.Int64)">
             <summary>
@@ -3534,12 +3887,12 @@
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match to
             <see cref="T:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer`1"/>'s type parameter.</typeparam>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.Debug.InvalidRenderException`1.#ctor(System.Collections.Generic.IReadOnlyList{Libplanet.Blockchain.Renderers.Debug.RenderRecord{`0}},System.String)">
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.InvalidRenderException`1.#ctor(System.String,System.Collections.Generic.IReadOnlyList{Libplanet.Blockchain.Renderers.Debug.RenderRecord{`0}})">
             <summary>
             Creates a new <see cref="T:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer`1"/> instance.
             </summary>
-            <param name="records">Recorded render events.</param>
             <param name="message">The exception message string.</param>
+            <param name="records">Recorded render events.</param>
         </member>
         <member name="P:Libplanet.Blockchain.Renderers.Debug.InvalidRenderException`1.Records">
             <summary>
@@ -4573,8 +4926,9 @@
         </member>
         <member name="T:Libplanet.Blockchain.StateCompleterSet`1">
             <summary>
-            Groups two kinds of state completers, <see cref="T:Libplanet.Blockchain.StateCompleters`1"/>
-            and <see cref="T:Libplanet.Blockchain.FungibleAssetStateCompleters`1"/>.
+            Groups three kinds of state completers, <see cref="T:Libplanet.Blockchain.StateCompleters`1"/>,
+            <see cref="T:Libplanet.Blockchain.FungibleAssetStateCompleters`1"/>, and
+            <see cref="T:Libplanet.Blockchain.TotalSupplyStateCompleters`1"/>.
             </summary>
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
             to <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
@@ -4623,6 +4977,11 @@
             Holds a <see cref="T:Libplanet.Blockchain.FungibleAssetStateCompleter`1"/>.
             </summary>
         </member>
+        <member name="P:Libplanet.Blockchain.StateCompleterSet`1.TotalSupplyStateCompleter">
+            <summary>
+            Holds a <see cref="T:Libplanet.Blockchain.TotalSupplyStateCompleter`1"/>.
+            </summary>
+        </member>
         <member name="T:Libplanet.Blockchain.TotalDifficultyComparer">
             <summary>
             The default canonical chain comparer (which purpose to be a <see
@@ -4642,6 +5001,51 @@
         </member>
         <member name="M:Libplanet.Blockchain.TotalDifficultyComparer.Compare(Libplanet.Blocks.IBlockExcerpt,Libplanet.Blocks.IBlockExcerpt)">
             <inheritdoc cref="M:System.Collections.Generic.IComparer`1.Compare(`0,`0)"/>
+        </member>
+        <member name="T:Libplanet.Blockchain.TotalSupplyStateCompleter`1">
+            <summary>
+            A delegate to be called when <see cref="M:Libplanet.Blockchain.IBlockChainStates`1.GetTotalSupply(Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash,Libplanet.Blockchain.TotalSupplyStateCompleter{`0})"/>
+            method encounters a block having incomplete dirty states.
+            <see cref="M:Libplanet.Blockchain.IBlockChainStates`1.GetTotalSupply(Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash,Libplanet.Blockchain.TotalSupplyStateCompleter{`0})"/> method returns this delegate's
+            return value instead for such case.
+            </summary>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
+            the type parameter of <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.</typeparam>
+            <param name="blockChain">The blockchain to query.</param>
+            <param name="blockHash">The hash of a block lacking its dirty states.</param>
+            <param name="currency">The currency to query.</param>
+            <returns>The total supply value of <paramref name="currency"/> in
+            <see cref="T:Libplanet.Assets.FungibleAssetValue"/>.</returns>
+            <seealso cref="T:Libplanet.Blockchain.FungibleAssetStateCompleters`1"/>
+        </member>
+        <member name="T:Libplanet.Blockchain.TotalSupplyStateCompleters`1">
+            <summary>
+            Predefined built-in state completers that satisfy the
+            <see cref="T:Libplanet.Blockchain.TotalSupplyStateCompleter`1"/> delegate.
+            </summary>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type. It should match the
+            <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
+        </member>
+        <member name="F:Libplanet.Blockchain.TotalSupplyStateCompleters`1.Recalculate">
+            <summary>
+            See <see cref="F:Libplanet.Blockchain.StateCompleterSet`1.Recalculate"/>.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Blockchain.TotalSupplyStateCompleters`1.ComplementAll">
+            <summary>
+            See <see cref="F:Libplanet.Blockchain.StateCompleterSet`1.ComplementAll"/>.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Blockchain.TotalSupplyStateCompleters`1.ComplementLatest">
+            <summary>
+            See <see cref="F:Libplanet.Blockchain.StateCompleterSet`1.ComplementLatest"/>.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Blockchain.TotalSupplyStateCompleters`1.Reject">
+            <summary>
+            Rejects to complement incomplete state and throws
+            an <see cref="T:Libplanet.Blockchain.IncompleteBlockStatesException"/>.
+            </summary>
         </member>
         <member name="T:Libplanet.Blocks.Block`1">
             <summary>
@@ -4694,18 +5098,21 @@
             <paramref name="header"/>'s <see cref="P:Libplanet.Blocks.IPreEvaluationBlockHeader.Nonce"/> does not
             satisfy the required <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.Difficulty"/>.</exception>
         </member>
-        <member name="M:Libplanet.Blocks.Block`1.#ctor(Libplanet.Blocks.PreEvaluationBlock{`0},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Nullable{System.Collections.Immutable.ImmutableArray{System.Byte}})">
+        <member name="M:Libplanet.Blocks.Block`1.#ctor(Libplanet.Blocks.PreEvaluationBlock{`0},System.ValueTuple{Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Nullable{System.Collections.Immutable.ImmutableArray{System.Byte}},Libplanet.Blocks.BlockHash})">
             <summary>
             Creates a <see cref="T:Libplanet.Blocks.Block`1"/> instance by combining
-            a <paramref name="preEvaluationBlock"/> and its corresponding
-            <paramref name="stateRootHash"/>.
+            a <paramref name="preEvaluationBlock"/>, its corresponding
+            <paramref name="proof.StateRootHash.StateRootHash"/>, valid <paramref name="proof.Signature.Signature"/>,
+            and correctly derived <paramref name="proof.Hash.Hash"/>.
             </summary>
             <param name="preEvaluationBlock">A pre-evaluation block.</param>
-            <param name="stateRootHash">A state root hash determined from the given
-            <paramref name="preEvaluationBlock"/> and its previous state root.</param>
-            <param name="signature">The block signature made using the miner's private key.</param>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockSignatureException">Thrown when
-            the <paramref name="signature"/> signature is invalid.</exception>
+            <param name="proof">A triple of the state root hash, the block signature,
+            and the block hash.</param>
+        </member>
+        <member name="P:Libplanet.Blocks.Block`1.Header">
+            <summary>
+            The <see cref="T:Libplanet.Blocks.BlockHeader"/> of the block.
+            </summary>
         </member>
         <member name="P:Libplanet.Blocks.Block`1.ProtocolVersion">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.ProtocolVersion"/>
@@ -4752,11 +5159,6 @@
         <member name="P:Libplanet.Blocks.Block`1.Transactions">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockContent`1.Transactions"/>
         </member>
-        <member name="P:Libplanet.Blocks.Block`1.Header">
-            <summary>
-            The <see cref="T:Libplanet.Blocks.BlockHeader"/> of the block.
-            </summary>
-        </member>
         <member name="M:Libplanet.Blocks.Block`1.op_Equality(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
             <summary>
             Equivalent to <see cref="M:System.IEquatable`1.Equals(`0)"/>.
@@ -4793,29 +5195,21 @@
             <typeparam name="T">A class implementing <see cref="T:Libplanet.Action.IAction"/> to include.  This type
             parameter is aligned with <see cref="T:Libplanet.Tx.Transaction`1"/>'s type parameter.</typeparam>
             <remarks>Unlike other model types like <see cref="T:Libplanet.Blocks.Block`1"/> or
-            <see cref="T:Libplanet.Tx.Transaction`1"/>, this type is mutable.  To get a distinct instance with
-            partly changed fields, use <see cref="M:Libplanet.Blocks.BlockContent`1.#ctor(Libplanet.Blocks.IBlockContent{`0})"/> constructor and
-            property setters on a copy instead.</remarks>
+            <see cref="T:Libplanet.Tx.Transaction`1"/>, this type is mutable.</remarks>
         </member>
         <member name="M:Libplanet.Blocks.BlockContent`1.#ctor(Libplanet.Blocks.IBlockMetadata,System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}})">
             <summary>
-            Creates a new <see cref="T:Libplanet.Blocks.BlockContent`1"/> instance filled with the given
-            <paramref name="metadata"/>'s contents and <paramref name="transactions"/>.
+            Creates a new <see cref="T:Libplanet.Blocks.BlockContent`1"/> instance filled with given
+            <paramref name="metadata"/> and <paramref name="transactions"/>.
             </summary>
+            <remarks>
+            This creates a new instance of <see cref="T:Libplanet.Blocks.BlockMetadata"/> to check the validity
+            of <paramref name="metadata"/>, hence throws any <see cref="T:System.Exception"/>s that may
+            arise from a <see cref="T:Libplanet.Blocks.BlockMetadata"/>'s constructor in addition to the ones
+            explicitly listed below.
+            </remarks>
             <param name="metadata">The <see cref="T:Libplanet.Blocks.IBlockMetadata"/> to copy.</param>
             <param name="transactions">The transactions to include in the block.</param>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockProtocolVersionException">Thrown when
-            the <paramref name="metadata"/>'s <see cref="P:Libplanet.Blocks.IBlockMetadata.ProtocolVersion"/>
-            is less than 0, or greater than <see cref="F:Libplanet.Blocks.BlockMetadata.CurrentProtocolVersion"/>,
-            the latest known protocol version.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockIndexException">Thrown when the <paramref name="metadata"/>
-            has a negative <see cref="P:Libplanet.Blocks.IBlockMetadata.Index"/>.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockDifficultyException">Thrown when
-            the <paramref name="metadata"/>'s <see cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/> is negative.
-            </exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockTotalDifficultyException">Thrown when
-            the <paramref name="metadata"/>'s <see cref="P:Libplanet.Blocks.IBlockMetadata.TotalDifficulty"/> is less
-            than its <see cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/>.</exception>
             <exception cref="T:Libplanet.Tx.InvalidTxSignatureException">Thrown when any tx signature is invalid or
             not signed by its signer.</exception>
             <exception cref="T:Libplanet.Tx.InvalidTxNonceException">Thrown when the same tx nonce is used by
@@ -4828,58 +5222,30 @@
             <exception cref="T:Libplanet.Blocks.InvalidBlockTxHashException">Thrown when the given
             <paramref name="metadata"/>'s <see cref="P:Libplanet.Blocks.IBlockMetadata.TxHash"/> is inconsistent with
             <paramref name="transactions"/>.</exception>
+            <seealso cref="T:Libplanet.Blocks.BlockMetadata"/>
         </member>
-        <member name="M:Libplanet.Blocks.BlockContent`1.#ctor(Libplanet.Blocks.IBlockMetadata)">
+        <member name="M:Libplanet.Blocks.BlockContent`1.#ctor(Libplanet.Blocks.BlockMetadata)">
             <summary>
-            Creates a new <see cref="T:Libplanet.Blocks.BlockContent`1"/> instance filled with the given
-            <paramref name="metadata"/>'s contents and zero transactions.
+            Creates a new <see cref="T:Libplanet.Blocks.BlockContent`1"/> instance with given
+            <paramref name="metadata"/> and without any <see cref="T:Libplanet.Tx.Transaction`1"/>s.
             </summary>
-            <param name="metadata">The <see cref="T:Libplanet.Blocks.IBlockMetadata"/> to copy.</param>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockProtocolVersionException">Thrown when
-            the <paramref name="metadata"/>'s to set is <see cref="P:Libplanet.Blocks.IBlockMetadata.ProtocolVersion"/>
-            is less than 0, or greater than <see cref="F:Libplanet.Blocks.BlockMetadata.CurrentProtocolVersion"/>,
-            the latest known protocol version.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockIndexException">Thrown when the value to set is negative.
-            </exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockDifficultyException">Thrown when the value to set is
-             is negative.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockTotalDifficultyException">Thrown when
-            the <paramref name="metadata"/>'s <see cref="P:Libplanet.Blocks.IBlockMetadata.TotalDifficulty"/> is less
-            than its <see cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/>.</exception>
-            <exception cref="T:Libplanet.Tx.InvalidTxSignatureException">Thrown when any tx signature is invalid or
-            not signed by its signer.</exception>
-            <exception cref="T:Libplanet.Tx.InvalidTxNonceException">Thrown when the same tx nonce is used by
-            a signer twice or more, or a tx nonce is used without its previous nonce by a signer.
-            Note that this validates only a block's intrinsic integrity between its transactions,
-            but does not guarantee integrity between blocks.  Such validation needs to be conducted
-            by <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.</exception>
-            <exception cref="T:Libplanet.Tx.InvalidTxGenesisHashException">Thrown when transactions to set have
-            inconsistent genesis hashes.</exception>
+            <param name="metadata">The <see cref="T:Libplanet.Blocks.BlockMetadata"/> to include in the block.</param>
             <exception cref="T:Libplanet.Blocks.InvalidBlockTxHashException">Thrown when the given
-            <paramref name="metadata"/>'s <see cref="P:Libplanet.Blocks.IBlockMetadata.TxHash"/> is not <c>null</c>.
-            </exception>
+            <paramref name="metadata"/>'s <see cref="P:Libplanet.Blocks.IBlockMetadata.TxHash"/> is not
+            <see lagnword="null"/>.</exception>
         </member>
-        <member name="M:Libplanet.Blocks.BlockContent`1.#ctor(Libplanet.Blocks.IBlockContent{`0})">
+        <member name="M:Libplanet.Blocks.BlockContent`1.#ctor(Libplanet.Blocks.BlockMetadata,System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}})">
             <summary>
-            Creates a <see cref="T:Libplanet.Blocks.BlockContent`1"/> by copying the fields of another block
-            <paramref name="content"/>.
+            Creates a new <see cref="T:Libplanet.Blocks.BlockContent`1"/> instance with given
+            <paramref name="metadata"/> and <paramref name="transactions"/>.
             </summary>
-            <param name="content">This source of the block content to copy.  This hasn't be
-            a actual <see cref="T:Libplanet.Blocks.BlockContent`1"/> instance, but can be any object which implements
-            <see cref="T:Libplanet.Blocks.IBlockContent`1"/> instance.</param>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockProtocolVersionException">Thrown when
-            the <paramref name="content"/>'s <see cref="P:Libplanet.Blocks.IBlockMetadata.ProtocolVersion"/>
-            is less than 0, or greater than <see cref="F:Libplanet.Blocks.BlockMetadata.CurrentProtocolVersion"/>,
-            the latest known protocol version.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockIndexException">Thrown when the value to set is negative.
-            </exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockDifficultyException">Thrown when the value to set is
-             is negative.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockTotalDifficultyException">Thrown when
-            the <paramref name="content"/>'s <see cref="P:Libplanet.Blocks.IBlockMetadata.TotalDifficulty"/> is less
-            than its <see cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/>.</exception>
-            <exception cref="T:Libplanet.Tx.InvalidTxSignatureException">Thrown when any tx signature is invalid or
-            not signed by its signer.</exception>
+            <param name="metadata">The <see cref="T:Libplanet.Blocks.BlockMetadata"/> to include in the block.</param>
+            <param name="transactions">The transactions to include in the block.</param>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockTxHashException">Thrown when the given
+            <paramref name="metadata"/>'s <see cref="P:Libplanet.Blocks.IBlockMetadata.TxHash"/> is inconsistent with
+            <paramref name="transactions"/>.</exception>
+            <exception cref="T:Libplanet.Tx.InvalidTxSignatureException">Thrown when any tx signature is invalid
+            or not signed by its signer.</exception>
             <exception cref="T:Libplanet.Tx.InvalidTxNonceException">Thrown when the same tx nonce is used by
             a signer twice or more, or a tx nonce is used without its previous nonce by a signer.
             Note that this validates only a block's intrinsic integrity between its transactions,
@@ -4887,39 +5253,57 @@
             by <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.</exception>
             <exception cref="T:Libplanet.Tx.InvalidTxGenesisHashException">Thrown when transactions to set have
             inconsistent genesis hashes.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockTxHashException">Thrown when the given block
-            <paramref name="content"/>'s <see cref="P:Libplanet.Blocks.IBlockMetadata.TxHash"/> is not consistent with
-            its <see cref="P:Libplanet.Blocks.IBlockContent`1.Transactions"/>.</exception>
+            <exception cref="T:System.ArgumentException">Thrown when <paramref name="transactions"/> is
+            not ordered by <see cref="P:Libplanet.Tx.Transaction`1.Id"/>s.</exception>
         </member>
-        <member name="M:Libplanet.Blocks.BlockContent`1.#ctor">
+        <member name="P:Libplanet.Blocks.BlockContent`1.Metadata">
             <summary>
-            Creates a new empty <see cref="T:Libplanet.Blocks.BlockContent`1"/> instance.
+            Internal <see cref="T:Libplanet.Blocks.BlockMetadata"/>.
             </summary>
+        </member>
+        <member name="P:Libplanet.Blocks.BlockContent`1.ProtocolVersion">
+            <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.ProtocolVersion"/>
+        </member>
+        <member name="P:Libplanet.Blocks.BlockContent`1.Index">
+            <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.Index"/>
+        </member>
+        <member name="P:Libplanet.Blocks.BlockContent`1.Timestamp">
+            <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.Timestamp"/>
+        </member>
+        <member name="P:Libplanet.Blocks.BlockContent`1.Miner">
+            <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.Miner"/>
+        </member>
+        <member name="P:Libplanet.Blocks.BlockContent`1.PublicKey">
+            <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.PublicKey"/>
+        </member>
+        <member name="P:Libplanet.Blocks.BlockContent`1.Difficulty">
+            <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/>
+        </member>
+        <member name="P:Libplanet.Blocks.BlockContent`1.TotalDifficulty">
+            <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.TotalDifficulty"/>
+        </member>
+        <member name="P:Libplanet.Blocks.BlockContent`1.PreviousHash">
+            <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.PreviousHash"/>
+        </member>
+        <member name="P:Libplanet.Blocks.BlockContent`1.TxHash">
+            <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.TxHash"/>
         </member>
         <member name="P:Libplanet.Blocks.BlockContent`1.Transactions">
             <summary>
             Transactions belonging to the block.
             </summary>
-            <remarks>This is always ordered by <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.
-            <para>When <see cref="P:Libplanet.Blocks.BlockContent`1.Transactions"/> is updated, <see cref="P:Libplanet.Blocks.BlockContent`1.TxHash"/> is also updated
-            together.</para></remarks>
-            <exception cref="T:Libplanet.Tx.InvalidTxSignatureException">Thrown when any tx signature is invalid or
-            not signed by its signer.</exception>
-            <exception cref="T:Libplanet.Tx.InvalidTxNonceException">Thrown when the same tx nonce is used by
-            a signer twice or more, or a tx nonce is used without its previous nonce by a signer.
-            Note that this validates only a block's intrinsic integrity between its transactions,
-            but does not guarantee integrity between blocks.  Such validation needs to be conducted
-            by <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.</exception>
-            <exception cref="T:Libplanet.Tx.InvalidTxGenesisHashException">Thrown when transactions to set have
-            inconsistent genesis hashes.</exception>
+            <remarks>This is always ordered by <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.</remarks>
         </member>
-        <member name="P:Libplanet.Blocks.BlockContent`1.TxHash">
+        <member name="M:Libplanet.Blocks.BlockContent`1.DeriveTxHash(System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}})">
             <summary>
-            The hash of all transactions in the block.  This is <c>null</c> if the block has no
-            transactions.
+            Derives <see cref="P:Libplanet.Blocks.IBlockMetadata.TxHash"/> from given <paramref name="transactions"/>.
             </summary>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockTxHashException">Thrown when the <see cref="P:Libplanet.Blocks.BlockContent`1.TxHash"/> is
-            inconsistent with <see cref="P:Libplanet.Blocks.BlockContent`1.Transactions"/>.</exception>
+            <param name="transactions">The transactions to derive
+            <see cref="P:Libplanet.Blocks.IBlockMetadata.TxHash"/> from.  This must be ordered by
+            <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.</param>
+            <returns>The derived <see cref="P:Libplanet.Blocks.IBlockMetadata.TxHash"/>.</returns>
+            <exception cref="T:System.ArgumentException">Thrown when the <paramref name="transactions"/> are
+            not ordered by their <see cref="P:Libplanet.Tx.Transaction`1.Id"/>s.</exception>
         </member>
         <member name="M:Libplanet.Blocks.BlockContent`1.Mine(System.Threading.CancellationToken)">
             <summary>
@@ -4933,59 +5317,6 @@
             </returns>
             <exception cref="T:System.OperationCanceledException">Thrown when the specified
             <paramref name="cancellationToken"/> received a cancellation request.</exception>
-        </member>
-        <member name="M:Libplanet.Blocks.BlockContent`1.DeriveTxHash(System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}})">
-            <summary>
-            Derives <see cref="P:Libplanet.Blocks.BlockContent`1.TxHash"/> from the given <paramref name="transactions"/>.
-            </summary>
-            <param name="transactions">The transactions to derive <see cref="P:Libplanet.Blocks.BlockContent`1.TxHash"/> from.
-            This must be ordered by <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.</param>
-            <returns>The derived <see cref="P:Libplanet.Blocks.BlockContent`1.TxHash"/>.</returns>
-            <exception cref="T:System.ArgumentException">Thrown when the <paramref name="transactions"/> are
-            not ordered by their <see cref="P:Libplanet.Tx.Transaction`1.Id"/>s.</exception>
-        </member>
-        <member name="T:Libplanet.Blocks.BlockContentExtensions">
-            <summary>
-            Convenient extension methods for <see cref="T:Libplanet.Blocks.IBlockContent`1"/>.
-            </summary>
-        </member>
-        <member name="M:Libplanet.Blocks.BlockContentExtensions.Copy``1(Libplanet.Blocks.IBlockContent{``0})">
-            <summary>
-            Creates a <see cref="T:Libplanet.Blocks.BlockContent`1"/> by copying the fields of another block
-            <paramref name="content"/>.
-            <para>Note that it is a shortcut of <seealso cref="M:Libplanet.Blocks.BlockContent`1.#ctor(Libplanet.Blocks.IBlockContent{`0})"/>
-            constructor.</para>
-            </summary>
-            <typeparam name="T">A class implementing <see cref="T:Libplanet.Action.IAction"/> to include.  This type
-            parameter is aligned with <see cref="T:Libplanet.Tx.Transaction`1"/>'s type parameter.</typeparam>
-            <param name="content">This source of the block content to copy.  This hasn't be
-            a actual <see cref="T:Libplanet.Blocks.BlockContent`1"/> instance, but can be any object which implements
-            <see cref="T:Libplanet.Blocks.IBlockContent`1"/> instance.</param>
-            <returns>The copied block content.</returns>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockProtocolVersionException">Thrown when
-            the <paramref name="content"/>'s to set is <see cref="P:Libplanet.Blocks.IBlockMetadata.ProtocolVersion"/>
-            is less than 0, or greater than <see cref="F:Libplanet.Blocks.BlockMetadata.CurrentProtocolVersion"/>,
-            the latest known protocol version.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockIndexException">Thrown when the value to set is negative.
-            </exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockDifficultyException">Thrown when the value to set is
-             is negative.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockTotalDifficultyException">Thrown when
-            the <paramref name="content"/>'s <see cref="P:Libplanet.Blocks.IBlockMetadata.TotalDifficulty"/> is less
-            than its <see cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/>.</exception>
-            <exception cref="T:Libplanet.Tx.InvalidTxSignatureException">Thrown when any tx signature is invalid or
-            not signed by its signer.</exception>
-            <exception cref="T:Libplanet.Tx.InvalidTxNonceException">Thrown when the same tx nonce is used by
-            a signer twice or more, or a tx nonce is used without its previous nonce by a signer.
-            Note that this validates only a block's intrinsic integrity between its transactions,
-            but does not guarantee integrity between blocks.  Such validation needs to be conducted
-            by <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.</exception>
-            <exception cref="T:Libplanet.Tx.InvalidTxGenesisHashException">Thrown when transactions to set have
-            inconsistent genesis hashes.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockTxHashException">Thrown when the given block
-            <paramref name="content"/>'s <see cref="P:Libplanet.Blocks.IBlockMetadata.TxHash"/> is not consistent with
-            its <see cref="P:Libplanet.Blocks.IBlockContent`1.Transactions"/>.</exception>
-            <seealso cref="M:Libplanet.Blocks.BlockContent`1.#ctor(Libplanet.Blocks.IBlockContent{`0})"/>
         </member>
         <member name="T:Libplanet.Blocks.BlockExcerptExtensions">
             <summary>
@@ -5102,47 +5433,53 @@
             Block header containing information about <see cref="T:Libplanet.Blocks.Block`1"/>s except transactions.
             </summary>
         </member>
-        <member name="M:Libplanet.Blocks.BlockHeader.#ctor(Libplanet.Blocks.PreEvaluationBlockHeader,Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Nullable{System.Collections.Immutable.ImmutableArray{System.Byte}})">
+        <member name="M:Libplanet.Blocks.BlockHeader.#ctor(Libplanet.Blocks.IBlockHeader)">
             <summary>
-            Creates a <see cref="T:Libplanet.Blocks.BlockHeader"/> instance from the given
-            <paramref name="preEvaluationBlockHeader"/> and <paramref name="stateRootHash"/>.
-            This automatically derives its hash from the given inputs.
+            Creates a <see cref="T:Libplanet.Blocks.BlockHeader"/> by copying the fields of another
+            block <paramref name="header"/>.
             </summary>
-            <param name="preEvaluationBlockHeader">The pre-evaluation block header.</param>
-            <param name="stateRootHash">The state root hash.</param>
-            <param name="signature">The block signature.</param>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockSignatureException">Thrown when
-            the <paramref name="signature"/> signature is invalid.</exception>
-        </member>
-        <member name="M:Libplanet.Blocks.BlockHeader.#ctor(Libplanet.Blocks.PreEvaluationBlockHeader,Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Nullable{System.Collections.Immutable.ImmutableArray{System.Byte}},Libplanet.Blocks.BlockHash)">
-            <summary>
-            Creates a <see cref="T:Libplanet.Blocks.BlockHeader"/> instance from the given
-            <paramref name="preEvaluationBlockHeader"/> and <paramref name="stateRootHash"/>.
-            It also checks the sanity of the given <paramref name="hash"/>.
-            </summary>
-            <param name="preEvaluationBlockHeader">The pre-evaluation block header.</param>
-            <param name="stateRootHash">The state root hash.</param>
-            <param name="signature">The block signature.</param>
-            <param name="hash">The block hash to check.</param>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockSignatureException">Thrown when
-            the <paramref name="signature"/> signature is invalid.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockHashException">Thrown when the given block
-            <paramref name="hash"/> is consistent with other arguments.</exception>
+            <remarks>
+            <para>
+            As <paramref name="header"/> needn't be an actual <see cref="T:Libplanet.Blocks.BlockHeader"/>
+            instance, but simply any object implementing <see cref="T:Libplanet.Blocks.IBlockHeader"/>
+            interface, it can't be trusted to satisfy all the constraints for a valid
+            <see cref="T:Libplanet.Blocks.BlockHeader"/> instance.  As such, conditions are checked again
+            whilst creating a copy.  This is a relatively heavy operation, so must be used
+            sparingly.
+            </para>
+            <para>
+            In particular, this creates a new instance of
+            <see cref="T:Libplanet.Blocks.PreEvaluationBlockHeader"/> with data extracted from
+            <paramref name="header"/>.  Thus any <see cref="T:System.Exception"/>s that can be thrown from a
+            <see cref="T:Libplanet.Blocks.PreEvaluationBlockHeader"/>'s constructors may also be thrown
+            in addition to the ones explicitly listed below.
+            </para>
+            </remarks>
+            <param name="header">The block header to copy.</param>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockSignatureException">Thrown if
+            <paramref name="header.Signature.Signature"/> is invalid.</exception>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockHashException">Thrown when <paramref name="header.Hash.Hash"/>
+            is inconsistent with other arguments.</exception>
+            <seealso cref="T:Libplanet.Blocks.PreEvaluationBlockHeader"/>
         </member>
         <member name="M:Libplanet.Blocks.BlockHeader.#ctor(Libplanet.Blocks.PreEvaluationBlockHeader,System.ValueTuple{Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Nullable{System.Collections.Immutable.ImmutableArray{System.Byte}},Libplanet.Blocks.BlockHash})">
             <summary>
-            Unsafely creates a <see cref="T:Libplanet.Blocks.BlockHeader"/> instance with its
-            <paramref name="preEvaluationBlockHeader"/> and <paramref name="proof"/> which is
-            probably considered as to be valid.
+            Creates a <see cref="T:Libplanet.Blocks.BlockHeader"/> instance with its
+            <paramref name="preEvaluationBlockHeader"/> and <paramref name="proof"/>.
             </summary>
             <param name="preEvaluationBlockHeader">The pre-evaluation block header.</param>
             <param name="proof">A triple of the state root hash, the block signature, and the block
             hash which is probably considered as to be derived from
             the <paramref name="preEvaluationBlockHeader"/> and the state root hash.</param>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockSignatureException">Thrown if a <paramref name="proof"/>'s
-            signature is invalid.</exception>
-            <remarks>This does not verify if a <paramref name="proof"/>'s hash is derived from
-            the <paramref name="preEvaluationBlockHeader"/> and the state root hash.</remarks>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockSignatureException">Thrown if
+            <paramref name="proof.Signature.Signature"/> signature is invalid.</exception>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockHashException">Thrown when <paramref name="proof.Hash.Hash"/>
+            is inconsistent with other arguments.</exception>
+        </member>
+        <member name="P:Libplanet.Blocks.BlockHeader.Header">
+            <summary>
+            Internal <see cref="T:Libplanet.Blocks.PreEvaluationBlockHeader"/>.
+            </summary>
         </member>
         <member name="P:Libplanet.Blocks.BlockHeader.ProtocolVersion">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.ProtocolVersion"/>
@@ -5152,9 +5489,6 @@
         </member>
         <member name="P:Libplanet.Blocks.BlockHeader.Timestamp">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.Timestamp"/>
-        </member>
-        <member name="P:Libplanet.Blocks.BlockHeader.Nonce">
-            <inheritdoc cref="P:Libplanet.Blocks.IPreEvaluationBlockHeader.Nonce"/>
         </member>
         <member name="P:Libplanet.Blocks.BlockHeader.Miner">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.Miner"/>
@@ -5174,17 +5508,20 @@
         <member name="P:Libplanet.Blocks.BlockHeader.TxHash">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.TxHash"/>
         </member>
-        <member name="P:Libplanet.Blocks.BlockHeader.Signature">
-            <inheritdoc cref="P:Libplanet.Blocks.IBlockHeader.Signature"/>
-        </member>
-        <member name="P:Libplanet.Blocks.BlockHeader.Hash">
-            <inheritdoc cref="P:Libplanet.Blocks.IBlockExcerpt.Hash"/>
+        <member name="P:Libplanet.Blocks.BlockHeader.Nonce">
+            <inheritdoc cref="P:Libplanet.Blocks.IPreEvaluationBlockHeader.Nonce"/>
         </member>
         <member name="P:Libplanet.Blocks.BlockHeader.PreEvaluationHash">
             <inheritdoc cref="P:Libplanet.Blocks.IPreEvaluationBlockHeader.PreEvaluationHash"/>
         </member>
         <member name="P:Libplanet.Blocks.BlockHeader.StateRootHash">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockHeader.StateRootHash"/>
+        </member>
+        <member name="P:Libplanet.Blocks.BlockHeader.Signature">
+            <inheritdoc cref="P:Libplanet.Blocks.IBlockHeader.Signature"/>
+        </member>
+        <member name="P:Libplanet.Blocks.BlockHeader.Hash">
+            <inheritdoc cref="P:Libplanet.Blocks.IBlockExcerpt.Hash"/>
         </member>
         <member name="M:Libplanet.Blocks.BlockHeader.ToString">
             <inheritdoc cref="M:System.Object.ToString"/>
@@ -5198,13 +5535,9 @@
             <summary>
             A block metadata without transactions or any proofs like nonce or hash.  This represents
             metadata of a block that is not yet mined nor proven.
-            <para>To represent a block content including its metadata and transactions, use <see
-            cref="T:Libplanet.Blocks.BlockContent`1"/>, which is its subclass.</para>
+            <para>To represent a block content including its metadata and transactions, use
+            <see cref="T:Libplanet.Blocks.BlockContent`1"/>.</para>
             </summary>
-            <remarks>Unlike other model types like <see cref="T:Libplanet.Blocks.Block`1"/> or
-            <see cref="T:Libplanet.Blocks.PreEvaluationBlock`1"/>, this type is mutable.  To get a distinct instance with
-            partly changed fields, use <see cref="M:Libplanet.Blocks.BlockMetadata.#ctor(Libplanet.Blocks.IBlockMetadata)"/> constructor and
-            property setters on a copy instead.</remarks>
             <seealso cref="T:Libplanet.Blocks.BlockContent`1"/>
         </member>
         <member name="F:Libplanet.Blocks.BlockMetadata.CurrentProtocolVersion">
@@ -5217,38 +5550,112 @@
             Creates a <see cref="T:Libplanet.Blocks.BlockMetadata"/> by copying the fields of another block
             <paramref name="metadata"/>.
             </summary>
-            <param name="metadata">This source of the block metadata to copy.  This hasn't be
-            a actual <see cref="T:Libplanet.Blocks.BlockMetadata"/> instance, but can be any object which implements
-            <see cref="T:Libplanet.Blocks.IBlockMetadata"/> instance.</param>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockProtocolVersionException">Thrown when
-            the <paramref name="metadata"/>'s <see cref="P:Libplanet.Blocks.IBlockMetadata.ProtocolVersion"/>
-            is less than 0, or greater than <see cref="F:Libplanet.Blocks.BlockMetadata.CurrentProtocolVersion"/>, the latest known
-            protocol version.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockIndexException">Thrown when the <paramref name="metadata"/>
-            has a negative <see cref="P:Libplanet.Blocks.IBlockMetadata.Index"/>.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockDifficultyException">Thrown when
-            the <paramref name="metadata"/>'s <see cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/> is negative.
-            </exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockTotalDifficultyException">Thrown when
-            the <paramref name="metadata"/>'s <see cref="P:Libplanet.Blocks.IBlockMetadata.TotalDifficulty"/> is less
-            than its <see cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/>.</exception>
+            <remarks>
+            <para>
+            As <paramref name="metadata"/> needn't be an actual <see cref="T:Libplanet.Blocks.BlockMetadata"/>
+            instance, but simply any object implementing <see cref="T:Libplanet.Blocks.IBlockMetadata"/> interface,
+            it can't be trusted to satisfy all the constraints for a valid
+            <see cref="T:Libplanet.Blocks.BlockMetadata"/> instance.  As such, conditions are checked again whilst
+            creating a copy.  This is a relatively heavy operation, so must be used sparingly.
+            </para>
+            <para>
+            This gets redirected to <see cref="M:Libplanet.Blocks.BlockMetadata.#ctor(System.Int32,System.Int64,System.DateTimeOffset,Libplanet.Address,Libplanet.Crypto.PublicKey,System.Int64,System.Numerics.BigInteger,System.Nullable{Libplanet.Blocks.BlockHash},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})"/>.  Refer to the
+            aforementioned constructor to see the full list of <see cref="T:System.Exception"/>s
+            that may be thrown.
+            </para>
+            </remarks>
+            <param name="metadata">The source block metadata to copy.  This needn't be
+            an actual <see cref="T:Libplanet.Blocks.BlockMetadata"/> instance, but can be any object which
+            implements <see cref="T:Libplanet.Blocks.IBlockMetadata"/>.</param>
+            <seealso cref="M:Libplanet.Blocks.BlockMetadata.#ctor(System.Int32,System.Int64,System.DateTimeOffset,Libplanet.Address,Libplanet.Crypto.PublicKey,System.Int64,System.Numerics.BigInteger,System.Nullable{Libplanet.Blocks.BlockHash},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})"/>
         </member>
-        <member name="M:Libplanet.Blocks.BlockMetadata.#ctor">
+        <member name="M:Libplanet.Blocks.BlockMetadata.#ctor(System.Int64,System.DateTimeOffset,Libplanet.Crypto.PublicKey,System.Int64,System.Numerics.BigInteger,System.Nullable{Libplanet.Blocks.BlockHash},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
             <summary>
-            Creates an empty <see cref="T:Libplanet.Blocks.BlockMetadata"/> instance.  Its properties can be easily
-            filled with C# object initializers.
+            Creates a <see cref="T:Libplanet.Blocks.BlockMetadata"/> with
+            <see cref="F:Libplanet.Blocks.BlockMetadata.CurrentProtocolVersion"/> as its
+            <see cref="P:Libplanet.Blocks.IBlockMetadata.ProtocolVersion"/>.
             </summary>
+            <remarks>
+            With this, <see cref="P:Libplanet.Blocks.IBlockMetadata.Timestamp"/> is set as current time and
+            <see cref="P:Libplanet.Blocks.IBlockMetadata.Miner"/> is derived from <paramref name="publicKey"/>.
+            This gets redirected to <see cref="M:Libplanet.Blocks.BlockMetadata.#ctor(System.Int32,System.Int64,System.DateTimeOffset,Libplanet.Address,Libplanet.Crypto.PublicKey,System.Int64,System.Numerics.BigInteger,System.Nullable{Libplanet.Blocks.BlockHash},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})"/>.  Refer to the
+            aforementioned constructor to see the full list of <see cref="T:System.Exception"/>s
+            that may be thrown.
+            </remarks>
+            <param name="index">Goes to <see cref="P:Libplanet.Blocks.IBlockMetadata.Index"/>.</param>
+            <param name="timestamp">Goes to <see cref="P:Libplanet.Blocks.IBlockMetadata.Timestamp"/>.</param>
+            <param name="publicKey">Goes to <see cref="P:Libplanet.Blocks.IBlockMetadata.PublicKey"/>.</param>
+            <param name="difficulty">Goes to <see cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/>.</param>
+            <param name="totalDifficulty">Goes to <see cref="P:Libplanet.Blocks.IBlockMetadata.TotalDifficulty"/>.
+            </param>
+            <param name="previousHash">Goes to <see cref="P:Libplanet.Blocks.IBlockMetadata.PreviousHash"/>.</param>
+            <param name="txHash">Goes to <see cref="P:Libplanet.Blocks.IBlockMetadata.TxHash"/>.</param>
+            <seealso cref="M:Libplanet.Blocks.BlockMetadata.#ctor(System.Int32,System.Int64,System.DateTimeOffset,Libplanet.Address,Libplanet.Crypto.PublicKey,System.Int64,System.Numerics.BigInteger,System.Nullable{Libplanet.Blocks.BlockHash},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})"/>
+        </member>
+        <member name="M:Libplanet.Blocks.BlockMetadata.#ctor(System.Int32,System.Int64,System.DateTimeOffset,Libplanet.Address,Libplanet.Crypto.PublicKey,System.Int64,System.Numerics.BigInteger,System.Nullable{Libplanet.Blocks.BlockHash},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
+            <summary>
+            Creates a <see cref="T:Libplanet.Blocks.BlockMetadata"/> by manually filling in the fields for
+            <see cref="T:Libplanet.Blocks.BlockMetadata"/>.  All other public constructors are redirected to this one.
+            </summary>
+            <remarks>
+            Except for debuggin and/or testing purposes, this shouldn't be called directly.
+            </remarks>
+            <param name="protocolVersion">Goes to <see cref="P:Libplanet.Blocks.IBlockMetadata.ProtocolVersion"/>.
+            </param>
+            <param name="index">Goes to <see cref="P:Libplanet.Blocks.IBlockMetadata.Index"/>.</param>
+            <param name="timestamp">Goes to <see cref="P:Libplanet.Blocks.IBlockMetadata.Timestamp"/>.</param>
+            <param name="miner">Goes to <see cref="P:Libplanet.Blocks.IBlockMetadata.Miner"/>.</param>
+            <param name="publicKey">Goes to <see cref="P:Libplanet.Blocks.IBlockMetadata.PublicKey"/>.</param>
+            <param name="difficulty">Goes to <see cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/>.</param>
+            <param name="totalDifficulty">Goes to <see cref="P:Libplanet.Blocks.IBlockMetadata.TotalDifficulty"/>.
+            </param>
+            <param name="previousHash">Goes to <see cref="P:Libplanet.Blocks.IBlockMetadata.PreviousHash"/>.</param>
+            <param name="txHash">Goes to <see cref="P:Libplanet.Blocks.IBlockMetadata.TxHash"/>.</param>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockProtocolVersionException">Thrown when
+            <paramref name="protocolVersion"/> is less than zero or greater than
+            <see cref="F:Libplanet.Blocks.BlockMetadata.CurrentProtocolVersion"/>, the latest known protocol version.</exception>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockIndexException">Thrown when <paramref name="index"/> is
+            less than zero.</exception>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockPublicKeyException">Thrown when any of the following
+            conditions isn't satisfied:
+            <list type="bullet">
+              <item><description>If <paramref name="protocolVersion"/> >= 2,
+              <paramref name="miner"/> should match the derived address of
+              <paramref name="publicKey"/>.</description></item>
+              <item><description>Otherwise, <paramref name="publicKey"/> must be
+              <see langword="null"/>.</description></item>
+            </list>
+            </exception>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockDifficultyException">Thrown when one of the following
+            conditions is met:
+            <list type="bullet">
+                <item><description>If <paramref name="difficulty"/> is less than 0.
+                </description></item>
+                <item><description>If <paramref name="index"/> is 0 and
+                <paramref name="difficulty"/> is not 0.</description></item>
+                <item><description>If <paramref name="index"/> is greater than 0 and
+                <paramref name="difficulty"/> is 0.</description></item>
+            </list>
+            </exception>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockTotalDifficultyException">Thrown when one of the following
+            conditions is met:
+            <list type="bullet">
+                <item><description>If <paramref name="totalDifficulty"/> is less than 0.
+                </description></item>
+                <item><description>If <paramref name="totalDifficulty"/> is less than
+                <paramref name="difficulty"/>.</description></item>
+            </list>
+            </exception>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockPreviousHashException">Thrown when
+            <paramref name="previousHash"/> is not null while <paramref name="index"/> is zero
+            or <paramref name="previousHash"/> is null while <paramref name="index"/> is nonzero.
+            </exception>
         </member>
         <member name="P:Libplanet.Blocks.BlockMetadata.ProtocolVersion">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.ProtocolVersion"/>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockProtocolVersionException">Thrown when the value to set is
-            less than 0, or greater than <see cref="F:Libplanet.Blocks.BlockMetadata.CurrentProtocolVersion"/>, the latest known
-            protocol version.</exception>
         </member>
         <member name="P:Libplanet.Blocks.BlockMetadata.Index">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.Index"/>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockIndexException">Thrown when the value to set is negative.
-            </exception>
         </member>
         <member name="P:Libplanet.Blocks.BlockMetadata.Timestamp">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.Timestamp"/>
@@ -5258,45 +5665,18 @@
         </member>
         <member name="P:Libplanet.Blocks.BlockMetadata.PublicKey">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.PublicKey"/>
-            <remarks>Its setter also updates the <see cref="P:Libplanet.Blocks.BlockMetadata.Miner"/> property too.</remarks>
         </member>
         <member name="P:Libplanet.Blocks.BlockMetadata.Difficulty">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockDifficultyException">Thrown when the value to set is
-            negative.</exception>
-            <remarks>This cannot not be negative.
-            <para>When <see cref="P:Libplanet.Blocks.BlockMetadata.Difficulty"/> is updated, <see cref="P:Libplanet.Blocks.BlockMetadata.TotalDifficulty"/> is also
-            updated together.  For example, when <see cref="P:Libplanet.Blocks.BlockMetadata.Difficulty"/> = 10 and
-            <see cref="P:Libplanet.Blocks.BlockMetadata.TotalDifficulty"/> = 50, if <see cref="P:Libplanet.Blocks.BlockMetadata.Difficulty"/> is updated to
-            20 (= 10 + 10) <see cref="P:Libplanet.Blocks.BlockMetadata.TotalDifficulty"/> is also updated to 60 (= 50 + 10).</para>
-            </remarks>
         </member>
         <member name="P:Libplanet.Blocks.BlockMetadata.TotalDifficulty">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.TotalDifficulty"/>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockTotalDifficultyException">Thrown when the value to set
-            is less than <see cref="P:Libplanet.Blocks.BlockMetadata.Difficulty"/>.</exception>
         </member>
         <member name="P:Libplanet.Blocks.BlockMetadata.PreviousHash">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.PreviousHash"/>
         </member>
         <member name="P:Libplanet.Blocks.BlockMetadata.TxHash">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.TxHash"/>
-        </member>
-        <member name="M:Libplanet.Blocks.BlockMetadata.MakeCandidateData(Libplanet.Nonce)">
-            <summary>
-            Serializes data of a possible candidate shifted from it into a Bencodex dictionary.
-            This data is used for PoW (proof-of-work) to find the satisfying
-            <paramref name="nonce"/>, rather than transmitting the block over the network.
-            </summary>
-            <param name="nonce">The nonce of the block.</param>
-            <returns>The serialized block content in a Bencodex dictionary.</returns>
-        </member>
-        <member name="M:Libplanet.Blocks.BlockMetadata.DerivePreEvaluationHash(Libplanet.Nonce)">
-            <summary>
-            Derives a hash digest from the block metadata and <paramref name="nonce"/>.
-            </summary>
-            <param name="nonce">The proof-of-work nonce.</param>
-            <returns>A pre-evaluation block hash.</returns>
         </member>
         <member name="M:Libplanet.Blocks.BlockMetadata.MineNonce(System.Threading.CancellationToken)">
             <summary>
@@ -5324,58 +5704,19 @@
             <exception cref="T:System.OperationCanceledException">Thrown when the specified
             <paramref name="cancellationToken"/> received a cancellation request.</exception>
         </member>
-        <member name="T:Libplanet.Blocks.BlockMetadataExtensions">
+        <member name="M:Libplanet.Blocks.BlockMetadata.DerivePreEvaluationHash(Libplanet.Nonce)">
             <summary>
-            Convenient extension methods for <see cref="T:Libplanet.Blocks.IBlockMetadata"/>.
+            Derives a hash digest from the block metadata and <paramref name="nonce"/>.
             </summary>
+            <param name="nonce">The proof-of-work nonce.</param>
+            <returns>A pre-evaluation block hash.</returns>
         </member>
-        <member name="M:Libplanet.Blocks.BlockMetadataExtensions.Copy(Libplanet.Blocks.IBlockMetadata)">
+        <member name="M:Libplanet.Blocks.BlockMetadata.MakeCandidateData(Libplanet.Nonce)">
             <summary>
-            Creates a <see cref="T:Libplanet.Blocks.BlockMetadata"/> by copying the fields of another block
-            <paramref name="metadata"/>.
-            <para>This is a shortcut of <see cref="M:Libplanet.Blocks.BlockMetadata.#ctor(Libplanet.Blocks.IBlockMetadata)"/> constructor.
-            </para>
+            Makes a serialized representation for mining.
             </summary>
-            <param name="metadata">This source of the block metadata to copy.  This hasn't be
-            a actual <see cref="T:Libplanet.Blocks.BlockMetadata"/> instance, but can be any object which implements
-            <see cref="T:Libplanet.Blocks.IBlockMetadata"/> instance.</param>
-            <returns>The copied block metadata.</returns>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockProtocolVersionException">Thrown when
-            the <paramref name="metadata"/>'s to set is <see cref="P:Libplanet.Blocks.IBlockMetadata.ProtocolVersion"/>
-            is less than 0, or greater than <see cref="F:Libplanet.Blocks.BlockMetadata.CurrentProtocolVersion"/>,
-            the latest known protocol version.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockIndexException">Thrown when the <paramref name="metadata"/>
-            has a negative <see cref="P:Libplanet.Blocks.IBlockMetadata.Index"/>.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockDifficultyException">Thrown when
-            the <paramref name="metadata"/>'s <see cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/> is negative.
-            </exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockTotalDifficultyException">Thrown when
-            the <paramref name="metadata"/>'s <see cref="P:Libplanet.Blocks.IBlockMetadata.TotalDifficulty"/> is less
-            than its <see cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/>.</exception>
-            <seealso cref="M:Libplanet.Blocks.BlockMetadata.#ctor(Libplanet.Blocks.IBlockMetadata)"/>
-        </member>
-        <member name="M:Libplanet.Blocks.BlockMetadataExtensions.ValidateTimestamp(Libplanet.Blocks.IBlockMetadata)">
-            <summary>
-            Checks if the given <paramref name="blockMetadata"/>'s
-            <see cref="P:Libplanet.Blocks.IBlockMetadata.Timestamp"/> is valid.  No-op if valid.
-            </summary>
-            <param name="blockMetadata">The block metadata to validate.</param>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockTimestampException">Thrown when
-            <see cref="P:Libplanet.Blocks.IBlockMetadata.Timestamp"/> is invalid.  For example,
-            if <see cref="P:Libplanet.Blocks.IBlockMetadata.Timestamp"/> is too far in the future
-            compared to the current time.</exception>
-        </member>
-        <member name="M:Libplanet.Blocks.BlockMetadataExtensions.ValidateTimestamp(Libplanet.Blocks.IBlockMetadata,System.DateTimeOffset)">
-            <summary>
-            Checks if the given <paramref name="blockMetadata"/>'s
-            <see cref="P:Libplanet.Blocks.IBlockMetadata.Timestamp"/> is valid.  No-op if valid.
-            </summary>
-            <param name="blockMetadata">The block metadata to validate.</param>
-            <param name="currentTime">Explicitly specify the current time.</param>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockTimestampException">Thrown when
-            <see cref="P:Libplanet.Blocks.IBlockMetadata.Timestamp"/> is invalid.  For example,
-            if <see cref="P:Libplanet.Blocks.IBlockMetadata.Timestamp"/> is too far in the future
-            compared to <paramref name="currentTime"/>.</exception>
+            <param name="nonce">The proof-of-work nonce.</param>
+            <returns>A <see cref="T:Bencodex.Types.Dictionary"/> representation for mining.</returns>
         </member>
         <member name="T:Libplanet.Blocks.BlockPerception">
             <summary>
@@ -5527,7 +5868,7 @@
             <summary>
             The height of the block.
             </summary>
-            <remarks>Zero means it is a genesis block.  Disallowed to be negative.</remarks>
+            <remarks>Zero means it is a genesis block.  Not allowed to be negative.</remarks>
         </member>
         <member name="P:Libplanet.Blocks.IBlockMetadata.Timestamp">
             <summary>
@@ -5565,7 +5906,7 @@
         <member name="P:Libplanet.Blocks.IBlockMetadata.PreviousHash">
             <summary>
             The previous block's hash.  If it's a genesis block (i.e., its <see cref="P:Libplanet.Blocks.IBlockMetadata.Index"/> is 0)
-            this should be <c>null</c>.
+            this must be <see langword="null"/>.
             </summary>
         </member>
         <member name="P:Libplanet.Blocks.IBlockMetadata.TxHash">
@@ -5574,10 +5915,38 @@
             transactions.
             </summary>
         </member>
+        <member name="T:Libplanet.Blocks.IBlockMetadataExtensions">
+            <summary>
+            Convenient extension methods for <see cref="T:Libplanet.Blocks.IBlockMetadata"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blocks.IBlockMetadataExtensions.ValidateTimestamp(Libplanet.Blocks.IBlockMetadata)">
+            <summary>
+            Checks if the given <paramref name="metadata"/>'s
+            <see cref="P:Libplanet.Blocks.IBlockMetadata.Timestamp"/> is valid.  No-op if valid.
+            </summary>
+            <param name="metadata">The block metadata to validate.</param>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockTimestampException">Thrown when
+            <see cref="P:Libplanet.Blocks.IBlockMetadata.Timestamp"/> is invalid.  For example,
+            if <see cref="P:Libplanet.Blocks.IBlockMetadata.Timestamp"/> is too far in the future
+            compared to the current time.</exception>
+        </member>
+        <member name="M:Libplanet.Blocks.IBlockMetadataExtensions.ValidateTimestamp(Libplanet.Blocks.IBlockMetadata,System.DateTimeOffset)">
+            <summary>
+            Checks if the given <paramref name="metadata"/>'s
+            <see cref="P:Libplanet.Blocks.IBlockMetadata.Timestamp"/> is valid.  No-op if valid.
+            </summary>
+            <param name="metadata">The block metadata to validate.</param>
+            <param name="currentTime">Explicitly specify the current time.</param>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockTimestampException">Thrown when
+            <see cref="P:Libplanet.Blocks.IBlockMetadata.Timestamp"/> is invalid.  For example,
+            if <see cref="P:Libplanet.Blocks.IBlockMetadata.Timestamp"/> is too far in the future
+            compared to <paramref name="currentTime"/>.</exception>
+        </member>
         <member name="T:Libplanet.Blocks.InvalidBlockBytesLengthException">
             <summary>
-            An exception thrown when a <see cref="T:Libplanet.Blocks.Block`1"/>'s encoded bytes exceeds
-            <see cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxBlockBytes(System.Int64)"/>.
+            An exception thrown when the encoded bytes of <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> exceeds
+            <see cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxTransactionsBytes(System.Int64)"/>.
             </summary>
         </member>
         <member name="M:Libplanet.Blocks.InvalidBlockBytesLengthException.#ctor(System.String,System.Int64)">
@@ -5585,12 +5954,12 @@
             Initializes a new instance of <see cref="T:Libplanet.Blocks.InvalidBlockBytesLengthException"/> class.
             </summary>
             <param name="message">The message that describes the error.</param>
-            <param name="bytesLength">The actual length of the <see cref="T:Libplanet.Blocks.Block`1"/>'s encoded
-            bytes.</param>
+            <param name="bytesLength">The actual encoded length of
+            <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> as bytes.</param>
         </member>
         <member name="P:Libplanet.Blocks.InvalidBlockBytesLengthException.BytesLength">
             <summary>
-            The actual length of the <see cref="T:Libplanet.Blocks.Block`1"/>'s encoded bytes.
+            The actual encoded length of <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> as bytes.
             </summary>
         </member>
         <member name="M:Libplanet.Blocks.InvalidBlockBytesLengthException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
@@ -5614,16 +5983,16 @@
             <see cref="P:Libplanet.Blocks.Block`1.PreEvaluationHash"/> is invalid.
             </summary>
         </member>
-        <member name="M:Libplanet.Blocks.InvalidBlockPreEvaluationHashException.#ctor(System.Collections.Immutable.ImmutableArray{System.Byte},System.Collections.Immutable.ImmutableArray{System.Byte},System.String)">
+        <member name="M:Libplanet.Blocks.InvalidBlockPreEvaluationHashException.#ctor(System.String,System.Collections.Immutable.ImmutableArray{System.Byte},System.Collections.Immutable.ImmutableArray{System.Byte})">
             <summary>
             Initializes a new instance of the
             <see cref="T:Libplanet.Blocks.InvalidBlockPreEvaluationHashException"/> class.
             </summary>
+            <param name="message">The message that describes the error.</param>
             <param name="actualPreEvaluationHash">The hash recorded as
             <see cref="P:Libplanet.Blocks.Block`1.PreEvaluationHash"/>.</param>
             <param name="expectedPreEvaluationHash">The hash calculated from the block except
             <see cref="P:Libplanet.Blocks.Block`1.StateRootHash"/>.</param>
-            <param name="message">The message that describes the error.</param>
         </member>
         <member name="P:Libplanet.Blocks.InvalidBlockPreEvaluationHashException.ActualPreEvaluationHash">
             <summary>
@@ -5642,13 +6011,13 @@
             <see cref="P:Libplanet.Blocks.BlockHeader.ProtocolVersion"/>) is invalid.
             </summary>
         </member>
-        <member name="M:Libplanet.Blocks.InvalidBlockProtocolVersionException.#ctor(System.Int32,System.String)">
+        <member name="M:Libplanet.Blocks.InvalidBlockProtocolVersionException.#ctor(System.String,System.Int32)">
             <summary>
             Initializes a new instance of <see cref="T:Libplanet.Blocks.InvalidBlockProtocolVersionException"/> class.
             </summary>
+            <param name="message">The message that describes the error.</param>
             <param name="actualProtocolVersion">The actual block protocol version which is invalid.
             </param>
-            <param name="message">The message that describes the error.</param>
         </member>
         <member name="P:Libplanet.Blocks.InvalidBlockProtocolVersionException.ActualProtocolVersion">
             <summary>
@@ -5663,13 +6032,13 @@
             An exception thrown when a block's public key is invalid.
             </summary>
         </member>
-        <member name="M:Libplanet.Blocks.InvalidBlockPublicKeyException.#ctor(Libplanet.Crypto.PublicKey,System.String)">
+        <member name="M:Libplanet.Blocks.InvalidBlockPublicKeyException.#ctor(System.String,Libplanet.Crypto.PublicKey)">
             <summary>
             Creates a new <see cref="T:Libplanet.Blocks.InvalidBlockPublicKeyException"/> instance.
             </summary>
+            <param name="message">A message that describes the error.</param>
             <param name="invalidPublicKey">The invalid public key tried to be used
             in the block.</param>
-            <param name="message">A message that describes the error.</param>
         </member>
         <member name="P:Libplanet.Blocks.InvalidBlockPublicKeyException.InvalidPublicKey">
             <summary>
@@ -5681,13 +6050,13 @@
             An exception thrown when a block's signature is invalid.
             </summary>
         </member>
-        <member name="M:Libplanet.Blocks.InvalidBlockSignatureException.#ctor(Libplanet.Crypto.PublicKey,System.Nullable{System.Collections.Immutable.ImmutableArray{System.Byte}},System.String)">
+        <member name="M:Libplanet.Blocks.InvalidBlockSignatureException.#ctor(System.String,Libplanet.Crypto.PublicKey,System.Nullable{System.Collections.Immutable.ImmutableArray{System.Byte}})">
             <summary>
             Creates a new <see cref="T:Libplanet.Blocks.InvalidBlockPublicKeyException"/> instance.
             </summary>
+            <param name="message">A message that describes the error.</param>
             <param name="publicKey">The public key used for signing the block.</param>
             <param name="invalidSignature">The block signature which is invalid.</param>
-            <param name="message">A message that describes the error.</param>
         </member>
         <member name="P:Libplanet.Blocks.InvalidBlockSignatureException.PublicKey">
             <summary>
@@ -5705,15 +6074,15 @@
             mismatches to the state root hash of the trie on the block executed in local.
             </summary>
         </member>
-        <member name="M:Libplanet.Blocks.InvalidBlockStateRootHashException.#ctor(Libplanet.HashDigest{System.Security.Cryptography.SHA256},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.String)">
+        <member name="M:Libplanet.Blocks.InvalidBlockStateRootHashException.#ctor(System.String,Libplanet.HashDigest{System.Security.Cryptography.SHA256},Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
             <summary>
             Initializes a new instance of the
             <see cref="T:Libplanet.Blocks.InvalidBlockStateRootHashException"/> class.
             </summary>
+            <param name="message">The message that describes the error.</param>
             <param name="expectedStateRootHash">The hash recorded as
             <see cref="P:Libplanet.Blocks.Block`1.StateRootHash"/>>.</param>
             <param name="actualStateRootHash">The hash of state trie on the block executed.</param>
-            <param name="message">The message that describes the error.</param>
         </member>
         <member name="P:Libplanet.Blocks.InvalidBlockStateRootHashException.ActualStateRootHash">
             <summary>
@@ -5759,10 +6128,10 @@
             <summary>
             Initializes a new instance of <see cref="T:Libplanet.Blocks.InvalidBlockTxHashException"/> class.
             </summary>
+            <param name="message">The message that describes the error.</param>
             <param name="blockTxHash">The hash digest of <see cref="P:Libplanet.Blocks.Block`1.TxHash"/>.</param>
             <param name="calculatedTxHash">The calculated hash digest from
             <see cref="P:Libplanet.Blocks.Block`1.Transactions"/>.</param>
-            <param name="message">The message that describes the error.</param>
         </member>
         <member name="P:Libplanet.Blocks.InvalidBlockTxHashException.BlockTxHash">
             <summary>
@@ -5783,15 +6152,15 @@
             the genesis block in other network.
             </summary>
         </member>
-        <member name="M:Libplanet.Blocks.InvalidGenesisBlockException.#ctor(Libplanet.Blocks.BlockHash,Libplanet.Blocks.BlockHash,System.String)">
+        <member name="M:Libplanet.Blocks.InvalidGenesisBlockException.#ctor(System.String,Libplanet.Blocks.BlockHash,Libplanet.Blocks.BlockHash)">
             <summary>
             Initializes a new instance of the
             <see cref="T:Libplanet.Blocks.InvalidGenesisBlockException"/> class.
             </summary>
+            <param name="message">The message that describes the error.</param>
             <param name="networkExpected">The genesis block that the network expects.</param>
             <param name="stored">The genesis block that a local <see cref="T:Libplanet.Store.IStore"/> contains.
             </param>
-            <param name="message">The message that describes the error.</param>
         </member>
         <member name="P:Libplanet.Blocks.InvalidGenesisBlockException.NetworkExpected">
             <summary>
@@ -5841,113 +6210,66 @@
             <typeparam name="T">A class implementing <see cref="T:Libplanet.Action.IAction"/> to include.  This type
             parameter is aligned with <see cref="T:Libplanet.Tx.Transaction`1"/>'s type parameter.</typeparam>
             <remarks>It guarantees that every instance of this type has a valid proof-of-work
-            <see cref="T:Libplanet.Nonce"/> which satisfies its <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.Difficulty"/>.
+            <see cref="P:Libplanet.Blocks.PreEvaluationBlock`1.Nonce"/> which satisfies its <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.Difficulty"/>.
             </remarks>
-        </member>
-        <member name="M:Libplanet.Blocks.PreEvaluationBlock`1.#ctor(Libplanet.Blocks.IBlockContent{`0},Libplanet.Nonce)">
-            <summary>
-            Creates a <see cref="T:Libplanet.Blocks.PreEvaluationBlock`1"/> instance with its
-            <paramref name="content"/> data and a valid proof-of-work <paramref name="nonce"/>
-            which satisfies the required <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.Difficulty"/>.
-            </summary>
-            <param name="content">Block's content data.</param>
-            <param name="nonce">A valid proof-of-work nonce which satisfies the required
-            <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.Difficulty"/>.</param>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockProtocolVersionException">Thrown when
-            the <paramref name="content"/>'s to set is <see cref="P:Libplanet.Blocks.IBlockMetadata.ProtocolVersion"/>
-            is less than 0, or greater than <see cref="F:Libplanet.Blocks.BlockMetadata.CurrentProtocolVersion"/>,
-            the latest known protocol version.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockIndexException">Thrown when the value to set is negative.
-            </exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockDifficultyException">Thrown when the value to set is
-             is negative.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockTotalDifficultyException">Thrown when
-            the <paramref name="content"/>'s <see cref="P:Libplanet.Blocks.IBlockMetadata.TotalDifficulty"/> is less
-            than its <see cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/>.</exception>
-            <exception cref="T:Libplanet.Tx.InvalidTxSignatureException">Thrown when any tx signature is invalid or
-            not signed by its signer.</exception>
-            <exception cref="T:Libplanet.Tx.InvalidTxNonceException">Thrown when the same tx nonce is used by
-            a signer twice or more, or a tx nonce is used without its previous nonce by a signer.
-            Note that this validates only a block's intrinsic integrity between its transactions,
-            but does not guarantee integrity between blocks.  Such validation needs to be conducted
-            by <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.</exception>
-            <exception cref="T:Libplanet.Tx.InvalidTxGenesisHashException">Thrown when transactions to set have
-            inconsistent genesis hashes.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockTxHashException">Thrown when the given block
-            <paramref name="content"/>'s <see cref="P:Libplanet.Blocks.IBlockMetadata.TxHash"/> is not consistent with
-            its <see cref="P:Libplanet.Blocks.IBlockContent`1.Transactions"/>.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockNonceException">Thrown when the given proof-of-work
-            <paramref name="nonce"/> does not satisfy the required
-            <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.Difficulty"/>.
-            </exception>
-            <remarks><see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.PreEvaluationHash"/> is automatically
-            derived from the given arguments.</remarks>
-        </member>
-        <member name="M:Libplanet.Blocks.PreEvaluationBlock`1.#ctor(Libplanet.Blocks.IBlockContent{`0},Libplanet.Nonce,System.Collections.Immutable.ImmutableArray{System.Byte})">
-            <summary>
-            Creates a <see cref="T:Libplanet.Blocks.PreEvaluationBlock`1"/> instance with its
-            <paramref name="content"/> data, a valid proof-of-work <paramref name="nonce"/>
-            which satisfies the required <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.Difficulty"/>,
-            and a <paramref name="preEvaluationHash"/> digest derived from them.
-            </summary>
-            <param name="content">Block's content data.</param>
-            <param name="nonce">A valid proof-of-work nonce which satisfies the required
-            <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.Difficulty"/>.</param>
-            <param name="preEvaluationHash">The hash digest derived from the given arguments.
-            </param>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockProtocolVersionException">Thrown when
-            the <paramref name="content"/>'s <see cref="P:Libplanet.Blocks.IBlockMetadata.ProtocolVersion"/>
-            is less than 0, or greater than <see cref="F:Libplanet.Blocks.BlockMetadata.CurrentProtocolVersion"/>,
-            the latest known protocol version.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockIndexException">Thrown when the value to set is negative.
-            </exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockDifficultyException">Thrown when the value to set is
-             is negative.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockTotalDifficultyException">Thrown when
-            the <paramref name="content"/>'s <see cref="P:Libplanet.Blocks.IBlockMetadata.TotalDifficulty"/> is less
-            than its <see cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/>.</exception>
-            <exception cref="T:Libplanet.Tx.InvalidTxSignatureException">Thrown when any tx signature is invalid or
-            not signed by its signer.</exception>
-            <exception cref="T:Libplanet.Tx.InvalidTxNonceException">Thrown when the same tx nonce is used by
-            a signer twice or more, or a tx nonce is used without its previous nonce by a signer.
-            Note that this validates only a block's intrinsic integrity between its transactions,
-            but does not guarantee integrity between blocks.  Such validation needs to be conducted
-            by <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.</exception>
-            <exception cref="T:Libplanet.Tx.InvalidTxGenesisHashException">Thrown when transactions to set have
-            inconsistent genesis hashes.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockTxHashException">Thrown when the given block
-            <paramref name="content"/>'s <see cref="P:Libplanet.Blocks.IBlockMetadata.TxHash"/> is not consistent with
-            its <see cref="P:Libplanet.Blocks.IBlockContent`1.Transactions"/>.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockPreEvaluationHashException">Thrown when the given
-            <paramref name="preEvaluationHash"/> is invalid.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockNonceException">Thrown when the given proof-of-work
-            <paramref name="nonce"/> does not satisfy the required
-            <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.Difficulty"/>.</exception>
         </member>
         <member name="M:Libplanet.Blocks.PreEvaluationBlock`1.#ctor(Libplanet.Blocks.BlockContent{`0},System.ValueTuple{Libplanet.Nonce,System.Collections.Immutable.ImmutableArray{System.Byte}}@)">
             <summary>
-            Unsafely creates a <see cref="T:Libplanet.Blocks.PreEvaluationBlock`1"/> instance with its
-            <paramref name="content"/> data, and a <paramref name="proof"/> which is probably
-            considered as to be valid.
+            Creates a <see cref="T:Libplanet.Blocks.PreEvaluationBlock`1"/> instance with its
+            <paramref name="content"/> data, a valid proof-of-work <paramref name="proof.Nonce.Nonce"/>
+            which satisfies the required <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.Difficulty"/>,
+            and a <paramref name="proof.PreEvaluationHash.PreEvaluationHash"/> digest derived from them.
             </summary>
             <param name="content">Block's content data.</param>
-            <param name="proof">A pair of the valid proof-of-work nonce which is probably considered
-            as to satisfy the required <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.Difficulty"/>,
-            and the hash digest which is probably considered as to be derived from
-            the block <paramref name="content"/> and the nonce.</param>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockPreEvaluationHashException">Thrown when the given proof's
-            hash is invalid.</exception>
-            <remarks>This does not verify if if a proof's hash is derived from the block
-            <paramref name="content"/> and the proof nonce.  Therefore, this unsafe constructor
-            shouldn't be used except for <see cref="M:Libplanet.Blocks.BlockContent`1.Mine(System.Threading.CancellationToken)"/> method.</remarks>
+            <param name="proof">A pair of a valid proof-of-work nonce which satisfies the required
+            <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.Difficulty"/> and a hash digest which is
+            derived from <paramref name="content"/> and the nonce.</param>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockNonceException">Thrown when <paramref name="proof"/>'s
+            <see cref="P:Libplanet.Blocks.IPreEvaluationBlockHeader.Nonce"/> does not satisfy the required
+            <see cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/>.</exception>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockPreEvaluationHashException">Thrown when
+            <paramref name="proof"/>'s hash is invalid.</exception>
+        </member>
+        <member name="P:Libplanet.Blocks.PreEvaluationBlock`1.Header">
+            <summary>
+            Internal <see cref="T:Libplanet.Blocks.PreEvaluationBlockHeader"/>.
+            </summary>
         </member>
         <member name="P:Libplanet.Blocks.PreEvaluationBlock`1.Transactions">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockContent`1.Transactions"/>
         </member>
-        <member name="P:Libplanet.Blocks.PreEvaluationBlock`1.Content">
-            <summary>
-            The internal block content.
-            </summary>
+        <member name="P:Libplanet.Blocks.PreEvaluationBlock`1.ProtocolVersion">
+            <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.ProtocolVersion"/>
+        </member>
+        <member name="P:Libplanet.Blocks.PreEvaluationBlock`1.Index">
+            <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.Index"/>
+        </member>
+        <member name="P:Libplanet.Blocks.PreEvaluationBlock`1.Timestamp">
+            <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.Timestamp"/>
+        </member>
+        <member name="P:Libplanet.Blocks.PreEvaluationBlock`1.Miner">
+            <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.Miner"/>
+        </member>
+        <member name="P:Libplanet.Blocks.PreEvaluationBlock`1.PublicKey">
+            <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.PublicKey"/>
+        </member>
+        <member name="P:Libplanet.Blocks.PreEvaluationBlock`1.Difficulty">
+            <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/>
+        </member>
+        <member name="P:Libplanet.Blocks.PreEvaluationBlock`1.TotalDifficulty">
+            <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.TotalDifficulty"/>
+        </member>
+        <member name="P:Libplanet.Blocks.PreEvaluationBlock`1.PreviousHash">
+            <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.PreviousHash"/>
+        </member>
+        <member name="P:Libplanet.Blocks.PreEvaluationBlock`1.TxHash">
+            <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.TxHash"/>
+        </member>
+        <member name="P:Libplanet.Blocks.PreEvaluationBlock`1.Nonce">
+            <inheritdoc cref="P:Libplanet.Blocks.IPreEvaluationBlockHeader.Nonce"/>
+        </member>
+        <member name="P:Libplanet.Blocks.PreEvaluationBlock`1.PreEvaluationHash">
+            <inheritdoc cref="P:Libplanet.Blocks.IPreEvaluationBlockHeader.PreEvaluationHash"/>
         </member>
         <member name="M:Libplanet.Blocks.PreEvaluationBlock`1.Evaluate(Libplanet.Crypto.PrivateKey,Libplanet.Action.IAction,System.Predicate{Libplanet.Assets.Currency},Libplanet.Store.IStateStore)">
             <summary>
@@ -5975,7 +6297,7 @@
             <see cref="P:Libplanet.Blocks.IBlockMetadata.Index"/> is not zero, or the block's
             <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.ProtocolVersion"/> is less than 2.</exception>
             <exception cref="T:System.ArgumentException">Thrown when the given <paramref name="privateKey"/>
-            does not match to the block miner's <see cref="T:Libplanet.Crypto.PublicKey"/>.</exception>
+            does not match to the block miner's <see cref="P:Libplanet.Blocks.PreEvaluationBlock`1.PublicKey"/>.</exception>
             <remarks>As blocks have their signatures since the <see
             cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.ProtocolVersion"/> 2, it is not usable with blocks of
             the earlier <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.ProtocolVersion"/>s than 2.
@@ -6000,7 +6322,7 @@
             <exception cref="T:System.InvalidOperationException">Thrown when the block's
             <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.ProtocolVersion"/> is less than 2.</exception>
             <exception cref="T:System.ArgumentException">Thrown when the given <paramref name="privateKey"/>
-            does not match to the block miner's <see cref="T:Libplanet.Crypto.PublicKey"/>.</exception>
+            does not match to the block miner's <see cref="P:Libplanet.Blocks.PreEvaluationBlock`1.PublicKey"/>.</exception>
             <remarks>As blocks have their signatures since the <see
             cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.ProtocolVersion"/> 2, it is not usable with blocks of
             the earlier <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.ProtocolVersion"/>s than 2.
@@ -6021,7 +6343,7 @@
             <exception cref="T:System.InvalidOperationException">Thrown when the block's
             <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.ProtocolVersion"/> is less than 2.</exception>
             <exception cref="T:System.ArgumentException">Thrown when the given <paramref name="privateKey"/>
-            does not match to the block miner's <see cref="T:Libplanet.Crypto.PublicKey"/>.</exception>
+            does not match to the block miner's <see cref="P:Libplanet.Blocks.PreEvaluationBlock`1.PublicKey"/>.</exception>
             <remarks>As blocks have their signatures since the <see
             cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.ProtocolVersion"/> 2, it is not usable with blocks of
             the earlier <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.ProtocolVersion"/>s than 2.
@@ -6099,105 +6421,57 @@
         </member>
         <member name="M:Libplanet.Blocks.PreEvaluationBlockHeader.#ctor(Libplanet.Blocks.IPreEvaluationBlockHeader)">
             <summary>
-            Creates a <see cref="T:Libplanet.Blocks.PreEvaluationBlockHeader"/>  by copying the fields of another
+            Creates a <see cref="T:Libplanet.Blocks.PreEvaluationBlockHeader"/> by copying the fields of another
             pre-evaluation block <paramref name="header"/>.
             </summary>
-            <param name="header">A pre-evaluation block header to copy.</param>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockProtocolVersionException">Thrown when
-            the <paramref name="header"/>'s to set is <see cref="P:Libplanet.Blocks.IBlockMetadata.ProtocolVersion"/>
-            is less than 0, or greater than <see cref="F:Libplanet.Blocks.BlockMetadata.CurrentProtocolVersion"/>,
-            the latest known protocol version.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockIndexException">Thrown when the <paramref name="header"/>
-            has a negative <see cref="P:Libplanet.Blocks.IBlockMetadata.Index"/>.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockDifficultyException">Thrown when
-            the <paramref name="header"/>'s <see cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/> is negative.
-            </exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockTotalDifficultyException">Thrown when
-            the <paramref name="header"/>'s <see cref="P:Libplanet.Blocks.IBlockMetadata.TotalDifficulty"/> is less
-            than its <see cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/>.</exception>
+            <remarks>
+            <para>
+            As <paramref name="header"/> needn't be an actual <see cref="T:Libplanet.Blocks.PreEvaluationBlockHeader"/>
+            instance, but simply any object implementing <see cref="T:Libplanet.Blocks.IPreEvaluationBlockHeader"/>
+            interface, it can't be trusted to satisfy all the constraints for a valid
+            <see cref="T:Libplanet.Blocks.PreEvaluationBlockHeader"/> instance.  As such, conditions are checked again
+            whilst creating a copy.  This is a relatively heavy operation, so must be used
+            sparingly.
+            </para>
+            <para>
+            In particular, this creates a new instance of
+            <see cref="T:Libplanet.Blocks.BlockMetadata"/> with data extracted from <paramref name="header"/>.
+            Thus any <see cref="T:System.Exception"/>s that can be thrown from a
+            <see cref="T:Libplanet.Blocks.BlockMetadata"/>'s constructors may also be thrown in addition to the ones
+            explicitly listed below.
+            </para>
+            </remarks>
+            <param name="header">The pre-evaluation block header to copy.</param>
             <exception cref="T:Libplanet.Blocks.InvalidBlockPreEvaluationHashException">Thrown when the given
             pre-evaluation <paramref name="header"/>'s
-            <seealso cref="P:Libplanet.Blocks.IPreEvaluationBlockHeader.PreEvaluationHash"/> is invalid.</exception>
+            <see cref="P:Libplanet.Blocks.IPreEvaluationBlockHeader.PreEvaluationHash"/> is invalid.</exception>
             <exception cref="T:Libplanet.Blocks.InvalidBlockNonceException">Thrown when the given
             pre-evaluation <paramref name="header"/>'s
-            <seealso cref="P:Libplanet.Blocks.IPreEvaluationBlockHeader.Nonce"/> does not satisfy the required
+            <see cref="P:Libplanet.Blocks.IPreEvaluationBlockHeader.Nonce"/> does not satisfy the required
             <see cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/>.
             </exception>
-        </member>
-        <member name="M:Libplanet.Blocks.PreEvaluationBlockHeader.#ctor(Libplanet.Blocks.IBlockMetadata,Libplanet.Nonce)">
-            <summary>
-            Creates a <see cref="T:Libplanet.Blocks.PreEvaluationBlockHeader"/> instance with its
-            <paramref name="metadata"/> and a valid proof-of-work <paramref name="nonce"/> which
-            satisfies the required <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.Difficulty"/>.
-            </summary>
-            <param name="metadata">Block's metadata.</param>
-            <param name="nonce">A valid proof-of-work nonce which satisfies the required
-            <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.Difficulty"/>.</param>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockProtocolVersionException">Thrown when
-            the <paramref name="metadata"/>'s to set is <see cref="P:Libplanet.Blocks.IBlockMetadata.ProtocolVersion"/>
-            is less than 0, or greater than <see cref="F:Libplanet.Blocks.BlockMetadata.CurrentProtocolVersion"/>,
-            the latest known protocol version.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockIndexException">Thrown when the <paramref name="metadata"/>
-            has a negative <see cref="P:Libplanet.Blocks.IBlockMetadata.Index"/>.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockDifficultyException">Thrown when
-            the <paramref name="metadata"/>'s <see cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/> is negative.
-            </exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockTotalDifficultyException">Thrown when
-            the <paramref name="metadata"/>'s <see cref="P:Libplanet.Blocks.IBlockMetadata.TotalDifficulty"/> is less
-            than its <see cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/>.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockNonceException">Thrown when the given proof-of-work
-            <paramref name="nonce"/> does not satisfy the required <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.Difficulty"/>.
-            </exception>
-            <remarks><see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.PreEvaluationHash"/> is automatically derived from the given
-            arguments.</remarks>
-        </member>
-        <member name="M:Libplanet.Blocks.PreEvaluationBlockHeader.#ctor(Libplanet.Blocks.IBlockMetadata,Libplanet.Nonce,System.Collections.Immutable.ImmutableArray{System.Byte})">
-            <summary>
-            Creates a <see cref="T:Libplanet.Blocks.PreEvaluationBlockHeader"/> instance with its
-            <paramref name="metadata"/>, a valid proof-of-work <paramref name="nonce"/> which
-            satisfies the required <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.Difficulty"/>, and
-            a <paramref name="preEvaluationHash"/> digest derived from them.
-            </summary>
-            <param name="metadata">Block's metadata.</param>
-            <param name="nonce">A valid proof-of-work nonce which satisfies the required
-            <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.Difficulty"/>.</param>
-            <param name="preEvaluationHash">The hash digest derived from the given arguments.
-            </param>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockProtocolVersionException">Thrown when
-            the <paramref name="metadata"/>'s to set is <see cref="P:Libplanet.Blocks.IBlockMetadata.ProtocolVersion"/>
-            is less than 0, or greater than <see cref="F:Libplanet.Blocks.BlockMetadata.CurrentProtocolVersion"/>,
-            the latest known protocol version.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockIndexException">Thrown when the <paramref name="metadata"/>
-            has a negative <see cref="P:Libplanet.Blocks.IBlockMetadata.Index"/>.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockDifficultyException">Thrown when
-            the <paramref name="metadata"/>'s <see cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/> is negative.
-            </exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockTotalDifficultyException">Thrown when
-            the <paramref name="metadata"/>'s <see cref="P:Libplanet.Blocks.IBlockMetadata.TotalDifficulty"/> is less
-            than its <see cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/>.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockPreEvaluationHashException">Thrown when the given
-            <paramref name="preEvaluationHash"/> is invalid.</exception>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockNonceException">Thrown when the given proof-of-work
-            <paramref name="nonce"/> does not satisfy the required <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.Difficulty"/>.
-            </exception>
+            <seealso cref="T:Libplanet.Blocks.BlockMetadata"/>
         </member>
         <member name="M:Libplanet.Blocks.PreEvaluationBlockHeader.#ctor(Libplanet.Blocks.BlockMetadata,System.ValueTuple{Libplanet.Nonce,System.Collections.Immutable.ImmutableArray{System.Byte}}@)">
             <summary>
-            Unsafely creates a <see cref="T:Libplanet.Blocks.PreEvaluationBlockHeader"/> instance with its
-            <paramref name="metadata"/>, and a <paramref name="proof"/> which is probably
-            considered as to be valid.
+            Creates a <see cref="T:Libplanet.Blocks.PreEvaluationBlockHeader"/> instance with its
+            <paramref name="metadata"/> and a valid <paramref name="proof"/>.  All other public
+            constructors should be redirected to this one.
             </summary>
             <param name="metadata">Block's metadata.</param>
             <param name="proof">A pair of the valid proof-of-work nonce which is probably considered
             as to satisfy the required <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.Difficulty"/>, and the hash digest which is
             probably considered as to be derived from the block <paramref name="metadata"/> and the
             nonce.</param>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockPreEvaluationHashException">Thrown when the given proof's
-            hash is invalid.</exception>
-            <remarks>This does not verify if a <paramref name="proof"/>'s hash is derived from
-            the block <paramref name="metadata"/> and the proof nonce.  Therefore, this unsafe
-            constructor shouldn't be used except for <see cref="M:Libplanet.Blocks.BlockContent`1.Mine(System.Threading.CancellationToken)"/> method.
-            </remarks>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockPreEvaluationHashException">Thrown when
+            <paramref name="proof.PreEvaluationHash.PreEvaluationHash"/> is invalid.</exception>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockNonceException">Thrown when <paramref name="proof.Nonce.Nonce"/>
+            does not satisfy the required <see cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/>.</exception>
+        </member>
+        <member name="P:Libplanet.Blocks.PreEvaluationBlockHeader.Metadata">
+            <summary>
+            Internal <see cref="T:Libplanet.Blocks.BlockMetadata"/>.
+            </summary>
         </member>
         <member name="P:Libplanet.Blocks.PreEvaluationBlockHeader.ProtocolVersion">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.ProtocolVersion"/>
@@ -6207,9 +6481,6 @@
         </member>
         <member name="P:Libplanet.Blocks.PreEvaluationBlockHeader.Timestamp">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.Timestamp"/>
-        </member>
-        <member name="P:Libplanet.Blocks.PreEvaluationBlockHeader.Nonce">
-            <inheritdoc cref="P:Libplanet.Blocks.IPreEvaluationBlockHeader.Nonce"/>
         </member>
         <member name="P:Libplanet.Blocks.PreEvaluationBlockHeader.Miner">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.Miner"/>
@@ -6229,13 +6500,11 @@
         <member name="P:Libplanet.Blocks.PreEvaluationBlockHeader.TxHash">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.TxHash"/>
         </member>
+        <member name="P:Libplanet.Blocks.PreEvaluationBlockHeader.Nonce">
+            <inheritdoc cref="P:Libplanet.Blocks.IPreEvaluationBlockHeader.Nonce"/>
+        </member>
         <member name="P:Libplanet.Blocks.PreEvaluationBlockHeader.PreEvaluationHash">
             <inheritdoc cref="P:Libplanet.Blocks.IPreEvaluationBlockHeader.PreEvaluationHash"/>
-        </member>
-        <member name="P:Libplanet.Blocks.PreEvaluationBlockHeader.Metadata">
-            <summary>
-            The internal block metadata.
-            </summary>
         </member>
         <member name="M:Libplanet.Blocks.PreEvaluationBlockHeader.MakeCandidateData(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Nullable{System.Collections.Immutable.ImmutableArray{System.Byte}})">
             <summary>
@@ -6282,7 +6551,7 @@
             of the signature.</param>
             <returns><c>true</c> if the signature is valid.  <c>false</c> otherwise.</returns>
         </member>
-        <member name="M:Libplanet.Blocks.PreEvaluationBlockHeader.DeriveBlockHash(Libplanet.HashDigest{System.Security.Cryptography.SHA256}@,System.Nullable{System.Collections.Immutable.ImmutableArray{System.Byte}})">
+        <member name="M:Libplanet.Blocks.PreEvaluationBlockHeader.DeriveBlockHash(Libplanet.HashDigest{System.Security.Cryptography.SHA256}@,System.Nullable{System.Collections.Immutable.ImmutableArray{System.Byte}}@)">
             <summary>
             Derives a hash digest from the given pre-evaluation block header and
             <paramref name="stateRootHash"/>.
@@ -6304,8 +6573,6 @@
             <param name="metadata">The block metadata.</param>
             <param name="nonce">The proof-of-work nonce.</param>
             <param name="preEvaluationHash">The pre-evaluation hash digest to verify.</param>
-            <returns>A pair of the <paramref name="nonce"/> and <paramref name="preEvaluationHash"/>
-            if the <paramref name="preEvaluationHash"/> is verified to be correct.</returns>
             <exception cref="T:Libplanet.Blocks.InvalidBlockPreEvaluationHashException">Thrown when the given
             <paramref name="preEvaluationHash"/> is incorrect.</exception>
         </member>
@@ -7650,16 +7917,16 @@
             with a given key ID in an <see cref="T:Libplanet.KeyStore.IKeyStore"/>.
             </summary>
         </member>
-        <member name="M:Libplanet.KeyStore.NoKeyException.#ctor(System.Guid,System.String)">
+        <member name="M:Libplanet.KeyStore.NoKeyException.#ctor(System.String,System.Guid)">
             <summary>
             Instantiates a new exception object with proper metadata.
             </summary>
+            <param name="message">A descriptive error message for programmers.
+            Goes to <see cref="P:System.Exception.Message"/>.</param>
             <param name="keyId">The key ID tried to look for.
             It is automatically included to the <see cref="P:System.Exception.Message"/>
             string.
             </param>
-            <param name="message">A descriptive error message for programmers.
-            Goes to <see cref="P:System.Exception.Message"/>.</param>
         </member>
         <member name="P:Libplanet.KeyStore.NoKeyException.KeyId">
             <summary>
@@ -8207,6 +8474,13 @@
             The block signature.
             </summary>
         </member>
+        <member name="P:Libplanet.Store.BlockDigest.TxIds">
+            <summary>
+            The <see cref="P:Libplanet.Tx.Transaction`1.Id"/>s of <see cref="T:Libplanet.Tx.Transaction`1"/>s in
+            a <see cref="T:Libplanet.Blocks.Block`1"/>.  This is <em>not</em> necessarily ordered by
+            <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.
+            </summary>
+        </member>
         <member name="M:Libplanet.Store.BlockDigest.FromBlock``1(Libplanet.Blocks.Block{``0})">
             <summary>
             Gets <see cref="T:Libplanet.Store.BlockDigest"/> representation of the <see cref="T:Libplanet.Blocks.Block`1"/>.
@@ -8547,16 +8821,10 @@
         <member name="M:Libplanet.Store.DefaultStore.ForkBlockIndexes(System.Guid,System.Guid,Libplanet.Blocks.BlockHash)">
             <inheritdoc cref="M:Libplanet.Store.BaseStore.ForkBlockIndexes(System.Guid,System.Guid,Libplanet.Blocks.BlockHash)"/>
         </member>
-        <member name="M:Libplanet.Store.DefaultStore.IterateTransactionIds">
-            <inheritdoc/>
-        </member>
         <member name="M:Libplanet.Store.DefaultStore.GetTransaction``1(Libplanet.Tx.TxId)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.DefaultStore.PutTransaction``1(Libplanet.Tx.Transaction{``0})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.DefaultStore.DeleteTransaction(Libplanet.Tx.TxId)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.DefaultStore.ContainsTransaction(Libplanet.Tx.TxId)">
@@ -8611,9 +8879,6 @@
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.DefaultStore.PruneOutdatedChains(System.Boolean)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.DefaultStore.CountTransactions">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.DefaultStore.CountBlocks">
@@ -9123,6 +9388,43 @@
             </summary>
             <returns>Pairs of registered URI scheme and declaring type.</returns>
         </member>
+        <member name="T:Libplanet.Store.TrieStateStore">
+            <summary>
+            An <see cref="T:Libplanet.Store.IStateStore"/> implementation. It stores states with <see cref="T:Libplanet.Store.Trie.MerkleTrie"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.#ctor(Libplanet.Store.Trie.IKeyValueStore,System.Boolean)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Store.TrieStateStore"/>.
+            </summary>
+            <param name="stateKeyValueStore">The storage to store states. It used by
+            <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in internal.</param>
+            <param name="secure">Whether to use <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in secure mode.
+            <seealso cref="M:Libplanet.Store.Trie.MerkleTrie.#ctor(Libplanet.Store.Trie.IKeyValueStore,Libplanet.Store.Trie.Nodes.INode,System.Boolean)"/>.</param>
+        </member>
+        <member name="P:Libplanet.Store.TrieStateStore.Secure">
+            <summary>
+            <see langword="true"/> if the <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> is in secure mode.
+            In secure mode, keys are hashed under the hood.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.PruneStates(System.Collections.Immutable.IImmutableSet{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
+            <inheritdoc cref="M:Libplanet.Store.IStateStore.PruneStates(System.Collections.Immutable.IImmutableSet{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})"/>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.CopyStates(System.Collections.Immutable.IImmutableSet{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},Libplanet.Store.TrieStateStore)">
+            <summary>
+            Copies states under state root hashes of given <paramref name="stateRootHashes"/>
+            to <paramref name="targetStateStore"/>.
+            </summary>
+            <param name="stateRootHashes">The state root hashes of states to copy.</param>
+            <param name="targetStateStore">The target state store to copy state root hashes.</param>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.GetStateRoot(System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
+            <inheritdoc cref="M:Libplanet.Store.IStateStore.GetStateRoot(System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})"/>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.Dispose">
+            <inheritdoc cref="M:System.IDisposable.Dispose"/>
+        </member>
         <member name="T:Libplanet.Store.Trie.CacheableKeyValueStore">
             <summary>
             The proxy class to cache <see cref="T:Libplanet.Store.Trie.IKeyValueStore"/> operations.
@@ -9606,68 +9908,31 @@
         <member name="M:Libplanet.Store.Trie.Nodes.ValueNode.ToBencodex">
             <inheritdoc cref="M:Libplanet.Store.Trie.Nodes.INode.ToBencodex"/>
         </member>
-        <member name="T:Libplanet.Store.TrieStateStore">
-            <summary>
-            An <see cref="T:Libplanet.Store.IStateStore"/> implementation. It stores states with <see cref="T:Libplanet.Store.Trie.MerkleTrie"/>.
-            </summary>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.#ctor(Libplanet.Store.Trie.IKeyValueStore,System.Boolean)">
-            <summary>
-            Creates a new <see cref="T:Libplanet.Store.TrieStateStore"/>.
-            </summary>
-            <param name="stateKeyValueStore">The storage to store states. It used by
-            <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in internal.</param>
-            <param name="secure">Whether to use <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in secure mode.
-            <seealso cref="M:Libplanet.Store.Trie.MerkleTrie.#ctor(Libplanet.Store.Trie.IKeyValueStore,Libplanet.Store.Trie.Nodes.INode,System.Boolean)"/>.</param>
-        </member>
-        <member name="P:Libplanet.Store.TrieStateStore.Secure">
-            <summary>
-            <see langword="true"/> if the <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> is in secure mode.
-            In secure mode, keys are hashed under the hood.
-            </summary>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.PruneStates(System.Collections.Immutable.IImmutableSet{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
-            <inheritdoc cref="M:Libplanet.Store.IStateStore.PruneStates(System.Collections.Immutable.IImmutableSet{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})"/>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.CopyStates(System.Collections.Immutable.IImmutableSet{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},Libplanet.Store.TrieStateStore)">
-            <summary>
-            Copies states under state root hashes of given <paramref name="stateRootHashes"/>
-            to <paramref name="targetStateStore"/>.
-            </summary>
-            <param name="stateRootHashes">The state root hashes of states to copy.</param>
-            <param name="targetStateStore">The target state store to copy state root hashes.</param>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.GetStateRoot(System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
-            <inheritdoc cref="M:Libplanet.Store.IStateStore.GetStateRoot(System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})"/>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.Dispose">
-            <inheritdoc cref="M:System.IDisposable.Dispose"/>
-        </member>
         <member name="T:Libplanet.Tx.InvalidTxException">
             <summary>
             Serves as the base class for exceptions thrown by
             <see cref="M:Libplanet.Tx.Transaction`1.Validate"/>.
             </summary>
         </member>
-        <member name="M:Libplanet.Tx.InvalidTxException.#ctor(Libplanet.Tx.TxId,System.String)">
+        <member name="M:Libplanet.Tx.InvalidTxException.#ctor(System.String,Libplanet.Tx.TxId)">
             <summary>
             Instantiates a new exception object with proper metadata. Use
-            <see cref="M:Libplanet.Tx.InvalidTxException.#ctor(Libplanet.Tx.TxId,System.String,System.Exception)"/> if innerException
+            <see cref="M:Libplanet.Tx.InvalidTxException.#ctor(System.String,Libplanet.Tx.TxId,System.Exception)"/> if innerException
             is required.
             </summary>
+            <param name="message">A descriptive error message for programmers.
+            </param>
             <param name="txid">The invalid <see cref="T:Libplanet.Tx.Transaction`1"/>'s
             <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.  It is automatically included to
             the <see cref="P:System.Exception.Message"/> string.</param>
-            <param name="message">A descriptive error message for programmers.
-            </param>
         </member>
-        <member name="M:Libplanet.Tx.InvalidTxException.#ctor(Libplanet.Tx.TxId,System.String,System.Exception)">
-            <inheritdoc cref="M:Libplanet.Tx.InvalidTxException.#ctor(Libplanet.Tx.TxId,System.String)"/>
+        <member name="M:Libplanet.Tx.InvalidTxException.#ctor(System.String,Libplanet.Tx.TxId,System.Exception)">
+            <inheritdoc cref="M:Libplanet.Tx.InvalidTxException.#ctor(System.String,Libplanet.Tx.TxId)"/>
+            <param name="message">A descriptive error message for programmers.
+            </param>
             <param name="txid">The invalid <see cref="T:Libplanet.Tx.Transaction`1"/>'s
             <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.  It is automatically included to
             the <see cref="P:System.Exception.Message"/> string.</param>
-            <param name="message">A descriptive error message for programmers.
-            </param>
             <param name="innerException">The <see cref="T:System.Exception"/> for
             <see cref="P:System.Exception.InnerException"/>.</param>
         </member>
@@ -9683,11 +9948,12 @@
             <see cref="P:Libplanet.Blockchain.BlockChain`1.Genesis"/>.
             </summary>
         </member>
-        <member name="M:Libplanet.Tx.InvalidTxGenesisHashException.#ctor(Libplanet.Tx.TxId,Libplanet.Blocks.BlockHash,System.Nullable{Libplanet.Blocks.BlockHash},System.String)">
+        <member name="M:Libplanet.Tx.InvalidTxGenesisHashException.#ctor(System.String,Libplanet.Tx.TxId,Libplanet.Blocks.BlockHash,System.Nullable{Libplanet.Blocks.BlockHash})">
             <summary>
             Initializes a new instance of the
             <see cref="T:Libplanet.Tx.InvalidTxGenesisHashException"/> class.
             </summary>
+            <param name="message">The message that describes the error.</param>
             <param name="txid">The invalid <see cref="T:Libplanet.Tx.Transaction`1"/>'s
             <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.  It is automatically included to
             the <see cref="P:System.Exception.Message"/> string.</param>
@@ -9695,7 +9961,6 @@
             value of <see cref="P:Libplanet.Blockchain.BlockChain`1.Genesis"/>.</param>
             <param name="improperGenesisHash">The actual
             <see cref="P:Libplanet.Tx.Transaction`1.GenesisHash"/>.  This can be <c>null</c>.</param>
-            <param name="message">The message that describes the error.</param>
         </member>
         <member name="P:Libplanet.Tx.InvalidTxGenesisHashException.ExpectedGenesisHash">
             <summary>
@@ -9717,15 +9982,15 @@
             encoding of <see cref="T:Libplanet.Tx.TxId"/>, but there is no corresponding entry to
             a given <see cref="T:Libplanet.Tx.TxId"/>, which is <em>valid</em>.</remarks>
         </member>
-        <member name="M:Libplanet.Tx.InvalidTxIdException.#ctor(Libplanet.Tx.TxId,System.String)">
+        <member name="M:Libplanet.Tx.InvalidTxIdException.#ctor(System.String,Libplanet.Tx.TxId)">
             <summary>
             Creates a new <see cref="T:Libplanet.Tx.InvalidTxIdException"/> object.
             </summary>
+            <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.
+            </param>
             <param name="txid">The invalid <see cref="T:Libplanet.Tx.TxId"/>.
             It is automatically included to the <see cref="P:System.Exception.Message"/>
             string.</param>
-            <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.
-            </param>
         </member>
         <member name="T:Libplanet.Tx.InvalidTxNonceException">
             <summary>
@@ -9734,11 +9999,12 @@
             the <see cref="P:Libplanet.Tx.Transaction`1.Signer"/>.
             </summary>
         </member>
-        <member name="M:Libplanet.Tx.InvalidTxNonceException.#ctor(Libplanet.Tx.TxId,System.Int64,System.Int64,System.String)">
+        <member name="M:Libplanet.Tx.InvalidTxNonceException.#ctor(System.String,Libplanet.Tx.TxId,System.Int64,System.Int64)">
             <summary>
             Initializes a new instance of the
             <see cref="T:Libplanet.Tx.InvalidTxNonceException"/> class.
             </summary>
+            <param name="message">The message that describes the error.</param>
             <param name="txid">The invalid <see cref="T:Libplanet.Tx.Transaction`1"/>'s
             <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.  It is automatically included to
             the <see cref="P:System.Exception.Message"/> string.</param>
@@ -9746,7 +10012,6 @@
             result of the <see cref="P:Libplanet.Tx.Transaction`1.Signer"/>.</param>
             <param name="improperNonce">The actual
             <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/>.</param>
-            <param name="message">The message that describes the error.</param>
         </member>
         <member name="P:Libplanet.Tx.InvalidTxNonceException.ExpectedNonce">
             <summary>
@@ -9765,15 +10030,14 @@
             <see cref="P:Libplanet.Tx.Transaction`1.Signature"/> is invalid.
             </summary>
         </member>
-        <member name="M:Libplanet.Tx.InvalidTxSignatureException.#ctor(Libplanet.Tx.TxId,System.String)">
+        <member name="M:Libplanet.Tx.InvalidTxSignatureException.#ctor(System.String,Libplanet.Tx.TxId)">
             <summary>
             Creates a new <see cref="T:Libplanet.Tx.InvalidTxSignatureException"/> object.
             </summary>
+            <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.</param>
             <param name="txid">The invalid <see cref="T:Libplanet.Tx.Transaction`1"/>'s
             <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.  It is automatically included to
             the <see cref="P:System.Exception.Message"/> string.</param>
-            <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.
-            </param>
         </member>
         <member name="T:Libplanet.Tx.ITxExcerpt">
             <summary>
@@ -10519,26 +10783,26 @@
             a <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>.
             </summary>
         </member>
-        <member name="M:Libplanet.Tx.TxPolicyViolationException.#ctor(Libplanet.Tx.TxId,System.String)">
+        <member name="M:Libplanet.Tx.TxPolicyViolationException.#ctor(System.String,Libplanet.Tx.TxId)">
             <summary>
             Creates a new <see cref="T:Libplanet.Tx.TxPolicyViolationException"/> instance. Use
-            <see cref="M:Libplanet.Tx.TxPolicyViolationException.#ctor(Libplanet.Tx.TxId,System.String,System.Exception)"/> if innerException
+            <see cref="M:Libplanet.Tx.TxPolicyViolationException.#ctor(System.String,Libplanet.Tx.TxId,System.Exception)"/> if innerException
             is required.
             </summary>
-            <param name="txid">The <see cref="P:Libplanet.Tx.Transaction`1.Id"/> of the
-            <see cref="T:Libplanet.Tx.Transaction`1"/> violating a <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>.
-            Gets prepended to <paramref name="message"/>.</param>
             <param name="message">A description for the reason of violation
             given by an implementation of <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>.
             </param>
-        </member>
-        <member name="M:Libplanet.Tx.TxPolicyViolationException.#ctor(Libplanet.Tx.TxId,System.String,System.Exception)">
-            <inheritdoc cref="M:Libplanet.Tx.TxPolicyViolationException.#ctor(Libplanet.Tx.TxId,System.String)"/>
             <param name="txid">The <see cref="P:Libplanet.Tx.Transaction`1.Id"/> of the
             <see cref="T:Libplanet.Tx.Transaction`1"/> violating a <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>.
             Gets prepended to <paramref name="message"/>.</param>
+        </member>
+        <member name="M:Libplanet.Tx.TxPolicyViolationException.#ctor(System.String,Libplanet.Tx.TxId,System.Exception)">
+            <inheritdoc cref="M:Libplanet.Tx.TxPolicyViolationException.#ctor(System.String,Libplanet.Tx.TxId)"/>
             <param name="message">A description for the reason of violation
             given by an implementation of <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>. </param>
+            <param name="txid">The <see cref="P:Libplanet.Tx.Transaction`1.Id"/> of the
+            <see cref="T:Libplanet.Tx.Transaction`1"/> violating a <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>.
+            Gets prepended to <paramref name="message"/>.</param>
             <param name="innerException">The <see cref="T:System.Exception"/> for
             <see cref="P:System.Exception.InnerException"/>.</param>
         </member>

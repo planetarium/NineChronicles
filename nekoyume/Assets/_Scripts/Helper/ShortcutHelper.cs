@@ -10,6 +10,7 @@ using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI;
 using Nekoyume.UI.Module;
+using UnityEngine;
 using static Nekoyume.Helper.ShortcutHelper;
 
 namespace Nekoyume.Helper
@@ -197,7 +198,11 @@ namespace Nekoyume.Helper
                     guideText = L10nManager.Localize("UI_QUEST");
                     break;
                 case PlaceType.Staking:
-                    shortcutAction += () => Widget.Find<StakingPopup>().Show();
+                    shortcutAction = () =>
+                    {
+                        caller.Close();
+                        Application.OpenURL(StakingPopup.StakingUrl);
+                    };
                     guideText = L10nManager.Localize("UI_PLACE_STAKING");
                     break;
                 default:
@@ -361,7 +366,7 @@ namespace Nekoyume.Helper
                     {
                         if (RxProps.EventDungeonInfo.Value is not null)
                         {
-                            return stageRow.Id <= RxProps.EventDungeonInfo.Value.ClearedStageId;
+                            return stageRow.Id <= RxProps.EventDungeonInfo.Value.ClearedStageId + 1;
                         }
 
                         return stageRow.Id.ToEventDungeonStageNumber() <= 1;
@@ -369,7 +374,7 @@ namespace Nekoyume.Helper
 
                     States.Instance.CurrentAvatarState.worldInformation
                         .TryGetLastClearedStageId(out var lastClearedStageId);
-                    return stageRow.Id <= lastClearedStageId;
+                    return stageRow.Id <= lastClearedStageId + 1;
                 }
             ).ToList();
 
@@ -401,7 +406,7 @@ namespace Nekoyume.Helper
                 rowList = stageRows.ToList();
                 var rowCount = rowList.Count;
                 for (var i = rowCount - 1;
-                     i >= 0 && result.Count >= MaxCountOfAcquisitionStages;
+                     i >= 0 && result.Count < MaxCountOfAcquisitionStages;
                      i--)
                 {
                     if (!result.Contains(rowList[i]))

@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Atlas_WorldBossResult
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 0
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 1
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 0
+      enableTightPacking: 1
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: 44adba90e5bae43269f6738f92d18d5e, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: d4bb0b90bcaa0414ba13e7cb366b8af3, type: 3}
+  - {fileID: 21300000, guid: 0e8c68815d854c74996e1ff9f2294568, type: 3}
+  - {fileID: 21300000, guid: 494e58342bcb2e64ab3ced8955affb05, type: 3}
+  - {fileID: 21300000, guid: 90eee816f5f270947ba9a02b5f025f0d, type: 3}
+  - {fileID: 21300000, guid: 3fddc5b76888a3347b7402083a630004, type: 3}
+  - {fileID: 21300000, guid: 08a492d8710d966449c3599c304b0ee6, type: 3}
+  - {fileID: 21300000, guid: f9a9e4e824fb3a7438400839ad1131f6, type: 3}
+  - {fileID: 21300000, guid: 6234549b973a02440a6cbaa5f5ff8497, type: 3}
+  - {fileID: 21300000, guid: 1b77a7ec9ce6c56479484a0b255b0bcd, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - WB_Result_Title_5
+  - WB_Result_Bg_2
+  - WB_Result_Bg_3
+  - WB_Result_Title_2
+  - WB_Result_Title_3
+  - WB_Result_Title_4
+  - WB_Result_Bg_1
+  - WB_Result_Title_1
+  - WB_Result_Bg_4
+  m_RenderDataMap: {}
+  m_Tag: Atlas_WorldBossResult
+  m_IsVariant: 0

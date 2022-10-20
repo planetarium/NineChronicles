@@ -220,6 +220,7 @@ namespace Nekoyume.UI
                 {
                     ["Count"] = models.Count,
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                 };
                 Analyzer.Instance.Track("Unity/Number of Purchased Items", props);
             }
@@ -230,6 +231,7 @@ namespace Nekoyume.UI
                 {
                     ["Price"] = model.OrderDigest.Price.GetQuantityString(),
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                 };
                 Analyzer.Instance.Track("Unity/Buy", props);
 

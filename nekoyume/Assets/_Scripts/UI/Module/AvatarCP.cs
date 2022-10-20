@@ -50,6 +50,10 @@ namespace Nekoyume.UI.Module
                 additionalCpText.text = (currentCp - prevCp).ToString();
                 _disableCpTween = StartCoroutine(CoDisableIncreasedCp());
             }
+            else
+            {
+                additionalCpArea.gameObject.SetActive(false);
+            }
         }
 
         private IEnumerator CoDisableIncreasedCp()

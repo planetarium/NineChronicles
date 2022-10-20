@@ -3,25 +3,14 @@ using System.Collections;
 using UnityEngine.UI;
 using UnityEngine;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.ScriptableObject;
-using Nekoyume.Helper;
-using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
+using Nekoyume.UI.Model;
+using System.Text.Json;
 
 namespace Nekoyume.UI
 {
     public class NoticePopup : PopupWidget
     {
-        [Serializable]
-        public class NoticeInfo
-        {
-            public string name;
-            public Sprite contentImage;
-            public string beginTime;
-            public string endTime;
-            public string pageUrlFormat;
-        }
-
         [SerializeField]
         private Image contentImage;
 
@@ -32,15 +21,17 @@ namespace Nekoyume.UI
         private Button closeButton;
 
         private const string LastNoticeDayKeyFormat = "LAST_NOTICE_DAY_{0}";
-        private const string BucketUrl =
-            "https://9c-asset-bundle.s3.us-east-2.amazonaws.com/Images/Notice_";
+        private const string JsonUrl =
+            "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/Notice.json";
 
-        private NoticeInfo _usingNoticeInfo;
-        private bool _spriteIsInitialized;
+        private const string ImageUrl =
+            "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Images/Notice";
 
-        private static bool CanShowNoticePopup(NoticeInfo notice)
+        private Notice _data;
+
+        private bool CanShowNoticePopup()
         {
-            if (notice == null)
+            if (_data == null)
             {
                 return false;
             }
@@ -50,12 +41,12 @@ namespace Nekoyume.UI
                 return false;
             }
 
-            if (!Util.IsInTime(notice.beginTime, notice.endTime, false))
+            if (!DateTime.UtcNow.IsInTime(_data.BeginDateTime, _data.EndDateTime))
             {
                 return false;
             }
 
-            var lastNoticeDayKey = string.Format(LastNoticeDayKeyFormat, notice.name);
+            var lastNoticeDayKey = string.Format(LastNoticeDayKeyFormat, _data.ImageName);
             var lastNoticeDay = DateTime.ParseExact(
                 PlayerPrefs.GetString(lastNoticeDayKey, "2022/03/01 00:00:00"),
                 "yyyy/MM/dd HH:mm:ss",
@@ -76,12 +67,6 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            detailButton.onClick.AddListener(() =>
-            {
-                GoToNoticePage();
-                AudioController.PlayClick();
-            });
-
             closeButton.onClick.AddListener(() =>
             {
                 Close();
@@ -90,41 +75,38 @@ namespace Nekoyume.UI
             closeButton.interactable = false;
         }
 
-        public override void Initialize()
+        private void Start()
         {
-            Addressables.LoadAssetAsync<NoticeInfoScriptableObject>("notice").Completed +=
-                operationHandle =>
-                {
-                    if (operationHandle.IsValid())
-                    {
-                        _usingNoticeInfo = operationHandle.Result.noticeInfo;
-                    }
-                    base.Initialize();
-                };
+            StartCoroutine(RequestManager.instance.GetJson(JsonUrl, Set));
+        }
+
+        private void Set(string json)
+        {
+            var data = JsonSerializer.Deserialize<Notice>(json);
+            _data = data;
+            StartCoroutine(CoSetTexture(_data.ImageName));
+
+            detailButton.onClick.RemoveAllListeners();
+            detailButton.onClick.AddListener(() =>
+            {
+                Application.OpenURL(data.Url);
+                AudioController.PlayClick();
+            });
         }
 
         public override void Show(bool ignoreStartAnimation = false)
         {
-            if (!CanShowNoticePopup(_usingNoticeInfo))
+            if (!CanShowNoticePopup())
             {
                 return;
             }
 
             base.Show(ignoreStartAnimation);
-            if (!_spriteIsInitialized)
-            {
-                StartCoroutine(CoSetTexture());
-            }
         }
 
-        private void GoToNoticePage()
+        private IEnumerator CoSetTexture(string imageName)
         {
-            Application.OpenURL(_usingNoticeInfo.pageUrlFormat);
-        }
-
-        private IEnumerator CoSetTexture()
-        {
-            var www = UnityWebRequestTexture.GetTexture($"{BucketUrl}{_usingNoticeInfo.name}.png");
+            var www = UnityWebRequestTexture.GetTexture($"{ImageUrl}/{imageName}.png");
             yield return www.SendWebRequest();
             closeButton.interactable = true;
             if (www.result != UnityWebRequest.Result.Success)
@@ -138,7 +120,6 @@ namespace Nekoyume.UI
                     myTexture,
                     new Rect(0, 0, myTexture.width, myTexture.height),
                     new Vector2(0.5f, 0.5f));
-                _spriteIsInitialized = true;
             }
         }
     }

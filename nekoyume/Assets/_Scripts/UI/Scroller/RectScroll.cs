@@ -229,6 +229,14 @@ namespace Nekoyume.UI.Scroller
             Scroller.ScrollSensitivity = forcedScrollSensitivity;
         }
 
+        // Polymorphic impletmentation of the base.AdjustCellIntervalAndScrollOffset() method.
+        protected void AdjustCellIntervalAndScrollOffset(float viewportSize)
+        {
+            var totalSize = viewportSize + (CellSize + spacing) * (1f + reuseCellMarginCount * 2f);
+            cellInterval = (CellSize + spacing) / totalSize;
+            scrollOffset = cellInterval * (1f + reuseCellMarginCount);
+        }
+
         #endregion
 
         private float GetAlignmentToIncludeWithinViewport(TItemData itemData)

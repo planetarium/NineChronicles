@@ -84,8 +84,8 @@ namespace Nekoyume.BlockChain
         protected BaseStore store;
         private IStagePolicy<NCAction> _stagePolicy;
         private IStateStore _stateStore;
-        private ImmutableList<Peer> _seedPeers;
-        private ImmutableList<Peer> _peerList;
+        private ImmutableList<BoundPeer> _seedPeers;
+        private ImmutableList<BoundPeer> _peerList;
 
         private static CancellationTokenSource _cancellationTokenSource;
 
@@ -156,7 +156,7 @@ namespace Nekoyume.BlockChain
         private void Init(
             PrivateKey privateKey,
             string path,
-            IEnumerable<Peer> peers,
+            IEnumerable<BoundPeer> peers,
             IEnumerable<IceServer> iceServers,
             string host,
             int? port,
@@ -216,7 +216,9 @@ namespace Nekoyume.BlockChain
 
             EncounteredHighestVersion = appProtocolVersion;
 
-            _swarm = new Swarm<NCAction>(
+            // FIXME: this should be changed to reflect libplanet API change after it is reworked.
+            // for context, refer to https://github.com/planetarium/libplanet/discussions/2303.
+            var initSwarmTask = Task.Run(() => new Swarm<NCAction>(
                 blocks,
                 privateKey,
                 appProtocolVersion: appProtocolVersion,
@@ -224,7 +226,10 @@ namespace Nekoyume.BlockChain
                 listenPort: port,
                 iceServers: iceServers,
                 differentAppProtocolVersionEncountered: DifferentAppProtocolVersionEncountered,
-                trustedAppProtocolVersionSigners: trustedAppProtocolVersionSigners);
+                trustedAppProtocolVersionSigners: trustedAppProtocolVersionSigners));
+
+            initSwarmTask.Wait();
+            _swarm = initSwarmTask.Result;
 
             if (!consoleSink) InitializeTelemetryClient(_swarm.Address);
 
@@ -256,8 +261,8 @@ namespace Nekoyume.BlockChain
                 {
                     try
                     {
-                        store?.Dispose();
                         _swarm?.Dispose();
+                        store?.Dispose();
                         if (_stateStore is IDisposable disposable)
                         {
                             disposable.Dispose();
@@ -273,11 +278,15 @@ namespace Nekoyume.BlockChain
             disposed = true;
         }
 
-        public void EnqueueAction(GameAction gameAction)
+        public void EnqueueAction(ActionBase actionBase)
         {
-            Debug.LogFormat("Enqueue GameAction: {0} Id: {1}", gameAction, gameAction.Id);
-            _queuedActions.Enqueue(gameAction);
-            OnEnqueueOwnGameAction?.Invoke(gameAction.Id);
+            Debug.LogFormat("Enqueue GameAction: {0}", actionBase);
+            _queuedActions.Enqueue(actionBase);
+
+            if (actionBase is GameAction gameAction)
+            {
+                OnEnqueueOwnGameAction?.Invoke(gameAction.Id);
+            }
         }
 
         public IValue GetState(Address address)
@@ -656,7 +665,7 @@ namespace Nekoyume.BlockChain
         }
 
         private void DifferentAppProtocolVersionEncountered(
-            Peer peer,
+            BoundPeer peer,
             AppProtocolVersion peerVersion,
             AppProtocolVersion localVersion
         )
@@ -883,8 +892,10 @@ namespace Nekoyume.BlockChain
                     yield return new WaitUntil(() => task.IsCompleted);
                     foreach (var action in actions)
                     {
-                        var ga = (GameAction)action.InnerAction;
-                        _transactions.TryAdd(ga.Id, task.Result.Id);
+                        if (action.InnerAction is GameAction gameAction)
+                        {
+                            _transactions.TryAdd(gameAction.Id, task.Result.Id);
+                        }
                     }
                 }
             }

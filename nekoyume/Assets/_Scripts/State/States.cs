@@ -50,8 +50,12 @@ namespace Nekoyume.State
 
         public int StakingLevel { get; private set; }
 
-        private readonly Dictionary<int, CombinationSlotState> _combinationSlotStates =
-            new Dictionary<int, CombinationSlotState>();
+        private class Workshop
+        {
+            public Dictionary<int, CombinationSlotState> States { get; }= new();
+        }
+
+        private readonly Dictionary<Address, Workshop> _slotStates = new();
 
         private Dictionary<int, HammerPointState> _hammerPointStates;
 
@@ -340,9 +344,6 @@ namespace Nekoyume.State
 
             if (isNewlySelected)
             {
-                // NOTE: commit c1b7f0dc2e8fd922556b83f0b9b2d2d2b2626603 에서 코드 수정이 생기면서
-                // SetCombinationSlotStatesAsync()가 호출이 안되는 이슈가 있어서 revert했습니다. 재수정 필요
-                _combinationSlotStates.Clear();
                 _hammerPointStates = null;
                 await UniTask.Run(async () =>
                 {
@@ -403,32 +404,43 @@ namespace Nekoyume.State
                 );
                 var stateValue = await Game.Game.instance.Agent.GetStateAsync(slotAddress);
                 var state = new CombinationSlotState((Dictionary)stateValue);
-                UpdateCombinationSlotState(i, state);
+                UpdateCombinationSlotState(avatarState.address, i, state);
             }
         }
 
-        public void UpdateCombinationSlotState(int index, CombinationSlotState state)
+        public void UpdateCombinationSlotState(
+            Address avatarAddress,
+            int index,
+            CombinationSlotState state)
         {
-            if (_combinationSlotStates.ContainsKey(index))
+            if (!_slotStates.ContainsKey(avatarAddress))
             {
-                _combinationSlotStates[index] = state;
+                _slotStates.Add(avatarAddress, new Workshop());
+            }
+
+            var slots = _slotStates[avatarAddress];
+            if (slots.States.ContainsKey(index))
+            {
+                slots.States[index] = state;
             }
             else
             {
-                _combinationSlotStates.Add(index, state);
+                slots.States.Add(index, state);
             }
         }
 
-        public Dictionary<int, CombinationSlotState> GetCombinationSlotState(long currentBlockIndex)
+        public Dictionary<int, CombinationSlotState> GetCombinationSlotState(
+            AvatarState avatarState,
+            long currentBlockIndex)
         {
-            if (_combinationSlotStates == null)
+            if (!_slotStates.ContainsKey(avatarState.address))
             {
-                return new Dictionary<int, CombinationSlotState>();
+                _slotStates.Add(avatarState.address, new Workshop());
             }
 
-            return _combinationSlotStates
-                .Where(pair => !pair.Value.Validate(CurrentAvatarState, currentBlockIndex))
-                .ToDictionary(pair => pair.Key, pair => pair.Value);
+            var states = _slotStates[avatarState.address].States;
+            return states.Where(x => !x.Value.Validate(avatarState, currentBlockIndex))
+                         .ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
         public void SetGameConfigState(GameConfigState state)

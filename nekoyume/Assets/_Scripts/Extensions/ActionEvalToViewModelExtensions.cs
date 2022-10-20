@@ -4,6 +4,7 @@ using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
@@ -58,9 +59,11 @@ namespace Nekoyume
                 firstStageSimulator ??= simulator;
                 model.Exp += simulator.Player.Exp.Current - prevExp;
                 model.ClearedCountForEachWaves[simulator.Log.clearedWaveNumber]++;
-                foreach (var itemBase in simulator.Reward)
+                foreach (var (id, count) in simulator.ItemMap)
                 {
-                    model.AddReward(new CountableItem(itemBase, 1));
+                    model.AddReward(new CountableItem(
+                        ItemFactory.CreateMaterial(TableSheets.Instance.MaterialItemSheet[id]),
+                        count));
                 }
             }
 

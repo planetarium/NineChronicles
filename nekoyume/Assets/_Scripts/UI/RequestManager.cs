@@ -12,6 +12,7 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module.WorldBoss;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace Nekoyume.UI
 {
@@ -22,6 +23,16 @@ namespace Nekoyume.UI
         private const int MaxRetryCount = 8;
         private int _isExistSeasonRewardRetryCount;
         private int _getSeasonRewardRetryCount;
+
+        public IEnumerator GetJson(string url, System.Action<string> onSuccess)
+        {
+            using var request = UnityWebRequest.Get(url);
+            yield return request.SendWebRequest();
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                onSuccess(request.downloadHandler.text);
+            }
+        }
 
         public void IsExistSeasonReward(int raidId, Address avatarAddress)
         {

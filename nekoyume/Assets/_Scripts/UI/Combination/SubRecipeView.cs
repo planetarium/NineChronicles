@@ -160,9 +160,7 @@ namespace Nekoyume.UI
                     .Subscribe(_ =>
                     {
                         Widget.Find<SuperCraftPopup>().Show(
-                            _skillOptionRow,
-                            _selectedRecipeInfo,
-                            _recipeRow.Key,
+                            (EquipmentItemRecipeSheet.Row) _recipeRow,
                             _canSuperCraft);
                     }).AddTo(gameObject);
             }
@@ -272,7 +270,7 @@ namespace Nekoyume.UI
                     if (Craft.SharedModel.UnlockedRecipes.HasValue &&
                         gameObject.activeSelf)
                     {
-                        UpdateButton();
+                        UpdateButtonForEquipment();
                     }
                 });
             }
@@ -465,18 +463,11 @@ namespace Nekoyume.UI
 
             if (equipmentRow != null)
             {
-                UpdateButton();
+                UpdateButtonForEquipment();
             }
             else if (consumableRow != null)
             {
-                var submittable = CheckNCGAndSlotIsEnough();
-                var cost = new ConditionalCostButton.CostParam(
-                    CostType.NCG,
-                    (long)_selectedRecipeInfo.CostNCG);
-                button.SetCost(cost);
-                button.Interactable = submittable;
-                button.gameObject.SetActive(true);
-                lockedObject.SetActive(false);
+                UpdateButtonForConsumable();
             }
         }
 
@@ -507,7 +498,7 @@ namespace Nekoyume.UI
             return replacedMaterialMap;
         }
 
-        private void UpdateButton()
+        private void UpdateButtonForEquipment()
         {
             button.Interactable = false;
             if (_selectedRecipeInfo.Equals(default))
@@ -559,6 +550,38 @@ namespace Nekoyume.UI
                 lockedObject.SetActive(true);
                 lockedText.text = L10nManager.Localize("UI_INFORM_UNLOCK_RECIPE");
             }
+        }
+
+        private void UpdateButtonForConsumable()
+        {
+            var submittable = CheckNCGAndSlotIsEnough();
+            var inventory = States.Instance.CurrentAvatarState.inventory;
+            foreach (var material in _selectedRecipeInfo.Materials)
+            {
+                if (!TableSheets.Instance.MaterialItemSheet.TryGetValue(material.Key, out var row))
+                {
+                    continue;
+                }
+
+                var itemCount = inventory.TryGetFungibleItems(row.ItemId, out var outFungibleItems)
+                    ? outFungibleItems.Sum(e => e.count)
+                    : 0;
+
+                // consumable materials are basically unreplaceable so unreplaceable check isn't required
+                if (material.Value > itemCount)
+                {
+                    submittable = false;
+                }
+            }
+
+            var cost = new ConditionalCostButton.CostParam(
+                CostType.NCG,
+                (long)_selectedRecipeInfo.CostNCG);
+
+            button.SetCost(cost);
+            button.Interactable = submittable;
+            button.gameObject.SetActive(true);
+            lockedObject.SetActive(false);
         }
 
         private void SetOptions(

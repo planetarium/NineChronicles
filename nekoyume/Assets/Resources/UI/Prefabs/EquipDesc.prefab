@@ -1159,7 +1159,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: -25.9, y: -0.7}
+  m_AnchoredPosition: {x: -25.900024, y: -0.7}
   m_SizeDelta: {x: 35, y: 34}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &5437302770728872455
@@ -7772,7 +7772,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 12.1, y: 0}
+  m_AnchoredPosition: {x: 12.099976, y: 0}
   m_SizeDelta: {x: 16.52, y: 0}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &6578361041575044485
@@ -7856,8 +7856,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7929227024780288114}
   m_HandleRect: {fileID: 5918772952418114343}
   m_Direction: 3
-  m_Value: 1
-  m_Size: 0.84
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -15403,7 +15403,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 3678689530951789823}
   m_FillRect: {fileID: 2749736099815153115}
   m_HandleRect: {fileID: 1382318238143243331}
@@ -15493,7 +15493,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 138809205372836629}
   m_FillRect: {fileID: 7566761056081315501}
   m_HandleRect: {fileID: 3735988037602369160}
@@ -17134,7 +17134,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: -1.6000061, y: 0}
+  m_AnchoredPosition: {x: -1.5999756, y: 0}
   m_SizeDelta: {x: 34, y: 36}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &4843154819663125138
@@ -17990,7 +17990,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 4573852564513520677}
   m_FillRect: {fileID: 4718790938043931768}
   m_HandleRect: {fileID: 0}
@@ -18080,7 +18080,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 5055870025112110587}
   m_FillRect: {fileID: 3733020903691155981}
   m_HandleRect: {fileID: 2479809886165015190}
@@ -18561,7 +18561,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 7841504948909591701}
   m_FillRect: {fileID: 9155893656672280244}
   m_HandleRect: {fileID: 2016355921541569147}
@@ -19447,7 +19447,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 5371001999157899181}
   m_FillRect: {fileID: 1562997211337623821}
   m_HandleRect: {fileID: 5016977185830651962}
@@ -19853,7 +19853,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 1408039216209412377}
   m_FillRect: {fileID: 1183600621387306486}
   m_HandleRect: {fileID: 7007888472422025519}
@@ -27716,7 +27716,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 602380624104396282}
   m_FillRect: {fileID: 137295364728560421}
   m_HandleRect: {fileID: 5960442824093875092}
@@ -40493,7 +40493,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 3755001854079836100}
   m_FillRect: {fileID: 5891293014067300428}
   m_HandleRect: {fileID: 8582167443533805560}
@@ -43260,7 +43260,7 @@ PrefabInstance:
     - target: {fileID: 5730728711148222447, guid: f28b579a9755c49b5b5d1a1763a906a8,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 228.28
       objectReference: {fileID: 0}
     - target: {fileID: 5730728711148222447, guid: f28b579a9755c49b5b5d1a1763a906a8,
         type: 3}
@@ -44878,7 +44878,7 @@ PrefabInstance:
     - target: {fileID: 3480436870340489609, guid: 63867f78a3a288049b3e8f4d0025b208,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 115
       objectReference: {fileID: 0}
     - target: {fileID: 3480436870340489609, guid: 63867f78a3a288049b3e8f4d0025b208,
         type: 3}
@@ -45083,7 +45083,7 @@ PrefabInstance:
     - target: {fileID: 4972502282326135715, guid: 63867f78a3a288049b3e8f4d0025b208,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 115
       objectReference: {fileID: 0}
     - target: {fileID: 4972502282326135715, guid: 63867f78a3a288049b3e8f4d0025b208,
         type: 3}
@@ -45299,7 +45299,7 @@ PrefabInstance:
     - target: {fileID: 8563028456115147020, guid: 63867f78a3a288049b3e8f4d0025b208,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 115
       objectReference: {fileID: 0}
     - target: {fileID: 8563028456115147020, guid: 63867f78a3a288049b3e8f4d0025b208,
         type: 3}

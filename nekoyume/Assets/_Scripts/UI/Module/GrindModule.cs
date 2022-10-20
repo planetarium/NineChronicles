@@ -284,15 +284,25 @@ namespace Nekoyume.UI.Module
 
         private void OnUpdateInventory(Inventory inventory, Nekoyume.Model.Item.Inventory inventoryModel)
         {
-            var selectedItemCount = _selectedItemsForGrind.Count;
-            for (int i = 0; i < selectedItemCount; i++)
+            var selectedItemList = _selectedItemsForGrind.OrderBy(i => i.GrindingCount.Value).ToList();
+            _selectedItemsForGrind.Clear();
+            var notExistItemCount = 0;
+            var slotIndex = 0;
+            foreach (var inventoryItem in selectedItemList)
             {
-                if (inventory.TryGetModel(_selectedItemsForGrind[i].ItemBase, out var inventoryItem))
+                if (inventory.TryGetModel(inventoryItem.ItemBase, out var newItem))
                 {
-                    inventoryItem.GrindingCount.SetValueAndForceNotify(_selectedItemsForGrind[i].GrindingCount.Value);
-                    _selectedItemsForGrind[i] = inventoryItem;
-                    itemSlots[i].UpdateSlot(_selectedItemsForGrind[i]);
+                    newItem.GrindingCount.SetValueAndForceNotify(
+                        inventoryItem.GrindingCount.Value - notExistItemCount);
+                    itemSlots[slotIndex - notExistItemCount].UpdateSlot(inventoryItem);
+                    _selectedItemsForGrind.Add(newItem);
                 }
+                else
+                {
+                    notExistItemCount++;
+                }
+
+                slotIndex++;
             }
 
             grindButton.Interactable = CanGrind;
@@ -453,6 +463,7 @@ namespace Nekoyume.UI.Module
                 ["EquipmentCount"] = equipments.Count,
                 ["GainedCrystal"] = (long) _cachedGrindingRewardCrystal.MajorUnit,
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             });
             ActionManager.Instance
                 .Grinding(equipments, chargeAp)

@@ -181,6 +181,7 @@ namespace Nekoyume.UI.Scroller
             {
                 ["BurntCrystal"] = (long)_openCost,
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             });
             Game.Game.instance.ActionManager
                 .UnlockEquipmentRecipe(_unlockableRecipeIds, _openCost)
@@ -216,7 +217,22 @@ namespace Nekoyume.UI.Scroller
                 .ToList();
             emptyObjectText.text = L10nManager.Localize("UI_WORKSHOP_EMPTY_CATEGORY");
             emptyObject.SetActive(!items.Any());
-            Show(items, true);
+            Show(items);
+
+            var max = 0;
+            foreach (var item in items)
+            {
+                if (item.Rows.Any(row => row is EquipmentItemRecipeSheet.Row equipmentRow
+                                         && !IsEquipmentLocked(equipmentRow)))
+                {
+                    max = Mathf.Max(max, items.IndexOf(item));
+                }
+            }
+            // `Scroller.ViewportSize`(viewport.rect.size.x,y) was not initialized.
+            const float viewportSizeVertical = 458f;  // in `UI_Craft` prefab
+            AdjustCellIntervalAndScrollOffset(viewportSizeVertical);
+            JumpTo(max-1);
+
             AnimateScroller();
 
             Craft.SharedModel.NotifiedRow
@@ -228,6 +244,33 @@ namespace Nekoyume.UI.Scroller
             AgentStateSubject.Crystal
                 .Subscribe(_ => UpdateUnlockAllButton())
                 .AddTo(_disposablesAtShow);
+        }
+
+        private static bool IsEquipmentLocked(EquipmentItemRecipeSheet.Row equipmentRow)
+        {
+            var worldInformation = States.Instance.CurrentAvatarState.worldInformation;
+            var clearedStage = worldInformation.TryGetLastClearedStageId(out var stageId)
+                ? stageId
+                : 0;
+            var sharedModel = Craft.SharedModel;
+
+            if (equipmentRow.UnlockStage - clearedStage > 0)
+            {
+                return true;
+            }
+            if (sharedModel.DummyLockedRecipes.Contains(equipmentRow.Id))
+            {
+                return true;
+            }
+            if (sharedModel.UnlockedRecipes is null)
+            {
+                return true;
+            }
+            if (sharedModel.UnlockingRecipes.Contains(equipmentRow.Id))
+            {
+                return false;
+            }
+            return !sharedModel.UnlockedRecipes.Value.Contains(equipmentRow.Id);
         }
 
         public void ShowAsFood(StatType type, bool updateToggle = false)

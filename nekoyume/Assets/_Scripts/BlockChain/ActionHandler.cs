@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using Lib9c.Renderer;
+using Libplanet;
 using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.Extensions;
@@ -329,9 +330,12 @@ namespace Nekoyume.BlockChain
             await UpdateAvatarState(avatarState, States.Instance.CurrentAvatarKey);
         }
 
-        internal static void UpdateCombinationSlotState(int slotIndex, CombinationSlotState state)
+        internal static void UpdateCombinationSlotState(
+        Address avatarAddress,
+        int slotIndex,
+        CombinationSlotState state)
         {
-            States.Instance.UpdateCombinationSlotState(slotIndex, state);
+            States.Instance.UpdateCombinationSlotState(avatarAddress, slotIndex, state);
             UpdateCache(state);
         }
 

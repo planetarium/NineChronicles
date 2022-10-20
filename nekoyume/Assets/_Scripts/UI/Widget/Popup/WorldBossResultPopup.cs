@@ -95,6 +95,11 @@ namespace Nekoyume.UI
 
         public void ShowAsPractice(int bossId, int score)
         {
+            foreach (var view in rewardViews)
+            {
+                view.gameObject.SetActive(false);
+            }
+
             base.Show();
             AudioController.instance.PlayMusic(AudioController.MusicCode.WorldBossBattleResult);
             _practiceText.SetActive(true);
@@ -125,7 +130,6 @@ namespace Nekoyume.UI
                 Find<WorldBossRewardScreen>().Show(_killRewards,
                     () =>
                     {
-                        Game.Event.OnRoomEnter.Invoke(true);
                         Find<WorldBoss>().ShowAsync().Forget();
                     });
             }

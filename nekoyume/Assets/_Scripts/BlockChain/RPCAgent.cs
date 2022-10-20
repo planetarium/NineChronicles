@@ -244,9 +244,9 @@ namespace Nekoyume.BlockChain
         {
         }
 
-        public void EnqueueAction(GameAction action)
+        public void EnqueueAction(ActionBase actionBase)
         {
-            _queuedActions.Enqueue(action);
+            _queuedActions.Enqueue(actionBase);
         }
 
         #region Mono
@@ -258,6 +258,7 @@ namespace Nekoyume.BlockChain
                 .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Disconnected", new Value
                 {
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                 }))
                 .AddTo(_disposables);
             OnRetryStarted
@@ -265,6 +266,7 @@ namespace Nekoyume.BlockChain
                 .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Retry Connect Started", new Value
                 {
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                 }))
                 .AddTo(_disposables);
             OnRetryEnded
@@ -272,6 +274,7 @@ namespace Nekoyume.BlockChain
                 .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Retry Connect Ended", new Value
                 {
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                 }))
                 .AddTo(_disposables);
             OnPreloadStarted
@@ -279,6 +282,7 @@ namespace Nekoyume.BlockChain
                 .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Preload Started", new Value
                 {
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                 }))
                 .AddTo(_disposables);
             OnPreloadEnded
@@ -286,6 +290,7 @@ namespace Nekoyume.BlockChain
                 .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Preload Ended", new Value
                 {
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                 }))
                 .AddTo(_disposables);
             OnRetryAttempt
@@ -490,8 +495,10 @@ namespace Nekoyume.BlockChain
 
             foreach (var action in actions)
             {
-                var ga = (GameAction) action.InnerAction;
-                _transactions.TryAdd(ga.Id, tx.Id);
+                if (action.InnerAction is GameAction gameAction)
+                {
+                    _transactions.TryAdd(gameAction.Id, tx.Id);
+                }
             }
         }
 
