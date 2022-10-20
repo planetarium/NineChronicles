@@ -80,7 +80,7 @@ namespace Nekoyume.Action
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Verbose("{AddressesHex}Sell exec started", addressesHex);
+            Log.Debug("{AddressesHex}Sell exec started", addressesHex);
 
             var ncg = states.GetGoldCurrency();
             if (!price.Currency.Equals(ncg) ||
@@ -172,7 +172,7 @@ namespace Nekoyume.Action
             sw.Stop();
             var ended = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}Sell Set ShopState: {Elapsed}", addressesHex, sw.Elapsed);
-            Log.Verbose(
+            Log.Debug(
                 "{AddressesHex}Sell Total Executed Time: {Elapsed}",
                 addressesHex,
                 ended - started);

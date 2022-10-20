@@ -7,6 +7,7 @@ using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Serilog;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
@@ -38,6 +39,9 @@ namespace Nekoyume.Action
 
             CheckObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex, context);
 
+            var addressesHex = GetSignerAndOtherAddressesHex(context, context.Signer);
+            var started = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}CancelMonsterCollect exec started", addressesHex);
             AgentState agentState = states.GetAgentState(context.Signer);
             if (agentState is null)
             {
@@ -72,6 +76,8 @@ namespace Nekoyume.Action
                 balance += monsterCollectionSheet[i].RequiredGold * currency;
             }
 
+            var ended = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}CancelMonsterCollect Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states
                 .SetState(collectionAddress, monsterCollectionState.Serialize())
                 .TransferAsset(collectionAddress, context.Signer, balance);

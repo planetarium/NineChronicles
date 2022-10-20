@@ -246,8 +246,7 @@ namespace Nekoyume.Action
             var serializedShopItem = shopItem.Serialize();
             serializedProductList = serializedProductList.Add(serializedShopItem);
             serializedSharedShopState = serializedSharedShopState.SetItem(
-                ProductsKey,
-                new List<IValue>(serializedProductList));
+                ProductsKey, serializedProductList);
 
             sw.Stop();
             Log.Verbose("{AddressesHex}Sell Get Register Item: {Elapsed}", addressesHex,

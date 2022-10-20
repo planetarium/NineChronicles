@@ -26,7 +26,8 @@ namespace Nekoyume.Action
 
         public override IValue PlainValue => Dictionary.Empty
             .Add("r", RewardPoolAddress.Serialize())
-            .Add("a", Assets.Select(a => a.Serialize()));
+            .Add("a", new List(Assets.Select(a => a.Serialize())));
+
         public override void LoadPlainValue(IValue plainValue)
         {
             var serialized = (Dictionary) plainValue;
@@ -52,7 +53,7 @@ namespace Nekoyume.Action
                 // Prevent mint NCG.
                 if (!(asset.Currency.Minters is null))
                 {
-                    throw new CurrencyPermissionException(context.Signer, asset.Currency, null);
+                    throw new CurrencyPermissionException(null, context.Signer, asset.Currency);
                 }
                 states = states.MintAsset(RewardPoolAddress, asset);
             }

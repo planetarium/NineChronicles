@@ -1,0 +1,86 @@
+﻿{
+  Bencodex.Types.Text "amount": [
+    {
+      Bencodex.Types.Text "decimalPlaces": [
+        2
+      ],
+      Bencodex.Types.Text "minters": {
+        Fingerprint: {
+          EncodingLength: 1
+        },
+        EncodingLength: 1
+      },
+      Bencodex.Types.Text "ticker": {
+        Value: NNN,
+        Kind: Text,
+        Fingerprint: {
+          Kind: Text,
+          EncodingLength: 6,
+          Digest: [
+            78,
+            78,
+            78
+          ]
+        },
+        EncodingLength: 6
+      }
+    },
+    {
+      Value: 10000,
+      Kind: Integer,
+      Fingerprint: {
+        Kind: Integer,
+        EncodingLength: 7,
+        Digest: [
+          16,
+          39
+        ]
+      },
+      EncodingLength: 7
+    }
+  ],
+  Bencodex.Types.Text "recipient": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  Bencodex.Types.Text "sender": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ]
+}

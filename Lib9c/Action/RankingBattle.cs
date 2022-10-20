@@ -71,7 +71,7 @@ namespace Nekoyume.Action
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Verbose(
+            Log.Debug(
                 "{AddressesHex}RankingBattle exec started. costume: ({CostumeIds}), equipment: ({EquipmentIds})",
                 addressesHex,
                 string.Join(",", costumeIds),
@@ -294,7 +294,7 @@ namespace Nekoyume.Action
             sw.Restart();
 
             var ended = DateTimeOffset.UtcNow;
-            Log.Verbose("{AddressesHex}RankingBattle Total Executed Time: {Elapsed}", addressesHex, ended - started);
+            Log.Debug("{AddressesHex}RankingBattle Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states;
         }
 

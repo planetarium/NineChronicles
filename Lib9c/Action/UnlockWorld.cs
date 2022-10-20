@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
@@ -9,6 +10,7 @@ using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Serilog;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
@@ -38,6 +40,9 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, context.Signer, Addresses.UnlockWorld);
             }
 
+            var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
+            var started = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}UnlockWorld exec started", addressesHex);
             if (!WorldIds.Any() || WorldIds.Any(i => i < 2 || i == GameConfig.MimisbrunnrWorldId))
             {
                 throw new InvalidWorldException();
@@ -121,6 +126,8 @@ namespace Nekoyume.Action
                     .SetState(inventoryAddress, avatarState.inventory.Serialize());
             }
 
+            var ended = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}UnlockWorld Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states
                 .SetState(unlockedWorldIdsAddress, new List(unlockedIds.Select(i => i.Serialize())))
                 .TransferAsset(context.Signer, Addresses.UnlockWorld, cost);

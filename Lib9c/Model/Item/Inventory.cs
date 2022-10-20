@@ -7,6 +7,7 @@ using Lib9c.Model.Order;
 using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Battle;
+using Nekoyume.Extensions;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
@@ -652,7 +653,13 @@ namespace Nekoyume.Model.Item
 
         #endregion
 
-        public bool HasNotification(int level, long blockIndex)
+        public bool HasNotification(
+            int level,
+            long blockIndex,
+            ItemRequirementSheet requirementSheet,
+            EquipmentItemRecipeSheet recipeSheet,
+            EquipmentItemSubRecipeSheetV2 subRecipeSheet,
+            EquipmentItemOptionSheet itemOptionSheet)
         {
             var availableSlots = UnlockHelper.GetAvailableEquipmentSlots(level);
 
@@ -679,9 +686,19 @@ namespace Nekoyume.Model.Item
                     }
 
                     var cp = CPHelper.GetCP(equipment);
-                    if (current.Any(i => CPHelper.GetCP(i) < cp))
+                    foreach (var i in current)
                     {
-                        return true;
+                        var requirementLevel = i.GetRequirementLevel(
+                            requirementSheet,
+                            recipeSheet,
+                            subRecipeSheet,
+                            itemOptionSheet);
+                        
+
+                        if (level >= requirementLevel && CPHelper.GetCP(i) < cp)
+                        {
+                            return true;
+                        }
                     }
                 }
             }

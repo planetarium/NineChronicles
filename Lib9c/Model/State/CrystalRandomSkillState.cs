@@ -73,5 +73,13 @@ namespace Nekoyume.Model.State
 
             return SkillFactory.Get(skillRow, default, 100);
         }
+
+        public int GetHighestRankSkill(CrystalRandomBuffSheet crystalRandomBuffSheet)
+        {
+            return SkillIds
+                .OrderBy(id => crystalRandomBuffSheet[id].Rank)
+                .ThenBy(id => id)
+                .First();
+        }
     }
 }

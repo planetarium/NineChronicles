@@ -6,6 +6,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.State;
+using Serilog;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
@@ -37,7 +38,8 @@ namespace Nekoyume.Action
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
-
+            var started = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}DailyReward exec started", addressesHex);
             if (!states.TryGetAgentAvatarStatesV2(context.Signer, avatarAddress, out _, out AvatarState avatarState, out _))
             {
                 throw new FailedLoadStateException(
@@ -63,6 +65,8 @@ namespace Nekoyume.Action
             avatarState.dailyRewardReceivedIndex = context.BlockIndex;
             avatarState.actionPoint = gameConfigState.ActionPointMax;
 
+            var ended = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}DailyReward Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states
                 .SetState(avatarAddress, avatarState.SerializeV2())
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())

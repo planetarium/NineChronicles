@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using Nekoyume.TableData;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
@@ -24,6 +25,7 @@ namespace Lib9c.Tools.SubCommand
     {
         private static Codec _codec = new Codec();
 
+        [Obsolete("This function is deprecated. Please use `NineChronicles.Headless.Executable tx transfer-asset` command instead.")]
         [Command(Description = "Create TransferAsset action and dump it.")]
         public void TransferAsset(
             [Argument("SENDER", Description = "An address of sender.")] string sender,
@@ -54,6 +56,7 @@ namespace Lib9c.Tools.SubCommand
             Console.Write(ByteUtil.Hex(raw));
         }
 
+        [Obsolete("This function is deprecated. Please use `NineChronicles.Headless.Executable tx sign` command instead.")]
         [Command(Description = "Create new transaction with given actions and dump it.")]
         public void Sign(
             [Argument("PRIVATE-KEY", Description = "A hex-encoded private key for signing.")] string privateKey,
@@ -89,6 +92,7 @@ namespace Lib9c.Tools.SubCommand
                         nameof(Nekoyume.Action.MigrationAvatarState) => new MigrationAvatarState(),
                         nameof(Nekoyume.Action.CreatePendingActivations) => new CreatePendingActivations(),
                         nameof(Nekoyume.Action.RenewAdminState) => new RenewAdminState(),
+                        nameof(Nekoyume.Action.PrepareRewardAssets) => new PrepareRewardAssets(),
                         _ => throw new CommandExitedException($"Can't determine given action type: {type}", 128),
                     };
                     action.LoadPlainValue(plainValue);
@@ -120,6 +124,7 @@ namespace Lib9c.Tools.SubCommand
             }
         }
 
+        [Obsolete("This function is deprecated. Please use `NineChronicles.Headless.Executable tx patch-table` command instead.")]
         [Command(Description = "Create PatchTable action and dump it.")]
         public void PatchTable(
             [Argument("TABLE-PATH", Description = "A table file path for patch.")]
@@ -162,6 +167,7 @@ namespace Lib9c.Tools.SubCommand
             Console.WriteLine(ByteUtil.Hex(raw));
         }
 
+        [Obsolete("This function is deprecated. Please use `NineChronicles.Headless.Executable tx migration-legacy-shop` command instead.")]
         [Command(Description = "Create MigrationLegacyShop action and dump it.")]
         public void MigrationLegacyShop()
         {
@@ -176,6 +182,7 @@ namespace Lib9c.Tools.SubCommand
             Console.WriteLine(ByteUtil.Hex(raw));
         }
 
+        [Obsolete("This function is deprecated. Please use `NineChronicles.Headless.Executable tx migration-activated-accounts-state` command instead.")]
         [Command(Description = "Create MigrationActivatedAccountsState action and dump it.")]
         public void MigrationActivatedAccountsState()
         {
@@ -189,6 +196,7 @@ namespace Lib9c.Tools.SubCommand
             Console.WriteLine(ByteUtil.Hex(raw));
         }
 
+        [Obsolete("This function is deprecated. Please use `NineChronicles.Headless.Executable tx migration-avatar-state` command instead.")]
         [Command(Description = "Create MigrationAvatarState action and dump it.")]
         public void MigrationAvatarState(
         [Argument("directory-path", Description = "path of the directory contained hex-encoded avatar states.")] string directoryPath,
@@ -215,6 +223,7 @@ namespace Lib9c.Tools.SubCommand
             File.WriteAllText(outputPath, ByteUtil.Hex(raw));
         }
 
+        [Obsolete("This function is deprecated. Please use `NineChronicles.Headless.Executable tx add-redeem-code` command instead.")]
         [Command(Description = "Create AddRedeemCode action and dump it.")]
         public void AddRedeemCode(
             [Argument("TABLE-PATH", Description = "A table file path for RedeemCodeListSheet")] string tablePath
@@ -233,6 +242,7 @@ namespace Lib9c.Tools.SubCommand
             Console.WriteLine(ByteUtil.Hex(raw));
         }
 
+        [Obsolete("This function is deprecated. Please use `NineChronicles.Headless.Executable tx create-pending-activations` command instead.")]
         [Command(Description = "Create CreatePendingActivations action and dump it.")]
         public void CreatePendingActivations(
             [Argument("CSV-PATH", Description = "A csv file path for CreatePendingActivations")] string csvPath
@@ -264,6 +274,7 @@ namespace Lib9c.Tools.SubCommand
             Console.WriteLine(ByteUtil.Hex(raw));
         }
 
+        [Obsolete("This function is deprecated. Please use `NineChronicles.Headless.Executable tx renew-admin-state` command instead.")]
         [Command(Description = "Create RenewAdminState action and dump it.")]
         public void RenewAdminState(
             [Argument("NEW-VALID-UNTIL")]
@@ -279,6 +290,7 @@ namespace Lib9c.Tools.SubCommand
             Console.WriteLine(ByteUtil.Hex(raw));
         }
 
+        [Obsolete("This function is deprecated. Please use `NineChronicles.Headless.Executable tx create-activation-keys` command instead.")]
         [Command(Description = "Create ActvationKey-nonce pairs and dump them as csv")]
         public void CreateActivationKeys(
             [Argument("COUNT", Description = "An amount of pairs")] int count
@@ -303,6 +315,39 @@ namespace Lib9c.Tools.SubCommand
                 var (ak, _) = ActivationKey.Create(key, nonce);
                 Console.WriteLine($"{ak.Encode()},{ByteUtil.Hex(nonce)}");
             }
+        }
+
+        [Obsolete("This function is deprecated. Please use `NineChronicles.Headless.Executable tx create-prepare-reward-assets` command instead.")]
+        [Command(Description = "Create PrepareRewardAssets")]
+        public void CreatePrepareRewardAssets(
+            [Argument("ASSETS")] string[] assets,
+            [Argument("POOL-ADDRESS")] string address
+            )
+        {
+            // 1,CRYSTAL,18
+            // 2,RUNE_FENRIR1
+            var poolAddress = new Address(address);
+            var favs = new List<FungibleAssetValue>();
+            Console.WriteLine($"Pool Address: {poolAddress}");
+            foreach (var asset in assets)
+            {
+                Console.WriteLine($"Asset: {asset}");
+                var args = asset.Split(',');
+                var amount = BigInteger.Parse(args[0]);
+                var ticker = args[1];
+                var decimalPlaces = args.Length == 3 ? (byte)int.Parse(args[2]) : (byte)0;
+#pragma warning disable CS0618
+                var currency = Currency.Legacy(ticker, decimalPlaces, minters: null);
+#pragma warning restore CS0618
+                favs.Add(amount * currency);
+            }
+            var action = new PrepareRewardAssets(poolAddress, favs);
+            var encoded = new List(
+                (Text) nameof(Nekoyume.Action.PrepareRewardAssets),
+                action.PlainValue
+            );
+            byte[] raw = _codec.Encode(encoded);
+            Console.WriteLine(ByteUtil.Hex(raw));
         }
     }
 }

@@ -9,6 +9,7 @@ using Libplanet.Action;
 using Nekoyume.Extensions;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Serilog;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
@@ -59,6 +60,9 @@ namespace Nekoyume.Action
                         StakeState.DeriveAddress(context.Signer));
             }
 
+            var addressesHex = GetSignerAndOtherAddressesHex(context, context.Signer);
+            var started = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}Stake exec started", addressesHex);
             if (Amount < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(Amount));
@@ -117,6 +121,9 @@ namespace Nekoyume.Action
                         .TransferAsset(stakeState.address, context.Signer, stakedBalance);
                 }
             }
+
+            var ended = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}Stake Total Executed Time: {Elapsed}", addressesHex, ended - started);
 
             // Stake with more or less amount.
             return states.TransferAsset(stakeState.address, context.Signer, stakedBalance)

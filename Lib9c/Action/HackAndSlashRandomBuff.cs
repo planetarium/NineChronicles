@@ -10,6 +10,7 @@ using Nekoyume.Battle;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using Nekoyume.TableData.Crystal;
+using Serilog;
 
 namespace Nekoyume.Action
 {
@@ -42,6 +43,9 @@ namespace Nekoyume.Action
         {
             var states = context.PreviousStates;
             var gachaStateAddress = Addresses.GetSkillStateAddressFromAvatarAddress(AvatarAddress);
+            var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
+            var started = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}HackAndSlashRandomBuff exec started", addressesHex);
 
             // Invalid Avatar address, or does not have GachaState.
             if (!states.TryGetState(gachaStateAddress, out List rawGachaState))
@@ -102,6 +106,8 @@ namespace Nekoyume.Action
 
             gachaState.Update(buffIds);
 
+            var ended = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}HackAndSlashRandomBuff Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states
                 .SetState(gachaStateAddress, gachaState.Serialize())
                 .TransferAsset(context.Signer, Addresses.StageRandomBuff, cost);

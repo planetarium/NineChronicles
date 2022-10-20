@@ -57,7 +57,10 @@ namespace Lib9c.Tests.Action
                 gameConfigState,
                 default
             );
-            var gold = new GoldCurrencyState(new Currency("NCG", 2, minter: null));
+#pragma warning disable CS0618
+            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+            var gold = new GoldCurrencyState(Currency.Legacy("NCG", 2, null));
+#pragma warning restore CS0618
 
             _initialState = new State()
                 .SetState(_agentAddress, agentState.Serialize())
@@ -166,7 +169,10 @@ namespace Lib9c.Tests.Action
 
             var goldCurrencyState = nextState.GetGoldCurrency();
             var blackSmithGold = nextState.GetBalance(Addresses.Blacksmith, goldCurrencyState);
-            var currency = new Currency("NCG", 2, minter: null);
+#pragma warning disable CS0618
+            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+            var currency = Currency.Legacy("NCG", 2, null);
+#pragma warning restore CS0618
             Assert.Equal(300 * currency, blackSmithGold);
             var agentGold = nextState.GetBalance(_agentAddress, goldCurrencyState);
             Assert.Equal(currency * 0, agentGold);

@@ -18,7 +18,11 @@ namespace Nekoyume.Helper
             [CanBeNull] IImmutableSet<Address> minters
         )
         {
-            return new Currency(runeRow.Ticker, decimalPlaces: decimalPlaces, minters: minters);
+
+#pragma warning disable CS0618
+            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+            return Currency.Legacy(runeRow.Ticker, decimalPlaces, minters);
+#pragma warning restore CS0618
         }
 
         public static FungibleAssetValue ToFungibleAssetValue(

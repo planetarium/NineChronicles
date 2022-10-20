@@ -72,7 +72,10 @@
             _questListAddress = _avatarAddress.Derive(LegacyQuestListKey);
             agentState.avatarAddresses.Add(0, _avatarAddress);
             _weeklyArenaState = new WeeklyArenaState(0);
-            var currency = new Currency("NCG", 2, minters: null);
+#pragma warning disable CS0618
+            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+            var currency = Currency.Legacy("NCG", 2, null);
+#pragma warning restore CS0618
             var goldCurrencyState = new GoldCurrencyState(currency);
             _initialState = new State()
                 .SetState(Addresses.GoldCurrency, goldCurrencyState.Serialize())
@@ -1161,20 +1164,26 @@
         }
 
         [Theory]
-        [InlineData(false, false, false)]
-        [InlineData(false, true, true)]
-        [InlineData(false, true, false)]
-        [InlineData(true, false, false)]
-        [InlineData(true, true, false)]
-        [InlineData(true, true, true)]
-        public void CheckCrystalRandomSkillState(bool clear, bool skillStateExist, bool hasCrystalSkill)
+        [InlineData(false, false, false, false)]
+        [InlineData(false, true, true, false)]
+        [InlineData(false, true, true, true)]
+        [InlineData(false, true, false, false)]
+        [InlineData(true, false, false, false)]
+        [InlineData(true, true, false, false)]
+        [InlineData(true, true, true, false)]
+        [InlineData(true, true, true, true)]
+        public void CheckCrystalRandomSkillState(
+            bool clear,
+            bool skillStateExist,
+            bool useCrystalSkill,
+            bool setSkillByArgument)
         {
             const int worldId = 1;
-            const int stageId = 5;
-            const int clearedStageId = 4;
+            const int stageId = 10;
+            const int clearedStageId = 9;
             var previousAvatarState = _initialState.GetAvatarStateV2(_avatarAddress);
             previousAvatarState.actionPoint = 999999;
-            previousAvatarState.level = clear ? 400 : 3;
+            previousAvatarState.level = clear ? 400 : 1;
             previousAvatarState.worldInformation = new WorldInformation(
                 0,
                 _tableSheets.WorldSheet,
@@ -1238,12 +1247,26 @@
             if (skillStateExist)
             {
                 skillState = new CrystalRandomSkillState(skillStateAddress, stageId);
-                if (hasCrystalSkill)
+                if (useCrystalSkill)
                 {
                     skillState.Update(int.MaxValue, _tableSheets.CrystalStageBuffGachaSheet);
+                    skillState.Update(_tableSheets.CrystalRandomBuffSheet
+                        .Select(pair => pair.Value.Id).ToList());
                 }
 
                 state = state.SetState(skillStateAddress, skillState.Serialize());
+            }
+
+            int? stageBuffId = null;
+            if (useCrystalSkill)
+            {
+                stageBuffId = skillState?.GetHighestRankSkill(_tableSheets.CrystalRandomBuffSheet);
+                Assert.NotNull(stageBuffId);
+            }
+
+            if (clear)
+            {
+                previousAvatarState.EquipItems(costumes.Concat(equipments.Select(e => e.ItemId)));
             }
 
             var action = new HackAndSlash
@@ -1256,9 +1279,9 @@
                 WorldId = worldId,
                 StageId = stageId,
                 AvatarAddress = _avatarAddress,
-                StageBuffId = skillState?.SkillIds
-                    .OrderBy(key => _tableSheets.CrystalRandomBuffSheet[key].Rank)
-                    .FirstOrDefault(),
+                StageBuffId = setSkillByArgument
+                    ? stageBuffId
+                    : null,
             };
 
             var ctx = new ActionContext
@@ -1270,12 +1293,25 @@
                 BlockIndex = 1,
             };
             var nextState = action.Execute(ctx);
+            var skillsOnWaveStart = new List<Skill>();
+            if (useCrystalSkill)
+            {
+                var skill = _tableSheets
+                    .SkillSheet
+                    .FirstOrDefault(pair => pair.Key == _tableSheets
+                        .CrystalRandomBuffSheet[stageBuffId.Value].SkillId);
+                if (skill.Value != null)
+                {
+                    skillsOnWaveStart.Add(SkillFactory.Get(skill.Value, default, 100));
+                }
+            }
+
             var contextRandom = new TestRandom(ctx.Random.Seed);
             var simulator = new StageSimulator(
                 contextRandom,
                 previousAvatarState,
                 new List<Guid>(),
-                new List<Skill>(),
+                skillsOnWaveStart,
                 worldId,
                 stageId,
                 _tableSheets.StageSheet[stageId],
@@ -1297,7 +1333,6 @@
             Assert.NotNull(serialized);
             var nextSkillState = new CrystalRandomSkillState(skillStateAddress, serialized);
             Assert.Equal(skillStateAddress, nextSkillState.Address);
-
             if (log.IsClear)
             {
                 Assert.Equal(stageId + 1, nextSkillState.StageId);
@@ -1306,11 +1341,8 @@
             else
             {
                 Assert.Equal(stageId, nextSkillState.StageId);
-                Assert.Equal(
-                    hasCrystalSkill
-                        ? _tableSheets.CrystalStageBuffGachaSheet[stageId].MaxStar
-                        : log.clearedWaveNumber,
-                    nextSkillState.StarCount);
+                skillState?.Update(log.clearedWaveNumber, _tableSheets.CrystalStageBuffGachaSheet);
+                Assert.Equal(skillState?.StarCount ?? log.clearedWaveNumber, nextSkillState.StarCount);
             }
 
             Assert.Empty(nextSkillState.SkillIds);

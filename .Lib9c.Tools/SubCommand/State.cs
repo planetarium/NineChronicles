@@ -26,6 +26,7 @@ namespace Lib9c.Tools.SubCommand
     {
         private static readonly Codec _codec = new Codec();
 
+        [Obsolete("This function is deprecated. Please use `NineChronicles.Headless.Executable state rebuild` command instead.")]
         [Command(Description = "Rebuild entire states by executing the chain from the genesis.")]
         public void Rebuild(
             [Option('v', Description = "Print more logs.")]
@@ -100,9 +101,7 @@ namespace Lib9c.Tools.SubCommand
                 Block<NCAction> block =
                     store.GetBlock<NCAction>(blockHash);
                 var preEvalBlock = new PreEvaluationBlock<NCAction>(
-                    block,
-                    block.Nonce,
-                    block.PreEvaluationHash
+                    block, block.Transactions
                 );
                 stderr.WriteLine(
                     "[{0}/{1}] Executing block #{2} {3}...",
@@ -188,6 +187,7 @@ namespace Lib9c.Tools.SubCommand
             stateStore.Dispose();
         }
 
+        [Obsolete("This function is deprecated. Please use `NineChronicles.Headless.Executable state check` command instead.")]
         [Command(Description = "Check if states for the specified block are available " +
             "in the state store.")]
         public void Check(

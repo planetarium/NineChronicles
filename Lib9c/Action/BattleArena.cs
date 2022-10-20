@@ -16,6 +16,7 @@ using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Serilog;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
@@ -79,6 +80,8 @@ namespace Nekoyume.Action
                 myAvatarAddress,
                 enemyAvatarAddress);
 
+            var started = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}BattleArena exec started", addressesHex);
             if (myAvatarAddress.Equals(enemyAvatarAddress))
             {
                 throw new InvalidAddressException(
@@ -356,6 +359,8 @@ namespace Nekoyume.Action
                         avatarState.questList.Serialize());
             }
 
+            var ended = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}BattleArena Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states
                 .SetState(myArenaAvatarStateAdr, myArenaAvatarState.Serialize())
                 .SetState(myArenaScoreAdr, myArenaScore.Serialize())

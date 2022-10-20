@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
@@ -12,6 +13,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Serilog;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
@@ -74,6 +76,8 @@ namespace Nekoyume.Action
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
+            var started = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}Combination exec started", addressesHex);
 
             if (!states.TryGetAvatarStateV2(context.Signer, avatarAddress, out var avatarState, out _))
             {
@@ -229,6 +233,8 @@ namespace Nekoyume.Action
             avatarState.Update(mail);
             // ~Create Mail
 
+            var ended = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}Combination Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states
                 .SetState(avatarAddress, avatarState.SerializeV2())
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())

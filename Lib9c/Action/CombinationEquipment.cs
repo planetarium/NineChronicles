@@ -15,6 +15,7 @@ using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
+using Serilog;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
@@ -84,6 +85,9 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
+            var started = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}CombinationEquipment exec started", addressesHex);
             if (recipeId != 1)
             {
                 var unlockedRecipeIdsAddress = avatarAddress.Derive("recipe_ids");
@@ -99,7 +103,6 @@ namespace Nekoyume.Action
                 }
             }
 
-            var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             if (!states.TryGetAgentAvatarStatesV2(context.Signer, avatarAddress, out var agentState,
                     out var avatarState, out _))
             {
@@ -435,6 +438,8 @@ namespace Nekoyume.Action
             avatarState.Update(mail);
             // ~Create Mail
 
+            var ended = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}CombinationEquipment Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states
                 .SetState(avatarAddress, avatarState.SerializeV2())
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())

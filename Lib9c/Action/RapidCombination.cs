@@ -10,15 +10,16 @@ using Nekoyume.Extensions;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Serilog;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1194
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1378
     /// </summary>
     [Serializable]
-    [ActionType("rapid_combination7")]
+    [ActionType("rapid_combination8")]
     public class RapidCombination : GameAction
     {
         public Address avatarAddress;
@@ -48,6 +49,8 @@ namespace Nekoyume.Action
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
+            var started = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}RapidCombination exec started", addressesHex);
 
             if (!states.TryGetAgentAvatarStatesV2(
                 context.Signer,
@@ -83,12 +86,13 @@ namespace Nekoyume.Action
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the GameConfigState was failed to load.");
             }
 
-            if (context.BlockIndex < slotState.StartBlockIndex + GameConfig.RequiredAppraiseBlock)
+            var actionableBlockIndex = slotState.StartBlockIndex +
+                                       states.GetGameConfigState().RequiredAppraiseBlock;
+            if (context.BlockIndex < actionableBlockIndex)
             {
                 throw new AppraiseBlockNotReachedException(
                     $"{addressesHex}Aborted as Item appraisal block section. " +
-                    $"context block index: {context.BlockIndex}, " +
-                    $"actionable block index : {slotState.StartBlockIndex + GameConfig.RequiredAppraiseBlock}");
+                    $"context block index: {context.BlockIndex}, actionable block index : {actionableBlockIndex}");
             }
 
             var count = RapidCombination0.CalculateHourglassCount(gameConfigState, diff);
@@ -124,6 +128,8 @@ namespace Nekoyume.Action
                 (RapidCombination5.ResultModel)slotState.Result,
                 context.BlockIndex);
 
+            var ended = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}RapidCombination Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states
                 .SetState(avatarAddress, avatarState.SerializeV2())
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())

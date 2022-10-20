@@ -177,7 +177,7 @@ namespace Nekoyume.Action
                 products = products.Add(productSerialized);
                 shopItem = new ShopItem(productSerialized);
             }
-            shopStateDict = shopStateDict.SetItem(ProductsKey, new List<IValue>(products));
+            shopStateDict = shopStateDict.SetItem(ProductsKey, products);
 
             sw.Stop();
             Log.Verbose("{AddressesHex}Sell Get Register Item: {Elapsed}", addressesHex, sw.Elapsed);

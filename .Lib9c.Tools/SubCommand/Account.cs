@@ -20,6 +20,7 @@ namespace Lib9c.Tools.SubCommand
 {
     public class Account
     {
+        [Obsolete("This function is deprecated. Please use `NineChronicles.Headless.Executable account` command instead.")]
         [Command(Description = "Query accounts' balances.")]
         public void Balance(
             [Option('v', Description = "Print more logs.")]

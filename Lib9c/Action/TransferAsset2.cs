@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using Nekoyume.Model;
+using Serilog;
 
 namespace Nekoyume.Action
 {
@@ -18,7 +19,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("transfer_asset2")]
-    public class TransferAsset2 : ActionBase, ISerializable
+    public class TransferAsset2 : ActionBase, ISerializable, ITransferAsset
     {
         private const int MemoMaxLength = 80;
 
@@ -77,6 +78,9 @@ namespace Nekoyume.Action
                 return state.MarkBalanceChanged(Amount.Currency, new[] { Sender, Recipient });
             }
 
+            var addressesHex = GetSignerAndOtherAddressesHex(context, context.Signer);
+            var started = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}TransferAsset2 exec started", addressesHex);
             if (Sender != context.Signer)
             {
                 throw new InvalidTransferSignerException(context.Signer, Sender, Recipient);
@@ -115,6 +119,8 @@ namespace Nekoyume.Action
                );
             }
 
+            var ended = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}TransferAsset2 Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return state.TransferAsset(Sender, Recipient, Amount);
         }
 
