@@ -43,7 +43,7 @@ jobs:
           path: ${{ matrix.projectPath }}/Library
           key: ${{ matrix.targetPlatform }}-${{ matrix.projectPath }}-Library-v4
 
-      - name: inject mixpanel client data
+      - name: inject client data
         run: |
           TARGET_NETWORK=$(case "$GITHUB_REF" in
             refs/heads/main)
@@ -65,6 +65,11 @@ jobs:
 
           chmod +x .github/bin/inject-mixpanel-client-data.sh
           .github/bin/inject-mixpanel-client-data.sh \
+          "$GITHUB_SHA" \
+          "$TARGET_NETWORK"
+
+          chmod +x .github/bin/inject-sentry-client-data.sh
+          .github/bin/inject-sentry-client-data.sh \
           "$GITHUB_SHA" \
           "$TARGET_NETWORK"
 

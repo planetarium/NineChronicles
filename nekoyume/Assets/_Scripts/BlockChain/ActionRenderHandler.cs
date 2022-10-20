@@ -93,7 +93,7 @@ namespace Nekoyume.BlockChain
 
                     if (States.Instance.CurrentAvatarState is not null)
                     {
-                        Analyzer.Instance.Track("Unity/ActionRender", new Value
+                        Analyzer.Instance.Track("Unity/ActionRender", new Dictionary<string, Value>()
                         {
                             ["ActionType"] = actionType.TypeIdentifier,
                             ["Elapsed"] = elapsed,
@@ -544,7 +544,7 @@ namespace Nekoyume.BlockChain
                                 formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
                                 break;
                             case Action.ItemEnhancement.EnhancementResult.Fail:
-                                Analyzer.Instance.Track("Unity/ItemEnhancement Failed", new Value
+                                Analyzer.Instance.Track("Unity/ItemEnhancement Failed", new Dictionary<string, Value>()
                                 {
                                     ["GainedCrystal"] = (long)enhancementResultModel.CRYSTAL.MajorUnit,
                                     ["BurntNCG"] = (long)enhancementResultModel.gold,
@@ -828,7 +828,7 @@ namespace Nekoyume.BlockChain
                         formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
                         break;
                     case Action.ItemEnhancement.EnhancementResult.Fail:
-                        Analyzer.Instance.Track("Unity/ItemEnhancement Failed", new Value
+                        Analyzer.Instance.Track("Unity/ItemEnhancement Failed", new Dictionary<string, Value>()
                         {
                             ["GainedCrystal"] = (long)result.CRYSTAL.MajorUnit,
                             ["BurntNCG"] = (long)result.gold,
@@ -1155,7 +1155,7 @@ namespace Nekoyume.BlockChain
 
                 if (eval.Action.StageBuffId.HasValue)
                 {
-                    Analyzer.Instance.Track("Unity/Use Crystal Bonus Skill", new Value
+                    Analyzer.Instance.Track("Unity/Use Crystal Bonus Skill", new Dictionary<string, Value>()
                     {
                         ["RandomSkillId"] = eval.Action.StageBuffId,
                         ["IsCleared"] = simulator.Log.IsClear,

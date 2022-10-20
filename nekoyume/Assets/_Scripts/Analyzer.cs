@@ -1,5 +1,8 @@
-﻿using mixpanel;
+﻿using System.Collections.Generic;
+using System.Linq;
+using mixpanel;
 using PackageExtensions.Mixpanel;
+using Sentry;
 using UnityEngine;
 
 namespace Nekoyume
@@ -24,6 +27,11 @@ namespace Nekoyume
                 return;
             }
 
+            InitializeSentry(
+                uniqueId,
+                rpcServerHost,
+                _isTrackable);
+
             _mixpanelValueFactory = new MixpanelValueFactory(
                 rpcServerHost,
                 uniqueId);
@@ -36,6 +44,56 @@ namespace Nekoyume
             Mixpanel.Init();
 
             Debug.Log($"Analyzer initialized: {uniqueId}");
+        }
+
+        private void InitializeSentry(
+            string uniqueId = "none",
+            string rpcServerHost = "no-rpc-host",
+            bool isTrackable = false)
+        {
+            if (!isTrackable)
+            {
+                return;
+            }
+
+            SentrySdk.ConfigureScope(scope =>
+            {
+                var clientHost = Resources.Load<TextAsset>("Sentry/ClientHost")?.text ?? "no-host";
+                var clientHash = Resources.Load<TextAsset>("Sentry/ClientHash")?.text ?? "no-hash";
+                var targetNetwork =
+                    Resources.Load<TextAsset>("Sentry/TargetNetwork")?.text ?? "no-target";
+
+                scope.User = new User()
+                {
+                    Id = uniqueId
+                };
+                scope.SetTag("client-host", clientHost);
+                scope.SetTag("client-hash", clientHash);
+                scope.SetTag("target-network", targetNetwork);
+                scope.SetTag("rpc-server-host", rpcServerHost);
+            });
+        }
+
+        private ITransaction CreateTrace(string eventName, Dictionary<string, string> properties)
+        {
+            if (!_isTrackable)
+            {
+                return null;
+            }
+            var transaction = SentrySdk.StartTransaction(eventName, eventName);
+            foreach (var (key, val) in properties)
+            {
+                transaction.SetTag(key, val);
+            }
+            return transaction;
+        }
+
+        public void FinishTrace(ITransaction transaction)
+        {
+            if (transaction is not null)
+            {
+                transaction.Finish();
+            }
         }
 
         public void Track(string eventName, params (string key, string value)[] properties)
@@ -55,15 +113,34 @@ namespace Nekoyume
             Mixpanel.Track(eventName, value);
         }
 
-        public void Track(string eventName, Value value)
+        public ITransaction Track(
+            string eventName,
+            Dictionary<string, Value> valueDict,
+            bool returnTrace = false)
         {
             if (!_isTrackable)
             {
-                return;
+                return null;
             }
+
+            var sentryTrace =  CreateTrace(
+                eventName,
+                valueDict.ToDictionary(
+                    item => item.Key,
+                    item => item.Value.ToString()));
+
+            Value value = new Value(valueDict);
 
             value = _mixpanelValueFactory.UpdateValue(value);
             Mixpanel.Track(eventName, value);
+
+
+            if (returnTrace)
+            {
+                return sentryTrace;
+            }
+            Instance.FinishTrace(sentryTrace);
+            return null;
         }
 
         public void Flush()
