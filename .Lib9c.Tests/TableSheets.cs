@@ -198,6 +198,8 @@ namespace Lib9c.Tests
 
         public BuffSheet BuffSheet { get; private set; }
 
+        public RuneStatSheet RuneStatSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet ??= new ItemSheet();
@@ -234,7 +236,8 @@ namespace Lib9c.Tests
                 ActionBuffSheet,
                 CharacterSheet,
                 CharacterLevelSheet,
-                EquipmentItemSetEffectSheet
+                EquipmentItemSetEffectSheet,
+                RuneStatSheet
             );
         }
 
@@ -252,7 +255,8 @@ namespace Lib9c.Tests
                 EquipmentItemSetEffectSheet,
                 StageSheet,
                 StageWaveSheet,
-                EnemySkillSheet
+                EnemySkillSheet,
+                RuneStatSheet
             );
         }
 
@@ -268,7 +272,8 @@ namespace Lib9c.Tests
                 CharacterSheet,
                 CharacterLevelSheet,
                 EquipmentItemSetEffectSheet,
-                WeeklyArenaRewardSheet
+                WeeklyArenaRewardSheet,
+                RuneStatSheet
             );
         }
 
@@ -285,7 +290,8 @@ namespace Lib9c.Tests
                 CharacterLevelSheet,
                 EquipmentItemSetEffectSheet,
                 CostumeStatSheet,
-                WeeklyArenaRewardSheet
+                WeeklyArenaRewardSheet,
+                RuneStatSheet
             );
         }
 
@@ -305,7 +311,8 @@ namespace Lib9c.Tests
                 WorldBossActionPatternSheet,
                 WorldBossBattleRewardSheet,
                 RuneWeightSheet,
-                RuneSheet
+                RuneSheet,
+                RuneStatSheet
             );
         }
 
