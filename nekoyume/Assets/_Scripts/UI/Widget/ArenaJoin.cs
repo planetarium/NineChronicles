@@ -573,8 +573,11 @@ namespace Nekoyume.UI
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var row = TableSheets.Instance.ArenaSheet.GetRowByBlockIndex(blockIndex);
             var avatarState = States.Instance.CurrentAvatarState;
+            var requiredMedal = row.Round
+                .FirstOrDefault(r => r.ArenaType == ArenaType.Championship)
+                ?.RequiredMedalCount ?? 0;
             var medalTotalCount = ArenaHelper.GetMedalTotalCount(row, avatarState);
-            return (row.Round[7].RequiredMedalCount, medalTotalCount);
+            return (requiredMedal, medalTotalCount);
         }
 
         private ArenaJoinSeasonInfo.RewardType GetRewardType(ArenaJoinSeasonItemData data)
