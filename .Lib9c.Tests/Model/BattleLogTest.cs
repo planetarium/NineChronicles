@@ -37,6 +37,7 @@ namespace Lib9c.Tests.Model
                 _random,
                 avatarState,
                 new List<Guid>(),
+                null,
                 new List<Nekoyume.Model.Skill.Skill>(),
                 1,
                 1,
@@ -44,7 +45,7 @@ namespace Lib9c.Tests.Model
                 _tableSheets.StageWaveSheet[1],
                 false,
                 20,
-                _tableSheets.GetSimulatorSheetsV1(),
+                _tableSheets.GetSimulatorSheets(),
                 _tableSheets.EnemySkillSheet,
                 _tableSheets.CostumeStatSheet,
                 StageSimulator.GetWaveRewards(

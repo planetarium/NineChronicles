@@ -1180,7 +1180,7 @@ namespace Lib9c.Tests.Action
             };
             var nextState = action.Execute(ctx);
             var contextRandom = new TestRandom(ctx.Random.Seed);
-            var simulator = new StageSimulator(
+            var simulator = new StageSimulatorV2(
                 contextRandom,
                 previousAvatarState,
                 new List<Guid>(),
