@@ -256,8 +256,10 @@ namespace Nekoyume
         public static bool IsChampionshipConditionComplete(this ArenaSheet.Row row, AvatarState avatarState)
         {
             var medalTotalCount = ArenaHelper.GetMedalTotalCount(row, avatarState);
-            var championshipRound = row.Round[7];
-            return medalTotalCount >= championshipRound.RequiredMedalCount;
+            var requiredMedalCount = row.Round
+                .FirstOrDefault(r => r.ArenaType == ArenaType.Championship)
+                ?.RequiredMedalCount ?? 0;
+            return medalTotalCount >= requiredMedalCount;
         }
 
         public static List<int> GetSeasonNumbersOfChampionship(
