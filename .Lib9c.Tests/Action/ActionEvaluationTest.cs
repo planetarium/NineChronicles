@@ -103,7 +103,7 @@ namespace Lib9c.Tests.Action
         [InlineData(typeof(Grinding))]
         [InlineData(typeof(UnlockEquipmentRecipe))]
         [InlineData(typeof(UnlockWorld))]
-        [InlineData(typeof(EventDungeonBattle))]
+        [InlineData(typeof(EventDungeonBattleV2))]
         [InlineData(typeof(EventConsumableItemCrafts))]
         [InlineData(typeof(Raid))]
         [InlineData(typeof(ClaimRaidReward))]
@@ -298,7 +298,7 @@ namespace Lib9c.Tests.Action
                         3,
                     },
                 },
-                EventDungeonBattle _ => new EventDungeonBattle
+                EventDungeonBattleV2 _ => new EventDungeonBattleV2
                 {
                     AvatarAddress = default,
                     EventScheduleId = 0,

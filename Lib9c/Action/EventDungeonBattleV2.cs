@@ -24,9 +24,9 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType(ActionTypeText)]
-    public class EventDungeonBattle : GameAction
+    public class EventDungeonBattleV2 : GameAction
     {
-        private const string ActionTypeText = "event_dungeon_battle3";
+        private const string ActionTypeText = "event_dungeon_battle2";
         public const int PlayCount = 1;
 
         public Address AvatarAddress;
@@ -36,7 +36,6 @@ namespace Nekoyume.Action
         public List<Guid> Equipments;
         public List<Guid> Costumes;
         public List<Guid> Foods;
-        public List<int> Runes;
         public bool BuyTicketIfNeeded;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal
@@ -58,10 +57,6 @@ namespace Nekoyume.Action
                             .Select(e => e.Serialize())))
                     .Add(new Bencodex.Types.List(
                         Foods
-                            .OrderBy(e => e)
-                            .Select(e => e.Serialize())))
-                    .Add(new Bencodex.Types.List(
-                        Runes
                             .OrderBy(e => e)
                             .Select(e => e.Serialize())))
                     .Add(BuyTicketIfNeeded.Serialize());
@@ -86,9 +81,9 @@ namespace Nekoyume.Action
                 throw new ArgumentException("'l' must be a bencodex list");
             }
 
-            if (list.Count < 9)
+            if (list.Count < 8)
             {
-                throw new ArgumentException("'l' must contain at least 9 items");
+                throw new ArgumentException("'l' must contain at least 8 items");
             }
 
             AvatarAddress = list[0].ToAddress();
@@ -98,8 +93,7 @@ namespace Nekoyume.Action
             Equipments = ((List)list[4]).ToList(StateExtensions.ToGuid);
             Costumes = ((List)list[5]).ToList(StateExtensions.ToGuid);
             Foods = ((List)list[6]).ToList(StateExtensions.ToGuid);
-            Runes = ((List)list[7]).ToList(StateExtensions.ToInteger);
-            BuyTicketIfNeeded = list[8].ToBoolean();
+            BuyTicketIfNeeded = list[7].ToBoolean();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -143,7 +137,23 @@ namespace Nekoyume.Action
 
             // Get sheets
             sw.Restart();
-            var sheets = states.GetSheets(
+            // FIXME Delete this check next hard fork.
+            bool useV100291Sheets = UseV100291Sheets(context.BlockIndex);
+            var sheets = useV100291Sheets
+            ? states.GetSheetsV100291(
+                containSimulatorSheets: true,
+                containValidateItemRequirementSheets: true,
+                sheetTypes: new[]
+                {
+                    typeof(EventScheduleSheet),
+                    typeof(EventDungeonSheet),
+                    typeof(EventDungeonStageSheet),
+                    typeof(EventDungeonStageWaveSheet),
+                    typeof(EnemySkillSheet),
+                    typeof(CostumeStatSheet),
+                    typeof(MaterialItemSheet),
+                })
+            : states.GetSheets(
                 containSimulatorSheets: true,
                 containValidateItemRequirementSheets: true,
                 sheetTypes: new[]
@@ -287,12 +297,13 @@ namespace Nekoyume.Action
             var exp = scheduleRow.GetStageExp(
                 EventDungeonStageId.ToEventDungeonStageNumber(),
                 PlayCount);
-            var simulatorSheets = sheets.GetSimulatorSheets();
-            var simulator = new StageSimulator(
+            var simulatorSheets = useV100291Sheets
+                ? sheets.GetSimulatorSheetsV100291()
+                : sheets.GetSimulatorSheetsV1();
+            var simulator = new StageSimulatorV2(
                 context.Random,
                 avatarState,
                 Foods,
-                Runes,
                 new List<Skill>(),
                 EventDungeonId,
                 EventDungeonStageId,
@@ -303,7 +314,7 @@ namespace Nekoyume.Action
                 simulatorSheets,
                 sheets.GetSheet<EnemySkillSheet>(),
                 sheets.GetSheet<CostumeStatSheet>(),
-                StageSimulator.GetWaveRewards(
+                StageSimulatorV2.GetWaveRewards(
                     context.Random,
                     stageRow,
                     sheets.GetSheet<MaterialItemSheet>(),
