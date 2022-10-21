@@ -37,7 +37,7 @@ namespace Nekoyume.UI
             for (var i = 0; i < model.Runes.Count; i++)
             {
                 var ticker = model.Runes[i].Currency.Ticker;
-                if (WorldBossFrontHelper.TryGetRuneIcon(ticker, out var icon))
+                if (RuneFrontHelper.TryGetRuneStoneIcon(ticker, out var icon))
                 {
                     // runeIcons[i].sprite = icon;
                     // runeCounts[i].text = $"{count:#,0}";

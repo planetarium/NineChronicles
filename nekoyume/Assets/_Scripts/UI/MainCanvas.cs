@@ -270,6 +270,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<Grind>());
             yield return null;
+            secondWidgets.Add(Widget.Create<Rune>());
+            yield return null;
 
             // header menu
             secondWidgets.Add(Widget.Create<HeaderMenuStatic>());
@@ -357,6 +359,8 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<SuperCraftPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<TicketPurchasePopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<MaterialNavigationPopup>());
             yield return null;
 
             // tooltip

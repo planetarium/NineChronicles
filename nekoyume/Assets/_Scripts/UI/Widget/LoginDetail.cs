@@ -189,6 +189,7 @@ namespace Nekoyume.UI
             var results =
                 await RxProps.SelectAvatarAsync(_selectedIndex);
             await WorldBossStates.Set(States.Instance.CurrentAvatarState.address);
+            await States.Instance.InitRuneStoneBalance();
             loadingScreen.Close();
             OnDidAvatarStateLoaded(results.selectedAvatarState);
         }

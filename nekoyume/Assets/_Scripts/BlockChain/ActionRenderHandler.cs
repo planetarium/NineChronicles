@@ -151,6 +151,7 @@ namespace Nekoyume.BlockChain
             // World Boss
             Raid();
             ClaimRaidReward();
+            RuneEnhancement();
         }
 
         public void Stop()
@@ -440,6 +441,15 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseClaimRaidReward)
+                .AddTo(_disposables);
+        }
+
+        private void RuneEnhancement()
+        {
+            _actionRenderer.EveryRender<RuneEnhancement>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseRuneEnhancement)
                 .AddTo(_disposables);
         }
 
@@ -2031,6 +2041,7 @@ namespace Nekoyume.BlockChain
                 Widget.Find<LoadingScreen>().Close();
                 worldBoss.Close();
                 await WorldBossStates.Set(avatarAddress);
+                await States.Instance.InitRuneStoneBalance();
                 Game.Event.OnRoomEnter.Invoke(true);
                 return;
             }
@@ -2086,6 +2097,7 @@ namespace Nekoyume.BlockChain
             var playerDigest = new ArenaPlayerDigest(clonedAvatarState);
 
             await WorldBossStates.Set(avatarAddress);
+            await States.Instance.InitRuneStoneBalance();
             var raiderState = WorldBossStates.GetRaiderState(avatarAddress);
             var killRewards = new List<FungibleAssetValue>();
             if (latestBossLevel < raiderState.LatestBossLevel)
@@ -2144,6 +2156,19 @@ namespace Nekoyume.BlockChain
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             WorldBossStates.SetReceivingGradeRewards(avatarAddress, false);
             Widget.Find<WorldBossRewardScreen>().Show(new LocalRandom(eval.RandomSeed));
+        }
+
+        private void ResponseRuneEnhancement(ActionBase.ActionEvaluation<RuneEnhancement> eval)
+        {
+            Widget.Find<Rune>().OnActionRender().Forget();
+
+            if (eval.Exception is not null)
+            {
+                return;
+            }
+
+            UpdateCrystalBalance(eval);
+            UpdateAgentStateAsync(eval).Forget();
         }
     }
 }

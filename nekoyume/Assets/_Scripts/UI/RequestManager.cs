@@ -87,6 +87,7 @@ namespace Nekoyume.UI
                 var crystal = await Game.Game.instance.Agent.GetBalanceAsync(agentAddress, CrystalCalculator.CRYSTAL);
                 States.Instance.SetCrystalBalance(crystal);
                 await WorldBossStates.Set(avatarAddress);
+                await States.Instance.InitRuneStoneBalance();
                 WorldBossStates.SetReceivingSeasonRewards(avatarAddress, false);
                 WorldBossStates.SetHasSeasonRewards(avatarAddress, false);
                 Widget.Find<WorldBossRewardScreen>().Show(received);

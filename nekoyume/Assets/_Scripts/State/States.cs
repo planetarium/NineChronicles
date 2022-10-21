@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Libplanet;
@@ -47,6 +48,8 @@ namespace Nekoyume.State
         public GameConfigState GameConfigState { get; private set; }
 
         public FungibleAssetValue CrystalBalance { get; private set; }
+
+        public Dictionary<int, FungibleAssetValue> RuneStoneBalance { get; } = new();
 
         public int StakingLevel { get; private set; }
 
@@ -126,6 +129,45 @@ namespace Nekoyume.State
 
             CrystalBalance = LocalLayer.Instance.ModifyCrystal(fav);
             AgentStateSubject.OnNextCrystal(CrystalBalance);
+        }
+
+        public async Task InitRuneStoneBalance()
+        {
+            RuneStoneBalance.Clear();
+            var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
+            var avatarAddress = CurrentAvatarState.address;
+            var task = Task.Run(async () =>
+            {
+                var runes = new List<FungibleAssetValue>();
+                await foreach (var row in runeSheet.Values)
+                {
+                    var rune = RuneHelper.ToCurrency(row, 0, null);
+                    var fungibleAsset = await Game.Game.instance.Agent.GetBalanceAsync(avatarAddress, rune);
+                    RuneStoneBalance.Add(row.Id, fungibleAsset);
+                }
+
+                return runes;
+            });
+
+            await task;
+        }
+
+        public async Task<FungibleAssetValue?> SetRuneStoneBalance(int runeId)
+        {
+            var avatarAddress = CurrentAvatarState.address;
+            var costSheet = Game.Game.instance.TableSheets.RuneCostSheet;
+            if (!costSheet.TryGetValue(runeId, out var costRow))
+            {
+                return null;
+            }
+
+            var runeStoneId = costRow.Cost.First().RuneStoneId;
+            var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
+            var runeStone = runeSheet.Values.First(x => x.Id == runeStoneId);
+            var rune = RuneHelper.ToCurrency(runeStone, 0, null);
+            var fungibleAsset = await Game.Game.instance.Agent.GetBalanceAsync(avatarAddress, rune);
+            RuneStoneBalance[runeStone.Id] = fungibleAsset;
+            return fungibleAsset;
         }
 
         public void SetMonsterCollectionState(
