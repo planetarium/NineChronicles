@@ -22,8 +22,7 @@ namespace Nekoyume
             ArenaSheet arenaSheet)
         {
             // NOTE: `700_102` is new arena medal item id.
-            if (medalItemId < 700_100 ||
-                medalItemId >= 800_000)
+            if (medalItemId is < 700_100 or >= 800_000)
             {
                 return (0, 0);
             }
@@ -37,35 +36,9 @@ namespace Nekoyume
 
             // `round`: 1 ~ 99
             var round = medalItemId % 100;
-            var seasonNumber = 0;
-            var isSeason = false;
-            foreach (var roundData in row.Round)
-            {
-                if (roundData.ArenaType == ArenaType.Season)
-                {
-                    seasonNumber++;
-                }
+            var seasonNumber = row.GetSeasonNumber(round);
 
-                if (roundData.Round == round)
-                {
-                    isSeason = roundData.ArenaType == ArenaType.Season;
-                    break;
-                }
-            }
-
-            if (championshipId <= 2)
-            {
-                seasonNumber = isSeason
-                    ? seasonNumber + (championshipId - 1) * 3 + 3
-                    : 0;
-                return (championshipId, seasonNumber);
-            }
-
-            var championshipNumber = (championshipId - 2) % 4;
-            seasonNumber = isSeason
-                ? seasonNumber + (championshipNumber - 1) * 3
-                : 0;
-            return (championshipNumber, seasonNumber);
+            return (championshipId, seasonNumber);
         }
 
         public static int ToItemIconResourceId(
@@ -76,18 +49,21 @@ namespace Nekoyume
             if (seasonNumber == 0)
             {
                 id += championshipNumber * 100;
-                id += 8;
+                id += championshipNumber < 2 ? 8 : 6;
                 return id;
             }
-            
-            // seasonNumber 1, 2, 3 -> championshipNumber 1
-            //              4, 5, 6 ->                    2
-            //              7, 8, 9 ->                    3
-            id += (seasonNumber + 2) / 3 * 100;
-            // seasonNumber 1, 2, 3 -> round 2, 4, 6
-            //              4, 5, 6 -> round 2, 4, 6
-            //              7, 8, 9 -> round 2, 4, 6
-            id += (seasonNumber - (seasonNumber - 1) / 3 * 3) * 2;
+
+            id += (championshipNumber + 1) * 100;
+            // seasonNumber 4, 5, 6 -> round 2, 4, 6
+            //              7, 8    -> round 2, 4
+            //              9, 10   -> round 2, 4
+            var lastSeasonCount = 0;
+            for (int i = 1; i <= championshipNumber; i++)
+            {
+                if (i < 3) lastSeasonCount += 3;
+                else lastSeasonCount += 2;
+            }
+            id += (seasonNumber - lastSeasonCount) * 2;
             return id;
         }
 
@@ -236,20 +212,14 @@ namespace Nekoyume
             if (roundData.ArenaType == ArenaType.Championship)
             {
                 medalItemResourceId = ArenaHelper.GetMedalItemId(
-                    roundData.ChampionshipId % 4,
+                    roundData.ChampionshipId,
                     roundData.Round);
-                return true;    
+                return true;
             }
 
-            // NOTE: id = 700{championship id % 4:N1}{round:N2}
-            //       e.g., 700102, 700406
-            // NOTE: The season number is beginning from 4 when the championship id is 1 or 2.
-            //       So `championshipNumber` should +1 like below
-            //       because every championship has 3 seasons.
-            var championshipNumber = roundData.ChampionshipId == 1 || roundData.ChampionshipId == 2
-                ? roundData.ChampionshipId % 4 + 1
-                : roundData.ChampionshipId % 4;
-            medalItemResourceId = ArenaHelper.GetMedalItemId(championshipNumber, roundData.Round);
+            medalItemResourceId = ArenaHelper.GetMedalItemId(
+                roundData.ChampionshipId + 1,
+                roundData.Round);
             return true;
         }
 
@@ -263,16 +233,16 @@ namespace Nekoyume
         public static int GetChampionshipYear(this ArenaSheet.Row row)
         {
             // row.ChampionshipId
-            // 1,  2,  3: 2022
-            // 4,  5,  6,  7,  8,  9: 2023
-            // 10, 11, 12, 13, 14, 15: 2024
+            // 1,  2: 2022
+            // 3,  4,  5,  6,  7,  8: 2023
+            // 9, 10, 11, 12, 13, 14: 2024
             // ...
-            if (row.ChampionshipId <= 3)
+            if (row.ChampionshipId <= 2)
             {
                 return 2022;
             }
 
-            var offset = (row.ChampionshipId - 3) / 6 + 1;
+            var offset = (row.ChampionshipId - 2) / 6 + 1;
 
             return 2022 + offset;
         }
