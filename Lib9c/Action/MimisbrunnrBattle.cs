@@ -7,12 +7,16 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
+using Nekoyume.BlockChain.Policy;
 using Nekoyume.Extensions;
+using Nekoyume.Model;
+using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.Skill;
+using Nekoyume.Model.Quest;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
+using Skill = Nekoyume.Model.Skill.Skill;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
@@ -349,6 +353,36 @@ namespace Nekoyume.Action
                 addressesHex,
                 sw.Elapsed);
             sw.Restart();
+
+            if (context.BlockIndex <= BlockPolicySource.V100310ExecutedBlockIndex)
+            {
+                var eventMap = simulator.Player.eventMap;
+                var monsterMap = simulator.Player.monsterMap;
+                var log = simulator.Log;
+                var logLength = log.events.Count;
+                for (var eventIndex = 1; eventIndex < logLength; eventIndex++)
+                {
+                    var currentEvent = log.events[eventIndex];
+                    var prevEvent = log.events[eventIndex - 1];
+                    if (!(currentEvent is Dead) || !(prevEvent is DoubleAttack))
+                    {
+                        continue;
+                    }
+
+                    switch (currentEvent.Character)
+                    {
+                        case Enemy enemy:
+                            monsterMap.Add(new KeyValuePair<int, int>(enemy.CharacterId, 1));
+                            break;
+                        case Player _:
+                            eventMap.Add(new KeyValuePair<int, int>((int) QuestEventType.Die, 1));
+                            break;
+                    }
+                }
+
+                simulator.Player.eventMap = eventMap;
+                simulator.Player.monsterMap = monsterMap;
+            }
 
             avatarState.Update(simulator);
             avatarState.UpdateQuestRewards(materialSheet);
