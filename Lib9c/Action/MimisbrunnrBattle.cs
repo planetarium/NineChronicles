@@ -354,11 +354,24 @@ namespace Nekoyume.Action
                 sw.Elapsed);
             sw.Restart();
 
+            // This conditional logic is same as written in the
+            // HackAndSlash("hack_and_slash18") action.
             if (context.BlockIndex < BlockPolicySource.V100310ExecutedBlockIndex)
             {
                 var player = simulator.Player;
-                player.eventMap = player.eventMapForBeforeOfV100310;
-                player.monsterMap = player.monsterMapForBeforeOfV100310;
+                foreach (var key in player.monsterMapForBeforeV100310.Keys)
+                {
+                    player.monsterMap.Add(key, player.monsterMapForBeforeV100310[key]);
+                }
+
+                player.monsterMapForBeforeV100310.Clear();
+
+                foreach (var key in player.eventMapForBeforeV100310.Keys)
+                {
+                    player.eventMap.Add(key, player.eventMapForBeforeV100310[key]);
+                }
+
+                player.eventMapForBeforeV100310.Clear();
             }
 
             avatarState.Update(simulator);

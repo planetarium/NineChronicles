@@ -551,10 +551,17 @@ namespace Nekoyume.Model
 
         private void FinishTargetIfKilledForBeforeV100310(BattleStatus.Skill usedSkill)
         {
+            var isFirst = true;
             foreach (var info in usedSkill.SkillInfos)
             {
                 if (!info.Target.IsDead)
                 {
+                    continue;
+                }
+
+                if (isFirst)
+                {
+                    isFirst = false;
                     continue;
                 }
 
@@ -565,7 +572,7 @@ namespace Nekoyume.Model
                     case Player player:
                     {
                         var quest = new KeyValuePair<int, int>((int)QuestEventType.Die, 1);
-                        player.eventMapForBeforeOfV100310.Add(quest);
+                        player.eventMapForBeforeV100310.Add(quest);
 
                         break;
                     }
@@ -574,7 +581,7 @@ namespace Nekoyume.Model
                         if (enemy.Targets[0] is Player targetPlayer)
                         {
                             var quest = new KeyValuePair<int, int>(enemy.CharacterId, 1);
-                            targetPlayer.monsterMapForBeforeOfV100310.Add(quest);
+                            targetPlayer.monsterMapForBeforeV100310.Add(quest);
                         }
 
                         break;
