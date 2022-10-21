@@ -89,7 +89,7 @@ namespace Lib9c.Tests.Action
         [InlineData(typeof(MigrationActivatedAccountsState))]
         [InlineData(typeof(MigrationAvatarState))]
         [InlineData(typeof(MigrationLegacyShop))]
-        [InlineData(typeof(MimisbrunnrBattle))]
+        [InlineData(typeof(MimisbrunnrBattle10))]
         [InlineData(typeof(MonsterCollect))]
         [InlineData(typeof(PatchTableSheet))]
         [InlineData(typeof(RankingBattle))]
@@ -167,6 +167,7 @@ namespace Lib9c.Tests.Action
                     Costumes = new List<Guid>(),
                     Equipments = new List<Guid>(),
                     Foods = new List<Guid>(),
+                    Runes = new List<int>(),
                     WorldId = 0,
                     StageId = 0,
                     AvatarAddress = new PrivateKey().ToAddress(),
@@ -216,7 +217,7 @@ namespace Lib9c.Tests.Action
                     avatarStates = new List<Dictionary>(),
                 },
                 MigrationLegacyShop _ => new MigrationLegacyShop(),
-                MimisbrunnrBattle _ => new MimisbrunnrBattle
+                MimisbrunnrBattle10 _ => new MimisbrunnrBattle10
                 {
                     costumes = new List<Guid>(),
                     equipments = new List<Guid>(),

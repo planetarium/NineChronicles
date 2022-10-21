@@ -46,6 +46,7 @@ namespace Nekoyume.Action
                     ["equipments"] =
                         new List(Equipments.OrderBy(i => i).Select(e => e.Serialize())),
                     ["foods"] = new List(Foods.OrderBy(i => i).Select(e => e.Serialize())),
+                    ["runes"] = new List(Runes.OrderBy(i => i).Select(e => e.Serialize())),
                     ["worldId"] = WorldId.Serialize(),
                     ["stageId"] = StageId.Serialize(),
                     ["avatarAddress"] = AvatarAddress.Serialize(),
@@ -65,6 +66,7 @@ namespace Nekoyume.Action
             Costumes = ((List)plainValue["costumes"]).Select(e => e.ToGuid()).ToList();
             Equipments = ((List)plainValue["equipments"]).Select(e => e.ToGuid()).ToList();
             Foods = ((List)plainValue["foods"]).Select(e => e.ToGuid()).ToList();
+            Runes = ((List)plainValue["runes"]).Select(e => e.ToInteger()).ToList();
             WorldId = plainValue["worldId"].ToInteger();
             StageId = plainValue["stageId"].ToInteger();
             if (plainValue.ContainsKey("stageBuffId"))
@@ -284,7 +286,7 @@ namespace Nekoyume.Action
                     simulatorSheets,
                     sheets.GetSheet<EnemySkillSheet>(),
                     sheets.GetSheet<CostumeStatSheet>(),
-                    StageSimulatorV2.GetWaveRewards(random, stageRow, materialItemSheet));
+                    StageSimulator.GetWaveRewards(random, stageRow, materialItemSheet));
                 sw.Stop();
                 Log.Verbose("{AddressesHex}HAS Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
 
