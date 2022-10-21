@@ -296,6 +296,7 @@ namespace Nekoyume.BlockChain
                 player.Equipments,
                 player.Costumes,
                 null,
+                player.Runes,
                 buyTicketIfNeeded);
 
         public IObservable<ActionBase.ActionEvaluation<EventDungeonBattle>> EventDungeonBattle(
@@ -305,6 +306,7 @@ namespace Nekoyume.BlockChain
             List<Equipment> equipments,
             List<Costume> costumes,
             List<Consumable> foods,
+            List<int> runes,
             bool buyTicketIfNeeded,
             bool trackGuideQuest = false)
         {
@@ -346,6 +348,7 @@ namespace Nekoyume.BlockChain
             costumes ??= new List<Costume>();
             equipments ??= new List<Equipment>();
             foods ??= new List<Consumable>();
+            runes ??= new List<int>();
 
             var action = new EventDungeonBattle
             {
@@ -356,6 +359,7 @@ namespace Nekoyume.BlockChain
                 Equipments = equipments.Select(e => e.ItemId).ToList(),
                 Costumes = costumes.Select(c => c.ItemId).ToList(),
                 Foods = foods.Select(f => f.ItemId).ToList(),
+                Runes = runes,
                 BuyTicketIfNeeded = buyTicketIfNeeded,
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
