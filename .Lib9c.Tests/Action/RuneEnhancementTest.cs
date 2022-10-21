@@ -71,7 +71,7 @@ namespace Lib9c.Tests.Action
                 throw new RuneCostNotFoundException($"[{nameof(ExecuteOnce)}] ");
             }
 
-            if (!costRow.TryGetCost(runeState.Level, out var cost))
+            if (!costRow.TryGetCost(runeState.Level + 1, out var cost))
             {
                 throw new RuneCostDataNotFoundException($"[{nameof(ExecuteOnce)}] ");
             }
@@ -159,8 +159,9 @@ namespace Lib9c.Tests.Action
             var costSheet = state.GetSheet<RuneCostSheet>();
             const string csv =
                 @"id,rune_level,rune_stone_id,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_success_rate
-        250010001,1,1001,10,100,100,1000
+        311001,1,1001,10,100,100,1000
         ";
+            costSheet.Clear();
             costSheet.Set(csv);
             state = state.SetState(Addresses.TableSheet.Derive("RuneCostSheet"), costSheet.Serialize());
             if (!costSheet.TryGetValue(runeId, out var costRow))
@@ -168,7 +169,7 @@ namespace Lib9c.Tests.Action
                 throw new RuneCostNotFoundException($"[{nameof(ExecuteOnce)}] ");
             }
 
-            if (!costRow.TryGetCost(runeState.Level, out var cost))
+            if (!costRow.TryGetCost(runeState.Level + 1, out var cost))
             {
                 throw new RuneCostDataNotFoundException($"[{nameof(ExecuteOnce)}] ");
             }
@@ -447,7 +448,7 @@ namespace Lib9c.Tests.Action
                 throw new RuneCostNotFoundException($"[{nameof(ExecuteOnce)}] ");
             }
 
-            if (!costRow.TryGetCost(runeState.Level, out var cost))
+            if (!costRow.TryGetCost(runeState.Level + 1, out var cost))
             {
                 throw new RuneCostDataNotFoundException($"[{nameof(ExecuteOnce)}] ");
             }
