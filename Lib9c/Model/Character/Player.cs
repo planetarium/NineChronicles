@@ -58,7 +58,9 @@ namespace Nekoyume.Model
         public Ring ring;
 
         public CollectionMap monsterMap;
+        public CollectionMap monsterMapForBeforeOfV100310;
         public CollectionMap eventMap;
+        public CollectionMap eventMapForBeforeOfV100310;
 
         // todo: `PlayerCostume` 정도의 객체로 분리.
         public int hairIndex;
@@ -93,7 +95,9 @@ namespace Nekoyume.Model
             necklace = null;
             ring = null;
             monsterMap = new CollectionMap();
+            monsterMapForBeforeOfV100310 = new CollectionMap();
             eventMap = new CollectionMap();
+            eventMapForBeforeOfV100310 = new CollectionMap();
             hairIndex = avatarState.hair;
             lensIndex = avatarState.lens;
             earIndex = avatarState.ear;
@@ -122,7 +126,9 @@ namespace Nekoyume.Model
             necklace = null;
             ring = null;
             monsterMap = new CollectionMap();
+            monsterMapForBeforeOfV100310 = new CollectionMap();
             eventMap = new CollectionMap();
+            eventMapForBeforeOfV100310 = new CollectionMap();
             hairIndex = avatarState.hair;
             lensIndex = avatarState.lens;
             earIndex = avatarState.ear;
@@ -150,7 +156,9 @@ namespace Nekoyume.Model
             necklace = null;
             ring = null;
             monsterMap = new CollectionMap();
+            monsterMapForBeforeOfV100310 = new CollectionMap();
             eventMap = new CollectionMap();
+            eventMapForBeforeOfV100310 = new CollectionMap();
             hairIndex = 0;
             lensIndex = 0;
             earIndex = 0;
@@ -172,7 +180,9 @@ namespace Nekoyume.Model
         {
             Inventory = new Inventory();
             monsterMap = new CollectionMap();
+            monsterMapForBeforeOfV100310 = new CollectionMap();
             eventMap = new CollectionMap();
+            eventMapForBeforeOfV100310 = new CollectionMap();
             hairIndex = enemyArenaPlayerDigest.HairIndex;
             lensIndex = enemyArenaPlayerDigest.LensIndex;
             earIndex = enemyArenaPlayerDigest.EarIndex;
@@ -195,7 +205,9 @@ namespace Nekoyume.Model
             necklace = value.necklace;
             ring = value.ring;
             monsterMap = value.monsterMap;
+            monsterMapForBeforeOfV100310 = value.monsterMapForBeforeOfV100310;
             eventMap = value.eventMap;
+            eventMapForBeforeOfV100310 = value.eventMapForBeforeOfV100310;
             hairIndex = value.hairIndex;
             lensIndex = value.lensIndex;
             earIndex = value.earIndex;
