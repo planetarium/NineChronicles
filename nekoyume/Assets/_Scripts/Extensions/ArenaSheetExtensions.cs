@@ -242,7 +242,7 @@ namespace Nekoyume
                 return 2022;
             }
 
-            var offset = (row.ChampionshipId - 2) / 6 + 1;
+            var offset = (row.ChampionshipId - 3) / 6 + 1;
 
             return 2022 + offset;
         }
