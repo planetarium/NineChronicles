@@ -103,6 +103,13 @@ namespace Nekoyume
                 return;
             }
 
+            ITransaction sentryTrace = CreateTrace(
+                eventName,
+                properties.ToDictionary(
+                    prop => prop.key,
+                    prop => prop.value));
+            Instance.FinishTrace(sentryTrace);
+
             if (properties.Length == 0)
             {
                 Mixpanel.Track(eventName);
