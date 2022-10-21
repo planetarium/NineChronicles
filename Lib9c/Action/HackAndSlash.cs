@@ -338,7 +338,7 @@ namespace Nekoyume.Action
                 }
 
                 sw.Restart();
-                if (blockIndex <= BlockPolicySource.V100310ExecutedBlockIndex)
+                if (blockIndex < BlockPolicySource.V100310ExecutedBlockIndex)
                 {
                     var eventMap = simulator.Player.eventMap;
                     var monsterMap = simulator.Player.monsterMap;
