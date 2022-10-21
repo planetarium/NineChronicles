@@ -164,6 +164,7 @@ namespace Nekoyume.BlockChain
             List<Costume> costumes,
             List<Equipment> equipments,
             List<Consumable> foods,
+            List<int> runes,
             int worldId,
             int stageId,
             int playCount)
@@ -172,16 +173,18 @@ namespace Nekoyume.BlockChain
             costumes ??= new List<Costume>();
             equipments ??= new List<Equipment>();
             foods ??= new List<Consumable>();
+            runes ??= new List<int>();
 
             var action = new MimisbrunnrBattle
             {
-                costumes = costumes.Select(e => e.ItemId).ToList(),
-                equipments = equipments.Select(e => e.ItemId).ToList(),
-                foods = foods.Select(f => f.ItemId).ToList(),
-                worldId = worldId,
-                stageId = stageId,
-                avatarAddress = avatarAddress,
-                playCount = playCount,
+                Costumes = costumes.Select(e => e.ItemId).ToList(),
+                Equipments = equipments.Select(e => e.ItemId).ToList(),
+                Foods = foods.Select(f => f.ItemId).ToList(),
+                Runes = runes,
+                WorldId = worldId,
+                StageId = stageId,
+                AvatarAddress = avatarAddress,
+                PlayCount = playCount,
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);

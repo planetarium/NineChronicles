@@ -130,6 +130,7 @@ namespace Nekoyume.UI
                     _costumes,
                     _equipments,
                     _consumables,
+                    _runes,
                     _worldId,
                     _stageId,
                     (int)apSlider.value

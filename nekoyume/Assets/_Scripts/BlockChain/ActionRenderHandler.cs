@@ -1238,7 +1238,7 @@ namespace Nekoyume.BlockChain
                             {
                                 UpdateCurrentAvatarStateAsync(eval).Forget();
                                 var avatarState = States.Instance.CurrentAvatarState;
-                                RenderQuest(eval.Action.avatarAddress,
+                                RenderQuest(eval.Action.AvatarAddress,
                                     avatarState.questList.completedQuestIds);
                                 _disposableForBattleEnd = null;
                                 Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
@@ -1250,32 +1250,33 @@ namespace Nekoyume.BlockChain
                         });
 
                 var sheets = TableSheets.Instance;
-                var stageRow = sheets.StageSheet[eval.Action.stageId];
+                var stageRow = sheets.StageSheet[eval.Action.StageId];
                 var avatarState = States.Instance.CurrentAvatarState;
                 var localRandom = new LocalRandom(eval.RandomSeed);
-                var simulator = new StageSimulatorV2(
+                var simulator = new StageSimulator(
                     localRandom,
                     avatarState,
-                    eval.Action.foods,
+                    eval.Action.Foods,
+                    eval.Action.Runes,
                     new List<Skill>(),
-                    eval.Action.worldId,
-                    eval.Action.stageId,
+                    eval.Action.WorldId,
+                    eval.Action.StageId,
                     stageRow,
-                    sheets.StageWaveSheet[eval.Action.stageId],
-                    avatarState.worldInformation.IsStageCleared(eval.Action.stageId),
+                    sheets.StageWaveSheet[eval.Action.StageId],
+                    avatarState.worldInformation.IsStageCleared(eval.Action.StageId),
                     0,
-                    sheets.GetSimulatorSheetsV1(),
+                    sheets.GetStageSimulatorSheets(),
                     sheets.EnemySkillSheet,
                     sheets.CostumeStatSheet,
                     StageSimulatorV2.GetWaveRewards(
                         localRandom,
                         stageRow,
                         sheets.MaterialItemSheet,
-                        eval.Action.playCount)
+                        eval.Action.PlayCount)
                 );
                 simulator.Simulate();
                 BattleLog log = simulator.Log;
-                Game.Game.instance.Stage.PlayCount = eval.Action.playCount;
+                Game.Game.instance.Stage.PlayCount = eval.Action.PlayCount;
                 Game.Game.instance.Stage.StageType = StageType.Mimisbrunnr;
 
                 if (Widget.Find<LoadingScreen>().IsActive())

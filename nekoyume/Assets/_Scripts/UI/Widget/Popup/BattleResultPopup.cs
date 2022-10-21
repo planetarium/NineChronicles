@@ -748,6 +748,7 @@ namespace Nekoyume.UI
                         costumes,
                         equipments,
                         new List<Consumable>(),
+                        runes,
                         SharedModel.WorldID,
                         SharedModel.StageID + stageIdOffset,
                         1)

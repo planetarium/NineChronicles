@@ -977,6 +977,7 @@ namespace Nekoyume.UI
             var consumables = consumableSlots
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)
                 .Select(slot => (Consumable)slot.Item).ToList();
+            var runes = _player.Runes;
 
             var stage = Game.Game.instance.Stage;
             stage.IsExitReserved = false;
@@ -998,7 +999,7 @@ namespace Nekoyume.UI
                                 costumes,
                                 equipments,
                                 consumables,
-                                _player.Runes,
+                                runes,
                                 _worldId,
                                 _stageId,
                                 playCount: playCount,
@@ -1024,7 +1025,7 @@ namespace Nekoyume.UI
                         costumes,
                         equipments,
                         consumables,
-                        _player.Runes,
+                        runes,
                         _worldId,
                         _stageId,
                         skillId,
@@ -1040,6 +1041,7 @@ namespace Nekoyume.UI
                         costumes,
                         equipments,
                         consumables,
+                        runes,
                         _worldId,
                         _stageId,
                         1
