@@ -276,6 +276,7 @@ namespace Nekoyume.Action
                     ["e"] = new List(EquipmentIds.Select(e => e.Serialize())),
                     ["c"] = new List(CostumeIds.Select(c => c.Serialize())),
                     ["f"] = new List(FoodIds.Select(f => f.Serialize())),
+                    ["r"] = new List(Runes.Select(r => r.Serialize())),
                     ["p"] = PayNcg.Serialize(),
                 }
                 .ToImmutableDictionary();
@@ -285,6 +286,7 @@ namespace Nekoyume.Action
             EquipmentIds = plainValue["e"].ToList(StateExtensions.ToGuid);
             CostumeIds = plainValue["c"].ToList(StateExtensions.ToGuid);
             FoodIds = plainValue["f"].ToList(StateExtensions.ToGuid);
+            Runes = plainValue["r"].ToList(StateExtensions.ToInteger);
             PayNcg = plainValue["p"].ToBoolean();
         }
     }

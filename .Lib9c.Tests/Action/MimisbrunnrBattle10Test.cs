@@ -33,6 +33,7 @@ namespace Lib9c.Tests.Action
         public MimisbrunnrBattle10Test()
         {
             _sheets = TableSheetsImporter.ImportSheets();
+            _sheets.Remove(nameof(RuneStatSheet));
             _tableSheets = new TableSheets(_sheets);
 
             var privateKey = new PrivateKey();

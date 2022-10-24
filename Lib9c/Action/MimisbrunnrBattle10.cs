@@ -114,7 +114,7 @@ namespace Nekoyume.Action
                         typeof(EquipmentItemOptionSheet),
                         typeof(MaterialItemSheet),
                     })
-                : states.GetSheets(
+                : states.GetSheetsV1(
                     containSimulatorSheets: true,
                     sheetTypes: new[]
                     {

@@ -153,7 +153,7 @@ namespace Nekoyume.Action
                     typeof(CostumeStatSheet),
                     typeof(MaterialItemSheet),
                 })
-            : states.GetSheets(
+            : states.GetSheetsV1(
                 containSimulatorSheets: true,
                 containValidateItemRequirementSheets: true,
                 sheetTypes: new[]

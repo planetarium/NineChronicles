@@ -50,7 +50,7 @@ namespace Nekoyume.Action
                     GameConfig.RequireClearedStageLevel.ActionsInRaid, current);
             }
 
-            Dictionary<Type, (Address, ISheet)> sheets = states.GetSheets(
+            Dictionary<Type, (Address, ISheet)> sheets = states.GetSheetsV1(
                 containRaidSimulatorSheets: true,
                 sheetTypes: new [] {
                 typeof(MaterialItemSheet),

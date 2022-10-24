@@ -150,7 +150,7 @@ namespace Nekoyume.Action
                         typeof(CrystalRandomBuffSheet),
                         typeof(StakeActionPointCoefficientSheet),
                     })
-                : states.GetSheets(
+                : states.GetSheetsV1(
                     containQuestSheet: true,
                     containSimulatorSheets: true,
                     sheetTypes: new[]
