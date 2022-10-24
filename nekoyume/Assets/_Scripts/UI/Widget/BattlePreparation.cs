@@ -1066,6 +1066,7 @@ namespace Nekoyume.UI
                             equipments,
                             costumes,
                             consumables,
+                            runes,
                             buyTicketIfNeeded,
                             _trackGuideQuest)
                         .Subscribe();

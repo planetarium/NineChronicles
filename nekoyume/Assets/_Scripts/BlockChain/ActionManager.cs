@@ -1123,6 +1123,7 @@ namespace Nekoyume.BlockChain
             List<Guid> costumes,
             List<Guid> equipments,
             List<Guid> foods,
+            List<int> runes,
             bool payNcg)
         {
             var action = new Raid
@@ -1131,6 +1132,7 @@ namespace Nekoyume.BlockChain
                 EquipmentIds = costumes,
                 CostumeIds = equipments,
                 FoodIds = foods,
+                Runes = runes,
                 PayNcg = payNcg,
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);

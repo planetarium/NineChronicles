@@ -637,7 +637,7 @@ namespace Nekoyume.UI
 
         private void PracticeRaid()
         {
-            (_, _, var foods) = SaveCurrentEquipment();
+            (_, _, var foods, var runes) = SaveCurrentEquipment();
             var currentAvatarState = States.Instance.CurrentAvatarState;
 
             var tableSheets = Game.Game.instance.TableSheets;
@@ -647,7 +647,8 @@ namespace Nekoyume.UI
                 new PracticeRandom(),
                 currentAvatarState,
                 foods,
-                tableSheets.GetRaidSimulatorSheetsV1(),
+                runes,
+                tableSheets.GetRaidSimulatorSheets(),
                 tableSheets.CostumeStatSheet
             );
             var log = simulator.Simulate();
@@ -714,14 +715,14 @@ namespace Nekoyume.UI
 
         private void Raid(bool payNcg)
         {
-            var (equipments, costumes, foods) = SaveCurrentEquipment();
-            ActionManager.Instance.Raid(costumes, equipments, foods, payNcg);
+            var (equipments, costumes, foods, runes) = SaveCurrentEquipment();
+            ActionManager.Instance.Raid(costumes, equipments, foods, runes, payNcg);
             Find<LoadingScreen>().Show();
             Find<WorldBoss>().Close();
             Close();
         }
 
-        private (List<Guid> equipments, List<Guid> costumes, List<Guid> foods) SaveCurrentEquipment()
+        private (List<Guid> equipments, List<Guid> costumes, List<Guid> foods, List<int> runes) SaveCurrentEquipment()
         {
             var equipments = Player.Equipments.Select(c => c.ItemId).ToList();
             var costumes = Player.Costumes.Select(c => c.ItemId).ToList();
@@ -729,13 +730,14 @@ namespace Nekoyume.UI
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)
                 .Select(slot => (Consumable)slot.Item)
                 .Select(c => c.ItemId).ToList();
+            var runes = Player.Runes;
 
             var equipment = new List<Guid>();
             equipment.AddRange(equipments);
             equipment.AddRange(costumes);
             equipment.AddRange(foods);
             SaveEquipment(equipment);
-            return (equipments, costumes, foods);
+            return (equipments, costumes, foods, runes);
         }
 
         private void ShowTicketPurchasePopup(long currentBlockIndex)

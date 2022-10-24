@@ -761,6 +761,7 @@ namespace Nekoyume.UI
                         equipments,
                         costumes,
                         new List<Consumable>(),
+                        runes,
                         false)
                     .StartAsCoroutine(),
                 _ => throw new ArgumentOutOfRangeException()

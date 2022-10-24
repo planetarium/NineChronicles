@@ -2078,7 +2078,8 @@ namespace Nekoyume.BlockChain
                 random,
                 clonedAvatarState,
                 eval.Action.FoodIds,
-                TableSheets.Instance.GetRaidSimulatorSheetsV1(),
+                eval.Action.Runes,
+                TableSheets.Instance.GetRaidSimulatorSheets(),
                 TableSheets.Instance.CostumeStatSheet
             );
             simulator.Simulate();

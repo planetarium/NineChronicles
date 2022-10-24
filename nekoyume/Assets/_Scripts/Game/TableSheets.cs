@@ -314,6 +314,27 @@ namespace Nekoyume.Game
             );
         }
 
+        public RaidSimulatorSheets GetRaidSimulatorSheets()
+        {
+            return new RaidSimulatorSheets(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
+                EquipmentItemSetEffectSheet,
+                WorldBossCharacterSheet,
+                WorldBossActionPatternSheet,
+                WorldBossBattleRewardSheet,
+                RuneWeightSheet,
+                RuneSheet,
+                RuneStatSheet
+            );
+        }
+
         public AvatarSheets GetAvatarSheets()
         {
             return new AvatarSheets(
