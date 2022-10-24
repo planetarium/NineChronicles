@@ -321,6 +321,7 @@ namespace Lib9c.Tests.Action
                     CostumeIds = new List<Guid>(),
                     EquipmentIds = new List<Guid>(),
                     FoodIds = new List<Guid>(),
+                    Runes = new List<int>(),
                     PayNcg = true,
                 },
                 ClaimRaidReward _ => new ClaimRaidReward(_sender),

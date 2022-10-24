@@ -20,7 +20,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1338
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1434
     /// </summary>
     [Serializable]
     [ActionType("hack_and_slash19")]

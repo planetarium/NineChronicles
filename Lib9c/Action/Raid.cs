@@ -18,10 +18,10 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1419
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1434
     /// </summary>
     [Serializable]
-    [ActionType("raid2")]
+    [ActionType("raid3")]
     public class Raid : GameAction
     {
         public const long RequiredInterval = 5L;
@@ -29,6 +29,7 @@ namespace Nekoyume.Action
         public List<Guid> EquipmentIds;
         public List<Guid> CostumeIds;
         public List<Guid> FoodIds;
+        public List<int> Runes;
         public bool PayNcg;
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -164,7 +165,7 @@ namespace Nekoyume.Action
                 sheets.GetSheet<EquipmentItemOptionSheet>(),
                 addressesHex);
 
-            var raidSimulatorSheets = sheets.GetRaidSimulatorSheetsV1();
+            var raidSimulatorSheets = sheets.GetRaidSimulatorSheets();
 
             // Simulate.
             var simulator = new RaidSimulator(
@@ -172,6 +173,7 @@ namespace Nekoyume.Action
                 context.Random,
                 avatarState,
                 FoodIds,
+                Runes,
                 raidSimulatorSheets,
                 sheets.GetSheet<CostumeStatSheet>());
             simulator.Simulate();

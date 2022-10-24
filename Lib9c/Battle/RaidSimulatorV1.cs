@@ -13,7 +13,7 @@ using System.Linq;
 
 namespace Nekoyume.Battle
 {
-    public class RaidSimulator : Simulator
+    public class RaidSimulatorV1 : Simulator
     {
         public int BossId { get; private set; }
         public int DamageDealt { get; private set; }
@@ -26,23 +26,15 @@ namespace Nekoyume.Battle
         private RuneSheet _runeSheet;
         private WorldBossCharacterSheet.Row _currentBossRow;
 
-        public RaidSimulator(
+        public RaidSimulatorV1(
             int bossId,
             IRandom random,
             AvatarState avatarState,
             List<Guid> foods,
-            List<int> runes,
-            RaidSimulatorSheets simulatorSheets,
+            RaidSimulatorSheetsV1 simulatorSheets,
             CostumeStatSheet costumeStatSheet) : base(random, avatarState, foods, simulatorSheets)
         {
             Player.SetCostumeStat(costumeStatSheet);
-            if (runes != null)
-            {
-                Player.SetRuneStat(
-                    runes.Select(rune => (rune, 1)).ToList(),
-                    simulatorSheets.RuneStatSheet);
-            }
-
             BossId = bossId;
             _waves = new List<RaidBoss>();
 
