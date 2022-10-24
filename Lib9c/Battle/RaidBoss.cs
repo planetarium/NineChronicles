@@ -11,9 +11,6 @@ namespace Nekoyume.Model
 {
     public class RaidBoss : Enemy
     {
-        [NonSerialized]
-        public RaidSimulatorV1 RaidSimulator;
-
         public new WorldBossCharacterSheet.Row RowData { get; }
         public WorldBossActionPatternSheet.Row PatternRowData { get; }
 
@@ -35,7 +32,6 @@ namespace Nekoyume.Model
                 characterRow.BossId,
                 statData.ElementalType)
         {
-            RaidSimulator = (RaidSimulatorV1) player.Simulator;
             RowData = characterRow;
             PatternRowData = patternRow;
             _wave = statData.Wave;
@@ -43,7 +39,6 @@ namespace Nekoyume.Model
 
         public RaidBoss(RaidBoss value) : base(value)
         {
-            RaidSimulator = value.RaidSimulator;
             RowData = value.RowData;
             PatternRowData = value.PatternRowData;
             _orderedSkills = value._orderedSkills;

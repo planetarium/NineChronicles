@@ -89,7 +89,7 @@ namespace Lib9c.Tests.Action
         [InlineData(typeof(MigrationActivatedAccountsState))]
         [InlineData(typeof(MigrationAvatarState))]
         [InlineData(typeof(MigrationLegacyShop))]
-        [InlineData(typeof(MimisbrunnrBattle10))]
+        [InlineData(typeof(MimisbrunnrBattle))]
         [InlineData(typeof(MonsterCollect))]
         [InlineData(typeof(PatchTableSheet))]
         [InlineData(typeof(RankingBattle))]
@@ -103,7 +103,7 @@ namespace Lib9c.Tests.Action
         [InlineData(typeof(Grinding))]
         [InlineData(typeof(UnlockEquipmentRecipe))]
         [InlineData(typeof(UnlockWorld))]
-        [InlineData(typeof(EventDungeonBattleV2))]
+        [InlineData(typeof(EventDungeonBattle))]
         [InlineData(typeof(EventConsumableItemCrafts))]
         [InlineData(typeof(Raid))]
         [InlineData(typeof(ClaimRaidReward))]
@@ -217,15 +217,16 @@ namespace Lib9c.Tests.Action
                     avatarStates = new List<Dictionary>(),
                 },
                 MigrationLegacyShop _ => new MigrationLegacyShop(),
-                MimisbrunnrBattle10 _ => new MimisbrunnrBattle10
+                MimisbrunnrBattle _ => new MimisbrunnrBattle
                 {
-                    costumes = new List<Guid>(),
-                    equipments = new List<Guid>(),
-                    foods = new List<Guid>(),
-                    worldId = 0,
-                    stageId = 0,
-                    playCount = 0,
-                    avatarAddress = default,
+                    Costumes = new List<Guid>(),
+                    Equipments = new List<Guid>(),
+                    Foods = new List<Guid>(),
+                    Runes = new List<int>(),
+                    WorldId = 0,
+                    StageId = 0,
+                    PlayCount = 0,
+                    AvatarAddress = default,
                 },
                 MonsterCollect _ => new MonsterCollect(),
                 PatchTableSheet _ => new PatchTableSheet
@@ -298,7 +299,7 @@ namespace Lib9c.Tests.Action
                         3,
                     },
                 },
-                EventDungeonBattleV2 _ => new EventDungeonBattleV2
+                EventDungeonBattle _ => new EventDungeonBattle
                 {
                     AvatarAddress = default,
                     EventScheduleId = 0,
@@ -307,6 +308,7 @@ namespace Lib9c.Tests.Action
                     Equipments = new List<Guid>(),
                     Costumes = new List<Guid>(),
                     Foods = new List<Guid>(),
+                    Runes = new List<int>(),
                 },
                 EventConsumableItemCrafts _ => new EventConsumableItemCrafts
                 {
