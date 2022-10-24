@@ -97,6 +97,7 @@ namespace Nekoyume.BlockChain.Policy
 
         public const long V100301ExecutedBlockIndex = 5_048_399L;
 
+        public const long V100310ExecutedBlockIndex = 5_217_577L;
 
         public static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(8);
 

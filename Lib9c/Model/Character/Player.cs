@@ -60,6 +60,14 @@ namespace Nekoyume.Model
         public CollectionMap monsterMap;
         public CollectionMap eventMap;
 
+        /// WARNING: This members is declared for specific reason related with v100310.
+        ///          Do not use this for other reason.
+        public CollectionMap monsterMapForBeforeV100310;
+
+        /// WARNING: This members is declared for specific reason related with v100310.
+        ///          Do not use this for other reason.
+        public CollectionMap eventMapForBeforeV100310;
+
         // todo: `PlayerCostume` 정도의 객체로 분리.
         public int hairIndex;
         public int lensIndex;
@@ -94,6 +102,8 @@ namespace Nekoyume.Model
             ring = null;
             monsterMap = new CollectionMap();
             eventMap = new CollectionMap();
+            monsterMapForBeforeV100310 = new CollectionMap();
+            eventMapForBeforeV100310 = new CollectionMap();
             hairIndex = avatarState.hair;
             lensIndex = avatarState.lens;
             earIndex = avatarState.ear;
@@ -123,6 +133,8 @@ namespace Nekoyume.Model
             ring = null;
             monsterMap = new CollectionMap();
             eventMap = new CollectionMap();
+            monsterMapForBeforeV100310 = new CollectionMap();
+            eventMapForBeforeV100310 = new CollectionMap();
             hairIndex = avatarState.hair;
             lensIndex = avatarState.lens;
             earIndex = avatarState.ear;
@@ -151,6 +163,8 @@ namespace Nekoyume.Model
             ring = null;
             monsterMap = new CollectionMap();
             eventMap = new CollectionMap();
+            monsterMapForBeforeV100310 = new CollectionMap();
+            eventMapForBeforeV100310 = new CollectionMap();
             hairIndex = 0;
             lensIndex = 0;
             earIndex = 0;
@@ -173,6 +187,8 @@ namespace Nekoyume.Model
             Inventory = new Inventory();
             monsterMap = new CollectionMap();
             eventMap = new CollectionMap();
+            monsterMapForBeforeV100310 = new CollectionMap();
+            eventMapForBeforeV100310 = new CollectionMap();
             hairIndex = enemyArenaPlayerDigest.HairIndex;
             lensIndex = enemyArenaPlayerDigest.LensIndex;
             earIndex = enemyArenaPlayerDigest.EarIndex;
@@ -196,6 +212,8 @@ namespace Nekoyume.Model
             ring = value.ring;
             monsterMap = value.monsterMap;
             eventMap = value.eventMap;
+            monsterMapForBeforeV100310 = value.monsterMapForBeforeV100310;
+            eventMapForBeforeV100310 = value.eventMapForBeforeV100310;
             hairIndex = value.hairIndex;
             lensIndex = value.lensIndex;
             earIndex = value.earIndex;
