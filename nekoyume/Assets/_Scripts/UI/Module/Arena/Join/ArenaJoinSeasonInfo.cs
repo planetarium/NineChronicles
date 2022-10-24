@@ -98,8 +98,7 @@ namespace Nekoyume.UI.Module.Arena.Join
         private void SetSliderAndText((long beginning, long end, long current) tuple)
         {
             var (beginning, end, current) = tuple;
-            if (current < beginning ||
-                current > end)
+            if (current > end)
             {
                 _seasonProgressFillImage.enabled = false;
                 _seasonProgressSliderFillText.enabled = false;
@@ -108,6 +107,15 @@ namespace Nekoyume.UI.Module.Arena.Join
                 {
                     _onSeasonEnded.OnNext(Unit.Default);
                 }
+
+                return;
+            }
+
+            if (current < beginning)
+            {
+                _seasonProgressFillImage.enabled = false;
+                _seasonProgressSliderFillText.text = Util.GetBlockToTime(beginning - current);
+                _seasonProgressSliderFillText.enabled = true;
 
                 return;
             }
