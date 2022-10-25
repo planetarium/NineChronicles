@@ -15,7 +15,7 @@ namespace Nekoyume.UI.Module.Arena.Join
 
         [SerializeField] private GameObject _cellPrefab;
 
-        [SerializeField] private GameObject[] frontGrounds;
+        [SerializeField] private GameObject[] scrollBarParents;
 
         protected override GameObject CellPrefab => _cellPrefab;
 
@@ -32,10 +32,10 @@ namespace Nekoyume.UI.Module.Arena.Join
                 return;
             }
 
-            var frontGroundIndex = Math.Clamp(data.Count, 6, 8) - 6;
-            for (int i = 0; i < frontGrounds.Length; i++)
+            var scrollBarIndex = Math.Clamp(data.Count, 6, 8) - 6;
+            for (int i = 0; i < scrollBarParents.Length; i++)
             {
-                frontGrounds[i].gameObject.SetActive(i == frontGroundIndex);
+                scrollBarParents[i].SetActive(i == scrollBarIndex);
             }
 
             if (index.HasValue)
