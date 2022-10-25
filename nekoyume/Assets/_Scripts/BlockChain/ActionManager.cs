@@ -269,7 +269,6 @@ namespace Nekoyume.BlockChain
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnCompleted(() => Analyzer.Instance.FinishTrace(sentryTrace))
                 .DoOnError(e =>
                 {
                     if (_lastBattleActionId == action.Id)
@@ -278,7 +277,8 @@ namespace Nekoyume.BlockChain
                     }
 
                     Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
-                });
+                })
+                .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
         public IObservable<ActionBase.ActionEvaluation<EventDungeonBattle>> EventDungeonBattle(
@@ -367,7 +367,6 @@ namespace Nekoyume.BlockChain
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnCompleted(() => Analyzer.Instance.FinishTrace(sentryTrace))
                 .DoOnError(e =>
                 {
                     if (_lastBattleActionId == action.Id)
@@ -376,7 +375,8 @@ namespace Nekoyume.BlockChain
                     }
 
                     Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
-                });
+                })
+                .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
         public IObservable<ActionBase.ActionEvaluation<CombinationConsumable>> CombinationConsumable(
@@ -434,8 +434,8 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnCompleted(() => Analyzer.Instance.FinishTrace(sentryTrace))
-                .DoOnError(e => throw HandleException(action.Id, e));
+                .DoOnError(e => throw HandleException(action.Id, e))
+                .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
         public IObservable<ActionBase.ActionEvaluation<EventConsumableItemCrafts>>
@@ -505,8 +505,8 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnCompleted(() => Analyzer.Instance.FinishTrace(sentryTrace))
-                .DoOnError(e => throw HandleException(action.Id, e));
+                .DoOnError(e => throw HandleException(action.Id, e))
+                .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
         public IObservable<ActionBase.ActionEvaluation<HackAndSlashSweep>> HackAndSlashSweep(
@@ -728,7 +728,6 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnCompleted(() => Analyzer.Instance.FinishTrace(sentryTrace))
                 .DoOnError(e =>
                 {
                     Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
@@ -770,7 +769,6 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnCompleted(() => Analyzer.Instance.FinishTrace(sentryTrace))
                 .DoOnError(e =>
                 {
                     if (_lastBattleActionId == action.Id)
@@ -779,7 +777,8 @@ namespace Nekoyume.BlockChain
                     }
 
                     Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
-                });
+                })
+                .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
         public IObservable<ActionBase.ActionEvaluation<JoinArena>> JoinArena(
@@ -940,8 +939,8 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnCompleted(() => Analyzer.Instance.FinishTrace(sentryTx))
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => HandleException(action.Id, e))
+                .Finally(() => Analyzer.Instance.FinishTrace(sentryTx));
         }
 
         public IObservable<ActionBase.ActionEvaluation<RapidCombination>> RapidCombination(
@@ -977,8 +976,8 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnCompleted(() => Analyzer.Instance.FinishTrace(sentryTrace))
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => HandleException(action.Id, e))
+                .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
         public IObservable<ActionBase.ActionEvaluation<RedeemCode>> RedeemCode(string code)

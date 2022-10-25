@@ -3,7 +3,7 @@ set -e
 
 commit_hash="$1"
 target_network="$2"
-data_dir="$(dirname "$0")/../../nekoyume/Assets/Resources/Sentry"
+data_dir="$(dirname "$0")/../../nekoyume/Assets/Resources"
 
 echo "planetarium" > "$data_dir/ClientHost.txt"
 echo "$commit_hash" > "$data_dir/ClientHash.txt"

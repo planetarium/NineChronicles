@@ -27,12 +27,22 @@ namespace Nekoyume
                 return;
             }
 
+            var clientHost = Resources.Load<TextAsset>("ClientHost")?.text ?? "no-host";
+            var clientHash = Resources.Load<TextAsset>("ClientHash")?.text ?? "no-hash";
+            var targetNetwork = Resources.Load<TextAsset>("TargetNetwork")?.text ?? "no-target";
+
             InitializeSentry(
-                uniqueId,
+                clientHost,
+                clientHash,
+                targetNetwork,
                 rpcServerHost,
+                uniqueId,
                 _isTrackable);
 
             _mixpanelValueFactory = new MixpanelValueFactory(
+                clientHost,
+                clientHash,
+                targetNetwork,
                 rpcServerHost,
                 uniqueId);
 
@@ -47,8 +57,11 @@ namespace Nekoyume
         }
 
         private void InitializeSentry(
-            string uniqueId = "none",
+            string clientHost,
+            string clientHash,
+            string targetNetwork,
             string rpcServerHost = "no-rpc-host",
+            string uniqueId = "none",
             bool isTrackable = false)
         {
             if (!isTrackable)
@@ -58,11 +71,6 @@ namespace Nekoyume
 
             SentrySdk.ConfigureScope(scope =>
             {
-                var clientHost = Resources.Load<TextAsset>("Sentry/ClientHost")?.text ?? "no-host";
-                var clientHash = Resources.Load<TextAsset>("Sentry/ClientHash")?.text ?? "no-hash";
-                var targetNetwork =
-                    Resources.Load<TextAsset>("Sentry/TargetNetwork")?.text ?? "no-target";
-
                 scope.User = new User()
                 {
                     Id = uniqueId
