@@ -1,4 +1,4 @@
-﻿namespace Lib9c.Tests.Action
+namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
@@ -25,7 +25,7 @@
     using Xunit;
     using static Lib9c.SerializeKeys;
 
-    public class HackAndSlashTest
+    public class HackAndSlash19Test
     {
         private readonly Dictionary<string, string> _sheets;
         private readonly TableSheets _tableSheets;
@@ -44,7 +44,7 @@
         private readonly WeeklyArenaState _weeklyArenaState;
         private readonly IAccountStateDelta _initialState;
 
-        public HackAndSlashTest()
+        public HackAndSlash19Test()
         {
             _sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(_sheets);
@@ -195,6 +195,7 @@
                 Costumes = costumes,
                 Equipments = equipments.Select(e => e.NonFungibleId).ToList(),
                 Foods = new List<Guid>(),
+                Runes = new List<int>(),
                 WorldId = worldId,
                 StageId = stageId,
                 AvatarAddress = _avatarAddress,
@@ -265,6 +266,7 @@
                 Costumes = new List<Guid>(),
                 Equipments = equipments.Select(e => e.NonFungibleId).ToList(),
                 Foods = new List<Guid>(),
+                Runes = new List<int>(),
                 WorldId = worldId,
                 StageId = stageId,
                 AvatarAddress = avatarState.address,
@@ -337,6 +339,7 @@
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
                 Foods = new List<Guid>(),
+                Runes = new List<int>(),
                 WorldId = worldId,
                 StageId = stageId,
                 AvatarAddress = _avatarAddress,
@@ -398,6 +401,7 @@
                 Costumes = new List<Guid>(),
                 Equipments = equipments,
                 Foods = new List<Guid>(),
+                Runes = new List<int>(),
                 WorldId = 1,
                 StageId = 1,
                 AvatarAddress = _avatarAddress,
@@ -424,6 +428,7 @@
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
                 Foods = new List<Guid>(),
+                Runes = new List<int>(),
                 WorldId = 1,
                 StageId = 1,
                 AvatarAddress = _avatarAddress,
@@ -459,6 +464,7 @@
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
                 Foods = new List<Guid>(),
+                Runes = new List<int>(),
                 WorldId = 1,
                 StageId = stageId,
                 AvatarAddress = _avatarAddress,
@@ -482,6 +488,7 @@
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
                 Foods = new List<Guid>(),
+                Runes = new List<int>(),
                 WorldId = 1,
                 StageId = 1,
                 AvatarAddress = _avatarAddress,
@@ -508,6 +515,7 @@
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
                 Foods = new List<Guid>(),
+                Runes = new List<int>(),
                 WorldId = 1,
                 StageId = 1,
                 AvatarAddress = _avatarAddress,
@@ -547,6 +555,7 @@
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
                 Foods = new List<Guid>(),
+                Runes = new List<int>(),
                 WorldId = worldId,
                 StageId = stageId,
                 AvatarAddress = _avatarAddress,
@@ -579,6 +588,7 @@
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
                 Foods = new List<Guid>(),
+                Runes = new List<int>(),
                 WorldId = 1,
                 StageId = 3,
                 AvatarAddress = _avatarAddress,
@@ -619,6 +629,7 @@
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
                 Foods = new List<Guid>(),
+                Runes = new List<int>(),
                 WorldId = 1,
                 StageId = 2,
                 AvatarAddress = _avatarAddress,
@@ -658,6 +669,7 @@
                     equipment.ItemId,
                 },
                 Foods = new List<Guid>(),
+                Runes = new List<int>(),
                 WorldId = 1,
                 StageId = 1,
                 AvatarAddress = _avatarAddress,
@@ -705,6 +717,7 @@
                     equipment.ItemId,
                 },
                 Foods = new List<Guid>(),
+                Runes = new List<int>(),
                 WorldId = 1,
                 StageId = 1,
                 AvatarAddress = _avatarAddress,
@@ -736,6 +749,7 @@
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
                 Foods = new List<Guid>(),
+                Runes = new List<int>(),
                 WorldId = 1,
                 StageId = 1,
                 AvatarAddress = _avatarAddress,
@@ -803,6 +817,7 @@
                 Costumes = costumes,
                 Equipments = equipments,
                 Foods = new List<Guid>(),
+                Runes = new List<int>(),
                 WorldId = 1,
                 StageId = 1,
                 AvatarAddress = _avatarAddress,
@@ -872,6 +887,7 @@
                         Costumes = costumes,
                         Equipments = equipments,
                         Foods = new List<Guid>(),
+                        Runes = new List<int>(),
                         WorldId = 1,
                         StageId = 1,
                         AvatarAddress = avatarState.address,
@@ -906,6 +922,7 @@
                     Costumes = new List<Guid>(),
                     Equipments = new List<Guid>(),
                     Foods = new List<Guid>(),
+                    Runes = new List<int>(),
                     WorldId = 1,
                     StageId = 1,
                     AvatarAddress = avatarState.address,
@@ -921,102 +938,6 @@
 
                 SerializeException<PlayCountIsZeroException>(exec);
             }
-        }
-
-        [Fact]
-        public void Execute_V100291()
-        {
-            var initialState = _initialState;
-            var keys = new List<string>
-            {
-                nameof(SkillActionBuffSheet),
-                nameof(ActionBuffSheet),
-                nameof(StatBuffSheet),
-            };
-            foreach (var (key, value) in _sheets)
-            {
-                if (keys.Contains(key))
-                {
-                    initialState = initialState.SetState(Addresses.TableSheet.Derive(key), null!);
-                }
-            }
-
-            var previousAvatarState = _initialState.GetAvatarStateV2(_avatarAddress);
-            var costumes = new List<Guid>();
-            IRandom random = new TestRandom();
-            var costumeId = _tableSheets
-                .CostumeItemSheet
-                .Values
-                .First(r => r.ItemSubType == ItemSubType.FullCostume)
-                .Id;
-
-            var costume = (Costume)ItemFactory.CreateItem(
-                    _tableSheets.ItemSheet[costumeId], random);
-            previousAvatarState.inventory.AddItem(costume);
-            costumes.Add(costume.ItemId);
-            var equipments = Doomfist.GetAllParts(_tableSheets, previousAvatarState.level);
-            foreach (var equipment in equipments)
-            {
-                previousAvatarState.inventory.AddItem(equipment);
-            }
-
-            var mailEquipmentRow = _tableSheets.EquipmentItemSheet.Values.First();
-            var mailEquipment = ItemFactory.CreateItemUsable(mailEquipmentRow, default, 0);
-            var result = new CombinationConsumable5.ResultModel
-            {
-                id = default,
-                gold = 0,
-                actionPoint = 0,
-                recipeId = 1,
-                materials = new Dictionary<Material, int>(),
-                itemUsable = mailEquipment,
-            };
-            for (var i = 0; i < 100; i++)
-            {
-                var mail = new CombinationMail(result, i, default, 0);
-                previousAvatarState.Update(mail);
-            }
-
-            initialState = initialState
-                .SetState(_avatarAddress, previousAvatarState.SerializeV2())
-                .SetState(_avatarAddress.Derive(LegacyInventoryKey), previousAvatarState.inventory.Serialize())
-                .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), previousAvatarState.worldInformation.Serialize())
-                .SetState(_avatarAddress.Derive(LegacyQuestListKey), previousAvatarState.questList.Serialize());
-
-            initialState = initialState.SetState(
-                _avatarAddress.Derive("world_ids"),
-                List.Empty.Add(1)
-            );
-
-            foreach (var key in keys)
-            {
-                Assert.Null(initialState.GetState(Addresses.GetSheetAddress(key)));
-            }
-
-            Assert.NotNull(initialState.GetState(Addresses.GetSheetAddress<BuffSheet>()));
-
-            var action = new HackAndSlash
-            {
-                Costumes = costumes,
-                Equipments = equipments.Select(e => e.NonFungibleId).ToList(),
-                Foods = new List<Guid>(),
-                WorldId = 1,
-                StageId = 1,
-                AvatarAddress = _avatarAddress,
-            };
-
-            var nextState = action.Execute(new ActionContext
-            {
-                PreviousStates = initialState,
-                Signer = _agentAddress,
-                Random = new TestRandom(),
-                Rehearsal = false,
-                BlockIndex = 1,
-            });
-
-            var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
-
-            Assert.True(nextAvatarState.worldInformation.IsStageCleared(1));
         }
 
         [Theory]
@@ -1109,6 +1030,7 @@
                 Costumes = costumes,
                 Equipments = equipments.Select(e => e.NonFungibleId).ToList(),
                 Foods = new List<Guid>(),
+                Runes = new List<int>(),
                 WorldId = worldId,
                 StageId = stageId,
                 AvatarAddress = _avatarAddress,
@@ -1276,6 +1198,7 @@
                     ? equipments.Select(e => e.NonFungibleId).ToList()
                     : new List<Guid>(),
                 Foods = new List<Guid>(),
+                Runes = new List<int>(),
                 WorldId = worldId,
                 StageId = stageId,
                 AvatarAddress = _avatarAddress,
@@ -1311,6 +1234,7 @@
                 contextRandom,
                 previousAvatarState,
                 new List<Guid>(),
+                null,
                 skillsOnWaveStart,
                 worldId,
                 stageId,
@@ -1396,6 +1320,7 @@
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
                 Foods = new List<Guid>(),
+                Runes = new List<int>(),
                 WorldId = worldId,
                 StageId = stageId,
                 AvatarAddress = _avatarAddress,

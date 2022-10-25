@@ -38,7 +38,7 @@ namespace Nekoyume.Battle
             IRandom random,
             AvatarState avatarState,
             List<Guid> foods,
-            SimulatorSheets simulatorSheets
+            SimulatorSheetsV1 simulatorSheets
         ) : this(random, new Player(avatarState, simulatorSheets), foods, simulatorSheets)
         {
         }
@@ -47,7 +47,7 @@ namespace Nekoyume.Battle
             IRandom random,
             Player player,
             List<Guid> foods,
-            SimulatorSheets simulatorSheets
+            SimulatorSheetsV1 simulatorSheets
         )
         {
             Random = random;

@@ -71,7 +71,7 @@ namespace Nekoyume.Model
         public ArenaCharacter(
             ArenaSimulator simulator,
             ArenaPlayerDigest digest,
-            ArenaSimulatorSheets sheets,
+            ArenaSimulatorSheetsV1 sheets,
             bool isEnemy = false)
         {
             OffensiveElementalType = GetElementalType(digest.Equipments, ItemSubType.Weapon);
@@ -135,7 +135,7 @@ namespace Nekoyume.Model
             return equipment?.ElementalType ?? ElementalType.Normal;
         }
 
-        private static CharacterSheet.Row CharacterRow(int characterId, ArenaSimulatorSheets sheets)
+        private static CharacterSheet.Row CharacterRow(int characterId, ArenaSimulatorSheetsV1 sheets)
         {
             if (!sheets.CharacterSheet.TryGetValue(characterId, out var row))
             {
@@ -146,7 +146,7 @@ namespace Nekoyume.Model
         }
 
 
-        private static CharacterStats GetStat(ArenaPlayerDigest digest, ArenaSimulatorSheets sheets)
+        private static CharacterStats GetStat(ArenaPlayerDigest digest, ArenaSimulatorSheetsV1 sheets)
         {
             var row = CharacterRow(digest.CharacterId, sheets);
             var stats = new CharacterStats(row, digest.Level);

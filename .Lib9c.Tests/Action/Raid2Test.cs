@@ -19,7 +19,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static SerializeKeys;
 
-    public class RaidTest
+    public class Raid2Test
     {
         private readonly Dictionary<string, string> _sheets;
         private readonly Address _agentAddress;
@@ -27,7 +27,7 @@ namespace Lib9c.Tests.Action
         private readonly TableSheets _tableSheets;
         private readonly Currency _goldCurrency;
 
-        public RaidTest()
+        public Raid2Test()
         {
             _sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(_sheets);
@@ -97,6 +97,7 @@ namespace Lib9c.Tests.Action
                 EquipmentIds = new List<Guid>(),
                 CostumeIds = new List<Guid>(),
                 FoodIds = new List<Guid>(),
+                Runes = new List<int>(),
                 PayNcg = payNcg,
             };
             Currency crystal = CrystalCalculator.CRYSTAL;
@@ -239,6 +240,7 @@ namespace Lib9c.Tests.Action
                     random,
                     avatarState,
                     action.FoodIds,
+                    action.Runes,
                     raidSimulatorSheets,
                     _tableSheets.CostumeStatSheet);
                 simulator.Simulate();
@@ -378,6 +380,7 @@ namespace Lib9c.Tests.Action
                 EquipmentIds = new List<Guid>(),
                 CostumeIds = new List<Guid>(),
                 FoodIds = new List<Guid>(),
+                Runes = new List<int>(),
                 PayNcg = false,
             };
             long blockIndex = 5055201L;
@@ -452,6 +455,7 @@ namespace Lib9c.Tests.Action
                 random,
                 avatarState,
                 action.FoodIds,
+                action.Runes,
                 _tableSheets.GetRaidSimulatorSheets(),
                 _tableSheets.CostumeStatSheet);
             simulator.Simulate();

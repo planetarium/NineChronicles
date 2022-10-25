@@ -54,7 +54,7 @@ namespace Lib9c.Tests
             var simulator = new ArenaSimulator(_random);
             var myDigest = new ArenaPlayerDigest(_avatarState1, _arenaAvatarState1);
             var enemyDigest = new ArenaPlayerDigest(_avatarState2, _arenaAvatarState2);
-            var arenaSheets = _tableSheets.GetArenaSimulatorSheets();
+            var arenaSheets = _tableSheets.GetArenaSimulatorSheetsV1();
             var log = simulator.Simulate(myDigest, enemyDigest, arenaSheets);
 
             Assert.Equal(_random, simulator.Random);
@@ -98,7 +98,7 @@ namespace Lib9c.Tests
             var simulator = new ArenaSimulator(_random);
             var myDigest = new ArenaPlayerDigest(_avatarState1, _arenaAvatarState1);
             var enemyDigest = new ArenaPlayerDigest(_avatarState2, _arenaAvatarState2);
-            var arenaSheets = _tableSheets.GetArenaSimulatorSheets();
+            var arenaSheets = _tableSheets.GetArenaSimulatorSheetsV1();
             var log = simulator.SimulateV1(myDigest, enemyDigest, arenaSheets);
 
             Assert.Equal(_random, simulator.Random);

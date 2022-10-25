@@ -209,7 +209,7 @@ namespace Nekoyume.Action
                 foods,
                 worldId,
                 stageId,
-                states.GetStageSimulatorSheets(),
+                states.GetStageSimulatorSheetsV1(),
                 costumeStatSheet
             );
             sw.Stop();

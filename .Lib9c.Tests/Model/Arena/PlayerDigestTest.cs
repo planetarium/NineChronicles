@@ -77,8 +77,8 @@ namespace Lib9c.Tests.Model.Arena
             Assert.Equal(2, digest.Equipments.Count);
             Assert.Equal(2, digest.Costumes.Count);
 
-            var enemyPlayer = new EnemyPlayer(digest, _tableSheets.GetArenaSimulatorSheets());
-            var player = new Player(digest, _tableSheets.GetArenaSimulatorSheets());
+            var enemyPlayer = new EnemyPlayer(digest, _tableSheets.GetArenaSimulatorSheetsV1());
+            var player = new Player(digest, _tableSheets.GetArenaSimulatorSheetsV1());
 
             Assert.Equal(2, enemyPlayer.Equipments.Count);
             Assert.Equal(2, enemyPlayer.Costumes.Count);

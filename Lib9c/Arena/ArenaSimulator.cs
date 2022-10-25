@@ -30,7 +30,7 @@ namespace Nekoyume.Arena
         public ArenaLog Simulate(
             ArenaPlayerDigest challenger,
             ArenaPlayerDigest enemy,
-            ArenaSimulatorSheets sheets)
+            ArenaSimulatorSheetsV1 sheets)
         {
             var log = new ArenaLog();
             var players = SpawnPlayers(this, challenger, enemy, sheets, log);
@@ -88,7 +88,7 @@ namespace Nekoyume.Arena
         public ArenaLog SimulateV1(
             ArenaPlayerDigest challenger,
             ArenaPlayerDigest enemy,
-            ArenaSimulatorSheets sheets)
+            ArenaSimulatorSheetsV1 sheets)
         {
             var log = new ArenaLog();
             var players = SpawnPlayersV1(this, challenger, enemy, sheets, log);
@@ -160,7 +160,7 @@ namespace Nekoyume.Arena
             ArenaSimulator simulator,
             ArenaPlayerDigest challengerDigest,
             ArenaPlayerDigest enemyDigest,
-            ArenaSimulatorSheets simulatorSheets,
+            ArenaSimulatorSheetsV1 simulatorSheets,
             ArenaLog log)
         {
             var challenger = new ArenaCharacter(simulator, challengerDigest, simulatorSheets);
@@ -183,7 +183,7 @@ namespace Nekoyume.Arena
             ArenaSimulator simulator,
             ArenaPlayerDigest challengerDigest,
             ArenaPlayerDigest enemyDigest,
-            ArenaSimulatorSheets simulatorSheets,
+            ArenaSimulatorSheetsV1 simulatorSheets,
             ArenaLog log)
         {
             var challenger = new ArenaCharacter(simulator, challengerDigest, simulatorSheets);

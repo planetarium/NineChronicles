@@ -43,7 +43,7 @@ namespace Lib9c.Tests.Model
                 new List<Guid>(),
                 1,
                 3,
-                _tableSheets.GetStageSimulatorSheets(),
+                _tableSheets.GetStageSimulatorSheetsV1(),
                 2,
                 1);
             simulator.SimulateV2();
@@ -67,7 +67,7 @@ namespace Lib9c.Tests.Model
                 new List<Guid>(),
                 1,
                 1,
-                _tableSheets.GetStageSimulatorSheets(),
+                _tableSheets.GetStageSimulatorSheetsV1(),
                 _tableSheets.CostumeStatSheet,
                 2);
 
@@ -87,7 +87,7 @@ namespace Lib9c.Tests.Model
                 new List<Guid>(),
                 1,
                 1,
-                _tableSheets.GetStageSimulatorSheets(),
+                _tableSheets.GetStageSimulatorSheetsV1(),
                 _tableSheets.CostumeStatSheet,
                 2);
 
@@ -113,7 +113,7 @@ namespace Lib9c.Tests.Model
                 new List<Guid>(),
                 1,
                 1,
-                _tableSheets.GetStageSimulatorSheets(),
+                _tableSheets.GetStageSimulatorSheetsV1(),
                 _tableSheets.CostumeStatSheet,
                 2);
 
@@ -139,7 +139,7 @@ namespace Lib9c.Tests.Model
                 new List<Guid>(),
                 1,
                 1,
-                _tableSheets.GetStageSimulatorSheets(),
+                _tableSheets.GetStageSimulatorSheetsV1(),
                 _tableSheets.CostumeStatSheet,
                 2);
 
