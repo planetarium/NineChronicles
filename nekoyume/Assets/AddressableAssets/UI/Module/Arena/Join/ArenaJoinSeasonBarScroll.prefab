@@ -597,7 +597,7 @@ MonoBehaviour:
   _scroller: {fileID: 5374736236375877621}
   _cellPrefab: {fileID: 2433830924602169073, guid: 3e1a4086a48216445953a4d6d047330c,
     type: 3}
-  frontGrounds:
+  scrollBarParents:
   - {fileID: 7706598245104164014}
   - {fileID: 8008311409861505663}
   - {fileID: 3260627028005198584}
