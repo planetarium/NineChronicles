@@ -23,12 +23,20 @@ namespace Nekoyume.TableData
             public long EntranceFee { get; }
             public long TicketPrice { get; }
             public long AdditionalTicketPrice { get; }
+            public int MaxPurchaseCount { get; }
+            public int MaxPurchaseCountWithInterval { get; }
 
-            public RoundData(int championshipId, int round, ArenaType arenaType,
-                long startBlockIndex, long endBlockIndex,
+            public RoundData(int championshipId,
+                int round,
+                ArenaType arenaType,
+                long startBlockIndex,
+                long endBlockIndex,
                 int requiredMedalCount,
                 long entranceFee,
-                long ticketPrice, long additionalTicketPrice)
+                long ticketPrice,
+                long additionalTicketPrice,
+                int maxPurchaseCount,
+                int maxPurchaseCountWithInterval)
             {
                 ChampionshipId = championshipId;
                 Round = round;
@@ -39,6 +47,8 @@ namespace Nekoyume.TableData
                 EntranceFee = entranceFee;
                 TicketPrice = ticketPrice;
                 AdditionalTicketPrice = additionalTicketPrice;
+                MaxPurchaseCount = maxPurchaseCount;
+                MaxPurchaseCountWithInterval = maxPurchaseCountWithInterval;
             }
 
             public bool IsTheRoundOpened(long blockIndex)
@@ -67,11 +77,27 @@ namespace Nekoyume.TableData
                 var entranceFee = ParseLong(fields[6]);
                 var ticketPrice = ParseLong(fields[7]);
                 var additionalTicketPrice = ParseLong(fields[8]);
+                var maxPurchaseCount = 0;
+                var maxPurchaseCountWithInterval = 0;
+                if (fields.Count > 9)
+                {
+                    maxPurchaseCount = ParseInt(fields[9]);
+                    maxPurchaseCountWithInterval = ParseInt(fields[10]);
+                }
+
                 Round = new List<RoundData>
                 {
-                    new RoundData(ChampionshipId, round, arenaType, startIndex, endIndex,
-                        requiredWins, entranceFee,
-                        ticketPrice, additionalTicketPrice)
+                    new RoundData(ChampionshipId,
+                        round,
+                        arenaType,
+                        startIndex,
+                        endIndex,
+                        requiredWins,
+                        entranceFee,
+                        ticketPrice,
+                        additionalTicketPrice,
+                        maxPurchaseCount,
+                        maxPurchaseCountWithInterval)
                 };
             }
 

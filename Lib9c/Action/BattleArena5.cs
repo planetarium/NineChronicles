@@ -277,7 +277,7 @@ namespace Nekoyume.Action
                         context.Signer,
                         arenaAdr,
                         ticketBalance);
-                    arenaInformation.BuyTicket(roundData);
+                    arenaInformation.BuyTicket(ArenaHelper.GetMaxPurchasedTicketCount(roundData));
                 }
             }
 

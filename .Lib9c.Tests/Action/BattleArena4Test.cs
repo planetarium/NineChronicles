@@ -265,7 +265,7 @@ namespace Lib9c.Tests.Action
                 {
                     var price = ArenaHelper.GetTicketPrice(roundData, beforeInfo, _state.GetGoldCurrency());
                     _state = _state.MintAsset(_agent1Address, price);
-                    beforeInfo.BuyTicket(roundData);
+                    beforeInfo.BuyTicket(ArenaHelper.GetMaxPurchasedTicketCount(roundData));
                 }
             }
 
@@ -750,7 +750,7 @@ namespace Lib9c.Tests.Action
             var max = ArenaHelper.GetMaxPurchasedTicketCount(roundData);
             for (var i = 0; i < max; i++)
             {
-                beforeInfo.BuyTicket(roundData);
+                beforeInfo.BuyTicket(ArenaHelper.GetMaxPurchasedTicketCount(roundData));
             }
 
             _state = _state.SetState(arenaInfoAdr, beforeInfo.Serialize());
@@ -811,7 +811,7 @@ namespace Lib9c.Tests.Action
             {
                 var price = ArenaHelper.GetTicketPrice(roundData, beforeInfo, _state.GetGoldCurrency());
                 _state = _state.MintAsset(_agent1Address, price);
-                beforeInfo.BuyTicket(roundData);
+                beforeInfo.BuyTicket(ArenaHelper.GetMaxPurchasedTicketCount(roundData));
             }
 
             var action = new BattleArena4()

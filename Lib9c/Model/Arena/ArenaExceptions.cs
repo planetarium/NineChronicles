@@ -182,6 +182,20 @@ namespace Nekoyume.Model.Arena
     }
 
     [Serializable]
+    public class ExceedTicketPurchaseLimitDuringIntervalException : Exception
+    {
+        public ExceedTicketPurchaseLimitDuringIntervalException(string message) : base(message)
+        {
+        }
+
+        protected ExceedTicketPurchaseLimitDuringIntervalException(SerializationInfo info,
+            StreamingContext context) :
+            base(info, context)
+        {
+        }
+    }
+
+    [Serializable]
     public class CoolDownBlockException : Exception
     {
         public CoolDownBlockException(string message) : base(message)
