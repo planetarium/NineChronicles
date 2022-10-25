@@ -15,6 +15,8 @@ namespace Nekoyume.UI.Module.Arena.Join
 
         [SerializeField] private GameObject _cellPrefab;
 
+        [SerializeField] private GameObject[] scrollBarParents;
+
         protected override GameObject CellPrefab => _cellPrefab;
 
         private readonly Subject<int> _onSelectionChanged = new Subject<int>();
@@ -28,6 +30,12 @@ namespace Nekoyume.UI.Module.Arena.Join
             if (data.Count == 0)
             {
                 return;
+            }
+
+            var scrollBarIndex = Math.Clamp(data.Count, 6, 8) - 6;
+            for (int i = 0; i < scrollBarParents.Length; i++)
+            {
+                scrollBarParents[i].SetActive(i == scrollBarIndex);
             }
 
             if (index.HasValue)
