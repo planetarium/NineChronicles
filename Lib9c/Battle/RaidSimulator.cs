@@ -19,7 +19,6 @@ namespace Nekoyume.Battle
         public int DamageDealt { get; private set; }
         public List<FungibleAssetValue> AssetReward { get; private set; } = new List<FungibleAssetValue>();
         public override IEnumerable<ItemBase> Reward => new List<ItemBase>();
-        private const int TurnLimit = 150;
         private readonly List<RaidBoss> _waves;
 
         private WorldBossBattleRewardSheet _worldBossBattleRewardSheet;
@@ -32,10 +31,18 @@ namespace Nekoyume.Battle
             IRandom random,
             AvatarState avatarState,
             List<Guid> foods,
+            List<int> runes,
             RaidSimulatorSheets simulatorSheets,
             CostumeStatSheet costumeStatSheet) : base(random, avatarState, foods, simulatorSheets)
         {
             Player.SetCostumeStat(costumeStatSheet);
+            if (runes != null)
+            {
+                Player.SetRuneStat(
+                    runes.Select(rune => (rune, 1)).ToList(),
+                    simulatorSheets.RuneStatSheet);
+            }
+
             BossId = bossId;
             _waves = new List<RaidBoss>();
 

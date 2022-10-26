@@ -239,7 +239,7 @@ namespace Lib9c.Tests.Action
                 player,
                 action.EnemyPlayerDigest,
                 new List<Guid>(),
-                _tableSheets.GetRankingSimulatorSheets(),
+                _tableSheets.GetRankingSimulatorSheetsV1(),
                 RankingBattle10.StageId,
                 action.ArenaInfo,
                 action.EnemyArenaInfo,

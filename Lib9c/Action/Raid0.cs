@@ -50,7 +50,7 @@ namespace Nekoyume.Action
                     GameConfig.RequireClearedStageLevel.ActionsInRaid, current);
             }
 
-            Dictionary<Type, (Address, ISheet)> sheets = states.GetSheets(
+            Dictionary<Type, (Address, ISheet)> sheets = states.GetSheetsV1(
                 containRaidSimulatorSheets: true,
                 sheetTypes: new [] {
                 typeof(MaterialItemSheet),
@@ -153,10 +153,10 @@ namespace Nekoyume.Action
                 sheets.GetSheet<EquipmentItemOptionSheet>(),
                 addressesHex);
 
-            var raidSimulatorSheets = sheets.GetRaidSimulatorSheets();
+            var raidSimulatorSheets = sheets.GetRaidSimulatorSheetsV1();
 
             // Simulate.
-            var simulator = new RaidSimulator(
+            var simulator = new RaidSimulatorV1(
                 row.BossId,
                 context.Random,
                 avatarState,

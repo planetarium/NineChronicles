@@ -37,6 +37,7 @@ namespace Lib9c.Tests.Model
                 _random,
                 avatarState,
                 new List<Guid>(),
+                null,
                 new List<Nekoyume.Model.Skill.Skill>(),
                 1,
                 1,

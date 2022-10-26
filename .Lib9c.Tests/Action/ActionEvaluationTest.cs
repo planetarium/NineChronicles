@@ -167,6 +167,7 @@ namespace Lib9c.Tests.Action
                     Costumes = new List<Guid>(),
                     Equipments = new List<Guid>(),
                     Foods = new List<Guid>(),
+                    Runes = new List<int>(),
                     WorldId = 0,
                     StageId = 0,
                     AvatarAddress = new PrivateKey().ToAddress(),
@@ -218,13 +219,14 @@ namespace Lib9c.Tests.Action
                 MigrationLegacyShop _ => new MigrationLegacyShop(),
                 MimisbrunnrBattle _ => new MimisbrunnrBattle
                 {
-                    costumes = new List<Guid>(),
-                    equipments = new List<Guid>(),
-                    foods = new List<Guid>(),
-                    worldId = 0,
-                    stageId = 0,
-                    playCount = 0,
-                    avatarAddress = default,
+                    Costumes = new List<Guid>(),
+                    Equipments = new List<Guid>(),
+                    Foods = new List<Guid>(),
+                    Runes = new List<int>(),
+                    WorldId = 0,
+                    StageId = 0,
+                    PlayCount = 0,
+                    AvatarAddress = default,
                 },
                 MonsterCollect _ => new MonsterCollect(),
                 PatchTableSheet _ => new PatchTableSheet
@@ -306,6 +308,7 @@ namespace Lib9c.Tests.Action
                     Equipments = new List<Guid>(),
                     Costumes = new List<Guid>(),
                     Foods = new List<Guid>(),
+                    Runes = new List<int>(),
                 },
                 EventConsumableItemCrafts _ => new EventConsumableItemCrafts
                 {
@@ -320,6 +323,7 @@ namespace Lib9c.Tests.Action
                     CostumeIds = new List<Guid>(),
                     EquipmentIds = new List<Guid>(),
                     FoodIds = new List<Guid>(),
+                    Runes = new List<int>(),
                     PayNcg = true,
                 },
                 ClaimRaidReward _ => new ClaimRaidReward(_sender),

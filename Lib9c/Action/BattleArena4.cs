@@ -118,7 +118,7 @@ namespace Nekoyume.Action
                         typeof(EquipmentItemOptionSheet),
                         typeof(MaterialItemSheet),
                     })
-                : states.GetSheets(
+                : states.GetSheetsV1(
                     containArenaSimulatorSheets: true,
                     sheetTypes: new[]
                     {
@@ -278,7 +278,7 @@ namespace Nekoyume.Action
             ExtraPreviousMyScore = myArenaScore.Score;
             var arenaSheets = useV100291Sheets
                 ? sheets.GetArenaSimulatorSheets_v100291()
-                : sheets.GetArenaSimulatorSheets();
+                : sheets.GetArenaSimulatorSheetsV1();
             var winCount = 0;
             var defeatCount = 0;
             var rewards = new List<ItemBase>();

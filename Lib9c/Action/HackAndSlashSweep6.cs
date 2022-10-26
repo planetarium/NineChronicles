@@ -81,7 +81,7 @@ namespace Nekoyume.Action
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
             }
 
-            var sheets = states.GetSheets(
+            var sheets = states.GetSheetsV1(
                 containQuestSheet: false,
                 containStageSimulatorSheets: false,
                 sheetTypes: new[]

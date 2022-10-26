@@ -20,7 +20,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static Lib9c.SerializeKeys;
 
-    public class EventDungeonBattleTest
+    public class EventDungeonBattleV2Test
     {
         private readonly Currency _ncgCurrency;
         private readonly TableSheets _tableSheets;
@@ -29,7 +29,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _avatarAddress;
         private IAccountStateDelta _initialStates;
 
-        public EventDungeonBattleTest()
+        public EventDungeonBattleV2Test()
         {
             _initialStates = new State();
 
@@ -41,6 +41,7 @@ namespace Lib9c.Tests.Action
                 GoldCurrencyState.Address,
                 new GoldCurrencyState(_ncgCurrency).Serialize());
             var sheets = TableSheetsImporter.ImportSheets();
+            sheets.Remove(nameof(RuneStatSheet));
             foreach (var (key, value) in sheets)
             {
                 _initialStates = _initialStates
@@ -405,7 +406,7 @@ namespace Lib9c.Tests.Action
                 previousAvatarState.inventory.AddItem(equipment, iLock: null);
             }
 
-            var action = new EventDungeonBattle
+            var action = new EventDungeonBattleV2
             {
                 AvatarAddress = _avatarAddress,
                 EventScheduleId = eventScheduleId,

@@ -1141,7 +1141,7 @@ namespace Lib9c.Tests.Action
                 new List<Guid>(),
                 worldId,
                 stageId,
-                _tableSheets.GetStageSimulatorSheets(),
+                _tableSheets.GetStageSimulatorSheetsV1(),
                 _tableSheets.CostumeStatSheet,
                 StageSimulatorV1.ConstructorVersionV100080);
             simulator.Simulate(1);

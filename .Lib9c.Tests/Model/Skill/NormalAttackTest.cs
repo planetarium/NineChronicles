@@ -50,6 +50,7 @@ namespace Lib9c.Tests.Model.Skill
                 random,
                 avatarState,
                 new List<Guid>(),
+                new List<int>(),
                 new List<Nekoyume.Model.Skill.Skill>(),
                 1,
                 1,

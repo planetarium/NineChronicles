@@ -35,6 +35,7 @@ namespace Nekoyume.Battle
             IRandom random,
             AvatarState avatarState,
             List<Guid> foods,
+            List<int> runes,
             List<Model.Skill.Skill> skillsOnWaveStart,
             int worldId,
             int stageId,
@@ -53,6 +54,12 @@ namespace Nekoyume.Battle
                 simulatorSheets)
         {
             Player.SetCostumeStat(costumeStatSheet);
+            if (runes != null)
+            {
+                Player.SetRuneStat(
+                    runes.Select(rune => (rune, 1)).ToList(),
+                    simulatorSheets.RuneStatSheet);
+            }
 
             _waves = new List<Wave>();
             _waveRewards = waveRewards;

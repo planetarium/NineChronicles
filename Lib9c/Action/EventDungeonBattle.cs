@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -20,13 +20,13 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1321
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1434
     /// </summary>
     [Serializable]
     [ActionType(ActionTypeText)]
     public class EventDungeonBattle : GameAction
     {
-        private const string ActionTypeText = "event_dungeon_battle2";
+        private const string ActionTypeText = "event_dungeon_battle3";
         public const int PlayCount = 1;
 
         public Address AvatarAddress;
@@ -36,6 +36,7 @@ namespace Nekoyume.Action
         public List<Guid> Equipments;
         public List<Guid> Costumes;
         public List<Guid> Foods;
+        public List<int> Runes;
         public bool BuyTicketIfNeeded;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal
@@ -57,6 +58,10 @@ namespace Nekoyume.Action
                             .Select(e => e.Serialize())))
                     .Add(new Bencodex.Types.List(
                         Foods
+                            .OrderBy(e => e)
+                            .Select(e => e.Serialize())))
+                    .Add(new Bencodex.Types.List(
+                        Runes
                             .OrderBy(e => e)
                             .Select(e => e.Serialize())))
                     .Add(BuyTicketIfNeeded.Serialize());
@@ -81,9 +86,9 @@ namespace Nekoyume.Action
                 throw new ArgumentException("'l' must be a bencodex list");
             }
 
-            if (list.Count < 8)
+            if (list.Count < 9)
             {
-                throw new ArgumentException("'l' must contain at least 8 items");
+                throw new ArgumentException("'l' must contain at least 9 items");
             }
 
             AvatarAddress = list[0].ToAddress();
@@ -93,7 +98,8 @@ namespace Nekoyume.Action
             Equipments = ((List)list[4]).ToList(StateExtensions.ToGuid);
             Costumes = ((List)list[5]).ToList(StateExtensions.ToGuid);
             Foods = ((List)list[6]).ToList(StateExtensions.ToGuid);
-            BuyTicketIfNeeded = list[7].ToBoolean();
+            Runes = ((List)list[7]).ToList(StateExtensions.ToInteger);
+            BuyTicketIfNeeded = list[8].ToBoolean();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -137,23 +143,7 @@ namespace Nekoyume.Action
 
             // Get sheets
             sw.Restart();
-            // FIXME Delete this check next hard fork.
-            bool useV100291Sheets = UseV100291Sheets(context.BlockIndex);
-            var sheets = useV100291Sheets
-            ? states.GetSheetsV100291(
-                containSimulatorSheets: true,
-                containValidateItemRequirementSheets: true,
-                sheetTypes: new[]
-                {
-                    typeof(EventScheduleSheet),
-                    typeof(EventDungeonSheet),
-                    typeof(EventDungeonStageSheet),
-                    typeof(EventDungeonStageWaveSheet),
-                    typeof(EnemySkillSheet),
-                    typeof(CostumeStatSheet),
-                    typeof(MaterialItemSheet),
-                })
-            : states.GetSheets(
+            var sheets = states.GetSheets(
                 containSimulatorSheets: true,
                 containValidateItemRequirementSheets: true,
                 sheetTypes: new[]
@@ -297,13 +287,12 @@ namespace Nekoyume.Action
             var exp = scheduleRow.GetStageExp(
                 EventDungeonStageId.ToEventDungeonStageNumber(),
                 PlayCount);
-            var simulatorSheets = useV100291Sheets
-                ? sheets.GetSimulatorSheetsV100291()
-                : sheets.GetSimulatorSheets();
+            var simulatorSheets = sheets.GetSimulatorSheets();
             var simulator = new StageSimulator(
                 context.Random,
                 avatarState,
                 Foods,
+                Runes,
                 new List<Skill>(),
                 EventDungeonId,
                 EventDungeonStageId,
