@@ -19,14 +19,14 @@ namespace Nekoyume.Action
     {
         public Address AvatarAddress;
         public int RuneId;
-        public bool Once;
+        public int TryCount;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
             {
                 ["a"] = AvatarAddress.Serialize(),
                 ["r"] = RuneId.Serialize(),
-                ["o"] = Once.Serialize(),
+                ["t"] = TryCount.Serialize(),
             }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(
@@ -34,7 +34,7 @@ namespace Nekoyume.Action
         {
             AvatarAddress = plainValue["a"].ToAddress();
             RuneId = plainValue["r"].ToInteger();
-            Once = plainValue["o"].ToBoolean();
+            TryCount = plainValue["t"].ToInteger();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -94,7 +94,7 @@ namespace Nekoyume.Action
             var runeBalance = states.GetBalance(AvatarAddress, runeCurrency);
             if (RuneHelper.TryEnhancement(ncgBalance, crystalBalance, runeBalance,
                     ncgCurrency, crystalCurrency, runeCurrency,
-                    cost, context.Random, Once, out var tryCount))
+                    cost, context.Random, TryCount, out var tryCount))
             {
                 runeState.LevelUp();
             }

@@ -25,10 +25,9 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(10000, false, false)]
-        [InlineData(1, true, false)]
-        [InlineData(1, true, true)]
-        public void Execute(int multiple, bool isEmptyBalance, bool once)
+        [InlineData(10000, false)]
+        [InlineData(1, true)]
+        public void Execute(int tryCount, bool isEmptyBalance)
         {
             var agentAddress = new PrivateKey().ToAddress();
             var avatarAddress = new PrivateKey().ToAddress();
@@ -92,9 +91,9 @@ namespace Lib9c.Tests.Action
             var crystalCurrency = CrystalCalculator.CRYSTAL;
             var runeCurrency = Currency.Legacy(runeRow.Ticker, 0, minters: null);
 
-            var ncgBal = cost.NcgQuantity * ncgCurrency * multiple;
-            var crystalBal = cost.CrystalQuantity * crystalCurrency * multiple;
-            var runeBal = cost.RuneStoneQuantity * runeCurrency * multiple;
+            var ncgBal = cost.NcgQuantity * ncgCurrency * tryCount;
+            var crystalBal = cost.CrystalQuantity * crystalCurrency * tryCount;
+            var runeBal = cost.RuneStoneQuantity * runeCurrency * tryCount;
 
             state = state.MintAsset(agentAddress, ncgBal);
             state = state.MintAsset(agentAddress, crystalBal);
@@ -104,7 +103,7 @@ namespace Lib9c.Tests.Action
             {
                 AvatarAddress = avatarState.address,
                 RuneId = runeId,
-                Once = once,
+                TryCount = tryCount,
             };
             var ctx = new ActionContext
             {
@@ -126,30 +125,23 @@ namespace Lib9c.Tests.Action
             var nextCrystalBal = nextState.GetBalance(agentAddress, ncgCurrency);
             var nextRuneBal = nextState.GetBalance(agentAddress, ncgCurrency);
 
-            if (once)
+            Assert.NotEqual(ncgBal, nextNcgBal);
+            Assert.NotEqual(crystalBal, nextCrystalBal);
+            Assert.NotEqual(runeBal, nextRuneBal);
+
+            if (isEmptyBalance)
             {
+                Assert.Equal("0", nextNcgBal.GetQuantityString());
+                Assert.Equal("0", nextCrystalBal.GetQuantityString());
+                Assert.Equal("0", nextRuneBal.GetQuantityString());
                 Assert.Equal(runeState.Level, nextRunState.Level);
             }
             else
             {
-                Assert.NotEqual(ncgBal, nextNcgBal);
-                Assert.NotEqual(crystalBal, nextCrystalBal);
-                Assert.NotEqual(runeBal, nextRuneBal);
-
-                if (isEmptyBalance)
-                {
-                    Assert.Equal("0", nextNcgBal.GetQuantityString());
-                    Assert.Equal("0", nextCrystalBal.GetQuantityString());
-                    Assert.Equal("0", nextRuneBal.GetQuantityString());
-                    Assert.Equal(runeState.Level, nextRunState.Level);
-                }
-                else
-                {
-                    Assert.NotEqual("0", nextNcgBal.GetQuantityString());
-                    Assert.NotEqual("0", nextCrystalBal.GetQuantityString());
-                    Assert.NotEqual("0", nextRuneBal.GetQuantityString());
-                    Assert.Equal(runeState.Level + 1, nextRunState.Level);
-                }
+                Assert.NotEqual("0", nextNcgBal.GetQuantityString());
+                Assert.NotEqual("0", nextCrystalBal.GetQuantityString());
+                Assert.NotEqual("0", nextRuneBal.GetQuantityString());
+                Assert.Equal(runeState.Level + 1, nextRunState.Level);
             }
         }
 
@@ -193,7 +185,7 @@ namespace Lib9c.Tests.Action
             {
                 AvatarAddress = avatarState.address,
                 RuneId = runeId,
-                Once = true,
+                TryCount = 1,
             };
 
             Assert.Throws<RuneCostNotFoundException>(() =>
@@ -258,7 +250,7 @@ namespace Lib9c.Tests.Action
             {
                 AvatarAddress = avatarState.address,
                 RuneId = runeId,
-                Once = true,
+                TryCount = 1,
             };
 
             Assert.Throws<RuneCostDataNotFoundException>(() =>
@@ -320,7 +312,7 @@ namespace Lib9c.Tests.Action
             {
                 AvatarAddress = avatarState.address,
                 RuneId = runeId,
-                Once = true,
+                TryCount = 1,
             };
 
             Assert.Throws<RuneNotFoundException>(() =>
@@ -413,7 +405,7 @@ namespace Lib9c.Tests.Action
             {
                 AvatarAddress = avatarState.address,
                 RuneId = runeId,
-                Once = true,
+                TryCount = 1,
             };
             var ctx = new ActionContext
             {

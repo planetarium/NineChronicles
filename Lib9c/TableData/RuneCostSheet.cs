@@ -13,12 +13,12 @@ namespace Nekoyume.TableData
         [Serializable]
         public class RuneCostData
         {
-            public int Level;
-            public int RuneStoneId;
-            public int RuneStoneQuantity;
-            public int CrystalQuantity;
-            public int NcgQuantity;
-            public int LevelUpSuccessRate;
+            public int Level { get; }
+            public int RuneStoneId { get; }
+            public int RuneStoneQuantity { get; }
+            public int CrystalQuantity { get; }
+            public int NcgQuantity { get; }
+            public int LevelUpSuccessRate { get; }
 
             public RuneCostData(
                 int level,
