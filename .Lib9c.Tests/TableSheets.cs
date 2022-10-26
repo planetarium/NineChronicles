@@ -204,7 +204,6 @@ namespace Lib9c.Tests
 
         public RuneStatSheet RuneStatSheet { get; private set; }
 
-
         public void ItemSheetInitialize()
         {
             ItemSheet ??= new ItemSheet();
