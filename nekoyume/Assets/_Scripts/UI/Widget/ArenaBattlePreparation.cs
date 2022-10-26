@@ -580,35 +580,23 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var gold = States.Instance.GoldBalanceState.Gold;
-            var ncgCost = ArenaHelper.GetTicketPrice(
+            var balance = States.Instance.GoldBalanceState.Gold;
+            var cost = ArenaHelper.GetTicketPrice(
                 _roundData,
                 RxProps.PlayersArenaParticipant.Value.CurrentArenaInfo,
-                gold.Currency);
-            var hasEnoughNCG = gold >= ncgCost;
-            if (hasEnoughNCG)
-            {
-                var notEnoughTicketMsg = L10nManager.Localize(
-                    "UI_CONFIRM_PAYMENT_CURRENCY_FORMAT_FOR_BATTLE_ARENA",
-                    ncgCost.ToString());
-                Find<PaymentPopup>().ShowAttract(
-                    CostType.ArenaTicket,
-                    arenaTicketCost.ToString(),
-                    notEnoughTicketMsg,
-                    L10nManager.Localize("UI_YES"),
-                    () => StartCoroutine(
-                        CoBattleStart(CostType.NCG)));
-                return;
-            }
+                balance.Currency);
+            var arenaInformation = RxProps.PlayersArenaParticipant.Value.CurrentArenaInfo;
 
-            var notEnoughNCGMsg =
-                L10nManager.Localize("UI_NOT_ENOUGH_NCG_WITH_SUPPLIER_INFO");
-            Find<PaymentPopup>().ShowAttract(
+            Find<TicketPurchasePopup>().Show(
+                CostType.ArenaTicket,
                 CostType.NCG,
-                ncgCost.GetQuantityString(),
-                notEnoughNCGMsg,
-                L10nManager.Localize("UI_GO_TO_MARKET"),
-                GoToMarket);
+                balance,
+                cost,
+                arenaInformation.PurchasedTicketCount,
+                _roundData.MaxPurchaseCount,
+                () => StartCoroutine(CoBattleStart(CostType.NCG)),
+                GoToMarket
+            );
         }
 
         private IEnumerator CoBattleStart(CostType costType)
