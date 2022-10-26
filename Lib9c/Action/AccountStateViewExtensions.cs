@@ -755,7 +755,8 @@ namespace Nekoyume.Action
                 GetSheet<StageSheet>(states),
                 GetSheet<StageWaveSheet>(states),
                 GetSheet<EnemySkillSheet>(states),
-                GetSheet<RuneStatSheet>(states)
+                GetSheet<RuneStatSheet>(states),
+                GetSheet<RuneSkillSheet>(states)
             );
         }
 
@@ -788,7 +789,8 @@ namespace Nekoyume.Action
                 GetSheet<CharacterLevelSheet>(states),
                 GetSheet<EquipmentItemSetEffectSheet>(states),
                 GetSheet<WeeklyArenaRewardSheet>(states),
-                GetSheet<RuneStatSheet>(states)
+                GetSheet<RuneStatSheet>(states),
+                GetSheet<RuneSkillSheet>(states)
             );
         }
 
