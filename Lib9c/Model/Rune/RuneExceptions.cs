@@ -42,4 +42,15 @@ namespace Nekoyume.Model.Rune
         }
     }
 
+    [Serializable]
+    public class TryCountIsZeroException : Exception
+    {
+        public TryCountIsZeroException(string msg) : base(msg)
+        {
+        }
+
+        public TryCountIsZeroException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
+    }
 }

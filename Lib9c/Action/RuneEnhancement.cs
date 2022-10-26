@@ -19,7 +19,7 @@ namespace Nekoyume.Action
     {
         public Address AvatarAddress;
         public int RuneId;
-        public int TryCount;
+        public int TryCount = 1;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
@@ -53,6 +53,13 @@ namespace Nekoyume.Action
                     typeof(RuneListSheet),
                     typeof(RuneCostSheet),
                 });
+
+            if (TryCount < 1)
+            {
+                throw new TryCountIsZeroException(
+                    $"{AvatarAddress}TryCount must be greater than 0. " +
+                    $"current TryCount : {TryCount}");
+            }
 
             RuneState runeState;
             var runeStateAddress = RuneState.DeriveAddress(AvatarAddress, RuneId);

@@ -425,5 +425,59 @@ namespace Lib9c.Tests.Action
                     BlockIndex = blockIndex,
                 }));
         }
+
+        [Fact]
+        public void Execute_TryCountIsZeroException()
+        {
+            var agentAddress = new PrivateKey().ToAddress();
+            var avatarAddress = new PrivateKey().ToAddress();
+            var sheets = TableSheetsImporter.ImportSheets();
+            var tableSheets = new TableSheets(sheets);
+            var blockIndex = tableSheets.WorldBossListSheet.Values
+                .OrderBy(x => x.StartedBlockIndex)
+                .First()
+                .StartedBlockIndex;
+
+            var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
+            var state = new State()
+                .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
+                .SetState(agentAddress, new AgentState(agentAddress).Serialize());
+
+            foreach (var (key, value) in sheets)
+            {
+                state = state.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
+            }
+
+            var avatarState = new AvatarState(
+                avatarAddress,
+                agentAddress,
+                0,
+                tableSheets.GetAvatarSheets(),
+                new GameConfigState(),
+                default
+            );
+
+            var runeListSheet = state.GetSheet<RuneListSheet>();
+            var runeId = runeListSheet.First().Value.Id;
+            var runeStateAddress = RuneState.DeriveAddress(avatarState.address, runeId);
+            var runeState = new RuneState(runeId);
+            state = state.SetState(runeStateAddress, runeState.Serialize());
+
+            var action = new RuneEnhancement()
+            {
+                AvatarAddress = avatarState.address,
+                RuneId = runeId,
+                TryCount = 0,
+            };
+
+            Assert.Throws<TryCountIsZeroException>(() =>
+                action.Execute(new ActionContext()
+                {
+                    PreviousStates = state,
+                    Signer = agentAddress,
+                    Random = new TestRandom(),
+                    BlockIndex = blockIndex,
+                }));
+        }
     }
 }
