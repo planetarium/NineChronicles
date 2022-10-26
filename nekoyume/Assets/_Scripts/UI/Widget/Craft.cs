@@ -496,7 +496,7 @@ namespace Nekoyume.UI
 
                         Analyzer.Instance.Track(
                             "Unity/Replace Combination Material",
-                            new Value
+                            new Dictionary<string, Value>()
                             {
                                 ["MaterialCount"] = insufficientMaterials
                                     .Sum(x => x.Value),
