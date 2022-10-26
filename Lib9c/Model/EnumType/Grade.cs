@@ -6,6 +6,6 @@ namespace Nekoyume.Model.EnumType
         Rare = 2,
         Epic = 3,
         Unique = 4,
-        Legendary = 4,
+        Legendary = 5,
     }
 }

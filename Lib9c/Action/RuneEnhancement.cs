@@ -92,7 +92,7 @@ namespace Nekoyume.Action
             var ncgBalance = states.GetBalance(context.Signer, ncgCurrency);
             var crystalBalance = states.GetBalance(context.Signer, crystalCurrency);
             var runeBalance = states.GetBalance(AvatarAddress, runeCurrency);
-            if (TryEnhancement(ncgBalance, crystalBalance, runeBalance,
+            if (RuneHelper.TryEnhancement(ncgBalance, crystalBalance, runeBalance,
                     ncgCurrency, crystalCurrency, runeCurrency,
                     cost, context.Random, Once, out var tryCount))
             {
@@ -109,47 +109,6 @@ namespace Nekoyume.Action
                 .TransferAsset(context.Signer, feeStoreAddress, ncgCost)
                 .TransferAsset(context.Signer, feeStoreAddress, crystalCost)
                 .TransferAsset(AvatarAddress, feeStoreAddress, runeCost);
-        }
-
-        private bool TryEnhancement(
-            FungibleAssetValue ncg,
-            FungibleAssetValue crystal,
-            FungibleAssetValue rune,
-            Currency ncgCurrency,
-            Currency crystalCurrency,
-            Currency runeCurrency,
-            RuneCostSheet.RuneCostData cost,
-            IRandom random,
-            bool once,
-            out int tryCount)
-        {
-            tryCount = 0;
-            var value = cost.LevelUpSuccessRate + 1;
-            while (value > cost.LevelUpSuccessRate)
-            {
-                if (once && tryCount == 1)
-                {
-                    return false;
-                }
-
-                tryCount++;
-                var ncgCost = tryCount * cost.NcgQuantity * ncgCurrency;
-                var crystalCost = tryCount * cost.CrystalQuantity * crystalCurrency;
-                var runeCost = tryCount * cost.RuneStoneQuantity * runeCurrency;
-                if (ncg < ncgCost || crystal < crystalCost || rune < runeCost)
-                {
-                    tryCount--;
-                    if (tryCount == 0)
-                    {
-                        throw new NotEnoughFungibleAssetValueException($"{nameof(RuneEnhancement)}" +
-                            $"[ncg:{ncg} < {ncgCost}] [crystal:{crystal} < {crystalCost}] [rune:{rune} < {runeCost}]");
-                    }
-                    return false;
-                }
-                value = random.Next(1, GameConfig.MaximumProbability + 1);
-            }
-
-            return true;
         }
     }
 }
