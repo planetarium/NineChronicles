@@ -400,7 +400,7 @@ namespace Nekoyume.State
                     avatar,
                     (win, lose)
                 );
-            }).ToArray();
+            }).OrderByDescending(e => e.Score).ThenByDescending(e => e.AvatarAddr == currentAvatarAddr).ToArray();
 
             var playerArenaInfo = stateBulk[playerArenaInfoAddr] is List arenaInfoList
                 ? new ArenaInformation(arenaInfoList)
