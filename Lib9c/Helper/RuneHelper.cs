@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -7,6 +8,8 @@ using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.Battle;
+using Nekoyume.Model.EnumType;
+using Nekoyume.Model.State;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Helper
