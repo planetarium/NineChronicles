@@ -1,5 +1,2 @@
-rune_id,_name,level,stat_type_1,value_1,value_type_1,stat_type_2,value_2,value_type_2,stat_type_3,value_3,value_type3
-250010001,Adventurer's Rune,1,HP,100,Add,NONE,0,Add,NONE,0,Add
-230010001,Rune of Health (Fenrir) Lv1,1,HP,200,Add,NONE,0,Add,NONE,0,Add
-220010001,Rune of Attack (Fenrir) Lv1,1,ATK,50,Add,NONE,0,Add,NONE,0,Add
-150010001,Rune of Bleeding (Fenrir) Lv1,1,HP,200,Add,ATK,100,Add,NONE,0,Add
+rune_id,_name,level,skillId,cooldown,chance,value,stat_ratio,stat_type,stat_reference_type
+150010001,Rune of Bleeding (Fenrir),1,600001,10,100,35,0,ATK,Caster

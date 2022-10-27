@@ -70,7 +70,7 @@ namespace Nekoyume.Battle
         {
             Player.Targets.Add(raidBoss);
             Characters.Enqueue(raidBoss, TurnPriority / raidBoss.SPD);
-            raidBoss.InitAI();
+            raidBoss.InitAIV3();
 
             var enemies = new List<Enemy>() { new RaidBoss(raidBoss) };
             var spawnWave = new SpawnWave(null, WaveNumber, WaveTurn, enemies, true);
@@ -83,7 +83,7 @@ namespace Nekoyume.Battle
             Log.waveCount = _waves.Count;
             Log.clearedWaveNumber = 0;
             Log.newlyCleared = false;
-            Player.Spawn();
+            Player.SpawnV3();
             TurnNumber = 0;
 
             var turnLimitExceeded = false;

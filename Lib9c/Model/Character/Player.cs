@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.Battle;
-using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus;
+using Nekoyume.Model.Buff;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Quest;
+using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -69,6 +71,8 @@ namespace Nekoyume.Model
 
         protected List<Costume> costumes;
         protected List<Equipment> equipments;
+        public readonly Skills RuneSkills = new Skills();
+        public readonly Dictionary<int, int> RuneSkillCooldownMap = new Dictionary<int, int>();
 
         public IReadOnlyList<Costume> Costumes => costumes;
         public IReadOnlyList<Equipment> Equipments => equipments;
@@ -201,6 +205,7 @@ namespace Nekoyume.Model
             earIndex = value.earIndex;
             tailIndex = value.tailIndex;
             characterLevelSheet = value.characterLevelSheet;
+            RuneSkills = value.RuneSkills;
 
             costumes = value.costumes;
             equipments = value.equipments;
@@ -426,7 +431,7 @@ namespace Nekoyume.Model
         public virtual void Spawn()
         {
             InitAI();
-            var spawn = new SpawnPlayer((CharacterBase) Clone());
+            var spawn = new SpawnPlayer((CharacterBase)Clone());
             Simulator.Log.Add(spawn);
         }
 
@@ -443,6 +448,14 @@ namespace Nekoyume.Model
         {
             InitAIV2();
             var spawn = new SpawnPlayer((CharacterBase) Clone());
+            Simulator.Log.Add(spawn);
+        }
+
+        [Obsolete("Use Spawn")]
+        public virtual void SpawnV3()
+        {
+            InitAIV3();
+            var spawn = new SpawnPlayer((CharacterBase)Clone());
             Simulator.Log.Add(spawn);
         }
 
@@ -481,6 +494,39 @@ namespace Nekoyume.Model
             Skills.Add(skill);
         }
 
+        protected override BattleStatus.Skill UseSkill()
+        {
+            var selectedSkill = RuneSkills.SelectWithoutDefaultAttack(Simulator.Random);
+            if (selectedSkill == null)
+            {
+                return base.UseSkill();
+            }
+
+            var usedSkill = selectedSkill.Use(
+                this,
+                Simulator.WaveTurn,
+                BuffFactory.GetBuffs(
+                    ATK,
+                    selectedSkill,
+                    Simulator.SkillBuffSheet,
+                    Simulator.StatBuffSheet,
+                    Simulator.SkillActionBuffSheet,
+                    Simulator.ActionBuffSheet
+                )
+            );
+
+            var cooldown = RuneSkillCooldownMap[selectedSkill.SkillRow.Id];
+            RuneSkills.SetCooldown(selectedSkill.SkillRow.Id, cooldown);
+            Simulator.Log.Add(usedSkill);
+            return usedSkill;
+        }
+
+        protected override void ReduceSkillCooldown()
+        {
+            base.ReduceSkillCooldown();
+            RuneSkills.ReduceCooldown();
+        }
+
         public void SetCostumeStat(CostumeStatSheet costumeStatSheet)
         {
             var statModifiers = new List<StatModifier>();
@@ -496,14 +542,16 @@ namespace Nekoyume.Model
             Stats.EqualizeCurrentHPWithHP();
         }
 
-        public void SetRuneStat(
+        public void SetRune(
             List<(int runeId, int level)> runes,
-            RuneStatSheet runeStatSheet)
+            RuneStatSheet runeStatSheet,
+            RuneSkillSheet runeSkillSheet,
+            SkillSheet skillSheet)
         {
             foreach (var (runeId, level) in runes)
             {
-                if (!runeStatSheet.TryGetValue(runeId, out var row) ||
-                    !row.LevelStatsMap.TryGetValue(level, out var statInfo))
+                if (!runeStatSheet.TryGetValue(runeId, out var statRow) ||
+                    !statRow.LevelStatsMap.TryGetValue(level, out var statInfo))
                 {
                     continue;
                 }
@@ -517,6 +565,35 @@ namespace Nekoyume.Model
                             x.statMap.ValueAsInt)));
                 Stats.AddOption(statModifiers);
                 Stats.EqualizeCurrentHPWithHP();
+
+                if (!runeSkillSheet.TryGetValue(runeId, out var runeSkillRow) ||
+                    !runeSkillRow.LevelSkillMap.TryGetValue(level, out var skillInfo) ||
+                    !skillSheet.TryGetValue(skillInfo.SkillId, out var skillRow))
+                {
+                    continue;
+                }
+
+                var power = skillInfo.Value;
+                var addedPower = 0;
+                if (skillInfo.StatReferenceType == EnumType.StatReferenceType.Caster)
+                {
+                    switch (skillInfo.StatType)
+                    {
+                        case StatType.HP:
+                            addedPower = HP;
+                            break;
+                        case StatType.ATK:
+                            addedPower = ATK;
+                            break;
+                        case StatType.DEF:
+                            addedPower = DEF;
+                            break;
+                    }
+                }
+                power += (int) Math.Round(addedPower * skillInfo.StatRatio);
+                var skill = SkillFactory.Get(skillRow, power, skillInfo.Chance);
+                RuneSkills.Add(skill);
+                RuneSkillCooldownMap[skillInfo.SkillId] = skillInfo.Cooldown;
             }
         }
 

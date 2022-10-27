@@ -16,6 +16,7 @@ namespace Nekoyume.TableData
         {
             public class RuneSkillInfo
             {
+                public int SkillId { get; set; }
                 public int Cooldown { get; set; }
                 public int Chance { get; set; }
                 public int Value { get; set; }
@@ -24,6 +25,7 @@ namespace Nekoyume.TableData
                 public StatReferenceType StatReferenceType { get; set; }
 
                 public RuneSkillInfo(
+                    int skillId,
                     int cooldown,
                     int chance,
                     int value,
@@ -31,6 +33,7 @@ namespace Nekoyume.TableData
                     StatType statType,
                     StatReferenceType statReferenceType)
                 {
+                    SkillId = skillId;
                     Cooldown = cooldown;
                     Chance = chance;
                     Value = value;
@@ -50,16 +53,18 @@ namespace Nekoyume.TableData
                 RuneId = ParseInt(fields[0]);
 
                 var level = ParseInt(fields[1]);
-                var cooldown = ParseInt(fields[2]);
-                var chance = ParseInt(fields[3]);
-                var value = ParseInt(fields[4]);
-                var statRatio = ParseDecimal(fields[5]);
+                var skillId = ParseInt(fields[2]);
+                var cooldown = ParseInt(fields[3]);
+                var chance = ParseInt(fields[4]);
+                var value = ParseInt(fields[5]);
+                var statRatio = ParseDecimal(fields[6]);
                 var statType =
-                    (StatType)Enum.Parse(typeof(StatType), fields[6]);
+                    (StatType)Enum.Parse(typeof(StatType), fields[7]);
                 var statReferenceType =
-                    (StatReferenceType)Enum.Parse(typeof(StatReferenceType), fields[7]);
+                    (StatReferenceType)Enum.Parse(typeof(StatReferenceType), fields[8]);
 
                 var skillInfo = new RuneSkillInfo(
+                    skillId,
                     cooldown,
                     chance,
                     value,

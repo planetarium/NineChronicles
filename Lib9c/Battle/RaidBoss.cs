@@ -3,7 +3,6 @@ using Nekoyume.Model.Buff;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 

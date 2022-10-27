@@ -129,8 +129,8 @@ namespace Nekoyume.Arena
 
         private void Spawn()
         {
-            Player.Spawn();
-            _enemyPlayer.Spawn();
+            Player.SpawnV3();
+            _enemyPlayer.SpawnV3();
             Player.Targets.Add(_enemyPlayer);
             _enemyPlayer.Targets.Add(Player);
         }

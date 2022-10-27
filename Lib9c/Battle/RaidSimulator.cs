@@ -38,9 +38,11 @@ namespace Nekoyume.Battle
             Player.SetCostumeStat(costumeStatSheet);
             if (runes != null)
             {
-                Player.SetRuneStat(
+                Player.SetRune(
                     runes.Select(rune => (rune, 1)).ToList(),
-                    simulatorSheets.RuneStatSheet);
+                    simulatorSheets.RuneStatSheet,
+                    simulatorSheets.RuneSkillSheet,
+                    simulatorSheets.SkillSheet);
             }
 
             BossId = bossId;

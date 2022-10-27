@@ -59,5 +59,20 @@ namespace Nekoyume.Battle
             var spawnWave = new SpawnWave(null, simulator.WaveNumber, simulator.WaveTurn, enemies, HasBoss);
             simulator.Log.Add(spawnWave);
         }
+
+        [Obsolete("Use Spawn")]
+        public void SpawnV3(ISimulator simulator)
+        {
+            foreach (var enemy in _enemies)
+            {
+                simulator.Player.Targets.Add(enemy);
+                simulator.Characters.Enqueue(enemy, Simulator.TurnPriority / enemy.SPD);
+                enemy.InitAIV3();
+            }
+
+            var enemies = _enemies.Select(enemy => new Enemy(enemy)).ToList();
+            var spawnWave = new SpawnWave(null, simulator.WaveNumber, simulator.WaveTurn, enemies, HasBoss);
+            simulator.Log.Add(spawnWave);
+        }
     }
 }
