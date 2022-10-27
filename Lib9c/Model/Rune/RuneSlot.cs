@@ -47,10 +47,15 @@ namespace Nekoyume.Model.Rune
                 .Add(new List(_runeStates.Select(x => x.Serialize())));
         }
 
-        public void SetRuneState(RuneState runeState)
+        public void Equip(RuneState runeState)
         {
             _runeStates.Clear();
             _runeStates.Add(runeState);
+        }
+
+        public void Unequip()
+        {
+            _runeStates.Clear();
         }
 
         public bool Equipped(out RuneState runeState)

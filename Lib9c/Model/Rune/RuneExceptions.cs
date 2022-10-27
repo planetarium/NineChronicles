@@ -157,4 +157,18 @@ namespace Nekoyume.Model.Rune
         {
         }
     }
+
+    [Serializable]
+    public class DuplicatedRuneSlotIndexException : Exception
+    {
+
+        public DuplicatedRuneSlotIndexException(string message) : base(message)
+        {
+        }
+
+        protected DuplicatedRuneSlotIndexException(SerializationInfo info, StreamingContext context) :
+            base(info, context)
+        {
+        }
+    }
 }

@@ -44,9 +44,15 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            if (RuneInfos is null || !RuneInfos.Any())
+            if (RuneInfos is null)
             {
                 throw new RuneInfosIsEmptyException(
+                    $"[{nameof(EquipRune)}] my avatar address : {AvatarAddress}");
+            }
+
+            if (RuneInfos.GroupBy(x => x.SlotIndex).Count() != RuneInfos.Count)
+            {
+                throw new DuplicatedRuneSlotIndexException(
                     $"[{nameof(EquipRune)}] my avatar address : {AvatarAddress}");
             }
 
@@ -60,30 +66,24 @@ namespace Nekoyume.Action
             var runeSlotState = states.TryGetState(runeSlotStateAddress, out List rawRuneSlotState)
                 ? new RuneSlotState(rawRuneSlotState)
                 : new RuneSlotState(BattleType);
-            foreach (var info in RuneInfos)
-            {
-                var runeListSheet = sheets.GetSheet<RuneListSheet>();
-                if (!runeListSheet.TryGetValue(info.RuneId, out var row))
-                {
-                    throw new RuneListNotFoundException(
-                        $"[{nameof(EquipRune)}] my avatar address : {AvatarAddress}");
-                }
 
-                var runeStateAddress = RuneState.DeriveAddress(AvatarAddress, info.RuneId);
-                if (states.TryGetState(runeStateAddress, out List rawRuneState))
+            if (RuneInfos.Exists(x => x.SlotIndex >= runeSlotState.GetRuneSlot().Count))
+            {
+                throw new SlotNotFoundException(
+                    $"[{nameof(EquipRune)}] my avatar address : {AvatarAddress}");
+            }
+
+            var runeStates = new List<RuneState>();
+            foreach (var address in RuneInfos.Select(info => RuneState.DeriveAddress(AvatarAddress, info.RuneId)))
+            {
+                if (states.TryGetState(address, out List rawRuneState))
                 {
-                    var runeState = new RuneState(rawRuneState);
-                    var runeType = (RuneType)row.RuneType;
-                    var runeUsePlace = (RuneUsePlace)row.UsePlace;
-                    runeSlotState.UpdateSlot(info.SlotIndex, runeState, runeType, runeUsePlace);
-                }
-                else
-                {
-                    throw new RuneStateNotFoundException(
-                        $"[{nameof(EquipRune)}] my avatar address : {AvatarAddress}");
+                    runeStates.Add(new RuneState(rawRuneState));
                 }
             }
 
+            var runeListSheet = sheets.GetSheet<RuneListSheet>();
+            runeSlotState.UpdateSlot(RuneInfos, runeStates, runeListSheet);
             return states.SetState(runeSlotStateAddress, runeSlotState.Serialize());
         }
     }

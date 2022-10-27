@@ -6,6 +6,7 @@ using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Rune;
+using Nekoyume.TableData;
 
 namespace Nekoyume.Model.State
 {
@@ -43,37 +44,70 @@ namespace Nekoyume.Model.State
             return result;
         }
 
-        public void UpdateSlot(int index,
-            RuneState runeState,
-            RuneType runeType,
-            RuneUsePlace runePlace)
+        public void UpdateSlot(
+            List<RuneSlotInfo> runeInfos,
+            List<RuneState> runeStates,
+            RuneListSheet runeListSheet)
         {
-            var slot = _slots.FirstOrDefault(x => x.Index == index);
-            if (slot is null)
+            foreach (var slot in _slots)
             {
-                throw new SlotNotFoundException(
-                    $"[{nameof(RuneSlotState)}] Index : {index}");
+                var runeInfo = runeInfos.FirstOrDefault(x => x.SlotIndex == slot.Index);
+                if (runeInfo is null)
+                {
+                    slot.Unequip();
+                }
+                else
+                {
+                    if (IsUsableSlot(runeStates, runeListSheet, slot, runeInfo, out var runeState))
+                    {
+                        slot.Equip(runeState);
+                    }
+                }
             }
+        }
 
+        private bool IsUsableSlot(
+            IEnumerable<RuneState> runeStates,
+            RuneListSheet runeListSheet,
+            RuneSlot slot,
+            RuneSlotInfo runeInfo,
+            out RuneState runeState)
+        {
             if (slot.IsLock)
             {
                 throw new SlotIsLockedException(
-                    $"[{nameof(RuneSlotState)}] Index : {index}");
+                    $"[{nameof(RuneSlotState)}] Index : {slot.Index}");
             }
 
+            var runeId = runeInfo.RuneId;
+            if (!runeListSheet.TryGetValue(runeId, out var row))
+            {
+                throw new RuneListNotFoundException(
+                    $"[{nameof(RuneSlotState)}] Index : {slot.Index} / runeId : {runeId}");
+            }
+
+            var runeType = (RuneType)row.RuneType;
             if (slot.RuneType != runeType)
             {
                 throw new SlotRuneTypeException(
-                    $"[{nameof(RuneSlotState)}] Index : {index} / {slot.RuneType} != {runeType}");
+                    $"[{nameof(RuneSlotState)}] Index : {slot.Index} / {slot.RuneType} != {runeType}");
             }
 
+            var runePlace = (RuneUsePlace)row.UsePlace;
             if (!BattleType.IsEquippableRune(runePlace))
             {
                 throw new IsEquippableRuneException(
-                    $"[{nameof(RuneSlotState)}] Index : {index} / runePlace : {runePlace}");
+                    $"[{nameof(RuneSlotState)}] Index : {slot.Index} / runePlace : {runePlace}");
             }
 
-            slot.SetRuneState(runeState);
+            runeState = runeStates.FirstOrDefault(x => x.RuneId == runeId);
+            if (runeState is null)
+            {
+                throw new RuneStateNotFoundException(
+                    $"[{nameof(RuneSlotState)}] Index : {slot.Index} / runeId : {runeId}");
+            }
+
+            return true;
         }
 
         public void Unlock(int index)

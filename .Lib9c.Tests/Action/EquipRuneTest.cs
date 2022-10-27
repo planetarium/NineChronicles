@@ -87,14 +87,39 @@ namespace Lib9c.Tests.Action
                 Signer = agentAddress,
             };
 
-            var nextState = action.Execute(ctx);
+            state = action.Execute(ctx);
             var runeSlotStateAddress = RuneSlotState.DeriveAddress(avatarAddress, battleType);
-            if (nextState.TryGetState(runeSlotStateAddress, out List rawRuneSlotState))
+            if (state.TryGetState(runeSlotStateAddress, out List rawRuneSlotState))
             {
                 var runeSlotState = new RuneSlotState(rawRuneSlotState);
                 var slot = runeSlotState.GetRuneSlot();
                 var equipped = slot[slotIndex].Equipped(out _);
                 Assert.True(equipped);
+            }
+
+            action = new EquipRune()
+            {
+                AvatarAddress = avatarAddress,
+                BattleType = battleType,
+                RuneInfos = new List<RuneSlotInfo>(),
+            };
+
+            ctx = new ActionContext
+            {
+                BlockIndex = blockIndex,
+                PreviousStates = state,
+                Random = new TestRandom(0),
+                Rehearsal = false,
+                Signer = agentAddress,
+            };
+
+            state = action.Execute(ctx);
+            if (state.TryGetState(runeSlotStateAddress, out List rawRuneSlotState2))
+            {
+                var runeSlotState = new RuneSlotState(rawRuneSlotState2);
+                var slot = runeSlotState.GetRuneSlot();
+                var equipped = slot[slotIndex].Equipped(out _);
+                Assert.False(equipped);
             }
         }
 
@@ -120,6 +145,32 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
+        public void Execute_DuplicatedRuneSlotIndexException()
+        {
+            var state = Init(out var agentAddress, out var avatarAddress, out var blockIndex);
+            var runeInfos = new List<RuneSlotInfo>
+            {
+                new RuneSlotInfo(0, 1),
+                new RuneSlotInfo(0, 1),
+            };
+            var action = new EquipRune()
+            {
+                AvatarAddress = avatarAddress,
+                BattleType = BattleType.Adventure,
+                RuneInfos = runeInfos,
+            };
+
+            Assert.Throws<DuplicatedRuneSlotIndexException>(() =>
+                action.Execute(new ActionContext()
+                {
+                    PreviousStates = state,
+                    Signer = agentAddress,
+                    Random = new TestRandom(),
+                    BlockIndex = blockIndex,
+                }));
+        }
+
+        [Fact]
         public void Execute_RuneListNotFoundException()
         {
             var state = Init(out var agentAddress, out var avatarAddress, out var blockIndex);
@@ -128,7 +179,7 @@ namespace Lib9c.Tests.Action
             var runeStateAddress = RuneState.DeriveAddress(avatarAddress, runeId);
             if (!state.TryGetState(runeStateAddress, out List rawRuneState))
             {
-                var runeState = new RuneState(runeId);
+                var runeState = new RuneState(1312312);
                 state = state.SetState(runeStateAddress, runeState.Serialize());
             }
 
