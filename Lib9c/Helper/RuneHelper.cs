@@ -5,6 +5,7 @@ using JetBrains.Annotations;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.TableData;
 
@@ -91,6 +92,67 @@ namespace Nekoyume.Helper
                 result.Add(rewardRow.Crystal * CrystalCalculator.CRYSTAL);
             }
             return result;
+        }
+
+        public static bool TryEnhancement(
+            FungibleAssetValue ncg,
+            FungibleAssetValue crystal,
+            FungibleAssetValue rune,
+            Currency ncgCurrency,
+            Currency crystalCurrency,
+            Currency runeCurrency,
+            RuneCostSheet.RuneCostData cost,
+            IRandom random,
+            int maxTryCount,
+            out int tryCount)
+        {
+            tryCount = 1;
+            var value = cost.LevelUpSuccessRate + 1;
+            while (value > cost.LevelUpSuccessRate)
+            {
+                if (tryCount > maxTryCount)
+                {
+                    tryCount = maxTryCount;
+                    return false;
+                }
+
+                if (!CheckBalance(ncg, crystal, rune, ncgCurrency, crystalCurrency, runeCurrency, cost, tryCount))
+                {
+                    return false;
+                }
+
+                tryCount++;
+                value = random.Next(1, GameConfig.MaximumProbability + 1);
+            }
+
+            return true;
+        }
+
+        private static bool CheckBalance(
+            FungibleAssetValue ncg,
+            FungibleAssetValue crystal,
+            FungibleAssetValue rune,
+            Currency ncgCurrency,
+            Currency crystalCurrency,
+            Currency runeCurrency,
+            RuneCostSheet.RuneCostData cost,
+            int tryCount)
+        {
+            var ncgCost = tryCount * cost.NcgQuantity * ncgCurrency;
+            var crystalCost = tryCount * cost.CrystalQuantity * crystalCurrency;
+            var runeCost = tryCount * cost.RuneStoneQuantity * runeCurrency;
+            if (ncg < ncgCost || crystal < crystalCost || rune < runeCost)
+            {
+                if (tryCount == 1)
+                {
+                    throw new NotEnoughFungibleAssetValueException($"{nameof(RuneEnhancement)}" +
+                        $"[ncg:{ncg} < {ncgCost}] [crystal:{crystal} < {crystalCost}] [rune:{rune} < {runeCost}]");
+                }
+
+                return false;
+            }
+
+            return true;
         }
     }
 }
