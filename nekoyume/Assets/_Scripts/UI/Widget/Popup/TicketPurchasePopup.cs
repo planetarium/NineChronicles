@@ -49,19 +49,26 @@ namespace Nekoyume.UI
             CostType costType,
             FungibleAssetValue balance,
             FungibleAssetValue cost,
-            int purchasedCount,
-            int maxPurchaseCount,
             System.Action onConfirm,
-            System.Action goToMarget)
+            System.Action goToMarget,
+            (int current, int max) seasonPurchased,
+            (int current, int max)? intervalPurchased = null)
         {
-            if (purchasedCount < maxPurchaseCount)
+            if (seasonPurchased.current >= seasonPurchased.max)
             {
-                ShowPurchaseTicketPopup(ticketType, costType, balance, cost,
-                    purchasedCount, maxPurchaseCount, onConfirm, goToMarget);
+                ShowConfirmPopup(ticketType, (seasonPurchased.current, seasonPurchased.max));
+
+            }
+            else if (intervalPurchased != null &&
+                     intervalPurchased.Value.current >= intervalPurchased.Value.max)
+            {
+                ShowConfirmPopup(ticketType, (seasonPurchased.current, seasonPurchased.max),
+                    (intervalPurchased.Value.current, intervalPurchased.Value.max));
             }
             else
             {
-                ShowConfirmPopup(ticketType, purchasedCount, maxPurchaseCount);
+                ShowPurchaseTicketPopup(ticketType, costType, balance, cost,
+                    onConfirm, goToMarget, seasonPurchased, intervalPurchased);
             }
 
             Show();
@@ -72,10 +79,10 @@ namespace Nekoyume.UI
             CostType costType,
             FungibleAssetValue balance,
             FungibleAssetValue cost,
-            int purchasedCount,
-            int maxPurchaseCount,
             System.Action onConfirm,
-            System.Action goToMarget)
+            System.Action goToMarget,
+            (int current, int max) seasonPurchased,
+            (int current, int max)? intervalPurchased = null)
         {
             ticketIcon.overrideSprite = costIconData.GetIcon(ticketType);
             costIcon.overrideSprite = costIconData.GetIcon(costType);
@@ -90,8 +97,16 @@ namespace Nekoyume.UI
                 ? Color.white
                 : Palette.GetColor(EnumType.ColorType.ButtonDisabled);
 
-            maxPurchaseText.text = L10nManager.Localize("UI_TICKET_PURCHASE_LIMIT",
-                purchasedCount, maxPurchaseCount);
+            var purchaseMessage = L10nManager.Localize("UI_TICKET_PURCHASE_LIMIT",
+                seasonPurchased.current, seasonPurchased.max);
+            if (intervalPurchased != null)
+            {
+                var interval = L10nManager.Localize("UI_TICKET_INTERVAL_PURCHASE_LIMIT",
+                    intervalPurchased.Value.current, intervalPurchased.Value.max);
+                purchaseMessage = $"{purchaseMessage}\n{interval}";
+            }
+
+            maxPurchaseText.text = purchaseMessage;
             maxPurchaseText.color = Palette.GetColor(EnumType.ColorType.TextElement06);
 
             cancelButton.gameObject.SetActive(true);
@@ -116,17 +131,31 @@ namespace Nekoyume.UI
             };
         }
 
-        private void ShowConfirmPopup(CostType ticketType, int purchasedCount, int maxPurchaseCount)
+        private void ShowConfirmPopup(
+            CostType ticketType,
+            (int current, int max) seasonPurchased,
+            (int current, int max)? intervalPurchased = null)
         {
             ticketIcon.overrideSprite = costIconData.GetIcon(ticketType);
 
             costContainer.SetActive(false);
             cancelButton.gameObject.SetActive(false);
-            maxPurchaseText.text = L10nManager.Localize("UI_TICKET_PURCHASE_LIMIT",
-                purchasedCount, maxPurchaseCount);
+
+            var purchaseMessage = L10nManager.Localize("UI_TICKET_PURCHASE_LIMIT",
+                seasonPurchased.current, seasonPurchased.max);
+            if (intervalPurchased != null)
+            {
+                var interval = L10nManager.Localize("UI_TICKET_INTERVAL_PURCHASE_LIMIT",
+                    intervalPurchased.Value.current, intervalPurchased.Value.max);
+                purchaseMessage = $"{purchaseMessage}\n{interval}";
+            }
+
+            maxPurchaseText.text = purchaseMessage;
             maxPurchaseText.color = Palette.GetColor(EnumType.ColorType.ButtonDisabled);
             confirmButton.Text = L10nManager.Localize("UI_OK");
-            contentText.text = L10nManager.Localize("UI_REACHED_TICKET_BUY_LIMIT", GetTicketName(ticketType));
+            contentText.text = intervalPurchased != null
+                ? L10nManager.Localize("UI_REACHED_TICKET_BUY_INTERVAL_LIMIT", GetTicketName(ticketType))
+                : L10nManager.Localize("UI_REACHED_TICKET_BUY_LIMIT", GetTicketName(ticketType));
             confirmButton.OnClick = () => Close();
         }
 

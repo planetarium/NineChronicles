@@ -592,10 +592,10 @@ namespace Nekoyume.UI
                 CostType.NCG,
                 balance,
                 cost,
-                arenaInformation.PurchasedTicketCount,
-                _roundData.MaxPurchaseCount,
                 () => StartCoroutine(CoBattleStart(CostType.NCG)),
-                GoToMarket
+                GoToMarket,
+                (arenaInformation.PurchasedTicketCount, _roundData.MaxPurchaseCount),
+                (arenaInformation.PurchasedTicketCountDuringResetInterval, _roundData.MaxPurchaseCountWithInterval)
             );
         }
 
