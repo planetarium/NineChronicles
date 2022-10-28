@@ -506,7 +506,7 @@ namespace Nekoyume.Model
                 this,
                 Simulator.WaveTurn,
                 BuffFactory.GetBuffs(
-                    ATK,
+                    selectedSkill.Power,
                     selectedSkill,
                     Simulator.SkillBuffSheet,
                     Simulator.StatBuffSheet,
