@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -7,6 +8,8 @@ using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.Battle;
+using Nekoyume.Model.EnumType;
+using Nekoyume.Model.State;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Helper
@@ -106,10 +109,11 @@ namespace Nekoyume.Helper
             int maxTryCount,
             out int tryCount)
         {
-            tryCount = 1;
+            tryCount = 0;
             var value = cost.LevelUpSuccessRate + 1;
             while (value > cost.LevelUpSuccessRate)
             {
+                tryCount++;
                 if (tryCount > maxTryCount)
                 {
                     tryCount = maxTryCount;
@@ -121,7 +125,6 @@ namespace Nekoyume.Helper
                     return false;
                 }
 
-                tryCount++;
                 value = random.Next(1, GameConfig.MaximumProbability + 1);
             }
 

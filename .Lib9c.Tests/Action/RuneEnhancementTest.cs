@@ -25,9 +25,9 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(10000, false)]
-        [InlineData(1, true)]
-        public void Execute(int tryCount, bool isEmptyBalance)
+        [InlineData(10000)]
+        [InlineData(1)]
+        public void Execute(int seed)
         {
             var agentAddress = new PrivateKey().ToAddress();
             var avatarAddress = new PrivateKey().ToAddress();
@@ -64,13 +64,6 @@ namespace Lib9c.Tests.Action
             state = state.SetState(runeStateAddress, runeState.Serialize());
 
             var costSheet = state.GetSheet<RuneCostSheet>();
-            const string csv =
-                @"id,rune_level,rune_stone_id,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_success_rate
-        311001,1,1001,10,100,100,1000
-        ";
-            costSheet.Clear();
-            costSheet.Set(csv);
-            state = state.SetState(Addresses.TableSheet.Derive("RuneCostSheet"), costSheet.Serialize());
             if (!costSheet.TryGetValue(runeId, out var costRow))
             {
                 throw new RuneCostNotFoundException($"[{nameof(Execute)}] ");
@@ -91,9 +84,15 @@ namespace Lib9c.Tests.Action
             var crystalCurrency = CrystalCalculator.CRYSTAL;
             var runeCurrency = Currency.Legacy(runeRow.Ticker, 0, minters: null);
 
-            var ncgBal = cost.NcgQuantity * ncgCurrency * tryCount;
-            var crystalBal = cost.CrystalQuantity * crystalCurrency * tryCount;
-            var runeBal = cost.RuneStoneQuantity * runeCurrency * tryCount;
+            var ncgBal = cost.NcgQuantity * ncgCurrency * 10000;
+            var crystalBal = cost.CrystalQuantity * crystalCurrency * 10000;
+            var runeBal = cost.RuneStoneQuantity * runeCurrency * 10000;
+
+            var rand = new TestRandom(seed);
+            if (!RuneHelper.TryEnhancement(ncgBal, crystalBal, runeBal, ncgCurrency, crystalCurrency, runeCurrency, cost, rand, 99, out var tryCount))
+            {
+                throw new RuneNotFoundException($"[{nameof(Execute)}] ");
+            }
 
             state = state.MintAsset(agentAddress, ncgBal);
             state = state.MintAsset(agentAddress, crystalBal);
@@ -109,7 +108,7 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = blockIndex,
                 PreviousStates = state,
-                Random = new TestRandom(0),
+                Random = rand,
                 Rehearsal = false,
                 Signer = agentAddress,
             };
@@ -122,27 +121,28 @@ namespace Lib9c.Tests.Action
 
             var nextRunState = new RuneState(nextRuneRawState);
             var nextNcgBal = nextState.GetBalance(agentAddress, ncgCurrency);
-            var nextCrystalBal = nextState.GetBalance(agentAddress, ncgCurrency);
-            var nextRuneBal = nextState.GetBalance(agentAddress, ncgCurrency);
+            var nextCrystalBal = nextState.GetBalance(agentAddress, crystalCurrency);
+            var nextRuneBal = nextState.GetBalance(agentAddress, runeCurrency);
 
             Assert.NotEqual(ncgBal, nextNcgBal);
             Assert.NotEqual(crystalBal, nextCrystalBal);
             Assert.NotEqual(runeBal, nextRuneBal);
 
-            if (isEmptyBalance)
-            {
-                Assert.Equal("0", nextNcgBal.GetQuantityString());
-                Assert.Equal("0", nextCrystalBal.GetQuantityString());
-                Assert.Equal("0", nextRuneBal.GetQuantityString());
-                Assert.Equal(runeState.Level, nextRunState.Level);
-            }
-            else
-            {
-                Assert.NotEqual("0", nextNcgBal.GetQuantityString());
-                Assert.NotEqual("0", nextCrystalBal.GetQuantityString());
-                Assert.NotEqual("0", nextRuneBal.GetQuantityString());
-                Assert.Equal(runeState.Level + 1, nextRunState.Level);
-            }
+            var costNcg = tryCount * cost.NcgQuantity * ncgCurrency;
+            var costCrystal = tryCount * cost.CrystalQuantity * crystalCurrency;
+            var costRune = tryCount * cost.RuneStoneQuantity * runeCurrency;
+
+            nextState = nextState.MintAsset(agentAddress, costNcg);
+            nextState = nextState.MintAsset(agentAddress, costCrystal);
+            nextState = nextState.MintAsset(avatarState.address, costRune);
+
+            var finalNcgBal = nextState.GetBalance(agentAddress, ncgCurrency);
+            var finalCrystalBal = nextState.GetBalance(agentAddress, crystalCurrency);
+            var finalRuneBal = nextState.GetBalance(avatarState.address, runeCurrency);
+            Assert.Equal(ncgBal, finalNcgBal);
+            Assert.Equal(crystalBal, finalCrystalBal);
+            Assert.Equal(runeBal, finalRuneBal);
+            Assert.Equal(runeState.Level + 1, nextRunState.Level);
         }
 
         [Fact]
