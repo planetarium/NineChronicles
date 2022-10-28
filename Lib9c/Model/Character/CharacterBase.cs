@@ -287,7 +287,7 @@ namespace Nekoyume.Model
         }
 
         [Obsolete("Use UseSkill")]
-        private BattleStatus.Skill UseSkillV3()
+        protected virtual BattleStatus.Skill UseSkillV3()
         {
             var selectedSkill = Skills.Select(Simulator.Random);
             var usedSkill = selectedSkill.Use(

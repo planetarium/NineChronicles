@@ -3,6 +3,7 @@ using Nekoyume.Model.Buff;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -77,6 +78,12 @@ namespace Nekoyume.Model
         }
 
         protected override BattleStatus.Skill UseSkill()
+        {
+            return UseSkillV3();
+        }
+
+        [Obsolete("Use UseSkill")]
+        protected override BattleStatus.Skill UseSkillV3()
         {
             var index = _actionCount % _orderedSkills.Count;
             var skill = _orderedSkills[index];
