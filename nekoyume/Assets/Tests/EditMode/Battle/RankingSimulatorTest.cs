@@ -42,7 +42,7 @@ namespace Tests.EditMode.Battle
                 avatarState,
                 avatarState,
                 new List<Guid>(),
-                _tableSheets.GetRankingSimulatorSheets(),
+                _tableSheets.GetRankingSimulatorSheetsV1(),
                 999999
             );
             simulator.Simulate();
