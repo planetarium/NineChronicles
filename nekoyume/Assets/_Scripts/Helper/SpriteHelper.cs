@@ -160,6 +160,21 @@ namespace Nekoyume.Helper
             return result ? result : Resources.Load<Sprite>(MailIconDefaultPath);
         }
 
+        /// <summary>
+        /// GetMailIcon method but not considering MailType.
+        /// </summary>
+        /// <param name="mail"></param>
+        /// <returns></returns>
+        public static Sprite GetLocalMailIcon(Mail mail)
+        {
+            return mail switch
+            {
+                RaidRewardMail =>  Resources.Load<Sprite>(
+                    string.Format(MailIconPathFormat, "icon_mail_worldBoss")),
+                _ => null
+            };
+        }
+
         public static Sprite GetWorldMapBackground(string imageKey, int pageIndex)
         {
             var path = string.Format(WorldmapBackgroundPathFormat, imageKey, pageIndex);

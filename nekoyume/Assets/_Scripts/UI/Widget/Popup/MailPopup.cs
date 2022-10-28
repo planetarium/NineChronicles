@@ -428,6 +428,12 @@ namespace Nekoyume.UI
             popup.Pop(monsterCollectionResult.rewards);
         }
 
+        public void Read(RaidRewardMail raidRewardMail)
+        {
+            raidRewardMail.New = false;
+            ReactiveAvatarState.UpdateMailBox(MailBox);
+        }
+
         public void TutorialActionClickFirstCombinationMailSubmitButton()
         {
             if (MailBox.Count == 0)
