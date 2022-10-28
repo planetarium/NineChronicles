@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Nekoyume.Action;
 using Nekoyume.Battle;
@@ -31,6 +31,7 @@ namespace Nekoyume
                     random,
                     avatarState,
                     i == 0 ? eval.Action.Foods : new List<Guid>(),
+                    eval.Action.Runes,
                     i == 0 ? skillsOnWaveStart : new List<Model.Skill.Skill>(),
                     eval.Action.WorldId,
                     eval.Action.StageId,
@@ -41,7 +42,7 @@ namespace Nekoyume
                     sheets.GetStageSimulatorSheets(),
                     sheets.EnemySkillSheet,
                     sheets.CostumeStatSheet,
-                    StageSimulator.GetWaveRewards(random, stageRow, sheets.MaterialItemSheet));
+                    StageSimulatorV2.GetWaveRewards(random, stageRow, sheets.MaterialItemSheet));
                 simulator.Simulate();
 
                 if (simulator.Log.IsClear)

@@ -668,6 +668,7 @@ namespace Nekoyume.UI
             yield return StartCoroutine(SendBattleActionAsync(
                 player.Equipments,
                 player.Costumes,
+                player.Runes,
                 1));
         }
 
@@ -721,12 +722,14 @@ namespace Nekoyume.UI
             yield return StartCoroutine(SendBattleActionAsync(
                 player.Equipments,
                 player.Costumes,
+                player.Runes,
                 0));
         }
 
         private IEnumerator SendBattleActionAsync(
             List<Equipment> equipments,
             List<Costume> costumes,
+            List<int> runes,
             int stageIdOffset)
         {
             yield return SharedModel.StageType switch
@@ -736,6 +739,7 @@ namespace Nekoyume.UI
                         costumes,
                         equipments,
                         new List<Consumable>(),
+                        runes,
                         SharedModel.WorldID,
                         SharedModel.StageID + stageIdOffset)
                     .StartAsCoroutine(),
@@ -744,6 +748,7 @@ namespace Nekoyume.UI
                         costumes,
                         equipments,
                         new List<Consumable>(),
+                        runes,
                         SharedModel.WorldID,
                         SharedModel.StageID + stageIdOffset,
                         1)
@@ -756,6 +761,7 @@ namespace Nekoyume.UI
                         equipments,
                         costumes,
                         new List<Consumable>(),
+                        runes,
                         false)
                     .StartAsCoroutine(),
                 _ => throw new ArgumentOutOfRangeException()

@@ -888,6 +888,7 @@ namespace Nekoyume.UI
             var consumables = consumableSlots
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)
                 .Select(slot => (Consumable)slot.Item).ToList();
+            var runes = _player.Runes;
 
             var stage = Game.Game.instance.Stage;
             stage.IsExitReserved = false;
@@ -899,6 +900,7 @@ namespace Nekoyume.UI
                 costumes,
                 equipments,
                 consumables,
+                runes,
                 GetBoostMaxCount(_stageId),
                 _worldId,
                 _stageId);
@@ -975,6 +977,7 @@ namespace Nekoyume.UI
             var consumables = consumableSlots
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)
                 .Select(slot => (Consumable)slot.Item).ToList();
+            var runes = _player.Runes;
 
             var stage = Game.Game.instance.Stage;
             stage.IsExitReserved = false;
@@ -996,6 +999,7 @@ namespace Nekoyume.UI
                                 costumes,
                                 equipments,
                                 consumables,
+                                runes,
                                 _worldId,
                                 _stageId,
                                 playCount: playCount,
@@ -1021,6 +1025,7 @@ namespace Nekoyume.UI
                         costumes,
                         equipments,
                         consumables,
+                        runes,
                         _worldId,
                         _stageId,
                         skillId,
@@ -1036,6 +1041,7 @@ namespace Nekoyume.UI
                         costumes,
                         equipments,
                         consumables,
+                        runes,
                         _worldId,
                         _stageId,
                         1
@@ -1060,6 +1066,7 @@ namespace Nekoyume.UI
                             equipments,
                             costumes,
                             consumables,
+                            runes,
                             buyTicketIfNeeded,
                             _trackGuideQuest)
                         .Subscribe();
@@ -1287,7 +1294,7 @@ namespace Nekoyume.UI
                     throw new ArgumentOutOfRangeException();
             }
 
-            var simulator = new StageSimulator(
+            var simulator = new StageSimulatorV2(
                 random,
                 avatarState,
                 consumables,
@@ -1298,10 +1305,10 @@ namespace Nekoyume.UI
                 stageWaveRow,
                 avatarState.worldInformation.IsStageCleared(stageId),
                 StageRewardExpHelper.GetExp(avatarState.level, stageId),
-                tableSheets.GetSimulatorSheets(),
+                tableSheets.GetSimulatorSheetsV1(),
                 tableSheets.EnemySkillSheet,
                 tableSheets.CostumeStatSheet,
-                StageSimulator.GetWaveRewards(
+                StageSimulatorV2.GetWaveRewards(
                     random,
                     tableSheets.StageSheet[stageId],
                     tableSheets.MaterialItemSheet)
