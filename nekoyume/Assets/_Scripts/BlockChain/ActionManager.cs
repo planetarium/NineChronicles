@@ -1176,7 +1176,6 @@ namespace Nekoyume.BlockChain
             {
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
                 RuneId = runeId,
-                Once = once,
             };
 
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
