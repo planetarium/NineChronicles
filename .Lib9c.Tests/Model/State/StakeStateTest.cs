@@ -53,5 +53,15 @@ namespace Lib9c.Tests.Model.State
             Assert.Equal(state.ReceivedBlockIndex, deserialized.ReceivedBlockIndex);
             Assert.Equal(state.CancellableBlockIndex, deserialized.CancellableBlockIndex);
         }
+
+        [Theory]
+        [InlineData(1L, 1L, -111)]
+        [InlineData(1L, 5_599_601L, 0)]
+        [InlineData(1L, 5_599_601L + StakeState.RewardInterval, 1)]
+        public void CalculateAccumulateRuneRewards(long startedBlockIndex, long blockIndex, int expected)
+        {
+            var state = new StakeState(default, startedBlockIndex);
+            Assert.Equal(expected, state.CalculateAccumulatedRuneRewards(blockIndex));
+        }
     }
 }

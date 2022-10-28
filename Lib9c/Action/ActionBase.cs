@@ -434,5 +434,13 @@ namespace Nekoyume.Action
         {
             return blockIndex < BlockPolicySource.V100301ExecutedBlockIndex;
         }
+
+        protected void CheckActionAvailable(long startedIndex, IActionContext ctx)
+        {
+            if (ctx.BlockIndex < startedIndex)
+            {
+                throw new ActionUnAvailableException();
+            }
+        }
     }
 }
