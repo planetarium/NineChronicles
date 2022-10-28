@@ -88,7 +88,7 @@ namespace Nekoyume.Action
             foreach (var reward in rewards)
             {
                 var (quantity, _) = stakedAmount.DivRem(currency * reward.Rate);
-                if (quantity < 1)
+                if (quantity < 1 || reward.Type != StakeRegularRewardSheet.StakeRewardType.Item)
                 {
                     // If the quantity is zero, it doesn't add the item into inventory.
                     continue;
