@@ -131,7 +131,7 @@ namespace Lib9c.Tests.Action
             {
                 AvatarAddress = avatarAddress,
                 BattleType = BattleType.Adventure,
-                RuneInfos = new List<RuneSlotInfo>(),
+                RuneInfos = null,
             };
 
             Assert.Throws<RuneInfosIsEmptyException>(() =>
