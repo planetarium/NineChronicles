@@ -62,6 +62,11 @@ namespace Nekoyume.Model.State
                     {
                         slot.Equip(runeState);
                     }
+                    else
+                    {
+                        throw new IsUsableSlotException(
+                            $"[{nameof(RuneSlotState)}] Index : {slot.Index}");
+                    }
                 }
             }
         }

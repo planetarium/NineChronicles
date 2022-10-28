@@ -171,4 +171,18 @@ namespace Nekoyume.Model.Rune
         {
         }
     }
+
+    [Serializable]
+    public class IsUsableSlotException : Exception
+    {
+
+        public IsUsableSlotException(string message) : base(message)
+        {
+        }
+
+        protected IsUsableSlotException(SerializationInfo info, StreamingContext context) :
+            base(info, context)
+        {
+        }
+    }
 }
