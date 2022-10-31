@@ -323,7 +323,7 @@ namespace Nekoyume.State
                 })
                 .ToArray();
             var avatarAddrAndScoresWithRank =
-                AddRank(avatarAddrAndScores);
+                AddRank(avatarAddrAndScores, currentAvatarAddr);
             PlayerArenaParticipant playersArenaParticipant = null;
             int playerScore;
             try
@@ -400,7 +400,7 @@ namespace Nekoyume.State
                     avatar,
                     (win, lose)
                 );
-            }).OrderByDescending(e => e.Score).ThenByDescending(e => e.AvatarAddr == currentAvatarAddr).ToArray();
+            }).ToArray();
 
             var playerArenaInfo = stateBulk[playerArenaInfoAddr] is List arenaInfoList
                 ? new ArenaInformation(arenaInfoList)
@@ -423,7 +423,7 @@ namespace Nekoyume.State
         }
 
         public static (Address avatarAddr, int score, int rank)[] AddRank(
-            (Address avatarAddr, int score)[] tuples)
+            (Address avatarAddr, int score)[] tuples, Address? currentAvatarAddr = null)
         {
             if (tuples.Length == 0)
             {
@@ -432,6 +432,7 @@ namespace Nekoyume.State
 
             var orderedTuples = tuples
                 .OrderByDescending(tuple => tuple.score)
+                .ThenByDescending(tuple => tuple.avatarAddr == currentAvatarAddr)
                 .ThenBy(tuple => tuple.avatarAddr)
                 .Select(tuple => (tuple.avatarAddr, tuple.score, 0))
                 .ToArray();
