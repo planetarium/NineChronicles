@@ -41,16 +41,17 @@ namespace Nekoyume
             _rectTransform = GetComponent<RectTransform>();
         }
 
-        public void Set(int sliderMaxValue, int sliderCurValue,
+        public void Set(int sliderMinValue, int sliderMaxValue, int sliderCurValue,
             int max, int multiplier,
-            Action<int> callback = null)
+            Action<int> callback = null, bool interactable = true)
         {
             UpdateListener(multiplier, callback);
-            UpdateSliderValues(sliderMaxValue, sliderCurValue);
+            UpdateSliderValues(sliderMinValue, sliderMaxValue, sliderCurValue);
             UpdateText(sliderCurValue, max, multiplier);
             UpdateContainer(sliderMaxValue);
             UpdateSliderWidth(sliderMaxValue, max, multiplier);
             UpdateBackground(sliderMaxValue, max, multiplier);
+            slider.interactable = interactable;
         }
 
         private void UpdateListener(int multiplier, Action<int> callback)
@@ -63,14 +64,14 @@ namespace Nekoyume
             });
         }
 
-        private void UpdateSliderValues(int sliderMaxValue, int sliderCurValue)
+        private void UpdateSliderValues(int sliderMinValue, int sliderMaxValue, int sliderCurValue)
         {
-            slider.minValue = 0;
+            slider.minValue = sliderMinValue;
             slider.maxValue = sliderMaxValue;
             slider.value = sliderCurValue;
         }
 
-        private void UpdateText(int sliderCurValue, int max, int multiplier)
+        public void UpdateText(int sliderCurValue, int max, int multiplier)
         {
             maxText.text = max.ToString();
             curText.text = $"{sliderCurValue * multiplier}";

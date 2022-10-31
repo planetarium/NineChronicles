@@ -27,6 +27,7 @@ namespace Nekoyume.UI.Model
         public RuneCostType CostType => costType;
         public Sprite Icon => iconImage.sprite;
         private System.Action _callback;
+        private int _defaultCount;
         private void Awake()
         {
             button.onClick.AddListener(() => _callback?.Invoke());
@@ -34,6 +35,7 @@ namespace Nekoyume.UI.Model
 
         public void Set(int count, bool isEnough, System.Action callback, Sprite icon = null)
         {
+            _defaultCount = count;
             countText.text = $"{count}";
             countText.color = isEnough ? Color.white : Palette.GetColor(ColorType.TextDenial);
             effect.SetActive(isEnough);
@@ -42,6 +44,11 @@ namespace Nekoyume.UI.Model
             {
                 iconImage.sprite = icon;
             }
+        }
+
+        public void UpdateCount(int tryCount)
+        {
+            countText.text = $"{_defaultCount * tryCount}";
         }
     }
 }

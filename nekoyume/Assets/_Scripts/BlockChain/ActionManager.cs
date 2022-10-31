@@ -1170,12 +1170,13 @@ namespace Nekoyume.BlockChain
 
         public IObservable<ActionBase.ActionEvaluation<RuneEnhancement >> RuneEnhancement(
             int runeId,
-            bool once)
+            int tryCount)
         {
             var action = new RuneEnhancement
             {
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
                 RuneId = runeId,
+                TryCount = tryCount,
             };
 
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);

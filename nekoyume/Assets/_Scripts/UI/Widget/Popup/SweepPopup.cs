@@ -245,13 +245,15 @@ namespace Nekoyume.UI
                     ? TableSheets.Instance.StakeActionPointCoefficientSheet.GetActionPointByStaking(
                         _stageRow.CostAP, 1, States.Instance.StakingLevel)
                     : _stageRow.CostAP;
-                apSlider.Set(haveApCount / _costAp,
+                apSlider.Set(0,
+                    haveApCount / _costAp,
                     haveApCount / _costAp,
                     States.Instance.GameConfigState.ActionPointMax,
                     _costAp,
                     x => _ap.Value = x * _costAp);
 
-                apStoneSlider.Set(Math.Min(haveApStoneCount, HackAndSlashSweep.UsableApStoneCount),
+                apStoneSlider.Set(0,
+                    Math.Min(haveApStoneCount, HackAndSlashSweep.UsableApStoneCount),
                     0,
                     HackAndSlashSweep.UsableApStoneCount, 1,
                     x => _apStoneCount.Value = x);

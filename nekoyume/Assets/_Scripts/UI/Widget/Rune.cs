@@ -16,6 +16,7 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,6 +25,8 @@ namespace Nekoyume.UI
     using UniRx;
     public class Rune : Widget
     {
+        private const int defaultRuneId = 311001;
+
         [SerializeField]
         private List<RuneCostItem> costItems;
 
@@ -37,13 +40,19 @@ namespace Nekoyume.UI
         private Button closeButton;
 
         [SerializeField]
-        private Button openButton;
+        private Button combineButton;
 
         [SerializeField]
-        private Button onceButton;
+        private Button levelUpButton;
 
         [SerializeField]
-        private Button repeatButton;
+        private Button plusButton;
+
+        [SerializeField]
+        private Button minusButton;
+
+        [SerializeField]
+        private SweepSlider slider;
 
         [SerializeField]
         private List<GameObject> activeButtons;
@@ -55,14 +64,10 @@ namespace Nekoyume.UI
         private GameObject content;
 
         [SerializeField]
-        private GameObject guide;
-
-        [SerializeField]
         private GameObject loading;
 
         [SerializeField]
         private GameObject maxLevel;
-
 
         [SerializeField]
         private RuneListScroll scroll;
@@ -70,46 +75,53 @@ namespace Nekoyume.UI
         [SerializeField]
         private Animator animator;
 
-        private static readonly int HashToOpen =
-            Animator.StringToHash("Open");
+        private static readonly int HashToCombine =
+            Animator.StringToHash("Combine");
 
-        private static readonly int HashToEnhancement =
-            Animator.StringToHash("Enhancement");
+        private static readonly int HashToLevelUp =
+            Animator.StringToHash("LevelUp");
 
-        private static readonly int HashToIdle =
-            Animator.StringToHash("Idle");
+        private static readonly int HashToCombineLoop =
+            Animator.StringToHash("CombineLoop");
+
+        private static readonly int HashToLevelUpLoop =
+            Animator.StringToHash("LevelUpLoop");
+
+        private static readonly int HashToMaterialUse =
+            Animator.StringToHash("MaterialUse");
 
         private readonly Dictionary<int, List<RuneItem>> _runeItems = new();
         private readonly List<IDisposable> _disposables = new();
 
         private RuneItem _selectedRuneItem;
+        private int _maxTryCount = 1;
+        private int _multiplier = 1;
         private static readonly ReactiveProperty<bool> IsLoading = new();
+        private static readonly ReactiveProperty<int> TryCount = new();
         private readonly Dictionary<RuneCostType, RuneCostItem> _costItems = new();
 
         protected override void Awake()
         {
             base.Awake();
-            openButton.onClick.AddListener(() => Enhancement(_selectedRuneItem.Row.Id, true, HashToOpen));
-            onceButton.onClick.AddListener(() => Enhancement(_selectedRuneItem.Row.Id, true, HashToEnhancement));
-            repeatButton.onClick.AddListener(() =>
-            {
-                var t = L10nManager.Localize("UI_REPEAT");
-                var c = L10nManager.Localize("UI_REPEAT_LEVEL_UP_INFO");
-                Find<TwoButtonSystem>().Show(
-                    $"<size=140%>{t}</size>\n\n{c}",
-                    L10nManager.Localize("UI_CONFIRM"),
-                    L10nManager.Localize("UI_CANCEL"),
-                    (() => Enhancement(_selectedRuneItem.Row.Id, false, HashToEnhancement)));
-            });
-
-            closeButton.onClick.AddListener(() => Close(true));
-            CloseWidget = () => Close(true);
-            IsLoading.Subscribe(b => loading.SetActive(b)).AddTo(gameObject);
-
             foreach (var costItem in costItems)
             {
                 _costItems.Add(costItem.CostType, costItem);
             }
+
+            combineButton.onClick.AddListener(Enhancement);
+            levelUpButton.onClick.AddListener(Enhancement);
+            plusButton.onClick.AddListener(() => TryCount.Value = math.min(_maxTryCount, TryCount.Value + 1));
+            minusButton.onClick.AddListener(() => TryCount.Value = math.max(1, TryCount.Value - 1));
+            closeButton.onClick.AddListener(() => Close(true));
+            CloseWidget = () => Close(true);
+            IsLoading.Subscribe(b => loading.SetActive(b)).AddTo(gameObject);
+            TryCount.Subscribe(x =>
+            {
+                slider.UpdateText(x, _maxTryCount, _multiplier);
+                _costItems[RuneCostType.RuneStone].UpdateCount(x * _multiplier);
+                _costItems[RuneCostType.Ncg].UpdateCount(x * _multiplier);
+                _costItems[RuneCostType.Crystal].UpdateCount(x * _multiplier);
+            }).AddTo(gameObject);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -123,15 +135,10 @@ namespace Nekoyume.UI
         {
             var loading = Find<DataLoadingScreen>();
             loading.Show();
-
-            if (!IsLoading.Value)
-            {
-                Reset();
-            }
-
             await SetInventory();
-            loading.Close();
             base.Show(ignoreShowAnimation);
+            Set(_selectedRuneItem);
+            loading.Close();
         }
 
         public async UniTaskVoid OnActionRender()
@@ -143,9 +150,8 @@ namespace Nekoyume.UI
             }
             await SetInventory();
             Set(_selectedRuneItem);
-            animator.Play(HashToIdle);
+            animator.Play(_selectedRuneItem.Level > 1 ? HashToLevelUp : HashToCombine);
             IsLoading.Value = false;
-
         }
 
         private async Task SetInventory()
@@ -165,10 +171,21 @@ namespace Nekoyume.UI
 
                 var state = runeStates.FirstOrDefault(x => x.RuneId == value.Id);
                 var runeItem = new RuneItem(value, state?.Level ?? 0);
-                if (_selectedRuneItem != null && _selectedRuneItem.Row.Id == runeItem.Row.Id)
+                if (_selectedRuneItem == null)
                 {
-                    _selectedRuneItem = runeItem;
+                    if (runeItem.Row.Id == defaultRuneId)
+                    {
+                        _selectedRuneItem = runeItem;
+                    }
                 }
+                else
+                {
+                    if (_selectedRuneItem.Row.Id == runeItem.Row.Id)
+                    {
+                        _selectedRuneItem = runeItem;
+                    }
+                }
+
                 _runeItems[groupId].Add(runeItem);
             }
 
@@ -204,20 +221,13 @@ namespace Nekoyume.UI
             Set(item);
         }
 
-        private void Enhancement(int runeId, bool once, int animationHash)
+        private void Enhancement()
         {
-            Animator.Play(animationHash);
-            ActionManager.Instance.RuneEnhancement(runeId, once);
+            var runeId = _selectedRuneItem.Row.Id;
+            var tryCount = 1;
+            Animator.Play(HashToMaterialUse);
+            ActionManager.Instance.RuneEnhancement(runeId, tryCount);
             IsLoading.Value = true;
-        }
-
-        private void Reset()
-        {
-            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.CurrencyOnly);
-            guide.SetActive(true);
-            content.SetActive(false);
-            runeImage.sprite = null;
-            successRateText.text = string.Empty;
         }
 
         private void Set(RuneItem item)
@@ -242,13 +252,13 @@ namespace Nekoyume.UI
                 return;
             }
 
-            guide.SetActive(false);
             content.SetActive(true);
             UpdateRuneItems(item);
             UpdateButtons(item);
             UpdateCost(item, runeIcon, runeStoneIcon);
-            UpdateHeaderMenu(runeStoneIcon, item.RuneStone);
-            Debug.Log($"[Rune.UpdateInfo] DONE");
+           UpdateHeaderMenu(runeStoneIcon, item.RuneStone);
+            UpdateSlider(item);
+            animator.Play(item.Level > 0 ? HashToLevelUp : HashToCombine);
         }
 
         private void UpdateRuneItems(RuneItem item)
@@ -278,9 +288,8 @@ namespace Nekoyume.UI
             }
 
             maxLevel.SetActive(item.IsMaxLevel);
-            openButton.gameObject.SetActive(item.Level == 0);
-            onceButton.gameObject.SetActive(item.Level != 0);
-            repeatButton.gameObject.SetActive(item.Level != 0);
+            combineButton.gameObject.SetActive(item.Level == 0);
+            levelUpButton.gameObject.SetActive(item.Level != 0);
         }
 
         private void UpdateCost(RuneItem item, Sprite runeIcon, Sprite runeStoneIcon)
@@ -310,6 +319,29 @@ namespace Nekoyume.UI
             var headerMenu = Find<HeaderMenuStatic>();
             headerMenu.UpdateAssets(HeaderMenuStatic.AssetVisibleState.RuneStone);
             headerMenu.RuneStone.SetRuneStone(runeStoneIcon, runeStone.GetQuantityString());
+        }
+
+        private void UpdateSlider(RuneItem item)
+        {
+            var maxRuneStone = item.Cost.RuneStoneQuantity > 0
+                ? (int)item.RuneStone.MajorUnit / item.Cost.RuneStoneQuantity
+                : -1;
+            var maxCrystal = item.Cost.CrystalQuantity > 0
+                ? (int)States.Instance.CrystalBalance.MajorUnit / item.Cost.CrystalQuantity
+                : -1;
+            var maxNcg = item.Cost.NcgQuantity > 0
+                ? (int)States.Instance.GoldBalanceState.Gold.MajorUnit / item.Cost.NcgQuantity
+                : -1;
+            var maxValues = new List<int> { maxRuneStone, maxCrystal, maxNcg };
+            _maxTryCount = maxValues.Where(x => x >= 0).Min();
+            _multiplier = _maxTryCount > 10 ? 10 : 1;
+            slider.Set(1,
+                _maxTryCount > 0 ? _maxTryCount/10 : 1,
+                1, _maxTryCount > 0 ? _maxTryCount : 1,
+                _multiplier,
+                (x) => TryCount.Value = x,
+                _maxTryCount > 0);
+            Debug.Log($"rune:{maxRuneStone} / crystal:{maxCrystal} / ncg:{maxNcg}");
         }
 
         private void ShowMaterialNavigatorPopup(

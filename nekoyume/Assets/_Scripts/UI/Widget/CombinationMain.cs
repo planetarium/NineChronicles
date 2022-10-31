@@ -55,7 +55,7 @@ namespace Nekoyume.UI
             runeButton.onClick.AddListener(() =>
             {
                 Close(true);
-                Find<Rune>().ShowAsync().Forget();
+                Find<Rune>().ShowAsync(true).Forget();
                 AudioController.PlayClick();
             });
 
