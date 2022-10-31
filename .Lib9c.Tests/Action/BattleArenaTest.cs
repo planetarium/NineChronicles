@@ -144,13 +144,13 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(1, 1, 1, false, 1, 2, 3)]
-        [InlineData(1, 1, 1, false, 1, 2, 4)]
-        [InlineData(1, 1, 1, false, 5, 2, 3)]
-        [InlineData(1, 1, 1, true, 1, 2, 3)]
-        [InlineData(1, 1, 1, true, 3, 2, 3)]
-        [InlineData(1, 1, 2, false, 1, 2, 3)]
-        [InlineData(1, 1, 2, true, 1, 2, 3)]
+        [InlineData(4, 1, 1, false, 1, 5, 3)]
+        [InlineData(4, 1, 1, false, 1, 5, 4)]
+        [InlineData(4, 1, 1, false, 5, 5, 3)]
+        [InlineData(4, 1, 1, true, 1, 5, 3)]
+        [InlineData(4, 1, 1, true, 3, 5, 3)]
+        [InlineData(1, 1, 2, false, 1, 5, 3)]
+        [InlineData(1, 1, 2, true, 1, 5, 3)]
         public void Execute_Success(
             long nextBlockIndex,
             int championshipId,
@@ -180,7 +180,7 @@ namespace Lib9c.Tests.Action
             Execute(
                 1,
                 1,
-                1,
+                2,
                 default,
                 1,
                 2,
