@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 222668420831161334}
   - component: {fileID: 95256010546860014}
   - component: {fileID: 182414209082397892}
+  - component: {fileID: 8773574652368624302}
   m_Layer: 5
   m_Name: UI_NoticePopup
   m_TagString: Untagged
@@ -87,6 +88,19 @@ MonoBehaviour:
   contentImage: {fileID: 7751381609379836820}
   detailButton: {fileID: 8915038191723940672}
   closeButton: {fileID: 9158407257095490729}
+  canvasGroup: {fileID: 8773574652368624302}
+--- !u!225 &8773574652368624302
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1907849136098932}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &288844463192487935
 GameObject:
   m_ObjectHideFlags: 0

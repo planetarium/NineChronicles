@@ -20,6 +20,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button closeButton;
 
+        [SerializeField]
+        private CanvasGroup canvasGroup;
+
         private const string LastNoticeDayKeyFormat = "LAST_NOTICE_DAY_{0}";
         private const string JsonUrl =
             "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/Notice.json";
@@ -75,11 +78,6 @@ namespace Nekoyume.UI
             closeButton.interactable = false;
         }
 
-        private void Start()
-        {
-            StartCoroutine(RequestManager.instance.GetJson(JsonUrl, Set));
-        }
-
         private void Set(string json)
         {
             var data = JsonSerializer.Deserialize<Notice>(json);
@@ -92,16 +90,22 @@ namespace Nekoyume.UI
                 Application.OpenURL(data.Url);
                 AudioController.PlayClick();
             });
+
+            if (CanShowNoticePopup())
+            {
+                canvasGroup.alpha = 1;
+            }
+            else
+            {
+                Close();
+            }
         }
 
         public override void Show(bool ignoreStartAnimation = false)
         {
-            if (!CanShowNoticePopup())
-            {
-                return;
-            }
-
+            canvasGroup.alpha = 0;
             base.Show(ignoreStartAnimation);
+            StartCoroutine(RequestManager.instance.GetJson(JsonUrl, Set));
         }
 
         private IEnumerator CoSetTexture(string imageName)
