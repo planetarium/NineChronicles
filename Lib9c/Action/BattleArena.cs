@@ -181,7 +181,9 @@ namespace Nekoyume.Action
                     $"[{nameof(BattleArena)}] my avatar address : {myAvatarAddress}");
             }
 
-            if (context.BlockIndex - myArenaAvatarState.LastBattleBlockIndex < 4)
+            var gameConfigState = states.GetGameConfigState();
+            var battleArenaInterval = gameConfigState.BattleArenaInterval;
+            if (context.BlockIndex - myArenaAvatarState.LastBattleBlockIndex < battleArenaInterval)
             {
                 throw new CoolDownBlockException(
                     $"[{nameof(BattleArena)}] LastBattleBlockIndex : " +
@@ -244,10 +246,9 @@ namespace Nekoyume.Action
                     $"diff({scoreDiff})");
             }
 
-            var gameConfigState = states.GetGameConfigState();
-            var interval = gameConfigState.DailyArenaInterval;
+            var dailyArenaInterval = gameConfigState.DailyArenaInterval;
             var currentTicketResetCount = ArenaHelper.GetCurrentTicketResetCount(
-                context.BlockIndex, roundData.StartBlockIndex, interval);
+                context.BlockIndex, roundData.StartBlockIndex, dailyArenaInterval);
             if (arenaInformation.TicketResetCount < currentTicketResetCount)
             {
                 arenaInformation.ResetTicket(currentTicketResetCount);
