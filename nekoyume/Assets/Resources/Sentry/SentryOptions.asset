@@ -16,7 +16,7 @@ MonoBehaviour:
   <Dsn>k__BackingField: https://58eacaea567c41cba9104c0e85ad1ffb@o195672.ingest.sentry.io/4503979492245504
   <CaptureInEditor>k__BackingField: 1
   <EnableLogDebouncing>k__BackingField: 0
-  <TracesSampleRate>k__BackingField: 1
+  <TracesSampleRate>k__BackingField: 0
   <AutoSessionTracking>k__BackingField: 1
   <AutoSessionTrackingInterval>k__BackingField: 30000
   <ReleaseOverride>k__BackingField: 
@@ -41,7 +41,8 @@ MonoBehaviour:
   <MacosNativeSupportEnabled>k__BackingField: 1
   <LinuxNativeSupportEnabled>k__BackingField: 1
   <Il2CppLineNumberSupportEnabled>k__BackingField: 1
-  <OptionsConfiguration>k__BackingField: {fileID: 0}
+  <OptionsConfiguration>k__BackingField: {fileID: 11400000, guid: e1f981f00f5b547bdb2a3e516d38e71f,
+    type: 2}
   <Debug>k__BackingField: 1
   <DebugOnlyInEditor>k__BackingField: 1
   <DiagnosticLevel>k__BackingField: 2
