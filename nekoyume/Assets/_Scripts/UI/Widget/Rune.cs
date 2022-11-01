@@ -65,6 +65,9 @@ namespace Nekoyume.UI
         private GameObject content;
 
         [SerializeField]
+        private GameObject requirement;
+
+        [SerializeField]
         private List<GameObject> loadingObjects;
 
         [SerializeField]
@@ -132,14 +135,11 @@ namespace Nekoyume.UI
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
         }
 
-        public async UniTaskVoid ShowAsync(bool ignoreShowAnimation = false)
+        public override void Show(bool ignoreShowAnimation = false)
         {
-            var loading = Find<DataLoadingScreen>();
-            loading.Show();
-            await SetInventory();
+            SetInventory();
             base.Show(ignoreShowAnimation);
             Set(_selectedRuneItem);
-            loading.Close();
         }
 
         public async UniTaskVoid OnActionRender(IRandom random)
@@ -151,24 +151,27 @@ namespace Nekoyume.UI
                 TryCount.Value,
                 random);
 
+            await States.Instance.InitRuneStates();
+
             var fav = await States.Instance.SetRuneStoneBalance(_selectedRuneItem.Row.Id);
             if (fav != null)
             {
                 _selectedRuneItem.RuneStone = (FungibleAssetValue)fav;
             }
-            await SetInventory();
+
+            SetInventory();
             Set(_selectedRuneItem);
             animator.Play(_selectedRuneItem.Level > 1 ? HashToLevelUp : HashToCombine);
             IsLoading.Value = false;
 
         }
 
-        private async Task SetInventory()
+        private void SetInventory()
         {
             _disposables.DisposeAllAndClear();
             _runeItems.Clear();
 
-            var runeStates = await GetRuneStatesAsync();
+            var runeStates = States.Instance.RuneStates;
             var sheet = Game.Game.instance.TableSheets.RuneListSheet;
             foreach (var value in sheet.Values)
             {
@@ -295,6 +298,8 @@ namespace Nekoyume.UI
                 b.SetActive(!item.HasNotification);
             }
 
+
+            requirement.SetActive(item.HasNotification);
             maxLevel.SetActive(item.IsMaxLevel);
             combineButton.gameObject.SetActive(item.Level == 0);
             levelUpButton.gameObject.SetActive(item.Level != 0);
