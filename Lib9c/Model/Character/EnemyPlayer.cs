@@ -116,14 +116,6 @@ namespace Nekoyume.Model
             Simulator.Log.Add(spawn);
         }
 
-        [Obsolete("Use Spawn")]
-        public override void SpawnV3()
-        {
-            InitAIV3();
-            var spawn = new SpawnEnemyPlayer((CharacterBase)Clone());
-            Simulator.Log.Add(spawn);
-        }
-
         public override object Clone()
         {
             return new EnemyPlayer(this);

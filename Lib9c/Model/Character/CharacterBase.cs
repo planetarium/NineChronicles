@@ -193,17 +193,6 @@ namespace Nekoyume.Model
             );
         }
 
-        [Obsolete("Use InitAI")]
-        public virtual void InitAIV3()
-        {
-            SetSkill();
-
-            _root = new Root();
-            _root.OpenBranch(
-                BT.Call(ActV3)
-            );
-        }
-
         public void Tick()
         {
             _root.Tick();
@@ -237,7 +226,28 @@ namespace Nekoyume.Model
 
         protected virtual BattleStatus.Skill UseSkill()
         {
-            return UseSkillV3();
+            var selectedSkill = Skills.Select(Simulator.Random);
+            var usedSkill = selectedSkill.Use(
+                this,
+                Simulator.WaveTurn,
+                BuffFactory.GetBuffs(
+                    ATK,
+                    selectedSkill,
+                    Simulator.SkillBuffSheet,
+                    Simulator.StatBuffSheet,
+                    Simulator.SkillActionBuffSheet,
+                    Simulator.ActionBuffSheet
+                )
+            );
+
+            if (!Simulator.SkillSheet.TryGetValue(selectedSkill.SkillRow.Id, out var sheetSkill))
+            {
+                throw new KeyNotFoundException(selectedSkill.SkillRow.Id.ToString(CultureInfo.InvariantCulture));
+            }
+
+            Skills.SetCooldown(selectedSkill.SkillRow.Id, sheetSkill.Cooldown);
+            Simulator.Log.Add(usedSkill);
+            return usedSkill;
         }
 
         [Obsolete("Use UseSkill")]
@@ -282,33 +292,6 @@ namespace Nekoyume.Model
             );
 
             Skills.SetCooldown(selectedSkill.SkillRow.Id, selectedSkill.SkillRow.Cooldown);
-            Simulator.Log.Add(usedSkill);
-            return usedSkill;
-        }
-
-        [Obsolete("Use UseSkill")]
-        protected virtual BattleStatus.Skill UseSkillV3()
-        {
-            var selectedSkill = Skills.Select(Simulator.Random);
-            var usedSkill = selectedSkill.Use(
-                this,
-                Simulator.WaveTurn,
-                BuffFactory.GetBuffs(
-                    ATK,
-                    selectedSkill,
-                    Simulator.SkillBuffSheet,
-                    Simulator.StatBuffSheet,
-                    Simulator.SkillActionBuffSheet,
-                    Simulator.ActionBuffSheet
-                )
-            );
-
-            if (!Simulator.SkillSheet.TryGetValue(selectedSkill.SkillRow.Id, out var sheetSkill))
-            {
-                throw new KeyNotFoundException(selectedSkill.SkillRow.Id.ToString(CultureInfo.InvariantCulture));
-            }
-
-            Skills.SetCooldown(selectedSkill.SkillRow.Id, sheetSkill.Cooldown);
             Simulator.Log.Add(usedSkill);
             return usedSkill;
         }
@@ -533,24 +516,6 @@ namespace Nekoyume.Model
                 ReduceSkillCooldownV1();
                 OnPreSkill();
                 var usedSkill = UseSkillV2();
-                if (usedSkill != null)
-                {
-                    OnPostSkill(usedSkill);
-                }
-                RemoveBuffs();
-            }
-            EndTurn();
-        }
-
-        [Obsolete("Use Act")]
-        private void ActV3()
-        {
-            if (IsAlive())
-            {
-                ReduceDurationOfBuffs();
-                ReduceSkillCooldown();
-                OnPreSkill();
-                var usedSkill = UseSkillV3();
                 if (usedSkill != null)
                 {
                     OnPostSkill(usedSkill);

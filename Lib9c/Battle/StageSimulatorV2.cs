@@ -100,7 +100,7 @@ namespace Nekoyume.Battle
             Log.waveCount = _waves.Count;
             Log.clearedWaveNumber = 0;
             Log.newlyCleared = false;
-            Player.SpawnV3();
+            Player.Spawn();
             TurnNumber = 0;
             for (var i = 0; i < _waves.Count; i++)
             {
@@ -109,7 +109,7 @@ namespace Nekoyume.Battle
 
                 WaveNumber = i + 1;
                 WaveTurn = 1;
-                _waves[i].SpawnV3(this);
+                _waves[i].Spawn(this);
 
                 foreach (var skill in _skillsOnWaveStart)
                 {

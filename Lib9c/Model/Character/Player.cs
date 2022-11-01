@@ -451,14 +451,6 @@ namespace Nekoyume.Model
             Simulator.Log.Add(spawn);
         }
 
-        [Obsolete("Use Spawn")]
-        public virtual void SpawnV3()
-        {
-            InitAIV3();
-            var spawn = new SpawnPlayer((CharacterBase)Clone());
-            Simulator.Log.Add(spawn);
-        }
-
         public void Use(List<Guid> consumableIds)
         {
             var consumables = Inventory.Items
