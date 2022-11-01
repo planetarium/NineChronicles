@@ -64,7 +64,7 @@ namespace Nekoyume.UI
         private GameObject content;
 
         [SerializeField]
-        private GameObject loading;
+        private List<GameObject> loadingObjects;
 
         [SerializeField]
         private GameObject maxLevel;
@@ -95,7 +95,6 @@ namespace Nekoyume.UI
 
         private RuneItem _selectedRuneItem;
         private int _maxTryCount = 1;
-        private int _multiplier = 1;
         private static readonly ReactiveProperty<bool> IsLoading = new();
         private static readonly ReactiveProperty<int> TryCount = new();
         private readonly Dictionary<RuneCostType, RuneCostItem> _costItems = new();
@@ -114,13 +113,14 @@ namespace Nekoyume.UI
             minusButton.onClick.AddListener(() => TryCount.Value = math.max(1, TryCount.Value - 1));
             closeButton.onClick.AddListener(() => Close(true));
             CloseWidget = () => Close(true);
-            IsLoading.Subscribe(b => loading.SetActive(b)).AddTo(gameObject);
+            IsLoading.Subscribe(b => loadingObjects.ForEach(x => x.SetActive(b)))
+                     .AddTo(gameObject);
             TryCount.Subscribe(x =>
             {
-                slider.UpdateText(x, _maxTryCount, _multiplier);
-                _costItems[RuneCostType.RuneStone].UpdateCount(x * _multiplier);
-                _costItems[RuneCostType.Ncg].UpdateCount(x * _multiplier);
-                _costItems[RuneCostType.Crystal].UpdateCount(x * _multiplier);
+                slider.ForceMove(x);
+                _costItems[RuneCostType.RuneStone].UpdateCount(x);
+                _costItems[RuneCostType.Ncg].UpdateCount(x);
+                _costItems[RuneCostType.Crystal].UpdateCount(x);
             }).AddTo(gameObject);
         }
 
@@ -224,9 +224,8 @@ namespace Nekoyume.UI
         private void Enhancement()
         {
             var runeId = _selectedRuneItem.Row.Id;
-            var tryCount = 1;
             Animator.Play(HashToMaterialUse);
-            ActionManager.Instance.RuneEnhancement(runeId, tryCount);
+            ActionManager.Instance.RuneEnhancement(runeId, TryCount.Value);
             IsLoading.Value = true;
         }
 
@@ -334,11 +333,11 @@ namespace Nekoyume.UI
                 : -1;
             var maxValues = new List<int> { maxRuneStone, maxCrystal, maxNcg };
             _maxTryCount = maxValues.Where(x => x >= 0).Min();
-            _multiplier = _maxTryCount > 10 ? 10 : 1;
             slider.Set(1,
-                _maxTryCount > 0 ? _maxTryCount/10 : 1,
-                1, _maxTryCount > 0 ? _maxTryCount : 1,
-                _multiplier,
+                _maxTryCount > 0 ? _maxTryCount : 1,
+                1,
+                _maxTryCount > 0 ? _maxTryCount : 1,
+                1,
                 (x) => TryCount.Value = x,
                 _maxTryCount > 0);
             Debug.Log($"rune:{maxRuneStone} / crystal:{maxCrystal} / ncg:{maxNcg}");

@@ -6441,7 +6441,9 @@ MonoBehaviour:
   - {fileID: 2037588187271181575}
   - {fileID: 6952657782620633882}
   content: {fileID: 8634316168518126721}
-  loading: {fileID: 4685234639540037661}
+  loadingObjects:
+  - {fileID: 7785106812570014186}
+  - {fileID: 4685234639540037661}
   maxLevel: {fileID: 194161607266629242}
   scroll: {fileID: 3832024585454071186}
   animator: {fileID: 5146677639958581202}
@@ -37149,7 +37151,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.56078434}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

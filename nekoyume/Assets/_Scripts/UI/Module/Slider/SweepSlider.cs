@@ -54,6 +54,12 @@ namespace Nekoyume
             slider.interactable = interactable;
         }
 
+        public void ForceMove(int value)
+        {
+            curText.text = $"{value}";
+            slider.value = value;
+        }
+
         private void UpdateListener(int multiplier, Action<int> callback)
         {
             slider.onValueChanged.RemoveAllListeners();
@@ -71,10 +77,11 @@ namespace Nekoyume
             slider.value = sliderCurValue;
         }
 
-        public void UpdateText(int sliderCurValue, int max, int multiplier)
+        private void UpdateText(int sliderCurValue, int max, int multiplier)
         {
             maxText.text = max.ToString();
             curText.text = $"{sliderCurValue * multiplier}";
+            slider.value = max;
         }
 
         private void UpdateContainer(int sliderMaxValue)
