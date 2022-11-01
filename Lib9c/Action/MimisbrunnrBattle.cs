@@ -7,12 +7,16 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
+using Nekoyume.BlockChain.Policy;
 using Nekoyume.Extensions;
+using Nekoyume.Model;
+using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.Skill;
+using Nekoyume.Model.Quest;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
+using Skill = Nekoyume.Model.Skill.Skill;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
@@ -349,6 +353,26 @@ namespace Nekoyume.Action
                 addressesHex,
                 sw.Elapsed);
             sw.Restart();
+
+            // This conditional logic is same as written in the
+            // HackAndSlash("hack_and_slash18") action.
+            if (context.BlockIndex < BlockPolicySource.V100310ExecutedBlockIndex)
+            {
+                var player = simulator.Player;
+                foreach (var key in player.monsterMapForBeforeV100310.Keys)
+                {
+                    player.monsterMap.Add(key, player.monsterMapForBeforeV100310[key]);
+                }
+
+                player.monsterMapForBeforeV100310.Clear();
+
+                foreach (var key in player.eventMapForBeforeV100310.Keys)
+                {
+                    player.eventMap.Add(key, player.eventMapForBeforeV100310[key]);
+                }
+
+                player.eventMapForBeforeV100310.Clear();
+            }
 
             avatarState.Update(simulator);
             avatarState.UpdateQuestRewards(materialSheet);

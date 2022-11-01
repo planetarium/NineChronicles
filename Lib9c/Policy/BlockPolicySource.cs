@@ -84,19 +84,19 @@ namespace Nekoyume.BlockChain.Policy
 
         public const long V100290ObsoleteIndex = 4_913_153;
 
-        // NOTE:
-        // Current block index: 4_945_493
-        // Current time(KST): 2022. 9. 13 오후 6:00:55
-        // Target block index: 5_150_000
-        // Target time(KST): 2022. 10. 12 오전 3:42:19
         public const long V100300ObsoleteIndex = 5_150_000;
 
-        public const long V100310ObsoleteIndex = 5_200_400;
+        public const long V100310ObsoleteIndex = 5_300_000;
+
+        // NOTE:
+        // V100311: ArenaSheet-2,6,Championship,5398001(start arena block index)
+        public const long V100320ObsoleteIndex = 5_398_001;
 
         public const long PermissionedMiningStartIndex = 2_225_500;
 
         public const long V100301ExecutedBlockIndex = 5_048_399L;
 
+        public const long V100310ExecutedBlockIndex = 5_217_577L;
 
         public static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(8);
 
