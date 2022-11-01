@@ -89,10 +89,8 @@ namespace Nekoyume.BlockChain.Policy
         public const long V100310ObsoleteIndex = 5_200_400;
 
         // NOTE:
-        // Current time(KST): 2022. 10. 28 16:26:59, 5_276_632
-        // Target release time(KST): 2022. 11. 09, 5_363_032
-        // Target obsolete time(KST): 2022. 12. 08, 5_579_032
-        public const long V100320ObsoleteIndex = 5_579_032;
+        // V100311: ArenaSheet-2,6,Championship,5398001(start arena block index)
+        public const long V100320ObsoleteIndex = 5_398_001;
 
         public const long PermissionedMiningStartIndex = 2_225_500;
 
