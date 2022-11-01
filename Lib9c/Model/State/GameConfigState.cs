@@ -75,8 +75,11 @@ namespace Nekoyume.Model.State
                 [(Text) "daily_arena_interval"] = DailyArenaInterval.Serialize(),
                 [(Text) "weekly_arena_interval"] = WeeklyArenaInterval.Serialize(),
                 [(Text) "required_appraise_block"] = RequiredAppraiseBlock.Serialize(),
-                [(Text) "battle_arena_interval"] = BattleArenaInterval.Serialize(),
             };
+            if (BattleArenaInterval > 0)
+            {
+                values.Add((Text)"battle_arena_interval", BattleArenaInterval.Serialize());
+            }
 #pragma warning disable LAA1002
             return new Dictionary(values.Union((Dictionary) base.Serialize()));
 #pragma warning restore LAA1002
