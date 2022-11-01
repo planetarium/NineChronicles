@@ -587,15 +587,17 @@ namespace Nekoyume.UI
                 balance.Currency);
             var arenaInformation = RxProps.PlayersArenaParticipant.Value.CurrentArenaInfo;
 
-            Find<TicketPurchasePopup>().Show(
+            Find<ArenaTicketPurchasePopup>().Show(
                 CostType.ArenaTicket,
                 CostType.NCG,
                 balance,
                 cost,
                 () => StartCoroutine(CoBattleStart(CostType.NCG)),
                 GoToMarket,
-                (arenaInformation.PurchasedTicketCount, _roundData.MaxPurchaseCount),
-                (arenaInformation.PurchasedTicketCountDuringResetInterval, _roundData.MaxPurchaseCountWithInterval)
+                arenaInformation.PurchasedTicketCount,
+                _roundData.MaxPurchaseCount,
+                arenaInformation.PurchasedTicketCountDuringResetInterval,
+                _roundData.MaxPurchaseCountWithInterval
             );
         }
 
@@ -729,8 +731,7 @@ namespace Nekoyume.UI
         {
             Close(true);
             Find<ShopBuy>().Show();
-            Find<HeaderMenuStatic>()
-                .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
         }
     }
 }

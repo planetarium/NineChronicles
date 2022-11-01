@@ -755,13 +755,14 @@ namespace Nekoyume.UI
                 CostType.NCG,
                 balance.Gold,
                 cost,
+                raiderState.PurchaseCount,
+                row.MaxPurchaseCount,
                 () =>
                 {
                     coverToBlockClick.SetActive(true);
                     Raid(true);
                 },
-                GoToMarket,
-                (raiderState.PurchaseCount, row.MaxPurchaseCount)
+                GoToMarket
             );
         }
 
