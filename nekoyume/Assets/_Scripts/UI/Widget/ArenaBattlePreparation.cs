@@ -74,7 +74,7 @@ namespace Nekoyume.UI
         private AvatarState _chooseAvatarState;
         private Player _player;
         private GameObject _cachedCharacterTitle;
-        private const int _ticketCountToUse = 1;
+        private const int _ticketCountToUse = 8;
 
         private readonly List<IDisposable> _disposables = new();
 
@@ -572,8 +572,8 @@ namespace Nekoyume.UI
 
             var arenaTicketCost = startButton.ArenaTicketCost;
             var hasEnoughTickets =
-                RxProps.ArenaTicketProgress.HasValue &&
-                RxProps.ArenaTicketProgress.Value.currentTickets >= arenaTicketCost;
+                RxProps.ArenaTicketsProgress.HasValue &&
+                RxProps.ArenaTicketsProgress.Value.currentTickets >= arenaTicketCost;
             if (hasEnoughTickets)
             {
                 StartCoroutine(CoBattleStart(CostType.ArenaTicket));
@@ -596,7 +596,7 @@ namespace Nekoyume.UI
                 GoToMarket,
                 arenaInformation.PurchasedTicketCount,
                 _roundData.MaxPurchaseCount,
-                arenaInformation.PurchasedTicketCountDuringResetInterval,
+                RxProps.ArenaTicketsProgress.Value.purchasedCountDuringInterval,
                 _roundData.MaxPurchaseCountWithInterval
             );
         }

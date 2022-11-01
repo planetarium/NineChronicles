@@ -100,11 +100,11 @@ namespace Nekoyume.State
             IReadOnlyAsyncUpdatableRxProp<(ArenaInformation current, ArenaInformation next)>
             ArenaInfoTuple => _arenaInfoTuple;
 
-        private static readonly ReactiveProperty<TicketProgress>
-            _arenaTicketProgress = new(new TicketProgress());
+        private static readonly ReactiveProperty<ArenaTicketProgress>
+            _arenaTicketsProgress = new(new ArenaTicketProgress());
 
-        public static IReadOnlyReactiveProperty<TicketProgress>
-            ArenaTicketProgress => _arenaTicketProgress;
+        public static IReadOnlyReactiveProperty<ArenaTicketProgress>
+            ArenaTicketsProgress => _arenaTicketsProgress;
 
         private static readonly ReactiveProperty<PlayerArenaParticipant>
             _playersArenaParticipant = new(null);
@@ -168,13 +168,8 @@ namespace Nekoyume.State
                 : null;
             if (currentArenaInfo is null)
             {
-                _arenaTicketProgress.Value.Reset(
-                    maxTicketCount,
-                    maxTicketCount,
-                    0,
-                    0);
-                _arenaTicketProgress.SetValueAndForceNotify(
-                    _arenaTicketProgress.Value);
+                _arenaTicketsProgress.Value.Reset(maxTicketCount, maxTicketCount);
+                _arenaTicketsProgress.SetValueAndForceNotify(_arenaTicketsProgress.Value);
                 return;
             }
 
@@ -183,15 +178,20 @@ namespace Nekoyume.State
                 blockIndex,
                 currentRoundData.StartBlockIndex,
                 ticketResetInterval);
+            var purchasedCountDuringInterval = currentArenaInfo.GetPurchasedCountInInterval(
+                blockIndex,
+                currentRoundData.StartBlockIndex,
+                ticketResetInterval);
             var progressedBlockRange =
                 (blockIndex - currentRoundData.StartBlockIndex) % ticketResetInterval;
-            _arenaTicketProgress.Value.Reset(
+            _arenaTicketsProgress.Value.Reset(
                 currentTicketCount,
                 maxTicketCount,
                 (int)progressedBlockRange,
-                ticketResetInterval);
-            _arenaTicketProgress.SetValueAndForceNotify(
-                _arenaTicketProgress.Value);
+                ticketResetInterval,
+                purchasedCountDuringInterval);
+            _arenaTicketsProgress.SetValueAndForceNotify(
+                _arenaTicketsProgress.Value);
         }
 
         private static async Task<(ArenaInformation current, ArenaInformation next)>
