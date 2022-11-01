@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
+using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
@@ -141,8 +142,15 @@ namespace Nekoyume.UI
             loading.Close();
         }
 
-        public async UniTaskVoid OnActionRender()
+        public async UniTaskVoid OnActionRender(IRandom random)
         {
+            Find<RuneEnhancementResultScreen>().Show(
+                _selectedRuneItem,
+                States.Instance.GoldBalanceState.Gold,
+                States.Instance.CrystalBalance,
+                TryCount.Value,
+                random);
+
             var fav = await States.Instance.SetRuneStoneBalance(_selectedRuneItem.Row.Id);
             if (fav != null)
             {
@@ -152,6 +160,7 @@ namespace Nekoyume.UI
             Set(_selectedRuneItem);
             animator.Play(_selectedRuneItem.Level > 1 ? HashToLevelUp : HashToCombine);
             IsLoading.Value = false;
+
         }
 
         private async Task SetInventory()
@@ -255,7 +264,7 @@ namespace Nekoyume.UI
             UpdateRuneItems(item);
             UpdateButtons(item);
             UpdateCost(item, runeIcon, runeStoneIcon);
-           UpdateHeaderMenu(runeStoneIcon, item.RuneStone);
+            UpdateHeaderMenu(runeStoneIcon, item.RuneStone);
             UpdateSlider(item);
             animator.Play(item.Level > 0 ? HashToLevelUp : HashToCombine);
         }

@@ -2162,7 +2162,7 @@ namespace Nekoyume.BlockChain
 
         private void ResponseRuneEnhancement(ActionBase.ActionEvaluation<RuneEnhancement> eval)
         {
-            Widget.Find<Rune>().OnActionRender().Forget();
+            Widget.Find<Rune>().OnActionRender(new LocalRandom(eval.RandomSeed)).Forget();
 
             if (eval.Exception is not null)
             {
