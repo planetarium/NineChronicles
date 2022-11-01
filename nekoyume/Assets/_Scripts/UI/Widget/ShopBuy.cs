@@ -216,7 +216,7 @@ namespace Nekoyume.UI
 
             if (models.Count > 0)
             {
-                var props = new Value
+                var props = new Dictionary<string, Value>()
                 {
                     ["Count"] = models.Count,
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
@@ -227,7 +227,7 @@ namespace Nekoyume.UI
 
             foreach (var model in models)
             {
-                var props = new Value
+                var props = new Dictionary<string, Value>()
                 {
                     ["Price"] = model.OrderDigest.Price.GetQuantityString(),
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),

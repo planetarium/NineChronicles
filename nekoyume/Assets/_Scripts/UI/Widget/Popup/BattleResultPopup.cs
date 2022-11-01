@@ -708,7 +708,7 @@ namespace Nekoyume.UI
             player.DisableHUD();
             ActionRenderHandler.Instance.Pending = true;
 
-            var props = new Value
+            var props = new Dictionary<string, Value>()
             {
                 ["StageId"] = SharedModel.StageID,
             };
@@ -800,7 +800,7 @@ namespace Nekoyume.UI
 
         private void GoToMain()
         {
-            var props = new Value
+            var props = new Dictionary<string, Value>()
             {
                 ["StageId"] = Game.Game.instance.Stage.stageId,
             };

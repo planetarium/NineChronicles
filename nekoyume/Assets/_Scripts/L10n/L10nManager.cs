@@ -322,6 +322,11 @@ namespace Nekoyume.L10n
             };
         }
 
+        public static string LocalizeCurrencyName(string ticker)
+        {
+            return TryLocalize($"UI_{ticker}", out var text) ? text : ticker;
+        }
+
         #endregion
 
         private static void ValidateStateAndKey(string key)

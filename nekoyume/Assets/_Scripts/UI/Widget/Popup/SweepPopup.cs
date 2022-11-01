@@ -434,7 +434,7 @@ namespace Nekoyume.UI
                 worldId,
                 stageRow.Id);
 
-            Analyzer.Instance.Track("Unity/HackAndSlashSweep", new Value
+            Analyzer.Instance.Track("Unity/HackAndSlashSweep", new Dictionary<string, Value>()
             {
                 ["stageId"] = stageRow.Id,
                 ["apStoneCount"] = apStoneCount,
