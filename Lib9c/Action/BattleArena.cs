@@ -281,15 +281,15 @@ namespace Nekoyume.Action
                 var goldCurrency = states.GetGoldCurrency();
                 for (var i = 0; i < ticket; i++)
                 {
+                    var ticketBalance =
+                        ArenaHelper.GetTicketPrice(roundData, arenaInformation, goldCurrency);
+                    arenaInformation.BuyTicket(roundData.MaxPurchaseCount);
                     if (purchasedCountDuringInterval >= roundData.MaxPurchaseCountWithInterval)
                     {
                         throw new ExceedTicketPurchaseLimitDuringIntervalException(
                             $"[{nameof(ArenaInformation)}] PurchasedTicketCount({purchasedCountDuringInterval}) >= MAX({{max}})");
                     }
 
-                    var ticketBalance =
-                        ArenaHelper.GetTicketPrice(roundData, arenaInformation, goldCurrency);
-                    arenaInformation.BuyTicket(roundData.MaxPurchaseCount);
                     states = states
                         .TransferAsset(context.Signer, arenaAdr, ticketBalance)
                         .SetState(purchasedCountAddr, ++purchasedCountDuringInterval);

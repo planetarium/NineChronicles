@@ -3,6 +3,7 @@ namespace Lib9c.Tests.Action
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
@@ -623,18 +624,9 @@ namespace Lib9c.Tests.Action
             var max = roundData.MaxPurchaseCount;
             for (var i = 0; i < max; i++)
             {
-                try
-                {
-                    beforeInfo.BuyTicket(roundData.MaxPurchaseCount);
-                }
-                catch (ExceedTicketPurchaseLimitDuringIntervalException)
-                {
-                    beforeInfo.ResetTicket(0);
-                    beforeInfo.BuyTicket(roundData.MaxPurchaseCount);
-                }
+                beforeInfo.BuyTicket(roundData.MaxPurchaseCount);
             }
 
-            beforeInfo.UseTicket(ArenaInformation.MaxTicketCount);
             previousStates = previousStates.SetState(arenaInfoAdr, beforeInfo.Serialize());
             var price = ArenaHelper.GetTicketPrice(
                 roundData,
@@ -711,7 +703,12 @@ namespace Lib9c.Tests.Action
                 beforeInfo.BuyTicket(roundData.MaxPurchaseCount);
             }
 
-            previousStates = previousStates.SetState(arenaInfoAdr, beforeInfo.Serialize());
+            var purchasedCountDuringInterval = arenaInfoAdr.Derive(BattleArena.PurchasedCountKey);
+            previousStates = previousStates
+                .SetState(arenaInfoAdr, beforeInfo.Serialize())
+                .SetState(
+                    purchasedCountDuringInterval,
+                    new Integer(beforeInfo.PurchasedTicketCount));
             var price = ArenaHelper.GetTicketPrice(
                 roundData,
                 beforeInfo,
