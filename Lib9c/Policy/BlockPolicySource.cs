@@ -91,12 +91,13 @@ namespace Nekoyume.BlockChain.Policy
         // Target time(KST): 2022. 10. 12 오전 3:42:19
         public const long V100300ObsoleteIndex = 5_150_000;
 
-        public const long V100310ObsoleteIndex = 5_200_400;
+        public const long V100310ObsoleteIndex = 5_300_000;
 
         public const long PermissionedMiningStartIndex = 2_225_500;
 
         public const long V100301ExecutedBlockIndex = 5_048_399L;
 
+        public const long V100310ExecutedBlockIndex = 5_217_577L;
 
         public static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(8);
 

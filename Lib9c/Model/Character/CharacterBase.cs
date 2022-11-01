@@ -8,6 +8,7 @@ using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Buff;
 using Nekoyume.Model.Character;
 using Nekoyume.Model.Elemental;
+using Nekoyume.Model.Quest;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
@@ -544,7 +545,49 @@ namespace Nekoyume.Model
                 Die();
             }
 
+            FinishTargetIfKilledForBeforeV100310(usedSkill);
             FinishTargetIfKilled(usedSkill);
+        }
+
+        private void FinishTargetIfKilledForBeforeV100310(BattleStatus.Skill usedSkill)
+        {
+            var isFirst = true;
+            foreach (var info in usedSkill.SkillInfos)
+            {
+                if (!info.Target.IsDead)
+                {
+                    continue;
+                }
+
+                if (isFirst)
+                {
+                    isFirst = false;
+                    continue;
+                }
+
+                var target = Targets.FirstOrDefault(i =>
+                    i.Id == info.Target.Id);
+                switch (target)
+                {
+                    case Player player:
+                    {
+                        var quest = new KeyValuePair<int, int>((int)QuestEventType.Die, 1);
+                        player.eventMapForBeforeV100310.Add(quest);
+
+                        break;
+                    }
+                    case Enemy enemy:
+                    {
+                        if (enemy.Targets[0] is Player targetPlayer)
+                        {
+                            var quest = new KeyValuePair<int, int>(enemy.CharacterId, 1);
+                            targetPlayer.monsterMapForBeforeV100310.Add(quest);
+                        }
+
+                        break;
+                    }
+                }
+            }
         }
 
         private void FinishTargetIfKilled(BattleStatus.Skill usedSkill)
@@ -553,7 +596,9 @@ namespace Nekoyume.Model
             foreach (var info in usedSkill.SkillInfos)
             {
                 if (!info.Target.IsDead)
+                {
                     continue;
+                }
 
                 var target = Targets.FirstOrDefault(i => i.Id == info.Target.Id);
                 if (!killedTargets.Contains(target))
