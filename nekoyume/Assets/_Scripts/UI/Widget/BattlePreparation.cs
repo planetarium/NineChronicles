@@ -348,8 +348,9 @@ namespace Nekoyume.UI
                     equipmentSlots.gameObject.SetActive(false);
                 },
                 GetElementalTypes(),
-                useConsumable: useConsumable,
-                onUpdateInventory: OnUpdateInventory);
+                inventory:States.Instance.CurrentAvatarState.inventory,
+                onUpdateInventory: OnUpdateInventory,
+                useConsumable: useConsumable);
         }
 
         private void UpdateBackground()
@@ -724,8 +725,7 @@ namespace Nekoyume.UI
         private void OnUpdateInventory(Inventory updatedInventory, Nekoyume.Model.Item.Inventory inventoryModel)
         {
             foreach (var consumable in consumableSlots
-                         .Where(consumableSlot =>
-                             !consumableSlot.IsLock && !consumableSlot.IsEmpty)
+                         .Where(consumableSlot => !consumableSlot.IsLock && !consumableSlot.IsEmpty)
                          .Select(slot => slot.Item))
             {
                 if (updatedInventory.TryGetModel(consumable, out var inventoryItem))
