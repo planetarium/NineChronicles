@@ -132,7 +132,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousStates = _initialState,
                 Signer = _signerAddress,
-                BlockIndex = ClaimStakeReward3.HardForkIndex + 1,
+                BlockIndex = ClaimStakeReward.ObsoletedIndex + 1,
             }));
         }
 

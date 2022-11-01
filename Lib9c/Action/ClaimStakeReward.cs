@@ -16,6 +16,7 @@ namespace Nekoyume.Action
     [ActionType(ActionTypeText)]
     public class ClaimStakeReward : GameAction
     {
+        public const long ObsoletedIndex = 5_599_601L;
         private const string ActionTypeText = "claim_stake_reward2";
 
         internal Address AvatarAddress { get; private set; }
@@ -37,7 +38,7 @@ namespace Nekoyume.Action
             }
 
             var states = context.PreviousStates;
-            CheckObsolete(ClaimStakeReward3.HardForkIndex, context);
+            CheckObsolete(ClaimStakeReward.ObsoletedIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             if (!states.TryGetStakeState(context.Signer, out StakeState stakeState))
             {

@@ -437,7 +437,7 @@ namespace Nekoyume.Action
 
         protected void CheckActionAvailable(long startedIndex, IActionContext ctx)
         {
-            if (ctx.BlockIndex < startedIndex)
+            if (ctx.BlockIndex <= startedIndex)
             {
                 throw new ActionUnAvailableException();
             }

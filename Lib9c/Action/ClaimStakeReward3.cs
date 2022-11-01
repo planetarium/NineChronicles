@@ -18,7 +18,6 @@ namespace Nekoyume.Action
     [ActionType(ActionTypeText)]
     public class ClaimStakeReward3 : GameAction
     {
-        public const long HardForkIndex = 5_599_601L;
         private const string ActionTypeText = "claim_stake_reward3";
 
         internal Address AvatarAddress { get; private set; }
@@ -40,7 +39,7 @@ namespace Nekoyume.Action
             }
 
             var states = context.PreviousStates;
-            CheckActionAvailable(HardForkIndex, context);
+            CheckActionAvailable(ClaimStakeReward.ObsoletedIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             if (!states.TryGetStakeState(context.Signer, out StakeState stakeState))
             {

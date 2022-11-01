@@ -106,23 +106,25 @@ namespace Lib9c.Tests.Action
             Assert.Equal(action.AvatarAddress, deserialized.AvatarAddress);
         }
 
-        [Fact]
-        public void Execute_Throw_ActionUnAvailableException()
+        [Theory]
+        [InlineData(ClaimStakeReward.ObsoletedIndex)]
+        [InlineData(ClaimStakeReward.ObsoletedIndex - 1)]
+        public void Execute_Throw_ActionUnAvailableException(long blockIndex)
         {
             var action = new ClaimStakeReward3(_avatarAddress);
             Assert.Throws<ActionUnAvailableException>(() => action.Execute(new ActionContext
             {
                 PreviousStates = _initialState,
                 Signer = _signerAddress,
-                BlockIndex = ClaimStakeReward3.HardForkIndex - 1,
+                BlockIndex = blockIndex,
             }));
         }
 
         [Theory]
-        [InlineData(ClaimStakeReward3.HardForkIndex, 100, ClaimStakeReward3.HardForkIndex + StakeState.LockupInterval, 40, 4, 0)]
-        [InlineData(ClaimStakeReward3.HardForkIndex, 6000, ClaimStakeReward3.HardForkIndex + StakeState.LockupInterval, 4800, 36, 4)]
+        [InlineData(ClaimStakeReward.ObsoletedIndex, 100, ClaimStakeReward.ObsoletedIndex + StakeState.LockupInterval, 40, 4, 0)]
+        [InlineData(ClaimStakeReward.ObsoletedIndex, 6000, ClaimStakeReward.ObsoletedIndex + StakeState.LockupInterval, 4800, 36, 4)]
         // Calculate rune start from hard fork index
-        [InlineData(0L, 6000, ClaimStakeReward3.HardForkIndex + StakeState.LockupInterval, 138000, 1035, 4)]
+        [InlineData(0L, 6000, ClaimStakeReward.ObsoletedIndex + StakeState.LockupInterval, 138000, 1035, 4)]
         public void Execute_Success(long startedBlockIndex, int stakeAmount, long blockIndex, int expectedHourglass, int expectedApStone, int expectedRune)
         {
             Execute(_avatarAddress, startedBlockIndex, stakeAmount, blockIndex, expectedHourglass, expectedApStone, expectedRune);
@@ -131,7 +133,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_With_Old_AvatarState_Success()
         {
-            Execute(_avatarAddressForBackwardCompatibility, ClaimStakeReward3.HardForkIndex, 100, ClaimStakeReward3.HardForkIndex + StakeState.LockupInterval, 40, 4, 0);
+            Execute(_avatarAddressForBackwardCompatibility, ClaimStakeReward.ObsoletedIndex, 100, ClaimStakeReward.ObsoletedIndex + StakeState.LockupInterval, 40, 4, 0);
         }
 
         private void Execute(Address avatarAddress, long startedBlockIndex, int stakeAmount, long blockIndex, int expectedHourglass, int expectedApStone, int expectedRune)
