@@ -439,7 +439,7 @@ namespace Nekoyume.Action
         {
             if (ctx.BlockIndex <= startedIndex)
             {
-                throw new ActionUnAvailableException();
+                throw new ActionUnavailableException();
             }
         }
     }

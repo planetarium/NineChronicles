@@ -112,7 +112,7 @@ namespace Lib9c.Tests.Action
         public void Execute_Throw_ActionUnAvailableException(long blockIndex)
         {
             var action = new ClaimStakeReward3(_avatarAddress);
-            Assert.Throws<ActionUnAvailableException>(() => action.Execute(new ActionContext
+            Assert.Throws<ActionUnavailableException>(() => action.Execute(new ActionContext
             {
                 PreviousStates = _initialState,
                 Signer = _signerAddress,
