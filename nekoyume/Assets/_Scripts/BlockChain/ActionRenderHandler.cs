@@ -2100,6 +2100,7 @@ namespace Nekoyume.BlockChain
 
             await WorldBossStates.Set(avatarAddress);
             await States.Instance.InitRuneStoneBalance();
+            await States.Instance.InitRuneStates();
             var raiderState = WorldBossStates.GetRaiderState(avatarAddress);
             var killRewards = new List<FungibleAssetValue>();
             if (latestBossLevel < raiderState.LatestBossLevel)

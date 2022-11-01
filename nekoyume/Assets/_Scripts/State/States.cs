@@ -51,6 +51,8 @@ namespace Nekoyume.State
 
         public Dictionary<int, FungibleAssetValue> RuneStoneBalance { get; } = new();
 
+        public List<RuneState> RuneStates { get; } = new();
+
         public int StakingLevel { get; private set; }
 
         private class Workshop
@@ -147,6 +149,31 @@ namespace Nekoyume.State
                 }
 
                 return runes;
+            });
+
+            await task;
+        }
+
+        public async Task InitRuneStates()
+        {
+            var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
+            var avatarAddress = CurrentAvatarState.address;
+            var runeIds = runeListSheet.Values.Select(x => x.Id).ToList();
+            var runeAddresses = runeIds.Select(id => RuneState.DeriveAddress(avatarAddress, id)).ToList();
+            var stateBulk = await Game.Game.instance.Agent.GetStateBulk(runeAddresses);
+            RuneStates.Clear();
+            var task = Task.Run(async () =>
+            {
+                var states = new List<RuneState>();
+                foreach (var value in stateBulk.Values)
+                {
+                    if (value is List list)
+                    {
+                        RuneStates.Add(new RuneState(list));
+                    }
+                }
+
+                return states;
             });
 
             await task;

@@ -27,11 +27,23 @@ namespace Nekoyume.UI.Module
             Raid,
         }
 
+        public enum InventoryTabType
+        {
+            Equipment,
+            Consumable,
+            Rune,
+            Material,
+            Costume,
+        }
+
         [SerializeField]
         private CategoryTabButton equipmentButton = null;
 
         [SerializeField]
         private CategoryTabButton consumableButton = null;
+
+        [SerializeField]
+        private CategoryTabButton runeButton = null;
 
         [SerializeField]
         private CategoryTabButton materialButton = null;
@@ -49,6 +61,7 @@ namespace Nekoyume.UI.Module
         private readonly List<InventoryItem> _consumables = new();
         private readonly List<InventoryItem> _materials = new();
         private readonly List<InventoryItem> _costumes = new();
+        private readonly List<InventoryItem> _runes = new();
 
         private readonly ToggleGroup _toggleGroup = new();
 
@@ -66,8 +79,9 @@ namespace Nekoyume.UI.Module
         private Action<InventoryItem> _onDoubleClickItem;
         private System.Action _onToggleEquipment;
         private System.Action _onToggleCostume;
+        private System.Action _onToggleRune;
 
-        private ItemType _activeItemType = ItemType.Equipment;
+        private InventoryTabType _activeTabType = InventoryTabType.Equipment;
         private bool _checkTradable;
 
         public bool HasNotification => _equipments.Any(x =>
@@ -77,20 +91,24 @@ namespace Nekoyume.UI.Module
         {
             _toggleGroup.RegisterToggleable(equipmentButton);
             _toggleGroup.RegisterToggleable(consumableButton);
+            _toggleGroup.RegisterToggleable(runeButton);
             _toggleGroup.RegisterToggleable(materialButton);
             _toggleGroup.RegisterToggleable(costumeButton);
 
             equipmentButton.OnClick
-                .Subscribe(button => OnTabButtonClick(button, ItemType.Equipment, _onToggleEquipment))
+                .Subscribe(button => OnTabButtonClick(button, InventoryTabType.Equipment, _onToggleEquipment))
                 .AddTo(gameObject);
             costumeButton.OnClick
-                .Subscribe(button => OnTabButtonClick(button, ItemType.Costume, _onToggleCostume))
+                .Subscribe(button => OnTabButtonClick(button, InventoryTabType.Costume, _onToggleCostume))
+                .AddTo(gameObject);
+            runeButton.OnClick
+                .Subscribe(button => OnTabButtonClick(button, InventoryTabType.Rune, _onToggleRune))
                 .AddTo(gameObject);
             consumableButton.OnClick
-                .Subscribe(button => OnTabButtonClick(button, ItemType.Consumable))
+                .Subscribe(button => OnTabButtonClick(button, InventoryTabType.Consumable))
                 .AddTo(gameObject);
             materialButton.OnClick
-                .Subscribe(button => OnTabButtonClick(button, ItemType.Material))
+                .Subscribe(button => OnTabButtonClick(button, InventoryTabType.Material))
                 .AddTo(gameObject);
 
             foreach (var type in ItemTypes)
@@ -99,11 +117,14 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void OnTabButtonClick(IToggleable toggleable, ItemType type, System.Action onSetToggle = null)
+        private void OnTabButtonClick(
+            IToggleable toggleable,
+            InventoryTabType tabType,
+            System.Action onSetToggle = null)
         {
             if (!_toggleGroup.DisabledFunc.Invoke())
             {
-                SetToggle(toggleable, type);
+                SetToggle(toggleable, tabType);
                 onSetToggle?.Invoke();
             }
             else
@@ -164,21 +185,26 @@ namespace Nekoyume.UI.Module
 
             if (useConsumable && _consumables.Any())
             {
-                SetToggle(consumableButton, ItemType.Consumable);
+                SetToggle(consumableButton, InventoryTabType.Consumable);
             }
             else
             {
-                SetToggle(equipmentButton, ItemType.Equipment);
+                SetToggle(equipmentButton, InventoryTabType.Equipment);
             }
 
             scroll.OnClick.Subscribe(OnClickItem).AddTo(_disposablesOnSet);
             scroll.OnDoubleClick.Subscribe(OnDoubleClick).AddTo(_disposablesOnSet);
         }
 
-        private void SetToggle(IToggleable toggle, ItemType itemType)
+        private void SetToggle(IToggleable toggle, InventoryTabType tabType)
         {
-            _activeItemType = itemType;
-            scroll.UpdateData(GetModels(itemType), !toggle.IsToggledOn);
+            _activeTabType = tabType;
+
+            // var items = tabType != InventoryTabType.Rune
+            //     ? GetModels(tabType)
+            //     : new List<InventoryItem>();
+
+            scroll.UpdateData(GetModels(tabType), !toggle.IsToggledOn);
             UpdateDimmedInventoryItem();
 
             ClearFocus();
@@ -196,6 +222,7 @@ namespace Nekoyume.UI.Module
             _consumables.Clear();
             _materials.Clear();
             _costumes.Clear();
+            _runes.Clear();
 
             if (inventory is null)
             {
@@ -214,7 +241,12 @@ namespace Nekoyume.UI.Module
                 AddItem(item.item, item.count);
             }
 
-            var models = GetModels(_activeItemType);
+            foreach (var runeState in States.Instance.RuneStates)
+            {
+                _runes.Add(new InventoryItem(runeState, false));
+            }
+
+            var models = GetModels(_activeTabType);
             if (reverseOrder)
             {
                 models.Reverse();
@@ -349,6 +381,19 @@ namespace Nekoyume.UI.Module
             }
         }
 
+        private List<InventoryItem> GetModels(InventoryTabType tabType)
+        {
+            return tabType switch
+            {
+                InventoryTabType.Consumable => _consumables,
+                InventoryTabType.Costume => _costumes,
+                InventoryTabType.Equipment => GetOrganizedEquipments(),
+                InventoryTabType.Material => GetOrganizedMaterials(),
+                InventoryTabType.Rune => _runes,
+                _ => throw new ArgumentOutOfRangeException(nameof(tabType), tabType, null)
+            };
+        }
+
         private List<InventoryItem> GetModels(ItemType itemType)
         {
             return itemType switch
@@ -404,7 +449,7 @@ namespace Nekoyume.UI.Module
 
         private void UpdateEquipmentNotification(IEnumerable<InventoryItem> bestItems)
         {
-            if (_activeItemType != ItemType.Equipment)
+            if (_activeTabType != InventoryTabType.Equipment)
             {
                 return;
             }

@@ -373,6 +373,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<CostumeTooltip>());
             yield return null;
+            secondWidgets.Add(Widget.Create<RuneTooltip>());
+            yield return null;
             secondWidgets.Add(Widget.Create<AvatarTooltip>());
             yield return null;
             secondWidgets.Add(Widget.Create<HelpTooltip>());

@@ -138,7 +138,7 @@ namespace Nekoyume.UI
             UpdateTitle(currentAvatarState);
             UpdateStat(currentAvatarState);
             UpdateSlot(currentAvatarState);
-            costumeSlots.gameObject.SetActive(false);
+            costumeSlots.gameObject.SetActive(true);
             equipmentSlots.gameObject.SetActive(true);
             HelpTooltip.HelpMe(100013, true);
             base.Show(ignoreShowAnimation);
@@ -183,13 +183,9 @@ namespace Nekoyume.UI
                 doubleClickItem: Equip,
                 clickEquipmentToggle: () =>
                 {
-                    costumeSlots.gameObject.SetActive(false);
-                    equipmentSlots.gameObject.SetActive(true);
                 },
                 clickCostumeToggle: () =>
                 {
-                    costumeSlots.gameObject.SetActive(true);
-                    equipmentSlots.gameObject.SetActive(false);
                 },
                 elementalTypes);
         }
@@ -442,16 +438,29 @@ namespace Nekoyume.UI
 
         private void ShowItemTooltip(InventoryItem model, RectTransform target)
         {
-            var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
-            var (submitText, interactable, submit, blocked) = GetToolTipParams(model);
-            tooltip.Show(
-                model,
-                submitText,
-                interactable,
-                submit,
-                () => inventory.ClearSelectedItem(),
-                blocked,
-                target);
+            if (model.RuneState != null)
+            {
+                Find<RuneTooltip>().Show(
+                    model,
+                    L10nManager.Localize(model.Equipped.Value ? "UI_UNEQUIP" : "UI_EQUIP"),
+                    true,
+                    () => {},
+                    () => {},
+                    target);
+            }
+            else
+            {
+                var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
+                var (submitText, interactable, submit, blocked) = GetToolTipParams(model);
+                tooltip.Show(
+                    model,
+                    submitText,
+                    interactable,
+                    submit,
+                    () => inventory.ClearSelectedItem(),
+                    blocked,
+                    target);
+            }
         }
 
         private (string, bool, System.Action, System.Action) GetToolTipParams(InventoryItem model)

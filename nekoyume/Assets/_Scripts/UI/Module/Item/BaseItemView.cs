@@ -160,5 +160,10 @@ namespace Nekoyume
             var add = itemBase is TradableMaterial ? 1 : 0;
             return itemViewData.GetItemViewData(itemBase.Grade + add);
         }
+
+        public ItemViewData GetItemViewData(int grade)
+        {
+            return itemViewData.GetItemViewData(grade);
+        }
     }
 }
