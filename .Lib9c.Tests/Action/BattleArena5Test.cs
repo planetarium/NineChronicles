@@ -623,7 +623,7 @@ namespace Lib9c.Tests.Action
             var max = ArenaHelper.GetMaxPurchasedTicketCount(roundData);
             for (var i = 0; i < max; i++)
             {
-                beforeInfo.BuyTicket(roundData);
+                beforeInfo.BuyTicket(ArenaHelper.GetMaxPurchasedTicketCount(roundData));
             }
 
             previousStates = previousStates.SetState(arenaInfoAdr, beforeInfo.Serialize());
@@ -705,7 +705,7 @@ namespace Lib9c.Tests.Action
                     beforeInfo,
                     previousStates.GetGoldCurrency());
                 previousStates = previousStates.MintAsset(_agent1Address, price);
-                beforeInfo.BuyTicket(roundData);
+                beforeInfo.BuyTicket(ArenaHelper.GetMaxPurchasedTicketCount(roundData));
             }
 
             var action = new BattleArena5
@@ -826,7 +826,7 @@ namespace Lib9c.Tests.Action
                         beforeInfo,
                         previousStates.GetGoldCurrency());
                     previousStates = previousStates.MintAsset(myAgentAddress, price);
-                    beforeInfo.BuyTicket(roundData);
+                    beforeInfo.BuyTicket(ArenaHelper.GetMaxPurchasedTicketCount(roundData));
                 }
             }
 
