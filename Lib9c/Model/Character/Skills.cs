@@ -124,6 +124,11 @@ namespace Nekoyume.Model
 
         private Skill.Skill PostSelectWithoutDefaultAttack(IRandom random, IEnumerable<Skill.Skill> skills)
         {
+            if (!skills.Any())
+            {
+                return null;
+            }
+
             var skillList = skills.ToList();
             var sortedSkills = skillList
                 .OrderBy(x => x.SkillRow.Id)
