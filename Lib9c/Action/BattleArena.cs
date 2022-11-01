@@ -22,7 +22,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1455
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1464
     /// </summary>
     [Serializable]
     [ActionType("battle_arena6")]
