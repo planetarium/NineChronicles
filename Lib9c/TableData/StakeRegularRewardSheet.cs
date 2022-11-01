@@ -34,11 +34,20 @@ namespace Nekoyume.TableData
 
             public readonly int ItemId;
             public readonly int Rate;
+            public readonly StakeRewardType Type;
 
             public RewardInfo(params string[] fields)
             {
                 ItemId = ParseInt(fields[0]);
                 Rate = ParseInt(fields[1]);
+                if (fields.Length > 2)
+                {
+                    Type = (StakeRewardType) Enum.Parse(typeof(StakeRewardType), fields[2]);
+                }
+                else
+                {
+                    Type = StakeRewardType.Item;
+                }
             }
 
             public RewardInfo(int itemId, int rate)
@@ -90,5 +99,11 @@ namespace Nekoyume.TableData
         }
 
         public IReadOnlyList<IStakeRewardRow> OrderedRows => OrderedList;
+
+        public enum StakeRewardType
+        {
+            Item,
+            Rune,
+        }
     }
 }
