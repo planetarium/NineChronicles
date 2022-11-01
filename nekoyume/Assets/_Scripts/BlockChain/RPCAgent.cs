@@ -253,9 +253,9 @@ namespace Nekoyume.BlockChain
 
         private void Awake()
         {
-            Value GetPlayerAddressForLogging()
+            Dictionary<string, Value> GetPlayerAddressForLogging()
             {
-                var value = new Value();
+                var value = new Dictionary<string, Value>();
                 if (States.Instance.AgentState is not null)
                 {
                     value["AgentAddress"] = States.Instance.AgentState.address.ToString();
