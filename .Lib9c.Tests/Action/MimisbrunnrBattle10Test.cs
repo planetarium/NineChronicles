@@ -34,6 +34,7 @@ namespace Lib9c.Tests.Action
         {
             _sheets = TableSheetsImporter.ImportSheets();
             _sheets.Remove(nameof(RuneStatSheet));
+            _sheets.Remove(nameof(RuneSkillSheet));
             _tableSheets = new TableSheets(_sheets);
 
             var privateKey = new PrivateKey();

@@ -212,8 +212,8 @@ namespace Nekoyume.Model
                 pair.Value.RemainedDuration--;
             }
         }
-
-        private void ReduceSkillCooldown()
+        
+        protected virtual void ReduceSkillCooldown()
         {
             Skills.ReduceCooldown();
         }

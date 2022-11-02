@@ -96,7 +96,7 @@ namespace Nekoyume.Model
         public override void Spawn()
         {
             InitAI();
-            var spawn = new SpawnEnemyPlayer((CharacterBase) Clone());
+            var spawn = new SpawnEnemyPlayer((CharacterBase)Clone());
             Simulator.Log.Add(spawn);
         }
 
