@@ -1,9 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
+using System.Collections;
 using System.Threading.Tasks;
 using Libplanet;
 using Nekoyume.UI.Model;
-using UnityEngine;
 using UnityEngine.Networking;
 
 namespace Nekoyume.UI.Module.WorldBoss
@@ -67,51 +66,13 @@ namespace Nekoyume.UI.Module.WorldBoss
             return response;
         }
 
-        public static async Task<List<SeasonRewards>> CheckTxStatus(List<SeasonRewards> rewards)
-        {
-            var successList = new List<SeasonRewards>();
-            await foreach (var reward in rewards)
-            {
-                var res = await QueryTxResultAsync(reward.tx_id);
-                if (res.transaction.transactionResult.txStatus == TxStatus.SUCCESS)
-                {
-                    successList.Add(reward);
-                }
-            }
-
-            return successList;
-        }
-
-        public static IEnumerator CoClaimSeasonReward(
-            int raidId,
-            Address agentAddress,
-            Address avatarAddress,
-            System.Action<string> onSuccess,
-            System.Action onFailed)
-        {
-            var form = new WWWForm();
-            form.AddField("raid_id", raidId);
-            form.AddField("avatar_address", avatarAddress.ToHex());
-            form.AddField("agent_address", agentAddress.ToHex());
-            using var request = UnityWebRequest.Post($"{_url}/reward", form);
-            yield return request.SendWebRequest();
-            if (request.result == UnityWebRequest.Result.Success)
-            {
-                onSuccess?.Invoke(request.downloadHandler.text);
-            }
-            else
-            {
-                onFailed?.Invoke();
-            }
-        }
-
-        public static IEnumerator CoIsExistSeasonReward(
+        public static IEnumerator CoGetSeasonRewards(
             int raidId,
             Address avatarAddress,
-            System.Action<string> onSuccess,
-            System.Action<int, Address> onFailed)
+            Action<string> onSuccess,
+            Action<int, Address> onFailed)
         {
-            var url = $"{_url}/{raidId}/{avatarAddress}";
+            var url = $"{_url}/{raidId}/{avatarAddress}/rewards";
             using var request = UnityWebRequest.Get(url);
             yield return request.SendWebRequest();
             if (request.result == UnityWebRequest.Result.Success)

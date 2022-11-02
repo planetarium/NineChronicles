@@ -110,7 +110,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             WorldBossStates.SetReceivingGradeRewards(avatarAddress, true);
             WorldBossStates.SetHasGradeRewards(avatarAddress, false);
-            ActionManager.Instance.ClaimRaidReward();
+            ActionManager.Instance.ClaimRaidReward().Subscribe();
             _canReceive = false;
             UpdateClaimButton();
         }

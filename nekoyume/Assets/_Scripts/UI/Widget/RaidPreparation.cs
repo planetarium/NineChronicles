@@ -715,7 +715,7 @@ namespace Nekoyume.UI
         private void Raid(bool payNcg)
         {
             var (equipments, costumes, foods) = SaveCurrentEquipment();
-            ActionManager.Instance.Raid(costumes, equipments, foods, payNcg);
+            ActionManager.Instance.Raid(costumes, equipments, foods, payNcg).Subscribe();
             Find<LoadingScreen>().Show();
             Find<WorldBoss>().Close();
             Close();

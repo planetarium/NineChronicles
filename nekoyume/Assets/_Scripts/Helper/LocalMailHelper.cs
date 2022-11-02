@@ -25,6 +25,11 @@ namespace Nekoyume.Helper
 
         public void Initialize()
         {
+            if (_disposables.Any())
+            {
+                return;
+            }
+
             ReactiveAvatarState.MailBox.Subscribe(mailBox =>
             {
                 if (_localMailDictionary.TryGetValue(States.Instance.CurrentAvatarState.address,
@@ -53,8 +58,9 @@ namespace Nekoyume.Helper
             }
         }
 
-        public void CleanupDisposables()
+        public void CleanupAndDispose(Address address)
         {
+            _localMailDictionary[address].Clear();
             _disposables.DisposeAllAndClear();
         }
     }

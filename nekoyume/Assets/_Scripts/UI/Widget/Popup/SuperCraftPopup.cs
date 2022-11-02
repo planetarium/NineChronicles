@@ -105,8 +105,8 @@ namespace Nekoyume.UI
                 CostType.Crystal,
                 sheets.CrystalHammerPointSheet[_recipeRow.Id].CRYSTAL);
             base.Show(ignoreAnimation);
-            basicRecipeToggle.isOn = true;
-            SetSkillInfoText(_recipeRow.SubRecipeIds[BasicRecipeIndex]);
+            premiumRecipeToggle.isOn = true;
+            SetSkillInfoText(_recipeRow.SubRecipeIds[PremiumRecipeIndex]);
         }
 
         private void SetSkillInfoText(int subRecipeId)
