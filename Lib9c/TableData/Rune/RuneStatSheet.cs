@@ -15,11 +15,13 @@ namespace Nekoyume.TableData
         {
             public class RuneStatInfo
             {
+                public int Cp { get; }
                 public List<(StatMap statMap, StatModifier.OperationType operationType)> Stats { get; set; }
                 public RuneStatInfo(
-                    List<(StatMap, StatModifier.OperationType)> stats)
+                    List<(StatMap, StatModifier.OperationType)> stats, int cp)
                 {
                     Stats = stats;
+                    Cp = cp;
                 }
             }
 
@@ -34,41 +36,42 @@ namespace Nekoyume.TableData
 
                 RuneId = ParseInt(fields[0]);
                 var level = ParseInt(fields[1]);
+                var cp = ParseInt(fields[2]);
 
-                var statType1 = (StatType)Enum.Parse(typeof(StatType), fields[2]);
-                var value1 = ParseDecimal(fields[3]);
+                var statType1 = (StatType)Enum.Parse(typeof(StatType), fields[3]);
+                var value1 = ParseDecimal(fields[4]);
                 var valueType1 = (StatModifier.OperationType)
-                    Enum.Parse(typeof(StatModifier.OperationType), fields[4]);
+                    Enum.Parse(typeof(StatModifier.OperationType), fields[5]);
                 if (statType1 != StatType.NONE)
                 {
                     var statMap = new StatMap(statType1, value1);
                     stats.Add((statMap, valueType1));
                 }
 
-                var statType2 = (StatType)Enum.Parse(typeof(StatType), fields[5]);
-                var value2 = ParseDecimal(fields[6]);
+                var statType2 = (StatType)Enum.Parse(typeof(StatType), fields[6]);
+                var value2 = ParseDecimal(fields[7]);
                 var valueType2 = (StatModifier.OperationType)
-                    Enum.Parse(typeof(StatModifier.OperationType), fields[7]);
+                    Enum.Parse(typeof(StatModifier.OperationType), fields[8]);
                 if (statType2 != StatType.NONE)
                 {
                     var statMap = new StatMap(statType2, value2);
                     stats.Add((statMap, valueType2));
                 }
 
-                var statType3 = (StatType)Enum.Parse(typeof(StatType), fields[8]);
-                var value3 = ParseDecimal(fields[9]);
+                var statType3 = (StatType)Enum.Parse(typeof(StatType), fields[9]);
+                var value3 = ParseDecimal(fields[10]);
                 var valueType3 = (StatModifier.OperationType)
-                    Enum.Parse(typeof(StatModifier.OperationType), fields[10]);
+                    Enum.Parse(typeof(StatModifier.OperationType), fields[11]);
                 if (statType3 != StatType.NONE)
                 {
                     var statMap = new StatMap(statType3, value3);
                     stats.Add((statMap, valueType3));
                 }
 
-                LevelStatsMap[level] = new RuneStatInfo(stats);
+                LevelStatsMap[level] = new RuneStatInfo(stats, cp);
             }
         }
-        
+
         public RuneStatSheet() : base(nameof(RuneStatSheet))
         {
         }
