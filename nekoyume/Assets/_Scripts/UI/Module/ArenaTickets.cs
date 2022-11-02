@@ -29,7 +29,7 @@ namespace Nekoyume.UI.Module
 
         private void OnEnable()
         {
-            RxProps.ArenaTicketProgress
+            RxProps.ArenaTicketsProgress
                 .SubscribeOnMainThread()
                 .Subscribe(UpdateTimespanText)
                 .AddTo(_disposables);

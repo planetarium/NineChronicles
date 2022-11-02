@@ -29,8 +29,8 @@ namespace Nekoyume.UI.Module.Arena
             _sliderText.text = string.Empty;
             _paused = false;
             _disposables.DisposeAllAndClear();
-            UpdateSliderAndText(RxProps.ArenaTicketProgress.Value);
-            RxProps.ArenaTicketProgress
+            UpdateSliderAndText(RxProps.ArenaTicketsProgress.Value);
+            RxProps.ArenaTicketsProgress
                 .Where(_ => !_paused)
                 .SubscribeOnMainThread()
                 .Subscribe(UpdateSliderAndText)

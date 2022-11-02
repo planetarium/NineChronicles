@@ -54,7 +54,7 @@ namespace Nekoyume.UI.Module.Arena.Join
                 TicketPrice = ticketPrice;
                 AdditionalTicketPrice = additionalTicketPrice;
                 MaxPurchaseCount = maxPurchaseCount;
-                MaxPurchaseCountWithInterval = MaxPurchaseCountWithInterval;
+                MaxPurchaseCountWithInterval = maxPurchaseCountWithInterval;
             }
 
             public ArenaSheet.RoundData ToRoundData() => new ArenaSheet.RoundData(
@@ -66,7 +66,10 @@ namespace Nekoyume.UI.Module.Arena.Join
                 RequiredMedalCount,
                 EntranceFee,
                 TicketPrice,
-                AdditionalTicketPrice, MaxPurchaseCount, MaxPurchaseCountWithInterval);
+                AdditionalTicketPrice,
+                MaxPurchaseCount,
+                MaxPurchaseCountWithInterval
+            );
         }
 
         [SerializeField]
@@ -98,7 +101,9 @@ namespace Nekoyume.UI.Module.Arena.Join
                         0,
                         0,
                         5,
-                        2, 0, 0),
+                        2,
+                        40,
+                        8),
                     RewardType = ArenaJoinSeasonInfo.RewardType.Food,
                 },
                 new ArenaData
@@ -113,7 +118,9 @@ namespace Nekoyume.UI.Module.Arena.Join
                         100,
                         50,
                         5,
-                        2, 0, 0),
+                        2,
+                        40,
+                        8),
                     RewardType = ArenaJoinSeasonInfo.RewardType.Food |
                                  ArenaJoinSeasonInfo.RewardType.Medal |
                                  ArenaJoinSeasonInfo.RewardType.NCG,
@@ -130,7 +137,9 @@ namespace Nekoyume.UI.Module.Arena.Join
                         0,
                         0,
                         5,
-                        2, 0, 0),
+                        2,
+                        40,
+                        8),
                     RewardType = ArenaJoinSeasonInfo.RewardType.Food,
                 },
                 new ArenaData
@@ -145,7 +154,9 @@ namespace Nekoyume.UI.Module.Arena.Join
                         100,
                         50,
                         5,
-                        2, 0, 0),
+                        2,
+                        40,
+                        8),
                     RewardType = ArenaJoinSeasonInfo.RewardType.Food |
                                  ArenaJoinSeasonInfo.RewardType.Medal |
                                  ArenaJoinSeasonInfo.RewardType.NCG,
@@ -162,7 +173,9 @@ namespace Nekoyume.UI.Module.Arena.Join
                         0,
                         0,
                         5,
-                        2, 0, 0),
+                        2,
+                        40,
+                        8),
                     RewardType = ArenaJoinSeasonInfo.RewardType.Food,
                 },
                 new ArenaData
@@ -177,7 +190,9 @@ namespace Nekoyume.UI.Module.Arena.Join
                         100,
                         50,
                         5,
-                        2, 0, 0),
+                        2,
+                        40,
+                        8),
                     RewardType = ArenaJoinSeasonInfo.RewardType.Food |
                                  ArenaJoinSeasonInfo.RewardType.Medal |
                                  ArenaJoinSeasonInfo.RewardType.NCG,
@@ -194,7 +209,9 @@ namespace Nekoyume.UI.Module.Arena.Join
                         0,
                         0,
                         5,
-                        2, 0, 0),
+                        2,
+                        40,
+                        8),
                     RewardType = ArenaJoinSeasonInfo.RewardType.Food,
                 },
                 new ArenaData
@@ -209,7 +226,9 @@ namespace Nekoyume.UI.Module.Arena.Join
                         1000,
                         500,
                         5,
-                        2, 0, 0),
+                        2,
+                        40,
+                        8),
                     RewardType = ArenaJoinSeasonInfo.RewardType.Food |
                                  ArenaJoinSeasonInfo.RewardType.Medal |
                                  ArenaJoinSeasonInfo.RewardType.NCG |
