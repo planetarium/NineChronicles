@@ -415,22 +415,19 @@ namespace Nekoyume.State
                 ? new ArenaInformation(arenaInfoList)
                 : null;
             var purchasedCountDuringInterval = 0;
-            if (playerArenaInfo is not null)
+            try
             {
-                try
-                {
-                    var purchasedCountDuringIntervalAddress =
-                        playerArenaInfo.Address.Derive(BattleArena.PurchasedCountKey);
-                    purchasedCountDuringInterval =
-                        await _agent.GetStateAsync(purchasedCountDuringIntervalAddress)
-                            is Integer iValue
-                            ? iValue.ToInteger()
-                            : 0;
-                }
-                catch
-                {
-                    // ignored
-                }
+                var purchasedCountDuringIntervalAddress =
+                    playerArenaInfoAddr.Derive(BattleArena.PurchasedCountKey);
+                purchasedCountDuringInterval =
+                    await _agent.GetStateAsync(purchasedCountDuringIntervalAddress)
+                        is Integer iValue
+                        ? iValue
+                        : 0;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
             }
 
             // NOTE: There is players `ArenaParticipant` in chain.
