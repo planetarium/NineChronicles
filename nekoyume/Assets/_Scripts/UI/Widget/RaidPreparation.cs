@@ -761,7 +761,17 @@ namespace Nekoyume.UI
                 {
                     coverToBlockClick.SetActive(true);
                     Raid(true);
-                });
+                },
+                GoToMarket
+            );
+        }
+
+        private void GoToMarket()
+        {
+            Find<WorldBoss>().Close(true);
+            Find<RaidPreparation>().Close(true);
+            Find<ShopBuy>().Show();
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
         }
 
         private void PostEquipOrUnequip(EquipmentSlot slot)

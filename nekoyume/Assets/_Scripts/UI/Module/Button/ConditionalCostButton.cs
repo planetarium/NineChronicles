@@ -187,7 +187,7 @@ namespace Nekoyume.UI.Module
                     var count = Util.GetHourglassCount(inventory, Game.Game.instance.Agent.BlockIndex);
                     return count >= cost;
                 case CostType.ArenaTicket:
-                    return RxProps.ArenaTicketProgress.Value.currentTickets >= cost;
+                    return RxProps.ArenaTicketsProgress.Value.currentTickets >= cost;
                 case CostType.EventDungeonTicket:
                     return RxProps.EventDungeonTicketProgress.Value.currentTickets >= cost;
                 default:
