@@ -60,6 +60,7 @@ namespace Nekoyume.State
         {
             public ArenaInformation CurrentArenaInfo;
             // public ArenaInformation NextArenaInfo;
+            public int PurchasedCountDuringInterval;
 
             public PlayerArenaParticipant(
                 Address avatarAddr,
@@ -67,7 +68,8 @@ namespace Nekoyume.State
                 int rank,
                 AvatarState avatarState,
                 (int win, int lose) expectDeltaScore,
-                ArenaInformation currentArenaInfo)
+                ArenaInformation currentArenaInfo,
+                int purchasedCountDuringInterval)
                 : base(
                     avatarAddr,
                     score,
@@ -77,15 +79,18 @@ namespace Nekoyume.State
             {
                 CurrentArenaInfo = currentArenaInfo;
                 // NextArenaInfo = nextArenaInfo;
+                this.PurchasedCountDuringInterval = purchasedCountDuringInterval;
             }
 
             public PlayerArenaParticipant(
                 ArenaParticipant arenaParticipant,
-                ArenaInformation currentArenaInfo)
+                ArenaInformation currentArenaInfo,
+                int purchasedCountDuringInterval)
                 : base(arenaParticipant)
             {
                 CurrentArenaInfo = currentArenaInfo;
                 // NextArenaInfo = nextArenaInfo;
+                this.PurchasedCountDuringInterval = purchasedCountDuringInterval;
             }
         }
 
@@ -178,10 +183,12 @@ namespace Nekoyume.State
                 blockIndex,
                 currentRoundData.StartBlockIndex,
                 ticketResetInterval);
-            var purchasedCountDuringInterval = currentArenaInfo.GetPurchasedCountInInterval(
+            var purchasedCount = _playersArenaParticipant?.Value?.PurchasedCountDuringInterval ?? 0;
+            var purchasedCountDuringInterval =  currentArenaInfo.GetPurchasedCountInInterval(
                 blockIndex,
                 currentRoundData.StartBlockIndex,
-                ticketResetInterval);
+                ticketResetInterval,
+                purchasedCount);
             var progressedBlockRange =
                 (blockIndex - currentRoundData.StartBlockIndex) % ticketResetInterval;
             _arenaTicketsProgress.Value.Reset(
@@ -293,7 +300,8 @@ namespace Nekoyume.State
                     new ArenaInformation(
                         currentAvatarAddr,
                         currentRoundData.ChampionshipId,
-                        currentRoundData.Round)));
+                        currentRoundData.Round),
+                    0));
 
                 return Array.Empty<ArenaParticipant>();
             }
@@ -346,7 +354,8 @@ namespace Nekoyume.State
                     0,
                     clonedCurrentAvatar,
                     default,
-                    null);
+                    null,
+                    0);
                 playerScore = playersArenaParticipant.Score;
                 avatarAddrAndScoresWithRank = GetBoundsWithPlayerScore(
                     avatarAddrAndScoresWithRank,
@@ -405,16 +414,37 @@ namespace Nekoyume.State
             var playerArenaInfo = stateBulk[playerArenaInfoAddr] is List arenaInfoList
                 ? new ArenaInformation(arenaInfoList)
                 : null;
+            var purchasedCountDuringInterval = 0;
+            if (playerArenaInfo is not null)
+            {
+                try
+                {
+                    var purchasedCountDuringIntervalAddress =
+                        playerArenaInfo.Address.Derive(BattleArena.PurchasedCountKey);
+                    purchasedCountDuringInterval =
+                        await _agent.GetStateAsync(purchasedCountDuringIntervalAddress)
+                            is Integer iValue
+                            ? iValue.ToInteger()
+                            : 0;
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+
             // NOTE: There is players `ArenaParticipant` in chain.
             if (playersArenaParticipant is null)
             {
                 var ap = result.FirstOrDefault(e =>
                     e.AvatarAddr.Equals(currentAvatarAddr));
-                playersArenaParticipant = new PlayerArenaParticipant(ap, playerArenaInfo);
+                playersArenaParticipant = new PlayerArenaParticipant(ap, playerArenaInfo,
+                    purchasedCountDuringInterval);
             }
             else
             {
                 playersArenaParticipant.CurrentArenaInfo = playerArenaInfo;
+                playersArenaParticipant.PurchasedCountDuringInterval = purchasedCountDuringInterval;
             }
 
             _playersArenaParticipant.SetValueAndForceNotify(playersArenaParticipant);

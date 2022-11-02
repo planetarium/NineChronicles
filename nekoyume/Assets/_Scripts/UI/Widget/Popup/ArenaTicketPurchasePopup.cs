@@ -43,12 +43,12 @@ namespace Nekoyume.UI
             else if (remainSeasonPurchased == remainIntervalPurchased)
             {
                 ShowPurchaseTicketPopup(ticketType, costType, balance, cost,
-                    seasonPurchased, maxSeasonPurchased, onConfirm, goToMarget);
+                    seasonPurchased, maxSeasonPurchased, onConfirm, goToMarget, false);
             }
             else
             {
                 ShowPurchaseTicketPopup(ticketType, costType, balance, cost,
-                    intervalPurchased, maxIntervalPurchased, onConfirm, goToMarget, true);
+                    intervalPurchased, maxIntervalPurchased, onConfirm, goToMarget, true, true);
             }
 
             Show();
@@ -65,7 +65,7 @@ namespace Nekoyume.UI
             maxPurchaseText.color = Palette.GetColor(EnumType.ColorType.ButtonDisabled);
 
             maxPurchaseText.text = L10nManager.Localize(
-                "UI_TICKET_PURCHASE_LIMIT",
+                isInternalLimit ? "UI_TICKET_INTERVAL_PURCHASE_LIMIT" : "UI_TICKET_PURCHASE_LIMIT",
                 purchasedCount, maxPurchaseCount);
 
             contentText.text = L10nManager.Localize(
@@ -100,6 +100,7 @@ namespace Nekoyume.UI
             int maxPurchaseCount,
             System.Action onConfirm,
             System.Action goToMarget,
+            bool isInternalLimit,
             bool showRemaining = false)
         {
             ticketIcon.overrideSprite = costIconData.GetIcon(ticketType);
@@ -116,7 +117,8 @@ namespace Nekoyume.UI
                 ? Color.white
                 : Palette.GetColor(EnumType.ColorType.ButtonDisabled);
 
-            var purchaseMessage = L10nManager.Localize("UI_TICKET_PURCHASE_LIMIT",
+            var purchaseMessage = L10nManager.Localize(
+                isInternalLimit ? "UI_TICKET_INTERVAL_PURCHASE_LIMIT" : "UI_TICKET_PURCHASE_LIMIT",
                 purchasedCount, maxPurchaseCount);
             if (showRemaining)
             {

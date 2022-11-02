@@ -74,7 +74,7 @@ namespace Nekoyume.UI
         private AvatarState _chooseAvatarState;
         private Player _player;
         private GameObject _cachedCharacterTitle;
-        private const int _ticketCountToUse = 8;
+        private const int _ticketCountToUse = 1;
 
         private readonly List<IDisposable> _disposables = new();
 
