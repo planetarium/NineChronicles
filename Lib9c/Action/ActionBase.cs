@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -299,12 +297,9 @@ namespace Nekoyume.Action
 
             private static byte[] ToBytes(T action)
             {
-                var formatter = new BinaryFormatter();
-                using (var stream = new MemoryStream())
-                {
-                    formatter.Serialize(stream, action);
-                    return stream.ToArray();
-                }
+                var codec = new Codec();
+                var polymorphicAction = (PolymorphicAction<T>)action;
+                return codec.Encode(polymorphicAction.PlainValue);
             }
 
             private static byte[] ToBytes(IAccountStateDelta delta, IImmutableSet<Address> updatedAddresses)
@@ -350,11 +345,11 @@ namespace Nekoyume.Action
 
             private static T FromBytes(byte[] bytes)
             {
-                var formatter = new BinaryFormatter();
-                using (var stream = new MemoryStream(bytes))
-                {
-                    return (T)formatter.Deserialize(stream);
-                }
+                var codec = new Codec();
+                var decoded = codec.Decode(bytes);
+                var action = Activator.CreateInstance<PolymorphicAction<T>>();
+                action.LoadPlainValue(decoded);
+                return action.InnerAction;
             }
         }
 
