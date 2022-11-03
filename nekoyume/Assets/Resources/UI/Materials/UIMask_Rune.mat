@@ -94,7 +94,7 @@ Material:
     - _Shininess: 0.2
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _Speed: 3
+    - _Speed: 1.25
     - _SrcBlend: 1
     - _Stencil: 0
     - _StencilComp: 8
@@ -105,7 +105,7 @@ Material:
     - _UseUIAlphaClip: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 1, g: 0.9844796, b: 0.759434, a: 0.4392157}
+    - _Color: {r: 1, g: 0.9325075, b: 0.6745283, a: 0.6901961}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _Specular: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
