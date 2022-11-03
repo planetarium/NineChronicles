@@ -44,32 +44,6 @@ namespace Lib9c.Tests.Action
             MessagePackSerializer.DefaultOptions = options;
         }
 
-        [Fact]
-        public void Serialize_With_DotnetAPI()
-        {
-            var formatter = new BinaryFormatter();
-            using var ms = new MemoryStream();
-            var evaluation = new ActionBase.ActionEvaluation<ActionBase>()
-            {
-                Action = GetAction(typeof(TransferAsset)),
-                Signer = _signer,
-                BlockIndex = 1234,
-                PreviousStates = _states,
-                OutputStates = _states,
-            };
-            formatter.Serialize(ms, evaluation);
-
-            ms.Seek(0, SeekOrigin.Begin);
-            var deserialized = (ActionBase.ActionEvaluation<ActionBase>)formatter.Deserialize(ms);
-
-            // FIXME We should equality check more precisely.
-            Assert.Equal(evaluation.Signer, deserialized.Signer);
-            Assert.Equal(evaluation.BlockIndex, deserialized.BlockIndex);
-            var dict = (Dictionary)deserialized.OutputStates.GetState(default)!;
-            Assert.Equal("value", (Text)dict["key"]);
-            Assert.Equal(_currency * 10000, deserialized.OutputStates.GetBalance(_signer, _currency));
-        }
-
         [Theory]
         [InlineData(typeof(TransferAsset))]
         [InlineData(typeof(CreateAvatar))]

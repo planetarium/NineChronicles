@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -254,8 +252,7 @@ namespace Nekoyume.Action
             }
         }
 
-        [Serializable]
-        public struct ActionEvaluation<T> : ISerializable
+        public struct ActionEvaluation<T>
             where T : ActionBase
         {
             public T Action { get; set; }
@@ -273,89 +270,6 @@ namespace Nekoyume.Action
             public int RandomSeed { get; set; }
 
             public Dictionary<string, IValue> Extra { get; set; }
-
-            public ActionEvaluation(SerializationInfo info, StreamingContext ctx)
-            {
-                Action = FromBytes((byte[])info.GetValue("action", typeof(byte[])));
-                Signer = new Address((byte[])info.GetValue("signer", typeof(byte[])));
-                BlockIndex = info.GetInt64("blockIndex");
-                OutputStates = new AccountStateDelta((byte[])info.GetValue("outputStates", typeof(byte[])));
-                Exception = (Exception)info.GetValue("exc", typeof(Exception));
-                PreviousStates = new AccountStateDelta((byte[])info.GetValue("previousStates", typeof(byte[])));
-                RandomSeed = info.GetInt32("randomSeed");
-                Extra = new Dictionary<string, IValue>();
-            }
-
-            public void GetObjectData(SerializationInfo info, StreamingContext context)
-            {
-                info.AddValue("action", ToBytes(Action));
-                info.AddValue("signer", Signer.ToByteArray());
-                info.AddValue("blockIndex", BlockIndex);
-                info.AddValue("outputStates", ToBytes(OutputStates, OutputStates.UpdatedAddresses));
-                info.AddValue("exc", Exception);
-                info.AddValue("previousStates", ToBytes(PreviousStates, OutputStates.UpdatedAddresses));
-                info.AddValue("randomSeed", RandomSeed);
-            }
-
-            private static byte[] ToBytes(T action)
-            {
-                var formatter = new BinaryFormatter();
-                using (var stream = new MemoryStream())
-                {
-                    formatter.Serialize(stream, action);
-                    return stream.ToArray();
-                }
-            }
-
-            private static byte[] ToBytes(IAccountStateDelta delta, IImmutableSet<Address> updatedAddresses)
-            {
-                var state = new Dictionary(
-                    updatedAddresses.Select(addr => new KeyValuePair<IKey, IValue>(
-                        (Binary)addr.ToByteArray(),
-                        delta.GetState(addr) ?? new Bencodex.Types.Null()
-                    ))
-                );
-                var balance = new Bencodex.Types.List(
-#pragma warning disable LAA1002
-                    delta.UpdatedFungibleAssets.SelectMany(ua =>
-#pragma warning restore LAA1002
-                        ua.Value.Select(c =>
-                        {
-                            FungibleAssetValue b = delta.GetBalance(ua.Key, c);
-                            return new Bencodex.Types.Dictionary(new[]
-                            {
-                                    new KeyValuePair<IKey, IValue>((Text) "address", (Binary) ua.Key.ToByteArray()),
-                                    new KeyValuePair<IKey, IValue>((Text) "currency", CurrencyExtensions.Serialize(c)),
-                                    new KeyValuePair<IKey, IValue>((Text) "amount", (Integer) b.RawValue),
-                                });
-                        }
-                        )
-                    ).Cast<IValue>()
-                );
-                var totalSupply = new Dictionary(
-                    delta.TotalSupplyUpdatedCurrencies.Select(currency =>
-                        new KeyValuePair<IKey, IValue>(
-                            (Binary)(IValue)CurrencyExtensions.Serialize(currency),
-                            (Integer)delta.GetTotalSupply(currency).RawValue)));
-
-                var bdict = new Dictionary(new[]
-                {
-                    new KeyValuePair<IKey, IValue>((Text) "states", state),
-                    new KeyValuePair<IKey, IValue>((Text) "balances", balance),
-                    new KeyValuePair<IKey, IValue>((Text) "totalSupplies", totalSupply),
-                });
-
-                return new Codec().Encode(bdict);
-            }
-
-            private static T FromBytes(byte[] bytes)
-            {
-                var formatter = new BinaryFormatter();
-                using (var stream = new MemoryStream(bytes))
-                {
-                    return (T)formatter.Deserialize(stream);
-                }
-            }
         }
 
         /// <summary>

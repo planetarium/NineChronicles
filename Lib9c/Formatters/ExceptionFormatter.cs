@@ -7,6 +7,8 @@ using MessagePack.Formatters;
 
 namespace Lib9c.Formatters
 {
+    // FIXME: This class must be removed and replaced with other way for serialization.
+    // https://github.com/dotnet/designs/blob/main/accepted/2020/better-obsoletion/binaryformatter-obsoletion.md
     public class ExceptionFormatter<T> : IMessagePackFormatter<T> where T : Exception
     {
         public void Serialize(ref MessagePackWriter writer, T value,
@@ -20,7 +22,9 @@ namespace Lib9c.Formatters
             var formatter = new BinaryFormatter();
             using (var stream = new MemoryStream())
             {
+#pragma warning disable SYSLIB0011
                 formatter.Serialize(stream, value);
+#pragma warning restore SYSLIB0011
                 var bytes = stream.ToArray();
                 writer.Write(bytes);
             }
@@ -39,7 +43,9 @@ namespace Lib9c.Formatters
             byte[] bytes = reader.ReadBytes()?.ToArray();
             using (var stream = new MemoryStream(bytes))
             {
+#pragma warning disable SYSLIB0011
                 return (T)formatter.Deserialize(stream);
+#pragma warning restore SYSLIB0011
             }
         }
     }
