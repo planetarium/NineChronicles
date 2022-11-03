@@ -1,4 +1,5 @@
-using Nekoyume.Model.Skill;
+using Bencodex.Types;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Stat;
 using System;
 using System.Collections.Generic;
@@ -17,11 +18,43 @@ namespace Nekoyume.TableData
             {
                 public int Cp { get; }
                 public List<(StatMap statMap, StatModifier.OperationType operationType)> Stats { get; set; }
+                public int SkillId { get; set; }
+                public int SkillCooldown { get; set; }
+                public int SkillChance { get; set; }
+                public int SkillValue { get; set; }
+                public decimal SkillStatRatio { get; set; }
+                public StatType SkillStatType { get; set; }
+                public StatReferenceType StatReferenceType { get; set; }
+
                 public RuneStatInfo(
-                    List<(StatMap, StatModifier.OperationType)> stats, int cp)
+                    int cp,
+                    List<(StatMap, StatModifier.OperationType)> stats,
+                    int skillId,
+                    int skillCooldown,
+                    int skillChance,
+                    int skillValue,
+                    decimal skillStatRatio,
+                    StatType skillStatType,
+                    StatReferenceType statReferenceType)
                 {
-                    Stats = stats;
                     Cp = cp;
+                    Stats = stats;
+                    SkillId = skillId;
+                    SkillCooldown = skillCooldown;
+                    SkillChance = skillChance;
+                    SkillValue = skillValue;
+                    SkillStatRatio = skillStatRatio;
+                    SkillStatType = skillStatType;
+                    StatReferenceType = statReferenceType;
+                }
+
+                public RuneStatInfo(
+                    int cp,
+                    List<(StatMap, StatModifier.OperationType)> stats)
+                {
+                    Cp = cp;
+                    Stats = stats;
+                    SkillId = default;
                 }
             }
 
@@ -68,7 +101,32 @@ namespace Nekoyume.TableData
                     stats.Add((statMap, valueType3));
                 }
 
-                LevelStatsMap[level] = new RuneStatInfo(stats, cp);
+                if (TryParseInt(fields[12], out var skillId))
+                {
+                    var cooldown = ParseInt(fields[13]);
+                    var chance = ParseInt(fields[14]);
+                    var value = ParseInt(fields[15]);
+                    var statRatio = ParseDecimal(fields[16]);
+                    var statType =
+                        (StatType)Enum.Parse(typeof(StatType), fields[17]);
+                    var statReferenceType =
+                        (StatReferenceType)Enum.Parse(typeof(StatReferenceType), fields[18]);
+
+                    LevelStatsMap[level] = new RuneStatInfo(
+                        cp,
+                        stats,
+                        skillId,
+                        cooldown,
+                        chance,
+                        value,
+                        statRatio,
+                        statType,
+                        statReferenceType);
+                }
+                else
+                {
+                    LevelStatsMap[level] = new RuneStatInfo(cp, stats);
+                }
             }
         }
 

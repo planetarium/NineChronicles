@@ -42,7 +42,6 @@ namespace Lib9c.Tests.Action
                 new GoldCurrencyState(_ncgCurrency).Serialize());
             var sheets = TableSheetsImporter.ImportSheets();
             sheets.Remove(nameof(RuneStatSheet));
-            sheets.Remove(nameof(RuneSkillSheet));
             foreach (var (key, value) in sheets)
             {
                 _initialStates = _initialStates

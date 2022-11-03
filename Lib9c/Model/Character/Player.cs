@@ -537,7 +537,6 @@ namespace Nekoyume.Model
         public void SetRune(
             List<(int runeId, int level)> runes,
             RuneStatSheet runeStatSheet,
-            RuneSkillSheet runeSkillSheet,
             SkillSheet skillSheet)
         {
             foreach (var (runeId, level) in runes)
@@ -558,18 +557,18 @@ namespace Nekoyume.Model
                 Stats.AddOption(statModifiers);
                 Stats.EqualizeCurrentHPWithHP();
 
-                if (!runeSkillSheet.TryGetValue(runeId, out var runeSkillRow) ||
-                    !runeSkillRow.LevelSkillMap.TryGetValue(level, out var skillInfo) ||
+                if (!statRow.LevelStatsMap.TryGetValue(level, out var skillInfo) ||
+                    skillInfo.SkillId == default ||
                     !skillSheet.TryGetValue(skillInfo.SkillId, out var skillRow))
                 {
                     continue;
                 }
 
-                var power = skillInfo.Value;
+                var power = skillInfo.SkillValue;
                 var addedPower = 0;
                 if (skillInfo.StatReferenceType == EnumType.StatReferenceType.Caster)
                 {
-                    switch (skillInfo.StatType)
+                    switch (skillInfo.SkillStatType)
                     {
                         case StatType.HP:
                             addedPower = HP;
@@ -582,10 +581,10 @@ namespace Nekoyume.Model
                             break;
                     }
                 }
-                power += (int) Math.Round(addedPower * skillInfo.StatRatio);
-                var skill = SkillFactory.Get(skillRow, power, skillInfo.Chance);
+                power += (int) Math.Round(addedPower * skillInfo.SkillStatRatio);
+                var skill = SkillFactory.Get(skillRow, power, skillInfo.SkillChance);
                 RuneSkills.Add(skill);
-                RuneSkillCooldownMap[skillInfo.SkillId] = skillInfo.Cooldown;
+                RuneSkillCooldownMap[skillInfo.SkillId] = skillInfo.SkillCooldown;
             }
         }
 

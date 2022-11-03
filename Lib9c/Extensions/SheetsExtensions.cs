@@ -191,8 +191,7 @@ namespace Nekoyume.Extensions
                 sheets.GetSheet<CharacterSheet>(),
                 sheets.GetSheet<CharacterLevelSheet>(),
                 sheets.GetSheet<EquipmentItemSetEffectSheet>(),
-                sheets.GetSheet<RuneStatSheet>(),
-                sheets.GetSheet<RuneSkillSheet>()
+                sheets.GetSheet<RuneStatSheet>()
             );
         }
 
@@ -245,8 +244,7 @@ namespace Nekoyume.Extensions
                 sheets.GetSheet<StageSheet>(),
                 sheets.GetSheet<StageWaveSheet>(),
                 sheets.GetSheet<EnemySkillSheet>(),
-                sheets.GetSheet<RuneStatSheet>(),
-                sheets.GetSheet<RuneSkillSheet>()
+                sheets.GetSheet<RuneStatSheet>()
             );
         }
 
@@ -298,8 +296,7 @@ namespace Nekoyume.Extensions
                 sheets.GetSheet<CharacterLevelSheet>(),
                 sheets.GetSheet<EquipmentItemSetEffectSheet>(),
                 sheets.GetSheet<WeeklyArenaRewardSheet>(),
-                sheets.GetSheet<RuneStatSheet>(),
-                sheets.GetSheet<RuneSkillSheet>()
+                sheets.GetSheet<RuneStatSheet>()
             );
         }
 
@@ -351,8 +348,7 @@ namespace Nekoyume.Extensions
                 sheets.GetSheet<EquipmentItemSetEffectSheet>(),
                 sheets.GetSheet<CostumeStatSheet>(),
                 sheets.GetSheet<WeeklyArenaRewardSheet>(),
-                sheets.GetSheet<RuneStatSheet>(),
-                sheets.GetSheet<RuneSkillSheet>()
+                sheets.GetSheet<RuneStatSheet>()
             );
         }
 
@@ -411,8 +407,7 @@ namespace Nekoyume.Extensions
                 sheets.GetSheet<WorldBossBattleRewardSheet>(),
                 sheets.GetSheet<RuneWeightSheet>(),
                 sheets.GetSheet<RuneSheet>(),
-                sheets.GetSheet<RuneStatSheet>(),
-                sheets.GetSheet<RuneSkillSheet>()
+                sheets.GetSheet<RuneStatSheet>()
             );
         }
 
