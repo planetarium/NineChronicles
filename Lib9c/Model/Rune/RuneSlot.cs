@@ -58,7 +58,7 @@ namespace Nekoyume.Model.Rune
             _runeStates.Clear();
         }
 
-        public bool Equipped(out RuneState runeState)
+        public bool IsEquipped(out RuneState runeState)
         {
             runeState = _runeStates.Any() ? _runeStates.First() : null;
             return _runeStates.Any();

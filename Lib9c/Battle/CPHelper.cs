@@ -10,13 +10,21 @@ namespace Nekoyume.Battle
 {
     public static class CPHelper
     {
-        /// <summary>
-        /// `AvatarState`의 CP를 반환한다.
-        /// 레벨 스탯, 그리고 장착한 장비의 스탯과 스킬을 고려합니다.
-        /// </summary>
-        /// <param name="avatarState"></param>
-        /// <param name="characterSheet"></param>
-        /// <returns></returns>
+        public static int GetCp(
+            AvatarState avatarState,
+            RuneSlotState runeSlotState,
+            CharacterSheet characterSheet,
+            CostumeStatSheet costumeStatSheet,
+            RuneStatSheet runeStatSheet)
+        {
+            var equipmentsCp = GetCPV2(avatarState, characterSheet, costumeStatSheet);
+            var runeStatInfos = runeSlotState.GetEquippedRuneStatInfos(runeStatSheet);
+            var runeCp = runeStatInfos.Sum(x => x.Cp);
+            var totalCp = equipmentsCp + runeCp;
+            return totalCp;
+        }
+
+        [Obsolete("Use GetCp")]
         public static int GetCP(AvatarState avatarState, CharacterSheet characterSheet)
         {
             if (!characterSheet.TryGetValue(avatarState.characterId, out var row))
@@ -35,6 +43,7 @@ namespace Nekoyume.Battle
             return DecimalToInt(levelStatsCP + equipmentsCP);
         }
 
+        [Obsolete("Use GetCp")]
         public static int GetCPV2(
             AvatarState avatarState,
             CharacterSheet characterSheet,
@@ -48,13 +57,7 @@ namespace Nekoyume.Battle
             return DecimalToInt(current + costumeCP);
         }
 
-        /// <summary>
-        /// return `Player` Combat Point.
-        /// Calculate Level Stat, Equipment Stat, Equipment SKills, Costume Stat.
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="costumeStatSheet"></param>
-        /// <returns></returns>
+        [Obsolete("Use GetCp")]
         public static int GetCP(Player player, CostumeStatSheet costumeStatSheet)
         {
             var levelStatsCP = GetStatsCP(player.Stats.BaseStats, player.Level);
@@ -64,12 +67,7 @@ namespace Nekoyume.Battle
             return DecimalToInt(levelStatsCP + equipmentsCP + costumeCP);
         }
 
-        /// <summary>
-        /// `Enemy`의 CP를 반환합니다.
-        /// 레벨 스탯, 별도 설정한 스킬을 고려한다. 그리고 장비는 없는 것으로 간주합니다.
-        /// </summary>
-        /// <param name="enemy"></param>
-        /// <returns></returns>
+        [Obsolete("Use GetCp")]
         public static int GetCP(Enemy enemy)
         {
             var levelStatsCP = GetStatsCP(enemy.Stats.BaseStats, enemy.Level);
@@ -77,11 +75,7 @@ namespace Nekoyume.Battle
             return DecimalToInt(levelStatsCP * GetSkillsMultiplier(skills.Length));
         }
 
-        /// <summary>
-        /// `ItemUsable`의 CP를 반환합니다.
-        /// </summary>
-        /// <param name="itemUsable"></param>
-        /// <returns></returns>
+        [Obsolete("Use GetCp")]
         public static int GetCP(ItemUsable itemUsable)
         {
             var statsCP = GetStatsCP(itemUsable.StatsMap);
@@ -89,6 +83,7 @@ namespace Nekoyume.Battle
             return DecimalToInt(statsCP * GetSkillsMultiplier(skills.Length));
         }
 
+        [Obsolete("Use GetCp")]
         public static int GetCP(Costume costume, CostumeStatSheet sheet)
         {
             var statsMap = new StatsMap();
@@ -100,6 +95,7 @@ namespace Nekoyume.Battle
             return DecimalToInt(GetStatsCP(statsMap));
         }
 
+        [Obsolete("Use GetCp")]
         public static int GetCP(ITradableItem tradableItem, CostumeStatSheet sheet)
         {
             if (tradableItem is ItemUsable itemUsable)
@@ -115,7 +111,7 @@ namespace Nekoyume.Battle
             return 0;
         }
 
-        public static decimal GetStatsCP(IStats stats, int characterLevel = 1)
+        private static decimal GetStatsCP(IStats stats, int characterLevel = 1)
         {
             var statTuples = stats.GetStats(true);
             return statTuples.Sum(tuple => GetStatCP(tuple.statType, tuple.value, characterLevel));

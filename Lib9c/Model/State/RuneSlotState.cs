@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
@@ -23,10 +22,10 @@ namespace Nekoyume.Model.State
         {
             BattleType = battleType;
             _slots.Add(new RuneSlot(0, RuneSlotType.Default, RuneType.Stat, false));
-            _slots.Add(new RuneSlot(1, RuneSlotType.Default, RuneType.Skill, false));
-            _slots.Add(new RuneSlot(2, RuneSlotType.Ncg, RuneType.Stat, true));
-            _slots.Add(new RuneSlot(3, RuneSlotType.Ncg, RuneType.Skill, true));
-            _slots.Add(new RuneSlot(4, RuneSlotType.Stake, RuneType.Stat, true));
+            _slots.Add(new RuneSlot(1, RuneSlotType.Ncg, RuneType.Stat, true));
+            _slots.Add(new RuneSlot(2, RuneSlotType.Stake, RuneType.Stat, true));
+            _slots.Add(new RuneSlot(3, RuneSlotType.Default, RuneType.Skill, false));
+            _slots.Add(new RuneSlot(4, RuneSlotType.Ncg, RuneType.Skill, true));
             _slots.Add(new RuneSlot(5, RuneSlotType.Stake, RuneType.Skill,true));
         }
 
@@ -136,6 +135,41 @@ namespace Nekoyume.Model.State
         public Dictionary<int, RuneSlot> GetRuneSlot()
         {
             return _slots.ToDictionary(runeSlot => runeSlot.Index);
+        }
+
+        public List<RuneState> GetEquippedRuneStates()
+        {
+            var result = new List<RuneState>();
+            foreach (var slot in _slots.Where(slot => !slot.IsLock))
+            {
+                if (slot.IsEquipped(out var runeState))
+                {
+                    result.Add(runeState);
+                }
+            }
+
+            return result;
+        }
+
+        public List<RuneStatSheet.Row.RuneStatInfo> GetEquippedRuneStatInfos(RuneStatSheet sheet)
+        {
+            var result = new List<RuneStatSheet.Row.RuneStatInfo>();
+            foreach (var runeState in GetEquippedRuneStates())
+            {
+                if (!sheet.TryGetValue(runeState.RuneId, out var row))
+                {
+                    continue;
+                }
+
+                if (!row.LevelStatsMap.TryGetValue(runeState.Level, out var statInfo))
+                {
+                    continue;
+                }
+
+                result.Add(statInfo);
+            }
+
+            return result;
         }
     }
 }
