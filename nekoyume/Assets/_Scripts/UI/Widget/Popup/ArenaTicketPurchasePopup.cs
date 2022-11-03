@@ -24,31 +24,31 @@ namespace Nekoyume.UI
             FungibleAssetValue cost,
             System.Action onConfirm,
             System.Action goToMarget,
-            int seasonPurchased,
-            int maxSeasonPurchased,
-            int intervalPurchased,
-            int maxIntervalPurchased)
+            int seasonPurchasedCount,
+            int maxSeasonPurchaseCount,
+            int intervalPurchasedCount,
+            int maxIntervalPurchaseCount)
         {
-            var remainSeasonPurchased = maxSeasonPurchased - seasonPurchased;
-            var remainIntervalPurchased = maxIntervalPurchased - intervalPurchased;
+            var remainSeasonPurchaseCount = maxSeasonPurchaseCount - seasonPurchasedCount;
+            var remainIntervalPurchaseCount = maxIntervalPurchaseCount - intervalPurchasedCount;
 
-            if (remainSeasonPurchased <= 0)
+            if (remainSeasonPurchaseCount <= 0)
             {
-                ShowConfirmPopup(ticketType, seasonPurchased, maxSeasonPurchased, false);
+                ShowConfirmPopup(ticketType, seasonPurchasedCount, maxSeasonPurchaseCount, false);
             }
-            else if (remainIntervalPurchased <= 0)
+            else if (remainIntervalPurchaseCount <= 0)
             {
-                ShowConfirmPopup(ticketType, intervalPurchased, maxIntervalPurchased, true, true);
+                ShowConfirmPopup(ticketType, intervalPurchasedCount, maxIntervalPurchaseCount, true, true);
             }
-            else if (remainSeasonPurchased == remainIntervalPurchased)
+            else if (remainIntervalPurchaseCount > remainSeasonPurchaseCount)
             {
                 ShowPurchaseTicketPopup(ticketType, costType, balance, cost,
-                    seasonPurchased, maxSeasonPurchased, onConfirm, goToMarget, false);
+                    seasonPurchasedCount, maxSeasonPurchaseCount, onConfirm, goToMarget, false);
             }
             else
             {
                 ShowPurchaseTicketPopup(ticketType, costType, balance, cost,
-                    intervalPurchased, maxIntervalPurchased, onConfirm, goToMarget, true, true);
+                    intervalPurchasedCount, maxIntervalPurchaseCount, onConfirm, goToMarget, true, true);
             }
 
             Show();
