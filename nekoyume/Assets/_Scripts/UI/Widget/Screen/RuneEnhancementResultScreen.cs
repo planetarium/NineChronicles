@@ -26,6 +26,9 @@ namespace Nekoyume.UI
         private TextMeshProUGUI failText;
 
         [SerializeField]
+        private TextMeshProUGUI levelText;
+
+        [SerializeField]
         private Animator animator;
 
         [SerializeField]

@@ -6,8 +6,11 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Elemental;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
+using Nekoyume.Model.Rune;
+using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
@@ -158,11 +161,11 @@ namespace Nekoyume.UI.Module
             _disposablesOnSet.DisposeAllAndClear();
             foreach (var type in ItemTypes)
             {
-                _dimConditionFuncsByItemType[type].Clear();
+                _dimConditionFuncsByItemType[type]?.Clear();
             }
 
             itemSetDimPredicates?.ForEach(tuple =>
-                _dimConditionFuncsByItemType[tuple.type].Add(tuple.predicate));
+                _dimConditionFuncsByItemType[tuple.type]?.Add(tuple.predicate));
 
             switch (inventoryType)
             {
@@ -199,11 +202,6 @@ namespace Nekoyume.UI.Module
         private void SetToggle(IToggleable toggle, InventoryTabType tabType)
         {
             _activeTabType = tabType;
-
-            // var items = tabType != InventoryTabType.Rune
-            //     ? GetModels(tabType)
-            //     : new List<InventoryItem>();
-
             scroll.UpdateData(GetModels(tabType), !toggle.IsToggledOn);
             UpdateDimmedInventoryItem();
 
@@ -216,7 +214,8 @@ namespace Nekoyume.UI.Module
         private void SetInventory(
             Nekoyume.Model.Item.Inventory inventory,
             Action<Inventory, Nekoyume.Model.Item.Inventory> onUpdateInventory = null,
-            bool reverseOrder = false)
+            bool reverseOrder = false,
+            BattleType battleType = BattleType.Adventure)
         {
             _equipments.Clear();
             _consumables.Clear();
@@ -589,6 +588,24 @@ namespace Nekoyume.UI.Module
             ClearFocus();
         }
 
+        public void UpdateRunes(Dictionary<int, RuneSlot> slotStates)
+        {
+            var runeStates = new List<RuneState>();
+            foreach (var slot in slotStates.Values)
+            {
+                if (slot.IsEquipped(out var runeState))
+                {
+                    runeStates.Add(runeState);
+                }
+            }
+
+            foreach (var rune in _runes)
+            {
+                var equipped = runeStates.Exists(x => x.RuneId == rune.RuneState.RuneId);
+                rune.Equipped.Value = equipped;
+            }
+        }
+
         public void Focus(
             ItemType itemType,
             ItemSubType subType,
@@ -658,6 +675,12 @@ namespace Nekoyume.UI.Module
             }
 
             return false;
+        }
+
+        public bool TryGetModel(int runeId, out InventoryItem result)
+        {
+            result = _runes.FirstOrDefault(x => x.RuneState.RuneId == runeId);
+            return result != null;
         }
 
         #region For tutorial

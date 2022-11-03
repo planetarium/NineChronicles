@@ -11,6 +11,8 @@ using ObservableExtensions = UniRx.ObservableExtensions;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class Status : Widget
     {
         [SerializeField]
@@ -50,9 +52,9 @@ namespace Nekoyume.UI
             base.Awake();
 
             Game.Event.OnRoomEnter.AddListener(b => Show());
-            ObservableExtensions.Subscribe(Game.Event.OnUpdatePlayerEquip, characterView.SetByPlayer)
+            Game.Event.OnUpdatePlayerEquip.Subscribe(characterView.SetByPlayer)
                 .AddTo(gameObject);
-            ObservableExtensions.Subscribe(Game.Event.OnUpdatePlayerStatus, SubscribeOnUpdatePlayerStatus)
+            Game.Event.OnUpdatePlayerStatus.Subscribe(SubscribeOnUpdatePlayerStatus)
                 .AddTo(gameObject);
 
             CloseWidget = null;

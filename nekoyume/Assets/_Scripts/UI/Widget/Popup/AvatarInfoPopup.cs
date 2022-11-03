@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
 using Nekoyume.Game.Character;
@@ -6,6 +7,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Elemental;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
@@ -13,11 +15,13 @@ using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
 using Inventory = Nekoyume.UI.Module.Inventory;
 using Material = Nekoyume.Model.Item.Material;
 using Toggle = Nekoyume.UI.Module.Toggle;
+using ToggleGroup = Nekoyume.UI.Module.ToggleGroup;
 
 namespace Nekoyume.UI
 {
@@ -45,10 +49,22 @@ namespace Nekoyume.UI
         private EquipmentSlots equipmentSlots;
 
         [SerializeField]
+        private RuneSlots runeSlots;
+
+        [SerializeField]
         private AvatarCP cp;
 
         [SerializeField]
         private AvatarStats stats;
+
+        [SerializeField]
+        private CategoryTabButton adventureButton;
+
+        [SerializeField]
+        private CategoryTabButton arenaButton;
+
+        [SerializeField]
+        private CategoryTabButton raidButton;
 
         [SerializeField]
         private Button closeButton;
@@ -73,9 +89,57 @@ namespace Nekoyume.UI
         private Player _player;
         private GameObject _cachedCharacterTitle;
         private Coroutine _disableCpTween;
-        private readonly ReactiveProperty<bool> IsTweenEnd = new ReactiveProperty<bool>(true);
+        private InventoryItem _pickedItem;
+        private System.Action _onToggleEquipment;
+        private System.Action _onToggleCostume;
+        private System.Action _onToggleRune;
+
+        private readonly ToggleGroup _toggleGroup = new();
+        private readonly ReactiveProperty<bool> IsTweenEnd = new(true);
+        private readonly Dictionary<BattleType, System.Action> _onToggleCallback = new()
+        {
+            { BattleType.Adventure , null},
+            { BattleType.Arena , null},
+            { BattleType.Raid , null},
+        };
+
+        private BattleType _battleType = BattleType.Adventure;
 
         #region Override
+
+        protected override void Awake()
+        {
+            _toggleGroup.RegisterToggleable(adventureButton);
+            _toggleGroup.RegisterToggleable(arenaButton);
+            _toggleGroup.RegisterToggleable(raidButton);
+
+            adventureButton.OnClick
+                .Subscribe(b =>
+                {
+                    OnClickPresetTab(b, BattleType.Adventure, _onToggleCallback[BattleType.Adventure]);
+                })
+                .AddTo(gameObject);
+            arenaButton.OnClick
+                .Subscribe(b =>
+                {
+                    OnClickPresetTab(b, BattleType.Arena, _onToggleCallback[BattleType.Arena]);
+                })
+                .AddTo(gameObject);
+            raidButton.OnClick
+                .Subscribe(b =>
+                {
+                    OnClickPresetTab(b, BattleType.Raid, _onToggleCallback[BattleType.Raid]);
+                })
+                .AddTo(gameObject);
+
+            closeButton.onClick.AddListener(() =>
+            {
+                Close();
+                AudioController.PlayClick();
+            });
+
+            base.Awake();
+        }
 
         public override void Initialize()
         {
@@ -101,12 +165,6 @@ namespace Nekoyume.UI
                 slot.ShowUnlockTooltip = true;
             }
 
-            closeButton.onClick.AddListener(() =>
-            {
-                Close();
-                AudioController.PlayClick();
-            });
-
             grindModeToggle.onValueChanged.AddListener(toggledOn =>
             {
                 grindModePanel.SetActive(toggledOn);
@@ -129,17 +187,7 @@ namespace Nekoyume.UI
             grindModeToggle.isOn = false;
             IsTweenEnd.Value = false;
             Destroy(_cachedCharacterTitle);
-
-            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
-            _player = Util.CreatePlayer(currentAvatarState, PlayerPosition);
-
-            UpdateInventory();
-            UpdateNickname(currentAvatarState.level, currentAvatarState.NameWithHash);
-            UpdateTitle(currentAvatarState);
-            UpdateStat(currentAvatarState);
-            UpdateSlot(currentAvatarState);
-            costumeSlots.gameObject.SetActive(true);
-            equipmentSlots.gameObject.SetActive(true);
+            OnClickPresetTab(adventureButton, BattleType.Adventure, _onToggleCallback[BattleType.Adventure]);
             HelpTooltip.HelpMe(100013, true);
             base.Show(ignoreShowAnimation);
         }
@@ -234,6 +282,47 @@ namespace Nekoyume.UI
             stats.SetData(s);
         }
 
+        private void OnClickRuneSlot(RuneSlotView slot)
+        {
+            if (slot.RuneSlot.IsEquipped(out var runeState))
+            {
+                if (!inventory.TryGetModel(runeState.RuneId, out var item))
+                {
+                    return;
+                }
+
+                if (_pickedItem != null)
+                {
+                    UnequipRune(item);
+                    EquipRune(_pickedItem);
+                    _pickedItem = null;
+                }
+                else
+                {
+                    ShowRuneTooltip(item, slot.RectTransform, new float2(-50, 0));
+                }
+            }
+            else
+            {
+                //todo : 장착 가능한룬 처리해줘야함
+            }
+        }
+
+        private void OnDoubleClickRuneSlot(RuneSlotView slot)
+        {
+            if (!slot.RuneSlot.IsEquipped(out var runeState))
+            {
+                return;
+            }
+
+            if (!inventory.TryGetModel(runeState.RuneId, out var item))
+            {
+                return;
+            }
+
+            UnequipRune(item);
+        }
+
         private void OnClickSlot(EquipmentSlot slot)
         {
             if (slot.IsEmpty)
@@ -261,6 +350,25 @@ namespace Nekoyume.UI
         }
 
         private void Equip(InventoryItem inventoryItem)
+        {
+            if (inventoryItem.RuneState != null)
+            {
+                if (inventoryItem.Equipped.Value)
+                {
+                    UnequipRune(inventoryItem);
+                }
+                else
+                {
+                    EquipRune(inventoryItem);
+                }
+            }
+            else
+            {
+                EquipEquipment(inventoryItem);
+            }
+        }
+
+        private void EquipEquipment(InventoryItem inventoryItem)
         {
             if (Game.Game.instance.IsInWorld)
             {
@@ -393,7 +501,7 @@ namespace Nekoyume.UI
                                 break;
                         }
 
-                        Game.Event.OnUpdatePlayerEquip.OnNext(selectedPlayer);
+                        Game.Event.OnUpdatePlayerEquip.OnNext(selectedPlayer); // 사실상 UI_Status 변경 용도
                         break;
                 }
             }
@@ -440,13 +548,35 @@ namespace Nekoyume.UI
         {
             if (model.RuneState != null)
             {
-                Find<RuneTooltip>().Show(
-                    model,
-                    L10nManager.Localize(model.Equipped.Value ? "UI_UNEQUIP" : "UI_EQUIP"),
-                    true,
-                    () => {},
-                    () => {},
-                    target);
+                ShowRuneTooltip(model, target, new float2(0, 0));
+                _pickedItem = null;
+                if (!model.Equipped.Value)
+                {
+                    var states = States.Instance.RuneSlotStates[_battleType];
+                    var sheet = Game.Game.instance.TableSheets.RuneListSheet;
+                    if (!sheet.TryGetValue(model.RuneState.RuneId, out var row))
+                    {
+                        return;
+                    }
+
+                    var slots = states
+                        .Where(x => !x.Value.IsLock)
+                        .Where(x => x.Value.RuneType == (RuneType)row.RuneType)
+                        .ToDictionary(x => x.Key, x => x.Value);
+                    if (slots.Values.All(x => x.IsEquipped(out _)) &&
+                        slots.Values.Count(x => x.IsEquipped(out _)) > 1)
+                    {
+                        var indexes = slots.Where(x => x.Value.IsEquipped(out _))
+                            .Select(kv => kv.Key)
+                            .ToList();
+                        runeSlots.ActiveWearable(indexes);
+                        OneLineSystem.Push(
+                            MailType.System,
+                            L10nManager.Localize("UI_SELECT_RUNE_SLOT"),
+                            NotificationCell.NotificationType.Alert);
+                        _pickedItem = model;
+                    }
+                }
             }
             else
             {
@@ -461,6 +591,24 @@ namespace Nekoyume.UI
                     blocked,
                     target);
             }
+        }
+
+        private Coroutine _coroutine;
+        private void ShowRuneTooltip(InventoryItem model, RectTransform target, float2 offset)
+        {
+            Find<RuneTooltip>().Show(
+                model,
+                L10nManager.Localize(model.Equipped.Value ? "UI_UNEQUIP" : "UI_EQUIP"),
+                true,
+                () => Equip(model),
+                () => { },
+                () =>
+                {
+                    inventory.ClearSelectedItem();
+                    UpdateRuneSlots();
+                },
+                target,
+                offset);
         }
 
         private (string, bool, System.Action, System.Action) GetToolTipParams(InventoryItem model)
@@ -571,6 +719,102 @@ namespace Nekoyume.UI
                     slot = null;
                     return false;
             }
+        }
+
+        private void EquipRune(InventoryItem inventoryItem)
+        {
+            var states = States.Instance.RuneSlotStates[_battleType];
+            var sheet = Game.Game.instance.TableSheets.RuneListSheet;
+            if (!sheet.TryGetValue(inventoryItem.RuneState.RuneId, out var row))
+            {
+                return;
+            }
+
+            var slots = states
+                .Where(x => !x.Value.IsLock)
+                .Where(x => x.Value.RuneType == (RuneType)row.RuneType)
+                .ToDictionary(x => x.Key, x => x.Value);
+
+            var selectedSlot = slots.Values.FirstOrDefault(x => !x.IsEquipped(out _));
+            if (selectedSlot != null)
+            {
+                selectedSlot.Equip(inventoryItem.RuneState);
+            }
+            else
+            {
+                var count = slots.Count(x => x.Value.IsEquipped(out _));
+                if (count == 1)
+                {
+                    slots.First().Value.Equip(inventoryItem.RuneState);
+                }
+                else
+                {
+                    // Do nothing
+                }
+            }
+
+            UpdateRuneSlots();
+        }
+
+        private void UpdateRuneSlots()
+        {
+            var states = States.Instance.RuneSlotStates[_battleType];
+            inventory.UpdateRunes(states);
+            runeSlots.Set(states, OnClickRuneSlot, OnDoubleClickRuneSlot);
+        }
+
+        private void UnequipRune(InventoryItem item)
+        {
+            var states = States.Instance.RuneSlotStates[_battleType];
+            foreach (var slot in states.Values)
+            {
+                if (slot.IsEquipped(out var runeState))
+                {
+                    if (runeState.RuneId == item.RuneState.RuneId)
+                    {
+                        slot.Unequip();
+                    }
+                }
+            }
+
+            UpdateRuneSlots();
+        }
+
+        private void OnClickPresetTab(
+            IToggleable toggle,
+            BattleType battleType,
+            System.Action onSetToggle = null)
+        {
+            _battleType = battleType;
+            _toggleGroup.SetToggledOffAll();
+            toggle.SetToggledOn();
+            onSetToggle?.Invoke();
+            AudioController.PlayClick();
+            UpdateRuneSlots();
+
+            AvatarState currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            switch (battleType)
+            {
+                case BattleType.Adventure:
+                    currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+                    break;
+                case BattleType.Arena:
+                    currentAvatarState = RxProps.PlayersArenaParticipant.Value.AvatarState;
+                    break;
+                case BattleType.Raid:
+                    currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+                    break;
+            }
+
+            _player = Util.CreatePlayer(currentAvatarState, PlayerPosition);
+            UpdateNickname(currentAvatarState.level, currentAvatarState.NameWithHash);
+
+            // for has
+            UpdateInventory();
+            UpdateTitle(currentAvatarState);
+            UpdateStat(currentAvatarState);
+            UpdateSlot(currentAvatarState);
+
         }
 
         #region For tutorial

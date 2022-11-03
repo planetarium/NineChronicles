@@ -152,6 +152,7 @@ namespace Nekoyume.UI
                 random);
 
             await States.Instance.InitRuneStates();
+            await States.Instance.InitRuneSlotStates();
 
             var fav = await States.Instance.SetRuneStoneBalance(_selectedRuneItem.Row.Id);
             if (fav != null)

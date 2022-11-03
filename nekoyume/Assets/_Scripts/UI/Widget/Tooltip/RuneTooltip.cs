@@ -1,13 +1,17 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Coffee.UIEffects;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.EnumType;
+using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
 using SkillView = Nekoyume.UI.Module.SkillView;
@@ -25,9 +29,6 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private Button enhancementButton;
-
-        [SerializeField]
-        private Button closeButton;
 
         [SerializeField]
         private TextMeshProUGUI runeNameText;
@@ -62,30 +63,69 @@ namespace Nekoyume.UI
         [SerializeField]
         private ItemViewDataScriptableObject itemViewDataScriptableObject;
 
-        private System.Action _onEquip;
-        private System.Action _onEnhancement;
+        [SerializeField]
+        private GameObject adventure;
 
+        [SerializeField]
+        private GameObject arena;
+
+        [SerializeField]
+        private GameObject raid;
+
+        [SerializeField]
+        private GameObject buttonArea;
+
+        private System.Action _onConfirm;
+        private System.Action _onEnhancement;
+        private System.Action _onClose;
+
+        protected bool _isPointerOnScrollArea;
         private bool _isClickedButtonArea;
 
         protected override PivotPresetType TargetPivotPresetType => PivotPresetType.TopRight;
+        private float2 _offsetFromTarget;
+        protected override float2 OffsetFromTarget => _offsetFromTarget;
 
         protected override void Awake()
         {
             base.Awake();
             CloseWidget = () => Close(true);
-            closeButton.onClick.AddListener(() => Close(true));
-            enhancementButton.onClick.AddListener(() => Close(true));
-            confirmButton.OnClickSubject.Subscribe(state => Close(true)).AddTo(gameObject);
+            SubmitWidget = () =>
+            {
+                _onConfirm?.Invoke();
+                Close();
+            };
+            enhancementButton.onClick.AddListener(() =>
+            {
+                _onEnhancement?.Invoke();
+                Close(true);
+            });
+            confirmButton.OnClickSubject.Subscribe(state =>
+            {
+                _onConfirm?.Invoke();
+                Close(true);
+            }).AddTo(gameObject);
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            _onClose?.Invoke();
+            _isPointerOnScrollArea = false;
+            _isClickedButtonArea = false;
+            base.Close(ignoreCloseAnimation);
         }
 
         public void Show(
             InventoryItem item,
             string confirm,
             bool interactable,
-            System.Action onEquip,
+            System.Action onConfirm,
             System.Action onEnhancement = null,
-            RectTransform target = null)
+            System.Action onClose = null,
+            RectTransform target = null,
+            float2 offsetFromTarget = default)
         {
+            _offsetFromTarget = offsetFromTarget;
             confirmButton.Interactable = interactable;
             confirmButton.Text = confirm;
             runeNameText.text = L10nManager.Localize($"ITEM_NAME_{item.RuneState.RuneId}");
@@ -94,15 +134,9 @@ namespace Nekoyume.UI
             var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
             if (runeListSheet.TryGetValue(item.RuneState.RuneId, out var row))
             {
-                var data = itemViewDataScriptableObject.GetItemViewData(row.Grade);
-                gradeImage.overrideSprite = data.GradeBackground;
-                gradeHsv.range = data.GradeHsvRange;
-                gradeHsv.hue = data.GradeHsvHue;
-                gradeHsv.saturation = data.GradeHsvSaturation;
-                gradeHsv.value = data.GradeHsvValue;
-
                 levelLimitText.text = L10nManager.Localize("UI_REQUIRED_LEVEL", row.RequiredLevel);
-                gradeText.text = L10nManager.Localize($"UI_ITEM_GRADE_{row.Grade}");
+                UpdateGrade(row);
+                UpdateAreaIcon((RuneUsePlace)row.UsePlace);
             }
 
             var runeCostSheet = Game.Game.instance.TableSheets.RuneCostSheet;
@@ -116,13 +150,71 @@ namespace Nekoyume.UI
                 runeImage.sprite = icon;
             }
 
-            _onEquip = onEquip;
+            _onConfirm = onConfirm;
             _onEnhancement = onEnhancement;
+            _onClose = onClose;
 
             scrollbar.value = 1f;
             UpdatePosition(target);
             base.Show();
+            StartCoroutine(CoUpdate(confirmButton.gameObject));
         }
+
+        private void UpdateGrade(RuneListSheet.Row row)
+        {
+            var data = itemViewDataScriptableObject.GetItemViewData(row.Grade);
+            gradeImage.overrideSprite = data.GradeBackground;
+            gradeHsv.range = data.GradeHsvRange;
+            gradeHsv.hue = data.GradeHsvHue;
+            gradeHsv.saturation = data.GradeHsvSaturation;
+            gradeHsv.value = data.GradeHsvValue;
+            gradeText.text = L10nManager.Localize($"UI_ITEM_GRADE_{row.Grade}");
+        }
+
+        private void UpdateAreaIcon(RuneUsePlace runeUsePlace)
+        {
+            switch (runeUsePlace)
+            {
+                case RuneUsePlace.Adventure:
+                    adventure.SetActive(true);
+                    arena.SetActive(false);
+                    raid.SetActive(false);
+                    break;
+                case RuneUsePlace.Arena:
+                    adventure.SetActive(false);
+                    arena.SetActive(true);
+                    raid.SetActive(false);
+                    break;
+                case RuneUsePlace.AdventureAndArena:
+                    adventure.SetActive(true);
+                    arena.SetActive(true);
+                    raid.SetActive(false);
+                    break;
+                case RuneUsePlace.Raid:
+                    adventure.SetActive(false);
+                    arena.SetActive(false);
+                    raid.SetActive(true);
+                    break;
+                case RuneUsePlace.RaidAndAdventure:
+                    adventure.SetActive(true);
+                    arena.SetActive(false);
+                    raid.SetActive(true);
+                    break;
+                case RuneUsePlace.RaidAndArena:
+                    adventure.SetActive(false);
+                    arena.SetActive(true);
+                    raid.SetActive(true);
+                    break;
+                case RuneUsePlace.All:
+                    adventure.SetActive(true);
+                    arena.SetActive(true);
+                    raid.SetActive(true);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(runeUsePlace), runeUsePlace, null);
+            }
+        }
+
 
         private void UpdatePosition(RectTransform target)
         {
@@ -148,6 +240,63 @@ namespace Nekoyume.UI
                     DefaultOffsetFromTarget.ReverseX());
                 UpdateAnchoredPosition(target);
             }
+        }
+
+        protected IEnumerator CoUpdate(GameObject target)
+        {
+            var selectedGameObjectCache = TouchHandler.currentSelectedGameObject;
+            while (selectedGameObjectCache is null)
+            {
+                selectedGameObjectCache = TouchHandler.currentSelectedGameObject;
+                yield return null;
+            }
+
+            var positionCache = selectedGameObjectCache.transform.position;
+
+            while (enabled)
+            {
+                if (Input.GetMouseButtonDown(0))
+                {
+                    _isClickedButtonArea = _isPointerOnScrollArea;
+                }
+
+                var current = TouchHandler.currentSelectedGameObject;
+                if (current == selectedGameObjectCache)
+                {
+                    if (!Input.GetMouseButton(0) &&
+                        Input.mouseScrollDelta == default)
+                    {
+                        yield return null;
+                        continue;
+                    }
+
+                    if (!_isClickedButtonArea)
+                    {
+                        Close();
+                        yield break;
+                    }
+                }
+                else
+                {
+                    if (current == target)
+                    {
+                        yield break;
+                    }
+
+                    if (!_isClickedButtonArea)
+                    {
+                        Close();
+                        yield break;
+                    }
+                }
+
+                yield return null;
+            }
+        }
+
+        public void OnEnterButtonArea(bool value)
+        {
+            _isPointerOnScrollArea = value;
         }
     }
 }

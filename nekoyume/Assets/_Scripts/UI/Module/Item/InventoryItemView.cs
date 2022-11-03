@@ -79,6 +79,7 @@ namespace Nekoyume.UI.Module
             baseItemView.EnhancementImage.gameObject.SetActive(false);
 
             // baseItemView.OptionTag.Set(model.ItemBase);
+            baseItemView.OptionTag.gameObject.SetActive(false); // temp
 
             model.Equipped.Subscribe(b => baseItemView.EquippedObject.SetActive(b)).AddTo(_disposables);
             model.Selected.Subscribe(b => baseItemView.SelectObject.SetActive(b)).AddTo(_disposables);

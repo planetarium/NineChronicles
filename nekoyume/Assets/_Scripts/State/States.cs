@@ -15,6 +15,8 @@ using StateExtensions = Nekoyume.Model.State.StateExtensions;
 using Libplanet.Assets;
 using Nekoyume.Game;
 using Nekoyume.Helper;
+using Nekoyume.Model.EnumType;
+using Nekoyume.Model.Rune;
 using Nekoyume.UI;
 
 namespace Nekoyume.State
@@ -52,6 +54,8 @@ namespace Nekoyume.State
         public Dictionary<int, FungibleAssetValue> RuneStoneBalance { get; } = new();
 
         public List<RuneState> RuneStates { get; } = new();
+
+        public Dictionary<BattleType, Dictionary<int, RuneSlot>> RuneSlotStates { get; } = new();
 
         public int StakingLevel { get; private set; }
 
@@ -170,6 +174,40 @@ namespace Nekoyume.State
                     if (value is List list)
                     {
                         RuneStates.Add(new RuneState(list));
+                    }
+                }
+
+                return states;
+            });
+
+            await task;
+        }
+
+        public async Task InitRuneSlotStates()
+        {
+            var avatarAddress = CurrentAvatarState.address;
+            var addresses = new List<Address>
+            {
+                RuneSlotState.DeriveAddress(avatarAddress, BattleType.Adventure),
+                RuneSlotState.DeriveAddress(avatarAddress, BattleType.Arena),
+                RuneSlotState.DeriveAddress(avatarAddress, BattleType.Raid)
+            };
+
+            var stateBulk = await Game.Game.instance.Agent.GetStateBulk(addresses);
+            RuneSlotStates.Clear();
+            RuneSlotStates.Add(BattleType.Adventure, new RuneSlotState(BattleType.Adventure).GetRuneSlot());
+            RuneSlotStates.Add(BattleType.Arena, new RuneSlotState(BattleType.Arena).GetRuneSlot());
+            RuneSlotStates.Add(BattleType.Raid, new RuneSlotState(BattleType.Raid).GetRuneSlot());
+
+            var task = Task.Run(async () =>
+            {
+                var states = new Dictionary<BattleType, RuneSlotState>();
+                foreach (var value in stateBulk.Values)
+                {
+                    if (value is List list)
+                    {
+                        var slotState = new RuneSlotState(list);
+                        RuneSlotStates[slotState.BattleType] = slotState.GetRuneSlot();
                     }
                 }
 
