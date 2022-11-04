@@ -30,7 +30,7 @@ namespace Lib9c.Tests.Action
         public Raid1Test()
         {
             _sheets = TableSheetsImporter.ImportSheets();
-            _sheets.Remove(nameof(RuneStatSheet));
+            _sheets.Remove(nameof(RuneOptionSheet));
             _tableSheets = new TableSheets(_sheets);
             _agentAddress = new PrivateKey().ToAddress();
             _avatarAddress = new PrivateKey().ToAddress();

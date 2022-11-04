@@ -9,12 +9,12 @@ using static Nekoyume.TableData.TableExtensions;
 namespace Nekoyume.TableData
 {
     [Serializable]
-    public class RuneStatSheet : Sheet<int, RuneStatSheet.Row>
+    public class RuneOptionSheet : Sheet<int, RuneOptionSheet.Row>
     {
         [Serializable]
         public class Row : SheetRow<int>
         {
-            public class RuneStatInfo
+            public class RuneOptionInfo
             {
                 public int Cp { get; }
                 public List<(StatMap statMap, StatModifier.OperationType operationType)> Stats { get; set; }
@@ -26,7 +26,7 @@ namespace Nekoyume.TableData
                 public StatType SkillStatType { get; set; }
                 public StatReferenceType StatReferenceType { get; set; }
 
-                public RuneStatInfo(
+                public RuneOptionInfo(
                     int cp,
                     List<(StatMap, StatModifier.OperationType)> stats,
                     int skillId,
@@ -48,7 +48,7 @@ namespace Nekoyume.TableData
                     StatReferenceType = statReferenceType;
                 }
 
-                public RuneStatInfo(
+                public RuneOptionInfo(
                     int cp,
                     List<(StatMap, StatModifier.OperationType)> stats)
                 {
@@ -60,11 +60,11 @@ namespace Nekoyume.TableData
 
             public override int Key => RuneId;
             public int RuneId { get; private set; }
-            public Dictionary<int, RuneStatInfo> LevelStatsMap { get; private set; }
+            public Dictionary<int, RuneOptionInfo> LevelOptionMap { get; private set; }
 
             public override void Set(IReadOnlyList<string> fields)
             {
-                LevelStatsMap = new Dictionary<int, RuneStatInfo>();
+                LevelOptionMap = new Dictionary<int, RuneOptionInfo>();
                 var stats = new List<(StatMap, StatModifier.OperationType)>();
 
                 RuneId = ParseInt(fields[0]);
@@ -112,7 +112,7 @@ namespace Nekoyume.TableData
                     var statReferenceType =
                         (StatReferenceType)Enum.Parse(typeof(StatReferenceType), fields[18]);
 
-                    LevelStatsMap[level] = new RuneStatInfo(
+                    LevelOptionMap[level] = new RuneOptionInfo(
                         cp,
                         stats,
                         skillId,
@@ -125,12 +125,12 @@ namespace Nekoyume.TableData
                 }
                 else
                 {
-                    LevelStatsMap[level] = new RuneStatInfo(cp, stats);
+                    LevelOptionMap[level] = new RuneOptionInfo(cp, stats);
                 }
             }
         }
 
-        public RuneStatSheet() : base(nameof(RuneStatSheet))
+        public RuneOptionSheet() : base(nameof(RuneOptionSheet))
         {
         }
 
@@ -143,11 +143,11 @@ namespace Nekoyume.TableData
                 return;
             }
 
-            if (value.LevelStatsMap.Count == 0)
+            if (value.LevelOptionMap.Count == 0)
                 return;
 
-            var pair = value.LevelStatsMap.OrderBy(x => x.Key).First();
-            row.LevelStatsMap[pair.Key] = pair.Value;
+            var pair = value.LevelOptionMap.OrderBy(x => x.Key).First();
+            row.LevelOptionMap[pair.Key] = pair.Value;
         }
     }
 }

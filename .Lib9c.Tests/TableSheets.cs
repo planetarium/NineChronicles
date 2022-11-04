@@ -202,7 +202,7 @@ namespace Lib9c.Tests
 
         public RuneCostSheet RuneCostSheet { get; private set; }
 
-        public RuneStatSheet RuneStatSheet { get; private set; }
+        public RuneOptionSheet RuneOptionSheet { get; private set; }
 
         public void ItemSheetInitialize()
         {
@@ -241,7 +241,7 @@ namespace Lib9c.Tests
                 CharacterSheet,
                 CharacterLevelSheet,
                 EquipmentItemSetEffectSheet,
-                RuneStatSheet
+                RuneOptionSheet
             );
         }
 
@@ -275,7 +275,7 @@ namespace Lib9c.Tests
                 StageSheet,
                 StageWaveSheet,
                 EnemySkillSheet,
-                RuneStatSheet
+                RuneOptionSheet
             );
         }
 
@@ -326,7 +326,7 @@ namespace Lib9c.Tests
                 CharacterLevelSheet,
                 EquipmentItemSetEffectSheet,
                 WeeklyArenaRewardSheet,
-                RuneStatSheet
+                RuneOptionSheet
             );
         }
 
@@ -361,7 +361,7 @@ namespace Lib9c.Tests
                 EquipmentItemSetEffectSheet,
                 CostumeStatSheet,
                 WeeklyArenaRewardSheet,
-                RuneStatSheet
+                RuneOptionSheet
             );
         }
 
@@ -402,7 +402,7 @@ namespace Lib9c.Tests
                 WorldBossBattleRewardSheet,
                 RuneWeightSheet,
                 RuneSheet,
-                RuneStatSheet
+                RuneOptionSheet
             );
         }
 

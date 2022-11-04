@@ -536,20 +536,20 @@ namespace Nekoyume.Model
 
         public void SetRune(
             List<(int runeId, int level)> runes,
-            RuneStatSheet runeStatSheet,
+            RuneOptionSheet runeOptionSheet,
             SkillSheet skillSheet)
         {
             foreach (var (runeId, level) in runes)
             {
-                if (!runeStatSheet.TryGetValue(runeId, out var statRow) ||
-                    !statRow.LevelStatsMap.TryGetValue(level, out var statInfo))
+                if (!runeOptionSheet.TryGetValue(runeId, out var optionRow) ||
+                    !optionRow.LevelOptionMap.TryGetValue(level, out var optionInfo))
                 {
                     continue;
                 }
 
                 var statModifiers = new List<StatModifier>();
                 statModifiers.AddRange(
-                    statInfo.Stats.Select(x =>
+                    optionInfo.Stats.Select(x =>
                         new StatModifier(
                             x.statMap.StatType,
                             x.operationType,
@@ -557,18 +557,17 @@ namespace Nekoyume.Model
                 Stats.AddOption(statModifiers);
                 Stats.EqualizeCurrentHPWithHP();
 
-                if (!statRow.LevelStatsMap.TryGetValue(level, out var skillInfo) ||
-                    skillInfo.SkillId == default ||
-                    !skillSheet.TryGetValue(skillInfo.SkillId, out var skillRow))
+                if (optionInfo.SkillId == default ||
+                    !skillSheet.TryGetValue(optionInfo.SkillId, out var skillRow))
                 {
                     continue;
                 }
 
-                var power = skillInfo.SkillValue;
+                var power = optionInfo.SkillValue;
                 var addedPower = 0;
-                if (skillInfo.StatReferenceType == EnumType.StatReferenceType.Caster)
+                if (optionInfo.StatReferenceType == EnumType.StatReferenceType.Caster)
                 {
-                    switch (skillInfo.SkillStatType)
+                    switch (optionInfo.SkillStatType)
                     {
                         case StatType.HP:
                             addedPower = HP;
@@ -581,10 +580,10 @@ namespace Nekoyume.Model
                             break;
                     }
                 }
-                power += (int) Math.Round(addedPower * skillInfo.SkillStatRatio);
-                var skill = SkillFactory.Get(skillRow, power, skillInfo.SkillChance);
+                power += (int) Math.Round(addedPower * optionInfo.SkillStatRatio);
+                var skill = SkillFactory.Get(skillRow, power, optionInfo.SkillChance);
                 RuneSkills.Add(skill);
-                RuneSkillCooldownMap[skillInfo.SkillId] = skillInfo.SkillCooldown;
+                RuneSkillCooldownMap[optionInfo.SkillId] = optionInfo.SkillCooldown;
             }
         }
 

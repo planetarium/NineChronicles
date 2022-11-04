@@ -559,7 +559,7 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(CharacterSheet));
                 sheetTypeList.Add(typeof(CharacterLevelSheet));
                 sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
-                sheetTypeList.Add(typeof(RuneStatSheet));
+                sheetTypeList.Add(typeof(RuneOptionSheet));
             }
 
             if (containStageSimulatorSheets)
@@ -576,7 +576,7 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(StageSheet));
                 sheetTypeList.Add(typeof(StageWaveSheet));
                 sheetTypeList.Add(typeof(EnemySkillSheet));
-                sheetTypeList.Add(typeof(RuneStatSheet));
+                sheetTypeList.Add(typeof(RuneOptionSheet));
             }
 
             if (containRankingSimulatorSheets)
@@ -591,7 +591,7 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(CharacterLevelSheet));
                 sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
                 sheetTypeList.Add(typeof(WeeklyArenaRewardSheet));
-                sheetTypeList.Add(typeof(RuneStatSheet));
+                sheetTypeList.Add(typeof(RuneOptionSheet));
             }
 
             if (containArenaSimulatorSheets)
@@ -607,7 +607,7 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
                 sheetTypeList.Add(typeof(WeeklyArenaRewardSheet));
                 sheetTypeList.Add(typeof(CostumeStatSheet));
-                sheetTypeList.Add(typeof(RuneStatSheet));
+                sheetTypeList.Add(typeof(RuneOptionSheet));
             }
 
             if (containValidateItemRequirementSheets)
@@ -634,7 +634,7 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(WorldBossBattleRewardSheet));
                 sheetTypeList.Add(typeof(RuneWeightSheet));
                 sheetTypeList.Add(typeof(RuneSheet));
-                sheetTypeList.Add(typeof(RuneStatSheet));
+                sheetTypeList.Add(typeof(RuneOptionSheet));
             }
 
             return states.GetSheets(sheetTypeList.Distinct().ToArray());
@@ -755,7 +755,7 @@ namespace Nekoyume.Action
                 GetSheet<StageSheet>(states),
                 GetSheet<StageWaveSheet>(states),
                 GetSheet<EnemySkillSheet>(states),
-                GetSheet<RuneStatSheet>(states)
+                GetSheet<RuneOptionSheet>(states)
             );
         }
 
@@ -788,7 +788,7 @@ namespace Nekoyume.Action
                 GetSheet<CharacterLevelSheet>(states),
                 GetSheet<EquipmentItemSetEffectSheet>(states),
                 GetSheet<WeeklyArenaRewardSheet>(states),
-                GetSheet<RuneStatSheet>(states)
+                GetSheet<RuneOptionSheet>(states)
             );
         }
 
