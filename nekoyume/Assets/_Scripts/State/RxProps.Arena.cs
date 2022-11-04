@@ -140,6 +140,10 @@ namespace Nekoyume.State
             ArenaInfoTuple
                 .Subscribe(_ => UpdateArenaTicketProgress(_agent.BlockIndex))
                 .AddTo(_disposables);
+
+            PlayersArenaParticipant
+                .Subscribe(_ => UpdateArenaTicketProgress(_agent.BlockIndex))
+                .AddTo(_disposables);
         }
 
         private static void OnBlockIndexArena(long blockIndex)
