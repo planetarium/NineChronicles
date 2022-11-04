@@ -44,5 +44,27 @@ namespace Nekoyume.Extensions
                 .OrderBy(row => row.Id)
                 .ToList();
         }
+
+        public static EventMaterialItemRecipeSheet.Row ValidateFromAction(
+            this EventMaterialItemRecipeSheet sheet,
+            int eventMaterialItemRecipeId,
+            string actionTypeText,
+            string addressesHex)
+        {
+            if (!sheet.TryGetValue(eventMaterialItemRecipeId, out var row))
+            {
+                throw new InvalidActionFieldException(
+                    actionTypeText,
+                    addressesHex,
+                    nameof(eventMaterialItemRecipeId),
+                    " Aborted because the event recipe is not found.",
+                    new SheetRowNotFoundException(
+                        addressesHex,
+                        sheet.Name,
+                        eventMaterialItemRecipeId));
+            }
+
+            return row;
+        }
     }
 }
