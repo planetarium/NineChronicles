@@ -39,7 +39,7 @@ namespace Nekoyume.Game.Character
                 .ToList()
             : Model.Equipments.Where(e => e.equipped).ToList();
 
-        public List<int> Runes => new() { 250010001, 230010001, 220010001, 150010001 };
+        public List<int> Runes => new() { 311001, 123001, 122001, 115001 };
 
         protected override float RunSpeedDefault => CharacterModel.RunSpeed;
 
