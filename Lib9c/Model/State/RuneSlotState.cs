@@ -151,9 +151,9 @@ namespace Nekoyume.Model.State
             return result;
         }
 
-        public List<RuneStatSheet.Row.RuneStatInfo> GetEquippedRuneStatInfos(RuneStatSheet sheet)
+        public List<RuneOptionSheet.Row.RuneOptionInfo> GetEquippedRuneStatInfos(RuneOptionSheet sheet)
         {
-            var result = new List<RuneStatSheet.Row.RuneStatInfo>();
+            var result = new List<RuneOptionSheet.Row.RuneOptionInfo>();
             foreach (var runeState in GetEquippedRuneStates())
             {
                 if (!sheet.TryGetValue(runeState.RuneId, out var row))
@@ -161,7 +161,7 @@ namespace Nekoyume.Model.State
                     continue;
                 }
 
-                if (!row.LevelStatsMap.TryGetValue(runeState.Level, out var statInfo))
+                if (!row.LevelOptionMap.TryGetValue(runeState.Level, out var statInfo))
                 {
                     continue;
                 }

@@ -15,10 +15,10 @@ namespace Nekoyume.Battle
             RuneSlotState runeSlotState,
             CharacterSheet characterSheet,
             CostumeStatSheet costumeStatSheet,
-            RuneStatSheet runeStatSheet)
+            RuneOptionSheet runeOptionSheet)
         {
             var equipmentsCp = GetCPV2(avatarState, characterSheet, costumeStatSheet);
-            var runeStatInfos = runeSlotState.GetEquippedRuneStatInfos(runeStatSheet);
+            var runeStatInfos = runeSlotState.GetEquippedRuneStatInfos(runeOptionSheet);
             var runeCp = runeStatInfos.Sum(x => x.Cp);
             var totalCp = equipmentsCp + runeCp;
             return totalCp;
