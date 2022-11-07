@@ -12,6 +12,7 @@ namespace Nekoyume.Helper
 {
     public static class RuneHelper
     {
+        public static readonly Currency StakeRune = Currency.Legacy("RUNE_GOLDENLEAF", 0, null);
         public static Currency ToCurrency(
             RuneSheet.Row runeRow,
             byte decimalPlaces,
@@ -91,6 +92,12 @@ namespace Nekoyume.Helper
                 result.Add(rewardRow.Crystal * CrystalCalculator.CRYSTAL);
             }
             return result;
+        }
+
+        public static FungibleAssetValue CalculateStakeReward(FungibleAssetValue stakeAmount, int rate)
+        {
+            var (quantity, _) = stakeAmount.DivRem(stakeAmount.Currency * rate);
+            return StakeRune * quantity;
         }
     }
 }
