@@ -383,35 +383,28 @@
                 updateSellInfos.Add(updateSellInfo);
             }
 
+            var action = new UpdateSell
+            {
+                sellerAvatarAddress = _avatarAddress,
+                updateSellInfos = updateSellInfos,
+            };
             if (exc)
             {
-                Assert.Throws<ArgumentOutOfRangeException>(() => new UpdateSell
+                Assert.Throws<ArgumentOutOfRangeException>(() => action.Execute(new ActionContext
                 {
-                    sellerAvatarAddress = _avatarAddress,
-                    updateSellInfos = updateSellInfos,
-                });
-                var action = new UpdateSell
-                {
-                    sellerAvatarAddress = _avatarAddress,
-                    updateSellInfos = new List<UpdateSellInfo>(),
-                };
-                var dict = (Dictionary)action.PlainValue;
-                dict = dict.SetItem(
-                    UpdateSellInfoKey,
-                    updateSellInfos.Select(info => info.Serialize()).Serialize());
-                Assert.Throws<ArgumentOutOfRangeException>(() => action.LoadPlainValue(dict));
+                    BlockIndex = 0,
+                    PreviousStates = _initialState,
+                    Signer = _agentAddress,
+                }));
             }
             else
             {
-                var action = new UpdateSell
+                Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
                 {
-                    sellerAvatarAddress = _avatarAddress,
-                    updateSellInfos = updateSellInfos,
-                };
-                Assert.Equal(count, action.updateSellInfos.Count());
-                var action2 = new UpdateSell();
-                action2.LoadPlainValue(action.PlainValue);
-                Assert.Equal(count, action2.updateSellInfos.Count());
+                    BlockIndex = 0,
+                    PreviousStates = _initialState,
+                    Signer = _agentAddress,
+                }));
             }
         }
     }

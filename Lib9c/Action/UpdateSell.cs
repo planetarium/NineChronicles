@@ -28,21 +28,7 @@ namespace Nekoyume.Action
     {
         private const int UpdateCapacity = 100;
         public Address sellerAvatarAddress;
-        public IEnumerable<UpdateSellInfo> updateSellInfos
-        {
-            get => _updateSellInfos;
-            set
-            {
-                if (value.Count() > UpdateCapacity)
-                {
-                    throw new ArgumentOutOfRangeException($"{nameof(value)} must be less than or equal 100.");
-                }
-
-                _updateSellInfos = value;
-            }
-        }
-
-        private IEnumerable<UpdateSellInfo> _updateSellInfos;
+        public IEnumerable<UpdateSellInfo> updateSellInfos;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
