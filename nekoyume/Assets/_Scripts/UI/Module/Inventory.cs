@@ -242,7 +242,7 @@ namespace Nekoyume.UI.Module
 
             foreach (var runeState in States.Instance.RuneStates)
             {
-                _runes.Add(new InventoryItem(runeState, false));
+                _runes.Add(new InventoryItem(runeState));
             }
 
             var models = GetModels(_activeTabType);
@@ -282,14 +282,12 @@ namespace Nekoyume.UI.Module
                     inventoryItem = CreateInventoryItem(
                         itemBase,
                         count,
-                        equipped: costume.equipped,
                         levelLimited: !Util.IsUsableItem(itemBase));
                     _costumes.Add(inventoryItem);
                     break;
                 case ItemType.Equipment:
                     var equipment = (Equipment)itemBase;
                     inventoryItem = CreateInventoryItem(itemBase, count,
-                        equipped: equipment.equipped,
                         levelLimited: !Util.IsUsableItem(itemBase));
 
                     if (!_equipments.ContainsKey(itemBase.ItemSubType))
@@ -344,13 +342,11 @@ namespace Nekoyume.UI.Module
         private InventoryItem CreateInventoryItem(
             ItemBase itemBase,
             int count,
-            bool equipped = false,
             bool levelLimited = false)
         {
             return new InventoryItem(
                 itemBase,
                 count,
-                equipped,
                 levelLimited,
                 _checkTradable && !(itemBase is ITradableItem));
         }
@@ -588,21 +584,54 @@ namespace Nekoyume.UI.Module
             ClearFocus();
         }
 
-        public void UpdateRunes(Dictionary<int, RuneSlot> slotStates)
+        public void UpdateRunes(List<RuneState> runeStates)
         {
-            var runeStates = new List<RuneState>();
-            foreach (var slot in slotStates.Values)
+            foreach (var rune in _runes)
             {
-                if (slot.IsEquipped(out var runeState))
+                var equipped = runeStates.Exists(x => x.RuneId == rune.RuneState.RuneId);
+                rune.Equipped.SetValueAndForceNotify(equipped);
+            }
+        }
+
+        public void UpdateCostumes(List<Guid> costumes)
+        {
+            foreach (var costume in _costumes)
+            {
+                var equipped = costumes.Exists(x => x == ((Costume)costume.ItemBase).ItemId);
+                costume.Equipped.SetValueAndForceNotify(equipped);
+            }
+        }
+
+        public void UpdateEquipments(List<Guid> equipments)
+        {
+            foreach (var eps in _equipments.Values)
+            {
+                foreach (var equipment in eps)
                 {
-                    runeStates.Add(runeState);
+                    var equipped = equipments.Exists(x => x == ((Equipment)equipment.ItemBase).ItemId);
+                    equipment.Equipped.SetValueAndForceNotify(equipped);
                 }
+            }
+        }
+
+        public void RefreshEquip()
+        {
+            foreach (var eps in _equipments.Values)
+            {
+                foreach (var equipment in eps)
+                {
+                    equipment.Equipped.SetValueAndForceNotify(equipment.Equipped.Value);
+                }
+            }
+
+            foreach (var costume in _costumes)
+            {
+                costume.Equipped.SetValueAndForceNotify(costume.Equipped.Value);
             }
 
             foreach (var rune in _runes)
             {
-                var equipped = runeStates.Exists(x => x.RuneId == rune.RuneState.RuneId);
-                rune.Equipped.Value = equipped;
+                rune.Equipped.SetValueAndForceNotify(rune.Equipped.Value);
             }
         }
 

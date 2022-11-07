@@ -1,7 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Nekoyume.Model.Rune;
-using Nekoyume.Model.State;
 using UnityEngine;
 
 namespace Nekoyume.UI.Module
@@ -12,13 +10,13 @@ namespace Nekoyume.UI.Module
         private List<RuneSlotView> slots;
 
         public void Set(
-            Dictionary<int, RuneSlot> runeSlots,
+            List<RuneSlot> runeSlotStates,
             System.Action<RuneSlotView> onClick,
             System.Action<RuneSlotView> onDoubleClick)
         {
-            foreach (var (key, value) in runeSlots)
+            foreach (var state in runeSlotStates)
             {
-                slots[key].Set(value, onClick, onDoubleClick);
+                slots[state.Index].Set(state, onClick, onDoubleClick);
             }
         }
 

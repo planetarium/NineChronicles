@@ -55,7 +55,9 @@ namespace Nekoyume.State
 
         public List<RuneState> RuneStates { get; } = new();
 
-        public Dictionary<BattleType, Dictionary<int, RuneSlot>> RuneSlotStates { get; } = new();
+        public Dictionary<BattleType, List<RuneSlot>> RuneSlotStates { get; } = new();
+
+        public Dictionary<BattleType, ItemSlotState> ItemSlotStates { get; } = new();
 
         public int StakingLevel { get; private set; }
 
@@ -208,6 +210,40 @@ namespace Nekoyume.State
                     {
                         var slotState = new RuneSlotState(list);
                         RuneSlotStates[slotState.BattleType] = slotState.GetRuneSlot();
+                    }
+                }
+
+                return states;
+            });
+
+            await task;
+        }
+
+        public async Task InitItemSlotStates()
+        {
+            var avatarAddress = CurrentAvatarState.address;
+            var addresses = new List<Address>
+            {
+                ItemSlotState.DeriveAddress(avatarAddress, BattleType.Adventure),
+                ItemSlotState.DeriveAddress(avatarAddress, BattleType.Arena),
+                ItemSlotState.DeriveAddress(avatarAddress, BattleType.Raid)
+            };
+
+            var stateBulk = await Game.Game.instance.Agent.GetStateBulk(addresses);
+            ItemSlotStates.Clear();
+            ItemSlotStates.Add(BattleType.Adventure, new ItemSlotState(BattleType.Adventure));
+            ItemSlotStates.Add(BattleType.Arena, new ItemSlotState(BattleType.Arena));
+            ItemSlotStates.Add(BattleType.Raid, new ItemSlotState(BattleType.Raid));
+
+            var task = Task.Run(async () =>
+            {
+                var states = new Dictionary<BattleType, ItemSlotState>();
+                foreach (var value in stateBulk.Values)
+                {
+                    if (value is List list)
+                    {
+                        var slotState = new ItemSlotState(list);
+                        ItemSlotStates[slotState.BattleType] = slotState;
                     }
                 }
 

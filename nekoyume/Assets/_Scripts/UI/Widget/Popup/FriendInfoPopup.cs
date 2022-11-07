@@ -151,7 +151,7 @@ namespace Nekoyume.UI
 
         private static void ShowTooltip(EquipmentSlot slot)
         {
-            var item = new InventoryItem(slot.Item, 1, true, false, true);
+            var item = new InventoryItem(slot.Item, 1, false, true);
             var tooltip = ItemTooltip.Find(item.ItemBase.ItemType);
             tooltip.Show(item, string.Empty, false, null, target:slot.RectTransform);
         }

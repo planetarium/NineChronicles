@@ -101,6 +101,42 @@ namespace Nekoyume.UI.Module
             UpdateDim(elementalTypes);
         }
 
+        public void SetPlayerCostumes(
+            int level,
+            List<Costume> costumes,
+            Action<EquipmentSlot> onClick,
+            Action<EquipmentSlot> onDoubleClick)
+        {
+            Clear();
+            _onSlotClicked = onClick;
+            _onSlotDoubleClicked = onDoubleClick;
+
+            UpdateSlots(level);
+            foreach (var costume in costumes)
+            {
+                TryToEquip(costume);
+            }
+        }
+
+        public void SetPlayerEquipments(
+            int level,
+            List<Equipment> equipments,
+            Action<EquipmentSlot> onClick,
+            Action<EquipmentSlot> onDoubleClick,
+            List<ElementalType> elementalTypes = null)
+        {
+            Clear();
+            _onSlotClicked = onClick;
+            _onSlotDoubleClicked = onDoubleClick;
+
+            UpdateSlots(level);
+            foreach (var equipment in equipments)
+            {
+                TryToEquip(equipment);
+            }
+            UpdateDim(elementalTypes);
+        }
+
         public void SetPlayerConsumables(int avatarLevel,
             Action<EquipmentSlot> onClick,
             Action<EquipmentSlot> onDoubleClick)

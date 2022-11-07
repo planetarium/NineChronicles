@@ -192,6 +192,7 @@ namespace Nekoyume.UI
             await States.Instance.InitRuneStoneBalance();
             await States.Instance.InitRuneStates();
             await States.Instance.InitRuneSlotStates();
+            await States.Instance.InitItemSlotStates();
             loadingScreen.Close();
             OnDidAvatarStateLoaded(results.selectedAvatarState);
         }
