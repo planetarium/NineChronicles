@@ -202,7 +202,7 @@ namespace Nekoyume.Game
 
         public RuneListSheet RuneListSheet { get; private set; }
         public RuneCostSheet RuneCostSheet { get; private set; }
-        public RuneStatSheet RuneStatSheet { get; private set; }
+        public RuneOptionSheet RuneOptionSheet { get; private set; }
 
         public void ItemSheetInitialize()
         {
@@ -259,7 +259,7 @@ namespace Nekoyume.Game
                 StageSheet,
                 StageWaveSheet,
                 EnemySkillSheet,
-                RuneStatSheet
+                RuneOptionSheet
             );
         }
 
@@ -333,7 +333,7 @@ namespace Nekoyume.Game
                 WorldBossBattleRewardSheet,
                 RuneWeightSheet,
                 RuneSheet,
-                RuneStatSheet
+                RuneOptionSheet
             );
         }
 
