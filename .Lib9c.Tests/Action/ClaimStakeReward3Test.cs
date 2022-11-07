@@ -7,6 +7,7 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Helper;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Serilog;
@@ -14,17 +15,16 @@ namespace Lib9c.Tests.Action
     using Xunit.Abstractions;
     using static Lib9c.SerializeKeys;
 
-    public class ClaimStakeRewardTest
+    public class ClaimStakeReward3Test
     {
         private readonly IAccountStateDelta _initialState;
         private readonly Currency _currency;
-        private readonly GoldCurrencyState _goldCurrencyState;
-        private readonly TableSheets _tableSheets;
         private readonly Address _signerAddress;
         private readonly Address _avatarAddress;
         private readonly Address _avatarAddressForBackwardCompatibility;
+        private readonly Address _stakeStateAddress;
 
-        public ClaimStakeRewardTest(ITestOutputHelper outputHelper)
+        public ClaimStakeReward3Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -40,16 +40,16 @@ namespace Lib9c.Tests.Action
                     .SetState(Addresses.TableSheet.Derive(key), value.Serialize());
             }
 
-            _tableSheets = new TableSheets(sheets);
+            var tableSheets = new TableSheets(sheets);
 
 #pragma warning disable CS0618
             // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
             _currency = Currency.Legacy("NCG", 2, null);
 #pragma warning restore CS0618
-            _goldCurrencyState = new GoldCurrencyState(_currency);
+            var goldCurrencyState = new GoldCurrencyState(_currency);
 
             _signerAddress = new PrivateKey().ToAddress();
-            var stakeStateAddress = StakeState.DeriveAddress(_signerAddress);
+            _stakeStateAddress = StakeState.DeriveAddress(_signerAddress);
             var agentState = new AgentState(_signerAddress);
             _avatarAddress = _signerAddress.Derive("0");
             agentState.avatarAddresses.Add(0, _avatarAddress);
@@ -57,7 +57,7 @@ namespace Lib9c.Tests.Action
                 _avatarAddress,
                 _signerAddress,
                 0,
-                _tableSheets.GetAvatarSheets(),
+                tableSheets.GetAvatarSheets(),
                 new GameConfigState(sheets[nameof(GameConfigSheet)]),
                 new PrivateKey().ToAddress()
             )
@@ -71,7 +71,7 @@ namespace Lib9c.Tests.Action
                 _avatarAddressForBackwardCompatibility,
                 _signerAddress,
                 0,
-                _tableSheets.GetAvatarSheets(),
+                tableSheets.GetAvatarSheets(),
                 new GameConfigState(sheets[nameof(GameConfigSheet)]),
                 new PrivateKey().ToAddress()
             )
@@ -94,84 +94,71 @@ namespace Lib9c.Tests.Action
                 .SetState(
                     _avatarAddressForBackwardCompatibility,
                     avatarStateForBackwardCompatibility.Serialize())
-                .SetState(GoldCurrencyState.Address, _goldCurrencyState.Serialize())
-                .SetState(stakeStateAddress, new StakeState(stakeStateAddress, 0).Serialize())
-                .MintAsset(stakeStateAddress, _currency * 100);
+                .SetState(GoldCurrencyState.Address, goldCurrencyState.Serialize());
         }
 
         [Fact]
         public void Serialization()
         {
-            var action = new ClaimStakeReward(_avatarAddress);
-            var deserialized = new ClaimStakeReward();
+            var action = new ClaimStakeReward3(_avatarAddress);
+            var deserialized = new ClaimStakeReward3();
             deserialized.LoadPlainValue(action.PlainValue);
             Assert.Equal(action.AvatarAddress, deserialized.AvatarAddress);
         }
 
         [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void Execute_Success(bool useOldTable)
+        [InlineData(ClaimStakeReward.ObsoletedIndex)]
+        [InlineData(ClaimStakeReward.ObsoletedIndex - 1)]
+        public void Execute_Throw_ActionUnAvailableException(long blockIndex)
         {
-            Execute(_avatarAddress, useOldTable);
-        }
-
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void Execute_With_Old_AvatarState_Success(bool useOldTable)
-        {
-            Execute(_avatarAddressForBackwardCompatibility, useOldTable);
-        }
-
-        [Fact]
-        public void Execute_Throw_ActionObsoletedException()
-        {
-            var action = new ClaimStakeReward(_avatarAddress);
-            Assert.Throws<ActionObsoletedException>(() => action.Execute(new ActionContext
+            var action = new ClaimStakeReward3(_avatarAddress);
+            Assert.Throws<ActionUnavailableException>(() => action.Execute(new ActionContext
             {
                 PreviousStates = _initialState,
                 Signer = _signerAddress,
-                BlockIndex = ClaimStakeReward.ObsoletedIndex + 1,
+                BlockIndex = blockIndex,
             }));
         }
 
-        private void Execute(Address avatarAddress, bool useOldTable)
+        [Theory]
+        [InlineData(ClaimStakeReward.ObsoletedIndex, 100, ClaimStakeReward.ObsoletedIndex + StakeState.LockupInterval, 40, 4, 0)]
+        [InlineData(ClaimStakeReward.ObsoletedIndex, 6000, ClaimStakeReward.ObsoletedIndex + StakeState.LockupInterval, 4800, 36, 4)]
+        // Calculate rune start from hard fork index
+        [InlineData(0L, 6000, ClaimStakeReward.ObsoletedIndex + StakeState.LockupInterval, 138000, 1035, 4)]
+        public void Execute_Success(long startedBlockIndex, int stakeAmount, long blockIndex, int expectedHourglass, int expectedApStone, int expectedRune)
+        {
+            Execute(_avatarAddress, startedBlockIndex, stakeAmount, blockIndex, expectedHourglass, expectedApStone, expectedRune);
+        }
+
+        [Fact]
+        public void Execute_With_Old_AvatarState_Success()
+        {
+            Execute(_avatarAddressForBackwardCompatibility, ClaimStakeReward.ObsoletedIndex, 100, ClaimStakeReward.ObsoletedIndex + StakeState.LockupInterval, 40, 4, 0);
+        }
+
+        private void Execute(Address avatarAddress, long startedBlockIndex, int stakeAmount, long blockIndex, int expectedHourglass, int expectedApStone, int expectedRune)
         {
             var state = _initialState;
-            if (useOldTable)
-            {
-                var sheet = @"level,required_gold,item_id,rate
-1,50,400000,10
-1,50,500000,800
-2,500,400000,8
-2,500,500000,800
-3,5000,400000,5
-3,5000,500000,800
-4,50000,400000,5
-4,50000,500000,800
-5,500000,400000,5
-5,500000,500000,800".Serialize();
-                state = state.SetState(Addresses.GetSheetAddress<StakeRegularRewardSheet>(), sheet);
-            }
+            state = state
+                    .SetState(_stakeStateAddress, new StakeState(_stakeStateAddress, startedBlockIndex).Serialize())
+                    .MintAsset(_stakeStateAddress, _currency * stakeAmount);
 
-            var action = new ClaimStakeReward(avatarAddress);
+            var action = new ClaimStakeReward3(avatarAddress);
             var states = action.Execute(new ActionContext
             {
                 PreviousStates = state,
                 Signer = _signerAddress,
-                BlockIndex = StakeState.LockupInterval,
+                BlockIndex = blockIndex,
             });
 
             AvatarState avatarState = states.GetAvatarStateV2(avatarAddress);
-            // regular (100 / 10) * 4
-            Assert.Equal(40, avatarState.inventory.Items.First(x => x.item.Id == 400000).count);
-            // regular ((100 / 800) + 1) * 4
+            Assert.Equal(expectedHourglass, avatarState.inventory.Items.First(x => x.item.Id == 400000).count);
             // It must be never added into the inventory if the amount is 0.
-            Assert.Equal(4, avatarState.inventory.Items.First(x => x.item.Id == 500000).count);
+            Assert.Equal(expectedApStone, avatarState.inventory.Items.First(x => x.item.Id == 500000).count);
+            Assert.Equal(expectedRune * RuneHelper.StakeRune, states.GetBalance(avatarAddress, RuneHelper.StakeRune));
 
             Assert.True(states.TryGetStakeState(_signerAddress, out StakeState stakeState));
-            Assert.Equal(StakeState.LockupInterval, stakeState.ReceivedBlockIndex);
+            Assert.Equal(blockIndex, stakeState.ReceivedBlockIndex);
         }
     }
 }

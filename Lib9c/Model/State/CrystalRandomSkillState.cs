@@ -79,7 +79,7 @@ namespace Nekoyume.Model.State
             return SkillIds
                 .OrderBy(id => crystalRandomBuffSheet[id].Rank)
                 .ThenBy(id => id)
-                .FirstOrDefault();
+                .First();
         }
     }
 }

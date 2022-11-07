@@ -66,13 +66,13 @@ namespace Nekoyume.Model.State
         #region Address
 
         public static IValue Serialize(this Address address) =>
-            new Binary(address.ToByteArray());
+            new Binary(address.ByteArray);
 
         public static IValue Serialize(this Address? address) =>
             Serialize(Serialize, address);
 
         public static Address ToAddress(this IValue serialized) =>
-            new Address(((Binary)serialized).ToByteArray());
+            new Address(((Binary)serialized).ByteArray);
 
         public static Address? ToNullableAddress(this IValue serialized) =>
             Deserialize(ToAddress, serialized);
@@ -336,11 +336,8 @@ namespace Nekoyume.Model.State
 
         public static IValue Serialize(this PublicKey key) => new Binary(key.Format(true));
 
-        public static PublicKey ToPublicKey(this IValue serialized)
-        {
-            var bin = ((Binary) serialized).ToByteArray();
-            return new PublicKey(bin);
-        }
+        public static PublicKey ToPublicKey(this IValue serialized) =>
+            new PublicKey(((Binary)serialized).ByteArray);
 
         #endregion
 
@@ -357,14 +354,12 @@ namespace Nekoyume.Model.State
 
         #region HashDigest<SHA256>
 
-        public static IValue Serialize(this HashDigest<SHA256> hashDigest)
-        {
-            return new Binary(hashDigest.ToByteArray());
-        }
+        public static IValue Serialize(this HashDigest<SHA256> hashDigest) =>
+            new Binary(hashDigest.ByteArray);
 
         public static HashDigest<SHA256> ToItemId(this IValue serialized)
         {
-            return new HashDigest<SHA256>(((Binary)serialized).ToByteArray());
+            return new HashDigest<SHA256>(((Binary)serialized).ByteArray);
         }
 
         #endregion
