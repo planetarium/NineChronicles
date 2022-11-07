@@ -12661,6 +12661,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: BenefitsIcon
       objectReference: {fileID: 0}
+    - target: {fileID: 629843325909190842, guid: 79eb3cd246b59479a8a8e5022a11679f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1066260074002597565, guid: 79eb3cd246b59479a8a8e5022a11679f,
         type: 3}
       propertyPath: m_Pivot.x
@@ -12811,7 +12816,7 @@ PrefabInstance:
     - target: {fileID: 629843325909190842, guid: 79eb3cd246b59479a8a8e5022a11679f,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1066260074002597565, guid: 79eb3cd246b59479a8a8e5022a11679f,
         type: 3}
@@ -14298,43 +14303,6 @@ MonoBehaviour:
   defaultWordSpacing: 0
   defaultLineSpacingInitialized: 0
   defaultLineSpacing: 0
---- !u!1 &5856435695018321520 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6917781799214122113, guid: be19467fa93a543fbb2fc8545dbf82d2,
-    type: 3}
-  m_PrefabInstance: {fileID: 3550763780947190513}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &4446111414181267338
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5856435695018321520}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fixedFontAsset: 0
-  fixedFontStyle: 0
-  fixedFontSizeOffset: 0
-  fixedSpacingOption: 0
-  fixedMarginOption: 0
-  fontMaterialType: 2
-  l10nKey: 
-  fontMaterialIndexInitialized: 0
-  fontMaterialIndex: 0
-  defaultFontStylesInitialized: 0
-  defaultFontStyles: 0
-  defaultFontSizeInitialized: 0
-  defaultFontSize: 0
-  defaultCharacterSpacingInitialized: 0
-  defaultCharacterSpacing: 0
-  defaultWordSpacingInitialized: 0
-  defaultWordSpacing: 0
-  defaultLineSpacingInitialized: 0
-  defaultLineSpacing: 0
 --- !u!1 &6966901247452771751 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5902458918508681046, guid: be19467fa93a543fbb2fc8545dbf82d2,
@@ -15421,11 +15389,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Item_StakingBenefits (1)
       objectReference: {fileID: 0}
-    - target: {fileID: 343125975978044815, guid: 0e587670461d74fb6b45d6a1bf627459,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5261381988405823756, guid: 0e587670461d74fb6b45d6a1bf627459,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -15554,6 +15517,21 @@ PrefabInstance:
     - target: {fileID: 7094565395026477004, guid: 0e587670461d74fb6b45d6a1bf627459,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7550001605788837339, guid: 0e587670461d74fb6b45d6a1bf627459,
+        type: 3}
+      propertyPath: m_Padding.m_Left
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7550001605788837339, guid: 0e587670461d74fb6b45d6a1bf627459,
+        type: 3}
+      propertyPath: m_Padding.m_Right
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8612810392488958499, guid: 0e587670461d74fb6b45d6a1bf627459,
+        type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -19478,11 +19456,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Item_StakingBenefits (2)
       objectReference: {fileID: 0}
-    - target: {fileID: 343125975978044815, guid: 0e587670461d74fb6b45d6a1bf627459,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5261381988405823756, guid: 0e587670461d74fb6b45d6a1bf627459,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -19611,6 +19584,21 @@ PrefabInstance:
     - target: {fileID: 7094565395026477004, guid: 0e587670461d74fb6b45d6a1bf627459,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7550001605788837339, guid: 0e587670461d74fb6b45d6a1bf627459,
+        type: 3}
+      propertyPath: m_Padding.m_Left
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7550001605788837339, guid: 0e587670461d74fb6b45d6a1bf627459,
+        type: 3}
+      propertyPath: m_Padding.m_Right
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8612810392488958499, guid: 0e587670461d74fb6b45d6a1bf627459,
+        type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -22623,6 +22611,21 @@ PrefabInstance:
     - target: {fileID: 7094565395026477004, guid: 0e587670461d74fb6b45d6a1bf627459,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7550001605788837339, guid: 0e587670461d74fb6b45d6a1bf627459,
+        type: 3}
+      propertyPath: m_Padding.m_Left
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7550001605788837339, guid: 0e587670461d74fb6b45d6a1bf627459,
+        type: 3}
+      propertyPath: m_Padding.m_Right
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8612810392488958499, guid: 0e587670461d74fb6b45d6a1bf627459,
+        type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
