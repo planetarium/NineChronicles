@@ -26,13 +26,14 @@ namespace Nekoyume.Action
     [ActionType("update_sell4")]
     public class UpdateSell : GameAction
     {
+        private const int UpdateCapacity = 100;
         public Address sellerAvatarAddress;
         public IEnumerable<UpdateSellInfo> updateSellInfos
         {
             get => _updateSellInfos;
             set
             {
-                if (value.Count() > 100)
+                if (value.Count() > UpdateCapacity)
                 {
                     throw new ArgumentOutOfRangeException($"{nameof(value)} must be less than or equal 100.");
                 }
@@ -70,6 +71,10 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            if (updateSellInfos.Count() > UpdateCapacity)
+            {
+                throw new ArgumentOutOfRangeException($"{nameof(updateSellInfos)} must be less than or equal 100.");
+            }
             // common
             var addressesHex = GetSignerAndOtherAddressesHex(context, sellerAvatarAddress);
             var sw = new Stopwatch();
