@@ -13,11 +13,6 @@ namespace Nekoyume.Model.State
 
         protected State(Address address)
         {
-            if (address == null)
-            {
-                throw new ArgumentNullException(nameof(address));
-            }
-
             this.address = address;
         }
 

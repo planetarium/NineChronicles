@@ -22,12 +22,13 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1370
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1464
     /// </summary>
     [Serializable]
-    [ActionType("battle_arena5")]
+    [ActionType("battle_arena6")]
     public class BattleArena : GameAction
     {
+        public const string PurchasedCountKey = "purchased_count_during_interval";
         public Address myAvatarAddress;
         public Address enemyAvatarAddress;
         public int championshipId;
@@ -181,7 +182,9 @@ namespace Nekoyume.Action
                     $"[{nameof(BattleArena)}] my avatar address : {myAvatarAddress}");
             }
 
-            if (context.BlockIndex - myArenaAvatarState.LastBattleBlockIndex < 2)
+            var gameConfigState = states.GetGameConfigState();
+            var battleArenaInterval = gameConfigState.BattleArenaInterval;
+            if (context.BlockIndex - myArenaAvatarState.LastBattleBlockIndex < battleArenaInterval)
             {
                 throw new CoolDownBlockException(
                     $"[{nameof(BattleArena)}] LastBattleBlockIndex : " +
@@ -244,13 +247,20 @@ namespace Nekoyume.Action
                     $"diff({scoreDiff})");
             }
 
-            var gameConfigState = states.GetGameConfigState();
-            var interval = gameConfigState.DailyArenaInterval;
+            var dailyArenaInterval = gameConfigState.DailyArenaInterval;
             var currentTicketResetCount = ArenaHelper.GetCurrentTicketResetCount(
-                context.BlockIndex, roundData.StartBlockIndex, interval);
+                context.BlockIndex, roundData.StartBlockIndex, dailyArenaInterval);
+            var purchasedCountAddr = arenaInformation.Address.Derive(PurchasedCountKey);
+            if (!states.TryGetState(purchasedCountAddr, out Integer purchasedCountDuringInterval))
+            {
+                purchasedCountDuringInterval = 0;
+            }
+
             if (arenaInformation.TicketResetCount < currentTicketResetCount)
             {
                 arenaInformation.ResetTicket(currentTicketResetCount);
+                purchasedCountDuringInterval = 0;
+                states = states.SetState(purchasedCountAddr, purchasedCountDuringInterval);
             }
 
             if (roundData.ArenaType != ArenaType.OffSeason && ticket > 1)
@@ -273,11 +283,16 @@ namespace Nekoyume.Action
                 {
                     var ticketBalance =
                         ArenaHelper.GetTicketPrice(roundData, arenaInformation, goldCurrency);
-                    states = states.TransferAsset(
-                        context.Signer,
-                        arenaAdr,
-                        ticketBalance);
-                    arenaInformation.BuyTicket(roundData);
+                    arenaInformation.BuyTicket(roundData.MaxPurchaseCount);
+                    if (purchasedCountDuringInterval >= roundData.MaxPurchaseCountWithInterval)
+                    {
+                        throw new ExceedTicketPurchaseLimitDuringIntervalException(
+                            $"[{nameof(ArenaInformation)}] PurchasedTicketCount({purchasedCountDuringInterval}) >= MAX({{max}})");
+                    }
+
+                    states = states
+                        .TransferAsset(context.Signer, arenaAdr, ticketBalance)
+                        .SetState(purchasedCountAddr, ++purchasedCountDuringInterval);
                 }
             }
 

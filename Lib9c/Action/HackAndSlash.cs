@@ -6,16 +6,19 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
-using Libplanet.Assets;
 using Nekoyume.Battle;
+using Nekoyume.BlockChain.Policy;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
-using Nekoyume.Model.Skill;
+using Nekoyume.Model;
+using Nekoyume.Model.BattleStatus;
+using Nekoyume.Model.Quest;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
 using Serilog;
 using static Lib9c.SerializeKeys;
+using Skill = Nekoyume.Model.Skill.Skill;
 
 namespace Nekoyume.Action
 {
@@ -310,6 +313,27 @@ namespace Nekoyume.Action
                 }
 
                 sw.Restart();
+
+                // This conditional logic is same as written in the
+                // MimisbrunnrBattle("mimisbrunnr_battle10") action.
+                if (blockIndex < BlockPolicySource.V100310ExecutedBlockIndex)
+                {
+                    var player = simulator.Player;
+                    foreach (var key in player.monsterMapForBeforeV100310.Keys)
+                    {
+                        player.monsterMap.Add(key, player.monsterMapForBeforeV100310[key]);
+                    }
+
+                    player.monsterMapForBeforeV100310.Clear();
+
+                    foreach (var key in player.eventMapForBeforeV100310.Keys)
+                    {
+                        player.eventMap.Add(key, player.eventMapForBeforeV100310[key]);
+                    }
+
+                    player.eventMapForBeforeV100310.Clear();
+                }
+
                 avatarState.Update(simulator);
                 // Update CrystalRandomSkillState.Stars by clearedWaveNumber. (add)
                 skillState?.Update(simulator.Log.clearedWaveNumber, crystalStageBuffSheet);

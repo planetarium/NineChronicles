@@ -69,9 +69,6 @@ namespace Nekoyume.Model.State
             Address rankingMapAddress,
             string name = null) : base(address)
         {
-            if (address == null)
-                throw new ArgumentNullException(nameof(address));
-
             this.name = name ?? string.Empty;
             characterId = GameConfig.DefaultAvatarCharacterId;
             level = 1;
