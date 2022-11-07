@@ -8,6 +8,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
+using UnityEngine.UI;
 
 namespace Nekoyume
 {
@@ -19,6 +20,9 @@ namespace Nekoyume
             public int SkillId;
             public TimelineAsset Playable;
         }
+
+        [SerializeField]
+        private Button skipButton = null;
 
         [SerializeField]
         private List<SkillCutsceneInfo> skillCutsceneInfos;
@@ -54,7 +58,9 @@ namespace Nekoyume
         public RaidBoss Boss => boss;
         public RaidCamera Camera => camera;
         public bool IsCutscenePlaying { get; private set; }
-        public System.Action OnAttackPoint { private get; set; } 
+        public System.Action OnAttackPoint { private get; set; }
+
+        private Marker _currentSkipMarker = null;
 
         public void Show()
         {
@@ -80,6 +86,18 @@ namespace Nekoyume
         {
             var info = skillCutsceneInfos.FirstOrDefault(x => x.SkillId == skillId);
             return info != null && info.Playable != null;
+        }
+
+        public void SkipCutscene()
+        {
+            if (_currentSkipMarker is null)
+            {
+                return;
+            }
+
+            skipButton.gameObject.SetActive(false);
+            director.time = _currentSkipMarker.time;
+            _currentSkipMarker = null;
         }
 
         public IEnumerator CoPlaySkillCutscene(int skillId)
@@ -110,6 +128,16 @@ namespace Nekoyume
                 director.SetGenericBinding(track, appearance.SpineController.SkeletonAnimation);
             }
 
+            if (asset.markerTrack)
+            {
+                var markers = asset.markerTrack.GetMarkers().OfType<SkipMarker>();
+                _currentSkipMarker = markers.FirstOrDefault();
+                if (_currentSkipMarker != null)
+                {
+                    skipButton.gameObject.SetActive(true);
+                }
+            }
+
             IsCutscenePlaying = true;
             director.playableAsset = asset;
             director.RebuildGraph();
@@ -117,6 +145,7 @@ namespace Nekoyume
             yield return new WaitWhile(() => director.state == PlayState.Playing);
             director.Stop();
             IsCutscenePlaying = false;
+            skipButton.gameObject.SetActive(false);
         }
 
         public void ReverseX()

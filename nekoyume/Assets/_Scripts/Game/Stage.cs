@@ -602,7 +602,7 @@ namespace Nekoyume.Game
             var characterSheet = TableSheets.Instance.CharacterSheet;
             var costumeStatSheet = TableSheets.Instance.CostumeStatSheet;
             var cp = CPHelper.GetCPV2(States.Instance.CurrentAvatarState, characterSheet, costumeStatSheet);
-            var props = new Value
+            var props = new Dictionary<string, Value>()
             {
                 ["StageId"] = log.stageId,
                 ["ClearedWave"] = log.clearedWaveNumber,

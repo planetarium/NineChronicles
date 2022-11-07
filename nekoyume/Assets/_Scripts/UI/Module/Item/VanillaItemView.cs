@@ -68,15 +68,8 @@ namespace Nekoyume.UI.Module
             gradeHsv.saturation = data.GradeHsvSaturation;
             gradeHsv.value = data.GradeHsvValue;
 
-            var iconResourceId = itemBase.Id.GetIconResourceId(TableSheets.Instance.ArenaSheet);
-            var itemSprite = SpriteHelper.GetItemIcon(iconResourceId);
-            if (itemSprite is null)
-            {
-                throw new FailedToLoadResourceException<Sprite>(iconResourceId.ToString());
-            }
-
             iconImage.enabled = true;
-            iconImage.overrideSprite = itemSprite;
+            iconImage.overrideSprite = itemBase.GetIconSprite();
             iconImage.SetNativeSize();
         }
 

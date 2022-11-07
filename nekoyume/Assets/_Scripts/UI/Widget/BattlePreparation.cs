@@ -232,7 +232,7 @@ namespace Nekoyume.UI
             bool showByGuideQuest = false)
         {
             _trackGuideQuest = showByGuideQuest;
-            Analyzer.Instance.Track("Unity/Click Stage", new Value
+            Analyzer.Instance.Track("Unity/Click Stage", new Dictionary<string, Value>()
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),

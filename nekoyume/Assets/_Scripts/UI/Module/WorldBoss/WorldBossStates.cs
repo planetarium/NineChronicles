@@ -20,58 +20,8 @@ namespace Nekoyume.UI.Module.WorldBoss
         private static readonly Dictionary<Address, WorldBossKillRewardRecord> _killRewards = new();
         private static readonly List<IDisposable> _disposables = new();
 
-
-        private static ReactiveDictionary<Address, bool> _hasSeasonRewards { get; } = new();
-        private static ReactiveDictionary<Address, bool> _canReceiveSeasonRewards { get; } = new();
-        private static ReactiveDictionary<Address, bool> _receivingSeasonRewards { get; } = new();
         private static ReactiveDictionary<Address, bool> _hasGradeRewards { get; } = new();
         private static ReactiveDictionary<Address, bool> _receivingGradeRewards { get; } = new();
-
-
-        public static bool HasSeasonRewards(Address avatarAddress)
-        {
-            return _hasSeasonRewards.ContainsKey(avatarAddress) && _hasSeasonRewards[avatarAddress];
-        }
-
-        public static void SetHasSeasonRewards(Address avatarAddress, bool value)
-        {
-            if (_hasSeasonRewards.ContainsKey(avatarAddress))
-            {
-                _hasSeasonRewards.Remove(avatarAddress);
-            }
-
-            _hasSeasonRewards.Add(avatarAddress, value);
-        }
-
-        public static bool CanReceiveSeasonRewards(Address avatarAddress)
-        {
-            return _canReceiveSeasonRewards.ContainsKey(avatarAddress) && _canReceiveSeasonRewards[avatarAddress];
-        }
-
-        private static void SetCanReceiveSeasonRewards(Address avatarAddress, bool value)
-        {
-            if (_canReceiveSeasonRewards.ContainsKey(avatarAddress))
-            {
-                _canReceiveSeasonRewards.Remove(avatarAddress);
-            }
-
-            _canReceiveSeasonRewards.Add(avatarAddress, value);
-        }
-
-        public static bool IsReceivingSeasonRewards(Address avatarAddress)
-        {
-            return _receivingSeasonRewards.ContainsKey(avatarAddress) && _receivingSeasonRewards[avatarAddress];
-        }
-
-        public static void SetReceivingSeasonRewards(Address avatarAddress, bool value)
-        {
-            if (_receivingSeasonRewards.ContainsKey(avatarAddress))
-            {
-                _receivingSeasonRewards.Remove(avatarAddress);
-            }
-
-            _receivingSeasonRewards.Add(avatarAddress, value);
-        }
 
         public static void SetHasGradeRewards(Address avatarAddress, bool value)
         {
@@ -137,40 +87,14 @@ namespace Nekoyume.UI.Module.WorldBoss
             if (isOnSeason)
             {
                 UpdateState(avatarAddress, raider, killReward);
-                SetCanReceiveSeasonRewards(avatarAddress, false);
             }
             else
             {
                 UpdatePreRaiderState(avatarAddress, raider);
-                SetCanReceiveSeasonRewards(avatarAddress, CanReceivedSeasonReward(raidRow, raider));
                 ClearRaiderState();
             }
 
             SetHasGradeRewards(avatarAddress, IsExistGradeReward(raidRow, raider));
-        }
-
-        public static void SubscribeHasSeasonRewards(System.Action callback)
-        {
-            _hasSeasonRewards.ObserveAdd().Subscribe(x =>
-            {
-                callback?.Invoke();
-            }).AddTo(_disposables);
-        }
-
-        public static void SubscribeCanReceivedSeasonRewards(System.Action callback)
-        {
-            _canReceiveSeasonRewards.ObserveAdd().Subscribe(x =>
-            {
-                callback?.Invoke();
-            }).AddTo(_disposables);
-        }
-
-        public static void SubscribeReceivingSeasonRewards(System.Action callback)
-        {
-            _receivingSeasonRewards.ObserveAdd().Subscribe(x =>
-            {
-                callback?.Invoke();
-            }).AddTo(_disposables);
         }
 
         public static void SubscribeGradeRewards(Action<bool> callback)
@@ -242,7 +166,6 @@ namespace Nekoyume.UI.Module.WorldBoss
                 return false;
             }
 
-
             if (!tableSheets.WorldBossCharacterSheet.TryGetValue(row.BossId, out var characterRow))
             {
                 return false;
@@ -253,16 +176,6 @@ namespace Nekoyume.UI.Module.WorldBoss
             var highScore = raiderState?.HighScore ?? 0;
             var currentRank = WorldBossHelper.CalculateRank(characterRow, highScore);
             return latestRewardRank < currentRank;
-        }
-
-        private static bool CanReceivedSeasonReward(WorldBossListSheet.Row row, RaiderState raiderState)
-        {
-            if (row == null)
-            {
-                return false;
-            }
-
-            return raiderState != null;
         }
 
         private static async Task<(

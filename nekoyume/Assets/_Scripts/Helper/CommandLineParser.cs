@@ -61,6 +61,8 @@ namespace Nekoyume.Helper
 
         private string onBoardingHost;
 
+        private double sentrySampleRate = 0;
+
         public bool Empty { get; private set; } = true;
 
         public string genesisBlockPath;
@@ -342,6 +344,17 @@ namespace Nekoyume.Helper
             set
             {
                 onBoardingHost = value;
+                Empty = false;
+            }
+        }
+
+        [Option("sentry-sample-rate", Required = false, HelpText = "sample rate for sentry trace")]
+        public double SentrySampleRate
+        {
+            get => sentrySampleRate;
+            set
+            {
+                sentrySampleRate = value;
                 Empty = false;
             }
         }

@@ -33,7 +33,7 @@ namespace Nekoyume.Game
 
         private IEnumerator CoStartPrologue()
         {
-            Analyzer.Instance.Track("Unity/Prologuebattle Start", new Value
+            Analyzer.Instance.Track("Unity/Prologuebattle Start", new Dictionary<string, Value>()
             {
                 ["AgentAddress"] = Game.instance.States.AgentState.address.ToString(),
             });
