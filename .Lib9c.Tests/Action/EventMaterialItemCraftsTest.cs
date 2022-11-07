@@ -1,5 +1,6 @@
 namespace Lib9c.Tests.Action
 {
+    using System.Collections.Generic;
     using System.Linq;
     using Libplanet;
     using Libplanet.Action;
@@ -11,7 +12,6 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
-    using Nekoyume.TableData.Event;
     using Xunit;
     using static SerializeKeys;
 
@@ -76,11 +76,45 @@ namespace Lib9c.Tests.Action
             }
         }
 
+        public static IEnumerable<object[]> GetExecuteSuccessMemberData()
+        {
+            yield return new object[]
+            {
+                100,
+                100100,
+                new Dictionary<int, int>
+                {
+                    [700102] = 5,
+                    [700104] = 5,
+                    [700106] = 5,
+                    [700202] = 5,
+                    [700204] = 5,
+                    [700206] = 5,
+                },
+            };
+
+            yield return new object[]
+            {
+                100,
+                100100,
+                new Dictionary<int, int>
+                {
+                    [700102] = 5,
+                    [700104] = 5,
+                    [700106] = 5,
+                    [700202] = 5,
+                    [700204] = 5,
+                    [700206] = 5,
+                },
+            };
+        }
+
         [Theory]
-        [InlineData(1001, 10010001)]
+        [MemberData(nameof(GetExecuteSuccessMemberData))]
         public void Execute_Success(
             int eventScheduleId,
-            int eventMaterialItemRecipeId)
+            int eventMaterialItemRecipeId,
+            Dictionary<int, int> materialsToUse)
         {
             Assert.True(_tableSheets.EventScheduleSheet
                 .TryGetValue(eventScheduleId, out var scheduleRow));
@@ -89,12 +123,14 @@ namespace Lib9c.Tests.Action
                 _initialStates,
                 eventScheduleId,
                 eventMaterialItemRecipeId,
+                materialsToUse,
                 contextBlockIndex);
             contextBlockIndex = scheduleRow.RecipeEndBlockIndex;
             Execute(
                 _initialStates,
                 eventScheduleId,
                 eventMaterialItemRecipeId,
+                materialsToUse,
                 contextBlockIndex);
         }
 
@@ -102,6 +138,7 @@ namespace Lib9c.Tests.Action
             IAccountStateDelta previousStates,
             int eventScheduleId,
             int eventMaterialItemRecipeId,
+            Dictionary<int, int> materialsToUse,
             long blockIndex = 0)
         {
             var previousAvatarState = previousStates.GetAvatarStateV2(_avatarAddress);
@@ -109,15 +146,13 @@ namespace Lib9c.Tests.Action
             var recipeSheet = previousStates.GetSheet<EventMaterialItemRecipeSheet>();
             Assert.True(recipeSheet.TryGetValue(eventMaterialItemRecipeId, out var recipeRow));
             var materialItemSheet = previousStates.GetSheet<MaterialItemSheet>();
-            // foreach (var materialInfo in recipeRow.Materials)
-            // {
-            //     Assert.True(materialItemSheet.TryGetValue(
-            //         materialInfo.Id,
-            //         out var materialRow));
-            //     var material =
-            //         ItemFactory.CreateItem(materialRow, new TestRandom());
-            //     previousAvatarState.inventory.AddItem(material, materialInfo.Count);
-            // }
+            foreach (var pair in materialsToUse)
+            {
+                Assert.True(materialItemSheet.TryGetValue(pair.Key, out var materialRow));
+                var material = ItemFactory.CreateItem(materialRow, new TestRandom());
+                previousAvatarState.inventory.AddItem(material, pair.Value);
+            }
+
             var worldSheet = previousStates.GetSheet<WorldSheet>();
             previousAvatarState.worldInformation = new WorldInformation(
                 blockIndex,
@@ -134,7 +169,7 @@ namespace Lib9c.Tests.Action
 
             var previousActionPoint = previousAvatarState.actionPoint;
             var previousResultMaterialCount =
-                previousAvatarState.inventory.Equipments
+                previousAvatarState.inventory.Materials
                     .Count(e => e.Id == recipeRow.ResultMaterialItemId);
             var previousMailCount = previousAvatarState.mailBox.Count;
 
@@ -143,6 +178,7 @@ namespace Lib9c.Tests.Action
                 AvatarAddress = _avatarAddress,
                 EventScheduleId = eventScheduleId,
                 EventMaterialItemRecipeId = eventMaterialItemRecipeId,
+                MaterialsToUse = materialsToUse,
             };
 
             var nextStates = action.Execute(new ActionContext
@@ -163,7 +199,7 @@ namespace Lib9c.Tests.Action
                 nextAvatarState.inventory.Materials
                     .Count(e => e.Id == recipeRow.ResultMaterialItemId));
             Assert.Equal(previousMailCount + 1, nextAvatarState.mailBox.Count);
-            Assert.IsType<CombinationMail>(nextAvatarState.mailBox.First());
+            Assert.IsType<MaterialCraftMail>(nextAvatarState.mailBox.First());
         }
     }
 }
