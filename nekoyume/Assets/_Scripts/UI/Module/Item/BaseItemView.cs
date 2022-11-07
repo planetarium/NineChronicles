@@ -144,12 +144,10 @@ namespace Nekoyume
 
         public static Sprite GetItemIcon(ItemBase itemBase)
         {
-            var iconResourceId =
-                itemBase.Id.GetIconResourceId(TableSheets.Instance.ArenaSheet);
-            var icon = SpriteHelper.GetItemIcon(iconResourceId);
+            var icon = itemBase.GetIconSprite();
             if (icon is null)
             {
-                throw new FailedToLoadResourceException<Sprite>(iconResourceId.ToString());
+                throw new FailedToLoadResourceException<Sprite>(itemBase.Id.ToString());
             }
 
             return icon;

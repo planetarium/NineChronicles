@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Libplanet;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
-using Nekoyume.Model.Mail;
 using Nekoyume.State;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module.WorldBoss;
-using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module.Lobby
 {
@@ -44,26 +44,16 @@ namespace Nekoyume.UI.Module.Lobby
         private TimeBlock timeBlock;
 
         [SerializeField]
-        private Button claimRewardButton;
-
-        [SerializeField]
         private GameObject loadingIndicator;
 
         private readonly List<IDisposable> _disposables = new();
+        private bool _madeRaidMail;
+
+        private const long SettleSeasonRewardInterval = 7200;
 
         private void Start()
         {
-            claimRewardButton.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    ClaimSeasonReward();
-                }).AddTo(gameObject);
-
             WorldBossStates.SubscribeGradeRewards(b => notification.SetActive(b));
-            WorldBossStates.SubscribeReceivingSeasonRewards(UpdateIndicator);
-            WorldBossStates.SubscribeCanReceivedSeasonRewards(UpdateClaimButton);
-            WorldBossStates.SubscribeHasSeasonRewards(UpdateClaimButton);
-            UpdateClaimButton();
 
             Game.Game.instance.Agent.BlockIndexSubject.Subscribe(UpdateBlockIndex).AddTo(_disposables);
             UpdateBlockIndex(Game.Game.instance.Agent.BlockIndex);
@@ -95,17 +85,21 @@ namespace Nekoyume.UI.Module.Lobby
                 return;
             }
 
+            if (blockIndex <= row.EndedBlockIndex + SettleSeasonRewardInterval)
+            {
+                loadingIndicator.SetActive(true);
+                seasonRewardIcon.gameObject.SetActive(true);
+                return;
+            }
+
             if (WorldBossStates.GetPreRaiderState(avatarAddress) is null)
             {
                 return;
             }
 
-            if (!WorldBossStates.IsReceivingSeasonRewards(avatarAddress))
-            {
-                RequestManager.instance.IsExistSeasonReward(row.Id, avatarAddress);
-            }
-
-            UpdateIndicator();
+            loadingIndicator.SetActive(false);
+            seasonRewardIcon.gameObject.SetActive(false);
+            AddSeasonRewardMail(row.Id);
         }
 
         private void OnDestroy()
@@ -113,32 +107,94 @@ namespace Nekoyume.UI.Module.Lobby
             _disposables.DisposeAllAndClear();
         }
 
-        private void UpdateClaimButton()
+        private void MakeSeasonRewardMail(int id, Address address, IEnumerable<SeasonRewards> rewards, bool isNew)
         {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var canReceived = WorldBossStates.CanReceiveSeasonRewards(avatarAddress);
-            if (!canReceived)
+            LocalMailHelper.Instance.Initialize();
+            var now = Game.Game.instance.Agent.BlockIndex;
+            foreach (var reward in rewards.OrderBy(reward => reward.ticker))
             {
-                claimRewardButton.gameObject.SetActive(false);
-                seasonRewardIcon.gameObject.SetActive(false);
-                return;
+                var currencyName = L10nManager.LocalizeCurrencyName(reward.ticker);
+                LocalMailHelper.Instance.Add(
+                    address,
+                    new RaidRewardMail(
+                        now,
+                        Guid.NewGuid(),
+                        now,
+                        currencyName,
+                        reward.amount,
+                        id) {New = isNew},
+                    true
+                );
             }
 
-            var hasRewards = WorldBossStates.HasSeasonRewards(avatarAddress);
-            claimRewardButton.gameObject.SetActive(hasRewards);
-            seasonRewardIcon.gameObject.SetActive(hasRewards);
+            ReactiveAvatarState.Address.First(addr => addr != address)
+                .Subscribe(_ =>
+                {
+                    _madeRaidMail = false;
+                    LocalMailHelper.Instance.CleanupAndDispose(address);
+                });
         }
 
-        private void UpdateIndicator()
+        private void AddSeasonRewardMail(int raidId)
         {
-            if (States.Instance.CurrentAvatarState == null)
+            const string success = "SUCCESS";
+            const string cachingKey = "SeasonRewards_{0}_{1}";
+            if (States.Instance.CurrentAvatarState == null || _madeRaidMail)
             {
                 return;
             }
 
+            _madeRaidMail = true;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var isReceiving = WorldBossStates.IsReceivingSeasonRewards(avatarAddress);
-            loadingIndicator.SetActive(isReceiving);
+            var localRewardKey = string.Format(cachingKey, raidId, avatarAddress);
+
+            var receivedRewardTxs = new List<string>();
+            if (PlayerPrefs.HasKey(localRewardKey))
+            {
+                var json = PlayerPrefs.GetString(localRewardKey);
+                var seasonReward = JsonUtility.FromJson<SeasonRewardRecord>(json);
+                var receivedRewards = seasonReward.rewards
+                    .Where(reward => reward.tx_result == success)
+                    .ToArray();
+                receivedRewardTxs.AddRange(receivedRewards.Select(reward => reward.tx_id));
+                MakeSeasonRewardMail(
+                    raidId,
+                    new Address(seasonReward.avatarAddress),
+                    receivedRewards,
+                    false);
+
+                // All tx(s) are SUCCESS, do not request.
+                if (seasonReward.rewards.Length == receivedRewards.Length)
+                {
+                    return;
+                }
+            }
+
+            // If have not cached data or have missing reward, Request SeasonRewards.
+            StartCoroutine(WorldBossQuery.CoGetSeasonRewards(
+                raidId,
+                avatarAddress,
+                json =>
+                {
+                    var seasonReward = JsonUtility.FromJson<SeasonRewardRecord>(json);
+                    // only succeed and not cached tx makes mail.
+                    var rewards = seasonReward.rewards.Where(reward =>
+                        reward.tx_result == success &&
+                        !receivedRewardTxs.Contains(reward.tx_id));
+                    MakeSeasonRewardMail(
+                        seasonReward.raidId,
+                        new Address(seasonReward.avatarAddress),
+                        rewards,
+                        true);
+                    PlayerPrefs.SetString(localRewardKey, json);
+                }, null));
+
+            // Delete old-cached data.
+            var oldSeasonCachingKey = string.Format(cachingKey, raidId - 1, avatarAddress);
+            if (PlayerPrefs.HasKey(oldSeasonCachingKey))
+            {
+                PlayerPrefs.DeleteKey(oldSeasonCachingKey);
+            }
         }
 
         private void UpdateBlockIndex(long currentBlockIndex)
@@ -188,46 +244,6 @@ namespace Nekoyume.UI.Module.Lobby
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-        }
-
-        private void ClaimSeasonReward()
-        {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var agentAddress = States.Instance.AgentState.address;
-            var blockIndex = Game.Game.instance.Agent.BlockIndex;
-
-            if (!IsUnlocked)
-            {
-                return;
-            }
-
-            if (WorldBossStates.IsReceivingSeasonRewards(avatarAddress))
-            {
-                return;
-            }
-
-            if (!WorldBossFrontHelper.TryGetPreviousRow(blockIndex, out var row))
-            {
-                return;
-            }
-
-            WorldBossStates.SetReceivingSeasonRewards(avatarAddress, true);
-            StartCoroutine(WorldBossQuery.CoClaimSeasonReward(
-                row.Id,
-                agentAddress,
-                avatarAddress,
-                (json) =>
-                {
-                    RequestManager.instance.GetSeasonReward(json);
-                },
-                () =>
-                {
-                    WorldBossStates.SetReceivingSeasonRewards(avatarAddress, false);
-                    OneLineSystem.Push(
-                        MailType.System,
-                        L10nManager.Localize("UI_BOSS_SEASON_REWARD_REQUEST_FAIL"),
-                        NotificationCell.NotificationType.Alert);
-                }));
         }
     }
 }

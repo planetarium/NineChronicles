@@ -11,86 +11,6 @@ namespace Nekoyume
 {
     public static class ArenaSheetExtensions
     {
-        /// <param name="medalItemId">`ItemSheet.Row.Id`</param>
-        /// <param name="arenaSheet"></param>
-        /// <returns>
-        /// `championshipNumber`: 1 ~ 4
-        /// `seasonNumber`: 1 ~ 12
-        /// </returns>
-        public static (int championshipNumber, int seasonNumber) ToArenaNumbers(
-            this int medalItemId,
-            ArenaSheet arenaSheet)
-        {
-            // NOTE: `700_102` is new arena medal item id.
-            if (medalItemId < 700_100 ||
-                medalItemId >= 800_000)
-            {
-                return (0, 0);
-            }
-
-            // `championshipId`: 1 ~ 999
-            var championshipId = medalItemId % 100_000 / 100;
-            if (!arenaSheet.TryGetValue(championshipId, out var row))
-            {
-                return (0, 0);
-            }
-
-            // `round`: 1 ~ 99
-            var round = medalItemId % 100;
-            var seasonNumber = 0;
-            var isSeason = false;
-            foreach (var roundData in row.Round)
-            {
-                if (roundData.ArenaType == ArenaType.Season)
-                {
-                    seasonNumber++;
-                }
-
-                if (roundData.Round == round)
-                {
-                    isSeason = roundData.ArenaType == ArenaType.Season;
-                    break;
-                }
-            }
-
-            if (championshipId <= 2)
-            {
-                seasonNumber = isSeason
-                    ? seasonNumber + (championshipId - 1) * 3 + 3
-                    : 0;
-                return (championshipId, seasonNumber);
-            }
-
-            var championshipNumber = (championshipId - 2) % 4;
-            seasonNumber = isSeason
-                ? seasonNumber + (championshipNumber - 1) * 3
-                : 0;
-            return (championshipNumber, seasonNumber);
-        }
-
-        public static int ToItemIconResourceId(
-            this (int championshipNumber, int seasonNumber) tuple)
-        {
-            var (championshipNumber, seasonNumber) = tuple;
-            var id = 700_000;
-            if (seasonNumber == 0)
-            {
-                id += championshipNumber * 100;
-                id += 8;
-                return id;
-            }
-            
-            // seasonNumber 1, 2, 3 -> championshipNumber 1
-            //              4, 5, 6 ->                    2
-            //              7, 8, 9 ->                    3
-            id += (seasonNumber + 2) / 3 * 100;
-            // seasonNumber 1, 2, 3 -> round 2, 4, 6
-            //              4, 5, 6 -> round 2, 4, 6
-            //              7, 8, 9 -> round 2, 4, 6
-            id += (seasonNumber - (seasonNumber - 1) / 3 * 3) * 2;
-            return id;
-        }
-
         public static bool TryGetCurrentRound(
             this ArenaSheet sheet,
             long blockIndex,
@@ -197,16 +117,16 @@ namespace Nekoyume
                 return false;
             }
 
-            // NOTE: The season number is beginning from 4 when the championship id is 1 or 2.
-            //       So it initialized as 3 when the championship id is 1 or 2 because the first
-            //       season number will be set like `seasonNumber++` in the following code.
-            seasonNumber = championshipId == 1 || championshipId == 2
-                ? 3
-                : 0;
+            // NOTE: The season number is beginning from 4. so it initialized as 3.
+            // because the first season number will be set like `seasonNumber++` in the following code.
+            seasonNumber = 3;
 
-            // NOTE: The championship cycles once over four times.
-            // And each championship includes three seasons.
-            seasonNumber += (championshipId % 4 - 1) * 3;
+            // Add count of last season by id.
+            // championship 1 includes 1 seasons.
+            if (championshipId > 1) seasonNumber += 3;
+            // championship 2 or more includes 2 seasons.
+            if (championshipId > 2) seasonNumber += (championshipId - 2) * 2;
+
             foreach (var roundData in roundDataArray)
             {
                 if (roundData.ArenaType == ArenaType.Season)
@@ -233,23 +153,9 @@ namespace Nekoyume
                 return false;
             }
 
-            if (roundData.ArenaType == ArenaType.Championship)
-            {
-                medalItemResourceId = ArenaHelper.GetMedalItemId(
-                    roundData.ChampionshipId % 4,
-                    roundData.Round);
-                return true;    
-            }
-
-            // NOTE: id = 700{championship id % 4:N1}{round:N2}
-            //       e.g., 700102, 700406
-            // NOTE: The season number is beginning from 4 when the championship id is 1 or 2.
-            //       So `championshipNumber` should +1 like below
-            //       because every championship has 3 seasons.
-            var championshipNumber = roundData.ChampionshipId == 1 || roundData.ChampionshipId == 2
-                ? roundData.ChampionshipId % 4 + 1
-                : roundData.ChampionshipId % 4;
-            medalItemResourceId = ArenaHelper.GetMedalItemId(championshipNumber, roundData.Round);
+            medalItemResourceId = ArenaHelper.GetMedalItemId(
+                roundData.ChampionshipId,
+                roundData.Round);
             return true;
         }
 
@@ -263,22 +169,16 @@ namespace Nekoyume
         public static int GetChampionshipYear(this ArenaSheet.Row row)
         {
             // row.ChampionshipId
-            // 1, 2: 2022
-            // 3, 4, 5, 6: 2023
-            // 7, 8, 9, 10: 2024
+            // 1,  2: 2022
+            // 3,  4,  5,  6,  7,  8: 2023
+            // 9, 10, 11, 12, 13, 14: 2024
             // ...
             if (row.ChampionshipId <= 2)
             {
                 return 2022;
             }
 
-            var offset = 0;
-            var i = row.ChampionshipId - 2;
-            while (i > 0)
-            {
-                offset++;
-                i -= 4;
-            }
+            var offset = (row.ChampionshipId - 3) / 6 + 1;
 
             return 2022 + offset;
         }
@@ -292,8 +192,10 @@ namespace Nekoyume
         public static bool IsChampionshipConditionComplete(this ArenaSheet.Row row, AvatarState avatarState)
         {
             var medalTotalCount = ArenaHelper.GetMedalTotalCount(row, avatarState);
-            var championshipRound = row.Round[7];
-            return medalTotalCount >= championshipRound.RequiredMedalCount;
+            var requiredMedalCount = row.Round
+                .FirstOrDefault(r => r.ArenaType == ArenaType.Championship)
+                ?.RequiredMedalCount ?? 0;
+            return medalTotalCount >= requiredMedalCount;
         }
 
         public static List<int> GetSeasonNumbersOfChampionship(
@@ -331,10 +233,16 @@ namespace Nekoyume
                 return false;
             }
 
-            // NOTE: The season number is beginning from 4.
-            // NOTE: The championship cycles once over four times.
-            // And each championship includes three seasons.
-            var seasonStartNumber = (championshipId % 4 - 1) * 3 + 4;
+            // NOTE: The season number is beginning from 4. so it initialized as 3.
+            // because the first season number will be set like `++seasonStartNumber` in the following code.
+            var seasonStartNumber = 3;
+
+            // Add count of last season by id.
+            // championship 1 includes 1 seasons.
+            if (championshipId > 1) seasonStartNumber += 3;
+            // championship 2 or more includes 2 seasons.
+            if (championshipId > 2) seasonStartNumber += (championshipId - 2) * 2;
+
             foreach (var roundData in roundDataArray)
             {
                 if (roundData.ArenaType != ArenaType.Season)
@@ -342,7 +250,7 @@ namespace Nekoyume
                     continue;
                 }
 
-                seasonNumbers.Add(seasonStartNumber++);
+                seasonNumbers.Add(++seasonStartNumber);
             }
 
             return true;

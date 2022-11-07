@@ -289,10 +289,11 @@ namespace Nekoyume.UI
             }
 
             Game.Game.instance.ActionManager.UpdateSell(updateSellInfos).Subscribe();
-            Analyzer.Instance.Track("Unity/UpdateSellAll", new Value
+            Analyzer.Instance.Track("Unity/UpdateSellAll", new Dictionary<string, Value>()
             {
                 ["Quantity"] = updateSellInfos.Count,
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             });
 
             string message;
@@ -375,9 +376,10 @@ namespace Nekoyume.UI
             var itemSubType = data.Item.Value.ItemBase.Value.ItemSubType;
             Game.Game.instance.ActionManager.Sell(tradableItem, count, totalPrice, itemSubType)
                 .Subscribe();
-            Analyzer.Instance.Track("Unity/Sell", new Value
+            Analyzer.Instance.Track("Unity/Sell", new Dictionary<string, Value>()
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             });
             ResponseSell();
         }
@@ -426,9 +428,10 @@ namespace Nekoyume.UI
             );
 
             Game.Game.instance.ActionManager.UpdateSell(new List<UpdateSellInfo> {updateSellInfo}).Subscribe();
-            Analyzer.Instance.Track("Unity/UpdateSell", new Value
+            Analyzer.Instance.Track("Unity/UpdateSell", new Dictionary<string, Value>()
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             });
             ResponseSell();
         }
@@ -527,9 +530,10 @@ namespace Nekoyume.UI
                 ReactiveShopState.GetSellDigest(tradableId, requiredBlockIndex, price, count);
             if (digest != null)
             {
-                Analyzer.Instance.Track("Unity/Sell Cancellation", new Value
+                Analyzer.Instance.Track("Unity/Sell Cancellation", new Dictionary<string, Value>()
                 {
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                 });
                 Game.Game.instance.ActionManager.SellCancellation(
                     avatarAddress,

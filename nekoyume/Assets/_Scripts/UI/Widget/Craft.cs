@@ -496,12 +496,13 @@ namespace Nekoyume.UI
 
                         Analyzer.Instance.Track(
                             "Unity/Replace Combination Material",
-                            new Value
+                            new Dictionary<string, Value>()
                             {
                                 ["MaterialCount"] = insufficientMaterials
                                     .Sum(x => x.Value),
                                 ["BurntCrystal"] = (long)recipeInfo.CostCrystal,
                                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                             });
 
                         ActionManager.Instance

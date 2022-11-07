@@ -358,6 +358,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<TicketPurchasePopup>());
             yield return null;
+            secondWidgets.Add(Widget.Create<ArenaTicketPurchasePopup>());
+            yield return null;
 
             // tooltip
             secondWidgets.Add(Widget.Create<EquipmentTooltip>());

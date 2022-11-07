@@ -18,12 +18,15 @@ namespace PackageExtensions.Mixpanel
         private readonly string _agentAddress;
 
         public MixpanelValueFactory(
+            string clientHost,
+            string clientHash,
+            string targetNetwork,
             string rpcServerHost = null,
             string agentAddress = null)
         {
-            _clientHost = Resources.Load<TextAsset>("MixpanelClientHost")?.text ?? "no-host";
-            _clientHash = Resources.Load<TextAsset>("MixpanelClientHash")?.text ?? "no-hash";
-            _targetNetwork = Resources.Load<TextAsset>("MixpanelTargetNetwork")?.text ?? "no-target";
+            _clientHost = clientHost;
+            _clientHash = clientHash;
+            _targetNetwork = targetNetwork;
             _rpcServerHost = rpcServerHost;
             _agentAddress = agentAddress;
 

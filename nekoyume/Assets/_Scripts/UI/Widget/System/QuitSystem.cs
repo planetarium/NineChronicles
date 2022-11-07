@@ -32,8 +32,7 @@ namespace Nekoyume.UI
                 .Subscribe(_ =>
                 {
                     var address = States.Instance.CurrentAvatarState.address;
-                    if (WorldBossStates.IsReceivingGradeRewards(address) ||
-                        WorldBossStates.IsReceivingSeasonRewards(address))
+                    if (WorldBossStates.IsReceivingGradeRewards(address))
                     {
                         OneLineSystem.Push(
                             MailType.System,

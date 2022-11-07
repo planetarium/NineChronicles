@@ -118,14 +118,19 @@ namespace Nekoyume.UI
             UpdateMailList(blockIndex);
         }
 
-        private IEnumerable<Nekoyume.Model.Mail.Mail> GetAvailableMailList(long blockIndex,
+        private IEnumerable<Mail> GetAvailableMailList(long blockIndex,
             MailTabState state)
         {
-            bool predicate(Nekoyume.Model.Mail.Mail mail)
+            bool predicate(Mail mail)
             {
                 if (state == MailTabState.All)
                 {
                     return true;
+                }
+
+                if (state == MailTabState.Workshop)
+                {
+                    return mail.MailType is MailType.Grinding or MailType.Workshop;
                 }
 
                 return mail.MailType == (MailType)state;
@@ -421,6 +426,12 @@ namespace Nekoyume.UI
                 widget.Close();
             });
             popup.Pop(monsterCollectionResult.rewards);
+        }
+
+        public void Read(RaidRewardMail raidRewardMail)
+        {
+            raidRewardMail.New = false;
+            ReactiveAvatarState.UpdateMailBox(MailBox);
         }
 
         public void TutorialActionClickFirstCombinationMailSubmitButton()

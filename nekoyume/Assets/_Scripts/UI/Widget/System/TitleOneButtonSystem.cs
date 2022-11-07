@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Nekoyume.EnumType;
 using mixpanel;
 using UnityEngine;
@@ -15,7 +16,7 @@ namespace Nekoyume.UI
             Analyzer.Instance.Track("Unity/SystemPopupImpression");
             if (Game.Game.instance.IsInWorld)
             {
-                var props = new Value
+                var props = new Dictionary<string, Value>()
                 {
                     ["StageId"] = Game.Game.instance.Stage.stageId,
                 };

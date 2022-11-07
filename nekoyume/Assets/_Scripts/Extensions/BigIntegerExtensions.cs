@@ -20,8 +20,8 @@ namespace Nekoyume
                         return num.ToString();
                     case 4:
                     case 5:
-                        return BigInteger.Divide(num, (BigInteger)1e3) + "K";
                     case 6:
+                        return BigInteger.Divide(num, (BigInteger)1e3) + "K";
                     case 7:
                     case 8:
                     case 9:

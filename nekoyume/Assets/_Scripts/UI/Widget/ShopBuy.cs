@@ -216,20 +216,22 @@ namespace Nekoyume.UI
 
             if (models.Count > 0)
             {
-                var props = new Value
+                var props = new Dictionary<string, Value>()
                 {
                     ["Count"] = models.Count,
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                 };
                 Analyzer.Instance.Track("Unity/Number of Purchased Items", props);
             }
 
             foreach (var model in models)
             {
-                var props = new Value
+                var props = new Dictionary<string, Value>()
                 {
                     ["Price"] = model.OrderDigest.Price.GetQuantityString(),
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                 };
                 Analyzer.Instance.Track("Unity/Buy", props);
 

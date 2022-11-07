@@ -716,7 +716,7 @@ namespace Nekoyume.UI
         private void Raid(bool payNcg)
         {
             var (equipments, costumes, foods, runes) = SaveCurrentEquipment();
-            ActionManager.Instance.Raid(costumes, equipments, foods, runes, payNcg);
+            ActionManager.Instance.Raid(costumes, equipments, foods, runes, payNcg).Subscribe();
             Find<LoadingScreen>().Show();
             Find<WorldBoss>().Close();
             Close();
@@ -763,7 +763,17 @@ namespace Nekoyume.UI
                 {
                     coverToBlockClick.SetActive(true);
                     Raid(true);
-                });
+                },
+                GoToMarket
+            );
+        }
+
+        private void GoToMarket()
+        {
+            Find<WorldBoss>().Close(true);
+            Find<RaidPreparation>().Close(true);
+            Find<ShopBuy>().Show();
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
         }
 
         private void PostEquipOrUnequip(EquipmentSlot slot)
