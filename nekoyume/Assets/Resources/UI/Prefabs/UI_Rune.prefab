@@ -6365,7 +6365,7 @@ MonoBehaviour:
   - {fileID: 2037588187271181575}
   - {fileID: 6952657782620633882}
   content: {fileID: 8634316168518126721}
-  requirement: {fileID: 0}
+  requirement: {fileID: 7244560001913322361}
   loadingObjects:
   - {fileID: 7785106812570014186}
   - {fileID: 4685234639540037661}
@@ -7668,9 +7668,9 @@ RectTransform:
   m_Father: {fileID: 2979483679616290867}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 10, y: -80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 10, y: 0}
   m_SizeDelta: {x: 0, y: 32}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &1457931699471292775
@@ -20672,9 +20672,9 @@ RectTransform:
   m_Father: {fileID: 3527600255487801352}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 10, y: 65}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 10, y: 0}
   m_SizeDelta: {x: 0, y: 32}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &277056571424595662
@@ -31020,6 +31020,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_fontColor32.rgba
       value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 8955036595898329477, guid: 9c6f222f201845d40a1c05047dffae0a,
+        type: 3}
+      propertyPath: costType
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9095759713712179507, guid: 9c6f222f201845d40a1c05047dffae0a,
         type: 3}
