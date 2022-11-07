@@ -13,6 +13,7 @@
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Battle;
+    using Nekoyume.BlockChain.Policy;
     using Nekoyume.Model;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.State;
@@ -21,7 +22,7 @@
     using Xunit.Abstractions;
     using static Lib9c.SerializeKeys;
 
-    public class UpdateSellTest
+    public class UpdateSell3Test
     {
         private const long ProductPrice = 100;
         private readonly Address _agentAddress;
@@ -32,7 +33,7 @@
         private readonly GoldCurrencyState _goldCurrencyState;
         private IAccountStateDelta _initialState;
 
-        public UpdateSellTest(ITestOutputHelper outputHelper)
+        public UpdateSell3Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -223,7 +224,7 @@
                 itemCount
             );
 
-            var action = new UpdateSell
+            var action = new UpdateSell3
             {
                 sellerAvatarAddress = _avatarAddress,
                 updateSellInfos = new[] { updateSellInfo },
@@ -250,7 +251,7 @@
         [Fact]
         public void Execute_Throw_ListEmptyException()
         {
-            var action = new UpdateSell
+            var action = new UpdateSell3
             {
                 sellerAvatarAddress = _avatarAddress,
                 updateSellInfos = new List<UpdateSellInfo>(),
@@ -275,7 +276,7 @@
                 0 * _currency,
                 1);
 
-            var action = new UpdateSell
+            var action = new UpdateSell3
             {
                 sellerAvatarAddress = _avatarAddress,
                 updateSellInfos = new[] { updateSellInfo },
@@ -311,7 +312,7 @@
                 0 * _currency,
                 1);
 
-            var action = new UpdateSell
+            var action = new UpdateSell3
             {
                 sellerAvatarAddress = _avatarAddress,
                 updateSellInfos = new[] { updateSellInfo },
@@ -350,7 +351,7 @@
                 -1 * _currency,
                 1);
 
-            var action = new UpdateSell
+            var action = new UpdateSell3
             {
                 sellerAvatarAddress = _avatarAddress,
                 updateSellInfos = new[] { updateSellInfo },
@@ -364,11 +365,8 @@
             }));
         }
 
-        [Theory]
-        [InlineData(100, false)]
-        [InlineData(1, false)]
-        [InlineData(101, true)]
-        public void PurchaseInfos_Capacity(int count, bool exc)
+        [Fact]
+        public void Execute_ActionObsoletedException()
         {
             var updateSellInfo = new UpdateSellInfo(
                 default,
@@ -377,42 +375,19 @@
                 default,
                 -1 * _currency,
                 1);
-            var updateSellInfos = new List<UpdateSellInfo>();
-            for (int i = 0; i < count; i++)
-            {
-                updateSellInfos.Add(updateSellInfo);
-            }
 
-            if (exc)
+            var action = new UpdateSell3
             {
-                Assert.Throws<ArgumentOutOfRangeException>(() => new UpdateSell
-                {
-                    sellerAvatarAddress = _avatarAddress,
-                    updateSellInfos = updateSellInfos,
-                });
-                var action = new UpdateSell
-                {
-                    sellerAvatarAddress = _avatarAddress,
-                    updateSellInfos = new List<UpdateSellInfo>(),
-                };
-                var dict = (Dictionary)action.PlainValue;
-                dict = dict.SetItem(
-                    UpdateSellInfoKey,
-                    updateSellInfos.Select(info => info.Serialize()).Serialize());
-                Assert.Throws<ArgumentOutOfRangeException>(() => action.LoadPlainValue(dict));
-            }
-            else
+                sellerAvatarAddress = _avatarAddress,
+                updateSellInfos = new[] { updateSellInfo },
+            };
+
+            Assert.Throws<ActionObsoletedException>(() => action.Execute(new ActionContext
             {
-                var action = new UpdateSell
-                {
-                    sellerAvatarAddress = _avatarAddress,
-                    updateSellInfos = updateSellInfos,
-                };
-                Assert.Equal(count, action.updateSellInfos.Count());
-                var action2 = new UpdateSell();
-                action2.LoadPlainValue(action.PlainValue);
-                Assert.Equal(count, action2.updateSellInfos.Count());
-            }
+                BlockIndex = BlockPolicySource.V100320ObsoleteIndex + 1,
+                PreviousStates = _initialState,
+                Signer = _agentAddress,
+            }));
         }
     }
 }

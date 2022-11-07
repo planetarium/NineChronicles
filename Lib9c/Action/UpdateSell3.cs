@@ -23,25 +23,12 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/1022
     /// </summary>
     [Serializable]
-    [ActionType("update_sell4")]
-    public class UpdateSell : GameAction
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100320ObsoleteIndex)]
+    [ActionType("update_sell3")]
+    public class UpdateSell3 : GameAction
     {
         public Address sellerAvatarAddress;
-        public IEnumerable<UpdateSellInfo> updateSellInfos
-        {
-            get => _updateSellInfos;
-            set
-            {
-                if (value.Count() > 100)
-                {
-                    throw new ArgumentOutOfRangeException($"{nameof(value)} must be less than or equal 100.");
-                }
-
-                _updateSellInfos = value;
-            }
-        }
-
-        private IEnumerable<UpdateSellInfo> _updateSellInfos;
+        public IEnumerable<UpdateSellInfo> updateSellInfos;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
@@ -69,6 +56,8 @@ namespace Nekoyume.Action
             {
                 return states;
             }
+
+            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100320ObsoleteIndex, context);
 
             // common
             var addressesHex = GetSignerAndOtherAddressesHex(context, sellerAvatarAddress);
