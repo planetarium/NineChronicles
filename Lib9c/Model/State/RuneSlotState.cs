@@ -16,7 +16,7 @@ namespace Nekoyume.Model.State
 
         public BattleType BattleType { get; }
 
-        private readonly List<RuneSlot> _slots = new List<RuneSlot>();
+        private readonly List<RuneSlot> _slots = new();
 
         public RuneSlotState(BattleType battleType)
         {
@@ -132,9 +132,9 @@ namespace Nekoyume.Model.State
             slot.Unlock();
         }
 
-        public Dictionary<int, RuneSlot> GetRuneSlot()
+        public List<RuneSlot> GetRuneSlot()
         {
-            return _slots.ToDictionary(runeSlot => runeSlot.Index);
+            return _slots;
         }
 
         public List<RuneState> GetEquippedRuneStates()
