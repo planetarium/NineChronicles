@@ -25,15 +25,24 @@ namespace Nekoyume.Action
         public Address AvatarAddress;
         public int EventScheduleId;
         public int EventMaterialItemRecipeId;
+        public Dictionary<int, int> MaterialsToUse;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal
         {
             get
             {
+                var serialized = new Dictionary(MaterialsToUse
+                    .OrderBy(pair => pair.Key)
+                    .Select(pair =>
+                        new KeyValuePair<IKey, IValue>(
+                            (IKey)pair.Key.Serialize(), pair.Value.Serialize()
+                        )
+                    ));
                 var list = List.Empty
                     .Add(AvatarAddress.Serialize())
                     .Add(EventScheduleId.Serialize())
-                    .Add(EventMaterialItemRecipeId.Serialize());
+                    .Add(EventMaterialItemRecipeId.Serialize())
+                    .Add(serialized);
 
                 return new Dictionary<string, IValue>
                 {
@@ -54,7 +63,7 @@ namespace Nekoyume.Action
                 throw new ArgumentException("'l' must be a bencodex list");
             }
 
-            if (list.Count < 3)
+            if (list.Count < 4)
             {
                 throw new ArgumentException("'l' must contain at least 4 items");
             }
@@ -62,6 +71,9 @@ namespace Nekoyume.Action
             AvatarAddress = list[0].ToAddress();
             EventScheduleId = list[1].ToInteger();
             EventMaterialItemRecipeId = list[2].ToInteger();
+            var deserialized = ((Dictionary)list[3]).ToDictionary(pair =>
+                pair.Key.ToInteger(), pair => pair.Value.ToInteger());
+            MaterialsToUse = deserialized;
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -167,14 +179,12 @@ namespace Nekoyume.Action
             // ~Validate fields
             #endregion
 
-            // Todo : requiredFungibleItems 지정하는데 이 액션에서 Material 확인하는방법 따라 수정하기
             #region Validate Work
             // Validate Work
             sw.Restart();
             var costActionPoint = 0;
-            var requiredFungibleItems = new Dictionary<int, int>();
 
-            // Validate Recipe ResultEquipmentId
+            // Validate Recipe ResultMaterialItemId
             var materialItemSheet = states.GetSheet<MaterialItemSheet>();
             if (!materialItemSheet.TryGetValue(
                     recipeRow.ResultMaterialItemId,
@@ -188,11 +198,11 @@ namespace Nekoyume.Action
             // ~Validate Recipe ResultEquipmentId
 
             // Validate Recipe Material
-            // var materialItemSheet = states.GetSheet<MaterialItemSheet>();
-            // materialItemSheet.ValidateFromAction(
-            //     recipeRow.Materials,
-            //     requiredFungibleItems,
-            //     addressesHex);
+            recipeRow.ValidateFromAction(
+                materialItemSheet,
+                MaterialsToUse,
+                ActionTypeText,
+                addressesHex);
             // ~Validate Recipe Material
 
             costActionPoint += recipeRow.RequiredActionPoint;
@@ -206,21 +216,20 @@ namespace Nekoyume.Action
             // ~Validate Work
             #endregion
 
-            // Todo : 이것도. 인벤토리에서 requiredFungibleItems를 찾아서 없애는거임
             #region Remove Required Materials
             // Remove Required Materials
-//             var inventory = avatarState.inventory;
-// #pragma warning disable LAA1002
-//             foreach (var pair in requiredFungibleItems)
-// #pragma warning restore LAA1002
-//             {
-//                 if (!materialItemSheet.TryGetValue(pair.Key, out var materialRow) ||
-//                     !inventory.RemoveFungibleItem(materialRow.ItemId, context.BlockIndex, pair.Value))
-//                 {
-//                     throw new NotEnoughMaterialException(
-//                         $"{addressesHex}Aborted as the player has no enough material ({pair.Key} * {pair.Value})");
-//                 }
-//             }
+            var inventory = avatarState.inventory;
+#pragma warning disable LAA1002
+            foreach (var pair in MaterialsToUse)
+#pragma warning restore LAA1002
+            {
+                if (!materialItemSheet.TryGetValue(pair.Key, out var materialRow) ||
+                    !inventory.RemoveFungibleItem(materialRow.ItemId, context.BlockIndex, pair.Value))
+                {
+                    throw new NotEnoughMaterialException(
+                        $"{addressesHex}Aborted as the player has no enough material ({pair.Key} * {pair.Value})");
+                }
+            }
             // ~Remove Required Materials
             #endregion
 
@@ -242,31 +251,19 @@ namespace Nekoyume.Action
 
             #region Create Material
             // Create Material
-            var materialResult = ItemFactory.CreateTradableMaterial(resulMaterialRow);
+            var materialResult = ItemFactory.CreateMaterial(resulMaterialRow);
             avatarState.inventory.AddItem(materialResult);
             // ~Create Material
             #endregion
 
             #region Create Mail
             // Create Mail
-            var mailId = context.Random.GenerateRandomGuid();
-            var attachmentResult = new CombinationConsumable5.ResultModel
-            {
-                id = mailId,
-                actionPoint = costActionPoint,
-                // Todo : 사용자가 지정한 재료 목록을 대신 넣기
-                materials = requiredFungibleItems.ToDictionary(
-                    e => ItemFactory.CreateMaterial(materialItemSheet, e.Key),
-                    e => e.Value),
-                tradableFungibleItem = materialResult,
-                recipeId = EventMaterialItemRecipeId,
-            };
-
-            var mail = new CombinationMail(
-                attachmentResult,
+            var mail = new MaterialCraftMail(
                 context.BlockIndex,
-                mailId,
-                context.BlockIndex);
+                Id,
+                context.BlockIndex,
+                1,
+                materialResult);
             avatarState.Update(mail);
             // ~Create Mail
             #endregion
@@ -274,7 +271,7 @@ namespace Nekoyume.Action
             #region Set states
             // Set states
             sw.Restart();
-            if (migrationRequired)  // Todo : 이게 무슨 의미인지
+            if (migrationRequired)
             {
                 states = states
                     .SetState(AvatarAddress, avatarState.SerializeV2())
@@ -286,7 +283,7 @@ namespace Nekoyume.Action
                         avatarState.worldInformation.Serialize())
                     .SetState(
                         AvatarAddress.Derive(LegacyQuestListKey),
-                        avatarState.questList.Serialize());  // Todo : 이거들 필요한 이유?
+                        avatarState.questList.Serialize());
             }
             else
             {

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Action;
 using Nekoyume.Exceptions;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Event;
@@ -65,6 +66,41 @@ namespace Nekoyume.Extensions
             }
 
             return row;
+        }
+
+        public static void ValidateFromAction(
+            this EventMaterialItemRecipeSheet.Row recipeRow,
+            MaterialItemSheet materialItemSheet,
+            Dictionary<int, int> materialsToUse,
+            string actionTypeText,
+            string addressesHex
+        )
+        {
+            var materialsCount = 0;
+            foreach (var pair in materialsToUse.OrderBy(pair => pair.Key))
+            {
+                if (!materialItemSheet.TryGetValue(pair.Key, out _))
+                {
+                    throw new SheetRowNotFoundException(
+                        addressesHex,
+                        nameof(MaterialItemSheet),
+                        pair.Key);
+                }
+
+                if (recipeRow.MaterialsId.Contains(pair.Key))
+                {
+                    materialsCount += pair.Value;
+                }
+            }
+
+            if (recipeRow.MaterialsCount != materialsCount)
+            {
+                throw new InvalidMaterialCountException(
+                    actionTypeText,
+                    addressesHex,
+                    recipeRow.MaterialsCount,
+                    materialsCount);
+            }
         }
     }
 }
