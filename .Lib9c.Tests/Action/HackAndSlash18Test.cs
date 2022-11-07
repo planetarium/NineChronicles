@@ -47,8 +47,7 @@ namespace Lib9c.Tests.Action
         public HackAndSlash18Test()
         {
             _sheets = TableSheetsImporter.ImportSheets();
-            _sheets.Remove(nameof(RuneStatSheet));
-            _sheets.Remove(nameof(RuneSkillSheet));
+            _sheets.Remove(nameof(RuneOptionSheet));
             _tableSheets = new TableSheets(_sheets);
 
             var privateKey = new PrivateKey();
