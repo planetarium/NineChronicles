@@ -581,24 +581,31 @@ namespace Nekoyume.Model
                     continue;
                 }
 
-                var power = optionInfo.SkillValue;
-                var addedPower = 0;
+                var power = 0;
                 if (optionInfo.StatReferenceType == EnumType.StatReferenceType.Caster)
                 {
-                    switch (optionInfo.SkillStatType)
+                    if (optionInfo.SkillValueType == StatModifier.OperationType.Add)
                     {
-                        case StatType.HP:
-                            addedPower = HP;
-                            break;
-                        case StatType.ATK:
-                            addedPower = ATK;
-                            break;
-                        case StatType.DEF:
-                            addedPower = DEF;
-                            break;
+                        power = (int)optionInfo.SkillValue;
+                    }
+                    else
+                    {
+                        switch (optionInfo.SkillStatType)
+                        {
+                            case StatType.HP:
+                                power = HP;
+                                break;
+                            case StatType.ATK:
+                                power = ATK;
+                                break;
+                            case StatType.DEF:
+                                power = DEF;
+                                break;
+                        }
+
+                        power = (int)Math.Round(power * optionInfo.SkillValue);
                     }
                 }
-                power += (int) Math.Round(addedPower * optionInfo.SkillStatRatio);
                 var skill = SkillFactory.Get(skillRow, power, optionInfo.SkillChance);
                 RuneSkills.Add(skill);
                 RuneSkillCooldownMap[optionInfo.SkillId] = optionInfo.SkillCooldown;
