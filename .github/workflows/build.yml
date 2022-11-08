@@ -9,7 +9,7 @@ jobs:
   build-unity:
     name: Build for ${{ matrix.targetPlatform }} on version ${{ matrix.unityVersion }}
     runs-on: 
-      labels: ["linux", "64cores"]
+      labels: ["linux", "4cores"]
     strategy:
       fail-fast: false
       matrix:
