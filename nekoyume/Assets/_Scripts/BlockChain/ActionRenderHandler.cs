@@ -125,6 +125,7 @@ namespace Nekoyume.BlockChain
             RapidCombination();
             Grinding();
             EventConsumableItemCrafts();
+            EventMaterialItemCrafts();
 
             // Market
             Sell();
@@ -423,6 +424,15 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseEventConsumableItemCrafts)
+                .AddTo(_disposables);
+        }
+
+        private void EventMaterialItemCrafts()
+        {
+            _actionRenderer.EveryRender<EventMaterialItemCrafts>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseEventMaterialItemCrafts)
                 .AddTo(_disposables);
         }
 
@@ -779,6 +789,17 @@ namespace Nekoyume.BlockChain
             // ~Notify
 
             Widget.Find<CombinationSlotsPopup>().SetCaching(avatarAddress, eval.Action.SlotIndex, false);
+        }
+
+        private void ResponseEventMaterialItemCrafts(
+            ActionBase.ActionEvaluation<EventMaterialItemCrafts> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                return;
+            }
+
+            // Todo : ResponseEventMaterialItemCrafts
         }
 
         private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)

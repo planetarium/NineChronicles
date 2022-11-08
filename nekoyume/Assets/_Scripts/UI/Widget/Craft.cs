@@ -608,6 +608,17 @@ namespace Nekoyume.UI
                 true));
         }
 
+        private void EventMaterialItemCraftsAction(SubRecipeView.RecipeInfo recipeInfo)
+        {
+            // Todo : EventMaterialItemCraftsAction - Fill Dict
+            ActionManager.Instance
+                .EventMaterialItemCrafts(
+                    RxProps.EventScheduleRowForRecipe.Value.Id,
+                    recipeInfo,
+                    new Dictionary<int, int>())
+                .Subscribe();
+        }
+
         private IEnumerator CoCombineNPCAnimation(
             ItemBase itemBase,
             long blockIndex,

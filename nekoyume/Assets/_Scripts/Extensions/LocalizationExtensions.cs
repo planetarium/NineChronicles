@@ -83,6 +83,9 @@ namespace Nekoyume
                         combinationMail.attachment.itemUsable.ItemType.HasElementType()));
                 }
 
+                case MaterialCraftMail materialCraftMail:
+                    return L10nManager.Localize(""); // Todo
+
                 case ItemEnhanceMail itemEnhanceMail:
                 {
                     string formatKey;

@@ -294,6 +294,11 @@ namespace Nekoyume.UI
             Debug.Log($"[{nameof(GrindingMail)}] ItemCount: {grindingMail.ItemCount}, Asset: {grindingMail.Asset}");
         }
 
+        public void Read(MaterialCraftMail materialCraftMail)
+        {
+            // Todo : 한줄 팝업을 띄우든, LocalLayerModifier.AddItem을 하든
+        }
+
         public async void Read(OrderExpirationMail orderExpirationMail)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
