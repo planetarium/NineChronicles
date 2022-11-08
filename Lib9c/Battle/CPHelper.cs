@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Model;
 using Nekoyume.Model.Item;
@@ -10,21 +11,23 @@ namespace Nekoyume.Battle
 {
     public static class CPHelper
     {
-        public static int GetCp(
-            AvatarState avatarState,
-            RuneSlotState runeSlotState,
-            CharacterSheet characterSheet,
-            CostumeStatSheet costumeStatSheet,
-            RuneOptionSheet runeOptionSheet)
+        public static int TotalCP(
+            IEnumerable<Equipment> equipments,
+            IEnumerable<Costume> costumes,
+            IEnumerable<RuneOptionSheet.Row.RuneOptionInfo> runeOptions,
+            int level,
+            CharacterSheet.Row row,
+            CostumeStatSheet costumeStatSheet)
         {
-            var equipmentsCp = GetCPV2(avatarState, characterSheet, costumeStatSheet);
-            var runeStatInfos = runeSlotState.GetEquippedRuneStatInfos(runeOptionSheet);
-            var runeCp = runeStatInfos.Sum(x => x.Cp);
-            var totalCp = equipmentsCp + runeCp;
+            var levelStatsCp = GetStatsCP(row.ToStats(level), level);
+            var equipmentsCp = equipments.Sum(GetCP);
+            var costumeCp = costumes.Sum(c => GetCP(c, costumeStatSheet));
+            var runeCp = runeOptions.Sum(x => x.Cp);
+            var totalCp = DecimalToInt(levelStatsCp + equipmentsCp + costumeCp + runeCp);
             return totalCp;
         }
 
-        [Obsolete("Use GetCp")]
+        [Obsolete("Use TotalCP")]
         public static int GetCP(AvatarState avatarState, CharacterSheet characterSheet)
         {
             if (!characterSheet.TryGetValue(avatarState.characterId, out var row))
@@ -43,7 +46,7 @@ namespace Nekoyume.Battle
             return DecimalToInt(levelStatsCP + equipmentsCP);
         }
 
-        [Obsolete("Use GetCp")]
+        [Obsolete("Use TotalCP")]
         public static int GetCPV2(
             AvatarState avatarState,
             CharacterSheet characterSheet,
@@ -57,7 +60,6 @@ namespace Nekoyume.Battle
             return DecimalToInt(current + costumeCP);
         }
 
-        [Obsolete("Use GetCp")]
         public static int GetCP(Player player, CostumeStatSheet costumeStatSheet)
         {
             var levelStatsCP = GetStatsCP(player.Stats.BaseStats, player.Level);
@@ -67,7 +69,6 @@ namespace Nekoyume.Battle
             return DecimalToInt(levelStatsCP + equipmentsCP + costumeCP);
         }
 
-        [Obsolete("Use GetCp")]
         public static int GetCP(Enemy enemy)
         {
             var levelStatsCP = GetStatsCP(enemy.Stats.BaseStats, enemy.Level);
@@ -75,7 +76,6 @@ namespace Nekoyume.Battle
             return DecimalToInt(levelStatsCP * GetSkillsMultiplier(skills.Length));
         }
 
-        [Obsolete("Use GetCp")]
         public static int GetCP(ItemUsable itemUsable)
         {
             var statsCP = GetStatsCP(itemUsable.StatsMap);
@@ -83,7 +83,6 @@ namespace Nekoyume.Battle
             return DecimalToInt(statsCP * GetSkillsMultiplier(skills.Length));
         }
 
-        [Obsolete("Use GetCp")]
         public static int GetCP(Costume costume, CostumeStatSheet sheet)
         {
             var statsMap = new StatsMap();
