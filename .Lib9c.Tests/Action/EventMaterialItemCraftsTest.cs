@@ -80,30 +80,87 @@ namespace Lib9c.Tests.Action
         {
             yield return new object[]
             {
-                100,
-                100100,
+                1002,
+                10020001,
+                new Dictionary<int, int>
+                {
+                    [700000] = 5,
+                    [700001] = 5,
+                    [700002] = 5,
+                },
+            };
+            yield return new object[]
+            {
+                1002,
+                10020001,
                 new Dictionary<int, int>
                 {
                     [700102] = 5,
                     [700104] = 5,
                     [700106] = 5,
-                    [700202] = 5,
+                },
+            };
+            yield return new object[]
+            {
+                1002,
+                10020001,
+                new Dictionary<int, int>
+                {
+                    [700202] = 10,
                     [700204] = 5,
+                },
+            };
+            yield return new object[]
+            {
+                1002,
+                10020002,
+                new Dictionary<int, int>
+                {
+                    [700108] = 5,
                     [700206] = 5,
                 },
             };
+        }
 
+        public static IEnumerable<object[]> GetExecuteInvalidAddressExceptionMemberData()
+        {
             yield return new object[]
             {
-                100,
-                100100,
+                1002,
+                10020001,
                 new Dictionary<int, int>
                 {
                     [700102] = 5,
-                    [700104] = 5,
-                    [700106] = 5,
-                    [700202] = 5,
                     [700204] = 5,
+                },
+            };
+            yield return new object[]
+            {
+                1002,
+                10020002,
+                new Dictionary<int, int>
+                {
+                    [700108] = 10,
+                    [700206] = 5,
+                },
+            };
+            yield return new object[]
+            {
+                1002,
+                10020002,
+                new Dictionary<int, int>
+                {
+                    [700102] = 10,
+                    [700104] = 5,
+                },
+            };
+            yield return new object[]
+            {
+                1002,
+                10020002,
+                new Dictionary<int, int>
+                {
+                    [700102] = 10,
                     [700206] = 5,
                 },
             };
@@ -132,6 +189,26 @@ namespace Lib9c.Tests.Action
                 eventMaterialItemRecipeId,
                 materialsToUse,
                 contextBlockIndex);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetExecuteInvalidAddressExceptionMemberData))]
+        public void Execute_InvalidAddressException(
+            int eventScheduleId,
+            int eventMaterialItemRecipeId,
+            Dictionary<int, int> materialsToUse)
+        {
+            Assert.True(_tableSheets.EventScheduleSheet
+                .TryGetValue(1002, out var scheduleRow));
+            Assert.Throws<InvalidMaterialCountException>(() =>
+            {
+                Execute(
+                    _initialStates,
+                    eventScheduleId,
+                    eventMaterialItemRecipeId,
+                    materialsToUse,
+                    scheduleRow.StartBlockIndex);
+            });
         }
 
         private void Execute(
@@ -167,7 +244,6 @@ namespace Lib9c.Tests.Action
                     _avatarAddress.Derive(LegacyWorldInformationKey),
                     previousAvatarState.worldInformation.Serialize());
 
-            var previousActionPoint = previousAvatarState.actionPoint;
             var previousResultMaterialCount =
                 previousAvatarState.inventory.Materials
                     .Count(e => e.Id == recipeRow.ResultMaterialItemId);
@@ -191,9 +267,6 @@ namespace Lib9c.Tests.Action
             });
 
             var nextAvatarState = nextStates.GetAvatarStateV2(_avatarAddress);
-            Assert.Equal(
-                previousActionPoint - recipeRow.RequiredActionPoint,
-                nextAvatarState.actionPoint);
             Assert.Equal(
                 previousResultMaterialCount + 1,
                 nextAvatarState.inventory.Materials

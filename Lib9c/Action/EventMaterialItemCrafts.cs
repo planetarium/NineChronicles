@@ -182,7 +182,6 @@ namespace Nekoyume.Action
             #region Validate Work
             // Validate Work
             sw.Restart();
-            var costActionPoint = 0;
 
             // Validate Recipe ResultMaterialItemId
             var materialItemSheet = states.GetSheet<MaterialItemSheet>();
@@ -204,8 +203,6 @@ namespace Nekoyume.Action
                 ActionTypeText,
                 addressesHex);
             // ~Validate Recipe Material
-
-            costActionPoint += recipeRow.RequiredActionPoint;
 
             sw.Stop();
             Log.Verbose(
@@ -231,22 +228,6 @@ namespace Nekoyume.Action
                 }
             }
             // ~Remove Required Materials
-            #endregion
-
-            #region Subtract Required ActionPoint
-            // Subtract Required ActionPoint
-            if (costActionPoint > 0)
-            {
-                if (avatarState.actionPoint < costActionPoint)
-                {
-                    throw new NotEnoughActionPointException(
-                        $"{addressesHex}Aborted due to insufficient action point: {avatarState.actionPoint} < {costActionPoint}"
-                    );
-                }
-
-                avatarState.actionPoint -= costActionPoint;
-            }
-            // ~Subtract Required ActionPoint
             #endregion
 
             #region Create Material

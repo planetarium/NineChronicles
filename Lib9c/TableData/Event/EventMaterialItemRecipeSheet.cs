@@ -12,27 +12,23 @@ namespace Nekoyume.TableData
         {
             public override int Key => Id;
             public int Id { get; private set; }
-            public int RequiredActionPoint { get; private set; }
-            public decimal RequiredGold { get; private set; }
+            public int ResultMaterialItemId { get; private set; }
             public int MaterialsCount { get; private set; }
             public List<int> MaterialsId { get; private set; }
-            public int ResultMaterialItemId { get; private set; }
             public override void Set(IReadOnlyList<string> fields)
             {
                 Id = ParseInt(fields[0]);
-                RequiredActionPoint = ParseInt(fields[1]);
-                RequiredGold = ParseDecimal(fields[2]);
-                MaterialsCount = ParseInt(fields[3]);
+                ResultMaterialItemId = ParseInt(fields[1]);
+                MaterialsCount = ParseInt(fields[2]);
                 MaterialsId = new List<int>();
                 for (int i = 0; i < 12; i++)
                 {
-                    var id = fields[4 + i];
+                    var id = fields[3 + i];
                     if (string.IsNullOrEmpty(id))
                         continue;
 
                     MaterialsId.Add(ParseInt(id));
                 }
-                ResultMaterialItemId = ParseInt(fields[16]);
             }
         }
 
