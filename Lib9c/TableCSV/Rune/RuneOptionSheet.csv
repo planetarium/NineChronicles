@@ -1,8 +1,4 @@
-rune_id,_name,level,total_cp,stat_type_1,value_1,value_type_1,stat_type_2,value_2,value_type_2,stat_type_3,value_3,value_type3,skillId,cooldown,chance,skill_value,skill_stat_ratio,skill_stat_type,stat_reference_type
-123001,Rune of Health (Fenrir) Lv1,1,140,HP,200,Add,NONE,0,Add,NONE,0,Add,,,,,,,
-123001,Rune of Health (Fenrir) Lv1,2,180,HP,224,Add,NONE,0,Add,NONE,0,Add,,,,,,,
-123001,Rune of Health (Fenrir) Lv1,3,220,HP,248,Add,NONE,0,Add,NONE,0,Add,,,,,,,
-122001,Rune of Attack (Fenrir) Lv1,1,525,ATK,50,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+rune_id,_name,level,total_cp,stat_type_1,value_1,value_type_1,stat_type_2,value_2,value_type_2,stat_type_3,value_3,value_type3,skillId,cooldown,chance,skill_value,skill_stat_ratio,skill_value_type,stat_reference_type
 122001,Rune of Attack (Fenrir) Lv1,2,575,ATK,52,Add,NONE,0,Add,NONE,0,Add,,,,,,,
 122001,Rune of Attack (Fenrir) Lv1,3,625,ATK,54,Add,NONE,0,Add,NONE,0,Add,,,,,,,
 311001,Adventurer's Rune,1,100,HP,186,Add,DEF,6,Add,NONE,0,Add,,,,,,,
