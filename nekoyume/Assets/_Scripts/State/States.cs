@@ -55,7 +55,7 @@ namespace Nekoyume.State
 
         public List<RuneState> RuneStates { get; } = new();
 
-        public Dictionary<BattleType, List<RuneSlot>> RuneSlotStates { get; } = new();
+        public Dictionary<BattleType, RuneSlotState> RuneSlotStates { get; } = new();
 
         public Dictionary<BattleType, ItemSlotState> ItemSlotStates { get; } = new();
 
@@ -197,9 +197,9 @@ namespace Nekoyume.State
 
             var stateBulk = await Game.Game.instance.Agent.GetStateBulk(addresses);
             RuneSlotStates.Clear();
-            RuneSlotStates.Add(BattleType.Adventure, new RuneSlotState(BattleType.Adventure).GetRuneSlot());
-            RuneSlotStates.Add(BattleType.Arena, new RuneSlotState(BattleType.Arena).GetRuneSlot());
-            RuneSlotStates.Add(BattleType.Raid, new RuneSlotState(BattleType.Raid).GetRuneSlot());
+            RuneSlotStates.Add(BattleType.Adventure, new RuneSlotState(BattleType.Adventure));
+            RuneSlotStates.Add(BattleType.Arena, new RuneSlotState(BattleType.Arena));
+            RuneSlotStates.Add(BattleType.Raid, new RuneSlotState(BattleType.Raid));
 
             var task = Task.Run(async () =>
             {
@@ -209,7 +209,7 @@ namespace Nekoyume.State
                     if (value is List list)
                     {
                         var slotState = new RuneSlotState(list);
-                        RuneSlotStates[slotState.BattleType] = slotState.GetRuneSlot();
+                        RuneSlotStates[slotState.BattleType] = slotState;
                     }
                 }
 

@@ -614,27 +614,6 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void RefreshEquip()
-        {
-            foreach (var eps in _equipments.Values)
-            {
-                foreach (var equipment in eps)
-                {
-                    equipment.Equipped.SetValueAndForceNotify(equipment.Equipped.Value);
-                }
-            }
-
-            foreach (var costume in _costumes)
-            {
-                costume.Equipped.SetValueAndForceNotify(costume.Equipped.Value);
-            }
-
-            foreach (var rune in _runes)
-            {
-                rune.Equipped.SetValueAndForceNotify(rune.Equipped.Value);
-            }
-        }
-
         public void Focus(
             ItemType itemType,
             ItemSubType subType,
@@ -689,6 +668,11 @@ namespace Nekoyume.UI.Module
         public bool TryGetModel(ItemBase itemBase, out InventoryItem result)
         {
             result = null;
+            if (itemBase is null)
+            {
+                return false;
+            }
+
             var item = itemBase as INonFungibleItem;
             var models = GetModels(itemBase.ItemType);
             foreach (var model in models)

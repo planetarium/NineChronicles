@@ -14,6 +14,7 @@ using Nekoyume.Model.Mail;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -102,6 +103,7 @@ namespace Nekoyume.UI
         };
 
         private BattleType _battleType = BattleType.Adventure;
+        private List<(ItemSubType, int)> _availableItemSlots = new();
 
         #region Override
 
@@ -183,7 +185,7 @@ namespace Nekoyume.UI
 
         private void UpdateRuneView()
         {
-            var states = States.Instance.RuneSlotStates[_battleType];
+            var states = States.Instance.RuneSlotStates[_battleType].GetRuneSlot();
             var equippedRuneState = GetEquippedRuneStates();
 
             inventory.UpdateRunes(equippedRuneState);
@@ -281,40 +283,69 @@ namespace Nekoyume.UI
             // _cachedCharacterTitle = Instantiate(clone, titleSocket);
         }
 
-        private void UpdateStat(AvatarState avatarState)
+        private void UpdateStat(int previousCp)
         {
-            // _player.Set(avatarState);
-            // var equipments = _player.Equipments;
-            // var costumes = _player.Costumes;
-            // var equipmentSetEffectSheet =
-            //     Game.Game.instance.TableSheets.EquipmentItemSetEffectSheet;
-            // var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
-            // var s = _player.Model.Stats.SetAll(_player.Model.Stats.Level,
-            //     equipments, costumes, null,
-            //     equipmentSetEffectSheet, costumeSheet);
+            var avatarState = Game.Game.instance.States.CurrentAvatarState;
+            var equipmentSetEffectSheet = Game.Game.instance.TableSheets.EquipmentItemSetEffectSheet;
+            var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
+            var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+            var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
+            if (!characterSheet.TryGetValue(avatarState.characterId, out var row))
+            {
+                return;
+            }
 
-            // var equippedRuneState = GetEquippedRuneStates();
-            // foreach (var runeState in equippedRuneState)
-            // {
-            //     var runeStatSheet = Game.Game.instance.TableSheets.RuneStatSheet;
-            //     if (!runeStatSheet.TryGetValue(runeState.RuneId, out var statRow) ||
-            //         !statRow.LevelStatsMap.TryGetValue(runeState.Level, out var statInfo))
-            //     {
-            //         continue;
-            //     }
-            //
-            //     var statModifiers = new List<StatModifier>();
-            //     statModifiers.AddRange(
-            //         statInfo.Stats.Select(x =>
-            //             new StatModifier(
-            //                 x.statMap.StatType,
-            //                 x.operationType,
-            //                 x.statMap.ValueAsInt)));
-            //
-            //     _player.Model.Stats.AddOption(statModifiers);
-            //     _player.Model.Stats.EqualizeCurrentHPWithHP();
-            // }
-            // stats.SetData(s);
+            var characterStats = new CharacterStats(row, avatarState.level);
+            var (equipments, costumes) = GetEquippedItems();
+            characterStats.SetAll(
+                avatarState.level,
+                equipments,
+                costumes,
+                null,
+            equipmentSetEffectSheet,
+                costumeSheet);
+
+            var equippedRuneState = GetEquippedRuneStates();
+            foreach (var runeState in equippedRuneState)
+            {
+                if (!runeOptionSheet.TryGetValue(runeState.RuneId, out var statRow) ||
+                    !statRow.LevelOptionMap.TryGetValue(runeState.Level, out var statInfo))
+                {
+                    continue;
+                }
+
+                var statModifiers = new List<StatModifier>();
+                statModifiers.AddRange(
+                    statInfo.Stats.Select(x =>
+                        new StatModifier(
+                            x.statMap.StatType,
+                            x.operationType,
+                            x.statMap.ValueAsInt)));
+
+                characterStats.AddOption(statModifiers);
+                characterStats.EqualizeCurrentHPWithHP();
+            }
+
+            stats.SetData(characterStats);
+            cp.PlayAnimation(previousCp, GetCp());
+        }
+
+        private int GetCp()
+        {
+            var avatarState = Game.Game.instance.States.CurrentAvatarState;
+            var level = avatarState.level;
+            var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
+            if (!characterSheet.TryGetValue(avatarState.characterId, out var row))
+            {
+                throw new SheetRowNotFoundException("CharacterSheet", avatarState.characterId);
+            }
+
+            var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+            var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
+            var runeSlotState = States.Instance.RuneSlotStates[_battleType];
+            var (equipments, costumes) = GetEquippedItems();
+            var runeOptionInfos = runeSlotState.GetEquippedRuneStatInfos(runeOptionSheet);
+            return CPHelper.TotalCP(equipments, costumes, runeOptionInfos, level, row, costumeSheet);
         }
 
         private void OnClickRuneSlot(RuneSlotView slot)
@@ -391,6 +422,7 @@ namespace Nekoyume.UI
 
         private void EquipOrUnequip(InventoryItem inventoryItem)
         {
+            var prevCp = GetCp();
             if (inventoryItem.RuneState != null)
             {
                 if (inventoryItem.Equipped.Value)
@@ -413,6 +445,8 @@ namespace Nekoyume.UI
                     EquipItem(inventoryItem);
                 }
             }
+
+            UpdateStat(prevCp);
         }
 
         private void UnequipItem(InventoryItem inventoryItem)
@@ -441,11 +475,23 @@ namespace Nekoyume.UI
 
         private void EquipItem(InventoryItem inventoryItem)
         {
+            if (inventoryItem.LevelLimited.Value)
+            {
+                return;
+            }
+
+
+            var avatarState = States.Instance.CurrentAvatarState;
+            if (!IsValid(inventoryItem, avatarState.level))
+            {
+                return;
+            }
+
             var states = States.Instance.ItemSlotStates[_battleType];
             switch (inventoryItem.ItemBase.ItemType)
             {
                 case ItemType.Costume:
-                    var costumes = States.Instance.CurrentAvatarState.inventory.Costumes;
+                    var costumes = avatarState.inventory.Costumes;
                     if (costumes is null)
                     {
                         return;
@@ -479,7 +525,7 @@ namespace Nekoyume.UI
                     break;
 
                 case ItemType.Equipment:
-                    var items = States.Instance.CurrentAvatarState.inventory.Equipments;
+                    var items = avatarState.inventory.Equipments;
                     if (items is null)
                     {
                         return;
@@ -501,24 +547,28 @@ namespace Nekoyume.UI
                         .Select(x => x.Key);
                     if (inventoryItem.ItemBase.ItemSubType == ItemSubType.Ring)
                     {
-                        if (equipmentRemovalList.Count() < 2)
+                        switch (equipmentRemovalList.Count())
                         {
-                            foreach (var guid in equipmentRemovalList)
-                            {
-                                equipmentSlots.Remove(guid);
-                            }
-                        }
-                        else
-                        {
-                            var cp = new Dictionary<Guid, int>();
-                            foreach (var guid in equipmentRemovalList)
-                            {
-                                var item = items.FirstOrDefault(x => x.ItemId == guid);
-                                cp.Add(guid, CPHelper.GetCP(item));
-                            }
+                            case 1:
+                                if (avatarState.level < GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing2)
+                                {
+                                    foreach (var guid in equipmentRemovalList)
+                                    {
+                                        equipmentSlots.Remove(guid);
+                                    }
+                                }
+                                break;
+                            case 2:
+                                var cp = new Dictionary<Guid, int>();
+                                foreach (var guid in equipmentRemovalList)
+                                {
+                                    var item = items.FirstOrDefault(x => x.ItemId == guid);
+                                    cp.Add(guid, CPHelper.GetCP(item));
+                                }
 
-                            var selectedItem = cp.OrderBy(x => x.Value).First().Key;
-                            equipmentSlots.Remove(selectedItem);
+                                var selectedItem = cp.OrderBy(x => x.Value).First().Key;
+                                equipmentSlots.Remove(selectedItem);
+                                break;
                         }
                     }
                     else
@@ -543,7 +593,7 @@ namespace Nekoyume.UI
 
         private void PostEquipOrUnequip(EquipmentSlot slot)
         {
-            UpdateStat(Game.Game.instance.States.CurrentAvatarState);
+            UpdateStat(GetCp());
             AudioController.instance.PlaySfx(slot.ItemSubType == ItemSubType.Food
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
@@ -584,7 +634,7 @@ namespace Nekoyume.UI
                 _pickedItem = null;
                 if (!model.Equipped.Value)
                 {
-                    var states = States.Instance.RuneSlotStates[_battleType];
+                    var states = States.Instance.RuneSlotStates[_battleType].GetRuneSlot();;
                     var sheet = Game.Game.instance.TableSheets.RuneListSheet;
                     if (!sheet.TryGetValue(model.RuneState.RuneId, out var row))
                     {
@@ -755,7 +805,7 @@ namespace Nekoyume.UI
 
         private void EquipRune(InventoryItem inventoryItem)
         {
-            var states = States.Instance.RuneSlotStates[_battleType];
+            var states = States.Instance.RuneSlotStates[_battleType].GetRuneSlot();
             var sheet = Game.Game.instance.TableSheets.RuneListSheet;
             if (!sheet.TryGetValue(inventoryItem.RuneState.RuneId, out var row))
             {
@@ -790,7 +840,7 @@ namespace Nekoyume.UI
 
         private List<RuneState> GetEquippedRuneStates()
         {
-            var states = States.Instance.RuneSlotStates[_battleType];
+            var states = States.Instance.RuneSlotStates[_battleType].GetRuneSlot();
             var runeStates = new List<RuneState>();
             foreach (var slot in states)
             {
@@ -805,7 +855,7 @@ namespace Nekoyume.UI
 
         private void UnequipRune(InventoryItem item)
         {
-            var states = States.Instance.RuneSlotStates[_battleType];
+            var states = States.Instance.RuneSlotStates[_battleType].GetRuneSlot();
             foreach (var slot in states)
             {
                 if (slot.IsEquipped(out var runeState))
@@ -825,25 +875,55 @@ namespace Nekoyume.UI
             BattleType battleType,
             System.Action onSetToggle = null)
         {
+            var prevCp = GetCp();
             _battleType = battleType;
             _toggleGroup.SetToggledOffAll();
             toggle.SetToggledOn();
             onSetToggle?.Invoke();
             AudioController.PlayClick();
 
-
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
 
+            _availableItemSlots = UnlockHelper.GetAvailableEquipmentSlots(currentAvatarState.level);
             UpdateNickname(currentAvatarState.level, currentAvatarState.NameWithHash);
-
             UpdateTitle(currentAvatarState);
-            UpdateStat(currentAvatarState);
-            // UpdateSlot(currentAvatarState);
-
-            // inventory.RefreshEquip();
             UpdateRuneView();
             UpdateItemView();
+            UpdateStat(prevCp);
+        }
 
+        private bool IsValid(InventoryItem inventoryItem, int level)
+        {
+            switch (inventoryItem.ItemBase.ItemType)
+            {
+                case ItemType.Costume:
+                    switch (inventoryItem.ItemBase.ItemSubType)
+                    {
+                        case ItemSubType.FullCostume:
+                            return level >= GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot;
+                        case ItemSubType.Title:
+                            return level >= GameConfig.RequireCharacterLevel.CharacterTitleSlot;
+                            break;
+                    }
+                    break;
+                case ItemType.Equipment:
+                    switch (inventoryItem.ItemBase.ItemSubType)
+                    {
+                        case ItemSubType.Weapon:
+                            return level >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotWeapon;
+                        case ItemSubType.Armor:
+                            return level >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotArmor;
+                        case ItemSubType.Belt:
+                            return level >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotBelt;
+                        case ItemSubType.Necklace:
+                            return level >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotNecklace;
+                        case ItemSubType.Ring:
+                            return level >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing1;
+                    }
+                    break;
+            }
+
+            return false;
         }
 
         #region For tutorial
