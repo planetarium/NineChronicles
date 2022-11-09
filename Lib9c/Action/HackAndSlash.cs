@@ -10,9 +10,7 @@ using Nekoyume.Battle;
 using Nekoyume.BlockChain.Policy;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
-using Nekoyume.Model;
-using Nekoyume.Model.BattleStatus;
-using Nekoyume.Model.Quest;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
@@ -32,7 +30,6 @@ namespace Nekoyume.Action
         public List<Guid> Costumes;
         public List<Guid> Equipments;
         public List<Guid> Foods;
-        public List<int> Runes;
         public int WorldId;
         public int StageId;
         public int? StageBuffId;
@@ -49,7 +46,6 @@ namespace Nekoyume.Action
                     ["equipments"] =
                         new List(Equipments.OrderBy(i => i).Select(e => e.Serialize())),
                     ["foods"] = new List(Foods.OrderBy(i => i).Select(e => e.Serialize())),
-                    ["runes"] = new List(Runes.OrderBy(i => i).Select(e => e.Serialize())),
                     ["worldId"] = WorldId.Serialize(),
                     ["stageId"] = StageId.Serialize(),
                     ["avatarAddress"] = AvatarAddress.Serialize(),
@@ -69,7 +65,6 @@ namespace Nekoyume.Action
             Costumes = ((List)plainValue["costumes"]).Select(e => e.ToGuid()).ToList();
             Equipments = ((List)plainValue["equipments"]).Select(e => e.ToGuid()).ToList();
             Foods = ((List)plainValue["foods"]).Select(e => e.ToGuid()).ToList();
-            Runes = ((List)plainValue["runes"]).Select(e => e.ToInteger()).ToList();
             WorldId = plainValue["worldId"].ToInteger();
             StageId = plainValue["stageId"].ToInteger();
             if (plainValue.ContainsKey("stageBuffId"))
@@ -269,6 +264,21 @@ namespace Nekoyume.Action
             sw.Restart();
             // if PlayCount > 1, it is Multi-HAS.
             var simulatorSheets = sheets.GetSimulatorSheets();
+
+            var runeSlotStateAddress = RuneSlotState.DeriveAddress(AvatarAddress, BattleType.Adventure);
+            var runeSlotState = states.TryGetState(runeSlotStateAddress, out List rawRuneSlotState)
+                ? new RuneSlotState(rawRuneSlotState)
+                : new RuneSlotState(BattleType.Adventure);
+            var runeSlots = runeSlotState.GetRuneSlot();
+            var runes = new List<(int id, int level)>();
+            foreach (var slot in runeSlots.Values)
+            {
+                if (slot.Equipped(out var state))
+                {
+                    runes.Add((state.RuneId, state.Level));
+                }
+            }
+
             for (var i = 0; i < PlayCount; i++)
             {
                 sw.Restart();
@@ -278,7 +288,7 @@ namespace Nekoyume.Action
                     random,
                     avatarState,
                     i == 0 ? Foods : new List<Guid>(),
-                    Runes,
+                    runes,
                     i == 0 ? skillsOnWaveStart : new List<Skill>(),
                     WorldId,
                     StageId,

@@ -97,7 +97,6 @@ namespace Lib9c.Tests.Action
                 EquipmentIds = new List<Guid>(),
                 CostumeIds = new List<Guid>(),
                 FoodIds = new List<Guid>(),
-                Runes = new List<int>(),
                 PayNcg = payNcg,
             };
             Currency crystal = CrystalCalculator.CRYSTAL;
@@ -240,7 +239,7 @@ namespace Lib9c.Tests.Action
                     random,
                     avatarState,
                     action.FoodIds,
-                    action.Runes,
+                    null,
                     raidSimulatorSheets,
                     _tableSheets.CostumeStatSheet);
                 simulator.Simulate();
@@ -380,7 +379,6 @@ namespace Lib9c.Tests.Action
                 EquipmentIds = new List<Guid>(),
                 CostumeIds = new List<Guid>(),
                 FoodIds = new List<Guid>(),
-                Runes = new List<int>(),
                 PayNcg = false,
             };
             long blockIndex = 5055201L;
@@ -455,7 +453,7 @@ namespace Lib9c.Tests.Action
                 random,
                 avatarState,
                 action.FoodIds,
-                action.Runes,
+                null,
                 _tableSheets.GetRaidSimulatorSheets(),
                 _tableSheets.CostumeStatSheet);
             simulator.Simulate();

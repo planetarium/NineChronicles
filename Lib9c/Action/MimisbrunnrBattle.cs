@@ -18,6 +18,7 @@ using Nekoyume.TableData;
 using Serilog;
 using Skill = Nekoyume.Model.Skill.Skill;
 using static Lib9c.SerializeKeys;
+using Nekoyume.Model.EnumType;
 
 namespace Nekoyume.Action
 {
@@ -271,11 +272,26 @@ namespace Nekoyume.Action
 
             sw.Restart();
             var materialSheet = sheets.GetSheet<MaterialItemSheet>();
+
+            var runeSlotStateAddress = RuneSlotState.DeriveAddress(AvatarAddress, BattleType.Adventure);
+            var runeSlotState = states.TryGetState(runeSlotStateAddress, out List rawRuneSlotState)
+                ? new RuneSlotState(rawRuneSlotState)
+                : new RuneSlotState(BattleType.Adventure);
+            var runeSlots = runeSlotState.GetRuneSlot();
+            var runes = new List<(int id, int level)>();
+            foreach (var slot in runeSlots.Values)
+            {
+                if (slot.Equipped(out var state))
+                {
+                    runes.Add((state.RuneId, state.Level));
+                }
+            }
+
             var simulator = new StageSimulator(
                 context.Random,
                 avatarState,
                 Foods,
-                Runes,
+                runes,
                 new List<Skill>(),
                 WorldId,
                 StageId,

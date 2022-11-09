@@ -31,7 +31,7 @@ namespace Nekoyume.Battle
             IRandom random,
             AvatarState avatarState,
             List<Guid> foods,
-            List<int> runes,
+            List<(int id, int level)> runes,
             RaidSimulatorSheets simulatorSheets,
             CostumeStatSheet costumeStatSheet) : base(random, avatarState, foods, simulatorSheets)
         {
@@ -39,7 +39,7 @@ namespace Nekoyume.Battle
             if (runes != null)
             {
                 Player.SetRune(
-                    runes.Select(rune => (rune, 1)).ToList(),
+                    runes.Select(rune => (rune.id, rune.level)).ToList(),
                     simulatorSheets.RuneOptionSheet,
                     simulatorSheets.SkillSheet);
             }

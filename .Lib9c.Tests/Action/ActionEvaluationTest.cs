@@ -141,7 +141,6 @@ namespace Lib9c.Tests.Action
                     Costumes = new List<Guid>(),
                     Equipments = new List<Guid>(),
                     Foods = new List<Guid>(),
-                    Runes = new List<int>(),
                     WorldId = 0,
                     StageId = 0,
                     AvatarAddress = new PrivateKey().ToAddress(),
@@ -282,7 +281,6 @@ namespace Lib9c.Tests.Action
                     Equipments = new List<Guid>(),
                     Costumes = new List<Guid>(),
                     Foods = new List<Guid>(),
-                    Runes = new List<int>(),
                 },
                 EventConsumableItemCrafts _ => new EventConsumableItemCrafts
                 {
@@ -297,7 +295,6 @@ namespace Lib9c.Tests.Action
                     CostumeIds = new List<Guid>(),
                     EquipmentIds = new List<Guid>(),
                     FoodIds = new List<Guid>(),
-                    Runes = new List<int>(),
                     PayNcg = true,
                 },
                 ClaimRaidReward _ => new ClaimRaidReward(_sender),
