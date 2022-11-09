@@ -463,8 +463,11 @@ namespace Nekoyume.BlockChain
 
             await UpdateAgentStateAsync(eval);
             await UpdateAvatarState(eval, eval.Action.index);
-            var avatarState
-                = await States.Instance.SelectAvatarAsync(eval.Action.index);
+            var avatarState = await States.Instance.SelectAvatarAsync(eval.Action.index);
+            await States.Instance.InitRuneStoneBalance();
+            await States.Instance.InitRuneStates();
+            await States.Instance.InitRuneSlotStates();
+            await States.Instance.InitItemSlotStates();
             RenderQuest(
                 avatarState.address,
                 avatarState.questList.completedQuestIds);
