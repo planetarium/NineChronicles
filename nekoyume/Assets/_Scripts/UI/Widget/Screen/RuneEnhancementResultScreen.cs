@@ -4,6 +4,8 @@ using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.Stat;
+using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using TMPro;
 using UnityEngine;
@@ -26,7 +28,32 @@ namespace Nekoyume.UI
         private TextMeshProUGUI failText;
 
         [SerializeField]
-        private TextMeshProUGUI levelText;
+        private TextMeshProUGUI currentLevelText;
+
+        [SerializeField]
+        private TextMeshProUGUI nextLevelText;
+
+        [SerializeField]
+        private TextMeshProUGUI skillNameText;
+
+        [SerializeField]
+        private TextMeshProUGUI skillDescText;
+
+        [SerializeField]
+        private List<TextMeshProUGUI> statTextList;
+
+        [SerializeField]
+        private List<TextMeshProUGUI> addStatTextList;
+
+        [SerializeField]
+        private GameObject skill;
+
+        [SerializeField]
+        private List<GameObject> stats;
+
+
+        [SerializeField]
+        private TextMeshProUGUI cpText;
 
         [SerializeField]
         private Animator animator;
@@ -70,7 +97,7 @@ namespace Nekoyume.UI
             IRandom random)
         {
             base.Show(true);
-            UpdateInformation(runeItem);
+
             var isSuccess = RuneHelper.TryEnhancement(
                 ncg,
                 crystal,
@@ -83,27 +110,96 @@ namespace Nekoyume.UI
                 tryCount,
                  out _);
 
+            if (isSuccess)
+            {
+                UpdateInformation(runeItem);
+            }
+
+            currentLevelText.text = $"+{runeItem.Level}";
+            nextLevelText.text = $"+{runeItem.Level + 1}";
             successText.gameObject.SetActive(isSuccess);
             failText.gameObject.SetActive(!isSuccess);
             animator.Play(isSuccess ? HashToSuccess : HashToFail);
         }
 
-        private void UpdateInformation(RuneItem runeItem)
+        private void UpdateInformation(RuneItem item)
         {
-            if (RuneFrontHelper.TryGetRuneIcon(runeItem.Row.Id, out var icon))
+            if (RuneFrontHelper.TryGetRuneIcon(item.Row.Id, out var icon))
             {
                 runeImage.sprite = icon;
             }
 
-            runeText.text = L10nManager.Localize($"ITEM_NAME_{runeItem.Row.Id}");
-            SetOptionTag();
+            runeText.text = L10nManager.Localize($"ITEM_NAME_{item.Row.Id}");
+
+            if (!item.OptionRow.LevelOptionMap.TryGetValue(item.Level + 1, out var nextOption))
+            {
+                return;
+            }
+
+            cpText.text = $"CP {nextOption.Cp}";
+
+            UpdateSkillInformation(nextOption);
+            UpdateStatInformation(item, nextOption);
+            UpdateOptionTag(nextOption);
         }
 
-        private void SetOptionTag()
+        private void UpdateSkillInformation(RuneOptionSheet.Row.RuneOptionInfo option)
+        {
+            skill.gameObject.SetActive(false);
+            if (option.SkillId != 0)
+            {
+                skill.gameObject.SetActive(true);
+                skillNameText.text = L10nManager.Localize($"SKILL_NAME_{option.SkillId}");
+                var skillValue = option.SkillValueType == StatModifier.OperationType.Percentage
+                    ? option.SkillValue * 100
+                    : option.SkillValue;
+                skillDescText.text = L10nManager.Localize(
+                    $"SKILL_DESCRIPTION_{option.SkillId}", option.SkillChance, skillValue);
+            }
+        }
+
+        private void UpdateStatInformation(RuneItem item, RuneOptionSheet.Row.RuneOptionInfo nextOption)
+        {
+            foreach (var stat in stats)
+            {
+                stat.SetActive(false);
+            }
+
+            for (var i = 0; i < nextOption.Stats.Count; i++)
+            {
+                var info = nextOption.Stats[i];
+                stats[i].gameObject.SetActive(true);
+                statTextList[i].text = $"{info.statMap.StatType.ToString()} {info.statMap.ValueAsInt}";
+            }
+
+            if (item.Level > 0)
+            {
+                if (!item.OptionRow.LevelOptionMap.TryGetValue(item.Level, out var curOption))
+                {
+                    return;
+                }
+
+                for (var i = 0; i < nextOption.Stats.Count; i++)
+                {
+                    var next = nextOption.Stats[i];
+                    var cur = curOption.Stats[i];
+                    var result = next.statMap.ValueAsInt - cur.statMap.ValueAsInt;
+                    addStatTextList[i].text = $"{result}";
+                }
+            }
+            else
+            {
+                for (var i = 0; i < nextOption.Stats.Count; i++)
+                {
+                    var info = nextOption.Stats[i];
+                    addStatTextList[i].text = $"{info.statMap.ValueAsInt}";
+                }
+            }
+        }
+
+        private void UpdateOptionTag(RuneOptionSheet.Row.RuneOptionInfo option)
         {
             optionTagBg.gameObject.SetActive(false);
-
-            // todo : 룬 옵션 갯수 체크
 
             var grade = 1;
             var data = optionTagData.GetOptionTagData(grade);
@@ -116,12 +212,11 @@ namespace Nekoyume.UI
             optionTagBg.hue = data.GradeHsvHue;
             optionTagBg.saturation = data.GradeHsvSaturation;
             optionTagBg.value = data.GradeHsvValue;
-            // var optionInfo = new ItemOptionInfo(equipment);
 
-            // var optionCount = optionInfo.StatOptions.Sum(x => x.count);
-            var optionCount = 0;
+            var optionCount = option.Stats.Count;
+
             var index = 0;
-            for (var i = 0; i < optionCount; ++i)
+            for (var i = 0; i < option.Stats.Count; ++i)
             {
                 var image = optionTagImages[index];
                 image.gameObject.SetActive(true);
@@ -129,8 +224,7 @@ namespace Nekoyume.UI
                 ++index;
             }
 
-            // for (var i = 0; i < optionInfo.SkillOptions.Count; ++i)
-            for (var i = 0; i < 0; ++i)
+            if (option.SkillId != 0)
             {
                 var image = optionTagImages[index];
                 image.gameObject.SetActive(true);

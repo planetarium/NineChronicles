@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Nekoyume.L10n;
+using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -18,7 +19,7 @@ namespace Nekoyume.UI.Model
         [SerializeField]
         private EnhancementOptionView skill;
 
-        public void Set(int level, RuneOptionSheet.Row.RuneOptionInfo optionInfo)
+        public void Set(int level, RuneOptionSheet.Row.RuneOptionInfo option)
         {
             levelText.text = $"+{level}";
 
@@ -27,21 +28,24 @@ namespace Nekoyume.UI.Model
                 stat.gameObject.SetActive(false);
             }
 
-            for (var i = 0; i < optionInfo.Stats.Count; i++)
+            for (var i = 0; i < option.Stats.Count; i++)
             {
-                var info = optionInfo.Stats[i];
-
+                var info = option.Stats[i];
                 stats[i].gameObject.SetActive(true);
                 stats[i].Set(info.statMap.StatType.ToString(), info.statMap.ValueAsInt.ToString());
             }
 
-            if (optionInfo.SkillId != 0)
+            if (option.SkillId != 0)
             {
                 skill.gameObject.SetActive(true);
-                skill.Set(L10nManager.Localize($"SKILL_NAME_{optionInfo.SkillId}"),
-                    $"{L10nManager.Localize("UI_SKILL_POWER")} : {optionInfo.SkillValue}",
-                    $"{L10nManager.Localize("UI_SKILL_CHANCE")} : {optionInfo.SkillChance}",
-                    $"{L10nManager.Localize("UI_COOLDOWN")} : {optionInfo.SkillCooldown}");
+                var skillValue = option.SkillValueType == StatModifier.OperationType.Percentage
+                    ? $"{option.SkillValue * 100}%"
+                    : $"{option.SkillValue}";
+
+                skill.Set(L10nManager.Localize($"SKILL_NAME_{option.SkillId}"),
+                    $"{L10nManager.Localize("UI_SKILL_POWER")} : {skillValue}",
+                    $"{L10nManager.Localize("UI_SKILL_CHANCE")} : {option.SkillChance}%",
+                    $"{L10nManager.Localize("UI_COOLDOWN")} : {option.SkillCooldown}");
             }
             else
             {
