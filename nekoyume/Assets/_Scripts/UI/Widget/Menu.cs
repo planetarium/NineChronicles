@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using DG.Tweening;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
@@ -95,6 +96,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private StakeIconDataScriptableObject stakeIconData;
 
+        [SerializeField]
+        private RectTransform player;
+
         private Coroutine _coLazyClose;
 
         private readonly List<IDisposable> _disposablesAtShow = new();
@@ -108,6 +112,10 @@ namespace Nekoyume.UI
 
             CloseWidget = null;
 
+            playerButton.onClick.AddListener(() =>
+            {
+                Game.Game.instance.Lobby.Character.Touch();
+            });
             guidedQuest.OnClickWorldQuestCell
                 .Subscribe(tuple => HackAndSlash(tuple.quest.Goal))
                 .AddTo(gameObject);
@@ -178,6 +186,12 @@ namespace Nekoyume.UI
             {
                 Find<Menu>().QuestClick();
             }
+        }
+
+        public void EnterRoom()
+        {
+            player.localPosition = new Vector3(-700, -149, 0);
+            player.DOLocalMoveX(-470, 1.0f);
         }
 
         public void GoToStage(BattleLog battleLog)
@@ -593,13 +607,6 @@ namespace Nekoyume.UI
             }
         }
 
-        public void UpdatePlayerReactButton(System.Action callback)
-        {
-            playerButton.onClick.RemoveAllListeners();
-            playerButton.onClick.AddListener(() => callback?.Invoke());
-        }
-
-        // Invoke from TutorialController.PlayAction()
         public void TutorialActionHackAndSlash()
         {
             HackAndSlash(GuidedQuest.WorldQuest?.Goal ?? 1);

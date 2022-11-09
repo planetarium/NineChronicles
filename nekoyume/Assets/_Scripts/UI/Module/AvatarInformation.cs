@@ -163,6 +163,8 @@ namespace Nekoyume.UI.Module
             inventory.UpdateCostumes(itemSlotState.Costumes);
             inventory.UpdateEquipments(itemSlotState.Equipments);
             inventory.UpdateConsumables(_consumables);
+
+
             UpdateTitle();
         }
 

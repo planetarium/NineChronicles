@@ -3234,8 +3234,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -470, y: -149}
-  m_SizeDelta: {x: 450, y: 450}
+  m_AnchoredPosition: {x: -727, y: -149}
+  m_SizeDelta: {x: 600, y: 600}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4074258769654277580
 CanvasRenderer:
@@ -3265,7 +3265,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 8400000, guid: ae6de5e133fbacb4aad0de866d7168a5, type: 2}
+  m_Texture: {fileID: 8400000, guid: 7f44fdd12f58e5d4b86f57a5de44a4fd, type: 2}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -3459,6 +3459,7 @@ MonoBehaviour:
   guidedQuest: {fileID: 8354548078518022176}
   playerButton: {fileID: 1107625710520463300}
   stakeIconData: {fileID: 11400000, guid: 09a4839f75f3f7244aae388772ba2dfe, type: 2}
+  player: {fileID: 4074258769654277578}
 --- !u!95 &2103180334685861810
 Animator:
   serializedVersion: 4

@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Cysharp.Threading.Tasks;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.UI;
@@ -38,6 +41,33 @@ namespace Nekoyume.Game.Character
                 avatarState.lens,
                 avatarState.hair,
                 avatarState.tail);
+
+            var items = new List<Guid>();
+            items.AddRange(costumes.Select(x=> x.ItemId));
+            items.AddRange(equipments.Select(x=> x.ItemId));
+            avatarState.EquipItems(items);
+
+            var status = Widget.Find<Status>();
+            status.UpdateOnlyPlayer(Game.instance.Stage.GetPlayer());
+        }
+
+        public void Touch()
+        {
+            Animator.Touch();
+        }
+
+        public void EnterRoom()
+        {
+            var status = Widget.Find<Status>();
+            status.Close(true);
+            StartCoroutine(CoPlayAnimation());
+        }
+
+        private IEnumerator CoPlayAnimation()
+        {
+            Animator.Run();
+            yield return new WaitForSeconds(1.0f);
+            Animator.Idle();
         }
     }
 }

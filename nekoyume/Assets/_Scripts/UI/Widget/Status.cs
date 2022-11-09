@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using Nekoyume.Game.Character;
+using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Timer;
@@ -96,6 +98,18 @@ namespace Nekoyume.UI
         public void HideBuffTooltip()
         {
             buffTooltip.gameObject.SetActive(false);
+        }
+
+        public void UpdateOnlyPlayer(Player player)
+        {
+            characterView.SetByPlayer(player);
+
+            if (player)
+            {
+                _player = player;
+            }
+
+            UpdateExp();
         }
 
         public void UpdatePlayer(Player player)
