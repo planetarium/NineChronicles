@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Libplanet.Net", ".Libplanet
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.Miner", "Lib9c.Miner\Lib9c.Miner.csproj", "{ED7B7033-B51B-474F-B9A3-D363AE416DD2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Libplanet.Crypto.Secp256k1", "Libplanet.Crypto.Secp256k1\Libplanet.Crypto.Secp256k1.csproj", "{964DB502-1A12-4979-9A22-E6633AFEA5E8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +95,10 @@ Global
 		{ED7B7033-B51B-474F-B9A3-D363AE416DD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED7B7033-B51B-474F-B9A3-D363AE416DD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ED7B7033-B51B-474F-B9A3-D363AE416DD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{964DB502-1A12-4979-9A22-E6633AFEA5E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{964DB502-1A12-4979-9A22-E6633AFEA5E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{964DB502-1A12-4979-9A22-E6633AFEA5E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{964DB502-1A12-4979-9A22-E6633AFEA5E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
