@@ -129,10 +129,10 @@ namespace Lib9c.Tests.Action
                     }
 
                     var arenaInformation = new ArenaInformation(_avatar1Address, roundData.ChampionshipId, roundData.Round);
-                    var max = ArenaHelper.GetMaxPurchasedTicketCount(roundData);
+                    var max = roundData.MaxPurchaseCount;
                     for (var i = 0; i < max; i++)
                     {
-                        arenaInformation.BuyTicket(roundData);
+                        arenaInformation.BuyTicket(roundData.MaxPurchaseCount);
 
                         var ticketPrice = 0;
                         var additionalTicketPrice = 0;
@@ -152,6 +152,12 @@ namespace Lib9c.Tests.Action
                                 break;
                             default:
                                 throw new ArgumentOutOfRangeException();
+                        }
+
+                        if (roundData.ChampionshipId == 2 && roundData.Round == 8)
+                        {
+                            ticketPrice = 100;
+                            additionalTicketPrice = 40;
                         }
 
                         var sum = ticketPrice + (additionalTicketPrice * arenaInformation.PurchasedTicketCount);

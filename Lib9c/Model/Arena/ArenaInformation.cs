@@ -62,13 +62,12 @@ namespace Nekoyume.Model.Arena
             Ticket -= ticketCount;
         }
 
-        public void BuyTicket(ArenaSheet.RoundData roundData)
+        public void BuyTicket(long maxCount)
         {
-            var max = ArenaHelper.GetMaxPurchasedTicketCount(roundData);
-            if (PurchasedTicketCount >= max)
+            if (PurchasedTicketCount >= maxCount)
             {
                 throw new ExceedTicketPurchaseLimitException(
-                    $"[{nameof(ArenaInformation)}] PurchasedTicketCount({PurchasedTicketCount}) >= MAX({{max}})");
+                    $"[{nameof(ArenaInformation)}] PurchasedTicketCount({PurchasedTicketCount}) >= MAX({maxCount})");
             }
 
             PurchasedTicketCount++;

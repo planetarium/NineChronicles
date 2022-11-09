@@ -21,8 +21,8 @@ namespace Nekoyume.TableData
                 public int SkillId { get; set; }
                 public int SkillCooldown { get; set; }
                 public int SkillChance { get; set; }
-                public int SkillValue { get; set; }
-                public decimal SkillStatRatio { get; set; }
+                public decimal SkillValue { get; set; }
+                public StatModifier.OperationType SkillValueType { get; set; }
                 public StatType SkillStatType { get; set; }
                 public StatReferenceType StatReferenceType { get; set; }
 
@@ -32,8 +32,8 @@ namespace Nekoyume.TableData
                     int skillId,
                     int skillCooldown,
                     int skillChance,
-                    int skillValue,
-                    decimal skillStatRatio,
+                    decimal skillValue,
+                    StatModifier.OperationType skillValueType,
                     StatType skillStatType,
                     StatReferenceType statReferenceType)
                 {
@@ -43,7 +43,7 @@ namespace Nekoyume.TableData
                     SkillCooldown = skillCooldown;
                     SkillChance = skillChance;
                     SkillValue = skillValue;
-                    SkillStatRatio = skillStatRatio;
+                    SkillValueType = skillValueType;
                     SkillStatType = skillStatType;
                     StatReferenceType = statReferenceType;
                 }
@@ -105,8 +105,9 @@ namespace Nekoyume.TableData
                 {
                     var cooldown = ParseInt(fields[13]);
                     var chance = ParseInt(fields[14]);
-                    var value = ParseInt(fields[15]);
-                    var statRatio = ParseDecimal(fields[16]);
+                    var value = ParseDecimal(fields[15]);
+                    var statValueType =
+                        (StatModifier.OperationType)Enum.Parse(typeof(StatModifier.OperationType), fields[16]);
                     var statType =
                         (StatType)Enum.Parse(typeof(StatType), fields[17]);
                     var statReferenceType =
@@ -119,7 +120,7 @@ namespace Nekoyume.TableData
                         cooldown,
                         chance,
                         value,
-                        statRatio,
+                        statValueType,
                         statType,
                         statReferenceType);
                 }
