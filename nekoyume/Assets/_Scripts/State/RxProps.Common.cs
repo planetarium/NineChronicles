@@ -62,5 +62,58 @@ namespace Nekoyume.State
                 remainTimespanToReset = Util.GetBlockToTime(totalBlockRange - progressedBlockRange);
             }
         }
+
+        public class ArenaTicketProgress : TicketProgress
+        {
+            public int purchasedCountDuringInterval;
+
+            public ArenaTicketProgress(
+                int currentTickets,
+                int maxTickets,
+                int progressedBlockRange,
+                int totalBlockRange,
+                string remainTimespanToReset,
+                int purchasedCountDuringInterval)
+                : base(currentTickets,
+                    maxTickets,
+                    progressedBlockRange,
+                    totalBlockRange,
+                    remainTimespanToReset)
+            {
+                this.purchasedCountDuringInterval = purchasedCountDuringInterval;
+            }
+
+            public ArenaTicketProgress(
+                int currentTickets,
+                int maxTickets,
+                int progressedBlockRange,
+                int totalBlockRange,
+                int purchasedCountDuringInterval)
+                : this(
+                    currentTickets,
+                    maxTickets,
+                    progressedBlockRange,
+                    totalBlockRange,
+                    Util.GetBlockToTime(totalBlockRange - progressedBlockRange),
+                    purchasedCountDuringInterval)
+            {
+            }
+
+            public ArenaTicketProgress() : this(0, 0, 0, 0, 0)
+            {
+            }
+
+            public void Reset(
+                int currentTicketCount = 0,
+                int maxTicketCount = 0,
+                int progressedBlockRange = 0,
+                int totalBlockRange = 0,
+                int purchasedCountDuringInterval = 0)
+            {
+                base.Reset(currentTicketCount, maxTicketCount, progressedBlockRange,
+                    totalBlockRange);
+                this.purchasedCountDuringInterval = purchasedCountDuringInterval;
+            }
+        }
     }
 }

@@ -253,40 +253,41 @@ namespace Nekoyume.BlockChain
 
         private void Awake()
         {
+            Dictionary<string, Value> GetPlayerAddressForLogging()
+            {
+                var value = new Dictionary<string, Value>();
+                if (States.Instance.AgentState is not null)
+                {
+                    value["AgentAddress"] = States.Instance.AgentState.address.ToString();
+                }
+
+                if (States.Instance.AgentState is not null)
+                {
+                    value["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString();
+                }
+
+                return value;
+            }
+
             OnDisconnected
                 .ObserveOnMainThread()
-                .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Disconnected", new Value
-                {
-                    ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                }))
+                .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Disconnected", GetPlayerAddressForLogging()))
                 .AddTo(_disposables);
             OnRetryStarted
                 .ObserveOnMainThread()
-                .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Retry Connect Started", new Value
-                {
-                    ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                }))
+                .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Retry Connect Started",GetPlayerAddressForLogging()))
                 .AddTo(_disposables);
             OnRetryEnded
                 .ObserveOnMainThread()
-                .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Retry Connect Ended", new Value
-                {
-                    ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                }))
+                .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Retry Connect Ended", GetPlayerAddressForLogging()))
                 .AddTo(_disposables);
             OnPreloadStarted
                 .ObserveOnMainThread()
-                .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Preload Started", new Value
-                {
-                    ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                }))
+                .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Preload Started", GetPlayerAddressForLogging()))
                 .AddTo(_disposables);
             OnPreloadEnded
                 .ObserveOnMainThread()
-                .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Preload Ended", new Value
-                {
-                    ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                }))
+                .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Preload Ended", GetPlayerAddressForLogging()))
                 .AddTo(_disposables);
             OnRetryAttempt
                 .ObserveOnMainThread()
@@ -490,8 +491,10 @@ namespace Nekoyume.BlockChain
 
             foreach (var action in actions)
             {
-                var ga = (GameAction) action.InnerAction;
-                _transactions.TryAdd(ga.Id, tx.Id);
+                if (action.InnerAction is GameAction gameAction)
+                {
+                    _transactions.TryAdd(gameAction.Id, tx.Id);
+                }
             }
         }
 

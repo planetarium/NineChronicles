@@ -574,43 +574,33 @@ namespace Nekoyume.UI
 
             var arenaTicketCost = startButton.ArenaTicketCost;
             var hasEnoughTickets =
-                RxProps.ArenaTicketProgress.HasValue &&
-                RxProps.ArenaTicketProgress.Value.currentTickets >= arenaTicketCost;
+                RxProps.ArenaTicketsProgress.HasValue &&
+                RxProps.ArenaTicketsProgress.Value.currentTickets >= arenaTicketCost;
             if (hasEnoughTickets)
             {
                 StartCoroutine(CoBattleStart(CostType.ArenaTicket));
                 return;
             }
 
-            var gold = States.Instance.GoldBalanceState.Gold;
-            var ncgCost = ArenaHelper.GetTicketPrice(
+            var balance = States.Instance.GoldBalanceState.Gold;
+            var cost = ArenaHelper.GetTicketPrice(
                 _roundData,
                 RxProps.PlayersArenaParticipant.Value.CurrentArenaInfo,
-                gold.Currency);
-            var hasEnoughNCG = gold >= ncgCost;
-            if (hasEnoughNCG)
-            {
-                var notEnoughTicketMsg = L10nManager.Localize(
-                    "UI_CONFIRM_PAYMENT_CURRENCY_FORMAT_FOR_BATTLE_ARENA",
-                    ncgCost.ToString());
-                Find<PaymentPopup>().ShowAttract(
-                    CostType.ArenaTicket,
-                    arenaTicketCost.ToString(),
-                    notEnoughTicketMsg,
-                    L10nManager.Localize("UI_YES"),
-                    () => StartCoroutine(
-                        CoBattleStart(CostType.NCG)));
-                return;
-            }
+                balance.Currency);
+            var arenaInformation = RxProps.PlayersArenaParticipant.Value.CurrentArenaInfo;
 
-            var notEnoughNCGMsg =
-                L10nManager.Localize("UI_NOT_ENOUGH_NCG_WITH_SUPPLIER_INFO");
-            Find<PaymentPopup>().ShowAttract(
+            Find<ArenaTicketPurchasePopup>().Show(
+                CostType.ArenaTicket,
                 CostType.NCG,
-                ncgCost.GetQuantityString(),
-                notEnoughNCGMsg,
-                L10nManager.Localize("UI_GO_TO_MARKET"),
-                GoToMarket);
+                balance,
+                cost,
+                () => StartCoroutine(CoBattleStart(CostType.NCG)),
+                GoToMarket,
+                arenaInformation.PurchasedTicketCount,
+                _roundData.MaxPurchaseCount,
+                RxProps.ArenaTicketsProgress.Value.purchasedCountDuringInterval,
+                _roundData.MaxPurchaseCountWithInterval
+            );
         }
 
         private IEnumerator CoBattleStart(CostType costType)
@@ -743,8 +733,7 @@ namespace Nekoyume.UI
         {
             Close(true);
             Find<ShopBuy>().Show();
-            Find<HeaderMenuStatic>()
-                .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
         }
     }
 }

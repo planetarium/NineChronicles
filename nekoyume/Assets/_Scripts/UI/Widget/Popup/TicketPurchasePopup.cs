@@ -11,31 +11,31 @@ namespace Nekoyume.UI
     public class TicketPurchasePopup : PopupWidget
     {
         [SerializeField]
-        private CostIconDataScriptableObject costIconData;
+        protected CostIconDataScriptableObject costIconData;
 
         [SerializeField]
-        private Image ticketIcon;
+        protected Image ticketIcon;
 
         [SerializeField]
-        private Image costIcon;
+        protected Image costIcon;
 
         [SerializeField]
-        private GameObject costContainer;
+        protected GameObject costContainer;
 
         [SerializeField]
-        private TextMeshProUGUI costText;
+        protected TextMeshProUGUI costText;
 
         [SerializeField]
-        private TextMeshProUGUI contentText;
+        protected TextMeshProUGUI contentText;
 
         [SerializeField]
-        private TextMeshProUGUI maxPurchaseText;
+        protected TextMeshProUGUI maxPurchaseText;
 
         [SerializeField]
-        private TextButton confirmButton;
+        protected TextButton confirmButton;
 
         [SerializeField]
-        private TextButton cancelButton;
+        protected TextButton cancelButton;
 
         protected override void Awake()
         {
@@ -51,12 +51,13 @@ namespace Nekoyume.UI
             FungibleAssetValue cost,
             int purchasedCount,
             int maxPurchaseCount,
-            System.Action onConfirm)
+            System.Action onConfirm,
+            System.Action goToMarget)
         {
             if (purchasedCount < maxPurchaseCount)
             {
                 ShowPurchaseTicketPopup(ticketType, costType, balance, cost,
-                    purchasedCount, maxPurchaseCount, onConfirm);
+                    purchasedCount, maxPurchaseCount, onConfirm, goToMarget);
             }
             else
             {
@@ -73,7 +74,8 @@ namespace Nekoyume.UI
             FungibleAssetValue cost,
             int purchasedCount,
             int maxPurchaseCount,
-            System.Action onConfirm)
+            System.Action onConfirm,
+            System.Action goToMarget)
         {
             ticketIcon.overrideSprite = costIconData.GetIcon(ticketType);
             costIcon.overrideSprite = costIconData.GetIcon(costType);
@@ -89,7 +91,7 @@ namespace Nekoyume.UI
                 : Palette.GetColor(EnumType.ColorType.ButtonDisabled);
 
             maxPurchaseText.text = L10nManager.Localize("UI_TICKET_PURCHASE_LIMIT",
-                purchasedCount, maxPurchaseCount);;
+                purchasedCount, maxPurchaseCount);
             maxPurchaseText.color = Palette.GetColor(EnumType.ColorType.TextElement06);
 
             cancelButton.gameObject.SetActive(true);
@@ -108,7 +110,7 @@ namespace Nekoyume.UI
                         cost.GetQuantityString(),
                         L10nManager.Localize("UI_NOT_ENOUGH_NCG_WITH_SUPPLIER_INFO"),
                         L10nManager.Localize("UI_GO_TO_MARKET"),
-                        GoToMarket);
+                        goToMarget);
                 }
                 Close(!enoughBalance);
             };
@@ -121,14 +123,14 @@ namespace Nekoyume.UI
             costContainer.SetActive(false);
             cancelButton.gameObject.SetActive(false);
             maxPurchaseText.text = L10nManager.Localize("UI_TICKET_PURCHASE_LIMIT",
-                purchasedCount, maxPurchaseCount);;
+                purchasedCount, maxPurchaseCount);
             maxPurchaseText.color = Palette.GetColor(EnumType.ColorType.ButtonDisabled);
             confirmButton.Text = L10nManager.Localize("UI_OK");
             contentText.text = L10nManager.Localize("UI_REACHED_TICKET_BUY_LIMIT", GetTicketName(ticketType));
             confirmButton.OnClick = () => Close();
         }
 
-        private string GetTicketName(CostType ticketType)
+        protected static string GetTicketName(CostType ticketType)
         {
             return ticketType switch
             {
@@ -136,14 +138,6 @@ namespace Nekoyume.UI
                 CostType.WorldBossTicket => L10nManager.Localize("UI_WORLD_BOSS"),
                 _ => string.Empty
             };
-        }
-
-        private void GoToMarket()
-        {
-            Find<WorldBoss>().Close(true);
-            Find<RaidPreparation>().Close(true);
-            Find<ShopBuy>().Show();
-            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
         }
     }
 }

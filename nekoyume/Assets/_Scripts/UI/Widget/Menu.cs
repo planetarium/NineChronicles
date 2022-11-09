@@ -198,9 +198,10 @@ namespace Nekoyume.UI
         private void GoToCombinationEquipmentRecipe(int recipeId)
         {
             AudioController.PlayClick();
-            Analyzer.Instance.Track("Unity/Click Guided Quest Combination Equipment", new Value
+            Analyzer.Instance.Track("Unity/Click Guided Quest Combination Equipment", new Dictionary<string, Value>()
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             });
             CombinationClickInternal(() =>
                 Find<Craft>().ShowWithEquipmentRecipeId(recipeId));
@@ -361,9 +362,10 @@ namespace Nekoyume.UI
 
             Close(true);
             Find<ArenaJoin>().ShowAsync().Forget();
-            Analyzer.Instance.Track("Unity/Enter arena page", new Value
+            Analyzer.Instance.Track("Unity/Enter arena page", new Dictionary<string, Value>()
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             });
             AudioController.PlayClick();
         }

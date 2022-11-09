@@ -1,5 +1,6 @@
 using Bencodex.Types;
 using Libplanet;
+using Nekoyume;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
 using NUnit.Framework;

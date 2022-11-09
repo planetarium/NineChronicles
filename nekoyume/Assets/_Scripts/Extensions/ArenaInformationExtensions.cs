@@ -1,4 +1,5 @@
-﻿using Nekoyume.Arena;
+﻿using Nekoyume.Action;
+using Nekoyume.Arena;
 using Nekoyume.Model.Arena;
 
 namespace Nekoyume
@@ -19,6 +20,22 @@ namespace Nekoyume
             return arenaInfo.TicketResetCount < currentTicketResetCount
                 ? ArenaInformation.MaxTicketCount
                 : arenaInfo.Ticket;
+        }
+
+        public static int GetPurchasedCountInInterval(
+            this ArenaInformation arenaInfo,
+            long blockIndex,
+            long roundStartBlockIndex,
+            int gameConfigStateDailyArenaInterval,
+            int purchasedCountDuringInterval)
+        {
+            var currentTicketResetCount = ArenaHelper.GetCurrentTicketResetCount(
+                blockIndex,
+                roundStartBlockIndex,
+                gameConfigStateDailyArenaInterval);
+            return arenaInfo.TicketResetCount < currentTicketResetCount
+                ? 0
+                : purchasedCountDuringInterval;
         }
     }
 }

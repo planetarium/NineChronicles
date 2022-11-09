@@ -601,13 +601,14 @@ namespace Nekoyume.Game
             var characterSheet = TableSheets.Instance.CharacterSheet;
             var costumeStatSheet = TableSheets.Instance.CostumeStatSheet;
             var cp = CPHelper.GetCPV2(States.Instance.CurrentAvatarState, characterSheet, costumeStatSheet);
-            var props = new Value
+            var props = new Dictionary<string, Value>()
             {
                 ["StageId"] = log.stageId,
                 ["ClearedWave"] = log.clearedWaveNumber,
                 ["CP"] = cp,
                 ["FoodCount"] = foodCount,
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             };
             Analyzer.Instance.Track("Unity/Stage End", props);
         }

@@ -9,47 +9,6 @@ namespace Tests.EditMode.Extensions
     {
         [DatapointSource]
         public (
-            int medalItemId,
-            int expectChampionshipNumber,
-            int expectSeasonNumber)[] valuesFor_ToArenaNumbers =
-            {
-                (int.MaxValue, 0, 0),
-                (int.MinValue, 0, 0),
-                (700_000, 0, 0),
-                (700_100, 1, 0),
-                (700_101, 1, 0),
-                (700_102, 1, 4),
-                (700_103, 1, 0),
-                (700_104, 1, 5),
-                (700_105, 1, 0),
-                (700_106, 1, 6),
-                (700_107, 1, 0),
-                (700_108, 1, 0),
-                (700_202, 2, 7),
-                (700_204, 2, 8),
-                (700_206, 2, 9),
-                (700_208, 2, 0),
-                // NOTE: Uncomment below after championship data extended.
-                // (700_302, 1, 1),
-                // (700_304, 1, 2),
-                // (700_306, 1, 3),
-                // (700_308, 1, 0),
-                // (700_402, 2, 4),
-                // (700_404, 2, 5),
-                // (700_406, 2, 6),
-                // (700_408, 2, 0),
-                // (700_502, 3, 7),
-                // (700_504, 3, 8),
-                // (700_506, 3, 9),
-                // (700_508, 3, 0),
-                // (700_602, 4, 10),
-                // (700_604, 4, 11),
-                // (700_606, 4, 12),
-                // (700_608, 4, 0),
-            };
-
-        [DatapointSource]
-        public (
             int championshipId,
             int round,
             bool expectResult,
@@ -68,50 +27,46 @@ namespace Tests.EditMode.Extensions
                 (2, 3, false, null),
                 (2, 4, true, 8),
                 (2, 5, false, null),
-                (2, 6, true, 9),
+                (2, 6, false, null),
                 (2, 7, false, null),
                 (2, 8, false, null),
                 // NOTE: Uncomment below after championship data extended.
                 // (3, 1, false, null),
-                // (3, 2, true, 1),
+                // (3, 2, true, 9),
                 // (3, 3, false, null),
-                // (3, 4, true, 2),
+                // (3, 4, true, 10),
                 // (3, 5, false, null),
-                // (3, 6, true, 3),
-                // (3, 7, false, null),
-                // (3, 8, false, null),
+                // (3, 6, false, null),
                 // (4, 1, false, null),
-                // (4, 2, true, 4),
+                // (4, 2, true, 11),
                 // (4, 3, false, null),
-                // (4, 4, true, 5),
+                // (4, 4, true, 12),
                 // (4, 5, false, null),
-                // (4, 6, true, 6),
-                // (4, 7, false, null),
-                // (4, 8, false, null),
+                // (4, 6, false, null),
                 // (5, 1, false, null),
-                // (5, 2, true, 7),
+                // (5, 2, true, 13),
                 // (5, 3, false, null),
-                // (5, 4, true, 8),
+                // (5, 4, true, 14),
                 // (5, 5, false, null),
-                // (5, 6, true, 9),
-                // (5, 7, false, null),
-                // (5, 8, false, null),
+                // (5, 6, false, null),
                 // (6, 1, false, null),
-                // (6, 2, true, 10),
+                // (6, 2, true, 15),
                 // (6, 3, false, null),
-                // (6, 4, true, 11),
+                // (6, 4, true, 16),
                 // (6, 5, false, null),
-                // (6, 6, true, 12),
-                // (6, 7, false, null),
-                // (6, 8, false, null),
+                // (6, 6, false, null),
                 // (7, 1, false, null),
-                // (7, 2, true, 1),
+                // (7, 2, true, 17),
                 // (7, 3, false, null),
-                // (7, 4, true, 2),
+                // (7, 4, true, 18),
                 // (7, 5, false, null),
-                // (7, 6, true, 3),
-                // (7, 7, false, null),
-                // (7, 8, false, null),
+                // (7, 6, false, null),
+                // (8, 1, false, null),
+                // (8, 2, true, 19),
+                // (8, 3, false, null),
+                // (8, 4, true, 20),
+                // (8, 5, false, null),
+                // (8, 6, false, null),
             };
 
         [DatapointSource]
@@ -122,22 +77,59 @@ namespace Tests.EditMode.Extensions
             int expectMedalItemResourceId)[]
             valuesFor_TryGetMedalItemResourceIdTest =
             {
-                (1, 1, false, 700101),
-                (1, 2, true, 700202),
-                (1, 3, false, 700103),
-                (1, 4, true, 700204),
-                (1, 5, false, 700105),
-                (1, 6, true, 700206),
-                (1, 7, false, 700107),
+                (1, 1, false, 700000),
+                (1, 2, true, 700102),
+                (1, 3, false, 700000),
+                (1, 4, true, 700104),
+                (1, 5, false, 700000),
+                (1, 6, true, 700106),
+                (1, 7, false, 700000),
                 (1, 8, true, 700108),
-                (2, 1, false, 700101),
-                (2, 2, true, 700302),
-                (2, 3, false, 700103),
-                (2, 4, true, 700304),
-                (2, 5, false, 700105),
-                (2, 6, true, 700306),
-                (2, 7, false, 700107),
-                (2, 8, true, 700208),
+                (2, 1, false, 700000),
+                (2, 2, true, 700202),
+                (2, 3, false, 700000),
+                (2, 4, true, 700204),
+                (2, 5, false, 700000),
+                (2, 6, true, 700206),
+                (2, 7, false, 700000),
+                (2, 8, false, 700000),
+                // NOTE: Uncomment below after championship data extended.
+                // (3, 1, false, 700000),
+                // (3, 2, true, 700302),
+                // (3, 3, false, 700000),
+                // (3, 4, true, 700304),
+                // (3, 5, false, 700000),
+                // (3, 6, true, 700306),
+                // (4, 1, false, 700000),
+                // (4, 2, true, 700402),
+                // (4, 3, false, 700000),
+                // (4, 4, true, 700404),
+                // (4, 5, false, 700000),
+                // (4, 6, true, 700406),
+                // (5, 1, false, 700000),
+                // (5, 2, true, 700502),
+                // (5, 3, false, 700000),
+                // (5, 4, true, 700504),
+                // (5, 5, false, 700000),
+                // (5, 6, true, 700506),
+                // (6, 1, false, 700000),
+                // (6, 2, true, 700602),
+                // (6, 3, false, 700000),
+                // (6, 4, true, 700604),
+                // (6, 5, false, 700000),
+                // (6, 6, true, 700606),
+                // (7, 1, false, 700000),
+                // (7, 2, true, 700702),
+                // (7, 3, false, 700000),
+                // (7, 4, true, 700704),
+                // (7, 5, false, 700000),
+                // (7, 6, true, 700706),
+                // (8, 1, false, 700000),
+                // (8, 2, true, 700802),
+                // (8, 3, false, 700000),
+                // (8, 4, true, 700804),
+                // (8, 5, false, 700000),
+                // (8, 6, true, 700806),
             };
 
         [DatapointSource]
@@ -151,7 +143,26 @@ namespace Tests.EditMode.Extensions
                 // (4, 2023),
                 // (5, 2023),
                 // (6, 2023),
-                // (7, 2024),
+                // (7, 2023),
+                // (8, 2023),
+                // (9, 2024),
+                // (10, 2024),
+                // (11, 2024),
+            };
+
+        [DatapointSource]
+        public (int championshipId, int[] seasonNumbers)[]
+            valuesFor_TryGetSeasonNumbersOfChampionship =
+            {
+                (1, new[] { 4, 5, 6 }),
+                (2, new[] { 7, 8 }),
+                // NOTE: Uncomment below after championship data extended.
+                // (3, new[] { 9, 10 }),
+                // (4, new[] { 11, 12 }),
+                // (5, new[] { 13, 14 }),
+                // (6, new[] { 15, 16 }),
+                // (7, new[] { 17, 18 }),
+                // (8, new[] { 19, 20 }),
             };
 
         private ArenaSheet _arenaSheet;
@@ -160,22 +171,6 @@ namespace Tests.EditMode.Extensions
         public void SetUp()
         {
             _arenaSheet = TableSheetsHelper.MakeTableSheets().ArenaSheet;
-        }
-
-        [Theory]
-        public void ToArenaNumbers((
-            int medalItemId,
-            int expectChampionshipNumber,
-            int expectSeasonNumber) tuple)
-        {
-            var (
-                medalItemId,
-                expectChampionshipNumber,
-                expectSeasonNumber) = tuple;
-            var (championshipNumber, seasonNumber) =
-                medalItemId.ToArenaNumbers(_arenaSheet);
-            Assert.AreEqual(expectChampionshipNumber, championshipNumber);
-            Assert.AreEqual(expectSeasonNumber, seasonNumber);
         }
 
         [Theory]
@@ -233,6 +228,17 @@ namespace Tests.EditMode.Extensions
             var (championshipId, year) = tuple;
             Assert.True(_arenaSheet.TryGetValue(championshipId, out var row));
             Assert.AreEqual(year, row.GetChampionshipYear());
+        }
+
+        [Theory]
+        public void TryGetSeasonNumbersOfChampionship((
+            int championshipId,
+            int[] seasonNumbers) tuple)
+        {
+            var (championshipId, seasonNumbers) = tuple;
+            Assert.True(_arenaSheet.TryGetValue(championshipId, out var row));
+            Assert.True(row.Round.TryGetSeasonNumbersOfChampionship(out var numbers));
+            Assert.AreEqual(seasonNumbers, numbers.ToArray());
         }
     }
 }

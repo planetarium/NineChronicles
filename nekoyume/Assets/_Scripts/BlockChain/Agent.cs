@@ -892,8 +892,10 @@ namespace Nekoyume.BlockChain
                     yield return new WaitUntil(() => task.IsCompleted);
                     foreach (var action in actions)
                     {
-                        var ga = (GameAction)action.InnerAction;
-                        _transactions.TryAdd(ga.Id, task.Result.Id);
+                        if (action.InnerAction is GameAction gameAction)
+                        {
+                            _transactions.TryAdd(gameAction.Id, task.Result.Id);
+                        }
                     }
                 }
             }
