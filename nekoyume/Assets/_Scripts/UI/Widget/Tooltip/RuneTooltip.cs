@@ -7,6 +7,7 @@ using Nekoyume.Game.Character;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
+using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -148,6 +149,43 @@ namespace Nekoyume.UI
             if (RuneFrontHelper.TryGetRuneIcon(item.RuneState.RuneId, out var icon))
             {
                 runeImage.sprite = icon;
+            }
+
+            var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
+            if (!runeOptionSheet.TryGetValue(item.RuneState.RuneId, out var optionRow))
+            {
+                return;
+            }
+
+            if (optionRow.LevelOptionMap.TryGetValue(item.RuneState.Level, out var option))
+            {
+                if (option.SkillId != 0)
+                {
+                    var name = L10nManager.Localize($"SKILL_NAME_{option.SkillId}");
+                    var skillValue = option.SkillValueType == StatModifier.OperationType.Percentage
+                        ? option.SkillValue * 100
+                        : option.SkillValue;
+                    var desc = L10nManager.Localize(
+                        $"SKILL_DESCRIPTION_{option.SkillId}", option.SkillChance, skillValue);
+                    var cooldown = $"{L10nManager.Localize($"UI_COOLDOWN")} : {option.SkillCooldown}";
+                    skillView.Show(name, desc, cooldown);
+                }
+                else
+                {
+                    skillView.Hide();
+                }
+
+                foreach (var statView in statViewList)
+                {
+                    statView.gameObject.SetActive(false);
+                }
+
+                for (var i = 0; i < option.Stats.Count; i++)
+                {
+                    var (statMap, _) = option.Stats[i];
+                    statViewList[i].gameObject.SetActive(true);
+                    statViewList[i].Show(statMap.StatType, statMap.ValueAsInt, true);
+                }
             }
 
             _onConfirm = onConfirm;

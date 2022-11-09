@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
+using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Elemental;
@@ -10,7 +11,6 @@ using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Stat;
-using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
@@ -55,7 +55,7 @@ namespace Nekoyume.UI.Module
         private bool _swapSlot;
 
         private readonly Dictionary<Inventory.InventoryTabType, GameObject> _slots = new();
-        private List<Guid> _consumables = new();
+        private readonly List<Guid> _consumables = new();
 
         public void Initialize(bool swapSlot)
         {
@@ -555,7 +555,13 @@ namespace Nekoyume.UI.Module
                 L10nManager.Localize(model.Equipped.Value ? "UI_UNEQUIP" : "UI_EQUIP"),
                 true,
                 () => EquipOrUnequip(model),
-                () => { },
+                () =>
+                {
+                    var rune = Widget.Find<Rune>();
+                    rune.CloseWithOtherWidgets();
+                    rune.Show(true);
+                    AudioController.PlayClick();
+                },
                 () =>
                 {
                     inventory.ClearSelectedItem();
