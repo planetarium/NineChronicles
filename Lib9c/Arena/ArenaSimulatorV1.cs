@@ -10,7 +10,10 @@ using Priority_Queue;
 
 namespace Nekoyume.Arena
 {
-    public class ArenaSimulator : IArenaSimulator
+    /// <summary>
+    /// Introduced at https://github.com/planetarium/lib9c/pull/1135
+    /// </summary>
+    public class ArenaSimulatorV1 : IArenaSimulator
     {
         private const decimal TurnPriority = 100m;
         private const int MaxTurn = 200;
@@ -18,7 +21,7 @@ namespace Nekoyume.Arena
         public IRandom Random { get; }
         public int Turn { get; private set; }
 
-        public ArenaSimulator(IRandom random)
+        public ArenaSimulatorV1(IRandom random)
         {
             Random = random;
             Turn = 1;
@@ -27,10 +30,68 @@ namespace Nekoyume.Arena
         public ArenaLog Simulate(
             ArenaPlayerDigest challenger,
             ArenaPlayerDigest enemy,
-            ArenaSimulatorSheets sheets)
+            ArenaSimulatorSheetsV1 sheets)
         {
             var log = new ArenaLog();
             var players = SpawnPlayers(this, challenger, enemy, sheets, log);
+            Turn = 1;
+
+            while (true)
+            {
+                if (Turn > MaxTurn)
+                {
+                    // todo : 턴오버일경우 정책 필요함 일단 Lose
+                    log.Result = ArenaLog.ArenaResult.Lose;
+                    break;
+                }
+
+                if (!players.TryDequeue(out var selectedPlayer))
+                {
+                    break;
+                }
+
+                selectedPlayer.Tick();
+                var clone = (ArenaCharacter)selectedPlayer.Clone();
+                log.Add(clone.SkillLog);
+
+                var deadPlayers = players.Where(x => x.IsDead);
+                var arenaCharacters = deadPlayers as ArenaCharacter[] ?? deadPlayers.ToArray();
+                if (arenaCharacters.Any())
+                {
+                    var (deadPlayer, result) = GetBattleResult(arenaCharacters);
+                    log.Result = result;
+                    log.Add(new ArenaDead((ArenaCharacter)deadPlayer.Clone()));
+                    log.Add(new ArenaTurnEnd((ArenaCharacter)selectedPlayer.Clone(), Turn));
+                    break;
+                }
+
+                if (!selectedPlayer.IsEnemy)
+                {
+                    log.Add(new ArenaTurnEnd((ArenaCharacter)selectedPlayer.Clone(), Turn));
+                    Turn++;
+                }
+
+                foreach (var other in players)
+                {
+                    var current = players.GetPriority(other);
+                    var speed = current * 0.6m;
+                    players.UpdatePriority(other, speed);
+                }
+
+                players.Enqueue(selectedPlayer, TurnPriority / selectedPlayer.SPD);
+            }
+
+            return log;
+        }
+
+        [Obsolete("Use Simulate")]
+        public ArenaLog SimulateV1(
+            ArenaPlayerDigest challenger,
+            ArenaPlayerDigest enemy,
+            ArenaSimulatorSheetsV1 sheets)
+        {
+            var log = new ArenaLog();
+            var players = SpawnPlayersV1(this, challenger, enemy, sheets, log);
             Turn = 1;
 
             while (true)
@@ -96,10 +157,10 @@ namespace Nekoyume.Arena
 
 
         private static SimplePriorityQueue<ArenaCharacter, decimal> SpawnPlayers(
-            ArenaSimulator simulator,
+            ArenaSimulatorV1 simulator,
             ArenaPlayerDigest challengerDigest,
             ArenaPlayerDigest enemyDigest,
-            ArenaSimulatorSheets simulatorSheets,
+            ArenaSimulatorSheetsV1 simulatorSheets,
             ArenaLog log)
         {
             var challenger = new ArenaCharacter(simulator, challengerDigest, simulatorSheets);
@@ -107,6 +168,29 @@ namespace Nekoyume.Arena
 
             challenger.Spawn(enemy);
             enemy.Spawn(challenger);
+
+            log.Add(new ArenaSpawnCharacter((ArenaCharacter)challenger.Clone()));
+            log.Add(new ArenaSpawnCharacter((ArenaCharacter)enemy.Clone()));
+
+            var players = new SimplePriorityQueue<ArenaCharacter, decimal>();
+            players.Enqueue(challenger, TurnPriority / challenger.SPD);
+            players.Enqueue(enemy, TurnPriority / enemy.SPD);
+            return players;
+        }
+
+        [Obsolete("Use SpawnPlayers")]
+        private static SimplePriorityQueue<ArenaCharacter, decimal> SpawnPlayersV1(
+            ArenaSimulatorV1 simulator,
+            ArenaPlayerDigest challengerDigest,
+            ArenaPlayerDigest enemyDigest,
+            ArenaSimulatorSheetsV1 simulatorSheets,
+            ArenaLog log)
+        {
+            var challenger = new ArenaCharacter(simulator, challengerDigest, simulatorSheets);
+            var enemy = new ArenaCharacter(simulator, enemyDigest, simulatorSheets, true);
+
+            challenger.SpawnV1(enemy);
+            enemy.SpawnV1(challenger);
 
             log.Add(new ArenaSpawnCharacter((ArenaCharacter)challenger.Clone()));
             log.Add(new ArenaSpawnCharacter((ArenaCharacter)enemy.Clone()));

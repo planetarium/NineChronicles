@@ -25,7 +25,7 @@ namespace Nekoyume.Model
         private readonly StatBuffSheet _statBuffSheet;
         private readonly SkillActionBuffSheet _skillActionBuffSheet;
         private readonly ActionBuffSheet _actionBuffSheet;
-        private readonly ArenaSimulator _simulator;
+        private readonly IArenaSimulator _simulator;
         private readonly CharacterStats _stats;
         private readonly ArenaSkills _skills;
 
@@ -69,7 +69,7 @@ namespace Nekoyume.Model
         public object Clone() => new ArenaCharacter(this);
 
         public ArenaCharacter(
-            ArenaSimulator simulator,
+            ArenaSimulatorV1 simulator,
             ArenaPlayerDigest digest,
             ArenaSimulatorSheetsV1 sheets,
             bool isEnemy = false)
@@ -90,7 +90,42 @@ namespace Nekoyume.Model
             _actionBuffSheet = sheets.ActionBuffSheet;
 
             _simulator = simulator;
-            _stats = GetStat(digest, sheets);
+            _stats = GetStat(
+                digest,
+                row,
+                sheets.EquipmentItemSetEffectSheet,
+                sheets.CostumeStatSheet);
+            _skills = GetSkills(digest.Equipments, sheets.SkillSheet);
+            _attackCountMax = AttackCountHelper.GetCountMax(digest.Level);
+        }
+
+        public ArenaCharacter(
+            ArenaSimulator simulator,
+            ArenaPlayerDigest digest,
+            ArenaSimulatorSheets sheets,
+            bool isEnemy = false)
+        {
+            OffensiveElementalType = GetElementalType(digest.Equipments, ItemSubType.Weapon);
+            DefenseElementalType = GetElementalType(digest.Equipments, ItemSubType.Armor);
+            var row = CharacterRow(digest.CharacterId, sheets);
+            SizeType = row?.SizeType ?? SizeType.S;
+            RunSpeed = row?.RunSpeed ?? 1f;
+            AttackRange = row?.AttackRange ?? 1f;
+            CharacterId = digest.CharacterId;
+            IsEnemy = isEnemy;
+
+            _skillSheet = sheets.SkillSheet;
+            _skillBuffSheet = sheets.SkillBuffSheet;
+            _statBuffSheet = sheets.StatBuffSheet;
+            _skillActionBuffSheet = sheets.SkillActionBuffSheet;
+            _actionBuffSheet = sheets.ActionBuffSheet;
+
+            _simulator = simulator;
+            _stats = GetStat(
+                digest,
+                row,
+                sheets.EquipmentItemSetEffectSheet,
+                sheets.CostumeStatSheet);
             _skills = GetSkills(digest.Equipments, sheets.SkillSheet);
             _attackCountMax = AttackCountHelper.GetCountMax(digest.Level);
         }
@@ -145,17 +180,29 @@ namespace Nekoyume.Model
             return row;
         }
 
-
-        private static CharacterStats GetStat(ArenaPlayerDigest digest, ArenaSimulatorSheetsV1 sheets)
+        private static CharacterSheet.Row CharacterRow(int characterId, ArenaSimulatorSheets sheets)
         {
-            var row = CharacterRow(digest.CharacterId, sheets);
-            var stats = new CharacterStats(row, digest.Level);
-            stats.SetEquipments(digest.Equipments, sheets.EquipmentItemSetEffectSheet);
+            if (!sheets.CharacterSheet.TryGetValue(characterId, out var row))
+            {
+                throw new SheetRowNotFoundException("CharacterSheet", characterId);
+            }
+
+            return row;
+        }
+
+        private static CharacterStats GetStat(
+            ArenaPlayerDigest digest,
+            CharacterSheet.Row characterRow,
+            EquipmentItemSetEffectSheet equipmentItemSetEffectSheet,
+            CostumeStatSheet costumeStatSheet)
+        {
+            var stats = new CharacterStats(characterRow, digest.Level);
+            stats.SetEquipments(digest.Equipments, equipmentItemSetEffectSheet);
 
             var options = new List<StatModifier>();
             foreach (var itemId in digest.Costumes.Select(costume => costume.Id))
             {
-                if (TryGetStats(sheets.CostumeStatSheet, itemId, out var option))
+                if (TryGetStats(costumeStatSheet, itemId, out var option))
                 {
                     options.AddRange(option);
                 }
