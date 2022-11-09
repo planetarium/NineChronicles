@@ -1159,8 +1159,8 @@ namespace Nekoyume.BlockChain
             var action = new Raid
             {
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
-                EquipmentIds = costumes,
-                CostumeIds = equipments,
+                EquipmentIds = equipments,
+                CostumeIds = costumes,
                 FoodIds = foods,
                 Runes = runes,
                 PayNcg = payNcg,

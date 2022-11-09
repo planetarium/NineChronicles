@@ -8,7 +8,6 @@ using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.BattleStatus;
-using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -127,7 +126,6 @@ namespace Nekoyume.UI
             });
 
             CloseWidget = () => Close(true);
-
             base.Awake();
         }
 
@@ -189,8 +187,7 @@ namespace Nekoyume.UI
 
             UpdateBackground();
 
-            var currentAvatarState = States.Instance.CurrentAvatarState;
-            UpdateStartButton(currentAvatarState);
+            UpdateStartButton();
             information.UpdateInventory(BattleType.Adventure);
             UpdateRequiredCostByStageId();
             UpdateRandomBuffButton();
@@ -225,11 +222,7 @@ namespace Nekoyume.UI
                     throw new ArgumentOutOfRangeException();
             }
 
-            ReactiveAvatarState.Inventory.Subscribe(_ =>
-            {
-                UpdateStartButton(States.Instance.CurrentAvatarState);
-
-            }).AddTo(_disposables);
+            ReactiveAvatarState.Inventory.Subscribe(_ => UpdateStartButton()).AddTo(_disposables);
         }
 
         private void UpdateRandomBuffButton()
@@ -272,22 +265,6 @@ namespace Nekoyume.UI
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        private void UpdateStartButton()
-        {
-            startButton.UpdateObjects();
-            foreach (var particle in particles)
-            {
-                if (startButton.IsSubmittable)
-                {
-                    particle.Play();
-                }
-                else
-                {
-                    particle.Stop();
-                }
             }
         }
 
@@ -697,8 +674,21 @@ namespace Nekoyume.UI
                 elementalTypes.Contains(x.ElementalType));
         }
 
-        private void UpdateStartButton(AvatarState avatarState)
+        private void UpdateStartButton()
         {
+            startButton.UpdateObjects();
+            foreach (var particle in particles)
+            {
+                if (startButton.IsSubmittable)
+                {
+                    particle.Play();
+                }
+                else
+                {
+                    particle.Stop();
+                }
+            }
+
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Adventure);
             var runes = States.Instance.GetEquippedRuneStates(BattleType.Adventure)
                 .Select(x=> x.RuneId).ToList();

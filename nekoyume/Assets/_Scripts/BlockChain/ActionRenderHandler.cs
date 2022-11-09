@@ -2080,8 +2080,7 @@ namespace Nekoyume.BlockChain
             }
 
             var clonedAvatarState = (AvatarState)States.Instance.CurrentAvatarState.Clone();
-            var items = Widget.Find<RaidPreparation>().LoadEquipment();
-            clonedAvatarState.EquipItems(items);
+            // todo : 장비 잘 착용하고 전투하는지 체크 필요
             var random = new LocalRandom(eval.RandomSeed);
 
             var preRaiderState = WorldBossStates.GetRaiderState(avatarAddress);

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
@@ -32,7 +33,7 @@ namespace Nekoyume.UI.Module
             button.OnClickAsObservable()
                 .ThrottleFirst(new TimeSpan(0, 0, 1))
                 .Subscribe(_ =>
-                {   
+                {
                     OnClickCharacterIcon.OnNext(_avatarStateToDisplay);
                     AudioController.PlayClick();
                 })
@@ -66,13 +67,44 @@ namespace Nekoyume.UI.Module
         public override void SetByPlayer(Player player)
         {
             base.SetByPlayer(player);
-            
+
             if (!isTitleFrame)
             {
                 return;
             }
 
             var title = player.Costumes.FirstOrDefault(costume =>
+                costume.ItemSubType == ItemSubType.Title &&
+                costume.equipped);
+            if (title is null)
+            {
+                SetFrame(null);
+            }
+            else
+            {
+                var image = SpriteHelper.GetTitleFrame(title.Id);
+                SetFrame(image);
+            }
+        }
+
+        public void Set(List<Equipment> equipments, List<Costume> costumes, int characterId)
+        {
+            var itemId = GameConfig.DefaultAvatarArmorId;
+            var armor = equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
+            if (armor != null)
+            {
+                itemId = armor.Id;
+            }
+
+            var fullCostume = costumes.FirstOrDefault(x => x.ItemSubType == ItemSubType.FullCostume);
+            if (fullCostume != null)
+            {
+                itemId = fullCostume.Id;
+            }
+
+            base.Set(itemId, characterId);
+
+            var title = costumes.FirstOrDefault(costume =>
                 costume.ItemSubType == ItemSubType.Title &&
                 costume.equipped);
             if (title is null)
