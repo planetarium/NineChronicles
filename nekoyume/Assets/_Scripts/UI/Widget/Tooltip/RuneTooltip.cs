@@ -47,6 +47,12 @@ namespace Nekoyume.UI
         private TextMeshProUGUI gradeText;
 
         [SerializeField]
+        private TextMeshProUGUI subTypeText;
+
+        [SerializeField]
+        private Image spacerImage;
+
+        [SerializeField]
         private Image runeImage;
 
         [SerializeField]
@@ -206,7 +212,12 @@ namespace Nekoyume.UI
             gradeHsv.hue = data.GradeHsvHue;
             gradeHsv.saturation = data.GradeHsvSaturation;
             gradeHsv.value = data.GradeHsvValue;
+
+            var color = LocalizationExtensions.GetItemGradeColor(row.Grade);
             gradeText.text = L10nManager.Localize($"UI_ITEM_GRADE_{row.Grade}");
+            gradeText.color = color;
+            subTypeText.color = color;
+            spacerImage.color = color;
         }
 
         private void UpdateAreaIcon(RuneUsePlace runeUsePlace)

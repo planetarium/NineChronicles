@@ -78,8 +78,22 @@ namespace Nekoyume.UI.Module
             baseItemView.EnhancementText.text = $"+{model.RuneState.Level}";
             baseItemView.EnhancementImage.gameObject.SetActive(false);
 
-            // baseItemView.OptionTag.Set(model.ItemBase);
-            baseItemView.OptionTag.gameObject.SetActive(false); // temp
+            var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
+            if (!runeOptionSheet.TryGetValue(row.Id, out var optionRow))
+            {
+                return;
+            }
+
+            if (!optionRow.LevelOptionMap.TryGetValue(model.RuneState.Level, out var option))
+            {
+                return;
+            }
+
+            baseItemView.OptionTag.gameObject.SetActive(option.SkillId != 0);
+            if (option.SkillId != 0)
+            {
+                baseItemView.OptionTag.Set(row.Grade);
+            }
 
             model.Equipped.Subscribe(b => baseItemView.EquippedObject.SetActive(b)).AddTo(_disposables);
             model.Selected.Subscribe(b => baseItemView.SelectObject.SetActive(b)).AddTo(_disposables);

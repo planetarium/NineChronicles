@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Coffee.UIEffects;
 using Libplanet.Action;
 using Libplanet.Assets;
@@ -140,7 +141,7 @@ namespace Nekoyume.UI
 
             UpdateSkillInformation(nextOption);
             UpdateStatInformation(item, nextOption);
-            UpdateOptionTag(nextOption);
+            UpdateOptionTag(nextOption, item.Row.Grade);
         }
 
         private void UpdateSkillInformation(RuneOptionSheet.Row.RuneOptionInfo option)
@@ -197,43 +198,25 @@ namespace Nekoyume.UI
             }
         }
 
-        private void UpdateOptionTag(RuneOptionSheet.Row.RuneOptionInfo option)
+        private void UpdateOptionTag(RuneOptionSheet.Row.RuneOptionInfo option, int grade)
         {
             optionTagBg.gameObject.SetActive(false);
 
-            var grade = 1;
-            var data = optionTagData.GetOptionTagData(grade);
             foreach (var image in optionTagImages)
             {
                 image.gameObject.SetActive(false);
             }
 
-            optionTagBg.range = data.GradeHsvRange;
-            optionTagBg.hue = data.GradeHsvHue;
-            optionTagBg.saturation = data.GradeHsvSaturation;
-            optionTagBg.value = data.GradeHsvValue;
-
-            var optionCount = option.Stats.Count;
-
-            var index = 0;
-            for (var i = 0; i < option.Stats.Count; ++i)
-            {
-                var image = optionTagImages[index];
-                image.gameObject.SetActive(true);
-                image.sprite = optionTagData.StatOptionSprite;
-                ++index;
-            }
-
             if (option.SkillId != 0)
             {
-                var image = optionTagImages[index];
+                var data = optionTagData.GetOptionTagData(grade);
+                var image = optionTagImages.First();
                 image.gameObject.SetActive(true);
                 image.sprite = optionTagData.SkillOptionSprite;
-                ++index;
-            }
-
-            if (optionCount > 0)
-            {
+                optionTagBg.range = data.GradeHsvRange;
+                optionTagBg.hue = data.GradeHsvHue;
+                optionTagBg.saturation = data.GradeHsvSaturation;
+                optionTagBg.value = data.GradeHsvValue;
                 optionTagBg.gameObject.SetActive(true);
             }
         }

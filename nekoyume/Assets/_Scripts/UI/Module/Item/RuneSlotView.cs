@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Coffee.UIEffects;
 using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Rune;
@@ -35,10 +36,10 @@ namespace Nekoyume.UI.Module
         private Image lockImage = null;
 
         [SerializeField]
-        private UIHsvModifier optionTagBg = null;
+        private UIHsvModifier optionTagBg;
 
         [SerializeField]
-        private List<Image> optionTagImages = null;
+        private Image optionTagImage;
 
         [SerializeField]
         private ItemViewDataScriptableObject itemViewData;
@@ -114,19 +115,35 @@ namespace Nekoyume.UI.Module
 
         private void Equip(RuneState state)
         {
-            enhancementText.text = $"+{state.Level}";
-            if (RuneFrontHelper.TryGetRuneIcon(state.RuneId, out var icon))
+            if(!RuneFrontHelper.TryGetRuneIcon(state.RuneId, out var icon))
             {
-                itemImage.enabled = true;
-                itemImage.overrideSprite = icon;
-                itemImage.SetNativeSize();
+              return;
             }
 
             var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
-            if (runeListSheet.TryGetValue(state.RuneId, out var row))
+            if (!runeListSheet.TryGetValue(state.RuneId, out var row))
             {
-                UpdateGrade(row);
+                return;
             }
+
+            var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
+            if (!runeOptionSheet.TryGetValue(row.Id, out var optionRow))
+            {
+                return;
+            }
+
+            if (!optionRow.LevelOptionMap.TryGetValue(state.Level, out var option))
+            {
+                return;
+            }
+
+            enhancementText.text = $"+{state.Level}";
+            itemImage.enabled = true;
+            itemImage.overrideSprite = icon;
+            itemImage.SetNativeSize();
+
+            UpdateGrade(row);
+            UpdateOptionTag(option, row.Grade);
         }
 
         private void Unequip()
@@ -147,6 +164,20 @@ namespace Nekoyume.UI.Module
             gradeHsv.hue = data.GradeHsvHue;
             gradeHsv.saturation = data.GradeHsvSaturation;
             gradeHsv.value = data.GradeHsvValue;
+        }
+
+        private void UpdateOptionTag(RuneOptionSheet.Row.RuneOptionInfo option, int grade)
+        {
+            optionTagBg.gameObject.SetActive(option.SkillId != 0);
+            if (option.SkillId != 0)
+            {
+                var data = optionTagData.GetOptionTagData(grade);
+                optionTagImage.sprite = optionTagData.SkillOptionSprite;
+                optionTagBg.range = data.GradeHsvRange;
+                optionTagBg.hue = data.GradeHsvHue;
+                optionTagBg.saturation = data.GradeHsvSaturation;
+                optionTagBg.value = data.GradeHsvValue;
+            }
         }
 
         private void OnClick(BaseEventData eventData)
