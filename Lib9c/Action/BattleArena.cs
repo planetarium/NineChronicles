@@ -307,13 +307,13 @@ namespace Nekoyume.Action
             ExtraEnemyArenaPlayerDigest =
                 new ArenaPlayerDigest(enemyAvatarState, enemyArenaAvatarState);
             ExtraPreviousMyScore = myArenaScore.Score;
-            var arenaSheets = sheets.GetArenaSimulatorSheetsV1();
+            var arenaSheets = sheets.GetArenaSimulatorSheets();
             var winCount = 0;
             var defeatCount = 0;
             var rewards = new List<ItemBase>();
             for (var i = 0; i < ticket; i++)
             {
-                var simulator = new ArenaSimulatorV1(context.Random);
+                var simulator = new ArenaSimulator(context.Random);
                 var log = simulator.Simulate(
                     ExtraMyArenaPlayerDigest,
                     ExtraEnemyArenaPlayerDigest,
