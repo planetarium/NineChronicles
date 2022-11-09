@@ -225,6 +225,11 @@ namespace Nekoyume.UI
             ReactiveAvatarState.Inventory.Subscribe(_ => UpdateStartButton()).AddTo(_disposables);
         }
 
+        public void UpdateInventory()
+        {
+            information.UpdateInventory(BattleType.Adventure);
+        }
+
         private void UpdateRandomBuffButton()
         {
             if (_stageType == StageType.EventDungeon)

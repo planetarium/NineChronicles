@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using Nekoyume.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -90,8 +91,7 @@ namespace Nekoyume.UI.Module
             return result;
         }
 
-        public void UpdateInventory(BattleType battleType,
-            Inventory.InventoryTabType tabType = Inventory.InventoryTabType.Equipment)
+        public void UpdateInventory(BattleType battleType)
         {
             _consumables.Clear();
             var elementalTypes = GetElementalTypes();
@@ -101,7 +101,7 @@ namespace Nekoyume.UI.Module
                 OnClickTab,
                 elementalTypes);
 
-            StartCoroutine(CoUpdateView(battleType, tabType));
+            StartCoroutine(CoUpdateView(battleType, Inventory.InventoryTabType.Equipment));
         }
 
         private IEnumerator CoUpdateView(BattleType battleType, Inventory.InventoryTabType tabType)

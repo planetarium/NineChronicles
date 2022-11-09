@@ -168,6 +168,11 @@ namespace Nekoyume.UI
                 .AddTo(_disposables);
         }
 
+        public void UpdateInventory()
+        {
+            information.UpdateInventory(BattleType.Raid);
+        }
+
         private void UpdateCrystalCost()
         {
             var crystalCost = GetEntranceFee(Game.Game.instance.States.CurrentAvatarState);

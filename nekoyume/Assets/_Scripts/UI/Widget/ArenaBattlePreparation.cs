@@ -119,7 +119,11 @@ namespace Nekoyume.UI
             AgentStateSubject.Crystal
                 .Subscribe(_ => ReadyToBattle())
                 .AddTo(_disposables);
+        }
 
+        public void UpdateInventory()
+        {
+            information.UpdateInventory(BattleType.Arena);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

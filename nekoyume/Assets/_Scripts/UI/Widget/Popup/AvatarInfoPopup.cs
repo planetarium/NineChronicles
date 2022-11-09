@@ -50,6 +50,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject equipmentSlotObject;
 
+        private BattlePreparation _battlePreparation;
+        private ArenaBattlePreparation _arenaPreparation;
+        private RaidPreparation _raidPreparation;
         private readonly ToggleGroup _toggleGroup = new();
         private readonly Dictionary<BattleType, System.Action> _onToggleCallback = new()
         {
@@ -95,7 +98,9 @@ namespace Nekoyume.UI
         public override void Initialize()
         {
             base.Initialize();
-
+            _battlePreparation = Find<BattlePreparation>();
+            _arenaPreparation = Find<ArenaBattlePreparation>();
+            _raidPreparation = Find<RaidPreparation>();
             information.Initialize(false);
 
             grindModeToggle.onValueChanged.AddListener(toggledOn =>
@@ -122,6 +127,26 @@ namespace Nekoyume.UI
             information.UpdateInventory(BattleType.Adventure);
             OnClickPresetTab(adventureButton, BattleType.Adventure, _onToggleCallback[BattleType.Adventure]);
             HelpTooltip.HelpMe(100013, true);
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            base.Close(ignoreCloseAnimation);
+
+            if (_battlePreparation.isActiveAndEnabled)
+            {
+                _battlePreparation.UpdateInventory();
+            }
+
+            if (_arenaPreparation.isActiveAndEnabled)
+            {
+                _arenaPreparation.UpdateInventory();
+            }
+
+            if (_raidPreparation.isActiveAndEnabled)
+            {
+                _raidPreparation.UpdateInventory();
+            }
         }
 
         private void OnClickPresetTab(
