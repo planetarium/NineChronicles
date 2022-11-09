@@ -137,22 +137,23 @@ namespace Nekoyume.UI.Module
             UpdateDim(elementalTypes);
         }
 
-        public void SetPlayerConsumables(int avatarLevel,
+        public void SetPlayerConsumables(int level,
+            List<Consumable> consumables,
             Action<EquipmentSlot> onClick,
             Action<EquipmentSlot> onDoubleClick)
         {
             Clear();
-
-            foreach (var slot in slots)
-            {
-                slot.Set(avatarLevel);
-            }
-
             _onSlotClicked = onClick;
             _onSlotDoubleClicked = onDoubleClick;
+
+            UpdateSlots(level);
+            for (var i = 0; i < consumables.Count; i++)
+            {
+                slots[i].Set(consumables[i], RaiseSlotClicked, RaiseSlotDoubleClicked);
+            }
         }
 
-        public bool TryToEquip(Costume costume)
+        private bool TryToEquip(Costume costume)
         {
             if (!TryGetToEquip(costume, out var slot))
             {
@@ -163,7 +164,7 @@ namespace Nekoyume.UI.Module
             return true;
         }
 
-        public bool TryToEquip(Equipment equipment)
+        private bool TryToEquip(Equipment equipment)
         {
             if (!TryGetToEquip(equipment, out var slot))
             {

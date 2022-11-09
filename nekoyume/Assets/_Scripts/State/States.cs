@@ -16,6 +16,7 @@ using Libplanet.Assets;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.Rune;
 using Nekoyume.UI;
 
@@ -671,6 +672,37 @@ namespace Nekoyume.State
                     HammerPointStatesSubject.OnReplaceHammerPointState(tuple.recipeId, state);
                 }
             }).Forget();
+        }
+
+        public (List<Equipment>, List<Costume>) GetEquippedItems(BattleType battleType)
+        {
+            var itemSlotState = ItemSlotStates[battleType];
+            var avatarState = CurrentAvatarState;
+            var equipmentInventory = avatarState.inventory.Equipments;
+            var equipments = itemSlotState.Equipments
+                .Select(guid => equipmentInventory.FirstOrDefault(x => x.ItemId == guid))
+                .Where(item => item != null).ToList();
+
+            var costumeInventory = avatarState.inventory.Costumes;
+            var costumes = itemSlotState.Costumes
+                .Select(guid => costumeInventory.FirstOrDefault(x => x.ItemId == guid))
+                .Where(item => item != null).ToList();
+            return (equipments, costumes);
+        }
+
+        public List<RuneState> GetEquippedRuneStates(BattleType battleType)
+        {
+            var states = RuneSlotStates[battleType].GetRuneSlot();
+            var runeStates = new List<RuneState>();
+            foreach (var slot in states)
+            {
+                if (slot.IsEquipped(out var runeState))
+                {
+                    runeStates.Add(runeState);
+                }
+            }
+
+            return runeStates;
         }
     }
 }

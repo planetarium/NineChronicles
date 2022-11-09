@@ -20,6 +20,9 @@ namespace Nekoyume.UI.Module
     public class RuneSlotView : MonoBehaviour
     {
         [SerializeField]
+        private RuneType runeType;
+
+        [SerializeField]
         private OptionTagDataScriptableObject optionTagData = null;
 
         [SerializeField]
@@ -61,10 +64,9 @@ namespace Nekoyume.UI.Module
         private Action<RuneSlotView> _onClick;
         private Action<RuneSlotView> _onDoubleClick;
         private EventTrigger _eventTrigger;
-        private RuneType _runeType;
 
+        public RuneType RuneType => runeType;
         public RectTransform RectTransform { get; private set; }
-
         public RuneSlot RuneSlot { get; private set; }
 
         public bool IsWearableImage

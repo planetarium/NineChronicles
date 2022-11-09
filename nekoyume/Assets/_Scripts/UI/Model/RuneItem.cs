@@ -9,6 +9,7 @@ namespace Nekoyume.UI.Model
     public class RuneItem
     {
         public RuneListSheet.Row Row { get; }
+        public RuneOptionSheet.Row OptionRow { get; }
         public RuneCostSheet.RuneCostData Cost { get; }
 
         public FungibleAssetValue RuneStone { get; set; }
@@ -26,6 +27,16 @@ namespace Nekoyume.UI.Model
             Row = row;
             Level = level;
 
+            var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
+            if (!runeOptionSheet.TryGetValue(row.Id, out var optionRow))
+            {
+                return;
+            }
+
+            OptionRow = optionRow;
+
+            IsMaxLevel = level == optionRow.LevelOptionMap.Count;
+
             var costSheet = Game.Game.instance.TableSheets.RuneCostSheet;
             if (!costSheet.TryGetValue(row.Id, out var costRow))
             {
@@ -33,8 +44,6 @@ namespace Nekoyume.UI.Model
             }
 
             Cost = costRow.Cost.FirstOrDefault(x => x.Level == level + 1);
-            IsMaxLevel = level == costRow.Cost.Count;
-
             if (Cost is null)
             {
                 return;

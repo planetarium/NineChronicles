@@ -29,10 +29,22 @@ namespace Nekoyume.UI
         private const int defaultRuneId = 311001;
 
         [SerializeField]
+        private RuneOptionView currentOptions;
+
+        [SerializeField]
+        private RuneOptionView afterOptions;
+
+        [SerializeField]
         private List<RuneCostItem> costItems;
 
         [SerializeField]
         private Image runeImage;
+
+        [SerializeField]
+        private TextMeshProUGUI runeNameText;
+
+        [SerializeField]
+        private TextMeshProUGUI gradeText;
 
         [SerializeField]
         private TextMeshProUGUI successRateText;
@@ -268,6 +280,7 @@ namespace Nekoyume.UI
             content.SetActive(true);
             UpdateRuneItems(item);
             UpdateButtons(item);
+            UpdateRuneOptions(item);
             UpdateCost(item, runeIcon, runeStoneIcon);
             UpdateHeaderMenu(runeStoneIcon, item.RuneStone);
             UpdateSlider(item);
@@ -303,8 +316,53 @@ namespace Nekoyume.UI
 
             requirement.SetActive(item.HasNotification);
             maxLevel.SetActive(item.IsMaxLevel);
-            combineButton.gameObject.SetActive(item.Level == 0);
-            levelUpButton.gameObject.SetActive(item.Level != 0);
+
+            if (item.IsMaxLevel)
+            {
+                combineButton.gameObject.SetActive(false);
+                levelUpButton.gameObject.SetActive(false);
+            }
+            else
+            {
+                combineButton.gameObject.SetActive(item.Level == 0);
+                levelUpButton.gameObject.SetActive(item.Level != 0);
+            }
+        }
+
+        private void UpdateRuneOptions(RuneItem item)
+        {
+            runeNameText.text = L10nManager.Localize($"ITEM_NAME_{item.Row.Id}");
+            gradeText.text = L10nManager.Localize($"UI_ITEM_GRADE_{item.Row.Grade}");
+
+
+            afterOptions.gameObject.SetActive(false);
+            if (item.Level == 0)
+            {
+                if (!item.OptionRow.LevelOptionMap.TryGetValue(1, out var statInfo))
+                {
+                    return;
+                }
+
+                currentOptions.Set(1, statInfo);
+            }
+            else
+            {
+                if (!item.OptionRow.LevelOptionMap.TryGetValue(item.Level, out var statInfo))
+                {
+                    return;
+                }
+
+                currentOptions.Set(item.Level, statInfo);
+
+                var nextLevel = item.Level + 1;
+                if (!item.OptionRow.LevelOptionMap.TryGetValue(nextLevel, out var afterStatInfo))
+                {
+                    return;
+                }
+
+                afterOptions.gameObject.SetActive(true);
+                afterOptions.Set(nextLevel, afterStatInfo);
+            }
         }
 
         private void UpdateCost(RuneItem item, Sprite runeIcon, Sprite runeStoneIcon)

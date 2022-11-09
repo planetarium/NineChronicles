@@ -251,23 +251,23 @@ namespace Nekoyume.UI
 
         private void UpdateInventory()
         {
-            inventory.SetAvatarInfo(
-                clickItem: ShowItemTooltip,
-                doubleClickItem: Equip,
-                clickEquipmentToggle: () =>
-                {
-                    costumeSlots.gameObject.SetActive(false);
-                    equipmentSlots.gameObject.SetActive(true);
-                },
-                clickCostumeToggle: () =>
-                {
-                    costumeSlots.gameObject.SetActive(true);
-                    equipmentSlots.gameObject.SetActive(false);
-                },
-                ElementalTypeExtension.GetAllTypes(),
-                Inventory.InventoryType.Arena,
-                RxProps.PlayersArenaParticipant.Value.AvatarState.inventory,
-                useConsumable: true);
+            // inventory.SetAvatarInfo(
+            //     clickItem: ShowItemTooltip,
+            //     doubleClickItem: Equip,
+            //     clickEquipmentToggle: () =>
+            //     {
+            //         costumeSlots.gameObject.SetActive(false);
+            //         equipmentSlots.gameObject.SetActive(true);
+            //     },
+            //     clickCostumeToggle: () =>
+            //     {
+            //         costumeSlots.gameObject.SetActive(true);
+            //         equipmentSlots.gameObject.SetActive(false);
+            //     },
+            //     ElementalTypeExtension.GetAllTypes(),
+            //     Inventory.InventoryType.Arena,
+            //     RxProps.PlayersArenaParticipant.Value.AvatarState.inventory,
+            //     useConsumable: true);
         }
 
         private void UpdateTitle()

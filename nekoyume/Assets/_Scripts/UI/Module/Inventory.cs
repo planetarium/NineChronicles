@@ -12,6 +12,7 @@ using Nekoyume.Model.Mail;
 using Nekoyume.Model.Rune;
 using Nekoyume.Model.State;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
@@ -80,10 +81,7 @@ namespace Nekoyume.UI.Module
 
         private Action<InventoryItem, RectTransform> _onClickItem;
         private Action<InventoryItem> _onDoubleClickItem;
-        private System.Action _onToggleEquipment;
-        private System.Action _onToggleCostume;
-        private System.Action _onToggleRune;
-
+        private Action<InventoryTabType> _onClickTab;
         private InventoryTabType _activeTabType = InventoryTabType.Equipment;
         private bool _checkTradable;
 
@@ -99,13 +97,13 @@ namespace Nekoyume.UI.Module
             _toggleGroup.RegisterToggleable(costumeButton);
 
             equipmentButton.OnClick
-                .Subscribe(button => OnTabButtonClick(button, InventoryTabType.Equipment, _onToggleEquipment))
+                .Subscribe(button => OnTabButtonClick(button, InventoryTabType.Equipment))
                 .AddTo(gameObject);
             costumeButton.OnClick
-                .Subscribe(button => OnTabButtonClick(button, InventoryTabType.Costume, _onToggleCostume))
+                .Subscribe(button => OnTabButtonClick(button, InventoryTabType.Costume))
                 .AddTo(gameObject);
             runeButton.OnClick
-                .Subscribe(button => OnTabButtonClick(button, InventoryTabType.Rune, _onToggleRune))
+                .Subscribe(button => OnTabButtonClick(button, InventoryTabType.Rune))
                 .AddTo(gameObject);
             consumableButton.OnClick
                 .Subscribe(button => OnTabButtonClick(button, InventoryTabType.Consumable))
@@ -120,15 +118,12 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void OnTabButtonClick(
-            IToggleable toggleable,
-            InventoryTabType tabType,
-            System.Action onSetToggle = null)
+        private void OnTabButtonClick(IToggleable toggleable, InventoryTabType tabType)
         {
             if (!_toggleGroup.DisabledFunc.Invoke())
             {
                 SetToggle(toggleable, tabType);
-                onSetToggle?.Invoke();
+                _onClickTab?.Invoke(tabType);
             }
             else
             {
@@ -141,13 +136,11 @@ namespace Nekoyume.UI.Module
 
         private void SetAction(Action<InventoryItem, RectTransform> clickItem,
             Action<InventoryItem> doubleClickItem = null,
-            System.Action clickEquipmentToggle = null,
-            System.Action clickCostumeToggle = null)
+            Action<InventoryTabType> onClickTab = null)
         {
             _onClickItem = clickItem;
             _onDoubleClickItem = doubleClickItem;
-            _onToggleEquipment = clickEquipmentToggle;
-            _onToggleCostume = clickCostumeToggle;
+            _onClickTab = onClickTab;
         }
 
         private void SetInventoryTab(
@@ -173,10 +166,11 @@ namespace Nekoyume.UI.Module
                     ReactiveAvatarState.Inventory
                         .Subscribe(e => SetInventory(e, onUpdateInventory, reverseOrder))
                         .AddTo(_disposablesOnSet);
-                    if (inventory is not null)
-                    {
-                        SetInventory(inventory, onUpdateInventory, reverseOrder);
-                    }
+                    // if (inventory is not null)
+                    // {
+                    //     SetInventory(inventory, onUpdateInventory, reverseOrder);
+                    // }
+                    SetInventory(inventory, onUpdateInventory, reverseOrder);
                     break;
                 case InventoryType.Arena:
                     SetInventory(inventory, onUpdateInventory);
@@ -540,15 +534,14 @@ namespace Nekoyume.UI.Module
         public void SetAvatarInfo(
             Action<InventoryItem, RectTransform> clickItem,
             Action<InventoryItem> doubleClickItem,
-            System.Action clickEquipmentToggle,
-            System.Action clickCostumeToggle,
+            Action<InventoryTabType> onClickTab,
             IEnumerable<ElementalType> elementalTypes,
             InventoryType inventoryType = InventoryType.Default,
             Nekoyume.Model.Item.Inventory inventory = null,
             Action<Inventory, Nekoyume.Model.Item.Inventory> onUpdateInventory = null,
             bool useConsumable = false)
         {
-            SetAction(clickItem, doubleClickItem, clickEquipmentToggle, clickCostumeToggle);
+            SetAction(clickItem, doubleClickItem, onClickTab);
             var predicateByElementalType =
                 InventoryHelper.GetDimmedFuncByElementalTypes(elementalTypes.ToList());
             var predicateList = predicateByElementalType != null
@@ -614,11 +607,33 @@ namespace Nekoyume.UI.Module
             }
         }
 
+        public void UpdateConsumables(List<Guid> consumables)
+        {
+            foreach (var consumable in _consumables)
+            {
+                var equipped = consumables.Exists(x => x == ((Consumable)consumable.ItemBase).ItemId);
+                consumable.Equipped.SetValueAndForceNotify(equipped);
+            }
+        }
+
         public void Focus(
             ItemType itemType,
             ItemSubType subType,
             List<ElementalType> elementalTypes)
         {
+            switch (itemType)
+            {
+                case ItemType.Equipment:
+                    OnTabButtonClick(equipmentButton, InventoryTabType.Equipment);
+                    break;
+                case ItemType.Costume:
+                    OnTabButtonClick(costumeButton, InventoryTabType.Costume);
+                    break;
+                case ItemType.Consumable:
+                    OnTabButtonClick(consumableButton, InventoryTabType.Consumable);
+                    break;
+            }
+
             foreach (var model in GetModels(itemType))
             {
                 if (model.ItemBase.ItemSubType.Equals(subType))
@@ -655,6 +670,22 @@ namespace Nekoyume.UI.Module
             }
         }
 
+        public void Focus(RuneType runeType, RuneListSheet sheet)
+        {
+            OnTabButtonClick(runeButton, InventoryTabType.Rune);
+            foreach (var rune in _runes)
+            {
+                if (sheet.TryGetValue(rune.RuneState.RuneId, out var row))
+                {
+                    rune.Focused.Value = (RuneType)row.RuneType == runeType;
+                }
+                else
+                {
+                    rune.Focused.Value = false;
+                }
+            }
+        }
+
         public void ClearFocus()
         {
             foreach (var item in _cachedFocusItems)
@@ -663,6 +694,11 @@ namespace Nekoyume.UI.Module
             }
 
             _cachedFocusItems.Clear();
+
+            foreach (var rune in _runes)
+            {
+                rune.Focused.Value = false;
+            }
         }
 
         public bool TryGetModel(ItemBase itemBase, out InventoryItem result)

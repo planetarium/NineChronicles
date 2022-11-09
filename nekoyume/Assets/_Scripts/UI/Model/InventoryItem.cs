@@ -12,7 +12,7 @@ namespace Nekoyume.UI.Model
 
         public readonly ReactiveProperty<int> Count;
         public readonly ReactiveProperty<bool> LevelLimited;
-        public readonly ReactiveProperty<bool> Equipped;
+        public readonly ReactiveProperty<bool> Equipped = new();
         public readonly ReactiveProperty<bool> Tradable;
         public readonly ReactiveProperty<bool> DimObjectEnabled;
         public readonly ReactiveProperty<bool> Selected;
@@ -28,7 +28,7 @@ namespace Nekoyume.UI.Model
         {
             ItemBase = itemBase;
             Count = new ReactiveProperty<int>(count);
-            Equipped = new ReactiveProperty<bool>(false);
+            // Equipped = new ReactiveProperty<bool>(false);
             LevelLimited = new ReactiveProperty<bool>(limited);
             Tradable = new ReactiveProperty<bool>(tradable);
             DimObjectEnabled = new ReactiveProperty<bool>(false);
@@ -44,7 +44,7 @@ namespace Nekoyume.UI.Model
         {
             RuneState = runeState;
             Count = new ReactiveProperty<int>(1);
-            Equipped = new ReactiveProperty<bool>(false);
+            // Equipped = new ReactiveProperty<bool>(false);
             LevelLimited = new ReactiveProperty<bool>(false);
             Tradable = new ReactiveProperty<bool>(false);
             DimObjectEnabled = new ReactiveProperty<bool>(false);
@@ -54,6 +54,46 @@ namespace Nekoyume.UI.Model
             GrindingCount = new ReactiveProperty<int>(0);
             Disabled = new ReactiveProperty<bool>(false);
             GrindingCountEnabled = new Subject<bool>();
+        }
+    }
+
+    public static class InventoryItemExtensions
+    {
+        public static bool IsValid(this InventoryItem inventoryItem, int level)
+        {
+            switch (inventoryItem.ItemBase.ItemType)
+            {
+                case ItemType.Costume:
+                    switch (inventoryItem.ItemBase.ItemSubType)
+                    {
+                        case ItemSubType.FullCostume:
+                            return level >= GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot;
+                        case ItemSubType.Title:
+                            return level >= GameConfig.RequireCharacterLevel.CharacterTitleSlot;
+                            break;
+                    }
+                    break;
+                case ItemType.Equipment:
+                    switch (inventoryItem.ItemBase.ItemSubType)
+                    {
+                        case ItemSubType.Weapon:
+                            return level >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotWeapon;
+                        case ItemSubType.Armor:
+                            return level >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotArmor;
+                        case ItemSubType.Belt:
+                            return level >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotBelt;
+                        case ItemSubType.Necklace:
+                            return level >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotNecklace;
+                        case ItemSubType.Ring:
+                            return level >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing1;
+                    }
+                    break;
+                case ItemType.Consumable:
+                    return level >= GameConfig.RequireCharacterLevel.CharacterConsumableSlot1;
+
+            }
+
+            return false;
         }
     }
 }

@@ -278,24 +278,24 @@ namespace Nekoyume.UI
 
         private void UpdateInventory()
         {
-            inventory.SetAvatarInfo(
-                clickItem: ShowItemTooltip,
-                doubleClickItem: Equip,
-                clickEquipmentToggle: () =>
-                {
-                    costumeSlots.gameObject.SetActive(false);
-                    equipmentSlots.gameObject.SetActive(true);
-                },
-                clickCostumeToggle: () =>
-                {
-                    costumeSlots.gameObject.SetActive(true);
-                    equipmentSlots.gameObject.SetActive(false);
-                },
-                ElementalTypeExtension.GetAllTypes(),
-                inventoryType:Inventory.InventoryType.Raid,
-                _avatarState.inventory,
-                onUpdateInventory:OnUpdateInventory,
-                useConsumable : true);
+            // inventory.SetAvatarInfo(
+            //     clickItem: ShowItemTooltip,
+            //     doubleClickItem: Equip,
+            //     clickEquipmentToggle: () =>
+            //     {
+            //         costumeSlots.gameObject.SetActive(false);
+            //         equipmentSlots.gameObject.SetActive(true);
+            //     },
+            //     clickCostumeToggle: () =>
+            //     {
+            //         costumeSlots.gameObject.SetActive(true);
+            //         equipmentSlots.gameObject.SetActive(false);
+            //     },
+            //     ElementalTypeExtension.GetAllTypes(),
+            //     inventoryType:Inventory.InventoryType.Raid,
+            //     _avatarState.inventory,
+            //     onUpdateInventory:OnUpdateInventory,
+            //     useConsumable : true);
         }
 
         private void UpdateTitle()
@@ -323,7 +323,7 @@ namespace Nekoyume.UI
             costumeSlots.SetPlayerCostumes(Player.Model, OnClickSlot, OnDoubleClickSlot);
             if (isResetConsumableSlot)
             {
-                consumableSlots.SetPlayerConsumables(Player.Level,OnClickSlot, OnDoubleClickSlot);
+                // consumableSlots.SetPlayerConsumables(Player.Level,OnClickSlot, OnDoubleClickSlot);
             }
         }
 
