@@ -117,6 +117,7 @@ namespace Nekoyume.UI.Module
             enhancementText.text = $"+{state.Level}";
             if (RuneFrontHelper.TryGetRuneIcon(state.RuneId, out var icon))
             {
+                itemImage.enabled = true;
                 itemImage.overrideSprite = icon;
                 itemImage.SetNativeSize();
             }
@@ -131,6 +132,7 @@ namespace Nekoyume.UI.Module
         private void Unequip()
         {
             enhancementText.text = string.Empty;
+            itemImage.enabled = false;
             itemImage.overrideSprite = RuneFrontHelper.DefaultRuneIcon;
             itemImage.SetNativeSize();
             gradeImage.gameObject.SetActive(false);
