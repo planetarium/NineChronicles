@@ -333,9 +333,8 @@ namespace Nekoyume.UI
         {
             runeNameText.text = L10nManager.Localize($"ITEM_NAME_{item.Row.Id}");
             gradeText.text = L10nManager.Localize($"UI_ITEM_GRADE_{item.Row.Grade}");
+            afterOptions.Hide();
 
-
-            afterOptions.gameObject.SetActive(false);
             if (item.Level == 0)
             {
                 if (!item.OptionRow.LevelOptionMap.TryGetValue(1, out var statInfo))
