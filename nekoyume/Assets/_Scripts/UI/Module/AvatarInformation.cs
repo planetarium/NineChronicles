@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Linq;
 using Nekoyume.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -54,13 +53,15 @@ namespace Nekoyume.UI.Module
         private InventoryItem _pickedItem;
         private BattleType _battleType;
         private bool _isAvatarInfo;
+        private System.Action _onUpdate;
 
         private readonly Dictionary<Inventory.InventoryTabType, GameObject> _slots = new();
         private readonly List<Guid> _consumables = new();
 
-        public void Initialize(bool isAvatarInfo = false)
+        public void Initialize(bool isAvatarInfo = false, System.Action onUpdate = null)
         {
             _isAvatarInfo = isAvatarInfo;
+            _onUpdate = onUpdate;
             _slots.Add(Inventory.InventoryTabType.Equipment, equipmentSlots.gameObject);
             _slots.Add(Inventory.InventoryTabType.Costume, costumeSlots.gameObject);
             _slots.Add(Inventory.InventoryTabType.Rune, runeSlots.gameObject);
@@ -95,13 +96,18 @@ namespace Nekoyume.UI.Module
         {
             _consumables.Clear();
             var elementalTypes = GetElementalTypes();
-            inventory.SetAvatarInfo(
+            inventory.SetAvatarInformation(
                 clickItem: ShowItemTooltip,
                 doubleClickItem: EquipOrUnequip,
                 OnClickTab,
                 elementalTypes);
 
             StartCoroutine(CoUpdateView(battleType, Inventory.InventoryTabType.Equipment));
+        }
+
+        public List<Guid> GetBestItems()
+        {
+            return inventory.GetBestItems();
         }
 
         private IEnumerator CoUpdateView(BattleType battleType, Inventory.InventoryTabType tabType)
@@ -132,6 +138,7 @@ namespace Nekoyume.UI.Module
             UpdateRuneView();
             UpdateItemView();
             UpdateStat(prevCp);
+            _onUpdate?.Invoke();
         }
 
         private void UpdateRuneView()
@@ -261,6 +268,7 @@ namespace Nekoyume.UI.Module
             }
 
             UnequipItem(item);
+            _onUpdate?.Invoke();
         }
 
         private void EquipItem(InventoryItem inventoryItem)
@@ -717,6 +725,7 @@ namespace Nekoyume.UI.Module
             }
 
             UpdateStat(prevCp);
+            _onUpdate?.Invoke();
         }
 
         private int GetCp()
@@ -782,6 +791,7 @@ namespace Nekoyume.UI.Module
 
             stats.SetData(characterStats);
             cp.PlayAnimation(previousCp, GetCp());
+            Widget.Find<HeaderMenuStatic>().UpdateInventoryNotification(inventory.HasNotification());
         }
 
         private static List<ElementalType> GetElementalTypes()
@@ -791,14 +801,6 @@ namespace Nekoyume.UI.Module
                 ? bp.GetElementalTypes()
                 : ElementalTypeExtension.GetAllTypes();
             return elementalTypes;
-        }
-
-        private void PostEquipOrUnequip(EquipmentSlot slot)
-        {
-            // AudioController.instance.PlaySfx(slot.ItemSubType == ItemSubType.Food
-            //     ? AudioController.SfxCode.ChainMail2
-            //     : AudioController.SfxCode.Equipment);
-            // Find<HeaderMenuStatic>().UpdateInventoryNotification(inventory.HasNotification);
         }
     }
 }

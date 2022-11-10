@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Nekoyume.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -85,9 +86,6 @@ namespace Nekoyume.UI.Module
         private InventoryTabType _activeTabType = InventoryTabType.Equipment;
         private bool _checkTradable;
 
-        public bool HasNotification => _equipments.Any(x =>
-            x.Value.Any(item => item.HasNotification.Value));
-
         protected void Awake()
         {
             _toggleGroup.RegisterToggleable(equipmentButton);
@@ -145,8 +143,6 @@ namespace Nekoyume.UI.Module
 
         private void SetInventoryTab(
             List<(ItemType type, Predicate<InventoryItem> predicate)> itemSetDimPredicates = null,
-            InventoryType inventoryType = InventoryType.Default,
-            Nekoyume.Model.Item.Inventory inventory = null,
             Action<Inventory, Nekoyume.Model.Item.Inventory> onUpdateInventory = null,
             bool useConsumable = false,
             bool reverseOrder = false)
@@ -160,25 +156,9 @@ namespace Nekoyume.UI.Module
             itemSetDimPredicates?.ForEach(tuple =>
                 _dimConditionFuncsByItemType[tuple.type]?.Add(tuple.predicate));
 
-            switch (inventoryType)
-            {
-                case InventoryType.Default:
-                    ReactiveAvatarState.Inventory
-                        .Subscribe(e => SetInventory(e, onUpdateInventory, reverseOrder))
-                        .AddTo(_disposablesOnSet);
-                    // if (inventory is not null)
-                    // {
-                    //     SetInventory(inventory, onUpdateInventory, reverseOrder);
-                    // }
-                    SetInventory(inventory, onUpdateInventory, reverseOrder);
-                    break;
-                case InventoryType.Arena:
-                    SetInventory(inventory, onUpdateInventory);
-                    break;
-                case InventoryType.Raid:
-                    SetInventory(inventory, onUpdateInventory);
-                    break;
-            }
+            ReactiveAvatarState.Inventory
+                .Subscribe(e => SetInventory(e, onUpdateInventory, reverseOrder))
+                .AddTo(_disposablesOnSet);
 
             if (useConsumable && _consumables.Any())
             {
@@ -438,6 +418,7 @@ namespace Nekoyume.UI.Module
 
         private void UpdateEquipmentNotification(IEnumerable<InventoryItem> bestItems)
         {
+            Debug.Log("UpdateEquipmentNotification");
             if (_activeTabType != InventoryTabType.Equipment)
             {
                 return;
@@ -531,13 +512,40 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void SetAvatarInfo(
+        public bool HasNotification()
+        {
+            var bestItems = GetUsableBestEquipments()
+                .Select(x => x.ItemBase as Equipment)
+                .Select(x => x.ItemId)
+                .ToList();
+
+            foreach (var guid in bestItems)
+            {
+                foreach (var state in States.Instance.ItemSlotStates.Values)
+                {
+                    if (!state.Equipments.Exists(x => x == guid))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public List<Guid> GetBestItems()
+        {
+            return GetUsableBestEquipments()
+                .Select(x => x.ItemBase as Equipment)
+                .Select(x => x.ItemId)
+                .ToList();
+        }
+
+        public void SetAvatarInformation(
             Action<InventoryItem, RectTransform> clickItem,
             Action<InventoryItem> doubleClickItem,
             Action<InventoryTabType> onClickTab,
             IEnumerable<ElementalType> elementalTypes,
-            InventoryType inventoryType = InventoryType.Default,
-            Nekoyume.Model.Item.Inventory inventory = null,
             Action<Inventory, Nekoyume.Model.Item.Inventory> onUpdateInventory = null,
             bool useConsumable = false)
         {
@@ -548,7 +556,7 @@ namespace Nekoyume.UI.Module
                 ? new List<(ItemType type, Predicate<InventoryItem>)>
                     { (ItemType.Equipment, predicateByElementalType) }
                 : null;
-            SetInventoryTab(predicateList, inventoryType, inventory, onUpdateInventory, useConsumable);
+            SetInventoryTab(predicateList, onUpdateInventory:onUpdateInventory, useConsumable:useConsumable);
             _toggleGroup.DisabledFunc = () => false;
         }
 

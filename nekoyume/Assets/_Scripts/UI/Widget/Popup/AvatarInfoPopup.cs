@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.EnumType;
+using Nekoyume.State;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
@@ -101,7 +102,7 @@ namespace Nekoyume.UI
             _battlePreparation = Find<BattlePreparation>();
             _arenaPreparation = Find<ArenaBattlePreparation>();
             _raidPreparation = Find<RaidPreparation>();
-            information.Initialize(true);
+            information.Initialize(true, UpdateNotification);
 
             grindModeToggle.onValueChanged.AddListener(toggledOn =>
             {
@@ -167,6 +168,36 @@ namespace Nekoyume.UI
         private void UpdateNickname(int level, string nameWithHash)
         {
             nicknameText.text = string.Format(NicknameTextFormat, level, nameWithHash);
+        }
+
+        private void UpdateNotification()
+        {
+            adventureButton.HasNotification.Value = false;
+            arenaButton.HasNotification.Value = false;
+            raidButton.HasNotification.Value = false;
+
+            var bestItems = information.GetBestItems();
+            var adventure = States.Instance.ItemSlotStates[BattleType.Adventure];
+            var arena = States.Instance.ItemSlotStates[BattleType.Arena];
+            var raid = States.Instance.ItemSlotStates[BattleType.Raid];
+
+            foreach (var bestItem in bestItems)
+            {
+                if (!adventure.Equipments.Exists(x => x == bestItem))
+                {
+                    adventureButton.HasNotification.Value = true;
+                }
+
+                if (!arena.Equipments.Exists(x => x == bestItem))
+                {
+                    arenaButton.HasNotification.Value = true;
+                }
+
+                if (!raid.Equipments.Exists(x => x == bestItem))
+                {
+                    raidButton.HasNotification.Value = true;
+                }
+            }
         }
 
         #region For tutorial5
