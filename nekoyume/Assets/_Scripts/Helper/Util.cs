@@ -236,38 +236,6 @@ namespace Nekoyume.Helper
             }
         }
 
-        public static bool CanBattle(Player player, IEnumerable<int> foodIds)
-        {
-            if (player == null)
-            {
-                return false;
-            }
-
-            var isValidated = false;
-            var tableSheets = Game.Game.instance.TableSheets;
-            try
-            {
-                var equipmentList = player.Equipments;
-                var costumeIds = player.Costumes.Select(costume => costume.Id);
-                States.Instance.CurrentAvatarState.ValidateItemRequirement(
-                    costumeIds.Concat(foodIds).ToList(),
-                    equipmentList,
-                    tableSheets.ItemRequirementSheet,
-                    tableSheets.EquipmentItemRecipeSheet,
-                    tableSheets.EquipmentItemSubRecipeSheetV2,
-                    tableSheets.EquipmentItemOptionSheet,
-                    States.Instance.CurrentAvatarState.address.ToHex());
-                isValidated = true;
-            }
-            catch (Exception e)
-            {
-                Debug.LogError(
-                    $"Check the player is equipped with the valid equipment.\nException: {e}");
-            }
-
-            return isValidated;
-        }
-
         public static bool CanBattle(
             List<Equipment> equipments,
             List<Costume> costumes,

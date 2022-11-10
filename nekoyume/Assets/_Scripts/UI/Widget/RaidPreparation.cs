@@ -114,7 +114,7 @@ namespace Nekoyume.UI
         {
             base.Initialize();
 
-            information.Initialize(true);
+            information.Initialize();
 
             startButton.onClick.AddListener(OnClickStartButton);
 
@@ -265,21 +265,23 @@ namespace Nekoyume.UI
             var itemSlotState = States.Instance.ItemSlotStates[BattleType.Raid];
             var equipments = itemSlotState.Equipments;
             var costumes = itemSlotState.Costumes;
+            var runeInfos = States.Instance.RuneSlotStates[BattleType.Adventure]
+                .GetEquippedRuneSlotInfos();
             var runes = States.Instance.GetEquippedRuneStates(BattleType.Raid)
                 .Select(x=> x.RuneId).ToList();
             var consumables = information.GetEquippedConsumables().Select(x => x.ItemId).ToList();
             var tableSheets = Game.Game.instance.TableSheets;
             var avatarState = States.Instance.CurrentAvatarState;
             var items = new List<Guid>();
-            // items.AddRange(equipments);
-            // items.AddRange(costumes);
-            // avatarState.EquipItems(items);
+            items.AddRange(equipments);
+            items.AddRange(costumes);
+            avatarState.EquipItems(items);
             var simulator = new RaidSimulator(
                 _bossId,
                 new PracticeRandom(),
                 avatarState,
                 consumables,
-                runes,
+                runeInfos,
                 tableSheets.GetRaidSimulatorSheets(),
                 tableSheets.CostumeStatSheet
             );

@@ -101,7 +101,7 @@ namespace Nekoyume.UI
             _battlePreparation = Find<BattlePreparation>();
             _arenaPreparation = Find<ArenaBattlePreparation>();
             _raidPreparation = Find<RaidPreparation>();
-            information.Initialize(false);
+            information.Initialize(true);
 
             grindModeToggle.onValueChanged.AddListener(toggledOn =>
             {

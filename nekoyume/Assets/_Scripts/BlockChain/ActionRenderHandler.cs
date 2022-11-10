@@ -1274,7 +1274,7 @@ namespace Nekoyume.BlockChain
                     localRandom,
                     avatarState,
                     eval.Action.Foods,
-                    eval.Action.Runes,
+                    eval.Action.RuneInfos,
                     new List<Skill>(),
                     eval.Action.WorldId,
                     eval.Action.StageId,
@@ -2095,7 +2095,7 @@ namespace Nekoyume.BlockChain
                 random,
                 clonedAvatarState,
                 eval.Action.FoodIds,
-                eval.Action.Runes,
+                eval.Action.RuneInfos,
                 TableSheets.Instance.GetRaidSimulatorSheets(),
                 TableSheets.Instance.CostumeStatSheet
             );

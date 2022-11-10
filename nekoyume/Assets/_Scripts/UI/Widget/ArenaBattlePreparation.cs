@@ -92,7 +92,7 @@ namespace Nekoyume.UI
         {
             base.Initialize();
 
-            information.Initialize(true);
+            information.Initialize();
 
             startButton.SetCost(CostType.ArenaTicket, _ticketCountToUse);
             startButton.OnSubmitSubject

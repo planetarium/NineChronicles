@@ -133,7 +133,7 @@ namespace Nekoyume.UI
         {
             base.Initialize();
 
-            information.Initialize(true);
+            information.Initialize();
 
             startButton.OnSubmitSubject
                 .Where(_ => !Game.Game.instance.IsInWorld)
@@ -455,8 +455,8 @@ namespace Nekoyume.UI
             }
 
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Adventure);
-            var runes = States.Instance.GetEquippedRuneStates(BattleType.Adventure)
-                .Select(x=> x.RuneId).ToList();
+            var runeInfos = States.Instance.RuneSlotStates[BattleType.Adventure]
+                .GetEquippedRuneSlotInfos();
             var consumables = information.GetEquippedConsumables();
             var stage = Game.Game.instance.Stage;
             stage.IsExitReserved = false;
@@ -468,7 +468,7 @@ namespace Nekoyume.UI
                 costumes,
                 equipments,
                 consumables,
-                runes,
+                runeInfos,
                 GetBoostMaxCount(_stageId),
                 _worldId,
                 _stageId);
@@ -484,13 +484,9 @@ namespace Nekoyume.UI
             Find<LoadingScreen>().Show();
 
             startButton.gameObject.SetActive(false);
-            //todo : 혹시 이슈 있나 체크 필요
-            // _player.StartRun();
-            // ActionCamera.instance.ChaseX(_player.transform);
-
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Adventure);
-            var runes = States.Instance.GetEquippedRuneStates(BattleType.Adventure)
-                .Select(x=> x.RuneId).ToList();
+            var runeInfos = States.Instance.RuneSlotStates[BattleType.Adventure]
+                .GetEquippedRuneSlotInfos();
             var consumables = information.GetEquippedConsumables();
 
             var stage = Game.Game.instance.Stage;
@@ -513,7 +509,7 @@ namespace Nekoyume.UI
                                 costumes,
                                 equipments,
                                 consumables,
-                                runes,
+                                runeInfos,
                                 _worldId,
                                 _stageId,
                                 playCount: playCount,
@@ -539,7 +535,7 @@ namespace Nekoyume.UI
                         costumes,
                         equipments,
                         consumables,
-                        runes,
+                        runeInfos,
                         _worldId,
                         _stageId,
                         skillId,
@@ -555,7 +551,7 @@ namespace Nekoyume.UI
                         costumes,
                         equipments,
                         consumables,
-                        runes,
+                        runeInfos,
                         _worldId,
                         _stageId,
                         1
@@ -580,7 +576,7 @@ namespace Nekoyume.UI
                             equipments,
                             costumes,
                             consumables,
-                            runes,
+                            runeInfos,
                             buyTicketIfNeeded,
                             _trackGuideQuest)
                         .Subscribe();

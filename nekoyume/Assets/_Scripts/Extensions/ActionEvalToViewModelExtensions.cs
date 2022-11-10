@@ -31,7 +31,7 @@ namespace Nekoyume
                     random,
                     avatarState,
                     i == 0 ? eval.Action.Foods : new List<Guid>(),
-                    eval.Action.Runes,
+                    eval.Action.RuneInfos,
                     i == 0 ? skillsOnWaveStart : new List<Model.Skill.Skill>(),
                     eval.Action.WorldId,
                     eval.Action.StageId,

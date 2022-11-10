@@ -53,14 +53,14 @@ namespace Nekoyume.UI.Module
         private GameObject _cachedCharacterTitle;
         private InventoryItem _pickedItem;
         private BattleType _battleType;
-        private bool _swapSlot;
+        private bool _isAvatarInfo;
 
         private readonly Dictionary<Inventory.InventoryTabType, GameObject> _slots = new();
         private readonly List<Guid> _consumables = new();
 
-        public void Initialize(bool swapSlot)
+        public void Initialize(bool isAvatarInfo = false)
         {
-            _swapSlot = swapSlot;
+            _isAvatarInfo = isAvatarInfo;
             _slots.Add(Inventory.InventoryTabType.Equipment, equipmentSlots.gameObject);
             _slots.Add(Inventory.InventoryTabType.Costume, costumeSlots.gameObject);
             _slots.Add(Inventory.InventoryTabType.Rune, runeSlots.gameObject);
@@ -114,7 +114,7 @@ namespace Nekoyume.UI.Module
 
         private void OnClickTab(Inventory.InventoryTabType tabType)
         {
-            if (!_swapSlot)
+            if (_isAvatarInfo)
             {
                 return;
             }
@@ -377,6 +377,11 @@ namespace Nekoyume.UI.Module
                     break;
 
                 case ItemType.Consumable:
+                    if (_isAvatarInfo)
+                    {
+                        return;
+                    }
+
                     var slotCount = 0;
                     if (GameConfig.RequireCharacterLevel.CharacterConsumableSlot1 <= avatarState.level)
                     {
@@ -728,7 +733,7 @@ namespace Nekoyume.UI.Module
             var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
             var runeSlotState = States.Instance.RuneSlotStates[_battleType];
             var (equipments, costumes) = States.Instance.GetEquippedItems(_battleType);
-            var runeOptionInfos = runeSlotState.GetEquippedRuneStatInfos(runeOptionSheet);
+            var runeOptionInfos = runeSlotState.GetEquippedRuneOptions(runeOptionSheet);
             return CPHelper.TotalCP(equipments, costumes, runeOptionInfos, level, row, costumeSheet);
         }
 

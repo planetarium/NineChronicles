@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
@@ -44,7 +45,7 @@ namespace Nekoyume.UI
         private List<Costume> _costumes;
         private List<Equipment> _equipments;
         private List<Consumable> _consumables;
-        private List<int> _runes;
+        private List<RuneSlotInfo> _runes;
         private int _worldId;
         private int _stageId;
 
@@ -65,7 +66,7 @@ namespace Nekoyume.UI
             List<Costume> costumes,
             List<Equipment> equipments,
             List<Consumable> consumables,
-            List<int> runes,
+            List<RuneSlotInfo> runes,
             int maxCount,
             int worldId,
             int stageId)
