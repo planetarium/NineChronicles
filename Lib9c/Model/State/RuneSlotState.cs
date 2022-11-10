@@ -16,7 +16,7 @@ namespace Nekoyume.Model.State
 
         public BattleType BattleType { get; }
 
-        private readonly List<RuneSlot> _slots = new();
+        private readonly List<RuneSlot> _slots = new List<RuneSlot>();
 
         public RuneSlotState(BattleType battleType)
         {
