@@ -152,6 +152,7 @@ namespace Nekoyume.BlockChain
             // World Boss
             Raid();
             ClaimRaidReward();
+            RuneEnhancement();
         }
 
         public void Stop()
@@ -444,6 +445,15 @@ namespace Nekoyume.BlockChain
                 .AddTo(_disposables);
         }
 
+        private void RuneEnhancement()
+        {
+            _actionRenderer.EveryRender<RuneEnhancement>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseRuneEnhancement)
+                .AddTo(_disposables);
+        }
+
         private async UniTaskVoid ResponseCreateAvatar(ActionBase.ActionEvaluation<CreateAvatar> eval)
         {
             if (eval.Exception != null)
@@ -453,8 +463,11 @@ namespace Nekoyume.BlockChain
 
             await UpdateAgentStateAsync(eval);
             await UpdateAvatarState(eval, eval.Action.index);
-            var avatarState
-                = await States.Instance.SelectAvatarAsync(eval.Action.index);
+            var avatarState = await States.Instance.SelectAvatarAsync(eval.Action.index);
+            await States.Instance.InitRuneStoneBalance();
+            await States.Instance.InitRuneStates();
+            await States.Instance.InitRuneSlotStates();
+            await States.Instance.InitItemSlotStates();
             RenderQuest(
                 avatarState.address,
                 avatarState.questList.completedQuestIds);
@@ -2036,6 +2049,7 @@ namespace Nekoyume.BlockChain
                 Widget.Find<LoadingScreen>().Close();
                 worldBoss.Close();
                 await WorldBossStates.Set(avatarAddress);
+                await States.Instance.InitRuneStoneBalance();
                 Game.Event.OnRoomEnter.Invoke(true);
                 return;
             }
@@ -2069,8 +2083,7 @@ namespace Nekoyume.BlockChain
             }
 
             var clonedAvatarState = (AvatarState)States.Instance.CurrentAvatarState.Clone();
-            var items = Widget.Find<RaidPreparation>().LoadEquipment();
-            clonedAvatarState.EquipItems(items);
+            // todo : 장비 잘 착용하고 전투하는지 체크 필요
             var random = new LocalRandom(eval.RandomSeed);
 
             var preRaiderState = WorldBossStates.GetRaiderState(avatarAddress);
@@ -2092,6 +2105,8 @@ namespace Nekoyume.BlockChain
             var playerDigest = new ArenaPlayerDigest(clonedAvatarState);
 
             await WorldBossStates.Set(avatarAddress);
+            await States.Instance.InitRuneStoneBalance();
+            await States.Instance.InitRuneStates();
             var raiderState = WorldBossStates.GetRaiderState(avatarAddress);
             var killRewards = new List<FungibleAssetValue>();
             if (latestBossLevel < raiderState.LatestBossLevel)
@@ -2150,6 +2165,19 @@ namespace Nekoyume.BlockChain
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             WorldBossStates.SetReceivingGradeRewards(avatarAddress, false);
             Widget.Find<WorldBossRewardScreen>().Show(new LocalRandom(eval.RandomSeed));
+        }
+
+        private void ResponseRuneEnhancement(ActionBase.ActionEvaluation<RuneEnhancement> eval)
+        {
+            Widget.Find<Rune>().OnActionRender(new LocalRandom(eval.RandomSeed)).Forget();
+
+            if (eval.Exception is not null)
+            {
+                return;
+            }
+
+            UpdateCrystalBalance(eval);
+            UpdateAgentStateAsync(eval).Forget();
         }
     }
 }

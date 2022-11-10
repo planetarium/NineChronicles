@@ -391,6 +391,10 @@ namespace Nekoyume.UI
                     loadingScreen.Show();
                     await RxProps.SelectAvatarAsync(slotIndex);
                     await WorldBossStates.Set(States.Instance.CurrentAvatarState.address);
+                    await States.Instance.InitRuneStoneBalance();
+                    await States.Instance.InitRuneStates();
+                    await States.Instance.InitRuneSlotStates();
+                    await States.Instance.InitItemSlotStates();
                     loadingScreen.Close();
                     Game.Event.OnRoomEnter.Invoke(false);
                     Game.Event.OnUpdateAddresses.Invoke();

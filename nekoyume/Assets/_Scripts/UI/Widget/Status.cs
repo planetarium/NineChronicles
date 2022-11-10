@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using Nekoyume.Game.Character;
+using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Timer;
@@ -11,6 +13,8 @@ using ObservableExtensions = UniRx.ObservableExtensions;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class Status : Widget
     {
         [SerializeField]
@@ -50,9 +54,9 @@ namespace Nekoyume.UI
             base.Awake();
 
             Game.Event.OnRoomEnter.AddListener(b => Show());
-            ObservableExtensions.Subscribe(Game.Event.OnUpdatePlayerEquip, characterView.SetByPlayer)
+            Game.Event.OnUpdatePlayerEquip.Subscribe(characterView.SetByPlayer)
                 .AddTo(gameObject);
-            ObservableExtensions.Subscribe(Game.Event.OnUpdatePlayerStatus, SubscribeOnUpdatePlayerStatus)
+            Game.Event.OnUpdatePlayerStatus.Subscribe(SubscribeOnUpdatePlayerStatus)
                 .AddTo(gameObject);
 
             CloseWidget = null;
@@ -94,6 +98,18 @@ namespace Nekoyume.UI
         public void HideBuffTooltip()
         {
             buffTooltip.gameObject.SetActive(false);
+        }
+
+        public void UpdateOnlyPlayer(Player player)
+        {
+            characterView.SetByPlayer(player);
+
+            if (player)
+            {
+                _player = player;
+            }
+
+            UpdateExp();
         }
 
         public void UpdatePlayer(Player player)

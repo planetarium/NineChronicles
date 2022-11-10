@@ -202,6 +202,8 @@ namespace Nekoyume.Game
 
         public ActionBuffSheet ActionBuffSheet { get; private set; }
 
+        public RuneListSheet RuneListSheet { get; private set; }
+        public RuneCostSheet RuneCostSheet { get; private set; }
         public RuneOptionSheet RuneOptionSheet { get; private set; }
 
         public void ItemSheetInitialize()

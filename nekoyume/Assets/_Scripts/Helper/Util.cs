@@ -268,6 +268,35 @@ namespace Nekoyume.Helper
             return isValidated;
         }
 
+        public static bool CanBattle(
+            List<Equipment> equipments,
+            List<Costume> costumes,
+            IEnumerable<int> foodIds)
+        {
+            var isValidated = false;
+            var tableSheets = Game.Game.instance.TableSheets;
+            try
+            {
+                var costumeIds = costumes.Select(costume => costume.Id);
+                States.Instance.CurrentAvatarState.ValidateItemRequirement(
+                    costumeIds.Concat(foodIds).ToList(),
+                    equipments,
+                    tableSheets.ItemRequirementSheet,
+                    tableSheets.EquipmentItemRecipeSheet,
+                    tableSheets.EquipmentItemSubRecipeSheetV2,
+                    tableSheets.EquipmentItemOptionSheet,
+                    States.Instance.CurrentAvatarState.address.ToHex());
+                isValidated = true;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(
+                    $"Check the player is equipped with the valid equipment.\nException: {e}");
+            }
+
+            return isValidated;
+        }
+
         public static Player CreatePlayer(AvatarState avatarState, Vector3 position)
         {
             var player = PlayerFactory.Create(avatarState).GetComponent<Player>();

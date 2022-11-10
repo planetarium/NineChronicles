@@ -1159,8 +1159,8 @@ namespace Nekoyume.BlockChain
             var action = new Raid
             {
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
-                EquipmentIds = costumes,
-                CostumeIds = equipments,
+                EquipmentIds = equipments,
+                CostumeIds = costumes,
                 FoodIds = foods,
                 Runes = runes,
                 PayNcg = payNcg,
@@ -1188,6 +1188,32 @@ namespace Nekoyume.BlockChain
             ProcessAction(action);
             _lastBattleActionId = action.Id;
             return _agent.ActionRenderer.EveryRender<ClaimRaidReward>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e =>
+                {
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
+                });
+        }
+
+        public IObservable<ActionBase.ActionEvaluation<RuneEnhancement >> RuneEnhancement(
+            int runeId,
+            int tryCount)
+        {
+            var action = new RuneEnhancement
+            {
+                AvatarAddress = States.Instance.CurrentAvatarState.address,
+                RuneId = runeId,
+                TryCount = tryCount,
+            };
+
+            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
+            LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
+            ProcessAction(action);
+            _lastBattleActionId = action.Id;
+            return _agent.ActionRenderer.EveryRender<RuneEnhancement>()
                 .Timeout(ActionTimeout)
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()

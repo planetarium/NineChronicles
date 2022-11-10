@@ -23,6 +23,9 @@ namespace Nekoyume.UI.Module
         private TextMeshProUGUI addExText;
 
         [SerializeField]
+        private TextMeshProUGUI etcText;
+
+        [SerializeField]
         private GameObject star;
 
         public void Set(string type, string currentValue, string addValue, int count = 1)
@@ -46,6 +49,20 @@ namespace Nekoyume.UI.Module
 
             currentExText.text = exValue;
             addExText.text = addExValue;
+        }
+
+        public void Set(string type, string currentValue)
+        {
+            typeText.text = type;
+            currentText.text = currentValue;
+        }
+
+        public void Set(string type, string currentValue, string currentExValue, string etcValue)
+        {
+            typeText.text = type;
+            currentText.text = currentValue;
+            currentExText.text = currentExValue;
+            etcText.text = etcValue;
         }
     }
 }
