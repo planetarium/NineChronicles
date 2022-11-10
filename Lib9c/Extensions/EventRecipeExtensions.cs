@@ -102,5 +102,20 @@ namespace Nekoyume.Extensions
                     materialsCount);
             }
         }
+
+        public static List<EventMaterialItemRecipeSheet.Row> GetRecipeRows(
+            this EventMaterialItemRecipeSheet sheet,
+            int eventScheduleId)
+        {
+            if (sheet is null)
+            {
+                return new List<EventMaterialItemRecipeSheet.Row>();
+            }
+
+            return sheet.OrderedList
+                .Where(row => row.Id.ToEventScheduleId() == eventScheduleId)
+                .OrderBy(row => row.Id)
+                .ToList();
+        }
     }
 }

@@ -12,6 +12,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
+    using Nekoyume.TableData.Event;
     using Xunit;
     using static SerializeKeys;
 
@@ -268,7 +269,7 @@ namespace Lib9c.Tests.Action
 
             var nextAvatarState = nextStates.GetAvatarStateV2(_avatarAddress);
             Assert.Equal(
-                previousResultMaterialCount + 1,
+                previousResultMaterialCount + recipeRow.ResultMaterialItemCount,
                 nextAvatarState.inventory.Materials
                     .Count(e => e.Id == recipeRow.ResultMaterialItemId));
             Assert.Equal(previousMailCount + 1, nextAvatarState.mailBox.Count);

@@ -93,7 +93,6 @@ namespace Nekoyume.Action
 
             var sw = new Stopwatch();
 
-            #region Get AvatarState
             // Get AvatarState
             sw.Start();
             if (!states.TryGetAvatarStateV2(
@@ -116,9 +115,7 @@ namespace Nekoyume.Action
                 addressesHex,
                 sw.Elapsed);
             // ~Get AvatarState
-            #endregion
 
-            #region Get sheets
             // Get sheets
             sw.Restart();
             var sheets = states.GetSheets(
@@ -135,9 +132,7 @@ namespace Nekoyume.Action
                 addressesHex,
                 sw.Elapsed);
             // ~Get sheets
-            #endregion
 
-            #region Validate Requirements
             // Validate Requirements
             sw.Restart();
             avatarState.worldInformation.ValidateFromAction(
@@ -152,9 +147,7 @@ namespace Nekoyume.Action
                 addressesHex,
                 sw.Elapsed);
             // ~Validate Requirements
-            #endregion
 
-            #region Validate fields
             // Validate fields
             sw.Restart();
             var scheduleSheet = sheets.GetSheet<EventScheduleSheet>();
@@ -177,9 +170,7 @@ namespace Nekoyume.Action
                 addressesHex,
                 sw.Elapsed);
             // ~Validate fields
-            #endregion
 
-            #region Validate Work
             // Validate Work
             sw.Restart();
 
@@ -211,9 +202,7 @@ namespace Nekoyume.Action
                 addressesHex,
                 sw.Elapsed);
             // ~Validate Work
-            #endregion
 
-            #region Remove Required Materials
             // Remove Required Materials
             var inventory = avatarState.inventory;
 #pragma warning disable LAA1002
@@ -228,28 +217,22 @@ namespace Nekoyume.Action
                 }
             }
             // ~Remove Required Materials
-            #endregion
 
-            #region Create Material
             // Create Material
             var materialResult = ItemFactory.CreateMaterial(resulMaterialRow);
-            avatarState.inventory.AddItem(materialResult);
+            avatarState.inventory.AddItem(materialResult, recipeRow.ResultMaterialItemCount);
             // ~Create Material
-            #endregion
 
-            #region Create Mail
             // Create Mail
             var mail = new MaterialCraftMail(
                 context.BlockIndex,
                 Id,
                 context.BlockIndex,
-                1,
+                recipeRow.ResultMaterialItemCount,
                 materialResult);
             avatarState.Update(mail);
             // ~Create Mail
-            #endregion
 
-            #region Set states
             // Set states
             sw.Restart();
             if (migrationRequired)
@@ -281,7 +264,6 @@ namespace Nekoyume.Action
                 addressesHex,
                 sw.Elapsed);
             // ~Set states
-            #endregion
 
             Log.Verbose(
                 "[{ActionTypeString}][{AddressesHex}] Total elapsed: {Elapsed}",
