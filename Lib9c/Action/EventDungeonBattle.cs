@@ -284,25 +284,11 @@ namespace Nekoyume.Action
                 PlayCount);
             var simulatorSheets = sheets.GetSimulatorSheets();
 
-            var runeSlotStateAddress = RuneSlotState.DeriveAddress(AvatarAddress, BattleType.Adventure);
-            var runeSlotState = states.TryGetState(runeSlotStateAddress, out List rawRuneSlotState)
-                ? new RuneSlotState(rawRuneSlotState)
-                : new RuneSlotState(BattleType.Adventure);
-            var runeSlots = runeSlotState.GetRuneSlot();
-            var runes = new List<(int id, int level)>();
-            foreach (var slot in runeSlots.Values)
-            {
-                if (slot.Equipped(out var state))
-                {
-                    runes.Add((state.RuneId, state.Level));
-                }
-            }
-
             var simulator = new StageSimulator(
                 context.Random,
                 avatarState,
                 Foods,
-                runes,
+                new List<(int id, int level)>(),
                 new List<Skill>(),
                 EventDungeonId,
                 EventDungeonStageId,

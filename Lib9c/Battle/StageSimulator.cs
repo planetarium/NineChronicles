@@ -57,7 +57,7 @@ namespace Nekoyume.Battle
             if (runes != null)
             {
                 Player.SetRune(
-                    runes.Select(rune => (rune.id, rune.level)).ToList(),
+                    runes,
                     simulatorSheets.RuneOptionSheet,
                     simulatorSheets.SkillSheet);
             }
