@@ -1731,35 +1731,6 @@ namespace Nekoyume.BlockChain
             UpdateCurrentAvatarStateAsync(eval).Forget();
         }
 
-        public static void RenderQuest(Address avatarAddress, IEnumerable<int> ids)
-        {
-            if (avatarAddress != States.Instance.CurrentAvatarState.address)
-            {
-                return;
-            }
-
-            var questList = States.Instance.CurrentAvatarState.questList;
-            foreach (var id in ids)
-            {
-                var quest = questList.First(q => q.Id == id);
-                var rewardMap = quest.Reward.ItemMap;
-
-                foreach (var reward in rewardMap)
-                {
-                    var materialRow = TableSheets.Instance
-                        .MaterialItemSheet
-                        .First(pair => pair.Key == reward.Key);
-
-                    LocalLayerModifier.RemoveItem(
-                        avatarAddress,
-                        materialRow.Value.ItemId,
-                        reward.Value);
-                }
-
-                LocalLayerModifier.AddReceivableQuest(avatarAddress, id);
-            }
-        }
-
         private static ItemBase GetItem(IAccountStateDelta state, Guid tradableId)
         {
             var address = Addresses.GetItemAddress(tradableId);
