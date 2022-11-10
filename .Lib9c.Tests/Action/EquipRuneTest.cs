@@ -93,7 +93,7 @@ namespace Lib9c.Tests.Action
             {
                 var runeSlotState = new RuneSlotState(rawRuneSlotState);
                 var slot = runeSlotState.GetRuneSlot();
-                var equipped = slot[slotIndex].Equipped(out _);
+                var equipped = slot[slotIndex].IsEquipped(out _);
                 Assert.True(equipped);
             }
 
@@ -118,7 +118,7 @@ namespace Lib9c.Tests.Action
             {
                 var runeSlotState = new RuneSlotState(rawRuneSlotState2);
                 var slot = runeSlotState.GetRuneSlot();
-                var equipped = slot[slotIndex].Equipped(out _);
+                var equipped = slot[slotIndex].IsEquipped(out _);
                 Assert.False(equipped);
             }
         }
@@ -270,7 +270,7 @@ namespace Lib9c.Tests.Action
                 state = state.SetState(runeStateAddress, runeState.Serialize());
             }
 
-            var runeInfos = new List<RuneSlotInfo> { new RuneSlotInfo(3, runeId) };
+            var runeInfos = new List<RuneSlotInfo> { new RuneSlotInfo(2, runeId) };
 
             var action = new EquipRune()
             {
@@ -302,7 +302,7 @@ namespace Lib9c.Tests.Action
                 state = state.SetState(runeStateAddress, runeState.Serialize());
             }
 
-            var runeInfos = new List<RuneSlotInfo> { new RuneSlotInfo(1, runeId) };
+            var runeInfos = new List<RuneSlotInfo> { new RuneSlotInfo(3, runeId) };
 
             var action = new EquipRune()
             {
