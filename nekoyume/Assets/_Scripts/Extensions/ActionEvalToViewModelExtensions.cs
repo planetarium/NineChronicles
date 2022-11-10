@@ -72,7 +72,7 @@ namespace Nekoyume
         }
 
         public static BattleResultPopup.Model GetHackAndSlash18Reward(
-            this ActionBase.ActionEvaluation<HackAndSlash18Base> eval,
+            this ActionBase.ActionEvaluation<IHackAndSlash> eval,
             AvatarState avatarState,
             List<Model.Skill.Skill> skillsOnWaveStart,
             TableSheets sheets,

@@ -181,17 +181,17 @@ namespace Nekoyume.BlockChain
 
         private void HackAndSlash()
         {
-            _actionRenderer.EveryRender<HackAndSlash19Base>()
+            _actionRenderer.EveryRender<IHackAndSlash>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseHackAndSlash)
                 .AddTo(_disposables);
 
-            _actionRenderer.EveryRender<HackAndSlash18Base>()
-                .Where(ValidateEvaluationForCurrentAgent)
-                .ObserveOnMainThread()
-                .Subscribe(ResponseHackAndSlash)
-                .AddTo(_disposables);
+            // _actionRenderer.EveryRender<HackAndSlash18Base>()
+            //     .Where(ValidateEvaluationForCurrentAgent)
+            //     .ObserveOnMainThread()
+            //     .Subscribe(ResponseHackAndSlash)
+            //     .AddTo(_disposables);
         }
 
         private void MimisbrunnrBattle()
@@ -1105,7 +1105,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseHackAndSlash(ActionBase.ActionEvaluation<HackAndSlash18Base> eval)
+        private void ResponseHackAndSlash(ActionBase.ActionEvaluation<IHackAndSlash> eval)
         {
             if (eval.Exception is null)
             {

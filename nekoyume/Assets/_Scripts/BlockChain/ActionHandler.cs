@@ -41,7 +41,6 @@ namespace Nekoyume.BlockChain
             && evaluation.OutputStates.UpdatedAddresses.Contains(States.Instance.CurrentAvatarState.address);
 
         protected static bool ValidateEvaluationForCurrentAgent<T>(ActionBase.ActionEvaluation<T> evaluation)
-            where T : ActionBase
         {
             return !(States.Instance.AgentState is null) &&
                    evaluation.Signer.Equals(States.Instance.AgentState.address);
@@ -117,7 +116,7 @@ namespace Nekoyume.BlockChain
         }
 
         protected static CrystalRandomSkillState GetCrystalRandomSkillState<T>(
-            ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+            ActionBase.ActionEvaluation<T> evaluation)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var buffStateAddress = Addresses.GetSkillStateAddressFromAvatarAddress(avatarAddress);
@@ -180,7 +179,6 @@ namespace Nekoyume.BlockChain
         }
 
         protected async UniTask UpdateCurrentAvatarStateAsync<T>(ActionBase.ActionEvaluation<T> evaluation)
-            where T : ActionBase
         {
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
@@ -240,7 +238,7 @@ namespace Nekoyume.BlockChain
         }
 
         protected static void UpdateCrystalRandomSkillState<T>(
-            ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+            ActionBase.ActionEvaluation<T> evaluation)
         {
             var state = GetCrystalRandomSkillState(evaluation);
 
