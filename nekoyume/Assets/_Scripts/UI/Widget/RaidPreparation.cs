@@ -356,8 +356,10 @@ namespace Nekoyume.UI
             var runes = States.Instance.GetEquippedRuneStates(BattleType.Raid)
                 .Select(x=> x.RuneId).ToList();
             var consumables = information.GetEquippedConsumables().Select(x => x.ItemId).ToList();
+            var runeInfos = States.Instance.RuneSlotStates[BattleType.Raid]
+                .GetEquippedRuneSlotInfos();
 
-            ActionManager.Instance.Raid(costumes, equipments, consumables, runes, payNcg).Subscribe();
+            ActionManager.Instance.Raid(costumes, equipments, consumables, runeInfos, payNcg).Subscribe();
             Find<LoadingScreen>().Show();
             Find<WorldBoss>().Close();
             Close();

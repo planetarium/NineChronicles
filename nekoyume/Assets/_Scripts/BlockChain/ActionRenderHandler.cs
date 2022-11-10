@@ -185,7 +185,7 @@ namespace Nekoyume.BlockChain
             _actionRenderer.EveryRender<HackAndSlash>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseHackAndSlash)
+                .Subscribe(ResponseHackAndSlashAsync)
                 .AddTo(_disposables);
         }
 
@@ -194,7 +194,7 @@ namespace Nekoyume.BlockChain
             _actionRenderer.EveryRender<MimisbrunnrBattle>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseMimisbrunnr)
+                .Subscribe(ResponseMimisbrunnrAsync)
                 .AddTo(_disposables);
         }
 
@@ -203,7 +203,7 @@ namespace Nekoyume.BlockChain
             _actionRenderer.EveryRender<EventDungeonBattle>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseEventDungeonBattle)
+                .Subscribe(ResponseEventDungeonBattleAsync)
                 .AddTo(_disposables);
         }
 
@@ -381,7 +381,7 @@ namespace Nekoyume.BlockChain
             _actionRenderer.EveryRender<HackAndSlashSweep>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseHackAndSlashSweep)
+                .Subscribe(ResponseHackAndSlashSweepAsync)
                 .AddTo(_disposables);
         }
 
@@ -414,7 +414,7 @@ namespace Nekoyume.BlockChain
             _actionRenderer.EveryRender<BattleArena>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseBattleArena)
+                .Subscribe(ResponseBattleArenaAsync)
                 .AddTo(_disposables);
         }
 
@@ -1112,10 +1112,13 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseHackAndSlash(ActionBase.ActionEvaluation<HackAndSlash> eval)
+        private async void ResponseHackAndSlashAsync(ActionBase.ActionEvaluation<HackAndSlash> eval)
         {
             if (eval.Exception is null)
             {
+                await States.Instance.InitRuneSlotStates();
+                await States.Instance.InitItemSlotStates();
+
                 if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
                 {
                     return;
@@ -1212,10 +1215,12 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseHackAndSlashSweep(ActionBase.ActionEvaluation<HackAndSlashSweep> eval)
+        private async void ResponseHackAndSlashSweepAsync(ActionBase.ActionEvaluation<HackAndSlashSweep> eval)
         {
             if (eval.Exception is null)
             {
+                await States.Instance.InitRuneSlotStates();
+                await States.Instance.InitItemSlotStates();
                 Widget.Find<SweepResultPopup>().OnActionRender(new LocalRandom(eval.RandomSeed));
 
                 if (eval.Action.apStoneCount > 0)
@@ -1236,7 +1241,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseMimisbrunnr(ActionBase.ActionEvaluation<MimisbrunnrBattle> eval)
+        private async void ResponseMimisbrunnrAsync(ActionBase.ActionEvaluation<MimisbrunnrBattle> eval)
         {
             if (eval.Exception is null)
             {
@@ -1244,6 +1249,9 @@ namespace Nekoyume.BlockChain
                 {
                     return;
                 }
+
+                await States.Instance.InitRuneSlotStates();
+                await States.Instance.InitItemSlotStates();
 
                 _disposableForBattleEnd?.Dispose();
                 _disposableForBattleEnd =
@@ -1331,7 +1339,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseEventDungeonBattle(ActionBase.ActionEvaluation<EventDungeonBattle> eval)
+        private async void ResponseEventDungeonBattleAsync(ActionBase.ActionEvaluation<EventDungeonBattle> eval)
         {
             if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
             {
@@ -1356,6 +1364,8 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
+            await States.Instance.InitRuneSlotStates();
+            await States.Instance.InitItemSlotStates();
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd =
                 Game.Game.instance.Stage.onEnterToStageEnd
@@ -1838,6 +1848,8 @@ namespace Nekoyume.BlockChain
             }
 
             UpdateCrystalBalance(eval);
+            await States.Instance.InitRuneSlotStates();
+            await States.Instance.InitItemSlotStates();
 
             var currentRound = TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(
                 Game.Game.instance.Agent.BlockIndex);
@@ -1859,7 +1871,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseBattleArena(ActionBase.ActionEvaluation<BattleArena> eval)
+        private async void ResponseBattleArenaAsync(ActionBase.ActionEvaluation<BattleArena> eval)
         {
             if (!ActionManager.IsLastBattleActionId(eval.Action.Id) ||
                 eval.Action.myAvatarAddress != States.Instance.CurrentAvatarState.address)
@@ -1880,6 +1892,8 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
+            await States.Instance.InitRuneSlotStates();
+            await States.Instance.InitItemSlotStates();
             // NOTE: Start cache some arena info which will be used after battle ends.
             RxProps.ArenaInfoTuple.UpdateAsync().Forget();
             RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync().Forget();
@@ -2041,6 +2055,9 @@ namespace Nekoyume.BlockChain
                 Game.Game.BackToMainAsync(eval.Exception.InnerException, false).Forget();
                 return;
             }
+
+            await States.Instance.InitRuneSlotStates();
+            await States.Instance.InitItemSlotStates();
 
             var worldBoss = Widget.Find<WorldBoss>();
             var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;

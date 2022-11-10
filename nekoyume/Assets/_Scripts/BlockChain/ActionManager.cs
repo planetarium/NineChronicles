@@ -164,7 +164,7 @@ namespace Nekoyume.BlockChain
             List<Costume> costumes,
             List<Equipment> equipments,
             List<Consumable> foods,
-            List<RuneSlotInfo> runes,
+            List<RuneSlotInfo> runeInfos,
             int worldId,
             int stageId,
             int playCount)
@@ -173,14 +173,14 @@ namespace Nekoyume.BlockChain
             costumes ??= new List<Costume>();
             equipments ??= new List<Equipment>();
             foods ??= new List<Consumable>();
-            runes ??= new List<RuneSlotInfo>();
+            runeInfos ??= new List<RuneSlotInfo>();
 
             var action = new MimisbrunnrBattle
             {
                 Costumes = costumes.Select(e => e.ItemId).ToList(),
                 Equipments = equipments.Select(e => e.ItemId).ToList(),
                 Foods = foods.Select(f => f.ItemId).ToList(),
-                RuneInfos = runes,
+                RuneInfos = runeInfos,
                 WorldId = worldId,
                 StageId = stageId,
                 AvatarAddress = avatarAddress,
@@ -282,7 +282,7 @@ namespace Nekoyume.BlockChain
             List<Equipment> equipments,
             List<Costume> costumes,
             List<Consumable> foods,
-            List<RuneSlotInfo> runeSlotInfos,
+            List<RuneSlotInfo> runeInfos,
             bool buyTicketIfNeeded,
             bool trackGuideQuest = false)
         {
@@ -337,6 +337,7 @@ namespace Nekoyume.BlockChain
                 Costumes = costumes.Select(c => c.ItemId).ToList(),
                 Foods = foods.Select(f => f.ItemId).ToList(),
                 BuyTicketIfNeeded = buyTicketIfNeeded,
+                RuneInfos = runeInfos,
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
@@ -1123,7 +1124,7 @@ namespace Nekoyume.BlockChain
             List<Guid> costumes,
             List<Guid> equipments,
             List<Guid> foods,
-            List<int> runes,
+            List<RuneSlotInfo> runeInfos,
             bool payNcg)
         {
             var action = new Raid
@@ -1132,6 +1133,7 @@ namespace Nekoyume.BlockChain
                 EquipmentIds = equipments,
                 CostumeIds = costumes,
                 FoodIds = foods,
+                RuneInfos = runeInfos,
                 PayNcg = payNcg,
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);

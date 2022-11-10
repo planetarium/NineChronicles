@@ -32,6 +32,7 @@ namespace Nekoyume.Game.Character
             List<Equipment> equipments)
         {
             _hudContainer ??= Widget.Create<HudContainer>(true);
+            _hudContainer.transform.localPosition = Vector3.left * 200000;
             appearance.Set(
                 Animator,
                 _hudContainer,
@@ -41,6 +42,12 @@ namespace Nekoyume.Game.Character
                 avatarState.lens,
                 avatarState.hair,
                 avatarState.tail);
+
+            var title = costumes.FirstOrDefault(x => x.ItemSubType == ItemSubType.Title);
+            if (title != null)
+            {
+                Widget.Find<Menu>().UpdateTitle(title);
+            }
 
             var items = new List<Guid>();
             items.AddRange(costumes.Select(x=> x.ItemId));

@@ -1105,6 +1105,7 @@ namespace Nekoyume.Game
         private Player RunPlayer(bool chasePlayer = true)
         {
             _stageRunningPlayer = GetPlayer();
+            _stageRunningPlayer.Set(States.Instance.CurrentAvatarState);
             var playerTransform = _stageRunningPlayer.transform;
             Vector2 position = playerTransform.position;
             position.y = StageStartPosition;

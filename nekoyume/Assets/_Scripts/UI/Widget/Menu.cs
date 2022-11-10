@@ -17,6 +17,7 @@ using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
@@ -99,9 +100,13 @@ namespace Nekoyume.UI
         [SerializeField]
         private RectTransform player;
 
+        [SerializeField]
+        private Transform titleSocket;
+
         private Coroutine _coLazyClose;
 
         private readonly List<IDisposable> _disposablesAtShow = new();
+        private GameObject _cachedCharacterTitle;
 
         protected override void Awake()
         {
@@ -186,6 +191,14 @@ namespace Nekoyume.UI
             {
                 Find<Menu>().QuestClick();
             }
+        }
+
+        public void UpdateTitle(Costume title)
+        {
+            Destroy(_cachedCharacterTitle);
+            var clone = ResourcesHelper.GetCharacterTitle(title.Grade,
+                title.GetLocalizedNonColoredName(false));
+            _cachedCharacterTitle = Instantiate(clone, titleSocket);
         }
 
         public void EnterRoom()
