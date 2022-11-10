@@ -57,6 +57,22 @@ namespace Nekoyume.Model
             Equipments = equipments;
         }
 
+        public ArenaPlayerDigest(
+            AvatarState avatarState,
+            List<Costume> costumes,
+            List<Equipment> equipments)
+        {
+            NameWithHash = avatarState.NameWithHash;
+            CharacterId = avatarState.characterId;
+            HairIndex = avatarState.hair;
+            LensIndex = avatarState.lens;
+            EarIndex = avatarState.ear;
+            TailIndex = avatarState.tail;
+            Level = avatarState.level;
+            Costumes = costumes;
+            Equipments = equipments;
+        }
+
         public ArenaPlayerDigest(List serialized)
         {
             NameWithHash = serialized[0].ToDotnetString();
