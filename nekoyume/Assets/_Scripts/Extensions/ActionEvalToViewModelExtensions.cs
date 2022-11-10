@@ -18,26 +18,42 @@ namespace Nekoyume
             AvatarState avatarState,
             List<Model.Skill.Skill> skillsOnWaveStart,
             TableSheets sheets,
+            out StageSimulator firstStageSimulator) =>
+            eval.Action.GetHackAndSlashReward(
+                eval.BlockIndex,
+                eval.RandomSeed,
+                avatarState,
+                skillsOnWaveStart,
+                sheets,
+                out firstStageSimulator);
+
+        public static BattleResultPopup.Model GetHackAndSlashReward(
+            this HackAndSlash hackAndSlash,
+            long blockIndex,
+            int randomSeed,
+            AvatarState avatarState,
+            List<Model.Skill.Skill> skillsOnWaveStart,
+            TableSheets sheets,
             out StageSimulator firstStageSimulator)
         {
             firstStageSimulator = null;
             var model = new BattleResultPopup.Model();
-            var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
-            var stageRow = sheets.StageSheet[eval.Action.StageId];
-            for (var i = 0; i < eval.Action.PlayCount; i++)
+            var random = new ActionRenderHandler.LocalRandom(randomSeed);
+            var stageRow = sheets.StageSheet[hackAndSlash.StageId];
+            for (var i = 0; i < hackAndSlash.PlayCount; i++)
             {
                 var prevExp = avatarState.exp;
                 var simulator = new StageSimulator(
                     random,
                     avatarState,
-                    i == 0 ? eval.Action.Foods : new List<Guid>(),
+                    i == 0 ? hackAndSlash.Foods : new List<Guid>(),
                     i == 0 ? skillsOnWaveStart : new List<Model.Skill.Skill>(),
-                    eval.Action.WorldId,
-                    eval.Action.StageId,
+                    hackAndSlash.WorldId,
+                    hackAndSlash.StageId,
                     stageRow,
-                    sheets.StageWaveSheet[eval.Action.StageId],
-                    avatarState.worldInformation.IsStageCleared(eval.Action.StageId),
-                    StageRewardExpHelper.GetExp(avatarState.level, eval.Action.StageId),
+                    sheets.StageWaveSheet[hackAndSlash.StageId],
+                    avatarState.worldInformation.IsStageCleared(hackAndSlash.StageId),
+                    StageRewardExpHelper.GetExp(avatarState.level, hackAndSlash.StageId),
                     sheets.GetStageSimulatorSheets(),
                     sheets.EnemySkillSheet,
                     sheets.CostumeStatSheet,
@@ -47,9 +63,9 @@ namespace Nekoyume
                 if (simulator.Log.IsClear)
                 {
                     simulator.Player.worldInformation.ClearStage(
-                        eval.Action.WorldId,
-                        eval.Action.StageId,
-                        eval.BlockIndex,
+                        hackAndSlash.WorldId,
+                        hackAndSlash.StageId,
+                        blockIndex,
                         sheets.WorldSheet,
                         sheets.WorldUnlockSheet
                     );
