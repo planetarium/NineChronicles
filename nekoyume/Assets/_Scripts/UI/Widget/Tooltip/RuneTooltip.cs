@@ -8,6 +8,7 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Stat;
+using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -122,6 +123,78 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
+         public void ShowForDisplay(
+             RuneState runeState,
+            RectTransform target = null,
+            float2 offsetFromTarget = default)
+        {
+            _offsetFromTarget = offsetFromTarget;
+            confirmButton.gameObject.SetActive(false);
+            runeNameText.text = L10nManager.Localize($"ITEM_NAME_{runeState.RuneId}");
+            currentLevelText.text = $"+{runeState.Level}";
+
+            var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
+            if (runeListSheet.TryGetValue(runeState.RuneId, out var row))
+            {
+                levelLimitText.text = L10nManager.Localize("UI_REQUIRED_LEVEL", row.RequiredLevel);
+                UpdateGrade(row);
+                UpdateAreaIcon((RuneUsePlace)row.UsePlace);
+            }
+
+            var runeCostSheet = Game.Game.instance.TableSheets.RuneCostSheet;
+            if (runeCostSheet.TryGetValue(runeState.RuneId, out var costRow))
+            {
+                maxLevelText.text = $"/{costRow.Cost.Count}";
+            }
+
+            if (RuneFrontHelper.TryGetRuneIcon(runeState.RuneId, out var icon))
+            {
+                runeImage.sprite = icon;
+            }
+
+            var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
+            if (!runeOptionSheet.TryGetValue(runeState.RuneId, out var optionRow))
+            {
+                return;
+            }
+
+            if (optionRow.LevelOptionMap.TryGetValue(runeState.Level, out var option))
+            {
+                if (option.SkillId != 0)
+                {
+                    var name = L10nManager.Localize($"SKILL_NAME_{option.SkillId}");
+                    var skillValue = option.SkillValueType == StatModifier.OperationType.Percentage
+                        ? option.SkillValue * 100
+                        : option.SkillValue;
+                    var desc = L10nManager.Localize(
+                        $"SKILL_DESCRIPTION_{option.SkillId}", option.SkillChance, skillValue);
+                    var cooldown = $"{L10nManager.Localize($"UI_COOLDOWN")} : {option.SkillCooldown}";
+                    skillView.Show(name, desc, cooldown);
+                }
+                else
+                {
+                    skillView.Hide();
+                }
+
+                foreach (var statView in statViewList)
+                {
+                    statView.gameObject.SetActive(false);
+                }
+
+                for (var i = 0; i < option.Stats.Count; i++)
+                {
+                    var (statMap, _) = option.Stats[i];
+                    statViewList[i].gameObject.SetActive(true);
+                    statViewList[i].Show(statMap.StatType, statMap.ValueAsInt, true);
+                }
+            }
+
+            scrollbar.value = 1f;
+            UpdatePosition(target);
+            base.Show();
+            StartCoroutine(CoUpdate(confirmButton.gameObject));
+        }
+
         public void Show(
             InventoryItem item,
             string confirm,
@@ -133,6 +206,7 @@ namespace Nekoyume.UI
             float2 offsetFromTarget = default)
         {
             _offsetFromTarget = offsetFromTarget;
+            confirmButton.gameObject.SetActive(true);
             confirmButton.Interactable = interactable;
             confirmButton.Text = confirm;
             runeNameText.text = L10nManager.Localize($"ITEM_NAME_{item.RuneState.RuneId}");

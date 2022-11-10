@@ -550,7 +550,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-         private void ShowRuneTooltip(InventoryItem model, RectTransform target, float2 offset)
+        private void ShowRuneTooltip(InventoryItem model, RectTransform target, float2 offset)
         {
             Widget.Find<RuneTooltip>().Show(
                 model,
