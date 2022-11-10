@@ -68,7 +68,7 @@ namespace Nekoyume.UI.Scroller
                         var (exist, state) = await States.TryGetAvatarStateAsync(address);
                         avatarState = exist ? state : null;
                     }
-                    Widget.Find<FriendInfoPopup>().Show(avatarState);
+                    Widget.Find<FriendInfoPopup>().ShowAsync(avatarState).Forget();
                     loadingScreen.Close();
                 })
                 .AddTo(gameObject);

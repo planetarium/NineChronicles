@@ -150,7 +150,7 @@ namespace Nekoyume.UI
                     }
 #endif
                     var data = _boundedData[index];
-                    Find<FriendInfoPopup>().Show(data.AvatarState);
+                    Find<FriendInfoPopup>().ShowAsync(data.AvatarState).Forget();
                 })
                 .AddTo(gameObject);
 

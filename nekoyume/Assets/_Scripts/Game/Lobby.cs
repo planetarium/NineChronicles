@@ -8,6 +8,10 @@ namespace Nekoyume.Game
         [SerializeField]
         private LobbyCharacter character;
 
+        [SerializeField]
+        private FriendCharacter friendCharacter;
+
         public LobbyCharacter Character => character;
+        public FriendCharacter FriendCharacter => friendCharacter;
     }
 }
