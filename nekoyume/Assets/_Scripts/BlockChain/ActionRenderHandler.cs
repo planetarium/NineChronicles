@@ -181,7 +181,13 @@ namespace Nekoyume.BlockChain
 
         private void HackAndSlash()
         {
-            _actionRenderer.EveryRender<HackAndSlash>()
+            _actionRenderer.EveryRender<HackAndSlash19Base>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseHackAndSlash)
+                .AddTo(_disposables);
+
+            _actionRenderer.EveryRender<HackAndSlash18Base>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseHackAndSlash)
@@ -1099,7 +1105,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseHackAndSlash(ActionBase.ActionEvaluation<HackAndSlash> eval)
+        private void ResponseHackAndSlash(ActionBase.ActionEvaluation<HackAndSlash18Base> eval)
         {
             if (eval.Exception is null)
             {
@@ -1140,8 +1146,8 @@ namespace Nekoyume.BlockChain
                         tableSheets.SkillSheet);
                     skillsOnWaveStart.Add(skill);
                 }
-
-                var resultModel = eval.GetHackAndSlashReward(States.Instance.CurrentAvatarState,
+                var resultModel = eval.GetHackAndSlash18Reward(
+                    States.Instance.CurrentAvatarState,
                     skillsOnWaveStart,
                     tableSheets,
                     out var simulator);

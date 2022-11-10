@@ -525,7 +525,6 @@ namespace Nekoyume.BlockChain
             };
 
             _miner = options.NoMiner ? null : CoMiner();
-            _autoPlayer = options.AutoPlay ? CoAutoPlayer() : null;
 
             if (development)
             {
@@ -898,40 +897,6 @@ namespace Nekoyume.BlockChain
                         }
                     }
                 }
-            }
-        }
-
-        private IEnumerator CoAutoPlayer()
-        {
-            var avatarIndex = 0;
-            var dummyName = Address.ToHex().Substring(0, 8);
-
-            yield return Game.Game.instance.ActionManager
-                .CreateAvatar(avatarIndex, dummyName)
-                .ToYieldInstruction();
-            var avatarAddress = Address.Derive(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    CreateAvatar2.DeriveFormat,
-                    avatarIndex
-                )
-            );
-            Debug.LogFormat("Autoplay[{0}, {1}]: CreateAvatar", avatarAddress.ToHex(), dummyName);
-
-            yield return States.Instance.SelectAvatarAsync(avatarIndex).ToCoroutine();
-            var waitForSeconds = new WaitForSeconds(TxProcessInterval);
-
-            while (true)
-            {
-                yield return waitForSeconds;
-                yield return Game.Game.instance.ActionManager.HackAndSlash(
-                    new(),
-                    new(),
-                    new(),
-                    new(),
-                    1,
-                    1).StartAsCoroutine();
-                Debug.LogFormat("Autoplay[{0}, {1}]: HackAndSlash", avatarAddress.ToHex(), dummyName);
             }
         }
 

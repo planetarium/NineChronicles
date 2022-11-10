@@ -23,6 +23,7 @@ using Nekoyume.UI;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
 using Material = Nekoyume.Model.Item.Material;
+using Random = UnityEngine.Random;
 using RedeemCode = Nekoyume.Action.RedeemCode;
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
@@ -207,19 +208,8 @@ namespace Nekoyume.BlockChain
                 });
         }
 
-        public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
-            Player player,
-            int worldId,
-            int stageId) =>
-            HackAndSlash(
-                player.Costumes,
-                player.Equipments,
-                null,
-                player.Runes,
-                worldId,
-                stageId);
 
-        public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
+        public IObservable<ActionBase.ActionEvaluation<GameAction>> HackAndSlash(
             List<Costume> costumes,
             List<Equipment> equipments,
             List<Consumable> foods,
@@ -254,23 +244,20 @@ namespace Nekoyume.BlockChain
             equipments ??= new List<Equipment>();
             foods ??= new List<Consumable>();
 
-            var action = new HackAndSlash
-            {
-                Costumes = costumes.Select(c => c.ItemId).ToList(),
-                Equipments = equipments.Select(e => e.ItemId).ToList(),
-                Foods = foods.Select(f => f.ItemId).ToList(),
-                Runes = runes,
-                WorldId = worldId,
-                StageId = stageId,
-                StageBuffId = stageBuffId,
-                AvatarAddress = avatarAddress,
-                PlayCount = playCount,
-            };
-            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
-            LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
+            var action = HackAndSlashFactory.HackAndSlash(
+                Random.Range(18, 21),
+                costumes.Select(c => c.ItemId).ToList(),
+                equipments.Select(e => e.ItemId).ToList(),
+                foods.Select(f => f.ItemId).ToList(),
+                runes,
+                worldId,
+                stageId,
+                avatarAddress,
+                playCount,
+                stageBuffId);
             ProcessAction(action);
             _lastBattleActionId = action.Id;
-            return _agent.ActionRenderer.EveryRender<HackAndSlash>()
+            return _agent.ActionRenderer.EveryRender<GameAction>()
                 .Timeout(ActionTimeout)
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
                 .First()
