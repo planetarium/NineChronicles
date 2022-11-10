@@ -151,7 +151,21 @@ namespace Nekoyume.Model.State
             return result;
         }
 
-        public List<RuneOptionSheet.Row.RuneOptionInfo> GetEquippedRuneStatInfos(RuneOptionSheet sheet)
+        public List<RuneSlotInfo> GetEquippedRuneSlotInfos()
+        {
+            var result = new List<RuneSlotInfo>();
+            foreach (var slot in _slots.Where(slot => !slot.IsLock))
+            {
+                if (slot.IsEquipped(out var runeState))
+                {
+                    result.Add(new RuneSlotInfo(slot.Index, runeState.RuneId, runeState.Level));
+                }
+            }
+
+            return result;
+        }
+
+        public List<RuneOptionSheet.Row.RuneOptionInfo> GetEquippedRuneOptions(RuneOptionSheet sheet)
         {
             var result = new List<RuneOptionSheet.Row.RuneOptionInfo>();
             foreach (var runeState in GetEquippedRuneStates())

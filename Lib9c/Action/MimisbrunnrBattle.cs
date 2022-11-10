@@ -314,18 +314,17 @@ namespace Nekoyume.Action
             // update item slot
             var itemSlotStateAddress = ItemSlotState.DeriveAddress(AvatarAddress, BattleType.Adventure);
             var itemSlotState = states.TryGetState(itemSlotStateAddress, out List rawItemSlotState)
-                ? new ItemSlotState(rawRuneSlotState)
+                ? new ItemSlotState(rawItemSlotState)
                 : new ItemSlotState(BattleType.Adventure);
             itemSlotState.UpdateEquipment(Equipments);
             itemSlotState.UpdateCostumes(Costumes);
             states = states.SetState(itemSlotStateAddress, itemSlotState.Serialize());
 
-            var runes = runeStates.Select(runeState => (runeState.RuneId, runeState.Level)).ToList();
             var simulator = new StageSimulator(
                 context.Random,
                 avatarState,
                 Foods,
-                runes,
+                RuneInfos,
                 new List<Skill>(),
                 WorldId,
                 StageId,
