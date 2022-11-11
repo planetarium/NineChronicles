@@ -263,68 +263,6 @@ namespace Lib9c.Tests.Action
                 }));
         }
 
-        [Fact]
-        public void Execute_RuneNotFoundException()
-        {
-            var agentAddress = new PrivateKey().ToAddress();
-            var avatarAddress = new PrivateKey().ToAddress();
-            var sheets = TableSheetsImporter.ImportSheets();
-            var tableSheets = new TableSheets(sheets);
-            var blockIndex = tableSheets.WorldBossListSheet.Values
-                .OrderBy(x => x.StartedBlockIndex)
-                .First()
-                .StartedBlockIndex;
-
-            var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
-            var state = new State()
-                .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
-                .SetState(agentAddress, new AgentState(agentAddress).Serialize());
-
-            foreach (var (key, value) in sheets)
-            {
-                state = state.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
-            }
-
-            var avatarState = new AvatarState(
-                avatarAddress,
-                agentAddress,
-                0,
-                tableSheets.GetAvatarSheets(),
-                new GameConfigState(),
-                default
-            );
-
-            var runeListSheet = state.GetSheet<RuneListSheet>();
-            var runeId = runeListSheet.First().Value.Id;
-            var runeStateAddress = RuneState.DeriveAddress(avatarState.address, runeId);
-            var runeState = new RuneState(runeId);
-            state = state.SetState(runeStateAddress, runeState.Serialize());
-
-            var costSheet = state.GetSheet<RuneSheet>();
-            const string csv =
-                @"id,ticker
-9999,RUNE_FENRIR1
-        ";
-            costSheet.Set(csv);
-            state = state.SetState(Addresses.TableSheet.Derive("RuneSheet"), costSheet.Serialize());
-
-            var action = new RuneEnhancement()
-            {
-                AvatarAddress = avatarState.address,
-                RuneId = runeId,
-                TryCount = 1,
-            };
-
-            Assert.Throws<RuneNotFoundException>(() =>
-                action.Execute(new ActionContext()
-                {
-                    PreviousStates = state,
-                    Signer = agentAddress,
-                    Random = new TestRandom(),
-                    BlockIndex = blockIndex,
-                }));
-        }
-
         [Theory]
         [InlineData(false, true, true)]
         [InlineData(true, true, false)]

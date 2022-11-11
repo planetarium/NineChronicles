@@ -218,6 +218,7 @@ namespace Lib9c.Tests.Action
                     actionPoint = avatarState.actionPoint,
                     costumes = costumes,
                     equipments = equipments,
+                    runeInfos = new List<RuneSlotInfo>(),
                     avatarAddress = _avatarAddress,
                     apStoneCount = apStoneCount,
                     worldId = worldId,
@@ -253,6 +254,7 @@ namespace Lib9c.Tests.Action
         {
             var action = new HackAndSlashSweep
             {
+                runeInfos = new List<RuneSlotInfo>(),
                 apStoneCount = 1,
                 avatarAddress = _avatarAddress,
                 worldId = 1,
@@ -283,6 +285,7 @@ namespace Lib9c.Tests.Action
         {
             var action = new HackAndSlashSweep
             {
+                runeInfos = new List<RuneSlotInfo>(),
                 apStoneCount = 1,
                 avatarAddress = _avatarAddress,
                 worldId = worldId,
@@ -309,6 +312,7 @@ namespace Lib9c.Tests.Action
         {
             var action = new HackAndSlashSweep
             {
+                runeInfos = new List<RuneSlotInfo>(),
                 apStoneCount = 1,
                 avatarAddress = _avatarAddress,
                 worldId = worldId,
@@ -337,6 +341,7 @@ namespace Lib9c.Tests.Action
         {
             var action = new HackAndSlashSweep
             {
+                runeInfos = new List<RuneSlotInfo>(),
                 apStoneCount = 1,
                 avatarAddress = _avatarAddress,
                 worldId = worldId,
@@ -423,6 +428,7 @@ namespace Lib9c.Tests.Action
 
             var action = new HackAndSlashSweep
             {
+                runeInfos = new List<RuneSlotInfo>(),
                 apStoneCount = 1,
                 avatarAddress = _avatarAddress,
                 worldId = worldId,
@@ -477,6 +483,7 @@ namespace Lib9c.Tests.Action
 
             var action = new HackAndSlashSweep
             {
+                runeInfos = new List<RuneSlotInfo>(),
                 apStoneCount = apStoneCount,
                 avatarAddress = _avatarAddress,
                 worldId = 1,
@@ -554,6 +561,7 @@ namespace Lib9c.Tests.Action
                 {
                     equipments = equipments,
                     costumes = costumes,
+                    runeInfos = new List<RuneSlotInfo>(),
                     avatarAddress = _avatarAddress,
                     actionPoint = avatarState.actionPoint,
                     apStoneCount = useApStoneCount,
@@ -626,6 +634,7 @@ namespace Lib9c.Tests.Action
                 var (equipments, costumes) = GetDummyItems(avatarState);
                 var action = new HackAndSlashSweep
                 {
+                    runeInfos = new List<RuneSlotInfo>(),
                     costumes = costumes,
                     equipments = equipments,
                     avatarAddress = _avatarAddress,
@@ -703,6 +712,7 @@ namespace Lib9c.Tests.Action
                 {
                     costumes = costumes,
                     equipments = equipments,
+                    runeInfos = new List<RuneSlotInfo>(),
                     avatarAddress = _avatarAddress,
                     actionPoint = 0,
                     apStoneCount = 0,
@@ -777,6 +787,7 @@ namespace Lib9c.Tests.Action
                 {
                     costumes = new List<Guid>(),
                     equipments = new List<Guid>(),
+                    runeInfos = new List<RuneSlotInfo>(),
                     avatarAddress = _avatarAddress,
                     actionPoint = avatarState.actionPoint,
                     apStoneCount = 1,
@@ -849,6 +860,7 @@ namespace Lib9c.Tests.Action
                 {
                     costumes = new List<Guid>(),
                     equipments = new List<Guid>(),
+                    runeInfos = new List<RuneSlotInfo>(),
                     avatarAddress = _avatarAddress,
                     actionPoint = avatarState.actionPoint,
                     apStoneCount = 1,
