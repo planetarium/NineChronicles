@@ -11,7 +11,7 @@ namespace Nekoyume.Model.GrandFinale
     public class GrandFinaleInformation : IState
     {
         public static Address DeriveAddress(Address avatarAddress, int grandFinaleId) =>
-            avatarAddress.Derive($"arena_information_{grandFinaleId}");
+            avatarAddress.Derive($"grand_finale_information_{grandFinaleId}");
 
         public Address Address;
         public int Ticket { get; private set; }
@@ -61,7 +61,7 @@ namespace Nekoyume.Model.GrandFinale
 
         public void UpdateRecord(Address enemyAddress, bool win)
         {
-            BattleRecordDictionary.TryAdd(enemyAddress, win);
+            BattleRecordDictionary.Add(enemyAddress, win);
         }
 
         public bool TryGetBattleRecord(Address enemyAddress, out bool win) =>
