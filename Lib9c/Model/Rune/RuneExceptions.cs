@@ -185,4 +185,17 @@ namespace Nekoyume.Model.Rune
         {
         }
     }
+
+    [Serializable]
+    public class MismatchRuneSlotTypeException : Exception
+    {
+        public MismatchRuneSlotTypeException(string message) : base(message)
+        {
+        }
+
+        protected MismatchRuneSlotTypeException(SerializationInfo info, StreamingContext context) :
+            base(info, context)
+        {
+        }
+    }
 }
