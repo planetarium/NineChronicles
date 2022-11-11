@@ -1,6 +1,6 @@
 using System;
 
-namespace Nekoyume.Action
+namespace Nekoyume.Exceptions
 {
     [Serializable]
     public class InvalidMaterialCountException : Exception

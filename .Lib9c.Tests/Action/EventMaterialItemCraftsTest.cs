@@ -7,6 +7,7 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Exceptions;
     using Nekoyume.Model;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
@@ -64,7 +65,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress, avatarState.SerializeV2())
                 .SetState(inventoryAddr, avatarState.inventory.Serialize())
                 .SetState(worldInformationAddr, avatarState.worldInformation.Serialize())
-                .SetState(questListAddr, avatarState.questList.Serialize()) // Todo : 이거 왜있지
+                .SetState(questListAddr, avatarState.questList.Serialize())
                 .SetState(gameConfigState.address, gameConfigState.Serialize());
 
             for (var i = 0; i < GameConfig.SlotCount; i++)
@@ -123,7 +124,7 @@ namespace Lib9c.Tests.Action
             };
         }
 
-        public static IEnumerable<object[]> GetExecuteInvalidAddressExceptionMemberData()
+        public static IEnumerable<object[]> GetExecuteInvalidMaterialCountExceptionMemberData()
         {
             yield return new object[]
             {
@@ -193,8 +194,8 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [MemberData(nameof(GetExecuteInvalidAddressExceptionMemberData))]
-        public void Execute_InvalidAddressException(
+        [MemberData(nameof(GetExecuteInvalidMaterialCountExceptionMemberData))]
+        public void Execute_InvalidMaterialCountException(
             int eventScheduleId,
             int eventMaterialItemRecipeId,
             Dictionary<int, int> materialsToUse)
