@@ -290,6 +290,7 @@ namespace Nekoyume.UI
             var color = LocalizationExtensions.GetItemGradeColor(row.Grade);
             gradeText.text = L10nManager.Localize($"UI_ITEM_GRADE_{row.Grade}");
             gradeText.color = color;
+            runeNameText.color = color;
             subTypeText.color = color;
             spacerImage.color = color;
         }
