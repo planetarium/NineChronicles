@@ -20,6 +20,7 @@ namespace Nekoyume.Action
     /// Introduced at https://github.com/planetarium/lib9c/pull/1495
     /// </summary>
     [Serializable]
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100340ObsoleteIndex)]
     [ActionType("join_arena")]
     public class JoinArena0 : GameAction
     {
@@ -58,6 +59,8 @@ namespace Nekoyume.Action
             {
                 return states;
             }
+
+            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100340ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             var started = DateTimeOffset.UtcNow;
