@@ -24,7 +24,7 @@ using Nekoyume.Model.Rune;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1434
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1495
     /// </summary>
     [Serializable]
     [ActionType("mimisbrunnr_battle11")]

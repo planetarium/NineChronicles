@@ -22,7 +22,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1434
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1495
     /// </summary>
     [Serializable]
     [ActionType(ActionTypeText)]
@@ -155,6 +155,7 @@ namespace Nekoyume.Action
                     typeof(EnemySkillSheet),
                     typeof(CostumeStatSheet),
                     typeof(MaterialItemSheet),
+                    typeof(RuneListSheet),
                 });
             sw.Stop();
             Log.Verbose(

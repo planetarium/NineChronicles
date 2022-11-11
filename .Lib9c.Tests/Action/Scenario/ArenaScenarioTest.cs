@@ -101,7 +101,7 @@ namespace Lib9c.Tests.Action.Scenario
             var preCurrency = roundData.EntranceFee * _crystal;
             _state = _state.MintAsset(signer, preCurrency);
 
-            var action = new JoinArena()
+            var action = new JoinArena0()
             {
                 championshipId = roundData.ChampionshipId,
                 round = roundData.Round,
@@ -130,7 +130,7 @@ namespace Lib9c.Tests.Action.Scenario
             int ticket,
             long blockIndex)
         {
-            var action = new BattleArena()
+            var action = new BattleArena6()
             {
                 myAvatarAddress = myAvatarAddress,
                 enemyAvatarAddress = enemyAvatarAddress,

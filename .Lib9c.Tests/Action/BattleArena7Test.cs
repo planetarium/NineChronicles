@@ -21,7 +21,7 @@ namespace Lib9c.Tests.Action
     using Xunit.Abstractions;
     using static Lib9c.SerializeKeys;
 
-    public class BattleArena6Test
+    public class BattleArena7Test
     {
         private readonly Dictionary<string, string> _sheets;
         private readonly TableSheets _tableSheets;
@@ -38,7 +38,7 @@ namespace Lib9c.Tests.Action
         private readonly Currency _ncg;
         private IAccountStateDelta _initialStates;
 
-        public BattleArena6Test(ITestOutputHelper outputHelper)
+        public BattleArena7Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -195,7 +195,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_InvalidAddressException()
         {
-            var action = new BattleArena6
+            var action = new BattleArena
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar1Address,
@@ -204,6 +204,7 @@ namespace Lib9c.Tests.Action
                 ticket = 1,
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
+                runeInfos = new List<RuneSlotInfo>(),
             };
 
             Assert.Throws<InvalidAddressException>(() => action.Execute(new ActionContext
@@ -217,7 +218,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_FailedLoadStateException()
         {
-            var action = new BattleArena6
+            var action = new BattleArena
             {
                 myAvatarAddress = _avatar2Address,
                 enemyAvatarAddress = _avatar1Address,
@@ -226,6 +227,7 @@ namespace Lib9c.Tests.Action
                 ticket = 1,
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
+                runeInfos = new List<RuneSlotInfo>(),
             };
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
@@ -239,7 +241,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_NotEnoughClearedStageLevelException()
         {
-            var action = new BattleArena6
+            var action = new BattleArena
             {
                 myAvatarAddress = _avatar4Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -248,6 +250,7 @@ namespace Lib9c.Tests.Action
                 ticket = 1,
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
+                runeInfos = new List<RuneSlotInfo>(),
             };
 
             Assert.Throws<NotEnoughClearedStageLevelException>(() =>
@@ -263,7 +266,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_SheetRowNotFoundException()
         {
-            var action = new BattleArena6
+            var action = new BattleArena
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -272,6 +275,7 @@ namespace Lib9c.Tests.Action
                 ticket = 1,
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
+                runeInfos = new List<RuneSlotInfo>(),
             };
 
             Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext
@@ -285,7 +289,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_ThisArenaIsClosedException()
         {
-            var action = new BattleArena6
+            var action = new BattleArena
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -294,6 +298,7 @@ namespace Lib9c.Tests.Action
                 ticket = 1,
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
+                runeInfos = new List<RuneSlotInfo>(),
             };
 
             Assert.Throws<ThisArenaIsClosedException>(() => action.Execute(new ActionContext
@@ -308,7 +313,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_ArenaParticipantsNotFoundException()
         {
-            var action = new BattleArena6
+            var action = new BattleArena
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -317,6 +322,7 @@ namespace Lib9c.Tests.Action
                 ticket = 1,
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
+                runeInfos = new List<RuneSlotInfo>(),
             };
 
             Assert.Throws<ArenaParticipantsNotFoundException>(() => action.Execute(new ActionContext
@@ -365,7 +371,7 @@ namespace Lib9c.Tests.Action
                     round,
                     random);
 
-            var action = new BattleArena6
+            var action = new BattleArena
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -374,6 +380,7 @@ namespace Lib9c.Tests.Action
                 ticket = 1,
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
+                runeInfos = new List<RuneSlotInfo>(),
             };
 
             Assert.Throws<AddressNotFoundInArenaParticipantsException>(() =>
@@ -431,7 +438,7 @@ namespace Lib9c.Tests.Action
             arenaScore.AddScore(900);
             previousStates = previousStates.SetState(arenaScoreAdr, arenaScore.Serialize());
 
-            var action = new BattleArena6
+            var action = new BattleArena
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -440,6 +447,7 @@ namespace Lib9c.Tests.Action
                 ticket = 1,
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
+                runeInfos = new List<RuneSlotInfo>(),
             };
 
             var blockIndex = roundData.StartBlockIndex + 1;
@@ -496,7 +504,7 @@ namespace Lib9c.Tests.Action
             beforeInfo.UseTicket(beforeInfo.Ticket);
             previousStates = previousStates.SetState(arenaInfoAdr, beforeInfo.Serialize());
 
-            var action = new BattleArena6
+            var action = new BattleArena
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -505,6 +513,7 @@ namespace Lib9c.Tests.Action
                 ticket = 1,
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
+                runeInfos = new List<RuneSlotInfo>(),
             };
 
             var blockIndex = roundData.StartBlockIndex + 1;
@@ -558,7 +567,7 @@ namespace Lib9c.Tests.Action
                 throw new ArenaInformationNotFoundException($"arenaInfoAdr : {arenaInfoAdr}");
             }
 
-            var action = new BattleArena6
+            var action = new BattleArena
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -567,6 +576,7 @@ namespace Lib9c.Tests.Action
                 ticket = 2,
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
+                runeInfos = new List<RuneSlotInfo>(),
             };
 
             var blockIndex = roundData.StartBlockIndex + 1;
@@ -634,7 +644,7 @@ namespace Lib9c.Tests.Action
                 previousStates.GetGoldCurrency());
             previousStates = previousStates.MintAsset(_agent1Address, price);
 
-            var action = new BattleArena6
+            var action = new BattleArena
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -643,6 +653,7 @@ namespace Lib9c.Tests.Action
                 ticket = 1,
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
+                runeInfos = new List<RuneSlotInfo>(),
             };
 
             var blockIndex = roundData.StartBlockIndex + 1;
@@ -715,7 +726,7 @@ namespace Lib9c.Tests.Action
                 previousStates.GetGoldCurrency());
             previousStates = previousStates.MintAsset(_agent1Address, price);
 
-            var action = new BattleArena6
+            var action = new BattleArena
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -724,6 +735,7 @@ namespace Lib9c.Tests.Action
                 ticket = 1,
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
+                runeInfos = new List<RuneSlotInfo>(),
             };
 
             var blockIndex = roundData.StartBlockIndex + 1;
@@ -790,7 +802,7 @@ namespace Lib9c.Tests.Action
                 beforeInfo.BuyTicket(roundData.MaxPurchaseCount);
             }
 
-            var action = new BattleArena6
+            var action = new BattleArena
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -799,6 +811,7 @@ namespace Lib9c.Tests.Action
                 ticket = 1,
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
+                runeInfos = new List<RuneSlotInfo>(),
             };
 
             var blockIndex = roundData.StartBlockIndex + 1;
@@ -912,7 +925,7 @@ namespace Lib9c.Tests.Action
                 }
             }
 
-            var action = new BattleArena6
+            var action = new BattleArena
             {
                 myAvatarAddress = myAvatarAddress,
                 enemyAvatarAddress = enemyAvatarAddress,
@@ -921,6 +934,7 @@ namespace Lib9c.Tests.Action
                 ticket = ticket,
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
+                runeInfos = new List<RuneSlotInfo>(),
             };
 
             var myScoreAdr = ArenaScore.DeriveAddress(

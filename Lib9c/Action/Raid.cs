@@ -11,6 +11,7 @@ using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.EnumType;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.Rune;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -20,7 +21,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1434
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1495
     /// </summary>
     [Serializable]
     [ActionType("raid3")]
@@ -228,9 +229,45 @@ namespace Nekoyume.Action
             simulator.Simulate();
             avatarState.inventory = simulator.Player.Inventory;
 
+            var costumeList = new List<Costume>();
+            foreach (var guid in CostumeIds)
+            {
+                var costume = avatarState.inventory.Costumes.FirstOrDefault(x => x.ItemId == guid);
+                if (costume != null)
+                {
+                    costumeList.Add(costume);
+                }
+            }
+
+            var runeOptionSheet = sheets.GetSheet<RuneOptionSheet>();
+            var runeOptions = new List<RuneOptionSheet.Row.RuneOptionInfo>();
+            foreach (var info in RuneInfos)
+            {
+                if (!runeOptionSheet.TryGetValue(info.RuneId, out var optionRow))
+                {
+                    throw new SheetRowNotFoundException("RuneOptionSheet", info.RuneId);
+                }
+
+                if (!optionRow.LevelOptionMap.TryGetValue(info.Level, out var option))
+                {
+                    throw new SheetRowNotFoundException("RuneOptionSheet", info.Level);
+                }
+
+                runeOptions.Add(option);
+            }
+
+            var characterSheet = sheets.GetSheet<CharacterSheet>();
+            if (!characterSheet.TryGetValue(avatarState.characterId, out var characterRow))
+            {
+                throw new SheetRowNotFoundException("CharacterSheet", avatarState.characterId);
+            }
+
+            var costumeStatSheet = sheets.GetSheet<CostumeStatSheet>();
+            var cp = CPHelper.TotalCP(
+                equipmentList, costumeList,
+                runeOptions, avatarState.level,
+                characterRow, costumeStatSheet);
             int score = simulator.DamageDealt;
-            int cp = CPHelper.GetCPV2(avatarState, sheets.GetSheet<CharacterSheet>(),
-                sheets.GetSheet<CostumeStatSheet>());
             raiderState.Update(avatarState, cp, score, PayNcg, context.BlockIndex);
 
             // Reward.

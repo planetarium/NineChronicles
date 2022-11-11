@@ -416,6 +416,7 @@ namespace Lib9c.Tests.Action
                     .ToList(),
                 Costumes = new List<Guid>(),
                 Foods = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>(),
                 BuyTicketIfNeeded = buyTicketIfNeeded,
             };
 

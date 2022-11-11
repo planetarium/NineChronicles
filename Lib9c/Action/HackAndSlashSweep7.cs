@@ -17,17 +17,16 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1495
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1374
     /// </summary>
     [Serializable]
-    [ActionType("hack_and_slash_sweep8")]
-    public class HackAndSlashSweep : GameAction
+    [ActionType("hack_and_slash_sweep7")]
+    public class HackAndSlashSweep7 : GameAction
     {
         public const int UsableApStoneCount = 10;
 
         public List<Guid> costumes;
         public List<Guid> equipments;
-        public List<RuneSlotInfo> runeInfos;
         public Address avatarAddress;
         public int apStoneCount;
         public int actionPoint;
@@ -39,7 +38,6 @@ namespace Nekoyume.Action
             {
                 ["costumes"] = new List(costumes.OrderBy(i => i).Select(e => e.Serialize())),
                 ["equipments"] = new List(equipments.OrderBy(i => i).Select(e => e.Serialize())),
-                ["runeInfos"] = runeInfos.OrderBy(x => x.SlotIndex).Select(x=> x.Serialize()).Serialize(),
                 ["avatarAddress"] = avatarAddress.Serialize(),
                 ["apStoneCount"] = apStoneCount.Serialize(),
                 ["actionPoint"] = actionPoint.Serialize(),
@@ -52,7 +50,6 @@ namespace Nekoyume.Action
         {
             costumes = ((List)plainValue["costumes"]).Select(e => e.ToGuid()).ToList();
             equipments = ((List)plainValue["equipments"]).Select(e => e.ToGuid()).ToList();
-            runeInfos = plainValue["runeInfos"].ToList(x => new RuneSlotInfo((List)x));
             avatarAddress = plainValue["avatarAddress"].ToAddress();
             apStoneCount = plainValue["apStoneCount"].ToInteger();
             actionPoint = plainValue["actionPoint"].ToInteger();
@@ -107,8 +104,6 @@ namespace Nekoyume.Action
                     typeof(CostumeStatSheet),
                     typeof(SweepRequiredCPSheet),
                     typeof(StakeActionPointCoefficientSheet),
-                    typeof(RuneListSheet),
-                    typeof(RuneOptionSheet),
                 });
 
             var worldSheet = sheets.GetSheet<WorldSheet>();
@@ -169,44 +164,9 @@ namespace Nekoyume.Action
                     $"{addressesHex}There is no row in SweepRequiredCPSheet: {stageId}");
             }
 
-            var costumeList = new List<Costume>();
-            foreach (var guid in costumes)
-            {
-                var costume = avatarState.inventory.Costumes.FirstOrDefault(x => x.ItemId == guid);
-                if (costume != null)
-                {
-                    costumeList.Add(costume);
-                }
-            }
-
-            var runeOptionSheet = sheets.GetSheet<RuneOptionSheet>();
-            var runeOptions = new List<RuneOptionSheet.Row.RuneOptionInfo>();
-            foreach (var info in runeInfos)
-            {
-                if (!runeOptionSheet.TryGetValue(info.RuneId, out var optionRow))
-                {
-                    throw new SheetRowNotFoundException("RuneOptionSheet", info.RuneId);
-                }
-
-                if (!optionRow.LevelOptionMap.TryGetValue(info.Level, out var option))
-                {
-                    throw new SheetRowNotFoundException("RuneOptionSheet", info.Level);
-                }
-
-                runeOptions.Add(option);
-            }
-
             var characterSheet = sheets.GetSheet<CharacterSheet>();
-            if (!characterSheet.TryGetValue(avatarState.characterId, out var characterRow))
-            {
-                throw new SheetRowNotFoundException("CharacterSheet", avatarState.characterId);
-            }
-
             var costumeStatSheet = sheets.GetSheet<CostumeStatSheet>();
-            var cp = CPHelper.TotalCP(
-                equipmentList, costumeList,
-                runeOptions, avatarState.level,
-                characterRow, costumeStatSheet);
+            var cp = CPHelper.GetCPV2(avatarState, characterSheet, costumeStatSheet);
             if (cp < cpRow.RequiredCP)
             {
                 throw new NotEnoughCombatPointException(

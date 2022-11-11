@@ -22,7 +22,7 @@ namespace Lib9c.Tests.Action
     using Xunit.Abstractions;
     using static Lib9c.SerializeKeys;
 
-    public class JoinArenaTest
+    public class JoinArena2Test
     {
         private readonly Dictionary<string, string> _sheets;
         private readonly TableSheets _tableSheets;
@@ -34,7 +34,7 @@ namespace Lib9c.Tests.Action
         private readonly Currency _currency;
         private IAccountStateDelta _state;
 
-        public JoinArenaTest(ITestOutputHelper outputHelper)
+        public JoinArena2Test(ITestOutputHelper outputHelper)
         {
             _random = new TestRandom();
             _sheets = TableSheetsImporter.ImportSheets();
@@ -210,6 +210,7 @@ namespace Lib9c.Tests.Action
                 round = round,
                 costumes = costumes,
                 equipments = equipments,
+                runeInfos = new List<RuneSlotInfo>(),
                 avatarAddress = _avatarAddress,
             };
 
@@ -267,7 +268,7 @@ namespace Lib9c.Tests.Action
 
             if (!row.TryGetRound(round, out var roundData))
             {
-                throw new RoundNotFoundException($"{nameof(JoinArena)} : {row.ChampionshipId} / {round}");
+                throw new RoundNotFoundException($"{nameof(JoinArena0)} : {row.ChampionshipId} / {round}");
             }
 
             Assert.Equal(0 * _currency, state.GetBalance(_signer, _currency));
@@ -287,6 +288,7 @@ namespace Lib9c.Tests.Action
                 round = 1,
                 costumes = costumes,
                 equipments = equipments,
+                runeInfos = new List<RuneSlotInfo>(),
                 avatarAddress = _avatarAddress,
             };
 
@@ -312,6 +314,7 @@ namespace Lib9c.Tests.Action
                 round = round,
                 costumes = costumes,
                 equipments = equipments,
+                runeInfos = new List<RuneSlotInfo>(),
                 avatarAddress = _avatarAddress,
             };
 
@@ -339,6 +342,7 @@ namespace Lib9c.Tests.Action
                 round = round,
                 costumes = costumes,
                 equipments = equipments,
+                runeInfos = new List<RuneSlotInfo>(),
                 avatarAddress = _avatarAddress,
             };
 
@@ -366,6 +370,7 @@ namespace Lib9c.Tests.Action
                 round = round,
                 costumes = costumes,
                 equipments = equipments,
+                runeInfos = new List<RuneSlotInfo>(),
                 avatarAddress = _avatarAddress,
             };
 
@@ -391,6 +396,7 @@ namespace Lib9c.Tests.Action
                 round = 1,
                 costumes = costumes,
                 equipments = equipments,
+                runeInfos = new List<RuneSlotInfo>(),
                 avatarAddress = _avatarAddress,
             };
 
@@ -432,6 +438,7 @@ namespace Lib9c.Tests.Action
                 round = round,
                 costumes = costumes,
                 equipments = equipments,
+                runeInfos = new List<RuneSlotInfo>(),
                 avatarAddress = _avatarAddress,
             };
 
@@ -464,6 +471,7 @@ namespace Lib9c.Tests.Action
                 round = round,
                 costumes = costumes,
                 equipments = equipments,
+                runeInfos = new List<RuneSlotInfo>(),
                 avatarAddress = _avatarAddress,
             };
 
@@ -485,6 +493,7 @@ namespace Lib9c.Tests.Action
                 round = 1,
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
+                runeInfos = new List<RuneSlotInfo>(),
                 avatarAddress = _avatar2Address,
             };
 
