@@ -245,9 +245,8 @@ namespace Lib9c.Tests.Action
                     _avatarAddress.Derive(LegacyWorldInformationKey),
                     previousAvatarState.worldInformation.Serialize());
 
-            var previousResultMaterialCount =
-                previousAvatarState.inventory.Materials
-                    .Count(e => e.Id == recipeRow.ResultMaterialItemId);
+            var previousResultMaterialCount = previousAvatarState.inventory.Items
+                .Sum(e => e.item.Id == recipeRow.ResultMaterialItemId ? e.count : 0);
             var previousMailCount = previousAvatarState.mailBox.Count;
 
             var action = new EventMaterialItemCrafts
@@ -270,8 +269,8 @@ namespace Lib9c.Tests.Action
             var nextAvatarState = nextStates.GetAvatarStateV2(_avatarAddress);
             Assert.Equal(
                 previousResultMaterialCount + recipeRow.ResultMaterialItemCount,
-                nextAvatarState.inventory.Materials
-                    .Count(e => e.Id == recipeRow.ResultMaterialItemId));
+                nextAvatarState.inventory.Items
+                    .Sum(e => e.item.Id == recipeRow.ResultMaterialItemId ? e.count : 0));
             Assert.Equal(previousMailCount + 1, nextAvatarState.mailBox.Count);
             Assert.IsType<MaterialCraftMail>(nextAvatarState.mailBox.First());
         }
