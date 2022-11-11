@@ -339,7 +339,7 @@ namespace Nekoyume.Action
                 context.Random,
                 avatarState,
                 Foods,
-                new List<RuneSlotInfo>(),
+                RuneInfos,
                 new List<Skill>(),
                 EventDungeonId,
                 EventDungeonStageId,
