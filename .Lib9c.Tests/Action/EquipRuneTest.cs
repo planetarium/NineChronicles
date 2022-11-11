@@ -70,7 +70,7 @@ namespace Lib9c.Tests.Action
                 state = state.SetState(runeStateAddress, runeState.Serialize());
             }
 
-            var runeInfos = new List<RuneSlotInfo> { new RuneSlotInfo(slotIndex, runeId) };
+            var runeInfos = new List<RuneSlotInfo> { new RuneSlotInfo(slotIndex, runeId, 1) };
             var action = new EquipRune()
             {
                 AvatarAddress = avatarAddress,
@@ -150,8 +150,8 @@ namespace Lib9c.Tests.Action
             var state = Init(out var agentAddress, out var avatarAddress, out var blockIndex);
             var runeInfos = new List<RuneSlotInfo>
             {
-                new RuneSlotInfo(0, 1),
-                new RuneSlotInfo(0, 1),
+                new RuneSlotInfo(0, 1, 1),
+                new RuneSlotInfo(0, 1, 1),
             };
             var action = new EquipRune()
             {
@@ -187,7 +187,7 @@ namespace Lib9c.Tests.Action
             {
                 AvatarAddress = avatarAddress,
                 BattleType = BattleType.Adventure,
-                RuneInfos = new List<RuneSlotInfo> { new RuneSlotInfo(0, 1312312) },
+                RuneInfos = new List<RuneSlotInfo> { new RuneSlotInfo(0, 1312312, 1) },
             };
 
             Assert.Throws<RuneListNotFoundException>(() =>
@@ -206,7 +206,7 @@ namespace Lib9c.Tests.Action
             var state = Init(out var agentAddress, out var avatarAddress, out var blockIndex);
             var runeListSheet = state.GetSheet<RuneListSheet>();
             var runeId = runeListSheet.Values.First().Id;
-            var runeInfos = new List<RuneSlotInfo> { new RuneSlotInfo(0, runeId) };
+            var runeInfos = new List<RuneSlotInfo> { new RuneSlotInfo(0, runeId, 1) };
 
             var action = new EquipRune()
             {
@@ -238,7 +238,7 @@ namespace Lib9c.Tests.Action
                 state = state.SetState(runeStateAddress, runeState.Serialize());
             }
 
-            var runeInfos = new List<RuneSlotInfo> { new RuneSlotInfo(99, runeId) };
+            var runeInfos = new List<RuneSlotInfo> { new RuneSlotInfo(99, runeId, 1) };
 
             var action = new EquipRune()
             {
@@ -270,7 +270,7 @@ namespace Lib9c.Tests.Action
                 state = state.SetState(runeStateAddress, runeState.Serialize());
             }
 
-            var runeInfos = new List<RuneSlotInfo> { new RuneSlotInfo(2, runeId) };
+            var runeInfos = new List<RuneSlotInfo> { new RuneSlotInfo(2, runeId, 1) };
 
             var action = new EquipRune()
             {
@@ -302,7 +302,7 @@ namespace Lib9c.Tests.Action
                 state = state.SetState(runeStateAddress, runeState.Serialize());
             }
 
-            var runeInfos = new List<RuneSlotInfo> { new RuneSlotInfo(3, runeId) };
+            var runeInfos = new List<RuneSlotInfo> { new RuneSlotInfo(3, runeId, 1) };
 
             var action = new EquipRune()
             {
@@ -334,7 +334,7 @@ namespace Lib9c.Tests.Action
                 state = state.SetState(runeStateAddress, runeState.Serialize());
             }
 
-            var runeInfos = new List<RuneSlotInfo> { new RuneSlotInfo(0, runeId) };
+            var runeInfos = new List<RuneSlotInfo> { new RuneSlotInfo(0, runeId, 1) };
 
             var action = new EquipRune()
             {

@@ -23,6 +23,7 @@ namespace Nekoyume.Model
         public readonly List<Costume> Costumes;
         public readonly List<Equipment> Equipments;
 
+        [Obsolete("Do not use it")]
         public ArenaPlayerDigest(AvatarState avatarState, ArenaAvatarState arenaAvatarState)
         {
             NameWithHash = avatarState.NameWithHash;
@@ -34,7 +35,24 @@ namespace Nekoyume.Model
 
             Level = avatarState.level;
             Costumes = avatarState.GetNonFungibleItems<Costume>(arenaAvatarState.Costumes);
-            Equipments = avatarState.GetNonFungibleItems<Equipment>(arenaAvatarState.Equipments);;
+            Equipments = avatarState.GetNonFungibleItems<Equipment>(arenaAvatarState.Equipments);
+        }
+
+        public ArenaPlayerDigest(
+            AvatarState avatarState,
+            List<Guid> equipments,
+            List<Guid> costumes)
+        {
+            NameWithHash = avatarState.NameWithHash;
+            CharacterId = avatarState.characterId;
+            HairIndex = avatarState.hair;
+            LensIndex = avatarState.lens;
+            EarIndex = avatarState.ear;
+            TailIndex = avatarState.tail;
+
+            Level = avatarState.level;
+            Costumes = avatarState.GetNonFungibleItems<Costume>(costumes);
+            Equipments = avatarState.GetNonFungibleItems<Equipment>(equipments);
         }
 
         public ArenaPlayerDigest(AvatarState avatarState)

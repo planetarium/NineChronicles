@@ -9,7 +9,9 @@ using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.Exceptions;
 using Nekoyume.Extensions;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Event;
+using Nekoyume.Model.Rune;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -20,7 +22,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1434
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1495
     /// </summary>
     [Serializable]
     [ActionType(ActionTypeText)]
@@ -36,8 +38,8 @@ namespace Nekoyume.Action
         public List<Guid> Equipments;
         public List<Guid> Costumes;
         public List<Guid> Foods;
-        public List<int> Runes;
         public bool BuyTicketIfNeeded;
+        public List<RuneSlotInfo> RuneInfos;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal
         {
@@ -60,11 +62,9 @@ namespace Nekoyume.Action
                         Foods
                             .OrderBy(e => e)
                             .Select(e => e.Serialize())))
-                    .Add(new Bencodex.Types.List(
-                        Runes
-                            .OrderBy(e => e)
-                            .Select(e => e.Serialize())))
-                    .Add(BuyTicketIfNeeded.Serialize());
+                    .Add(BuyTicketIfNeeded.Serialize())
+                    .Add(RuneInfos.OrderBy(x => x.SlotIndex).Select(x => x.Serialize())
+                        .Serialize());
 
                 return new Dictionary<string, IValue>
                 {
@@ -98,8 +98,8 @@ namespace Nekoyume.Action
             Equipments = ((List)list[4]).ToList(StateExtensions.ToGuid);
             Costumes = ((List)list[5]).ToList(StateExtensions.ToGuid);
             Foods = ((List)list[6]).ToList(StateExtensions.ToGuid);
-            Runes = ((List)list[7]).ToList(StateExtensions.ToInteger);
-            BuyTicketIfNeeded = list[8].ToBoolean();
+            BuyTicketIfNeeded = list[7].ToBoolean();
+            RuneInfos = list[8].ToList(x => new RuneSlotInfo((List)x));
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -155,6 +155,7 @@ namespace Nekoyume.Action
                     typeof(EnemySkillSheet),
                     typeof(CostumeStatSheet),
                     typeof(MaterialItemSheet),
+                    typeof(RuneListSheet),
                 });
             sw.Stop();
             Log.Verbose(
@@ -282,17 +283,63 @@ namespace Nekoyume.Action
                 sw.Elapsed);
             // ~Validate avatar's event dungeon info.
 
+            // update rune slot
+            if (RuneInfos is null)
+            {
+                throw new RuneInfosIsEmptyException(
+                    $"[{nameof(EquipRune)}] my avatar address : {AvatarAddress}");
+            }
+
+            if (RuneInfos.GroupBy(x => x.SlotIndex).Count() != RuneInfos.Count)
+            {
+                throw new DuplicatedRuneSlotIndexException(
+                    $"[{nameof(EquipRune)}] my avatar address : {AvatarAddress}");
+            }
+
+            var runeSlotStateAddress = RuneSlotState.DeriveAddress(AvatarAddress, BattleType.Adventure);
+            var runeSlotState = states.TryGetState(runeSlotStateAddress, out List rawRuneSlotState)
+                ? new RuneSlotState(rawRuneSlotState)
+                : new RuneSlotState(BattleType.Adventure);
+
+            if (RuneInfos.Exists(x => x.SlotIndex >= runeSlotState.GetRuneSlot().Count))
+            {
+                throw new SlotNotFoundException(
+                    $"[{nameof(EquipRune)}] my avatar address : {AvatarAddress}");
+            }
+
+            var runeStates = new List<RuneState>();
+            foreach (var address in RuneInfos.Select(info => RuneState.DeriveAddress(AvatarAddress, info.RuneId)))
+            {
+                if (states.TryGetState(address, out List rawRuneState))
+                {
+                    runeStates.Add(new RuneState(rawRuneState));
+                }
+            }
+            var runeListSheet = sheets.GetSheet<RuneListSheet>();
+            runeSlotState.UpdateSlot(RuneInfos, runeStates, runeListSheet);
+            states = states.SetState(runeSlotStateAddress, runeSlotState.Serialize());
+
+            // update item slot
+            var itemSlotStateAddress = ItemSlotState.DeriveAddress(AvatarAddress, BattleType.Adventure);
+            var itemSlotState = states.TryGetState(itemSlotStateAddress, out List rawItemSlotState)
+                ? new ItemSlotState(rawItemSlotState)
+                : new ItemSlotState(BattleType.Adventure);
+            itemSlotState.UpdateEquipment(Equipments);
+            itemSlotState.UpdateCostumes(Costumes);
+            states = states.SetState(itemSlotStateAddress, itemSlotState.Serialize());
+
             // Simulate
             sw.Restart();
             var exp = scheduleRow.GetStageExp(
                 EventDungeonStageId.ToEventDungeonStageNumber(),
                 PlayCount);
             var simulatorSheets = sheets.GetSimulatorSheets();
+
             var simulator = new StageSimulator(
                 context.Random,
                 avatarState,
                 Foods,
-                Runes,
+                RuneInfos,
                 new List<Skill>(),
                 EventDungeonId,
                 EventDungeonStageId,

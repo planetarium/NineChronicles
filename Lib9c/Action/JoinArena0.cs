@@ -10,7 +10,6 @@ using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.EnumType;
-using Nekoyume.Model.Rune;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
@@ -21,15 +20,15 @@ namespace Nekoyume.Action
     /// Introduced at https://github.com/planetarium/lib9c/pull/1495
     /// </summary>
     [Serializable]
-    [ActionType("join_arena2")]
-    public class JoinArena : GameAction
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100340ObsoleteIndex)]
+    [ActionType("join_arena")]
+    public class JoinArena0 : GameAction
     {
         public Address avatarAddress;
         public int championshipId;
         public int round;
         public List<Guid> costumes;
         public List<Guid> equipments;
-        public List<RuneSlotInfo> runeInfos;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>()
@@ -41,7 +40,6 @@ namespace Nekoyume.Action
                     .OrderBy(element => element).Select(e => e.Serialize())),
                 ["equipments"] = new List(equipments
                     .OrderBy(element => element).Select(e => e.Serialize())),
-                ["runeInfos"] = runeInfos.OrderBy(x => x.SlotIndex).Select(x=> x.Serialize()).Serialize(),
             }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(
@@ -52,7 +50,6 @@ namespace Nekoyume.Action
             round = plainValue["round"].ToInteger();
             costumes = ((List)plainValue["costumes"]).Select(e => e.ToGuid()).ToList();
             equipments = ((List)plainValue["equipments"]).Select(e => e.ToGuid()).ToList();
-            runeInfos = plainValue["runeInfos"].ToList(x => new RuneSlotInfo((List)x));
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -63,6 +60,8 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100340ObsoleteIndex, context);
+
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             var started = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}JoinArena exec started", addressesHex);
@@ -71,7 +70,7 @@ namespace Nekoyume.Action
                     out var agentState, out var avatarState, out _))
             {
                 throw new FailedLoadStateException(
-                    $"[{nameof(JoinArena)}] Aborted as the avatar state of the signer failed to load.");
+                    $"[{nameof(JoinArena0)}] Aborted as the avatar state of the signer failed to load.");
             }
 
             if (!avatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
@@ -97,7 +96,6 @@ namespace Nekoyume.Action
                     typeof(EquipmentItemSubRecipeSheetV2),
                     typeof(EquipmentItemOptionSheet),
                     typeof(ArenaSheet),
-                    typeof(RuneListSheet),
                 });
 
             avatarState.ValidEquipmentAndCostume(costumes, equipments,
@@ -106,51 +104,6 @@ namespace Nekoyume.Action
                 sheets.GetSheet<EquipmentItemSubRecipeSheetV2>(),
                 sheets.GetSheet<EquipmentItemOptionSheet>(),
                 context.BlockIndex, addressesHex);
-
-            // update rune slot
-            if (runeInfos is null)
-            {
-                throw new RuneInfosIsEmptyException(
-                    $"[{nameof(EquipRune)}] my avatar address : {avatarAddress}");
-            }
-
-            if (runeInfos.GroupBy(x => x.SlotIndex).Count() != runeInfos.Count)
-            {
-                throw new DuplicatedRuneSlotIndexException(
-                    $"[{nameof(EquipRune)}] my avatar address : {avatarAddress}");
-            }
-
-            var runeSlotStateAddress = RuneSlotState.DeriveAddress(avatarAddress, BattleType.Arena);
-            var runeSlotState = states.TryGetState(runeSlotStateAddress, out List rawRuneSlotState)
-                ? new RuneSlotState(rawRuneSlotState)
-                : new RuneSlotState(BattleType.Arena);
-
-            if (runeInfos.Exists(x => x.SlotIndex >= runeSlotState.GetRuneSlot().Count))
-            {
-                throw new SlotNotFoundException(
-                    $"[{nameof(EquipRune)}] my avatar address : {avatarAddress}");
-            }
-
-            var runeStates = new List<RuneState>();
-            foreach (var address in runeInfos.Select(info => RuneState.DeriveAddress(avatarAddress, info.RuneId)))
-            {
-                if (states.TryGetState(address, out List rawRuneState))
-                {
-                    runeStates.Add(new RuneState(rawRuneState));
-                }
-            }
-            var runeListSheet = sheets.GetSheet<RuneListSheet>();
-            runeSlotState.UpdateSlot(runeInfos, runeStates, runeListSheet);
-            states = states.SetState(runeSlotStateAddress, runeSlotState.Serialize());
-
-            // update item slot
-            var itemSlotStateAddress = ItemSlotState.DeriveAddress(avatarAddress, BattleType.Arena);
-            var itemSlotState = states.TryGetState(itemSlotStateAddress, out List rawItemSlotState)
-                ? new ItemSlotState(rawItemSlotState)
-                : new ItemSlotState(BattleType.Arena);
-            itemSlotState.UpdateEquipment(equipments);
-            itemSlotState.UpdateCostumes(costumes);
-            states = states.SetState(itemSlotStateAddress, itemSlotState.Serialize());
 
             var sheet = sheets.GetSheet<ArenaSheet>();
             if (!sheet.TryGetValue(championshipId, out var row))
@@ -162,7 +115,7 @@ namespace Nekoyume.Action
             if (!row.TryGetRound(round, out var roundData))
             {
                 throw new RoundNotFoundException(
-                    $"[{nameof(JoinArena)}] ChampionshipId({row.ChampionshipId}) - round({round})");
+                    $"[{nameof(JoinArena0)}] ChampionshipId({row.ChampionshipId}) - round({round})");
             }
 
             // check fee
@@ -188,7 +141,7 @@ namespace Nekoyume.Action
                 if (medalCount < roundData.RequiredMedalCount)
                 {
                     throw new NotEnoughMedalException(
-                        $"[{nameof(JoinArena)}] have({medalCount}) < Required Medal Count({roundData.RequiredMedalCount}) ");
+                        $"[{nameof(JoinArena0)}] have({medalCount}) < Required Medal Count({roundData.RequiredMedalCount}) ");
                 }
             }
 
@@ -198,7 +151,7 @@ namespace Nekoyume.Action
             if (states.TryGetState(arenaScoreAdr, out List _))
             {
                 throw new ArenaScoreAlreadyContainsException(
-                    $"[{nameof(JoinArena)}] id({roundData.ChampionshipId}) / round({roundData.Round})");
+                    $"[{nameof(JoinArena0)}] id({roundData.ChampionshipId}) / round({roundData.Round})");
             }
 
             var arenaScore = new ArenaScore(avatarAddress, roundData.ChampionshipId, roundData.Round);
@@ -209,7 +162,7 @@ namespace Nekoyume.Action
             if (states.TryGetState(arenaInformationAdr, out List _))
             {
                 throw new ArenaInformationAlreadyContainsException(
-                    $"[{nameof(JoinArena)}] id({roundData.ChampionshipId}) / round({roundData.Round})");
+                    $"[{nameof(JoinArena0)}] id({roundData.ChampionshipId}) / round({roundData.Round})");
             }
 
             var arenaInformation =

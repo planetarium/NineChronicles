@@ -19,7 +19,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static SerializeKeys;
 
-    public class Raid2Test
+    public class Raid3Test
     {
         private readonly Dictionary<string, string> _sheets;
         private readonly Address _agentAddress;
@@ -27,7 +27,7 @@ namespace Lib9c.Tests.Action
         private readonly TableSheets _tableSheets;
         private readonly Currency _goldCurrency;
 
-        public Raid2Test()
+        public Raid3Test()
         {
             _sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(_sheets);
@@ -91,12 +91,13 @@ namespace Lib9c.Tests.Action
                 .First()
                 .StartedBlockIndex;
 
-            var action = new Raid1
+            var action = new Raid
             {
                 AvatarAddress = _avatarAddress,
                 EquipmentIds = new List<Guid>(),
                 CostumeIds = new List<Guid>(),
                 FoodIds = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>(),
                 PayNcg = payNcg,
             };
             Currency crystal = CrystalCalculator.CRYSTAL;
@@ -373,12 +374,13 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_With_Reward()
         {
-            var action = new Raid1
+            var action = new Raid
             {
                 AvatarAddress = _avatarAddress,
                 EquipmentIds = new List<Guid>(),
                 CostumeIds = new List<Guid>(),
                 FoodIds = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>(),
                 PayNcg = false,
             };
             long blockIndex = 5055201L;
