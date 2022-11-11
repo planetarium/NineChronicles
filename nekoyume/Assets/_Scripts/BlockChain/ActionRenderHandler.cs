@@ -152,7 +152,10 @@ namespace Nekoyume.BlockChain
             // World Boss
             Raid();
             ClaimRaidReward();
+
+            // Rune
             RuneEnhancement();
+            UnlockRuneSlot();
         }
 
         public void Stop()
@@ -451,6 +454,15 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRuneEnhancement)
+                .AddTo(_disposables);
+        }
+
+        private void UnlockRuneSlot()
+        {
+            _actionRenderer.EveryRender<UnlockRuneSlot>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseUnlockRuneSlotAsync)
                 .AddTo(_disposables);
         }
 
@@ -2195,6 +2207,22 @@ namespace Nekoyume.BlockChain
 
             UpdateCrystalBalance(eval);
             UpdateAgentStateAsync(eval).Forget();
+        }
+
+        private async void ResponseUnlockRuneSlotAsync(ActionBase.ActionEvaluation<UnlockRuneSlot> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                return;
+            }
+
+            LoadingHelper.UnlockRuneSlot.Remove(eval.Action.SlotIndex);
+            await States.Instance.InitRuneSlotStates();
+            UpdateAgentStateAsync(eval).Forget();
+            NotificationSystem.Push(
+                MailType.Workshop,
+                L10nManager.Localize("UI_MESSAGE_RUNE_SLOT_OPEN"),
+                NotificationCell.NotificationType.Notification);
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
+using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -203,28 +204,68 @@ namespace Nekoyume.UI.Module
 
         private void OnClickRuneSlot(RuneSlotView slot)
         {
-            if (slot.RuneSlot.IsEquipped(out var runeState))
+            if (slot.RuneSlot.IsLock)
             {
-                if (!inventory.TryGetModel(runeState.RuneId, out var item))
-                {
-                    return;
-                }
-
-                if (_pickedItem != null)
-                {
-                    UnequipRune(item);
-                    EquipRune(_pickedItem);
-                    _pickedItem = null;
-                }
-                else
-                {
-                    ShowRuneTooltip(item, slot.RectTransform, new float2(-50, 0));
-                }
+                var cost = slot.RuneType == RuneType.Stat
+                    ? States.Instance.GameConfigState.RuneStatSlotUnlockCost
+                    : States.Instance.GameConfigState.RuneSkillSlotUnlockCost;
+                var ncgHas = States.Instance.GoldBalanceState.Gold;
+                var enough = ncgHas.MajorUnit >= cost;
+                var content = enough
+                    ? L10nManager.Localize("UI_RUNE_SLOT_OPEN")
+                    : L10nManager.Localize("UI_NOT_ENOUGH_NCG_WITH_SUPPLIER_INFO");
+                var attractMessage = enough
+                    ? L10nManager.Localize("UI_YES")
+                    : L10nManager.Localize("UI_GO_TO_MARKET");
+                Widget.Find<PaymentPopup>().ShowAttract(
+                    CostType.NCG,
+                    cost,
+                    content,
+                    attractMessage,
+                    () =>
+                    {
+                        if (enough)
+                        {
+                            ActionManager.Instance.UnlockRuneSlot(slot.RuneSlot.Index);
+                        }
+                        else
+                        {
+                            GoToMarket();
+                        }
+                    });
             }
             else
             {
-                inventory.Focus(slot.RuneType, Game.Game.instance.TableSheets.RuneListSheet);
+                if (slot.RuneSlot.IsEquipped(out var runeState))
+                {
+                    if (!inventory.TryGetModel(runeState.RuneId, out var item))
+                    {
+                        return;
+                    }
+
+                    if (_pickedItem != null)
+                    {
+                        UnequipRune(item);
+                        EquipRune(_pickedItem);
+                        _pickedItem = null;
+                    }
+                    else
+                    {
+                        ShowRuneTooltip(item, slot.RectTransform, new float2(-50, 0));
+                    }
+                }
+                else
+                {
+                    inventory.Focus(slot.RuneType, Game.Game.instance.TableSheets.RuneListSheet);
+                }
             }
+        }
+
+        private void GoToMarket()
+        {
+            Widget.Find<AvatarInfoPopup>().CloseWithOtherWidgets();
+            Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+            Widget.Find<ShopSell>().Show(true);
         }
 
         private void OnDoubleClickRuneSlot(RuneSlotView slot)

@@ -15,6 +15,7 @@ using Nekoyume.State;
 using Nekoyume.ActionExtensions;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
@@ -1195,6 +1196,29 @@ namespace Nekoyume.BlockChain
                 });
         }
 
+        public IObservable<ActionBase.ActionEvaluation<UnlockRuneSlot>> UnlockRuneSlot(
+            int slotIndex)
+        {
+            var action = new UnlockRuneSlot
+            {
+                AvatarAddress = States.Instance.CurrentAvatarState.address,
+                SlotIndex = slotIndex,
+            };
+
+            LoadingHelper.UnlockRuneSlot.Add(slotIndex);
+            ProcessAction(action);
+            _lastBattleActionId = action.Id;
+            return _agent.ActionRenderer.EveryRender<UnlockRuneSlot>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e =>
+                {
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
+                });
+        }
+
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
         public IObservable<ActionBase.ActionEvaluation<CreateTestbed>> CreateTestbed()
         {
@@ -1214,7 +1238,6 @@ namespace Nekoyume.BlockChain
                     Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
                 });
         }
-
 
         public IObservable<ActionBase.ActionEvaluation<CreateArenaDummy>> CreateArenaDummy(
             List<Guid> costumes,
