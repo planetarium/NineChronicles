@@ -282,6 +282,7 @@ namespace Lib9c.Tests.Action
                     Equipments = new List<Guid>(),
                     Costumes = new List<Guid>(),
                     Foods = new List<Guid>(),
+                    RuneInfos = new List<RuneSlotInfo>(),
                 },
                 EventConsumableItemCrafts _ => new EventConsumableItemCrafts
                 {
@@ -296,6 +297,7 @@ namespace Lib9c.Tests.Action
                     CostumeIds = new List<Guid>(),
                     EquipmentIds = new List<Guid>(),
                     FoodIds = new List<Guid>(),
+                    RuneInfos = new List<RuneSlotInfo>(),
                     PayNcg = true,
                 },
                 ClaimRaidReward _ => new ClaimRaidReward(_sender),
