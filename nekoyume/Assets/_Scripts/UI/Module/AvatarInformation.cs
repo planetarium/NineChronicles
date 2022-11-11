@@ -135,7 +135,7 @@ namespace Nekoyume.UI.Module
         public void UpdateView(BattleType battleType)
         {
             _battleType = battleType;
-            var prevCp = GetCp();
+            var prevCp = Util.TotalCP(battleType);
             UpdateRuneView();
             UpdateItemView();
             UpdateStat(prevCp);
@@ -146,8 +146,8 @@ namespace Nekoyume.UI.Module
         {
             var states = States.Instance.RuneSlotStates[_battleType].GetRuneSlot();
             var equippedRuneState = States.Instance.GetEquippedRuneStates(_battleType);
-
-            inventory.UpdateRunes(equippedRuneState);
+            var sheet = Game.Game.instance.TableSheets.RuneListSheet;
+            inventory.UpdateRunes(equippedRuneState, _battleType, sheet);
             runeSlots.Set(states, OnClickRuneSlot, OnDoubleClickRuneSlot);
         }
 
@@ -505,6 +505,11 @@ namespace Nekoyume.UI.Module
 
         private void EquipRune(InventoryItem inventoryItem)
         {
+            if (inventoryItem.DimObjectEnabled.Value)
+            {
+                return;
+            }
+
             var states = States.Instance.RuneSlotStates[_battleType].GetRuneSlot();
             var sheet = Game.Game.instance.TableSheets.RuneListSheet;
             if (!sheet.TryGetValue(inventoryItem.RuneState.RuneId, out var row))
@@ -606,10 +611,11 @@ namespace Nekoyume.UI.Module
 
         private void ShowRuneTooltip(InventoryItem model, RectTransform target, float2 offset)
         {
-            Widget.Find<RuneTooltip>().Show(
+            Widget.Find<RuneTooltip>().
+                Show(
                 model,
                 L10nManager.Localize(model.Equipped.Value ? "UI_UNEQUIP" : "UI_EQUIP"),
-                true,
+                !model.DimObjectEnabled.Value,
                 () => EquipOrUnequip(model),
                 () =>
                 {
@@ -741,7 +747,7 @@ namespace Nekoyume.UI.Module
 
         private void EquipOrUnequip(InventoryItem inventoryItem)
         {
-            var prevCp = GetCp();
+            var prevCp = Util.TotalCP(_battleType);
             if (inventoryItem.RuneState != null)
             {
                 if (inventoryItem.Equipped.Value)
@@ -767,24 +773,6 @@ namespace Nekoyume.UI.Module
 
             UpdateStat(prevCp);
             _onUpdate?.Invoke();
-        }
-
-        private int GetCp()
-        {
-            var avatarState = Game.Game.instance.States.CurrentAvatarState;
-            var level = avatarState.level;
-            var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
-            if (!characterSheet.TryGetValue(avatarState.characterId, out var row))
-            {
-                throw new SheetRowNotFoundException("CharacterSheet", avatarState.characterId);
-            }
-
-            var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
-            var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
-            var runeSlotState = States.Instance.RuneSlotStates[_battleType];
-            var (equipments, costumes) = States.Instance.GetEquippedItems(_battleType);
-            var runeOptionInfos = runeSlotState.GetEquippedRuneOptions(runeOptionSheet);
-            return CPHelper.TotalCP(equipments, costumes, runeOptionInfos, level, row, costumeSheet);
         }
 
         private void UpdateStat(int previousCp)
@@ -831,7 +819,7 @@ namespace Nekoyume.UI.Module
             }
 
             stats.SetData(characterStats);
-            cp.PlayAnimation(previousCp, GetCp());
+            cp.PlayAnimation(previousCp, Util.TotalCP(_battleType));
             Widget.Find<HeaderMenuStatic>().UpdateInventoryNotification(inventory.HasNotification());
         }
 

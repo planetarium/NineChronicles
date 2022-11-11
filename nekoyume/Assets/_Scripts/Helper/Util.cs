@@ -7,12 +7,15 @@ using System.Threading.Tasks;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
+using Nekoyume.Battle;
 using Nekoyume.Extensions;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Factory;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using UnityEngine;
 using Inventory = Nekoyume.Model.Item.Inventory;
@@ -311,6 +314,24 @@ namespace Nekoyume.Helper
             }
 
             return false;
+        }
+
+        public static int TotalCP(BattleType battleType)
+        {
+            var avatarState = Game.Game.instance.States.CurrentAvatarState;
+            var level = avatarState.level;
+            var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
+            if (!characterSheet.TryGetValue(avatarState.characterId, out var row))
+            {
+                throw new SheetRowNotFoundException("CharacterSheet", avatarState.characterId);
+            }
+
+            var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+            var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
+            var runeSlotState = States.Instance.RuneSlotStates[battleType];
+            var (equipments, costumes) = States.Instance.GetEquippedItems(battleType);
+            var runeOptionInfos = runeSlotState.GetEquippedRuneOptions(runeOptionSheet);
+            return CPHelper.TotalCP(equipments, costumes, runeOptionInfos, level, row, costumeSheet);
         }
     }
 }

@@ -722,7 +722,9 @@ namespace Nekoyume.UI
 
         private IEnumerator SendBattleActionAsync(int stageIdOffset)
         {
-            var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Adventure);
+            var itemSlotState = States.Instance.ItemSlotStates[BattleType.Adventure];
+            var costumes = itemSlotState.Costumes;
+            var equipments = itemSlotState.Equipments;
             var runeSlotInfos = States.Instance.RuneSlotStates[BattleType.Adventure].GetEquippedRuneSlotInfos();
             yield return SharedModel.StageType switch
             {

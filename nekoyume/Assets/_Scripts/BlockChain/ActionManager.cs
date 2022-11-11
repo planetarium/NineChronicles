@@ -162,8 +162,8 @@ namespace Nekoyume.BlockChain
         }
 
         public IObservable<ActionBase.ActionEvaluation<MimisbrunnrBattle>> MimisbrunnrBattle(
-            List<Costume> costumes,
-            List<Equipment> equipments,
+            List<Guid> costumes,
+            List<Guid> equipments,
             List<Consumable> foods,
             List<RuneSlotInfo> runeInfos,
             int worldId,
@@ -171,15 +171,15 @@ namespace Nekoyume.BlockChain
             int playCount)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            costumes ??= new List<Costume>();
-            equipments ??= new List<Equipment>();
+            costumes ??= new List<Guid>();
+            equipments ??= new List<Guid>();
             foods ??= new List<Consumable>();
             runeInfos ??= new List<RuneSlotInfo>();
 
             var action = new MimisbrunnrBattle
             {
-                Costumes = costumes.Select(e => e.ItemId).ToList(),
-                Equipments = equipments.Select(e => e.ItemId).ToList(),
+                Costumes = costumes,
+                Equipments = equipments,
                 Foods = foods.Select(f => f.ItemId).ToList(),
                 RuneInfos = runeInfos,
                 WorldId = worldId,
@@ -209,8 +209,8 @@ namespace Nekoyume.BlockChain
         }
 
         public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
-            List<Costume> costumes,
-            List<Equipment> equipments,
+            List<Guid> costumes,
+            List<Guid> equipments,
             List<Consumable> foods,
             List<RuneSlotInfo> runeInfos,
             int worldId,
@@ -239,14 +239,14 @@ namespace Nekoyume.BlockChain
             }, true);
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            costumes ??= new List<Costume>();
-            equipments ??= new List<Equipment>();
+            costumes ??= new List<Guid>();
+            equipments ??= new List<Guid>();
             foods ??= new List<Consumable>();
 
             var action = new HackAndSlash
             {
-                Costumes = costumes.Select(c => c.ItemId).ToList(),
-                Equipments = equipments.Select(e => e.ItemId).ToList(),
+                Costumes = costumes,
+                Equipments = equipments,
                 Foods = foods.Select(f => f.ItemId).ToList(),
                 RuneInfos = runeInfos,
                 WorldId = worldId,
@@ -280,8 +280,8 @@ namespace Nekoyume.BlockChain
             int eventScheduleId,
             int eventDungeonId,
             int eventDungeonStageId,
-            List<Equipment> equipments,
-            List<Costume> costumes,
+            List<Guid> equipments,
+            List<Guid> costumes,
             List<Consumable> foods,
             List<RuneSlotInfo> runeInfos,
             bool buyTicketIfNeeded,
@@ -324,8 +324,8 @@ namespace Nekoyume.BlockChain
             }, true);
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            costumes ??= new List<Costume>();
-            equipments ??= new List<Equipment>();
+            costumes ??= new List<Guid>();
+            equipments ??= new List<Guid>();
             foods ??= new List<Consumable>();
 
             var action = new EventDungeonBattle
@@ -334,8 +334,8 @@ namespace Nekoyume.BlockChain
                 EventScheduleId = eventScheduleId,
                 EventDungeonId = eventDungeonId,
                 EventDungeonStageId = eventDungeonStageId,
-                Equipments = equipments.Select(e => e.ItemId).ToList(),
-                Costumes = costumes.Select(c => c.ItemId).ToList(),
+                Equipments = equipments,
+                Costumes = costumes,
                 Foods = foods.Select(f => f.ItemId).ToList(),
                 BuyTicketIfNeeded = buyTicketIfNeeded,
                 RuneInfos = runeInfos,
@@ -494,6 +494,7 @@ namespace Nekoyume.BlockChain
         public IObservable<ActionBase.ActionEvaluation<HackAndSlashSweep>> HackAndSlashSweep(
             List<Guid> costumes,
             List<Guid> equipments,
+            List<RuneSlotInfo> runeInfos,
             int apStoneCount,
             int actionPoint,
             int worldId,
@@ -504,6 +505,7 @@ namespace Nekoyume.BlockChain
             {
                 costumes = costumes,
                 equipments = equipments,
+                runeInfos = runeInfos,
                 avatarAddress = avatarAddress,
                 apStoneCount = apStoneCount,
                 actionPoint = actionPoint,
@@ -766,6 +768,7 @@ namespace Nekoyume.BlockChain
         public IObservable<ActionBase.ActionEvaluation<JoinArena>> JoinArena(
             List<Guid> costumes,
             List<Guid> equipments,
+            List<RuneSlotInfo> runeInfos,
             int championshipId,
             int round
         )
@@ -775,6 +778,7 @@ namespace Nekoyume.BlockChain
                 avatarAddress = States.Instance.CurrentAvatarState.address,
                 costumes = costumes,
                 equipments = equipments,
+                runeInfos = runeInfos,
                 championshipId = championshipId,
                 round = round,
             };
@@ -797,6 +801,7 @@ namespace Nekoyume.BlockChain
             Address enemyAvatarAddress,
             List<Guid> costumes,
             List<Guid> equipments,
+            List<RuneSlotInfo> runeInfos,
             int championshipId,
             int round,
             int ticket
@@ -808,6 +813,7 @@ namespace Nekoyume.BlockChain
                 enemyAvatarAddress = enemyAvatarAddress,
                 costumes = costumes,
                 equipments = equipments,
+                runeInfos = runeInfos,
                 championshipId = championshipId,
                 round = round,
                 ticket = ticket,
@@ -1131,8 +1137,8 @@ namespace Nekoyume.BlockChain
             var action = new Raid
             {
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
-                EquipmentIds = equipments,
                 CostumeIds = costumes,
+                EquipmentIds = equipments,
                 FoodIds = foods,
                 RuneInfos = runeInfos,
                 PayNcg = payNcg,

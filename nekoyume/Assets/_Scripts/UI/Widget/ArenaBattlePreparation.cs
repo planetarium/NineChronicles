@@ -287,13 +287,16 @@ namespace Nekoyume.UI
             var runes = States.Instance.GetEquippedRuneStates(BattleType.Arena)
                 .Select(x=> x.RuneId).ToList();
 
-            var equipments = States.Instance.ItemSlotStates[BattleType.Arena].Equipments;
             var costumes = States.Instance.ItemSlotStates[BattleType.Arena].Costumes;
+            var equipments = States.Instance.ItemSlotStates[BattleType.Arena].Equipments;
+            var runeInfos = States.Instance.RuneSlotStates[BattleType.Arena]
+                .GetEquippedRuneSlotInfos();
             ActionRenderHandler.Instance.Pending = true;
             ActionManager.Instance.BattleArena(
                     _chooseAvatarState.address,
-                    equipments,
                     costumes,
+                    equipments,
+                    runeInfos,
                     _roundData.ChampionshipId,
                     _roundData.Round,
                     _ticketCountToUse)

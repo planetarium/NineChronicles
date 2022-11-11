@@ -120,10 +120,6 @@ namespace Nekoyume.UI
             var equipments = _equipments[battleType];
             var costumes = _costumes[battleType];
             var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
-            // var runes = _runes.ContainsKey(battleType)
-            //     ? _runes[battleType].GetEquippedRuneStatInfos(runeOptionSheet)
-            //     : new List<RuneOptionSheet.Row.RuneOptionInfo>();
-
             var runes = _runes[battleType].GetEquippedRuneOptions(runeOptionSheet);
             var cp = CPHelper.TotalCP(equipments, costumes, runes, level, row, costumeSheet);
             cpText.text = $"{cp}";

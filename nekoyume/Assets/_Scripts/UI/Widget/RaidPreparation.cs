@@ -351,10 +351,8 @@ namespace Nekoyume.UI
         private void Raid(bool payNcg)
         {
             var itemSlotState = States.Instance.ItemSlotStates[BattleType.Raid];
-            var equipments = itemSlotState.Equipments;
             var costumes = itemSlotState.Costumes;
-            var runes = States.Instance.GetEquippedRuneStates(BattleType.Raid)
-                .Select(x=> x.RuneId).ToList();
+            var equipments = itemSlotState.Equipments;
             var consumables = information.GetEquippedConsumables().Select(x => x.ItemId).ToList();
             var runeInfos = States.Instance.RuneSlotStates[BattleType.Raid]
                 .GetEquippedRuneSlotInfos();

@@ -25,7 +25,6 @@ namespace Nekoyume.State
             public readonly int Rank;
             public readonly AvatarState AvatarState;
             public readonly (int win, int lose) ExpectDeltaScore;
-
             public readonly int CP;
 
             public ArenaParticipant(
@@ -397,6 +396,7 @@ namespace Nekoyume.State
                     stateBulk[ArenaAvatarState.DeriveAddress(avatarAddr)] is List arenaAvatarList
                         ? new ArenaAvatarState(arenaAvatarList)
                         : null;
+                // todo :여기서 수정해야함
                 avatar = avatar.ApplyToInventory(arenaAvatar);
                 var (win, lose, _) =
                     ArenaHelper.GetScores(playerScore, score);

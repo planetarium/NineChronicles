@@ -585,12 +585,20 @@ namespace Nekoyume.UI.Module
             ClearFocus();
         }
 
-        public void UpdateRunes(List<RuneState> runeStates)
+        public void UpdateRunes(List<RuneState> runeStates, BattleType battleType, RuneListSheet sheet)
         {
             foreach (var rune in _runes)
             {
                 var equipped = runeStates.Exists(x => x.RuneId == rune.RuneState.RuneId);
                 rune.Equipped.SetValueAndForceNotify(equipped);
+
+                if (!sheet.TryGetValue(rune.RuneState.RuneId, out var row))
+                {
+                    continue;
+                }
+
+                var equippable = battleType.IsEquippableRune((RuneUsePlace)row.UsePlace);
+                rune.DimObjectEnabled.SetValueAndForceNotify(!equippable);
             }
         }
 
