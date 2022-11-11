@@ -86,7 +86,7 @@ namespace Nekoyume.Action
                 throw new ArgumentException("'l' must be a bencodex list");
             }
 
-            if (list.Count < 8)
+            if (list.Count < 9)
             {
                 throw new ArgumentException("'l' must contain at least 9 items");
             }
