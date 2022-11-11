@@ -87,18 +87,18 @@ namespace Nekoyume.Extensions
                         pair.Key);
                 }
 
-                if (recipeRow.MaterialsId.Contains(pair.Key))
+                if (recipeRow.RequiredMaterialsId.Contains(pair.Key))
                 {
                     materialsCount += pair.Value;
                 }
             }
 
-            if (recipeRow.MaterialsCount != materialsCount)
+            if (recipeRow.RequiredMaterialsCount != materialsCount)
             {
                 throw new InvalidMaterialCountException(
                     actionTypeText,
                     addressesHex,
-                    recipeRow.MaterialsCount,
+                    recipeRow.RequiredMaterialsCount,
                     materialsCount);
             }
         }

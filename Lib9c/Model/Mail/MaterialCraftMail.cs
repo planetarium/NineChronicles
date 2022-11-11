@@ -11,24 +11,24 @@ namespace Nekoyume.Model.Mail
     public class MaterialCraftMail : Mail
     {
         public int ItemCount;
-        public Material Material;
+        public int ItemId;
 
         public MaterialCraftMail(
             long blockIndex,
             Guid id,
             long requiredBlockIndex,
             int itemCount,
-            Material material
+            int itemId
         ) : base(blockIndex, id, requiredBlockIndex)
         {
             ItemCount = itemCount;
-            Material = material;
+            ItemId = itemId;
         }
 
         public MaterialCraftMail(Dictionary serialized) : base(serialized)
         {
             ItemCount = serialized["ic"].ToInteger();
-            Material = (Material)ItemFactory.Deserialize((Dictionary)serialized["m"]);
+            ItemId = serialized["iid"].ToInteger();
         }
 
         public override void Read(IMail mail)
@@ -44,7 +44,7 @@ namespace Nekoyume.Model.Mail
             new Dictionary(new Dictionary<IKey, IValue>
             {
                 [(Text)"ic"] = ItemCount.Serialize(),
-                [(Text)"m"] = Material.Serialize(),
+                [(Text)"iid"] = ItemId.Serialize(),
             }.Union((Dictionary)base.Serialize()));
 #pragma warning restore LAA1002
 

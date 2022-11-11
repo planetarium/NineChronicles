@@ -14,22 +14,24 @@ namespace Nekoyume.TableData.Event
             public int Id { get; private set; }
             public int ResultMaterialItemId { get; private set; }
             public int ResultMaterialItemCount { get; private set; }
-            public int MaterialsCount { get; private set; }
-            public List<int> MaterialsId { get; private set; }
+            public int RequiredMaterialsCount { get; private set; }
+            public List<int> RequiredMaterialsId { get; private set; }
             public override void Set(IReadOnlyList<string> fields)
             {
                 Id = ParseInt(fields[0]);
                 ResultMaterialItemId = ParseInt(fields[1]);
                 ResultMaterialItemCount = ParseInt(fields[2]);
-                MaterialsCount = ParseInt(fields[3]);
-                MaterialsId = new List<int>();
-                for (int i = 0; i < 12; i++)
+                RequiredMaterialsCount = ParseInt(fields[3]);
+                RequiredMaterialsId = new List<int>();
+                const int maxCountOfMaterialTypes = 12;
+                const int offset = 4;
+                for (int i = 0; i < maxCountOfMaterialTypes ; i++)
                 {
-                    var id = fields[4 + i];
+                    var id = fields[offset + i];
                     if (string.IsNullOrEmpty(id))
                         continue;
 
-                    MaterialsId.Add(ParseInt(id));
+                    RequiredMaterialsId.Add(ParseInt(id));
                 }
             }
         }

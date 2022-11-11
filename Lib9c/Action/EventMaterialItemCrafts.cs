@@ -229,7 +229,7 @@ namespace Nekoyume.Action
                 Id,
                 context.BlockIndex,
                 recipeRow.ResultMaterialItemCount,
-                materialResult);
+                materialResult.Id);
             avatarState.Update(mail);
             // ~Create Mail
 
