@@ -92,6 +92,8 @@ namespace Nekoyume.BlockChain.Policy
         // V100311: ArenaSheet-2,6,Championship,5398001(start arena block index)
         public const long V100320ObsoleteIndex = 5_398_001;
 
+        public const long V100340ObsoleteIndex = 6_000_000;
+
         public const long PermissionedMiningStartIndex = 2_225_500;
 
         public const long V100301ExecutedBlockIndex = 5_048_399L;

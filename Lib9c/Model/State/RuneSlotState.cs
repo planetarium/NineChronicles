@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
@@ -23,10 +22,10 @@ namespace Nekoyume.Model.State
         {
             BattleType = battleType;
             _slots.Add(new RuneSlot(0, RuneSlotType.Default, RuneType.Stat, false));
-            _slots.Add(new RuneSlot(1, RuneSlotType.Default, RuneType.Skill, false));
-            _slots.Add(new RuneSlot(2, RuneSlotType.Ncg, RuneType.Stat, true));
-            _slots.Add(new RuneSlot(3, RuneSlotType.Ncg, RuneType.Skill, true));
-            _slots.Add(new RuneSlot(4, RuneSlotType.Stake, RuneType.Stat, true));
+            _slots.Add(new RuneSlot(1, RuneSlotType.Ncg, RuneType.Stat, true));
+            _slots.Add(new RuneSlot(2, RuneSlotType.Stake, RuneType.Stat, true));
+            _slots.Add(new RuneSlot(3, RuneSlotType.Default, RuneType.Skill, false));
+            _slots.Add(new RuneSlot(4, RuneSlotType.Ncg, RuneType.Skill, true));
             _slots.Add(new RuneSlot(5, RuneSlotType.Stake, RuneType.Skill,true));
         }
 
@@ -133,9 +132,58 @@ namespace Nekoyume.Model.State
             slot.Unlock();
         }
 
-        public Dictionary<int, RuneSlot> GetRuneSlot()
+        public List<RuneSlot> GetRuneSlot()
         {
-            return _slots.ToDictionary(runeSlot => runeSlot.Index);
+            return _slots;
+        }
+
+        public List<RuneState> GetEquippedRuneStates()
+        {
+            var result = new List<RuneState>();
+            foreach (var slot in _slots.Where(slot => !slot.IsLock))
+            {
+                if (slot.IsEquipped(out var runeState))
+                {
+                    result.Add(runeState);
+                }
+            }
+
+            return result;
+        }
+
+        public List<RuneSlotInfo> GetEquippedRuneSlotInfos()
+        {
+            var result = new List<RuneSlotInfo>();
+            foreach (var slot in _slots.Where(slot => !slot.IsLock))
+            {
+                if (slot.IsEquipped(out var runeState))
+                {
+                    result.Add(new RuneSlotInfo(slot.Index, runeState.RuneId, runeState.Level));
+                }
+            }
+
+            return result;
+        }
+
+        public List<RuneOptionSheet.Row.RuneOptionInfo> GetEquippedRuneOptions(RuneOptionSheet sheet)
+        {
+            var result = new List<RuneOptionSheet.Row.RuneOptionInfo>();
+            foreach (var runeState in GetEquippedRuneStates())
+            {
+                if (!sheet.TryGetValue(runeState.RuneId, out var row))
+                {
+                    continue;
+                }
+
+                if (!row.LevelOptionMap.TryGetValue(runeState.Level, out var statInfo))
+                {
+                    continue;
+                }
+
+                result.Add(statInfo);
+            }
+
+            return result;
         }
     }
 }

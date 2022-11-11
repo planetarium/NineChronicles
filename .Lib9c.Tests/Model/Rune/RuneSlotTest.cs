@@ -14,7 +14,7 @@ namespace Lib9c.Tests.Model.Rune
             var serialized = (List)slot.Serialize();
             var deserialized = new RuneSlot(serialized);
 
-            Assert.Equal(slot.Equipped(out _), deserialized.Equipped(out _));
+            Assert.Equal(slot.IsEquipped(out _), deserialized.IsEquipped(out _));
             Assert.Equal(slot.RuneSlotType, deserialized.RuneSlotType);
             Assert.Equal(slot.RuneType, deserialized.RuneType);
             Assert.Equal(slot.Index, deserialized.Index);
