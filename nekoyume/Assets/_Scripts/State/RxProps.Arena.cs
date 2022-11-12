@@ -24,23 +24,26 @@ namespace Nekoyume.State
             public readonly int Score;
             public readonly int Rank;
             public readonly AvatarState AvatarState;
+            public readonly ItemSlotState ItemSlotState;
+            public readonly RuneSlotState RuneSlotState;
             public readonly (int win, int lose) ExpectDeltaScore;
-            public readonly int CP;
 
             public ArenaParticipant(
                 Address avatarAddr,
                 int score,
                 int rank,
                 AvatarState avatarState,
+                ItemSlotState itemSlotState,
+                RuneSlotState runeSlotState,
                 (int win, int lose) expectDeltaScore)
             {
                 AvatarAddr = avatarAddr;
                 Score = score;
                 Rank = rank;
                 AvatarState = avatarState;
+                ItemSlotState = itemSlotState;
+                RuneSlotState = runeSlotState;
                 ExpectDeltaScore = expectDeltaScore;
-
-                CP = AvatarState?.GetCP() ?? 0;
             }
 
             public ArenaParticipant(ArenaParticipant value)
@@ -49,9 +52,9 @@ namespace Nekoyume.State
                 Score = value.Score;
                 Rank = value.Rank;
                 AvatarState = value.AvatarState;
+                ItemSlotState = value.ItemSlotState;
+                RuneSlotState = value.RuneSlotState;
                 ExpectDeltaScore = value.ExpectDeltaScore;
-
-                CP = AvatarState?.GetCP() ?? 0;
             }
         }
 
@@ -66,6 +69,8 @@ namespace Nekoyume.State
                 int score,
                 int rank,
                 AvatarState avatarState,
+                ItemSlotState itemSlotState,
+                RuneSlotState runeSlotState,
                 (int win, int lose) expectDeltaScore,
                 ArenaInformation currentArenaInfo,
                 int purchasedCountDuringInterval)
@@ -74,6 +79,8 @@ namespace Nekoyume.State
                     score,
                     rank,
                     avatarState,
+                    itemSlotState,
+                    runeSlotState,
                     expectDeltaScore)
             {
                 CurrentArenaInfo = currentArenaInfo;
@@ -288,13 +295,13 @@ namespace Nekoyume.State
 
                 // TODO!!!! [`_playersArenaParticipant`]를 이 문맥이 아닌 곳에서
                 // 따로 처리합니다.
-                var arenaAvatarState = currentAvatar.ToArenaAvatarState();
-                var clonedCurrentAvatar = currentAvatar.CloneAndApplyToInventory(arenaAvatarState);
                 _playersArenaParticipant.SetValueAndForceNotify(new PlayerArenaParticipant(
                     currentAvatarAddr,
                     ArenaScore.ArenaScoreDefault,
                     0,
-                    clonedCurrentAvatar,
+                    currentAvatar,
+                    States.Instance.ItemSlotStates[BattleType.Arena],
+                    States.Instance.RuneSlotStates[BattleType.Arena],
                     (0, 0),
                     new ArenaInformation(
                         currentAvatarAddr,
@@ -345,13 +352,13 @@ namespace Nekoyume.State
             }
             catch
             {
-                var arenaAvatarState = currentAvatar.ToArenaAvatarState();
-                var clonedCurrentAvatar = currentAvatar.CloneAndApplyToInventory(arenaAvatarState);
                 playersArenaParticipant = new PlayerArenaParticipant(
                     currentAvatarAddr,
                     ArenaScore.ArenaScoreDefault,
                     0,
-                    clonedCurrentAvatar,
+                    currentAvatar,
+                    States.Instance.ItemSlotStates[BattleType.Arena],
+                    States.Instance.RuneSlotStates[BattleType.Arena],
                     default,
                     null,
                     0);
@@ -371,7 +378,9 @@ namespace Nekoyume.State
                 {
                     tuple.avatarAddr,
                     tuple.avatarAddr.Derive(LegacyInventoryKey),
-                    ArenaAvatarState.DeriveAddress(tuple.avatarAddr),
+                    ItemSlotState.DeriveAddress(tuple.avatarAddr, BattleType.Arena),
+                    RuneSlotState.DeriveAddress(tuple.avatarAddr, BattleType.Arena)
+                    // ArenaAvatarState.DeriveAddress(tuple.avatarAddr),
                 })
                 .ToList();
             addrBulk.Add(playerArenaInfoAddr);
@@ -392,12 +401,24 @@ namespace Nekoyume.State
                     avatar.inventory = inventory;
                 }
 
-                var arenaAvatar =
-                    stateBulk[ArenaAvatarState.DeriveAddress(avatarAddr)] is List arenaAvatarList
-                        ? new ArenaAvatarState(arenaAvatarList)
-                        : null;
+                var itemSlotState =
+                    stateBulk[ItemSlotState.DeriveAddress(tuple.avatarAddr, BattleType.Arena)] is
+                        List itemSlotList
+                        ? new ItemSlotState(itemSlotList)
+                        : new ItemSlotState(BattleType.Arena);
+
+                var runeSlotState =
+                    stateBulk[RuneSlotState.DeriveAddress(tuple.avatarAddr, BattleType.Arena)] is
+                        List runeSlotList
+                        ? new RuneSlotState(runeSlotList)
+                        : new RuneSlotState(BattleType.Arena);
+
                 // todo :여기서 수정해야함
-                avatar = avatar.ApplyToInventory(arenaAvatar);
+                // var arenaAvatar =
+                //     stateBulk[ArenaAvatarState.DeriveAddress(avatarAddr)] is List arenaAvatarList
+                //         ? new ArenaAvatarState(arenaAvatarList)
+                //         : null;
+                // avatar = avatar.ApplyToInventory(arenaAvatar);
                 var (win, lose, _) =
                     ArenaHelper.GetScores(playerScore, score);
                 return new ArenaParticipant(
@@ -407,6 +428,8 @@ namespace Nekoyume.State
                         : score,
                     rank,
                     avatar,
+                    itemSlotState,
+                    runeSlotState,
                     (win, lose)
                 );
             }).ToArray();

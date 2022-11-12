@@ -103,7 +103,7 @@ namespace Nekoyume.UI
             _runes.Add(BattleType.Raid, new RuneSlotState(BattleType.Raid));
             foreach (var state in runeSlotStates)
             {
-                _runes.Add(state.BattleType, state);
+                _runes[state.BattleType] = state;
             }
         }
 
