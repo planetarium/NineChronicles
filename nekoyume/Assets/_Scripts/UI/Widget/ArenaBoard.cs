@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Nekoyume.Battle;
 using Nekoyume.Game.Controller;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
@@ -171,7 +172,7 @@ namespace Nekoyume.UI
                     }
 #endif
                     var data = _boundedData[index];
-                    Find<FriendInfoPopup>().ShowAsync(data.AvatarState).Forget();
+                    Find<FriendInfoPopup>().ShowAsync(data.AvatarState, BattleType.Arena).Forget();
                 })
                 .AddTo(gameObject);
 

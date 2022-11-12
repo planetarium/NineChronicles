@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,6 +21,8 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class FriendInfoPopup : PopupWidget
     {
         private const string NicknameTextFormat = "<color=#B38271>Lv.{0}</color=> {1}";
@@ -45,28 +48,91 @@ namespace Nekoyume.UI
         [SerializeField]
         private AvatarStats avatarStats = null;
 
+        [SerializeField]
+        private CategoryTabButton adventureButton;
+
+        [SerializeField]
+        private CategoryTabButton arenaButton;
+
+        [SerializeField]
+        private CategoryTabButton raidButton;
+
         private GameObject _cachedCharacterTitle;
+        private AvatarState _avatarState;
+        private readonly ToggleGroup _toggleGroup = new();
         private readonly Dictionary<BattleType, List<Equipment>> _equipments = new();
         private readonly Dictionary<BattleType, List<Costume>> _costumes = new();
         private readonly Dictionary<BattleType, RuneSlotState> _runes = new();
 
-        public async UniTaskVoid ShowAsync(AvatarState avatarState, bool ignoreShowAnimation = false)
+        protected override void Awake()
         {
+            _toggleGroup.RegisterToggleable(adventureButton);
+            _toggleGroup.RegisterToggleable(arenaButton);
+            _toggleGroup.RegisterToggleable(raidButton);
+
+            adventureButton.OnClick
+                .Subscribe(b =>
+                {
+                    OnClickPresetTab(b, BattleType.Adventure);
+                })
+                .AddTo(gameObject);
+            arenaButton.OnClick
+                .Subscribe(b =>
+                {
+                    OnClickPresetTab(b, BattleType.Arena);
+                })
+                .AddTo(gameObject);
+            raidButton.OnClick
+                .Subscribe(b =>
+                {
+                    OnClickPresetTab(b, BattleType.Raid);
+                })
+                .AddTo(gameObject);
+
+            base.Awake();
+        }
+
+        private void OnClickPresetTab(
+            IToggleable toggle,
+            BattleType battleType)
+        {
+            _toggleGroup.SetToggledOffAll();
+            toggle.SetToggledOn();
+
+            Game.Game.instance.Lobby.FriendCharacter.Set(
+                _avatarState,
+                _costumes[battleType],
+                _equipments[battleType]);
+
+            UpdateCp(_avatarState, battleType);
+            UpdateName(_avatarState);
+            UpdateTitle(battleType);
+            UpdateSlotView(_avatarState, battleType);
+            UpdateStatViews(_avatarState, battleType);
+        }
+
+        public async UniTaskVoid ShowAsync(
+            AvatarState avatarState,
+            BattleType battleType,
+            bool ignoreShowAnimation = false)
+        {
+            _avatarState = avatarState;
             var (itemSlotStates, runeSlotStates) = await GetStatesAsync(avatarState);
             SetItems(avatarState, itemSlotStates, runeSlotStates);
 
             base.Show(ignoreShowAnimation);
-
-            Game.Game.instance.Lobby.FriendCharacter.Set(
-                avatarState,
-                _costumes[BattleType.Adventure],
-                _equipments[BattleType.Adventure]);
-
-            UpdateCp(avatarState, BattleType.Adventure);
-            UpdateName(avatarState);
-            UpdateTitle(BattleType.Adventure);
-            UpdateSlotView(avatarState, BattleType.Adventure);
-            UpdateStatViews(avatarState, BattleType.Adventure);
+            switch (battleType)
+            {
+                case BattleType.Adventure:
+                    OnClickPresetTab(adventureButton, battleType);
+                    break;
+                case BattleType.Arena:
+                    OnClickPresetTab(arenaButton, battleType);
+                    break;
+                case BattleType.Raid:
+                    OnClickPresetTab(raidButton, battleType);
+                    break;
+            }
         }
 
         private void SetItems(

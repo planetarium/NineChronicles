@@ -2,6 +2,7 @@ using System.Linq;
 using Libplanet;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State;
@@ -135,7 +136,7 @@ namespace Nekoyume.UI
         private void OnClickAvatarInfo(Unit unit)
         {
             AudioController.PlayClick();
-            Find<FriendInfoPopup>().ShowAsync(_selectedAvatarState, true).Forget();
+            Find<FriendInfoPopup>().ShowAsync(_selectedAvatarState, BattleType.Adventure, true).Forget();
             Close();
         }
     }
