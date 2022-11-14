@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using Bencodex.Types;
     using Libplanet;
@@ -452,7 +453,11 @@
                 Random = new TestRandom(randomSeed),
             });
             Assert.True(nextStates.TryGetState<Integer>(
-                myAvatarAddr.Derive(BattleGrandFinale.ScoreDeriveKey),
+                myAvatarAddr.Derive(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        BattleGrandFinale.ScoreDeriveKey,
+                        grandFinaleId)),
                 out var myScore));
             Assert.Equal<Integer>(setToWin ? 1020 : 1001, myScore);
             Assert.True(nextStates.TryGetState<List>(

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet;
@@ -32,7 +33,7 @@ namespace Nekoyume.Action
         public const int WinScore = 20;
         public const int LoseScore = 1;
         public const int DefaultScore = 1000;
-        public const string ScoreDeriveKey = "grand_finale_score";
+        public const string ScoreDeriveKey = "grand_finale_score_{0}";
 
         public Address myAvatarAddress;
         public Address enemyAvatarAddress;
@@ -168,10 +169,10 @@ namespace Nekoyume.Action
                     $"[{nameof(BattleArena)}] enemy avatar address : {enemyAvatarAddress}");
             }
 
-            var myArenaScoreAdr = myAvatarAddress.Derive(ScoreDeriveKey);
-            if (!states.TryGetState(myArenaScoreAdr, out Integer myArenaScore))
+            var scoreAddress = myAvatarAddress.Derive(string.Format(CultureInfo.InvariantCulture, ScoreDeriveKey, grandFinaleId));
+            if (!states.TryGetState(scoreAddress, out Integer grandFinaleScore))
             {
-                myArenaScore = DefaultScore;
+                grandFinaleScore = DefaultScore;
             }
 
             var informationAdr = GrandFinaleInformation.DeriveAddress(
@@ -218,26 +219,14 @@ namespace Nekoyume.Action
                 arenaSheets);
 
             var win = log.Result.Equals(ArenaLog.ArenaResult.Win);
-            myArenaScore += win ? WinScore : LoseScore;
+            grandFinaleScore += win ? WinScore : LoseScore;
             grandFinaleInformation.UpdateRecord(enemyAvatarAddress, win);
-
-            if (migrationRequired)
-            {
-                states = states
-                    .SetState(myAvatarAddress, avatarState.SerializeV2())
-                    .SetState(
-                        myAvatarAddress.Derive(LegacyWorldInformationKey),
-                        avatarState.worldInformation.Serialize())
-                    .SetState(
-                        myAvatarAddress.Derive(LegacyQuestListKey),
-                        avatarState.questList.Serialize());
-            }
 
             var ended = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}BattleGrandFinale Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states
                 .SetState(myArenaAvatarStateAdr, myArenaAvatarState.Serialize())
-                .SetState(myArenaScoreAdr, myArenaScore)
+                .SetState(scoreAddress, grandFinaleScore)
                 .SetState(informationAdr, grandFinaleInformation.Serialize());
         }
     }
