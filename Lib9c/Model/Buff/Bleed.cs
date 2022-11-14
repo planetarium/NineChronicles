@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.Skill;
 using Nekoyume.TableData;
 
@@ -43,6 +44,28 @@ namespace Nekoyume.Model.Buff
 
             return new Model.BattleStatus.TickDamage(
                 RowData.Id,
+                clone,
+                damageInfos,
+                null);
+        }
+
+        public override ArenaSkill GiveEffectForArena(
+            ArenaCharacter affectedCharacter,
+            int simulatorWaveTurn)
+        {
+            var clone = (ArenaCharacter)affectedCharacter.Clone();
+            var originalDamage = (int)decimal.Round(Power * RowData.ATKPowerRatio);
+            var damage = affectedCharacter.GetDamage(originalDamage, false);
+            affectedCharacter.CurrentHP -= damage;
+
+            var damageInfos = new List<ArenaSkill.ArenaSkillInfo>
+            {
+                new ArenaSkill.ArenaSkillInfo((ArenaCharacter)affectedCharacter.Clone(), damage, false,
+                        SkillCategory.Debuff, simulatorWaveTurn, RowData.ElementalType,
+                        RowData.TargetType)
+            };
+
+            return new ArenaTickDamage(
                 clone,
                 damageInfos,
                 null);

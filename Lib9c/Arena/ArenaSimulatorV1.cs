@@ -20,6 +20,7 @@ namespace Nekoyume.Arena
 
         public IRandom Random { get; }
         public int Turn { get; private set; }
+        public ArenaLog Log { get; private set; }
 
         public ArenaSimulatorV1(IRandom random)
         {
@@ -32,8 +33,8 @@ namespace Nekoyume.Arena
             ArenaPlayerDigest enemy,
             ArenaSimulatorSheetsV1 sheets)
         {
-            var log = new ArenaLog();
-            var players = SpawnPlayers(this, challenger, enemy, sheets, log);
+            Log = new ArenaLog();
+            var players = SpawnPlayers(this, challenger, enemy, sheets, Log);
             Turn = 1;
 
             while (true)
@@ -41,7 +42,7 @@ namespace Nekoyume.Arena
                 if (Turn > MaxTurn)
                 {
                     // todo : 턴오버일경우 정책 필요함 일단 Lose
-                    log.Result = ArenaLog.ArenaResult.Lose;
+                    Log.Result = ArenaLog.ArenaResult.Lose;
                     break;
                 }
 
@@ -52,22 +53,22 @@ namespace Nekoyume.Arena
 
                 selectedPlayer.Tick();
                 var clone = (ArenaCharacter)selectedPlayer.Clone();
-                log.Add(clone.SkillLog);
+                Log.Add(clone.SkillLog);
 
                 var deadPlayers = players.Where(x => x.IsDead);
                 var arenaCharacters = deadPlayers as ArenaCharacter[] ?? deadPlayers.ToArray();
                 if (arenaCharacters.Any())
                 {
                     var (deadPlayer, result) = GetBattleResult(arenaCharacters);
-                    log.Result = result;
-                    log.Add(new ArenaDead((ArenaCharacter)deadPlayer.Clone()));
-                    log.Add(new ArenaTurnEnd((ArenaCharacter)selectedPlayer.Clone(), Turn));
+                    Log.Result = result;
+                    Log.Add(new ArenaDead((ArenaCharacter)deadPlayer.Clone()));
+                    Log.Add(new ArenaTurnEnd((ArenaCharacter)selectedPlayer.Clone(), Turn));
                     break;
                 }
 
                 if (!selectedPlayer.IsEnemy)
                 {
-                    log.Add(new ArenaTurnEnd((ArenaCharacter)selectedPlayer.Clone(), Turn));
+                    Log.Add(new ArenaTurnEnd((ArenaCharacter)selectedPlayer.Clone(), Turn));
                     Turn++;
                 }
 
@@ -81,7 +82,7 @@ namespace Nekoyume.Arena
                 players.Enqueue(selectedPlayer, TurnPriority / selectedPlayer.SPD);
             }
 
-            return log;
+            return Log;
         }
 
         [Obsolete("Use Simulate")]
@@ -166,8 +167,8 @@ namespace Nekoyume.Arena
             var challenger = new ArenaCharacter(simulator, challengerDigest, simulatorSheets);
             var enemy = new ArenaCharacter(simulator, enemyDigest, simulatorSheets, true);
 
-            challenger.Spawn(enemy);
-            enemy.Spawn(challenger);
+            challenger.SpawnV2(enemy);
+            enemy.SpawnV2(challenger);
 
             log.Add(new ArenaSpawnCharacter((ArenaCharacter)challenger.Clone()));
             log.Add(new ArenaSpawnCharacter((ArenaCharacter)enemy.Clone()));

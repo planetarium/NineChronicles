@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using BTAI;
+using Nekoyume.Action;
 using Nekoyume.Arena;
 using Nekoyume.Battle;
-using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Buff;
 using Nekoyume.Model.Character;
 using Nekoyume.Model.Elemental;
@@ -28,6 +28,9 @@ namespace Nekoyume.Model
         private readonly IArenaSimulator _simulator;
         private readonly CharacterStats _stats;
         private readonly ArenaSkills _skills;
+
+        public readonly ArenaSkills _runeSkills = new ArenaSkills();
+        public readonly Dictionary<int, int> RuneSkillCooldownMap = new Dictionary<int, int>();
 
         private readonly int _attackCountMax;
 
@@ -126,6 +129,10 @@ namespace Nekoyume.Model
                 row,
                 sheets.EquipmentItemSetEffectSheet,
                 sheets.CostumeStatSheet);
+            if (digest.Runes != null)
+            {
+                SetRune(digest.Runes, sheets.RuneOptionSheet, sheets.SkillSheet);
+            }
             _skills = GetSkills(digest.Equipments, sheets.SkillSheet);
             _attackCountMax = AttackCountHelper.GetCountMax(digest.Level);
         }
@@ -227,6 +234,67 @@ namespace Nekoyume.Model
             return statModifiers.Any();
         }
 
+        public void SetRune(
+            List<RuneSlotInfo> runes,
+            RuneOptionSheet runeOptionSheet,
+            SkillSheet skillSheet)
+        {
+            foreach (var rune in runes)
+            {
+                if (!runeOptionSheet.TryGetValue(rune.RuneId, out var optionRow) ||
+                    !optionRow.LevelOptionMap.TryGetValue(rune.Level, out var optionInfo))
+                {
+                    continue;
+                }
+
+                var statModifiers = new List<StatModifier>();
+                statModifiers.AddRange(
+                    optionInfo.Stats.Select(x =>
+                        new StatModifier(
+                            x.statMap.StatType,
+                            x.operationType,
+                            x.statMap.ValueAsInt)));
+                _stats.AddOption(statModifiers);
+                _stats.IncreaseHpForArena();
+                _stats.EqualizeCurrentHPWithHP();
+
+                if (optionInfo.SkillId == default ||
+                    !skillSheet.TryGetValue(optionInfo.SkillId, out var skillRow))
+                {
+                    continue;
+                }
+
+                var power = 0;
+                if (optionInfo.StatReferenceType == EnumType.StatReferenceType.Caster)
+                {
+                    if (optionInfo.SkillValueType == StatModifier.OperationType.Add)
+                    {
+                        power = (int)optionInfo.SkillValue;
+                    }
+                    else
+                    {
+                        switch (optionInfo.SkillStatType)
+                        {
+                            case StatType.HP:
+                                power = HP;
+                                break;
+                            case StatType.ATK:
+                                power = ATK;
+                                break;
+                            case StatType.DEF:
+                                power = DEF;
+                                break;
+                        }
+
+                        power = (int)Math.Round(power * optionInfo.SkillValue);
+                    }
+                }
+                var skill = SkillFactory.GetForArena(skillRow, power, optionInfo.SkillChance);
+                _runeSkills.Add(skill);
+                RuneSkillCooldownMap[optionInfo.SkillId] = optionInfo.SkillCooldown;
+            }
+        }
+
         private static ArenaSkills GetSkills(IEnumerable<Equipment> equipments, SkillSheet skillSheet)
         {
             var skills = new ArenaSkills();
@@ -269,6 +337,15 @@ namespace Nekoyume.Model
         }
 
         [Obsolete("Use InitAI")]
+        private void InitAIV2()
+        {
+            _root = new Root();
+            _root.OpenBranch(
+                BT.Call(ActV2)
+            );
+        }
+
+        [Obsolete("Use InitAI")]
         private void InitAIV1()
         {
             _root = new Root();
@@ -286,7 +363,12 @@ namespace Nekoyume.Model
 
             ReduceDurationOfBuffs();
             ReduceSkillCooldown();
-            UseSkill();
+            OnPreSkill();
+            var usedSkill = UseSkill();
+            if (usedSkill != null)
+            {
+                OnPostSkill(usedSkill);
+            }
             RemoveBuffs();
         }
 
@@ -304,6 +386,35 @@ namespace Nekoyume.Model
             RemoveBuffsV1();
         }
 
+        [Obsolete("Use Act")]
+        private void ActV2()
+        {
+            if (IsDead)
+            {
+                return;
+            }
+
+            ReduceDurationOfBuffs();
+            ReduceSkillCooldown();
+            UseSkill();
+            RemoveBuffs();
+        }
+
+        protected virtual void OnPreSkill()
+        {
+
+        }
+
+        protected virtual void OnPostSkill(BattleStatus.Arena.ArenaSkill usedSkill)
+        {
+            var bleeds = Buffs.Values.OfType<Bleed>().OrderBy(x => x.BuffInfo.Id);
+            foreach (var bleed in bleeds)
+            {
+                var effect = bleed.GiveEffectForArena(this, _simulator.Turn);
+                _simulator.Log.Add(effect);
+            }
+        }
+
         private void ReduceDurationOfBuffs()
         {
 #pragma warning disable LAA1002
@@ -317,12 +428,15 @@ namespace Nekoyume.Model
         private void ReduceSkillCooldown()
         {
             _skills.ReduceCooldown();
+            _runeSkills.ReduceCooldown();
         }
 
-        private void UseSkill()
+        private BattleStatus.Arena.ArenaSkill UseSkill()
         {
-            var selectedSkill = _skills.Select(_simulator.Random);
-            SkillLog = selectedSkill.Use(
+            var selectedRuneSkill = _runeSkills.SelectWithoutDefaultAttack(_simulator.Random);
+            var selectedSkill = selectedRuneSkill ??
+                _skills.Select(_simulator.Random);
+            var usedSkill = selectedSkill.Use(
                 this,
                 _target,
                 _simulator.Turn,
@@ -341,7 +455,17 @@ namespace Nekoyume.Model
                     selectedSkill.SkillRow.Id.ToString(CultureInfo.InvariantCulture));
             }
 
-            _skills.SetCooldown(selectedSkill.SkillRow.Id, row.Cooldown);
+            if (selectedRuneSkill == null)
+            {
+                _skills.SetCooldown(selectedSkill.SkillRow.Id, row.Cooldown);
+            }
+            else
+            {
+                _runeSkills.SetCooldown(selectedSkill.SkillRow.Id, row.Cooldown);
+            }
+
+            _simulator.Log.Add(usedSkill);
+            return usedSkill;
         }
 
         [Obsolete("Use UseSkill")]
@@ -432,6 +556,13 @@ namespace Nekoyume.Model
         {
             _target = target;
             InitAIV1();
+        }
+
+        [Obsolete("Use Spawn")]
+        public void SpawnV2(ArenaCharacter target)
+        {
+            _target = target;
+            InitAIV2();
         }
 
         public void AddBuff(Buff.Buff buff, bool updateImmediate = true)

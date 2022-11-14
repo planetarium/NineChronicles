@@ -23,5 +23,9 @@ namespace Nekoyume.Model.Buff
         public abstract BattleStatus.Skill GiveEffect(
             CharacterBase affectedCharacter,
             int simulatorWaveTurn);
+
+        public abstract BattleStatus.Arena.ArenaSkill GiveEffectForArena(
+            ArenaCharacter affectedCharacter,
+            int simulatorWaveTurn);
     }
 }
