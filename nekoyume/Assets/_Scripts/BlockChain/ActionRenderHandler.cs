@@ -152,7 +152,10 @@ namespace Nekoyume.BlockChain
             // World Boss
             Raid();
             ClaimRaidReward();
+
+            // Rune
             RuneEnhancement();
+            UnlockRuneSlot();
         }
 
         public void Stop()
@@ -451,6 +454,15 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRuneEnhancement)
+                .AddTo(_disposables);
+        }
+
+        private void UnlockRuneSlot()
+        {
+            _actionRenderer.EveryRender<UnlockRuneSlot>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseUnlockRuneSlotAsync)
                 .AddTo(_disposables);
         }
 
@@ -1954,32 +1966,21 @@ namespace Nekoyume.BlockChain
 
             if (!myDigest.HasValue)
             {
-                var myAvatarState
-                    = eval.OutputStates.GetAvatarStateV2(eval.Action.myAvatarAddress);
-                if (!eval.OutputStates.TryGetArenaAvatarState(
-                        ArenaAvatarState.DeriveAddress(eval.Action.myAvatarAddress),
-                        out var myArenaAvatarState))
-                {
-                    Debug.LogError("Failed to get ArenaAvatarState of mine");
-                }
-
-                myDigest
-                    = new ArenaPlayerDigest(myAvatarState, myArenaAvatarState);
+                var myAvatarState = eval.OutputStates.GetAvatarStateV2(eval.Action.myAvatarAddress);
+                var itemSlotState = States.Instance.ItemSlotStates[BattleType.Arena];
+                myDigest = new ArenaPlayerDigest(myAvatarState, itemSlotState.Equipments, itemSlotState.Costumes);
             }
 
             if (!enemyDigest.HasValue)
             {
-                var enemyAvatarState
-                    = eval.OutputStates.GetAvatarStateV2(eval.Action.enemyAvatarAddress);
-                if (!eval.OutputStates.TryGetArenaAvatarState(
-                        ArenaAvatarState.DeriveAddress(eval.Action.enemyAvatarAddress),
-                        out var enemyArenaAvatarState))
+                var enemyAvatarState = eval.OutputStates.GetAvatarStateV2(eval.Action.enemyAvatarAddress);
+                var (itemSlotStates, runeSlotStates) = await enemyAvatarState.GetSlotStatesAsync();
+                var itemSlotState = itemSlotStates.FirstOrDefault(x => x.BattleType == BattleType.Arena);
+                if (itemSlotState == null)
                 {
-                    Debug.LogError("Failed to get ArenaAvatarState of enemy");
+                    itemSlotState = new ItemSlotState(BattleType.Arena);
                 }
-
-                enemyDigest
-                    = new ArenaPlayerDigest(enemyAvatarState, enemyArenaAvatarState);
+                enemyDigest = new ArenaPlayerDigest(enemyAvatarState, itemSlotState.Equipments, itemSlotState.Costumes);
             }
 
             previousMyScore ??= RxProps.PlayersArenaParticipant.HasValue
@@ -2201,6 +2202,22 @@ namespace Nekoyume.BlockChain
 
             UpdateCrystalBalance(eval);
             UpdateAgentStateAsync(eval).Forget();
+        }
+
+        private async void ResponseUnlockRuneSlotAsync(ActionBase.ActionEvaluation<UnlockRuneSlot> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                return;
+            }
+
+            LoadingHelper.UnlockRuneSlot.Remove(eval.Action.SlotIndex);
+            await States.Instance.InitRuneSlotStates();
+            UpdateAgentStateAsync(eval).Forget();
+            NotificationSystem.Push(
+                MailType.Workshop,
+                L10nManager.Localize("UI_MESSAGE_RUNE_SLOT_OPEN"),
+                NotificationCell.NotificationType.Notification);
         }
     }
 }

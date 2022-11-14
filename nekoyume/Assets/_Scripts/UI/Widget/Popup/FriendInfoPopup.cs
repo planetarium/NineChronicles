@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,7 +9,6 @@ using Nekoyume.Battle;
 using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.Rune;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -20,6 +20,8 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class FriendInfoPopup : PopupWidget
     {
         private const string NicknameTextFormat = "<color=#B38271>Lv.{0}</color=> {1}";
@@ -45,28 +47,91 @@ namespace Nekoyume.UI
         [SerializeField]
         private AvatarStats avatarStats = null;
 
+        [SerializeField]
+        private CategoryTabButton adventureButton;
+
+        [SerializeField]
+        private CategoryTabButton arenaButton;
+
+        [SerializeField]
+        private CategoryTabButton raidButton;
+
         private GameObject _cachedCharacterTitle;
+        private AvatarState _avatarState;
+        private readonly ToggleGroup _toggleGroup = new();
         private readonly Dictionary<BattleType, List<Equipment>> _equipments = new();
         private readonly Dictionary<BattleType, List<Costume>> _costumes = new();
         private readonly Dictionary<BattleType, RuneSlotState> _runes = new();
 
-        public async UniTaskVoid ShowAsync(AvatarState avatarState, bool ignoreShowAnimation = false)
+        protected override void Awake()
         {
-            var (itemSlotStates, runeSlotStates) = await GetStatesAsync(avatarState);
+            _toggleGroup.RegisterToggleable(adventureButton);
+            _toggleGroup.RegisterToggleable(arenaButton);
+            _toggleGroup.RegisterToggleable(raidButton);
+
+            adventureButton.OnClick
+                .Subscribe(b =>
+                {
+                    OnClickPresetTab(b, BattleType.Adventure);
+                })
+                .AddTo(gameObject);
+            arenaButton.OnClick
+                .Subscribe(b =>
+                {
+                    OnClickPresetTab(b, BattleType.Arena);
+                })
+                .AddTo(gameObject);
+            raidButton.OnClick
+                .Subscribe(b =>
+                {
+                    OnClickPresetTab(b, BattleType.Raid);
+                })
+                .AddTo(gameObject);
+
+            base.Awake();
+        }
+
+        private void OnClickPresetTab(
+            IToggleable toggle,
+            BattleType battleType)
+        {
+            _toggleGroup.SetToggledOffAll();
+            toggle.SetToggledOn();
+
+            Game.Game.instance.Lobby.FriendCharacter.Set(
+                _avatarState,
+                _costumes[battleType],
+                _equipments[battleType]);
+
+            UpdateCp(_avatarState, battleType);
+            UpdateName(_avatarState);
+            UpdateTitle(battleType);
+            UpdateSlotView(_avatarState, battleType);
+            UpdateStatViews(_avatarState, battleType);
+        }
+
+        public async UniTaskVoid ShowAsync(
+            AvatarState avatarState,
+            BattleType battleType,
+            bool ignoreShowAnimation = false)
+        {
+            _avatarState = avatarState;
+            var (itemSlotStates, runeSlotStates) = await avatarState.GetSlotStatesAsync();
             SetItems(avatarState, itemSlotStates, runeSlotStates);
 
             base.Show(ignoreShowAnimation);
-
-            Game.Game.instance.Lobby.FriendCharacter.Set(
-                avatarState,
-                _costumes[BattleType.Adventure],
-                _equipments[BattleType.Adventure]);
-
-            UpdateCp(avatarState, BattleType.Adventure);
-            UpdateName(avatarState);
-            UpdateTitle(BattleType.Adventure);
-            UpdateSlotView(avatarState, BattleType.Adventure);
-            UpdateStatViews(avatarState, BattleType.Adventure);
+            switch (battleType)
+            {
+                case BattleType.Adventure:
+                    OnClickPresetTab(adventureButton, battleType);
+                    break;
+                case BattleType.Arena:
+                    OnClickPresetTab(arenaButton, battleType);
+                    break;
+                case BattleType.Raid:
+                    OnClickPresetTab(raidButton, battleType);
+                    break;
+            }
         }
 
         private void SetItems(
@@ -103,7 +168,7 @@ namespace Nekoyume.UI
             _runes.Add(BattleType.Raid, new RuneSlotState(BattleType.Raid));
             foreach (var state in runeSlotStates)
             {
-                _runes.Add(state.BattleType, state);
+                _runes[state.BattleType] = state;
             }
         }
 
@@ -120,10 +185,6 @@ namespace Nekoyume.UI
             var equipments = _equipments[battleType];
             var costumes = _costumes[battleType];
             var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
-            // var runes = _runes.ContainsKey(battleType)
-            //     ? _runes[battleType].GetEquippedRuneStatInfos(runeOptionSheet)
-            //     : new List<RuneOptionSheet.Row.RuneOptionInfo>();
-
             var runes = _runes[battleType].GetEquippedRuneOptions(runeOptionSheet);
             var cp = CPHelper.TotalCP(equipments, costumes, runes, level, row, costumeSheet);
             cpText.text = $"{cp}";
@@ -152,55 +213,11 @@ namespace Nekoyume.UI
             _cachedCharacterTitle = Instantiate(clone, titleSocket);
         }
 
-        private async Task<(List<ItemSlotState>, List<RuneSlotState>)> GetStatesAsync(
-            AvatarState avatarState)
-        {
-            var avatarAddress = avatarState.address;
-
-            var itemAddresses = new List<Address>
-            {
-                ItemSlotState.DeriveAddress(avatarAddress, BattleType.Adventure),
-                ItemSlotState.DeriveAddress(avatarAddress, BattleType.Arena),
-                ItemSlotState.DeriveAddress(avatarAddress, BattleType.Raid)
-            };
-            var itemBulk = await Game.Game.instance.Agent.GetStateBulk(itemAddresses);
-            var itemStates = new List<ItemSlotState>();
-            foreach (var value in itemBulk.Values)
-            {
-                if (value is List list)
-                {
-                    itemStates.Add(new ItemSlotState(list));
-                }
-            }
-
-            var runeAddresses = new List<Address>
-            {
-                RuneSlotState.DeriveAddress(avatarAddress, BattleType.Adventure),
-                RuneSlotState.DeriveAddress(avatarAddress, BattleType.Arena),
-                RuneSlotState.DeriveAddress(avatarAddress, BattleType.Raid)
-            };
-            var runeBulk = await Game.Game.instance.Agent.GetStateBulk(runeAddresses);
-            var runeStates = new List<RuneSlotState>();
-            foreach (var value in runeBulk.Values)
-            {
-                if (value is List list)
-                {
-                    runeStates.Add(new RuneSlotState(list));
-                }
-            }
-
-            return (itemStates, runeStates);
-        }
-
         private void UpdateSlotView(AvatarState avatarState, BattleType battleType)
         {
             var level = avatarState.level;
             var equipments = _equipments[battleType];
             var costumes = _costumes[battleType];
-            // var runeSlot = _runes.ContainsKey(battleType)
-            //     ? _runes[battleType].GetRuneSlot()
-            //     : new List<RuneSlot>();
-
             var runeSlot = _runes[battleType].GetRuneSlot();
             costumeSlots.SetPlayerCostumes(level, costumes, ShowTooltip, null);
             equipmentSlots.SetPlayerEquipments(level, equipments, ShowTooltip, null);
@@ -212,9 +229,6 @@ namespace Nekoyume.UI
             var equipments = _equipments[battleType];
             var costumes = _costumes[battleType];
             var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
-            // var runeStates = _runes.ContainsKey(battleType)
-            //     ? _runes[battleType].GetEquippedRuneStates()
-            //     : new List<RuneState>();
             var runeStates = _runes[battleType].GetEquippedRuneStates();
             var equipmentSetEffectSheet = Game.Game.instance.TableSheets.EquipmentItemSetEffectSheet;
             var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;

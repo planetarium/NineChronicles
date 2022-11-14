@@ -11,6 +11,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Rune;
 using Nekoyume.Model.State;
+using Nekoyume.State;
 using Nekoyume.TableData;
 
 namespace Nekoyume.UI.Module
@@ -31,9 +32,6 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private TextMeshProUGUI enhancementText = null;
-
-        [SerializeField]
-        private Image lockImage = null;
 
         [SerializeField]
         private UIHsvModifier optionTagBg;
@@ -60,11 +58,15 @@ namespace Nekoyume.UI.Module
         private GameObject lockPriceObject;
 
         [SerializeField]
+        private GameObject loadingObject;
+
+        [SerializeField]
         private TextMeshProUGUI lockPrice;
 
         private Action<RuneSlotView> _onClick;
         private Action<RuneSlotView> _onDoubleClick;
         private EventTrigger _eventTrigger;
+        private readonly List<IDisposable> _disposables = new();
 
         public RuneType RuneType => runeType;
         public RectTransform RectTransform { get; private set; }
@@ -92,6 +94,17 @@ namespace Nekoyume.UI.Module
             RectTransform = GetComponent<RectTransform>();
         }
 
+        private void UpdateLoading()
+        {
+            if (RuneSlot == null)
+            {
+                return;
+            }
+
+            var value = LoadingHelper.UnlockRuneSlot.Any(x => x == RuneSlot.Index);
+            loadingObject.SetActive(value);
+        }
+
         public void Set(
             RuneSlot runeSlot,
             Action<RuneSlotView> onClick,
@@ -100,9 +113,18 @@ namespace Nekoyume.UI.Module
             RuneSlot = runeSlot;
             _onClick = onClick;
             _onDoubleClick = onDoubleClick;
-            lockObject.SetActive(runeSlot.IsLock);
-            optionTagBg.gameObject.SetActive(false); // temp
+
+            UpdateLockState(runeSlot);
+
+            _disposables.DisposeAllAndClear();
+            LoadingHelper.UnlockRuneSlot.ObserveAdd().Subscribe(x =>
+            {
+                UpdateLoading();
+            }).AddTo(_disposables);
+            UpdateLoading();
+
             wearableImage.SetActive(false);
+            optionTagBg.gameObject.SetActive(false);
             if (runeSlot.IsEquipped(out var state))
             {
                 Equip(state);
@@ -110,6 +132,23 @@ namespace Nekoyume.UI.Module
             else
             {
                 Unequip();
+            }
+        }
+
+        private void UpdateLockState(RuneSlot runeSlot)
+        {
+            lockObject.SetActive(runeSlot.IsLock);
+            if(runeSlot.IsLock && runeSlot.RuneSlotType == RuneSlotType.Ncg)
+            {
+                lockPriceObject.SetActive(true);
+                var cost = runeSlot.RuneType == RuneType.Stat
+                    ? States.Instance.GameConfigState.RuneStatSlotUnlockCost
+                    : States.Instance.GameConfigState.RuneSkillSlotUnlockCost;
+                lockPrice.text = $"{cost}";
+            }
+            else
+            {
+                lockPriceObject.SetActive(false);
             }
         }
 

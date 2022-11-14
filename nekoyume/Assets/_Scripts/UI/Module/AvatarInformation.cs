@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
+using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -134,7 +135,7 @@ namespace Nekoyume.UI.Module
         public void UpdateView(BattleType battleType)
         {
             _battleType = battleType;
-            var prevCp = GetCp();
+            var prevCp = Util.TotalCP(battleType);
             UpdateRuneView();
             UpdateItemView();
             UpdateStat(prevCp);
@@ -145,8 +146,8 @@ namespace Nekoyume.UI.Module
         {
             var states = States.Instance.RuneSlotStates[_battleType].GetRuneSlot();
             var equippedRuneState = States.Instance.GetEquippedRuneStates(_battleType);
-
-            inventory.UpdateRunes(equippedRuneState);
+            var sheet = Game.Game.instance.TableSheets.RuneListSheet;
+            inventory.UpdateRunes(equippedRuneState, _battleType, sheet);
             runeSlots.Set(states, OnClickRuneSlot, OnDoubleClickRuneSlot);
         }
 
@@ -203,28 +204,79 @@ namespace Nekoyume.UI.Module
 
         private void OnClickRuneSlot(RuneSlotView slot)
         {
-            if (slot.RuneSlot.IsEquipped(out var runeState))
+            if (slot.RuneSlot.IsLock)
             {
-                if (!inventory.TryGetModel(runeState.RuneId, out var item))
+                switch (slot.RuneSlot.RuneSlotType)
                 {
-                    return;
-                }
-
-                if (_pickedItem != null)
-                {
-                    UnequipRune(item);
-                    EquipRune(_pickedItem);
-                    _pickedItem = null;
-                }
-                else
-                {
-                    ShowRuneTooltip(item, slot.RectTransform, new float2(-50, 0));
+                    case RuneSlotType.Ncg:
+                        var cost = slot.RuneType == RuneType.Stat
+                            ? States.Instance.GameConfigState.RuneStatSlotUnlockCost
+                            : States.Instance.GameConfigState.RuneSkillSlotUnlockCost;
+                        var ncgHas = States.Instance.GoldBalanceState.Gold;
+                        var enough = ncgHas.MajorUnit >= cost;
+                        var content = enough
+                            ? L10nManager.Localize("UI_RUNE_SLOT_OPEN")
+                            : L10nManager.Localize("UI_NOT_ENOUGH_NCG_WITH_SUPPLIER_INFO");
+                        var attractMessage = enough
+                            ? L10nManager.Localize("UI_YES")
+                            : L10nManager.Localize("UI_GO_TO_MARKET");
+                        Widget.Find<PaymentPopup>().ShowAttract(
+                            CostType.NCG,
+                            cost,
+                            content,
+                            attractMessage,
+                            () =>
+                            {
+                                if (enough)
+                                {
+                                    ActionManager.Instance.UnlockRuneSlot(slot.RuneSlot.Index);
+                                }
+                                else
+                                {
+                                    GoToMarket();
+                                }
+                            });
+                        break;
+                    case RuneSlotType.Stake:
+                        OneLineSystem.Push(
+                            MailType.System,
+                            L10nManager.Localize("UI_MESSAGE_CAN_NOT_OPEN"),
+                            NotificationCell.NotificationType.Alert);
+                        break;
                 }
             }
             else
             {
-                inventory.Focus(slot.RuneType, Game.Game.instance.TableSheets.RuneListSheet);
+                if (slot.RuneSlot.IsEquipped(out var runeState))
+                {
+                    if (!inventory.TryGetModel(runeState.RuneId, out var item))
+                    {
+                        return;
+                    }
+
+                    if (_pickedItem != null)
+                    {
+                        UnequipRune(item);
+                        EquipRune(_pickedItem);
+                        _pickedItem = null;
+                    }
+                    else
+                    {
+                        ShowRuneTooltip(item, slot.RectTransform, new float2(-50, 0));
+                    }
+                }
+                else
+                {
+                    inventory.Focus(slot.RuneType, Game.Game.instance.TableSheets.RuneListSheet);
+                }
             }
+        }
+
+        private void GoToMarket()
+        {
+            Widget.Find<AvatarInfoPopup>().CloseWithOtherWidgets();
+            Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+            Widget.Find<ShopSell>().Show(true);
         }
 
         private void OnDoubleClickRuneSlot(RuneSlotView slot)
@@ -464,6 +516,11 @@ namespace Nekoyume.UI.Module
 
         private void EquipRune(InventoryItem inventoryItem)
         {
+            if (inventoryItem.DimObjectEnabled.Value)
+            {
+                return;
+            }
+
             var states = States.Instance.RuneSlotStates[_battleType].GetRuneSlot();
             var sheet = Game.Game.instance.TableSheets.RuneListSheet;
             if (!sheet.TryGetValue(inventoryItem.RuneState.RuneId, out var row))
@@ -565,10 +622,11 @@ namespace Nekoyume.UI.Module
 
         private void ShowRuneTooltip(InventoryItem model, RectTransform target, float2 offset)
         {
-            Widget.Find<RuneTooltip>().Show(
+            Widget.Find<RuneTooltip>().
+                Show(
                 model,
                 L10nManager.Localize(model.Equipped.Value ? "UI_UNEQUIP" : "UI_EQUIP"),
-                true,
+                !model.DimObjectEnabled.Value,
                 () => EquipOrUnequip(model),
                 () =>
                 {
@@ -700,7 +758,7 @@ namespace Nekoyume.UI.Module
 
         private void EquipOrUnequip(InventoryItem inventoryItem)
         {
-            var prevCp = GetCp();
+            var prevCp = Util.TotalCP(_battleType);
             if (inventoryItem.RuneState != null)
             {
                 if (inventoryItem.Equipped.Value)
@@ -726,24 +784,6 @@ namespace Nekoyume.UI.Module
 
             UpdateStat(prevCp);
             _onUpdate?.Invoke();
-        }
-
-        private int GetCp()
-        {
-            var avatarState = Game.Game.instance.States.CurrentAvatarState;
-            var level = avatarState.level;
-            var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
-            if (!characterSheet.TryGetValue(avatarState.characterId, out var row))
-            {
-                throw new SheetRowNotFoundException("CharacterSheet", avatarState.characterId);
-            }
-
-            var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
-            var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
-            var runeSlotState = States.Instance.RuneSlotStates[_battleType];
-            var (equipments, costumes) = States.Instance.GetEquippedItems(_battleType);
-            var runeOptionInfos = runeSlotState.GetEquippedRuneOptions(runeOptionSheet);
-            return CPHelper.TotalCP(equipments, costumes, runeOptionInfos, level, row, costumeSheet);
         }
 
         private void UpdateStat(int previousCp)
@@ -790,7 +830,7 @@ namespace Nekoyume.UI.Module
             }
 
             stats.SetData(characterStats);
-            cp.PlayAnimation(previousCp, GetCp());
+            cp.PlayAnimation(previousCp, Util.TotalCP(_battleType));
             Widget.Find<HeaderMenuStatic>().UpdateInventoryNotification(inventory.HasNotification());
         }
 

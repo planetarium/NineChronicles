@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Coffee.UIEffects;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
+using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
@@ -72,16 +73,13 @@ namespace Nekoyume.UI
         private ItemViewDataScriptableObject itemViewDataScriptableObject;
 
         [SerializeField]
-        private GameObject adventure;
+        private Image adventure;
 
         [SerializeField]
-        private GameObject arena;
+        private Image arena;
 
         [SerializeField]
-        private GameObject raid;
-
-        [SerializeField]
-        private GameObject buttonArea;
+        private Image raid;
 
         private System.Action _onConfirm;
         private System.Action _onEnhancement;
@@ -297,42 +295,43 @@ namespace Nekoyume.UI
 
         private void UpdateAreaIcon(RuneUsePlace runeUsePlace)
         {
+            var disableColor = Palette.GetColor(ColorType.TextDenial);
             switch (runeUsePlace)
             {
                 case RuneUsePlace.Adventure:
-                    adventure.SetActive(true);
-                    arena.SetActive(false);
-                    raid.SetActive(false);
+                    adventure.color = Color.white;
+                    arena.color = disableColor;
+                    raid.color = disableColor;
                     break;
                 case RuneUsePlace.Arena:
-                    adventure.SetActive(false);
-                    arena.SetActive(true);
-                    raid.SetActive(false);
+                    adventure.color = disableColor;
+                    arena.color = Color.white;
+                    raid.color = disableColor;
                     break;
                 case RuneUsePlace.AdventureAndArena:
-                    adventure.SetActive(true);
-                    arena.SetActive(true);
-                    raid.SetActive(false);
+                    adventure.color = Color.white;
+                    arena.color = Color.white;
+                    raid.color = disableColor;
                     break;
                 case RuneUsePlace.Raid:
-                    adventure.SetActive(false);
-                    arena.SetActive(false);
-                    raid.SetActive(true);
+                    adventure.color = disableColor;
+                    arena.color = disableColor;
+                    raid.color = Color.white;
                     break;
                 case RuneUsePlace.RaidAndAdventure:
-                    adventure.SetActive(true);
-                    arena.SetActive(false);
-                    raid.SetActive(true);
+                    adventure.color = Color.white;
+                    arena.color = disableColor;
+                    raid.color = Color.white;
                     break;
                 case RuneUsePlace.RaidAndArena:
-                    adventure.SetActive(false);
-                    arena.SetActive(true);
-                    raid.SetActive(true);
+                    adventure.color = disableColor;
+                    arena.color = Color.white;
+                    raid.color = Color.white;
                     break;
                 case RuneUsePlace.All:
-                    adventure.SetActive(true);
-                    arena.SetActive(true);
-                    raid.SetActive(true);
+                    adventure.color = Color.white;
+                    arena.color = Color.white;
+                    raid.color = Color.white;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(runeUsePlace), runeUsePlace, null);

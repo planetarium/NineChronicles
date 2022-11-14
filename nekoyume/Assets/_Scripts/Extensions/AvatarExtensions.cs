@@ -27,12 +27,5 @@ namespace Nekoyume
             TryGetEquippedFullCostume(avatarState, out var fullCostume)
                 ? fullCostume.Id
                 : avatarState.GetArmorId();
-
-        public static int GetCP(this AvatarState avatarState)
-        {
-            var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
-            var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
-            return CPHelper.GetCPV2(avatarState, characterSheet, costumeStatSheet);
-        }
     }
 }

@@ -317,17 +317,15 @@ namespace Nekoyume.UI
 
                 _innerState = InnerState.RegistrationAndTransitionToArenaBoard;
                 Find<LoadingScreen>().Show();
-                var inventory = States.Instance.CurrentAvatarState.inventory;
                 var selectedRoundData = _scroll.SelectedItemData.RoundData;
-                ActionManager.Instance.JoinArena(
-                        inventory.Costumes
-                            .Where(e => e.Equipped)
-                            .Select(e => e.NonFungibleId)
-                            .ToList(),
-                        inventory.Equipments
-                            .Where(e => e.Equipped)
-                            .Select(e => e.NonFungibleId)
-                            .ToList(),
+                var itemSlotState = States.Instance.ItemSlotStates[BattleType.Arena];
+                var runeInfos = States.Instance.RuneSlotStates[BattleType.Arena]
+                    .GetEquippedRuneSlotInfos();
+                ActionManager.Instance
+                    .JoinArena(
+                        itemSlotState.Costumes,
+                        itemSlotState.Equipments,
+                        runeInfos,
                         selectedRoundData.ChampionshipId,
                         selectedRoundData.Round)
                     .Subscribe();
@@ -615,17 +613,15 @@ namespace Nekoyume.UI
         private void JoinArenaAction()
         {
             Find<LoadingScreen>().Show();
-            var inventory = States.Instance.CurrentAvatarState.inventory;
             var selectedRoundData = _scroll.SelectedItemData.RoundData;
-            ActionManager.Instance.JoinArena(
-                    inventory.Costumes
-                        .Where(e => e.Equipped)
-                        .Select(e => e.NonFungibleId)
-                        .ToList(),
-                    inventory.Equipments
-                        .Where(e => e.Equipped)
-                        .Select(e => e.NonFungibleId)
-                        .ToList(),
+            var itemSlotState = States.Instance.ItemSlotStates[BattleType.Arena];
+            var runeInfos = States.Instance.RuneSlotStates[BattleType.Arena]
+                .GetEquippedRuneSlotInfos();
+            ActionManager.Instance
+                .JoinArena(
+                    itemSlotState.Costumes,
+                    itemSlotState.Equipments,
+                    runeInfos,
                     selectedRoundData.ChampionshipId,
                     selectedRoundData.Round)
                 .Subscribe();

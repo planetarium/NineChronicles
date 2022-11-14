@@ -8,7 +8,6 @@ using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
-using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;

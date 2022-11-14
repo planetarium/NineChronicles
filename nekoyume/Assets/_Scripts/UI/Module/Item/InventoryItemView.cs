@@ -55,7 +55,6 @@ namespace Nekoyume.UI.Module
             baseItemView.CountText.gameObject.SetActive(false);
             baseItemView.LevelLimitObject.SetActive(false);
             baseItemView.TradableObject.SetActive(false);
-            baseItemView.DimObject.SetActive(false);
             baseItemView.GrindingCountObject.SetActive(false);
 
             if (RuneFrontHelper.TryGetRuneIcon(model.RuneState.RuneId, out var icon))
@@ -98,6 +97,7 @@ namespace Nekoyume.UI.Module
             model.Equipped.Subscribe(b => baseItemView.EquippedObject.SetActive(b)).AddTo(_disposables);
             model.Selected.Subscribe(b => baseItemView.SelectObject.SetActive(b)).AddTo(_disposables);
             model.Focused.Subscribe(b => baseItemView.FocusObject.SetActive(b)).AddTo(_disposables);
+            model.DimObjectEnabled.Subscribe(b => baseItemView.DimObject.SetActive(b)).AddTo(_disposables);
             model.HasNotification.Subscribe(b => baseItemView.NotificationObject.SetActive(b)).AddTo(_disposables);
 
             model.View = GetComponent<RectTransform>();
