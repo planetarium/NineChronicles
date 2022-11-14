@@ -8,9 +8,9 @@ using Priority_Queue;
 
 namespace Nekoyume.Arena
 {
-     /// <summary>
-     /// Introduced at https://github.com/planetarium/lib9c/pull/1501
-     /// </summary>
+    /// <summary>
+    /// Introduced at https://github.com/planetarium/lib9c/pull/1501
+    /// </summary>
     public class ArenaSimulator : IArenaSimulator
     {
         private const decimal TurnPriority = 100m;
