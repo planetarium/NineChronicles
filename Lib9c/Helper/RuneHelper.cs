@@ -1,15 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using JetBrains.Annotations;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.Battle;
-using Nekoyume.Model.EnumType;
-using Nekoyume.Model.State;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Helper
@@ -20,7 +16,7 @@ namespace Nekoyume.Helper
         public static Currency ToCurrency(
             RuneSheet.Row runeRow,
             byte decimalPlaces,
-            [CanBeNull] IImmutableSet<Address> minters
+            IImmutableSet<Address> minters
         )
         {
 
@@ -34,7 +30,7 @@ namespace Nekoyume.Helper
             RuneSheet.Row runeRow,
             int quantity,
             byte decimalPlaces = 0,
-            [CanBeNull] IImmutableSet<Address> minters = null
+            IImmutableSet<Address> minters = null
         )
         {
             return ToCurrency(runeRow, decimalPlaces, minters) * quantity;
