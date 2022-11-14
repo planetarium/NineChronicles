@@ -2,7 +2,6 @@
 using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Action;
-using Nekoyume.Model.Arena;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Model.GrandFinale
@@ -14,22 +13,19 @@ namespace Nekoyume.Model.GrandFinale
             avatarAddress.Derive($"grand_finale_information_{grandFinaleId}");
 
         public Address Address;
-        public int Ticket { get; private set; }
         private Dictionary<Address, bool> BattleRecordDictionary { get; }
 
-        public GrandFinaleInformation(Address avatarAddress, int grandFinaleId, int ticket)
+        public GrandFinaleInformation(Address avatarAddress, int grandFinaleId)
         {
             Address = DeriveAddress(avatarAddress, grandFinaleId);
-            Ticket = ticket;
             BattleRecordDictionary = new Dictionary<Address, bool>();
         }
 
         public GrandFinaleInformation(List serialized)
         {
             Address = serialized[0].ToAddress();
-            Ticket = (Integer)serialized[1];
             BattleRecordDictionary =
-                ((Dictionary)serialized[2]).ToDictionary(pair => pair.Key.ToAddress(),
+                ((Dictionary)serialized[1]).ToDictionary(pair => pair.Key.ToAddress(),
                     pair => pair.Value.ToBoolean());
         }
 
@@ -44,19 +40,7 @@ namespace Nekoyume.Model.GrandFinale
             );
             return List.Empty
                 .Add(Address.Serialize())
-                .Add(Ticket)
                 .Add(battleRecordDict);
-        }
-
-        public void UseTicket()
-        {
-            if (Ticket <= 0)
-            {
-                throw new NotEnoughTicketException(
-                    $"[{nameof(GrandFinaleInformation)}] have({Ticket})");
-            }
-
-            Ticket -= 1;
         }
 
         public void UpdateRecord(Address enemyAddress, bool win)
@@ -66,5 +50,8 @@ namespace Nekoyume.Model.GrandFinale
 
         public bool TryGetBattleRecord(Address enemyAddress, out bool win) =>
             BattleRecordDictionary.TryGetValue(enemyAddress, out win);
+
+        public List<KeyValuePair<Address, bool>> GetBattleRecordList() =>
+            BattleRecordDictionary.OrderBy(pair => pair.Key).ToList();
     }
 }

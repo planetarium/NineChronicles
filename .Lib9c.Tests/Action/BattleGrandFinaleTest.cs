@@ -223,29 +223,6 @@
         }
 
         [Fact]
-        public void Execute_NotEnoughTicketException()
-        {
-            var info = new GrandFinaleInformation(_avatar1Address, 1, 1);
-            info.UseTicket();
-            var states = _initialStates.SetState(info.Address, info.Serialize());
-            var action = new BattleGrandFinale
-            {
-                myAvatarAddress = _avatar1Address,
-                enemyAvatarAddress = _avatar2Address,
-                grandFinaleId = 1,
-                costumes = new List<Guid>(),
-                equipments = new List<Guid>(),
-            };
-            Assert.Throws<NotEnoughTicketException>(() => action.Execute(new ActionContext
-            {
-                PreviousStates = states,
-                Signer = _agent1Address,
-                Random = new TestRandom(),
-                BlockIndex = 1,
-            }));
-        }
-
-        [Fact]
         public void Execute_InvalidAddressException()
         {
             var action = new BattleGrandFinale
@@ -466,7 +443,6 @@
                     grandFinaleId),
                 out var serialized));
             var nextInformation = new GrandFinaleInformation(serialized);
-            Assert.Equal(participantsCount - 2, nextInformation.Ticket);
             Assert.True(nextInformation.TryGetBattleRecord(enemyAvatarAddr, out var win));
             Assert.Equal(setToWin, win);
         }

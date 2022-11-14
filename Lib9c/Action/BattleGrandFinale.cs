@@ -187,8 +187,7 @@ namespace Nekoyume.Action
             {
                 grandFinaleInformation = new GrandFinaleInformation(
                     myAvatarAddress,
-                    grandFinaleId,
-                    participantsRow.Participants.Count - 1);
+                    grandFinaleId);
             }
 
             if (grandFinaleInformation.TryGetBattleRecord(enemyAvatarAddress,
@@ -199,8 +198,6 @@ namespace Nekoyume.Action
             }
 
             #endregion
-
-            grandFinaleInformation.UseTicket();
 
             // update arena avatar state
             myArenaAvatarState.UpdateEquipment(equipments);
