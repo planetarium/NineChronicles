@@ -239,7 +239,7 @@ namespace Nekoyume.Game.Character
             ShowSpeech("PLAYER_ATTACK");
         }
 
-        private IEnumerator CoProcessDamage(ArenaSkill.ArenaSkillInfo info, bool isConsiderElementalType)
+        public IEnumerator CoProcessDamage(ArenaSkill.ArenaSkillInfo info, bool isConsiderElementalType)
         {
             var dmg = info.Effect;
 
@@ -574,6 +574,23 @@ namespace Nekoyume.Game.Character
         }
 
         public IEnumerator CoBuff(IReadOnlyList<ArenaSkill.ArenaSkillInfo> skillInfos)
+        {
+            if (skillInfos is null ||
+                skillInfos.Count == 0)
+                yield break;
+
+            yield return StartCoroutine(CoAnimationBuffCast(skillInfos.First()));
+
+            foreach (var info in skillInfos)
+            {
+                var target = info.Target.Id == Id ? this : _target;
+                target.ProcessBuff(target, info);
+            }
+
+            Animator.Idle();
+        }
+
+        public IEnumerator CoTickDamage(IReadOnlyList<ArenaSkill.ArenaSkillInfo> skillInfos)
         {
             if (skillInfos is null ||
                 skillInfos.Count == 0)
