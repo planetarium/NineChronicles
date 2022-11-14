@@ -1,607 +1,1201 @@
 rune_id,_name,level,total_cp,stat_type_1,value_1,value_type_1,stat_type_2,value_2,value_type_2,stat_type_3,value_3,value_type3,skillId,cooldown,chance,skill_value,skill_stat_ratio,skill_value_type,stat_reference_type
-123001,Rune of Health (Fenrir) Lv1,1,140,HP,200,Add,NONE,0,Add,NONE,0,Add,,,,,,,
-123001,Rune of Health (Fenrir) Lv1,2,180,HP,224,Add,NONE,0,Add,NONE,0,Add,,,,,,,
-123001,Rune of Health (Fenrir) Lv1,3,220,HP,248,Add,NONE,0,Add,NONE,0,Add,,,,,,,
-122001,Rune of Attack (Fenrir) Lv1,1,525,ATK,50,Add,NONE,0,Add,NONE,0,Add,,,,,,,
-122001,Rune of Attack (Fenrir) Lv1,2,575,ATK,52,Add,NONE,0,Add,NONE,0,Add,,,,,,,
-122001,Rune of Attack (Fenrir) Lv1,3,625,ATK,54,Add,NONE,0,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,1,100,HP,186,Add,DEF,6,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,2,200,HP,200,Add,DEF,7,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,3,300,HP,214,Add,DEF,8,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,4,400,HP,228,Add,DEF,9,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,5,500,HP,242,Add,DEF,10,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,6,600,HP,256,Add,DEF,11,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,7,700,HP,270,Add,DEF,12,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,8,800,HP,284,Add,DEF,13,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,9,900,HP,298,Add,DEF,14,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,10,1000,HP,312,Add,DEF,15,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,11,1100,HP,326,Add,DEF,16,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,12,1200,HP,340,Add,DEF,17,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,13,1300,HP,354,Add,DEF,18,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,14,1400,HP,368,Add,DEF,19,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,15,1500,HP,382,Add,DEF,20,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,16,1600,HP,396,Add,DEF,21,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,17,1700,HP,410,Add,DEF,22,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,18,1800,HP,424,Add,DEF,23,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,19,1900,HP,438,Add,DEF,24,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,20,2000,HP,452,Add,DEF,25,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,21,2100,HP,466,Add,DEF,26,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,22,2200,HP,480,Add,DEF,27,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,23,2300,HP,494,Add,DEF,28,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,24,2400,HP,508,Add,DEF,29,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,25,2500,HP,530,Add,DEF,30,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,26,2600,HP,552,Add,DEF,31,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,27,2700,HP,574,Add,DEF,32,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,28,2800,HP,596,Add,DEF,33,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,29,2900,HP,618,Add,DEF,34,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,30,3000,HP,640,Add,DEF,35,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,31,3100,HP,662,Add,DEF,36,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,32,3200,HP,684,Add,DEF,37,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,33,3300,HP,706,Add,DEF,38,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,34,3400,HP,728,Add,DEF,39,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,35,3500,HP,750,Add,DEF,40,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,36,3600,HP,772,Add,DEF,41,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,37,3700,HP,794,Add,DEF,42,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,38,3800,HP,816,Add,DEF,43,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,39,3900,HP,838,Add,DEF,44,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,40,4000,HP,860,Add,DEF,45,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,41,4100,HP,882,Add,DEF,46,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,42,4200,HP,904,Add,DEF,47,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,43,4300,HP,926,Add,DEF,48,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,44,4400,HP,948,Add,DEF,49,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,45,4500,HP,970,Add,DEF,50,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,46,4600,HP,992,Add,DEF,51,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,47,4700,HP,1014,Add,DEF,52,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,48,4800,HP,1036,Add,DEF,53,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,49,4900,HP,1058,Add,DEF,54,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,50,5000,HP,1080,Add,DEF,55,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,51,5100,HP,1102,Add,DEF,56,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,52,5200,HP,1124,Add,DEF,57,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,53,5300,HP,1146,Add,DEF,58,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,54,5400,HP,1168,Add,DEF,59,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,55,5500,HP,1192,Add,DEF,60,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,56,5600,HP,1216,Add,DEF,61,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,57,5700,HP,1240,Add,DEF,62,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,58,5800,HP,1264,Add,DEF,63,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,59,5900,HP,1288,Add,DEF,64,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,60,6000,HP,1312,Add,DEF,65,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,61,6100,HP,1336,Add,DEF,66,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,62,6200,HP,1360,Add,DEF,67,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,63,6300,HP,1384,Add,DEF,68,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,64,6400,HP,1408,Add,DEF,69,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,65,6500,HP,1432,Add,DEF,70,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,66,6600,HP,1456,Add,DEF,71,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,67,6700,HP,1480,Add,DEF,72,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,68,6800,HP,1504,Add,DEF,73,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,69,6900,HP,1528,Add,DEF,74,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,70,7000,HP,1552,Add,DEF,75,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,71,7100,HP,1576,Add,DEF,76,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,72,7200,HP,1600,Add,DEF,77,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,73,7300,HP,1624,Add,DEF,78,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,74,7400,HP,1648,Add,DEF,79,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,75,7500,HP,1672,Add,DEF,80,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,76,7600,HP,1696,Add,DEF,81,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,77,7700,HP,1720,Add,DEF,82,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,78,7800,HP,1744,Add,DEF,83,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,79,7900,HP,1768,Add,DEF,84,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,80,8000,HP,1792,Add,DEF,85,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,81,8100,HP,1816,Add,DEF,86,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,82,8200,HP,1840,Add,DEF,87,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,83,8300,HP,1864,Add,DEF,88,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,84,8400,HP,1888,Add,DEF,89,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,85,8500,HP,1912,Add,DEF,90,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,86,8600,HP,1936,Add,DEF,91,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,87,8700,HP,1960,Add,DEF,92,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,88,8800,HP,1984,Add,DEF,93,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,89,8900,HP,2008,Add,DEF,94,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,90,9000,HP,2032,Add,DEF,95,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,91,9100,HP,2056,Add,DEF,96,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,92,9200,HP,2080,Add,DEF,97,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,93,9300,HP,2104,Add,DEF,98,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,94,9400,HP,2128,Add,DEF,99,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,95,9500,HP,2152,Add,DEF,100,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,96,9600,HP,2190,Add,DEF,102,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,97,9700,HP,2228,Add,DEF,104,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,98,9800,HP,2266,Add,DEF,106,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,99,9900,HP,2304,Add,DEF,108,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,100,10000,HP,2342,Add,DEF,110,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,101,10100,HP,2380,Add,DEF,112,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,102,10200,HP,2418,Add,DEF,114,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,103,10300,HP,2456,Add,DEF,116,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,104,10400,HP,2494,Add,DEF,118,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,105,10500,HP,2532,Add,DEF,120,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,106,10600,HP,2570,Add,DEF,122,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,107,10700,HP,2608,Add,DEF,124,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,108,10800,HP,2646,Add,DEF,126,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,109,10900,HP,2684,Add,DEF,128,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,110,11000,HP,2722,Add,DEF,130,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,111,11100,HP,2760,Add,DEF,132,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,112,11200,HP,2798,Add,DEF,134,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,113,11300,HP,2836,Add,DEF,136,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,114,11400,HP,2874,Add,DEF,138,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,115,11500,HP,2912,Add,DEF,140,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,116,11600,HP,2950,Add,DEF,142,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,117,11700,HP,2988,Add,DEF,144,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,118,11800,HP,3026,Add,DEF,146,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,119,11900,HP,3064,Add,DEF,148,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,120,12000,HP,3102,Add,DEF,150,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,121,12100,HP,3140,Add,DEF,152,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,122,12200,HP,3178,Add,DEF,154,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,123,12300,HP,3216,Add,DEF,156,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,124,12400,HP,3254,Add,DEF,158,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,125,12500,HP,3292,Add,DEF,160,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,126,12600,HP,3330,Add,DEF,162,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,127,12700,HP,3368,Add,DEF,164,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,128,12800,HP,3406,Add,DEF,166,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,129,12900,HP,3444,Add,DEF,168,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,130,13000,HP,3482,Add,DEF,170,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,131,13100,HP,3520,Add,DEF,172,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,132,13200,HP,3558,Add,DEF,174,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,133,13300,HP,3596,Add,DEF,176,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,134,13400,HP,3634,Add,DEF,178,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,135,13500,HP,3672,Add,DEF,180,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,136,13600,HP,3710,Add,DEF,182,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,137,13700,HP,3748,Add,DEF,184,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,138,13800,HP,3786,Add,DEF,186,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,139,13900,HP,3824,Add,DEF,188,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,140,14000,HP,3862,Add,DEF,190,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,141,14100,HP,3900,Add,DEF,192,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,142,14200,HP,3938,Add,DEF,194,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,143,14300,HP,3976,Add,DEF,196,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,144,14400,HP,4014,Add,DEF,198,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,145,14500,HP,4052,Add,DEF,200,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,146,14600,HP,4153,Add,DEF,204,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,147,14700,HP,4254,Add,DEF,208,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,148,14800,HP,4355,Add,DEF,212,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,149,14900,HP,4456,Add,DEF,216,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,150,15000,HP,4557,Add,DEF,220,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,151,15100,HP,4658,Add,DEF,224,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,152,15200,HP,4759,Add,DEF,228,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,153,15300,HP,4860,Add,DEF,232,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,154,15400,HP,4961,Add,DEF,236,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,155,15500,HP,5062,Add,DEF,240,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,156,15600,HP,5163,Add,DEF,244,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,157,15700,HP,5264,Add,DEF,248,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,158,15800,HP,5365,Add,DEF,252,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,159,15900,HP,5466,Add,DEF,256,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,160,16000,HP,5567,Add,DEF,260,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,161,16100,HP,5668,Add,DEF,264,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,162,16200,HP,5769,Add,DEF,268,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,163,16300,HP,5870,Add,DEF,272,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,164,16400,HP,5971,Add,DEF,276,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,165,16500,HP,6072,Add,DEF,280,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,166,16600,HP,6173,Add,DEF,284,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,167,16700,HP,6274,Add,DEF,288,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,168,16800,HP,6375,Add,DEF,292,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,169,16900,HP,6476,Add,DEF,296,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,170,17000,HP,6577,Add,DEF,300,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,171,17100,HP,6678,Add,DEF,304,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,172,17200,HP,6779,Add,DEF,308,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,173,17300,HP,6880,Add,DEF,312,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,174,17400,HP,6981,Add,DEF,316,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,175,17500,HP,7082,Add,DEF,320,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,176,17600,HP,7183,Add,DEF,324,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,177,17700,HP,7284,Add,DEF,328,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,178,17800,HP,7385,Add,DEF,332,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,179,17900,HP,7486,Add,DEF,336,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,180,18000,HP,7587,Add,DEF,340,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,181,18100,HP,7688,Add,DEF,344,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,182,18200,HP,7789,Add,DEF,348,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,183,18300,HP,7890,Add,DEF,352,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,184,18400,HP,7991,Add,DEF,356,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,185,18500,HP,8092,Add,DEF,360,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,186,18600,HP,8193,Add,DEF,364,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,187,18700,HP,8294,Add,DEF,368,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,188,18800,HP,8395,Add,DEF,372,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,189,18900,HP,8496,Add,DEF,376,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,190,19000,HP,8597,Add,DEF,380,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,191,19100,HP,8698,Add,DEF,384,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,192,19200,HP,8799,Add,DEF,388,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,193,19300,HP,8900,Add,DEF,392,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,194,19400,HP,9001,Add,DEF,396,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,195,19500,HP,9102,Add,DEF,400,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,196,19600,HP,9203,Add,DEF,404,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,197,19700,HP,9304,Add,DEF,408,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,198,19800,HP,9405,Add,DEF,412,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,199,19900,HP,9506,Add,DEF,416,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,200,20000,HP,9607,Add,DEF,420,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,201,20100,HP,9708,Add,DEF,424,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,202,20200,HP,9809,Add,DEF,428,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,203,20300,HP,9910,Add,DEF,432,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,204,20400,HP,10011,Add,DEF,436,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,205,20500,HP,10112,Add,DEF,440,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,206,20600,HP,10213,Add,DEF,444,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,207,20700,HP,10314,Add,DEF,448,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,208,20800,HP,10415,Add,DEF,452,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,209,20900,HP,10516,Add,DEF,456,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,210,21000,HP,10617,Add,DEF,460,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,211,21100,HP,10718,Add,DEF,464,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,212,21200,HP,10819,Add,DEF,468,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,213,21300,HP,10920,Add,DEF,472,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,214,21400,HP,11021,Add,DEF,476,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,215,21500,HP,11122,Add,DEF,480,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,216,21600,HP,11232,Add,DEF,488,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,217,21700,HP,11342,Add,DEF,496,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,218,21800,HP,11452,Add,DEF,504,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,219,21900,HP,11562,Add,DEF,512,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,220,22000,HP,11672,Add,DEF,520,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,221,22100,HP,11782,Add,DEF,528,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,222,22200,HP,11892,Add,DEF,536,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,223,22300,HP,12002,Add,DEF,544,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,224,22400,HP,12112,Add,DEF,552,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,225,22500,HP,12222,Add,DEF,560,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,226,22600,HP,12332,Add,DEF,568,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,227,22700,HP,12442,Add,DEF,576,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,228,22800,HP,12552,Add,DEF,584,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,229,22900,HP,12662,Add,DEF,592,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,230,23000,HP,12772,Add,DEF,600,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,231,23100,HP,12882,Add,DEF,608,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,232,23200,HP,12992,Add,DEF,616,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,233,23300,HP,13102,Add,DEF,624,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,234,23400,HP,13212,Add,DEF,632,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,235,23500,HP,13322,Add,DEF,640,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,236,23600,HP,13432,Add,DEF,648,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,237,23700,HP,13542,Add,DEF,656,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,238,23800,HP,13652,Add,DEF,664,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,239,23900,HP,13762,Add,DEF,672,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,240,24000,HP,13872,Add,DEF,680,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,241,24100,HP,13982,Add,DEF,688,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,242,24200,HP,14092,Add,DEF,696,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,243,24300,HP,14202,Add,DEF,704,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,244,24400,HP,14312,Add,DEF,712,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,245,24500,HP,14422,Add,DEF,720,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,246,24600,HP,14532,Add,DEF,728,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,247,24700,HP,14642,Add,DEF,736,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,248,24800,HP,14752,Add,DEF,744,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,249,24900,HP,14862,Add,DEF,752,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,250,25000,HP,14972,Add,DEF,760,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,251,25100,HP,15082,Add,DEF,768,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,252,25200,HP,15192,Add,DEF,776,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,253,25300,HP,15302,Add,DEF,784,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,254,25400,HP,15412,Add,DEF,792,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,255,25500,HP,15522,Add,DEF,800,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,256,25600,HP,15632,Add,DEF,808,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,257,25700,HP,15742,Add,DEF,816,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,258,25800,HP,15852,Add,DEF,824,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,259,25900,HP,15962,Add,DEF,832,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,260,26000,HP,16072,Add,DEF,840,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,261,26100,HP,16182,Add,DEF,848,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,262,26200,HP,16292,Add,DEF,856,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,263,26300,HP,16402,Add,DEF,864,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,264,26400,HP,16512,Add,DEF,872,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,265,26500,HP,16622,Add,DEF,880,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,266,26600,HP,16732,Add,DEF,888,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,267,26700,HP,16842,Add,DEF,896,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,268,26800,HP,16952,Add,DEF,904,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,269,26900,HP,17062,Add,DEF,912,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,270,27000,HP,17172,Add,DEF,920,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,271,27100,HP,17282,Add,DEF,928,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,272,27200,HP,17392,Add,DEF,936,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,273,27300,HP,17502,Add,DEF,944,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,274,27400,HP,17612,Add,DEF,952,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,275,27500,HP,17722,Add,DEF,960,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,276,27600,HP,17832,Add,DEF,968,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,277,27700,HP,17942,Add,DEF,976,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,278,27800,HP,18052,Add,DEF,984,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,279,27900,HP,18162,Add,DEF,992,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,280,28000,HP,18272,Add,DEF,1000,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,281,28100,HP,18382,Add,DEF,1008,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,282,28200,HP,18492,Add,DEF,1016,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,283,28300,HP,18602,Add,DEF,1024,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,284,28400,HP,18712,Add,DEF,1032,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,285,28500,HP,18822,Add,DEF,1040,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,286,28600,HP,18932,Add,DEF,1048,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,287,28700,HP,19042,Add,DEF,1056,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,288,28800,HP,19152,Add,DEF,1064,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,289,28900,HP,19262,Add,DEF,1072,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,290,29000,HP,19372,Add,DEF,1080,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,291,29100,HP,19482,Add,DEF,1088,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,292,29200,HP,19592,Add,DEF,1096,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,293,29300,HP,19702,Add,DEF,1104,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,294,29400,HP,19812,Add,DEF,1112,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,295,29500,HP,19922,Add,DEF,1120,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,296,29600,HP,20032,Add,DEF,1128,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,297,29700,HP,20142,Add,DEF,1136,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,298,29800,HP,20252,Add,DEF,1144,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,299,29900,HP,20362,Add,DEF,1152,Add,NONE,0,Add,,,,,,,
-311001,Adventurer's Rune,300,30000,HP,20472,Add,DEF,1160,Add,NONE,0,Add,,,,,,,
-115001,Rune of Bleeding (Fenrir) Lv1,1,100,ATK,19,Add,0,0,Add,NONE,0,Add,600001,10,20,0.05,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,2,200,ATK,21,Add,0,0,Add,NONE,0,Add,600001,10,20,0.05,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,3,300,ATK,23,Add,0,0,Add,NONE,0,Add,600001,10,20,0.06,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,4,400,ATK,25,Add,0,0,Add,NONE,0,Add,600001,10,20,0.06,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,5,500,ATK,27,Add,0,0,Add,NONE,0,Add,600001,10,20,0.06,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,6,600,ATK,29,Add,0,0,Add,NONE,0,Add,600001,10,20,0.06,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,7,700,ATK,31,Add,0,0,Add,NONE,0,Add,600001,10,20,0.07,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,8,800,ATK,33,Add,0,0,Add,NONE,0,Add,600001,10,20,0.07,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,9,900,ATK,35,Add,0,0,Add,NONE,0,Add,600001,10,20,0.07,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,10,1000,ATK,37,Add,0,0,Add,NONE,0,Add,600001,10,20,0.08,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,11,1100,ATK,39,Add,0,0,Add,NONE,0,Add,600001,10,20,0.08,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,12,1200,ATK,41,Add,0,0,Add,NONE,0,Add,600001,10,20,0.08,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,13,1300,ATK,43,Add,0,0,Add,NONE,0,Add,600001,10,20,0.08,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,14,1400,ATK,45,Add,0,0,Add,NONE,0,Add,600001,10,20,0.09,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,15,1500,ATK,47,Add,0,0,Add,NONE,0,Add,600001,10,20,0.09,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,16,1600,ATK,49,Add,0,0,Add,NONE,0,Add,600001,10,20,0.09,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,17,1700,ATK,51,Add,0,0,Add,NONE,0,Add,600001,10,20,0.10,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,18,1800,ATK,53,Add,0,0,Add,NONE,0,Add,600001,10,20,0.10,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,19,1900,ATK,55,Add,0,0,Add,NONE,0,Add,600001,10,20,0.10,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,20,2000,ATK,57,Add,0,0,Add,NONE,0,Add,600001,10,20,0.10,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,21,2100,ATK,59,Add,0,0,Add,NONE,0,Add,600001,10,20,0.11,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,22,2200,ATK,61,Add,0,0,Add,NONE,0,Add,600001,10,20,0.11,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,23,2300,ATK,63,Add,0,0,Add,NONE,0,Add,600001,10,20,0.11,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,24,2400,ATK,65,Add,0,0,Add,NONE,0,Add,600001,10,20,0.12,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,25,2500,ATK,67,Add,0,0,Add,NONE,0,Add,600001,10,20,0.12,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,26,2600,ATK,71,Add,0,0,Add,NONE,0,Add,600001,10,20,0.12,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,27,2700,ATK,75,Add,0,0,Add,NONE,0,Add,600001,10,20,0.12,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,28,2800,ATK,79,Add,0,0,Add,NONE,0,Add,600001,10,20,0.13,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,29,2900,ATK,83,Add,0,0,Add,NONE,0,Add,600001,10,20,0.13,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,30,3000,ATK,87,Add,0,0,Add,NONE,0,Add,600001,10,20,0.13,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,31,3100,ATK,91,Add,0,0,Add,NONE,0,Add,600001,10,20,0.14,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,32,3200,ATK,95,Add,0,0,Add,NONE,0,Add,600001,10,20,0.14,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,33,3300,ATK,99,Add,0,0,Add,NONE,0,Add,600001,10,20,0.14,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,34,3400,ATK,103,Add,0,0,Add,NONE,0,Add,600001,10,20,0.14,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,35,3500,ATK,107,Add,0,0,Add,NONE,0,Add,600001,10,20,0.15,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,36,3600,ATK,111,Add,0,0,Add,NONE,0,Add,600001,10,20,0.15,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,37,3700,ATK,115,Add,0,0,Add,NONE,0,Add,600001,10,20,0.15,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,38,3800,ATK,119,Add,0,0,Add,NONE,0,Add,600001,10,20,0.16,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,39,3900,ATK,123,Add,0,0,Add,NONE,0,Add,600001,10,20,0.16,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,40,4000,ATK,127,Add,0,0,Add,NONE,0,Add,600001,10,20,0.16,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,41,4100,ATK,131,Add,0,0,Add,NONE,0,Add,600001,10,20,0.17,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,42,4200,ATK,135,Add,0,0,Add,NONE,0,Add,600001,10,20,0.17,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,43,4300,ATK,139,Add,0,0,Add,NONE,0,Add,600001,10,20,0.17,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,44,4400,ATK,143,Add,0,0,Add,NONE,0,Add,600001,10,20,0.17,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,45,4500,ATK,147,Add,0,0,Add,NONE,0,Add,600001,10,20,0.18,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,46,4600,ATK,151,Add,0,0,Add,NONE,0,Add,600001,10,20,0.18,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,47,4700,ATK,155,Add,0,0,Add,NONE,0,Add,600001,10,20,0.18,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,48,4800,ATK,159,Add,0,0,Add,NONE,0,Add,600001,10,20,0.19,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,49,4900,ATK,163,Add,0,0,Add,NONE,0,Add,600001,10,20,0.19,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,50,5000,ATK,167,Add,0,0,Add,NONE,0,Add,600001,10,20,0.19,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,51,5100,ATK,171,Add,0,0,Add,NONE,0,Add,600001,10,20,0.20,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,52,5200,ATK,175,Add,0,0,Add,NONE,0,Add,600001,10,20,0.20,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,53,5300,ATK,179,Add,0,0,Add,NONE,0,Add,600001,10,20,0.20,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,54,5400,ATK,183,Add,0,0,Add,NONE,0,Add,600001,10,20,0.20,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,55,5500,ATK,187,Add,0,0,Add,NONE,0,Add,600001,10,20,0.21,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,56,5600,ATK,191,Add,0,0,Add,NONE,0,Add,600001,10,20,0.21,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,57,5700,ATK,195,Add,0,0,Add,NONE,0,Add,600001,10,20,0.22,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,58,5800,ATK,199,Add,0,0,Add,NONE,0,Add,600001,10,20,0.22,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,59,5900,ATK,203,Add,0,0,Add,NONE,0,Add,600001,10,20,0.22,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,60,6000,ATK,207,Add,0,0,Add,NONE,0,Add,600001,10,20,0.23,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,61,6100,ATK,211,Add,0,0,Add,NONE,0,Add,600001,10,20,0.23,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,62,6200,ATK,215,Add,0,0,Add,NONE,0,Add,600001,10,20,0.23,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,63,6300,ATK,219,Add,0,0,Add,NONE,0,Add,600001,10,20,0.24,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,64,6400,ATK,223,Add,0,0,Add,NONE,0,Add,600001,10,20,0.24,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,65,6500,ATK,227,Add,0,0,Add,NONE,0,Add,600001,10,20,0.24,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,66,6600,ATK,231,Add,0,0,Add,NONE,0,Add,600001,10,20,0.25,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,67,6700,ATK,235,Add,0,0,Add,NONE,0,Add,600001,10,20,0.25,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,68,6800,ATK,239,Add,0,0,Add,NONE,0,Add,600001,10,20,0.25,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,69,6900,ATK,243,Add,0,0,Add,NONE,0,Add,600001,10,20,0.26,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,70,7000,ATK,247,Add,0,0,Add,NONE,0,Add,600001,10,20,0.26,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,71,7100,ATK,251,Add,0,0,Add,NONE,0,Add,600001,10,20,0.27,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,72,7200,ATK,255,Add,0,0,Add,NONE,0,Add,600001,10,20,0.27,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,73,7300,ATK,259,Add,0,0,Add,NONE,0,Add,600001,10,20,0.27,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,74,7400,ATK,263,Add,0,0,Add,NONE,0,Add,600001,10,20,0.28,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,75,7500,ATK,267,Add,0,0,Add,NONE,0,Add,600001,10,20,0.28,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,76,7600,ATK,271,Add,0,0,Add,NONE,0,Add,600001,10,20,0.28,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,77,7700,ATK,275,Add,0,0,Add,NONE,0,Add,600001,10,20,0.29,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,78,7800,ATK,279,Add,0,0,Add,NONE,0,Add,600001,10,20,0.29,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,79,7900,ATK,283,Add,0,0,Add,NONE,0,Add,600001,10,20,0.29,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,80,8000,ATK,287,Add,0,0,Add,NONE,0,Add,600001,10,20,0.30,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,81,8100,ATK,291,Add,0,0,Add,NONE,0,Add,600001,10,20,0.30,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,82,8200,ATK,295,Add,0,0,Add,NONE,0,Add,600001,10,20,0.31,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,83,8300,ATK,299,Add,0,0,Add,NONE,0,Add,600001,10,20,0.31,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,84,8400,ATK,303,Add,0,0,Add,NONE,0,Add,600001,10,20,0.31,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,85,8500,ATK,307,Add,0,0,Add,NONE,0,Add,600001,10,20,0.32,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,86,8600,ATK,311,Add,0,0,Add,NONE,0,Add,600001,10,20,0.32,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,87,8700,ATK,315,Add,0,0,Add,NONE,0,Add,600001,10,20,0.32,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,88,8800,ATK,319,Add,0,0,Add,NONE,0,Add,600001,10,20,0.33,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,89,8900,ATK,323,Add,0,0,Add,NONE,0,Add,600001,10,20,0.33,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,90,9000,ATK,327,Add,0,0,Add,NONE,0,Add,600001,10,20,0.33,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,91,9100,ATK,331,Add,0,0,Add,NONE,0,Add,600001,10,20,0.34,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,92,9200,ATK,335,Add,0,0,Add,NONE,0,Add,600001,10,20,0.34,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,93,9300,ATK,339,Add,0,0,Add,NONE,0,Add,600001,10,20,0.34,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,94,9400,ATK,343,Add,0,0,Add,NONE,0,Add,600001,10,20,0.35,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,95,9500,ATK,348,Add,0,0,Add,NONE,0,Add,600001,10,20,0.35,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,96,9600,ATK,353,Add,0,0,Add,NONE,0,Add,600001,10,20,0.36,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,97,9700,ATK,358,Add,0,0,Add,NONE,0,Add,600001,10,20,0.36,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,98,9800,ATK,363,Add,0,0,Add,NONE,0,Add,600001,10,20,0.36,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,99,9900,ATK,368,Add,0,0,Add,NONE,0,Add,600001,10,20,0.37,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,100,10000,ATK,373,Add,0,0,Add,NONE,0,Add,600001,10,20,0.37,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,101,10100,ATK,378,Add,0,0,Add,NONE,0,Add,600001,10,20,0.38,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,102,10200,ATK,383,Add,0,0,Add,NONE,0,Add,600001,10,20,0.38,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,103,10300,ATK,388,Add,0,0,Add,NONE,0,Add,600001,10,20,0.39,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,104,10400,ATK,393,Add,0,0,Add,NONE,0,Add,600001,10,20,0.39,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,105,10500,ATK,398,Add,0,0,Add,NONE,0,Add,600001,10,20,0.39,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,106,10600,ATK,403,Add,0,0,Add,NONE,0,Add,600001,10,20,0.40,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,107,10700,ATK,408,Add,0,0,Add,NONE,0,Add,600001,10,20,0.40,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,108,10800,ATK,413,Add,0,0,Add,NONE,0,Add,600001,10,20,0.41,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,109,10900,ATK,418,Add,0,0,Add,NONE,0,Add,600001,10,20,0.41,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,110,11000,ATK,423,Add,0,0,Add,NONE,0,Add,600001,10,20,0.41,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,111,11100,ATK,428,Add,0,0,Add,NONE,0,Add,600001,10,20,0.42,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,112,11200,ATK,433,Add,0,0,Add,NONE,0,Add,600001,10,20,0.42,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,113,11300,ATK,438,Add,0,0,Add,NONE,0,Add,600001,10,20,0.43,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,114,11400,ATK,443,Add,0,0,Add,NONE,0,Add,600001,10,20,0.43,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,115,11500,ATK,448,Add,0,0,Add,NONE,0,Add,600001,10,20,0.44,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,116,11600,ATK,453,Add,0,0,Add,NONE,0,Add,600001,10,20,0.44,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,117,11700,ATK,458,Add,0,0,Add,NONE,0,Add,600001,10,20,0.44,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,118,11800,ATK,463,Add,0,0,Add,NONE,0,Add,600001,10,20,0.45,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,119,11900,ATK,468,Add,0,0,Add,NONE,0,Add,600001,10,20,0.45,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,120,12000,ATK,473,Add,0,0,Add,NONE,0,Add,600001,10,20,0.46,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,121,12100,ATK,478,Add,0,0,Add,NONE,0,Add,600001,10,20,0.46,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,122,12200,ATK,483,Add,0,0,Add,NONE,0,Add,600001,10,20,0.47,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,123,12300,ATK,488,Add,0,0,Add,NONE,0,Add,600001,10,20,0.47,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,124,12400,ATK,493,Add,0,0,Add,NONE,0,Add,600001,10,20,0.47,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,125,12500,ATK,498,Add,0,0,Add,NONE,0,Add,600001,10,20,0.48,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,126,12600,ATK,503,Add,0,0,Add,NONE,0,Add,600001,10,20,0.48,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,127,12700,ATK,508,Add,0,0,Add,NONE,0,Add,600001,10,20,0.49,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,128,12800,ATK,513,Add,0,0,Add,NONE,0,Add,600001,10,20,0.49,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,129,12900,ATK,518,Add,0,0,Add,NONE,0,Add,600001,10,20,0.49,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,130,13000,ATK,523,Add,0,0,Add,NONE,0,Add,600001,10,20,0.50,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,131,13100,ATK,528,Add,0,0,Add,NONE,0,Add,600001,10,20,0.50,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,132,13200,ATK,533,Add,0,0,Add,NONE,0,Add,600001,10,20,0.51,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,133,13300,ATK,538,Add,0,0,Add,NONE,0,Add,600001,10,20,0.51,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,134,13400,ATK,543,Add,0,0,Add,NONE,0,Add,600001,10,20,0.52,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,135,13500,ATK,548,Add,0,0,Add,NONE,0,Add,600001,10,20,0.52,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,136,13600,ATK,553,Add,0,0,Add,NONE,0,Add,600001,10,20,0.52,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,137,13700,ATK,558,Add,0,0,Add,NONE,0,Add,600001,10,20,0.53,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,138,13800,ATK,563,Add,0,0,Add,NONE,0,Add,600001,10,20,0.53,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,139,13900,ATK,568,Add,0,0,Add,NONE,0,Add,600001,10,20,0.54,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,140,14000,ATK,573,Add,0,0,Add,NONE,0,Add,600001,10,20,0.54,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,141,14100,ATK,578,Add,0,0,Add,NONE,0,Add,600001,10,20,0.55,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,142,14200,ATK,583,Add,0,0,Add,NONE,0,Add,600001,10,20,0.55,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,143,14300,ATK,588,Add,0,0,Add,NONE,0,Add,600001,10,20,0.55,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,144,14400,ATK,593,Add,0,0,Add,NONE,0,Add,600001,10,20,0.56,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,145,14500,ATK,598,Add,0,0,Add,NONE,0,Add,600001,10,20,0.56,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,146,14600,ATK,613,Add,0,0,Add,NONE,0,Add,600001,10,20,0.57,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,147,14700,ATK,628,Add,0,0,Add,NONE,0,Add,600001,10,20,0.57,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,148,14800,ATK,643,Add,0,0,Add,NONE,0,Add,600001,10,20,0.58,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,149,14900,ATK,658,Add,0,0,Add,NONE,0,Add,600001,10,20,0.58,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,150,15000,ATK,673,Add,0,0,Add,NONE,0,Add,600001,10,20,0.59,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,151,15100,ATK,688,Add,0,0,Add,NONE,0,Add,600001,10,20,0.59,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,152,15200,ATK,703,Add,0,0,Add,NONE,0,Add,600001,10,20,0.60,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,153,15300,ATK,718,Add,0,0,Add,NONE,0,Add,600001,10,20,0.61,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,154,15400,ATK,733,Add,0,0,Add,NONE,0,Add,600001,10,20,0.61,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,155,15500,ATK,748,Add,0,0,Add,NONE,0,Add,600001,10,20,0.62,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,156,15600,ATK,763,Add,0,0,Add,NONE,0,Add,600001,10,20,0.62,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,157,15700,ATK,778,Add,0,0,Add,NONE,0,Add,600001,10,20,0.63,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,158,15800,ATK,793,Add,0,0,Add,NONE,0,Add,600001,10,20,0.63,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,159,15900,ATK,808,Add,0,0,Add,NONE,0,Add,600001,10,20,0.64,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,160,16000,ATK,823,Add,0,0,Add,NONE,0,Add,600001,10,20,0.64,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,161,16100,ATK,838,Add,0,0,Add,NONE,0,Add,600001,10,20,0.65,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,162,16200,ATK,853,Add,0,0,Add,NONE,0,Add,600001,10,20,0.65,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,163,16300,ATK,868,Add,0,0,Add,NONE,0,Add,600001,10,20,0.66,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,164,16400,ATK,883,Add,0,0,Add,NONE,0,Add,600001,10,20,0.66,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,165,16500,ATK,898,Add,0,0,Add,NONE,0,Add,600001,10,20,0.67,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,166,16600,ATK,913,Add,0,0,Add,NONE,0,Add,600001,10,20,0.68,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,167,16700,ATK,928,Add,0,0,Add,NONE,0,Add,600001,10,20,0.68,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,168,16800,ATK,943,Add,0,0,Add,NONE,0,Add,600001,10,20,0.69,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,169,16900,ATK,958,Add,0,0,Add,NONE,0,Add,600001,10,20,0.69,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,170,17000,ATK,973,Add,0,0,Add,NONE,0,Add,600001,10,20,0.70,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,171,17100,ATK,988,Add,0,0,Add,NONE,0,Add,600001,10,20,0.70,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,172,17200,ATK,1003,Add,0,0,Add,NONE,0,Add,600001,10,20,0.71,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,173,17300,ATK,1018,Add,0,0,Add,NONE,0,Add,600001,10,20,0.71,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,174,17400,ATK,1033,Add,0,0,Add,NONE,0,Add,600001,10,20,0.72,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,175,17500,ATK,1048,Add,0,0,Add,NONE,0,Add,600001,10,20,0.72,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,176,17600,ATK,1063,Add,0,0,Add,NONE,0,Add,600001,10,20,0.73,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,177,17700,ATK,1078,Add,0,0,Add,NONE,0,Add,600001,10,20,0.73,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,178,17800,ATK,1093,Add,0,0,Add,NONE,0,Add,600001,10,20,0.74,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,179,17900,ATK,1108,Add,0,0,Add,NONE,0,Add,600001,10,20,0.75,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,180,18000,ATK,1123,Add,0,0,Add,NONE,0,Add,600001,10,20,0.75,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,181,18100,ATK,1138,Add,0,0,Add,NONE,0,Add,600001,10,20,0.76,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,182,18200,ATK,1153,Add,0,0,Add,NONE,0,Add,600001,10,20,0.76,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,183,18300,ATK,1168,Add,0,0,Add,NONE,0,Add,600001,10,20,0.77,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,184,18400,ATK,1183,Add,0,0,Add,NONE,0,Add,600001,10,20,0.77,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,185,18500,ATK,1198,Add,0,0,Add,NONE,0,Add,600001,10,20,0.78,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,186,18600,ATK,1213,Add,0,0,Add,NONE,0,Add,600001,10,20,0.78,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,187,18700,ATK,1228,Add,0,0,Add,NONE,0,Add,600001,10,20,0.79,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,188,18800,ATK,1243,Add,0,0,Add,NONE,0,Add,600001,10,20,0.79,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,189,18900,ATK,1258,Add,0,0,Add,NONE,0,Add,600001,10,20,0.80,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,190,19000,ATK,1273,Add,0,0,Add,NONE,0,Add,600001,10,20,0.80,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,191,19100,ATK,1288,Add,0,0,Add,NONE,0,Add,600001,10,20,0.81,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,192,19200,ATK,1303,Add,0,0,Add,NONE,0,Add,600001,10,20,0.82,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,193,19300,ATK,1318,Add,0,0,Add,NONE,0,Add,600001,10,20,0.82,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,194,19400,ATK,1333,Add,0,0,Add,NONE,0,Add,600001,10,20,0.83,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,195,19500,ATK,1348,Add,0,0,Add,NONE,0,Add,600001,10,20,0.83,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,196,19600,ATK,1363,Add,0,0,Add,NONE,0,Add,600001,10,20,0.84,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,197,19700,ATK,1378,Add,0,0,Add,NONE,0,Add,600001,10,20,0.84,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,198,19800,ATK,1393,Add,0,0,Add,NONE,0,Add,600001,10,20,0.85,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,199,19900,ATK,1408,Add,0,0,Add,NONE,0,Add,600001,10,20,0.85,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,200,20000,ATK,1423,Add,0,0,Add,NONE,0,Add,600001,10,20,0.86,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,201,20100,ATK,1438,Add,0,0,Add,NONE,0,Add,600001,10,20,0.86,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,202,20200,ATK,1453,Add,0,0,Add,NONE,0,Add,600001,10,20,0.87,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,203,20300,ATK,1468,Add,0,0,Add,NONE,0,Add,600001,10,20,0.88,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,204,20400,ATK,1483,Add,0,0,Add,NONE,0,Add,600001,10,20,0.88,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,205,20500,ATK,1498,Add,0,0,Add,NONE,0,Add,600001,10,20,0.89,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,206,20600,ATK,1513,Add,0,0,Add,NONE,0,Add,600001,10,20,0.89,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,207,20700,ATK,1528,Add,0,0,Add,NONE,0,Add,600001,10,20,0.90,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,208,20800,ATK,1543,Add,0,0,Add,NONE,0,Add,600001,10,20,0.90,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,209,20900,ATK,1558,Add,0,0,Add,NONE,0,Add,600001,10,20,0.91,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,210,21000,ATK,1573,Add,0,0,Add,NONE,0,Add,600001,10,20,0.91,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,211,21100,ATK,1588,Add,0,0,Add,NONE,0,Add,600001,10,20,0.92,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,212,21200,ATK,1603,Add,0,0,Add,NONE,0,Add,600001,10,20,0.92,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,213,21300,ATK,1618,Add,0,0,Add,NONE,0,Add,600001,10,20,0.93,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,214,21400,ATK,1633,Add,0,0,Add,NONE,0,Add,600001,10,20,0.93,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,215,21500,ATK,1648,Add,0,0,Add,NONE,0,Add,600001,10,20,0.94,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,216,21600,ATK,1667,Add,0,0,Add,NONE,0,Add,600001,10,20,0.96,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,217,21700,ATK,1686,Add,0,0,Add,NONE,0,Add,600001,10,20,0.97,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,218,21800,ATK,1705,Add,0,0,Add,NONE,0,Add,600001,10,20,0.99,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,219,21900,ATK,1724,Add,0,0,Add,NONE,0,Add,600001,10,20,1.01,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,220,22000,ATK,1743,Add,0,0,Add,NONE,0,Add,600001,10,20,1.03,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,221,22100,ATK,1762,Add,0,0,Add,NONE,0,Add,600001,10,20,1.04,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,222,22200,ATK,1781,Add,0,0,Add,NONE,0,Add,600001,10,20,1.06,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,223,22300,ATK,1800,Add,0,0,Add,NONE,0,Add,600001,10,20,1.08,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,224,22400,ATK,1819,Add,0,0,Add,NONE,0,Add,600001,10,20,1.09,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,225,22500,ATK,1838,Add,0,0,Add,NONE,0,Add,600001,10,20,1.11,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,226,22600,ATK,1857,Add,0,0,Add,NONE,0,Add,600001,10,20,1.13,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,227,22700,ATK,1876,Add,0,0,Add,NONE,0,Add,600001,10,20,1.15,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,228,22800,ATK,1895,Add,0,0,Add,NONE,0,Add,600001,10,20,1.16,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,229,22900,ATK,1914,Add,0,0,Add,NONE,0,Add,600001,10,20,1.18,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,230,23000,ATK,1933,Add,0,0,Add,NONE,0,Add,600001,10,20,1.20,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,231,23100,ATK,1952,Add,0,0,Add,NONE,0,Add,600001,10,20,1.22,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,232,23200,ATK,1971,Add,0,0,Add,NONE,0,Add,600001,10,20,1.23,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,233,23300,ATK,1990,Add,0,0,Add,NONE,0,Add,600001,10,20,1.25,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,234,23400,ATK,2009,Add,0,0,Add,NONE,0,Add,600001,10,20,1.27,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,235,23500,ATK,2028,Add,0,0,Add,NONE,0,Add,600001,10,20,1.28,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,236,23600,ATK,2047,Add,0,0,Add,NONE,0,Add,600001,10,20,1.30,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,237,23700,ATK,2066,Add,0,0,Add,NONE,0,Add,600001,10,20,1.32,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,238,23800,ATK,2085,Add,0,0,Add,NONE,0,Add,600001,10,20,1.34,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,239,23900,ATK,2104,Add,0,0,Add,NONE,0,Add,600001,10,20,1.35,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,240,24000,ATK,2123,Add,0,0,Add,NONE,0,Add,600001,10,20,1.37,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,241,24100,ATK,2142,Add,0,0,Add,NONE,0,Add,600001,10,20,1.39,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,242,24200,ATK,2161,Add,0,0,Add,NONE,0,Add,600001,10,20,1.40,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,243,24300,ATK,2180,Add,0,0,Add,NONE,0,Add,600001,10,20,1.42,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,244,24400,ATK,2199,Add,0,0,Add,NONE,0,Add,600001,10,20,1.44,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,245,24500,ATK,2218,Add,0,0,Add,NONE,0,Add,600001,10,20,1.46,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,246,24600,ATK,2237,Add,0,0,Add,NONE,0,Add,600001,10,20,1.47,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,247,24700,ATK,2256,Add,0,0,Add,NONE,0,Add,600001,10,20,1.49,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,248,24800,ATK,2275,Add,0,0,Add,NONE,0,Add,600001,10,20,1.51,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,249,24900,ATK,2294,Add,0,0,Add,NONE,0,Add,600001,10,20,1.52,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,250,25000,ATK,2313,Add,0,0,Add,NONE,0,Add,600001,10,20,1.54,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,251,25100,ATK,2332,Add,0,0,Add,NONE,0,Add,600001,10,20,1.56,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,252,25200,ATK,2351,Add,0,0,Add,NONE,0,Add,600001,10,20,1.58,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,253,25300,ATK,2370,Add,0,0,Add,NONE,0,Add,600001,10,20,1.59,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,254,25400,ATK,2389,Add,0,0,Add,NONE,0,Add,600001,10,20,1.61,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,255,25500,ATK,2408,Add,0,0,Add,NONE,0,Add,600001,10,20,1.63,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,256,25600,ATK,2427,Add,0,0,Add,NONE,0,Add,600001,10,20,1.65,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,257,25700,ATK,2446,Add,0,0,Add,NONE,0,Add,600001,10,20,1.66,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,258,25800,ATK,2465,Add,0,0,Add,NONE,0,Add,600001,10,20,1.68,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,259,25900,ATK,2484,Add,0,0,Add,NONE,0,Add,600001,10,20,1.70,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,260,26000,ATK,2503,Add,0,0,Add,NONE,0,Add,600001,10,20,1.71,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,261,26100,ATK,2522,Add,0,0,Add,NONE,0,Add,600001,10,20,1.73,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,262,26200,ATK,2541,Add,0,0,Add,NONE,0,Add,600001,10,20,1.75,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,263,26300,ATK,2560,Add,0,0,Add,NONE,0,Add,600001,10,20,1.77,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,264,26400,ATK,2579,Add,0,0,Add,NONE,0,Add,600001,10,20,1.78,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,265,26500,ATK,2598,Add,0,0,Add,NONE,0,Add,600001,10,20,1.80,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,266,26600,ATK,2617,Add,0,0,Add,NONE,0,Add,600001,10,20,1.82,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,267,26700,ATK,2636,Add,0,0,Add,NONE,0,Add,600001,10,20,1.83,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,268,26800,ATK,2655,Add,0,0,Add,NONE,0,Add,600001,10,20,1.85,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,269,26900,ATK,2674,Add,0,0,Add,NONE,0,Add,600001,10,20,1.87,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,270,27000,ATK,2693,Add,0,0,Add,NONE,0,Add,600001,10,20,1.89,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,271,27100,ATK,2712,Add,0,0,Add,NONE,0,Add,600001,10,20,1.90,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,272,27200,ATK,2731,Add,0,0,Add,NONE,0,Add,600001,10,20,1.92,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,273,27300,ATK,2750,Add,0,0,Add,NONE,0,Add,600001,10,20,1.94,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,274,27400,ATK,2769,Add,0,0,Add,NONE,0,Add,600001,10,20,1.95,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,275,27500,ATK,2788,Add,0,0,Add,NONE,0,Add,600001,10,20,1.97,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,276,27600,ATK,2807,Add,0,0,Add,NONE,0,Add,600001,10,20,1.99,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,277,27700,ATK,2826,Add,0,0,Add,NONE,0,Add,600001,10,20,2.01,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,278,27800,ATK,2845,Add,0,0,Add,NONE,0,Add,600001,10,20,2.02,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,279,27900,ATK,2864,Add,0,0,Add,NONE,0,Add,600001,10,20,2.04,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,280,28000,ATK,2883,Add,0,0,Add,NONE,0,Add,600001,10,20,2.06,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,281,28100,ATK,2902,Add,0,0,Add,NONE,0,Add,600001,10,20,2.08,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,282,28200,ATK,2921,Add,0,0,Add,NONE,0,Add,600001,10,20,2.09,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,283,28300,ATK,2940,Add,0,0,Add,NONE,0,Add,600001,10,20,2.11,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,284,28400,ATK,2959,Add,0,0,Add,NONE,0,Add,600001,10,20,2.13,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,285,28500,ATK,2978,Add,0,0,Add,NONE,0,Add,600001,10,20,2.14,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,286,28600,ATK,2997,Add,0,0,Add,NONE,0,Add,600001,10,20,2.16,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,287,28700,ATK,3016,Add,0,0,Add,NONE,0,Add,600001,10,20,2.18,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,288,28800,ATK,3035,Add,0,0,Add,NONE,0,Add,600001,10,20,2.20,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,289,28900,ATK,3054,Add,0,0,Add,NONE,0,Add,600001,10,20,2.21,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,290,29000,ATK,3073,Add,0,0,Add,NONE,0,Add,600001,10,20,2.23,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,291,29100,ATK,3092,Add,0,0,Add,NONE,0,Add,600001,10,20,2.25,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,292,29200,ATK,3111,Add,0,0,Add,NONE,0,Add,600001,10,20,2.26,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,293,29300,ATK,3130,Add,0,0,Add,NONE,0,Add,600001,10,20,2.28,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,294,29400,ATK,3149,Add,0,0,Add,NONE,0,Add,600001,10,20,2.30,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,295,29500,ATK,3168,Add,0,0,Add,NONE,0,Add,600001,10,20,2.32,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,296,29600,ATK,3187,Add,0,0,Add,NONE,0,Add,600001,10,20,2.33,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,297,29700,ATK,3206,Add,0,0,Add,NONE,0,Add,600001,10,20,2.35,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,298,29800,ATK,3225,Add,0,0,Add,NONE,0,Add,600001,10,20,2.37,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,299,29900,ATK,3244,Add,0,0,Add,NONE,0,Add,600001,10,20,2.38,Percentage,ATK,Caster
-115001,Rune of Bleeding (Fenrir) Lv1,300,30000,ATK,3263,Add,0,0,Add,NONE,0,Add,600001,10,20,2.40,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),1,362,ATK,30,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.18,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),2,386,ATK,32,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.18,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),3,410,ATK,34,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.18,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),4,434,ATK,36,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.18,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),5,458,ATK,38,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.22,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),6,483,ATK,40,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.22,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),7,507,ATK,42,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.22,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),8,531,ATK,44,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.22,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),9,555,ATK,46,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.22,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),10,579,ATK,48,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.26,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),11,603,ATK,50,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.26,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),12,627,ATK,52,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.26,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),13,652,ATK,54,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.26,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),14,676,ATK,56,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.26,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),15,700,ATK,58,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.30,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),16,724,ATK,60,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.30,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),17,748,ATK,62,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.30,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),18,772,ATK,64,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.30,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),19,796,ATK,66,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.30,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),20,821,ATK,68,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.34,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),21,845,ATK,70,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.34,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),22,869,ATK,72,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.34,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),23,893,ATK,74,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.34,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),24,917,ATK,76,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.34,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),25,941,ATK,78,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.38,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),26,1002,ATK,83,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.38,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),27,1062,ATK,88,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.38,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),28,1122,ATK,93,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.38,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),29,1183,ATK,98,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.38,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),30,1243,ATK,103,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.43,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),31,1304,ATK,108,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.43,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),32,1364,ATK,113,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.43,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),33,1424,ATK,118,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.43,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),34,1485,ATK,123,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.43,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),35,1545,ATK,128,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.48,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),36,1605,ATK,133,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.48,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),37,1666,ATK,138,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.48,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),38,1726,ATK,143,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.48,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),39,1787,ATK,148,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.48,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),40,1847,ATK,153,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.53,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),41,1907,ATK,158,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.53,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),42,1968,ATK,163,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.53,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),43,2028,ATK,168,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.53,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),44,2088,ATK,173,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.53,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),45,2149,ATK,178,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.58,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),46,2209,ATK,183,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.58,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),47,2270,ATK,188,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.58,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),48,2330,ATK,193,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.58,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),49,2390,ATK,198,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.58,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),50,2451,ATK,203,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.63,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),51,2511,ATK,208,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.63,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),52,2571,ATK,213,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.63,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),53,2632,ATK,218,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.63,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),54,2692,ATK,223,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.63,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),55,2753,ATK,228,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.68,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),56,2813,ATK,233,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.68,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),57,2873,ATK,238,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.68,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),58,2934,ATK,243,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.68,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),59,2994,ATK,248,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.68,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),60,3054,ATK,253,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.74,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),61,3115,ATK,258,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.74,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),62,3175,ATK,263,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.74,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),63,3236,ATK,268,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.74,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),64,3296,ATK,273,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.74,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),65,3356,ATK,278,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.80,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),66,3417,ATK,283,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.80,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),67,3477,ATK,288,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.80,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),68,3537,ATK,293,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.80,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),69,3598,ATK,298,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.80,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),70,3658,ATK,303,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.86,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),71,3719,ATK,308,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.86,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),72,3779,ATK,313,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.86,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),73,3839,ATK,318,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.86,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),74,3900,ATK,323,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.86,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),75,3960,ATK,328,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.92,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),76,4020,ATK,333,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.92,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),77,4081,ATK,338,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.92,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),78,4141,ATK,343,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.92,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),79,4202,ATK,348,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.92,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),80,4262,ATK,353,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.98,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),81,4322,ATK,358,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.98,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),82,4383,ATK,363,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.98,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),83,4443,ATK,368,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.98,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),84,4503,ATK,373,Add,NONE,0,Add,NONE,0,Add,600001,10,20,0.98,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),85,4564,ATK,378,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.04,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),86,4624,ATK,383,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.04,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),87,4685,ATK,388,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.04,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),88,4745,ATK,393,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.04,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),89,4805,ATK,398,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.04,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),90,4866,ATK,403,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.10,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),91,4926,ATK,408,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.10,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),92,4986,ATK,413,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.10,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),93,5047,ATK,418,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.10,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),94,5107,ATK,423,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.10,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),95,5168,ATK,428,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.16,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),96,5240,ATK,434,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.16,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),97,5313,ATK,440,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.16,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),98,5385,ATK,446,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.16,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),99,5457,ATK,452,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.16,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),100,5530,ATK,458,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.23,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),101,5602,ATK,464,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.23,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),102,5675,ATK,470,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.23,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),103,5747,ATK,476,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.23,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),104,5820,ATK,482,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.23,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),105,5892,ATK,488,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.30,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),106,5965,ATK,494,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.30,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),107,6037,ATK,500,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.30,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),108,6109,ATK,506,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.30,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),109,6182,ATK,512,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.30,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),110,6254,ATK,518,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.37,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),111,6327,ATK,524,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.37,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),112,6399,ATK,530,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.37,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),113,6472,ATK,536,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.37,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),114,6544,ATK,542,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.37,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),115,6617,ATK,548,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.44,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),116,6689,ATK,554,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.44,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),117,6762,ATK,560,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.44,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),118,6834,ATK,566,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.44,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),119,6906,ATK,572,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.44,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),120,6979,ATK,578,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.51,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),121,7051,ATK,584,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.51,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),122,7124,ATK,590,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.51,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),123,7196,ATK,596,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.51,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),124,7269,ATK,602,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.51,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),125,7341,ATK,608,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.58,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),126,7414,ATK,614,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.58,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),127,7486,ATK,620,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.58,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),128,7558,ATK,626,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.58,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),129,7631,ATK,632,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.58,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),130,7703,ATK,638,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.65,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),131,7776,ATK,644,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.65,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),132,7848,ATK,650,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.65,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),133,7921,ATK,656,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.65,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),134,7993,ATK,662,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.65,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),135,8066,ATK,668,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.72,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),136,8138,ATK,674,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.72,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),137,8211,ATK,680,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.72,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),138,8283,ATK,686,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.72,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),139,8355,ATK,692,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.72,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),140,8428,ATK,698,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.79,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),141,8500,ATK,704,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.79,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),142,8573,ATK,710,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.79,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),143,8645,ATK,716,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.79,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),144,8718,ATK,722,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.79,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),145,8790,ATK,728,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.86,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),146,9044,ATK,749,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.86,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),147,9297,ATK,770,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.86,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),148,9551,ATK,791,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.86,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),149,9804,ATK,812,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.86,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),150,10058,ATK,833,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.94,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),151,10312,ATK,854,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.94,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),152,10565,ATK,875,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.94,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),153,10819,ATK,896,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.94,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),154,11072,ATK,917,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.94,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),155,11326,ATK,938,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.02,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),156,11579,ATK,959,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.02,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),157,11833,ATK,980,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.02,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),158,12087,ATK,1001,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.02,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),159,12340,ATK,1022,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.02,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),160,12594,ATK,1043,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.10,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),161,12847,ATK,1064,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.10,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),162,13101,ATK,1085,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.10,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),163,13354,ATK,1106,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.10,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),164,13608,ATK,1127,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.10,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),165,13862,ATK,1148,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.18,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),166,14115,ATK,1169,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.18,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),167,14369,ATK,1190,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.18,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),168,14622,ATK,1211,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.18,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),169,14876,ATK,1232,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.18,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),170,15129,ATK,1253,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.26,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),171,15383,ATK,1274,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.26,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),172,15637,ATK,1295,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.26,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),173,15890,ATK,1316,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.26,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),174,16144,ATK,1337,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.26,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),175,16397,ATK,1358,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.34,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),176,16651,ATK,1379,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.34,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),177,16905,ATK,1400,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.34,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),178,17158,ATK,1421,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.34,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),179,17412,ATK,1442,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.34,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),180,17665,ATK,1463,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.42,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),181,17919,ATK,1484,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.42,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),182,18172,ATK,1505,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.42,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),183,18426,ATK,1526,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.42,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),184,18680,ATK,1547,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.42,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),185,18933,ATK,1568,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.50,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),186,19187,ATK,1589,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.50,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),187,19440,ATK,1610,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.50,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),188,19694,ATK,1631,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.50,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),189,19947,ATK,1652,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.50,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),190,20201,ATK,1673,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.58,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),191,20455,ATK,1694,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.58,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),192,20708,ATK,1715,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.58,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),193,20962,ATK,1736,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.58,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),194,21215,ATK,1757,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.58,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),195,21469,ATK,1778,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.66,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),196,21722,ATK,1799,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.66,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),197,21976,ATK,1820,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.66,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),198,22230,ATK,1841,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.66,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),199,22483,ATK,1862,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.66,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),200,22737,ATK,1883,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.74,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),201,22990,ATK,1904,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.74,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),202,23244,ATK,1925,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.74,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),203,23497,ATK,1946,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.74,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),204,23751,ATK,1967,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.74,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),205,24005,ATK,1988,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.82,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),206,24258,ATK,2009,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.82,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),207,24512,ATK,2030,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.82,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),208,24765,ATK,2051,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.82,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),209,25019,ATK,2072,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.82,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),210,25272,ATK,2093,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.90,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),211,25526,ATK,2114,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.90,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),212,25780,ATK,2135,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.90,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),213,26033,ATK,2156,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.90,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),214,26287,ATK,2177,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.90,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),215,26540,ATK,2198,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.98,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),216,26866,ATK,2225,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.98,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),217,27192,ATK,2252,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.98,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),218,27518,ATK,2279,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.98,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),219,27844,ATK,2306,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.98,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),220,28170,ATK,2333,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.08,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),221,28497,ATK,2360,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.08,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),222,28823,ATK,2387,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.08,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),223,29149,ATK,2414,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.08,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),224,29475,ATK,2441,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.08,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),225,29801,ATK,2468,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.18,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),226,30127,ATK,2495,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.18,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),227,30453,ATK,2522,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.18,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),228,30779,ATK,2549,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.18,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),229,31105,ATK,2576,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.18,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),230,31431,ATK,2603,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.28,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),231,31757,ATK,2630,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.28,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),232,32083,ATK,2657,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.28,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),233,32409,ATK,2684,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.28,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),234,32735,ATK,2711,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.28,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),235,33061,ATK,2738,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.38,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),236,33387,ATK,2765,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.38,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),237,33713,ATK,2792,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.38,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),238,34039,ATK,2819,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.38,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),239,34365,ATK,2846,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.38,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),240,34691,ATK,2873,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.48,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),241,35017,ATK,2900,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.48,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),242,35343,ATK,2927,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.48,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),243,35669,ATK,2954,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.48,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),244,35995,ATK,2981,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.48,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),245,36321,ATK,3008,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.58,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),246,36647,ATK,3035,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.58,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),247,36973,ATK,3062,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.58,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),248,37299,ATK,3089,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.58,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),249,37625,ATK,3116,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.58,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),250,37951,ATK,3143,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.68,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),251,38277,ATK,3170,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.68,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),252,38603,ATK,3197,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.68,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),253,38929,ATK,3224,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.68,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),254,39255,ATK,3251,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.68,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),255,39581,ATK,3278,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.78,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),256,39907,ATK,3305,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.78,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),257,40233,ATK,3332,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.78,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),258,40559,ATK,3359,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.78,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),259,40885,ATK,3386,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.78,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),260,41211,ATK,3413,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.88,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),261,41538,ATK,3440,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.88,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),262,41864,ATK,3467,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.88,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),263,42190,ATK,3494,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.88,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),264,42516,ATK,3521,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.88,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),265,42842,ATK,3548,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.98,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),266,43168,ATK,3575,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.98,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),267,43494,ATK,3602,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.98,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),268,43820,ATK,3629,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.98,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),269,44146,ATK,3656,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.98,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),270,44472,ATK,3683,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.08,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),271,44798,ATK,3710,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.08,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),272,45124,ATK,3737,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.08,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),273,45450,ATK,3764,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.08,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),274,45776,ATK,3791,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.08,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),275,46102,ATK,3818,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.18,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),276,46428,ATK,3845,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.18,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),277,46754,ATK,3872,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.18,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),278,47080,ATK,3899,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.18,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),279,47406,ATK,3926,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.18,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),280,47732,ATK,3953,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.28,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),281,48058,ATK,3980,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.28,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),282,48384,ATK,4007,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.28,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),283,48710,ATK,4034,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.28,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),284,49036,ATK,4061,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.28,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),285,49362,ATK,4088,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.38,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),286,49688,ATK,4115,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.38,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),287,50014,ATK,4142,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.38,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),288,50340,ATK,4169,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.38,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),289,50666,ATK,4196,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.38,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),290,50992,ATK,4223,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.48,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),291,51318,ATK,4250,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.48,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),292,51644,ATK,4277,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.48,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),293,51970,ATK,4304,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.48,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),294,52296,ATK,4331,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.48,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),295,52622,ATK,4358,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.58,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),296,52948,ATK,4385,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.58,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),297,53274,ATK,4412,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.58,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),298,53600,ATK,4439,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.58,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),299,53926,ATK,4466,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.58,Percentage,ATK,Caster
+115001,Rune of Bleeding (Fenrir),300,54252,ATK,4493,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.68,Percentage,ATK,Caster
+122001,Rune of Health (Fenrir),1,163,HP,234,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),2,175,HP,251,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),3,187,HP,268,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),4,199,HP,285,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),5,211,HP,302,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),6,223,HP,319,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),7,235,HP,336,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),8,247,HP,353,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),9,259,HP,370,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),10,270,HP,387,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),11,282,HP,404,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),12,294,HP,421,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),13,306,HP,438,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),14,318,HP,455,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),15,330,HP,472,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),16,342,HP,489,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),17,354,HP,506,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),18,366,HP,523,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),19,378,HP,540,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),20,389,HP,557,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),21,401,HP,574,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),22,413,HP,591,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),23,425,HP,608,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),24,437,HP,625,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),25,449,HP,642,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),26,467,HP,668,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),27,485,HP,694,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),28,504,HP,720,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),29,522,HP,746,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),30,540,HP,772,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),31,558,HP,798,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),32,576,HP,824,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),33,595,HP,850,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),34,613,HP,876,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),35,631,HP,902,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),36,649,HP,928,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),37,667,HP,954,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),38,686,HP,980,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),39,704,HP,1006,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),40,722,HP,1032,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),41,740,HP,1058,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),42,758,HP,1084,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),43,777,HP,1110,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),44,795,HP,1136,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),45,813,HP,1162,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),46,831,HP,1188,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),47,849,HP,1214,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),48,868,HP,1240,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),49,886,HP,1266,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),50,904,HP,1292,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),51,922,HP,1318,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),52,940,HP,1344,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),53,959,HP,1370,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),54,977,HP,1396,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),55,995,HP,1422,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),56,1015,HP,1450,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),57,1034,HP,1478,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),58,1054,HP,1506,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),59,1073,HP,1534,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),60,1093,HP,1562,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),61,1113,HP,1590,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),62,1132,HP,1618,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),63,1152,HP,1646,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),64,1171,HP,1674,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),65,1191,HP,1702,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),66,1211,HP,1730,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),67,1230,HP,1758,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),68,1250,HP,1786,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),69,1269,HP,1814,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),70,1289,HP,1842,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),71,1309,HP,1870,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),72,1328,HP,1898,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),73,1348,HP,1926,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),74,1367,HP,1954,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),75,1387,HP,1982,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),76,1407,HP,2010,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),77,1426,HP,2038,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),78,1446,HP,2066,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),79,1465,HP,2094,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),80,1485,HP,2122,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),81,1505,HP,2150,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),82,1524,HP,2178,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),83,1544,HP,2206,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),84,1563,HP,2234,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),85,1583,HP,2262,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),86,1603,HP,2290,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),87,1622,HP,2318,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),88,1642,HP,2346,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),89,1661,HP,2374,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),90,1681,HP,2402,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),91,1701,HP,2430,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),92,1720,HP,2458,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),93,1740,HP,2486,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),94,1759,HP,2514,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),95,1779,HP,2542,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),96,1810,HP,2587,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),97,1842,HP,2632,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),98,1873,HP,2677,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),99,1905,HP,2722,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),100,1936,HP,2767,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),101,1968,HP,2812,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),102,1999,HP,2857,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),103,2031,HP,2902,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),104,2062,HP,2947,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),105,2094,HP,2992,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),106,2125,HP,3037,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),107,2157,HP,3082,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),108,2188,HP,3127,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),109,2220,HP,3172,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),110,2251,HP,3217,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),111,2283,HP,3262,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),112,2314,HP,3307,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),113,2346,HP,3352,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),114,2377,HP,3397,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),115,2409,HP,3442,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),116,2440,HP,3487,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),117,2472,HP,3532,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),118,2503,HP,3577,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),119,2535,HP,3622,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),120,2566,HP,3667,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),121,2598,HP,3712,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),122,2629,HP,3757,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),123,2661,HP,3802,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),124,2692,HP,3847,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),125,2724,HP,3892,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),126,2755,HP,3937,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),127,2787,HP,3982,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),128,2818,HP,4027,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),129,2850,HP,4072,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),130,2881,HP,4117,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),131,2913,HP,4162,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),132,2944,HP,4207,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),133,2976,HP,4252,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),134,3007,HP,4297,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),135,3039,HP,4342,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),136,3070,HP,4387,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),137,3102,HP,4432,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),138,3133,HP,4477,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),139,3165,HP,4522,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),140,3196,HP,4567,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),141,3228,HP,4612,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),142,3259,HP,4657,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),143,3291,HP,4702,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),144,3322,HP,4747,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),145,3354,HP,4792,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),146,3437,HP,4910,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),147,3519,HP,5028,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),148,3602,HP,5146,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),149,3684,HP,5264,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),150,3767,HP,5382,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),151,3850,HP,5500,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),152,3932,HP,5618,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),153,4015,HP,5736,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),154,4097,HP,5854,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),155,4180,HP,5972,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),156,4263,HP,6090,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),157,4345,HP,6208,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),158,4428,HP,6326,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),159,4510,HP,6444,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),160,4593,HP,6562,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),161,4676,HP,6680,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),162,4758,HP,6798,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),163,4841,HP,6916,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),164,4923,HP,7034,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),165,5006,HP,7152,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),166,5089,HP,7270,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),167,5171,HP,7388,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),168,5254,HP,7506,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),169,5336,HP,7624,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),170,5419,HP,7742,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),171,5502,HP,7860,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),172,5584,HP,7978,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),173,5667,HP,8096,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),174,5749,HP,8214,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),175,5832,HP,8332,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),176,5915,HP,8450,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),177,5997,HP,8568,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),178,6080,HP,8686,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),179,6162,HP,8804,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),180,6245,HP,8922,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),181,6328,HP,9040,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),182,6410,HP,9158,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),183,6493,HP,9276,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),184,6575,HP,9394,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),185,6658,HP,9512,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),186,6741,HP,9630,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),187,6823,HP,9748,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),188,6906,HP,9866,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),189,6988,HP,9984,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),190,7071,HP,10102,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),191,7154,HP,10220,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),192,7236,HP,10338,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),193,7319,HP,10456,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),194,7401,HP,10574,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),195,7484,HP,10692,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),196,7567,HP,10810,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),197,7649,HP,10928,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),198,7732,HP,11046,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),199,7814,HP,11164,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),200,7897,HP,11282,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),201,7980,HP,11400,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),202,8062,HP,11518,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),203,8145,HP,11636,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),204,8227,HP,11754,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),205,8310,HP,11872,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),206,8393,HP,11990,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),207,8475,HP,12108,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),208,8558,HP,12226,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),209,8640,HP,12344,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),210,8723,HP,12462,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),211,8806,HP,12580,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),212,8888,HP,12698,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),213,8971,HP,12816,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),214,9053,HP,12934,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),215,9136,HP,13052,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),216,9226,HP,13180,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),217,9315,HP,13308,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),218,9405,HP,13436,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),219,9494,HP,13564,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),220,9584,HP,13692,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),221,9674,HP,13820,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),222,9763,HP,13948,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),223,9853,HP,14076,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),224,9942,HP,14204,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),225,10032,HP,14332,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),226,10122,HP,14460,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),227,10211,HP,14588,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),228,10301,HP,14716,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),229,10390,HP,14844,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),230,10480,HP,14972,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),231,10570,HP,15100,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),232,10659,HP,15228,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),233,10749,HP,15356,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),234,10838,HP,15484,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),235,10928,HP,15612,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),236,11018,HP,15740,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),237,11107,HP,15868,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),238,11197,HP,15996,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),239,11286,HP,16124,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),240,11376,HP,16252,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),241,11466,HP,16380,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),242,11555,HP,16508,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),243,11645,HP,16636,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),244,11734,HP,16764,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),245,11824,HP,16892,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),246,11914,HP,17020,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),247,12003,HP,17148,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),248,12093,HP,17276,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),249,12182,HP,17404,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),250,12272,HP,17532,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),251,12362,HP,17660,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),252,12451,HP,17788,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),253,12541,HP,17916,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),254,12630,HP,18044,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),255,12720,HP,18172,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),256,12810,HP,18300,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),257,12899,HP,18428,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),258,12989,HP,18556,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),259,13078,HP,18684,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),260,13168,HP,18812,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),261,13258,HP,18940,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),262,13347,HP,19068,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),263,13437,HP,19196,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),264,13526,HP,19324,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),265,13616,HP,19452,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),266,13706,HP,19580,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),267,13795,HP,19708,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),268,13885,HP,19836,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),269,13974,HP,19964,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),270,14064,HP,20092,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),271,14154,HP,20220,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),272,14243,HP,20348,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),273,14333,HP,20476,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),274,14422,HP,20604,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),275,14512,HP,20732,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),276,14602,HP,20860,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),277,14691,HP,20988,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),278,14781,HP,21116,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),279,14870,HP,21244,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),280,14960,HP,21372,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),281,15050,HP,21500,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),282,15139,HP,21628,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),283,15229,HP,21756,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),284,15318,HP,21884,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),285,15408,HP,22012,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),286,15498,HP,22140,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),287,15587,HP,22268,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),288,15677,HP,22396,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),289,15766,HP,22524,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),290,15856,HP,22652,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),291,15946,HP,22780,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),292,16035,HP,22908,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),293,16125,HP,23036,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),294,16214,HP,23164,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),295,16304,HP,23292,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),296,16394,HP,23420,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),297,16483,HP,23548,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),298,16573,HP,23676,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),299,16662,HP,23804,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+122001,Rune of Health (Fenrir),300,16752,HP,23932,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),1,189,ATK,18,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),2,199,ATK,19,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),3,210,ATK,20,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),4,220,ATK,21,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),5,231,ATK,22,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),6,241,ATK,23,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),7,252,ATK,24,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),8,262,ATK,25,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),9,273,ATK,26,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),10,283,ATK,27,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),11,294,ATK,28,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),12,304,ATK,29,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),13,315,ATK,30,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),14,325,ATK,31,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),15,336,ATK,32,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),16,346,ATK,33,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),17,357,ATK,34,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),18,367,ATK,35,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),19,378,ATK,36,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),20,388,ATK,37,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),21,399,ATK,38,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),22,409,ATK,39,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),23,420,ATK,40,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),24,430,ATK,41,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),25,441,ATK,42,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),26,472,ATK,45,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),27,504,ATK,48,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),28,535,ATK,51,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),29,567,ATK,54,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),30,598,ATK,57,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),31,630,ATK,60,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),32,661,ATK,63,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),33,693,ATK,66,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),34,724,ATK,69,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),35,756,ATK,72,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),36,787,ATK,75,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),37,819,ATK,78,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),38,850,ATK,81,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),39,882,ATK,84,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),40,913,ATK,87,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),41,945,ATK,90,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),42,976,ATK,93,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),43,1008,ATK,96,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),44,1039,ATK,99,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),45,1071,ATK,102,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),46,1102,ATK,105,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),47,1134,ATK,108,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),48,1165,ATK,111,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),49,1197,ATK,114,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),50,1228,ATK,117,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),51,1260,ATK,120,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),52,1291,ATK,123,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),53,1323,ATK,126,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),54,1354,ATK,129,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),55,1386,ATK,132,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),56,1417,ATK,135,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),57,1449,ATK,138,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),58,1480,ATK,141,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),59,1512,ATK,144,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),60,1543,ATK,147,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),61,1575,ATK,150,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),62,1606,ATK,153,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),63,1638,ATK,156,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),64,1669,ATK,159,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),65,1701,ATK,162,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),66,1732,ATK,165,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),67,1764,ATK,168,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),68,1795,ATK,171,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),69,1827,ATK,174,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),70,1858,ATK,177,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),71,1890,ATK,180,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),72,1921,ATK,183,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),73,1953,ATK,186,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),74,1984,ATK,189,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),75,2016,ATK,192,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),76,2047,ATK,195,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),77,2079,ATK,198,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),78,2110,ATK,201,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),79,2142,ATK,204,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),80,2173,ATK,207,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),81,2205,ATK,210,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),82,2236,ATK,213,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),83,2268,ATK,216,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),84,2299,ATK,219,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),85,2331,ATK,222,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),86,2362,ATK,225,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),87,2394,ATK,228,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),88,2425,ATK,231,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),89,2457,ATK,234,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),90,2488,ATK,237,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),91,2520,ATK,240,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),92,2551,ATK,243,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),93,2583,ATK,246,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),94,2614,ATK,249,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),95,2646,ATK,252,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),96,2688,ATK,256,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),97,2730,ATK,260,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),98,2772,ATK,264,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),99,2814,ATK,268,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),100,2856,ATK,272,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),101,2898,ATK,276,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),102,2940,ATK,280,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),103,2982,ATK,284,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),104,3024,ATK,288,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),105,3066,ATK,292,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),106,3108,ATK,296,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),107,3150,ATK,300,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),108,3192,ATK,304,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),109,3234,ATK,308,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),110,3276,ATK,312,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),111,3318,ATK,316,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),112,3360,ATK,320,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),113,3402,ATK,324,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),114,3444,ATK,328,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),115,3486,ATK,332,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),116,3528,ATK,336,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),117,3570,ATK,340,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),118,3612,ATK,344,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),119,3654,ATK,348,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),120,3696,ATK,352,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),121,3738,ATK,356,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),122,3780,ATK,360,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),123,3822,ATK,364,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),124,3864,ATK,368,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),125,3906,ATK,372,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),126,3948,ATK,376,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),127,3990,ATK,380,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),128,4032,ATK,384,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),129,4074,ATK,388,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),130,4116,ATK,392,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),131,4158,ATK,396,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),132,4200,ATK,400,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),133,4242,ATK,404,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),134,4284,ATK,408,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),135,4326,ATK,412,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),136,4368,ATK,416,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),137,4410,ATK,420,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),138,4452,ATK,424,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),139,4494,ATK,428,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),140,4536,ATK,432,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),141,4578,ATK,436,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),142,4620,ATK,440,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),143,4662,ATK,444,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),144,4704,ATK,448,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),145,4746,ATK,452,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),146,4882,ATK,465,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),147,5019,ATK,478,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),148,5155,ATK,491,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),149,5292,ATK,504,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),150,5428,ATK,517,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),151,5565,ATK,530,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),152,5701,ATK,543,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),153,5838,ATK,556,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),154,5974,ATK,569,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),155,6111,ATK,582,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),156,6247,ATK,595,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),157,6384,ATK,608,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),158,6520,ATK,621,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),159,6657,ATK,634,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),160,6793,ATK,647,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),161,6930,ATK,660,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),162,7066,ATK,673,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),163,7203,ATK,686,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),164,7339,ATK,699,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),165,7476,ATK,712,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),166,7612,ATK,725,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),167,7749,ATK,738,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),168,7885,ATK,751,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),169,8022,ATK,764,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),170,8158,ATK,777,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),171,8295,ATK,790,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),172,8431,ATK,803,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),173,8568,ATK,816,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),174,8704,ATK,829,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),175,8841,ATK,842,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),176,8977,ATK,855,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),177,9114,ATK,868,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),178,9250,ATK,881,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),179,9387,ATK,894,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),180,9523,ATK,907,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),181,9660,ATK,920,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),182,9796,ATK,933,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),183,9933,ATK,946,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),184,10069,ATK,959,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),185,10206,ATK,972,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),186,10342,ATK,985,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),187,10479,ATK,998,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),188,10615,ATK,1011,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),189,10752,ATK,1024,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),190,10888,ATK,1037,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),191,11025,ATK,1050,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),192,11161,ATK,1063,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),193,11298,ATK,1076,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),194,11434,ATK,1089,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),195,11571,ATK,1102,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),196,11707,ATK,1115,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),197,11844,ATK,1128,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),198,11980,ATK,1141,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),199,12117,ATK,1154,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),200,12253,ATK,1167,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),201,12390,ATK,1180,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),202,12526,ATK,1193,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),203,12663,ATK,1206,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),204,12799,ATK,1219,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),205,12936,ATK,1232,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),206,13072,ATK,1245,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),207,13209,ATK,1258,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),208,13345,ATK,1271,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),209,13482,ATK,1284,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),210,13618,ATK,1297,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),211,13755,ATK,1310,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),212,13891,ATK,1323,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),213,14028,ATK,1336,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),214,14164,ATK,1349,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),215,14301,ATK,1362,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),216,14479,ATK,1379,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),217,14658,ATK,1396,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),218,14836,ATK,1413,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),219,15015,ATK,1430,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),220,15193,ATK,1447,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),221,15372,ATK,1464,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),222,15550,ATK,1481,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),223,15729,ATK,1498,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),224,15907,ATK,1515,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),225,16086,ATK,1532,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),226,16264,ATK,1549,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),227,16443,ATK,1566,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),228,16621,ATK,1583,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),229,16800,ATK,1600,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),230,16978,ATK,1617,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),231,17157,ATK,1634,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),232,17335,ATK,1651,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),233,17514,ATK,1668,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),234,17692,ATK,1685,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),235,17871,ATK,1702,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),236,18049,ATK,1719,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),237,18228,ATK,1736,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),238,18406,ATK,1753,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),239,18585,ATK,1770,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),240,18763,ATK,1787,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),241,18942,ATK,1804,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),242,19120,ATK,1821,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),243,19299,ATK,1838,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),244,19477,ATK,1855,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),245,19656,ATK,1872,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),246,19834,ATK,1889,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),247,20013,ATK,1906,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),248,20191,ATK,1923,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),249,20370,ATK,1940,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),250,20548,ATK,1957,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),251,20727,ATK,1974,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),252,20905,ATK,1991,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),253,21084,ATK,2008,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),254,21262,ATK,2025,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),255,21441,ATK,2042,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),256,21619,ATK,2059,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),257,21798,ATK,2076,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),258,21976,ATK,2093,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),259,22155,ATK,2110,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),260,22333,ATK,2127,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),261,22512,ATK,2144,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),262,22690,ATK,2161,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),263,22869,ATK,2178,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),264,23047,ATK,2195,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),265,23226,ATK,2212,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),266,23404,ATK,2229,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),267,23583,ATK,2246,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),268,23761,ATK,2263,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),269,23940,ATK,2280,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),270,24118,ATK,2297,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),271,24297,ATK,2314,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),272,24475,ATK,2331,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),273,24654,ATK,2348,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),274,24832,ATK,2365,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),275,25011,ATK,2382,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),276,25189,ATK,2399,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),277,25368,ATK,2416,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),278,25546,ATK,2433,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),279,25725,ATK,2450,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),280,25903,ATK,2467,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),281,26082,ATK,2484,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),282,26260,ATK,2501,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),283,26439,ATK,2518,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),284,26617,ATK,2535,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),285,26796,ATK,2552,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),286,26974,ATK,2569,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),287,27153,ATK,2586,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),288,27331,ATK,2603,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),289,27510,ATK,2620,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),290,27688,ATK,2637,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),291,27867,ATK,2654,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),292,28045,ATK,2671,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),293,28224,ATK,2688,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),294,28402,ATK,2705,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),295,28581,ATK,2722,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),296,28759,ATK,2739,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),297,28938,ATK,2756,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),298,29116,ATK,2773,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),299,29295,ATK,2790,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+123001,Rune of Attack (Fenrir),300,29473,ATK,2807,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,1,2457,HP,3510,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,2,2464,HP,3520,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,3,2471,HP,3530,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,4,2478,HP,3540,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,5,2485,HP,3550,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,6,2492,HP,3560,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,7,2499,HP,3570,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,8,2506,HP,3580,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,9,2513,HP,3590,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,10,2520,HP,3600,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,11,2527,HP,3610,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,12,2534,HP,3620,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,13,2541,HP,3630,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,14,2548,HP,3640,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,15,2555,HP,3650,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,16,2562,HP,3660,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,17,2569,HP,3670,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,18,2576,HP,3680,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,19,2583,HP,3690,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,20,2590,HP,3700,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,21,2597,HP,3710,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,22,2604,HP,3720,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,23,2611,HP,3730,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,24,2618,HP,3740,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,25,2625,HP,3750,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,26,2632,HP,3760,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,27,2639,HP,3770,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,28,2646,HP,3780,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,29,2653,HP,3790,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,30,2660,HP,3800,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,31,2667,HP,3810,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,32,2674,HP,3820,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,33,2681,HP,3830,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,34,2688,HP,3840,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,35,2695,HP,3850,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,36,2702,HP,3860,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,37,2709,HP,3870,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,38,2716,HP,3880,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,39,2723,HP,3890,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,40,2730,HP,3900,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,41,2737,HP,3910,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,42,2744,HP,3920,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,43,2751,HP,3930,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,44,2758,HP,3940,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,45,2765,HP,3950,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,46,2772,HP,3960,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,47,2779,HP,3970,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,48,2786,HP,3980,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,49,2793,HP,3990,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,50,2800,HP,4000,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,51,2807,HP,4010,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,52,2814,HP,4020,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,53,2821,HP,4030,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,54,2828,HP,4040,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,55,2835,HP,4050,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,56,2842,HP,4060,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,57,2849,HP,4070,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,58,2856,HP,4080,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,59,2863,HP,4090,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,60,2870,HP,4100,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,61,2877,HP,4110,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,62,2884,HP,4120,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,63,2891,HP,4130,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,64,2898,HP,4140,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,65,2905,HP,4150,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,66,2912,HP,4160,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,67,2919,HP,4170,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,68,2926,HP,4180,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,69,2933,HP,4190,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,70,2940,HP,4200,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,71,2947,HP,4210,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,72,2954,HP,4220,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,73,2961,HP,4230,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,74,2968,HP,4240,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,75,2975,HP,4250,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,76,2982,HP,4260,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,77,2989,HP,4270,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,78,2996,HP,4280,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,79,3003,HP,4290,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,80,3010,HP,4300,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,81,3017,HP,4310,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,82,3024,HP,4320,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,83,3031,HP,4330,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,84,3038,HP,4340,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,85,3045,HP,4350,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,86,3052,HP,4360,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,87,3059,HP,4370,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,88,3066,HP,4380,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,89,3073,HP,4390,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,90,3080,HP,4400,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,91,3087,HP,4410,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,92,3094,HP,4420,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,93,3101,HP,4430,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,94,3108,HP,4440,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,95,3115,HP,4450,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,96,3122,HP,4460,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,97,3129,HP,4470,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,98,3136,HP,4480,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,99,3143,HP,4490,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,100,3150,HP,4500,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,101,3157,HP,4510,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,102,3164,HP,4520,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,103,3171,HP,4530,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,104,3178,HP,4540,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,105,3185,HP,4550,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,106,3192,HP,4560,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,107,3199,HP,4570,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,108,3206,HP,4580,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,109,3213,HP,4590,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,110,3220,HP,4600,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,111,3227,HP,4610,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,112,3234,HP,4620,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,113,3241,HP,4630,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,114,3248,HP,4640,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,115,3255,HP,4650,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,116,3262,HP,4660,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,117,3269,HP,4670,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,118,3276,HP,4680,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,119,3283,HP,4690,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,120,3290,HP,4700,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,121,3297,HP,4710,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,122,3304,HP,4720,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,123,3311,HP,4730,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,124,3318,HP,4740,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,125,3325,HP,4750,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,126,3332,HP,4760,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,127,3339,HP,4770,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,128,3346,HP,4780,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,129,3353,HP,4790,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,130,3360,HP,4800,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,131,3367,HP,4810,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,132,3374,HP,4820,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,133,3381,HP,4830,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,134,3388,HP,4840,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,135,3395,HP,4850,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,136,3402,HP,4860,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,137,3409,HP,4870,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,138,3416,HP,4880,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,139,3423,HP,4890,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,140,3430,HP,4900,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,141,3437,HP,4910,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,142,3444,HP,4920,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,143,3451,HP,4930,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,144,3458,HP,4940,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,145,3465,HP,4950,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,146,3472,HP,4960,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,147,3479,HP,4970,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,148,3486,HP,4980,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,149,3493,HP,4990,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,150,3500,HP,5000,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,151,3507,HP,5010,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,152,3514,HP,5020,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,153,3521,HP,5030,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,154,3528,HP,5040,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,155,3535,HP,5050,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,156,3542,HP,5060,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,157,3549,HP,5070,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,158,3556,HP,5080,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,159,3563,HP,5090,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,160,3570,HP,5100,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,161,3577,HP,5110,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,162,3584,HP,5120,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,163,3591,HP,5130,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,164,3598,HP,5140,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,165,3605,HP,5150,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,166,3612,HP,5160,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,167,3619,HP,5170,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,168,3626,HP,5180,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,169,3633,HP,5190,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,170,3640,HP,5200,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,171,3647,HP,5210,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,172,3654,HP,5220,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,173,3661,HP,5230,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,174,3668,HP,5240,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,175,3675,HP,5250,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,176,3682,HP,5260,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,177,3689,HP,5270,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,178,3696,HP,5280,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,179,3703,HP,5290,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,180,3710,HP,5300,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,181,3717,HP,5310,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,182,3724,HP,5320,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,183,3731,HP,5330,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,184,3738,HP,5340,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,185,3745,HP,5350,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,186,3752,HP,5360,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,187,3759,HP,5370,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,188,3766,HP,5380,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,189,3773,HP,5390,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,190,3780,HP,5400,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,191,3787,HP,5410,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,192,3794,HP,5420,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,193,3801,HP,5430,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,194,3808,HP,5440,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,195,3815,HP,5450,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,196,3822,HP,5460,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,197,3829,HP,5470,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,198,3836,HP,5480,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,199,3843,HP,5490,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,200,3850,HP,5500,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,201,3857,HP,5510,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,202,3864,HP,5520,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,203,3871,HP,5530,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,204,3878,HP,5540,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,205,3885,HP,5550,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,206,3892,HP,5560,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,207,3899,HP,5570,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,208,3906,HP,5580,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,209,3913,HP,5590,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,210,3920,HP,5600,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,211,3927,HP,5610,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,212,3934,HP,5620,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,213,3941,HP,5630,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,214,3948,HP,5640,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,215,3955,HP,5650,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,216,3962,HP,5660,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,217,3969,HP,5670,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,218,3976,HP,5680,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,219,3983,HP,5690,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,220,3990,HP,5700,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,221,3997,HP,5710,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,222,4004,HP,5720,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,223,4011,HP,5730,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,224,4018,HP,5740,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,225,4025,HP,5750,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,226,4032,HP,5760,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,227,4039,HP,5770,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,228,4046,HP,5780,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,229,4053,HP,5790,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,230,4060,HP,5800,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,231,4067,HP,5810,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,232,4074,HP,5820,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,233,4081,HP,5830,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,234,4088,HP,5840,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,235,4095,HP,5850,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,236,4102,HP,5860,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,237,4109,HP,5870,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,238,4116,HP,5880,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,239,4123,HP,5890,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,240,4130,HP,5900,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,241,4137,HP,5910,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,242,4144,HP,5920,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,243,4151,HP,5930,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,244,4158,HP,5940,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,245,4165,HP,5950,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,246,4172,HP,5960,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,247,4179,HP,5970,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,248,4186,HP,5980,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,249,4193,HP,5990,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,250,4200,HP,6000,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,251,4207,HP,6010,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,252,4214,HP,6020,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,253,4221,HP,6030,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,254,4228,HP,6040,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,255,4235,HP,6050,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,256,4242,HP,6060,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,257,4249,HP,6070,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,258,4256,HP,6080,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,259,4263,HP,6090,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,260,4270,HP,6100,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,261,4277,HP,6110,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,262,4284,HP,6120,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,263,4291,HP,6130,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,264,4298,HP,6140,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,265,4305,HP,6150,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,266,4312,HP,6160,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,267,4319,HP,6170,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,268,4326,HP,6180,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,269,4333,HP,6190,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,270,4340,HP,6200,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,271,4347,HP,6210,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,272,4354,HP,6220,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,273,4361,HP,6230,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,274,4368,HP,6240,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,275,4375,HP,6250,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,276,4382,HP,6260,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,277,4389,HP,6270,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,278,4396,HP,6280,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,279,4403,HP,6290,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,280,4410,HP,6300,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,281,4417,HP,6310,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,282,4424,HP,6320,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,283,4431,HP,6330,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,284,4438,HP,6340,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,285,4445,HP,6350,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,286,4452,HP,6360,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,287,4459,HP,6370,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,288,4466,HP,6380,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,289,4473,HP,6390,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,290,4480,HP,6400,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,291,4487,HP,6410,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,292,4494,HP,6420,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,293,4501,HP,6430,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,294,4508,HP,6440,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,295,4515,HP,6450,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,296,4522,HP,6460,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,297,4529,HP,6470,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,298,4536,HP,6480,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,299,4543,HP,6490,Add,NONE,0,Add,NONE,0,Add,,,,,,,
+311001,Adventurer's Rune,300,4550,HP,6500,Add,NONE,0,Add,NONE,0,Add,,,,,,,

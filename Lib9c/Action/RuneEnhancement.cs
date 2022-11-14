@@ -106,16 +106,29 @@ namespace Nekoyume.Action
                 runeState.LevelUp();
             }
 
-            var ncgCost = cost.NcgQuantity * tryCount * ncgCurrency;
-            var crystalCost = cost.CrystalQuantity * tryCount * crystalCurrency;
-            var runeCost = cost.RuneStoneQuantity * tryCount * runeCurrency;
             var arenaSheet = sheets.GetSheet<ArenaSheet>();
             var arenaData = arenaSheet.GetRoundByBlockIndex(context.BlockIndex);
             var feeStoreAddress = Addresses.GetBlacksmithFeeAddress(arenaData.ChampionshipId, arenaData.Round);
-            return states.SetState(runeStateAddress, runeState.Serialize())
-                .TransferAsset(context.Signer, feeStoreAddress, ncgCost)
-                .TransferAsset(context.Signer, feeStoreAddress, crystalCost)
-                .TransferAsset(AvatarAddress, feeStoreAddress, runeCost);
+
+            var ncgCost = cost.NcgQuantity * tryCount * ncgCurrency;
+            if (cost.NcgQuantity > 0)
+            {
+                states = states.TransferAsset(context.Signer, feeStoreAddress, ncgCost);
+            }
+
+            var crystalCost = cost.CrystalQuantity * tryCount * crystalCurrency;
+            if (cost.CrystalQuantity > 0)
+            {
+                states = states.TransferAsset(context.Signer, feeStoreAddress, crystalCost);
+            }
+
+            var runeCost = cost.RuneStoneQuantity * tryCount * runeCurrency;
+            if (cost.RuneStoneQuantity > 0)
+            {
+                states = states.TransferAsset(AvatarAddress, feeStoreAddress, runeCost);
+            }
+
+            return states.SetState(runeStateAddress, runeState.Serialize());
         }
     }
 }

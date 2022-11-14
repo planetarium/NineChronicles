@@ -124,9 +124,20 @@ namespace Lib9c.Tests.Action
             var nextCrystalBal = nextState.GetBalance(agentAddress, crystalCurrency);
             var nextRuneBal = nextState.GetBalance(agentAddress, runeCurrency);
 
-            Assert.NotEqual(ncgBal, nextNcgBal);
-            Assert.NotEqual(crystalBal, nextCrystalBal);
-            Assert.NotEqual(runeBal, nextRuneBal);
+            if (cost.NcgQuantity != 0)
+            {
+                Assert.NotEqual(ncgBal, nextNcgBal);
+            }
+
+            if (cost.CrystalQuantity != 0)
+            {
+                Assert.NotEqual(crystalBal, nextCrystalBal);
+            }
+
+            if (cost.RuneStoneQuantity != 0)
+            {
+                Assert.NotEqual(runeBal, nextRuneBal);
+            }
 
             var costNcg = tryCount * cost.NcgQuantity * ncgCurrency;
             var costCrystal = tryCount * cost.CrystalQuantity * crystalCurrency;
@@ -353,6 +364,21 @@ namespace Lib9c.Tests.Action
                 Rehearsal = false,
                 Signer = agentAddress,
             };
+
+            if (!ncg && cost.NcgQuantity == 0)
+            {
+                return;
+            }
+
+            if (!crystal && cost.CrystalQuantity == 0)
+            {
+                return;
+            }
+
+            if (!rune && cost.RuneStoneQuantity == 0)
+            {
+                return;
+            }
 
             Assert.Throws<NotEnoughFungibleAssetValueException>(() =>
                 action.Execute(new ActionContext()
