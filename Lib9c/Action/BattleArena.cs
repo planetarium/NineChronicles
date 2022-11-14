@@ -139,7 +139,7 @@ namespace Nekoyume.Action
                 sheets.GetSheet<EquipmentItemOptionSheet>(),
                 context.BlockIndex, addressesHex);
 
-                        // update rune slot
+            // update rune slot
             if (runeInfos is null)
             {
                 throw new RuneInfosIsEmptyException(

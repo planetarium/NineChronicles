@@ -38,7 +38,7 @@ namespace Nekoyume.Model
             Level = avatarState.level;
             Costumes = avatarState.GetNonFungibleItems<Costume>(arenaAvatarState.Costumes);
             Equipments = avatarState.GetNonFungibleItems<Equipment>(arenaAvatarState.Equipments);
-            Runes = null;
+            Runes = new List<RuneSlotInfo>();
         }
 
         public ArenaPlayerDigest(
