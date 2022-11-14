@@ -119,7 +119,7 @@ namespace Nekoyume.Action
                     world.StageClearedId);
             }
 
-            var sheets = states.GetSheetsV1(
+            var sheets = states.GetSheets(
                 containArenaSimulatorSheets: true,
                 sheetTypes: new[]
                 {
