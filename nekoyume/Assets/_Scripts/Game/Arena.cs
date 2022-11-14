@@ -253,6 +253,16 @@ namespace Nekoyume.Game
             yield return null;
         }
 
+        public IEnumerator CoTickDamage(ArenaCharacter affectedCharacter,
+            IEnumerable<ArenaSkill.ArenaSkillInfo> skillInfos)
+        {
+            Character.ArenaCharacter target = affectedCharacter.Id == me.Id ? me : enemy;
+            foreach (var info in skillInfos)
+            {
+                yield return StartCoroutine(target.CoProcessDamage(info, true));
+            }
+        }
+
         public IEnumerator CoRemoveBuffs(ArenaCharacter caster)
         {
             var target = caster.Id == me.Id ? me : enemy;

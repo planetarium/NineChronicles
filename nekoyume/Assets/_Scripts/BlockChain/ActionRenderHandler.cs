@@ -2003,7 +2003,7 @@ namespace Nekoyume.BlockChain
             var log = simulator.Simulate(
                 myDigest.Value,
                 enemyDigest.Value,
-                tableSheets.GetArenaSimulatorSheetsV1());
+                tableSheets.GetArenaSimulatorSheets());
             log.Score = outputMyScore.Value;
 
             var rewards = RewardSelector.Select(
@@ -2120,7 +2120,13 @@ namespace Nekoyume.BlockChain
             simulator.Simulate();
             var log = simulator.Log;
             Widget.Find<Menu>().Close();
-            var playerDigest = new ArenaPlayerDigest(clonedAvatarState);
+
+            var slotInfos = States.Instance.RuneSlotStates.TryGetValue(BattleType.Raid, out var state) ?
+                state.GetEquippedRuneSlotInfos() :
+                null;
+            var playerDigest = new ArenaPlayerDigest(
+                clonedAvatarState,
+                slotInfos);
 
             await WorldBossStates.Set(avatarAddress);
             await States.Instance.InitRuneStoneBalance();

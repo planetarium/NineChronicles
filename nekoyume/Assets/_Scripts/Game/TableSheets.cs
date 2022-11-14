@@ -298,6 +298,24 @@ namespace Nekoyume.Game
             );
         }
 
+        public ArenaSimulatorSheets GetArenaSimulatorSheets()
+        {
+            return new ArenaSimulatorSheets(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
+                EquipmentItemSetEffectSheet,
+                CostumeStatSheet,
+                WeeklyArenaRewardSheet,
+                RuneOptionSheet
+            );
+        }
+
         public RaidSimulatorSheetsV1 GetRaidSimulatorSheetsV1()
         {
             return new RaidSimulatorSheetsV1(
