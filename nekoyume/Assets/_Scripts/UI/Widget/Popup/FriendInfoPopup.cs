@@ -116,7 +116,7 @@ namespace Nekoyume.UI
             bool ignoreShowAnimation = false)
         {
             _avatarState = avatarState;
-            var (itemSlotStates, runeSlotStates) = await GetStatesAsync(avatarState);
+            var (itemSlotStates, runeSlotStates) = await avatarState.GetSlotStatesAsync();
             SetItems(avatarState, itemSlotStates, runeSlotStates);
 
             base.Show(ignoreShowAnimation);
@@ -211,46 +211,6 @@ namespace Nekoyume.UI
             var clone = ResourcesHelper.GetCharacterTitle(title.Grade,
                 title.GetLocalizedNonColoredName(false));
             _cachedCharacterTitle = Instantiate(clone, titleSocket);
-        }
-
-        private async Task<(List<ItemSlotState>, List<RuneSlotState>)> GetStatesAsync(
-            AvatarState avatarState)
-        {
-            var avatarAddress = avatarState.address;
-
-            var itemAddresses = new List<Address>
-            {
-                ItemSlotState.DeriveAddress(avatarAddress, BattleType.Adventure),
-                ItemSlotState.DeriveAddress(avatarAddress, BattleType.Arena),
-                ItemSlotState.DeriveAddress(avatarAddress, BattleType.Raid)
-            };
-            var itemBulk = await Game.Game.instance.Agent.GetStateBulk(itemAddresses);
-            var itemStates = new List<ItemSlotState>();
-            foreach (var value in itemBulk.Values)
-            {
-                if (value is List list)
-                {
-                    itemStates.Add(new ItemSlotState(list));
-                }
-            }
-
-            var runeAddresses = new List<Address>
-            {
-                RuneSlotState.DeriveAddress(avatarAddress, BattleType.Adventure),
-                RuneSlotState.DeriveAddress(avatarAddress, BattleType.Arena),
-                RuneSlotState.DeriveAddress(avatarAddress, BattleType.Raid)
-            };
-            var runeBulk = await Game.Game.instance.Agent.GetStateBulk(runeAddresses);
-            var runeStates = new List<RuneSlotState>();
-            foreach (var value in runeBulk.Values)
-            {
-                if (value is List list)
-                {
-                    runeStates.Add(new RuneSlotState(list));
-                }
-            }
-
-            return (itemStates, runeStates);
         }
 
         private void UpdateSlotView(AvatarState avatarState, BattleType battleType)
