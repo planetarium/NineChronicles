@@ -48,6 +48,7 @@ namespace Lib9c.Tests.Action
             _initialStates = new State();
 
             _sheets = TableSheetsImporter.ImportSheets();
+            _sheets.Remove(nameof(RuneOptionSheet));
             foreach (var (key, value) in _sheets)
             {
                 _initialStates = _initialStates.SetState(

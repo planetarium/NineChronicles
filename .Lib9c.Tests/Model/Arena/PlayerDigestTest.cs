@@ -89,9 +89,23 @@ namespace Lib9c.Tests.Model.Arena
         }
 
         [Fact]
-        public void Serialize()
+        public void SerializeWithoutRune()
         {
             var digest = new ArenaPlayerDigest(_avatarState, _arenaAvatarState);
+            var serialized = digest.Serialize();
+            var deserialized = new ArenaPlayerDigest((List)serialized);
+
+            Assert.Equal(serialized, deserialized.Serialize());
+        }
+
+        [Fact]
+        public void Serialize()
+        {
+            var digest = new ArenaPlayerDigest(
+                _avatarState,
+                _arenaAvatarState.Equipments,
+                _arenaAvatarState.Costumes,
+                new List<Nekoyume.Action.RuneSlotInfo>());
             var serialized = digest.Serialize();
             var deserialized = new ArenaPlayerDigest((List)serialized);
 

@@ -57,8 +57,7 @@ namespace Nekoyume.Battle
             Player.SetCostumeStat(costumeStatSheet);
             if (runeSlotInfos != null)
             {
-                var runes = runeSlotInfos.Select(x => (x.RuneId, x.Level)).ToList();
-                Player.SetRune(runes, simulatorSheets.RuneOptionSheet, simulatorSheets.SkillSheet);
+                Player.SetRune(runeSlotInfos, simulatorSheets.RuneOptionSheet, simulatorSheets.SkillSheet);
             }
 
             _waves = new List<Wave>();

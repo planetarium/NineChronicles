@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Text;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
@@ -118,7 +119,7 @@ namespace Nekoyume.Action
                     world.StageClearedId);
             }
 
-            var sheets = states.GetSheetsV1(
+            var sheets = states.GetSheets(
                 containArenaSimulatorSheets: true,
                 sheetTypes: new[]
                 {
@@ -138,7 +139,7 @@ namespace Nekoyume.Action
                 sheets.GetSheet<EquipmentItemOptionSheet>(),
                 context.BlockIndex, addressesHex);
 
-                        // update rune slot
+            // update rune slot
             if (runeInfos is null)
             {
                 throw new RuneInfosIsEmptyException(
@@ -356,14 +357,26 @@ namespace Nekoyume.Action
             var enemyItemSlotState = states.TryGetState(enemyItemSlotStateAddress, out List rawEnemyItemSlotState)
                 ? new ItemSlotState(rawEnemyItemSlotState)
                 : new ItemSlotState(BattleType.Arena);
+            var enemyRuneSlotStateAddress = RuneSlotState.DeriveAddress(enemyAvatarAddress, BattleType.Arena);
+            var enemyRuneSlotState = states.TryGetState(enemyRuneSlotStateAddress, out List enemyRawRuneSlotState)
+                ? new RuneSlotState(enemyRawRuneSlotState)
+                : new RuneSlotState(BattleType.Arena);
+            var enemyRuneSlotInfos = enemyRuneSlotState.GetEquippedRuneSlotInfos();
 
             // simulate
             var enemyAvatarState = states.GetEnemyAvatarState(enemyAvatarAddress);
-            ExtraMyArenaPlayerDigest = new ArenaPlayerDigest(avatarState, equipments, costumes);
-            ExtraEnemyArenaPlayerDigest =
-                new ArenaPlayerDigest(enemyAvatarState, enemyItemSlotState.Equipments, enemyItemSlotState.Costumes);
+            ExtraMyArenaPlayerDigest = new ArenaPlayerDigest(
+                avatarState,
+                equipments,
+                costumes,
+                runeInfos);
+            ExtraEnemyArenaPlayerDigest = new ArenaPlayerDigest(
+                enemyAvatarState,
+                enemyItemSlotState.Equipments,
+                enemyItemSlotState.Costumes,
+                enemyRuneSlotInfos);
             ExtraPreviousMyScore = myArenaScore.Score;
-            var arenaSheets = sheets.GetArenaSimulatorSheetsV1();
+            var arenaSheets = sheets.GetArenaSimulatorSheets();
             var winCount = 0;
             var defeatCount = 0;
             var rewards = new List<ItemBase>();
