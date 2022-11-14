@@ -9,7 +9,6 @@ using Nekoyume.Battle;
 using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.Rune;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -259,10 +258,6 @@ namespace Nekoyume.UI
             var level = avatarState.level;
             var equipments = _equipments[battleType];
             var costumes = _costumes[battleType];
-            // var runeSlot = _runes.ContainsKey(battleType)
-            //     ? _runes[battleType].GetRuneSlot()
-            //     : new List<RuneSlot>();
-
             var runeSlot = _runes[battleType].GetRuneSlot();
             costumeSlots.SetPlayerCostumes(level, costumes, ShowTooltip, null);
             equipmentSlots.SetPlayerEquipments(level, equipments, ShowTooltip, null);
@@ -274,9 +269,6 @@ namespace Nekoyume.UI
             var equipments = _equipments[battleType];
             var costumes = _costumes[battleType];
             var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
-            // var runeStates = _runes.ContainsKey(battleType)
-            //     ? _runes[battleType].GetEquippedRuneStates()
-            //     : new List<RuneState>();
             var runeStates = _runes[battleType].GetEquippedRuneStates();
             var equipmentSetEffectSheet = Game.Game.instance.TableSheets.EquipmentItemSetEffectSheet;
             var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
