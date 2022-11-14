@@ -1968,7 +1968,11 @@ namespace Nekoyume.BlockChain
             {
                 var myAvatarState = eval.OutputStates.GetAvatarStateV2(eval.Action.myAvatarAddress);
                 var itemSlotState = States.Instance.ItemSlotStates[BattleType.Arena];
-                myDigest = new ArenaPlayerDigest(myAvatarState, itemSlotState.Equipments, itemSlotState.Costumes);
+                var runeSlotState = States.Instance.RuneSlotStates[BattleType.Arena];
+                myDigest = new ArenaPlayerDigest(myAvatarState,
+                    itemSlotState.Equipments,
+                    itemSlotState.Costumes,
+                    runeSlotState.GetEquippedRuneSlotInfos());
             }
 
             if (!enemyDigest.HasValue)
@@ -1976,11 +1980,21 @@ namespace Nekoyume.BlockChain
                 var enemyAvatarState = eval.OutputStates.GetAvatarStateV2(eval.Action.enemyAvatarAddress);
                 var (itemSlotStates, runeSlotStates) = await enemyAvatarState.GetSlotStatesAsync();
                 var itemSlotState = itemSlotStates.FirstOrDefault(x => x.BattleType == BattleType.Arena);
+                var runeSlotState = runeSlotStates.FirstOrDefault(x => x.BattleType == BattleType.Arena);
                 if (itemSlotState == null)
                 {
                     itemSlotState = new ItemSlotState(BattleType.Arena);
                 }
-                enemyDigest = new ArenaPlayerDigest(enemyAvatarState, itemSlotState.Equipments, itemSlotState.Costumes);
+                if (runeSlotState == null)
+                {
+                    runeSlotState = new RuneSlotState(BattleType.Arena);
+                }
+
+                enemyDigest = new ArenaPlayerDigest(
+                    enemyAvatarState,
+                    itemSlotState.Equipments,
+                    itemSlotState.Costumes,
+                    runeSlotState.GetEquippedRuneSlotInfos());
             }
 
             previousMyScore ??= RxProps.PlayersArenaParticipant.HasValue
