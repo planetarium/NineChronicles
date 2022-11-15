@@ -85,6 +85,9 @@ namespace Nekoyume.UI
         private GameObject maxLevel;
 
         [SerializeField]
+        private GameObject sliderContainer;
+
+        [SerializeField]
         private RuneListScroll scroll;
 
         [SerializeField]
@@ -394,25 +397,33 @@ namespace Nekoyume.UI
 
         private void UpdateSlider(RuneItem item)
         {
-            var maxRuneStone = item.Cost.RuneStoneQuantity > 0
-                ? (int)item.RuneStone.MajorUnit / item.Cost.RuneStoneQuantity
-                : -1;
-            var maxCrystal = item.Cost.CrystalQuantity > 0
-                ? (int)States.Instance.CrystalBalance.MajorUnit / item.Cost.CrystalQuantity
-                : -1;
-            var maxNcg = item.Cost.NcgQuantity > 0
-                ? (int)States.Instance.GoldBalanceState.Gold.MajorUnit / item.Cost.NcgQuantity
-                : -1;
-            var maxValues = new List<int> { maxRuneStone, maxCrystal, maxNcg };
-            _maxTryCount = maxValues.Where(x => x >= 0).Min();
-            slider.Set(1,
-                _maxTryCount > 0 ? _maxTryCount : 1,
-                1,
-                _maxTryCount > 0 ? _maxTryCount : 1,
-                1,
-                (x) => TryCount.Value = x,
-                _maxTryCount > 0);
-            Debug.Log($"rune:{maxRuneStone} / crystal:{maxCrystal} / ncg:{maxNcg}");
+            if (item.Level == 0)
+            {
+                sliderContainer.SetActive(false);
+                TryCount.Value = 1;
+            }
+            else
+            {
+                sliderContainer.SetActive(true);
+                var maxRuneStone = item.Cost.RuneStoneQuantity > 0
+                    ? (int)item.RuneStone.MajorUnit / item.Cost.RuneStoneQuantity
+                    : -1;
+                var maxCrystal = item.Cost.CrystalQuantity > 0
+                    ? (int)States.Instance.CrystalBalance.MajorUnit / item.Cost.CrystalQuantity
+                    : -1;
+                var maxNcg = item.Cost.NcgQuantity > 0
+                    ? (int)States.Instance.GoldBalanceState.Gold.MajorUnit / item.Cost.NcgQuantity
+                    : -1;
+                var maxValues = new List<int> { maxRuneStone, maxCrystal, maxNcg };
+                _maxTryCount = maxValues.Where(x => x >= 0).Min();
+                slider.Set(1,
+                    _maxTryCount > 0 ? _maxTryCount : 1,
+                    1,
+                    _maxTryCount > 0 ? _maxTryCount : 1,
+                    1,
+                    (x) => TryCount.Value = x,
+                    _maxTryCount > 0);
+            }
         }
 
         private void ShowMaterialNavigatorPopup(
