@@ -87,7 +87,7 @@ namespace Nekoyume.Action
             }
 
             var runeSheet = sheets.GetSheet<RuneSheet>();
-            if (!runeSheet.TryGetValue(cost.RuneStoneId, out var runeRow))
+            if (!runeSheet.TryGetValue(runeState.RuneId, out var runeRow))
             {
                 throw new RuneNotFoundException(
                     $"[{nameof(RuneEnhancement)}] my avatar address : {AvatarAddress}");
