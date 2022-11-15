@@ -20,9 +20,9 @@ namespace Nekoyume.Action
 
         public RuneSlotInfo(List serialized)
         {
-            SlotIndex = ((List)serialized[0]).ToInteger();
-            RuneId = ((List)serialized[1]).ToInteger();
-            Level = ((List)serialized[2]).ToInteger();
+            SlotIndex = serialized[0].ToInteger();
+            RuneId = serialized[1].ToInteger();
+            Level = serialized[2].ToInteger();
         }
 
         public IValue Serialize()
