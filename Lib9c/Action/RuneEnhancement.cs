@@ -105,6 +105,7 @@ namespace Nekoyume.Action
                     cost, context.Random, TryCount, out var tryCount))
             {
                 runeState.LevelUp();
+                states = states.SetState(runeStateAddress, runeState.Serialize());
             }
 
             // update rune slot
@@ -142,7 +143,7 @@ namespace Nekoyume.Action
                 states = states.TransferAsset(AvatarAddress, feeStoreAddress, runeCost);
             }
 
-            return states.SetState(runeStateAddress, runeState.Serialize());
+            return states;
         }
     }
 }
