@@ -143,13 +143,13 @@ namespace Nekoyume.Action
             if (runeInfos is null)
             {
                 throw new RuneInfosIsEmptyException(
-                    $"[{nameof(EquipRune)}] my avatar address : {myAvatarAddress}");
+                    $"[{nameof(BattleArena)}] my avatar address : {myAvatarAddress}");
             }
 
             if (runeInfos.GroupBy(x => x.SlotIndex).Count() != runeInfos.Count)
             {
                 throw new DuplicatedRuneSlotIndexException(
-                    $"[{nameof(EquipRune)}] my avatar address : {myAvatarAddress}");
+                    $"[{nameof(BattleArena)}] my avatar address : {myAvatarAddress}");
             }
 
             var runeSlotStateAddress = RuneSlotState.DeriveAddress(myAvatarAddress, BattleType.Arena);
@@ -160,7 +160,7 @@ namespace Nekoyume.Action
             if (runeInfos.Exists(x => x.SlotIndex >= runeSlotState.GetRuneSlot().Count))
             {
                 throw new SlotNotFoundException(
-                    $"[{nameof(EquipRune)}] my avatar address : {myAvatarAddress}");
+                    $"[{nameof(BattleArena)}] my avatar address : {myAvatarAddress}");
             }
 
             var runeStates = new List<RuneState>();
