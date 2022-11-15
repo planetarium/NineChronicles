@@ -50,14 +50,13 @@ namespace Nekoyume.TableData
             {
                 RuneId = ParseInt(fields[0]);
                 var level = ParseInt(fields[1]);
-                var runeStoneId = ParseInt(fields[2]);
-                var runeStoneQuantity = ParseInt(fields[3]);
-                var crystal = ParseInt(fields[4]);
-                var ncg = ParseInt(fields[5]);
-                var successRate = ParseInt(fields[6]);
+                var runeStoneQuantity = ParseInt(fields[2]);
+                var crystal = ParseInt(fields[3]);
+                var ncg = ParseInt(fields[4]);
+                var successRate = ParseInt(fields[5]);
                 Cost = new List<RuneCostData>
                 {
-                   new RuneCostData(level, runeStoneId, runeStoneQuantity, crystal, ncg, successRate)
+                   new RuneCostData(level, RuneId, runeStoneQuantity, crystal, ncg, successRate)
                 };
             }
 
