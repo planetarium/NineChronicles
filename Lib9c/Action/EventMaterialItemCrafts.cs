@@ -86,7 +86,7 @@ namespace Nekoyume.Action
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             var started = DateTimeOffset.UtcNow;
-            Log.Verbose(
+            Log.Debug(
                 "[{ActionTypeString}][{AddressesHex}] Execute() start",
                 ActionTypeText,
                 addressesHex);
@@ -235,28 +235,17 @@ namespace Nekoyume.Action
 
             // Set states
             sw.Restart();
-            if (migrationRequired)
-            {
-                states = states
-                    .SetState(AvatarAddress, avatarState.SerializeV2())
-                    .SetState(
-                        AvatarAddress.Derive(LegacyInventoryKey),
-                        avatarState.inventory.Serialize())
-                    .SetState(
-                        AvatarAddress.Derive(LegacyWorldInformationKey),
-                        avatarState.worldInformation.Serialize())
-                    .SetState(
-                        AvatarAddress.Derive(LegacyQuestListKey),
-                        avatarState.questList.Serialize());
-            }
-            else
-            {
-                states = states
-                    .SetState(AvatarAddress, avatarState.SerializeV2())
-                    .SetState(
-                        AvatarAddress.Derive(LegacyInventoryKey),
-                        avatarState.inventory.Serialize());
-            }
+            states = states
+                .SetState(AvatarAddress, avatarState.SerializeV2())
+                .SetState(
+                    AvatarAddress.Derive(LegacyInventoryKey),
+                    avatarState.inventory.Serialize())
+                .SetState(
+                    AvatarAddress.Derive(LegacyWorldInformationKey),
+                    avatarState.worldInformation.Serialize())
+                .SetState(
+                    AvatarAddress.Derive(LegacyQuestListKey),
+                    avatarState.questList.Serialize());
             sw.Stop();
             Log.Verbose(
                 "[{ActionTypeString}][{AddressesHex}] Set states: {Elapsed}",
@@ -265,7 +254,7 @@ namespace Nekoyume.Action
                 sw.Elapsed);
             // ~Set states
 
-            Log.Verbose(
+            Log.Debug(
                 "[{ActionTypeString}][{AddressesHex}] Total elapsed: {Elapsed}",
                 ActionTypeText,
                 addressesHex,
