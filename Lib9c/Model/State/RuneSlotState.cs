@@ -70,6 +70,25 @@ namespace Nekoyume.Model.State
             }
         }
 
+        public void UpdateSlotItem(RuneState runeState)
+        {
+            foreach (var slot in _slots)
+            {
+                if (!slot.IsEquipped(out var state))
+                {
+                    continue;
+                }
+
+                if (state.RuneId != runeState.RuneId)
+                {
+                    continue;
+                }
+
+                slot.Equip(runeState);
+                return;
+            }
+        }
+
         private bool IsUsableSlot(
             IEnumerable<RuneState> runeStates,
             RuneListSheet runeListSheet,

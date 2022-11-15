@@ -7,6 +7,7 @@ using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Rune;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -104,6 +105,19 @@ namespace Nekoyume.Action
                     cost, context.Random, TryCount, out var tryCount))
             {
                 runeState.LevelUp();
+            }
+
+            // update rune slot
+            for (var i = 1; i < (int)BattleType.End; i++)
+            {
+                var battleType = (BattleType)i;
+                var runeSlotStateAddress = RuneSlotState.DeriveAddress(AvatarAddress, battleType);
+                var runeSlotState = states.TryGetState(runeSlotStateAddress, out List rawRuneSlotState)
+                    ? new RuneSlotState(rawRuneSlotState)
+                    : new RuneSlotState(battleType);
+
+                runeSlotState.UpdateSlotItem(runeState);
+                states = states.SetState(runeSlotStateAddress, runeSlotState.Serialize());
             }
 
             var arenaSheet = sheets.GetSheet<ArenaSheet>();
