@@ -11,17 +11,12 @@ namespace Nekoyume.Model.GrandFinale
     {
         public static Address DeriveAddress(Address avatarAddress, int grandFinaleId) =>
             avatarAddress.Derive($"grand_finale_information_{grandFinaleId}");
-        public const int WinScore = 20;
-        public const int LoseScore = 1;
-        public const int DefaultScore = 1000;
 
         public Address Address;
-        public int Score { get; private set; }
         private Dictionary<Address, bool> BattleRecordDictionary { get; }
 
         public GrandFinaleInformation(Address avatarAddress, int grandFinaleId)
         {
-            Score = DefaultScore;
             Address = DeriveAddress(avatarAddress, grandFinaleId);
             BattleRecordDictionary = new Dictionary<Address, bool>();
         }
@@ -29,9 +24,8 @@ namespace Nekoyume.Model.GrandFinale
         public GrandFinaleInformation(List serialized)
         {
             Address = serialized[0].ToAddress();
-            Score = (Integer)serialized[1];
             BattleRecordDictionary = new Dictionary<Address, bool>();
-            foreach (var iValue in (List)serialized[2])
+            foreach (var iValue in (List)serialized[1])
             {
                 var list = (List)iValue;
                 BattleRecordDictionary.Add(list[0].ToAddress(), list[1].ToBoolean());
@@ -51,14 +45,12 @@ namespace Nekoyume.Model.GrandFinale
                 );
             return List.Empty
                 .Add(Address.Serialize())
-                .Add(Score)
                 .Add(battleRecordList);
         }
 
-        public void UpdateRecordAndScore(Address enemyAddress, bool win)
+        public void UpdateRecord(Address enemyAddress, bool win)
         {
             BattleRecordDictionary.Add(enemyAddress, win);
-            Score += win ? WinScore : LoseScore;
         }
 
         public bool TryGetBattleRecord(Address enemyAddress, out bool win) =>

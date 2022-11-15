@@ -429,6 +429,14 @@
                 PreviousStates = states,
                 Random = new TestRandom(randomSeed),
             });
+            Assert.True(nextStates.TryGetState<Integer>(
+                myAvatarAddr.Derive(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        BattleGrandFinale.ScoreDeriveKey,
+                        grandFinaleId)),
+                out var myScore));
+            Assert.Equal<Integer>(setToWin ? 1020 : 1001, myScore);
             Assert.True(nextStates.TryGetState<List>(
                 GrandFinaleInformation.DeriveAddress(
                     myAvatarAddr,
@@ -437,9 +445,6 @@
             var nextInformation = new GrandFinaleInformation(serialized);
             Assert.True(nextInformation.TryGetBattleRecord(enemyAvatarAddr, out var win));
             Assert.Equal(setToWin, win);
-            const int winScore = GrandFinaleInformation.DefaultScore + GrandFinaleInformation.WinScore;
-            const int loseScore = GrandFinaleInformation.DefaultScore + GrandFinaleInformation.LoseScore;
-            Assert.Equal(setToWin ? winScore : loseScore, nextInformation.Score);
         }
     }
 }
