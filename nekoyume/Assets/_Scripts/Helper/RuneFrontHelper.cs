@@ -57,7 +57,7 @@ namespace Nekoyume.Helper
 
         public static bool TryGetRuneStoneIcon(string ticker, out Sprite icon)
         {
-            var result = RuneData.RuneStones.FirstOrDefault(x => x.ticker == ticker);
+            var result = RuneData.Runes.FirstOrDefault(x => x.ticker == ticker);
             if (result is null)
             {
                 icon = null;
@@ -70,7 +70,7 @@ namespace Nekoyume.Helper
 
         public static bool TryGetRuneStoneIcon(int id, out Sprite icon)
         {
-            var result = RuneData.RuneStones.FirstOrDefault(x => x.id == id);
+            var result = RuneData.Runes.FirstOrDefault(x => x.id == id);
             if (result is null)
             {
                 icon = null;
@@ -97,16 +97,21 @@ namespace Nekoyume.Helper
             return false;
         }
 
-        public static (string, bool) GetRunStoneInformation(long currentBlockIndex, int runeStoneId)
+        public static bool TryGetRunStoneInformation(
+        long currentBlockIndex,
+        int runeStoneId,
+        out string info,
+        out bool canObtain)
         {
             switch (runeStoneId)
             {
                 case 3001:
                 case 2002:
-                    return (string.Empty, false);
+                    info = string.Empty;
+                    canObtain = false;
+                    return false;
                 default:
-                    var canObtain = CanObtain(currentBlockIndex, runeStoneId);
-                    string info;
+                    canObtain = CanObtain(currentBlockIndex, runeStoneId);
                     if (canObtain)
                     {
                         info = L10nManager.Localize("UI_INFO_ON_SEASON_AVAILABLE");
@@ -117,7 +122,7 @@ namespace Nekoyume.Helper
                             ? L10nManager.Localize("UI_INFO_ON_SEASON_NOT_OBTAINED")
                             : L10nManager.Localize("UI_INFO_PRACTICE_MODE");
                     }
-                    return (info, canObtain);
+                    return true;
             }
         }
     }

@@ -33,6 +33,9 @@ namespace Nekoyume.UI
         private TextMeshProUGUI infoText;
 
         [SerializeField]
+        private GameObject infoContainer;
+
+        [SerializeField]
         private TextMeshProUGUI actionButtonText;
 
         [SerializeField]
@@ -70,8 +73,9 @@ namespace Nekoyume.UI
             base.Show();
         }
 
-        public void SetInfo((string, bool) value)
+        public void SetInfo(bool isActive, (string, bool) value = default)
         {
+            infoContainer.SetActive(isActive);
             var (info, isPositive) = value;
             infoText.text = info;
             infoText.color = isPositive

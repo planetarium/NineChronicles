@@ -25,7 +25,7 @@ namespace Nekoyume.UI
     using UniRx;
     public class Rune : Widget
     {
-        private const int defaultRuneId = 311001;
+        private const int defaultRuneId = 3001;
 
         [SerializeField]
         private RuneOptionView currentOptions;
@@ -274,7 +274,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (!RuneFrontHelper.TryGetRuneStoneIcon(item.Cost.RuneStoneId, out var runeStoneIcon))
+            if (!RuneFrontHelper.TryGetRuneStoneIcon(item.Row.Id, out var runeStoneIcon))
             {
                 return;
             }
@@ -437,15 +437,19 @@ namespace Nekoyume.UI
             {
                 case RuneCostType.RuneStone:
                     var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
-                    var runeStoneId = item.Cost.RuneStoneId;
-                    var (info, canObtain) = RuneFrontHelper.GetRunStoneInformation(currentBlockIndex, runeStoneId);
+                    var runeStoneId = item.Row.Id;
+                    var isExist = RuneFrontHelper.TryGetRunStoneInformation(
+                        currentBlockIndex,
+                        runeStoneId,
+                        out var info,
+                        out var canObtain);
                     name = L10nManager.Localize($"ITEM_NAME_{runeStoneId}");
                     count = States.Instance.RuneStoneBalance[runeStoneId].GetQuantityString();
                     content = L10nManager.Localize($"ITEM_DESCRIPTION_{runeStoneId}");
                     buttonText = canObtain
                         ? L10nManager.Localize("UI_MAIN_MENU_WORLDBOSS")
                         : L10nManager.Localize("UI_SHOP");
-                    popup.SetInfo((info, canObtain));
+                    popup.SetInfo(isExist, (info, canObtain));
                     callback = () =>
                     {
                         base.Close(true);
@@ -464,13 +468,14 @@ namespace Nekoyume.UI
                     name = L10nManager.Localize("ITEM_NAME_9999998");
                     count = States.Instance.CrystalBalance.GetQuantityString();
                     content = L10nManager.Localize("ITEM_DESCRIPTION_9999998");
-                    buttonText = L10nManager.Localize("UI_MAIN_MENU_STAKING");
+                    buttonText = L10nManager.Localize("GRIND_UI_BUTTON");
                     callback = () =>
                     {
                         base.Close(true);
                         Game.Event.OnRoomEnter.Invoke(true);
-                        Find<StakingPopup>().Show();
+                        Find<Grind>().Show();
                     };
+                    popup.SetInfo(false);
                     break;
                 case RuneCostType.Ncg:
                     name = L10nManager.Localize("ITEM_NAME_9999999");
@@ -483,6 +488,7 @@ namespace Nekoyume.UI
                         Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
                         Find<ShopBuy>().Show();
                     };
+                    popup.SetInfo(false);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(costType), costType, null);

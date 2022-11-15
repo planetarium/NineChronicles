@@ -49,13 +49,13 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
-            if (!States.Instance.RuneStoneBalance.ContainsKey(Cost.RuneStoneId))
+            if (!States.Instance.RuneStoneBalance.ContainsKey(row.Id))
             {
                 return;
             }
 
-            RuneStone = States.Instance.RuneStoneBalance[Cost.RuneStoneId];
-            EnoughRuneStone = RuneStone.MajorUnit >= Cost.RuneStoneId;
+            RuneStone = States.Instance.RuneStoneBalance[row.Id];
+            EnoughRuneStone = RuneStone.MajorUnit >= row.Id;
             EnoughCrystal = States.Instance.CrystalBalance.MajorUnit >= Cost.CrystalQuantity;
             EnoughNcg = States.Instance.GoldBalanceState.Gold.MajorUnit >= Cost.NcgQuantity;
         }
