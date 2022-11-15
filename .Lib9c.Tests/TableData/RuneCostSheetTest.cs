@@ -12,8 +12,8 @@ namespace Lib9c.Tests.TableData
         public void SetToSheet()
         {
             const string content =
-                @"id,rune_level,rune_stone_id,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_success_rate
-        250010001,1,1001,10,100,100,10000
+                @"id,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_success_rate
+        1001,1,10,100,100,10000
         ";
 
             var sheet = new RuneCostSheet();
@@ -27,8 +27,8 @@ namespace Lib9c.Tests.TableData
         public void GetRowTest()
         {
             const string content =
-                @"id,rune_level,rune_stone_id,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_success_rate
-        250010001,1,1001,10,100,100,10000
+                @"id,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_success_rate
+        1001,1,10,100,100,10000
         ";
 
             var sheet = new RuneCostSheet();
