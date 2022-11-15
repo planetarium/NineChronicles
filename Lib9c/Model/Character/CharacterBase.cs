@@ -63,7 +63,7 @@ namespace Nekoyume.Model
 
         public bool IsDead => CurrentHP <= 0;
 
-        public int AttackCount { get; private set; }
+        public int AttackCount { get; set; }
         public int AttackCountMax { get; protected set; }
 
         protected CharacterBase(Simulator simulator, CharacterSheet characterSheet, int characterId, int level,

@@ -61,7 +61,8 @@ namespace Nekoyume.Battle
                     Player,
                     characterRow,
                     patternRow,
-                    characterRow.WaveStats[i]);
+                    characterRow.WaveStats[i],
+                    false);
                 _waves.Add(enemyModel);
             }
         }
