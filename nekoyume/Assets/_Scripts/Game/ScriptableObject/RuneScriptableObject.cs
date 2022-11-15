@@ -9,7 +9,6 @@ namespace Nekoyume
     public class RuneScriptableObject : ScriptableObject
     {
         public List<RuneData> Runes;
-        public List<RuneStoneData> RuneStones;
         public List<string> GroupNames;
         public Sprite DefaultRuneIcon;
 
@@ -18,13 +17,6 @@ namespace Nekoyume
         {
             public int id;
             public int groupdId;
-            public Sprite icon;
-        }
-
-        [Serializable]
-        public class RuneStoneData
-        {
-            public int id;
             public string ticker;
             public Sprite icon;
         }

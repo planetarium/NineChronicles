@@ -263,12 +263,11 @@ namespace Nekoyume.State
                 return null;
             }
 
-            var runeStoneId = costRow.Cost.First().RuneStoneId;
             var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
-            var runeStone = runeSheet.Values.First(x => x.Id == runeStoneId);
-            var rune = RuneHelper.ToCurrency(runeStone, 0, null);
+            var runeRow = runeSheet.Values.First(x => x.Id == runeId);
+            var rune = RuneHelper.ToCurrency(runeRow, 0, null);
             var fungibleAsset = await Game.Game.instance.Agent.GetBalanceAsync(avatarAddress, rune);
-            RuneStoneBalance[runeStone.Id] = fungibleAsset;
+            RuneStoneBalance[runeRow.Id] = fungibleAsset;
             return fungibleAsset;
         }
 
