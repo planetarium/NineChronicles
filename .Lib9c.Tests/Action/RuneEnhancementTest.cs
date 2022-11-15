@@ -75,7 +75,7 @@ namespace Lib9c.Tests.Action
             }
 
             var runeSheet = state.GetSheet<RuneSheet>();
-            if (!runeSheet.TryGetValue(cost.RuneStoneId, out var runeRow))
+            if (!runeSheet.TryGetValue(runeId, out var runeRow))
             {
                 throw new RuneNotFoundException($"[{nameof(Execute)}] ");
             }
@@ -326,7 +326,7 @@ namespace Lib9c.Tests.Action
             }
 
             var runeSheet = state.GetSheet<RuneSheet>();
-            if (!runeSheet.TryGetValue(cost.RuneStoneId, out var runeRow))
+            if (!runeSheet.TryGetValue(runeId, out var runeRow))
             {
                 throw new RuneNotFoundException($"[{nameof(Execute)}] ");
             }

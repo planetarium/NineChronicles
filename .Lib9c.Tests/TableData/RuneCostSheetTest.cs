@@ -37,7 +37,6 @@ namespace Lib9c.Tests.TableData
             var random = new TestRandom();
             var expectRow = sheet.OrderedList[random.Next(0, sheet.Count)];
             Assert.Equal(1, expectRow.Cost.First().Level);
-            Assert.Equal(1001, expectRow.Cost.First().RuneStoneId);
             Assert.Equal(10, expectRow.Cost.First().RuneStoneQuantity);
             Assert.Equal(100, expectRow.Cost.First().CrystalQuantity);
             Assert.Equal(100, expectRow.Cost.First().NcgQuantity);
