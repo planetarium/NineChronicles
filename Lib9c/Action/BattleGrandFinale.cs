@@ -95,7 +95,7 @@ namespace Nekoyume.Action
                     context.Signer,
                     myAvatarAddress,
                     out var avatarState,
-                    out var migrationRequired))
+                    out _))
             {
                 throw new FailedLoadStateException(
                     $"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
