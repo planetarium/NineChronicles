@@ -1,3 +1,4 @@
+#nullable enable
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace Nekoyume.Helper
         public static Currency ToCurrency(
             RuneSheet.Row runeRow,
             byte decimalPlaces,
-            IImmutableSet<Address> minters
+            IImmutableSet<Address>? minters
         )
         {
 
@@ -30,7 +31,7 @@ namespace Nekoyume.Helper
             RuneSheet.Row runeRow,
             int quantity,
             byte decimalPlaces = 0,
-            IImmutableSet<Address> minters = null
+            IImmutableSet<Address>? minters = null
         )
         {
             return ToCurrency(runeRow, decimalPlaces, minters) * quantity;

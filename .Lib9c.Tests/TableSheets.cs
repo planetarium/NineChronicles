@@ -6,6 +6,7 @@ namespace Lib9c.Tests
     using Nekoyume.TableData;
     using Nekoyume.TableData.Crystal;
     using Nekoyume.TableData.Event;
+    using Nekoyume.TableData.GrandFinale;
 
     public class TableSheets
     {
@@ -203,6 +204,10 @@ namespace Lib9c.Tests
         public RuneCostSheet RuneCostSheet { get; private set; }
 
         public RuneOptionSheet RuneOptionSheet { get; private set; }
+
+        public GrandFinaleScheduleSheet GrandFinaleScheduleSheet { get; private set; }
+
+        public GrandFinaleParticipantsSheet GrandFinaleParticipantsSheet { get; private set; }
 
         public void ItemSheetInitialize()
         {

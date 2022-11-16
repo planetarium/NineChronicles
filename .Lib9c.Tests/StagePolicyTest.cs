@@ -13,7 +13,9 @@ namespace Lib9c.Tests
     using Nekoyume.BlockChain.Policy;
     using Serilog.Core;
     using Xunit;
+#pragma warning disable SA1135
     using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
+#pragma warning restore SA1135
 
     public class StagePolicyTest
     {

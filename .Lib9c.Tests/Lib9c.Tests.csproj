@@ -23,7 +23,7 @@
     <PackageReference Include="Verify.Xunit" Version="17.2.1" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3" />
-    <PackageReference Include="coverlet.collector" Version="1.3.0" />
+    <PackageReference Include="coverlet.collector" Version="3.2.0" />
     <PackageReference Include="System.IO.Abstractions" Version="12.2.6" />
     <PackageReference Include="System.IO.Abstractions.TestingHelpers" Version="12.2.6" />
 
@@ -38,6 +38,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Lib9c.DevExtensions\Lib9c.DevExtensions.csproj" />
     <ProjectReference Include="..\Lib9c\Lib9c.csproj" />
+    <ProjectReference Include="..\Lib9c.MessagePack\Lib9c.MessagePack.csproj" />
   </ItemGroup>
 
   <ItemGroup>
