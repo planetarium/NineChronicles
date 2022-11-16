@@ -643,7 +643,7 @@ namespace Nekoyume.UI.Module
                 {
                     var rune = Widget.Find<Rune>();
                     rune.CloseWithOtherWidgets();
-                    rune.Show(true);
+                    rune.Show(model.RuneState.RuneId, true);
                     AudioController.PlayClick();
                 },
                 () =>

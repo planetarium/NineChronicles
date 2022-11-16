@@ -25,8 +25,6 @@ namespace Nekoyume.UI
     using UniRx;
     public class Rune : Widget
     {
-        private const int defaultRuneId = 3001;
-
         [SerializeField]
         private RuneOptionView currentOptions;
 
@@ -117,6 +115,8 @@ namespace Nekoyume.UI
         private static readonly ReactiveProperty<int> TryCount = new();
         private readonly Dictionary<RuneCostType, RuneCostItem> _costItems = new();
 
+        private int _defaultRuneId = 3001;
+
         protected override void Awake()
         {
             base.Awake();
@@ -149,12 +149,23 @@ namespace Nekoyume.UI
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
         }
 
-        public override void Show(bool ignoreShowAnimation = false)
+        public void Show(bool ignoreShowAnimation = false)
         {
             SetInventory();
             base.Show(ignoreShowAnimation);
             Set(_selectedRuneItem);
         }
+
+        public void Show(int runeId, bool ignoreShowAnimation = false)
+        {
+            _defaultRuneId = runeId;
+            _selectedRuneItem = null;
+
+            SetInventory();
+            base.Show(ignoreShowAnimation);
+            Set(_selectedRuneItem);
+        }
+
 
         public async UniTaskVoid OnActionRender(IRandom random)
         {
@@ -200,7 +211,7 @@ namespace Nekoyume.UI
                 var runeItem = new RuneItem(value, state?.Level ?? 0);
                 if (_selectedRuneItem == null)
                 {
-                    if (runeItem.Row.Id == defaultRuneId)
+                    if (runeItem.Row.Id == _defaultRuneId)
                     {
                         _selectedRuneItem = runeItem;
                     }
