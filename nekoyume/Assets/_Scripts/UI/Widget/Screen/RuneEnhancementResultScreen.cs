@@ -52,7 +52,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private List<GameObject> stats;
 
-
         [SerializeField]
         private TextMeshProUGUI cpText;
 
@@ -71,6 +70,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button closeButton;
 
+        [SerializeField]
+        private SpeechBubble speechBubble;
+
         private static readonly int HashToSuccess =
             Animator.StringToHash("Success");
 
@@ -82,10 +84,12 @@ namespace Nekoyume.UI
             base.Awake();
             closeButton.onClick.AddListener(() =>
             {
+                speechBubble.Close();
                 Close(true);
             });
             CloseWidget = () =>
             {
+                speechBubble.Close();
                 Close(true);
             };
         }
@@ -109,7 +113,22 @@ namespace Nekoyume.UI
                 runeItem.Cost,
                 random,
                 tryCount,
-                 out _);
+                 out var tryResult);
+
+            var speech = string.Empty;
+            if (isSuccess)
+            {
+                speech = tryCount != tryResult
+                    ? L10nManager.Localize("UI_RUNE_LEVEL_UP_SUCCESS_1", tryCount, tryResult)
+                    : L10nManager.Localize("UI_RUNE_LEVEL_UP_SUCCESS_2", tryResult);
+            }
+            else
+            {
+                speech = L10nManager.Localize("UI_RUNE_LEVEL_UP_FAIL", tryResult);
+            }
+
+            speechBubble.Show();
+            StartCoroutine(speechBubble.CoShowText(speech, true));
 
             if (isSuccess)
             {
