@@ -112,14 +112,12 @@ namespace Nekoyume.Action
             for (var i = 1; i < (int)BattleType.End; i++)
             {
                 var runeSlotStateAddress = RuneSlotState.DeriveAddress(AvatarAddress, (BattleType)i);
-                if (!states.TryGetState(runeSlotStateAddress, out List rawRuneSlotState))
+                if (states.TryGetState(runeSlotStateAddress, out List rawRuneSlotState))
                 {
-                    break;
+                    var runeSlotState = new RuneSlotState(rawRuneSlotState);
+                    runeSlotState.UpdateSlotItem(runeState);
+                    states = states.SetState(runeSlotStateAddress, runeSlotState.Serialize());
                 }
-
-                var runeSlotState = new RuneSlotState(rawRuneSlotState);
-                runeSlotState.UpdateSlotItem(runeState);
-                states = states.SetState(runeSlotStateAddress, runeSlotState.Serialize());
             }
 
             var arenaSheet = sheets.GetSheet<ArenaSheet>();
