@@ -220,6 +220,26 @@ namespace Nekoyume.State
             await task;
         }
 
+        public void UpdateRuneSlotState()
+        {
+            foreach (var runeSlotState in RuneSlotStates)
+            {
+                var states = RuneSlotStates[runeSlotState.Key].GetRuneSlot();
+                foreach (var runeSlot in states)
+                {
+                    if (!runeSlot.IsEquipped(out var runeState))
+                    {
+                        continue;
+                    }
+
+                    var current = RuneStates.FirstOrDefault(x=> x.RuneId == runeState.RuneId);
+                    runeSlot.Equip(current);
+                }
+            }
+
+            Event.OnUpdateRuneState.Invoke();
+        }
+
         public async Task InitItemSlotStates()
         {
             var avatarAddress = CurrentAvatarState.address;

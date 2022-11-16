@@ -323,7 +323,6 @@ namespace Nekoyume.UI
                 PlayerPrefs.SetInt(key, 1);
             }
 
-            Game.Game.instance.Stage.SelectedPlayer.gameObject.SetActive(false);
             Close();
             var avatarState = States.Instance.CurrentAvatarState;
             Find<WorldMap>().Show(avatarState.worldInformation);

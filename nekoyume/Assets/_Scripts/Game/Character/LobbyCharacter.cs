@@ -54,11 +54,11 @@ namespace Nekoyume.Game.Character
             items.AddRange(equipments.Select(x=> x.ItemId));
             avatarState.EquipItems(items);
 
-            var status = Widget.Find<Status>();
-            var player = Game.instance.Stage.GetPlayer();
+            // var status = Widget.Find<Status>();
+            // var player = Game.instance.Stage.GetPlayer();
             // todo : player 말고 필요한 값만 받게 수정해야 합니다.
-            status.UpdateOnlyPlayer(player);
-            player.gameObject.SetActive(false);
+            // status.UpdateOnlyPlayer(player);
+            // player.gameObject.SetActive(false);
         }
 
         public void Touch()

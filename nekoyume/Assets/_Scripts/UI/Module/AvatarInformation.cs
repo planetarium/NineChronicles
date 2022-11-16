@@ -59,6 +59,17 @@ namespace Nekoyume.UI.Module
         private readonly Dictionary<Inventory.InventoryTabType, GameObject> _slots = new();
         private readonly List<Guid> _consumables = new();
 
+        private void Start()
+        {
+            Game.Event.OnUpdateRuneState.AddListener(() =>
+            {
+                if (gameObject.activeSelf)
+                {
+                    UpdateInventory(_battleType);
+                }
+            });
+        }
+
         public void Initialize(bool isAvatarInfo = false, System.Action onUpdate = null)
         {
             _isAvatarInfo = isAvatarInfo;

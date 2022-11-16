@@ -14,7 +14,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    public class RuneEnhancementResultScreen : PopupWidget
+    public class RuneEnhancementResultScreen : ScreenWidget
     {
         [SerializeField]
         private Image runeImage;
