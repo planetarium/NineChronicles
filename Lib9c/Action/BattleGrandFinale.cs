@@ -30,6 +30,10 @@ namespace Nekoyume.Action
     public class BattleGrandFinale : GameAction
     {
         private const string ActionTypeName = "battle_grand_finale";
+        public const int WinScore = 20;
+        public const int LoseScore = 1;
+        public const int DefaultScore = 1000;
+        public const string ScoreDeriveKey = "grand_finale_score_{0}";
 
         public Address myAvatarAddress;
         public Address enemyAvatarAddress;
@@ -165,6 +169,12 @@ namespace Nekoyume.Action
                     $"[{nameof(BattleArena)}] enemy avatar address : {enemyAvatarAddress}");
             }
 
+            var scoreAddress = myAvatarAddress.Derive(string.Format(CultureInfo.InvariantCulture, ScoreDeriveKey, grandFinaleId));
+            if (!states.TryGetState(scoreAddress, out Integer grandFinaleScore))
+            {
+                grandFinaleScore = DefaultScore;
+            }
+
             var informationAdr = GrandFinaleInformation.DeriveAddress(
                 myAvatarAddress,
                 grandFinaleId);
@@ -206,12 +216,14 @@ namespace Nekoyume.Action
                 arenaSheets);
 
             var win = log.Result.Equals(ArenaLog.ArenaResult.Win);
-            grandFinaleInformation.UpdateRecordAndScore(enemyAvatarAddress, win);
+            grandFinaleScore += win ? WinScore : LoseScore;
+            grandFinaleInformation.UpdateRecord(enemyAvatarAddress, win);
 
             var ended = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}BattleGrandFinale Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states
                 .SetState(myArenaAvatarStateAdr, myArenaAvatarState.Serialize())
+                .SetState(scoreAddress, grandFinaleScore)
                 .SetState(informationAdr, grandFinaleInformation.Serialize());
         }
     }
