@@ -33,6 +33,7 @@ namespace Nekoyume.Model.Mail
                 [nameof(OrderBuyerMail)] = d => new OrderBuyerMail(d),
                 [nameof(OrderSellerMail)] = d => new OrderSellerMail(d),
                 [nameof(GrindingMail)] = d => new GrindingMail(d),
+                [nameof(MaterialCraftMail)] = d => new MaterialCraftMail(d),
             };
 
         public Guid id;
