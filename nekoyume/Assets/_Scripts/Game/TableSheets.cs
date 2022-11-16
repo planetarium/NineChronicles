@@ -4,6 +4,7 @@ using System.Text;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
 using Nekoyume.TableData.Event;
+using Nekoyume.TableData.GrandFinale;
 
 namespace Nekoyume.Game
 {
@@ -201,6 +202,10 @@ namespace Nekoyume.Game
         public SkillActionBuffSheet SkillActionBuffSheet { get; private set; }
 
         public ActionBuffSheet ActionBuffSheet { get; private set; }
+
+        public GrandFinaleScheduleSheet GrandFinaleScheduleSheet { get; private set; }
+
+        public GrandFinaleParticipantsSheet GrandFinaleParticipantsSheet { get; private set; }
 
         public void ItemSheetInitialize()
         {
