@@ -111,12 +111,13 @@ namespace Nekoyume.Action
             // update rune slot
             for (var i = 1; i < (int)BattleType.End; i++)
             {
-                var battleType = (BattleType)i;
-                var runeSlotStateAddress = RuneSlotState.DeriveAddress(AvatarAddress, battleType);
-                var runeSlotState = states.TryGetState(runeSlotStateAddress, out List rawRuneSlotState)
-                    ? new RuneSlotState(rawRuneSlotState)
-                    : new RuneSlotState(battleType);
+                var runeSlotStateAddress = RuneSlotState.DeriveAddress(AvatarAddress, (BattleType)i);
+                if (!states.TryGetState(runeSlotStateAddress, out List rawRuneSlotState))
+                {
+                    break;
+                }
 
+                var runeSlotState = new RuneSlotState(rawRuneSlotState);
                 runeSlotState.UpdateSlotItem(runeState);
                 states = states.SetState(runeSlotStateAddress, runeSlotState.Serialize());
             }
