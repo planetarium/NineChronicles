@@ -449,7 +449,6 @@ namespace Nekoyume.UI
                 PlayerPrefs.SetInt(key, 1);
             }
 
-            Game.Game.instance.Stage.SelectedPlayer.gameObject.SetActive(false);
             Close();
             AudioController.PlayClick();
 

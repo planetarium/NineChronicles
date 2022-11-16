@@ -17115,11 +17115,13 @@ MonoBehaviour:
   coverToBlockClick: {fileID: 527046033499987006}
   sweepPopupButton: {fileID: 3795999925088060485}
   sweepButtonText: {fileID: 8092915186552291678}
+  enemyCp: {fileID: 2036304415623430632}
   boostPopupButton: {fileID: 183432576108830691}
   mimisbrunnrBg: {fileID: 7610461272151471522}
   eventDungeonBg: {fileID: 1580173362770384484}
   hasBg: {fileID: 1886977658}
   blockStartingTextObject: {fileID: 1382415843525520753}
+  enemyCpContainer: {fileID: 5677835682297504188}
 --- !u!95 &1720378640888706023
 Animator:
   serializedVersion: 4
@@ -17886,6 +17888,7 @@ GameObject:
   - component: {fileID: 8602668532541643203}
   - component: {fileID: 7506918701625905659}
   - component: {fileID: 5309379770024960370}
+  - component: {fileID: 8393937760263189618}
   m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
@@ -17941,7 +17944,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Enemy CP
+  m_text: UI_RECOMMENDED_CP
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
@@ -18011,6 +18014,37 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &8393937760263189618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3677516447384848782}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixedFontAsset: 0
+  fixedFontStyle: 0
+  fixedFontSizeOffset: 0
+  fixedSpacingOption: 0
+  fixedMarginOption: 0
+  fontMaterialType: 0
+  l10nKey: UI_RECOMMENDED_CP
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0
 --- !u!1 &3773175312070656913
 GameObject:
   m_ObjectHideFlags: 0
@@ -36548,6 +36582,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: CPArea
       objectReference: {fileID: 0}
+    - target: {fileID: 1035417568355266913, guid: c0f663afea23ff04aab497ac165aa6b3,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1168064820041350319, guid: c0f663afea23ff04aab497ac165aa6b3,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -36975,6 +37014,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c0f663afea23ff04aab497ac165aa6b3, type: 3}
+--- !u!114 &2036304415623430632 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5630639970167094374, guid: c0f663afea23ff04aab497ac165aa6b3,
+    type: 3}
+  m_PrefabInstance: {fileID: 5937544396980862350}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &5184149434716460067 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1555898400341666221, guid: c0f663afea23ff04aab497ac165aa6b3,

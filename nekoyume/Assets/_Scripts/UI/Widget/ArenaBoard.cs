@@ -189,10 +189,31 @@ namespace Nekoyume.UI
                     }
 #endif
                     var data = _boundedData[index];
+
+                    var equipments = data.ItemSlotState.Equipments
+                        .Select(guid =>
+                            data.AvatarState.inventory.Equipments.FirstOrDefault(x => x.ItemId == guid))
+                        .Where(item => item != null).ToList();
+                    var costumes = data.ItemSlotState.Costumes
+                        .Select(guid =>
+                            data.AvatarState.inventory.Costumes.FirstOrDefault(x => x.ItemId == guid))
+                        .Where(item => item != null).ToList();
+                    var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
+                    var rune = data.RuneSlotState.GetEquippedRuneOptions(runeOptionSheet);
+                    var lv = data.AvatarState.level;
+                    var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+                    var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
+                    if (!characterSheet.TryGetValue(data.AvatarState.characterId, out var row))
+                    {
+                        throw new SheetRowNotFoundException("CharacterSheet",
+                            $"{data.AvatarState.characterId}");
+                    }
+
                     Close();
                     Find<ArenaBattlePreparation>().Show(
                         _roundData,
-                        data.AvatarState);
+                        data.AvatarState,
+                        CPHelper.TotalCP(equipments, costumes, rune, lv, row, costumeSheet));
                 })
                 .AddTo(gameObject);
         }

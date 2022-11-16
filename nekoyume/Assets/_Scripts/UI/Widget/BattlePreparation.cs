@@ -74,6 +74,9 @@ namespace Nekoyume.UI
         private TextMeshProUGUI sweepButtonText;
 
         [SerializeField]
+        private TextMeshProUGUI enemyCp;
+
+        [SerializeField]
         private Button boostPopupButton;
 
         [SerializeField]
@@ -87,6 +90,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private GameObject blockStartingTextObject;
+
+        [SerializeField]
+        private GameObject enemyCpContainer;
 
         private StageType _stageType;
         private int? _scheduleId;
@@ -223,6 +229,22 @@ namespace Nekoyume.UI
             }
 
             ReactiveAvatarState.Inventory.Subscribe(_ => UpdateStartButton()).AddTo(_disposables);
+
+
+            switch (_stageType)
+            {
+                case StageType.HackAndSlash:
+                    if (TableSheets.Instance.SweepRequiredCPSheet.TryGetValue(_stageId, out var row))
+                    {
+                        enemyCpContainer.gameObject.SetActive(true);
+                        enemyCp.text = $"{(int)(row.RequiredCP * 1.25f)}";
+                    }
+                    break;
+                case StageType.Mimisbrunnr:
+                case StageType.EventDungeon:
+                    enemyCpContainer.gameObject.SetActive(false);
+                    break;
+            }
         }
 
         public void UpdateInventory()

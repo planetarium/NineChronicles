@@ -17,6 +17,7 @@ using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
 using Nekoyume.State.Subjects;
 using Nekoyume.TableData;
+using TMPro;
 
 namespace Nekoyume.UI
 {
@@ -27,25 +28,36 @@ namespace Nekoyume.UI
         [SerializeField]
         private AvatarInformation information;
 
-        [SerializeField] private ParticleSystem[] particles;
+        [SerializeField]
+        private ParticleSystem[] particles;
 
-        [SerializeField] private ConditionalCostButton startButton;
+        [SerializeField]
+        private ConditionalCostButton startButton;
 
-        [SerializeField] private Button closeButton;
+        [SerializeField]
+        private Button closeButton;
 
-        [SerializeField] private Transform buttonStarImageTransform;
+        [SerializeField]
+        private Transform buttonStarImageTransform;
 
-        [SerializeField, Range(.5f, 3.0f)] private float animationTime = 1f;
+        [SerializeField, Range(.5f, 3.0f)]
+        private float animationTime = 1f;
 
-        [SerializeField] private bool moveToLeft = false;
+        [SerializeField]
+        private bool moveToLeft = false;
 
         [SerializeField, Range(0f, 10f),
          Tooltip("Gap between start position X and middle position X")]
         private float middleXGap = 1f;
 
-        [SerializeField] private GameObject coverToBlockClick;
+        [SerializeField]
+        private GameObject coverToBlockClick;
 
-        [SerializeField] private GameObject blockStartingTextObject;
+        [SerializeField]
+        private GameObject blockStartingTextObject;
+
+        [SerializeField]
+        private TextMeshProUGUI enemyCp;
 
         private ArenaSheet.RoundData _roundData;
         private AvatarState _chooseAvatarState;
@@ -107,11 +119,13 @@ namespace Nekoyume.UI
         public void Show(
             ArenaSheet.RoundData roundData,
             AvatarState chooseAvatarState,
+            int chooseAvatarCp,
             bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
             _roundData = roundData;
             _chooseAvatarState = chooseAvatarState;
+            enemyCp.text = chooseAvatarCp.ToString();
             UpdateStartButton();
             information.UpdateInventory(BattleType.Arena);
 
@@ -173,7 +187,8 @@ namespace Nekoyume.UI
                     var isValid = existItem is { Locked: false, item: ITradableItem tradableItem }
                                   && tradableItem.RequiredBlockIndex <= currentBlockIndex;
 
-                    if (arenaAvatarState.inventory.Items[i] is { item: IEquippableItem { Equipped: true } equippedItem }
+                    if (arenaAvatarState.inventory.Items[i] is
+                            { item: IEquippableItem { Equipped: true } equippedItem }
                         && !isValid)
                     {
                         equippedItem.Unequip();
@@ -285,7 +300,7 @@ namespace Nekoyume.UI
 
             // todo : 룬도 넣어줘야함.
             var runes = States.Instance.GetEquippedRuneStates(BattleType.Arena)
-                .Select(x=> x.RuneId).ToList();
+                .Select(x => x.RuneId).ToList();
 
             var costumes = States.Instance.ItemSlotStates[BattleType.Arena].Costumes;
             var equipments = States.Instance.ItemSlotStates[BattleType.Arena].Equipments;
@@ -319,8 +334,8 @@ namespace Nekoyume.UI
         {
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Arena);
             var runes = States.Instance.GetEquippedRuneStates(BattleType.Arena)
-                .Select(x=> x.RuneId).ToList();
-            var consumables = information.GetEquippedConsumables().Select(x=> x.Id).ToList();
+                .Select(x => x.RuneId).ToList();
+            var consumables = information.GetEquippedConsumables().Select(x => x.Id).ToList();
             var canBattle = Util.CanBattle(equipments, costumes, consumables);
             startButton.gameObject.SetActive(canBattle);
             startButton.Interactable = true;
