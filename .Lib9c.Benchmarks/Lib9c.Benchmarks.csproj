@@ -15,6 +15,7 @@
       <ProjectReference Include="..\.Libplanet\Libplanet.RocksDBStore\Libplanet.RocksDBStore.csproj" />
       <ProjectReference Include="..\.Libplanet\Libplanet\Libplanet.csproj" />
       <ProjectReference Include="..\Lib9c\Lib9c.csproj" />
+      <ProjectReference Include="..\Libplanet.Crypto.Secp256k1\Libplanet.Crypto.Secp256k1.csproj" />
     </ItemGroup>
 
     <ItemGroup>
