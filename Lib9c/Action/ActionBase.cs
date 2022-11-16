@@ -12,6 +12,7 @@ using Libplanet.Action;
 using Serilog;
 using Nekoyume.Model.State;
 using Libplanet.Assets;
+using Libplanet.Tx;
 using Nekoyume.BlockChain.Policy;
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
@@ -260,6 +261,8 @@ namespace Nekoyume.Action
             public Address Signer { get; set; }
 
             public long BlockIndex { get; set; }
+
+            public TxId? TxId { get; set; }
 
             public IAccountStateDelta OutputStates { get; set; }
 

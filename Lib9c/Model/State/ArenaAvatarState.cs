@@ -4,7 +4,6 @@ using Libplanet;
 using Nekoyume.Action;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 
 namespace Nekoyume.Model.State
 {
@@ -52,7 +51,7 @@ namespace Nekoyume.Model.State
             return result;
         }
 
-        public void UpdateCostumes([NotNull] List<Guid> costumes)
+        public void UpdateCostumes(List<Guid> costumes)
         {
             if (costumes == null)
             {
@@ -63,7 +62,7 @@ namespace Nekoyume.Model.State
             Costumes.AddRange(costumes);
         }
 
-        public void UpdateEquipment([NotNull] List<Guid> equipments)
+        public void UpdateEquipment(List<Guid> equipments)
         {
             if (equipments == null)
             {

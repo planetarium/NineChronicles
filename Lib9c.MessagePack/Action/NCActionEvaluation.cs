@@ -1,9 +1,9 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Bencodex.Types;
-using JetBrains.Annotations;
 using Libplanet;
 using Libplanet.Action;
 using MessagePack;
@@ -15,7 +15,7 @@ namespace Nekoyume.Action
     public struct NCActionEvaluation
     {
 #pragma warning disable MsgPack003
-        [Key(0)] [CanBeNull] public NCAction Action { get; set; }
+        [Key(0)] public NCAction? Action { get; set; }
 
         [Key(1)]
         public Address Signer { get; set; }
@@ -42,11 +42,11 @@ namespace Nekoyume.Action
 
         [SerializationConstructor]
         public NCActionEvaluation(
-            NCAction action,
+            NCAction? action,
             Address signer,
             long blockIndex,
             IAccountStateDelta outputStates,
-            Exception exception,
+            Exception? exception,
             IAccountStateDelta previousStates,
             int randomSeed,
             Dictionary<string, IValue> extra
