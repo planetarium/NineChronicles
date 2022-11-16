@@ -167,8 +167,7 @@ namespace Nekoyume.UI.Module
             var avatarState = States.Instance.CurrentAvatarState;
             var level = avatarState.level;
             var (equipments, costumes) = States.Instance.GetEquippedItems(_battleType);
-
-            Game.Game.instance.Lobby.Character.Set(avatarState, costumes, equipments);
+            Game.Game.instance.Lobby.Character.Set(avatarState, equipments, costumes);
 
             costumeSlots.SetPlayerCostumes(level, costumes, OnClickSlot, OnDoubleClickSlot);
             equipmentSlots.SetPlayerEquipments(level, equipments, OnClickSlot, OnDoubleClickSlot);

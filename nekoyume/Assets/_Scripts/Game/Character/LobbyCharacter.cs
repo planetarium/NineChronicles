@@ -28,8 +28,8 @@ namespace Nekoyume.Game.Character
 
         public void Set(
             AvatarState avatarState,
-            List<Costume> costumes,
-            List<Equipment> equipments)
+            List<Equipment> equipments,
+            List<Costume> costumes)
         {
             _hudContainer ??= Widget.Create<HudContainer>(true);
             _hudContainer.transform.localPosition = Vector3.left * 200000;
@@ -54,11 +54,8 @@ namespace Nekoyume.Game.Character
             items.AddRange(equipments.Select(x=> x.ItemId));
             avatarState.EquipItems(items);
 
-            // var status = Widget.Find<Status>();
-            // var player = Game.instance.Stage.GetPlayer();
-            // todo : player 말고 필요한 값만 받게 수정해야 합니다.
-            // status.UpdateOnlyPlayer(player);
-            // player.gameObject.SetActive(false);
+            var status = Widget.Find<Status>();
+            status.UpdateForLobby(avatarState, equipments, costumes);
         }
 
         public void Touch()
