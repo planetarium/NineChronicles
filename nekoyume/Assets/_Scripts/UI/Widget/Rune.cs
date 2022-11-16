@@ -415,6 +415,7 @@ namespace Nekoyume.UI
                     : -1;
                 var maxValues = new List<int> { maxRuneStone, maxCrystal, maxNcg };
                 _maxTryCount = maxValues.Where(x => x >= 0).Min();
+                _maxTryCount = math.min(100, _maxTryCount);
                 slider.Set(1,
                     _maxTryCount > 0 ? _maxTryCount : 1,
                     1,
