@@ -7,6 +7,7 @@ namespace Nekoyume.Model.EnumType
         Adventure = 1,
         Arena = 2,
         Raid = 3,
+        End = 4,
     }
 
     public static class BattleTypeExtensions
