@@ -10,6 +10,7 @@ using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
@@ -62,13 +63,16 @@ namespace Nekoyume.UI
         private Button minusButton;
 
         [SerializeField]
+        private Button disableCombineButton;
+
+        [SerializeField]
+        private Button disableLevelUpButton;
+
+        [SerializeField]
         private SweepSlider slider;
 
         [SerializeField]
         private List<GameObject> activeButtons;
-
-        [SerializeField]
-        private List<GameObject> disableButtons;
 
         [SerializeField]
         private GameObject content;
@@ -127,6 +131,18 @@ namespace Nekoyume.UI
 
             combineButton.onClick.AddListener(Enhancement);
             levelUpButton.onClick.AddListener(Enhancement);
+            disableCombineButton.onClick.AddListener(() =>
+            {
+                NotificationSystem.Push(MailType.System,
+                    L10nManager.Localize("UI_MESSAGE_NOT_ENOUGH_MATERIAL_1"),
+                    NotificationCell.NotificationType.Alert);
+            });
+            disableLevelUpButton.onClick.AddListener(() =>
+            {
+                NotificationSystem.Push(MailType.System,
+                    L10nManager.Localize("UI_MESSAGE_NOT_ENOUGH_MATERIAL_2"),
+                    NotificationCell.NotificationType.Alert);
+            });
             plusButton.onClick.AddListener(() => TryCount.Value = math.min(_maxTryCount, TryCount.Value + 1));
             minusButton.onClick.AddListener(() => TryCount.Value = math.max(1, TryCount.Value - 1));
             closeButton.onClick.AddListener(() => Close(true));
@@ -320,14 +336,11 @@ namespace Nekoyume.UI
                 b.SetActive(item.HasNotification);
             }
 
-            foreach (var b in disableButtons)
-            {
-                b.SetActive(!item.HasNotification);
-            }
-
-
             requirement.SetActive(item.HasNotification);
             maxLevel.SetActive(item.IsMaxLevel);
+
+            disableCombineButton.gameObject.SetActive(!item.HasNotification);
+            disableLevelUpButton.gameObject.SetActive(!item.HasNotification);
 
             if (item.IsMaxLevel)
             {

@@ -6529,13 +6529,12 @@ MonoBehaviour:
   levelUpButton: {fileID: 1604049799626114499}
   plusButton: {fileID: 7946766789631699976}
   minusButton: {fileID: 7224720988609070112}
+  disableCombineButton: {fileID: 3522575619439554761}
+  disableLevelUpButton: {fileID: 6134182936651357373}
   slider: {fileID: 1602195553315732616}
   activeButtons:
   - {fileID: 6119716860094053337}
   - {fileID: 2652271764634249739}
-  disableButtons:
-  - {fileID: 2037588187271181575}
-  - {fileID: 6952657782620633882}
   content: {fileID: 8634316168518126721}
   requirement: {fileID: 7244560001913322361}
   loadingObjects:
@@ -8469,7 +8468,7 @@ GameObject:
   - component: {fileID: 3281611014297289971}
   - component: {fileID: 3522575619439554761}
   m_Layer: 5
-  m_Name: Disabled
+  m_Name: CombineDisabled
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -23117,7 +23116,7 @@ GameObject:
   - component: {fileID: 3598808998952037245}
   - component: {fileID: 6134182936651357373}
   m_Layer: 5
-  m_Name: Disabled
+  m_Name: LevelUpDisabled
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

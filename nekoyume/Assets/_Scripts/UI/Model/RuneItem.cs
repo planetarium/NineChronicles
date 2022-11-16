@@ -55,7 +55,7 @@ namespace Nekoyume.UI.Model
             }
 
             RuneStone = States.Instance.RuneStoneBalance[row.Id];
-            EnoughRuneStone = RuneStone.MajorUnit >= row.Id;
+            EnoughRuneStone = RuneStone.MajorUnit >= Cost.RuneStoneQuantity;
             EnoughCrystal = States.Instance.CrystalBalance.MajorUnit >= Cost.CrystalQuantity;
             EnoughNcg = States.Instance.GoldBalanceState.Gold.MajorUnit >= Cost.NcgQuantity;
         }
