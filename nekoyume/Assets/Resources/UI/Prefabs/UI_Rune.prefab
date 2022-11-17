@@ -6470,7 +6470,7 @@ MonoBehaviour:
   tutorialTargets: []
   tutorialActions: 
   currentOptions: {fileID: 4129051695580481964}
-  afterOptions: {fileID: 0}
+  afterOptions: {fileID: 8151979781387003942}
   costItems:
   - {fileID: 9065187067033104469}
   - {fileID: 1190506779833221986}
@@ -6921,6 +6921,62 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Horizontal: 1
   m_Veritical: 0
+--- !u!1 &1231400115439187993
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2427298249786200704}
+  - component: {fileID: 8151979781387003942}
+  m_Layer: 5
+  m_Name: AfterDesc
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &2427298249786200704
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1231400115439187993}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3966629560219970139}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &8151979781387003942
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1231400115439187993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b95868db5ba24e2a96d08b3d1aeeb3dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  levelText: {fileID: 2517952986530955663}
+  stats:
+  - {fileID: 1049925430117302208}
+  - {fileID: 6338990342852551707}
+  - {fileID: 1084577718212850953}
+  skill: {fileID: 3165065212556298568}
+  deco: []
 --- !u!1 &1239635582640271394
 GameObject:
   m_ObjectHideFlags: 0
@@ -9459,6 +9515,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2979483679616290867}
+  - {fileID: 2427298249786200704}
   m_Father: {fileID: 626977902602025131}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

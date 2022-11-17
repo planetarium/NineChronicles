@@ -62,10 +62,10 @@ namespace Nekoyume.UI.Model
             if (option.SkillId != 0)
             {
                 skill.gameObject.SetActive(true);
-                var skillValue = option.SkillValueType == StatModifier.OperationType.Percentage
-                    ? $"{option.SkillValue * 100}%"
-                    : $"{option.SkillValue}";
-
+                var power = option.SkillValueType == StatModifier.OperationType.Percentage
+                    ? option.SkillValue * 100
+                    : option.SkillValue;
+                var skillValue = power == (int)power ? $"{(int)power}" : $"{power}";
                 skill.Set(L10nManager.Localize($"SKILL_NAME_{option.SkillId}"),
                     $"{L10nManager.Localize("UI_SKILL_POWER")} : {skillValue}",
                     $"{L10nManager.Localize("UI_SKILL_CHANCE")} : {option.SkillChance}%",
