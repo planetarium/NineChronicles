@@ -366,7 +366,7 @@ namespace Nekoyume.UI
 
         private void UpdateRuneOptions(RuneItem item)
         {
-            runeNameText.text = L10nManager.Localize($"ITEM_NAME_{item.Row.Id}");
+            runeNameText.text = L10nManager.Localize($"RUNE_NAME_{item.Row.Id}");
             gradeText.text = L10nManager.Localize($"UI_ITEM_GRADE_{item.Row.Grade}");
             afterOptions.Hide();
 

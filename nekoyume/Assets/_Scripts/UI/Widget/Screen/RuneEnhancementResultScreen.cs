@@ -149,7 +149,7 @@ namespace Nekoyume.UI
                 runeImage.sprite = icon;
             }
 
-            runeText.text = L10nManager.Localize($"ITEM_NAME_{item.Row.Id}");
+            runeText.text = L10nManager.Localize($"RUNE_NAME_{item.Row.Id}");
 
             if (!item.OptionRow.LevelOptionMap.TryGetValue(item.Level + 1, out var nextOption))
             {

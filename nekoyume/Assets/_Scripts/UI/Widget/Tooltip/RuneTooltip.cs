@@ -128,7 +128,7 @@ namespace Nekoyume.UI
         {
             _offsetFromTarget = offsetFromTarget;
             confirmButton.gameObject.SetActive(false);
-            runeNameText.text = L10nManager.Localize($"ITEM_NAME_{runeState.RuneId}");
+            runeNameText.text = L10nManager.Localize($"RUNE_NAME_{runeState.RuneId}");
             currentLevelText.text = $"+{runeState.Level}";
 
             var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
@@ -207,7 +207,7 @@ namespace Nekoyume.UI
             confirmButton.gameObject.SetActive(true);
             confirmButton.Interactable = interactable;
             confirmButton.Text = confirm;
-            runeNameText.text = L10nManager.Localize($"ITEM_NAME_{item.RuneState.RuneId}");
+            runeNameText.text = L10nManager.Localize($"RUNE_NAME_{item.RuneState.RuneId}");
             currentLevelText.text = $"+{item.RuneState.Level}";
 
             var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
