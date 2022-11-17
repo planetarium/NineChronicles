@@ -515,6 +515,7 @@ MonoBehaviour:
   _seasonText: {fileID: 2938966998453191817}
   _seasonGameObject: {fileID: 7694181548214814764}
   _championshipGameObject: {fileID: 635508035456408890}
+  grandFinaleGameObject: {fileID: 4783575879649647900}
 --- !u!225 &73013701249350966
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -2088,7 +2089,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5348842462879540978
 RectTransform:
   m_ObjectHideFlags: 0
