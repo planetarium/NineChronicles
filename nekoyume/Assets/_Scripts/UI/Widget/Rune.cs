@@ -69,6 +69,9 @@ namespace Nekoyume.UI
         private Button disableLevelUpButton;
 
         [SerializeField]
+        private Button informationButton;
+
+        [SerializeField]
         private SweepSlider slider;
 
         [SerializeField]
@@ -91,6 +94,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private RuneListScroll scroll;
+
+        [SerializeField]
+        private SpeechBubble speechBubble;
 
         [SerializeField]
         private Animator animator;
@@ -142,6 +148,10 @@ namespace Nekoyume.UI
                 NotificationSystem.Push(MailType.System,
                     L10nManager.Localize("UI_MESSAGE_NOT_ENOUGH_MATERIAL_2"),
                     NotificationCell.NotificationType.Alert);
+            });
+            informationButton.onClick.AddListener(() =>
+            {
+                informationButton.gameObject.SetActive(false);
             });
             plusButton.onClick.AddListener(() => TryCount.Value = math.min(_maxTryCount, TryCount.Value + 1));
             minusButton.onClick.AddListener(() => TryCount.Value = math.max(1, TryCount.Value - 1));
