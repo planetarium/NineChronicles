@@ -3,6 +3,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Module.Common;
 using TMPro;
 using UnityEngine;
 
@@ -21,6 +22,9 @@ namespace Nekoyume.UI.Model
 
         [SerializeField]
         private List<GameObject> deco = new();
+
+        [SerializeField]
+        private PositionTooltip tooltip;
 
         public void Hide()
         {
@@ -70,10 +74,23 @@ namespace Nekoyume.UI.Model
                     $"{L10nManager.Localize("UI_SKILL_POWER")} : {skillValue}",
                     $"{L10nManager.Localize("UI_SKILL_CHANCE")} : {option.SkillChance}%",
                     $"{L10nManager.Localize("UI_COOLDOWN")} : {option.SkillCooldown}");
+
+                if (tooltip != null)
+                {
+                    var title = L10nManager.Localize($"SKILL_NAME_{option.SkillId}");
+                    var content = L10nManager.Localize(
+                        $"SKILL_DESCRIPTION_{option.SkillId}", option.SkillChance, skillValue);
+                    tooltip.Set(title, content);
+                    tooltip.gameObject.SetActive(false);
+                }
             }
             else
             {
                 skill.gameObject.SetActive(false);
+                if (tooltip != null)
+                {
+                    tooltip.gameObject.SetActive(false);
+                }
             }
         }
     }

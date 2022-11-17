@@ -28,16 +28,6 @@ namespace Nekoyume.UI.Module
 
         private Coroutine _disableCpTween;
 
-        private void OnDisable()
-        {
-            if (!(_disableCpTween is null))
-            {
-                StopCoroutine(_disableCpTween);
-            }
-
-            increaseCpArea.gameObject.SetActive(false);
-        }
-
         public void UpdateCP(int cp)
         {
             cpText.text = cp.ToString();

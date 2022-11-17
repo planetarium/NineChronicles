@@ -96,9 +96,6 @@ namespace Nekoyume.UI
         private RuneListScroll scroll;
 
         [SerializeField]
-        private SpeechBubble speechBubble;
-
-        [SerializeField]
         private Animator animator;
 
         private static readonly int HashToCombine =
