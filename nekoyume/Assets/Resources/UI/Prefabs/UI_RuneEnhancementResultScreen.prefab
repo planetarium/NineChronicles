@@ -53306,6 +53306,7 @@ GameObject:
   - component: {fileID: 9010355976142514219}
   - component: {fileID: 1780464257128849459}
   - component: {fileID: 1606584021092217210}
+  - component: {fileID: 8903743172992598829}
   m_Layer: 5
   m_Name: Bubble_0
   m_TagString: Untagged
@@ -53371,6 +53372,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &8903743172992598829
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3707484994109519627}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bb4e59514e90489d985e9a17c838085, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Horizontal: 1
+  m_Veritical: 0
 --- !u!1 &3733285751173581046
 GameObject:
   m_ObjectHideFlags: 0
@@ -86906,7 +86921,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -37.949997, y: -5.785}
+  m_AnchoredPosition: {x: -54.2, y: -5.785}
   m_SizeDelta: {x: 123.5, y: 11.57}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3831700480493903628
@@ -86940,7 +86955,7 @@ MonoBehaviour:
   m_text: I succeeded in the 3rd time!.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 0de5ad765f53d464dbc47574cb28982e, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: e22461e7aefa54e80b907628f605eb1e, type: 2}
   m_fontSharedMaterials:
   - {fileID: 0}
   m_fontMaterial: {fileID: 0}
@@ -86948,8 +86963,8 @@ MonoBehaviour:
   - {fileID: 0}
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4292010495
+  m_fontColor: {r: 1, g: 0.88086563, b: 0.8254717, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -86972,7 +86987,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 4096
   m_textAlignment: 65535
@@ -87025,7 +87040,7 @@ MonoBehaviour:
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
   fixedMarginOption: 0
-  fontMaterialType: 2
+  fontMaterialType: 38
   l10nKey: 
   fontMaterialIndexInitialized: 1
   fontMaterialIndex: 0
