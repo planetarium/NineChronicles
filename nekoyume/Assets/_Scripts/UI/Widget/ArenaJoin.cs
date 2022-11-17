@@ -70,6 +70,12 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button _backButton;
 
+        [SerializeField]
+        private GrandFinaleJoin grandFinaleJoin;
+
+        [SerializeField]
+        private GameObject baseArenaJoinObject;
+
         private InnerState _innerState = InnerState.Idle;
         private readonly List<IDisposable> _disposablesForShow = new List<IDisposable>();
 
@@ -116,6 +122,17 @@ namespace Nekoyume.UI
             RxProps.ArenaInfoTuple
                 .Subscribe(tuple => UpdateBottomButtons())
                 .AddTo(_disposablesForShow);
+            if (TableSheets.Instance.GrandFinaleScheduleSheet.GetRowByBlockIndex(Game.Game.instance.Agent.BlockIndex) is not null)
+            {
+                baseArenaJoinObject.SetActive(false);
+                grandFinaleJoin.gameObject.SetActive(true);
+            }
+            else
+            {
+                baseArenaJoinObject.SetActive(true);
+                grandFinaleJoin.gameObject.SetActive(false);
+            }
+
             base.Show(ignoreShowAnimation);
         }
 
@@ -301,8 +318,7 @@ namespace Nekoyume.UI
                 })
                 .AddTo(gameObject);
 
-            _joinButton.SetState(ConditionalButton.State.Normal);
-            _joinButton.OnClickSubject.Subscribe(_ =>
+            void OnClickJoinButton()
             {
                 AudioController.PlayClick();
                 if (RxProps.ArenaInfoTuple.HasValue &&
@@ -331,7 +347,12 @@ namespace Nekoyume.UI
                         selectedRoundData.ChampionshipId,
                         selectedRoundData.Round)
                     .Subscribe();
-            }).AddTo(gameObject);
+            }
+
+            grandFinaleJoin.Set(OnClickJoinButton);
+
+            _joinButton.SetState(ConditionalButton.State.Normal);
+            _joinButton.OnClickSubject.Subscribe(_ => OnClickJoinButton()).AddTo(gameObject);
 
             _paymentButton.SetState(ConditionalButton.State.Conditional);
             _paymentButton.SetCondition(() => CheckChampionshipConditions(true));
