@@ -27,6 +27,7 @@ namespace Nekoyume.Helper
             }
         }
 
+        public const int DefaultRuneId = 3001;
         public static Sprite DefaultRuneIcon => RuneData.DefaultRuneIcon;
 
         public static int GetGroupId(int id)
@@ -65,6 +66,19 @@ namespace Nekoyume.Helper
             }
 
             icon = result.icon;
+            return true;
+        }
+
+        public static bool TryGetRuneData(string ticker, out RuneScriptableObject.RuneData data)
+        {
+            var result = RuneData.Runes.FirstOrDefault(x => x.ticker == ticker);
+            if (result is null)
+            {
+                data = null;
+                return false;
+            }
+
+            data = result;
             return true;
         }
 

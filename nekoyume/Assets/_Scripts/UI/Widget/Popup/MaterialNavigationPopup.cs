@@ -70,6 +70,7 @@ namespace Nekoyume.UI
             contentText.text = content;
             actionButtonText.text = buttonText;
             infoText.gameObject.SetActive(infoText.text != string.Empty);
+            infoContainer.SetActive(false);
             base.Show();
         }
 

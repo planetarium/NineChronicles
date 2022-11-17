@@ -121,11 +121,11 @@ namespace Nekoyume.UI
 
         private RuneItem _selectedRuneItem;
         private int _maxTryCount = 1;
+        private int _currentRuneId = RuneFrontHelper.DefaultRuneId;
+
         private static readonly ReactiveProperty<bool> IsLoading = new();
         private static readonly ReactiveProperty<int> TryCount = new();
         private readonly Dictionary<RuneCostType, RuneCostItem> _costItems = new();
-
-        private int _defaultRuneId = 3001;
 
         protected override void Awake()
         {
@@ -184,7 +184,7 @@ namespace Nekoyume.UI
 
         public void Show(int runeId, bool ignoreShowAnimation = false)
         {
-            _defaultRuneId = runeId;
+            _currentRuneId = runeId;
             _selectedRuneItem = null;
 
             SetInventory();
@@ -237,7 +237,7 @@ namespace Nekoyume.UI
                 var runeItem = new RuneItem(value, state?.Level ?? 0);
                 if (_selectedRuneItem == null)
                 {
-                    if (runeItem.Row.Id == _defaultRuneId)
+                    if (runeItem.Row.Id == _currentRuneId)
                     {
                         _selectedRuneItem = runeItem;
                     }
