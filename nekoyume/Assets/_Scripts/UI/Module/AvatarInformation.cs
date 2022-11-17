@@ -301,7 +301,9 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
+            var prevCp = Util.TotalCP(_battleType);
             UnequipRune(item);
+            UpdateStat(prevCp);
         }
 
         private void OnClickSlot(EquipmentSlot slot)
@@ -329,8 +331,10 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
+            var prevCp = Util.TotalCP(_battleType);
             UnequipItem(item);
             _onUpdate?.Invoke();
+            UpdateStat(prevCp);
         }
 
         private void EquipItem(InventoryItem inventoryItem)
