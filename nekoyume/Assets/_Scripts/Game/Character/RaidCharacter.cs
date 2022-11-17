@@ -154,7 +154,6 @@ namespace Nekoyume.Game.Character
                     var vfx = Game.instance.RaidStage.BuffController.Get<BleedVFX>(gameObject, buff);
                     _actionBuffVFXMap[id] = vfx;
                     vfx.transform.parent = transform;
-                    vfx.transform.localPosition = Vector3.zero;
                     vfx.Play();
                 }
             }
