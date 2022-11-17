@@ -8,11 +8,13 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
+using Nekoyume.Model.Mail;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Scroller;
 using TMPro;
 using Unity.Mathematics;
 using UnityEngine;
@@ -111,6 +113,14 @@ namespace Nekoyume.UI
                 _onConfirm?.Invoke();
                 Close(true);
             }).AddTo(gameObject);
+
+            confirmButton.OnClickDisabledSubject.Subscribe(_ =>
+            {
+                NotificationSystem.Push(MailType.System,
+                    L10nManager.Localize("UI_MESSAGE_CAN_NOT_EQUIPPED"),
+                    NotificationCell.NotificationType.Alert);
+            })
+            .AddTo(gameObject);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
