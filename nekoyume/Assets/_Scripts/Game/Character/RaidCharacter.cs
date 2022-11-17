@@ -586,8 +586,11 @@ namespace Nekoyume.Game.Character
             }
 
             var buff = info.Buff;
-            var effect = Game.instance.RaidStage.BuffController.Get<RaidCharacter, BuffVFX>(target, buff);
-            effect.Play();
+            if (info.Buff is not ActionBuff)
+            {
+                var effect = Game.instance.RaidStage.BuffController.Get<RaidCharacter, BuffVFX>(target, buff);
+                effect.Play();
+            }
             AddNextBuff(buff);
             target.UpdateStatusUI();
         }

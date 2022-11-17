@@ -407,9 +407,9 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var costumes = States.Instance.ItemSlotStates[BattleType.Arena].Costumes;
-            var equipments = States.Instance.ItemSlotStates[BattleType.Arena].Equipments;
-            var runeInfos = States.Instance.RuneSlotStates[BattleType.Arena]
+            var costumes = States.Instance.ItemSlotStates[BattleType.Adventure].Costumes;
+            var equipments = States.Instance.ItemSlotStates[BattleType.Adventure].Equipments;
+            var runeInfos = States.Instance.RuneSlotStates[BattleType.Adventure]
                 .GetEquippedRuneSlotInfos();
             Game.Game.instance.ActionManager.HackAndSlashSweep(
                 costumes,
