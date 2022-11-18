@@ -13,7 +13,6 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Stat;
 using Nekoyume.State;
-using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Unity.Mathematics;
 using UnityEngine;
