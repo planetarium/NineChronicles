@@ -16,8 +16,6 @@ using Nekoyume.TableData;
 
 namespace Nekoyume.UI.Module
 {
-    using UniRx;
-
     [RequireComponent(typeof(RectTransform))]
     public class RuneSlotView : MonoBehaviour
     {
@@ -66,7 +64,6 @@ namespace Nekoyume.UI.Module
         private Action<RuneSlotView> _onClick;
         private Action<RuneSlotView> _onDoubleClick;
         private EventTrigger _eventTrigger;
-        private readonly List<IDisposable> _disposables = new();
 
         public RuneType RuneType => runeType;
         public RectTransform RectTransform { get; private set; }
@@ -94,17 +91,6 @@ namespace Nekoyume.UI.Module
             RectTransform = GetComponent<RectTransform>();
         }
 
-        private void UpdateLoading()
-        {
-            if (RuneSlot == null)
-            {
-                return;
-            }
-
-            var value = LoadingHelper.UnlockRuneSlot.Any(x => x == RuneSlot.Index);
-            loadingObject.SetActive(value);
-        }
-
         public void Set(
             RuneSlot runeSlot,
             Action<RuneSlotView> onClick,
@@ -113,16 +99,8 @@ namespace Nekoyume.UI.Module
             RuneSlot = runeSlot;
             _onClick = onClick;
             _onDoubleClick = onDoubleClick;
-
+            UpdateLoading(runeSlot);
             UpdateLockState(runeSlot);
-
-            _disposables.DisposeAllAndClear();
-            LoadingHelper.UnlockRuneSlot.ObserveAdd().Subscribe(x =>
-            {
-                UpdateLoading();
-            }).AddTo(_disposables);
-            UpdateLoading();
-
             wearableImage.SetActive(false);
             optionTagBg.gameObject.SetActive(false);
             if (runeSlot.IsEquipped(out var state))
@@ -133,6 +111,12 @@ namespace Nekoyume.UI.Module
             {
                 Unequip();
             }
+        }
+
+        private void UpdateLoading(RuneSlot runeSlot)
+        {
+            var value = LoadingHelper.UnlockRuneSlot.Any(x => x == runeSlot.Index);
+            loadingObject.SetActive(value);
         }
 
         private void UpdateLockState(RuneSlot runeSlot)

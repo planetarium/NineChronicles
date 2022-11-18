@@ -52,12 +52,13 @@ namespace Nekoyume.UI.Module
 
         private GameObject _cachedCharacterTitle;
         private InventoryItem _pickedItem;
-        private BattleType _battleType;
+        private BattleType _battleType = BattleType.Adventure;
         private bool _isAvatarInfo;
         private System.Action _onUpdate;
 
         private readonly Dictionary<Inventory.InventoryTabType, GameObject> _slots = new();
         private readonly List<Guid> _consumables = new();
+        private readonly List<IDisposable> _disposables = new();
 
         private void Start()
         {
@@ -95,6 +96,11 @@ namespace Nekoyume.UI.Module
             {
                 slot.ShowUnlockTooltip = true;
             }
+
+            _disposables.DisposeAllAndClear();
+            LoadingHelper.UnlockRuneSlot.ObserveCountChanged().Subscribe(x => {
+                UpdateRuneView();
+            }).AddTo(_disposables);
         }
 
         public bool TryGetFirstCell(out InventoryItem item)

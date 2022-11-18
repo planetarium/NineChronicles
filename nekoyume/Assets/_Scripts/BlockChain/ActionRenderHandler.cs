@@ -2225,8 +2225,8 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            LoadingHelper.UnlockRuneSlot.Remove(eval.Action.SlotIndex);
             await States.Instance.InitRuneSlotStates();
+            LoadingHelper.UnlockRuneSlot.Remove(eval.Action.SlotIndex);
             UpdateAgentStateAsync(eval).Forget();
             NotificationSystem.Push(
                 MailType.Workshop,

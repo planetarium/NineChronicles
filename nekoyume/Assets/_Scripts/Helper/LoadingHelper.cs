@@ -3,6 +3,6 @@
     using UniRx;
     public static class LoadingHelper
     {
-        public static ReactiveCollection<int> UnlockRuneSlot = new();
+        public static readonly ReactiveCollection<int> UnlockRuneSlot = new();
     }
 }
