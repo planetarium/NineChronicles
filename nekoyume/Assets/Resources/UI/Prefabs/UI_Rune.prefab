@@ -8282,7 +8282,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -14, y: -39}
+  m_AnchoredPosition: {x: -14, y: -40}
   m_SizeDelta: {x: 111, y: 168}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &194064869827782583
@@ -9423,7 +9423,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: -29, y: -20}
-  m_SizeDelta: {x: 28, y: 28}
+  m_SizeDelta: {x: 30, y: 30}
   m_Pivot: {x: 1, y: 1}
 --- !u!222 &3101607564832883643
 CanvasRenderer:
@@ -12948,7 +12948,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 150, y: -550.9}
+  m_AnchoredPosition: {x: 150, y: -322.9}
   m_SizeDelta: {x: 280, y: 22}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4435761777667675462
@@ -22358,7 +22358,7 @@ MonoBehaviour:
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
   fixedMarginOption: 0
-  fontMaterialType: 0
+  fontMaterialType: 38
   l10nKey: UI_RUNE_MAX_ATTEMPTS
   fontMaterialIndexInitialized: 1
   fontMaterialIndex: 0
@@ -34150,6 +34150,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 147
+      objectReference: {fileID: 0}
+    - target: {fileID: 1703991400425991467, guid: cb606263bd9f00b428478c8c0dea3094,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 42.33
       objectReference: {fileID: 0}
     - target: {fileID: 1728141331898931782, guid: cb606263bd9f00b428478c8c0dea3094,
         type: 3}
