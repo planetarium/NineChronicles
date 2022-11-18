@@ -314,6 +314,15 @@ namespace Nekoyume.UI
             var scrollData =
                 _grandFinaleParticipants.Select(e =>
                 {
+                    var hasBattleRecord = false;
+                    var win = false;
+                    if (isParticipant)
+                    {
+                        hasBattleRecord = States.Instance.GrandFinaleStates.GrandFinalePlayer
+                            .CurrentInfo
+                            .TryGetBattleRecord(e.AvatarAddr, out win);
+                    }
+
                     return new ArenaBoardPlayerItemData
                     {
                         name = e.AvatarState.NameWithHash,
@@ -331,8 +340,18 @@ namespace Nekoyume.UI
                         expectWinDeltaScore = BattleGrandFinale.WinScore,
                         interactableChoiceButton = !e.AvatarAddr.Equals(currentAvatarAddr),
                         canFight = isParticipant,
+                        winAtGrandFinale = hasBattleRecord ? win : null,
                     };
                 }).ToList();
+
+            bool IsFoughtPlayer(ArenaBoardPlayerItemData data)
+            {
+                return data.winAtGrandFinale.HasValue && data.interactableChoiceButton;
+            }
+
+            var foughtPlayers = scrollData.Where(IsFoughtPlayer).ToList();
+            scrollData.RemoveAll(IsFoughtPlayer);
+            scrollData.AddRange(foughtPlayers);
             for (var i = 0; i < _grandFinaleParticipants.Length; i++)
             {
                 var data = _grandFinaleParticipants[i];

@@ -23,6 +23,7 @@ namespace Nekoyume.UI.Module.Arena.Board
         public int expectWinDeltaScore;
         public bool interactableChoiceButton;
         public bool canFight;
+        public bool? winAtGrandFinale;
     }
 
     public class ArenaBoardPlayerScrollContext : FancyScrollRectContext
@@ -65,6 +66,12 @@ namespace Nekoyume.UI.Module.Arena.Board
         [SerializeField]
         private ConditionalButton _choiceButton;
 
+        [SerializeField]
+        private GameObject winObject;
+
+        [SerializeField]
+        private GameObject loseObject;
+
         private ArenaBoardPlayerItemData _currentData;
 
 #if UNITY_EDITOR
@@ -97,12 +104,24 @@ namespace Nekoyume.UI.Module.Arena.Board
                 _currentData.cp.ToString("N0", CultureInfo.CurrentCulture);
             _ratingText.text =
                 _currentData.score.ToString("N0", CultureInfo.CurrentCulture);
-            _plusRatingText.gameObject.SetActive(_currentData.canFight);
+            _plusRatingText.gameObject.SetActive(_currentData.canFight && !_currentData.winAtGrandFinale.HasValue);
             _plusRatingText.text =
                 _currentData.expectWinDeltaScore.ToString(
                     "N0",
                     CultureInfo.CurrentCulture);
-            _choiceButton.gameObject.SetActive(_currentData.canFight);
+            if (_currentData.winAtGrandFinale.HasValue)
+            {
+                var win = _currentData.winAtGrandFinale.Value;
+                winObject.SetActive(win);
+                loseObject.SetActive(!win);
+            }
+            else
+            {
+                winObject.SetActive(false);
+                loseObject.SetActive(false);
+            }
+
+            _choiceButton.gameObject.SetActive(_currentData.canFight && !_currentData.winAtGrandFinale.HasValue);
             _choiceButton.Interactable = _currentData.interactableChoiceButton;
             UpdateRank();
         }
