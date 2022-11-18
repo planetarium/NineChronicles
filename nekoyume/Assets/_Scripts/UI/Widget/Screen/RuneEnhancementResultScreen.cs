@@ -204,7 +204,7 @@ namespace Nekoyume.UI
                     var next = nextOption.Stats[i];
                     var cur = curOption.Stats[i];
                     var result = next.statMap.ValueAsInt - cur.statMap.ValueAsInt;
-                    addStatTextList[i].text = $"{result}";
+                    addStatTextList[i].text = $"(+{result})";
                 }
             }
             else
@@ -212,7 +212,7 @@ namespace Nekoyume.UI
                 for (var i = 0; i < nextOption.Stats.Count; i++)
                 {
                     var info = nextOption.Stats[i];
-                    addStatTextList[i].text = $"{info.statMap.ValueAsInt}";
+                    addStatTextList[i].text = $"(+{info.statMap.ValueAsInt})";
                 }
             }
         }
