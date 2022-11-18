@@ -22,6 +22,7 @@ namespace Nekoyume.UI.Module.Arena.Board
         public int rank;
         public int expectWinDeltaScore;
         public bool interactableChoiceButton;
+        public bool canFight;
     }
 
     public class ArenaBoardPlayerScrollContext : FancyScrollRectContext
@@ -78,7 +79,7 @@ namespace Nekoyume.UI.Module.Arena.Board
             _characterView.OnClickCharacterIcon
                 .Subscribe(_ => Context.onClickCharacterView?.Invoke(Index))
                 .AddTo(gameObject);
-            
+
             _choiceButton.OnClickSubject
                 .Subscribe(_ => Context.onClickChoice?.Invoke(Index))
                 .AddTo(gameObject);
@@ -96,10 +97,12 @@ namespace Nekoyume.UI.Module.Arena.Board
                 _currentData.cp.ToString("N0", CultureInfo.CurrentCulture);
             _ratingText.text =
                 _currentData.score.ToString("N0", CultureInfo.CurrentCulture);
+            _plusRatingText.gameObject.SetActive(_currentData.canFight);
             _plusRatingText.text =
                 _currentData.expectWinDeltaScore.ToString(
                     "N0",
                     CultureInfo.CurrentCulture);
+            _choiceButton.gameObject.SetActive(_currentData.canFight);
             _choiceButton.Interactable = _currentData.interactableChoiceButton;
             UpdateRank();
         }

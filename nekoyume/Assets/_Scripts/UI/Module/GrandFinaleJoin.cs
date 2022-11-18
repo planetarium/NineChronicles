@@ -1,4 +1,6 @@
 ﻿using Nekoyume.Game;
+using Nekoyume.Game.Controller;
+using Nekoyume.State;
 using Nekoyume.UI.Module.Arena.Join;
 using UniRx;
 using UnityEngine;
@@ -13,6 +15,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private ConditionalButton arenaJoinButton;
 
+        [SerializeField]
+        private ConditionalButton grandFinaleJoinButton;
+
         public void Set(System.Action onClickJoinArena)
         {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
@@ -24,6 +29,13 @@ namespace Nekoyume.UI.Module
                 null
             );
             arenaJoinButton.OnClickSubject.Subscribe(_ => onClickJoinArena.Invoke()).AddTo(gameObject);
+            grandFinaleJoinButton.OnClickSubject.Subscribe(_ =>
+            {
+                AudioController.PlayClick();
+                Widget.Find<ArenaJoin>().Close();
+                Widget.Find<ArenaBoard>()
+                    .Show(States.Instance.GrandFinaleStates.GrandFinaleParticipants);
+            }).AddTo(gameObject);
         }
     }
 }

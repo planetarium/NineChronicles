@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
+using Nekoyume.Action;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
@@ -40,8 +41,9 @@ namespace Nekoyume.UI
         private Button _backButton;
 
         private ArenaSheet.RoundData _roundData;
-
         private RxProps.ArenaParticipant[] _boundedData;
+        private GrandFinaleStates.GrandFinaleParticipant[] _grandFinaleParticipants;
+        private bool _useGrandFinale;
 
         protected override void Awake()
         {
@@ -81,6 +83,7 @@ namespace Nekoyume.UI
             RxProps.ArenaParticipant[] arenaParticipants,
             bool ignoreShowAnimation = false)
         {
+            _useGrandFinale = false;
             _roundData = roundData;
             _boundedData = arenaParticipants;
             Find<HeaderMenuStatic>().Show(HeaderMenuStatic.AssetVisibleState.Arena);
@@ -149,8 +152,10 @@ namespace Nekoyume.UI
                         return;
                     }
 #endif
-                    var data = _boundedData[index];
-                    Find<FriendInfoPopup>().Show(data.AvatarState);
+                    var avatarState = _useGrandFinale
+                        ? _grandFinaleParticipants[index].AvatarState
+                        : _boundedData[index].AvatarState;
+                    Find<FriendInfoPopup>().Show(avatarState);
                 })
                 .AddTo(gameObject);
 
@@ -166,11 +171,13 @@ namespace Nekoyume.UI
                         return;
                     }
 #endif
-                    var data = _boundedData[index];
+                    var avatarState = _useGrandFinale
+                        ? _grandFinaleParticipants[index].AvatarState
+                        : _boundedData[index].AvatarState;
                     Close();
                     Find<ArenaBattlePreparation>().Show(
                         _roundData,
-                        data.AvatarState);
+                        avatarState);
                 })
                 .AddTo(gameObject);
         }
@@ -212,6 +219,7 @@ namespace Nekoyume.UI
                         rank = e.Rank,
                         expectWinDeltaScore = e.ExpectDeltaScore.win,
                         interactableChoiceButton = !e.AvatarAddr.Equals(currentAvatarAddr),
+                        canFight = true,
                     };
                 }).ToList();
             for (var i = 0; i < _boundedData.Length; i++)
@@ -225,5 +233,118 @@ namespace Nekoyume.UI
 
             return (scrollData, 0);
         }
+
+        #region For GrandFinale
+
+        public void Show(
+            GrandFinaleStates.GrandFinaleParticipant[] arenaParticipants,
+            bool ignoreShowAnimation = false)
+        {
+            _useGrandFinale = true;
+            _grandFinaleParticipants = arenaParticipants;
+            Find<HeaderMenuStatic>().Show(HeaderMenuStatic.AssetVisibleState.Battle);
+            UpdateBillboardForGrandFinale();
+            UpdateScrollsForGrandFinale();
+
+            _noJoinedPlayersGameObject.SetActive(_playerScroll.Data.Count < 1);
+            base.Show(ignoreShowAnimation);
+        }
+
+        private void UpdateBillboardForGrandFinale()
+        {
+#if UNITY_EDITOR
+            if (_useSo && _so)
+            {
+                _billboard.SetData(
+                    _so.SeasonText,
+                    _so.Rank,
+                    _so.WinCount,
+                    _so.LoseCount,
+                    _so.CP,
+                    _so.Rating);
+                return;
+            }
+#endif
+
+            var player = States.Instance.GrandFinaleStates.GrandFinalePlayer;
+            if (player is null)
+            {
+                Debug.Log($"{nameof(RxProps.PlayersArenaParticipant)} is null");
+                _billboard.SetData();
+                return;
+            }
+
+            if (player.CurrentInfo is null)
+            {
+                Debug.Log($"{nameof(player.CurrentInfo)} is null");
+                _billboard.SetData();
+                return;
+            }
+
+            var battleRecords = player.CurrentInfo.GetBattleRecordList();
+            var winCount = battleRecords.Count(pair => pair.Value);
+            _billboard.SetData(
+                "GrandFinale",
+                player.Rank,
+                winCount,
+                battleRecords.Count - winCount,
+                player.CP,
+                player.Score);
+        }
+
+        private void UpdateScrollsForGrandFinale()
+        {
+            var (scrollData, playerIndex) =
+                GetScrollDataForGrandFinale();
+            _playerScroll.SetData(scrollData, playerIndex);
+        }
+
+        private (List<ArenaBoardPlayerItemData> scrollData, int playerIndex)
+            GetScrollDataForGrandFinale()
+        {
+#if UNITY_EDITOR
+            if (_useSo && _so)
+            {
+                return (_so.ArenaBoardPlayerScrollData, 0);
+            }
+#endif
+
+            var isParticipant = States.Instance.GrandFinaleStates.GrandFinalePlayer is not null;
+            var currentAvatarAddr = States.Instance.CurrentAvatarState.address;
+            var scrollData =
+                _grandFinaleParticipants.Select(e =>
+                {
+                    return new ArenaBoardPlayerItemData
+                    {
+                        name = e.AvatarState.NameWithHash,
+                        level = e.AvatarState.level,
+                        fullCostumeOrArmorId =
+                            e.AvatarState.inventory.GetEquippedFullCostumeOrArmorId(),
+                        titleId = e.AvatarState.inventory.Costumes
+                            .FirstOrDefault(costume =>
+                                costume.ItemSubType == ItemSubType.Title
+                                && costume.Equipped)?
+                            .Id,
+                        cp = e.AvatarState.GetCP(),
+                        score = e.Score,
+                        rank = e.Rank,
+                        expectWinDeltaScore = BattleGrandFinale.WinScore,
+                        interactableChoiceButton = !e.AvatarAddr.Equals(currentAvatarAddr),
+                        canFight = isParticipant,
+                    };
+                }).ToList();
+            for (var i = 0; i < _grandFinaleParticipants.Length; i++)
+            {
+                var data = _grandFinaleParticipants[i];
+                if (data.AvatarAddr.Equals(currentAvatarAddr))
+                {
+                    return (scrollData, i);
+                }
+            }
+
+            return (scrollData, 0);
+        }
+
+        #endregion
     }
 }

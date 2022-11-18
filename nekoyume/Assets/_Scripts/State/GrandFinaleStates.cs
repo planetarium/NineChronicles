@@ -17,8 +17,12 @@ namespace Nekoyume.State
 {
     public class GrandFinaleStates
     {
-        private static PlayerGrandFinaleParticipant _playersGrandFinaleParticipant;
-        private static long _participantsUpdatedBlockIndex;
+        public GrandFinaleParticipant[] GrandFinaleParticipants { get; private set; } =
+            Array.Empty<GrandFinaleParticipant>();
+
+        public PlayerGrandFinaleParticipant GrandFinalePlayer { get; private set; }
+
+        private long _participantsUpdatedBlockIndex;
 
         public class GrandFinaleParticipant
         {
@@ -81,8 +85,8 @@ namespace Nekoyume.State
             }
         }
 
-        public static async Task<GrandFinaleParticipant[]>
-            UpdateGrandFinaleParticipantsOrderedWithScoreAsync(GrandFinaleParticipant[] previous)
+        public async Task<GrandFinaleParticipant[]>
+            UpdateGrandFinaleParticipantsOrderedWithScoreAsync()
         {
             var states = States.Instance;
             var agent = Game.Game.instance.Agent;
@@ -90,12 +94,13 @@ namespace Nekoyume.State
             var avatarAddress = states.CurrentAvatarState?.address;
             if (!avatarAddress.HasValue)
             {
-                return Array.Empty<GrandFinaleParticipant>();
+                GrandFinaleParticipants = Array.Empty<GrandFinaleParticipant>();
+                return GrandFinaleParticipants;
             }
 
             if (_participantsUpdatedBlockIndex == agent.BlockIndex)
             {
-                return previous;
+                return GrandFinaleParticipants;
             }
 
             _participantsUpdatedBlockIndex = agent.BlockIndex;
@@ -236,11 +241,13 @@ namespace Nekoyume.State
                 }
             }
 
-            _playersGrandFinaleParticipant = playerGrandFinaleParticipant;
-            return result;
+            GrandFinalePlayer = playerGrandFinaleParticipant;
+
+            GrandFinaleParticipants = result;
+            return GrandFinaleParticipants;
         }
 
-        public static (Address avatarAddr, int score, int rank)[] AddRank(
+        private static (Address avatarAddr, int score, int rank)[] AddRank(
             (Address avatarAddr, int score)[] tuples, Address? currentAvatarAddr = null)
         {
             if (tuples.Length == 0)
