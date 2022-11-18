@@ -536,8 +536,17 @@ namespace Nekoyume.BlockChain
             int apStoneCount,
             int actionPoint,
             int worldId,
-            int stageId)
+            int stageId,
+            int? playCount)
         {
+            var sentryTrace = Analyzer.Instance.Track("Unity/HackAndSlashSweep", new Dictionary<string, Value>()
+            {
+                ["stageId"] = stageId,
+                ["apStoneCount"] = apStoneCount,
+                ["playCount"] = playCount,
+                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+            }, true);
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var action = new HackAndSlashSweep
             {
@@ -566,7 +575,7 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e =>
                 {
                     Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
-                });
+                }).Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
         public IObservable<ActionBase.ActionEvaluation<Sell>> Sell(
@@ -637,6 +646,11 @@ namespace Nekoyume.BlockChain
         public IObservable<ActionBase.ActionEvaluation<UpdateSell>> UpdateSell(List<UpdateSellInfo> updateSellInfos)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var sentryTrace = Analyzer.Instance.Track("Unity/UpdateSell", new Dictionary<string, Value>()
+            {
+                ["AvatarAddress"] = avatarAddress.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+            }, true);
 
             var action = new UpdateSell
             {
@@ -653,7 +667,8 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e => throw HandleException(action.Id, e));
+                .DoOnError(e => throw HandleException(action.Id, e))
+                .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
         public IObservable<ActionBase.ActionEvaluation<Buy>> Buy(List<PurchaseInfo> purchaseInfos)
@@ -856,6 +871,13 @@ namespace Nekoyume.BlockChain
                 round = round,
                 ticket = ticket,
             };
+
+            var sentryTrace = Analyzer.Instance.Track("Unity/BattleArena",
+                new Dictionary<string, Value>()
+                {
+                    ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                }, true);
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
@@ -873,7 +895,7 @@ namespace Nekoyume.BlockChain
                     }
 
                     Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
-                });
+                }).Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
         public IObservable<ActionBase.ActionEvaluation<PatchTableSheet>> PatchTableSheet(
@@ -1146,8 +1168,15 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<HackAndSlashRandomBuff>> HackAndSlashRandomBuff(bool advanced)
+        public IObservable<ActionBase.ActionEvaluation<HackAndSlashRandomBuff>> HackAndSlashRandomBuff(bool advanced, long burntCrystal)
         {
+            Analyzer.Instance.Track("Unity/Purchase Crystal Bonus Skill", new Dictionary<string, Value>()
+            {
+                ["BurntCrystal"] = burntCrystal,
+                ["isAdvanced"] = advanced,
+                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+            });
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
             var action = new HackAndSlashRandomBuff

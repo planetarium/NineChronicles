@@ -418,16 +418,8 @@ namespace Nekoyume.UI
                 apStoneCount,
                 actionPoint,
                 worldId,
-                stageRow.Id);
-
-            Analyzer.Instance.Track("Unity/HackAndSlashSweep", new Dictionary<string, Value>()
-            {
-                ["stageId"] = stageRow.Id,
-                ["apStoneCount"] = apStoneCount,
-                ["playCount"] = totalPlayCount,
-                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
-            });
+                stageRow.Id,
+                totalPlayCount).Subscribe();
 
             Close();
 

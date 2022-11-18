@@ -427,11 +427,6 @@ namespace Nekoyume.UI
             );
 
             Game.Game.instance.ActionManager.UpdateSell(new List<UpdateSellInfo> {updateSellInfo}).Subscribe();
-            Analyzer.Instance.Track("Unity/UpdateSell", new Dictionary<string, Value>()
-            {
-                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
-            });
             ResponseSell();
         }
 
