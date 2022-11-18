@@ -216,6 +216,8 @@ namespace Nekoyume.UI
             _offsetFromTarget = offsetFromTarget;
             confirmButton.gameObject.SetActive(true);
             confirmButton.Interactable = interactable;
+            enhancementButton.interactable = interactable;
+
             confirmButton.Text = confirm;
             runeNameText.text = L10nManager.Localize($"RUNE_NAME_{item.RuneState.RuneId}");
             currentLevelText.text = $"+{item.RuneState.Level}";

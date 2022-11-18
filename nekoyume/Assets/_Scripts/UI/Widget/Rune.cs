@@ -93,6 +93,9 @@ namespace Nekoyume.UI
         private GameObject sliderContainer;
 
         [SerializeField]
+        private GameObject nextTitle;
+
+        [SerializeField]
         private RuneListScroll scroll;
 
         [SerializeField]
@@ -320,6 +323,7 @@ namespace Nekoyume.UI
             UpdateHeaderMenu(runeStoneIcon, item.RuneStone);
             UpdateSlider(item);
             animator.Play(item.Level > 0 ? HashToLevelUp : HashToCombine);
+            nextTitle.gameObject.SetActive(item.Level != 0);
         }
 
         private void UpdateRuneItems(RuneItem item)

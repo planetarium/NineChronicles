@@ -216,6 +216,11 @@ namespace Nekoyume.UI.Module
         {
             if (slot.RuneSlot.IsLock)
             {
+                if (Game.Game.instance.IsInWorld)
+                {
+                    return;
+                }
+
                 switch (slot.RuneSlot.RuneSlotType)
                 {
                     case RuneSlotType.Ncg:
@@ -284,6 +289,11 @@ namespace Nekoyume.UI.Module
 
         private void GoToMarket()
         {
+            if (Game.Game.instance.IsInWorld)
+            {
+                return;
+            }
+
             Widget.Find<AvatarInfoPopup>().CloseWithOtherWidgets();
             Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
             Widget.Find<ShopSell>().Show(true);
@@ -291,6 +301,11 @@ namespace Nekoyume.UI.Module
 
         private void OnDoubleClickRuneSlot(RuneSlotView slot)
         {
+            if (Game.Game.instance.IsInWorld)
+            {
+                return;
+            }
+
             if (!slot.RuneSlot.IsEquipped(out var runeState))
             {
                 return;
@@ -326,6 +341,11 @@ namespace Nekoyume.UI.Module
 
         private void OnDoubleClickSlot(EquipmentSlot slot)
         {
+            if (Game.Game.instance.IsInWorld)
+            {
+                return;
+            }
+
             if (!inventory.TryGetModel(slot.Item, out var item))
             {
                 return;
@@ -339,6 +359,11 @@ namespace Nekoyume.UI.Module
 
         private void EquipItem(InventoryItem inventoryItem)
         {
+            if (Game.Game.instance.IsInWorld)
+            {
+                return;
+            }
+
             if (inventoryItem.LevelLimited.Value)
             {
                 return;
@@ -497,6 +522,11 @@ namespace Nekoyume.UI.Module
 
         private void UnequipItem(InventoryItem inventoryItem)
         {
+            if (Game.Game.instance.IsInWorld)
+            {
+                return;
+            }
+
             var states = States.Instance.ItemSlotStates[_battleType];
             switch (inventoryItem.ItemBase.ItemType)
             {
@@ -530,6 +560,11 @@ namespace Nekoyume.UI.Module
 
         private void EquipRune(InventoryItem inventoryItem)
         {
+            if (Game.Game.instance.IsInWorld)
+            {
+                return;
+            }
+
             if (inventoryItem.DimObjectEnabled.Value)
             {
                 return;
@@ -570,6 +605,11 @@ namespace Nekoyume.UI.Module
 
         private void UnequipRune(InventoryItem item)
         {
+            if (Game.Game.instance.IsInWorld)
+            {
+                return;
+            }
+
             var states = States.Instance.RuneSlotStates[_battleType].GetRuneSlot();
             foreach (var slot in states)
             {
@@ -640,10 +680,15 @@ namespace Nekoyume.UI.Module
                 Show(
                 model,
                 L10nManager.Localize(model.Equipped.Value ? "UI_UNEQUIP" : "UI_EQUIP"),
-                !model.DimObjectEnabled.Value,
+                !Game.Game.instance.IsInWorld && !model.DimObjectEnabled.Value,
                 () => EquipOrUnequip(model),
                 () =>
                 {
+                    if (Game.Game.instance.IsInWorld)
+                    {
+                        return;
+                    }
+
                     var rune = Widget.Find<Rune>();
                     rune.CloseWithOtherWidgets();
                     rune.Show(model.RuneState.RuneId, true);

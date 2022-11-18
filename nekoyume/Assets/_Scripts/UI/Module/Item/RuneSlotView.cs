@@ -140,15 +140,21 @@ namespace Nekoyume.UI.Module
             lockObject.SetActive(runeSlot.IsLock);
             if(runeSlot.IsLock && runeSlot.RuneSlotType == RuneSlotType.Ncg)
             {
-                lockPriceObject.SetActive(true);
                 var cost = runeSlot.RuneType == RuneType.Stat
                     ? States.Instance.GameConfigState.RuneStatSlotUnlockCost
                     : States.Instance.GameConfigState.RuneSkillSlotUnlockCost;
                 lockPrice.text = $"{cost}";
+                if (lockPriceObject != null)
+                {
+                    lockPriceObject.SetActive(true);
+                }
             }
             else
             {
-                lockPriceObject.SetActive(false);
+                if (lockPriceObject != null)
+                {
+                    lockPriceObject.SetActive(false);
+                }
             }
         }
 
