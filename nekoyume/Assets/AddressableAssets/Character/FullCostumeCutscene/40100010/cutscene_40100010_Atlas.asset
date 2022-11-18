@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a6b194f808b1af6499c93410e504af42, type: 3}
-  m_Name: cutscene_40100007_Atlas
+  m_Name: cutscene_40100010_Atlas
   m_EditorClassIdentifier: 
-  atlasFile: {fileID: 4900000, guid: 26159a76f10c34806a62c77de4094f07, type: 3}
+  atlasFile: {fileID: 4900000, guid: 5a2280a3fa55040408455549d0e7b148, type: 3}
   materials:
-  - {fileID: 2100000, guid: f61fec2472b734c5fba9597603b3ee7a, type: 2}
-  - {fileID: 2100000, guid: 12def65847e7e4843ad94b45c6c35762, type: 2}
-  - {fileID: 2100000, guid: 2cfc60422ffc24782be257d8af62f84a, type: 2}
+  - {fileID: 2100000, guid: 48a8fa42f9ef74d9c9426801ca25a8e5, type: 2}
+  - {fileID: 2100000, guid: 0a88c5019243b47d889ea6d3234827e9, type: 2}
+  - {fileID: 2100000, guid: eca1ebfc9be2148c88116d0beafe5906, type: 2}
