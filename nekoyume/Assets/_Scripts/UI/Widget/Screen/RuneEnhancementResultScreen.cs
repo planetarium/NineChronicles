@@ -170,9 +170,10 @@ namespace Nekoyume.UI
             {
                 skill.gameObject.SetActive(true);
                 skillNameText.text = L10nManager.Localize($"SKILL_NAME_{option.SkillId}");
-                var skillValue = option.SkillValueType == StatModifier.OperationType.Percentage
+                var power = option.SkillValueType == StatModifier.OperationType.Percentage
                     ? option.SkillValue * 100
                     : option.SkillValue;
+                var skillValue = power == (int)power ? $"{(int)power}" : $"{power}";
                 skillDescText.text = L10nManager.Localize(
                     $"SKILL_DESCRIPTION_{option.SkillId}", option.SkillChance, skillValue);
             }
