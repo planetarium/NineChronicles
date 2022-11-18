@@ -418,7 +418,6 @@ namespace Nekoyume.UI.Module
 
         private void UpdateEquipmentNotification(IEnumerable<InventoryItem> bestItems)
         {
-            Debug.Log("UpdateEquipmentNotification");
             if (_activeTabType != InventoryTabType.Equipment)
             {
                 return;
@@ -621,6 +620,9 @@ namespace Nekoyume.UI.Module
                     equipment.Equipped.SetValueAndForceNotify(equipped);
                 }
             }
+
+            var bestItems = GetUsableBestEquipments();
+            UpdateEquipmentNotification(bestItems);
         }
 
         public void UpdateConsumables(List<Guid> consumables)
