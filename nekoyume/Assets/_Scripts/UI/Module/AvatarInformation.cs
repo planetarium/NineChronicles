@@ -235,9 +235,14 @@ namespace Nekoyume.UI.Module
                             : States.Instance.GameConfigState.RuneSkillSlotUnlockCost;
                         var ncgHas = States.Instance.GoldBalanceState.Gold;
                         var enough = ncgHas.MajorUnit >= cost;
-                        var content = enough
-                            ? L10nManager.Localize("UI_RUNE_SLOT_OPEN")
-                            : L10nManager.Localize("UI_NOT_ENOUGH_NCG_WITH_SUPPLIER_INFO");
+                        var content = slot.RuneType == RuneType.Stat
+                                ? L10nManager.Localize("UI_RUNE_SLOT_OPEN_STAT")
+                                : L10nManager.Localize("UI_RUNE_SLOT_OPEN_SKILL");
+                        if (!enough)
+                        {
+                            content = L10nManager.Localize("UI_NOT_ENOUGH_NCG_WITH_SUPPLIER_INFO");
+                        }
+
                         var attractMessage = enough
                             ? L10nManager.Localize("UI_YES")
                             : L10nManager.Localize("UI_GO_TO_MARKET");
