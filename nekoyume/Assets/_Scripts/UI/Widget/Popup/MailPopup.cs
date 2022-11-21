@@ -296,7 +296,7 @@ namespace Nekoyume.UI
 
         public void Read(MaterialCraftMail materialCraftMail)
         {
-            // Todo : 한줄 팝업을 띄우든, LocalLayerModifier.AddItem을 하든
+            Debug.Log($"[{nameof(MaterialCraftMail)}] ItemCount: {materialCraftMail.ItemCount}, ItemId: {materialCraftMail.ItemId}");
         }
 
         public async void Read(OrderExpirationMail orderExpirationMail)

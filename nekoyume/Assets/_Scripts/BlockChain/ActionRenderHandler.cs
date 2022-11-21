@@ -772,7 +772,7 @@ namespace Nekoyume.BlockChain
                 avatarAddress,
                 itemUsable.ItemId,
                 itemUsable.RequiredBlockIndex,
-                 1);
+                1);
             LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
             UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
@@ -800,6 +800,25 @@ namespace Nekoyume.BlockChain
             }
 
             // Todo : ResponseEventMaterialItemCrafts
+
+            var avatarAddress = eval.Action.AvatarAddress;
+            var materialsToUse = eval.Action.MaterialsToUse;
+            var recipe = TableSheets.Instance.EventMaterialItemRecipeSheet[eval.Action.EventMaterialItemRecipeId];
+            var resultItem = ItemFactory.CreateMaterial(TableSheets.Instance.MaterialItemSheet, recipe.ResultMaterialItemId);
+
+            foreach (var material in materialsToUse)
+            {
+                var id = TableSheets.Instance.MaterialItemSheet[material.Key].ItemId;
+                LocalLayerModifier.AddItem(avatarAddress, id, material.Value);
+            }
+
+            UpdateAgentStateAsync(eval).Forget();
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+
+            // Notify
+            var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE", resultItem.GetLocalizedName(false));
+            NotificationSystem.Reserve(MailType.Workshop, format, 1, Guid.Empty);
+            // ~Notify
         }
 
         private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)

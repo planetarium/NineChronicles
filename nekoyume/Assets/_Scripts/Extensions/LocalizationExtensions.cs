@@ -84,7 +84,8 @@ namespace Nekoyume
                 }
 
                 case MaterialCraftMail materialCraftMail:
-                    return L10nManager.Localize(""); // Todo
+                    var materialItemName = L10nManager.Localize($"ITEM_NAME_{materialCraftMail.ItemId}");
+                    return L10nManager.Localize("UI_COMBINATION_NOTIFY_FORMAT", materialItemName);
 
                 case ItemEnhanceMail itemEnhanceMail:
                 {
