@@ -14343,7 +14343,7 @@ GameObject:
   - component: {fileID: 4184089737432329837}
   - component: {fileID: 5278972594173922099}
   m_Layer: 14
-  m_Name: magiccircle_04_fire
+  m_Name: magiccircle_04
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14616,8 +14616,8 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 1
-      minScalar: 3
+      scalar: 1.5
+      minScalar: 5
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -19453,7 +19453,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 3
+      scalar: 5
       minScalar: 1
       maxCurve:
         serializedVersion: 2
