@@ -3398,7 +3398,7 @@ MonoBehaviour:
   m_Direction: 0
   m_MinValue: 0
   m_MaxValue: 10
-  m_WholeNumbers: 1
+  m_WholeNumbers: 0
   m_Value: 10
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4298,7 +4298,7 @@ MonoBehaviour:
   m_Direction: 0
   m_MinValue: 0
   m_MaxValue: 10
-  m_WholeNumbers: 1
+  m_WholeNumbers: 0
   m_Value: 10
   m_OnValueChanged:
     m_PersistentCalls:
@@ -5620,7 +5620,6 @@ GameObject:
   - component: {fileID: 5144036802849101613}
   - component: {fileID: 4588188304223755106}
   - component: {fileID: 4473509735232324404}
-  - component: {fileID: 2635125389001946522}
   m_Layer: 5
   m_Name: OffseasonInfo
   m_TagString: Untagged
@@ -5703,27 +5702,6 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &2635125389001946522
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6106023907125214752}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d76e1e388a084b08ab37046e2bc31285, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _titleText: {fileID: 8817072543755450631}
-  _seasonProgressSlider: {fileID: 0}
-  _seasonProgressFillImage: {fileID: 0}
-  _seasonProgressSliderFillText: {fileID: 0}
-  _medalReward: {fileID: 5238120246552999047}
-  _ncgReward: {fileID: 80857098325520938}
-  _foodReward: {fileID: 2084951348059059290}
-  _costumeReward: {fileID: 8028946178861158215}
-  _currentRoundMedalImages: []
 --- !u!1 &6214030360786303058
 GameObject:
   m_ObjectHideFlags: 0
@@ -5851,12 +5829,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88d440d0b2f142bea3419947442a2610, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  arenaJoinSeasonInfo: {fileID: 2635125389001946522}
   arenaJoinButton: {fileID: 8564589794633542603}
   grandFinaleJoinButton: {fileID: 361758833939788424}
-  seasonProgressSlider: {fileID: 0}
-  seasonProgressFillImage: {fileID: 0}
-  seasonProgressSliderFillText: {fileID: 0}
+  arenaProgressFillImage: {fileID: 8899406682498098536}
+  arenaProgressSliderFillText: {fileID: 2388591879275656554}
+  grandFinaleProgressFillImage: {fileID: 375842168907205378}
+  grandFinaleProgressSliderFillText: {fileID: 5287116053353907393}
 --- !u!1 &6683552317284178724
 GameObject:
   m_ObjectHideFlags: 0
