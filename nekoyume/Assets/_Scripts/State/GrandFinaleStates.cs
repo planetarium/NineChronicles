@@ -202,14 +202,16 @@ namespace Nekoyume.State
                 var avatar = stateBulk[avatarAddr] is Dictionary avatarDict
                     ? new AvatarState(avatarDict)
                     : null;
+                if (avatar is null)
+                {
+                    return null;
+                }
+
                 var inventory =
                     stateBulk[avatarAddr.Derive(LegacyInventoryKey)] is List inventoryList
                         ? new Model.Item.Inventory(inventoryList)
                         : null;
-                if (avatar is { })
-                {
-                    avatar.inventory = inventory;
-                }
+                avatar.inventory = inventory;
 
                 var arenaAvatar =
                     stateBulk[ArenaAvatarState.DeriveAddress(avatarAddr)] is List arenaAvatarList
@@ -224,7 +226,7 @@ namespace Nekoyume.State
                     rank,
                     avatar
                 );
-            }).ToArray();
+            }).Where(value => value is not null).ToArray();
 
             if (isGrandFinaleParticipant)
             {
