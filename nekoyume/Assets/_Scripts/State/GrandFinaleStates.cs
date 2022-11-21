@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Bencodex.Types;
+using Cysharp.Threading.Tasks;
 using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Game;
@@ -21,6 +22,8 @@ namespace Nekoyume.State
             Array.Empty<GrandFinaleParticipant>();
 
         public PlayerGrandFinaleParticipant GrandFinalePlayer { get; private set; }
+
+        public bool IsUpdating { get; private set; } = false;
 
         private long _participantsUpdatedBlockIndex;
 
@@ -85,7 +88,7 @@ namespace Nekoyume.State
             }
         }
 
-        public async Task<GrandFinaleParticipant[]>
+        public async UniTask<GrandFinaleParticipant[]>
             UpdateGrandFinaleParticipantsOrderedWithScoreAsync()
         {
             var states = States.Instance;
@@ -122,6 +125,7 @@ namespace Nekoyume.State
                 return Array.Empty<GrandFinaleParticipant>();
             }
 
+            IsUpdating = true;
             var avatarAddrList = row.Participants;
             var isGrandFinaleParticipant = avatarAddrList.Contains(currentAvatarAddr);
             var scoreDeriveString = string.Format(
@@ -241,6 +245,7 @@ namespace Nekoyume.State
 
             GrandFinalePlayer = playerGrandFinaleParticipant;
             GrandFinaleParticipants = result;
+            IsUpdating = false;
             return GrandFinaleParticipants;
         }
 

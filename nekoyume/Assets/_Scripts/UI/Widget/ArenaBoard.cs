@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Nekoyume.Action;
+using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
@@ -65,12 +66,23 @@ namespace Nekoyume.UI
         {
             var loading = Find<DataLoadingScreen>();
             loading.Show();
-            await UniTask.WaitWhile(() =>
-                RxProps.ArenaParticipantsOrderedWithScore.IsUpdating);
-            loading.Close();
-            Show(
-                RxProps.ArenaParticipantsOrderedWithScore.Value,
-                ignoreShowAnimation);
+            if (!_useGrandFinale)
+            {
+                await UniTask.WaitWhile(() =>
+                    RxProps.ArenaParticipantsOrderedWithScore.IsUpdating);
+                loading.Close();
+                Show(
+                    RxProps.ArenaParticipantsOrderedWithScore.Value,
+                    ignoreShowAnimation);
+            }
+            else
+            {
+                await UniTask.WaitWhile(() => States.Instance.GrandFinaleStates.IsUpdating);
+                loading.Close();
+                Show(
+                    _grandFinaleScheduleRow,
+                    States.Instance.GrandFinaleStates.GrandFinaleParticipants);
+            }
         }
 
         public void Show(
@@ -251,7 +263,7 @@ namespace Nekoyume.UI
         {
             _useGrandFinale = true;
             _grandFinaleScheduleRow = scheduleRow;
-            _grandFinaleParticipants = arenaParticipants;
+            _grandFinaleParticipants = GetOrderedGrandFinaleParticipants(arenaParticipants.ToList());
             Find<HeaderMenuStatic>().Show(HeaderMenuStatic.AssetVisibleState.Battle);
             UpdateBillboardForGrandFinale();
             UpdateScrollsForGrandFinale();
@@ -260,6 +272,30 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
         }
 
+        /// <summary>
+        /// Participants with battle record are moved back.
+        /// If States.Instance.GrandFinaleStates.GrandFinalePlayer is null, return participants.
+        /// </summary>
+        /// <param name="participants"></param>
+        private GrandFinaleStates.GrandFinaleParticipant[] GetOrderedGrandFinaleParticipants(
+            List<GrandFinaleStates.GrandFinaleParticipant> participants)
+        {
+            var grandFinalePlayer = States.Instance.GrandFinaleStates.GrandFinalePlayer;
+            if (States.Instance.GrandFinaleStates.GrandFinalePlayer is null)
+            {
+                return participants.ToArray();
+            }
+
+            bool IsFoughtPlayer(GrandFinaleStates.GrandFinaleParticipant data)
+            {
+                return grandFinalePlayer.CurrentInfo.TryGetBattleRecord(data.AvatarAddr, out _);
+            }
+
+            var foughtPlayers = participants.Where(IsFoughtPlayer).ToList();
+            participants.RemoveAll(IsFoughtPlayer);
+            participants.AddRange(foughtPlayers);
+            return participants.ToArray();
+        }
         private void UpdateBillboardForGrandFinale()
         {
 #if UNITY_EDITOR
@@ -354,14 +390,6 @@ namespace Nekoyume.UI
                     };
                 }).ToList();
 
-            bool IsFoughtPlayer(ArenaBoardPlayerItemData data)
-            {
-                return data.winAtGrandFinale.HasValue && data.interactableChoiceButton;
-            }
-
-            var foughtPlayers = scrollData.Where(IsFoughtPlayer).ToList();
-            scrollData.RemoveAll(IsFoughtPlayer);
-            scrollData.AddRange(foughtPlayers);
             for (var i = 0; i < _grandFinaleParticipants.Length; i++)
             {
                 var data = _grandFinaleParticipants[i];

@@ -807,6 +807,18 @@ namespace Nekoyume.UI
             Find<ArenaBattleLoadingScreen>().Close();
         }
 
+        public void OnRenderBattleArena(ActionBase.ActionEvaluation<BattleGrandFinale> eval)
+        {
+            if (eval.Exception is { })
+            {
+                Find<ArenaBattleLoadingScreen>().Close();
+                return;
+            }
+
+            Close(true);
+            Find<ArenaBattleLoadingScreen>().Close();
+        }
+
         private void UpdateStartButton(AvatarState avatarState)
         {
             _player.Set(avatarState);

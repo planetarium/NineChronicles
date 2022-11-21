@@ -2175,8 +2175,7 @@ namespace Nekoyume.BlockChain
             {
                 if (arenaBattlePreparation && arenaBattlePreparation.IsActive())
                 {
-                    // TODO: OnRenderBattleArena 에서 배틀 아레나만 받고있음.
-                    // renaBattlePreparation.OnRenderBattleArena(eval);
+                    arenaBattlePreparation.OnRenderBattleArena(eval);
                 }
 
                 Game.Game.BackToMainAsync(eval.Exception.InnerException).Forget();
@@ -2185,9 +2184,9 @@ namespace Nekoyume.BlockChain
             }
 
             // NOTE: Start cache some arena info which will be used after battle ends.
-            // TODO: RxProps 말고 그랜드 피날레 상태쪽 캐싱하는걸로 알아서 잘 바꿔놓기.
             RxProps.ArenaInfoTuple.UpdateAsync().Forget();
             RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync().Forget();
+            States.Instance.GrandFinaleStates.UpdateGrandFinaleParticipantsOrderedWithScoreAsync().Forget();
 
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd = Game.Game.instance.Arena.OnArenaEnd
@@ -2268,7 +2267,7 @@ namespace Nekoyume.BlockChain
                         eval.Action.grandFinaleId)),
                 out Integer outputScore)
                 ? outputScore
-                : ArenaScore.ArenaScoreDefault;
+                : BattleGrandFinale.DefaultScore;
 
             var random = new LocalRandom(eval.RandomSeed);
             var simulator = new ArenaSimulator(random);
@@ -2280,8 +2279,7 @@ namespace Nekoyume.BlockChain
 
             if (arenaBattlePreparation && arenaBattlePreparation.IsActive())
             {
-                // TODO: OnRenderBattleArena 에서 배틀 아레나만 받고있음.
-                //arenaBattlePreparation.OnRenderBattleArena(eval);
+                arenaBattlePreparation.OnRenderBattleArena(eval);
                 Game.Game.instance.Arena.Enter(
                     log,
                     new List<ItemBase>(),
