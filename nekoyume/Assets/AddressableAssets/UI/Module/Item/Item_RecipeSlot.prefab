@@ -898,6 +898,7 @@ MonoBehaviour:
   normalLevelText: {fileID: 2206191034640012376}
   lockedLevelText: {fileID: 1910121206647586470}
   elementImage: {fileID: 7271660783666743978}
+  countText: {fileID: 0}
 --- !u!1 &1973015353554014809
 GameObject:
   m_ObjectHideFlags: 0
@@ -3472,6 +3473,7 @@ MonoBehaviour:
   normalLevelText: {fileID: 6079023553882979410}
   lockedLevelText: {fileID: 8382291164303484539}
   elementImage: {fileID: 6529614113028070468}
+  countText: {fileID: 7557918150565414826}
 --- !u!1 &6058652811456295672
 GameObject:
   m_ObjectHideFlags: 0
@@ -4202,6 +4204,7 @@ MonoBehaviour:
   normalLevelText: {fileID: 605332740862499684}
   lockedLevelText: {fileID: 5615722173338426634}
   elementImage: {fileID: 618761591148054510}
+  countText: {fileID: 0}
 --- !u!1 &7200423135639980101
 GameObject:
   m_ObjectHideFlags: 0

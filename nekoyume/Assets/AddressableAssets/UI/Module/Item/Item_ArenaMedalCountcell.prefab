@@ -178,6 +178,7 @@ GameObject:
   - component: {fileID: 4825742567828543159}
   - component: {fileID: 5288895913131761570}
   - component: {fileID: 3249614805175229192}
+  - component: {fileID: 5637258603997332859}
   m_Layer: 5
   m_Name: Item_ArenaMedalCountcell
   m_TagString: Untagged
@@ -246,6 +247,23 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &5637258603997332859
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2089427508987794370}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8b790602e284c0f8f849e4811ebfbd3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemView: {fileID: 4760309850428093009}
+  itemNameText: {fileID: 8831947656498443131}
+  countInputField: {fileID: 4808553965391743719}
+  increaseCountButton: {fileID: 1126166984927537604}
+  decreaseCountButton: {fileID: 8844202766623031349}
 --- !u!1 &2206937629887239144
 GameObject:
   m_ObjectHideFlags: 0
@@ -475,6 +493,7 @@ GameObject:
   - component: {fileID: 3556669828472269884}
   - component: {fileID: 2648563195576825416}
   - component: {fileID: 8831947656498443131}
+  - component: {fileID: 1924949159950549379}
   m_Layer: 5
   m_Name: ItemNameText
   m_TagString: Untagged
@@ -600,6 +619,37 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &1924949159950549379
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5044576031565566882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixedFontAsset: 0
+  fixedFontStyle: 0
+  fixedFontSizeOffset: 0
+  fixedSpacingOption: 0
+  fixedMarginOption: 0
+  fontMaterialType: 0
+  l10nKey: 
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0
 --- !u!1 &5846878186973977586
 GameObject:
   m_ObjectHideFlags: 0
@@ -739,7 +789,7 @@ MonoBehaviour:
   m_CharacterValidation: 1
   m_RegexValue: 
   m_GlobalPointSize: 18
-  m_CharacterLimit: 8
+  m_CharacterLimit: 2
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls: []
@@ -1697,3 +1747,15 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 6461064082771365345}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4760309850428093009 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1997991965690462128, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
+    type: 3}
+  m_PrefabInstance: {fileID: 6461064082771365345}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d710db0c8f34326bca10f1fe0a9fa88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

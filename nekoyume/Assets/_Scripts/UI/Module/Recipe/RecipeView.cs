@@ -29,9 +29,11 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private Image elementImage = null;
-        
 
-        public void Show(RecipeViewData.Data viewData, ItemSheet.Row itemRow)
+        [SerializeField]
+        private TextMeshProUGUI countText = null;
+
+        public void Show(RecipeViewData.Data viewData, ItemSheet.Row itemRow, int count = 0)
         {
             if (itemRow is null)
             {
@@ -82,6 +84,19 @@ namespace Nekoyume.UI.Module
                 elementImage.enabled = false;
             }
             enabledBgImage.overrideSprite = viewData.BgSprite;
+
+            if (countText != null)
+            {
+                if (count > 0)
+                {
+                    countText.text = $"<size=70%>x</size>{count}";
+                    countText.gameObject.SetActive(true);
+                }
+                else
+                {
+                    countText.gameObject.SetActive(false);
+                }
+            }
 
             gameObject.SetActive(true);
         }

@@ -18,6 +18,7 @@ using Nekoyume.Model.Mail;
 using Nekoyume.UI.Scroller;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;
+using Nekoyume.TableData.Event;
 using UnityEngine.UI;
 using Toggle = Nekoyume.UI.Module.Toggle;
 
@@ -111,6 +112,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private HammerPointView hammerPointView;
 
+        [SerializeField]
+        private ConditionalCostButton materialSelectButton;
+
         public readonly Subject<RecipeInfo> CombinationActionSubject = new Subject<RecipeInfo>();
 
         private SheetRow<int> _recipeRow;
@@ -140,19 +144,23 @@ namespace Nekoyume.UI
                 });
             }
 
-            button.OnClickSubject
-                .Subscribe(state => { CombineCurrentRecipe(); })
-                .AddTo(gameObject);
+            if (button != null)
+            {
+                button.OnClickSubject
+                    .Subscribe(state => { CombineCurrentRecipe(); })
+                    .AddTo(gameObject);
 
-            button.OnClickDisabledSubject
-                .Subscribe(_ =>
-                {
-                    if (!CheckSubmittable(out var errorMessage, out var slotIndex))
+                button.OnClickDisabledSubject
+                    .Subscribe(_ =>
                     {
-                        OneLineSystem.Push(MailType.System, errorMessage, NotificationCell.NotificationType.Alert);
-                    }
-                })
-                .AddTo(gameObject);
+                        if (!CheckSubmittable(out var errorMessage, out var slotIndex))
+                        {
+                            OneLineSystem.Push(MailType.System, errorMessage, NotificationCell.NotificationType.Alert);
+                        }
+                    })
+                    .AddTo(gameObject);
+            }
+
             if (hammerPointView.superCraftButton)
             {
                 hammerPointView.superCraftButton
@@ -160,9 +168,25 @@ namespace Nekoyume.UI
                     .Subscribe(_ =>
                     {
                         Widget.Find<SuperCraftPopup>().Show(
-                            (EquipmentItemRecipeSheet.Row) _recipeRow,
+                            (EquipmentItemRecipeSheet.Row)_recipeRow,
                             _canSuperCraft);
                     }).AddTo(gameObject);
+            }
+
+            if (materialSelectButton != null)
+            {
+                materialSelectButton.OnClickSubject
+                    .Subscribe(_ =>
+                    {
+                        Widget.Find<ItemMaterialSelectPopup>().Show(
+                            (EventMaterialItemRecipeSheet.Row)_recipeRow,
+                            materials =>
+                            {
+                                _selectedRecipeInfo.Materials = materials;
+                                CombineCurrentRecipe();
+                            });
+                    }).AddTo(gameObject);
+                UpdateButtonForEventMaterial();
             }
         }
 
@@ -236,6 +260,14 @@ namespace Nekoyume.UI
                     recipeCell.Show(consumableRow, false);
                     break;
                 }
+                case EventMaterialItemRecipeSheet.Row materialRow :
+                {
+                    var resultItem = materialRow.GetResultMaterialItemRow();
+                    title = resultItem.GetLocalizedName(false, false);
+                    mainStatTexts.FirstOrDefault()!.text = resultItem.GetLocalizedDescription();
+                    recipeCell.Show(materialRow, false);
+                    break;
+                }
             }
 
             titleText.text = title;
@@ -304,6 +336,7 @@ namespace Nekoyume.UI
 
             var equipmentRow = _recipeRow as EquipmentItemRecipeSheet.Row;
             var consumableRow = _recipeRow as ConsumableItemRecipeSheet.Row;
+            var eventMaterialRow = _recipeRow as EventMaterialItemRecipeSheet.Row;
             foreach (var optionView in optionViews)
             {
                 optionView.ParentObject.SetActive(false);
@@ -445,6 +478,12 @@ namespace Nekoyume.UI
                     materialMap.Add(material.Id, material.Count);
                 }
             }
+            else if (eventMaterialRow != null)
+            {
+                blockIndex = 1;
+                requiredItemRecipeView.SetData(eventMaterialRow.RequiredMaterialsId, eventMaterialRow.RequiredMaterialsCount);
+                recipeId = eventMaterialRow.Id;
+            }
 
             blockIndexText.text = blockIndex.ToString();
             greatSuccessRateText.text =
@@ -584,6 +623,13 @@ namespace Nekoyume.UI
             lockedObject.SetActive(false);
         }
 
+        private void UpdateButtonForEventMaterial()
+        {
+            materialSelectButton.SetCost(new ConditionalCostButton.CostParam(CostType.NCG, 0));
+            materialSelectButton.Interactable = true;
+            materialSelectButton .gameObject.SetActive(true);
+        }
+
         private void SetOptions(
             List<EquipmentItemSubRecipeSheetV2.OptionInfo> optionInfos)
         {
@@ -664,7 +710,7 @@ namespace Nekoyume.UI
             return true;
         }
 
-        public bool CheckSubmittable(out string errorMessage, out int slotIndex)
+        public bool CheckSubmittable(out string errorMessage, out int slotIndex, bool checkSlot = true)
         {
             slotIndex = -1;
 
@@ -714,12 +760,15 @@ namespace Nekoyume.UI
                 return false;
             }
 
-            var slots = Widget.Find<CombinationSlotsPopup>();
-            if (!slots.TryGetEmptyCombinationSlot(out slotIndex))
+            if (checkSlot)
             {
-                var message = L10nManager.Localize("NOTIFICATION_NOT_ENOUGH_SLOTS");
-                errorMessage = message;
-                return false;
+                var slots = Widget.Find<CombinationSlotsPopup>();
+                if (!slots.TryGetEmptyCombinationSlot(out slotIndex))
+                {
+                    var message = L10nManager.Localize("NOTIFICATION_NOT_ENOUGH_SLOTS");
+                    errorMessage = message;
+                    return false;
+                }
             }
 
             errorMessage = null;
