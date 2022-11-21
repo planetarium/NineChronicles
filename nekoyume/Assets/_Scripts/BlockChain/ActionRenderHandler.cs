@@ -152,6 +152,9 @@ namespace Nekoyume.BlockChain
             // World Boss
             Raid();
             ClaimRaidReward();
+
+            // Grand Finale
+            HandleBattleGrandFinale();
         }
 
         public void Stop()
@@ -441,6 +444,15 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseClaimRaidReward)
+                .AddTo(_disposables);
+        }
+
+        private void HandleBattleGrandFinale()
+        {
+            _actionRenderer.EveryRender<BattleGrandFinale>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseBattleGrandFinale)
                 .AddTo(_disposables);
         }
 

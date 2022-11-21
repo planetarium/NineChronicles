@@ -8,6 +8,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.TableData;
+using Nekoyume.TableData.GrandFinale;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Arena.Board;
 using Nekoyume.UI.Scroller;
@@ -42,6 +43,7 @@ namespace Nekoyume.UI
 
         private ArenaSheet.RoundData _roundData;
         private RxProps.ArenaParticipant[] _boundedData;
+        private GrandFinaleScheduleSheet.Row _grandFinaleScheduleRow;
         private GrandFinaleStates.GrandFinaleParticipant[] _grandFinaleParticipants;
         private bool _useGrandFinale;
 
@@ -171,13 +173,19 @@ namespace Nekoyume.UI
                         return;
                     }
 #endif
-                    var avatarState = _useGrandFinale
-                        ? _grandFinaleParticipants[index].AvatarState
-                        : _boundedData[index].AvatarState;
                     Close();
-                    Find<ArenaBattlePreparation>().Show(
-                        _roundData,
-                        avatarState);
+                    if (_useGrandFinale)
+                    {
+                        Find<ArenaBattlePreparation>().Show(
+                            _grandFinaleScheduleRow?.Id ?? 0,
+                            _grandFinaleParticipants[index].AvatarState);
+                    }
+                    else
+                    {
+                        Find<ArenaBattlePreparation>().Show(
+                            _roundData,
+                            _boundedData[index].AvatarState);
+                    }
                 })
                 .AddTo(gameObject);
         }
@@ -237,10 +245,12 @@ namespace Nekoyume.UI
         #region For GrandFinale
 
         public void Show(
+            GrandFinaleScheduleSheet.Row scheduleRow,
             GrandFinaleStates.GrandFinaleParticipant[] arenaParticipants,
             bool ignoreShowAnimation = false)
         {
             _useGrandFinale = true;
+            _grandFinaleScheduleRow = scheduleRow;
             _grandFinaleParticipants = arenaParticipants;
             Find<HeaderMenuStatic>().Show(HeaderMenuStatic.AssetVisibleState.Battle);
             UpdateBillboardForGrandFinale();

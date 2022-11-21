@@ -10,7 +10,9 @@ namespace Nekoyume.UI.Module
     public class GrandFinaleJoin : MonoBehaviour
     {
         private const string OffSeasonString = "off-season";
-        public ArenaJoinSeasonInfo arenaJoinSeasonInfo;
+
+        [SerializeField]
+        private ArenaJoinSeasonInfo arenaJoinSeasonInfo;
 
         [SerializeField]
         private ConditionalButton arenaJoinButton;
@@ -29,12 +31,15 @@ namespace Nekoyume.UI.Module
                 null
             );
             arenaJoinButton.OnClickSubject.Subscribe(_ => onClickJoinArena.Invoke()).AddTo(gameObject);
+
+            var grandFinaleRow =
+                TableSheets.Instance.GrandFinaleScheduleSheet.GetRowByBlockIndex(blockIndex);
             grandFinaleJoinButton.OnClickSubject.Subscribe(_ =>
             {
                 AudioController.PlayClick();
                 Widget.Find<ArenaJoin>().Close();
                 Widget.Find<ArenaBoard>()
-                    .Show(States.Instance.GrandFinaleStates.GrandFinaleParticipants);
+                    .Show(grandFinaleRow, States.Instance.GrandFinaleStates.GrandFinaleParticipants);
             }).AddTo(gameObject);
         }
     }

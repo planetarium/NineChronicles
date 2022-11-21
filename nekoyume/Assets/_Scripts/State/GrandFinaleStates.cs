@@ -118,21 +118,19 @@ namespace Nekoyume.State
             {
                 Debug.Log(
                     $"Failed to get {nameof(GrandFinaleParticipantsSheet)} with {currentGrandFinaleData.Id}");
-
-                _playersGrandFinaleParticipant = null;
+                GrandFinalePlayer = null;
                 return Array.Empty<GrandFinaleParticipant>();
             }
 
             var avatarAddrList = row.Participants;
-            var isGrandFinaleParticipant = row.Participants.Contains(currentAvatarAddr);
+            var isGrandFinaleParticipant = avatarAddrList.Contains(currentAvatarAddr);
+            var scoreDeriveString = string.Format(
+                CultureInfo.InvariantCulture,
+                BattleGrandFinale.ScoreDeriveKey,
+                row.GrandFinaleId);
             var avatarAndScoreAddrList = avatarAddrList
-                .Select(avatarAddr => (
-                    avatarAddr,
-                    avatarAddr.Derive(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            BattleGrandFinale.ScoreDeriveKey,
-                            row.GrandFinaleId)))
+                .Select(avatarAddr => (avatarAddr,
+                    avatarAddr.Derive(scoreDeriveString))
                 ).ToArray();
             // NOTE: If addresses is too large, and split and get separately.
             var scores = await agent.GetStateBulk(
@@ -228,7 +226,7 @@ namespace Nekoyume.State
             {
                 var playerGrandFinaleInfo = stateBulk[playerGrandFinaleInfoAddr] is List serialized
                     ? new GrandFinaleInformation(serialized)
-                    : new GrandFinaleInformation(currentAvatarAddr, row.GrandFinaleId);
+                    : new GrandFinaleInformation(currentAvatarAddr, 1);
                 if (playerGrandFinaleParticipant is null)
                 {
                     var participant = result.FirstOrDefault(e =>
@@ -242,7 +240,6 @@ namespace Nekoyume.State
             }
 
             GrandFinalePlayer = playerGrandFinaleParticipant;
-
             GrandFinaleParticipants = result;
             return GrandFinaleParticipants;
         }
