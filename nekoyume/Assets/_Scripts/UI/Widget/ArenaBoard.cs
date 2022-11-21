@@ -42,6 +42,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button _backButton;
 
+        [SerializeField]
+        private GameObject grandFinaleLogoObject;
+
         private ArenaSheet.RoundData _roundData;
         private RxProps.ArenaParticipant[] _boundedData;
         private GrandFinaleScheduleSheet.Row _grandFinaleScheduleRow;
@@ -100,6 +103,7 @@ namespace Nekoyume.UI
             _useGrandFinale = false;
             _roundData = roundData;
             _boundedData = arenaParticipants;
+            grandFinaleLogoObject.SetActive(false);
             Find<HeaderMenuStatic>().Show(HeaderMenuStatic.AssetVisibleState.Arena);
             UpdateBillboard();
             UpdateScrolls();
@@ -263,6 +267,7 @@ namespace Nekoyume.UI
         {
             _useGrandFinale = true;
             _grandFinaleScheduleRow = scheduleRow;
+            grandFinaleLogoObject.SetActive(true);
             _grandFinaleParticipants = GetOrderedGrandFinaleParticipants(arenaParticipants.ToList());
             Find<HeaderMenuStatic>().Show(HeaderMenuStatic.AssetVisibleState.Battle);
             UpdateBillboardForGrandFinale();
