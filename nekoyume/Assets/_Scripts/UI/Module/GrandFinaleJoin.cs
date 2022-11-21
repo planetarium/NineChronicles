@@ -40,7 +40,6 @@ namespace Nekoyume.UI.Module
             if (roundData is null)
             {
                 return;
-
             }
 
             arenaJoinButton.OnClickSubject.Subscribe(_ => onClickJoinArena.Invoke()).AddTo(gameObject);
@@ -55,51 +54,26 @@ namespace Nekoyume.UI.Module
                     .Show(grandFinaleRow, States.Instance.GrandFinaleStates.GrandFinaleParticipants);
             }).AddTo(gameObject);
 
-            SetGrandFinaleInfo(grandFinaleRow, blockIndex);
-            SetArenaInfo(roundData, blockIndex);
+            SetScheduleUI(
+                (grandFinaleRow.StartBlockIndex, grandFinaleRow.EndBlockIndex, blockIndex),
+                grandFinaleProgressFillImage,
+                grandFinaleProgressSliderFillText);
+            SetScheduleUI(
+                roundData.GetSeasonProgress(blockIndex),
+                arenaProgressFillImage,
+                arenaProgressSliderFillText);
         }
 
-        private void SetGrandFinaleInfo(
-            GrandFinaleScheduleSheet.Row grandFinaleRow,
-            long blockIndex)
+        private void SetScheduleUI(
+            (long beginning, long end, long current) tuple,
+            Image sliderImage,
+            TextMeshProUGUI text)
         {
-            var (beginning, end, current) = (grandFinaleRow.StartBlockIndex,
-                grandFinaleRow.EndBlockIndex, blockIndex);
+            var (beginning, end, current) = tuple;
             if (current > end)
             {
-                grandFinaleProgressFillImage.enabled = false;
-                grandFinaleProgressSliderFillText.enabled = false;
-
-                return;
-            }
-
-            if (current < beginning)
-            {
-                grandFinaleProgressFillImage.enabled = false;
-                grandFinaleProgressSliderFillText.text = Util.GetBlockToTime(beginning - current);
-                grandFinaleProgressSliderFillText.enabled = true;
-
-                return;
-            }
-
-            var range = end - beginning;
-            var progress = current - beginning;
-            var sliderNormalizedValue = (float) progress / range;
-            grandFinaleProgressFillImage.fillAmount = sliderNormalizedValue;
-            grandFinaleProgressFillImage.enabled = true;
-            grandFinaleProgressSliderFillText.text = Util.GetBlockToTime(range - progress);
-            grandFinaleProgressSliderFillText.enabled = true;
-        }
-
-        private void SetArenaInfo(
-            ArenaSheet.RoundData roundData,
-            long blockIndex)
-        {
-            var (beginning, end, current) = roundData.GetSeasonProgress(blockIndex);
-            if (current > end)
-            {
-                arenaProgressFillImage.enabled = false;
-                arenaProgressSliderFillText.enabled = false;
+                sliderImage.enabled = false;
+                text.enabled = false;
 
                 return;
             }
@@ -107,8 +81,8 @@ namespace Nekoyume.UI.Module
             if (current < beginning)
             {
                 arenaProgressFillImage.enabled = false;
-                arenaProgressSliderFillText.text = Util.GetBlockToTime(beginning - current);
-                arenaProgressSliderFillText.enabled = true;
+                text.text = Util.GetBlockToTime(beginning - current);
+                text.enabled = true;
 
                 return;
             }
@@ -116,10 +90,10 @@ namespace Nekoyume.UI.Module
             var range = end - beginning;
             var progress = current - beginning;
             var sliderNormalizedValue = (float) progress / range;
-            arenaProgressFillImage.fillAmount = sliderNormalizedValue;
-            arenaProgressFillImage.enabled = true;
-            arenaProgressSliderFillText.text = Util.GetBlockToTime(range - progress);
-            arenaProgressSliderFillText.enabled = true;
+            sliderImage.fillAmount = sliderNormalizedValue;
+            sliderImage.enabled = true;
+            text.text = Util.GetBlockToTime(range - progress);
+            text.enabled = true;
         }
     }
 }
