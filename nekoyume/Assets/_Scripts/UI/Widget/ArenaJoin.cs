@@ -105,9 +105,9 @@ namespace Nekoyume.UI
             var loading = Find<DataLoadingScreen>();
             loading.Show();
             await UniTask.WhenAll(RxProps.ArenaInfoTuple.UpdateAsync(),
-                RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync(), States.Instance
-                    .GrandFinaleStates
-                    .UpdateGrandFinaleParticipantsOrderedWithScoreAsync().AsUniTask());
+                RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync(),
+                States.Instance.GrandFinaleStates
+                    .UpdateGrandFinaleParticipantsOrderedWithScoreAsync());
             loading.Close();
             Show(ignoreShowAnimation);
         }
