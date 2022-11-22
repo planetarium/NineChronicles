@@ -99,7 +99,7 @@ namespace Lib9c.Tests.Action.Scenario
                 WorldId = 1,
                 RuneInfos = new List<RuneSlotInfo>
                 {
-                    new RuneSlotInfo(0, runeId, 1),
+                    new RuneSlotInfo(0, runeId),
                 },
             };
 
@@ -117,7 +117,6 @@ namespace Lib9c.Tests.Action.Scenario
             var runeSlot = new RuneSlotState(rawRuneSlot);
             var runeSlotInfo = runeSlot.GetEquippedRuneSlotInfos().Single();
 
-            Assert.Equal(1, runeSlotInfo.Level);
             Assert.Equal(runeId, runeSlotInfo.RuneId);
             Assert.Equal(0, runeSlotInfo.SlotIndex);
         }
