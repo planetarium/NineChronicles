@@ -4908,6 +4908,21 @@ PrefabInstance:
       propertyPath: m_EffectFactor
       value: 0.21349654
       objectReference: {fileID: 0}
+    - target: {fileID: 1039696039944544107, guid: 9c3d233eb0a5b44be817eb9d0d14c468,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 0.09019607
+      objectReference: {fileID: 0}
+    - target: {fileID: 1039696039944544107, guid: 9c3d233eb0a5b44be817eb9d0d14c468,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 0.8760956
+      objectReference: {fileID: 0}
+    - target: {fileID: 1039696039944544107, guid: 9c3d233eb0a5b44be817eb9d0d14c468,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2053865732027394049, guid: 9c3d233eb0a5b44be817eb9d0d14c468,
         type: 3}
       propertyPath: m_Enabled
@@ -5098,6 +5113,12 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7609783844042341058, guid: 9c3d233eb0a5b44be817eb9d0d14c468,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: f95b06a77e385f04fa568a28b55cb57c,
+        type: 3}
     - target: {fileID: 8715728521642366476, guid: 9c3d233eb0a5b44be817eb9d0d14c468,
         type: 3}
       propertyPath: m_LocalScale.x

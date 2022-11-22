@@ -1,3 +1,4 @@
+using Nekoyume.Helper;
 using Nekoyume.UI.Module;
 using TMPro;
 using UniRx;
@@ -16,6 +17,9 @@ namespace Nekoyume.UI.Scroller
 
         private ItemMaterialSelectScroll.Model _model;
 
+        private static readonly Color DefaultColor = ColorHelper.HexToColorRGB("ebceb1");
+        private static readonly Color DimmedColor = ColorHelper.HexToColorRGB("292520");
+
         public override void UpdateContent(ItemMaterialSelectScroll.Model model)
         {
             _model = model;
@@ -26,17 +30,33 @@ namespace Nekoyume.UI.Scroller
             increaseCountButton.onClick.RemoveAllListeners();
             decreaseCountButton.onClick.RemoveAllListeners();
 
-            countInputField.onValueChanged.AddListener(count =>
+            if (model.Item.Count.Value > 0)
             {
-                OnChangeCount(int.TryParse(count, out var countValue) ? countValue : 0);
                 countInputField.text = _model.SelectedCount.Value.ToString();
-            });
-            increaseCountButton.onClick.AddListener(() => OnChangeCount(_model.SelectedCount.Value + 1));
-            decreaseCountButton.onClick.AddListener(() => OnChangeCount(_model.SelectedCount.Value - 1));
+                countInputField.textComponent.color = DefaultColor;
+                countInputField.interactable = true;
+                increaseCountButton.gameObject.SetActive(true);
+                decreaseCountButton.gameObject.SetActive(true);
 
-            _model.SelectedCount
-                .Subscribe(count => countInputField.text = count.ToString())
-                .AddTo(gameObject);
+                countInputField.onValueChanged.AddListener(count =>
+                {
+                    OnChangeCount(int.TryParse(count, out var countValue) ? countValue : 0);
+                    countInputField.text = _model.SelectedCount.Value.ToString();
+                });
+                increaseCountButton.onClick.AddListener(() => OnChangeCount(_model.SelectedCount.Value + 1));
+                decreaseCountButton.onClick.AddListener(() => OnChangeCount(_model.SelectedCount.Value - 1));
+
+                _model.SelectedCount
+                    .Subscribe(count => countInputField.text = count.ToString())
+                    .AddTo(gameObject);            }
+            else
+            {
+                countInputField.text = "-";
+                countInputField.textComponent.color = DimmedColor;
+                countInputField.interactable = false;
+                increaseCountButton.gameObject.SetActive(false);
+                decreaseCountButton.gameObject.SetActive(false);
+            }
         }
 
         private void OnChangeCount(int count)

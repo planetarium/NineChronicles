@@ -9,13 +9,12 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
-using ObservableExtensions = UniRx.ObservableExtensions;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
     public class ItemMaterialSelectPopup : PopupWidget
     {
         [SerializeField] private SimpleCountableItemView itemView;
@@ -78,10 +77,10 @@ namespace Nekoyume.UI
                 .ThenBy(model => model.Item.ItemBase.Value.Id)
                 .ToList();
             Models = models;
-            ObservableExtensions.Subscribe(Observable.NextFrame(), _ =>
+            Observable.NextFrame().Subscribe(_ =>
             {
                 scroll.UpdateData(Models, true);
-                ObservableExtensions.Subscribe(scroll.OnChangeCount, value =>
+                scroll.OnChangeCount.Subscribe(value =>
                 {
                     var totalSelectedCount = Models.Sum(model => model.SelectedCount.Value) - value.Item1.SelectedCount.Value;
                     var itemCount = value.Item1.Item.Count.Value;
@@ -94,11 +93,13 @@ namespace Nekoyume.UI
                 CheckSelectedCount(requiredItemCount);
             });
 
-            ObservableExtensions.Subscribe(combineButton.OnSubmitSubject, _ =>
+            combineButton.OnSubmitSubject.Subscribe(_ =>
                 {
-                    var materials = Models.ToDictionary(
-                        model => model.Item.ItemBase.Value.Id,
-                        model => model.SelectedCount.Value);
+                    var materials = Models
+                        .Where(model => model.SelectedCount.Value > 0)
+                        .ToDictionary(
+                            model => model.Item.ItemBase.Value.Id,
+                            model => model.SelectedCount.Value);
                     _selectedMaterialsByRecipe[recipeRow.Id] = materials;
                     onSubmit(materials);
                     Close();

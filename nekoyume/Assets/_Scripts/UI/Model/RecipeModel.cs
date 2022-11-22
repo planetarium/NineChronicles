@@ -173,7 +173,7 @@ namespace Nekoyume.UI.Model
             foreach (var group in groups)
             {
                 var result = group.First().GetResultMaterialItemRow();
-                var model = new RecipeRow.Model(result.GetLocalizedName(false, false), result.Grade)
+                var model = new RecipeRow.Model(result.GetLocalizedName(false, false), 0)
                 {
                     ItemSubType = result.ItemSubType,
                 };

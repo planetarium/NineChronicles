@@ -147,7 +147,7 @@ namespace Nekoyume.UI
             if (button != null)
             {
                 button.OnClickSubject
-                    .Subscribe(state => { CombineCurrentRecipe(); })
+                    .Subscribe(state => CombineCurrentRecipe())
                     .AddTo(gameObject);
 
                 button.OnClickDisabledSubject

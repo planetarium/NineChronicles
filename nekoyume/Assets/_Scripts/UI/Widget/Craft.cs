@@ -681,7 +681,9 @@ namespace Nekoyume.UI
 
             var format = L10nManager.Localize("UI_COST_BLOCK");
             var quote = string.Format(format, blockIndex);
-            loadingScreen.AnimateNPC(itemBase.ItemType, quote);
+            var itemType = itemBase.ItemType != ItemType.Material
+                ? itemBase.ItemType : ItemType.Consumable;
+            loadingScreen.AnimateNPC(itemType, quote);
         }
 
         private void OnNPCDisappear()

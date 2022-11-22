@@ -96,7 +96,7 @@ namespace Nekoyume.State
                 .AddTo(_disposables);
             _eventScheduleRowForRecipe
                 .ObserveOnMainThread()
-                .Subscribe(_ => { UpdateEventRecipeRemainingTimeText(_agent.BlockIndex); })
+                .Subscribe(_ => UpdateEventRecipeRemainingTimeText(_agent.BlockIndex))
                 .AddTo(_disposables);
         }
 
