@@ -93,8 +93,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 60
-    m_Right: 0
+    m_Left: 15
+    m_Right: 15
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 0
@@ -273,7 +273,7 @@ MonoBehaviour:
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
   fixedMarginOption: 0
-  fontMaterialType: 0
+  fontMaterialType: 1
   l10nKey: 
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
@@ -298,6 +298,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: BenefitsIcon
+      objectReference: {fileID: 0}
+    - target: {fileID: 629843325909190842, guid: 79eb3cd246b59479a8a8e5022a11679f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1066260074002597565, guid: 79eb3cd246b59479a8a8e5022a11679f,
         type: 3}
@@ -387,7 +392,7 @@ PrefabInstance:
     - target: {fileID: 1066260074002597565, guid: 79eb3cd246b59479a8a8e5022a11679f,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -27.5
+      value: -25
       objectReference: {fileID: 0}
     - target: {fileID: 1066260074002597565, guid: 79eb3cd246b59479a8a8e5022a11679f,
         type: 3}
@@ -403,6 +408,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8181938468535538676, guid: 79eb3cd246b59479a8a8e5022a11679f,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8181938468535538676, guid: 79eb3cd246b59479a8a8e5022a11679f,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 79eb3cd246b59479a8a8e5022a11679f, type: 3}
