@@ -35,14 +35,18 @@ namespace Nekoyume.UI.Module
 
         public void Set(System.Action onClickJoinArena)
         {
+            arenaJoinButton.OnClickSubject.Subscribe(_ => onClickJoinArena.Invoke()).AddTo(gameObject);
+            UpdateInformation();
+        }
+
+        public void UpdateInformation()
+        {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var roundData = TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(blockIndex);
             if (roundData is null)
             {
                 return;
             }
-
-            arenaJoinButton.OnClickSubject.Subscribe(_ => onClickJoinArena.Invoke()).AddTo(gameObject);
 
             var grandFinaleRow =
                 TableSheets.Instance.GrandFinaleScheduleSheet.GetRowByBlockIndex(blockIndex);

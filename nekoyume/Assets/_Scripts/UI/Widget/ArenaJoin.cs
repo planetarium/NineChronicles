@@ -300,6 +300,7 @@ namespace Nekoyume.UI
                 selectedRoundData.TryGetMedalItemResourceId(out var medalItemId)
                     ? medalItemId
                     : (int?)null);
+            grandFinaleJoin.UpdateInformation();
         }
 
         /// <summary>
