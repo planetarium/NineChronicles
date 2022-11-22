@@ -122,7 +122,7 @@ namespace Nekoyume.UI
             RxProps.ArenaInfoTuple
                 .Subscribe(tuple => UpdateBottomButtons())
                 .AddTo(_disposablesForShow);
-            if (TableSheets.Instance.GrandFinaleScheduleSheet.GetRowByBlockIndex(Game.Game.instance.Agent.BlockIndex) is not null)
+            if (TableSheets.Instance.GrandFinaleScheduleSheet?.GetRowByBlockIndex(Game.Game.instance.Agent.BlockIndex) is not null)
             {
                 baseArenaJoinObject.SetActive(false);
                 grandFinaleJoin.gameObject.SetActive(true);

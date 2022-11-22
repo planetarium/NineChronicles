@@ -66,7 +66,7 @@ namespace Nekoyume.UI.Module.Lobby
 
         private void UpdateArenaSeasonTitle(long blockIndex)
         {
-            if (TableSheets.Instance.GrandFinaleScheduleSheet.GetRowByBlockIndex(blockIndex)
+            if (TableSheets.Instance.GrandFinaleScheduleSheet?.GetRowByBlockIndex(blockIndex)
                 is not null)
             {
                 grandFinaleGameObject.SetActive(true);
