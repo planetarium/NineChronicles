@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Bencodex.Types;
+using Cysharp.Threading.Tasks;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Action;
@@ -69,12 +70,12 @@ namespace Nekoyume
                 ItemSlotState.DeriveAddress(avatarAddress, BattleType.Raid)
             };
             var itemBulk = await Game.Game.instance.Agent.GetStateBulk(itemAddresses);
-            var itemStates = new List<ItemSlotState>();
+            var itemSlotStates = new List<ItemSlotState>();
             foreach (var value in itemBulk.Values)
             {
                 if (value is List list)
                 {
-                    itemStates.Add(new ItemSlotState(list));
+                    itemSlotStates.Add(new ItemSlotState(list));
                 }
             }
 
@@ -85,16 +86,34 @@ namespace Nekoyume
                 RuneSlotState.DeriveAddress(avatarAddress, BattleType.Raid)
             };
             var runeBulk = await Game.Game.instance.Agent.GetStateBulk(runeAddresses);
-            var runeStates = new List<RuneSlotState>();
+            var runeSlotStates = new List<RuneSlotState>();
             foreach (var value in runeBulk.Values)
             {
                 if (value is List list)
                 {
-                    runeStates.Add(new RuneSlotState(list));
+                    runeSlotStates.Add(new RuneSlotState(list));
                 }
             }
 
-            return (itemStates, runeStates);
+            return (itemSlotStates, runeSlotStates);
+        }
+
+        public static async Task<List<RuneState>> GetRuneStatesAsync(this AvatarState avatarState)
+        {
+            var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
+            var runeIds = runeListSheet.Values.Select(x => x.Id).ToList();
+            var addresses = runeIds.Select(id => RuneState.DeriveAddress(avatarState.address, id)).ToList();
+            var bulk = await Game.Game.instance.Agent.GetStateBulk(addresses);
+            var runeStates = new List<RuneState>();
+            foreach (var value in bulk.Values)
+            {
+                if (value is List list)
+                {
+                    runeStates.Add(new RuneState(list));
+                }
+            }
+
+            return runeStates;
         }
     }
 }

@@ -16,6 +16,7 @@ namespace Nekoyume
         public static BattleResultPopup.Model GetHackAndSlashReward(
             this ActionBase.ActionEvaluation<HackAndSlash> eval,
             AvatarState avatarState,
+            List<RuneState> runeStates,
             List<Model.Skill.Skill> skillsOnWaveStart,
             TableSheets sheets,
             out StageSimulator firstStageSimulator)
@@ -31,7 +32,7 @@ namespace Nekoyume
                     random,
                     avatarState,
                     i == 0 ? eval.Action.Foods : new List<Guid>(),
-                    eval.Action.RuneInfos,
+                    runeStates,
                     i == 0 ? skillsOnWaveStart : new List<Model.Skill.Skill>(),
                     eval.Action.WorldId,
                     eval.Action.StageId,

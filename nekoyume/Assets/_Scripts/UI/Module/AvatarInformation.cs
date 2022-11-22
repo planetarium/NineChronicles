@@ -272,9 +272,9 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                if (slot.RuneSlot.IsEquipped(out var runeState))
+                if (slot.RuneSlot.RuneId.HasValue)
                 {
-                    if (!inventory.TryGetModel(runeState.RuneId, out var item))
+                    if (!inventory.TryGetModel(slot.RuneSlot.RuneId.Value, out var item))
                     {
                         return;
                     }
@@ -316,12 +316,12 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            if (!slot.RuneSlot.IsEquipped(out var runeState))
+            if (!slot.RuneSlot.RuneId.HasValue)
             {
                 return;
             }
 
-            if (!inventory.TryGetModel(runeState.RuneId, out var item))
+            if (!inventory.TryGetModel(slot.RuneSlot.RuneId.Value, out var item))
             {
                 return;
             }
@@ -592,17 +592,17 @@ namespace Nekoyume.UI.Module
                 .Where(x => x.RuneType == (RuneType)row.RuneType)
                 .ToDictionary(x => x.Index, x => x);
 
-            var selectedSlot = slots.Values.FirstOrDefault(x => !x.IsEquipped(out _));
+            var selectedSlot = slots.Values.FirstOrDefault(x => !x.RuneId.HasValue);
             if (selectedSlot != null)
             {
-                selectedSlot.Equip(inventoryItem.RuneState);
+                selectedSlot.Equip(inventoryItem.RuneState.RuneId);
             }
             else
             {
-                var count = slots.Count(x => x.Value.IsEquipped(out _));
+                var count = slots.Count(x => x.Value.RuneId.HasValue);
                 if (count == 1)
                 {
-                    slots.First().Value.Equip(inventoryItem.RuneState);
+                    slots.First().Value.Equip(inventoryItem.RuneState.RuneId);
                 }
                 else
                 {
@@ -623,9 +623,9 @@ namespace Nekoyume.UI.Module
             var states = States.Instance.RuneSlotStates[_battleType].GetRuneSlot();
             foreach (var slot in states)
             {
-                if (slot.IsEquipped(out var runeState))
+                if (slot.RuneId.HasValue)
                 {
-                    if (runeState.RuneId == item.RuneState.RuneId)
+                    if (slot.RuneId.Value == item.RuneState.RuneId)
                     {
                         slot.Unequip();
                     }
@@ -654,10 +654,10 @@ namespace Nekoyume.UI.Module
                         .Where(x => !x.IsLock)
                         .Where(x => x.RuneType == (RuneType)row.RuneType)
                         .ToDictionary(x => x.Index, x => x);
-                    if (slots.Values.All(x => x.IsEquipped(out _)) &&
-                        slots.Values.Count(x => x.IsEquipped(out _)) > 1)
+                    if (slots.Values.All(x => x.RuneId.HasValue) &&
+                        slots.Values.Count(x => x.RuneId.HasValue) > 1)
                     {
-                        var indexes = slots.Where(x => x.Value.IsEquipped(out _))
+                        var indexes = slots.Where(x => x.Value.RuneId.HasValue)
                             .Select(kv => kv.Key)
                             .ToList();
                         runeSlots.ActiveWearable(indexes);

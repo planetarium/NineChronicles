@@ -1169,7 +1169,9 @@ namespace Nekoyume.BlockChain
                     skillsOnWaveStart.Add(skill);
                 }
 
-                var resultModel = eval.GetHackAndSlashReward(States.Instance.CurrentAvatarState,
+                var resultModel = eval.GetHackAndSlashReward(
+                    States.Instance.CurrentAvatarState,
+                    States.Instance.GetEquippedRuneStates(BattleType.Adventure),
                     skillsOnWaveStart,
                     tableSheets,
                     out var simulator);
@@ -1289,12 +1291,13 @@ namespace Nekoyume.BlockChain
                 var sheets = TableSheets.Instance;
                 var stageRow = sheets.StageSheet[eval.Action.StageId];
                 var avatarState = States.Instance.CurrentAvatarState;
+                var runeStates = States.Instance.GetEquippedRuneStates(BattleType.Adventure);
                 var localRandom = new LocalRandom(eval.RandomSeed);
                 var simulator = new StageSimulator(
                     localRandom,
                     avatarState,
                     eval.Action.Foods,
-                    eval.Action.RuneInfos,
+                    runeStates,
                     new List<Skill>(),
                     eval.Action.WorldId,
                     eval.Action.StageId,
@@ -1969,10 +1972,11 @@ namespace Nekoyume.BlockChain
                 var myAvatarState = eval.OutputStates.GetAvatarStateV2(eval.Action.myAvatarAddress);
                 var itemSlotState = States.Instance.ItemSlotStates[BattleType.Arena];
                 var runeSlotState = States.Instance.RuneSlotStates[BattleType.Arena];
+                var runeStates = States.Instance.GetEquippedRuneStates(BattleType.Arena);
                 myDigest = new ArenaPlayerDigest(myAvatarState,
                     itemSlotState.Equipments,
                     itemSlotState.Costumes,
-                    runeSlotState.GetEquippedRuneSlotInfos());
+                    runeStates);
             }
 
             if (!enemyDigest.HasValue)
@@ -1985,16 +1989,18 @@ namespace Nekoyume.BlockChain
                 {
                     itemSlotState = new ItemSlotState(BattleType.Arena);
                 }
+
                 if (runeSlotState == null)
                 {
                     runeSlotState = new RuneSlotState(BattleType.Arena);
                 }
 
+                var runeStates = await enemyAvatarState.GetRuneStatesAsync();
                 enemyDigest = new ArenaPlayerDigest(
                     enemyAvatarState,
                     itemSlotState.Equipments,
                     itemSlotState.Costumes,
-                    runeSlotState.GetEquippedRuneSlotInfos());
+                    runeStates);
             }
 
             previousMyScore ??= RxProps.PlayersArenaParticipant.HasValue
@@ -2121,13 +2127,14 @@ namespace Nekoyume.BlockChain
             var preRaiderState = WorldBossStates.GetRaiderState(avatarAddress);
             var preKillReward = WorldBossStates.GetKillReward(avatarAddress);
             var latestBossLevel = preRaiderState?.LatestBossLevel ?? 0;
+            var runeStates = States.Instance.GetEquippedRuneStates(BattleType.Raid);
 
             var simulator = new RaidSimulator(
                 row.BossId,
                 random,
                 clonedAvatarState,
                 eval.Action.FoodIds,
-                eval.Action.RuneInfos,
+                runeStates,
                 TableSheets.Instance.GetRaidSimulatorSheets(),
                 TableSheets.Instance.CostumeStatSheet
             );
@@ -2135,12 +2142,9 @@ namespace Nekoyume.BlockChain
             var log = simulator.Log;
             Widget.Find<Menu>().Close();
 
-            var slotInfos = States.Instance.RuneSlotStates.TryGetValue(BattleType.Raid, out var state) ?
-                state.GetEquippedRuneSlotInfos() :
-                null;
             var playerDigest = new ArenaPlayerDigest(
                 clonedAvatarState,
-                slotInfos);
+                runeStates);
 
             await WorldBossStates.Set(avatarAddress);
             await States.Instance.InitRuneStoneBalance();

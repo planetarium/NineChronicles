@@ -103,9 +103,9 @@ namespace Nekoyume.UI.Module
             UpdateLockState(runeSlot);
             wearableImage.SetActive(false);
             optionTagBg.gameObject.SetActive(false);
-            if (runeSlot.IsEquipped(out var state))
+            if (runeSlot.RuneId.HasValue)
             {
-                Equip(state);
+                Equip(runeSlot.RuneId.Value);
             }
             else
             {
@@ -142,8 +142,13 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void Equip(RuneState state)
+        private void Equip(int runeId)
         {
+            if (!States.Instance.TryGetRuneState(runeId, out var state))
+            {
+                return;
+            }
+
             if(!RuneFrontHelper.TryGetRuneIcon(state.RuneId, out var icon))
             {
               return;

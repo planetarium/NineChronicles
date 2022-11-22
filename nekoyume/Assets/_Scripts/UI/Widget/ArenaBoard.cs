@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Nekoyume.Battle;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
@@ -138,7 +139,7 @@ namespace Nekoyume.UI
                     player.AvatarState.inventory.Costumes.FirstOrDefault(x => x.ItemId == guid))
                 .Where(item => item != null).ToList();
             var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
-            var rune = player.RuneSlotState.GetEquippedRuneOptions(runeOptionSheet);
+            var runeOptions = Util.GetRuneOptions(player.RuneStates, runeOptionSheet);
             var lv = player.AvatarState.level;
             var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
             var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
@@ -147,7 +148,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var cp = CPHelper.TotalCP(equipments, costumes, rune, lv, row, costumeSheet);
+            var cp = CPHelper.TotalCP(equipments, costumes, runeOptions, lv, row, costumeSheet);
             _billboard.SetData(
                 "season",
                 player.Rank,
@@ -199,7 +200,7 @@ namespace Nekoyume.UI
                             data.AvatarState.inventory.Costumes.FirstOrDefault(x => x.ItemId == guid))
                         .Where(item => item != null).ToList();
                     var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
-                    var rune = data.RuneSlotState.GetEquippedRuneOptions(runeOptionSheet);
+                    var runeOptions = Util.GetRuneOptions(data.RuneStates, runeOptionSheet);
                     var lv = data.AvatarState.level;
                     var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
                     var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
@@ -213,7 +214,7 @@ namespace Nekoyume.UI
                     Find<ArenaBattlePreparation>().Show(
                         _roundData,
                         data.AvatarState,
-                        CPHelper.TotalCP(equipments, costumes, rune, lv, row, costumeSheet));
+                        CPHelper.TotalCP(equipments, costumes, runeOptions, lv, row, costumeSheet));
                 })
                 .AddTo(gameObject);
         }
@@ -250,7 +251,7 @@ namespace Nekoyume.UI
                         .Select(guid =>
                             e.AvatarState.inventory.Costumes.FirstOrDefault(x => x.ItemId == guid))
                         .Where(item => item != null).ToList();
-                    var rune = e.RuneSlotState.GetEquippedRuneOptions(runeOptionSheet);
+                    var runeOptions = Util.GetRuneOptions(e.RuneStates, runeOptionSheet);
                     var lv = e.AvatarState.level;
                     var titleId = costumes.FirstOrDefault(costume =>
                         costume.ItemSubType == ItemSubType.Title && costume.Equipped)?.Id;
@@ -281,7 +282,7 @@ namespace Nekoyume.UI
                         level = e.AvatarState.level,
                         fullCostumeOrArmorId = portrait,
                         titleId = titleId,
-                        cp = CPHelper.TotalCP(equipments, costumes, rune, lv, row, costumeSheet),
+                        cp = CPHelper.TotalCP(equipments, costumes, runeOptions, lv, row, costumeSheet),
                         score = e.Score,
                         rank = e.Rank,
                         expectWinDeltaScore = e.ExpectDeltaScore.win,

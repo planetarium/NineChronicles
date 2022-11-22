@@ -328,10 +328,33 @@ namespace Nekoyume.Helper
 
             var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
             var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
-            var runeSlotState = States.Instance.RuneSlotStates[battleType];
             var (equipments, costumes) = States.Instance.GetEquippedItems(battleType);
-            var runeOptionInfos = runeSlotState.GetEquippedRuneOptions(runeOptionSheet);
+            var runeStated = States.Instance.GetEquippedRuneStates(battleType);
+            var runeOptionInfos = GetRuneOptions(runeStated, runeOptionSheet);
             return CPHelper.TotalCP(equipments, costumes, runeOptionInfos, level, row, costumeSheet);
+        }
+
+        public static List<RuneOptionSheet.Row.RuneOptionInfo> GetRuneOptions(
+            List<RuneState> runeStates,
+            RuneOptionSheet sheet)
+        {
+            var result = new List<RuneOptionSheet.Row.RuneOptionInfo>();
+            foreach (var runeState in runeStates)
+            {
+                if (!sheet.TryGetValue(runeState.RuneId, out var row))
+                {
+                    continue;
+                }
+
+                if (!row.LevelOptionMap.TryGetValue(runeState.Level, out var statInfo))
+                {
+                    continue;
+                }
+
+                result.Add(statInfo);
+            }
+
+            return result;
         }
     }
 }

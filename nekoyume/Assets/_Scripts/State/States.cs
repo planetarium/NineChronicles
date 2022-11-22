@@ -227,13 +227,12 @@ namespace Nekoyume.State
                 var states = RuneSlotStates[runeSlotState.Key].GetRuneSlot();
                 foreach (var runeSlot in states)
                 {
-                    if (!runeSlot.IsEquipped(out var runeState))
+                    if (!runeSlot.RuneId.HasValue)
                     {
                         continue;
                     }
 
-                    var current = RuneStates.FirstOrDefault(x=> x.RuneId == runeState.RuneId);
-                    runeSlot.Equip(current);
+                    runeSlot.Equip(runeSlot.RuneId.Value);
                 }
             }
 
@@ -715,13 +714,25 @@ namespace Nekoyume.State
             var runeStates = new List<RuneState>();
             foreach (var slot in states)
             {
-                if (slot.IsEquipped(out var runeState))
+                if (!slot.RuneId.HasValue)
+                {
+                    continue;
+                }
+
+                var runeState = RuneStates.FirstOrDefault(x => x.RuneId == slot.RuneId);
+                if (runeState != null)
                 {
                     runeStates.Add(runeState);
                 }
             }
 
             return runeStates;
+        }
+
+        public bool TryGetRuneState(int runeId, out RuneState runeState)
+        {
+            runeState = RuneStates.FirstOrDefault(x => x.RuneId == runeId);
+            return runeState != null;
         }
     }
 }

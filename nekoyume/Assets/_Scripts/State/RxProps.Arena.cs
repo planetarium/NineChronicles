@@ -9,6 +9,7 @@ using Nekoyume.Arena;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
+using Nekoyume.UI;
 using UnityEngine;
 using static Lib9c.SerializeKeys;
 
@@ -26,6 +27,7 @@ namespace Nekoyume.State
             public readonly AvatarState AvatarState;
             public readonly ItemSlotState ItemSlotState;
             public readonly RuneSlotState RuneSlotState;
+            public readonly List<RuneState> RuneStates;
             public readonly (int win, int lose) ExpectDeltaScore;
 
             public ArenaParticipant(
@@ -35,6 +37,7 @@ namespace Nekoyume.State
                 AvatarState avatarState,
                 ItemSlotState itemSlotState,
                 RuneSlotState runeSlotState,
+                List<RuneState> runeStates,
                 (int win, int lose) expectDeltaScore)
             {
                 AvatarAddr = avatarAddr;
@@ -43,6 +46,7 @@ namespace Nekoyume.State
                 AvatarState = avatarState;
                 ItemSlotState = itemSlotState;
                 RuneSlotState = runeSlotState;
+                RuneStates = runeStates;
                 ExpectDeltaScore = expectDeltaScore;
             }
 
@@ -54,6 +58,7 @@ namespace Nekoyume.State
                 AvatarState = value.AvatarState;
                 ItemSlotState = value.ItemSlotState;
                 RuneSlotState = value.RuneSlotState;
+                RuneStates = value.RuneStates;
                 ExpectDeltaScore = value.ExpectDeltaScore;
             }
         }
@@ -71,6 +76,7 @@ namespace Nekoyume.State
                 AvatarState avatarState,
                 ItemSlotState itemSlotState,
                 RuneSlotState runeSlotState,
+                List<RuneState> runeStates,
                 (int win, int lose) expectDeltaScore,
                 ArenaInformation currentArenaInfo,
                 int purchasedCountDuringInterval)
@@ -81,6 +87,7 @@ namespace Nekoyume.State
                     avatarState,
                     itemSlotState,
                     runeSlotState,
+                    runeStates,
                     expectDeltaScore)
             {
                 CurrentArenaInfo = currentArenaInfo;
@@ -302,6 +309,7 @@ namespace Nekoyume.State
                     currentAvatar,
                     States.Instance.ItemSlotStates[BattleType.Arena],
                     States.Instance.RuneSlotStates[BattleType.Arena],
+                    States.Instance.GetEquippedRuneStates(BattleType.Arena),
                     (0, 0),
                     new ArenaInformation(
                         currentAvatarAddr,
@@ -359,6 +367,7 @@ namespace Nekoyume.State
                     currentAvatar,
                     States.Instance.ItemSlotStates[BattleType.Arena],
                     States.Instance.RuneSlotStates[BattleType.Arena],
+                    States.Instance.GetEquippedRuneStates(BattleType.Arena),
                     default,
                     null,
                     0);
@@ -373,19 +382,28 @@ namespace Nekoyume.State
                 currentAvatarAddr,
                 currentRoundData.ChampionshipId,
                 currentRoundData.Round);
+
+            var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
+            var runeIds = runeListSheet.Values.Select(x => x.Id).ToList();
             var addrBulk = avatarAddrAndScoresWithRank
                 .SelectMany(tuple => new[]
                 {
                     tuple.avatarAddr,
                     tuple.avatarAddr.Derive(LegacyInventoryKey),
                     ItemSlotState.DeriveAddress(tuple.avatarAddr, BattleType.Arena),
-                    RuneSlotState.DeriveAddress(tuple.avatarAddr, BattleType.Arena)
-                    // ArenaAvatarState.DeriveAddress(tuple.avatarAddr),
+                    RuneSlotState.DeriveAddress(tuple.avatarAddr, BattleType.Arena),
                 })
                 .ToList();
+
+            foreach (var tuple in avatarAddrAndScoresWithRank)
+            {
+                addrBulk.AddRange(runeIds.Select(x => RuneState.DeriveAddress(tuple.avatarAddr, x)));
+            }
+
             addrBulk.Add(playerArenaInfoAddr);
             // NOTE: If the [`addrBulk`] is too large, and split and get separately.
             var stateBulk = await _agent.GetStateBulk(addrBulk);
+            var runeStates = new List<RuneState>();
             var result = avatarAddrAndScoresWithRank.Select(tuple =>
             {
                 var (avatarAddr, score, rank) = tuple;
@@ -413,12 +431,15 @@ namespace Nekoyume.State
                         ? new RuneSlotState(runeSlotList)
                         : new RuneSlotState(BattleType.Arena);
 
-                // todo :여기서 수정해야함
-                // var arenaAvatar =
-                //     stateBulk[ArenaAvatarState.DeriveAddress(avatarAddr)] is List arenaAvatarList
-                //         ? new ArenaAvatarState(arenaAvatarList)
-                //         : null;
-                // avatar = avatar.ApplyToInventory(arenaAvatar);
+                foreach (var id in runeIds)
+                {
+                    var address = RuneState.DeriveAddress(tuple.avatarAddr, id);
+                    if (stateBulk[address] is List runeStateList)
+                    {
+                        runeStates.Add(new RuneState(runeStateList));
+                    }
+                }
+
                 var (win, lose, _) =
                     ArenaHelper.GetScores(playerScore, score);
                 return new ArenaParticipant(
@@ -430,6 +451,7 @@ namespace Nekoyume.State
                     avatar,
                     itemSlotState,
                     runeSlotState,
+                    runeStates,
                     (win, lose)
                 );
             }).ToArray();
