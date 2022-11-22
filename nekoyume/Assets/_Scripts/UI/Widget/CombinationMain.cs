@@ -1,4 +1,7 @@
+using System.Linq;
 using Nekoyume.Game.Controller;
+using Nekoyume.State;
+using Nekoyume.UI.Model;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,10 +10,10 @@ namespace Nekoyume.UI
     public class CombinationMain : Widget
     {
         [SerializeField]
-        private Button combineButton = null;
+        private Button combineButton;
 
         [SerializeField]
-        private Button upgradeButton = null;
+        private Button upgradeButton;
 
         [SerializeField]
         private Button grindButton;
@@ -19,13 +22,16 @@ namespace Nekoyume.UI
         private Button runeButton;
 
         [SerializeField]
-        private Button closeButton = null;
+        private Button closeButton;
 
         [SerializeField]
-        private Image craftNotificationImage = null;
+        private Image craftNotificationImage;
 
         [SerializeField]
-        private SpeechBubble speechBubble = null;
+        private Image runeNotificationImage;
+
+        [SerializeField]
+        private SpeechBubble speechBubble;
 
         protected override void Awake()
         {
@@ -77,7 +83,7 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            craftNotificationImage.enabled = Craft.SharedModel.HasNotification;
+            UpdateNotification();
             base.Show(ignoreShowAnimation);
 
             var audioController = AudioController.instance;
@@ -89,6 +95,27 @@ namespace Nekoyume.UI
 
             HelpTooltip.HelpMe(100007, true);
             StartCoroutine(speechBubble.CoShowText(true));
+        }
+
+        private void UpdateNotification()
+        {
+            // craft
+            craftNotificationImage.enabled = Craft.SharedModel.HasNotification;
+
+            // rune
+            runeNotificationImage.enabled = false;
+            var runeStates = States.Instance.RuneStates;
+            var sheet = Game.Game.instance.TableSheets.RuneListSheet;
+            foreach (var value in sheet.Values)
+            {
+                var state = runeStates.FirstOrDefault(x => x.RuneId == value.Id);
+                var runeItem = new RuneItem(value, state?.Level ?? 0);
+                if (runeItem.HasNotification)
+                {
+                    runeNotificationImage.enabled = true;
+                    return;
+                }
+            }
         }
     }
 }

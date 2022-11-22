@@ -255,6 +255,7 @@ namespace Nekoyume.UI
 
             var items = _runeItems.Select(p
                 => new RuneListItem(RuneFrontHelper.GetGroupName(p.Key), p.Value)).ToList();
+
             scroll.UpdateData(items);
             scroll.OnClick.Subscribe(OnClickItem).AddTo(_disposables);
         }

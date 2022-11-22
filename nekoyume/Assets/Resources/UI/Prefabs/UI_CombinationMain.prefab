@@ -201,6 +201,7 @@ MonoBehaviour:
   runeButton: {fileID: 4062579702270901021}
   closeButton: {fileID: 3174719986751943182}
   craftNotificationImage: {fileID: 6274492409712002948}
+  runeNotificationImage: {fileID: 889186927360354802}
   speechBubble: {fileID: 6080656401470243660}
 --- !u!225 &3856260509446582021
 CanvasGroup:
@@ -2172,7 +2173,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 300, y: -2.730011}
+  m_AnchoredPosition: {x: 300, y: -2.7299805}
   m_SizeDelta: {x: 206, y: 216}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &7113562271138496271
@@ -3023,7 +3024,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -300, y: -2.730011}
+  m_AnchoredPosition: {x: -300, y: -2.7299805}
   m_SizeDelta: {x: 206, y: 217.3}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &6274492408613066937
@@ -5239,7 +5240,7 @@ PrefabInstance:
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 88
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
