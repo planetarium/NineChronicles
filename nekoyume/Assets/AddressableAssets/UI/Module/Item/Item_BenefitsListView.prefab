@@ -895,7 +895,7 @@ GameObject:
   - component: {fileID: 968284045425492173}
   - component: {fileID: 567597642443682006}
   m_Layer: 5
-  m_Name: 2 (1)
+  m_Name: 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1023,6 +1023,7 @@ MonoBehaviour:
     requiredDepositText: {fileID: 42139710680104070}
     hourGlassInterestText: {fileID: 7729283318293921382}
     apPotionInterestText: {fileID: 8650886195334095416}
+    runeInterestText: {fileID: 2446878902685662512}
     arenaTicketBuffText: {fileID: 5929345045979458712}
     crystalBuffText: {fileID: 3975137677533920718}
     actionPointBuffText: {fileID: 8311748358421801630}
@@ -1031,6 +1032,7 @@ MonoBehaviour:
     requiredDepositText: {fileID: 4661614269410309996}
     hourGlassInterestText: {fileID: 3994420566036772641}
     apPotionInterestText: {fileID: 1328320525002464068}
+    runeInterestText: {fileID: 438522784159206070}
     arenaTicketBuffText: {fileID: 6311796465302195411}
     crystalBuffText: {fileID: 6886577038886266521}
     actionPointBuffText: {fileID: 4945445962704843551}
@@ -1039,6 +1041,7 @@ MonoBehaviour:
     requiredDepositText: {fileID: 4463254880621075343}
     hourGlassInterestText: {fileID: 8761415201397826876}
     apPotionInterestText: {fileID: 7809945492967645938}
+    runeInterestText: {fileID: 7367062187494286046}
     arenaTicketBuffText: {fileID: 1873431143519149783}
     crystalBuffText: {fileID: 8765903993948831001}
     actionPointBuffText: {fileID: 2964607621650195575}
@@ -2731,10 +2734,10 @@ RectTransform:
   m_Father: {fileID: 6365538392262388103}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50, y: -69.5}
-  m_SizeDelta: {x: 76, y: 19}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1712731209957219454
 CanvasRenderer:
