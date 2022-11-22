@@ -50,7 +50,7 @@ namespace Lib9c.Tests.TableData
             const string tableContentWithRune = @"level,required_gold,item_id,rate,type
 1,50,400000,10,Item
 1,50,500000,800,Item
-1,50,2002,6000,Rune
+1,50,20001,6000,Rune
 ";
             patchedSheet.Set(tableContentWithRune);
             Assert.Single(patchedSheet);
@@ -63,7 +63,7 @@ namespace Lib9c.Tests.TableData
                 {
                     0 => 400000,
                     1 => 500000,
-                    2 => 2002,
+                    2 => 20001,
                     _ => throw new ArgumentOutOfRangeException()
                 };
                 var rate = i switch
