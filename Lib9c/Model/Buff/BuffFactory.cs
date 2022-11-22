@@ -24,6 +24,9 @@ namespace Nekoyume.Model.Buff
                     return new HitBuff(row);
                 case StatType.SPD:
                     return new SpeedBuff(row);
+                case StatType.DRR:
+                case StatType.DRV:
+                    return new DamageReductionBuff(row);
                 default:
                     throw new ArgumentOutOfRangeException();
             }

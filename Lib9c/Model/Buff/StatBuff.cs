@@ -43,6 +43,12 @@ namespace Nekoyume.Model.Buff
                 case StatType.SPD:
                     value = characterBase.SPD;
                     break;
+                case StatType.DRV:
+                    value = characterBase.DRV;
+                    break;
+                case StatType.DRR:
+                    value = characterBase.DRR;
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }

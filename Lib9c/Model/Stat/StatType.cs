@@ -39,7 +39,17 @@ namespace Nekoyume.Model.Stat
         /// <summary>
         /// Speed
         /// </summary>
-        SPD
+        SPD,
+
+        /// <summary>
+        /// Damage Reduction (Subtract)
+        /// </summary>
+        DRV,
+
+        /// <summary>
+        /// Damage Reduction (Multiply)
+        /// </summary>
+        DRR,
     }
 
     [Serializable]
