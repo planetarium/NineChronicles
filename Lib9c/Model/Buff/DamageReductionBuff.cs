@@ -1,4 +1,5 @@
 using System;
+using Nekoyume.Model.Skill;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model.Buff
@@ -7,6 +8,11 @@ namespace Nekoyume.Model.Buff
     public class DamageReductionBuff : StatBuff
     {
         public DamageReductionBuff(StatBuffSheet.Row row) : base(row)
+        {
+        }
+
+        public DamageReductionBuff(SkillCustomField customField, StatBuffSheet.Row row)
+            : base(customField, row)
         {
         }
     }

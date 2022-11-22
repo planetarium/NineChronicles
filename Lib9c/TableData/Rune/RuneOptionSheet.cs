@@ -25,6 +25,7 @@ namespace Nekoyume.TableData
                 public StatModifier.OperationType SkillValueType { get; set; }
                 public StatType SkillStatType { get; set; }
                 public StatReferenceType StatReferenceType { get; set; }
+                public int BuffDuration { get; set; }
 
                 public RuneOptionInfo(
                     int cp,
@@ -35,7 +36,8 @@ namespace Nekoyume.TableData
                     decimal skillValue,
                     StatModifier.OperationType skillValueType,
                     StatType skillStatType,
-                    StatReferenceType statReferenceType)
+                    StatReferenceType statReferenceType,
+                    int buffDuration)
                 {
                     Cp = cp;
                     Stats = stats;
@@ -46,6 +48,7 @@ namespace Nekoyume.TableData
                     SkillValueType = skillValueType;
                     SkillStatType = skillStatType;
                     StatReferenceType = statReferenceType;
+                    BuffDuration = buffDuration;
                 }
 
                 public RuneOptionInfo(
@@ -112,6 +115,7 @@ namespace Nekoyume.TableData
                         (StatType)Enum.Parse(typeof(StatType), fields[17]);
                     var statReferenceType =
                         (StatReferenceType)Enum.Parse(typeof(StatReferenceType), fields[18]);
+                    var buffDuration = ParseInt(fields[19]);
 
                     LevelOptionMap[level] = new RuneOptionInfo(
                         cp,
@@ -122,7 +126,8 @@ namespace Nekoyume.TableData
                         value,
                         statValueType,
                         statType,
-                        statReferenceType);
+                        statReferenceType,
+                        buffDuration);
                 }
                 else
                 {

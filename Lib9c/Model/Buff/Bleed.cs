@@ -16,6 +16,11 @@ namespace Nekoyume.Model.Buff
             Power = power;
         }
 
+        public Bleed(SkillCustomField customField, ActionBuffSheet.Row row) : base(customField, row)
+        {
+            Power = customField.BuffValue;
+        }
+
         protected Bleed(Bleed value) : base(value)
         {
             Power = value.Power;

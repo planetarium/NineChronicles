@@ -336,7 +336,7 @@ namespace Nekoyume.Model.Stat
 
         public void AddBuff(Buff.StatBuff buff, bool updateImmediate = true)
         {
-            _buffStatModifiers[buff.RowData.GroupId] = buff.RowData.StatModifier;
+            _buffStatModifiers[buff.RowData.GroupId] = buff.GetModifier();
 
             if (updateImmediate)
             {
