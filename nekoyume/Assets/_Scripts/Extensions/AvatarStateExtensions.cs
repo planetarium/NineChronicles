@@ -16,9 +16,11 @@ namespace Nekoyume
         {
             var arenaAvatarState = new ArenaAvatarState(avatarState);
             arenaAvatarState.UpdateCostumes(avatarState.inventory.Costumes
+                .Where(costume => costume.Equipped)
                 .Select(e => e.NonFungibleId)
                 .ToList());
             arenaAvatarState.UpdateEquipment(avatarState.inventory.Equipments
+                .Where(equipment => equipment.Equipped)
                 .Select(e => e.NonFungibleId)
                 .ToList());
             return arenaAvatarState;

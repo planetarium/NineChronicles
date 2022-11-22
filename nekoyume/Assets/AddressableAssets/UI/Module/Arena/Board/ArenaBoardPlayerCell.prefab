@@ -531,7 +531,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7535839762550681365
 RectTransform:
   m_ObjectHideFlags: 0
@@ -683,7 +683,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2767782327982941398
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1138,6 +1138,8 @@ MonoBehaviour:
   _cpText: {fileID: 1991182203086928886}
   _plusRatingText: {fileID: 4133636230288920637}
   _choiceButton: {fileID: 5759196546260136036}
+  winObject: {fileID: 3355895840381158326}
+  loseObject: {fileID: 3804535062619151780}
   _normalizedPosition: 0
 --- !u!1 &6022805100448495617
 GameObject:
@@ -1888,7 +1890,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &9129760065478134538
 RectTransform:
   m_ObjectHideFlags: 0

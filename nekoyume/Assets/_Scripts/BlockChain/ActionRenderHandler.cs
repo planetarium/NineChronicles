@@ -152,6 +152,9 @@ namespace Nekoyume.BlockChain
             // World Boss
             Raid();
             ClaimRaidReward();
+
+            // Grand Finale
+            HandleBattleGrandFinale();
         }
 
         public void Stop()
@@ -441,6 +444,15 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseClaimRaidReward)
+                .AddTo(_disposables);
+        }
+
+        private void HandleBattleGrandFinale()
+        {
+            _actionRenderer.EveryRender<BattleGrandFinale>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseBattleGrandFinale)
                 .AddTo(_disposables);
         }
 
@@ -2148,6 +2160,132 @@ namespace Nekoyume.BlockChain
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             WorldBossStates.SetReceivingGradeRewards(avatarAddress, false);
             Widget.Find<WorldBossRewardScreen>().Show(new LocalRandom(eval.RandomSeed));
+        }
+
+        private void ResponseBattleGrandFinale(ActionBase.ActionEvaluation<BattleGrandFinale> eval)
+        {
+            if (!ActionManager.IsLastBattleActionId(eval.Action.Id) ||
+                eval.Action.myAvatarAddress != States.Instance.CurrentAvatarState.address)
+            {
+                return;
+            }
+
+            var arenaBattlePreparation = Widget.Find<ArenaBattlePreparation>();
+            if (eval.Exception != null)
+            {
+                if (arenaBattlePreparation && arenaBattlePreparation.IsActive())
+                {
+                    arenaBattlePreparation.OnRenderBattleArena(eval);
+                }
+
+                Game.Game.BackToMainAsync(eval.Exception.InnerException).Forget();
+
+                return;
+            }
+
+            // NOTE: Start cache some arena info which will be used after battle ends.
+            RxProps.ArenaInfoTuple.UpdateAsync().Forget();
+            RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync().Forget();
+            States.Instance.GrandFinaleStates.UpdateGrandFinaleParticipantsOrderedWithScoreAsync().Forget();
+
+            _disposableForBattleEnd?.Dispose();
+            _disposableForBattleEnd = Game.Game.instance.Arena.OnArenaEnd
+                .First()
+                .Subscribe(_ =>
+                {
+                    UniTask.Run(() =>
+                        {
+                            UpdateAgentStateAsync(eval).Forget();
+                            UpdateCurrentAvatarStateAsync().Forget();
+                            // TODO!!!! [`PlayersArenaParticipant`]를 개별로 업데이트 한다.
+                            // RxProps.PlayersArenaParticipant.UpdateAsync().Forget();
+                            _disposableForBattleEnd = null;
+                            Game.Game.instance.Arena.IsAvatarStateUpdatedAfterBattle = true;
+                        }).ToObservable()
+                        .First()
+                        // ReSharper disable once ConvertClosureToMethodGroup
+                        .DoOnError(e => Debug.LogException(e));
+                });
+
+            var tableSheets = TableSheets.Instance;
+            ArenaPlayerDigest? myDigest = null;
+            ArenaPlayerDigest? enemyDigest = null;
+            if (eval.Extra is { })
+            {
+                myDigest = eval.Extra.TryGetValue(
+                    nameof(BattleGrandFinale.ExtraMyArenaPlayerDigest),
+                    out var myDigestValue)
+                    ? myDigestValue is List myDigestList
+                        ? new ArenaPlayerDigest(myDigestList)
+                        : (ArenaPlayerDigest?)null
+                    : null;
+
+                enemyDigest = eval.Extra.TryGetValue(
+                    nameof(BattleGrandFinale.ExtraEnemyArenaPlayerDigest),
+                    out var enemyDigestValue)
+                    ? enemyDigestValue is List enemyDigestList
+                        ? new ArenaPlayerDigest(enemyDigestList)
+                        : (ArenaPlayerDigest?)null
+                    : null;
+            }
+
+            if (!myDigest.HasValue)
+            {
+                var myAvatarState
+                    = eval.OutputStates.GetAvatarStateV2(eval.Action.myAvatarAddress);
+                if (!eval.OutputStates.TryGetArenaAvatarState(
+                        ArenaAvatarState.DeriveAddress(eval.Action.myAvatarAddress),
+                        out var myArenaAvatarState))
+                {
+                    Debug.LogError("Failed to get ArenaAvatarState of mine");
+                }
+
+                myDigest
+                    = new ArenaPlayerDigest(myAvatarState, myArenaAvatarState);
+            }
+
+            if (!enemyDigest.HasValue)
+            {
+                var enemyAvatarState
+                    = eval.OutputStates.GetAvatarStateV2(eval.Action.enemyAvatarAddress);
+                if (!eval.OutputStates.TryGetArenaAvatarState(
+                        ArenaAvatarState.DeriveAddress(eval.Action.enemyAvatarAddress),
+                        out var enemyArenaAvatarState))
+                {
+                    Debug.LogError("Failed to get ArenaAvatarState of enemy");
+                }
+
+                enemyDigest
+                    = new ArenaPlayerDigest(enemyAvatarState, enemyArenaAvatarState);
+            }
+
+            int? outputMyScore = eval.OutputStates.TryGetState(
+                eval.Action.myAvatarAddress.Derive(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        BattleGrandFinale.ScoreDeriveKey,
+                        eval.Action.grandFinaleId)),
+                out Integer outputScore)
+                ? outputScore
+                : BattleGrandFinale.DefaultScore;
+
+            var random = new LocalRandom(eval.RandomSeed);
+            var simulator = new ArenaSimulator(random);
+            var log = simulator.Simulate(
+                myDigest.Value,
+                enemyDigest.Value,
+                tableSheets.GetArenaSimulatorSheets());
+            log.Score = outputMyScore.Value;
+
+            if (arenaBattlePreparation && arenaBattlePreparation.IsActive())
+            {
+                arenaBattlePreparation.OnRenderBattleArena(eval);
+                Game.Game.instance.Arena.Enter(
+                    log,
+                    new List<ItemBase>(),
+                    myDigest.Value,
+                    enemyDigest.Value);
+            }
         }
     }
 }

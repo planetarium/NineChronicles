@@ -1186,6 +1186,39 @@ namespace Nekoyume.BlockChain
                 });
         }
 
+        public IObservable<ActionBase.ActionEvaluation<BattleGrandFinale>> BattleGrandFinale(
+            Address enemyAvatarAddress,
+            List<Guid> costumes,
+            List<Guid> equipments,
+            int grandFinaleId
+        )
+        {
+            var action = new BattleGrandFinale
+            {
+                myAvatarAddress = States.Instance.CurrentAvatarState.address,
+                enemyAvatarAddress = enemyAvatarAddress,
+                costumes = costumes,
+                equipments = equipments,
+                grandFinaleId = grandFinaleId,
+            };
+            ProcessAction(action);
+            _lastBattleActionId = action.Id;
+            return _agent.ActionRenderer.EveryRender<BattleGrandFinale>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e =>
+                {
+                    if (_lastBattleActionId == action.Id)
+                    {
+                        _lastBattleActionId = null;
+                    }
+
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
+                });
+        }
+
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
         public IObservable<ActionBase.ActionEvaluation<CreateTestbed>> CreateTestbed()
         {

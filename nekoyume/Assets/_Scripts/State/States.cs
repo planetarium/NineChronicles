@@ -50,6 +50,7 @@ namespace Nekoyume.State
 
         public int StakingLevel { get; private set; }
 
+        public GrandFinaleStates GrandFinaleStates { get; } = new GrandFinaleStates();
         private class Workshop
         {
             public Dictionary<int, CombinationSlotState> States { get; }= new();
