@@ -14,7 +14,7 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1371
     /// </summary>
     [ActionType(ActionTypeText)]
-    public class ClaimStakeReward : GameAction
+    public class ClaimStakeReward : GameAction, IClaimStakeReward
     {
         public const long ObsoletedIndex = 5_599_601L;
         private const string ActionTypeText = "claim_stake_reward2";
