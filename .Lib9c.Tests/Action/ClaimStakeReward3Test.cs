@@ -124,10 +124,23 @@ namespace Lib9c.Tests.Action
         [InlineData(ClaimStakeReward.ObsoletedIndex, 100, ClaimStakeReward.ObsoletedIndex + StakeState.LockupInterval, 40, 4, 0)]
         [InlineData(ClaimStakeReward.ObsoletedIndex, 6000, ClaimStakeReward.ObsoletedIndex + StakeState.LockupInterval, 4800, 36, 4)]
         // Calculate rune start from hard fork index
-        [InlineData(0L, 6000, ClaimStakeReward.ObsoletedIndex + StakeState.LockupInterval, 138000, 1035, 4)]
-        public void Execute_Success(long startedBlockIndex, int stakeAmount, long blockIndex, int expectedHourglass, int expectedApStone, int expectedRune)
+        [InlineData(0L, 6000, ClaimStakeReward.ObsoletedIndex + StakeState.LockupInterval, 136800, 1026, 4)]
+        public void Execute_Success(
+            long startedBlockIndex,
+            int stakeAmount,
+            long blockIndex,
+            int expectedHourglass,
+            int expectedApStone,
+            int expectedRune)
         {
-            Execute(_avatarAddress, startedBlockIndex, stakeAmount, blockIndex, expectedHourglass, expectedApStone, expectedRune);
+            Execute(
+                _avatarAddress,
+                startedBlockIndex,
+                stakeAmount,
+                blockIndex,
+                expectedHourglass,
+                expectedApStone,
+                expectedRune);
         }
 
         [Fact]
