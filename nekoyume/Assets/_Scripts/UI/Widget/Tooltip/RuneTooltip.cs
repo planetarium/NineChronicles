@@ -54,6 +54,9 @@ namespace Nekoyume.UI
         private TextMeshProUGUI subTypeText;
 
         [SerializeField]
+        private TextMeshProUGUI cpText;
+
+        [SerializeField]
         private Image spacerImage;
 
         [SerializeField]
@@ -132,7 +135,7 @@ namespace Nekoyume.UI
         }
 
          public void ShowForDisplay(
-             RuneState runeState,
+            RuneState runeState,
             RectTransform target = null,
             float2 offsetFromTarget = default)
         {
@@ -196,6 +199,8 @@ namespace Nekoyume.UI
                     statViewList[i].gameObject.SetActive(true);
                     statViewList[i].Show(statMap.StatType, statMap.ValueAsInt, true);
                 }
+
+                cpText.text = $"<size=80%>CP</size> {option.Cp}";
             }
 
             scrollbar.value = 1f;
@@ -278,6 +283,8 @@ namespace Nekoyume.UI
                     statViewList[i].gameObject.SetActive(true);
                     statViewList[i].Show(statMap.StatType, statMap.ValueAsInt, true);
                 }
+
+                cpText.text = $"<size=80%>CP</size> {option.Cp}";
             }
 
             _onConfirm = onConfirm;

@@ -66,6 +66,7 @@ namespace Nekoyume.UI
             System.Action onSubmit,
             System.Action onClose = null,
             System.Action onBlocked = null,
+            System.Action onEnhancement = null,
             RectTransform target = null)
         {
             Show(

@@ -279,7 +279,7 @@ namespace Nekoyume.UI.Module
                 OnSubmit,
                 grindInventory.ClearSelectedItem,
                 onBlock,
-                target);
+                target:target);
         }
 
         private void OnUpdateInventory(Inventory inventory, Nekoyume.Model.Item.Inventory inventoryModel)

@@ -25,6 +25,9 @@ namespace Nekoyume.UI
         protected ConditionalButton submitButton;
 
         [SerializeField]
+        private Button enhancementButton;
+
+        [SerializeField]
         protected ItemTooltipBuy buy;
 
         [SerializeField]
@@ -42,16 +45,17 @@ namespace Nekoyume.UI
         [SerializeField]
         protected AcquisitionPlaceDescription acquisitionPlaceDescription;
 
-        protected readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForModel = new();
 
-        protected RectTransform _descriptionButtonRectTransform;
+        private RectTransform _descriptionButtonRectTransform;
 
-        protected System.Action _onSubmit;
-        protected System.Action _onClose;
-        protected System.Action _onBlocked;
+        private System.Action _onSubmit;
+        private System.Action _onClose;
+        private System.Action _onBlocked;
+        private System.Action _onEnhancement;
 
-        protected bool _isPointerOnScrollArea;
-        protected bool _isClickedButtonArea;
+        public bool _isPointerOnScrollArea;
+        public bool _isClickedButtonArea;
 
         protected override PivotPresetType TargetPivotPresetType => PivotPresetType.TopRight;
 
@@ -65,6 +69,11 @@ namespace Nekoyume.UI
             }).AddTo(gameObject);
             submitButton.OnClickDisabledSubject.Subscribe(_ => _onBlocked?.Invoke())
                 .AddTo(gameObject);
+            enhancementButton.onClick.AddListener(() =>
+            {
+                _onEnhancement?.Invoke();
+                Close(true);
+            });
             CloseWidget = () => Close();
             SubmitWidget = () =>
             {
@@ -116,6 +125,7 @@ namespace Nekoyume.UI
                  item.ItemType == ItemType.Costume));
 
             submitButton.gameObject.SetActive(onSubmit != null);
+            enhancementButton.gameObject.SetActive(false);
             submitButton.Interactable = interactable;
             submitButton.Text = submitText;
             _onSubmit = onSubmit;
@@ -135,6 +145,7 @@ namespace Nekoyume.UI
             System.Action onSubmit,
             System.Action onClose = null,
             System.Action onBlocked = null,
+            System.Action onEnhancement = null,
             RectTransform target = null)
         {
             buy.gameObject.SetActive(false);
@@ -153,6 +164,8 @@ namespace Nekoyume.UI
             _onSubmit = onSubmit;
             _onClose = onClose;
             _onBlocked = onBlocked;
+            _onEnhancement = onEnhancement;
+            enhancementButton.gameObject.SetActive(onEnhancement != null);
 
             scrollbar.value = 1f;
             UpdatePosition(target);
@@ -168,6 +181,7 @@ namespace Nekoyume.UI
             RectTransform target = null)
         {
             submitButton.gameObject.SetActive(false);
+            enhancementButton.gameObject.SetActive(false);
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(true);
             sell.Set(item.OrderDigest.ExpiredBlockIndex,
@@ -201,6 +215,7 @@ namespace Nekoyume.UI
             RectTransform target = null)
         {
             submitButton.gameObject.SetActive(false);
+            enhancementButton.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
             buy.gameObject.SetActive(true);
             buy.Set(item.OrderDigest.ExpiredBlockIndex,
@@ -234,6 +249,7 @@ namespace Nekoyume.UI
             System.Action onBlocked = null,
             RectTransform target = null)
         {
+            enhancementButton.gameObject.SetActive(false);
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
             detail.Set(

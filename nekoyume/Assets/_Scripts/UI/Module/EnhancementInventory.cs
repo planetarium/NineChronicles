@@ -210,6 +210,32 @@ namespace Nekoyume.UI.Module
             UpdateView();
         }
 
+        public void Select(ItemSubType itemSubType,Guid itemId)
+        {
+            var items = _equipments[itemSubType];
+            foreach (var item in items)
+            {
+                if (item.ItemBase is not Equipment equipment)
+                {
+                    continue;
+                }
+
+                if (equipment.ItemId != itemId)
+                {
+                    continue;
+                }
+
+
+                var toggle = categoryToggles.FirstOrDefault(x => x.Type == itemSubType);
+                toggle.Toggle.isOn = true;
+                ClearSelectedItem();
+                _selectedModel = item;
+                // _selectedModel.Selected.SetValueAndForceNotify(true);
+                SelectItem();
+                return;
+            }
+        }
+
         private void OnDoubleClickItem(EnhancementInventoryItem item)
         {
             ClearSelectedItem();

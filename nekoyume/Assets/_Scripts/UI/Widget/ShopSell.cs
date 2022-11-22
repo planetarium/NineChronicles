@@ -130,7 +130,7 @@ namespace Nekoyume.UI
                 () => ShowSell(model),
                 inventory.ClearSelectedItem,
                 () => L10nManager.Localize("UI_UNTRADABLE"),
-                target);
+                target:target);
         }
 
         private void ShowSellTooltip(ShopItem model, RectTransform target)

@@ -672,7 +672,11 @@ namespace Nekoyume.UI.Module
             else
             {
                 var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
-                var (submitText, interactable, submit, blocked) = GetToolTipParams(model);
+                var (submitText,
+                    interactable,
+                    submit,
+                    blocked,
+                    enhancement) = GetToolTipParams(model);
                 tooltip.Show(
                     model,
                     submitText,
@@ -680,6 +684,7 @@ namespace Nekoyume.UI.Module
                     submit,
                     () => inventory.ClearSelectedItem(),
                     blocked,
+                    enhancement,
                     target);
             }
         }
@@ -713,13 +718,15 @@ namespace Nekoyume.UI.Module
                 offset);
         }
 
-        private (string, bool, System.Action, System.Action) GetToolTipParams(InventoryItem model)
+        private (string, bool, System.Action, System.Action, System.Action)
+            GetToolTipParams(InventoryItem model)
         {
             var item = model.ItemBase;
             var submitText = string.Empty;
             var interactable = false;
             System.Action submit = null;
             System.Action blocked = null;
+            System.Action enhancement = null;
 
             switch (item.ItemType)
             {
@@ -747,6 +754,27 @@ namespace Nekoyume.UI.Module
                     }
 
                     submit = () => EquipOrUnequip(model);
+
+                    if (item.ItemType == ItemType.Equipment)
+                    {
+                        enhancement = () =>
+                        {
+                            if (Game.Game.instance.IsInWorld)
+                            {
+                                return;
+                            }
+
+                            if (item is not Equipment equipment)
+                            {
+                                return;
+                            }
+
+                            var e = Widget.Find<Enhancement>();
+                            e.CloseWithOtherWidgets();
+                            e.Show(item.ItemSubType, equipment.ItemId, true);
+                            AudioController.PlayClick();
+                        };
+                    }
 
                     if (Game.Game.instance.IsInWorld)
                     {
@@ -796,7 +824,7 @@ namespace Nekoyume.UI.Module
                     throw new ArgumentOutOfRangeException();
             }
 
-            return (submitText, interactable, submit, blocked);
+            return (submitText, interactable, submit, blocked, enhancement);
         }
 
         private bool IsInteractableMaterial()
