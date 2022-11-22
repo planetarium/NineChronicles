@@ -14877,6 +14877,8 @@ MonoBehaviour:
     enoughHammerPointObject: {fileID: 0}
     superCraftButton: {fileID: 0}
   materialSelectButton: {fileID: 0}
+  requiredNormalItemIcons: []
+  requiredNormalItemImage: {fileID: 0}
 --- !u!1 &4912586623246627599
 GameObject:
   m_ObjectHideFlags: 0
@@ -26327,6 +26329,8 @@ MonoBehaviour:
     enoughHammerPointObject: {fileID: 0}
     superCraftButton: {fileID: 0}
   materialSelectButton: {fileID: 0}
+  requiredNormalItemIcons: []
+  requiredNormalItemImage: {fileID: 0}
 --- !u!1 &8478980182715841073
 GameObject:
   m_ObjectHideFlags: 0
@@ -26561,6 +26565,12 @@ MonoBehaviour:
     enoughHammerPointObject: {fileID: 0}
     superCraftButton: {fileID: 0}
   materialSelectButton: {fileID: 8744786337952269997}
+  requiredNormalItemIcons:
+  - recipeId: 10020001
+    sprite: {fileID: 21300000, guid: b838d452ee0d547179f51bc5f1f14791, type: 3}
+  - recipeId: 10020002
+    sprite: {fileID: 21300000, guid: 8fb8d7d5f798b46aba22e35060379282, type: 3}
+  requiredNormalItemImage: {fileID: 5768343284660825125}
 --- !u!1 &8571591880880175740
 GameObject:
   m_ObjectHideFlags: 0
@@ -37059,6 +37069,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6f493bd37f0e4aeea754f8fbb6a08f11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5768343284660825125 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2627997801349970720, guid: a1c4fa5a429c14614a172512d3d2b929,
+    type: 3}
+  m_PrefabInstance: {fileID: 8391828659934009093}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!224 &6514845315996208010 stripped

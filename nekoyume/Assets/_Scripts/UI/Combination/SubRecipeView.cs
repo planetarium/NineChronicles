@@ -61,6 +61,13 @@ namespace Nekoyume.UI
             public Button superCraftButton;
         }
 
+        [Serializable]
+        public class RequiredNormalItemIcon
+        {
+            public int recipeId;
+            public Sprite sprite;
+        }
+
         [SerializeField]
         private GameObject toggleParent;
 
@@ -114,6 +121,12 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private ConditionalCostButton materialSelectButton;
+
+        [SerializeField]
+        private List<RequiredNormalItemIcon> requiredNormalItemIcons;
+
+        [SerializeField]
+        private Image requiredNormalItemImage;
 
         public readonly Subject<RecipeInfo> CombinationActionSubject = new Subject<RecipeInfo>();
 
@@ -264,7 +277,7 @@ namespace Nekoyume.UI
                 {
                     var resultItem = materialRow.GetResultMaterialItemRow();
                     title = resultItem.GetLocalizedName(false, false);
-                    mainStatTexts.FirstOrDefault()!.text = resultItem.GetLocalizedDescription();
+                    mainStatTexts.First().text = resultItem.GetLocalizedDescription();
                     recipeCell.Show(materialRow, false);
                     break;
                 }
@@ -481,7 +494,11 @@ namespace Nekoyume.UI
             else if (eventMaterialRow != null)
             {
                 blockIndex = 1;
-                requiredItemRecipeView.SetData(eventMaterialRow.RequiredMaterialsId, eventMaterialRow.RequiredMaterialsCount);
+                requiredItemRecipeView.SetData(
+                    eventMaterialRow.RequiredMaterialsId,
+                    eventMaterialRow.RequiredMaterialsCount);
+                requiredNormalItemImage.overrideSprite = requiredNormalItemIcons
+                    .FirstOrDefault(icon => icon.recipeId == eventMaterialRow.Id)?.sprite;
                 recipeId = eventMaterialRow.Id;
             }
 
@@ -627,7 +644,7 @@ namespace Nekoyume.UI
         {
             materialSelectButton.SetCost(new ConditionalCostButton.CostParam(CostType.NCG, 0));
             materialSelectButton.Interactable = true;
-            materialSelectButton .gameObject.SetActive(true);
+            materialSelectButton.gameObject.SetActive(true);
         }
 
         private void SetOptions(

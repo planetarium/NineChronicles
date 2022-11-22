@@ -48,7 +48,8 @@ namespace Nekoyume.UI.Scroller
 
                 _model.SelectedCount
                     .Subscribe(count => countInputField.text = count.ToString())
-                    .AddTo(gameObject);            }
+                    .AddTo(gameObject);
+            }
             else
             {
                 countInputField.text = "-";

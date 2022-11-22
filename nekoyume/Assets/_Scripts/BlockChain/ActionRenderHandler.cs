@@ -811,8 +811,6 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            // Todo : ResponseEventMaterialItemCrafts
-
             var avatarAddress = eval.Action.AvatarAddress;
             var materialsToUse = eval.Action.MaterialsToUse;
             var recipe = TableSheets.Instance.EventMaterialItemRecipeSheet[eval.Action.EventMaterialItemRecipeId];
