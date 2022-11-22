@@ -271,39 +271,12 @@ namespace Nekoyume.Action
             var simulatorSheets = sheets.GetSimulatorSheets();
 
             // update rune slot
-            if (RuneInfos is null)
-            {
-                throw new RuneInfosIsEmptyException(
-                    $"[{nameof(HackAndSlash)}] my avatar address : {AvatarAddress}");
-            }
-
-            if (RuneInfos.GroupBy(x => x.SlotIndex).Count() != RuneInfos.Count)
-            {
-                throw new DuplicatedRuneSlotIndexException(
-                    $"[{nameof(HackAndSlash)}] my avatar address : {AvatarAddress}");
-            }
-
             var runeSlotStateAddress = RuneSlotState.DeriveAddress(AvatarAddress, BattleType.Adventure);
             var runeSlotState = states.TryGetState(runeSlotStateAddress, out List rawRuneSlotState)
                 ? new RuneSlotState(rawRuneSlotState)
                 : new RuneSlotState(BattleType.Adventure);
-
-            if (RuneInfos.Exists(x => x.SlotIndex >= runeSlotState.GetRuneSlot().Count))
-            {
-                throw new SlotNotFoundException(
-                    $"[{nameof(HackAndSlash)}] my avatar address : {AvatarAddress}");
-            }
-
-            var runeStates = new List<RuneState>();
-            foreach (var address in RuneInfos.Select(info => RuneState.DeriveAddress(AvatarAddress, info.RuneId)))
-            {
-                if (states.TryGetState(address, out List rawRuneState))
-                {
-                    runeStates.Add(new RuneState(rawRuneState));
-                }
-            }
             var runeListSheet = sheets.GetSheet<RuneListSheet>();
-            runeSlotState.UpdateSlot(RuneInfos, runeStates, runeListSheet);
+            runeSlotState.UpdateSlot(RuneInfos, runeListSheet);
             states = states.SetState(runeSlotStateAddress, runeSlotState.Serialize());
 
             // update item slot
@@ -315,6 +288,14 @@ namespace Nekoyume.Action
             itemSlotState.UpdateCostumes(Costumes);
             states = states.SetState(itemSlotStateAddress, itemSlotState.Serialize());
 
+            var runeStates = new List<RuneState>();
+            foreach (var address in RuneInfos.Select(info => RuneState.DeriveAddress(AvatarAddress, info.RuneId)))
+            {
+                if (states.TryGetState(address, out List rawRuneState))
+                {
+                    runeStates.Add(new RuneState(rawRuneState));
+                }
+            }
             for (var i = 0; i < PlayCount; i++)
             {
                 sw.Restart();
@@ -324,7 +305,7 @@ namespace Nekoyume.Action
                     random,
                     avatarState,
                     i == 0 ? Foods : new List<Guid>(),
-                    RuneInfos,
+                    runeStates,
                     i == 0 ? skillsOnWaveStart : new List<Skill>(),
                     WorldId,
                     StageId,

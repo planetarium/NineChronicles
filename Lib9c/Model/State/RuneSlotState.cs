@@ -43,11 +43,26 @@ namespace Nekoyume.Model.State
             return result;
         }
 
-        public void UpdateSlot(
-            List<RuneSlotInfo> runeInfos,
-            List<RuneState> runeStates,
-            RuneListSheet runeListSheet)
+        public void UpdateSlot(List<RuneSlotInfo> runeInfos, RuneListSheet runeListSheet)
         {
+            if (runeInfos is null)
+            {
+                throw new RuneInfosIsEmptyException($"[{nameof(BattleArena)}]");
+            }
+
+            if (runeInfos.GroupBy(x => x.SlotIndex).Count() != runeInfos.Count)
+            {
+                throw new DuplicatedRuneSlotIndexException($"[{nameof(BattleArena)}]");
+            }
+
+            foreach (var runeSlotInfo in runeInfos)
+            {
+                if (_slots.All(x => x.Index != runeSlotInfo.SlotIndex))
+                {
+                    throw new SlotNotFoundException($"[{nameof(RuneSlotState)}]");
+                }
+            }
+
             foreach (var slot in _slots)
             {
                 var runeInfo = runeInfos.FirstOrDefault(x => x.SlotIndex == slot.Index);
@@ -57,9 +72,9 @@ namespace Nekoyume.Model.State
                 }
                 else
                 {
-                    if (IsUsableSlot(runeStates, runeListSheet, slot, runeInfo, out var runeState))
+                    if (IsUsableSlot(runeListSheet, slot, runeInfo))
                     {
-                        slot.Equip(runeState);
+                        slot.Equip(runeInfo.RuneId);
                     }
                     else
                     {
@@ -70,31 +85,7 @@ namespace Nekoyume.Model.State
             }
         }
 
-        public void UpdateSlotItem(RuneState runeState)
-        {
-            foreach (var slot in _slots)
-            {
-                if (!slot.IsEquipped(out var state))
-                {
-                    continue;
-                }
-
-                if (state.RuneId != runeState.RuneId)
-                {
-                    continue;
-                }
-
-                slot.Equip(runeState);
-                return;
-            }
-        }
-
-        private bool IsUsableSlot(
-            IEnumerable<RuneState> runeStates,
-            RuneListSheet runeListSheet,
-            RuneSlot slot,
-            RuneSlotInfo runeInfo,
-            out RuneState runeState)
+        private bool IsUsableSlot(RuneListSheet runeListSheet, RuneSlot slot, RuneSlotInfo runeInfo)
         {
             if (slot.IsLock)
             {
@@ -123,11 +114,10 @@ namespace Nekoyume.Model.State
                     $"[{nameof(RuneSlotState)}] Index : {slot.Index} / runePlace : {runePlace}");
             }
 
-            runeState = runeStates.FirstOrDefault(x => x.RuneId == runeId);
-            if (runeState is null)
+            if (_slots.Where(x => x.Index != slot.Index).Any(x => x.RuneId == runeId))
             {
-                throw new RuneStateNotFoundException(
-                    $"[{nameof(RuneSlotState)}] Index : {slot.Index} / runeId : {runeId}");
+                throw new DuplicatedRuneIdException(
+                    $"[{nameof(RuneSlotState)}] RuneId : {runeId}");
             }
 
             return true;
@@ -156,50 +146,15 @@ namespace Nekoyume.Model.State
             return _slots;
         }
 
-        public List<RuneState> GetEquippedRuneStates()
-        {
-            var result = new List<RuneState>();
-            foreach (var slot in _slots.Where(slot => !slot.IsLock))
-            {
-                if (slot.IsEquipped(out var runeState))
-                {
-                    result.Add(runeState);
-                }
-            }
-
-            return result;
-        }
-
         public List<RuneSlotInfo> GetEquippedRuneSlotInfos()
         {
             var result = new List<RuneSlotInfo>();
             foreach (var slot in _slots.Where(slot => !slot.IsLock))
             {
-                if (slot.IsEquipped(out var runeState))
+                if (slot.RuneId.HasValue)
                 {
-                    result.Add(new RuneSlotInfo(slot.Index, runeState.RuneId, runeState.Level));
+                    result.Add(new RuneSlotInfo(slot.Index, slot.RuneId.Value));
                 }
-            }
-
-            return result;
-        }
-
-        public List<RuneOptionSheet.Row.RuneOptionInfo> GetEquippedRuneOptions(RuneOptionSheet sheet)
-        {
-            var result = new List<RuneOptionSheet.Row.RuneOptionInfo>();
-            foreach (var runeState in GetEquippedRuneStates())
-            {
-                if (!sheet.TryGetValue(runeState.RuneId, out var row))
-                {
-                    continue;
-                }
-
-                if (!row.LevelOptionMap.TryGetValue(runeState.Level, out var statInfo))
-                {
-                    continue;
-                }
-
-                result.Add(statInfo);
             }
 
             return result;

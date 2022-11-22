@@ -108,18 +108,6 @@ namespace Nekoyume.Action
                 states = states.SetState(runeStateAddress, runeState.Serialize());
             }
 
-            // update rune slot
-            for (var i = 1; i < (int)BattleType.End; i++)
-            {
-                var runeSlotStateAddress = RuneSlotState.DeriveAddress(AvatarAddress, (BattleType)i);
-                if (states.TryGetState(runeSlotStateAddress, out List rawRuneSlotState))
-                {
-                    var runeSlotState = new RuneSlotState(rawRuneSlotState);
-                    runeSlotState.UpdateSlotItem(runeState);
-                    states = states.SetState(runeSlotStateAddress, runeSlotState.Serialize());
-                }
-            }
-
             var arenaSheet = sheets.GetSheet<ArenaSheet>();
             var arenaData = arenaSheet.GetRoundByBlockIndex(context.BlockIndex);
             var feeStoreAddress = Addresses.GetBlacksmithFeeAddress(arenaData.ChampionshipId, arenaData.Round);

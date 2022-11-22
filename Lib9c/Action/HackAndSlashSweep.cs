@@ -8,6 +8,7 @@ using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -179,18 +180,44 @@ namespace Nekoyume.Action
                 }
             }
 
+            // update rune slot
+            var runeSlotStateAddress = RuneSlotState.DeriveAddress(avatarAddress, BattleType.Adventure);
+            var runeSlotState = states.TryGetState(runeSlotStateAddress, out List rawRuneSlotState)
+                ? new RuneSlotState(rawRuneSlotState)
+                : new RuneSlotState(BattleType.Adventure);
+            var runeListSheet = sheets.GetSheet<RuneListSheet>();
+            runeSlotState.UpdateSlot(runeInfos, runeListSheet);
+            states = states.SetState(runeSlotStateAddress, runeSlotState.Serialize());
+
+            // update item slot
+            var itemSlotStateAddress = ItemSlotState.DeriveAddress(avatarAddress, BattleType.Adventure);
+            var itemSlotState = states.TryGetState(itemSlotStateAddress, out List rawItemSlotState)
+                ? new ItemSlotState(rawItemSlotState)
+                : new ItemSlotState(BattleType.Adventure);
+            itemSlotState.UpdateEquipment(equipments);
+            itemSlotState.UpdateCostumes(costumes);
+            states = states.SetState(itemSlotStateAddress, itemSlotState.Serialize());
+
+            var runeStates = new List<RuneState>();
+            foreach (var address in runeInfos.Select(info => RuneState.DeriveAddress(avatarAddress, info.RuneId)))
+            {
+                if (states.TryGetState(address, out List rawRuneState))
+                {
+                    runeStates.Add(new RuneState(rawRuneState));
+                }
+            }
             var runeOptionSheet = sheets.GetSheet<RuneOptionSheet>();
             var runeOptions = new List<RuneOptionSheet.Row.RuneOptionInfo>();
-            foreach (var info in runeInfos)
+            foreach (var runeState in runeStates)
             {
-                if (!runeOptionSheet.TryGetValue(info.RuneId, out var optionRow))
+                if (!runeOptionSheet.TryGetValue(runeState.RuneId, out var optionRow))
                 {
-                    throw new SheetRowNotFoundException("RuneOptionSheet", info.RuneId);
+                    throw new SheetRowNotFoundException("RuneOptionSheet", runeState.RuneId);
                 }
 
-                if (!optionRow.LevelOptionMap.TryGetValue(info.Level, out var option))
+                if (!optionRow.LevelOptionMap.TryGetValue(runeState.Level, out var option))
                 {
-                    throw new SheetRowNotFoundException("RuneOptionSheet", info.Level);
+                    throw new SheetRowNotFoundException("RuneOptionSheet", runeState.Level);
                 }
 
                 runeOptions.Add(option);

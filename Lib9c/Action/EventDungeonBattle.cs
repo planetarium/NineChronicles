@@ -284,39 +284,12 @@ namespace Nekoyume.Action
             // ~Validate avatar's event dungeon info.
 
             // update rune slot
-            if (RuneInfos is null)
-            {
-                throw new RuneInfosIsEmptyException(
-                    $"[{nameof(EventDungeonBattle)}] my avatar address : {AvatarAddress}");
-            }
-
-            if (RuneInfos.GroupBy(x => x.SlotIndex).Count() != RuneInfos.Count)
-            {
-                throw new DuplicatedRuneSlotIndexException(
-                    $"[{nameof(EventDungeonBattle)}] my avatar address : {AvatarAddress}");
-            }
-
             var runeSlotStateAddress = RuneSlotState.DeriveAddress(AvatarAddress, BattleType.Adventure);
             var runeSlotState = states.TryGetState(runeSlotStateAddress, out List rawRuneSlotState)
                 ? new RuneSlotState(rawRuneSlotState)
                 : new RuneSlotState(BattleType.Adventure);
-
-            if (RuneInfos.Exists(x => x.SlotIndex >= runeSlotState.GetRuneSlot().Count))
-            {
-                throw new SlotNotFoundException(
-                    $"[{nameof(EventDungeonBattle)}] my avatar address : {AvatarAddress}");
-            }
-
-            var runeStates = new List<RuneState>();
-            foreach (var address in RuneInfos.Select(info => RuneState.DeriveAddress(AvatarAddress, info.RuneId)))
-            {
-                if (states.TryGetState(address, out List rawRuneState))
-                {
-                    runeStates.Add(new RuneState(rawRuneState));
-                }
-            }
             var runeListSheet = sheets.GetSheet<RuneListSheet>();
-            runeSlotState.UpdateSlot(RuneInfos, runeStates, runeListSheet);
+            runeSlotState.UpdateSlot(RuneInfos, runeListSheet);
             states = states.SetState(runeSlotStateAddress, runeSlotState.Serialize());
 
             // update item slot
@@ -334,12 +307,20 @@ namespace Nekoyume.Action
                 EventDungeonStageId.ToEventDungeonStageNumber(),
                 PlayCount);
             var simulatorSheets = sheets.GetSimulatorSheets();
+            var runeStates = new List<RuneState>();
+            foreach (var address in RuneInfos.Select(info => RuneState.DeriveAddress(AvatarAddress, info.RuneId)))
+            {
+                if (states.TryGetState(address, out List rawRuneState))
+                {
+                    runeStates.Add(new RuneState(rawRuneState));
+                }
+            }
 
             var simulator = new StageSimulator(
                 context.Random,
                 avatarState,
                 Foods,
-                RuneInfos,
+                runeStates,
                 new List<Skill>(),
                 EventDungeonId,
                 EventDungeonStageId,

@@ -308,7 +308,7 @@ namespace Nekoyume.Action
                 }
             }
             var runeListSheet = sheets.GetSheet<RuneListSheet>();
-            runeSlotState.UpdateSlot(RuneInfos, runeStates, runeListSheet);
+            runeSlotState.UpdateSlot(RuneInfos, runeListSheet);
             states = states.SetState(runeSlotStateAddress, runeSlotState.Serialize());
 
             // update item slot
@@ -324,7 +324,7 @@ namespace Nekoyume.Action
                 context.Random,
                 avatarState,
                 Foods,
-                RuneInfos,
+                runeStates,
                 new List<Skill>(),
                 WorldId,
                 StageId,

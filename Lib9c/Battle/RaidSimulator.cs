@@ -32,14 +32,14 @@ namespace Nekoyume.Battle
             IRandom random,
             AvatarState avatarState,
             List<Guid> foods,
-            List<RuneSlotInfo> runeSlotInfos,
+            List<RuneState> runeStates,
             RaidSimulatorSheets simulatorSheets,
             CostumeStatSheet costumeStatSheet) : base(random, avatarState, foods, simulatorSheets)
         {
             Player.SetCostumeStat(costumeStatSheet);
-            if (runeSlotInfos != null)
+            if (runeStates != null)
             {
-                Player.SetRune(runeSlotInfos, simulatorSheets.RuneOptionSheet, simulatorSheets.SkillSheet);
+                Player.SetRune(runeStates, simulatorSheets.RuneOptionSheet, simulatorSheets.SkillSheet);
             }
 
             BossId = bossId;
