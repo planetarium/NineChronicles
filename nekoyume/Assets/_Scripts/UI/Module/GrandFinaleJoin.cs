@@ -33,9 +33,19 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private TextMeshProUGUI grandFinaleProgressSliderFillText;
 
+        private GrandFinaleScheduleSheet.Row _grandFinaleScheduleRow;
+
         public void Set(System.Action onClickJoinArena)
         {
             arenaJoinButton.OnClickSubject.Subscribe(_ => onClickJoinArena.Invoke()).AddTo(gameObject);
+            grandFinaleJoinButton.OnClickSubject.Subscribe(_ =>
+            {
+                AudioController.PlayClick();
+                Widget.Find<ArenaJoin>().Close();
+                Widget.Find<ArenaBoard>()
+                    .Show(_grandFinaleScheduleRow,
+                        States.Instance.GrandFinaleStates.GrandFinaleParticipants);
+            }).AddTo(gameObject);
             UpdateInformation();
         }
 
@@ -48,18 +58,15 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            var grandFinaleRow =
-                TableSheets.Instance.GrandFinaleScheduleSheet.GetRowByBlockIndex(blockIndex);
-            grandFinaleJoinButton.OnClickSubject.Subscribe(_ =>
+            _grandFinaleScheduleRow =
+                TableSheets.Instance.GrandFinaleScheduleSheet?.GetRowByBlockIndex(blockIndex);
+            if (_grandFinaleScheduleRow is null)
             {
-                AudioController.PlayClick();
-                Widget.Find<ArenaJoin>().Close();
-                Widget.Find<ArenaBoard>()
-                    .Show(grandFinaleRow, States.Instance.GrandFinaleStates.GrandFinaleParticipants);
-            }).AddTo(gameObject);
+                return;
+            }
 
             SetScheduleUI(
-                (grandFinaleRow.StartBlockIndex, grandFinaleRow.EndBlockIndex, blockIndex),
+                (_grandFinaleScheduleRow.StartBlockIndex, _grandFinaleScheduleRow.EndBlockIndex, blockIndex),
                 grandFinaleProgressFillImage,
                 grandFinaleProgressSliderFillText);
             SetScheduleUI(
