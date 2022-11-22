@@ -52,9 +52,9 @@ namespace Lib9c.Tests.Action
             Assert.Throws<MemoLengthOverflowException>(() =>
                 new TransferAssets(
                     _sender,
-                    new Dictionary<Address, FungibleAssetValue>
+                    new List<(Address, FungibleAssetValue)>()
                     {
-                        [_recipient] = _currency * 100,
+                        (_recipient, _currency * 100),
                     },
                     new string(' ', 100)
                 )
@@ -103,10 +103,10 @@ namespace Lib9c.Tests.Action
             );
             var action = new TransferAssets(
                 sender: _sender,
-                new Dictionary<Address, FungibleAssetValue>
+                new List<(Address, FungibleAssetValue)>
                 {
-                    [_recipient] = _currency * 100,
-                    [_recipient2] = _currency * 100,
+                    (_recipient, _currency * 100),
+                    (_recipient2, _currency * 100),
                 }
             );
             IAccountStateDelta nextState = action.Execute(new ActionContext()
@@ -133,9 +133,9 @@ namespace Lib9c.Tests.Action
             );
             var action = new TransferAssets(
                 sender: _sender,
-                new Dictionary<Address, FungibleAssetValue>
+                new List<(Address, FungibleAssetValue)>
                 {
-                    [_recipient] = _currency * 100,
+                    (_recipient, _currency * 100),
                 }
             );
 
@@ -167,9 +167,9 @@ namespace Lib9c.Tests.Action
             // Should not allow TransferAsset with same sender and recipient.
             var action = new TransferAssets(
                 sender: _sender,
-                new Dictionary<Address, FungibleAssetValue>
+                new List<(Address, FungibleAssetValue)>
                 {
-                    [_sender] = _currency * 100,
+                    (_sender, _currency * 100),
                 }
             );
 
@@ -199,9 +199,9 @@ namespace Lib9c.Tests.Action
             ).SetState(_recipient, new AgentState(_recipient).Serialize());
             var action = new TransferAssets(
                 sender: _sender,
-                new Dictionary<Address, FungibleAssetValue>
+                new List<(Address, FungibleAssetValue)>
                 {
-                    [_recipient] = _currency * 100000,
+                    (_recipient, _currency * 100000),
                 }
             );
 
@@ -232,9 +232,9 @@ namespace Lib9c.Tests.Action
             ).SetState(_recipient, new AgentState(_recipient).Serialize());
             var action = new TransferAssets(
                 sender: _sender,
-                new Dictionary<Address, FungibleAssetValue>
+                new List<(Address, FungibleAssetValue)>
                 {
-                    [_recipient] = currencyBySender * 100,
+                    (_recipient, currencyBySender * 100),
                 }
             );
             var ex = Assert.Throws<InvalidTransferMinterException>(() =>
@@ -268,9 +268,9 @@ namespace Lib9c.Tests.Action
             ).SetState(_recipient, new AgentState(_recipient).Serialize());
             var action = new TransferAssets(
                 sender: _sender,
-                new Dictionary<Address, FungibleAssetValue>
+                new List<(Address, FungibleAssetValue)>
                 {
-                    [_recipient] = currencyByRecipient * 100,
+                    (_recipient, currencyByRecipient * 100),
                 }
             );
             var ex = Assert.Throws<InvalidTransferMinterException>(() =>
@@ -305,9 +305,9 @@ namespace Lib9c.Tests.Action
             );
             var action = new TransferAssets(
                 sender: _sender,
-                new Dictionary<Address, FungibleAssetValue>
+                new List<(Address, FungibleAssetValue)>
                 {
-                    [_recipient] = _currency * 100,
+                    (_recipient, _currency * 100),
                 }
             );
             var ex = Assert.Throws<InvalidTransferUnactivatedRecipientException>(() =>
@@ -329,9 +329,9 @@ namespace Lib9c.Tests.Action
         {
             var action = new TransferAssets(
                 sender: _sender,
-                new Dictionary<Address, FungibleAssetValue>
+                new List<(Address, FungibleAssetValue)>
                 {
-                    [_recipient] = _currency * 100,
+                    (_recipient, _currency * 100),
                 }
             );
 
@@ -362,17 +362,17 @@ namespace Lib9c.Tests.Action
         {
             var action = new TransferAssets(
                 _sender,
-                new Dictionary<Address, FungibleAssetValue>
+                new List<(Address, FungibleAssetValue)>
                 {
-                    [_recipient] = _currency * 100,
+                    (_recipient, _currency * 100),
                 },
                 memo
             );
 
             Dictionary plainValue = (Dictionary)action.PlainValue;
 
-            var map = (List)plainValue["map"];
-            var info = (List)map[0];
+            var recipients = (List)plainValue["recipients"];
+            var info = (List)recipients[0];
             Assert.Equal(_sender, plainValue["sender"].ToAddress());
             Assert.Equal(_recipient, info[0].ToAddress());
             Assert.Equal(_currency * 100, info[1].ToFungibleAssetValue());
@@ -390,7 +390,7 @@ namespace Lib9c.Tests.Action
             IEnumerable<KeyValuePair<IKey, IValue>> pairs = new[]
             {
                 new KeyValuePair<IKey, IValue>((Text)"sender", _sender.Serialize()),
-                new KeyValuePair<IKey, IValue>((Text)"map", List.Empty.Add(List.Empty.Add(_recipient.Serialize()).Add((_currency * 100).Serialize()))),
+                new KeyValuePair<IKey, IValue>((Text)"recipients", List.Empty.Add(List.Empty.Add(_recipient.Serialize()).Add((_currency * 100).Serialize()))),
             };
             if (!(memo is null))
             {
@@ -402,8 +402,8 @@ namespace Lib9c.Tests.Action
             action.LoadPlainValue(plainValue);
 
             Assert.Equal(_sender, action.Sender);
-            Assert.Equal(_recipient, action.Map.Single().Key);
-            Assert.Equal(_currency * 100, action.Map.Single().Value);
+            Assert.Equal(_recipient, action.Recipients.Single().recipient);
+            Assert.Equal(_currency * 100, action.Recipients.Single().amount);
             Assert.Equal(memo, action.Memo);
         }
 
@@ -414,7 +414,7 @@ namespace Lib9c.Tests.Action
             var plainValue = new Dictionary(new[]
             {
                 new KeyValuePair<IKey, IValue>((Text)"sender", _sender.Serialize()),
-                new KeyValuePair<IKey, IValue>((Text)"map", List.Empty.Add(List.Empty.Add(_recipient.Serialize()).Add((_currency * 100).Serialize()))),
+                new KeyValuePair<IKey, IValue>((Text)"recipients", List.Empty.Add(List.Empty.Add(_recipient.Serialize()).Add((_currency * 100).Serialize()))),
                 new KeyValuePair<IKey, IValue>((Text)"memo", new string(' ', 81).Serialize()),
             });
 
@@ -429,9 +429,9 @@ namespace Lib9c.Tests.Action
             var formatter = new BinaryFormatter();
             var action = new TransferAssets(
                 _sender,
-                new Dictionary<Address, FungibleAssetValue>
+                new List<(Address, FungibleAssetValue)>
                 {
-                    [_recipient] = _currency * 100,
+                    (_recipient, _currency * 100),
                 },
                 memo
             );
@@ -443,8 +443,8 @@ namespace Lib9c.Tests.Action
             var deserialized = (TransferAssets)formatter.Deserialize(ms);
 
             Assert.Equal(_sender, deserialized.Sender);
-            Assert.Equal(_recipient, deserialized.Map.Single().Key);
-            Assert.Equal(_currency * 100, deserialized.Map.Single().Value);
+            Assert.Equal(_recipient, deserialized.Recipients.Single().recipient);
+            Assert.Equal(_currency * 100, deserialized.Recipients.Single().amount);
             Assert.Equal(memo, deserialized.Memo);
         }
     }

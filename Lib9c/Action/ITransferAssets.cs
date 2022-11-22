@@ -8,7 +8,7 @@ namespace Nekoyume.Action
     public interface ITransferAssets
     {
         Address Sender { get; }
-        Dictionary<Address, FungibleAssetValue> Map { get; }
+        List<(Address recipient, FungibleAssetValue amount)> Recipients { get; }
         string? Memo { get; }
     }
 }

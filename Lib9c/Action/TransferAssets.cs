@@ -27,10 +27,10 @@ namespace Nekoyume.Action
         {
         }
 
-        public TransferAssets(Address sender, Dictionary<Address, FungibleAssetValue> map, string memo = null)
+        public TransferAssets(Address sender, List<(Address, FungibleAssetValue)> recipients, string memo = null)
         {
             Sender = sender;
-            Map = map;
+            Recipients = recipients;
 
             CheckMemoLength(memo);
             Memo = memo;
@@ -45,7 +45,7 @@ namespace Nekoyume.Action
         }
 
         public Address Sender { get; private set; }
-        public Dictionary<Address, FungibleAssetValue> Map { get; private set; }
+        public List<(Address recipient, FungibleAssetValue amount)> Recipients { get; private set; }
         public string Memo { get; private set; }
 
         public override IValue PlainValue
@@ -55,7 +55,7 @@ namespace Nekoyume.Action
                 IEnumerable<KeyValuePair<IKey, IValue>> pairs = new[]
                 {
                     new KeyValuePair<IKey, IValue>((Text) "sender", Sender.Serialize()),
-                    new KeyValuePair<IKey, IValue>((Text) "map", Map.OrderBy(i => i.Key).Aggregate(List.Empty, (list, kv) => list.Add(List.Empty.Add(kv.Key.Serialize()).Add(kv.Value.Serialize())))),
+                    new KeyValuePair<IKey, IValue>((Text) "recipients", Recipients.Aggregate(List.Empty, (list, t) => list.Add(List.Empty.Add(t.recipient.Serialize()).Add(t.amount.Serialize())))),
                 };
 
                 if (!(Memo is null))
@@ -72,14 +72,18 @@ namespace Nekoyume.Action
             var state = context.PreviousStates;
             if (context.Rehearsal)
             {
-                return Map.OrderBy(i => i.Key).Aggregate(state, (current, kv) => current.MarkBalanceChanged(kv.Value.Currency, new[] {Sender, kv.Key}));
+                return Recipients.Aggregate(state, (current, t) => current.MarkBalanceChanged(t.amount.Currency, new[] {Sender, t.recipient}));
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, context.Signer);
             var started = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}TransferAsset3 exec started", addressesHex);
 
-            state = Map.OrderBy(i => i.Key).Aggregate(state, (current, kv) => Transfer(current, context.Signer, kv.Key, kv.Value));
+            var activatedAccountsState = state.GetState(Addresses.ActivatedAccount) is Dictionary asDict
+                ? new ActivatedAccountsState(asDict)
+                : new ActivatedAccountsState();
+
+            state = Recipients.Aggregate(state, (current, t) => Transfer(current, context.Signer, t.recipient, t.amount, activatedAccountsState));
             var ended = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}TransferAsset4 Total Executed Time: {Elapsed}", addressesHex, ended - started);
 
@@ -91,14 +95,12 @@ namespace Nekoyume.Action
             var asDict = (Dictionary) plainValue;
 
             Sender = asDict["sender"].ToAddress();
-            var rawMap = (List)asDict["map"];
-            Map = new Dictionary<Address, FungibleAssetValue>();
+            var rawMap = (List)asDict["recipients"];
+            Recipients = new List<(Address recipient, FungibleAssetValue amount)>();
             foreach (var iValue in rawMap)
             {
                 var list = (List) iValue;
-                var key = list[0].ToAddress();
-                var value = list[1].ToFungibleAssetValue();
-                Map[key] = value;
+                Recipients.Add((list[0].ToAddress(), list[1].ToFungibleAssetValue()));
             }
             Memo = asDict.TryGetValue((Text) "memo", out IValue memo) ? memo.ToDotnetString() : null;
 
@@ -120,7 +122,7 @@ namespace Nekoyume.Action
             }
         }
 
-        private IAccountStateDelta Transfer(IAccountStateDelta state, Address signer, Address recipient, FungibleAssetValue amount)
+        private IAccountStateDelta Transfer(IAccountStateDelta state, Address signer, Address recipient, FungibleAssetValue amount, ActivatedAccountsState activatedAccountsState)
         {
             if (Sender != signer)
             {
@@ -138,11 +140,9 @@ namespace Nekoyume.Action
             // If result of GetState is not null, it is assumed that it has been activated.
             if (
                 state.GetState(recipientAddress) is null &&
-                state.GetState(Addresses.ActivatedAccount) is Dictionary asDict &&
                 state.GetState(recipient) is null
             )
             {
-                var activatedAccountsState = new ActivatedAccountsState(asDict);
                 var activatedAccounts = activatedAccountsState.Accounts;
                 // if ActivatedAccountsState is empty, all user is activate.
                 if (activatedAccounts.Count != 0
