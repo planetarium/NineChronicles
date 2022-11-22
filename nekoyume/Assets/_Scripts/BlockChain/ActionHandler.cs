@@ -179,7 +179,8 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        protected async UniTask UpdateCurrentAvatarStateAsync<T>(ActionBase.ActionEvaluation<T> evaluation)
+        protected async UniTask UpdateCurrentAvatarStateAsync<T>(
+            ActionBase.ActionEvaluation<T> evaluation)
             where T : ActionBase
         {
             var agentAddress = States.Instance.AgentState.address;
@@ -192,7 +193,8 @@ namespace Nekoyume.BlockChain
             }
             catch (Exception e)
             {
-                Debug.LogError($"Failed to Update AvatarState: {agentAddress}, {avatarAddress}\n{e.Message}");
+                Debug.LogError(
+                    $"Failed to Update AvatarState: {agentAddress}, {avatarAddress}\n{e.Message}");
             }
         }
 
