@@ -125,6 +125,7 @@ namespace Nekoyume.BlockChain
             RapidCombination();
             Grinding();
             EventConsumableItemCrafts();
+            EventMaterialItemCrafts();
 
             // Market
             Sell();
@@ -426,6 +427,15 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseEventConsumableItemCrafts)
+                .AddTo(_disposables);
+        }
+
+        private void EventMaterialItemCrafts()
+        {
+            _actionRenderer.EveryRender<EventMaterialItemCrafts>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseEventMaterialItemCrafts)
                 .AddTo(_disposables);
         }
 
@@ -774,7 +784,7 @@ namespace Nekoyume.BlockChain
                 avatarAddress,
                 itemUsable.ItemId,
                 itemUsable.RequiredBlockIndex,
-                 1);
+                1);
             LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
             UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
@@ -791,6 +801,34 @@ namespace Nekoyume.BlockChain
             // ~Notify
 
             Widget.Find<CombinationSlotsPopup>().SetCaching(avatarAddress, eval.Action.SlotIndex, false);
+        }
+
+        private void ResponseEventMaterialItemCrafts(
+            ActionBase.ActionEvaluation<EventMaterialItemCrafts> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                return;
+            }
+
+            var avatarAddress = eval.Action.AvatarAddress;
+            var materialsToUse = eval.Action.MaterialsToUse;
+            var recipe = TableSheets.Instance.EventMaterialItemRecipeSheet[eval.Action.EventMaterialItemRecipeId];
+            var resultItem = ItemFactory.CreateMaterial(TableSheets.Instance.MaterialItemSheet, recipe.ResultMaterialItemId);
+
+            foreach (var material in materialsToUse)
+            {
+                var id = TableSheets.Instance.MaterialItemSheet[material.Key].ItemId;
+                LocalLayerModifier.AddItem(avatarAddress, id, material.Value);
+            }
+
+            UpdateAgentStateAsync(eval).Forget();
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+
+            // Notify
+            var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE", resultItem.GetLocalizedName(false));
+            NotificationSystem.Reserve(MailType.Workshop, format, 1, Guid.Empty);
+            // ~Notify
         }
 
         private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)

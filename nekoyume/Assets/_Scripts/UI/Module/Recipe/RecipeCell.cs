@@ -12,6 +12,7 @@ using Nekoyume.EnumType;
 using Nekoyume.L10n;
 using Nekoyume.UI.Scroller;
 using System.Collections.Generic;
+using Nekoyume.TableData.Event;
 
 namespace Nekoyume.UI.Module
 {
@@ -117,6 +118,14 @@ namespace Nekoyume.UI.Module
                 var viewData = recipeViewData.GetData(resultItem.Grade);
                 equipmentView.Hide();
                 consumableView.Show(viewData, resultItem);
+                IsLocked = false;
+            }
+            else if (recipeRow is EventMaterialItemRecipeSheet.Row materialRow)
+            {
+                var resultItem = materialRow.GetResultMaterialItemRow();
+                var viewData = recipeViewData.GetData(resultItem.Grade);
+                equipmentView.Hide();
+                consumableView.Show(viewData, resultItem, materialRow.ResultMaterialItemCount);
                 IsLocked = false;
             }
             else

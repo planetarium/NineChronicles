@@ -59,6 +59,12 @@ namespace Nekoyume.State
         public static IReadOnlyReactiveProperty<List<EventConsumableItemRecipeSheet.Row>>
             EventConsumableItemRecipeRows => _eventConsumableItemRecipeRows;
 
+        private static readonly ReactiveProperty<List<EventMaterialItemRecipeSheet.Row>>
+            _eventMaterialItemRecipeRows = new(null);
+
+        public static IReadOnlyReactiveProperty<List<EventMaterialItemRecipeSheet.Row>>
+            EventMaterialItemRecipeRows = _eventMaterialItemRecipeRows;
+
         private static ReactiveProperty<string> _eventRecipeRemainingTimeText =
             new(string.Empty);
 
@@ -88,10 +94,7 @@ namespace Nekoyume.State
                 .AddTo(_disposables);
             _eventScheduleRowForRecipe
                 .ObserveOnMainThread()
-                .Subscribe(_ =>
-                {
-                    UpdateEventRecipeRemainingTimeText(_agent.BlockIndex);
-                })
+                .Subscribe(_ => UpdateEventRecipeRemainingTimeText(_agent.BlockIndex))
                 .AddTo(_disposables);
         }
 
@@ -223,13 +226,12 @@ namespace Nekoyume.State
 
         private static void UpdateEventRecipeSheetData(long blockIndex)
         {
-            if (!_tableSheets.EventScheduleSheet.TryGetRowForRecipe(
-                    blockIndex,
-                    out var scheduleRow) ||
-                scheduleRow.RecipeEndBlockIndex == blockIndex)
+            if (!_tableSheets.EventScheduleSheet.TryGetRowForRecipe(blockIndex, out var scheduleRow)
+                || scheduleRow.RecipeEndBlockIndex == blockIndex)
             {
                 _eventScheduleRowForRecipe.Value = null;
                 _eventConsumableItemRecipeRows.Value = null;
+                _eventMaterialItemRecipeRows.Value = null;
                 return;
             }
 
@@ -241,6 +243,9 @@ namespace Nekoyume.State
             _eventScheduleRowForRecipe.Value = scheduleRow;
             _eventConsumableItemRecipeRows.Value =
                 _tableSheets.EventConsumableItemRecipeSheet
+                    .GetRecipeRows(_eventScheduleRowForRecipe.Value.Id);
+            _eventMaterialItemRecipeRows.Value =
+                _tableSheets.EventMaterialItemRecipeSheet
                     .GetRecipeRows(_eventScheduleRowForRecipe.Value.Id);
         }
 

@@ -329,24 +329,34 @@ namespace Nekoyume.UI.Scroller
             equipmentTab.SetActive(false);
             consumableTab.SetActive(false);
 
-            if (RxProps.EventScheduleRowForRecipe is null ||
-                RxProps.EventConsumableItemRecipeRows.Value?.Count is null or 0)
+            if (RxProps.EventScheduleRowForRecipe is not null &&
+                RxProps.EventConsumableItemRecipeRows.Value?.Count is not (null or 0))
+            {
+                var items = Craft.SharedModel.EventConsumableRecipeMap.Values.ToList();
+                viewport.SetActive(true);
+                emptyObject.SetActive(false);
+                eventScheduleTab.SetActive(true);
+                Show(items, true);
+                AnimateScroller();
+            }
+            else if (RxProps.EventScheduleRowForRecipe is not null &&
+                     RxProps.EventMaterialItemRecipeRows.Value?.Count is not (null or 0))
+            {
+                var items = Craft.SharedModel.EventMaterialRecipeMap.Values.ToList();
+                viewport.SetActive(true);
+                emptyObject.SetActive(false);
+                eventScheduleTab.SetActive(true);
+                Show(items, true);
+                AnimateScroller();
+            }
+            else
             {
                 Show(new List<RecipeRow.Model>(), true);
                 emptyObjectText.text = L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS");
                 viewport.SetActive(false);
                 emptyObject.SetActive(true);
                 eventScheduleTab.SetActive(false);
-                return;
             }
-
-            var items = Craft.SharedModel.EventConsumableRecipeMap
-                .Values.ToList();
-            viewport.SetActive(true);
-            emptyObject.SetActive(false);
-            eventScheduleTab.SetActive(true);
-            Show(items, true);
-            AnimateScroller();
         }
 
         private void UpdateEventScheduleEntireTime(

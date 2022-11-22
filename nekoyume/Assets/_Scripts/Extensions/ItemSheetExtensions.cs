@@ -1,3 +1,4 @@
+using Nekoyume.L10n;
 using Nekoyume.TableData;
 
 namespace Nekoyume
@@ -29,6 +30,11 @@ namespace Nekoyume
 
             return LocalizationExtensions.GetLocalizedNonColoredName(
                 value.ElementalType, value.Id, useElementalIcon);
+        }
+
+        public static string GetLocalizedDescription(this ItemSheet.Row value)
+        {
+            return L10nManager.Localize($"ITEM_DESCRIPTION_{value.Id}");;
         }
     }
 }

@@ -90,7 +90,7 @@
             <param name="extra">Extra data to claim.</param>
             <returns>A signed version claim.</returns>
             <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="signer"/> is
-            <c>null</c>.</exception>
+            <see langword="null"/>.</exception>
         </member>
         <member name="M:Libplanet.Net.AppProtocolVersion.FromToken(System.String)">
             <summary>
@@ -98,7 +98,7 @@
             </summary>
             <param name="token">A <see cref="P:Libplanet.Net.AppProtocolVersion.Token"/> string.</param>
             <returns>A deserialized <see cref="T:Libplanet.Net.AppProtocolVersion"/> object.</returns>
-            <exception cref="T:System.ArgumentNullException">Thrown when <c>null</c> is passed to
+            <exception cref="T:System.ArgumentNullException">Thrown when <see langword="null"/> is passed to
             <paramref name="token"/>.</exception>
             <exception cref="T:System.FormatException">Thrown when the given <paramref name="token"/>'s
             format is invalid.  The detailed reason is in the message.</exception>
@@ -109,7 +109,7 @@
             Verifies whether the claim is certainly signed by the <see cref="F:Libplanet.Net.AppProtocolVersion.Signer"/>.
             </summary>
             <param name="publicKey">A public key of the <see cref="F:Libplanet.Net.AppProtocolVersion.Signer"/>.</param>
-            <returns><c>true</c> if and only if the given <paramref name="publicKey"/> is
+            <returns><see langword="true"/> if and only if the given <paramref name="publicKey"/> is
             <see cref="F:Libplanet.Net.AppProtocolVersion.Signer"/>'s and the <see cref="P:Libplanet.Net.AppProtocolVersion.Signature"/> is certainly signed by
             the <see cref="F:Libplanet.Net.AppProtocolVersion.Signer"/>.</returns>
         </member>
@@ -347,7 +347,7 @@
         <member name="P:Libplanet.Net.Messages.BlockHashesMsg.StartIndex">
             <summary>
             The block index of the first hash in <see cref="P:Libplanet.Net.Messages.BlockHashesMsg.Hashes"/>.
-            It is <c>null</c> iff <see cref="P:Libplanet.Net.Messages.BlockHashesMsg.Hashes"/> are empty.
+            It is <see langword="null"/> iff <see cref="P:Libplanet.Net.Messages.BlockHashesMsg.Hashes"/> are empty.
             </summary>
         </member>
         <member name="P:Libplanet.Net.Messages.BlockHashesMsg.Hashes">
@@ -592,13 +592,13 @@
             from <see cref="P:Libplanet.Net.Messages.MessageValidator.Apv"/>, depends on this value:
             <list type="bullet">
                 <item><description>
-                    If <c>null</c>, the <see cref="T:Libplanet.Net.AppProtocolVersion"/> in question is trusted
-                    regardless of its signer.
+                    If <see langword="null"/>, the <see cref="T:Libplanet.Net.AppProtocolVersion"/> in question
+                    is trusted regardless of its signer.
                 </description></item>
                 <item><description>
-                    If not <c>null</c>, an <see cref="T:Libplanet.Net.AppProtocolVersion"/> is trusted if it is
-                    signed by one of the signers in the set.  In particular, if the set is empty,
-                    no <see cref="T:Libplanet.Net.AppProtocolVersion"/> is trusted.
+                    If not <see langword="null"/>, an <see cref="T:Libplanet.Net.AppProtocolVersion"/> is trusted
+                    if it is signed by one of the signers in the set.  In particular, if the set
+                    is empty, no <see cref="T:Libplanet.Net.AppProtocolVersion"/> is trusted.
                 </description></item>
             </list>
             </para>
@@ -610,7 +610,7 @@
             by a <em>trusted</em> signer that is different from <see cref="P:Libplanet.Net.Messages.MessageValidator.Apv"/> is encountered.
             </summary>
             <remarks>
-            If <c>null</c>, no action is taken.
+            If <see langword="null"/>, no action is taken.
             </remarks>
         </member>
         <member name="P:Libplanet.Net.Messages.MessageValidator.MessageTimestampBuffer">
@@ -622,11 +622,11 @@
             Whether a decoded <see cref="T:Libplanet.Net.Messages.Message"/> is valid or not depends on this value:
             <list type="bullet">
                 <item><description>
-                    If <c>null</c>, there is no restriction on <see cref="P:Libplanet.Net.Messages.Message.Timestamp"/>
-                    for received <see cref="T:Libplanet.Net.Messages.Message"/>s.
+                    If <see langword="null"/>, there is no restriction
+                    on <see cref="P:Libplanet.Net.Messages.Message.Timestamp"/> for received <see cref="T:Libplanet.Net.Messages.Message"/>s.
                 </description></item>
                 <item><description>
-                    If not <c>null</c>, the absolute difference between the timestamp of
+                    If not <see langword="null"/>, the absolute difference between the timestamp of
                     a received <see cref="T:Libplanet.Net.Messages.Message"/> and current time should be less than
                     this value.
                 </description></item>
@@ -647,7 +647,7 @@
             is signed by a trusted signer, then <see cref="P:Libplanet.Net.Messages.MessageValidator.DifferentApvEncountered"/> is called.
             </remarks>
             <exception cref="T:System.NullReferenceException">Thrown when <see cref="P:Libplanet.Net.Messages.Message.Remote"/> is
-            <c>null</c> for <paramref name="message"/>.</exception>
+            <see langword="null"/> for <paramref name="message"/>.</exception>
             <exception cref="T:Libplanet.Net.Transports.DifferentAppProtocolVersionException">Thrown when
             local version does not match with given <paramref name="message"/>'s
             <see cref="P:Libplanet.Net.Messages.Message.Version"/>.</exception>
@@ -781,7 +781,7 @@
             to bootstrap.</param>
             <param name="dialTimeout">The timeout used when waiting a reply for either
             <see cref="T:Libplanet.Net.Messages.PingMsg"/> or <see cref="T:Libplanet.Net.Messages.FindNeighborsMsg"/>.
-            If <c>null</c> is given, the task never halts by itself
+            If <see langword="null"/> is given, the task never halts by itself
             even no any response was given from the the target seed.</param>
             <param name="depth">Recursive operation depth to search peers from network.</param>
             <param name="cancellationToken">
@@ -797,7 +797,7 @@
             <param name="peers">The peers to add.</param>
             <param name="timeout">A timeout of waiting for the reply of <see cref="T:Libplanet.Net.Messages.PingMsg"/>
             message sent to <paramref name="peers"/>.
-            If <c>null</c> is given, task never halts by itself
+            If <see langword="null"/> is given, task never halts by itself
             even the target peer gives no any response.</param>
             <param name="cancellationToken">
             A cancellation token used to propagate notification that this
@@ -948,9 +948,8 @@
             to be the reference point.</param>
             <param name="findConcurrency">The number of concurrency in peer discovery.</param>
             <param name="requestTimeout">
-            A timeout of waiting for the reply of messages.
-            If it's omitted or <c>null</c> is given, will automatically be set to 5 seconds.
-            </param>
+            A timeout of waiting for the reply of messages.  If it's omitted
+            or <see langword="null"/> is given, will automatically be set to 5 seconds.</param>
         </member>
         <member name="M:Libplanet.Net.Protocols.KademliaProtocol.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
             <inheritdoc />
@@ -966,7 +965,7 @@
             Refreshes all peers in routing table.
             </summary>
             <param name="timeout">A timeout of waiting for the reply of messages.
-            If <c>null</c> is given, the task never halts by itself
+            If <see langword="null"/> is given, the task never halts by itself
             even no any response was given from the the target peer.</param>
             <param name="cancellationToken">
             A cancellation token used to propagate notification that this
@@ -991,7 +990,7 @@
             <param name="cancellationToken">A cancellation token used to propagate notification
             that this operation should be canceled.</param>
             <returns>A <see cref="T:Libplanet.Net.BoundPeer"/> with <paramref name="target"/> as its
-            <see cref="T:Libplanet.Address"/> if found.  Otherwise, <c>null</c>.</returns>
+            <see cref="T:Libplanet.Address"/> if found.  Otherwise, <see langword="null"/>.</returns>
         </member>
         <member name="M:Libplanet.Net.Protocols.KademliaProtocol.ValidateAsync(Libplanet.Net.BoundPeer,System.TimeSpan,System.Threading.CancellationToken)">
             <summary>
@@ -1048,13 +1047,13 @@
         <member name="P:Libplanet.Net.Protocols.KBucket.Head">
             <summary>
             The <see cref="T:Libplanet.Net.PeerState"/> used most recently. If the bucket is empty,
-            this is <c>null</c>.
+            this is <see langword="null"/>.
             </summary>
         </member>
         <member name="P:Libplanet.Net.Protocols.KBucket.Tail">
             <summary>
             The <see cref="T:Libplanet.Net.PeerState"/> used longest time ago. If the bucket is empty,
-            this is <c>null</c>.
+            this is <see langword="null"/>.
             </summary>
         </member>
         <member name="M:Libplanet.Net.Protocols.KBucket.Contains(Libplanet.Net.BoundPeer)">
@@ -1062,8 +1061,8 @@
             Checks whether the bucket contains given <paramref name="peer"/>.
             </summary>
             <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to check.</param>
-            <returns><c>true</c> if the bucket contains <paramref name="peer"/>,
-            <c>false</c> otherwise.</returns>
+            <returns><see langword="true"/> if the bucket contains <paramref name="peer"/>,
+            <see langword="false"/> otherwise.</returns>
         </member>
         <member name="M:Libplanet.Net.Protocols.KBucket.Clear">
             <summary>
@@ -1076,8 +1075,8 @@
             </summary>
             <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to remove.</param>
             <returns>
-            <c>true</c> if <paramref name="peer"/> was removed, <c>false</c> otherwise.
-            </returns>
+            <see langword="true"/> if <paramref name="peer"/> was removed,
+            <see langword="false"/> otherwise.</returns>
         </member>
         <member name="M:Libplanet.Net.Protocols.KBucket.GetRandomPeer(System.Nullable{Libplanet.Address})">
             <summary>
@@ -1088,7 +1087,7 @@
             <returns>
             A randomly selected <see cref="T:Libplanet.Net.BoundPeer"/> in the bucket excluding
             <paramref name="except"/>. If no <see cref="T:Libplanet.Net.BoundPeer"/> can be selected,
-            <c>null</c> is returned.
+            <see langword="null"/> is returned.
             </returns>
         </member>
         <member name="T:Libplanet.Net.Protocols.KBucketDictionary">
@@ -1125,14 +1124,14 @@
         </member>
         <member name="P:Libplanet.Net.Protocols.KBucketDictionary.Head">
             <summary>
-            The <see cref="T:Libplanet.Net.PeerState"/> updated most recently. <c>null</c> if the dictionary
-            is empty.
+            The <see cref="T:Libplanet.Net.PeerState"/> updated most recently. <see langword="null"/>
+            if the dictionary is empty.
             </summary>
         </member>
         <member name="P:Libplanet.Net.Protocols.KBucketDictionary.Tail">
             <summary>
-            The <see cref="T:Libplanet.Net.PeerState"/> updated least recently. <c>null</c> if the dictionary
-            is empty.
+            The <see cref="T:Libplanet.Net.PeerState"/> updated least recently. <see langword="null"/>
+            if the dictionary is empty.
             </summary>
         </member>
         <member name="M:Libplanet.Net.Protocols.KBucketDictionary.Get(Libplanet.Net.BoundPeer)">
@@ -1142,7 +1141,7 @@
             </summary>
             <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to check.</param>
             <returns>The <see cref="T:Libplanet.Net.BoundPeer"/> with its address equal to
-            that of the <paramref name="peer"/>'s. <c>null</c> if not found.</returns>
+            that of the <paramref name="peer"/>'s. <see langword="null"/> if not found.</returns>
         </member>
         <member name="M:Libplanet.Net.Protocols.KBucketDictionary.Get(Libplanet.Address)">
             <summary>
@@ -1150,7 +1149,7 @@
             </summary>
             <param name="address">The <see cref="T:Libplanet.Address"/> to check.</param>
             <returns>The <see cref="T:Libplanet.Net.BoundPeer"/> with its address equal to
-            that of <paramref name="address"/>. <c>null</c> if not found.</returns>
+            that of <paramref name="address"/>. <see langword="null"/> if not found.</returns>
         </member>
         <member name="M:Libplanet.Net.Protocols.KBucketDictionary.Contains(Libplanet.Net.BoundPeer)">
             <summary>
@@ -1158,24 +1157,24 @@
             as a key.
             </summary>
             <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to check.</param>
-            <returns><c>true</c> if the <paramref name="peer"/>'s <see cref="T:Libplanet.Address"/> exists,
-            <c>false</c> otherwise.</returns>
+            <returns><see langword="true"/> if the <paramref name="peer"/>'s
+            <see cref="T:Libplanet.Address"/> exists, <see langword="false"/> otherwise.</returns>
         </member>
         <member name="M:Libplanet.Net.Protocols.KBucketDictionary.Contains(Libplanet.Address)">
             <summary>
             Checks if the dictionary contains <paramref name="address"/> as a key.
             </summary>
             <param name="address">The <see cref="T:Libplanet.Address"/> to check.</param>
-            <returns><c>true</c> if <paramref name="address"/> exists,
-            <c>false</c> otherwise.</returns>
+            <returns><see langword="true"/> if <paramref name="address"/> exists,
+            <see langword="false"/> otherwise.</returns>
         </member>
         <member name="M:Libplanet.Net.Protocols.KBucketDictionary.AddOrUpdate(Libplanet.Net.BoundPeer)">
             <summary>
             Adds or updates the dictionary with <paramref name="peer"/>.
             </summary>
             <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to add or update.</param>
-            <returns><c>true</c> if <paramref name="peer"/> was either added or updated,
-            <c>false</c> otherwise.</returns>
+            <returns><see langword="true"/> if <paramref name="peer"/> was either added or updated,
+            <see langword="false"/> otherwise.</returns>
             <seealso cref="M:Libplanet.Net.Protocols.KBucketDictionary.AddOrUpdate(Libplanet.Net.BoundPeer,Libplanet.Net.PeerState)"/>.
         </member>
         <member name="M:Libplanet.Net.Protocols.KBucketDictionary.AddOrUpdate(Libplanet.Net.BoundPeer,Libplanet.Net.PeerState)">
@@ -1184,8 +1183,8 @@
             </summary>
             <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to add or update.</param>
             <param name="peerState">The <see cref="T:Libplanet.Net.PeerState"/> to use as a value.</param>
-            <returns><c>true</c> if <paramref name="peer"/> was either added or updated,
-            <c>false</c> otherwise.</returns>
+            <returns><see langword="true"/> if <paramref name="peer"/> was either added or updated,
+            <see langword="false"/> otherwise.</returns>
             <seealso cref="M:Libplanet.Net.Protocols.KBucketDictionary.AddOrUpdate(Libplanet.Address,Libplanet.Net.PeerState)"/>.
         </member>
         <member name="M:Libplanet.Net.Protocols.KBucketDictionary.AddOrUpdate(Libplanet.Address,Libplanet.Net.PeerState)">
@@ -1206,9 +1205,9 @@
                     a key/value pair.
                 </description></item>
                 <item><description>
-                    Else, if the dictionary is full and replace option is set to <c>true</c>,
-                    replace the oldest <see cref="T:Libplanet.Net.PeerState"/>, i.e. <see cref="P:Libplanet.Net.Protocols.KBucketDictionary.Tail"/>,
-                    with <paramref name="peerState"/>.
+                    Else, if the dictionary is full and replace option is set to
+                    <see langword="true"/>, replace the oldest <see cref="T:Libplanet.Net.PeerState"/>, i.e.
+                    <see cref="P:Libplanet.Net.Protocols.KBucketDictionary.Tail"/>, with <paramref name="peerState"/>.
                 </description></item>
                 <item><description>
                     Else, ignore.
@@ -1218,10 +1217,10 @@
             </summary>
             <param name="address">The <see cref="T:Libplanet.Address"/> to use as a key.</param>
             <param name="peerState">The <see cref="T:Libplanet.Net.PeerState"/> to use as a value.</param>
-            <returns><c>true</c> if the key/value pair was either added or updated,
-            <c>false</c> otherwise.</returns>
+            <returns><see langword="true"/> if the key/value pair was either added or updated,
+            <see langword="false"/> otherwise.</returns>
             <remarks>
-            This returns <c>false</c> only if all following conditions are met:
+            This returns <see langword="false"/> only if all following conditions are met:
             <list type="bullet">
                 <item><description>
                     The dictionary does not contain <paramref name="address"/> as a key.
@@ -1230,7 +1229,7 @@
                     The dictionary is already full.
                 </description></item>
                 <item><description>
-                    The replacement option is set to <c>false</c> for
+                    The replacement option is set to <see langword="false"/> for
                     this <see cref="T:Libplanet.Net.Protocols.KBucketDictionary"/> instance.
                 </description></item>
             </list>
@@ -1241,16 +1240,16 @@
             Removes <paramref name="peer"/> from the dictionary.
             </summary>
             <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to remove.</param>
-            <returns><c>true</c> if <paramref name="peer"/> was successfully removed,
-            <c>false</c> otherwise.</returns>
+            <returns><see langword="true"/> if <paramref name="peer"/> was successfully removed,
+            <see langword="false"/> otherwise.</returns>
         </member>
         <member name="M:Libplanet.Net.Protocols.KBucketDictionary.Remove(Libplanet.Address)">
             <summary>
             Removes <paramref name="address"/> from the dictionary.
             </summary>
             <param name="address">The <see cref="T:Libplanet.Address"/> to remove.</param>
-            <returns><c>true</c> if <paramref name="address"/> was successfully removed,
-            <c>false</c> otherwise.</returns>
+            <returns><see langword="true"/> if <paramref name="address"/> was successfully removed,
+            <see langword="false"/> otherwise.</returns>
         </member>
         <member name="M:Libplanet.Net.Protocols.KBucketDictionary.Clear">
             <summary>
@@ -1331,8 +1330,8 @@
         <member name="M:Libplanet.Net.Protocols.RoutingTable.Neighbors(Libplanet.Address,System.Int32,System.Boolean)">
             <summary>
             Returns at most 2 * <paramref name="k"/> (2 * <paramref name="k"/> + 1 if
-            <paramref name="includeTarget"/> is <c>true</c>) nearest peers to given parameter peer
-            from routing table. Return value is sorted with respect to target.
+            <paramref name="includeTarget"/> is <see langword="true"/>) nearest peers to given
+            parameter peer from routing table. Return value is sorted with respect to target.
             <seealso cref="M:Libplanet.Net.Protocols.Kademlia.SortByDistance(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},Libplanet.Address)"/>
             </summary>
             <param name="target"><see cref="T:Libplanet.Address"/> to look up.</param>
@@ -1427,7 +1426,7 @@
         <member name="P:Libplanet.Net.Swarm`1.LastMessageTimestamp">
             <summary>
             The last time when any message was arrived.
-            It can be <c>null</c> if no message has been arrived yet.
+            It can be <see langword="null"/> if no message has been arrived yet.
             </summary>
         </member>
         <member name="P:Libplanet.Net.Swarm`1.BlockChain">
@@ -1453,7 +1452,7 @@
             </summary>
             <seealso cref="M:Libplanet.Net.Transports.ITransport.WaitForRunningAsync"/>
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> completed when <see cref="P:Libplanet.Net.Transports.ITransport.Running"/>
-            property becomes <c>true</c>.</returns>
+            property becomes <see langword="true"/>.</returns>
         </member>
         <member name="M:Libplanet.Net.Swarm`1.StartAsync(System.Threading.CancellationToken)">
             <summary>
@@ -1482,7 +1481,7 @@
             <param name="dialTimeout">
             When the <see cref="T:Libplanet.Net.Swarm`1"/> tries to dial each peer in <see cref="P:Libplanet.Net.Swarm`1.Peers"/>,
             the dial-up is cancelled after this timeout, and it tries another peer.
-            If <c>null</c> is given it never gives up dial-ups.
+            If <see langword="null"/> is given it never gives up dial-ups.
             </param>
             <param name="broadcastBlockInterval">Time interval between each broadcast of
             chain tip.</param>
@@ -1546,7 +1545,7 @@
             <param name="dialTimeout">
             When the <see cref="T:Libplanet.Net.Swarm`1"/> tries to dial each peer in <see cref="P:Libplanet.Net.Swarm`1.Peers"/>,
             the dial-up is cancelled after this timeout, and it tries another peer.
-            If <c>null</c> is given it never gives up dial-ups.
+            If <see langword="null"/> is given it never gives up dial-ups.
             </param>
             <param name="cancellationToken">
             A cancellation token used to propagate notification that this
@@ -1583,7 +1582,7 @@
             <param name="dialTimeout">
             When the <see cref="T:Libplanet.Net.Swarm`1"/> tries to dial each peer in <see cref="P:Libplanet.Net.Swarm`1.Peers"/>,
             the dial-up is cancelled after this timeout, and it tries another peer.
-            If <c>null</c> is given it never gives up dial-ups.
+            If <see langword="null"/> is given it never gives up dial-ups.
             </param>
             <param name="tipDeltaThreshold">The threshold of the difference between the topmost tip
             among peers and the local tip.  If the local tip is still behind the topmost tip among
@@ -1618,21 +1617,22 @@
             <paramref name="target"/> is found.</param>
             <param name="timeout">
             <see cref="T:System.TimeSpan"/> for waiting reply of <see cref="T:Libplanet.Net.Messages.FindNeighborsMsg"/>.
-            If <c>null</c> is given, <see cref="T:System.TimeoutException"/> will not be thrown.
+            If <see langword="null"/> is given, <see cref="T:System.TimeoutException"/> will not be thrown.
             </param>
             <param name="cancellationToken">A cancellation token used to propagate notification
             that this operation should be canceled.</param>
             <returns>
             A <see cref="T:Libplanet.Net.BoundPeer"/> with <see cref="P:Libplanet.Net.Swarm`1.Address"/> of <paramref name="target"/>.
-            Returns <c>null</c> if the peer with address does not exist.
+            Returns <see langword="null"/> if the peer with address does not exist.
             </returns>
         </member>
         <member name="M:Libplanet.Net.Swarm`1.CheckAllPeersAsync(System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
             <summary>
             Validates all <see cref="T:Libplanet.Net.BoundPeer"/>s in the routing table by sending a simple message.
             </summary>
-            <param name="timeout">Timeout for this operation. If it is set to <c>null</c>,
-            wait infinitely until the requested operation is finished.</param>
+            <param name="timeout">Timeout for this operation. If it is set to
+            <see langword="null"/>, wait infinitely until the requested operation is finished.
+            </param>
             <param name="cancellationToken">A cancellation token used to propagate notification
             that this operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
@@ -1642,8 +1642,9 @@
             Adds <paramref name="peers"/> to routing table by sending a simple message.
             </summary>
             <param name="peers">A list of peers to add.</param>
-            <param name="timeout">Timeout for this operation. If it is set to <c>null</c>,
-            wait infinitely until the requested operation is finished.</param>
+            <param name="timeout">Timeout for this operation. If it is set to
+            <see langword="null"/>, wait infinitely until the requested operation is finished.
+            </param>
             <param name="cancellationToken">A cancellation token used to propagate notification
             that this operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
@@ -1656,7 +1657,7 @@
             </summary>
             <param name="dialTimeout">Timeout for each dialing operation to
             a <see cref="T:Libplanet.Net.BoundPeer"/> in <see cref="P:Libplanet.Net.Swarm`1.Peers"/>.  Not having a timeout limit
-            is equivalent to setting this value to <c>null</c>.</param>
+            is equivalent to setting this value to <see langword="null"/>.</param>
             <param name="maxPeersToDial">Maximum number of <see cref="T:Libplanet.Net.BoundPeer"/>s to dial.</param>
             <param name="cancellationToken">A cancellation token used to propagate notification
             that this operation should be canceled.</param>
@@ -1673,13 +1674,13 @@
             </summary>
             <param name="dialTimeout">Timeout for each dialing operation to
             a <see cref="T:Libplanet.Net.BoundPeer"/> in <see cref="P:Libplanet.Net.Swarm`1.Peers"/>.  Not having a timeout limit
-            is equivalent to setting this value to <c>null</c>.</param>
+            is equivalent to setting this value to <see langword="null"/>.</param>
             <param name="maxPeersToDial">Maximum number of <see cref="T:Libplanet.Net.BoundPeer"/>s to dial.</param>
             <param name="cancellationToken">A cancellation token used to propagate notification
             that this operation should be canceled.</param>
             <returns>An awaitable task with an <see cref="T:System.Array"/> of tuples
             of <see cref="T:Libplanet.Net.BoundPeer"/> and <see cref="T:Libplanet.Net.Messages.ChainStatusMsg"/> where
-            <see cref="T:Libplanet.Net.Messages.ChainStatusMsg"/> can be <c>null</c> if dialing fails for
+            <see cref="T:Libplanet.Net.Messages.ChainStatusMsg"/> can be <see langword="null"/> if dialing fails for
             a selected <see cref="T:Libplanet.Net.BoundPeer"/>.</returns>
         </member>
         <member name="M:Libplanet.Net.Swarm`1.IsBlockNeeded(Libplanet.Blocks.IBlockExcerpt)">
@@ -1689,8 +1690,8 @@
             </summary>
             <param name="target">The <see cref="T:Libplanet.Blocks.IBlockExcerpt"/> to compare to the current
             <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> of <see cref="P:Libplanet.Net.Swarm`1.BlockChain"/>.</param>
-            <returns><c>true</c> if the corresponding <see cref="T:Libplanet.Blocks.Block`1"/> to
-            <paramref name="target"/> is needed, otherwise, <c>false</c>.</returns>
+            <returns><see langword="true"/> if the corresponding <see cref="T:Libplanet.Blocks.Block`1"/> to
+            <paramref name="target"/> is needed, otherwise, <see langword="false"/>.</returns>
         </member>
         <member name="P:Libplanet.Net.SwarmOptions.BlockDemandLifespan">
             <summary>
@@ -1980,9 +1981,9 @@
             Whether this <see cref="T:Libplanet.Net.Transports.ITransport"/> instance is running.
             </para>
             <para>
-            When the value is <c>true</c>, the <see cref="T:Libplanet.Net.Transports.ITransport"/> can recieve outside
-            requests.  When the value is <c>false</c>, the <see cref="T:Libplanet.Net.Transports.ITransport"/> stops recieving
-            outside requests.
+            When the value is <see langword="true"/>, the <see cref="T:Libplanet.Net.Transports.ITransport"/> can recieve
+            outside requests.  When the value is <see langword="false"/>,
+            the <see cref="T:Libplanet.Net.Transports.ITransport"/> stops recieving outside requests.
             </para>
             </summary>
             <value>The value indicating whether the instance is running.</value>
@@ -2014,7 +2015,7 @@
             Waits until this <see cref="T:Libplanet.Net.Transports.ITransport"/> instance gets started to run.
             </summary>
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> completed when <see cref="P:Libplanet.Net.Transports.ITransport.Running"/>
-            property becomes <c>true</c>.</returns>
+            property becomes <see langword="true"/>.</returns>
         </member>
         <member name="M:Libplanet.Net.Transports.ITransport.SendMessageAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
             <summary>
@@ -2096,7 +2097,7 @@
             version of the transport layer.</param>
             <param name="trustedAppProtocolVersionSigners"><see cref="T:Libplanet.Crypto.PublicKey"/>s of parties
             to trust <see cref="T:Libplanet.Net.AppProtocolVersion"/>s they signed.  To trust any party, pass
-            <c>null</c>.</param>
+            <see langword="null"/>.</param>
             <param name="workers">The number of background workers (i.e., threads).</param>
             <param name="host">A hostname to be a part of a public endpoint, that peers use when
             they connect to this node.  Note that this is not a hostname to listen to;
@@ -2108,16 +2109,17 @@
             <param name="differentAppProtocolVersionEncountered">A delegate called back when a peer
             with one different from <paramref name="appProtocolVersion"/>, and their version is
             signed by a trusted party (i.e., <paramref name="trustedAppProtocolVersionSigners"/>).
-            If this callback returns <c>false</c>, an encountered peer is ignored.  If this callback
-            is omitted, all peers with different <see cref="T:Libplanet.Net.AppProtocolVersion"/>s are ignored.
+            If this callback returns <see langword="false"/>, an encountered peer is ignored.
+            If this callback is omitted, all peers with different <see cref="T:Libplanet.Net.AppProtocolVersion"/>s
+            are ignored.
             </param>
             <param name="messageTimestampBuffer">The amount in <see cref="T:System.TimeSpan"/>
             that is allowed for the timestamp of a <see cref="T:Libplanet.Net.Messages.Message"/> to differ from
             the current time of a local node.  Every <see cref="T:Libplanet.Net.Messages.Message"/> with its timestamp
             differing greater than <paramref name="messageTimestampBuffer"/> will be ignored.
-            If <c>null</c>, any timestamp is accepted.</param>
+            If <see langword="null"/>, any timestamp is accepted.</param>
             <exception cref="T:System.ArgumentException">Thrown when both <paramref name="host"/> and
-            <paramref name="iceServers"/> are <c>null</c>.</exception>
+            <paramref name="iceServers"/> are <see langword="null"/>.</exception>
         </member>
         <member name="P:Libplanet.Net.Transports.NetMQTransport.ProcessMessageHandler">
             <inheritdoc/>
@@ -2140,7 +2142,7 @@
             version of the transport layer.</param>
             <param name="trustedAppProtocolVersionSigners"><see cref="T:Libplanet.Crypto.PublicKey"/>s of parties
             to trust <see cref="T:Libplanet.Net.AppProtocolVersion"/>s they signed.  To trust any party, pass
-            <c>null</c>.</param>
+            <see langword="null"/>.</param>
             <param name="workers">The number of background workers (i.e., threads).</param>
             <param name="host">A hostname to be a part of a public endpoint, that peers use when
             they connect to this node.  Note that this is not a hostname to listen to;
@@ -2152,16 +2154,17 @@
             <param name="differentAppProtocolVersionEncountered">A delegate called back when a peer
             with one different from <paramref name="appProtocolVersion"/>, and their version is
             signed by a trusted party (i.e., <paramref name="trustedAppProtocolVersionSigners"/>).
-            If this callback returns <c>false</c>, an encountered peer is ignored.  If this callback
-            is omitted, all peers with different <see cref="T:Libplanet.Net.AppProtocolVersion"/>s are ignored.
+            If this callback returns <see langword="false"/>, an encountered peer is ignored.
+            If this callback is omitted, all peers with different <see cref="T:Libplanet.Net.AppProtocolVersion"/>s
+            are ignored.
             </param>
             <param name="messageTimestampBuffer">The amount in <see cref="T:System.TimeSpan"/>
             that is allowed for the timestamp of a <see cref="T:Libplanet.Net.Messages.Message"/> to differ from
             the current time of a local node.  Every <see cref="T:Libplanet.Net.Messages.Message"/> with its timestamp
             differing greater than <paramref name="messageTimestampBuffer"/> will be ignored.
-            If <c>null</c>, any timestamp is accepted.</param>
+            If <see langword="null"/>, any timestamp is accepted.</param>
             <exception cref="T:System.ArgumentException">Thrown when both <paramref name="host"/> and
-            <paramref name="iceServers"/> are <c>null</c>.</exception>
+            <paramref name="iceServers"/> are <see langword="null"/>.</exception>
             <returns>
             An awaitable <see cref="T:System.Threading.Tasks.Task"/> returning a <see cref="T:Libplanet.Net.Transports.NetMQTransport"/>
             when awaited that is ready to send request <see cref="T:Libplanet.Net.Messages.Message"/>s and

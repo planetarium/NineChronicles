@@ -26,6 +26,8 @@ namespace Nekoyume.UI.Model
 
         public readonly Dictionary<ItemSubType, RecipeRow.Model> EventConsumableRecipeMap = new();
 
+        public readonly Dictionary<int, RecipeRow.Model> EventMaterialRecipeMap = new();
+
         public readonly ReactiveProperty<SheetRow<int>> SelectedRow = new();
 
         public readonly ReactiveProperty<SheetRow<int>> NotifiedRow = new();
@@ -49,11 +51,13 @@ namespace Nekoyume.UI.Model
         public RecipeModel(
             IEnumerable<EquipmentItemRecipeSheet.Row> equipments,
             IEnumerable<RecipeGroup> consumableGroups,
-            List<EventConsumableItemRecipeSheet.Row> eventConsumables)
+            List<EventConsumableItemRecipeSheet.Row> eventConsumables,
+            List<EventMaterialItemRecipeSheet.Row> eventMaterials)
         {
             LoadEquipment(equipments);
             LoadConsumable(consumableGroups);
             UpdateEventConsumable(eventConsumables);
+            UpdateEventMaterial(eventMaterials);
         }
 
         private void LoadEquipment(IEnumerable<EquipmentItemRecipeSheet.Row> recipes)
@@ -155,6 +159,31 @@ namespace Nekoyume.UI.Model
             }
 
             EventConsumableRecipeMap[ItemSubType.Food] = value;
+        }
+
+        public void UpdateEventMaterial(List<EventMaterialItemRecipeSheet.Row> rows)
+        {
+            EventMaterialRecipeMap.Clear();
+            if (rows is null)
+            {
+                return;
+            }
+
+            var groups = rows.GroupBy(x => x.ResultMaterialItemId);
+            foreach (var group in groups)
+            {
+                var result = group.First().GetResultMaterialItemRow();
+                var model = new RecipeRow.Model(result.GetLocalizedName(false, false), 0)
+                {
+                    ItemSubType = result.ItemSubType,
+                };
+                foreach (var row in group)
+                {
+                    model.Rows.Add(row);
+                }
+
+                EventMaterialRecipeMap[group.Key] = model;
+            }
         }
 
         public async void UpdateUnlockedRecipesAsync(Address address)

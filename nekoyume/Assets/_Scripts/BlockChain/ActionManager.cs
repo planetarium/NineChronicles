@@ -509,6 +509,44 @@ namespace Nekoyume.BlockChain
                 .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
+        public IObservable<ActionBase.ActionEvaluation<EventMaterialItemCrafts>>
+            EventMaterialItemCrafts(
+                int eventScheduleId,
+                int recipeId,
+                Dictionary<int,int> materialsToUse)
+        {
+            var avatarState = States.Instance.CurrentAvatarState;
+            var avatarAddress = avatarState.address;
+
+            foreach (var (id, count) in materialsToUse)
+            {
+                if (!Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(id, out var row))
+                {
+                    continue;
+                }
+
+                LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId, count);
+            }
+
+            var action = new EventMaterialItemCrafts
+            {
+                AvatarAddress = States.Instance.CurrentAvatarState.address,
+                EventScheduleId = eventScheduleId,
+                EventMaterialItemRecipeId = recipeId,
+                MaterialsToUse = materialsToUse,
+            };
+            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
+            LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
+            ProcessAction(action);
+
+            return _agent.ActionRenderer.EveryRender<EventMaterialItemCrafts>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e => throw HandleException(action.Id, e));
+        }
+
         public IObservable<ActionBase.ActionEvaluation<HackAndSlashSweep>> HackAndSlashSweep(
             List<Guid> costumes,
             List<Guid> equipments,
