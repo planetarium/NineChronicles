@@ -7,6 +7,7 @@ using Nekoyume.Exceptions;
 using Nekoyume.L10n;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.State;
+using Nekoyume.State;
 using Nekoyume.TableData;
 using UnityEngine;
 
@@ -238,6 +239,12 @@ namespace Nekoyume.BlockChain
                 case NotEnoughRankException _:
                     code = "42";
                     key = "NOT_ENOUGH_RANK_EXCEPTION";
+                    break;
+                case CoolDownBlockException _:
+                    code = "47";
+                    var battleArenaInterval = States.Instance.GameConfigState.BattleArenaInterval;
+                    errorMsg = $"Arena battle is possible after at least {battleArenaInterval} blocks." +
+                               $"\nError Code: {code}";
                     break;
             }
 

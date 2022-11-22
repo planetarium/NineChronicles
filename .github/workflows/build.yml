@@ -8,7 +8,8 @@ name: Build
 jobs:
   build-unity:
     name: Build for ${{ matrix.targetPlatform }} on version ${{ matrix.unityVersion }}
-    runs-on: ubuntu-latest
+    runs-on: 
+      labels: ["linux", "4cores"]
     strategy:
       fail-fast: false
       matrix:
