@@ -116,14 +116,21 @@ effect_04
   orig: 14, 13
   offset: 0, 0
   index: -1
-eye_close1
+eye_01
+  rotate: true
+  xy: 137, 87
+  size: 39, 17
+  orig: 39, 17
+  offset: 0, 0
+  index: -1
+eye_02
   rotate: true
   xy: 168, 115
   size: 37, 16
   orig: 37, 16
   offset: 0, 0
   index: -1
-eye_close2
+eye_03
   rotate: true
   xy: 190, 88
   size: 37, 12
@@ -142,13 +149,6 @@ eye_hit
   xy: 156, 52
   size: 39, 14
   orig: 39, 14
-  offset: 0, 0
-  index: -1
-eye_idle
-  rotate: true
-  xy: 137, 87
-  size: 39, 17
-  orig: 39, 17
   offset: 0, 0
   index: -1
 eye_run
