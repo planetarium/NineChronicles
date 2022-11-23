@@ -72,6 +72,7 @@ namespace Nekoyume.Game.Character
                 case SkillCategory.CriticalBuff:
                 case SkillCategory.SpeedBuff:
                 case SkillCategory.HitBuff:
+                case SkillCategory.DamageReductionBuff:
                     foreach (var info in infos)
                     {
                         var buffTarget = info.Target.Id == Id ? this : _target;
