@@ -46,27 +46,23 @@ namespace Nekoyume.UI.Module
                 throw new FailedToLoadResourceException<Sprite>(itemRow.Id.ToString());
             iconImage.overrideSprite = itemSprite;
 
+            levelBg.gameObject.SetActive(true);
             var sheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
-            if (!sheet.TryGetValue(itemRow.Id, out var row))
+            var currentAvatarLevel = States.Instance.CurrentAvatarState.level;
+            var requirementLevel = sheet.TryGetValue(itemRow.Id, out var row) ? row.Level : 1;
+
+            if (currentAvatarLevel >= requirementLevel)
             {
-                levelBg.gameObject.SetActive(false);
+                normalLevelText.text = $"Lv. {requirementLevel}";
+                normalLevelText.fontSharedMaterial = viewData.LevelTextMaterial;
+                normalLevelText.gameObject.SetActive(true);
+                lockedLevelText.gameObject.SetActive(false);
             }
             else
             {
-                var currentAvatarLevel = States.Instance.CurrentAvatarState.level;
-                if (currentAvatarLevel >= row.Level)
-                {
-                    normalLevelText.text = $"Lv. {row.Level}";
-                    normalLevelText.fontSharedMaterial = viewData.LevelTextMaterial;
-                    normalLevelText.gameObject.SetActive(true);
-                    lockedLevelText.gameObject.SetActive(false);
-                }
-                else
-                {
-                    lockedLevelText.text = $"Lv. {row.Level}";
-                    lockedLevelText.gameObject.SetActive(true);
-                    normalLevelText.gameObject.SetActive(false);
-                }
+                lockedLevelText.text = $"Lv. {requirementLevel}";
+                lockedLevelText.gameObject.SetActive(true);
+                normalLevelText.gameObject.SetActive(false);
             }
 
             levelBg.targetColor = viewData.LevelBgHsvTargetColor;
