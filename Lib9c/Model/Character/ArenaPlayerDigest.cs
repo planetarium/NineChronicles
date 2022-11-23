@@ -23,7 +23,7 @@ namespace Nekoyume.Model
 
         public readonly List<Costume> Costumes;
         public readonly List<Equipment> Equipments;
-        public readonly List<RuneSlotInfo> Runes;
+        public readonly List<RuneState> Runes;
 
         [Obsolete("Do not use it")]
         public ArenaPlayerDigest(AvatarState avatarState, ArenaAvatarState arenaAvatarState)
@@ -38,14 +38,14 @@ namespace Nekoyume.Model
             Level = avatarState.level;
             Costumes = avatarState.GetNonFungibleItems<Costume>(arenaAvatarState.Costumes);
             Equipments = avatarState.GetNonFungibleItems<Equipment>(arenaAvatarState.Equipments);
-            Runes = new List<RuneSlotInfo>();
+            Runes = new List<RuneState>();
         }
 
         public ArenaPlayerDigest(
             AvatarState avatarState,
             List<Guid> equipments,
             List<Guid> costumes,
-            List<RuneSlotInfo> runes)
+            List<RuneState> runes)
         {
             NameWithHash = avatarState.NameWithHash;
             CharacterId = avatarState.characterId;
@@ -62,7 +62,7 @@ namespace Nekoyume.Model
 
         public ArenaPlayerDigest(
             AvatarState avatarState,
-            List<RuneSlotInfo> runes)
+            List<RuneState> runes)
         {
             NameWithHash = avatarState.NameWithHash;
             CharacterId = avatarState.characterId;
@@ -87,7 +87,7 @@ namespace Nekoyume.Model
             AvatarState avatarState,
             List<Costume> costumes,
             List<Equipment> equipments,
-            List<RuneSlotInfo> runes)
+            List<RuneState> runes)
         {
             NameWithHash = avatarState.NameWithHash;
             CharacterId = avatarState.characterId;
@@ -115,7 +115,7 @@ namespace Nekoyume.Model
             Equipments = ((List)serialized[8]).Select(e =>
                 (Equipment)ItemFactory.Deserialize((Dictionary)e)).ToList();
             Runes = ((List)serialized[9]).Select(e =>
-                new RuneSlotInfo((List)e)).ToList();
+                new RuneState((List)e)).ToList();
         }
 
         public IValue Serialize()

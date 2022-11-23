@@ -12,8 +12,7 @@ namespace Nekoyume.Model.Rune
         public RuneSlotType RuneSlotType { get; }
         public RuneType RuneType { get; }
         public bool IsLock { get; private set; }
-
-        private readonly List<RuneState> _runeStates;
+        public int? RuneId { get; private set; }
 
         public RuneSlot(
             int index,
@@ -21,7 +20,6 @@ namespace Nekoyume.Model.Rune
             RuneType runeType,
             bool isLock)
         {
-            _runeStates = new List<RuneState>();
             Index = index;
             RuneSlotType = runeSlotType;
             RuneType = runeType;
@@ -34,34 +32,36 @@ namespace Nekoyume.Model.Rune
             RuneSlotType = serialized[1].ToEnum<RuneSlotType>();
             RuneType = serialized[2].ToEnum<RuneType>();
             IsLock = serialized[3].ToBoolean();
-            _runeStates = ((List)serialized[4]).Select(x => new RuneState((List)x)).ToList();
+            if (serialized.Count > 4)
+            {
+                RuneId = serialized[4].ToNullableInteger();
+            }
         }
 
         public IValue Serialize()
         {
-            return List.Empty
+            var result = List.Empty
                 .Add(Index.Serialize())
                 .Add(RuneSlotType.Serialize())
                 .Add(RuneType.Serialize())
-                .Add(IsLock.Serialize())
-                .Add(new List(_runeStates.Select(x => x.Serialize())));
+                .Add(IsLock.Serialize());
+
+            if (RuneId.HasValue)
+            {
+                result = result.Add(RuneId.Serialize());
+            }
+
+            return result;
         }
 
-        public void Equip(RuneState runeState)
+        public void Equip(int runeId)
         {
-            _runeStates.Clear();
-            _runeStates.Add(runeState);
+            RuneId = runeId;
         }
 
         public void Unequip()
         {
-            _runeStates.Clear();
-        }
-
-        public bool IsEquipped(out RuneState runeState)
-        {
-            runeState = _runeStates.Any() ? _runeStates.First() : null;
-            return _runeStates.Any();
+            RuneId = null;
         }
 
         public void Unlock()

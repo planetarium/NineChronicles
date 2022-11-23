@@ -553,7 +553,7 @@ namespace Nekoyume.Model
         }
 
         public void SetRune(
-            List<RuneSlotInfo> runes,
+            List<RuneState> runes,
             RuneOptionSheet runeOptionSheet,
             SkillSheet skillSheet)
         {

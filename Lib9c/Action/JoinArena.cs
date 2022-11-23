@@ -108,39 +108,12 @@ namespace Nekoyume.Action
                 context.BlockIndex, addressesHex);
 
             // update rune slot
-            if (runeInfos is null)
-            {
-                throw new RuneInfosIsEmptyException(
-                    $"[{nameof(JoinArena)}] my avatar address : {avatarAddress}");
-            }
-
-            if (runeInfos.GroupBy(x => x.SlotIndex).Count() != runeInfos.Count)
-            {
-                throw new DuplicatedRuneSlotIndexException(
-                    $"[{nameof(JoinArena)}] my avatar address : {avatarAddress}");
-            }
-
             var runeSlotStateAddress = RuneSlotState.DeriveAddress(avatarAddress, BattleType.Arena);
             var runeSlotState = states.TryGetState(runeSlotStateAddress, out List rawRuneSlotState)
                 ? new RuneSlotState(rawRuneSlotState)
                 : new RuneSlotState(BattleType.Arena);
-
-            if (runeInfos.Exists(x => x.SlotIndex >= runeSlotState.GetRuneSlot().Count))
-            {
-                throw new SlotNotFoundException(
-                    $"[{nameof(JoinArena)}] my avatar address : {avatarAddress}");
-            }
-
-            var runeStates = new List<RuneState>();
-            foreach (var address in runeInfos.Select(info => RuneState.DeriveAddress(avatarAddress, info.RuneId)))
-            {
-                if (states.TryGetState(address, out List rawRuneState))
-                {
-                    runeStates.Add(new RuneState(rawRuneState));
-                }
-            }
             var runeListSheet = sheets.GetSheet<RuneListSheet>();
-            runeSlotState.UpdateSlot(runeInfos, runeStates, runeListSheet);
+            runeSlotState.UpdateSlot(runeInfos, runeListSheet);
             states = states.SetState(runeSlotStateAddress, runeSlotState.Serialize());
 
             // update item slot

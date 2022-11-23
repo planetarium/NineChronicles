@@ -147,39 +147,12 @@ namespace Nekoyume.Action
             var costumeIds = avatarState.ValidateCostume(CostumeIds);
 
             // Update rune slot
-            if (RuneInfos is null)
-            {
-                throw new RuneInfosIsEmptyException(
-                    $"[{nameof(Raid)}] my avatar address : {AvatarAddress}");
-            }
-
-            if (RuneInfos.GroupBy(x => x.SlotIndex).Count() != RuneInfos.Count)
-            {
-                throw new DuplicatedRuneSlotIndexException(
-                    $"[{nameof(Raid)}] my avatar address : {AvatarAddress}");
-            }
-
             var runeSlotStateAddress = RuneSlotState.DeriveAddress(AvatarAddress, BattleType.Raid);
             var runeSlotState = states.TryGetState(runeSlotStateAddress, out List rawRuneSlotState)
                 ? new RuneSlotState(rawRuneSlotState)
                 : new RuneSlotState(BattleType.Raid);
-
-            if (RuneInfos.Exists(x => x.SlotIndex >= runeSlotState.GetRuneSlot().Count))
-            {
-                throw new SlotNotFoundException(
-                    $"[{nameof(Raid)}] my avatar address : {AvatarAddress}");
-            }
-
-            var runeStates = new List<RuneState>();
-            foreach (var address in RuneInfos.Select(info => RuneState.DeriveAddress(AvatarAddress, info.RuneId)))
-            {
-                if (states.TryGetState(address, out List rawRuneState))
-                {
-                    runeStates.Add(new RuneState(rawRuneState));
-                }
-            }
             var runeListSheet = sheets.GetSheet<RuneListSheet>();
-            runeSlotState.UpdateSlot(RuneInfos, runeStates, runeListSheet);
+            runeSlotState.UpdateSlot(RuneInfos, runeListSheet);
             states = states.SetState(runeSlotStateAddress, runeSlotState.Serialize());
 
             // Update item slot
@@ -216,6 +189,14 @@ namespace Nekoyume.Action
                 addressesHex);
 
             var raidSimulatorSheets = sheets.GetRaidSimulatorSheets();
+            var runeStates = new List<RuneState>();
+            foreach (var address in RuneInfos.Select(info => RuneState.DeriveAddress(AvatarAddress, info.RuneId)))
+            {
+                if (states.TryGetState(address, out List rawRuneState))
+                {
+                    runeStates.Add(new RuneState(rawRuneState));
+                }
+            }
 
             // Simulate.
             var simulator = new RaidSimulator(
@@ -223,7 +204,7 @@ namespace Nekoyume.Action
                 context.Random,
                 avatarState,
                 FoodIds,
-                RuneInfos,
+                runeStates,
                 raidSimulatorSheets,
                 sheets.GetSheet<CostumeStatSheet>());
             simulator.Simulate();
@@ -241,16 +222,16 @@ namespace Nekoyume.Action
 
             var runeOptionSheet = sheets.GetSheet<RuneOptionSheet>();
             var runeOptions = new List<RuneOptionSheet.Row.RuneOptionInfo>();
-            foreach (var info in RuneInfos)
+            foreach (var runeState in runeStates)
             {
-                if (!runeOptionSheet.TryGetValue(info.RuneId, out var optionRow))
+                if (!runeOptionSheet.TryGetValue(runeState.RuneId, out var optionRow))
                 {
-                    throw new SheetRowNotFoundException("RuneOptionSheet", info.RuneId);
+                    throw new SheetRowNotFoundException("RuneOptionSheet", runeState.RuneId);
                 }
 
-                if (!optionRow.LevelOptionMap.TryGetValue(info.Level, out var option))
+                if (!optionRow.LevelOptionMap.TryGetValue(runeState.Level, out var option))
                 {
-                    throw new SheetRowNotFoundException("RuneOptionSheet", info.Level);
+                    throw new SheetRowNotFoundException("RuneOptionSheet", runeState.Level);
                 }
 
                 runeOptions.Add(option);

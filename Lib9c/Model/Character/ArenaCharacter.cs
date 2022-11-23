@@ -12,6 +12,7 @@ using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
+using Nekoyume.Model.State;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model
@@ -235,7 +236,7 @@ namespace Nekoyume.Model
         }
 
         public void SetRune(
-            List<RuneSlotInfo> runes,
+            List<RuneState> runes,
             RuneOptionSheet runeOptionSheet,
             SkillSheet skillSheet)
         {
