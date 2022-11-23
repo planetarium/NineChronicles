@@ -399,8 +399,9 @@ namespace Nekoyume.BlockChain
 
         private void ClaimStakeReward()
         {
-            _actionRenderer.EveryRender<ClaimStakeReward>()
+            _actionRenderer.ActionRenderSubject
                 .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(eval => eval.Action is IClaimStakeReward)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseClaimStakeReward)
                 .AddTo(_disposables);
@@ -1765,9 +1766,9 @@ namespace Nekoyume.BlockChain
             UpdateAgentStateAsync(eval).Forget();
         }
 
-        private void ResponseClaimStakeReward(ActionBase.ActionEvaluation<ClaimStakeReward> eval)
+        private void ResponseClaimStakeReward(ActionBase.ActionEvaluation<ActionBase> eval)
         {
-            if (!(eval.Exception is null))
+            if (eval.Exception is not null)
             {
                 return;
             }
