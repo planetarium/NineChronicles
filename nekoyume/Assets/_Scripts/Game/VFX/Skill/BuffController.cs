@@ -59,7 +59,7 @@ namespace Nekoyume.Game.VFX.Skill
             }
             else if (buff is StatBuff statBuff)
             {
-                buffName = statBuff.RowData.StatModifier.Value > 0
+                buffName = statBuff.RowData.StatModifier.Value >= 0
                     ? "buff_plus_casting"
                     : "buff_minus_casting";
             }
