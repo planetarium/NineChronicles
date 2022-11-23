@@ -81,7 +81,6 @@ namespace Nekoyume
         {
             maxText.text = max.ToString();
             curText.text = $"{sliderCurValue * multiplier}";
-            slider.value = max;
         }
 
         private void UpdateContainer(int sliderMaxValue)
