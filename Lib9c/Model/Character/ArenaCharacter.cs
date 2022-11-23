@@ -65,6 +65,8 @@ namespace Nekoyume.Model
         public int CRI => _stats.CRI;
         public int HIT => _stats.HIT;
         public int SPD => _stats.SPD;
+        public int DRV => _stats.DRV;
+        public int DRR => _stats.DRR;
         public bool IsDead => CurrentHP <= 0;
         public Dictionary<int, Buff.Buff> Buffs { get; } = new Dictionary<int, Buff.Buff>();
         public IEnumerable<StatBuff> StatBuffs => Buffs.Values.OfType<StatBuff>();

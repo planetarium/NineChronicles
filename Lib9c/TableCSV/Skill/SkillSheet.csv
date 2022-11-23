@@ -118,9 +118,11 @@ _300001,힐(전체),Normal,Heal,Heal,Ally,1,1 // 미구현
 500003,할퀴기,Normal,Attack,BlowAttack,Enemy,1,0
 500004,할퀴기 Wave 4,Normal,Attack,BlowAttack,Enemy,1,0
 500005,할퀴기 Wave 5,Normal,Attack,BlowAttack,Enemy,1,0
-510001,광폭화 Wave 1,Normal,Buff,Buff,Self,1,0  
+510001,광폭화 Wave 1,Normal,Buff,Buff,Self,1,0
 510002,광폭화 Wave 2,Normal,Buff,Buff,Self,1,0
 510003,광폭화 Wave 3,Normal,Buff,Buff,Self,1,0
 510004,광폭화 Wave 4,Normal,Buff,Buff,Self,1,0
 510005,광폭화 Wave 5,Normal,Buff,Buff,Self,1,0
 600001,출혈,Normal,Debuff,Buff,Enemy,1,0
+600002,피해 감소 룬 (고정),Normal,Buff,DamageReductionBuff,Self,1,0
+600003,피해 감소 룬 (비율),Normal,Buff,DamageReductionBuff,Self,1,0
