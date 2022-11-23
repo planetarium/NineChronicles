@@ -48,6 +48,9 @@ namespace Nekoyume.UI
         private TextMeshProUGUI successRateText;
 
         [SerializeField]
+        private TextMeshProUGUI loadingText;
+
+        [SerializeField]
         private Button closeButton;
 
         [SerializeField]
@@ -324,6 +327,9 @@ namespace Nekoyume.UI
             UpdateHeaderMenu(runeStoneIcon, item.RuneStone);
             UpdateSlider(item);
             animator.Play(item.Level > 0 ? HashToLevelUp : HashToCombine);
+            loadingText.text = item.Level > 0
+                ? L10nManager.Localize($"UI_RUNE_LEVEL_UP_PROCESSING")
+                : L10nManager.Localize($"UI_RUNE_COMBINE_PROCESSING");
             nextTitle.gameObject.SetActive(item.Level != 0);
         }
 
