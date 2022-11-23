@@ -194,7 +194,8 @@ namespace Nekoyume.UI
             UpdateBackground();
 
             UpdateStartButton();
-            information.UpdateInventory(BattleType.Adventure);
+            var cp = UpdateCp();
+            information.UpdateInventory(BattleType.Adventure, cp);
             UpdateRequiredCostByStageId();
             UpdateRandomBuffButton();
 
@@ -229,22 +230,28 @@ namespace Nekoyume.UI
             }
 
             ReactiveAvatarState.Inventory.Subscribe(_ => UpdateStartButton()).AddTo(_disposables);
+        }
 
-
+        private int? UpdateCp()
+        {
             switch (_stageType)
             {
                 case StageType.HackAndSlash:
                     if (TableSheets.Instance.SweepRequiredCPSheet.TryGetValue(_stageId, out var row))
                     {
                         enemyCpContainer.gameObject.SetActive(true);
-                        enemyCp.text = $"{(int)(row.RequiredCP * 1.25f)}";
+                        var cp = (int)(row.RequiredCP * 1.25f);
+                        enemyCp.text = $"{cp}";
+                        return cp;
                     }
+
                     break;
                 case StageType.Mimisbrunnr:
                 case StageType.EventDungeon:
                     enemyCpContainer.gameObject.SetActive(false);
                     break;
             }
+            return null;
         }
 
         public void UpdateInventory()

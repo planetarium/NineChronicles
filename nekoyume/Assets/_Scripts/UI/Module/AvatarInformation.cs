@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
 using Nekoyume.BlockChain;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -14,6 +15,7 @@ using Nekoyume.Model.Mail;
 using Nekoyume.Model.Stat;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
+using TMPro;
 using Unity.Mathematics;
 using UnityEngine;
 using Material = Nekoyume.Model.Item.Material;
@@ -44,7 +46,7 @@ namespace Nekoyume.UI.Module
         private RuneSlots runeSlots;
 
         [SerializeField]
-        private AvatarCP cp;
+        private TextMeshProUGUI cp;
 
         [SerializeField]
         private AvatarStats stats;
@@ -54,6 +56,7 @@ namespace Nekoyume.UI.Module
         private BattleType _battleType = BattleType.Adventure;
         private bool _isAvatarInfo;
         private System.Action _onUpdate;
+        private int? _compareCp;
 
         private readonly Dictionary<Inventory.InventoryTabType, GameObject> _slots = new();
         private readonly List<Guid> _consumables = new();
@@ -109,8 +112,9 @@ namespace Nekoyume.UI.Module
             return result;
         }
 
-        public void UpdateInventory(BattleType battleType)
+        public void UpdateInventory(BattleType battleType, int? compareCp = null)
         {
+            _compareCp = compareCp;
             _consumables.Clear();
             var elementalTypes = GetElementalTypes();
             inventory.SetAvatarInformation(
@@ -926,9 +930,25 @@ namespace Nekoyume.UI.Module
                 characterStats.EqualizeCurrentHPWithHP();
             }
 
+            UpdateCp();
             stats.SetData(characterStats);
-            cp.PlayAnimation(previousCp, Util.TotalCP(_battleType));
             Widget.Find<HeaderMenuStatic>().UpdateInventoryNotification(inventory.HasNotification());
+        }
+
+        private void UpdateCp()
+        {
+            var currentCp = Util.TotalCP(_battleType);
+            cp.text = currentCp.ToString();
+            if (_compareCp.HasValue)
+            {
+                cp.color = currentCp < _compareCp.Value
+                    ? Palette.GetColor(ColorType.TextDenial)
+                    : Palette.GetColor(ColorType.TextPositive);
+            }
+            else
+            {
+                cp.color = Color.white;
+            }
         }
 
         private static List<ElementalType> GetElementalTypes()

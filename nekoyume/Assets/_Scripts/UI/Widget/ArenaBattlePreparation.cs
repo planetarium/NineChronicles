@@ -5,6 +5,7 @@ using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.Arena;
 using Nekoyume.BlockChain;
+using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Item;
@@ -105,7 +106,6 @@ namespace Nekoyume.UI
             base.Initialize();
 
             information.Initialize();
-
             startButton.SetCost(CostType.ArenaTicket, _ticketCountToUse);
             startButton.OnSubmitSubject
                 .Where(_ => !Game.Game.instance.IsInWorld)
@@ -127,7 +127,7 @@ namespace Nekoyume.UI
             _chooseAvatarState = chooseAvatarState;
             enemyCp.text = chooseAvatarCp.ToString();
             UpdateStartButton();
-            information.UpdateInventory(BattleType.Arena);
+            information.UpdateInventory(BattleType.Arena, chooseAvatarCp);
 
             coverToBlockClick.SetActive(false);
             AgentStateSubject.Crystal
