@@ -301,6 +301,19 @@ namespace Nekoyume.UI
                     ? medalItemId
                     : (int?)null);
             grandFinaleJoin.UpdateInformation();
+
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            var row = TableSheets.Instance.ArenaSheet.GetRowByBlockIndex(blockIndex);
+            var championshipRound = row.Round
+                .Last(roundData => roundData.ArenaType == ArenaType.Championship).Round;
+            if (selectedRoundData.Round > championshipRound)
+            {
+                _missionButton.Hide();
+            }
+            else
+            {
+                _missionButton.Show(GetConditions());
+            }
         }
 
         /// <summary>
@@ -398,7 +411,6 @@ namespace Nekoyume.UI
                 isOpened,
                 blockIndex,
                 championshipId);
-            _missionButton.SetConditions(GetConditions());
         }
 
         private void UpdateEarlyRegistrationButton(
