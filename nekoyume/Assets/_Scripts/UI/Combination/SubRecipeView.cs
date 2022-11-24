@@ -500,9 +500,8 @@ namespace Nekoyume.UI
                     eventMaterialRow.RequiredMaterialsCount);
 
                 var defaultItemSprite = requiredNormalItemIcons.First().sprite;
-                if (eventMaterialRow.RequiredMaterialsId
-                    .First()
-                    .TryGetArenaType(TableSheets.Instance.ArenaSheet, out var arenaType))
+                if (TableSheets.Instance.ArenaSheet.TryGetArenaType(
+                        eventMaterialRow.RequiredMaterialsId.First(), out var arenaType))
                 {
                     var itemSprite = requiredNormalItemIcons
                         .FirstOrDefault(icon => icon.arenaType == arenaType)?.sprite;

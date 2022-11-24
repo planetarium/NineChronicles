@@ -12,8 +12,8 @@ namespace Nekoyume
     public static class ArenaSheetExtensions
     {
         public static bool TryGetArenaType(
-            this int medalItemId,
-            ArenaSheet arenaSheet,
+            this ArenaSheet arenaSheet,
+            int medalItemId,
             out ArenaType arenaType)
         {
             arenaType = ArenaType.OffSeason;
