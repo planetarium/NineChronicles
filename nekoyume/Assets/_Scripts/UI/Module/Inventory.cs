@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Cysharp.Threading.Tasks;
 using Nekoyume.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -10,7 +9,6 @@ using Nekoyume.Model.Elemental;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
-using Nekoyume.Model.Rune;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -61,6 +59,9 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private bool resetScrollOnEnable;
+
+        [SerializeField]
+        private RectTransform tooltipSocket;
 
         private readonly Dictionary<ItemSubType, List<InventoryItem>> _equipments = new();
         private readonly List<InventoryItem> _consumables = new();
@@ -331,7 +332,7 @@ namespace Nekoyume.UI.Module
             {
                 _selectedModel = item;
                 _selectedModel.Selected.SetValueAndForceNotify(true);
-                _onClickItem?.Invoke(_selectedModel, _selectedModel.View); // Show tooltip popup
+                _onClickItem?.Invoke(_selectedModel, tooltipSocket); // Show tooltip popup
             }
             else
             {
@@ -345,7 +346,7 @@ namespace Nekoyume.UI.Module
                     _selectedModel.Selected.SetValueAndForceNotify(false);
                     _selectedModel = item;
                     _selectedModel.Selected.SetValueAndForceNotify(true);
-                    _onClickItem?.Invoke(_selectedModel, _selectedModel.View); // Show tooltip popup
+                    _onClickItem?.Invoke(_selectedModel, tooltipSocket); // Show tooltip popup
                 }
             }
         }

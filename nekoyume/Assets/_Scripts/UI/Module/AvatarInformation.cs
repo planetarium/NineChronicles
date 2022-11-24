@@ -51,6 +51,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private AvatarStats stats;
 
+        [SerializeField]
+        private RectTransform tooltipSocket;
+
         private GameObject _cachedCharacterTitle;
         private InventoryItem _pickedItem;
         private BattleType _battleType = BattleType.Adventure;
@@ -118,7 +121,7 @@ namespace Nekoyume.UI.Module
             _consumables.Clear();
             var elementalTypes = GetElementalTypes();
             inventory.SetAvatarInformation(
-                clickItem: ShowItemTooltip,
+                clickItem: OnClickInventoryItem,
                 doubleClickItem: EquipOrUnequip,
                 OnClickTab,
                 elementalTypes);
@@ -291,7 +294,7 @@ namespace Nekoyume.UI.Module
                     }
                     else
                     {
-                        ShowRuneTooltip(item, slot.RectTransform, new float2(-50, 0));
+                        ShowRuneTooltip(item, tooltipSocket);
                     }
                 }
                 else
@@ -349,7 +352,7 @@ namespace Nekoyume.UI.Module
                 }
 
                 inventory.ClearFocus();
-                ShowItemTooltip(model, slot.RectTransform);
+                ShowItemTooltip(model, tooltipSocket);
             }
         }
 
@@ -597,7 +600,7 @@ namespace Nekoyume.UI.Module
                 .ToDictionary(x => x.Index, x => x);
 
             var selectedSlot = slots.Values.FirstOrDefault(x => !x.RuneId.HasValue);
-            if (selectedSlot != null)
+            if (selectedSlot != null)// 비어있으면
             {
                 selectedSlot.Equip(inventoryItem.RuneState.RuneId);
             }
@@ -639,17 +642,39 @@ namespace Nekoyume.UI.Module
             UpdateRuneView();
         }
 
+        private void OnClickInventoryItem(InventoryItem model, RectTransform target)
+        {
+            if (model.RuneState != null)
+            {
+                if (!model.Equipped.Value)
+                {
+                    runeSlots.UpdateNotification(model.RuneState, _battleType);
+                }
+            }
+            else
+            {
+
+            }
+
+            ShowItemTooltip(model, target);
+        }
+
         private void ShowItemTooltip(InventoryItem model, RectTransform target)
         {
             if (model.RuneState != null)
             {
-                ShowRuneTooltip(model, target, new float2(0, 0));
+                ShowRuneTooltip(model, target);
                 _pickedItem = null;
                 if (!model.Equipped.Value)
                 {
                     var states = States.Instance.RuneSlotStates[_battleType].GetRuneSlot();;
                     var sheet = Game.Game.instance.TableSheets.RuneListSheet;
                     if (!sheet.TryGetValue(model.RuneState.RuneId, out var row))
+                    {
+                        return;
+                    }
+
+                    if (!_battleType.IsEquippableRune((RuneUsePlace)row.UsePlace))
                     {
                         return;
                     }
@@ -693,7 +718,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void ShowRuneTooltip(InventoryItem model, RectTransform target, float2 offset)
+        private void ShowRuneTooltip(InventoryItem model, RectTransform target)
         {
             Widget.Find<RuneTooltip>().
                 Show(
@@ -718,8 +743,7 @@ namespace Nekoyume.UI.Module
                     inventory.ClearSelectedItem();
                     UpdateRuneView();
                 },
-                target,
-                offset);
+                target);
         }
 
         private (string, bool, System.Action, System.Action, System.Action)

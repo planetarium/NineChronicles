@@ -50,6 +50,12 @@ namespace Nekoyume.UI.Module
         private GameObject wearableImage;
 
         [SerializeField]
+        private GameObject upNotification;
+
+        [SerializeField]
+        private GameObject downNotification;
+
+        [SerializeField]
         private GameObject lockObject;
 
         [SerializeField]
@@ -103,6 +109,8 @@ namespace Nekoyume.UI.Module
             UpdateLockState(runeSlot);
             wearableImage.SetActive(false);
             optionTagBg.gameObject.SetActive(false);
+            upNotification.SetActive(false);
+            downNotification.SetActive(false);
             if (runeSlot.RuneId.HasValue)
             {
                 Equip(runeSlot.RuneId.Value);
@@ -111,6 +119,48 @@ namespace Nekoyume.UI.Module
             {
                 Unequip();
             }
+        }
+
+        public void UpdateNotification(RuneState targetRuneState, BattleType battleType)
+        {
+            upNotification.SetActive(false);
+            downNotification.SetActive(false);
+
+            if (RuneSlot.IsLock)
+            {
+                return;
+            }
+
+            if (!RuneSlot.RuneId.HasValue || targetRuneState.RuneId == RuneSlot.RuneId.Value)
+            {
+                return;
+            }
+
+            var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
+            if (!runeListSheet.TryGetValue(targetRuneState.RuneId, out var row))
+            {
+                return;
+            }
+
+            if (!battleType.IsEquippableRune((RuneUsePlace)row.UsePlace))
+            {
+                return;
+            }
+
+            if((RuneType)row.RuneType != RuneSlot.RuneType)
+            {
+                return;
+            }
+
+            if(!States.Instance.TryGetRuneState(RuneSlot.RuneId.Value, out var slotRuneState))
+            {
+                return;
+            }
+
+            var targetCp = Util.GetRuneCp(targetRuneState);
+            var slotCp = Util.GetRuneCp(slotRuneState);
+            upNotification.SetActive(targetCp >= slotCp);
+            downNotification.SetActive(targetCp < slotCp);
         }
 
         private void UpdateLoading(RuneSlot runeSlot)

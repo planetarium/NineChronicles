@@ -4551,6 +4551,42 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -6, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &4190258535619676832
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1288008056879993739}
+  m_Layer: 5
+  m_Name: InventoryCenter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1288008056879993739
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4190258535619676832}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4788093640571366837}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &4272353215964292980
 GameObject:
   m_ObjectHideFlags: 0
@@ -4842,6 +4878,7 @@ RectTransform:
   - {fileID: 6181407179752447753}
   - {fileID: 3027250879760580127}
   - {fileID: 5948577729351323265}
+  - {fileID: 1288008056879993739}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4902,10 +4939,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   equipmentButton: {fileID: 829970758904517144}
   consumableButton: {fileID: 3957154106442019948}
+  runeButton: {fileID: 0}
   materialButton: {fileID: 1284933532856369684}
   costumeButton: {fileID: 9134396430624545873}
   scroll: {fileID: 3669903297582199154}
   resetScrollOnEnable: 0
+  tooltipSocket: {fileID: 0}
 --- !u!1 &4714281320301330323
 GameObject:
   m_ObjectHideFlags: 0
