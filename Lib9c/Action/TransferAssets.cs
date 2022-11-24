@@ -82,7 +82,7 @@ namespace Nekoyume.Action
             }
             var addressesHex = GetSignerAndOtherAddressesHex(context, context.Signer);
             var started = DateTimeOffset.UtcNow;
-            Log.Debug("{AddressesHex}TransferAssets exec started", addressesHex);
+            Log.Debug("{AddressesHex}transfer_assets exec started", addressesHex);
 
             var activatedAccountsState = state.GetState(Addresses.ActivatedAccount) is Dictionary asDict
                 ? new ActivatedAccountsState(asDict)
@@ -90,7 +90,7 @@ namespace Nekoyume.Action
 
             state = Recipients.Aggregate(state, (current, t) => Transfer(current, context.Signer, t.recipient, t.amount, activatedAccountsState));
             var ended = DateTimeOffset.UtcNow;
-            Log.Debug("{AddressesHex}TransferAssets Total Executed Time: {Elapsed}", addressesHex, ended - started);
+            Log.Debug("{AddressesHex}transfer_assets Total Executed Time: {Elapsed}", addressesHex, ended - started);
 
             return state;
         }
