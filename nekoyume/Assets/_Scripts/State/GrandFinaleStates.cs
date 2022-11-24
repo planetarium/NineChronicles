@@ -199,9 +199,20 @@ namespace Nekoyume.State
             var result = avatarAddrAndScoresWithRank.Select(tuple =>
             {
                 var (avatarAddr, score, rank) = tuple;
-                var avatar = stateBulk[avatarAddr] is Dictionary avatarDict
-                    ? new AvatarState(avatarDict)
-                    : null;
+                AvatarState avatar = null;
+                if (stateBulk[avatarAddr] is Dictionary avatarDict)
+                {
+                    try
+                    {
+                        avatar = new AvatarState(avatarDict);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError($"UpdateGrandFinaleParticipantsOrderedWithScoreAsync(): {e}");
+                        avatar = null;
+                    }
+                }
+
                 if (avatar is null)
                 {
                     return null;
@@ -217,6 +228,11 @@ namespace Nekoyume.State
                     stateBulk[ArenaAvatarState.DeriveAddress(avatarAddr)] is List arenaAvatarList
                         ? new ArenaAvatarState(arenaAvatarList)
                         : null;
+                if (arenaAvatar is null)
+                {
+                    return null;
+                }
+
                 avatar = avatar.ApplyToInventory(arenaAvatar);
                 return new GrandFinaleParticipant(
                     avatarAddr,
