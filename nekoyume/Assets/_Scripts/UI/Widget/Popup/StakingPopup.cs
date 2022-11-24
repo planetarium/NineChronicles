@@ -213,13 +213,17 @@ namespace Nekoyume.UI
                 && regularFixedSheet.TryGetValue(level, out var regularFixed))
             {
                 var materialSheet = sheets.MaterialItemSheet;
-                var rewardsCount = Mathf.Min(regular.Rewards.Count, interestBenefitsViews.Length);
-                for (var i = 0; i < rewardsCount; i++)
+                for (var i = 0; i < interestBenefitsViews.Length; i++)
                 {
                     var result = GetReward(regular, regularFixed, (long)deposit, i);
                     result *= Mathf.Max(rewardCount, 1);
-                    interestBenefitsViews[i].gameObject.SetActive(result > 0);
+                    if (result <= 0)
+                    {
+                        interestBenefitsViews[i].gameObject.SetActive(false);
+                        return;
+                    }
 
+                    interestBenefitsViews[i].gameObject.SetActive(true);
                     switch (regular.Rewards[i].Type)
                     {
                         case StakeRegularRewardSheet.StakeRewardType.Item:
@@ -319,6 +323,11 @@ namespace Nekoyume.UI
             StakeRegularFixedRewardSheet.Row regularFixed,
             long deposit, int index)
         {
+            if (regular.Rewards.Count <= index)
+            {
+                return 0;
+            }
+
             var result = deposit / regular.Rewards[index].Rate;
             var levelBonus = regularFixed.Rewards.FirstOrDefault(
                 reward => reward.ItemId == regular.Rewards[index].ItemId)?.Count ?? 0;
