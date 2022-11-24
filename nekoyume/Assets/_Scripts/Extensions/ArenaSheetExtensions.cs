@@ -11,6 +11,36 @@ namespace Nekoyume
 {
     public static class ArenaSheetExtensions
     {
+        public static bool TryGetArenaType(
+            this ArenaSheet arenaSheet,
+            int medalItemId,
+            out ArenaType arenaType)
+        {
+            arenaType = ArenaType.OffSeason;
+            // NOTE: `700_102` is new arena medal item id.
+            if (medalItemId is < 700_100 or >= 800_000)
+            {
+                return false;
+            }
+
+            // `championshipId`: 1 ~ 999
+            var championshipId = medalItemId % 100_000 / 100;
+            if (!arenaSheet.TryGetValue(championshipId, out var row))
+            {
+                return false;
+            }
+
+            // `round`: 1 ~ 99
+            var round = medalItemId % 100;
+            if (!row.TryGetRound(round, out var roundData))
+            {
+                return false;
+            }
+
+            arenaType = roundData.ArenaType;
+            return true;
+        }
+
         public static bool TryGetCurrentRound(
             this ArenaSheet sheet,
             long blockIndex,
