@@ -220,7 +220,7 @@ namespace Nekoyume.UI
                     if (result <= 0)
                     {
                         interestBenefitsViews[i].gameObject.SetActive(false);
-                        return;
+                        continue;
                     }
 
                     interestBenefitsViews[i].gameObject.SetActive(true);
