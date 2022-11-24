@@ -29846,6 +29846,42 @@ MonoBehaviour:
   normalObject: {fileID: 360985023693625156}
   selectedObject: {fileID: 1652951431789981155}
   hasNotificationImage: {fileID: 0}
+--- !u!1 &4297357989216003451
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4617395393645642573}
+  m_Layer: 5
+  m_Name: InventoryCenter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &4617395393645642573
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4297357989216003451}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5299799965362086276}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &4297503287170158410
 GameObject:
   m_ObjectHideFlags: 0
@@ -37338,6 +37374,7 @@ RectTransform:
   - {fileID: 6788850043306201912}
   - {fileID: 2449085819899015726}
   - {fileID: 6445642674141774512}
+  - {fileID: 4617395393645642573}
   m_Father: {fileID: 5790248345511944501}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -37403,6 +37440,7 @@ MonoBehaviour:
   costumeButton: {fileID: 8448180164061302880}
   scroll: {fileID: 4111803691029445955}
   resetScrollOnEnable: 0
+  tooltipSocket: {fileID: 9167386919494311510}
 --- !u!1 &5374825520376783116
 GameObject:
   m_ObjectHideFlags: 0
@@ -48690,6 +48728,7 @@ MonoBehaviour:
   runeSlots: {fileID: 4324478342102067320}
   cp: {fileID: 8760681492486436696}
   stats: {fileID: 5150814594604043080}
+  tooltipSocket: {fileID: 4617395393645642573}
 --- !u!1 &6716294530710340718
 GameObject:
   m_ObjectHideFlags: 0
@@ -48818,6 +48857,7 @@ RectTransform:
   - {fileID: 6786792049390821760}
   - {fileID: 6786549480552539226}
   - {fileID: 4459339182759398511}
+  - {fileID: 9167386919494311510}
   m_Father: {fileID: 6785922367765288486}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -63658,6 +63698,42 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &7777177058436475925
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9167386919494311510}
+  m_Layer: 5
+  m_Name: TooltipSocket
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &9167386919494311510
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7777177058436475925}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6786584188659346010}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 1, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 1, y: 0.5}
 --- !u!1 &7784999714428153096
 GameObject:
   m_ObjectHideFlags: 0

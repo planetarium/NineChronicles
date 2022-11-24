@@ -1637,6 +1637,7 @@ MonoBehaviour:
   runeSlots: {fileID: 2930662396841505460}
   cp: {fileID: 6058498253812522715}
   stats: {fileID: 4442061167375357892}
+  tooltipSocket: {fileID: 6989585780587234102}
 --- !u!1 &2876407774478346020
 GameObject:
   m_ObjectHideFlags: 0
@@ -1830,6 +1831,7 @@ RectTransform:
   - {fileID: 7143364849348676613}
   - {fileID: 2662057172536409356}
   - {fileID: 6615276812639704145}
+  - {fileID: 129199905238157025}
   m_Father: {fileID: 2662315663128103594}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -9130,6 +9132,42 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &7648602088478580824
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 129199905238157025}
+  m_Layer: 5
+  m_Name: TooltipSocket
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &129199905238157025
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7648602088478580824}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2661851478349592278}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 1, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 1, y: 0.5}
 --- !u!1 &7664852121301486911
 GameObject:
   m_ObjectHideFlags: 0
@@ -21472,6 +21510,11 @@ PrefabInstance:
       propertyPath: runeButton
       value: 
       objectReference: {fileID: 7003511862108460129}
+    - target: {fileID: 4100081935161556727, guid: 30ca55af9c4c11f45a533b51c5d72258,
+        type: 3}
+      propertyPath: tooltipSocket
+      value: 
+      objectReference: {fileID: 129199905238157025}
     - target: {fileID: 4135739168730383831, guid: 30ca55af9c4c11f45a533b51c5d72258,
         type: 3}
       propertyPath: m_PreferredWidth
@@ -21947,6 +21990,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27e2f785c9f14bf0a7e26bd106882815, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &6989585780587234102 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1288008056879993739, guid: 30ca55af9c4c11f45a533b51c5d72258,
+    type: 3}
+  m_PrefabInstance: {fileID: 8151537026956153021}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &7003511862108460129 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1157824581023548636, guid: 30ca55af9c4c11f45a533b51c5d72258,

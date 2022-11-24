@@ -356,5 +356,20 @@ namespace Nekoyume.Helper
 
             return result;
         }
+
+        public static int GetRuneCp(RuneState runeState)
+        {
+            var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
+            if (!runeOptionSheet.TryGetValue(runeState.RuneId, out var optionRow))
+            {
+                return 0;
+            }
+            if (!optionRow.LevelOptionMap.TryGetValue(runeState.Level, out var option))
+            {
+                return 0;
+            }
+
+            return option.Cp;
+        }
     }
 }

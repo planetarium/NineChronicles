@@ -216,10 +216,9 @@ namespace Nekoyume.UI
             System.Action onConfirm,
             System.Action onEnhancement = null,
             System.Action onClose = null,
-            RectTransform target = null,
-            float2 offsetFromTarget = default)
+            RectTransform target = null)
         {
-            _offsetFromTarget = offsetFromTarget;
+            // _offsetFromTarget = offsetFromTarget;
             confirmButton.gameObject.SetActive(true);
             confirmButton.Interactable = interactable;
             enhancementButton.gameObject.SetActive(true);
@@ -359,31 +358,9 @@ namespace Nekoyume.UI
             }
         }
 
-
         private void UpdatePosition(RectTransform target)
         {
-            LayoutRebuilder.ForceRebuildLayoutImmediate(panel);
-            panel.SetAnchorAndPivot(AnchorPresetType.TopLeft, PivotPresetType.TopLeft);
-            LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)verticalLayoutGroup.transform);
-            if (target)
-            {
-                panel.MoveToRelatedPosition(target, TargetPivotPresetType, OffsetFromTarget);
-            }
-            else
-            {
-                panel.SetAnchor(AnchorPresetType.MiddleCenter);
-                panel.anchoredPosition =
-                    new Vector2(-(panel.sizeDelta.x / 2), panel.sizeDelta.y / 2);
-            }
-            panel.MoveInsideOfParent(MarginFromParent);
-
-            if (!(target is null) && panel.position.x - target.position.x < 0)
-            {
-                panel.SetAnchorAndPivot(AnchorPresetType.TopRight, PivotPresetType.TopRight);
-                panel.MoveToRelatedPosition(target, TargetPivotPresetType.ReverseX(),
-                    DefaultOffsetFromTarget.ReverseX());
-                UpdateAnchoredPosition(target);
-            }
+            transform.position = target.position;
         }
 
         protected IEnumerator CoUpdate(GameObject target)
