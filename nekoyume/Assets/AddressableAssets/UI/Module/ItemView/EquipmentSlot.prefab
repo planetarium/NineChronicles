@@ -238,6 +238,8 @@ MonoBehaviour:
   gradeImage: {fileID: 722425532850955470}
   gradeHsv: {fileID: 3081713397720630798}
   enhancementImage: {fileID: 1382718575695869683}
+  upNotification: {fileID: 6762120420213855777}
+  downNotification: {fileID: 6140782909744284226}
 --- !u!114 &6202325387254898463
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -267,7 +269,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &4748748357272669033
 RectTransform:
   m_ObjectHideFlags: 0

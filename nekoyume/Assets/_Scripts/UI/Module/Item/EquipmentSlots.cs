@@ -272,6 +272,14 @@ namespace Nekoyume.UI.Module
             return slot;
         }
 
+        public void UpdateNotification(ItemBase itemBase)
+        {
+            foreach (var slot in slots)
+            {
+                slot.UpdateNotification(itemBase);
+            }
+        }
+
         /// <summary>
         /// 모든 슬롯을 해제한다.
         /// </summary>

@@ -644,16 +644,18 @@ namespace Nekoyume.UI.Module
 
         private void OnClickInventoryItem(InventoryItem model, RectTransform target)
         {
+            if (model.Equipped.Value)
+            {
+                return;
+            }
+
             if (model.RuneState != null)
             {
-                if (!model.Equipped.Value)
-                {
-                    runeSlots.UpdateNotification(model.RuneState, _battleType);
-                }
+                runeSlots.UpdateNotification(model.RuneState, _battleType);
             }
             else
             {
-
+                equipmentSlots.UpdateNotification(model.ItemBase);
             }
 
             ShowItemTooltip(model, target);
