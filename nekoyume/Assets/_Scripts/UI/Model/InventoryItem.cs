@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Model
 {
-    public class InventoryItem : IItemViewModel
+    public class InventoryItem
     {
         public ItemBase ItemBase { get; }
         public RuneState RuneState { get; }
@@ -21,8 +21,6 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<int> GrindingCount;
         public readonly ReactiveProperty<bool> Disabled;
         public readonly Subject<bool> GrindingCountEnabled;
-
-        public RectTransform View { get; set; }
 
         public InventoryItem(ItemBase itemBase, int count, bool limited, bool tradable)
         {

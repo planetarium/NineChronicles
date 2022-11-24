@@ -61,6 +61,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private bool resetScrollOnEnable;
 
+        [SerializeField]
+        private RectTransform tooltipSocket;
+
         private readonly Dictionary<ItemSubType, List<EnhancementInventoryItem>> _equipments =
             new Dictionary<ItemSubType, List<EnhancementInventoryItem>>();
 
@@ -204,7 +207,7 @@ namespace Nekoyume.UI.Module
                 ClearSelectedItem();
                 _selectedModel = item;
                 _selectedModel.Selected.SetValueAndForceNotify(true);
-                _onSelectItem?.Invoke(_selectedModel, _selectedModel.View); // Show tooltip popup
+                _onSelectItem?.Invoke(_selectedModel, tooltipSocket); // Show tooltip popup
             }
 
             UpdateView();

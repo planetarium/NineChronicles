@@ -43,6 +43,9 @@ namespace Nekoyume.UI
         protected Button descriptionButton;
 
         [SerializeField]
+        protected GameObject submitButtonContainer;
+
+        [SerializeField]
         protected AcquisitionPlaceDescription acquisitionPlaceDescription;
 
         private readonly List<IDisposable> _disposablesForModel = new();
@@ -124,8 +127,7 @@ namespace Nekoyume.UI
                 (item.ItemType == ItemType.Equipment ||
                  item.ItemType == ItemType.Costume));
 
-            submitButton.gameObject.SetActive(onSubmit != null);
-            enhancementButton.gameObject.SetActive(false);
+            submitButtonContainer.SetActive(onSubmit != null);
             submitButton.Interactable = interactable;
             submitButton.Text = submitText;
             _onSubmit = onSubmit;
@@ -135,7 +137,7 @@ namespace Nekoyume.UI
             scrollbar.value = 1f;
             UpdatePosition(target);
             base.Show();
-            StartCoroutine(CoUpdate(submitButton.gameObject));
+            StartCoroutine(CoUpdate(submitButtonContainer.gameObject));
         }
 
         public virtual void Show(
@@ -158,7 +160,7 @@ namespace Nekoyume.UI
                 (item.ItemBase.ItemType == ItemType.Equipment ||
                  item.ItemBase.ItemType == ItemType.Costume));
 
-            submitButton.gameObject.SetActive(onSubmit != null);
+            submitButtonContainer.SetActive(onSubmit != null);
             submitButton.Interactable = interactable;
             submitButton.Text = submitText;
             _onSubmit = onSubmit;
@@ -170,7 +172,7 @@ namespace Nekoyume.UI
             scrollbar.value = 1f;
             UpdatePosition(target);
             base.Show();
-            StartCoroutine(CoUpdate(submitButton.gameObject));
+            StartCoroutine(CoUpdate(submitButtonContainer.gameObject));
         }
 
         public virtual void Show(
@@ -180,8 +182,7 @@ namespace Nekoyume.UI
             System.Action onClose,
             RectTransform target = null)
         {
-            submitButton.gameObject.SetActive(false);
-            enhancementButton.gameObject.SetActive(false);
+            submitButtonContainer.SetActive(false);
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(true);
             sell.Set(item.OrderDigest.ExpiredBlockIndex,
@@ -214,8 +215,7 @@ namespace Nekoyume.UI
             System.Action onClose,
             RectTransform target = null)
         {
-            submitButton.gameObject.SetActive(false);
-            enhancementButton.gameObject.SetActive(false);
+            submitButtonContainer.SetActive(false);
             sell.gameObject.SetActive(false);
             buy.gameObject.SetActive(true);
             buy.Set(item.OrderDigest.ExpiredBlockIndex,
@@ -259,7 +259,7 @@ namespace Nekoyume.UI
                 (item.ItemBase.ItemType == ItemType.Equipment ||
                  item.ItemBase.ItemType == ItemType.Costume));
 
-            submitButton.gameObject.SetActive(onSubmit != null);
+            submitButtonContainer.SetActive(onSubmit != null);
             submitButton.Interactable = interactable;
             submitButton.Text = submitText;
             _onSubmit = onSubmit;
@@ -269,7 +269,7 @@ namespace Nekoyume.UI
             scrollbar.value = 1f;
             UpdatePosition(target);
             base.Show();
-            StartCoroutine(CoUpdate(submitButton.gameObject));
+            StartCoroutine(CoUpdate(submitButtonContainer.gameObject));
         }
 
         public static ItemTooltip Find(ItemType type)

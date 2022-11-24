@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Model
 {
-    public class ShopItem : IItemViewModel
+    public class ShopItem
     {
         public ItemBase ItemBase { get; }
         public OrderDigest OrderDigest { get; }
@@ -15,8 +15,6 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<bool> Selected;
         public readonly ReactiveProperty<bool> Expired;
         public readonly ReactiveProperty<bool> Loading;
-
-        public RectTransform View { get; set; }
 
         public ShopItem(ItemBase itemBase, OrderDigest orderDigest,
             int grade, bool limited)

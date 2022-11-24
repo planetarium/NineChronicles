@@ -16,7 +16,6 @@ namespace Nekoyume.UI.Module
 
         public void Set(RuneListItem model, RuneListScroll.ContextModel context)
         {
-            model.View = GetComponent<RectTransform>();
             titleText.text = model.RuneTitle;
             foreach (var item in items)
             {

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Model
 {
-    public class RuneListItem : IItemViewModel
+    public class RuneListItem
     {
         public string RuneTitle { get; }
         public List<RuneItem> Runes { get; }

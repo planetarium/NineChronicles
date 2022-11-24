@@ -100,8 +100,6 @@ namespace Nekoyume.UI.Module
             model.DimObjectEnabled.Subscribe(b => baseItemView.DimObject.SetActive(b)).AddTo(_disposables);
             model.HasNotification.Subscribe(b => baseItemView.NotificationObject.SetActive(b)).AddTo(_disposables);
 
-            model.View = GetComponent<RectTransform>();
-
             baseItemView.TouchHandler.OnClick.Select(_ => model)
                 .Subscribe(context.OnClick.OnNext).AddTo(_disposables);
             baseItemView.TouchHandler.OnDoubleClick.Select(_ => model)
@@ -177,7 +175,6 @@ namespace Nekoyume.UI.Module
             model.GrindingCountEnabled
                 .Subscribe(b => baseItemView.GrindingCountObject.SetActive(b))
                 .AddTo(_disposables);
-            model.View = GetComponent<RectTransform>();
 
             baseItemView.TouchHandler.OnClick.Select(_ => model)
                 .Subscribe(context.OnClick.OnNext).AddTo(_disposables);

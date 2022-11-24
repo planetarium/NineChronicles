@@ -309,6 +309,7 @@ MonoBehaviour:
   addText: {fileID: 1926970472686703761}
   currentExText: {fileID: 0}
   addExText: {fileID: 0}
+  etcText: {fileID: 0}
   star: {fileID: 5933923379369600674}
 --- !u!1 &268997067771209855
 GameObject:
@@ -867,6 +868,7 @@ MonoBehaviour:
   addText: {fileID: 6310320797683655756}
   currentExText: {fileID: 5220103423414557588}
   addExText: {fileID: 5338170709110291880}
+  etcText: {fileID: 0}
   star: {fileID: 0}
 --- !u!1 &450169256266826341
 GameObject:
@@ -3634,6 +3636,7 @@ RectTransform:
   - {fileID: 8282401372565983629}
   - {fileID: 6606676148326447645}
   - {fileID: 6703707268641252892}
+  - {fileID: 6510831282604904313}
   m_Father: {fileID: 2584949540336901383}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5531,6 +5534,7 @@ MonoBehaviour:
   addText: {fileID: 3727065432727665975}
   currentExText: {fileID: 255961665773990259}
   addExText: {fileID: 5687858099532913538}
+  etcText: {fileID: 0}
   star: {fileID: 0}
 --- !u!1 &2133850267985883043
 GameObject:
@@ -16666,6 +16670,7 @@ MonoBehaviour:
   addText: {fileID: 1709520135320215207}
   currentExText: {fileID: 7304848218521454026}
   addExText: {fileID: 2294378542248365737}
+  etcText: {fileID: 0}
   star: {fileID: 0}
 --- !u!1 &5805460822868582915
 GameObject:
@@ -17740,6 +17745,7 @@ MonoBehaviour:
   addText: {fileID: 8316203907443577124}
   currentExText: {fileID: 9028819612320428091}
   addExText: {fileID: 5737208335873028134}
+  etcText: {fileID: 0}
   star: {fileID: 0}
 --- !u!1 &6029497992367919486
 GameObject:
@@ -25077,6 +25083,7 @@ MonoBehaviour:
   addText: {fileID: 6326084380545639969}
   currentExText: {fileID: 0}
   addExText: {fileID: 0}
+  etcText: {fileID: 0}
   star: {fileID: 8420015299094811192}
 --- !u!1 &7153988267142730440
 GameObject:
@@ -25312,6 +25319,7 @@ MonoBehaviour:
   addText: {fileID: 1229234684588085119}
   currentExText: {fileID: 0}
   addExText: {fileID: 0}
+  etcText: {fileID: 0}
   star: {fileID: 4638366347647269982}
 --- !u!1 &7171435864491744801
 GameObject:
@@ -45787,6 +45795,42 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   allowSwitchOffWhenIsOn: 1
+--- !u!1 &7628079640196123263
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6510831282604904313}
+  m_Layer: 5
+  m_Name: TooltipSocket
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &6510831282604904313
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7628079640196123263}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4701239689616853684}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 88}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &7687108036663158169
 GameObject:
   m_ObjectHideFlags: 0
@@ -46068,6 +46112,7 @@ MonoBehaviour:
   addText: {fileID: 36027773617278691}
   currentExText: {fileID: 0}
   addExText: {fileID: 0}
+  etcText: {fileID: 0}
   star: {fileID: 7826583086600318582}
 --- !u!1 &7826583086600318582
 GameObject:
@@ -49360,6 +49405,7 @@ MonoBehaviour:
   addText: {fileID: 1911403105111940470}
   currentExText: {fileID: 0}
   addExText: {fileID: 0}
+  etcText: {fileID: 0}
   star: {fileID: 0}
 --- !u!1001 &45850969305254936
 PrefabInstance:
@@ -50801,6 +50847,11 @@ PrefabInstance:
       propertyPath: scroll
       value: 
       objectReference: {fileID: 4198832074225017460}
+    - target: {fileID: 4093876328674768839, guid: 1ea70276a4bf19b4faf37eb620cafe4b,
+        type: 3}
+      propertyPath: tooltipSocket
+      value: 
+      objectReference: {fileID: 6510831282604904313}
     - target: {fileID: 4388369274710730599, guid: 1ea70276a4bf19b4faf37eb620cafe4b,
         type: 3}
       propertyPath: m_SizeDelta.x
