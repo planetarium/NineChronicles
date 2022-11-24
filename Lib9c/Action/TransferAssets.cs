@@ -21,6 +21,7 @@ namespace Nekoyume.Action
     [ActionType("transfer_assets")]
     public class TransferAssets : ActionBase, ISerializable, ITransferAssets
     {
+        public const int RecipientsCapacity = 100;
         private const int MemoMaxLength = 80;
 
         public TransferAssets()
@@ -75,6 +76,10 @@ namespace Nekoyume.Action
                 return Recipients.Aggregate(state, (current, t) => current.MarkBalanceChanged(t.amount.Currency, new[] {Sender, t.recipient}));
             }
 
+            if (Recipients.Count > RecipientsCapacity)
+            {
+                throw new ArgumentOutOfRangeException($"{nameof(Recipients)} must be less than or equal {RecipientsCapacity}.");
+            }
             var addressesHex = GetSignerAndOtherAddressesHex(context, context.Signer);
             var started = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}TransferAsset3 exec started", addressesHex);
