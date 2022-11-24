@@ -1,5 +1,6 @@
 namespace Lib9c.Tests.Action
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.IO;
@@ -446,6 +447,29 @@ namespace Lib9c.Tests.Action
             Assert.Equal(_recipient, deserialized.Recipients.Single().recipient);
             Assert.Equal(_currency * 100, deserialized.Recipients.Single().amount);
             Assert.Equal(memo, deserialized.Memo);
+        }
+
+        [Fact]
+        public void Execute_Throw_ArgumentOutOfRangeException()
+        {
+            var recipients = new List<(Address, FungibleAssetValue)>();
+
+            for (int i = 0; i < TransferAssets.RecipientsCapacity + 1; i++)
+            {
+                recipients.Add((_recipient, _currency * 100));
+            }
+
+            var action = new TransferAssets(_sender, recipients);
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                action.Execute(new ActionContext()
+                {
+                    PreviousStates = new State(),
+                    Signer = _sender,
+                    Rehearsal = false,
+                    BlockIndex = 1,
+                });
+            });
         }
     }
 }
