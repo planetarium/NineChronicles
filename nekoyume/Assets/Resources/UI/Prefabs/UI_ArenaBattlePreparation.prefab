@@ -1637,7 +1637,6 @@ MonoBehaviour:
   runeSlots: {fileID: 2930662396841505460}
   cp: {fileID: 6058498253812522715}
   stats: {fileID: 4442061167375357892}
-  tooltipSocket: {fileID: 0}
 --- !u!1 &2876407774478346020
 GameObject:
   m_ObjectHideFlags: 0
@@ -8411,9 +8410,9 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
-  m_enableVertexGradient: 1
+    rgba: 4292737535
+  m_fontColor: {r: 1, g: 0.9764706, b: 0.8666667, a: 1}
+  m_enableVertexGradient: 0
   m_colorMode: 2
   m_fontColorGradient:
     topLeft: {r: 1, g: 0.96350545, b: 0.9009434, a: 1}
@@ -8956,9 +8955,9 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
-  m_enableVertexGradient: 1
+    rgba: 4292737535
+  m_fontColor: {r: 1, g: 0.9764706, b: 0.8666667, a: 1}
+  m_enableVertexGradient: 0
   m_colorMode: 2
   m_fontColorGradient:
     topLeft: {r: 1, g: 0.9647059, b: 0.9019608, a: 1}
@@ -18209,12 +18208,12 @@ PrefabInstance:
     - target: {fileID: 2117119794829413410, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2117119794829413410, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2117119794829413410, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
@@ -18224,7 +18223,7 @@ PrefabInstance:
     - target: {fileID: 2117119794829413410, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 26
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2117119794829413410, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
@@ -18234,7 +18233,7 @@ PrefabInstance:
     - target: {fileID: 2117119794829413410, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -13
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2424622643390601637, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
