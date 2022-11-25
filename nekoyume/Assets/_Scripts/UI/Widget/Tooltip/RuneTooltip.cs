@@ -16,7 +16,6 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
 using SkillView = Nekoyume.UI.Module.SkillView;
@@ -94,8 +93,6 @@ namespace Nekoyume.UI
         private bool _isClickedButtonArea;
 
         protected override PivotPresetType TargetPivotPresetType => PivotPresetType.TopRight;
-        private float2 _offsetFromTarget;
-        protected override float2 OffsetFromTarget => _offsetFromTarget;
 
         protected override void Awake()
         {
@@ -134,12 +131,8 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-         public void ShowForDisplay(
-            RuneState runeState,
-            RectTransform target = null,
-            float2 offsetFromTarget = default)
+         public void ShowForDisplay(RuneState runeState)
         {
-            _offsetFromTarget = offsetFromTarget;
             confirmButton.gameObject.SetActive(false);
             enhancementButton.gameObject.SetActive(false);
             runeNameText.text = L10nManager.Localize($"RUNE_NAME_{runeState.RuneId}");
@@ -204,7 +197,6 @@ namespace Nekoyume.UI
             }
 
             scrollbar.value = 1f;
-            UpdatePosition(target);
             base.Show();
             StartCoroutine(CoUpdate(confirmButton.gameObject));
         }
@@ -215,10 +207,8 @@ namespace Nekoyume.UI
             bool interactable,
             System.Action onConfirm,
             System.Action onEnhancement = null,
-            System.Action onClose = null,
-            RectTransform target = null)
+            System.Action onClose = null)
         {
-            // _offsetFromTarget = offsetFromTarget;
             confirmButton.gameObject.SetActive(true);
             confirmButton.Interactable = interactable;
             enhancementButton.gameObject.SetActive(true);
@@ -291,7 +281,6 @@ namespace Nekoyume.UI
             _onClose = onClose;
 
             scrollbar.value = 1f;
-            UpdatePosition(target);
             base.Show();
             StartCoroutine(CoUpdate(confirmButton.gameObject));
         }
@@ -356,11 +345,6 @@ namespace Nekoyume.UI
                 default:
                     throw new ArgumentOutOfRangeException(nameof(runeUsePlace), runeUsePlace, null);
             }
-        }
-
-        private void UpdatePosition(RectTransform target)
-        {
-            transform.position = target.position;
         }
 
         protected IEnumerator CoUpdate(GameObject target)

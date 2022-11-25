@@ -20,9 +20,6 @@ namespace Nekoyume
         [SerializeField]
         private TMP_Dropdown sortFilter;
 
-        [SerializeField]
-        private RectTransform tooltipSocket;
-
         private ShopItem _selectedItem;
 
         // search condition
@@ -87,7 +84,7 @@ namespace Nekoyume
             {
                 _selectedItem = item;
                 _selectedItem.Selected.SetValueAndForceNotify(true);
-                ClickItemAction?.Invoke(_selectedItem, tooltipSocket); // Show tooltip popup
+                ClickItemAction?.Invoke(_selectedItem); // Show tooltip popup
             }
             else
             {
@@ -101,7 +98,7 @@ namespace Nekoyume
                     _selectedItem.Selected.SetValueAndForceNotify(false);
                     _selectedItem = item;
                     _selectedItem.Selected.SetValueAndForceNotify(true);
-                    ClickItemAction?.Invoke(_selectedItem, tooltipSocket); // Show tooltip popup
+                    ClickItemAction?.Invoke(_selectedItem); // Show tooltip popup
                 }
             }
         }

@@ -114,8 +114,7 @@ namespace Nekoyume.UI
             System.Action onSubmit,
             System.Action onClose = null,
             System.Action onBlocked = null,
-            int itemCount = 0,
-            RectTransform target = null)
+            int itemCount = 0)
         {
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
@@ -135,7 +134,6 @@ namespace Nekoyume.UI
             _onBlocked = onBlocked;
 
             scrollbar.value = 1f;
-            UpdatePosition(target);
             base.Show();
             StartCoroutine(CoUpdate(submitButtonContainer.gameObject));
         }
@@ -147,8 +145,7 @@ namespace Nekoyume.UI
             System.Action onSubmit,
             System.Action onClose = null,
             System.Action onBlocked = null,
-            System.Action onEnhancement = null,
-            RectTransform target = null)
+            System.Action onEnhancement = null)
         {
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
@@ -170,7 +167,6 @@ namespace Nekoyume.UI
             enhancementButton.gameObject.SetActive(onEnhancement != null);
 
             scrollbar.value = 1f;
-            UpdatePosition(target);
             base.Show();
             StartCoroutine(CoUpdate(submitButtonContainer.gameObject));
         }
@@ -179,8 +175,7 @@ namespace Nekoyume.UI
             ShopItem item,
             System.Action onRegister,
             System.Action onSellCancellation,
-            System.Action onClose,
-            RectTransform target = null)
+            System.Action onClose)
         {
             submitButtonContainer.SetActive(false);
             buy.gameObject.SetActive(false);
@@ -204,7 +199,6 @@ namespace Nekoyume.UI
             _onClose = onClose;
 
             scrollbar.value = 1f;
-            UpdatePosition(target);
             base.Show();
             StartCoroutine(CoUpdate(sell.gameObject));
         }
@@ -212,8 +206,7 @@ namespace Nekoyume.UI
         public virtual void Show(
             ShopItem item,
             System.Action onBuy,
-            System.Action onClose,
-            RectTransform target = null)
+            System.Action onClose)
         {
             submitButtonContainer.SetActive(false);
             sell.gameObject.SetActive(false);
@@ -235,7 +228,6 @@ namespace Nekoyume.UI
             _onClose = onClose;
 
             scrollbar.value = 1f;
-            UpdatePosition(target);
             base.Show();
             StartCoroutine(CoUpdate(buy.gameObject));
         }
@@ -246,8 +238,7 @@ namespace Nekoyume.UI
             bool interactable,
             System.Action onSubmit,
             System.Action onClose = null,
-            System.Action onBlocked = null,
-            RectTransform target = null)
+            System.Action onBlocked = null)
         {
             enhancementButton.gameObject.SetActive(false);
             buy.gameObject.SetActive(false);
@@ -267,7 +258,6 @@ namespace Nekoyume.UI
             _onBlocked = onBlocked;
 
             scrollbar.value = 1f;
-            UpdatePosition(target);
             base.Show();
             StartCoroutine(CoUpdate(submitButtonContainer.gameObject));
         }
@@ -282,11 +272,6 @@ namespace Nekoyume.UI
                 ItemType.Material => Find<MaterialTooltip>(),
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, $"invalid ItemType : {type}")
             };
-        }
-
-        protected void UpdatePosition(RectTransform target)
-        {
-            transform.position = target.position;
         }
 
         protected IEnumerator CoUpdate(GameObject target)

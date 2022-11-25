@@ -81,7 +81,7 @@ namespace Nekoyume.UI.Module
 
         private InventoryItem _selectedModel;
 
-        private Action<InventoryItem, RectTransform> _onClickItem;
+        private Action<InventoryItem> _onClickItem;
         private Action<InventoryItem> _onDoubleClickItem;
         private Action<InventoryTabType> _onClickTab;
         private InventoryTabType _activeTabType = InventoryTabType.Equipment;
@@ -133,7 +133,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void SetAction(Action<InventoryItem, RectTransform> clickItem,
+        private void SetAction(Action<InventoryItem> clickItem,
             Action<InventoryItem> doubleClickItem = null,
             Action<InventoryTabType> onClickTab = null)
         {
@@ -332,7 +332,7 @@ namespace Nekoyume.UI.Module
             {
                 _selectedModel = item;
                 _selectedModel.Selected.SetValueAndForceNotify(true);
-                _onClickItem?.Invoke(_selectedModel, tooltipSocket); // Show tooltip popup
+                _onClickItem?.Invoke(_selectedModel); // Show tooltip popup
             }
             else
             {
@@ -346,7 +346,7 @@ namespace Nekoyume.UI.Module
                     _selectedModel.Selected.SetValueAndForceNotify(false);
                     _selectedModel = item;
                     _selectedModel.Selected.SetValueAndForceNotify(true);
-                    _onClickItem?.Invoke(_selectedModel, tooltipSocket); // Show tooltip popup
+                    _onClickItem?.Invoke(_selectedModel); // Show tooltip popup
                 }
             }
         }
@@ -542,7 +542,7 @@ namespace Nekoyume.UI.Module
         }
 
         public void SetAvatarInformation(
-            Action<InventoryItem, RectTransform> clickItem,
+            Action<InventoryItem> clickItem,
             Action<InventoryItem> doubleClickItem,
             Action<InventoryTabType> onClickTab,
             IEnumerable<ElementalType> elementalTypes,
@@ -560,7 +560,7 @@ namespace Nekoyume.UI.Module
             _toggleGroup.DisabledFunc = () => false;
         }
 
-        public void SetShop(Action<InventoryItem, RectTransform> clickItem)
+        public void SetShop(Action<InventoryItem> clickItem)
         {
             _checkTradable = true;
             SetAction(clickItem);
@@ -568,7 +568,7 @@ namespace Nekoyume.UI.Module
             _toggleGroup.DisabledFunc = () => false;
         }
 
-        public void SetGrinding(Action<InventoryItem, RectTransform> clickItem,
+        public void SetGrinding(Action<InventoryItem> clickItem,
             Action<Inventory, Nekoyume.Model.Item.Inventory> onUpdateInventory,
             List<(ItemType type, Predicate<InventoryItem>)> predicateList,
             bool reverseOrder)
@@ -600,6 +600,10 @@ namespace Nekoyume.UI.Module
                 var equippable = battleType.IsEquippableRune((RuneUsePlace)row.UsePlace);
                 rune.DimObjectEnabled.SetValueAndForceNotify(!equippable);
             }
+
+            var test = _runes.OrderBy(x => x.DimObjectEnabled.Value).ToList();
+            _runes.Clear();
+            _runes.AddRange(test);
         }
 
         public void UpdateCostumes(List<Guid> costumes)

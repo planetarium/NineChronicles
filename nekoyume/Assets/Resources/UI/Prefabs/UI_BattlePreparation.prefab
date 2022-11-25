@@ -17663,7 +17663,7 @@ MonoBehaviour:
   runeSlots: {fileID: 1371271110937315894}
   cp: {fileID: 7298241815649076378}
   stats: {fileID: 4442061167375357892}
-  tooltipSocket: {fileID: 4109858349970769939}
+  tooltipSocket: {fileID: 0}
 --- !u!1 &2876414533856991458
 GameObject:
   m_ObjectHideFlags: 0
@@ -17784,7 +17784,6 @@ RectTransform:
   - {fileID: 7143364849348676613}
   - {fileID: 2661815698627541206}
   - {fileID: 5105057331969915232}
-  - {fileID: 4109858349970769939}
   m_Father: {fileID: 2662315663128103594}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -20652,42 +20651,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!1 &6947020017454836048
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4109858349970769939}
-  m_Layer: 5
-  m_Name: TooltipSocket
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &4109858349970769939
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6947020017454836048}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2661851478349592278}
-  m_RootOrder: 9
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0.5}
-  m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 190, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 1, y: 0.5}
 --- !u!1 &7015951007761812073
 GameObject:
   m_ObjectHideFlags: 0
@@ -39813,7 +39776,7 @@ PrefabInstance:
         type: 3}
       propertyPath: tooltipSocket
       value: 
-      objectReference: {fileID: 4109858349970769939}
+      objectReference: {fileID: 0}
     - target: {fileID: 4145868064589585212, guid: 30ca55af9c4c11f45a533b51c5d72258,
         type: 3}
       propertyPath: m_AnchorMax.y

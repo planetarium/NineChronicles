@@ -157,8 +157,7 @@ namespace Nekoyume.UI
                 () => enhancementInventory.ClearSelectedItem(),
                 () => NotificationSystem.Push(MailType.System,
                     L10nManager.Localize("NOTIFICATION_MISMATCH_MATERIAL"),
-                    NotificationCell.NotificationType.Alert),
-                target);
+                    NotificationCell.NotificationType.Alert));
         }
 
         private void Action()

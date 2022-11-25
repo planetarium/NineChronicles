@@ -93,16 +93,16 @@ namespace Nekoyume.UI.Module
                 {
                     var rt = items[i].RectTransform;
                     var itemBase = rewardItems[i].ItemBase.Value;
-                    items[i].SetData(rewardItems[i], () => ShowTooltip(itemBase, rt));
+                    items[i].SetData(rewardItems[i], () => ShowTooltip(itemBase));
                     items[i].gameObject.SetActive(true);
                 }
             }
 
-            private static void ShowTooltip(ItemBase itemBase, RectTransform rt)
+            private static void ShowTooltip(ItemBase itemBase)
             {
                 AudioController.PlayClick();
                 var tooltip = ItemTooltip.Find(itemBase.ItemType);
-                tooltip.Show(itemBase, string.Empty, false, null, target:rt);
+                tooltip.Show(itemBase, string.Empty, false, null);
             }
         }
 

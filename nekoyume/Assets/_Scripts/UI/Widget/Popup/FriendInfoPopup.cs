@@ -285,7 +285,7 @@ namespace Nekoyume.UI
 
             var item = new InventoryItem(slot.Item, 1, false, true);
             var tooltip = ItemTooltip.Find(item.ItemBase.ItemType);
-            tooltip.Show(item, string.Empty, false, null, target: slot.RectTransform);
+            tooltip.Show(item, string.Empty, false, null);
         }
 
         private void ShowRuneTooltip(RuneSlotView slot)
@@ -301,7 +301,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            Find<RuneTooltip>().ShowForDisplay(runeState, slot.RectTransform, new float2(-50, 0));
+            Find<RuneTooltip>().ShowForDisplay(runeState);
         }
     }
 }

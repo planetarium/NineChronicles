@@ -62,9 +62,6 @@ namespace Nekoyume
         [SerializeField]
         private GameObject loading;
 
-        [SerializeField]
-        private RectTransform tooltipSocket;
-
         private readonly List<ItemSubTypeFilter> _toggleTypes = new List<ItemSubTypeFilter>()
         {
             ItemSubTypeFilter.Equipment,
@@ -320,14 +317,14 @@ namespace Nekoyume
                             ClearSelectedItems();
                             item.Selected.SetValueAndForceNotify(true);
                             _selectedItems.Add(item);
-                            ClickItemAction?.Invoke(item, tooltipSocket); // Show tooltip popup
+                            ClickItemAction?.Invoke(item); // Show tooltip popup
                         }
                     }
                     else
                     {
                         item.Selected.SetValueAndForceNotify(true);
                         _selectedItems.Add(item);
-                        ClickItemAction?.Invoke(item, tooltipSocket); // Show tooltip popup
+                        ClickItemAction?.Invoke(item); // Show tooltip popup
                     }
 
                     break;

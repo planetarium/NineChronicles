@@ -165,12 +165,12 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        private void ShowItemTooltip(ShopItem model, RectTransform target)
+        private void ShowItemTooltip(ShopItem model)
         {
             var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
             tooltip.Show(model,
                 () => ShowBuyPopup(new List<ShopItem> { model }),
-                view.ClearSelectedItems, target);
+                view.ClearSelectedItems);
         }
 
         private void ShowBuyPopup(List<ShopItem> models)

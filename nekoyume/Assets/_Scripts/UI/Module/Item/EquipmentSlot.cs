@@ -10,7 +10,6 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Coffee.UIEffects;
 using System.Collections.Generic;
-using Nekoyume.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
 
@@ -69,12 +68,6 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         protected Image enhancementImage;
-
-        [SerializeField]
-        private GameObject upNotification;
-
-        [SerializeField]
-        private GameObject downNotification;
 
         private int _requireLevel;
         private string _messageForCat;
@@ -247,8 +240,6 @@ namespace Nekoyume.UI.Module
 
             optionTagBg.gameObject.SetActive(false);
             enhancementImage.gameObject.SetActive(false);
-            upNotification.SetActive(false);
-            downNotification.SetActive(false);
             if (itemBase is Equipment equip)
             {
                 var isUpgraded = equip.level > 0;
@@ -335,40 +326,6 @@ namespace Nekoyume.UI.Module
             itemImage.color = isDim ? DimmedColor : OriginColor;
         }
 
-        public void UpdateNotification(ItemBase itemBase)
-        {
-            upNotification.SetActive(false);
-            downNotification.SetActive(false);
-            if (Item is null)
-            {
-                return;
-            }
-
-            if (itemBase.ItemSubType != Item.ItemSubType)
-            {
-                return;
-            }
-            if (Item is not Equipment slotEquipment)
-            {
-                return;
-            }
-
-            if (itemBase is not Equipment targetEquipment)
-            {
-                return;
-            }
-
-            if (targetEquipment.ItemId == slotEquipment.ItemId)
-            {
-                return;
-            }
-
-            var slotCp = CPHelper.GetCP(slotEquipment);
-            var targetCp = CPHelper.GetCP(targetEquipment);
-            upNotification.SetActive(targetCp >= slotCp);
-            downNotification.SetActive(targetCp < slotCp);
-        }
-
         public void Clear()
         {
             if (defaultImage)
@@ -381,8 +338,6 @@ namespace Nekoyume.UI.Module
             enhancementText.enabled = false;
             enhancementImage.gameObject.SetActive(false);
             optionTagBg.gameObject.SetActive(false);
-            upNotification.SetActive(false);
-            downNotification.SetActive(false);
             Item = null;
             Unlock();
         }

@@ -120,7 +120,7 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
         }
 
-        private void ShowItemTooltip(InventoryItem model, RectTransform target)
+        private void ShowItemTooltip(InventoryItem model)
         {
             var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
             tooltip.Show(
@@ -129,17 +129,16 @@ namespace Nekoyume.UI
                 model.ItemBase is ITradableItem,
                 () => ShowSell(model),
                 inventory.ClearSelectedItem,
-                () => L10nManager.Localize("UI_UNTRADABLE"),
-                target:target);
+                () => L10nManager.Localize("UI_UNTRADABLE"));
         }
 
-        private void ShowSellTooltip(ShopItem model, RectTransform target)
+        private void ShowSellTooltip(ShopItem model)
         {
             var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
             tooltip.Show(model,
                 () => ShowUpdateSellPopup(model),
                 () => ShowRetrievePopup(model),
-                view.ClearSelectedItem, target);
+                view.ClearSelectedItem);
         }
 
         public override void Show(bool ignoreShowAnimation = false)

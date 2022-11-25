@@ -22,8 +22,7 @@ namespace Nekoyume.UI
             System.Action onSubmit,
             System.Action onClose = null,
             System.Action onBlocked = null,
-            int itemCount = 0,
-            RectTransform target = null)
+            int itemCount = 0)
         {
             base.Show(
                 item,
@@ -32,8 +31,7 @@ namespace Nekoyume.UI
                 onSubmit,
                 onClose,
                 onBlocked,
-                itemCount,
-                target);
+                itemCount);
             acquisitionGroup.SetActive(false);
             SetAcquisitionPlaceButtons(item);
         }
@@ -42,20 +40,18 @@ namespace Nekoyume.UI
             ShopItem item,
             System.Action onRegister,
             System.Action onSellCancellation,
-            System.Action onClose,
-            RectTransform target = null)
+            System.Action onClose)
         {
-            base.Show(item, onRegister, onSellCancellation, onClose, target);
+            base.Show(item, onRegister, onSellCancellation, onClose);
             acquisitionGroup.SetActive(false);
         }
 
         public override void Show(
             ShopItem item,
             System.Action onBuy,
-            System.Action onClose,
-            RectTransform target)
+            System.Action onClose)
         {
-            base.Show(item, onBuy, onClose, target);
+            base.Show(item, onBuy, onClose);
             acquisitionGroup.SetActive(false);
         }
 
@@ -66,8 +62,7 @@ namespace Nekoyume.UI
             System.Action onSubmit,
             System.Action onClose = null,
             System.Action onBlocked = null,
-            System.Action onEnhancement = null,
-            RectTransform target = null)
+            System.Action onEnhancement = null)
         {
             Show(
                 item.ItemBase,
@@ -76,8 +71,7 @@ namespace Nekoyume.UI
                 onSubmit,
                 onClose,
                 onBlocked,
-                item.Count.Value,
-                target);
+                item.Count.Value);
         }
 
         private void SetAcquisitionPlaceButtons(ItemBase itemBase)
