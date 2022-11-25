@@ -498,6 +498,7 @@ namespace Nekoyume.UI
                 requiredItemRecipeView.SetData(
                     eventMaterialRow.RequiredMaterialsId,
                     eventMaterialRow.RequiredMaterialsCount);
+                recipeId = eventMaterialRow.Id;
 
                 var defaultItemSprite = requiredNormalItemIcons.First().sprite;
                 if (TableSheets.Instance.ArenaSheet.TryGetArenaType(
