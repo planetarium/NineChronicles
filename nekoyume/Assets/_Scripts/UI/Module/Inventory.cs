@@ -359,7 +359,7 @@ namespace Nekoyume.UI.Module
                 InventoryTabType.Costume => _costumes,
                 InventoryTabType.Equipment => GetOrganizedEquipments(),
                 InventoryTabType.Material => GetOrganizedMaterials(),
-                InventoryTabType.Rune => _runes,
+                InventoryTabType.Rune => GetOrganizedRunes(),
                 _ => throw new ArgumentOutOfRangeException(nameof(tabType), tabType, null)
             };
         }
@@ -415,6 +415,11 @@ namespace Nekoyume.UI.Module
                     x.ItemBase.ItemSubType == ItemSubType.ApStone ||
                     x.ItemBase.ItemSubType == ItemSubType.Hourglass)
                 .ThenBy(x => x.ItemBase is ITradableItem).ToList();
+        }
+
+        private List<InventoryItem> GetOrganizedRunes()
+        {
+            return _runes.OrderBy(x => x.DimObjectEnabled.Value).ToList();
         }
 
         private void UpdateEquipmentNotification(IEnumerable<InventoryItem> bestItems)
@@ -601,9 +606,8 @@ namespace Nekoyume.UI.Module
                 rune.DimObjectEnabled.SetValueAndForceNotify(!equippable);
             }
 
-            var test = _runes.OrderBy(x => x.DimObjectEnabled.Value).ToList();
-            _runes.Clear();
-            _runes.AddRange(test);
+            var models = GetModels(_activeTabType);
+            scroll.UpdateData(models, resetScrollOnEnable);
         }
 
         public void UpdateCostumes(List<Guid> costumes)
