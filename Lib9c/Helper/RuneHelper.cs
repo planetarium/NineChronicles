@@ -14,6 +14,8 @@ namespace Nekoyume.Helper
     public static class RuneHelper
     {
         public static readonly Currency StakeRune = Currency.Legacy("RUNE_GOLDENLEAF", 0, null);
+        public static readonly Currency DailyRewardRune = Currency.Legacy("RUNE_ADVENTURER", 0, null);
+
         public static Currency ToCurrency(
             RuneSheet.Row runeRow,
             byte decimalPlaces,

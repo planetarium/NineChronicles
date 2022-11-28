@@ -7,6 +7,7 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Helper;
     using Nekoyume.Model.State;
     using Serilog;
     using Xunit;
@@ -112,6 +113,9 @@ namespace Lib9c.Tests.Action
             Assert.NotNull(nextAvatarState.questList);
             Assert.NotNull(nextAvatarState.worldInformation);
             Assert.Equal(nextGameConfigState.ActionPointMax, nextAvatarState.actionPoint);
+
+            var avatarRuneAmount = nextState.GetBalance(_avatarAddress, RuneHelper.DailyRewardRune);
+            Assert.Equal(nextGameConfigState.DailyRuneRewardAmount, (int)avatarRuneAmount.MajorUnit);
         }
 
         [Fact]

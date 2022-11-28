@@ -20,6 +20,7 @@ namespace Nekoyume.Model.State
         public int BattleArenaInterval { get; private set; }
         public int RuneStatSlotUnlockCost { get; private set; }
         public int RuneSkillSlotUnlockCost { get; private set; }
+        public int DailyRuneRewardAmount { get; private set; }
 
         public GameConfigState() : base(Address)
         {
@@ -63,6 +64,10 @@ namespace Nekoyume.Model.State
             {
                 RuneSkillSlotUnlockCost = value9.ToInteger();
             }
+            if (serialized.TryGetValue((Text)"daily_rune_reward_amount", out var value10))
+            {
+                DailyRuneRewardAmount = value10.ToInteger();
+            }
         }
 
         public GameConfigState(string csv) : base(Address)
@@ -99,6 +104,11 @@ namespace Nekoyume.Model.State
             if (RuneSkillSlotUnlockCost > 0)
             {
                 values.Add((Text)"rune_skill_slot_unlock_cost", RuneSkillSlotUnlockCost.Serialize());
+            }
+
+            if (DailyRuneRewardAmount > 0)
+            {
+                values.Add((Text)"daily_rune_reward_amount", DailyRuneRewardAmount.Serialize());
             }
 #pragma warning disable LAA1002
             return new Dictionary(values.Union((Dictionary) base.Serialize()));
@@ -143,6 +153,9 @@ namespace Nekoyume.Model.State
                     break;
                 case "rune_skill_slot_unlock_cost":
                     RuneSkillSlotUnlockCost = TableExtensions.ParseInt(row.Value);
+                    break;
+                case "daily_rune_reward_amount":
+                    DailyRuneRewardAmount = TableExtensions.ParseInt(row.Value);
                     break;
             }
         }
