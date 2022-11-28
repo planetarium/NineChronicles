@@ -17,6 +17,7 @@ using Nekoyume.Game;
 using Nekoyume.Model.Mail;
 using Nekoyume.UI.Scroller;
 using Nekoyume.L10n;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
 using Nekoyume.TableData.Event;
 using UnityEngine.UI;
@@ -64,7 +65,7 @@ namespace Nekoyume.UI
         [Serializable]
         public class RequiredNormalItemIcon
         {
-            public int recipeId;
+            public ArenaType arenaType;
             public Sprite sprite;
         }
 
@@ -497,9 +498,20 @@ namespace Nekoyume.UI
                 requiredItemRecipeView.SetData(
                     eventMaterialRow.RequiredMaterialsId,
                     eventMaterialRow.RequiredMaterialsCount);
-                requiredNormalItemImage.overrideSprite = requiredNormalItemIcons
-                    .FirstOrDefault(icon => icon.recipeId == eventMaterialRow.Id)?.sprite;
                 recipeId = eventMaterialRow.Id;
+
+                var defaultItemSprite = requiredNormalItemIcons.First().sprite;
+                if (TableSheets.Instance.ArenaSheet.TryGetArenaType(
+                        eventMaterialRow.RequiredMaterialsId.First(), out var arenaType))
+                {
+                    var itemSprite = requiredNormalItemIcons
+                        .FirstOrDefault(icon => icon.arenaType == arenaType)?.sprite;
+                    requiredNormalItemImage.overrideSprite = itemSprite ? itemSprite : defaultItemSprite;
+                }
+                else
+                {
+                    requiredNormalItemImage.overrideSprite = defaultItemSprite;
+                }
             }
 
             blockIndexText.text = blockIndex.ToString();

@@ -26566,9 +26566,9 @@ MonoBehaviour:
     superCraftButton: {fileID: 0}
   materialSelectButton: {fileID: 8744786337952269997}
   requiredNormalItemIcons:
-  - recipeId: 10020001
+  - arenaType: 1
     sprite: {fileID: 21300000, guid: b838d452ee0d547179f51bc5f1f14791, type: 3}
-  - recipeId: 10020002
+  - arenaType: 2
     sprite: {fileID: 21300000, guid: 8fb8d7d5f798b46aba22e35060379282, type: 3}
   requiredNormalItemImage: {fileID: 5768343284660825125}
 --- !u!1 &8571591880880175740
