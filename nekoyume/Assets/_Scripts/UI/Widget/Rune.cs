@@ -30,10 +30,10 @@ namespace Nekoyume.UI
         private RuneOptionView currentOptions;
 
         [SerializeField]
-        private RuneOptionView afterOptions;
+        private List<RuneCostItem> costItems;
 
         [SerializeField]
-        private List<RuneCostItem> costItems;
+        private List<RuneEachCostItem> eachCostItems;
 
         [SerializeField]
         private Image runeImage;
@@ -376,7 +376,6 @@ namespace Nekoyume.UI
         {
             runeNameText.text = L10nManager.Localize($"RUNE_NAME_{item.Row.Id}");
             gradeText.text = L10nManager.Localize($"UI_ITEM_GRADE_{item.Row.Grade}");
-            afterOptions.Hide();
 
             if (item.Level == 0)
             {
@@ -394,16 +393,15 @@ namespace Nekoyume.UI
                     return;
                 }
 
-                currentOptions.Set(item.Level, statInfo);
-
                 var nextLevel = item.Level + 1;
-                if (!item.OptionRow.LevelOptionMap.TryGetValue(nextLevel, out var afterStatInfo))
+                if (item.OptionRow.LevelOptionMap.TryGetValue(nextLevel, out var nextStatInfo))
                 {
-                    return;
+                    currentOptions.Set(item.Level, nextLevel, statInfo, nextStatInfo);
                 }
-
-                afterOptions.gameObject.SetActive(true);
-                afterOptions.Set(nextLevel, afterStatInfo);
+                else
+                {
+                    currentOptions.Set(item.Level, statInfo); // max level
+                }
             }
         }
 
@@ -427,6 +425,22 @@ namespace Nekoyume.UI
                 item.Cost.NcgQuantity,
                 item.EnoughNcg,
                 () => ShowMaterialNavigatorPopup(RuneCostType.Ncg, item, _costItems[RuneCostType.Ncg].Icon));
+
+            foreach (var costItem in eachCostItems)
+            {
+                switch(costItem.CostType)
+                {
+                    case RuneCostType.RuneStone:
+                        costItem.Set(item.Cost.RuneStoneQuantity);
+                        break;
+                    case RuneCostType.Crystal:
+                        costItem.Set(item.Cost.CrystalQuantity);
+                        break;
+                    case RuneCostType.Ncg:
+                        costItem.Set(item.Cost.NcgQuantity);
+                        break;
+                }
+            }
         }
 
         private static void UpdateHeaderMenu(Sprite runeStoneIcon, FungibleAssetValue runeStone)
