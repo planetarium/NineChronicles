@@ -63,6 +63,9 @@ namespace Nekoyume.UI
         private SubRecipeView eventConsumableSubRecipeView;
 
         [SerializeField]
+        private SubRecipeView eventMaterialSubRecipeView;
+
+        [SerializeField]
         private CanvasGroup canvasGroup;
 
         public static RecipeModel SharedModel { get; set; }
@@ -113,6 +116,10 @@ namespace Nekoyume.UI
 
             eventConsumableSubRecipeView.CombinationActionSubject
                 .Subscribe(EventConsumableItemCraftsAction)
+                .AddTo(gameObject);
+
+            eventMaterialSubRecipeView.CombinationActionSubject
+                .Subscribe(EventMaterialItemCraftsAction)
                 .AddTo(gameObject);
         }
 
@@ -170,6 +177,10 @@ namespace Nekoyume.UI
                     else if (eventConsumableSubRecipeView.gameObject.activeSelf)
                     {
                         eventConsumableSubRecipeView.UpdateView();
+                    }
+                    else if (eventMaterialSubRecipeView.gameObject.activeSelf)
+                    {
+                        eventMaterialSubRecipeView.UpdateView();
                     }
                 })
                 .AddTo(gameObject);
@@ -249,6 +260,13 @@ namespace Nekoyume.UI
                     OnClickConsumableToggle(eventConsumableToggle.isOn);
                 })
                 .AddTo(_disposablesAtShow);
+            RxProps.EventMaterialItemRecipeRows
+                .Subscribe(value =>
+                {
+                    SharedModel.UpdateEventMaterial(value);
+                    OnClickConsumableToggle(eventConsumableToggle.isOn);
+                })
+                .AddTo(_disposablesAtShow);
             HammerPointStatesSubject.HammerPointSubject.Subscribe(_ =>
             {
                 if (equipmentSubRecipeView.gameObject.activeSelf)
@@ -307,6 +325,7 @@ namespace Nekoyume.UI
                     equipmentSubRecipeView.gameObject.SetActive(true);
                     consumableSubRecipeView.gameObject.SetActive(false);
                     eventConsumableSubRecipeView.gameObject.SetActive(false);
+                    eventMaterialSubRecipeView.gameObject.SetActive(false);
                     equipmentSubRecipeView.SetData(equipmentRow, equipmentRow.SubRecipeIds);
                     break;
                 // NOTE: We must check the `row` is type of `EventConsumableItemRecipeSheet.Row`
@@ -316,18 +335,29 @@ namespace Nekoyume.UI
                     equipmentSubRecipeView.gameObject.SetActive(false);
                     consumableSubRecipeView.gameObject.SetActive(false);
                     eventConsumableSubRecipeView.gameObject.SetActive(true);
+                    eventMaterialSubRecipeView.gameObject.SetActive(false);
                     eventConsumableSubRecipeView.SetData(eventConsumableRow, null);
                     break;
                 case ConsumableItemRecipeSheet.Row consumableRow:
                     equipmentSubRecipeView.gameObject.SetActive(false);
                     consumableSubRecipeView.gameObject.SetActive(true);
                     eventConsumableSubRecipeView.gameObject.SetActive(false);
+                    eventMaterialSubRecipeView.gameObject.SetActive(false);
                     consumableSubRecipeView.SetData(consumableRow, null);
+                    break;
+
+                case EventMaterialItemRecipeSheet.Row eventMaterialRow:
+                    equipmentSubRecipeView.gameObject.SetActive(false);
+                    consumableSubRecipeView.gameObject.SetActive(false);
+                    eventConsumableSubRecipeView.gameObject.SetActive(false);
+                    eventMaterialSubRecipeView.gameObject.SetActive(true);
+                    eventMaterialSubRecipeView.SetData(eventMaterialRow, null);
                     break;
                 default:
                     equipmentSubRecipeView.gameObject.SetActive(false);
                     consumableSubRecipeView.gameObject.SetActive(false);
                     eventConsumableSubRecipeView.gameObject.SetActive(false);
+                    eventMaterialSubRecipeView.gameObject.SetActive(false);
                     break;
             }
         }
@@ -342,7 +372,8 @@ namespace Nekoyume.UI
             SharedModel = new RecipeModel(
                 TableSheets.Instance.EquipmentItemRecipeSheet.Values,
                 group?.Groups ?? Array.Empty<RecipeGroup>(),
-                RxProps.EventConsumableItemRecipeRows.Value);
+                RxProps.EventConsumableItemRecipeRows.Value,
+                RxProps.EventMaterialItemRecipeRows.Value);
         }
 
         private static void SubscribeQuestList(QuestList questList)
@@ -608,6 +639,31 @@ namespace Nekoyume.UI
                 true));
         }
 
+        private void EventMaterialItemCraftsAction(SubRecipeView.RecipeInfo recipeInfo)
+        {
+            if (!eventMaterialSubRecipeView.CheckSubmittable(out var errorMessage, out _, false))
+            {
+                OneLineSystem.Push(
+                    MailType.System,
+                    errorMessage,
+                    NotificationCell.NotificationType.Alert);
+                return;
+            }
+
+            var materialRow = TableSheets.Instance.EventMaterialItemRecipeSheet[recipeInfo.RecipeId];
+            var material = ItemFactory.CreateMaterial(materialRow.GetResultMaterialItemRow());
+
+            eventMaterialSubRecipeView.UpdateView();
+            ActionManager.Instance
+                .EventMaterialItemCrafts(
+                    RxProps.EventScheduleRowForRecipe.Value.Id,
+                    recipeInfo.RecipeId,
+                    recipeInfo.Materials)
+                .Subscribe();
+
+            StartCoroutine(CoCombineNPCAnimation(material, 1));
+        }
+
         private IEnumerator CoCombineNPCAnimation(
             ItemBase itemBase,
             long blockIndex,
@@ -625,7 +681,9 @@ namespace Nekoyume.UI
 
             var format = L10nManager.Localize("UI_COST_BLOCK");
             var quote = string.Format(format, blockIndex);
-            loadingScreen.AnimateNPC(itemBase.ItemType, quote);
+            var itemType = itemBase.ItemType != ItemType.Material
+                ? itemBase.ItemType : ItemType.Consumable;
+            loadingScreen.AnimateNPC(itemType, quote);
         }
 
         private void OnNPCDisappear()

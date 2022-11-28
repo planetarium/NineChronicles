@@ -33,6 +33,9 @@ namespace Nekoyume.UI.Module.Lobby
         [SerializeField]
         private GameObject _championshipGameObject;
 
+        [SerializeField]
+        private GameObject grandFinaleGameObject;
+
         private readonly List<IDisposable> _disposables = new();
 
         private void OnEnable()
@@ -63,6 +66,15 @@ namespace Nekoyume.UI.Module.Lobby
 
         private void UpdateArenaSeasonTitle(long blockIndex)
         {
+            if (TableSheets.Instance.GrandFinaleScheduleSheet?.GetRowByBlockIndex(blockIndex)
+                is not null)
+            {
+                grandFinaleGameObject.SetActive(true);
+                _seasonGameObject.SetActive(false);
+                _championshipGameObject.SetActive(false);
+                return;
+            }
+
             ArenaSheet.RoundData currentRoundData;
             try
             {
@@ -73,6 +85,7 @@ namespace Nekoyume.UI.Module.Lobby
             {
                 _seasonGameObject.SetActive(false);
                 _championshipGameObject.SetActive(false);
+                grandFinaleGameObject.SetActive(false);
                 return;
             }
 
@@ -81,6 +94,7 @@ namespace Nekoyume.UI.Module.Lobby
                 case ArenaType.OffSeason:
                     _seasonGameObject.SetActive(false);
                     _championshipGameObject.SetActive(false);
+                    grandFinaleGameObject.SetActive(false);
                     break;
                 case ArenaType.Season:
                     _seasonText.text = TableSheets.Instance.ArenaSheet
@@ -90,10 +104,12 @@ namespace Nekoyume.UI.Module.Lobby
                         .ToString();
                     _seasonGameObject.SetActive(true);
                     _championshipGameObject.SetActive(false);
+                    grandFinaleGameObject.SetActive(false);
                     break;
                 case ArenaType.Championship:
                     _seasonGameObject.SetActive(false);
                     _championshipGameObject.SetActive(true);
+                    grandFinaleGameObject.SetActive(false);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

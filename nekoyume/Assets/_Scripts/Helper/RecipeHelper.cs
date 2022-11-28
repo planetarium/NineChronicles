@@ -1,6 +1,7 @@
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 using System.Linq;
+using Nekoyume.TableData.Event;
 
 namespace Nekoyume.Helper
 {
@@ -16,6 +17,12 @@ namespace Nekoyume.Helper
         {
             return Game.Game.instance.TableSheets
                 .ConsumableItemSheet[recipeRow.ResultConsumableItemId];
+        }
+
+        public static MaterialItemSheet.Row GetResultMaterialItemRow(this EventMaterialItemRecipeSheet.Row recipeRow)
+        {
+            return Game.Game.instance.TableSheets
+                .MaterialItemSheet[recipeRow.ResultMaterialItemId];
         }
 
         public static DecimalStat GetUniqueStat(this EquipmentItemSheet.Row row)

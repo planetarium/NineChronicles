@@ -6,6 +6,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using TMPro;
 using UniRx;
@@ -68,8 +69,7 @@ namespace Nekoyume.UI
         private readonly StakingBenefitsListView.Model[] _cachedModel =
             new StakingBenefitsListView.Model[6];
 
-        public const string StakingUrl =
-            "ninechronicles-launcher://open/monster-collection";
+        public const string StakingUrl = "ninechronicles-launcher://open/monster-collection";
         private const string ActionPointBuffFormat = "{0} <color=#1FFF00>{1}% DC</color>";
         private const string BuffBenefitRateFormat = "{0} <color=#1FFF00>+{1}%</color>";
         private const string RemainingBlockFormat = "<Style=G5>{0}({1})";
@@ -102,6 +102,7 @@ namespace Nekoyume.UI
                 AudioController.PlayClick();
                 Close();
             });
+
             stakingButton.onClick.AddListener(() =>
             {
                 AudioController.PlayClick();
@@ -112,6 +113,7 @@ namespace Nekoyume.UI
                 AudioController.PlayClick();
                 Close();
             });
+
             archiveButton.OnClickSubject.Subscribe(_ =>
             {
                 AudioController.PlayClick();
@@ -211,17 +213,32 @@ namespace Nekoyume.UI
                 && regularFixedSheet.TryGetValue(level, out var regularFixed))
             {
                 var materialSheet = sheets.MaterialItemSheet;
-                var rewardsCount = Mathf.Min(regular.Rewards.Count, interestBenefitsViews.Length);
-                for (var i = 0; i < rewardsCount; i++)
+                for (var i = 0; i < interestBenefitsViews.Length; i++)
                 {
-                    var item = ItemFactory.CreateMaterial(materialSheet, regular.Rewards[i].ItemId);
-                    var result = (int)deposit / regular.Rewards[i].Rate;
-                    var levelBonus = regularFixed.Rewards.FirstOrDefault(
-                        reward => reward.ItemId == regular.Rewards[i].ItemId)?.Count ?? 0;
-                    result += levelBonus;
+                    var result = GetReward(regular, regularFixed, (long)deposit, i);
                     result *= Mathf.Max(rewardCount, 1);
+                    if (result <= 0)
+                    {
+                        interestBenefitsViews[i].gameObject.SetActive(false);
+                        continue;
+                    }
 
-                    interestBenefitsViews[i].Set(item, result, _benefitRates[level]);
+                    interestBenefitsViews[i].gameObject.SetActive(true);
+                    switch (regular.Rewards[i].Type)
+                    {
+                        case StakeRegularRewardSheet.StakeRewardType.Item:
+                            interestBenefitsViews[i].Set(
+                                ItemFactory.CreateMaterial(materialSheet, regular.Rewards[i].ItemId),
+                                (int)result,
+                                _benefitRates[level]);
+                            break;
+                        case StakeRegularRewardSheet.StakeRewardType.Rune:
+                            interestBenefitsViews[i].Set(
+                                regular.Rewards[i].ItemId,
+                                (int)result,
+                                _benefitRates[level]);
+                            break;
+                    }
                 }
             }
 
@@ -277,24 +294,18 @@ namespace Nekoyume.UI
             for (int level = 1; level <= 5; level++)
             {
                 var model = new StakingBenefitsListView.Model();
+
                 if (regularSheet.TryGetValue(level, out var regular)
                     && regularFixedSheet.TryGetValue(level, out var regularFixed))
                 {
-                    var hourGlass = regular.RequiredGold / regular.Rewards[0].Rate;
-                    var levelBonus1 = regularFixed.Rewards.FirstOrDefault(
-                        reward => reward.ItemId == regular.Rewards[0].ItemId)?.Count ?? 0;
-                    hourGlass += levelBonus1;
-                    var apPotion = regular.RequiredGold / regular.Rewards[1].Rate;
-                    var levelBonus2 = regularFixed.Rewards.FirstOrDefault(
-                        reward => reward.ItemId == regular.Rewards[1].ItemId)?.Count ?? 0;
-                    apPotion += levelBonus2;
                     model.RequiredDeposit = regular.RequiredGold;
-                    model.HourGlassInterest = hourGlass;
-                    model.ApPotionInterest = apPotion;
+                    model.HourGlassInterest = GetReward(regular, regularFixed,regular.RequiredGold, 0);
+                    model.ApPotionInterest = GetReward(regular, regularFixed, regular.RequiredGold, 1);
+                    model.RuneInterest = GetReward(regular, regularFixed, regular.RequiredGold, 2);
                 }
+
                 model.BenefitRate = _benefitRates[level];
                 model.RequiredDeposit = regular.RequiredGold;
-
                 if (stakingMultiplierSheet.TryGetValue(level, out var row))
                 {
                     model.CrystalBuff = row.Multiplier;
@@ -305,6 +316,23 @@ namespace Nekoyume.UI
                 benefitsListViews[level].Set(level, model);
                 _cachedModel[level] = model;
             }
+        }
+
+        private static long GetReward(
+            StakeRegularRewardSheet.Row regular,
+            StakeRegularFixedRewardSheet.Row regularFixed,
+            long deposit, int index)
+        {
+            if (regular.Rewards.Count <= index)
+            {
+                return 0;
+            }
+
+            var result = deposit / regular.Rewards[index].Rate;
+            var levelBonus = regularFixed.Rewards.FirstOrDefault(
+                reward => reward.ItemId == regular.Rewards[index].ItemId)?.Count ?? 0;
+
+            return result + levelBonus;
         }
     }
 }
