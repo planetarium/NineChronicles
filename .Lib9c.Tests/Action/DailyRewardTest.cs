@@ -116,7 +116,8 @@ namespace Lib9c.Tests.Action
             Assert.Equal(nextGameConfigState.ActionPointMax, nextAvatarState.actionPoint);
 
             var avatarRuneAmount = nextState.GetBalance(_avatarAddress, RuneHelper.DailyRewardRune);
-            Assert.Equal(nextGameConfigState.DailyRuneRewardAmount, (int)avatarRuneAmount.MajorUnit);
+            var expectedRune = RuneHelper.DailyRewardRune * nextGameConfigState.DailyRuneRewardAmount;
+            Assert.Equal(expectedRune, avatarRuneAmount);
         }
 
         [Fact]
