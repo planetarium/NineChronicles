@@ -26,7 +26,7 @@ namespace Nekoyume.UI.Model
             {
                 iconImage.gameObject.SetActive(true);
                 countText.gameObject.SetActive(true);
-                countText.text = $"{count}";
+                countText.text = count.ToCurrencyNotation();
             }
             else
             {

@@ -47,7 +47,7 @@ namespace Nekoyume.UI.Model
         public void Set(int count, bool isEnough, System.Action callback, Sprite icon = null)
         {
             _defaultCount = count;
-            countText.text = count > 0 ? $"{count}" : string.Empty;
+            countText.text = count > 0 ? count.ToCurrencyNotation() : string.Empty;
             countText.color = isEnough ? Color.white : Palette.GetColor(ColorType.TextDenial);
             effect.SetActive(isEnough);
             _callback = callback;
@@ -61,7 +61,8 @@ namespace Nekoyume.UI.Model
 
         public void UpdateCount(int tryCount)
         {
-            countText.text = _defaultCount > 0 ? $"{_defaultCount * tryCount}" : string.Empty;
+            var count = _defaultCount * tryCount;
+            countText.text = _defaultCount > 0 ? count.ToCurrencyNotation() : string.Empty;
         }
     }
 }
