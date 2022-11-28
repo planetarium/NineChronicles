@@ -49,11 +49,18 @@ namespace Lib9c.Tests.TableData
         }
 
         [Fact]
-        public void Row_Round_Contains_8_Elements()
+        public void Row_Round_Contains_Full_Elements()
         {
             foreach (var row in _arenaSheet.OrderedList)
             {
-                Assert.Equal(8, row.Round.Count);
+                if (row.ChampionshipId == 1 || row.ChampionshipId == 2)
+                {
+                    Assert.Equal(8, row.Round.Count);
+                }
+                else
+                {
+                    Assert.Equal(6, row.Round.Count);
+                }
             }
         }
 
@@ -99,37 +106,40 @@ namespace Lib9c.Tests.TableData
                 Assert.True(round.StartBlockIndex < round.EndBlockIndex);
                 Assert.Equal(round.EndBlockIndex + 1, nextRound.StartBlockIndex);
                 round = nextRound;
-                nextRound = rounds[6];
-                if (round.ChampionshipId != 2)
+                if (round.ChampionshipId <= 2)
                 {
-                    Assert.Equal(ArenaType.Season, round.ArenaType);
-                    Assert.Equal(0, round.RequiredMedalCount);
-                }
-                else
-                {
-                    Assert.Equal(ArenaType.Championship, round.ArenaType);
-                    Assert.Equal(160, round.RequiredMedalCount);
-                }
+                    nextRound = rounds[6];
+                    if (round.ChampionshipId != 2)
+                    {
+                        Assert.Equal(ArenaType.Season, round.ArenaType);
+                        Assert.Equal(0, round.RequiredMedalCount);
+                    }
+                    else
+                    {
+                        Assert.Equal(ArenaType.Championship, round.ArenaType);
+                        Assert.Equal(160, round.RequiredMedalCount);
+                    }
 
-                Assert.True(round.EntranceFee > 0L);
-                Assert.True(round.StartBlockIndex < round.EndBlockIndex);
-                Assert.Equal(round.EndBlockIndex + 1, nextRound.StartBlockIndex);
+                    Assert.True(round.EntranceFee > 0L);
+                    Assert.True(round.StartBlockIndex < round.EndBlockIndex);
+                    Assert.Equal(round.EndBlockIndex + 1, nextRound.StartBlockIndex);
 
-                round = nextRound;
-                nextRound = rounds[7];
-                Assert.Equal(ArenaType.OffSeason, round.ArenaType);
-                Assert.Equal(0, round.RequiredMedalCount);
-                Assert.Equal(0L, round.EntranceFee);
-                Assert.True(round.StartBlockIndex < round.EndBlockIndex);
-                Assert.Equal(round.EndBlockIndex + 1, nextRound.StartBlockIndex);
-                round = nextRound;
-                if (round.ChampionshipId != 2)
-                {
-                    Assert.Equal(ArenaType.Championship, round.ArenaType);
-                }
-                else
-                {
+                    round = nextRound;
+                    nextRound = rounds[7];
                     Assert.Equal(ArenaType.OffSeason, round.ArenaType);
+                    Assert.Equal(0, round.RequiredMedalCount);
+                    Assert.Equal(0L, round.EntranceFee);
+                    Assert.True(round.StartBlockIndex < round.EndBlockIndex);
+                    Assert.Equal(round.EndBlockIndex + 1, nextRound.StartBlockIndex);
+                    round = nextRound;
+                    if (round.ChampionshipId != 2)
+                    {
+                        Assert.Equal(ArenaType.Championship, round.ArenaType);
+                    }
+                    else
+                    {
+                        Assert.Equal(ArenaType.OffSeason, round.ArenaType);
+                    }
                 }
 
                 Assert.True(round.RequiredMedalCount > 0);
@@ -143,7 +153,7 @@ namespace Lib9c.Tests.TableData
         {
             var random = new TestRandom();
             var expectRow = _arenaSheet.OrderedList[random.Next(0, _arenaSheet.Count)];
-            var expectRound = expectRow.Round[random.Next(0, 8)];
+            var expectRound = expectRow.Round[random.Next(0, expectRow.Round.Count)];
             var blockIndex = expectRound.StartBlockIndex;
             var testRow = _arenaSheet.GetRowByBlockIndex(blockIndex);
             Assert.NotNull(testRow);
@@ -153,7 +163,7 @@ namespace Lib9c.Tests.TableData
             Assert.NotNull(testRow);
             Assert.Equal(expectRow.ChampionshipId, testRow.ChampionshipId);
 
-            var lastRound = expectRow.Round[7];
+            var lastRound = _arenaSheet.OrderedList[^1].Round[^1];
             blockIndex = lastRound.EndBlockIndex + 1;
             Assert.Throws<InvalidOperationException>(() =>
                 _arenaSheet.GetRowByBlockIndex(blockIndex));
@@ -164,7 +174,7 @@ namespace Lib9c.Tests.TableData
         {
             var random = new TestRandom();
             var expectRow = _arenaSheet.OrderedList[random.Next(0, _arenaSheet.Count)];
-            var expectRound = expectRow.Round[random.Next(0, 8)];
+            var expectRound = expectRow.Round[random.Next(0, expectRow.Round.Count)];
             var blockIndex = expectRound.StartBlockIndex;
             var testRound = _arenaSheet.GetRoundByBlockIndex(blockIndex);
             Assert.NotNull(testRound);
@@ -178,7 +188,7 @@ namespace Lib9c.Tests.TableData
             Assert.Equal(expectRound.Round, testRound.Round);
             Assert.Equal(expectRound.ArenaType, testRound.ArenaType);
 
-            var lastRound = expectRow.Round[7];
+            var lastRound = _arenaSheet.OrderedList[^1].Round[^1];
             blockIndex = lastRound.EndBlockIndex + 1;
             Assert.Throws<RoundNotFoundException>(() =>
                 _arenaSheet.GetRoundByBlockIndex(blockIndex));

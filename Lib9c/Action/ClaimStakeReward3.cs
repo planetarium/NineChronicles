@@ -16,7 +16,7 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1371
     /// </summary>
     [ActionType(ActionTypeText)]
-    public class ClaimStakeReward3 : GameAction
+    public class ClaimStakeReward3 : GameAction, IClaimStakeReward
     {
         private const string ActionTypeText = "claim_stake_reward3";
 
