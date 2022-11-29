@@ -46,6 +46,12 @@ namespace Nekoyume.UI.Model
             Cost = costRow.Cost.FirstOrDefault(x => x.Level == level + 1);
             if (Cost is null)
             {
+                if (IsMaxLevel)
+                {
+                    EnoughRuneStone = false;
+                    EnoughCrystal = false;
+                    EnoughNcg = false;
+                }
                 return;
             }
 

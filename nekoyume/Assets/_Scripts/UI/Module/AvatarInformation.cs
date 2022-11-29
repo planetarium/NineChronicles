@@ -322,7 +322,7 @@ namespace Nekoyume.UI.Module
 
             UnequipRune(item);
             UpdateStat();
-            ShowCpScreen();
+            ShowCpScreen(item);
         }
 
         private void OnClickSlot(EquipmentSlot slot)
@@ -358,7 +358,7 @@ namespace Nekoyume.UI.Module
             UnequipItem(item);
             _onUpdate?.Invoke();
             UpdateStat();
-            ShowCpScreen();
+            ShowCpScreen(item);
         }
 
         private void EquipItem(InventoryItem inventoryItem)
@@ -890,12 +890,7 @@ namespace Nekoyume.UI.Module
             }
 
             UpdateStat();
-            if (inventoryItem.ItemBase.ItemType == ItemType.Equipment ||
-                inventoryItem.ItemBase.ItemType == ItemType.Costume)
-            {
-                ShowCpScreen();
-            }
-
+            ShowCpScreen(inventoryItem);
             _onUpdate?.Invoke();
         }
 
@@ -964,8 +959,13 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void ShowCpScreen()
+        private void ShowCpScreen(InventoryItem inventoryItem)
         {
+            if (inventoryItem.ItemBase is { ItemType: ItemType.Material or ItemType.Consumable })
+            {
+                return;
+            }
+
             var cpScreen = Widget.Find<CPScreen>();
             cpScreen.Show(_previousCp, _currentCp);
         }

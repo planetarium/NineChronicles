@@ -298,7 +298,7 @@ namespace Nekoyume.UI
 
         private void OnClickItem(RuneItem item)
         {
-            _selectedRuneItem = item;
+            _selectedRuneItem = null;
             Set(item);
         }
 
@@ -317,26 +317,22 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (!RuneFrontHelper.TryGetRuneIcon(item.Row.Id, out var runeIcon))
-            {
-                return;
-            }
-
-            if (item.Cost is null)
-            {
-                return;
-            }
-
             if (!RuneFrontHelper.TryGetRuneStoneIcon(item.Row.Id, out var runeStoneIcon))
             {
                 return;
             }
 
+            if (item.Cost is null && !item.IsMaxLevel)
+            {
+                return;
+            }
+
+            _selectedRuneItem = item;
             content.SetActive(true);
             UpdateRuneItems(item);
             UpdateButtons(item);
             UpdateRuneOptions(item);
-            UpdateCost(item, runeIcon, runeStoneIcon);
+            UpdateCost(item, runeStoneIcon);
             UpdateHeaderMenu(runeStoneIcon, item.RuneStone);
             UpdateSlider(item);
             animator.Play(item.Level > 0 ? HashToLevelUp : HashToCombine);
@@ -354,6 +350,13 @@ namespace Nekoyume.UI
 
         private void UpdateRuneItems(RuneItem item)
         {
+            if (!RuneFrontHelper.TryGetRuneIcon(item.Row.Id, out var runeIcon))
+            {
+                return;
+            }
+
+            runeImage.sprite = runeIcon;
+
             var items = new List<RuneItem>();
             foreach (var list in _runeItems.Values)
             {
@@ -398,7 +401,7 @@ namespace Nekoyume.UI
 
             if (item.Level == 0)
             {
-                if (!item.OptionRow.LevelOptionMap.TryGetValue(1, out var statInfo))
+                if (item.OptionRow is null || !item.OptionRow.LevelOptionMap.TryGetValue(1, out var statInfo))
                 {
                     return;
                 }
@@ -424,9 +427,18 @@ namespace Nekoyume.UI
             }
         }
 
-        private void UpdateCost(RuneItem item, Sprite runeIcon, Sprite runeStoneIcon)
+        private void UpdateCost(RuneItem item, Sprite runeStoneIcon)
         {
-            runeImage.sprite = runeIcon;
+            if (item.Cost is null)
+            {
+                successRateText.text = String.Empty;
+                eachCostItems.ForEach(x=> x.Set(0));
+                _costItems[RuneCostType.RuneStone].Set(0, false, null);
+                _costItems[RuneCostType.Crystal].Set(0, false, null);
+                _costItems[RuneCostType.Ncg].Set(0, false, null);
+                return;
+            }
+
             successRateText.text = $"{item.Cost.LevelUpSuccessRate / 100}%";
 
             _costItems[RuneCostType.RuneStone].Set(
@@ -478,6 +490,12 @@ namespace Nekoyume.UI
             }
             else
             {
+                if (item.Cost is null)
+                {
+                    sliderContainer.SetActive(false);
+                    return;
+                }
+
                 sliderContainer.SetActive(true);
                 var maxRuneStone = item.Cost.RuneStoneQuantity > 0
                     ? (int)item.RuneStone.MajorUnit / item.Cost.RuneStoneQuantity
