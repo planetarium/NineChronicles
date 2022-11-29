@@ -54,9 +54,11 @@ namespace Nekoyume.UI.Module
         private GameObject _cachedCharacterTitle;
         // private InventoryItem _pickedItem;
         private BattleType _battleType = BattleType.Adventure;
-        private bool _isAvatarInfo;
         private System.Action _onUpdate;
         private int? _compareCp;
+        private int _previousCp;
+        private int _currentCp;
+        private bool _isAvatarInfo;
 
         private readonly Dictionary<Inventory.InventoryTabType, GameObject> _slots = new();
         private readonly List<Guid> _consumables = new();
@@ -156,10 +158,9 @@ namespace Nekoyume.UI.Module
         public void UpdateView(BattleType battleType)
         {
             _battleType = battleType;
-            var prevCp = Util.TotalCP(battleType);
             UpdateRuneView();
             UpdateItemView();
-            UpdateStat(prevCp);
+            UpdateStat();
             _onUpdate?.Invoke();
         }
 
@@ -284,17 +285,6 @@ namespace Nekoyume.UI.Module
                         return;
                     }
 
-                    // if (_pickedItem != null)
-                    // {
-                    //     UnequipRune(item);
-                    //     EquipRune(_pickedItem);
-                    //     _pickedItem = null;
-                    // }
-                    // else
-                    // {
-                    //
-                    // }
-
                     ShowRuneTooltip(item);
                 }
                 else
@@ -333,9 +323,9 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            var prevCp = Util.TotalCP(_battleType);
             UnequipRune(item);
-            UpdateStat(prevCp);
+            UpdateStat();
+            ShowCpScreen();
         }
 
         private void OnClickSlot(EquipmentSlot slot)
@@ -368,10 +358,10 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            var prevCp = Util.TotalCP(_battleType);
             UnequipItem(item);
             _onUpdate?.Invoke();
-            UpdateStat(prevCp);
+            UpdateStat();
+            ShowCpScreen();
         }
 
         private void EquipItem(InventoryItem inventoryItem)
@@ -687,39 +677,6 @@ namespace Nekoyume.UI.Module
             if (model.RuneState != null)
             {
                 ShowRuneTooltip(model);
-                // _pickedItem = null;
-                // if (!model.Equipped.Value)
-                // {
-                //     var states = States.Instance.RuneSlotStates[_battleType].GetRuneSlot();;
-                //     var sheet = Game.Game.instance.TableSheets.RuneListSheet;
-                //     if (!sheet.TryGetValue(model.RuneState.RuneId, out var row))
-                //     {
-                //         return;
-                //     }
-                //
-                //     if (!_battleType.IsEquippableRune((RuneUsePlace)row.UsePlace))
-                //     {
-                //         return;
-                //     }
-                //
-                //     var slots = states
-                //         .Where(x => !x.IsLock)
-                //         .Where(x => x.RuneType == (RuneType)row.RuneType)
-                //         .ToDictionary(x => x.Index, x => x);
-                //     if (slots.Values.All(x => x.RuneId.HasValue) &&
-                //         slots.Values.Count(x => x.RuneId.HasValue) > 1)
-                //     {
-                //         var indexes = slots.Where(x => x.Value.RuneId.HasValue)
-                //             .Select(kv => kv.Key)
-                //             .ToList();
-                //         runeSlots.ActiveWearable(indexes);
-                //         OneLineSystem.Push(
-                //             MailType.System,
-                //             L10nManager.Localize("UI_SELECT_RUNE_SLOT"),
-                //             NotificationCell.NotificationType.Alert);
-                //         _pickedItem = model;
-                //     }
-                // }
             }
             else
             {
@@ -912,7 +869,6 @@ namespace Nekoyume.UI.Module
 
         private void EquipOrUnequip(InventoryItem inventoryItem)
         {
-            var prevCp = Util.TotalCP(_battleType);
             if (inventoryItem.RuneState != null)
             {
                 if (inventoryItem.Equipped.Value)
@@ -936,11 +892,12 @@ namespace Nekoyume.UI.Module
                 }
             }
 
-            UpdateStat(prevCp);
+            UpdateStat();
+            ShowCpScreen();
             _onUpdate?.Invoke();
         }
 
-        private void UpdateStat(int previousCp)
+        private void UpdateStat()
         {
             var avatarState = Game.Game.instance.States.CurrentAvatarState;
             var equipmentSetEffectSheet = Game.Game.instance.TableSheets.EquipmentItemSetEffectSheet;
@@ -990,11 +947,12 @@ namespace Nekoyume.UI.Module
 
         private void UpdateCp()
         {
-            var currentCp = Util.TotalCP(_battleType);
-            cp.text = currentCp.ToString();
+            _previousCp = _currentCp;
+            _currentCp = Util.TotalCP(_battleType);
+            cp.text = _currentCp.ToString();
             if (_compareCp.HasValue)
             {
-                cp.color = currentCp < _compareCp.Value
+                cp.color = _currentCp < _compareCp.Value
                     ? Palette.GetColor(ColorType.TextDenial)
                     : Palette.GetColor(ColorType.TextPositive);
             }
@@ -1002,6 +960,12 @@ namespace Nekoyume.UI.Module
             {
                 cp.color = Color.white;
             }
+        }
+
+        private void ShowCpScreen()
+        {
+            var cpScreen = Widget.Find<CPScreen>();
+            cpScreen.Show(_previousCp, _currentCp);
         }
 
         private static List<ElementalType> GetElementalTypes()

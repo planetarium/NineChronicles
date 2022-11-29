@@ -126,7 +126,6 @@ namespace Nekoyume.UI
         private int _maxTryCount = 1;
         private int _currentRuneId = RuneFrontHelper.DefaultRuneId;
 
-        // private static readonly ReactiveProperty<bool> IsLoading = new();
         private static readonly ReactiveProperty<int> TryCount = new();
         private readonly Dictionary<RuneCostType, RuneCostItem> _costItems = new();
 
