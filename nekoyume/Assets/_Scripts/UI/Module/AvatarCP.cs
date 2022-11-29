@@ -9,9 +9,6 @@ namespace Nekoyume.UI.Module
     public class AvatarCP : MonoBehaviour
     {
         [SerializeField]
-        private TextMeshProUGUI cpText = null;
-
-        [SerializeField]
         private DigitTextTweener cpTextValueTweener = null;
 
         [SerializeField]
@@ -25,8 +22,6 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private TextMeshProUGUI decreaseCpText = null;
-
-        private Coroutine _disableCpTween;
 
         public void PlayAnimation(int prevCp, int currentCp)
         {

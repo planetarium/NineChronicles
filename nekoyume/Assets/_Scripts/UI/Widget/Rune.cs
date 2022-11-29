@@ -198,12 +198,25 @@ namespace Nekoyume.UI
 
         public async UniTaskVoid OnActionRender(IRandom random)
         {
-            Find<RuneEnhancementResultScreen>().Show(
-                _selectedRuneItem,
-                States.Instance.GoldBalanceState.Gold,
-                States.Instance.CrystalBalance,
-                TryCount.Value,
-                random);
+            if (_selectedRuneItem.Level > 1)
+            {
+                Find<RuneEnhancementResultScreen>().Show(
+                    _selectedRuneItem,
+                    States.Instance.GoldBalanceState.Gold,
+                    States.Instance.CrystalBalance,
+                    TryCount.Value,
+                    random);
+            }
+            else
+            {
+                if (!RuneFrontHelper.TryGetRuneIcon(_selectedRuneItem.Row.Id, out var runeIcon))
+                {
+                    return;
+                }
+
+                var quote = L10nManager.Localize("UI_RUNE_COMBINE_START");
+                Find<RuneCombineResultScreen>().Show(runeIcon, quote);
+            }
 
             await States.Instance.InitRuneStates();
             States.Instance.UpdateRuneSlotState();

@@ -174,6 +174,7 @@ namespace Nekoyume.UI
                 Widget.Create<BuffBonusLoadingScreen>(),
                 Widget.Create<PreloadingScreen>(),
                 Widget.Create<WorldBossRewardScreen>(),
+                Widget.Create<RuneCombineResultScreen>(),
                 Widget.Create<RuneEnhancementResultScreen>(),
                 Widget.Create<CPScreen>(),
 
