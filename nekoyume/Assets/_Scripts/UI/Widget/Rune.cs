@@ -330,7 +330,13 @@ namespace Nekoyume.UI
             loadingText.text = item.Level > 0
                 ? L10nManager.Localize($"UI_RUNE_LEVEL_UP_PROCESSING")
                 : L10nManager.Localize($"UI_RUNE_COMBINE_PROCESSING");
-            nextTitle.gameObject.SetActive(item.Level != 0);
+
+            var isActive = item.Level != 0;
+            if (item.IsMaxLevel)
+            {
+                isActive = false;
+            }
+            nextTitle.gameObject.SetActive(isActive);
         }
 
         private void UpdateRuneItems(RuneItem item)
