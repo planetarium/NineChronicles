@@ -198,16 +198,7 @@ namespace Nekoyume.UI
 
         public async UniTaskVoid OnActionRender(IRandom random)
         {
-            if (_selectedRuneItem.Level > 1)
-            {
-                Find<RuneEnhancementResultScreen>().Show(
-                    _selectedRuneItem,
-                    States.Instance.GoldBalanceState.Gold,
-                    States.Instance.CrystalBalance,
-                    TryCount.Value,
-                    random);
-            }
-            else
+            if (_selectedRuneItem.Level == 0)
             {
                 if (!RuneFrontHelper.TryGetRuneIcon(_selectedRuneItem.Row.Id, out var runeIcon))
                 {
@@ -216,6 +207,15 @@ namespace Nekoyume.UI
 
                 var quote = L10nManager.Localize("UI_RUNE_COMBINE_START");
                 Find<RuneCombineResultScreen>().Show(runeIcon, quote);
+            }
+            else
+            {
+                Find<RuneEnhancementResultScreen>().Show(
+                    _selectedRuneItem,
+                    States.Instance.GoldBalanceState.Gold,
+                    States.Instance.CrystalBalance,
+                    TryCount.Value,
+                    random);
             }
 
             await States.Instance.InitRuneStates();
@@ -231,7 +231,6 @@ namespace Nekoyume.UI
             Set(_selectedRuneItem);
             animator.Play(_selectedRuneItem.Level > 1 ? HashToLevelUp : HashToCombine);
             LoadingHelper.RuneEnhancement.Value = false;
-
         }
 
         private void SetInventory()
