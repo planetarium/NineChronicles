@@ -3,6 +3,7 @@ using System.Linq;
 using Coffee.UIEffects;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Stat;
@@ -116,6 +117,11 @@ namespace Nekoyume.UI
                  out var tryResult);
 
             var speech = string.Empty;
+
+            AudioController.instance.PlaySfx(isSuccess
+                ? AudioController.SfxCode.GreatSuccessDrum
+                : AudioController.SfxCode.Failed);
+
             if (isSuccess)
             {
                 speech = tryCount != tryResult

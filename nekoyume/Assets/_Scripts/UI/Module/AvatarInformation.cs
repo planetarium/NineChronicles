@@ -16,7 +16,6 @@ using Nekoyume.Model.Stat;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using TMPro;
-using Unity.Mathematics;
 using UnityEngine;
 using Material = Nekoyume.Model.Item.Material;
 
@@ -192,8 +191,6 @@ namespace Nekoyume.UI.Module
             inventory.UpdateCostumes(itemSlotState.Costumes);
             inventory.UpdateEquipments(itemSlotState.Equipments);
             inventory.UpdateConsumables(_consumables);
-
-
             UpdateTitle();
         }
 
@@ -893,7 +890,12 @@ namespace Nekoyume.UI.Module
             }
 
             UpdateStat();
-            ShowCpScreen();
+            if (inventoryItem.ItemBase.ItemType == ItemType.Equipment ||
+                inventoryItem.ItemBase.ItemType == ItemType.Costume)
+            {
+                ShowCpScreen();
+            }
+
             _onUpdate?.Invoke();
         }
 

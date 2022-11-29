@@ -28,11 +28,6 @@ namespace Nekoyume.UI.Module
 
         private Coroutine _disableCpTween;
 
-        public void UpdateCP(int cp)
-        {
-            cpText.text = cp.ToString();
-        }
-
         public void PlayAnimation(int prevCp, int currentCp)
         {
             if (!(_disableCpTween is null))
