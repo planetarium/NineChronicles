@@ -126,7 +126,7 @@ namespace Nekoyume.UI
         private int _maxTryCount = 1;
         private int _currentRuneId = RuneFrontHelper.DefaultRuneId;
 
-        private static readonly ReactiveProperty<bool> IsLoading = new();
+        // private static readonly ReactiveProperty<bool> IsLoading = new();
         private static readonly ReactiveProperty<int> TryCount = new();
         private readonly Dictionary<RuneCostType, RuneCostItem> _costItems = new();
 
@@ -160,8 +160,9 @@ namespace Nekoyume.UI
             minusButton.onClick.AddListener(() => TryCount.Value = math.max(1, TryCount.Value - 1));
             closeButton.onClick.AddListener(() => Close(true));
             CloseWidget = () => Close(true);
-            IsLoading.Subscribe(b => loadingObjects.ForEach(x => x.SetActive(b)))
-                     .AddTo(gameObject);
+            LoadingHelper.RuneEnhancement
+                         .Subscribe(b => loadingObjects.ForEach(x => x.SetActive(b)))
+                         .AddTo(gameObject);
             TryCount.Subscribe(x =>
             {
                 slider.ForceMove(x);
@@ -217,7 +218,7 @@ namespace Nekoyume.UI
             SetInventory();
             Set(_selectedRuneItem);
             animator.Play(_selectedRuneItem.Level > 1 ? HashToLevelUp : HashToCombine);
-            IsLoading.Value = false;
+            LoadingHelper.RuneEnhancement.Value = false;
 
         }
 
@@ -294,7 +295,7 @@ namespace Nekoyume.UI
             var runeId = _selectedRuneItem.Row.Id;
             Animator.Play(HashToMaterialUse);
             ActionManager.Instance.RuneEnhancement(runeId, TryCount.Value);
-            IsLoading.Value = true;
+            LoadingHelper.RuneEnhancement.Value = true;
         }
 
         private void Set(RuneItem item)

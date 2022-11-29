@@ -755,6 +755,14 @@ namespace Nekoyume.UI.Module
                         return;
                     }
 
+                    if (LoadingHelper.RuneEnhancement.Value)
+                    {
+                        NotificationSystem.Push(MailType.System,
+                            L10nManager.Localize("UI_CAN_NOT_ENTER_RUNE_MENU"),
+                            NotificationCell.NotificationType.Alert);
+                        return;
+                    }
+
                     var rune = Widget.Find<Rune>();
                     rune.CloseWithOtherWidgets();
                     rune.Show(model.RuneState.RuneId, true);
