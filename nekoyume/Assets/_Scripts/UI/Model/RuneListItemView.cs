@@ -64,7 +64,13 @@ namespace Nekoyume.UI.Model
                 runeImage.sprite = icon;
             }
             levelText.text = item.Level.ToString();
-            notification.SetActive(item.HasNotification);
+
+            var hasNotification = item.HasNotification;
+            if (item.IsMaxLevel)
+            {
+                hasNotification = false;
+            }
+            notification.SetActive(hasNotification);
 
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() => context.OnClick.OnNext(item));

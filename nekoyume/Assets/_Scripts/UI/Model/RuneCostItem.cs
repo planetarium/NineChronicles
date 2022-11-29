@@ -49,7 +49,7 @@ namespace Nekoyume.UI.Model
             _defaultCount = count;
             countText.text = count > 0 ? count.ToCurrencyNotation() : string.Empty;
             countText.color = isEnough ? Color.white : Palette.GetColor(ColorType.TextDenial);
-            effect.SetActive(isEnough);
+            effect.SetActive(count > 0 && isEnough);
             _callback = callback;
             if (icon != null)
             {
