@@ -30,11 +30,6 @@ namespace Nekoyume.UI.Module
 
         public void PlayAnimation(int prevCp, int currentCp)
         {
-            if (!(_disableCpTween is null))
-            {
-                StopCoroutine(_disableCpTween);
-            }
-
             cpTextValueTweener.Play(prevCp, currentCp);
             increaseCpArea.gameObject.SetActive(false);
             decreaseCpArea.gameObject.SetActive(false);
@@ -48,15 +43,6 @@ namespace Nekoyume.UI.Module
                 decreaseCpArea.gameObject.SetActive(true);
                 decreaseCpText.text = (math.abs(currentCp - prevCp)).ToString();
             }
-
-            _disableCpTween = StartCoroutine(CoDisableAdditionalCp());
-        }
-
-        private IEnumerator CoDisableAdditionalCp()
-        {
-            yield return new WaitForSeconds(1.5f);
-            increaseCpArea.gameObject.SetActive(false);
-            decreaseCpArea.gameObject.SetActive(false);
         }
     }
 }
