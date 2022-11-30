@@ -15,6 +15,10 @@ namespace Nekoyume.Model.Skill
         public int Power { get; private set; }
         public int Chance { get; private set; }
 
+        // When used as model
+        [field: NonSerialized]
+        public SkillCustomField? CustomField { get; set; }
+
         protected Skill(SkillSheet.Row skillRow, int power, int chance)
         {
             SkillRow = skillRow;
@@ -30,7 +34,9 @@ namespace Nekoyume.Model.Skill
 
         protected bool Equals(Skill other)
         {
-            return SkillRow.Equals(other.SkillRow) && Power == other.Power && Chance.Equals(other.Chance);
+            return SkillRow.Equals(other.SkillRow) &&
+                Power == other.Power &&
+                Chance.Equals(other.Chance);
         }
 
         public override bool Equals(object obj)

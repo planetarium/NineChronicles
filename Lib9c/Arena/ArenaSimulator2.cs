@@ -22,7 +22,7 @@ namespace Nekoyume.Arena
         public ArenaSimulator2(IRandom random,
             ArenaPlayerDigest myDigest,
             ArenaPlayerDigest enemyDigest,
-            ArenaSimulatorSheets simulatorSheets
+            ArenaSimulatorSheetsV1 simulatorSheets
         ) : base(
             random,
             new Player(myDigest, simulatorSheets),

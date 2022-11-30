@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Libplanet.Action;
 using System.Collections;
@@ -95,6 +95,11 @@ namespace Nekoyume.Model
             }
         }
 
+        public Skill.Skill SelectWithoutDefaultAttack(IRandom random)
+        {
+            return PostSelectWithoutDefaultAttack(random, GetSelectableSkills());
+        }
+
         public Skill.Skill Select(IRandom random)
         {
             return PostSelect(random, GetSelectableSkills());
@@ -115,6 +120,35 @@ namespace Nekoyume.Model
         private IEnumerable<Skill.Skill> GetSelectableSkills()
         {
             return _skills.Where(skill => !_skillsCooldown.ContainsKey(skill.SkillRow.Id));
+        }
+
+        private Skill.Skill PostSelectWithoutDefaultAttack(IRandom random, IEnumerable<Skill.Skill> skills)
+        {
+            if (!skills.Any())
+            {
+                return null;
+            }
+
+            var skillList = skills.ToList();
+            var sortedSkills = skillList
+                .OrderBy(x => x.SkillRow.Id)
+                .ToList();
+
+            var sumChance = sortedSkills.Sum(x => x.Chance);
+            if (sumChance < 100 &&
+                sumChance <= random.Next(0, 100))
+            {
+                return null;
+            }
+
+            var itemSelector = new WeightedSelector<Skill.Skill>(random);
+            foreach (var skill in sortedSkills)
+            {
+                itemSelector.Add(skill, skill.Chance);
+            }
+
+            var selectedSkill = itemSelector.Select(1);
+            return selectedSkill.First();
         }
 
         private Skill.Skill PostSelect(IRandom random, IEnumerable<Skill.Skill> skills)

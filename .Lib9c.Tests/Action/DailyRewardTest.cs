@@ -7,7 +7,9 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Helper;
     using Nekoyume.Model.State;
+    using Nekoyume.TableData;
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
@@ -112,6 +114,10 @@ namespace Lib9c.Tests.Action
             Assert.NotNull(nextAvatarState.questList);
             Assert.NotNull(nextAvatarState.worldInformation);
             Assert.Equal(nextGameConfigState.ActionPointMax, nextAvatarState.actionPoint);
+
+            var avatarRuneAmount = nextState.GetBalance(_avatarAddress, RuneHelper.DailyRewardRune);
+            var expectedRune = RuneHelper.DailyRewardRune * nextGameConfigState.DailyRuneRewardAmount;
+            Assert.Equal(expectedRune, avatarRuneAmount);
         }
 
         [Fact]
@@ -141,6 +147,31 @@ namespace Lib9c.Tests.Action
             {
                 Assert.True(throwsException);
             }
+        }
+
+        [Fact]
+        private void Execute_Without_Runereward()
+        {
+            var gameConfigSheet = new GameConfigSheet();
+            var csv = @"key,value
+hourglass_per_block,3
+action_point_max,120
+daily_reward_interval,1
+daily_arena_interval,5040
+weekly_arena_interval,56000
+required_appraise_block,10
+battle_arena_interval,4
+rune_stat_slot_unlock_cost,50
+rune_skill_slot_unlock_cost,500";
+            gameConfigSheet.Set(csv);
+            var gameConfigState = new GameConfigState();
+            gameConfigState.Set(gameConfigSheet);
+
+            var state = _initialState
+                .SetState(Addresses.GameConfig, gameConfigState.Serialize());
+            var nextState = ExecuteInternal(state, 1800);
+            var avatarRuneAmount = nextState.GetBalance(_avatarAddress, RuneHelper.DailyRewardRune);
+            Assert.Equal(0, (int)avatarRuneAmount.MajorUnit);
         }
 
         private IAccountStateDelta SetAvatarStateAsV2To(IAccountStateDelta state, AvatarState avatarState) =>

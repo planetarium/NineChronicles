@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Text;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
@@ -14,6 +15,7 @@ using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Rune;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
@@ -22,10 +24,10 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1464
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1495
     /// </summary>
     [Serializable]
-    [ActionType("battle_arena6")]
+    [ActionType("battle_arena7")]
     public class BattleArena : GameAction
     {
         public const string PurchasedCountKey = "purchased_count_during_interval";
@@ -37,6 +39,7 @@ namespace Nekoyume.Action
 
         public List<Guid> costumes;
         public List<Guid> equipments;
+        public List<RuneSlotInfo> runeInfos;
 
         public ArenaPlayerDigest ExtraMyArenaPlayerDigest;
         public ArenaPlayerDigest ExtraEnemyArenaPlayerDigest;
@@ -54,6 +57,7 @@ namespace Nekoyume.Action
                     .OrderBy(element => element).Select(e => e.Serialize())),
                 [EquipmentsKey] = new List(equipments
                     .OrderBy(element => element).Select(e => e.Serialize())),
+                [RuneInfos] = runeInfos.OrderBy(x => x.SlotIndex).Select(x=> x.Serialize()).Serialize(),
             }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(
@@ -66,6 +70,7 @@ namespace Nekoyume.Action
             ticket = plainValue[TicketKey].ToInteger();
             costumes = ((List)plainValue[CostumesKey]).Select(e => e.ToGuid()).ToList();
             equipments = ((List)plainValue[EquipmentsKey]).Select(e => e.ToGuid()).ToList();
+            runeInfos = plainValue[RuneInfos].ToList(x => new RuneSlotInfo((List)x));
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -124,6 +129,7 @@ namespace Nekoyume.Action
                     typeof(EquipmentItemSubRecipeSheetV2),
                     typeof(EquipmentItemOptionSheet),
                     typeof(MaterialItemSheet),
+                    typeof(RuneListSheet),
                 });
 
             avatarState.ValidEquipmentAndCostume(costumes, equipments,
@@ -132,6 +138,24 @@ namespace Nekoyume.Action
                 sheets.GetSheet<EquipmentItemSubRecipeSheetV2>(),
                 sheets.GetSheet<EquipmentItemOptionSheet>(),
                 context.BlockIndex, addressesHex);
+
+            // update rune slot
+            var runeSlotStateAddress = RuneSlotState.DeriveAddress(myAvatarAddress, BattleType.Arena);
+            var runeSlotState = states.TryGetState(runeSlotStateAddress, out List rawRuneSlotState)
+                ? new RuneSlotState(rawRuneSlotState)
+                : new RuneSlotState(BattleType.Arena);
+            var runeListSheet = sheets.GetSheet<RuneListSheet>();
+            runeSlotState.UpdateSlot(runeInfos, runeListSheet);
+            states = states.SetState(runeSlotStateAddress, runeSlotState.Serialize());
+
+            // update item slot
+            var itemSlotStateAddress = ItemSlotState.DeriveAddress(myAvatarAddress, BattleType.Arena);
+            var itemSlotState = states.TryGetState(itemSlotStateAddress, out List rawItemSlotState)
+                ? new ItemSlotState(rawItemSlotState)
+                : new ItemSlotState(BattleType.Arena);
+            itemSlotState.UpdateEquipment(equipments);
+            itemSlotState.UpdateCostumes(costumes);
+            states = states.SetState(itemSlotStateAddress, itemSlotState.Serialize());
 
             var arenaSheet = sheets.GetSheet<ArenaSheet>();
             if (!arenaSheet.TryGetValue(championshipId, out var arenaRow))
@@ -300,12 +324,47 @@ namespace Nekoyume.Action
             myArenaAvatarState.UpdateEquipment(equipments);
             myArenaAvatarState.UpdateCostumes(costumes);
             myArenaAvatarState.LastBattleBlockIndex = context.BlockIndex;
+            var runeStates = new List<RuneState>();
+            foreach (var address in runeInfos.Select(info => RuneState.DeriveAddress(myAvatarAddress, info.RuneId)))
+            {
+                if (states.TryGetState(address, out List rawRuneState))
+                {
+                    runeStates.Add(new RuneState(rawRuneState));
+                }
+            }
+
+            // get enemy equipped items
+            var enemyItemSlotStateAddress = ItemSlotState.DeriveAddress(enemyAvatarAddress, BattleType.Arena);
+            var enemyItemSlotState = states.TryGetState(enemyItemSlotStateAddress, out List rawEnemyItemSlotState)
+                ? new ItemSlotState(rawEnemyItemSlotState)
+                : new ItemSlotState(BattleType.Arena);
+            var enemyRuneSlotStateAddress = RuneSlotState.DeriveAddress(enemyAvatarAddress, BattleType.Arena);
+            var enemyRuneSlotState = states.TryGetState(enemyRuneSlotStateAddress, out List enemyRawRuneSlotState)
+                ? new RuneSlotState(enemyRawRuneSlotState)
+                : new RuneSlotState(BattleType.Arena);
+
+            var enemyRuneStates = new List<RuneState>();
+            var enemyRuneSlotInfos = enemyRuneSlotState.GetEquippedRuneSlotInfos();
+            foreach (var address in enemyRuneSlotInfos.Select(info => RuneState.DeriveAddress(myAvatarAddress, info.RuneId)))
+            {
+                if (states.TryGetState(address, out List rawRuneState))
+                {
+                    enemyRuneStates.Add(new RuneState(rawRuneState));
+                }
+            }
 
             // simulate
             var enemyAvatarState = states.GetEnemyAvatarState(enemyAvatarAddress);
-            ExtraMyArenaPlayerDigest = new ArenaPlayerDigest(avatarState, myArenaAvatarState);
-            ExtraEnemyArenaPlayerDigest =
-                new ArenaPlayerDigest(enemyAvatarState, enemyArenaAvatarState);
+            ExtraMyArenaPlayerDigest = new ArenaPlayerDigest(
+                avatarState,
+                equipments,
+                costumes,
+                runeStates);
+            ExtraEnemyArenaPlayerDigest = new ArenaPlayerDigest(
+                enemyAvatarState,
+                enemyItemSlotState.Equipments,
+                enemyItemSlotState.Costumes,
+                enemyRuneStates);
             ExtraPreviousMyScore = myArenaScore.Score;
             var arenaSheets = sheets.GetArenaSimulatorSheets();
             var winCount = 0;

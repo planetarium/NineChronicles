@@ -5,6 +5,7 @@ using System.Text;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using Serilog;
 using static Lib9c.SerializeKeys;
@@ -34,7 +35,8 @@ namespace Nekoyume.Action
                     .SetState(avatarAddress, MarkChanged)
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(worldInformationAddress, MarkChanged)
-                    .SetState(questListAddress, MarkChanged);
+                    .SetState(questListAddress, MarkChanged)
+                    .MarkBalanceChanged(GoldCurrencyMock, avatarAddress);
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
@@ -64,6 +66,13 @@ namespace Nekoyume.Action
 
             avatarState.dailyRewardReceivedIndex = context.BlockIndex;
             avatarState.actionPoint = gameConfigState.ActionPointMax;
+
+            if (gameConfigState.DailyRuneRewardAmount > 0)
+            {
+                states = states.MintAsset(
+                    avatarAddress,
+                    RuneHelper.DailyRewardRune * gameConfigState.DailyRuneRewardAmount);
+            }
 
             var ended = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}DailyReward Total Executed Time: {Elapsed}", addressesHex, ended - started);

@@ -17,6 +17,7 @@ namespace Nekoyume.Model.Skill
         CriticalBuff,
         HitBuff,
         SpeedBuff,
+        DamageReductionBuff,
         Buff,
         Debuff,
     }

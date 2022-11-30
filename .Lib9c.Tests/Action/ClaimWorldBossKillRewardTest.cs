@@ -31,7 +31,7 @@ namespace Lib9c.Tests.Action
 
             var runeWeightSheet = new RuneWeightSheet();
             runeWeightSheet.Set(@"id,boss_id,rank,rune_id,weight
-1,900001,0,1001,100
+1,900001,0,10001,100
 ");
             var killRewardSheet = new WorldBossKillRewardSheet();
             killRewardSheet.Set(@"id,boss_id,rank,rune_min,rune_max,crystal
@@ -92,7 +92,7 @@ namespace Lib9c.Tests.Action
                     Random = new TestRandom(randomSeed),
                 });
 
-                var runeCurrency = RuneHelper.ToCurrency(tableSheets.RuneSheet[1001], 0, null);
+                var runeCurrency = RuneHelper.ToCurrency(tableSheets.RuneSheet[10001], 0, null);
                 Assert.Equal(1 * runeCurrency, nextState.GetBalance(avatarAddress, runeCurrency));
                 Assert.Equal(100 * CrystalCalculator.CRYSTAL, nextState.GetBalance(agentAddress, CrystalCalculator.CRYSTAL));
                 var nextRewardInfo = new WorldBossKillRewardRecord((List)nextState.GetState(worldBossKillRewardRecordAddress));

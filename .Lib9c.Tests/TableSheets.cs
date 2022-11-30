@@ -201,6 +201,12 @@ namespace Lib9c.Tests
 
         public BuffSheet BuffSheet { get; private set; }
 
+        public RuneListSheet RuneListSheet { get; private set; }
+
+        public RuneCostSheet RuneCostSheet { get; private set; }
+
+        public RuneOptionSheet RuneOptionSheet { get; private set; }
+
         public GrandFinaleScheduleSheet GrandFinaleScheduleSheet { get; private set; }
 
         public GrandFinaleParticipantsSheet GrandFinaleParticipantsSheet { get; private set; }
@@ -241,6 +247,22 @@ namespace Lib9c.Tests
                 ActionBuffSheet,
                 CharacterSheet,
                 CharacterLevelSheet,
+                EquipmentItemSetEffectSheet,
+                RuneOptionSheet
+            );
+        }
+
+        public SimulatorSheetsV1 GetSimulatorSheetsV1()
+        {
+            return new SimulatorSheetsV1(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
                 EquipmentItemSetEffectSheet
             );
         }
@@ -259,7 +281,42 @@ namespace Lib9c.Tests
                 EquipmentItemSetEffectSheet,
                 StageSheet,
                 StageWaveSheet,
+                EnemySkillSheet,
+                RuneOptionSheet
+            );
+        }
+
+        public StageSimulatorSheetsV1 GetStageSimulatorSheetsV1()
+        {
+            return new StageSimulatorSheetsV1(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
+                EquipmentItemSetEffectSheet,
+                StageSheet,
+                StageWaveSheet,
                 EnemySkillSheet
+            );
+        }
+
+        public RankingSimulatorSheetsV1 GetRankingSimulatorSheetsV1()
+        {
+            return new RankingSimulatorSheetsV1(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
+                EquipmentItemSetEffectSheet,
+                WeeklyArenaRewardSheet
             );
         }
 
@@ -275,6 +332,24 @@ namespace Lib9c.Tests
                 CharacterSheet,
                 CharacterLevelSheet,
                 EquipmentItemSetEffectSheet,
+                WeeklyArenaRewardSheet,
+                RuneOptionSheet
+            );
+        }
+
+        public ArenaSimulatorSheetsV1 GetArenaSimulatorSheetsV1()
+        {
+            return new ArenaSimulatorSheetsV1(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
+                EquipmentItemSetEffectSheet,
+                CostumeStatSheet,
                 WeeklyArenaRewardSheet
             );
         }
@@ -292,7 +367,28 @@ namespace Lib9c.Tests
                 CharacterLevelSheet,
                 EquipmentItemSetEffectSheet,
                 CostumeStatSheet,
-                WeeklyArenaRewardSheet
+                WeeklyArenaRewardSheet,
+                RuneOptionSheet
+            );
+        }
+
+        public RaidSimulatorSheetsV1 GetRaidSimulatorSheetsV1()
+        {
+            return new RaidSimulatorSheetsV1(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
+                EquipmentItemSetEffectSheet,
+                WorldBossCharacterSheet,
+                WorldBossActionPatternSheet,
+                WorldBossBattleRewardSheet,
+                RuneWeightSheet,
+                RuneSheet
             );
         }
 
@@ -312,7 +408,8 @@ namespace Lib9c.Tests
                 WorldBossActionPatternSheet,
                 WorldBossBattleRewardSheet,
                 RuneWeightSheet,
-                RuneSheet
+                RuneSheet,
+                RuneOptionSheet
             );
         }
 

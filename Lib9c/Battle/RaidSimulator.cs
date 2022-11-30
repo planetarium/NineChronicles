@@ -10,6 +10,7 @@ using Priority_Queue;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Action;
 
 namespace Nekoyume.Battle
 {
@@ -19,7 +20,6 @@ namespace Nekoyume.Battle
         public int DamageDealt { get; private set; }
         public List<FungibleAssetValue> AssetReward { get; private set; } = new List<FungibleAssetValue>();
         public override IEnumerable<ItemBase> Reward => new List<ItemBase>();
-        private const int TurnLimit = 150;
         private readonly List<RaidBoss> _waves;
 
         private WorldBossBattleRewardSheet _worldBossBattleRewardSheet;
@@ -32,10 +32,16 @@ namespace Nekoyume.Battle
             IRandom random,
             AvatarState avatarState,
             List<Guid> foods,
+            List<RuneState> runeStates,
             RaidSimulatorSheets simulatorSheets,
             CostumeStatSheet costumeStatSheet) : base(random, avatarState, foods, simulatorSheets)
         {
             Player.SetCostumeStat(costumeStatSheet);
+            if (runeStates != null)
+            {
+                Player.SetRune(runeStates, simulatorSheets.RuneOptionSheet, simulatorSheets.SkillSheet);
+            }
+
             BossId = bossId;
             _waves = new List<RaidBoss>();
 
@@ -62,7 +68,8 @@ namespace Nekoyume.Battle
                     Player,
                     characterRow,
                     patternRow,
-                    characterRow.WaveStats[i]);
+                    characterRow.WaveStats[i],
+                    true);
                 _waves.Add(enemyModel);
             }
         }

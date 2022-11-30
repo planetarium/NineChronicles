@@ -46,6 +46,8 @@ namespace Nekoyume.Model.Stat
         public int BaseCRI => BaseStats.CRI;
         public int BaseHIT => BaseStats.HIT;
         public int BaseSPD => BaseStats.SPD;
+        public int BaseDRV => BaseStats.DRV;
+        public int BaseDRR => BaseStats.DRR;
 
         public bool HasBaseHP => BaseStats.HasHP;
         public bool HasBaseATK => BaseStats.HasATK;
@@ -53,6 +55,8 @@ namespace Nekoyume.Model.Stat
         public bool HasBaseCRI => BaseStats.HasCRI;
         public bool HasBaseHIT => BaseStats.HasHIT;
         public bool HasBaseSPD => BaseStats.HasSPD;
+        public bool HasBaseDRV => BaseStats.HasDRV;
+        public bool HasBaseDRR => BaseStats.HasDRR;
 
         public int AdditionalHP => HP - _baseStats.HP;
         public int AdditionalATK => ATK - _baseStats.ATK;
@@ -60,6 +64,8 @@ namespace Nekoyume.Model.Stat
         public int AdditionalCRI => CRI - _baseStats.CRI;
         public int AdditionalHIT => HIT - _baseStats.HIT;
         public int AdditionalSPD => SPD - _baseStats.SPD;
+        public int AdditionalDRV => DRV - _baseStats.DRV;
+        public int AdditionalDRR => DRR - _baseStats.DRR;
 
         public bool HasAdditionalHP => AdditionalHP > 0;
         public bool HasAdditionalATK => AdditionalATK > 0;
@@ -67,9 +73,11 @@ namespace Nekoyume.Model.Stat
         public bool HasAdditionalCRI => AdditionalCRI > 0;
         public bool HasAdditionalHIT => AdditionalHIT > 0;
         public bool HasAdditionalSPD => AdditionalSPD > 0;
+        public bool HasAdditionalDRV => AdditionalDRV > 0;
+        public bool HasAdditionalDRR => AdditionalDRR > 0;
 
         public bool HasAdditionalStats => HasAdditionalHP || HasAdditionalATK || HasAdditionalDEF || HasAdditionalCRI ||
-                                          HasAdditionalHIT || HasAdditionalSPD;
+                                          HasAdditionalHIT || HasAdditionalSPD || HasAdditionalDRV || HasAdditionalDRR;
 
         public CharacterStats(
             CharacterSheet.Row row,
@@ -199,6 +207,18 @@ namespace Nekoyume.Model.Stat
                         _equipmentStatModifiers.Add(new StatModifier(StatType.SPD, StatModifier.OperationType.Add,
                             statMap.SPD));
                     }
+
+                    if (statMap.HasDRV)
+                    {
+                        _equipmentStatModifiers.Add(new StatModifier(StatType.DRV, StatModifier.OperationType.Add,
+                            statMap.DRV));
+                    }
+
+                    if (statMap.HasDRR)
+                    {
+                        _equipmentStatModifiers.Add(new StatModifier(StatType.DRR, StatModifier.OperationType.Add,
+                            statMap.DRR));
+                    }
                 }
 
                 // set effects.
@@ -266,6 +286,18 @@ namespace Nekoyume.Model.Stat
                         _consumableStatModifiers.Add(new StatModifier(StatType.SPD, StatModifier.OperationType.Add,
                             statMap.SPD));
                     }
+
+                    if (statMap.HasDRV)
+                    {
+                        _consumableStatModifiers.Add(new StatModifier(StatType.DRV, StatModifier.OperationType.Add,
+                            statMap.DRV));
+                    }
+
+                    if (statMap.HasDRR)
+                    {
+                        _consumableStatModifiers.Add(new StatModifier(StatType.DRR, StatModifier.OperationType.Add,
+                            statMap.DRR));
+                    }
                 }
             }
 
@@ -304,7 +336,7 @@ namespace Nekoyume.Model.Stat
 
         public void AddBuff(Buff.StatBuff buff, bool updateImmediate = true)
         {
-            _buffStatModifiers[buff.RowData.GroupId] = buff.RowData.StatModifier;
+            _buffStatModifiers[buff.RowData.GroupId] = buff.GetModifier();
 
             if (updateImmediate)
             {

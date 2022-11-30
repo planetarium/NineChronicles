@@ -62,7 +62,7 @@ namespace Lib9c.Tests.Model
                 avatarState,
                 avatarState,
                 new List<Guid>(),
-                _tableSheets.GetRankingSimulatorSheets(),
+                _tableSheets.GetRankingSimulatorSheetsV1(),
                 1
             );
             simulator.Simulate();
@@ -114,7 +114,7 @@ namespace Lib9c.Tests.Model
                 avatarState,
                 avatarState,
                 new List<Guid>(),
-                _tableSheets.GetRankingSimulatorSheets(),
+                _tableSheets.GetRankingSimulatorSheetsV1(),
                 1
             );
             simulator.Simulate();
@@ -168,7 +168,7 @@ namespace Lib9c.Tests.Model
                 avatarState,
                 enemyAvatarState,
                 new List<Guid>(),
-                _tableSheets.GetRankingSimulatorSheets(),
+                _tableSheets.GetRankingSimulatorSheetsV1(),
                 1,
                 _tableSheets.CostumeStatSheet
             );
@@ -216,7 +216,7 @@ namespace Lib9c.Tests.Model
                 avatarState,
                 avatarState,
                 new List<Guid>(),
-                _tableSheets.GetRankingSimulatorSheets(),
+                _tableSheets.GetRankingSimulatorSheetsV1(),
                 1);
 
             var rewardIds = new HashSet<int>();

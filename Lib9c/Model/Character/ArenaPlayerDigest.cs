@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
+using Nekoyume.Action;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 
@@ -22,7 +23,9 @@ namespace Nekoyume.Model
 
         public readonly List<Costume> Costumes;
         public readonly List<Equipment> Equipments;
+        public readonly List<RuneState> Runes;
 
+        [Obsolete("Do not use it")]
         public ArenaPlayerDigest(AvatarState avatarState, ArenaAvatarState arenaAvatarState)
         {
             NameWithHash = avatarState.NameWithHash;
@@ -34,10 +37,32 @@ namespace Nekoyume.Model
 
             Level = avatarState.level;
             Costumes = avatarState.GetNonFungibleItems<Costume>(arenaAvatarState.Costumes);
-            Equipments = avatarState.GetNonFungibleItems<Equipment>(arenaAvatarState.Equipments);;
+            Equipments = avatarState.GetNonFungibleItems<Equipment>(arenaAvatarState.Equipments);
+            Runes = new List<RuneState>();
         }
 
-        public ArenaPlayerDigest(AvatarState avatarState)
+        public ArenaPlayerDigest(
+            AvatarState avatarState,
+            List<Guid> equipments,
+            List<Guid> costumes,
+            List<RuneState> runes)
+        {
+            NameWithHash = avatarState.NameWithHash;
+            CharacterId = avatarState.characterId;
+            HairIndex = avatarState.hair;
+            LensIndex = avatarState.lens;
+            EarIndex = avatarState.ear;
+            TailIndex = avatarState.tail;
+
+            Level = avatarState.level;
+            Costumes = avatarState.GetNonFungibleItems<Costume>(costumes);
+            Equipments = avatarState.GetNonFungibleItems<Equipment>(equipments);
+            Runes = runes;
+        }
+
+        public ArenaPlayerDigest(
+            AvatarState avatarState,
+            List<RuneState> runes)
         {
             NameWithHash = avatarState.NameWithHash;
             CharacterId = avatarState.characterId;
@@ -55,6 +80,25 @@ namespace Nekoyume.Model
                 .Where(x => x.equipped)
                 .ToList();
             Equipments = equipments;
+            Runes = runes;
+        }
+
+        public ArenaPlayerDigest(
+            AvatarState avatarState,
+            List<Costume> costumes,
+            List<Equipment> equipments,
+            List<RuneState> runes)
+        {
+            NameWithHash = avatarState.NameWithHash;
+            CharacterId = avatarState.characterId;
+            HairIndex = avatarState.hair;
+            LensIndex = avatarState.lens;
+            EarIndex = avatarState.ear;
+            TailIndex = avatarState.tail;
+            Level = avatarState.level;
+            Costumes = costumes;
+            Equipments = equipments;
+            Runes = runes;
         }
 
         public ArenaPlayerDigest(List serialized)
@@ -70,6 +114,8 @@ namespace Nekoyume.Model
                 (Costume)ItemFactory.Deserialize((Dictionary)c)).ToList();
             Equipments = ((List)serialized[8]).Select(e =>
                 (Equipment)ItemFactory.Deserialize((Dictionary)e)).ToList();
+            Runes = ((List)serialized[9]).Select(e =>
+                new RuneState((List)e)).ToList();
         }
 
         public IValue Serialize()
@@ -85,7 +131,9 @@ namespace Nekoyume.Model
                 .Add(Costumes.Aggregate(List.Empty,
                     (current, costume) => current.Add(costume.Serialize())))
                 .Add(Equipments.Aggregate(List.Empty,
-                    (current, equipment) => current.Add(equipment.Serialize())));
+                    (current, equipment) => current.Add(equipment.Serialize())))
+                .Add(Runes.Aggregate(List.Empty,
+                    (current, rune) => current.Add(rune.Serialize())));
         }
     }
 }

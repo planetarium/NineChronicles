@@ -21,6 +21,7 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/1241
     /// </summary>
     [Serializable]
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100340ObsoleteIndex)]
     [ActionType("mimisbrunnr_battle9")]
     public class MimisbrunnrBattle9 : GameAction
     {
@@ -71,6 +72,8 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, MarkChanged);
                 return states.SetState(ctx.Signer, MarkChanged);
             }
+
+            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100340ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
@@ -222,7 +225,7 @@ namespace Nekoyume.Action
                 foods,
                 worldId,
                 stageId,
-                states.GetStageSimulatorSheets(),
+                states.GetStageSimulatorSheetsV1(),
                 costumeStatSheet,
                 StageSimulatorV1.ConstructorVersionV100080,
                 playCount);

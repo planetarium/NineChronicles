@@ -60,7 +60,7 @@ namespace Lib9c.Tests.Model
                 avatarState,
                 avatarState,
                 new List<Guid>(),
-                _tableSheets.GetRankingSimulatorSheets(),
+                _tableSheets.GetRankingSimulatorSheetsV1(),
                 1,
                 new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false),
                 new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false)
@@ -104,7 +104,7 @@ namespace Lib9c.Tests.Model
                 avatarState,
                 avatarState,
                 new List<Guid>(),
-                _tableSheets.GetRankingSimulatorSheets(),
+                _tableSheets.GetRankingSimulatorSheetsV1(),
                 1,
                 info,
                 new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false)
@@ -150,7 +150,7 @@ namespace Lib9c.Tests.Model
                 avatarState,
                 enemyAvatarState,
                 new List<Guid>(),
-                _tableSheets.GetRankingSimulatorSheets(),
+                _tableSheets.GetRankingSimulatorSheetsV1(),
                 1,
                 new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false),
                 new ArenaInfo(enemyAvatarState, _tableSheets.CharacterSheet, false),
@@ -198,7 +198,7 @@ namespace Lib9c.Tests.Model
                 avatarState,
                 avatarState,
                 new List<Guid>(),
-                _tableSheets.GetRankingSimulatorSheets(),
+                _tableSheets.GetRankingSimulatorSheetsV1(),
                 1,
                 new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false),
                 new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false));

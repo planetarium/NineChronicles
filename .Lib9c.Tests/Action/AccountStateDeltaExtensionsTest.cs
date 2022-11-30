@@ -56,7 +56,7 @@ namespace Lib9c.Tests.Action
             var random = new TestRandom();
             var tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
             var runeSheet = tableSheets.RuneSheet;
-            var runeCurrency = RuneHelper.ToCurrency(runeSheet[1001], 0, null);
+            var runeCurrency = RuneHelper.ToCurrency(runeSheet[10001], 0, null);
             var avatarAddress = new PrivateKey().ToAddress();
             var bossState = new WorldBossState(
                 tableSheets.WorldBossListSheet[1],
@@ -65,7 +65,7 @@ namespace Lib9c.Tests.Action
             var bossId = bossState.Id;
             var runeWeightSheet = new RuneWeightSheet();
             runeWeightSheet.Set($@"id,boss_id,rank,rune_id,weight
-1,{bossId},0,1001,100
+1,{bossId},0,10001,100
 ");
             var killRewardSheet = new WorldBossKillRewardSheet();
             killRewardSheet.Set($@"id,boss_id,rank,rune_min,rune_max,crystal
