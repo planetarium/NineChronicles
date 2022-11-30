@@ -87,6 +87,12 @@ namespace Nekoyume.UI
         private GameObject requirement;
 
         [SerializeField]
+        private GameObject successContainer;
+
+        [SerializeField]
+        private GameObject costContainer;
+
+        [SerializeField]
         private List<GameObject> loadingObjects;
 
         [SerializeField]
@@ -344,7 +350,10 @@ namespace Nekoyume.UI
             {
                 isActive = false;
             }
+
             nextTitle.gameObject.SetActive(isActive);
+            successContainer.SetActive(!item.IsMaxLevel);
+            costContainer.SetActive(!item.IsMaxLevel);
         }
 
         private void UpdateRuneItems(RuneItem item)
