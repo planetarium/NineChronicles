@@ -8,6 +8,7 @@ using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -17,16 +18,17 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1374
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1495
     /// </summary>
     [Serializable]
-    [ActionType("hack_and_slash_sweep7")]
+    [ActionType("hack_and_slash_sweep8")]
     public class HackAndSlashSweep : GameAction
     {
         public const int UsableApStoneCount = 10;
 
         public List<Guid> costumes;
         public List<Guid> equipments;
+        public List<RuneSlotInfo> runeInfos;
         public Address avatarAddress;
         public int apStoneCount;
         public int actionPoint;
@@ -38,6 +40,7 @@ namespace Nekoyume.Action
             {
                 ["costumes"] = new List(costumes.OrderBy(i => i).Select(e => e.Serialize())),
                 ["equipments"] = new List(equipments.OrderBy(i => i).Select(e => e.Serialize())),
+                ["runeInfos"] = runeInfos.OrderBy(x => x.SlotIndex).Select(x=> x.Serialize()).Serialize(),
                 ["avatarAddress"] = avatarAddress.Serialize(),
                 ["apStoneCount"] = apStoneCount.Serialize(),
                 ["actionPoint"] = actionPoint.Serialize(),
@@ -50,6 +53,7 @@ namespace Nekoyume.Action
         {
             costumes = ((List)plainValue["costumes"]).Select(e => e.ToGuid()).ToList();
             equipments = ((List)plainValue["equipments"]).Select(e => e.ToGuid()).ToList();
+            runeInfos = plainValue["runeInfos"].ToList(x => new RuneSlotInfo((List)x));
             avatarAddress = plainValue["avatarAddress"].ToAddress();
             apStoneCount = plainValue["apStoneCount"].ToInteger();
             actionPoint = plainValue["actionPoint"].ToInteger();
@@ -104,6 +108,8 @@ namespace Nekoyume.Action
                     typeof(CostumeStatSheet),
                     typeof(SweepRequiredCPSheet),
                     typeof(StakeActionPointCoefficientSheet),
+                    typeof(RuneListSheet),
+                    typeof(RuneOptionSheet),
                 });
 
             var worldSheet = sheets.GetSheet<WorldSheet>();
@@ -164,9 +170,70 @@ namespace Nekoyume.Action
                     $"{addressesHex}There is no row in SweepRequiredCPSheet: {stageId}");
             }
 
+            var costumeList = new List<Costume>();
+            foreach (var guid in costumes)
+            {
+                var costume = avatarState.inventory.Costumes.FirstOrDefault(x => x.ItemId == guid);
+                if (costume != null)
+                {
+                    costumeList.Add(costume);
+                }
+            }
+
+            // update rune slot
+            var runeSlotStateAddress = RuneSlotState.DeriveAddress(avatarAddress, BattleType.Adventure);
+            var runeSlotState = states.TryGetState(runeSlotStateAddress, out List rawRuneSlotState)
+                ? new RuneSlotState(rawRuneSlotState)
+                : new RuneSlotState(BattleType.Adventure);
+            var runeListSheet = sheets.GetSheet<RuneListSheet>();
+            runeSlotState.UpdateSlot(runeInfos, runeListSheet);
+            states = states.SetState(runeSlotStateAddress, runeSlotState.Serialize());
+
+            // update item slot
+            var itemSlotStateAddress = ItemSlotState.DeriveAddress(avatarAddress, BattleType.Adventure);
+            var itemSlotState = states.TryGetState(itemSlotStateAddress, out List rawItemSlotState)
+                ? new ItemSlotState(rawItemSlotState)
+                : new ItemSlotState(BattleType.Adventure);
+            itemSlotState.UpdateEquipment(equipments);
+            itemSlotState.UpdateCostumes(costumes);
+            states = states.SetState(itemSlotStateAddress, itemSlotState.Serialize());
+
+            var runeStates = new List<RuneState>();
+            foreach (var address in runeInfos.Select(info => RuneState.DeriveAddress(avatarAddress, info.RuneId)))
+            {
+                if (states.TryGetState(address, out List rawRuneState))
+                {
+                    runeStates.Add(new RuneState(rawRuneState));
+                }
+            }
+            var runeOptionSheet = sheets.GetSheet<RuneOptionSheet>();
+            var runeOptions = new List<RuneOptionSheet.Row.RuneOptionInfo>();
+            foreach (var runeState in runeStates)
+            {
+                if (!runeOptionSheet.TryGetValue(runeState.RuneId, out var optionRow))
+                {
+                    throw new SheetRowNotFoundException("RuneOptionSheet", runeState.RuneId);
+                }
+
+                if (!optionRow.LevelOptionMap.TryGetValue(runeState.Level, out var option))
+                {
+                    throw new SheetRowNotFoundException("RuneOptionSheet", runeState.Level);
+                }
+
+                runeOptions.Add(option);
+            }
+
             var characterSheet = sheets.GetSheet<CharacterSheet>();
+            if (!characterSheet.TryGetValue(avatarState.characterId, out var characterRow))
+            {
+                throw new SheetRowNotFoundException("CharacterSheet", avatarState.characterId);
+            }
+
             var costumeStatSheet = sheets.GetSheet<CostumeStatSheet>();
-            var cp = CPHelper.GetCPV2(avatarState, characterSheet, costumeStatSheet);
+            var cp = CPHelper.TotalCP(
+                equipmentList, costumeList,
+                runeOptions, avatarState.level,
+                characterRow, costumeStatSheet);
             if (cp < cpRow.RequiredCP)
             {
                 throw new NotEnoughCombatPointException(

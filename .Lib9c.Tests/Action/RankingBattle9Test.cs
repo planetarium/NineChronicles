@@ -234,7 +234,7 @@ namespace Lib9c.Tests.Action
                 previousAvatar1State,
                 action.EnemyAvatarState,
                 action.consumableIds,
-                _tableSheets.GetRankingSimulatorSheets(),
+                _tableSheets.GetRankingSimulatorSheetsV1(),
                 RankingBattle9.StageId,
                 action.ArenaInfo,
                 action.EnemyArenaInfo,

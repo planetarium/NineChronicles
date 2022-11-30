@@ -39,7 +39,7 @@ namespace Nekoyume.Battle
             return isHit;
         }
 
-        public static bool IsHitForArena(
+        public static bool IsHitWithoutLevelCorrection(
             int attackerLevel, int attackerHit,
             int defenderLevel, int defenderHit,
             int lowLimitChance)

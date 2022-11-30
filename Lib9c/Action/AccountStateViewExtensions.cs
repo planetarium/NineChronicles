@@ -559,6 +559,7 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(CharacterSheet));
                 sheetTypeList.Add(typeof(CharacterLevelSheet));
                 sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
+                sheetTypeList.Add(typeof(RuneOptionSheet));
             }
 
             if (containStageSimulatorSheets)
@@ -575,6 +576,7 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(StageSheet));
                 sheetTypeList.Add(typeof(StageWaveSheet));
                 sheetTypeList.Add(typeof(EnemySkillSheet));
+                sheetTypeList.Add(typeof(RuneOptionSheet));
             }
 
             if (containRankingSimulatorSheets)
@@ -589,6 +591,7 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(CharacterLevelSheet));
                 sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
                 sheetTypeList.Add(typeof(WeeklyArenaRewardSheet));
+                sheetTypeList.Add(typeof(RuneOptionSheet));
             }
 
             if (containArenaSimulatorSheets)
@@ -604,6 +607,7 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
                 sheetTypeList.Add(typeof(WeeklyArenaRewardSheet));
                 sheetTypeList.Add(typeof(CostumeStatSheet));
+                sheetTypeList.Add(typeof(RuneOptionSheet));
             }
 
             if (containValidateItemRequirementSheets)
@@ -630,6 +634,7 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(WorldBossBattleRewardSheet));
                 sheetTypeList.Add(typeof(RuneWeightSheet));
                 sheetTypeList.Add(typeof(RuneSheet));
+                sheetTypeList.Add(typeof(RuneOptionSheet));
             }
 
             return states.GetSheets(sheetTypeList.Distinct().ToArray());
@@ -717,9 +722,9 @@ namespace Nekoyume.Action
             return sheet;
         }
 
-        public static StageSimulatorSheets GetStageSimulatorSheets(this IAccountStateView states)
+        public static StageSimulatorSheetsV1 GetStageSimulatorSheetsV1(this IAccountStateView states)
         {
-            return new StageSimulatorSheets(
+            return new StageSimulatorSheetsV1(
                 GetSheet<MaterialItemSheet>(states),
                 GetSheet<SkillSheet>(states),
                 GetSheet<SkillBuffSheet>(states),
@@ -735,6 +740,41 @@ namespace Nekoyume.Action
             );
         }
 
+        public static StageSimulatorSheets GetStageSimulatorSheets(this IAccountStateView states)
+        {
+            return new StageSimulatorSheets(
+                GetSheet<MaterialItemSheet>(states),
+                GetSheet<SkillSheet>(states),
+                GetSheet<SkillBuffSheet>(states),
+                GetSheet<StatBuffSheet>(states),
+                GetSheet<SkillActionBuffSheet>(states),
+                GetSheet<ActionBuffSheet>(states),
+                GetSheet<CharacterSheet>(states),
+                GetSheet<CharacterLevelSheet>(states),
+                GetSheet<EquipmentItemSetEffectSheet>(states),
+                GetSheet<StageSheet>(states),
+                GetSheet<StageWaveSheet>(states),
+                GetSheet<EnemySkillSheet>(states),
+                GetSheet<RuneOptionSheet>(states)
+            );
+        }
+
+        public static RankingSimulatorSheetsV1 GetRankingSimulatorSheetsV1(this IAccountStateView states)
+        {
+            return new RankingSimulatorSheetsV1(
+                GetSheet<MaterialItemSheet>(states),
+                GetSheet<SkillSheet>(states),
+                GetSheet<SkillBuffSheet>(states),
+                GetSheet<StatBuffSheet>(states),
+                GetSheet<SkillActionBuffSheet>(states),
+                GetSheet<ActionBuffSheet>(states),
+                GetSheet<CharacterSheet>(states),
+                GetSheet<CharacterLevelSheet>(states),
+                GetSheet<EquipmentItemSetEffectSheet>(states),
+                GetSheet<WeeklyArenaRewardSheet>(states)
+            );
+        }
+
         public static RankingSimulatorSheets GetRankingSimulatorSheets(this IAccountStateView states)
         {
             return new RankingSimulatorSheets(
@@ -747,7 +787,8 @@ namespace Nekoyume.Action
                 GetSheet<CharacterSheet>(states),
                 GetSheet<CharacterLevelSheet>(states),
                 GetSheet<EquipmentItemSetEffectSheet>(states),
-                GetSheet<WeeklyArenaRewardSheet>(states)
+                GetSheet<WeeklyArenaRewardSheet>(states),
+                GetSheet<RuneOptionSheet>(states)
             );
         }
 
@@ -1134,6 +1175,141 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(EquipmentItemRecipeSheet));
                 sheetTypeList.Add(typeof(EquipmentItemSubRecipeSheetV2));
                 sheetTypeList.Add(typeof(EquipmentItemOptionSheet));
+            }
+
+            return states.GetSheets(sheetTypeList.Distinct().ToArray());
+        }
+
+        public static Dictionary<Type, (Address address, ISheet sheet)> GetSheetsV1(
+            this IAccountStateView states,
+            bool containAvatarSheets = false,
+            bool containItemSheet = false,
+            bool containQuestSheet = false,
+            bool containSimulatorSheets = false,
+            bool containStageSimulatorSheets = false,
+            bool containRankingSimulatorSheets = false,
+            bool containArenaSimulatorSheets = false,
+            bool containValidateItemRequirementSheets = false,
+            bool containRaidSimulatorSheets = false,
+            IEnumerable<Type> sheetTypes = null)
+        {
+            var sheetTypeList = sheetTypes?.ToList() ?? new List<Type>();
+            if (containAvatarSheets)
+            {
+                // AvatarSheets need QuestSheet
+                containQuestSheet = true;
+                sheetTypeList.Add(typeof(WorldSheet));
+                sheetTypeList.Add(typeof(QuestRewardSheet));
+                sheetTypeList.Add(typeof(QuestItemRewardSheet));
+                sheetTypeList.Add(typeof(EquipmentItemRecipeSheet));
+                sheetTypeList.Add(typeof(EquipmentItemSubRecipeSheet));
+            }
+
+            if (containItemSheet)
+            {
+                sheetTypeList.Add(typeof(ConsumableItemSheet));
+                sheetTypeList.Add(typeof(CostumeItemSheet));
+                sheetTypeList.Add(typeof(EquipmentItemSheet));
+                sheetTypeList.Add(typeof(MaterialItemSheet));
+            }
+
+            if (containQuestSheet)
+            {
+                sheetTypeList.Add(typeof(WorldQuestSheet));
+                sheetTypeList.Add(typeof(CollectQuestSheet));
+                sheetTypeList.Add(typeof(CombinationQuestSheet));
+                sheetTypeList.Add(typeof(TradeQuestSheet));
+                sheetTypeList.Add(typeof(MonsterQuestSheet));
+                sheetTypeList.Add(typeof(ItemEnhancementQuestSheet));
+                sheetTypeList.Add(typeof(GeneralQuestSheet));
+                sheetTypeList.Add(typeof(ItemGradeQuestSheet));
+                sheetTypeList.Add(typeof(ItemTypeCollectQuestSheet));
+                sheetTypeList.Add(typeof(GoldQuestSheet));
+                sheetTypeList.Add(typeof(CombinationEquipmentQuestSheet));
+            }
+
+            if (containSimulatorSheets)
+            {
+                sheetTypeList.Add(typeof(MaterialItemSheet));
+                sheetTypeList.Add(typeof(SkillSheet));
+                sheetTypeList.Add(typeof(SkillBuffSheet));
+                sheetTypeList.Add(typeof(StatBuffSheet));
+                sheetTypeList.Add(typeof(SkillActionBuffSheet));
+                sheetTypeList.Add(typeof(ActionBuffSheet));
+                sheetTypeList.Add(typeof(CharacterSheet));
+                sheetTypeList.Add(typeof(CharacterLevelSheet));
+                sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
+            }
+
+            if (containStageSimulatorSheets)
+            {
+                sheetTypeList.Add(typeof(MaterialItemSheet));
+                sheetTypeList.Add(typeof(SkillSheet));
+                sheetTypeList.Add(typeof(SkillBuffSheet));
+                sheetTypeList.Add(typeof(StatBuffSheet));
+                sheetTypeList.Add(typeof(SkillActionBuffSheet));
+                sheetTypeList.Add(typeof(ActionBuffSheet));
+                sheetTypeList.Add(typeof(CharacterSheet));
+                sheetTypeList.Add(typeof(CharacterLevelSheet));
+                sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
+                sheetTypeList.Add(typeof(StageSheet));
+                sheetTypeList.Add(typeof(StageWaveSheet));
+                sheetTypeList.Add(typeof(EnemySkillSheet));
+            }
+
+            if (containRankingSimulatorSheets)
+            {
+                sheetTypeList.Add(typeof(MaterialItemSheet));
+                sheetTypeList.Add(typeof(SkillSheet));
+                sheetTypeList.Add(typeof(SkillBuffSheet));
+                sheetTypeList.Add(typeof(StatBuffSheet));
+                sheetTypeList.Add(typeof(SkillActionBuffSheet));
+                sheetTypeList.Add(typeof(ActionBuffSheet));
+                sheetTypeList.Add(typeof(CharacterSheet));
+                sheetTypeList.Add(typeof(CharacterLevelSheet));
+                sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
+                sheetTypeList.Add(typeof(WeeklyArenaRewardSheet));
+            }
+
+            if (containArenaSimulatorSheets)
+            {
+                sheetTypeList.Add(typeof(MaterialItemSheet));
+                sheetTypeList.Add(typeof(SkillSheet));
+                sheetTypeList.Add(typeof(SkillBuffSheet));
+                sheetTypeList.Add(typeof(StatBuffSheet));
+                sheetTypeList.Add(typeof(SkillActionBuffSheet));
+                sheetTypeList.Add(typeof(ActionBuffSheet));
+                sheetTypeList.Add(typeof(CharacterSheet));
+                sheetTypeList.Add(typeof(CharacterLevelSheet));
+                sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
+                sheetTypeList.Add(typeof(WeeklyArenaRewardSheet));
+                sheetTypeList.Add(typeof(CostumeStatSheet));
+            }
+
+            if (containValidateItemRequirementSheets)
+            {
+                sheetTypeList.Add(typeof(ItemRequirementSheet));
+                sheetTypeList.Add(typeof(EquipmentItemRecipeSheet));
+                sheetTypeList.Add(typeof(EquipmentItemSubRecipeSheetV2));
+                sheetTypeList.Add(typeof(EquipmentItemOptionSheet));
+            }
+
+            if (containRaidSimulatorSheets)
+            {
+                sheetTypeList.Add(typeof(MaterialItemSheet));
+                sheetTypeList.Add(typeof(SkillSheet));
+                sheetTypeList.Add(typeof(SkillBuffSheet));
+                sheetTypeList.Add(typeof(StatBuffSheet));
+                sheetTypeList.Add(typeof(SkillActionBuffSheet));
+                sheetTypeList.Add(typeof(ActionBuffSheet));
+                sheetTypeList.Add(typeof(CharacterSheet));
+                sheetTypeList.Add(typeof(CharacterLevelSheet));
+                sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
+                sheetTypeList.Add(typeof(WorldBossCharacterSheet));
+                sheetTypeList.Add(typeof(EnemySkillSheet));
+                sheetTypeList.Add(typeof(WorldBossBattleRewardSheet));
+                sheetTypeList.Add(typeof(RuneWeightSheet));
+                sheetTypeList.Add(typeof(RuneSheet));
             }
 
             return states.GetSheets(sheetTypeList.Distinct().ToArray());

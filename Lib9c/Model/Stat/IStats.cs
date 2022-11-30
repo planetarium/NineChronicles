@@ -10,6 +10,8 @@ namespace Nekoyume.Model.Stat
         int CRI { get; }
         int HIT { get; }
         int SPD { get; }
+        int DRV { get; }
+        int DRR { get; }
 
         bool HasHP { get; }
         bool HasATK { get; }
@@ -17,6 +19,8 @@ namespace Nekoyume.Model.Stat
         bool HasCRI { get; }
         bool HasHIT { get; }
         bool HasSPD { get; }
+        bool HasDRV { get; }
+        bool HasDRR { get; }
 
         IEnumerable<(StatType statType, int value)> GetStats(bool ignoreZero = false);
     }

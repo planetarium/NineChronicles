@@ -162,10 +162,10 @@ namespace Nekoyume.Extensions
             return questSheet;
         }
 
-        public static SimulatorSheets GetSimulatorSheets(
+        public static SimulatorSheetsV1 GetSimulatorSheetsV1(
             this Dictionary<Type, (Address address, ISheet sheet)> sheets)
         {
-            return new SimulatorSheets(
+            return new SimulatorSheetsV1(
                 sheets.GetSheet<MaterialItemSheet>(),
                 sheets.GetSheet<SkillSheet>(),
                 sheets.GetSheet<SkillBuffSheet>(),
@@ -178,7 +178,24 @@ namespace Nekoyume.Extensions
             );
         }
 
-        public static SimulatorSheets GetSimulatorSheetsV100291(
+        public static SimulatorSheets GetSimulatorSheets(
+            this Dictionary<Type, (Address address, ISheet sheet)> sheets)
+        {
+            return new SimulatorSheets(
+                sheets.GetSheet<MaterialItemSheet>(),
+                sheets.GetSheet<SkillSheet>(),
+                sheets.GetSheet<SkillBuffSheet>(),
+                sheets.GetSheet<StatBuffSheet>(),
+                sheets.GetSheet<SkillActionBuffSheet>(),
+                sheets.GetSheet<ActionBuffSheet>(),
+                sheets.GetSheet<CharacterSheet>(),
+                sheets.GetSheet<CharacterLevelSheet>(),
+                sheets.GetSheet<EquipmentItemSetEffectSheet>(),
+                sheets.GetSheet<RuneOptionSheet>()
+            );
+        }
+
+        public static SimulatorSheetsV1 GetSimulatorSheetsV100291(
             this Dictionary<Type, (Address address, ISheet sheet)> sheets)
         {
             return new SimulatorSheetsV100291(
@@ -189,7 +206,26 @@ namespace Nekoyume.Extensions
                 sheets.GetSheet<CharacterSheet>(),
                 sheets.GetSheet<CharacterLevelSheet>(),
                 sheets.GetSheet<EquipmentItemSetEffectSheet>()
-            ).ToSimulatorSheets();
+            ).ToSimulatorSheetsV1();
+        }
+
+        public static StageSimulatorSheetsV1 GetStageSimulatorSheetsV1(
+            this Dictionary<Type, (Address address, ISheet sheet)> sheets)
+        {
+            return new StageSimulatorSheetsV1(
+                sheets.GetSheet<MaterialItemSheet>(),
+                sheets.GetSheet<SkillSheet>(),
+                sheets.GetSheet<SkillBuffSheet>(),
+                sheets.GetSheet<StatBuffSheet>(),
+                sheets.GetSheet<SkillActionBuffSheet>(),
+                sheets.GetSheet<ActionBuffSheet>(),
+                sheets.GetSheet<CharacterSheet>(),
+                sheets.GetSheet<CharacterLevelSheet>(),
+                sheets.GetSheet<EquipmentItemSetEffectSheet>(),
+                sheets.GetSheet<StageSheet>(),
+                sheets.GetSheet<StageWaveSheet>(),
+                sheets.GetSheet<EnemySkillSheet>()
+            );
         }
 
         public static StageSimulatorSheets GetStageSimulatorSheets(
@@ -207,11 +243,12 @@ namespace Nekoyume.Extensions
                 sheets.GetSheet<EquipmentItemSetEffectSheet>(),
                 sheets.GetSheet<StageSheet>(),
                 sheets.GetSheet<StageWaveSheet>(),
-                sheets.GetSheet<EnemySkillSheet>()
+                sheets.GetSheet<EnemySkillSheet>(),
+                sheets.GetSheet<RuneOptionSheet>()
             );
         }
 
-        public static StageSimulatorSheets GetStageSimulatorSheetsV100291(
+        public static StageSimulatorSheetsV1 GetStageSimulatorSheetsV100291(
             this Dictionary<Type, (Address address, ISheet sheet)> sheets)
         {
             return new StageSimulatorSheetsV100291(
@@ -225,7 +262,24 @@ namespace Nekoyume.Extensions
                 sheets.GetSheet<StageSheet>(),
                 sheets.GetSheet<StageWaveSheet>(),
                 sheets.GetSheet<EnemySkillSheet>()
-            ).ToStageSimulatorSheets();
+            ).ToStageSimulatorSheetsV1();
+        }
+
+        public static RankingSimulatorSheetsV1 GetRankingSimulatorSheetsV1(
+            this Dictionary<Type, (Address address, ISheet sheet)> sheets)
+        {
+            return new RankingSimulatorSheetsV1(
+                sheets.GetSheet<MaterialItemSheet>(),
+                sheets.GetSheet<SkillSheet>(),
+                sheets.GetSheet<SkillBuffSheet>(),
+                sheets.GetSheet<StatBuffSheet>(),
+                sheets.GetSheet<SkillActionBuffSheet>(),
+                sheets.GetSheet<ActionBuffSheet>(),
+                sheets.GetSheet<CharacterSheet>(),
+                sheets.GetSheet<CharacterLevelSheet>(),
+                sheets.GetSheet<EquipmentItemSetEffectSheet>(),
+                sheets.GetSheet<WeeklyArenaRewardSheet>()
+            );
         }
 
         public static RankingSimulatorSheets GetRankingSimulatorSheets(
@@ -241,11 +295,12 @@ namespace Nekoyume.Extensions
                 sheets.GetSheet<CharacterSheet>(),
                 sheets.GetSheet<CharacterLevelSheet>(),
                 sheets.GetSheet<EquipmentItemSetEffectSheet>(),
-                sheets.GetSheet<WeeklyArenaRewardSheet>()
+                sheets.GetSheet<WeeklyArenaRewardSheet>(),
+                sheets.GetSheet<RuneOptionSheet>()
             );
         }
 
-        public static RankingSimulatorSheets GetRankingSimulatorSheetsV100291(
+        public static RankingSimulatorSheetsV1 GetRankingSimulatorSheetsV100291(
             this Dictionary<Type, (Address address, ISheet sheet)> sheets)
         {
             return new RankingSimulatorSheetsV100291(
@@ -257,12 +312,13 @@ namespace Nekoyume.Extensions
                 sheets.GetSheet<CharacterLevelSheet>(),
                 sheets.GetSheet<EquipmentItemSetEffectSheet>(),
                 sheets.GetSheet<WeeklyArenaRewardSheet>()
-            ).ToRankingSimulatorSheets();
+            ).ToRankingSimulatorSheetsV1();
         }
-        public static ArenaSimulatorSheets GetArenaSimulatorSheets(
+
+        public static ArenaSimulatorSheetsV1 GetArenaSimulatorSheetsV1(
             this Dictionary<Type, (Address address, ISheet sheet)> sheets)
         {
-            return new ArenaSimulatorSheets(
+            return new ArenaSimulatorSheetsV1(
                 sheets.GetSheet<MaterialItemSheet>(),
                 sheets.GetSheet<SkillSheet>(),
                 sheets.GetSheet<SkillBuffSheet>(),
@@ -277,7 +333,26 @@ namespace Nekoyume.Extensions
             );
         }
 
-        public static ArenaSimulatorSheets GetArenaSimulatorSheets_v100291(
+        public static ArenaSimulatorSheets GetArenaSimulatorSheets(
+            this Dictionary<Type, (Address address, ISheet sheet)> sheets)
+        {
+            return new ArenaSimulatorSheets(
+                sheets.GetSheet<MaterialItemSheet>(),
+                sheets.GetSheet<SkillSheet>(),
+                sheets.GetSheet<SkillBuffSheet>(),
+                sheets.GetSheet<StatBuffSheet>(),
+                sheets.GetSheet<SkillActionBuffSheet>(),
+                sheets.GetSheet<ActionBuffSheet>(),
+                sheets.GetSheet<CharacterSheet>(),
+                sheets.GetSheet<CharacterLevelSheet>(),
+                sheets.GetSheet<EquipmentItemSetEffectSheet>(),
+                sheets.GetSheet<CostumeStatSheet>(),
+                sheets.GetSheet<WeeklyArenaRewardSheet>(),
+                sheets.GetSheet<RuneOptionSheet>()
+            );
+        }
+
+        public static ArenaSimulatorSheetsV1 GetArenaSimulatorSheets_v100291(
             this Dictionary<Type, (Address address, ISheet sheet)> sheets)
         {
             return new ArenaSimulatorSheetsV100291(
@@ -290,8 +365,30 @@ namespace Nekoyume.Extensions
                 sheets.GetSheet<EquipmentItemSetEffectSheet>(),
                 sheets.GetSheet<CostumeStatSheet>(),
                 sheets.GetSheet<WeeklyArenaRewardSheet>()
-            ).ToArenaSimulatorSheets();
+            ).ToArenaSimulatorSheetsV1();
         }
+
+        public static RaidSimulatorSheetsV1 GetRaidSimulatorSheetsV1(
+            this Dictionary<Type, (Address address, ISheet sheet)> sheets)
+        {
+            return new RaidSimulatorSheetsV1(
+                sheets.GetSheet<MaterialItemSheet>(),
+                sheets.GetSheet<SkillSheet>(),
+                sheets.GetSheet<SkillBuffSheet>(),
+                sheets.GetSheet<StatBuffSheet>(),
+                sheets.GetSheet<SkillActionBuffSheet>(),
+                sheets.GetSheet<ActionBuffSheet>(),
+                sheets.GetSheet<CharacterSheet>(),
+                sheets.GetSheet<CharacterLevelSheet>(),
+                sheets.GetSheet<EquipmentItemSetEffectSheet>(),
+                sheets.GetSheet<WorldBossCharacterSheet>(),
+                sheets.GetSheet<WorldBossActionPatternSheet>(),
+                sheets.GetSheet<WorldBossBattleRewardSheet>(),
+                sheets.GetSheet<RuneWeightSheet>(),
+                sheets.GetSheet<RuneSheet>()
+            );
+        }
+
         public static RaidSimulatorSheets GetRaidSimulatorSheets(
             this Dictionary<Type, (Address address, ISheet sheet)> sheets)
         {
@@ -309,7 +406,8 @@ namespace Nekoyume.Extensions
                 sheets.GetSheet<WorldBossActionPatternSheet>(),
                 sheets.GetSheet<WorldBossBattleRewardSheet>(),
                 sheets.GetSheet<RuneWeightSheet>(),
-                sheets.GetSheet<RuneSheet>()
+                sheets.GetSheet<RuneSheet>(),
+                sheets.GetSheet<RuneOptionSheet>()
             );
         }
 

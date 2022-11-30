@@ -10,6 +10,8 @@ namespace Nekoyume.Model.Stat
         int BaseCRI { get; }
         int BaseHIT { get; }
         int BaseSPD { get; }
+        int BaseDRV { get; }
+        int BaseDRR { get; }
 
         bool HasBaseHP { get; }
         bool HasBaseATK { get; }
@@ -17,6 +19,8 @@ namespace Nekoyume.Model.Stat
         bool HasBaseCRI { get; }
         bool HasBaseHIT { get; }
         bool HasBaseSPD { get; }
+        bool HasBaseDRV { get; }
+        bool HasBaseDRR { get; }
 
         int AdditionalHP { get; }
         int AdditionalATK { get; }
@@ -24,6 +28,8 @@ namespace Nekoyume.Model.Stat
         int AdditionalCRI { get; }
         int AdditionalHIT { get; }
         int AdditionalSPD { get; }
+        int AdditionalDRV { get; }
+        int AdditionalDRR { get; }
 
         bool HasAdditionalHP { get; }
         bool HasAdditionalATK { get; }
@@ -31,6 +37,8 @@ namespace Nekoyume.Model.Stat
         bool HasAdditionalCRI { get; }
         bool HasAdditionalHIT { get; }
         bool HasAdditionalSPD { get; }
+        bool HasAdditionalDRV { get; }
+        bool HasAdditionalDRR { get; }
         bool HasAdditionalStats { get; }
 
         IEnumerable<(StatType statType, int baseValue)> GetBaseStats(bool ignoreZero = false);

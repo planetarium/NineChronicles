@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.Battle;
-using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus;
+using Nekoyume.Model.Buff;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Quest;
+using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -77,6 +79,8 @@ namespace Nekoyume.Model
 
         protected List<Costume> costumes;
         protected List<Equipment> equipments;
+        public readonly Skills RuneSkills = new Skills();
+        public readonly Dictionary<int, int> RuneSkillCooldownMap = new Dictionary<int, int>();
 
         public IReadOnlyList<Costume> Costumes => costumes;
         public IReadOnlyList<Equipment> Equipments => equipments;
@@ -172,13 +176,13 @@ namespace Nekoyume.Model
             PostConstruction(characterLevelSheet, equipmentItemSetEffectSheet);
         }
 
-        public Player(AvatarState avatarState, SimulatorSheets simulatorSheets) : this(avatarState,
+        public Player(AvatarState avatarState, SimulatorSheetsV1 simulatorSheets) : this(avatarState,
             simulatorSheets.CharacterSheet, simulatorSheets.CharacterLevelSheet,
             simulatorSheets.EquipmentItemSetEffectSheet)
         {
         }
 
-        public Player(ArenaPlayerDigest enemyArenaPlayerDigest, ArenaSimulatorSheets simulatorSheets)
+        public Player(ArenaPlayerDigest enemyArenaPlayerDigest, ArenaSimulatorSheetsV1 simulatorSheets)
              : base(null,
                  simulatorSheets.CharacterSheet,
                  enemyArenaPlayerDigest.CharacterId,
@@ -219,6 +223,7 @@ namespace Nekoyume.Model
             earIndex = value.earIndex;
             tailIndex = value.tailIndex;
             characterLevelSheet = value.characterLevelSheet;
+            RuneSkills = value.RuneSkills;
 
             costumes = value.costumes;
             equipments = value.equipments;
@@ -444,7 +449,7 @@ namespace Nekoyume.Model
         public virtual void Spawn()
         {
             InitAI();
-            var spawn = new SpawnPlayer((CharacterBase) Clone());
+            var spawn = new SpawnPlayer((CharacterBase)Clone());
             Simulator.Log.Add(spawn);
         }
 
@@ -499,6 +504,39 @@ namespace Nekoyume.Model
             Skills.Add(skill);
         }
 
+        protected override BattleStatus.Skill UseSkill()
+        {
+            var selectedSkill = RuneSkills.SelectWithoutDefaultAttack(Simulator.Random);
+            if (selectedSkill == null)
+            {
+                return base.UseSkill();
+            }
+
+            var usedSkill = selectedSkill.Use(
+                this,
+                Simulator.WaveTurn,
+                BuffFactory.GetBuffs(
+                    selectedSkill.Power,
+                    selectedSkill,
+                    Simulator.SkillBuffSheet,
+                    Simulator.StatBuffSheet,
+                    Simulator.SkillActionBuffSheet,
+                    Simulator.ActionBuffSheet
+                )
+            );
+
+            var cooldown = RuneSkillCooldownMap[selectedSkill.SkillRow.Id];
+            RuneSkills.SetCooldown(selectedSkill.SkillRow.Id, cooldown);
+            Simulator.Log.Add(usedSkill);
+            return usedSkill;
+        }
+
+        protected override void ReduceSkillCooldown()
+        {
+            base.ReduceSkillCooldown();
+            RuneSkills.ReduceCooldown();
+        }
+
         public void SetCostumeStat(CostumeStatSheet costumeStatSheet)
         {
             var statModifiers = new List<StatModifier>();
@@ -512,6 +550,71 @@ namespace Nekoyume.Model
             }
             Stats.SetOption(statModifiers);
             Stats.EqualizeCurrentHPWithHP();
+        }
+
+        public void SetRune(
+            List<RuneState> runes,
+            RuneOptionSheet runeOptionSheet,
+            SkillSheet skillSheet)
+        {
+            foreach (var rune in runes)
+            {
+                if (!runeOptionSheet.TryGetValue(rune.RuneId, out var optionRow) ||
+                    !optionRow.LevelOptionMap.TryGetValue(rune.Level, out var optionInfo))
+                {
+                    continue;
+                }
+
+                var statModifiers = new List<StatModifier>();
+                statModifiers.AddRange(
+                    optionInfo.Stats.Select(x =>
+                        new StatModifier(
+                            x.statMap.StatType,
+                            x.operationType,
+                            x.statMap.ValueAsInt)));
+                Stats.AddOption(statModifiers);
+                Stats.EqualizeCurrentHPWithHP();
+
+                if (optionInfo.SkillId == default ||
+                    !skillSheet.TryGetValue(optionInfo.SkillId, out var skillRow))
+                {
+                    continue;
+                }
+
+                var power = 0;
+
+                if (optionInfo.SkillValueType == StatModifier.OperationType.Add)
+                {
+                    power = (int)optionInfo.SkillValue;
+                }
+                else if (optionInfo.StatReferenceType == EnumType.StatReferenceType.Caster)
+                {
+                    switch (optionInfo.SkillStatType)
+                    {
+                        case StatType.HP:
+                            power = HP;
+                            break;
+                        case StatType.ATK:
+                            power = ATK;
+                            break;
+                        case StatType.DEF:
+                            power = DEF;
+                            break;
+                    }
+
+                    power = (int)Math.Round(power * optionInfo.SkillValue);
+                }
+                var skill = SkillFactory.Get(skillRow, power, optionInfo.SkillChance);
+                var customField = new SkillCustomField
+                {
+                    BuffDuration = optionInfo.BuffDuration,
+                    BuffValue = power,
+                };
+                skill.CustomField = customField;
+
+                RuneSkills.Add(skill);
+                RuneSkillCooldownMap[optionInfo.SkillId] = optionInfo.SkillCooldown;
+            }
         }
 
         public override object Clone()

@@ -54,6 +54,8 @@ namespace Nekoyume.Model
         public int CRI => Stats.CRI;
         public int HIT => Stats.HIT;
         public int SPD => Stats.SPD;
+        public int DRV => Stats.DRV;
+        public int DRR => Stats.DRR;
 
         public int CurrentHP
         {
@@ -63,7 +65,7 @@ namespace Nekoyume.Model
 
         public bool IsDead => CurrentHP <= 0;
 
-        public int AttackCount { get; private set; }
+        public int AttackCount { get; set; }
         public int AttackCountMax { get; protected set; }
 
         protected CharacterBase(Simulator simulator, CharacterSheet characterSheet, int characterId, int level,
@@ -213,8 +215,8 @@ namespace Nekoyume.Model
                 pair.Value.RemainedDuration--;
             }
         }
-
-        private void ReduceSkillCooldown()
+        
+        protected virtual void ReduceSkillCooldown()
         {
             Skills.ReduceCooldown();
         }

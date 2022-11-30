@@ -18,6 +18,9 @@ namespace Nekoyume.Model.State
         public int WeeklyArenaInterval { get; private set; }
         public int RequiredAppraiseBlock { get; private set; }
         public int BattleArenaInterval { get; private set; }
+        public int RuneStatSlotUnlockCost { get; private set; }
+        public int RuneSkillSlotUnlockCost { get; private set; }
+        public int DailyRuneRewardAmount { get; private set; }
 
         public GameConfigState() : base(Address)
         {
@@ -53,6 +56,18 @@ namespace Nekoyume.Model.State
             {
                 BattleArenaInterval = value7.ToInteger();
             }
+            if (serialized.TryGetValue((Text)"rune_stat_slot_unlock_cost", out var value8))
+            {
+                RuneStatSlotUnlockCost = value8.ToInteger();
+            }
+            if (serialized.TryGetValue((Text)"rune_skill_slot_unlock_cost", out var value9))
+            {
+                RuneSkillSlotUnlockCost = value9.ToInteger();
+            }
+            if (serialized.TryGetValue((Text)"daily_rune_reward_amount", out var value10))
+            {
+                DailyRuneRewardAmount = value10.ToInteger();
+            }
         }
 
         public GameConfigState(string csv) : base(Address)
@@ -79,6 +94,21 @@ namespace Nekoyume.Model.State
             if (BattleArenaInterval > 0)
             {
                 values.Add((Text)"battle_arena_interval", BattleArenaInterval.Serialize());
+            }
+
+            if (RuneStatSlotUnlockCost > 0)
+            {
+                values.Add((Text)"rune_stat_slot_unlock_cost", RuneStatSlotUnlockCost.Serialize());
+            }
+
+            if (RuneSkillSlotUnlockCost > 0)
+            {
+                values.Add((Text)"rune_skill_slot_unlock_cost", RuneSkillSlotUnlockCost.Serialize());
+            }
+
+            if (DailyRuneRewardAmount > 0)
+            {
+                values.Add((Text)"daily_rune_reward_amount", DailyRuneRewardAmount.Serialize());
             }
 #pragma warning disable LAA1002
             return new Dictionary(values.Union((Dictionary) base.Serialize()));
@@ -117,6 +147,15 @@ namespace Nekoyume.Model.State
                     break;
                 case "battle_arena_interval":
                     BattleArenaInterval = TableExtensions.ParseInt(row.Value);
+                    break;
+                case "rune_stat_slot_unlock_cost":
+                    RuneStatSlotUnlockCost = TableExtensions.ParseInt(row.Value);
+                    break;
+                case "rune_skill_slot_unlock_cost":
+                    RuneSkillSlotUnlockCost = TableExtensions.ParseInt(row.Value);
+                    break;
+                case "daily_rune_reward_amount":
+                    DailyRuneRewardAmount = TableExtensions.ParseInt(row.Value);
                     break;
             }
         }

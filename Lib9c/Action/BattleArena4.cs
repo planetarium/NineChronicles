@@ -121,7 +121,7 @@ namespace Nekoyume.Action
                         typeof(EquipmentItemOptionSheet),
                         typeof(MaterialItemSheet),
                     })
-                : states.GetSheets(
+                : states.GetSheetsV1(
                     containArenaSimulatorSheets: true,
                     sheetTypes: new[]
                     {
@@ -281,13 +281,13 @@ namespace Nekoyume.Action
             ExtraPreviousMyScore = myArenaScore.Score;
             var arenaSheets = useV100291Sheets
                 ? sheets.GetArenaSimulatorSheets_v100291()
-                : sheets.GetArenaSimulatorSheets();
+                : sheets.GetArenaSimulatorSheetsV1();
             var winCount = 0;
             var defeatCount = 0;
             var rewards = new List<ItemBase>();
             for (var i = 0; i < ticket; i++)
             {
-                var simulator = new ArenaSimulator(context.Random);
+                var simulator = new ArenaSimulatorV1(context.Random);
                 var log = simulator.Simulate(ExtraMyArenaPlayerDigest, ExtraEnemyArenaPlayerDigest, arenaSheets);
                 if (log.Result.Equals(ArenaLog.ArenaResult.Win))
                 {

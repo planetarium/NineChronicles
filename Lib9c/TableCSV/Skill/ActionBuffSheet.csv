@@ -2,3 +2,4 @@ id,group,_name,chance,duration,target_type,buff_type,elemental_type,atk_power_ra
 500001,500001,출혈(0.5),100,10,Enemy,Bleed,Normal,0.5
 500002,500001,출혈(0.4),100,10,Enemy,Bleed,Normal,0.4
 500003,500001,출혈(0.2),100,10,Enemy,Bleed,Normal,0.2
+600001,600001,출혈,100,0,Enemies,Bleed,Normal,1

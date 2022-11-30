@@ -77,8 +77,8 @@ namespace Lib9c.Tests.Model.Arena
             Assert.Equal(2, digest.Equipments.Count);
             Assert.Equal(2, digest.Costumes.Count);
 
-            var enemyPlayer = new EnemyPlayer(digest, _tableSheets.GetArenaSimulatorSheets());
-            var player = new Player(digest, _tableSheets.GetArenaSimulatorSheets());
+            var enemyPlayer = new EnemyPlayer(digest, _tableSheets.GetArenaSimulatorSheetsV1());
+            var player = new Player(digest, _tableSheets.GetArenaSimulatorSheetsV1());
 
             Assert.Equal(2, enemyPlayer.Equipments.Count);
             Assert.Equal(2, enemyPlayer.Costumes.Count);
@@ -89,9 +89,23 @@ namespace Lib9c.Tests.Model.Arena
         }
 
         [Fact]
-        public void Serialize()
+        public void SerializeWithoutRune()
         {
             var digest = new ArenaPlayerDigest(_avatarState, _arenaAvatarState);
+            var serialized = digest.Serialize();
+            var deserialized = new ArenaPlayerDigest((List)serialized);
+
+            Assert.Equal(serialized, deserialized.Serialize());
+        }
+
+        [Fact]
+        public void Serialize()
+        {
+            var digest = new ArenaPlayerDigest(
+                _avatarState,
+                _arenaAvatarState.Equipments,
+                _arenaAvatarState.Costumes,
+                new List<RuneState>());
             var serialized = digest.Serialize();
             var deserialized = new ArenaPlayerDigest((List)serialized);
 

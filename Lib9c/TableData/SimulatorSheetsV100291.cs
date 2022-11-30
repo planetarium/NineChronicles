@@ -31,11 +31,11 @@ namespace Nekoyume.TableData
             EquipmentItemSetEffectSheet = equipmentItemSetEffectSheet;
         }
 
-        public SimulatorSheets ToSimulatorSheets()
+        public SimulatorSheetsV1 ToSimulatorSheetsV1()
         {
             var statBuffSheet = new StatBuffSheet();
             statBuffSheet.Set((Text)BuffSheet.Serialize());
-            return new SimulatorSheets(MaterialItemSheet, SkillSheet, SkillBuffSheet,
+            return new SimulatorSheetsV1(MaterialItemSheet, SkillSheet, SkillBuffSheet,
                 statBuffSheet, new SkillActionBuffSheet(), new ActionBuffSheet(), CharacterSheet,
                 CharacterLevelSheet, EquipmentItemSetEffectSheet);
         }
@@ -73,11 +73,11 @@ namespace Nekoyume.TableData
             EnemySkillSheet = enemySkillSheet;
         }
 
-        public StageSimulatorSheets ToStageSimulatorSheets()
+        public StageSimulatorSheetsV1 ToStageSimulatorSheetsV1()
         {
             var statBuffSheet = new StatBuffSheet();
             statBuffSheet.Set((Text)BuffSheet.Serialize());
-            return new StageSimulatorSheets(MaterialItemSheet, SkillSheet, SkillBuffSheet, statBuffSheet,
+            return new StageSimulatorSheetsV1(MaterialItemSheet, SkillSheet, SkillBuffSheet, statBuffSheet,
                 new SkillActionBuffSheet(), new ActionBuffSheet(), CharacterSheet,
                 CharacterLevelSheet, EquipmentItemSetEffectSheet, StageSheet, StageWaveSheet, EnemySkillSheet);
         }
@@ -109,11 +109,11 @@ namespace Nekoyume.TableData
             WeeklyArenaRewardSheet = weeklyArenaRewardSheet;
         }
 
-        public RankingSimulatorSheets ToRankingSimulatorSheets()
+        public RankingSimulatorSheetsV1 ToRankingSimulatorSheetsV1()
         {
             var statBuffSheet = new StatBuffSheet();
             statBuffSheet.Set((Text)BuffSheet.Serialize());
-            return new RankingSimulatorSheets(MaterialItemSheet, SkillSheet, SkillBuffSheet,
+            return new RankingSimulatorSheetsV1(MaterialItemSheet, SkillSheet, SkillBuffSheet,
                 statBuffSheet,
                 new SkillActionBuffSheet(), new ActionBuffSheet(), CharacterSheet,
                 CharacterLevelSheet, EquipmentItemSetEffectSheet, WeeklyArenaRewardSheet);
@@ -148,11 +148,11 @@ namespace Nekoyume.TableData
 
         }
 
-        public ArenaSimulatorSheets ToArenaSimulatorSheets()
+        public ArenaSimulatorSheetsV1 ToArenaSimulatorSheetsV1()
         {
             var statBuffSheet = new StatBuffSheet();
             statBuffSheet.Set((Text)BuffSheet.Serialize());
-            return new ArenaSimulatorSheets(MaterialItemSheet, SkillSheet, SkillBuffSheet, statBuffSheet,
+            return new ArenaSimulatorSheetsV1(MaterialItemSheet, SkillSheet, SkillBuffSheet, statBuffSheet,
                 new SkillActionBuffSheet(), new ActionBuffSheet(), CharacterSheet,
                 CharacterLevelSheet, EquipmentItemSetEffectSheet, CostumeStatSheet,
                 WeeklyArenaRewardSheet);
