@@ -42,7 +42,6 @@ namespace Nekoyume.Game
         private RaidTimelineContainer container;
         private Coroutine _battleCoroutine;
         private IEnumerator _nextWaveCoroutine;
-        private Character.Player _playerCharacter;
         private int _waveTurn;
         private int _turnLimit;
         private int _wave;
@@ -165,7 +164,6 @@ namespace Nekoyume.Game
             container.Show();
             MainCanvas.instance.Canvas.worldCamera = container.Camera.Cam;
 
-            _playerCharacter = Widget.Find<RaidPreparation>().Player;
             _player = container.Player;
             _boss = container.Boss;
 
@@ -249,7 +247,7 @@ namespace Nekoyume.Game
         public IEnumerator CoSpawnPlayer(Player character)
         {
             _player.Spawn(character);
-            Widget.Find<WorldBossBattle>().SetData(_currentBossId, _playerCharacter);
+            Widget.Find<WorldBossBattle>().SetData(_currentBossId);
             yield break;
         }
 

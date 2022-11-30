@@ -82,11 +82,11 @@ namespace Nekoyume.UI
                 foreach (var reward in battleRewards)
                 {
                     var ticker = reward.Currency.Ticker;
-                    if (WorldBossFrontHelper.TryGetRuneIcon(ticker, out var icon))
+                    if (RuneFrontHelper.TryGetRuneData(ticker, out var data))
                     {
                         var view = rewardViews.First(x => !x.gameObject.activeSelf);
                         var count = Convert.ToInt32(reward.GetQuantityString());
-                        view.Set(icon, count);
+                        view.Set(data, count);
                         view.gameObject.SetActive(true);
                     }
                 }

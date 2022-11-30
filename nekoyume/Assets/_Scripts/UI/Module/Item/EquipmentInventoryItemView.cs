@@ -81,8 +81,6 @@ namespace Nekoyume.UI.Module
             model.SelectedMaterial.Subscribe(b => baseItemView.SelectMaterialItemObject.SetActive(b)).AddTo(_disposables);
             model.Disabled.Subscribe(b => baseItemView.DimObject.SetActive(b)).AddTo(_disposables);
 
-            model.View = GetComponent<RectTransform>();
-
             baseItemView.TouchHandler.OnClick.Select(_ => model)
                 .Subscribe(context.OnClick.OnNext).AddTo(_disposables);
 

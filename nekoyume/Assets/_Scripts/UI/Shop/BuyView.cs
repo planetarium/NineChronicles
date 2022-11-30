@@ -317,14 +317,14 @@ namespace Nekoyume
                             ClearSelectedItems();
                             item.Selected.SetValueAndForceNotify(true);
                             _selectedItems.Add(item);
-                            ClickItemAction?.Invoke(item, item.View); // Show tooltip popup
+                            ClickItemAction?.Invoke(item); // Show tooltip popup
                         }
                     }
                     else
                     {
                         item.Selected.SetValueAndForceNotify(true);
                         _selectedItems.Add(item);
-                        ClickItemAction?.Invoke(item, item.View); // Show tooltip popup
+                        ClickItemAction?.Invoke(item); // Show tooltip popup
                     }
 
                     break;

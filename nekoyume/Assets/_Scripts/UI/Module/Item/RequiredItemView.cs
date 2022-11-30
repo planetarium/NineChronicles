@@ -34,9 +34,8 @@ namespace Nekoyume.UI.Module
         private void ShowTooltip(Item model)
         {
             AudioController.PlayClick();
-            var rt = GetComponent<RectTransform>();
             var tooltip = ItemTooltip.Find(model.ItemBase.Value.ItemType);
-            tooltip.Show(model.ItemBase.Value, string.Empty, false, null, target:rt);
+            tooltip.Show(model.ItemBase.Value, string.Empty, false, null);
         }
 
         protected override void SetCount(int count)

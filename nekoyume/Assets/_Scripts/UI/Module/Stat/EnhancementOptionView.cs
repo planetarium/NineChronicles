@@ -1,5 +1,3 @@
-using System;
-using Nekoyume.Model.Stat;
 using TMPro;
 using UnityEngine;
 
@@ -11,16 +9,25 @@ namespace Nekoyume.UI.Module
         private TextMeshProUGUI typeText;
 
         [SerializeField]
-        private TextMeshProUGUI currentText;
+        private TextMeshProUGUI contentText;
 
         [SerializeField]
-        private TextMeshProUGUI addText;
+        private TextMeshProUGUI currentText;
 
         [SerializeField]
         private TextMeshProUGUI currentExText;
 
         [SerializeField]
+        private TextMeshProUGUI addText;
+
+        [SerializeField]
         private TextMeshProUGUI addExText;
+
+        [SerializeField]
+        private TextMeshProUGUI etcText;
+
+        [SerializeField]
+        private TextMeshProUGUI etcExText;
 
         [SerializeField]
         private GameObject star;
@@ -46,6 +53,33 @@ namespace Nekoyume.UI.Module
 
             currentExText.text = exValue;
             addExText.text = addExValue;
+        }
+
+        public void Set(string type, string currentValue, string addValue)
+        {
+            typeText.text = type;
+            currentText.text = currentValue;
+            addText.text = addValue;
+        }
+
+        public void Set(
+        string type,
+        string content,
+        string currentValue,
+        string currentExValue,
+        string addValue,
+        string addExValue,
+        string etcValue,
+        string etcExValue)
+        {
+            typeText.text = type;
+            contentText.text = content;
+            currentText.text = currentValue;
+            currentExText.text = currentExValue;
+            addText.text = addValue;
+            addExText.text = addExValue;
+            etcText.text = etcValue;
+            etcExText.text = etcExValue;
         }
     }
 }

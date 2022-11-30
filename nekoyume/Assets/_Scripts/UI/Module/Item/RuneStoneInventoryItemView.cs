@@ -14,12 +14,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private Image bossImage;
 
-        // [SerializeField]
-        // private List<Image> runeIcons;
-        //
-        // [SerializeField]
-        // private List<TextMeshProUGUI> runeCounts;
-
         [SerializeField]
         private TextMeshProUGUI bossName;
 
@@ -37,14 +31,10 @@ namespace Nekoyume.UI
             for (var i = 0; i < model.Runes.Count; i++)
             {
                 var ticker = model.Runes[i].Currency.Ticker;
-                if (WorldBossFrontHelper.TryGetRuneIcon(ticker, out var icon))
+                if (RuneFrontHelper.TryGetRuneData(ticker, out var runeData))
                 {
-                    // runeIcons[i].sprite = icon;
-                    // runeCounts[i].text = $"{count:#,0}";
-
-                    //
                     var count = Convert.ToInt32(model.Runes[i].GetQuantityString());
-                    runeStones[i].Set(icon, count);
+                    runeStones[i].Set(runeData, count);
                 }
             }
         }

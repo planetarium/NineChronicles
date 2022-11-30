@@ -4902,10 +4902,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   equipmentButton: {fileID: 829970758904517144}
   consumableButton: {fileID: 3957154106442019948}
+  runeButton: {fileID: 0}
   materialButton: {fileID: 1284933532856369684}
   costumeButton: {fileID: 9134396430624545873}
   scroll: {fileID: 3669903297582199154}
   resetScrollOnEnable: 0
+  tooltipSocket: {fileID: 0}
 --- !u!1 &4714281320301330323
 GameObject:
   m_ObjectHideFlags: 0

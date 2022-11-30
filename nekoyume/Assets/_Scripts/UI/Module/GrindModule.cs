@@ -238,7 +238,7 @@ namespace Nekoyume.UI.Module
                 slot.OnClick.Subscribe(_ => { _selectedItemsForGrind.Remove(slot.AssignedItem); }).AddTo(_disposables));
         }
 
-        private void ShowItemTooltip(InventoryItem model, RectTransform target)
+        private void ShowItemTooltip(InventoryItem model)
         {
             var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
             var isRegister = !_selectedItemsForGrind.Contains(model);
@@ -278,8 +278,7 @@ namespace Nekoyume.UI.Module
                 interactable,
                 OnSubmit,
                 grindInventory.ClearSelectedItem,
-                onBlock,
-                target);
+                onBlock);
         }
 
         private void OnUpdateInventory(Inventory inventory, Nekoyume.Model.Item.Inventory inventoryModel)

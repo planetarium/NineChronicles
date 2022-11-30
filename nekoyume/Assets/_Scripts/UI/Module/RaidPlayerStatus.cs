@@ -1,4 +1,5 @@
-using Nekoyume.Game.Character;
+using System.Collections.Generic;
+using Nekoyume.Model.Item;
 using Nekoyume.UI.Module.Timer;
 using UnityEngine;
 
@@ -12,9 +13,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private BattleTimerView battleTimerView = null;
 
-        public void SetData(Player player, int turnLimit)
+        public void SetData(List<Equipment> equipments, List<Costume> costumes, int characterId, int turnLimit)
         {
-            characterView.SetByPlayer(player);
+            characterView.Set(equipments, costumes, characterId);
             battleTimerView.Show(turnLimit);
         }
 

@@ -4,10 +4,8 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Model
 {
-    public class RuneStoneInventoryItem : IItemViewModel
+    public class RuneStoneInventoryItem
     {
-        public RectTransform View { get; set; }
-
         public List<FungibleAssetValue> Runes { get; }
         public int BoosId { get; }
 

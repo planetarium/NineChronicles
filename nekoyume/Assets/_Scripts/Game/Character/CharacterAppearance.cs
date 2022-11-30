@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Helper;
 using Nekoyume.Model;
@@ -31,28 +32,63 @@ namespace Nekoyume.Game.Character
             _hudContainer = hudContainer;
             Destroy(_cachedCharacterTitle);
 
-            UpdateArmor(digest);
-            UpdateWeapon(digest);
+            UpdateArmor(digest.Equipments);
+            UpdateWeapon(digest.Equipments);
 
             UpdateEarById(digest.EarIndex);
             UpdateEyeById(digest.LensIndex);
             UpdateHairById(digest.HairIndex);
             UpdateTailById(digest.TailIndex);
 
-            UpdateCostumes(digest);
+            UpdateCostumes(digest.Costumes);
         }
 
-        private void UpdateArmor(ArenaPlayerDigest digest)
+        public void Set(
+            CharacterAnimator animator,
+            HudContainer hudContainer,
+            List<Costume> costumes,
+            List<Equipment> equipments,
+            int earIndex,
+            int lensIndex,
+            int hairIndex,
+            int tailIndex)
         {
-            var armor = digest.Equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
+            _animator = animator;
+            _hudContainer = hudContainer;
+            UpdateArmor(equipments);
+            UpdateWeapon(equipments);
+            UpdateEarById(earIndex);
+            UpdateEyeById(lensIndex);
+            UpdateHairById(hairIndex);
+            UpdateTailById(tailIndex);
+            UpdateCostumes(costumes);
+        }
+
+        private void UpdateArmor(IEnumerable<Equipment> equipments)
+        {
+            if (equipments is null)
+            {
+                ChangeSpineObject($"Character/Player/{GameConfig.DefaultAvatarArmorId}", false);
+                return;
+            }
+
+            var armor = equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
             var armorId = armor?.Id ?? GameConfig.DefaultAvatarArmorId;
             var spineResourcePath = armor?.SpineResourcePath ?? $"Character/Player/{armorId}";
             ChangeSpineObject(spineResourcePath, false);
         }
 
-        private void UpdateWeapon(ArenaPlayerDigest digest)
+        private void UpdateWeapon(IEnumerable<Equipment> equipments)
         {
-            var weapon = (Weapon)digest.Equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Weapon);
+            if (equipments is null)
+            {
+                var defaultId = GameConfig.DefaultAvatarWeaponId;
+                var defaultSprite = SpriteHelper.GetPlayerSpineTextureWeapon(defaultId);
+                SpineController.UpdateWeapon(defaultId, defaultSprite);
+                return;
+            }
+
+            var weapon = (Weapon)equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Weapon);
             var id = weapon?.Id ?? 0;
             var level = weapon?.level ?? 0;
             var levelVFXPrefab = ResourcesHelper.GetAuraWeaponPrefab(id, level);
@@ -111,19 +147,19 @@ namespace Nekoyume.Game.Character
             _cachedCharacterTitle.transform.SetAsFirstSibling();
         }
 
-        private void UpdateCostumes(ArenaPlayerDigest digest)
+        private void UpdateCostumes(List<Costume> costumes)
         {
-            if (digest.Costumes == null)
+            if (costumes == null)
             {
                 return;
             }
 
-            foreach (var costume in digest.Costumes)
+            foreach (var costume in costumes)
             {
                 EquipCostume(costume);
             }
 
-            var fullCostume = digest.Costumes.FirstOrDefault(x => x.ItemSubType == ItemSubType.FullCostume);
+            var fullCostume = costumes.FirstOrDefault(x => x.ItemSubType == ItemSubType.FullCostume);
             if (fullCostume != null)
             {
                 ChangeSpineObject(fullCostume.SpineResourcePath, true);
