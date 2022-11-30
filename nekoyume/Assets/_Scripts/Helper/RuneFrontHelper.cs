@@ -27,7 +27,7 @@ namespace Nekoyume.Helper
             }
         }
 
-        public const int DefaultRuneId = 3001;
+        public const int DefaultRuneId = 30001;
         public static Sprite DefaultRuneIcon => RuneData.DefaultRuneIcon;
 
         public static int GetGroupId(int id)

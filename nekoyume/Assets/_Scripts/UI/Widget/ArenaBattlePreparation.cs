@@ -142,6 +142,7 @@ namespace Nekoyume.UI
             UpdateStartButton();
             information.UpdateInventory(BattleType.Arena, chooseAvatarCp);
             grandFinaleStartButton.gameObject.SetActive(false);
+            grandFinaleStartButton.Interactable = false;
             coverToBlockClick.SetActive(false);
             AgentStateSubject.Crystal
                 .Subscribe(_ => ReadyToBattle())
@@ -151,35 +152,17 @@ namespace Nekoyume.UI
         public void Show(
             int grandFinaleId,
             AvatarState chooseAvatarState,
+            int chooseAvatarCp,
             bool ignoreShowAnimation = false)
         {
             _grandFinaleId = grandFinaleId;
             _chooseAvatarState = chooseAvatarState;
-
-            UpdateArenaAvatarState();
-            var avatarState = RxProps.PlayersArenaParticipant.Value.AvatarState;
-            if (!_player)
-            {
-                _player = PlayerFactory.Create(avatarState).GetComponent<Player>();
-            }
-
-            _player.transform.position = PlayerPosition;
-            _player.Set(avatarState);
-            _player.SpineController.Appear();
-            _player.gameObject.SetActive(true);
-
-            UpdateInventory();
-            UpdateTitle();
-            UpdateStat(avatarState);
-            UpdateSlot(avatarState);
-            UpdateStartButton(avatarState);
-
-            startButton.gameObject.SetActive(false);
+            enemyCp.text = chooseAvatarCp.ToString();
+            UpdateStartButton();
+            information.UpdateInventory(BattleType.Arena, chooseAvatarCp);
             grandFinaleStartButton.gameObject.SetActive(true);
             grandFinaleStartButton.Interactable = true;
             coverToBlockClick.SetActive(false);
-            costumeSlots.gameObject.SetActive(false);
-            equipmentSlots.gameObject.SetActive(true);
             base.Show(ignoreShowAnimation);
         }
 
@@ -346,10 +329,6 @@ namespace Nekoyume.UI
                 _chooseAvatarState.level,
                 _chooseAvatarState.inventory.GetEquippedFullCostumeOrArmorId());
 
-            // todo : 룬도 넣어줘야함.
-            var runes = States.Instance.GetEquippedRuneStates(BattleType.Arena)
-                .Select(x => x.RuneId).ToList();
-
             var costumes = States.Instance.ItemSlotStates[BattleType.Arena].Costumes;
             var equipments = States.Instance.ItemSlotStates[BattleType.Arena].Equipments;
             var runeInfos = States.Instance.RuneSlotStates[BattleType.Arena]
@@ -366,6 +345,32 @@ namespace Nekoyume.UI
                 .Subscribe();
         }
 
+        private void SendBattleGrandFinaleAction()
+        {
+            startButton.gameObject.SetActive(false);
+            var playerAvatar = RxProps.PlayersArenaParticipant.Value.AvatarState;
+            Find<ArenaBattleLoadingScreen>().Show(
+                playerAvatar.NameWithHash,
+                playerAvatar.level,
+                playerAvatar.inventory.GetEquippedFullCostumeOrArmorId(),
+                _chooseAvatarState.NameWithHash,
+                _chooseAvatarState.level,
+                _chooseAvatarState.inventory.GetEquippedFullCostumeOrArmorId());
+
+            var costumes = States.Instance.ItemSlotStates[BattleType.Arena].Costumes;
+            var equipments = States.Instance.ItemSlotStates[BattleType.Arena].Equipments;
+            var runeInfos = States.Instance.RuneSlotStates[BattleType.Arena]
+                .GetEquippedRuneSlotInfos();
+
+            ActionRenderHandler.Instance.Pending = true;
+            ActionManager.Instance.BattleGrandFinale(
+                    _chooseAvatarState.address,
+                    costumes,
+                    equipments,
+                    _grandFinaleId)
+                .Subscribe();
+        }
+
         private void OnClickGrandFinale()
         {
             AudioController.PlayClick();
@@ -379,34 +384,6 @@ namespace Nekoyume.UI
             game.IsInWorld = true;
             game.Stage.IsShowHud = true;
             SendBattleGrandFinaleAction();
-        }
-
-        private void SendBattleGrandFinaleAction()
-        {
-            startButton.gameObject.SetActive(false);
-            var playerAvatar = RxProps.PlayersArenaParticipant.Value.AvatarState;
-            Find<ArenaBattleLoadingScreen>().Show(
-                playerAvatar.NameWithHash,
-                playerAvatar.level,
-                playerAvatar.inventory.GetEquippedFullCostumeOrArmorId(),
-                _chooseAvatarState.NameWithHash,
-                _chooseAvatarState.level,
-                _chooseAvatarState.inventory.GetEquippedFullCostumeOrArmorId());
-
-            _player.StopRun();
-            _player.gameObject.SetActive(false);
-
-            ActionRenderHandler.Instance.Pending = true;
-            ActionManager.Instance.BattleGrandFinale(
-                    _chooseAvatarState.address,
-                    _player.Costumes
-                        .Select(e => e.NonFungibleId)
-                        .ToList(),
-                    _player.Equipments
-                        .Select(e => e.NonFungibleId)
-                        .ToList(),
-                    _grandFinaleId)
-                .Subscribe();
         }
 
         public void OnRenderBattleArena(ActionBase.ActionEvaluation<BattleArena> eval)

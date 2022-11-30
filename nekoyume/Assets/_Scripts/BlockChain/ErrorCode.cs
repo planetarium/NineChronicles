@@ -278,6 +278,7 @@ namespace Nekoyume.BlockChain
                     break;
                 case SlotIsAlreadyUnlockedException _:
                     code = "58";
+                    break;
                 case SlotNotFoundException _:
                     code = "59";
                     break;
