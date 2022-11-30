@@ -59,7 +59,7 @@ namespace Lib9c.Tests.Action.Scenario
                     .SetState(Addresses.TableSheet.Derive(key), value.Serialize());
             }
 
-            var runeId = 3001;
+            var runeId = 30001;
             var runeRow = tableSheets.RuneSheet[runeId];
             var rune = RuneHelper.ToCurrency(runeRow, 0, null);
             initialState = initialState.MintAsset(avatarAddress, rune * 1);
