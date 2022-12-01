@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using log4net.Core;
 using Nekoyume.L10n;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
