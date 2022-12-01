@@ -183,7 +183,6 @@ namespace Nekoyume.UI
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             });
 
-            var stage = Game.Game.instance.Stage;
             repeatToggle.isOn = false;
             repeatToggle.interactable = true;
 
@@ -257,6 +256,13 @@ namespace Nekoyume.UI
         public void UpdateInventory()
         {
             information.UpdateInventory(BattleType.Adventure);
+        }
+
+        public void UpdateInventoryView()
+        {
+            var cp = UpdateCp();
+            information.UpdateInventory(BattleType.Adventure, cp);
+            information.UpdateView(BattleType.Adventure);
         }
 
         private void UpdateRandomBuffButton()

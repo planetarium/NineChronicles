@@ -51,7 +51,6 @@ namespace Nekoyume.UI.Module
         private AvatarStats stats;
 
         private GameObject _cachedCharacterTitle;
-        // private InventoryItem _pickedItem;
         private BattleType _battleType = BattleType.Adventure;
         private System.Action _onUpdate;
         private int? _compareCp;
@@ -115,7 +114,6 @@ namespace Nekoyume.UI.Module
 
         public void UpdateInventory(BattleType battleType, int? compareCp = null)
         {
-            Debug.Log("UpdateInventory");
             _compareCp = compareCp;
             _consumables.Clear();
             var elementalTypes = GetElementalTypes();

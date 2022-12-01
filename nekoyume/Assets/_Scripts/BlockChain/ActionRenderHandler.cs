@@ -1284,10 +1284,7 @@ namespace Nekoyume.BlockChain
         {
             if (eval.Exception is null)
             {
-                await States.Instance.InitRuneSlotStates();
-                await States.Instance.InitItemSlotStates();
                 Widget.Find<SweepResultPopup>().OnActionRender(new LocalRandom(eval.RandomSeed));
-
                 if (eval.Action.apStoneCount > 0)
                 {
                     var avatarAddress = eval.Action.avatarAddress;
@@ -1298,6 +1295,10 @@ namespace Nekoyume.BlockChain
                 }
 
                 UpdateCurrentAvatarStateAsync().Forget();
+
+                await States.Instance.InitRuneSlotStates();
+                await States.Instance.InitItemSlotStates();
+                Widget.Find<BattlePreparation>().UpdateInventoryView();
             }
             else
             {
