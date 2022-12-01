@@ -8,6 +8,7 @@ using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -100,9 +101,6 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private GameObject sliderContainer;
-
-        [SerializeField]
-        private GameObject nextTitle;
 
         [SerializeField]
         private RuneListScroll scroll;
@@ -351,7 +349,6 @@ namespace Nekoyume.UI
                 isActive = false;
             }
 
-            nextTitle.gameObject.SetActive(isActive);
             successContainer.SetActive(!item.IsMaxLevel);
             costContainer.SetActive(!item.IsMaxLevel);
         }
