@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module;
@@ -64,8 +67,10 @@ namespace Nekoyume.UI.Model
             int level,
             int nextLevel,
             RuneOptionSheet.Row.RuneOptionInfo option,
-            RuneOptionSheet.Row.RuneOptionInfo nextOption)
+            RuneOptionSheet.Row.RuneOptionInfo nextOption,
+            RuneUsePlace runeUsePlace)
         {
+            UpdateAreaIcon(runeUsePlace);
             levelText.text = $"+{level}";
             nextLevelText.text = $"+{nextLevel}";
             levelArrow.SetActive(true);
@@ -131,8 +136,12 @@ namespace Nekoyume.UI.Model
             }
         }
 
-        public void Set(int level, RuneOptionSheet.Row.RuneOptionInfo option)
+        public void Set(
+            int level,
+            RuneOptionSheet.Row.RuneOptionInfo option,
+            RuneUsePlace runeUsePlace)
         {
+            UpdateAreaIcon(runeUsePlace);
             levelText.text = $"+{level}";
             nextLevelText.text = string.Empty;
             levelArrow.SetActive(false);
@@ -183,6 +192,50 @@ namespace Nekoyume.UI.Model
                 {
                     tooltip.gameObject.SetActive(false);
                 }
+            }
+        }
+
+        private void UpdateAreaIcon(RuneUsePlace runeUsePlace)
+        {
+            switch (runeUsePlace)
+            {
+                case RuneUsePlace.Adventure:
+                    adventure.gameObject.SetActive(true);
+                    arena.gameObject.SetActive(false);
+                    raid.gameObject.SetActive(false);
+                    break;
+                case RuneUsePlace.Arena:
+                    adventure.gameObject.SetActive(false);
+                    arena.gameObject.SetActive(true);
+                    raid.gameObject.SetActive(false);
+                    break;
+                case RuneUsePlace.AdventureAndArena:
+                    adventure.gameObject.SetActive(true);
+                    arena.gameObject.SetActive(true);
+                    raid.gameObject.SetActive(false);
+                    break;
+                case RuneUsePlace.Raid:
+                    adventure.gameObject.SetActive(false);
+                    arena.gameObject.SetActive(false);
+                    raid.gameObject.SetActive(true);
+                    break;
+                case RuneUsePlace.RaidAndAdventure:
+                    adventure.gameObject.SetActive(true);
+                    arena.gameObject.SetActive(false);
+                    raid.gameObject.SetActive(true);
+                    break;
+                case RuneUsePlace.RaidAndArena:
+                    adventure.gameObject.SetActive(false);
+                    arena.gameObject.SetActive(true);
+                    raid.gameObject.SetActive(true);
+                    break;
+                case RuneUsePlace.All:
+                    adventure.gameObject.SetActive(true);
+                    arena.gameObject.SetActive(true);
+                    raid.gameObject.SetActive(true);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(runeUsePlace), runeUsePlace, null);
             }
         }
     }
