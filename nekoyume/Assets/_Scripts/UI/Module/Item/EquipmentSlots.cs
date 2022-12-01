@@ -101,22 +101,59 @@ namespace Nekoyume.UI.Module
             UpdateDim(elementalTypes);
         }
 
-        public void SetPlayerConsumables(int avatarLevel,
+        public void SetPlayerCostumes(
+            int level,
+            List<Costume> costumes,
             Action<EquipmentSlot> onClick,
             Action<EquipmentSlot> onDoubleClick)
         {
             Clear();
-
-            foreach (var slot in slots)
-            {
-                slot.Set(avatarLevel);
-            }
-
             _onSlotClicked = onClick;
             _onSlotDoubleClicked = onDoubleClick;
+
+            UpdateSlots(level);
+            foreach (var costume in costumes)
+            {
+                TryToEquip(costume);
+            }
         }
 
-        public bool TryToEquip(Costume costume)
+        public void SetPlayerEquipments(
+            int level,
+            List<Equipment> equipments,
+            Action<EquipmentSlot> onClick,
+            Action<EquipmentSlot> onDoubleClick,
+            List<ElementalType> elementalTypes = null)
+        {
+            Clear();
+            _onSlotClicked = onClick;
+            _onSlotDoubleClicked = onDoubleClick;
+
+            UpdateSlots(level);
+            foreach (var equipment in equipments)
+            {
+                TryToEquip(equipment);
+            }
+            UpdateDim(elementalTypes);
+        }
+
+        public void SetPlayerConsumables(int level,
+            List<Consumable> consumables,
+            Action<EquipmentSlot> onClick,
+            Action<EquipmentSlot> onDoubleClick)
+        {
+            Clear();
+            _onSlotClicked = onClick;
+            _onSlotDoubleClicked = onDoubleClick;
+
+            UpdateSlots(level);
+            for (var i = 0; i < consumables.Count; i++)
+            {
+                slots[i].Set(consumables[i], RaiseSlotClicked, RaiseSlotDoubleClicked);
+            }
+        }
+
+        private bool TryToEquip(Costume costume)
         {
             if (!TryGetToEquip(costume, out var slot))
             {
@@ -127,7 +164,7 @@ namespace Nekoyume.UI.Module
             return true;
         }
 
-        public bool TryToEquip(Equipment equipment)
+        private bool TryToEquip(Equipment equipment)
         {
             if (!TryGetToEquip(equipment, out var slot))
             {

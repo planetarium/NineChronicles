@@ -8,6 +8,7 @@ using Cysharp.Threading.Tasks;
 using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Game;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.GrandFinale;
 using Nekoyume.Model.State;
 using Nekoyume.TableData.GrandFinale;
@@ -33,20 +34,26 @@ namespace Nekoyume.State
             public readonly int Score;
             public readonly int Rank;
             public readonly AvatarState AvatarState;
-            public readonly int CP;
+            public readonly ItemSlotState ItemSlotState;
+            public readonly RuneSlotState RuneSlotState;
+            public readonly List<RuneState> RuneStates;
 
             public GrandFinaleParticipant(
                 Address avatarAddr,
                 int score,
                 int rank,
-                AvatarState avatarState)
+                AvatarState avatarState,
+                ItemSlotState itemSlotState,
+                RuneSlotState runeSlotState,
+                List<RuneState> runeStates)
             {
                 AvatarAddr = avatarAddr;
                 Score = score;
                 Rank = rank;
                 AvatarState = avatarState;
-
-                CP = AvatarState?.GetCP() ?? 0;
+                ItemSlotState = itemSlotState;
+                RuneSlotState = runeSlotState;
+                RuneStates = runeStates;
             }
 
             public GrandFinaleParticipant(GrandFinaleParticipant value)
@@ -55,8 +62,9 @@ namespace Nekoyume.State
                 Score = value.Score;
                 Rank = value.Rank;
                 AvatarState = value.AvatarState;
-
-                CP = AvatarState?.GetCP() ?? 0;
+                ItemSlotState = value.ItemSlotState;
+                RuneSlotState = value.RuneSlotState;
+                RuneStates = value.RuneStates;
             }
         }
 
@@ -69,12 +77,18 @@ namespace Nekoyume.State
                 int score,
                 int rank,
                 AvatarState avatarState,
+                ItemSlotState itemSlotState,
+                RuneSlotState runeSlotState,
+                List<RuneState> runeStates,
                 GrandFinaleInformation currentInfo)
                 : base(
                     avatarAddr,
                     score,
                     rank,
-                    avatarState)
+                    avatarState,
+                    itemSlotState,
+                    runeSlotState,
+                    runeStates)
             {
                 CurrentInfo = currentInfo;
             }
@@ -166,26 +180,31 @@ namespace Nekoyume.State
                 catch
                 {
                     // Chain has not Score and GrandFinaleInfo about current avatar.
-                    var arenaAvatarState = currentAvatar.ToArenaAvatarState();
-                    var clonedCurrentAvatar = currentAvatar.CloneAndApplyToInventory(arenaAvatarState);
                     playerGrandFinaleParticipant = new PlayerGrandFinaleParticipant(
                         currentAvatarAddr,
                         BattleGrandFinale.DefaultScore,
                         0,
-                        clonedCurrentAvatar,
+                        currentAvatar,
+                        States.Instance.ItemSlotStates[BattleType.Arena],
+                        States.Instance.RuneSlotStates[BattleType.Arena],
+                        States.Instance.GetEquippedRuneStates(BattleType.Arena),
                         default);
                     playerScore = playerGrandFinaleParticipant.Score;
                 }
             }
 
+            var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
+            var runeIds = runeListSheet.Values.Select(x => x.Id).ToList();
             var addrBulk = avatarAddrAndScoresWithRank
                 .SelectMany(tuple => new[]
                 {
                     tuple.avatarAddr,
                     tuple.avatarAddr.Derive(LegacyInventoryKey),
-                    ArenaAvatarState.DeriveAddress(tuple.avatarAddr),
+                    ItemSlotState.DeriveAddress(tuple.avatarAddr, BattleType.Arena),
+                    RuneSlotState.DeriveAddress(tuple.avatarAddr, BattleType.Arena),
                 })
                 .ToList();
+
             var playerGrandFinaleInfoAddr = GrandFinaleInformation.DeriveAddress(
                 currentAvatarAddr,
                 row.GrandFinaleId);
@@ -196,6 +215,7 @@ namespace Nekoyume.State
 
             // NOTE: If the [`addrBulk`] is too large, and split and get separately.
             var stateBulk = await agent.GetStateBulk(addrBulk);
+            var runeStates = new List<RuneState>();
             var result = avatarAddrAndScoresWithRank.Select(tuple =>
             {
                 var (avatarAddr, score, rank) = tuple;
@@ -224,6 +244,27 @@ namespace Nekoyume.State
                         : null;
                 avatar.inventory = inventory;
 
+                var itemSlotState =
+                    stateBulk[ItemSlotState.DeriveAddress(tuple.avatarAddr, BattleType.Arena)] is
+                        List itemSlotList
+                        ? new ItemSlotState(itemSlotList)
+                        : new ItemSlotState(BattleType.Arena);
+
+                var runeSlotState =
+                    stateBulk[RuneSlotState.DeriveAddress(tuple.avatarAddr, BattleType.Arena)] is
+                        List runeSlotList
+                        ? new RuneSlotState(runeSlotList)
+                        : new RuneSlotState(BattleType.Arena);
+
+                foreach (var id in runeIds)
+                {
+                    var address = RuneState.DeriveAddress(tuple.avatarAddr, id);
+                    if (stateBulk[address] is List runeStateList)
+                    {
+                        runeStates.Add(new RuneState(runeStateList));
+                    }
+                }
+
                 var arenaAvatar =
                     stateBulk[ArenaAvatarState.DeriveAddress(avatarAddr)] is List arenaAvatarList
                         ? new ArenaAvatarState(arenaAvatarList)
@@ -233,15 +274,16 @@ namespace Nekoyume.State
                     return null;
                 }
 
-                avatar = avatar.ApplyToInventory(arenaAvatar);
                 return new GrandFinaleParticipant(
                     avatarAddr,
                     avatarAddr.Equals(currentAvatarAddr)
                         ? playerScore
                         : score,
                     rank,
-                    avatar
-                );
+                    avatar,
+                    itemSlotState,
+                    runeSlotState,
+                    runeStates);
             }).Where(value => value is not null).ToArray();
 
             if (isGrandFinaleParticipant)

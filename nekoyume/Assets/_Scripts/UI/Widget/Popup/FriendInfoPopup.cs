@@ -1,159 +1,307 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Bencodex.Types;
+using Cysharp.Threading.Tasks;
+using Libplanet;
 using Nekoyume.Battle;
-using Nekoyume.EnumType;
-using Nekoyume.Game.Character;
-using Nekoyume.Game.Factory;
 using Nekoyume.Helper;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
+using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
-using UniRx;
+using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class FriendInfoPopup : PopupWidget
     {
         private const string NicknameTextFormat = "<color=#B38271>Lv.{0}</color=> {1}";
 
-        private static readonly Vector3 NPCPosition = new Vector3(2000f, 1999.2f, 2.15f);
+        [SerializeField]
+        private TextMeshProUGUI nicknameText;
 
         [SerializeField]
-        private TextMeshProUGUI nicknameText = null;
+        private Transform titleSocket;
 
         [SerializeField]
-        private Transform titleSocket = null;
+        private TextMeshProUGUI cpText;
 
         [SerializeField]
-        private TextMeshProUGUI cpText = null;
+        private EquipmentSlots costumeSlots;
 
         [SerializeField]
-        private EquipmentSlots costumeSlots = null;
+        private EquipmentSlots equipmentSlots;
 
         [SerializeField]
-        private EquipmentSlots equipmentSlots = null;
+        private RuneSlots runeSlots;
 
         [SerializeField]
         private AvatarStats avatarStats = null;
 
         [SerializeField]
-        private RawImage playerRawImage;
+        private CategoryTabButton adventureButton;
 
         [SerializeField]
-        private RawImage playerRawImageInLobbyCamera;
+        private CategoryTabButton arenaButton;
 
-        private CharacterStats _tempStats;
+        [SerializeField]
+        private CategoryTabButton raidButton;
+
         private GameObject _cachedCharacterTitle;
-        private Player _player;
+        private AvatarState _avatarState;
+        private readonly ToggleGroup _toggleGroup = new();
+        private readonly Dictionary<BattleType, List<Equipment>> _equipments = new();
+        private readonly Dictionary<BattleType, List<Costume>> _costumes = new();
+        private readonly Dictionary<BattleType, RuneSlotState> _runes = new();
+        private readonly List<RuneState> _runeStates = new();
 
-        #region Override
 
         protected override void Awake()
         {
+            _toggleGroup.RegisterToggleable(adventureButton);
+            _toggleGroup.RegisterToggleable(arenaButton);
+            _toggleGroup.RegisterToggleable(raidButton);
+
+            adventureButton.OnClick
+                .Subscribe(b =>
+                {
+                    OnClickPresetTab(b, BattleType.Adventure);
+                })
+                .AddTo(gameObject);
+            arenaButton.OnClick
+                .Subscribe(b =>
+                {
+                    OnClickPresetTab(b, BattleType.Arena);
+                })
+                .AddTo(gameObject);
+            raidButton.OnClick
+                .Subscribe(b =>
+                {
+                    OnClickPresetTab(b, BattleType.Raid);
+                })
+                .AddTo(gameObject);
+
             base.Awake();
-
-            costumeSlots.gameObject.SetActive(false);
-            equipmentSlots.gameObject.SetActive(true);
         }
 
-        public override void Show(bool ignoreShowAnimation = false)
+        private void OnClickPresetTab(
+            IToggleable toggle,
+            BattleType battleType)
         {
-            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
-            Show(currentAvatarState, ignoreShowAnimation);
+            _toggleGroup.SetToggledOffAll();
+            toggle.SetToggledOn();
+
+            Game.Game.instance.Lobby.FriendCharacter.Set(
+                _avatarState,
+                _costumes[battleType],
+                _equipments[battleType]);
+
+            UpdateCp(_avatarState, battleType);
+            UpdateName(_avatarState);
+            UpdateTitle(battleType);
+            UpdateSlotView(_avatarState, battleType);
+            UpdateStatViews(_avatarState, battleType);
         }
 
-        protected override void OnCompleteOfCloseAnimationInternal()
+        public async UniTaskVoid ShowAsync(
+            AvatarState avatarState,
+            BattleType battleType,
+            bool ignoreShowAnimation = false)
         {
-            TerminatePlayer();
-        }
+            _avatarState = avatarState;
+            var (itemSlotStates, runeSlotStates) = await avatarState.GetSlotStatesAsync();
+            var runeStates = await avatarState.GetRuneStatesAsync();
+            SetItems(avatarState, itemSlotStates, runeSlotStates, runeStates);
 
-        #endregion
-
-        public void Show(AvatarState avatarState, bool ignoreShowAnimation = false)
-        {
             base.Show(ignoreShowAnimation);
-
-            InitializePlayer(avatarState);
-            UpdateSlotView(avatarState);
-            UpdateStatViews();
+            switch (battleType)
+            {
+                case BattleType.Adventure:
+                    OnClickPresetTab(adventureButton, battleType);
+                    break;
+                case BattleType.Arena:
+                    OnClickPresetTab(arenaButton, battleType);
+                    break;
+                case BattleType.Raid:
+                    OnClickPresetTab(raidButton, battleType);
+                    break;
+            }
         }
 
-        private void InitializePlayer(AvatarState avatarState)
+        private void SetItems(
+            AvatarState avatarState,
+            List<ItemSlotState> itemSlotStates,
+            List<RuneSlotState> runeSlotStates,
+            List<RuneState> runeStates)
         {
-            _player = Util.CreatePlayer(avatarState, NPCPosition);
+            _equipments.Clear();
+            _costumes.Clear();
+            _equipments.Add(BattleType.Adventure, new List<Equipment>());
+            _equipments.Add(BattleType.Arena, new List<Equipment>());
+            _equipments.Add(BattleType.Raid, new List<Equipment>());
+            _costumes.Add(BattleType.Adventure, new List<Costume>());
+            _costumes.Add(BattleType.Arena, new List<Costume>());
+            _costumes.Add(BattleType.Raid, new List<Costume>());
+            foreach (var state in itemSlotStates)
+            {
+                var equipments = state.Equipments
+                    .Select(guid =>
+                        avatarState.inventory.Equipments.FirstOrDefault(x => x.ItemId == guid))
+                    .Where(item => item != null).ToList();
+                _equipments[state.BattleType] = equipments;
+
+                var costumes = state.Costumes
+                    .Select(guid =>
+                        avatarState.inventory.Costumes.FirstOrDefault(x => x.ItemId == guid))
+                    .Where(item => item != null).ToList();
+                _costumes[state.BattleType] = costumes;
+            }
+
+            _runes.Clear();
+            _runes.Add(BattleType.Adventure, new RuneSlotState(BattleType.Adventure));
+            _runes.Add(BattleType.Arena, new RuneSlotState(BattleType.Arena));
+            _runes.Add(BattleType.Raid, new RuneSlotState(BattleType.Raid));
+            foreach (var state in runeSlotStates)
+            {
+                _runes[state.BattleType] = state;
+            }
+
+            _runeStates.Clear();
+            _runeStates.AddRange(runeStates);
         }
 
-        private void TerminatePlayer()
+        private void UpdateCp(AvatarState avatarState, BattleType battleType)
         {
-            var t = _player.transform;
-            t.SetParent(Game.Game.instance.Stage.transform);
-            t.localScale = Vector3.one;
-            _player.gameObject.SetActive(false);
-            _player = null;
+            var level = avatarState.level;
+            var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
+            if (!characterSheet.TryGetValue(avatarState.characterId, out var row))
+            {
+                throw new SheetRowNotFoundException("CharacterSheet", avatarState.characterId);
+            }
+
+            var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+            var equipments = _equipments[battleType];
+            var costumes = _costumes[battleType];
+            var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
+            var runeOptions = Util.GetRuneOptions(_runeStates, runeOptionSheet);
+            var cp = CPHelper.TotalCP(equipments, costumes, runeOptions, level, row, costumeSheet);
+            cpText.text = $"{cp}";
         }
 
-        private void UpdateSlotView(AvatarState avatarState)
+        private void UpdateName(AvatarState avatarState)
         {
-            var game = Game.Game.instance;
-            var playerModel = _player.Model;
-
             nicknameText.text = string.Format(
                 NicknameTextFormat,
                 avatarState.level,
                 avatarState.NameWithHash);
-
-            var title = avatarState.inventory.Costumes.FirstOrDefault(costume =>
-                costume.ItemSubType == ItemSubType.Title &&
-                costume.equipped);
-
-            if (!(title is null))
-            {
-                Destroy(_cachedCharacterTitle);
-                var clone = ResourcesHelper.GetCharacterTitle(title.Grade,
-                    title.GetLocalizedNonColoredName(false));
-                _cachedCharacterTitle = Instantiate(clone, titleSocket);
-            }
-
-            cpText.text = CPHelper
-                .GetCPV2(avatarState, game.TableSheets.CharacterSheet,
-                    game.TableSheets.CostumeStatSheet)
-                .ToString();
-
-            costumeSlots.SetPlayerCostumes(playerModel, ShowTooltip, null);
-            equipmentSlots.SetPlayerEquipments(playerModel, ShowTooltip, null);
         }
 
-        private void UpdateStatViews()
+        private void UpdateTitle(BattleType battleType)
         {
-            _tempStats = _player.Model.Stats.Clone() as CharacterStats;
-            var equipments = equipmentSlots
-                .Where(slot => !slot.IsLock && !slot.IsEmpty)
-                .Select(slot => slot.Item as Equipment)
-                .Where(item => !(item is null))
-                .ToList();
+            var costumes = _costumes[battleType];
+            Destroy(_cachedCharacterTitle);
+            var title = costumes.FirstOrDefault(costume => costume.ItemSubType == ItemSubType.Title);
+            if (title == null)
+            {
+                return;
+            }
 
-            var costumes = costumeSlots
-                .Where(slot => !slot.IsLock && !slot.IsEmpty)
-                .Select(slot => slot.Item as Costume)
-                .Where(item => !(item is null))
-                .ToList();
+            var clone = ResourcesHelper.GetCharacterTitle(title.Grade,
+                title.GetLocalizedNonColoredName(false));
+            _cachedCharacterTitle = Instantiate(clone, titleSocket);
+        }
 
-            var equipEffectSheet = Game.Game.instance.TableSheets.EquipmentItemSetEffectSheet;
+        private void UpdateSlotView(AvatarState avatarState, BattleType battleType)
+        {
+            var level = avatarState.level;
+            var equipments = _equipments[battleType];
+            var costumes = _costumes[battleType];
+            var runeSlot = _runes[battleType].GetRuneSlot();
+            costumeSlots.SetPlayerCostumes(level, costumes, ShowTooltip, null);
+            equipmentSlots.SetPlayerEquipments(level, equipments, ShowTooltip, null);
+            runeSlots.Set(runeSlot, ShowRuneTooltip, null);
+        }
+
+        private void UpdateStatViews(AvatarState avatarState, BattleType battleType)
+        {
+            var equipments = _equipments[battleType];
+            var costumes = _costumes[battleType];
+            var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
+            var runeStates = _runeStates;
+            var equipmentSetEffectSheet = Game.Game.instance.TableSheets.EquipmentItemSetEffectSheet;
+            var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
             var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
-            var stats = _tempStats.SetAll(_tempStats.Level, equipments, costumes, null,
-                equipEffectSheet, costumeSheet);
-            avatarStats.SetData(stats);
+            if (!characterSheet.TryGetValue(avatarState.characterId, out var row))
+            {
+                return;
+            }
+            var characterStats = new CharacterStats(row, avatarState.level);
+            characterStats.SetAll(
+                avatarState.level,
+                equipments,
+                costumes,
+                null,
+                equipmentSetEffectSheet,
+                costumeSheet);
+
+            foreach (var runeState in runeStates)
+            {
+                if (!runeOptionSheet.TryGetValue(runeState.RuneId, out var statRow) ||
+                    !statRow.LevelOptionMap.TryGetValue(runeState.Level, out var statInfo))
+                {
+                    continue;
+                }
+
+                var statModifiers = new List<StatModifier>();
+                statModifiers.AddRange(
+                    statInfo.Stats.Select(x =>
+                        new StatModifier(
+                            x.statMap.StatType,
+                            x.operationType,
+                            x.statMap.ValueAsInt)));
+
+                characterStats.AddOption(statModifiers);
+                characterStats.EqualizeCurrentHPWithHP();
+            }
+
+            avatarStats.SetData(characterStats);
         }
 
         private static void ShowTooltip(EquipmentSlot slot)
         {
-            var item = new InventoryItem(slot.Item, 1, true, false, true);
+            if (slot.Item == null)
+            {
+                return;
+            }
+
+            var item = new InventoryItem(slot.Item, 1, false, true);
             var tooltip = ItemTooltip.Find(item.ItemBase.ItemType);
-            tooltip.Show(item, string.Empty, false, null, target:slot.RectTransform);
+            tooltip.Show(item, string.Empty, false, null);
+        }
+
+        private void ShowRuneTooltip(RuneSlotView slot)
+        {
+            if (!slot.RuneSlot.RuneId.HasValue)
+            {
+                return;
+            }
+
+            var runeState = _runeStates.FirstOrDefault(x => x.RuneId == slot.RuneSlot.RuneId.Value);
+            if (runeState == null)
+            {
+                return;
+            }
+
+            Find<RuneTooltip>().ShowForDisplay(runeState);
         }
     }
 }

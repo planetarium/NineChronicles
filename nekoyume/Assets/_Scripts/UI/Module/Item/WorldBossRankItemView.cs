@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using Nekoyume.Game.Character;
 using Nekoyume.Helper;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module.WorldBoss;
@@ -8,6 +11,8 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class WorldBossRankItemView : MonoBehaviour
     {
         [SerializeField]
@@ -46,8 +51,12 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject rankTextContainer;
 
+        [SerializeField]
+        public TouchHandler touchHandler;
+
         private GameObject _gradeObject;
         private GameObject _rankObject;
+        private readonly List<IDisposable> _disposables = new();
 
         public void Set(WorldBossRankItem model, WorldBossRankScroll.ContextModel context)
         {
@@ -93,6 +102,13 @@ namespace Nekoyume.UI
                 rankImageContainer.SetActive(true);
                 var rankPrefab = WorldBossFrontHelper.GetRankPrefab(model.Ranking);
                 _rankObject = Instantiate(rankPrefab, rankImageContainer.transform);
+            }
+
+            if (touchHandler != null)
+            {
+                _disposables.DisposeAllAndClear();
+                touchHandler.OnClick.Select(_ => model)
+                    .Subscribe(context.OnClick.OnNext).AddTo(_disposables);
             }
         }
     }

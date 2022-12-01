@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Model
 {
-    public class WorldBossRankItem : IItemViewModel
+    public class WorldBossRankItem
     {
         public WorldBossCharacterSheet.Row BossRow;
         public RectTransform View { get; set; }

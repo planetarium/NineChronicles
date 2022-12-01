@@ -236,7 +236,7 @@ namespace Nekoyume.UI.Scroller
         {
             AudioController.PlayClick();
             ItemTooltip.Find(reward.Data.ItemType)
-                .Show(reward.Data, string.Empty, false, null, target:reward.RectTransform);
+                .Show(reward.Data, string.Empty, false, null);
         }
 
         private void ClearRewards()

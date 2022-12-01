@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Libplanet;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.EnumType;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
@@ -77,6 +78,7 @@ namespace Nekoyume.UI.Module.WorldBoss
         private Status _status;
         private GameObject _bossNameObject;
         private Address _currentAvatarAddress;
+        private readonly List<IDisposable> _disposables = new();
 
         private void Awake()
         {
@@ -225,10 +227,28 @@ namespace Nekoyume.UI.Module.WorldBoss
             myInfoObject.SetActive(items.MyItem != null);
             noneObject.gameObject.SetActive(items.MyItem == null);
             myInfo.Set(items.MyItem, null);
+            _disposables.DisposeAllAndClear();
             scroll.UpdateData(items.UserItems);
+            scroll.OnClick.Subscribe(x =>
+            {
+                ShowAsync(x.Address).Forget();
+            }).AddTo(_disposables);
             totalUsers.text = items.UserCount > 0 ? $"{items.UserCount:#,0}" : string.Empty;;
             lastUpdatedText.text = $"{items.LastUpdatedBlockIndex:#,0}";
         }
+
+        private async UniTaskVoid ShowAsync(string address)
+        {
+            var (exist, state) = await States.TryGetAvatarStateAsync(new Address(address));
+            var avatarState = exist ? state : null;
+            var popup = Widget.Find<FriendInfoPopup>();
+            if (popup.isActiveAndEnabled)
+            {
+                popup.Close(true);
+            }
+            popup.ShowAsync(avatarState, BattleType.Raid).Forget();
+        }
+
 
         private void SetActiveQueryLoading(bool value)
         {

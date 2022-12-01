@@ -1,9 +1,5 @@
 //#define TEST_LOG
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using mixpanel;
@@ -20,7 +16,6 @@ using Nekoyume.Game.Util;
 using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
 using Nekoyume.Helper;
-using Nekoyume.L10n;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
@@ -30,6 +25,10 @@ using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Spine.Unity;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 using CharacterBase = Nekoyume.Model.CharacterBase;
@@ -1106,6 +1105,7 @@ namespace Nekoyume.Game
         private Player RunPlayer(bool chasePlayer = true)
         {
             _stageRunningPlayer = GetPlayer();
+            _stageRunningPlayer.Set(States.Instance.CurrentAvatarState);
             var playerTransform = _stageRunningPlayer.transform;
             Vector2 position = playerTransform.position;
             position.y = StageStartPosition;
