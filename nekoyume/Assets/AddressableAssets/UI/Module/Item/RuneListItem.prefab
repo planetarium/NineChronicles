@@ -5028,6 +5028,7 @@ MonoBehaviour:
   normalLevelText: {fileID: 0}
   lockedLevelText: {fileID: 0}
   elementImage: {fileID: 0}
+  countText: {fileID: 0}
 --- !u!1 &515816288160553797
 GameObject:
   m_ObjectHideFlags: 0
@@ -26943,7 +26944,7 @@ GameObject:
   - component: {fileID: 1468147549687730864}
   - component: {fileID: 4399361638179174102}
   - component: {fileID: 6299052522898427456}
-  - component: {fileID: 2629627617421636095}
+  - component: {fileID: 3587602999015105741}
   m_Layer: 5
   m_Name: ButtonArea
   m_TagString: Untagged
@@ -27058,7 +27059,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1468147549687730864}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 3587602999015105741}
+        m_TargetAssemblyTypeName: Nekoyume.UIOnClickSound, Nekoyume
+        m_MethodName: Play
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!95 &6299052522898427456
 Animator:
   serializedVersion: 4
@@ -27079,7 +27092,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &2629627617421636095
+--- !u!114 &3587602999015105741
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -32140,6 +32153,7 @@ MonoBehaviour:
   normalLevelText: {fileID: 0}
   lockedLevelText: {fileID: 0}
   elementImage: {fileID: 0}
+  countText: {fileID: 0}
 --- !u!1 &9191251058101790234
 GameObject:
   m_ObjectHideFlags: 0

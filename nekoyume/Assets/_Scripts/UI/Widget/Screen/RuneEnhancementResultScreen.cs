@@ -136,11 +136,7 @@ namespace Nekoyume.UI
             speechBubble.Show();
             StartCoroutine(speechBubble.CoShowText(speech, true));
 
-            if (isSuccess)
-            {
-                UpdateInformation(runeItem);
-            }
-
+            UpdateInformation(runeItem, isSuccess);
             currentLevelText.text = $"+{runeItem.Level}";
             nextLevelText.text = $"+{runeItem.Level + 1}";
             successText.gameObject.SetActive(isSuccess);
@@ -148,7 +144,7 @@ namespace Nekoyume.UI
             animator.Play(isSuccess ? HashToSuccess : HashToFail);
         }
 
-        private void UpdateInformation(RuneItem item)
+        private void UpdateInformation(RuneItem item, bool isSuccess)
         {
             if (RuneFrontHelper.TryGetRuneIcon(item.Row.Id, out var icon))
             {
@@ -157,16 +153,17 @@ namespace Nekoyume.UI
 
             runeText.text = L10nManager.Localize($"RUNE_NAME_{item.Row.Id}");
 
-            if (!item.OptionRow.LevelOptionMap.TryGetValue(item.Level + 1, out var nextOption))
+            var level = isSuccess ? item.Level + 1 : item.Level;
+            if (!item.OptionRow.LevelOptionMap.TryGetValue(level, out var option))
             {
                 return;
             }
 
-            cpText.text = $"CP {nextOption.Cp}";
+            cpText.text = $"CP {option.Cp}";
 
-            UpdateSkillInformation(nextOption);
-            UpdateStatInformation(item, nextOption);
-            UpdateOptionTag(nextOption, item.Row.Grade);
+            UpdateSkillInformation(option);
+            UpdateStatInformation(item, option);
+            UpdateOptionTag(option, item.Row.Grade);
         }
 
         private void UpdateSkillInformation(RuneOptionSheet.Row.RuneOptionInfo option)
