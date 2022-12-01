@@ -2174,7 +2174,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 640, y: 526}
+  m_SizeDelta: {x: 714, y: 555.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6532789224452991109
 CanvasRenderer:
@@ -8957,12 +8957,12 @@ PrefabInstance:
     - target: {fileID: 8659116146397617775, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
         type: 3}
       propertyPath: cellInterval
-      value: 0.14285715
+      value: 0.13610889
       objectReference: {fileID: 0}
     - target: {fileID: 8659116146397617775, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
         type: 3}
       propertyPath: scrollOffset
-      value: 0.14285715
+      value: 0.13610889
       objectReference: {fileID: 0}
     - target: {fileID: 8751341184753845357, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
         type: 3}
