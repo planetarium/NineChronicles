@@ -6,6 +6,7 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Common;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Model
 {
@@ -37,6 +38,15 @@ namespace Nekoyume.UI.Model
 
         [SerializeField]
         private PositionTooltip tooltip;
+
+        [SerializeField]
+        private Image adventure;
+
+        [SerializeField]
+        private Image arena;
+
+        [SerializeField]
+        private Image raid;
 
         public void Hide()
         {
