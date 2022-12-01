@@ -1296,8 +1296,7 @@ namespace Nekoyume.BlockChain
 
                 UpdateCurrentAvatarStateAsync().Forget();
 
-                await States.Instance.InitRuneSlotStates();
-                await States.Instance.InitItemSlotStates();
+                await Task.WhenAll(States.Instance.InitRuneSlotStates(), States.Instance.InitItemSlotStates());
                 Widget.Find<BattlePreparation>().UpdateInventoryView();
             }
             else
