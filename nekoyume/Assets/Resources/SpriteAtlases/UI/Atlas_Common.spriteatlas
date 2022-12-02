@@ -248,6 +248,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: dc38b4c6f210e4b7b975ca319ff7ad1d, type: 3}
   - {fileID: 21300000, guid: 246367d6aa9d90448bc371fcabd0b795, type: 3}
   - {fileID: 21300000, guid: 0fd932e603eb03049a100b49a122e8ea, type: 3}
+  - {fileID: 21300000, guid: 5a2526e6dae9a49e88944d5d22e5950a, type: 3}
   - {fileID: 21300000, guid: b6e66be6314984381a8830b102440660, type: 3}
   - {fileID: 21300000, guid: 0c69c5f633fde4fe99fdfb2c6c01aa6f, type: 3}
   - {fileID: 21300000, guid: 8efd7a17ae635458c812966d604e1b9c, type: 3}
@@ -445,7 +446,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 72c6d0bd5d09147d38b492372d624465, type: 3}
   - {fileID: 21300000, guid: 62c9b5bde9eb5478283fe5454c87d0bf, type: 3}
   - {fileID: 21300000, guid: 55352fbdf22e74f52a49fd3d89d83953, type: 3}
-  - {fileID: 21300000, guid: 95fd59ddddd904e6db5758ec79e80d4c, type: 3}
   - {fileID: 21300000, guid: 452723ed3d7a34919b996c897f3476b0, type: 3}
   - {fileID: 21300000, guid: 491a34edb16c34b3ca8b0a767bd25d21, type: 3}
   - {fileID: 21300000, guid: 3c39dfed8a782494f9def5a4cdfe99b4, type: 3}
@@ -698,6 +698,7 @@ SpriteAtlas:
   - icon_notice_06_black
   - Button_Tab_bg_Normal_04
   - Staking_Mob_01
+  - ui_bg_combination_01_ef
   - UI_arrow_04
   - UI_icon_Quest_type_01
   - icon_Staking_Buff_05
@@ -895,7 +896,6 @@ SpriteAtlas:
   - Ani_Workshop_02
   - Common_bg_2R
   - Item_bg_Grade_00
-  - Rank_bg_11
   - UI_icon_check
   - UI_Popup_bg_02_tooltip
   - UI_icon_login_lock
