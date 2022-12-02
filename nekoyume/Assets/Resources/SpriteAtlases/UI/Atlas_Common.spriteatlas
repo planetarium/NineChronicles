@@ -58,6 +58,7 @@ SpriteAtlas:
     - {fileID: 102900000, guid: 9bc80a3d80eb8448ca722faa16cc1c4d, type: 3}
     - {fileID: 102900000, guid: 5de5d741dd95f4b109fcb2db189fadfa, type: 3}
     - {fileID: 102900000, guid: c15853f15215b484d92ffecf46906877, type: 3}
+    - {fileID: 2800000, guid: 23bc1f293e20d4c15b583a7a67bab116, type: 3}
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -245,6 +246,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: dc38b4c6f210e4b7b975ca319ff7ad1d, type: 3}
   - {fileID: 21300000, guid: 246367d6aa9d90448bc371fcabd0b795, type: 3}
   - {fileID: 21300000, guid: 0fd932e603eb03049a100b49a122e8ea, type: 3}
+  - {fileID: 21300000, guid: b6e66be6314984381a8830b102440660, type: 3}
   - {fileID: 21300000, guid: 8efd7a17ae635458c812966d604e1b9c, type: 3}
   - {fileID: 21300000, guid: f8ebc527aa87e4f2da7520536ec17819, type: 3}
   - {fileID: 21300000, guid: 2d8d7e277d39c47dab9df83b6bec36ec, type: 3}
@@ -302,6 +304,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 3d4fbee8e2bbc4556b9845b6e1bab15c, type: 3}
   - {fileID: 21300000, guid: 149516097e93cf24c892072063bcf0a5, type: 3}
   - {fileID: 21300000, guid: b550fb09379c14e9da9213f5e65aff49, type: 3}
+  - {fileID: 21300000, guid: 23bc1f293e20d4c15b583a7a67bab116, type: 3}
   - {fileID: 21300000, guid: ab8a3d3905fc6485b99af9a34ebc0a85, type: 3}
   - {fileID: 21300000, guid: 593fee39c5aab443b990690a0f2a9142, type: 3}
   - {fileID: 21300000, guid: 0daa5349d4dee4ee89aeb82ae3aa0ade, type: 3}
@@ -431,6 +434,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 3a0ea20e8e0254404a27b6c827aab686, type: 3}
   - {fileID: 21300000, guid: 1a2f661ed7471524c9fde8f945f75580, type: 3}
   - {fileID: 21300000, guid: a9885d1ec8c1dae4294b4bf8a9a9e178, type: 3}
+  - {fileID: 21300000, guid: 0d11282efb8a045558d8b1364266b5c0, type: 3}
   - {fileID: 21300000, guid: 5239f92e89bdbb54abae0311f68711d8, type: 3}
   - {fileID: 21300000, guid: b741d13ee7bb44ad185d1d90c24c35c2, type: 3}
   - {fileID: 21300000, guid: bc32333ea13304191bee07df4643a087, type: 3}
@@ -674,6 +678,7 @@ SpriteAtlas:
   - icon_notice_06_black
   - Button_Tab_bg_Normal_04
   - Staking_Mob_01
+  - UI_arrow_04
   - icon_Staking_Buff_05
   - UI_scroll_bar
   - icon_combination_consumables
@@ -731,6 +736,7 @@ SpriteAtlas:
   - UI_Combination_mainmenu_bg_03
   - button_page_02_reverse
   - UI_Btn_bg_04
+  - UI_box_Inventory_01
   - Common_bg_7R
   - button_brown_circle
   - icon_notice_05_black
@@ -860,6 +866,7 @@ SpriteAtlas:
   - UI_Popup_bg_09
   - Icon_Personnel_2
   - UI_mail_popup_01
+  - Common_bg_7R_Gradiant
   - UI_icon_item_bg_14
   - UI_scroll_bg
   - UI_Btn_bg_02_Press
