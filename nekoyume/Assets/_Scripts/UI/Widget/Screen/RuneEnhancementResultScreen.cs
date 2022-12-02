@@ -119,7 +119,7 @@ namespace Nekoyume.UI
             var speech = string.Empty;
 
             AudioController.instance.PlaySfx(isSuccess
-                ? AudioController.SfxCode.GreatSuccessDrum
+                ? AudioController.SfxCode.Success
                 : AudioController.SfxCode.Failed);
 
             if (isSuccess)
