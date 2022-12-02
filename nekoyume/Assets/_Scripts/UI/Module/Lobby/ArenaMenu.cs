@@ -38,11 +38,6 @@ namespace Nekoyume.UI.Module.Lobby
         private GameObject grandFinaleGameObject;
 
         private readonly List<IDisposable> _disposables = new();
-        private Thread _mainThread = Thread.CurrentThread;
-        void Start ()
-        {
-            _mainThread = Thread.CurrentThread;
-        }
 
         private void OnEnable()
         {
@@ -52,7 +47,7 @@ namespace Nekoyume.UI.Module.Lobby
                 .Subscribe(UpdateArenaSeasonTitle)
                 .AddTo(_disposables);
             RxProps.ArenaTicketsProgress
-                .SubscribeOnMainThread()
+                .ObserveOnMainThread()
                 .Subscribe(UpdateTicket)
                 .AddTo(_disposables);
         }
@@ -64,11 +59,6 @@ namespace Nekoyume.UI.Module.Lobby
 
         private void UpdateTicket(RxProps.TicketProgress ticketProgress)
         {
-            if (!_mainThread.Equals(Thread.CurrentThread))
-            {
-                return;
-            }
-
             _ticketCountGO.SetActive(ticketProgress.currentTickets > 0);
             _ticketCount.text = ticketProgress.currentTickets
                 .ToString(CultureInfo.InvariantCulture);
