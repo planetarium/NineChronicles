@@ -44,15 +44,31 @@ SpriteAtlas:
     secondaryTextureSettings: {}
     variantMultiplier: 1
     packables:
-    - {fileID: 2800000, guid: 9945d399913883a408b87ba6778f992a, type: 3}
+    - {fileID: 102900000, guid: 345a67321d0344285a63b6bce64a4ce5, type: 3}
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
-  - {fileID: 21300000, guid: 9945d399913883a408b87ba6778f992a, type: 3}
+  - {fileID: 21300000, guid: 75960fa0a23350747889f353ca04f218, type: 3}
+  - {fileID: 21300000, guid: 044b1f122d8835247b403a329ffc7c40, type: 3}
+  - {fileID: 21300000, guid: 850ed972508bc2b459bd28c22f8a3377, type: 3}
+  - {fileID: 21300000, guid: 7916d023788128143977a675669adfb7, type: 3}
+  - {fileID: 21300000, guid: f9ed6d23580368b4bab35cfff3e6861b, type: 3}
+  - {fileID: 21300000, guid: c67647e4e123e3e41b8ae9994d5ca58d, type: 3}
+  - {fileID: 21300000, guid: 083bf39ac01dfe14eb9000b3ddb8401e, type: 3}
+  - {fileID: 21300000, guid: fa1409bd25e03a84aba704aa53863b52, type: 3}
+  - {fileID: 21300000, guid: 6758f0cd55ef5aa409c4750386e24f1d, type: 3}
   m_PackedSpriteNamesToIndex:
-  - bg_loading_01
+  - UI_loading_cat
+  - UI_loading_bg
+  - UI_loading_girlback
+  - UI_loading_girl
+  - UI_loading_02
+  - UI_loading_icon_01
+  - UI_loading_ornament
+  - UI_loading_lens flare
+  - UI_loading_catback
   m_RenderDataMap: {}
   m_Tag: Loading
   m_IsVariant: 0

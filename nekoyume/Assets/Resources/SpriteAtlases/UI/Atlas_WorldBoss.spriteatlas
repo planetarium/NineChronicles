@@ -199,6 +199,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 0c12d6d5f6830614ba97d8ee279ec8e9, type: 3}
   - {fileID: 21300000, guid: 34b1f9d5da41744ac9a6cb0e25431394, type: 3}
   - {fileID: 21300000, guid: 4ce5d5e573d21409bb1dec6720f6a9b1, type: 3}
+  - {fileID: 21300000, guid: 804646e5fde1747a99d792f2ab580649, type: 3}
   - {fileID: 21300000, guid: e5fc96e56a10d7841806464b6daf7207, type: 3}
   - {fileID: 21300000, guid: 9da9fee57dd8c474dafaf32229a6efca, type: 3}
   - {fileID: 21300000, guid: 2a128af529287764183ca61a2503f256, type: 3}
@@ -245,6 +246,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 7c857d97a6fec4f33963889081cb5e1b, type: 3}
   - {fileID: 21300000, guid: f11570a76d53d48faa0dd8e29c152ff9, type: 3}
   - {fileID: 21300000, guid: f5c0d7a70f64d4bf898c6310e903b9d2, type: 3}
+  - {fileID: 21300000, guid: 23dd06b7b55074de082337d088f0674d, type: 3}
   - {fileID: 21300000, guid: a5b808b7d8dc74c89ae19864eda853c4, type: 3}
   - {fileID: 21300000, guid: 87bb79b7dffc64f9996adc35d2c3276f, type: 3}
   - {fileID: 21300000, guid: 363d1fb713d3d7544bba7bd873af24d3, type: 3}
@@ -267,6 +269,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: e62bf548a67d24d388a85cb8304de7a9, type: 3}
   - {fileID: 21300000, guid: 77938a489564448ee87c3b4d55bf0030, type: 3}
   - {fileID: 21300000, guid: 45179b48ce56c4ed18b4c1f9ef4e72b2, type: 3}
+  - {fileID: 21300000, guid: 716a6f5800255498cbda1cf8013f3f2c, type: 3}
   - {fileID: 21300000, guid: a668126808bc944db8ab665f8bd9f014, type: 3}
   - {fileID: 21300000, guid: c5fd33687c5184f45846042df877e93a, type: 3}
   - {fileID: 21300000, guid: 71ed9c68f6f7347c794619bff4783e41, type: 3}
@@ -275,6 +278,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 7ae8bd7862d1e49e69ac5b00a093bb12, type: 3}
   - {fileID: 21300000, guid: 0680de78f71e9a042aee974aa278b528, type: 3}
   - {fileID: 21300000, guid: 282d2788e4dc2cd4da4e4e0570d08529, type: 3}
+  - {fileID: 21300000, guid: 02115a8800b99412ea04aabff2bfa72f, type: 3}
   - {fileID: 21300000, guid: 5a1f7b885330a56458fab52ebb426550, type: 3}
   - {fileID: 21300000, guid: 8a3d79a8f58bae34bb95fa4649cf22ff, type: 3}
   - {fileID: 21300000, guid: 4ab08ea8f2de7454da685f56eb0c7545, type: 3}
@@ -334,6 +338,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: cc08f1cae86154acebb5737994414f2f, type: 3}
   - {fileID: 21300000, guid: 5e2c03ca14e54114186e3ebc10523b38, type: 3}
   - {fileID: 21300000, guid: d5e1b4da7bc57a14781b6768739dcc45, type: 3}
+  - {fileID: 21300000, guid: 9394f8da5938042989eb6405a94b396f, type: 3}
   - {fileID: 21300000, guid: e28a2eda03aa14186b003b0c57fb1ec8, type: 3}
   - {fileID: 21300000, guid: 568239eace6e94a52b9841fb10ac6974, type: 3}
   - {fileID: 21300000, guid: e6175eea41e27468b9e2b59b369f0c77, type: 3}
@@ -605,6 +610,7 @@ SpriteAtlas:
   - UI_icon_item_bg_10
   - UI_stage_bar
   - Common_Arrow_s
+  - 8x8_rect_white
   - icon_ticket_pvp
   - WB_Gauge_Bg_1_add
   - Icon_VS_01_Black
@@ -651,6 +657,7 @@ SpriteAtlas:
   - UI_icon_Mainmenu_05
   - UI_Popup_bg_07
   - Common_Tooltipbg3
+  - 8x8_rect_transparent_border2px
   - UI_Mask_Slot
   - icon_Craft_recipe
   - UI_bg_chat_02
@@ -673,6 +680,7 @@ SpriteAtlas:
   - Bg_Wave_13
   - Bg_Wave_07
   - button_yellow_02
+  - 8x8_rect_transparent_border3px
   - Bg_Wave_10
   - UI_line_04
   - UI_bg_Start_00
@@ -681,6 +689,7 @@ SpriteAtlas:
   - icon_Staking_Buff_02
   - UI_bg_chat
   - Icon_SeasonTop_01_Black
+  - 8x8_rect_transparent_border1px
   - UI_icon_item_bg_08
   - WB_Grade_Bg_3
   - Common_Tooltipbg7
@@ -740,6 +749,7 @@ SpriteAtlas:
   - icon_costume_01_black
   - Icon_Prev
   - Common_Prrogressbar_Line_1
+  - 8x8_rect_transparent
   - UI_icon_Mainmenu_08
   - UI_Common_Slot_Expired
   - UI_Gradiant_bg_02

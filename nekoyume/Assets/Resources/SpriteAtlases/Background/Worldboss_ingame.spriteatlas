@@ -1,0 +1,108 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Worldboss_ingame
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 0
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 1
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 0
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: f88acc55c84b24c9abe1c7c11b5f4dc6, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 840d04d0634cf4511983b93d5a55f655, type: 3}
+  - {fileID: 21300000, guid: 77a306317fecf49a3b67cbdddd5c14c4, type: 3}
+  - {fileID: 21300000, guid: b59d2cf15eed24ce5a305432306c6b49, type: 3}
+  - {fileID: 21300000, guid: a61826121f7754a1084a1ff065d19c7b, type: 3}
+  - {fileID: 21300000, guid: c614ed62f19f7432cb406ea13ee07029, type: 3}
+  - {fileID: 21300000, guid: 91095ec2fa5c246a980fad6378fca7fe, type: 3}
+  - {fileID: 21300000, guid: 2deac123030154a8f96f65f1eab2193e, type: 3}
+  - {fileID: 21300000, guid: 93d11083249574e0997531a0e17c22e2, type: 3}
+  - {fileID: 21300000, guid: acfc94046328e4fe18e9e140a191178f, type: 3}
+  - {fileID: 21300000, guid: e81f31548c0bd48708fd9711d5b33660, type: 3}
+  - {fileID: 21300000, guid: 652365841c7fe4bdaa0effda414a9169, type: 3}
+  - {fileID: 21300000, guid: 9c174b46103d84d05a3cdc4e139c2b3b, type: 3}
+  - {fileID: 21300000, guid: e06598f614fc04aba99532886467a0d5, type: 3}
+  - {fileID: 21300000, guid: c02319878a8b94e96ac6da782bcaad1b, type: 3}
+  - {fileID: 21300000, guid: ad338c78a6ace46fcb0be0c974227d55, type: 3}
+  - {fileID: 21300000, guid: 2ab6a089c1bdd4106879bd0f17a6294d, type: 3}
+  - {fileID: 21300000, guid: 74c0dc4a7b66f4032adcaae762cf3f62, type: 3}
+  - {fileID: 21300000, guid: d619799a4841e4bb581fc4c1c1d40a9e, type: 3}
+  - {fileID: 21300000, guid: b3ceebda67ff941a390b5b7d2c5c0e3d, type: 3}
+  - {fileID: 21300000, guid: cf45660d1f3404f40a71b23657900800, type: 3}
+  - {fileID: 21300000, guid: 98682d0de72ce4026bfa0f61e677f745, type: 3}
+  - {fileID: 21300000, guid: cea855ad68cee426f83cbd8e59c47359, type: 3}
+  - {fileID: 21300000, guid: 227a9d3e718c347e98db8419070d5b12, type: 3}
+  - {fileID: 21300000, guid: a338af7e898f54f9aa2af0b43f030641, type: 3}
+  - {fileID: 21300000, guid: d9525b6f66883417580b4584f59a1562, type: 3}
+  - {fileID: 21300000, guid: 1ce1388fd88534f95b096ace98d9e55a, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - bg_WorldBoss_04_2
+  - bg_WorldBoss_tile_01
+  - bg_WorldBoss_04_3
+  - bg_WorldBoss_04_4_add
+  - bg_WorldBoss_03
+  - bg_WorldBoss_tile_03
+  - bg_WorldBoss_02
+  - bg_WorldBoss_tile_02
+  - bg_WorldBoss_05_7
+  - bg_WorldBoss_05_4
+  - bg_WorldBoss_05_2
+  - bg_WorldBoss_04_3_3
+  - bg_WorldBoss_05_6
+  - bg_WorldBoss_tile_04
+  - bg_WorldBoss_05_5
+  - bg_WorldBoss_tile_06
+  - bg_WorldBoss_04_4
+  - bg_WorldBoss_04_3_1
+  - bg_WorldBoss_05
+  - bg_WorldBoss_03_tile
+  - bg_WorldBoss_02_tile
+  - bg_WorldBoss_04_3_2
+  - bg_WorldBoss_01
+  - bg_WorldBoss_tile_05
+  - bg_WorldBoss_04
+  - bg_WorldBoss_05_3
+  m_RenderDataMap: {}
+  m_Tag: Worldboss_ingame
+  m_IsVariant: 0
