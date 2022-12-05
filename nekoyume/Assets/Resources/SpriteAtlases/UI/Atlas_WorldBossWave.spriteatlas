@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Atlas_WorldBossWave
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 1
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 0
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 1
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 0
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: 20f1c16e4b9e74f5e9c419816987171c, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: ef4764133d8d044118d31d393c8e6bad, type: 3}
+  - {fileID: 21300000, guid: f8e9a3c3958b24853ac1fe292e96359a, type: 3}
+  - {fileID: 21300000, guid: 53fc152434bc14db2853af8ac1660b23, type: 3}
+  - {fileID: 21300000, guid: 236d7435fda2b4358ae62ce7ef5b0e7a, type: 3}
+  - {fileID: 21300000, guid: 799334a5ae9e54353a5dad21ef8b3f47, type: 3}
+  - {fileID: 21300000, guid: f605b247ef92f48cda81f0fecc9b6a1b, type: 3}
+  - {fileID: 21300000, guid: e62bf548a67d24d388a85cb8304de7a9, type: 3}
+  - {fileID: 21300000, guid: 77938a489564448ee87c3b4d55bf0030, type: 3}
+  - {fileID: 21300000, guid: a668126808bc944db8ab665f8bd9f014, type: 3}
+  - {fileID: 21300000, guid: af70052af89fd434ab14e5fc9c1a5aed, type: 3}
+  - {fileID: 21300000, guid: 5a5a1f5b2cf6944099a65da3fd5ef689, type: 3}
+  - {fileID: 21300000, guid: c830b1db3b9be48b19b21954e810229c, type: 3}
+  - {fileID: 21300000, guid: ecb33ceb1f4204832bb0526b6437361e, type: 3}
+  - {fileID: 21300000, guid: debc2dfce481c4e35a6f4ab3ae050fe0, type: 3}
+  - {fileID: 21300000, guid: d876c34d48ba6409d8e916e4369f729e, type: 3}
+  - {fileID: 21300000, guid: ad6436ce3cdf445b2a5cd864929161f7, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - Bg_Wave_03
+  - Bg_Wave_02
+  - Bg_Wave_01
+  - Bg_Wave_12
+  - Bg_Wave_08_3
+  - Bg_Wave_11
+  - Bg_Wave_13
+  - Bg_Wave_07
+  - Bg_Wave_10
+  - Bg_Wave_08_2
+  - Bg_Wave_08
+  - Bg_Wave_08_4
+  - Bg_Wave_08_5
+  - Bg_Wave_04
+  - Bg_Wave_05
+  - Bg_Wave_06
+  m_RenderDataMap: {}
+  m_Tag: Atlas_WorldBossWave
+  m_IsVariant: 0
