@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Immutable;
 using Bencodex.Types;
+using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -15,11 +16,17 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/287
     /// Updated at https://github.com/planetarium/lib9c/pull/315
     /// Updated at https://github.com/planetarium/lib9c/pull/957
+    /// Updated at https://github.com/planetarium/lib9c/pull/1560
     /// </summary>
     [Serializable]
     [ActionType("patch_table_sheet")]
     public class PatchTableSheet : GameAction
     {
+        // FIXME: We should eliminate or justify this concept in another way after v100340.
+        // (Until that) please consult Nine Chronicles Dev if you have any questions about this account.
+        private static readonly Address Operator =
+            new Address("3fe3106a3547488e157AED606587580e80375295");
+
         public string TableName;
         public string TableCsv;
 
@@ -37,7 +44,20 @@ namespace Nekoyume.Action
 
             var addressesHex = GetSignerAndOtherAddressesHex(context);
 
-            CheckPermission(context);
+#if !LIB9C_DEV_EXTENSIONS && !UNITY_EDITOR
+            if (ctx.Signer == Operator)
+            {
+                Log.Information(
+                    "Skip CheckPermission since {TxId} had been signed by the operator({Operator}).",
+                    context.TxId,
+                    Operator
+                );
+            }
+            else
+            {
+                CheckPermission(context);
+            }
+#endif
 
             var sheets = states.GetState(sheetAddress);
             var value = sheets is null ? string.Empty : sheets.ToDotnetString();
