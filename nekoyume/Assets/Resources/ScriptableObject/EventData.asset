@@ -47,9 +47,23 @@ MonoBehaviour:
     stageIconOffset: {x: 1, y: 7}
     mainBGM: {fileID: 8300000, guid: f461d703e65c9ea4f85f37f198af9f5f, type: 3}
     targetDungeonIds: 91bd9800a1e49800
+    eventDungeonKey: EventSummer
+    eventDungeonGuidedQuestIcon: {fileID: 21300000, guid: fe8e6c68cc5ce48f1b5a148d6e80d6ad,
+      type: 3}
+    eventRecipeGuidedQuestIcon: {fileID: 21300000, guid: 2307dcba620744161ab8508dd933199c,
+      type: 3}
+    eventDungeonBattlePreparationBg: {fileID: 21300000, guid: 9df3c48b0627b4912b6200963a4e040a,
+      type: 3}
   - eventType: 3
     intro: {fileID: 21300000, guid: d66925166185a4c9499ebb9359b58649, type: 3}
     stageIcon: {fileID: 21300000, guid: a9ff32e70226c43dbbfcb26d6eae5228, type: 3}
-    stageIconOffset: {x: 1, y: 7}
+    stageIconOffset: {x: 0, y: 7.5}
     mainBGM: {fileID: 8300000, guid: 7093635f328f84c59af6f67a2e028a3e, type: 3}
     targetDungeonIds: b10b9900
+    eventDungeonKey: EventWinter
+    eventDungeonGuidedQuestIcon: {fileID: 21300000, guid: a9ff32e70226c43dbbfcb26d6eae5228,
+      type: 3}
+    eventRecipeGuidedQuestIcon: {fileID: 21300000, guid: a9ff32e70226c43dbbfcb26d6eae5228,
+      type: 3}
+    eventDungeonBattlePreparationBg: {fileID: 21300000, guid: 9445c007a7664459ba515141d5495c00,
+      type: 3}

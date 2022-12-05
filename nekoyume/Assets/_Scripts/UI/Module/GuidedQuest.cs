@@ -76,8 +76,7 @@ namespace Nekoyume.UI.Module
             public readonly ReactiveProperty<WorldQuest> eventDungeonQuest = new();
 
             // NOTE: This is fake quest.
-            public readonly ReactiveProperty<CombinationEquipmentQuest>
-                craftEventItemQuest = new();
+            public readonly ReactiveProperty<CombinationEquipmentQuest> craftEventItemQuest = new();
         }
 
         private static readonly ViewModel SharedViewModel = new();

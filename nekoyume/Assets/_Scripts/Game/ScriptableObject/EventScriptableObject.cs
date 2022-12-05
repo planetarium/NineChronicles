@@ -61,5 +61,17 @@ namespace Nekoyume
     {
         [Tooltip("ID list of `EventDungeonSheet`")]
         public int[] targetDungeonIds;
+
+        [Tooltip("The Key used by WorldMapPage in WorldMapWorld.prefab")]
+        public string eventDungeonKey;
+
+        [Tooltip("The sprite used by GuidedQuestCell.prefab as event dungeon icon")]
+        public Sprite eventDungeonGuidedQuestIcon;
+
+        [Tooltip("The sprite used by GuideQuestCell.prefab as event recipe icon")]
+        public Sprite eventRecipeGuidedQuestIcon;
+
+        [Tooltip("The sprite used by UI_BattlePreparation.prefab")]
+        public Sprite eventDungeonBattlePreparationBg;
     }
 }

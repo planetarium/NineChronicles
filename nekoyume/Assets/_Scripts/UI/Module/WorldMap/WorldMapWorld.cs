@@ -209,7 +209,8 @@ namespace Nekoyume.UI.Module
                     {
                         StageType.Mimisbrunnr => "mimisbrunnr",
                         // NOTE: `EventSummer` is flaky.
-                        StageType.EventDungeon => "EventSummer",
+                        StageType.EventDungeon =>
+                            EventManager.GetEventDungeonInfo().eventDungeonKey ?? "EventSummer",
                         _ => worldRow.Id.ToString("00"),
                     },
                     pageIndex);

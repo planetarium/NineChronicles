@@ -37,6 +37,10 @@ namespace Nekoyume
                    SO.defaultSettings;
         }
 
+        public static EventDungeonIdBasedEventInfo GetEventDungeonInfo()
+        {
+            return GetEventInfo() as EventDungeonIdBasedEventInfo;
+        }
         public static bool TryGetEvent(EventType eventType, out EventInfo timeBasedEventInfo)
         {
             timeBasedEventInfo = SO.timeBasedEvents.FirstOrDefault(e => e.eventType == eventType);

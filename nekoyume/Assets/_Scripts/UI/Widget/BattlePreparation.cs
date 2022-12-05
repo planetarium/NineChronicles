@@ -83,7 +83,7 @@ namespace Nekoyume.UI
         private GameObject mimisbrunnrBg;
 
         [SerializeField]
-        private GameObject eventDungeonBg;
+        private Image eventDungeonBg;
 
         [SerializeField]
         private GameObject hasBg;
@@ -291,17 +291,18 @@ namespace Nekoyume.UI
                 case StageType.HackAndSlash:
                     hasBg.SetActive(true);
                     mimisbrunnrBg.SetActive(false);
-                    eventDungeonBg.SetActive(false);
+                    eventDungeonBg.gameObject.SetActive(false);
                     break;
                 case StageType.Mimisbrunnr:
                     hasBg.SetActive(false);
                     mimisbrunnrBg.SetActive(true);
-                    eventDungeonBg.SetActive(false);
+                    eventDungeonBg.gameObject.SetActive(false);
                     break;
                 case StageType.EventDungeon:
                     hasBg.SetActive(false);
                     mimisbrunnrBg.SetActive(false);
-                    eventDungeonBg.SetActive(true);
+                    eventDungeonBg.gameObject.SetActive(true);
+                    eventDungeonBg.sprite = EventManager.GetEventDungeonInfo().eventDungeonBattlePreparationBg;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
