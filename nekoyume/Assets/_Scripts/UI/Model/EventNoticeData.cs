@@ -1,13 +1,14 @@
 ﻿using System;
+using UnityEngine;
 
 namespace Nekoyume.UI.Model
 {
     [Serializable]
-    public class EventBannerData
+    public class EventNoticeData
     {
         public int Priority { get; set; }
-        public string BannerImageName { get; set; }
-        public string PopupImageName { get; set; }
+        public Sprite BannerImage { get; set; }
+        public Sprite PopupImage { get; set; }
         public bool UseDateTime { get; set; }
         public string BeginDateTime { get; set; }
         public string EndDateTime { get; set; }
