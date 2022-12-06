@@ -56,7 +56,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: ac32aa804681c49d5a29473fbc520a21, type: 3}
   - {fileID: 21300000, guid: e6af7801e4afae842aad64f0eb1ea196, type: 3}
   - {fileID: 21300000, guid: 40ef27b1744b5418e804ae7d87823539, type: 3}
-  - {fileID: 21300000, guid: ee155c0290a0f4865b5d9a33c35a88fb, type: 3}
   - {fileID: 21300000, guid: c4648932d941ce743990f79103054e17, type: 3}
   - {fileID: 21300000, guid: 2d4ae042985ba684f957343ceacc835e, type: 3}
   - {fileID: 21300000, guid: b838d452ee0d547179f51bc5f1f14791, type: 3}
@@ -80,7 +79,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: f83d5d87983d443f8bb265739347826f, type: 3}
   - {fileID: 21300000, guid: 5d3b000808ef14a41b10fc2266acd58d, type: 3}
   - {fileID: 21300000, guid: b24fc508fd6de3e44873c7bdb2e9188d, type: 3}
-  - {fileID: 21300000, guid: c8527d68d1dfe4292ae2c67a3b182a34, type: 3}
   - {fileID: 21300000, guid: 3595f898485cb4466b74e2e8cfe51185, type: 3}
   - {fileID: 21300000, guid: 23588dc8e4b9a46f5aa5f8532a82514e, type: 3}
   - {fileID: 21300000, guid: 8ec05d396b838486fbb917b41aed27d0, type: 3}
@@ -89,7 +87,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: fbf9879ad40de4494ad8b698ae79b3a4, type: 3}
   - {fileID: 21300000, guid: a8b169aa8c8f77a468365ee4d3c10849, type: 3}
   - {fileID: 21300000, guid: 8c6fe71b9dce844ed84850afb73a48b2, type: 3}
-  - {fileID: 21300000, guid: a2e2153b2bf9a44a9bf7db4c2c21f896, type: 3}
   - {fileID: 21300000, guid: b7c13f6b7601e43458b8a37944fd03a4, type: 3}
   - {fileID: 21300000, guid: c7e3508ba831348f78885adaaa1e0065, type: 3}
   - {fileID: 21300000, guid: 1da7810c87905014f9fbdb32107e7405, type: 3}
@@ -100,7 +97,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 11627b8dedc85451d92bd8a2660da33d, type: 3}
   - {fileID: 21300000, guid: eaf5f99de2cecfd4586e57ead99d756c, type: 3}
   - {fileID: 21300000, guid: d492db3e1b5b243e2b504cdff757e9b7, type: 3}
-  - {fileID: 21300000, guid: b4ab13ae582544a6895d04f0717aba97, type: 3}
   - {fileID: 21300000, guid: 0461f2be2e10940879088d0d7a370923, type: 3}
   - {fileID: 21300000, guid: a1b86b2fa0332462f8274003a727f53d, type: 3}
   m_PackedSpriteNamesToIndex:
@@ -109,7 +105,6 @@ SpriteAtlas:
   - Arena_bg_02
   - bg_pvp_vs
   - Bg_Arena_Season_add
-  - Arena_bg_gauge_04_Line
   - UI_pvp_wing
   - Arena_bg_21
   - Icon_OfficialSeasonMedal
@@ -133,7 +128,6 @@ SpriteAtlas:
   - Arena_bg_18
   - Arena_bg_22_1
   - UI_pvp_emblem
-  - Arena_bg_gauge_02
   - Arena_bg_04
   - Bg_Arena_Championship
   - Bg_Arena_Grade
@@ -142,7 +136,6 @@ SpriteAtlas:
   - Bg_Arena_Championship_icon
   - Arena_bg_22_2
   - Bg_Arena_Championship_add
-  - Arena_bg_gauge_02_mask
   - Arena_bg_28
   - Arena_bg_11
   - bg_pvp_back
@@ -153,7 +146,6 @@ SpriteAtlas:
   - Arena_bg_08
   - bg_pvp_vs_effect
   - Arena_bg_gauge_01_Type2
-  - Arena_bg_gauge_03_mask
   - Arena_bg_16
   - Arena_bg_27
   m_RenderDataMap: {}
