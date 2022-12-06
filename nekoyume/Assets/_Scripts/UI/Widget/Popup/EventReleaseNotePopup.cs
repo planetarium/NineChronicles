@@ -1,16 +1,18 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Nekoyume.Game.Notice;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 using ToggleGroup = Nekoyume.UI.Module.ToggleGroup;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class EventReleaseNotePopup : PopupWidget
     {
         [Header("For event banner & view")]
@@ -54,8 +56,12 @@ namespace Nekoyume.UI
         private NoticeItem _selectedNoticeItem;
         private readonly ToggleGroup _tabGroup = new();
 
+        private const string LastReadingDayKey = "LAST_READING_DAY";
+        private const string DateTimeFormat = "yyyy-MM-ddTHH:mm:ss";
+
         public override void Initialize()
         {
+            base.Initialize();
             _tabGroup.RegisterToggleable(eventTabButton);
             _tabGroup.RegisterToggleable(noticeTabButton);
             _tabGroup.OnToggledOn.Subscribe(toggle =>
@@ -73,14 +79,8 @@ namespace Nekoyume.UI
             }).AddTo(gameObject);
             _tabGroup.SetToggledOn(eventTabButton);
             closeButton.onClick.AddListener(() => Close());
-            base.Initialize();
-        }
 
-        private IEnumerator Start()
-        {
             var noticeManager = NoticeManager.instance;
-            yield return new WaitUntil(() => noticeManager.IsInitialized);
-
             eventTabButton.HasNotification.SetValueAndForceNotify(noticeManager.HasUnreadEvent);
             noticeTabButton.HasNotification.SetValueAndForceNotify(noticeManager.HasUnreadNotice);
             noticeManager.ObservableHasUnreadEvent
@@ -124,10 +124,23 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            base.Show(ignoreShowAnimation);
-            if (NoticeManager.instance.HasUnreadEvent || NoticeManager.instance.HasUnreadNotice)
+            var hasUnreadContents = NoticeManager.instance.HasUnreadEvent ||
+                                    NoticeManager.instance.HasUnreadNotice;
+            var notReadAtToday = true;
+            if (PlayerPrefs.HasKey(LastReadingDayKey) &&
+                DateTime.TryParseExact(PlayerPrefs.GetString(LastReadingDayKey),
+                    DateTimeFormat,
+                    null,
+                    DateTimeStyles.None,
+                    out var result))
             {
-                Show(_selectedEventBannerItem.Data, ignoreShowAnimation);
+                notReadAtToday = DateTime.Today != result.Date;
+            }
+
+            if (hasUnreadContents || notReadAtToday)
+            {
+                base.Show(ignoreShowAnimation);
+                PlayerPrefs.SetString(LastReadingDayKey, DateTime.Today.ToString(DateTimeFormat));
             }
         }
 
