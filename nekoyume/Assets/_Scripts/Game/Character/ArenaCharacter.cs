@@ -42,6 +42,7 @@ namespace Nekoyume.Game.Character
         private int _currentHp;
         private readonly List<Costume> _costumes = new List<Costume>();
         private readonly List<Equipment> _equipments = new List<Equipment>();
+        private readonly Dictionary<int, VFX.VFX> _persistingVFXMap = new();
 
         public List<ArenaActionParams> Actions { get; } = new List<ArenaActionParams>();
 
@@ -111,6 +112,23 @@ namespace Nekoyume.Game.Character
 
             _hudContainer.UpdatePosition(ActionCamera.instance.Cam, gameObject, HUDOffset);
             _arenaBattle.UpdateStatus(_characterModel.IsEnemy, _currentHp, _characterModel.HP, _characterModel.Buffs);
+
+
+            // delete existing vfx
+            var removedVfx = new List<int>();
+            foreach (var buff in _persistingVFXMap.Keys)
+            {
+                if (!_characterModel.Buffs.Keys.Contains(buff))
+                {
+                    _persistingVFXMap[buff].Stop();
+                    removedVfx.Add(buff);
+                }
+            }
+
+            foreach (var id in removedVfx)
+            {
+                _persistingVFXMap.Remove(id);
+            }
         }
 
         public void ShowSpeech(string key, params int[] list)
@@ -286,6 +304,10 @@ namespace Nekoyume.Game.Character
             var buff = info.Buff;
             var effect = Game.instance.Arena.BuffController.Get<ArenaCharacter, BuffVFX>(target, buff);
             effect.Play();
+            if (effect.IsPersisting)
+            {
+                _persistingVFXMap[buff.BuffInfo.GroupId] = effect;
+            }
         }
 
         #region Animation
