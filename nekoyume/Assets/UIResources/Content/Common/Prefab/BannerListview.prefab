@@ -76,6 +76,7 @@ MonoBehaviour:
   image: {fileID: 5459255344108757373}
   button: {fileID: 6040318150752162526}
   selectObject: {fileID: 7006397546315245062}
+  notificationObject: {fileID: 1787854040674572455}
 --- !u!1 &6441094100039202254
 GameObject:
   m_ObjectHideFlags: 0
@@ -404,6 +405,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2c2fa1ad6950e4db0b395efd9f2c5248, type: 3}
+--- !u!1 &1787854040674572455 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5978968050969261174, guid: 2c2fa1ad6950e4db0b395efd9f2c5248,
+    type: 3}
+  m_PrefabInstance: {fileID: 5347518802517634257}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &5459255344108757373 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 141053920574721452, guid: 2c2fa1ad6950e4db0b395efd9f2c5248,

@@ -77,6 +77,7 @@ MonoBehaviour:
   headerText: {fileID: 42009412174811589}
   dateText: {fileID: 4611462918445350020}
   selectObject: {fileID: 7443231864997725493}
+  notificationObject: {fileID: 2215675653726976916}
 --- !u!1 &6850905730043893501
 GameObject:
   m_ObjectHideFlags: 0
@@ -509,6 +510,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &2215675653726976916 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5786100188410675977, guid: da299e8c9c5924485b362b00cd5b6df6,
+    type: 3}
+  m_PrefabInstance: {fileID: 5689157057453406365}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &4611462918445350020 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8146104787536479257, guid: da299e8c9c5924485b362b00cd5b6df6,

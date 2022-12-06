@@ -14,16 +14,17 @@ namespace Nekoyume.Game.Notice
     {
         private const string EventJsonUrl =
             "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/feature/renew-notice/Assets/Json/Event.json";
-
         private const string NoticeJsonUrl =
             "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/feature/renew-notice/Assets/Json/Notice.json";
-
         private const string ImageUrl =
             "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/feature/renew-notice/Assets/Images";
+        private const string AlreadyReadNoticeKey = "AlreadyReadNoticeList";
+
         private static readonly Vector2 Pivot = new(0.5f, 0.5f);
 
         private readonly List<EventNoticeData> _bannerData = new();
         private Notices _notices;
+        private HashSet<string> _alreadyReadNotices = new();
 
         public IReadOnlyList<EventNoticeData> BannerData => _bannerData;
         public IReadOnlyList<NoticeData> NoticeData => _notices.NoticeData;
@@ -33,6 +34,23 @@ namespace Nekoyume.Game.Notice
         {
             StartCoroutine(RequestManager.instance.GetJson(EventJsonUrl, SetEventData));
             StartCoroutine(RequestManager.instance.GetJson(NoticeJsonUrl, SetNotices));
+        }
+
+        public void AddToCheckedList(string key)
+        {
+            if (_alreadyReadNotices.Contains(key))
+            {
+                return;
+            }
+
+            _alreadyReadNotices.Add(key);
+            PlayerPrefs.SetString(AlreadyReadNoticeKey,
+                _alreadyReadNotices.Aggregate((a, b) => $"{a}#{b}"));
+        }
+
+        public bool IsAlreadyReadNotice(string key)
+        {
+            return _alreadyReadNotices.Contains(key);
         }
 
         private void SetNotices(string response)
@@ -82,6 +100,20 @@ namespace Nekoyume.Game.Notice
                 tasks.TrueForAll(task => task.Status == UniTaskStatus.Succeeded) &&
                 _notices is not null);
             IsInitialized = true;
+
+            if (PlayerPrefs.HasKey(AlreadyReadNoticeKey))
+            {
+                var listString = PlayerPrefs.GetString(AlreadyReadNoticeKey);
+                var currentDataSet = _bannerData.Select(d => d.Description)
+                    .Concat(_notices.NoticeData.Select(d => d.Header)).ToHashSet();
+                foreach (var noticeKey in listString.Split("#"))
+                {
+                    if (currentDataSet.Contains(noticeKey))
+                    {
+                        AddToCheckedList(noticeKey);
+                    }
+                }
+            }
         }
 
         private async UniTask<Sprite> GetTexture(string textureType, string imageName)

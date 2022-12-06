@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Game.Notice;
-using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UniRx;
@@ -79,13 +78,16 @@ namespace Nekoyume.UI
 
         private IEnumerator Start()
         {
-            yield return new WaitUntil(() => NoticeManager.instance.IsInitialized);
+            var noticeManager = NoticeManager.instance;
+            yield return new WaitUntil(() => noticeManager.IsInitialized);
 
-            var eventData = NoticeManager.instance.BannerData.ToList();
+            var eventData = noticeManager.BannerData;
             foreach (var notice in eventData)
             {
                 var item = Instantiate(originEventNoticeItem, eventScrollViewport);
-                item.Set(notice, OnClickEventNoticeItem);
+                item.Set(notice,
+                    !noticeManager.IsAlreadyReadNotice(notice.Description),
+                    OnClickEventNoticeItem);
                 _eventBannerItems.Add(notice.Description, item);
                 if (_selectedEventBannerItem == null)
                 {
@@ -94,11 +96,13 @@ namespace Nekoyume.UI
                 }
             }
 
-            var noticeData = NoticeManager.instance.NoticeData.ToList();
+            var noticeData = noticeManager.NoticeData.ToList();
             foreach (var notice in noticeData)
             {
                 var item = Instantiate(originNoticeItem, noticeScrollViewport);
-                item.Set(notice, OnClickNoticeItem);
+                item.Set(notice,
+                    !noticeManager.IsAlreadyReadNotice(notice.Header),
+                    OnClickNoticeItem);
                 if (_selectedNoticeItem == null)
                 {
                     _selectedNoticeItem = item;
@@ -142,6 +146,7 @@ namespace Nekoyume.UI
             _selectedEventBannerItem = item;
             _selectedEventBannerItem.Select();
             RenderNotice(item.Data);
+            NoticeManager.instance.AddToCheckedList(item.Data.Description);
         }
 
         private void OnClickNoticeItem(NoticeItem item)
@@ -155,6 +160,7 @@ namespace Nekoyume.UI
             _selectedNoticeItem = item;
             _selectedNoticeItem.Select();
             RenderNotice(item.Data);
+            NoticeManager.instance.AddToCheckedList(item.Data.Header);
         }
 
         private void RenderNotice(NoticeData data)

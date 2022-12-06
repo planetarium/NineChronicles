@@ -19,9 +19,12 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private GameObject selectObject;
 
+        [SerializeField]
+        private GameObject notificationObject;
+
         public NoticeData Data { get; private set; }
 
-        public void Set(NoticeData data, System.Action<NoticeItem> onClick = null)
+        public void Set(NoticeData data, bool hasNotification = false, System.Action<NoticeItem> onClick = null)
         {
             Data = data;
             headerText.text = Data.Header;
@@ -36,6 +39,7 @@ namespace Nekoyume.UI.Module
         public void Select()
         {
             selectObject.SetActive(true);
+            notificationObject.SetActive(false);
         }
 
         public void DeSelect()
