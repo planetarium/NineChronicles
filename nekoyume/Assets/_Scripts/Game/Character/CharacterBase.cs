@@ -77,7 +77,7 @@ namespace Nekoyume.Game.Character
         private ProgressBar CastingBar { get; set; }
         protected SpeechBubble SpeechBubble { get; set; }
 
-        private readonly Dictionary<int, VFX.VFX> _actionBuffVFXMap = new();
+        private readonly Dictionary<int, VFX.VFX> _persistingVFXMap = new();
 
         protected virtual bool CanRun
         {
@@ -212,36 +212,19 @@ namespace Nekoyume.Game.Character
             HPBar.SetLevel(Level);
 
             // delete existing vfx
-
             var removedVfx = new List<int>();
-            foreach (var buff in _actionBuffVFXMap.Keys)
+            foreach (var buff in _persistingVFXMap.Keys)
             {
                 if (!CharacterModel.Buffs.Keys.Contains(buff))
                 {
-                    _actionBuffVFXMap[buff].Stop();
+                    _persistingVFXMap[buff].Stop();
                     removedVfx.Add(buff);
                 }
             }
 
             foreach (var id in removedVfx)
             {
-                var vfx = _actionBuffVFXMap[id];
-                vfx.transform.parent = Game.instance.Stage.transform;
-                _actionBuffVFXMap.Remove(id);
-            }
-
-            // apply new vfx
-            foreach (var buff in CharacterModel.Buffs.Values.OfType<ActionBuff>())
-            {
-                var id = buff.BuffInfo.GroupId;
-                if (!_actionBuffVFXMap.ContainsKey(id))
-                {
-                    var vfx = Game.instance.RaidStage.BuffController.Get<BleedVFX>(gameObject, buff);
-                    _actionBuffVFXMap[id] = vfx;
-                    vfx.transform.parent = transform;
-                    vfx.transform.localPosition = Vector3.zero;
-                    vfx.Play();
-                }
+                _persistingVFXMap.Remove(id);
             }
 
             OnUpdateHPBar.OnNext(this);
@@ -313,7 +296,7 @@ namespace Nekoyume.Game.Character
 
         protected virtual void OnDeadStart()
         {
-            foreach (var vfx in _actionBuffVFXMap.Values)
+            foreach (var vfx in _persistingVFXMap.Values)
             {
                 vfx.transform.parent = Game.instance.Stage.transform;
                 vfx.Stop();
@@ -562,13 +545,15 @@ namespace Nekoyume.Game.Character
                 var position = transform.TransformPoint(0f, 1.7f, 0f);
                 var force = new Vector3(-0.1f, 0.5f);
                 var buff = info.Buff;
-                if (info.Buff is not ActionBuff)
+                var effect = Game.instance.Stage.BuffController.Get<CharacterBase, BuffVFX>(target, buff);
+                effect.Play();
+                if (effect.IsPersisting)
                 {
-                    var effect = Game.instance.Stage.BuffController.Get<CharacterBase, BuffVFX>(target, buff);
-                    effect.Play();
+                    _persistingVFXMap[buff.BuffInfo.GroupId] = effect;
                 }
+
                 target.UpdateHpBar();
-//                Debug.LogWarning($"{Animator.Target.name}'s {nameof(ProcessBuff)} called: {CurrentHP}({Model.Stats.CurrentHP}) / {HP}({Model.Stats.LevelStats.HP}+{Model.Stats.BuffStats.HP})");
+                //Debug.LogWarning($"{Animator.Target.name}'s {nameof(ProcessBuff)} called: {CurrentHP}({Model.Stats.CurrentHP}) / {HP}({Model.Stats.LevelStats.HP}+{Model.Stats.BuffStats.HP})");
             }
         }
 
