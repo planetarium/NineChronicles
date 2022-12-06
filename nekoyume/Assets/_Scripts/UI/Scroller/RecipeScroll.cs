@@ -177,12 +177,6 @@ namespace Nekoyume.UI.Scroller
             }
 
             Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
-            Analyzer.Instance.Track("Unity/UnlockEquipmentRecipe", new Dictionary<string, Value>()
-            {
-                ["BurntCrystal"] = (long)_openCost,
-                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
-            });
             Game.Game.instance.ActionManager
                 .UnlockEquipmentRecipe(_unlockableRecipeIds, _openCost)
                 .Subscribe();
