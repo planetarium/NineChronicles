@@ -266,9 +266,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
@@ -6691,7 +6691,6 @@ MonoBehaviour:
   - {fileID: 7432564310329674287}
   maxLevel: {fileID: 194161607266629242}
   sliderContainer: {fileID: 1036098219747755859}
-  nextTitle: {fileID: 0}
   scroll: {fileID: 3832024585454071186}
   animator: {fileID: 5146677639958581202}
 --- !u!95 &5146677639958581202
@@ -10314,12 +10313,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 16
+  m_fontSize: 15.7
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
@@ -12256,9 +12255,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
