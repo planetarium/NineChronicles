@@ -397,13 +397,7 @@ namespace Nekoyume.UI
                 () =>
                 {
                     Find<UnlockWorldLoadingScreen>().Show();
-                    Analyzer.Instance.Track("Unity/UnlockWorld", new Dictionary<string, Value>()
-                    {
-                        ["BurntCrystal"] = (long)cost,
-                        ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                        ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
-                    });
-                    ActionManager.Instance.UnlockWorld(new List<int> { worldId }).Subscribe();
+                    ActionManager.Instance.UnlockWorld(new List<int> { worldId }, (int) cost).Subscribe();
                 },
                 OnAttractInPaymentPopup);
         }
@@ -434,13 +428,7 @@ namespace Nekoyume.UI
                         () =>
                         {
                             Find<UnlockWorldLoadingScreen>().Show();
-                            Analyzer.Instance.Track("Unity/UnlockWorld", new Dictionary<string, Value>()
-                            {
-                                ["BurntCrystal"] = (long)cost,
-                                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
-                            });
-                            ActionManager.Instance.UnlockWorld(worldIdListForUnlock).Subscribe();
+                            ActionManager.Instance.UnlockWorld(worldIdListForUnlock, (int) cost).Subscribe();
                         },
                         OnAttractInPaymentPopup);
                     return true;

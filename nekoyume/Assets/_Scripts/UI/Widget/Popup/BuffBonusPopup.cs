@@ -163,15 +163,9 @@ namespace Nekoyume.UI
             Find<BuffBonusLoadingScreen>().Show();
             Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
 
-            Analyzer.Instance.Track("Unity/Purchase Crystal Bonus Skill", new Dictionary<string, Value>()
-            {
-                ["BurntCrystal"] = (long) (advanced ? _advancedCost : _normalCost),
-                ["isAdvanced"] = advanced,
-                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
-            });
+            var burntCrystal = (long)(advanced ? _advancedCost : _normalCost);
 
-            ActionManager.Instance.HackAndSlashRandomBuff(advanced).Subscribe();
+            ActionManager.Instance.HackAndSlashRandomBuff(advanced, burntCrystal).Subscribe();
             Close();
         }
 

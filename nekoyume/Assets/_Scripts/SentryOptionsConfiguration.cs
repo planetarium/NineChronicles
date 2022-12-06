@@ -1,5 +1,7 @@
+using System;
 using System.IO;
 using Nekoyume.Helper;
+using Sentry;
 using Sentry.Unity;
 using UnityEngine;
 
@@ -19,5 +21,6 @@ public class SentryOptionsConfiguration : ScriptableOptionsConfiguration
         );
         options.SampleRate = _options.SentrySampleRate > 0 ? (float) _options.SentrySampleRate : 0.01f;
         options.TracesSampleRate = _options.SentrySampleRate;
+        options.AddExceptionFilterForType<NullReferenceException>();
     }
 }
