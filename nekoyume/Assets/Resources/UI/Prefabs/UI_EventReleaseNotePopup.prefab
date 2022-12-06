@@ -572,7 +572,7 @@ MonoBehaviour:
   m_fontSizeMin: 8
   m_fontSizeMax: 32
   m_fontStyle: 1
-  m_HorizontalAlignment: 2
+  m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -3612,7 +3612,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5643234714671101960
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3939,8 +3939,8 @@ RectTransform:
   m_Father: {fileID: 96411594524379570}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 0.77030164}
+  m_AnchorMin: {x: 0, y: 0.22969836}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -4185,7 +4185,7 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 5393352378446820510}
   m_HandleRect: {fileID: 8499324610643852006}
-  m_Direction: 3
+  m_Direction: 2
   m_Value: 1
   m_Size: 0.77030164
   m_NumberOfSteps: 0
@@ -4688,7 +4688,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Content: {fileID: 4467185399450988435}
-  m_Horizontal: 1
+  m_Horizontal: 0
   m_Vertical: 1
   m_MovementType: 1
   m_Elasticity: 0.1

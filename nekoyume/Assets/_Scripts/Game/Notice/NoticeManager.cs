@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using Cysharp.Threading.Tasks;
+using Nekoyume.Game.ScriptableObject;
 using Nekoyume.Pattern;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
@@ -15,19 +16,13 @@ namespace Nekoyume.Game.Notice
 
     public class NoticeManager : MonoSingleton<NoticeManager>
     {
-        private const string EventJsonUrl =
-            "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/feature/renew-notice/Assets/Json/Event.json";
-        private const string NoticeJsonUrl =
-            "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/feature/renew-notice/Assets/Json/Notice.json";
-        private const string ImageUrl =
-            "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/feature/renew-notice/Assets/Images";
         private const string AlreadyReadNoticeKey = "AlreadyReadNoticeList";
-
         private static readonly Vector2 Pivot = new(0.5f, 0.5f);
 
         private readonly List<EventNoticeData> _bannerData = new();
-        private Notices _notices;
         private readonly ReactiveCollection<string> _alreadyReadNotices = new();
+        private Notices _notices;
+        private NoticeEndpointScriptableObject _endpoint;
 
         public bool HasUnreadEvent =>
             _bannerData.Any(d => !_alreadyReadNotices.Contains(d.Description));
@@ -49,8 +44,9 @@ namespace Nekoyume.Game.Notice
 
         public void InitializeData()
         {
-            StartCoroutine(RequestManager.instance.GetJson(EventJsonUrl, SetEventData));
-            StartCoroutine(RequestManager.instance.GetJson(NoticeJsonUrl, SetNotices));
+            _endpoint = Resources.Load<NoticeEndpointScriptableObject>("ScriptableObject/NoticeEndpoint");
+            StartCoroutine(RequestManager.instance.GetJson(_endpoint.EventJsonUrl, SetEventData));
+            StartCoroutine(RequestManager.instance.GetJson(_endpoint.NoticeJsonUrl, SetNotices));
         }
 
         public void AddToCheckedList(string key)
@@ -135,7 +131,8 @@ namespace Nekoyume.Game.Notice
 
         private async UniTask<Sprite> GetTexture(string textureType, string imageName)
         {
-            var www = UnityWebRequestTexture.GetTexture($"{ImageUrl}/{textureType}/{imageName}.png");
+            var www = UnityWebRequestTexture.GetTexture(
+                $"{_endpoint.ImageRootUrl}/{textureType}/{imageName}.png");
             await www.SendWebRequest();
 
             if (www.result != UnityWebRequest.Result.Success)
