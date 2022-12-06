@@ -81,6 +81,14 @@ namespace Nekoyume.UI
             var noticeManager = NoticeManager.instance;
             yield return new WaitUntil(() => noticeManager.IsInitialized);
 
+            eventTabButton.HasNotification.SetValueAndForceNotify(noticeManager.HasUnreadEvent);
+            noticeTabButton.HasNotification.SetValueAndForceNotify(noticeManager.HasUnreadNotice);
+            noticeManager.ObservableHasUnreadEvent
+                .SubscribeTo(eventTabButton.HasNotification)
+                .AddTo(gameObject);
+            noticeManager.ObservableHasUnreadNotice
+                .SubscribeTo(noticeTabButton.HasNotification)
+                .AddTo(gameObject);
             var eventData = noticeManager.BannerData;
             foreach (var notice in eventData)
             {
@@ -146,7 +154,6 @@ namespace Nekoyume.UI
             _selectedEventBannerItem = item;
             _selectedEventBannerItem.Select();
             RenderNotice(item.Data);
-            NoticeManager.instance.AddToCheckedList(item.Data.Description);
         }
 
         private void OnClickNoticeItem(NoticeItem item)
@@ -160,17 +167,18 @@ namespace Nekoyume.UI
             _selectedNoticeItem = item;
             _selectedNoticeItem.Select();
             RenderNotice(item.Data);
-            NoticeManager.instance.AddToCheckedList(item.Data.Header);
         }
 
         private void RenderNotice(NoticeData data)
         {
             noticeView.Set(data);
+            NoticeManager.instance.AddToCheckedList(data.Header);
         }
 
         private void RenderNotice(EventNoticeData data)
         {
             eventView.Set(data.PopupImage, data.Url, data.UseAgentAddress);
+            NoticeManager.instance.AddToCheckedList(data.Description);
         }
     }
 }

@@ -34,6 +34,7 @@ namespace Nekoyume.UI.Module
             {
                 onClick?.Invoke(this);
             });
+            notificationObject.SetActive(hasNotification);
         }
 
         public void Select()

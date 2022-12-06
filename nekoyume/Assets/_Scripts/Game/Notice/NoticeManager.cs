@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using Cysharp.Threading.Tasks;
@@ -10,6 +11,8 @@ using UnityEngine.Networking;
 
 namespace Nekoyume.Game.Notice
 {
+    using UniRx;
+
     public class NoticeManager : MonoSingleton<NoticeManager>
     {
         private const string EventJsonUrl =
@@ -24,7 +27,21 @@ namespace Nekoyume.Game.Notice
 
         private readonly List<EventNoticeData> _bannerData = new();
         private Notices _notices;
-        private HashSet<string> _alreadyReadNotices = new();
+        private readonly ReactiveCollection<string> _alreadyReadNotices = new();
+
+        public bool HasUnreadEvent =>
+            _bannerData.Any(d => !_alreadyReadNotices.Contains(d.Description));
+
+        public bool HasUnreadNotice =>
+            _notices.NoticeData.Any(d => !_alreadyReadNotices.Contains(d.Header));
+
+        public IObservable<bool> ObservableHasUnreadEvent => _alreadyReadNotices
+            .ObserveAdd()
+            .Select(_ => HasUnreadEvent);
+
+        public IObservable<bool> ObservableHasUnreadNotice => _alreadyReadNotices
+            .ObserveAdd()
+            .Select(_ => HasUnreadNotice);
 
         public IReadOnlyList<EventNoticeData> BannerData => _bannerData;
         public IReadOnlyList<NoticeData> NoticeData => _notices.NoticeData;
