@@ -125,7 +125,7 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            if (_selectedEventBannerItem)
+            if (NoticeManager.instance.HasUnreadEvent || NoticeManager.instance.HasUnreadNotice)
             {
                 Show(_selectedEventBannerItem.Data, ignoreShowAnimation);
             }
