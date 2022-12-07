@@ -213,7 +213,14 @@ namespace Nekoyume.State
                 addrBulk.Add(playerGrandFinaleInfoAddr);
             }
 
+            var runeAddrBulk = new List<Address>();
+            foreach (var tuple in avatarAddrAndScoresWithRank)
+            {
+                runeAddrBulk.AddRange(runeIds.Select(x => RuneState.DeriveAddress(tuple.avatarAddr, x)));
+            }
+
             // NOTE: If the [`addrBulk`] is too large, and split and get separately.
+            var runeStateBulk = await agent.GetStateBulk(runeAddrBulk);
             var stateBulk = await agent.GetStateBulk(addrBulk);
             var runeStates = new List<RuneState>();
             var result = avatarAddrAndScoresWithRank.Select(tuple =>
@@ -259,19 +266,10 @@ namespace Nekoyume.State
                 foreach (var id in runeIds)
                 {
                     var address = RuneState.DeriveAddress(tuple.avatarAddr, id);
-                    if (stateBulk[address] is List runeStateList)
+                    if (runeStateBulk[address] is List runeStateList)
                     {
                         runeStates.Add(new RuneState(runeStateList));
                     }
-                }
-
-                var arenaAvatar =
-                    stateBulk[ArenaAvatarState.DeriveAddress(avatarAddr)] is List arenaAvatarList
-                        ? new ArenaAvatarState(arenaAvatarList)
-                        : null;
-                if (arenaAvatar is null)
-                {
-                    return null;
                 }
 
                 return new GrandFinaleParticipant(
