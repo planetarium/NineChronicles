@@ -195,8 +195,10 @@ namespace Nekoyume.UI
                 return;
             }
 
+            var content = string.Format(L10nManager.Localize("UI_BUY_MULTIPLE_FORMAT"),
+                models.Count, sumPrice);
             Find<TwoButtonSystem>().Show(
-                L10nManager.Localize("UI_REPEAT"),
+                content,
                 L10nManager.Localize("UI_BUY"),
                 L10nManager.Localize("UI_CANCEL"),
                 (() => Buy(models)));
