@@ -178,7 +178,7 @@ namespace Nekoyume.UI
                     : option.SkillValue;
                 var skillValue = power == (int)power ? $"{(int)power}" : $"{power}";
                 skillDescText.text = L10nManager.Localize(
-                    $"SKILL_DESCRIPTION_{option.SkillId}", option.SkillChance, skillValue);
+                    $"SKILL_DESCRIPTION_{option.SkillId}", option.SkillChance, option.SkillCooldown, skillValue);
             }
         }
 

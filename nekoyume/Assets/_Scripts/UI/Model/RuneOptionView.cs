@@ -89,7 +89,7 @@ namespace Nekoyume.UI.Model
                 var nextSkillValue =
                     nextPower == (int)nextPower ? $"{(int)nextPower}" : $"{nextPower}";
                 var skillDescription = L10nManager.Localize($"SKILL_DESCRIPTION_{option.SkillId}",
-                    nextOption.SkillChance, nextSkillValue);
+                    nextOption.SkillChance, nextOption.SkillCooldown, nextSkillValue);
                 var curChance = $"{option.SkillChance}%";
                 var nextChance = option.SkillChance == nextOption.SkillChance ? string.Empty : $"{nextOption.SkillChance}%";
                 var curCooldown = $"{option.SkillCooldown}";
@@ -149,7 +149,7 @@ namespace Nekoyume.UI.Model
                 var power = isPercent ? option.SkillValue * 100 : option.SkillValue;
                 var skillValue = power == (int)power ? $"{(int)power}" : $"{power}";
                 var skillDescription = L10nManager.Localize($"SKILL_DESCRIPTION_{option.SkillId}",
-                    option.SkillChance, skillValue);
+                    option.SkillChance, option.SkillCooldown, skillValue);
                 skill.Set(skillName,
                     skillDescription,
                     isPercent ? $"{skillValue}%" : $"{skillValue}",
