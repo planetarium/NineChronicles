@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Libplanet;
 using Nekoyume.Helper;
@@ -61,6 +62,12 @@ namespace Nekoyume.UI.Module
             }
 
             SetByCharacterId(player.Model.RowData.Id);
+        }
+
+        public void Set(int itemId, int characterId)
+        {
+            SetByFullCostumeOrArmorId(itemId);
+            SetByCharacterId(characterId);
         }
 
         public void SetByCharacterId(int characterId)

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;

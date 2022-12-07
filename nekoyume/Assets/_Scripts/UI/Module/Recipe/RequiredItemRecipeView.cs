@@ -84,24 +84,51 @@ namespace Nekoyume.UI.Module
             Show();
         }
 
+        public void SetData(
+            List<int> requiredMaterialsId,
+            int requiredCount
+        )
+        {
+            foreach (var itemView in requiredItemViews)
+            {
+                itemView.gameObject.SetActive(false);
+            }
+
+            var requiredItemView = requiredItemViews.First();
+            requiredItemView.gameObject.SetActive(true);
+
+            var inventoryItems = Game.Game.instance.States.CurrentAvatarState.inventory.Items;
+            var itemCount = requiredMaterialsId
+                .Sum(id => inventoryItems.FirstOrDefault(item => Equals(item.item.Id, id))?.count ?? 0);
+
+            SetView(requiredItemView, requiredMaterialsId.First(), requiredCount,
+                true, false, itemCount);
+        }
+
         private void SetView(
             RequiredItemView view,
             int materialId,
             int requiredCount,
             bool checkInventory,
-            bool hideEnoughObject
+            bool hideEnoughObject,
+            int? itemCount = null
             )
         {
             var material = ItemFactory.CreateMaterial(Game.Game.instance.TableSheets.MaterialItemSheet, materialId);
-            var itemCount = requiredCount;
-            if (checkInventory)
+            if (itemCount == null)
             {
-                var inventory = Game.Game.instance.States.CurrentAvatarState.inventory;
-                itemCount = inventory.TryGetFungibleItems(material.FungibleId, out var outFungibleItems)
-                    ? outFungibleItems.Sum(e => e.count)
-                    : 0;
+                itemCount = requiredCount;
+                if (checkInventory)
+                {
+                    var inventory = Game.Game.instance.States.CurrentAvatarState.inventory;
+                    itemCount =
+                        inventory.TryGetFungibleItems(material.FungibleId, out var outFungibleItems)
+                            ? outFungibleItems.Sum(e => e.count)
+                            : 0;
+                }
             }
-            var countableItem = new CountableItem(material, itemCount);
+
+            var countableItem = new CountableItem(material, itemCount.Value);
             view.HideEnoughObject = hideEnoughObject;
             view.SetData(countableItem, requiredCount);
             if (!checkInventory)

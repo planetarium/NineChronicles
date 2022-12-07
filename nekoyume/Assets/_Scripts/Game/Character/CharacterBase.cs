@@ -13,6 +13,8 @@ using Nekoyume.Model.Skill;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Character;
 using UnityEngine.Rendering;
+using Nekoyume.Model.Buff;
+using DG.Tweening.Plugins.Options;
 
 namespace Nekoyume.Game.Character
 {
@@ -75,6 +77,7 @@ namespace Nekoyume.Game.Character
         private ProgressBar CastingBar { get; set; }
         protected SpeechBubble SpeechBubble { get; set; }
 
+        private readonly Dictionary<int, VFX.VFX> _actionBuffVFXMap = new();
 
         protected virtual bool CanRun
         {
@@ -208,6 +211,39 @@ namespace Nekoyume.Game.Character
             HPBar.SetBuffs(CharacterModel.Buffs);
             HPBar.SetLevel(Level);
 
+            // delete existing vfx
+
+            var removedVfx = new List<int>();
+            foreach (var buff in _actionBuffVFXMap.Keys)
+            {
+                if (!CharacterModel.Buffs.Keys.Contains(buff))
+                {
+                    _actionBuffVFXMap[buff].Stop();
+                    removedVfx.Add(buff);
+                }
+            }
+
+            foreach (var id in removedVfx)
+            {
+                var vfx = _actionBuffVFXMap[id];
+                vfx.transform.parent = Game.instance.Stage.transform;
+                _actionBuffVFXMap.Remove(id);
+            }
+
+            // apply new vfx
+            foreach (var buff in CharacterModel.Buffs.Values.OfType<ActionBuff>())
+            {
+                var id = buff.BuffInfo.GroupId;
+                if (!_actionBuffVFXMap.ContainsKey(id))
+                {
+                    var vfx = Game.instance.RaidStage.BuffController.Get<BleedVFX>(gameObject, buff);
+                    _actionBuffVFXMap[id] = vfx;
+                    vfx.transform.parent = transform;
+                    vfx.transform.localPosition = Vector3.zero;
+                    vfx.Play();
+                }
+            }
+
             OnUpdateHPBar.OnNext(this);
         }
 
@@ -277,6 +313,11 @@ namespace Nekoyume.Game.Character
 
         protected virtual void OnDeadStart()
         {
+            foreach (var vfx in _actionBuffVFXMap.Values)
+            {
+                vfx.transform.parent = Game.instance.Stage.transform;
+                vfx.Stop();
+            }
         }
 
         protected virtual void OnDeadEnd()
@@ -521,8 +562,11 @@ namespace Nekoyume.Game.Character
                 var position = transform.TransformPoint(0f, 1.7f, 0f);
                 var force = new Vector3(-0.1f, 0.5f);
                 var buff = info.Buff;
-                var effect = Game.instance.Stage.BuffController.Get<CharacterBase, BuffVFX>(target, buff);
-                effect.Play();
+                if (info.Buff is not ActionBuff)
+                {
+                    var effect = Game.instance.Stage.BuffController.Get<CharacterBase, BuffVFX>(target, buff);
+                    effect.Play();
+                }
                 target.UpdateHpBar();
 //                Debug.LogWarning($"{Animator.Target.name}'s {nameof(ProcessBuff)} called: {CurrentHP}({Model.Stats.CurrentHP}) / {HP}({Model.Stats.LevelStats.HP}+{Model.Stats.BuffStats.HP})");
             }
@@ -616,13 +660,15 @@ namespace Nekoyume.Game.Character
 
             var pos = transform.position;
             yield return CoAnimationCastAttack(infos.Any(skillInfo => skillInfo.Critical));
-            var effect = Game.instance.Stage.SkillController.GetBlowCasting(
-                pos,
-                info.SkillCategory,
-                info.ElementalType);
-            effect.Play();
+            if (info.ElementalType != ElementalType.Normal)
+            {
+                var effect = Game.instance.Stage.SkillController.GetBlowCasting(
+                    pos,
+                    info.SkillCategory,
+                    info.ElementalType);
+                effect.Play();
+            }
             yield return new WaitForSeconds(0.2f);
-
             PostAnimationForTheKindOfAttack();
         }
 
@@ -719,11 +765,14 @@ namespace Nekoyume.Game.Character
                 if (target is null)
                     continue;
 
-                var effect = Game.instance.Stage.SkillController.Get<SkillBlowVFX>(target, info);
-                if (effect is null)
-                    continue;
+                if (info.ElementalType != ElementalType.Normal)
+                {
+                    var effect = Game.instance.Stage.SkillController.Get<SkillBlowVFX>(target, info);
+                    if (effect is null)
+                        continue;
+                    effect.Play();
+                }
 
-                effect.Play();
                 ProcessAttack(target, info, info.Target.IsDead, true);
             }
         }

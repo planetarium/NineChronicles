@@ -78,11 +78,14 @@ namespace Nekoyume
                         formatKey = "UI_COMBINATION_NOTIFY_FORMAT";
                     }
 
-                    return string.Format(
-                        L10nManager.Localize(formatKey),
-                        GetLocalizedNonColoredName(combinationMail.attachment.itemUsable,
-                            combinationMail.attachment.itemUsable.ItemType.HasElementType()));
+                    return L10nManager.Localize(formatKey, GetLocalizedNonColoredName(
+                        combinationMail.attachment.itemUsable,
+                        combinationMail.attachment.itemUsable.ItemType.HasElementType()));
                 }
+
+                case MaterialCraftMail materialCraftMail:
+                    var materialItemName = L10nManager.Localize($"ITEM_NAME_{materialCraftMail.ItemId}");
+                    return L10nManager.Localize("UI_COMBINATION_NOTIFY_FORMAT", materialItemName);
 
                 case ItemEnhanceMail itemEnhanceMail:
                 {
@@ -141,29 +144,25 @@ namespace Nekoyume
 
                 case OrderBuyerMail orderBuyerMail:
                     var buyerItemName = await Util.GetItemNameByOrderId(orderBuyerMail.OrderId, true);
-                    return string.Format(L10nManager.Localize("UI_BUYER_MAIL_FORMAT"),
-                        buyerItemName);
+                    return L10nManager.Localize("UI_BUYER_MAIL_FORMAT", buyerItemName);
 
                 case OrderSellerMail orderSellerMail:
                     var order = await Util.GetOrder(orderSellerMail.OrderId);
                     var sellerItemName = await Util.GetItemNameByOrderId(orderSellerMail.OrderId, true);
                     var taxedPrice = order.Price - order.GetTax();
-                    return string.Format(L10nManager.Localize("UI_SELLER_MAIL_FORMAT"), taxedPrice, sellerItemName);
+                    return L10nManager.Localize("UI_SELLER_MAIL_FORMAT", taxedPrice, sellerItemName);
 
                 case OrderExpirationMail orderExpirationMail:
                     var expiredItemName = await Util.GetItemNameByOrderId(orderExpirationMail.OrderId, true);
-                    return string.Format(L10nManager.Localize("UI_SELL_EXPIRATION_MAIL_FORMAT"),
-                        expiredItemName);
+                    return L10nManager.Localize("UI_SELL_EXPIRATION_MAIL_FORMAT", expiredItemName);
 
                 case CancelOrderMail cancelOrderMail:
                     var cancelItemName = await Util.GetItemNameByOrderId(cancelOrderMail.OrderId, true);
-                    return string.Format(L10nManager.Localize("UI_SELL_CANCEL_MAIL_FORMAT"),
-                        cancelItemName);
+                    return L10nManager.Localize("UI_SELL_CANCEL_MAIL_FORMAT", cancelItemName);
 
                 case BuyerMail buyerMail:
                     var buyerMailItemBase = GetItemBase(buyerMail.attachment);
-                    return string.Format(
-                        L10nManager.Localize("UI_BUYER_MAIL_FORMAT"),
+                    return L10nManager.Localize("UI_BUYER_MAIL_FORMAT",
                         GetLocalizedNonColoredName(buyerMailItemBase,
                             buyerMailItemBase.ItemType.HasElementType()));
 
@@ -174,20 +173,16 @@ namespace Nekoyume
                         throw new InvalidCastException($"({nameof(Buy7.SellerResult)}){nameof(attachment)}");
                     }
 
-                    return string.Format(
-                        L10nManager.Localize("UI_SELLER_MAIL_FORMAT"),
+                    return L10nManager.Localize("UI_SELLER_MAIL_FORMAT",
                         sellerResult.gold,
                         GetLocalizedNonColoredName(GetItemBase(attachment),
                             attachment.itemUsable.ItemType.HasElementType()));
 
                 case SellCancelMail sellCancelMail:
                     var cancelMailItemBase = GetItemBase(sellCancelMail.attachment);
-                    return string.Format(
-                        L10nManager.Localize("UI_SELL_CANCEL_MAIL_FORMAT"),
+                    return L10nManager.Localize("UI_SELL_CANCEL_MAIL_FORMAT",
                         GetLocalizedNonColoredName(cancelMailItemBase,
-                            cancelMailItemBase.ItemType.HasElementType()
-                        ));
-
+                            cancelMailItemBase.ItemType.HasElementType()));
                 case DailyRewardMail _:
                     return L10nManager.Localize("UI_DAILY_REWARD_MAIL_FORMAT");
                 case MonsterCollectionMail _:
@@ -267,11 +262,10 @@ namespace Nekoyume
             switch (quest)
             {
                 case CollectQuest collectQuest:
-                    return string.Format(L10nManager.Localize("QUEST_COLLECT_CURRENT_INFO_FORMAT"),
+                    return L10nManager.Localize("QUEST_COLLECT_CURRENT_INFO_FORMAT",
                         L10nManager.LocalizeItemName(collectQuest.ItemId));
                 case CombinationQuest combinationQuest:
-                    return string.Format(
-                        L10nManager.Localize("QUEST_COMBINATION_CURRENT_INFO_FORMAT"),
+                    return L10nManager.Localize("QUEST_COMBINATION_CURRENT_INFO_FORMAT",
                         combinationQuest.ItemSubType.GetLocalizedString(), combinationQuest.Goal);
                 case GeneralQuest generalQuest:
                     switch (generalQuest.Event)
@@ -284,8 +278,7 @@ namespace Nekoyume
                         case QuestEventType.Complete:
                         case QuestEventType.Equipment:
                         case QuestEventType.Consumable:
-                            return string.Format(
-                                L10nManager.Localize($"QUEST_GENERAL_{generalQuest.Event}_FORMAT"),
+                            return L10nManager.Localize($"QUEST_GENERAL_{generalQuest.Event}_FORMAT",
                                 generalQuest.Goal);
                         default:
                             throw new ArgumentOutOfRangeException();
@@ -293,25 +286,25 @@ namespace Nekoyume
 
                     return L10nManager.Localize($"QUEST_GENERAL_{generalQuest.Event}_FORMAT");
                 case GoldQuest goldQuest:
-                    return string.Format(
-                        L10nManager.Localize($"QUEST_GOLD_{goldQuest.Type}_FORMAT"),
+                    return
+                        L10nManager.Localize($"QUEST_GOLD_{goldQuest.Type}_FORMAT",
                         goldQuest.Goal);
                 case ItemEnhancementQuest itemEnhancementQuest:
-                    return string.Format(L10nManager.Localize("QUEST_ITEM_ENHANCEMENT_FORMAT"),
+                    return L10nManager.Localize("QUEST_ITEM_ENHANCEMENT_FORMAT",
                         itemEnhancementQuest.Grade, itemEnhancementQuest.Goal,
                         itemEnhancementQuest.Count);
                 case ItemGradeQuest itemGradeQuest:
-                    return string.Format(L10nManager.Localize("QUEST_ITEM_GRADE_FORMAT"),
+                    return L10nManager.Localize("QUEST_ITEM_GRADE_FORMAT",
                         itemGradeQuest.Grade, itemGradeQuest.Goal);
                 case ItemTypeCollectQuest itemTypeCollectQuest:
-                    return string.Format(L10nManager.Localize("QUEST_ITEM_TYPE_FORMAT"),
+                    return L10nManager.Localize("QUEST_ITEM_TYPE_FORMAT",
                         itemTypeCollectQuest.ItemType.GetLocalizedString(),
                         itemTypeCollectQuest.Goal);
                 case MonsterQuest monsterQuest:
-                    return string.Format(L10nManager.Localize("QUEST_MONSTER_FORMAT"),
+                    return L10nManager.Localize("QUEST_MONSTER_FORMAT",
                         L10nManager.LocalizeCharacterName(monsterQuest.MonsterId));
                 case TradeQuest tradeQuest:
-                    return string.Format(L10nManager.Localize("QUEST_TRADE_CURRENT_INFO_FORMAT"),
+                    return L10nManager.Localize("QUEST_TRADE_CURRENT_INFO_FORMAT",
                         tradeQuest.Type.GetLocalizedString(), tradeQuest.Goal);
                 case WorldQuest worldQuest:
                     if (TableSheets.Instance.WorldSheet.TryGetByStageId(
@@ -320,13 +313,11 @@ namespace Nekoyume
                     {
                         if (worldQuest.Goal == worldRow.StageBegin)
                         {
-                            return string.Format(
-                                L10nManager.Localize("QUEST_WORLD_FORMAT"),
+                            return L10nManager.Localize("QUEST_WORLD_FORMAT",
                                 worldRow.GetLocalizedName());
                         }
 
-                        return string.Format(
-                            L10nManager.Localize("QUEST_CLEAR_STAGE_FORMAT"),
+                        return L10nManager.Localize("QUEST_CLEAR_STAGE_FORMAT",
                             worldRow.GetLocalizedName(), worldQuest.Goal);
                     }
 
@@ -339,13 +330,11 @@ namespace Nekoyume
 
                     if (worldQuest.Goal == eventDungeonRow.StageBegin)
                     {
-                        return string.Format(
-                            L10nManager.Localize("QUEST_WORLD_FORMAT"),
+                        return L10nManager.Localize("QUEST_WORLD_FORMAT",
                             eventDungeonRow.GetLocalizedName());
                     }
 
-                    return string.Format(
-                        L10nManager.Localize("QUEST_CLEAR_STAGE_FORMAT"),
+                    return L10nManager.Localize("QUEST_CLEAR_STAGE_FORMAT",
                         eventDungeonRow.GetLocalizedName(),
                         worldQuest.Goal.ToEventDungeonStageNumber());
                 case CombinationEquipmentQuest combinationEquipmentQuest:
@@ -353,16 +342,14 @@ namespace Nekoyume
                         .TryGetValue(combinationEquipmentQuest.RecipeId, out var recipeRow))
                     {
                         var itemRow = recipeRow.GetResultEquipmentItemRow();
-                        return string.Format(
-                            L10nManager.Localize("QUEST_COMBINATION_EQUIPMENT_FORMAT"),
+                        return L10nManager.Localize("QUEST_COMBINATION_EQUIPMENT_FORMAT",
                             itemRow.GetLocalizedName(false));
                     }
 
                     if (TableSheets.Instance.EventScheduleSheet
                         .TryGetValue(combinationEquipmentQuest.RecipeId, out var eventScheduleRow))
                     {
-                        return string.Format(
-                            L10nManager.Localize("QUEST_COMBINATION_EQUIPMENT_FORMAT"),
+                        return L10nManager.Localize("QUEST_COMBINATION_EQUIPMENT_FORMAT",
                             L10nManager.Localize("UI_EVENT_ITEM"));
                     }
 
@@ -509,7 +496,7 @@ namespace Nekoyume
             var g = (int)(color.g * 255);
             var b = (int)(color.b * 255);
 
-            var result = string.Format("{0:x2}{1:x2}{2:x2}", r, g, b);
+            var result = $"{r:x2}{g:x2}{b:x2}";
             return result;
         }
 

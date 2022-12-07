@@ -166,7 +166,7 @@ namespace Nekoyume.Game.Controller
             {
                 PlayMusic(RxProps.EventScheduleRowForDungeon.Value is not null
                     ? "bgm_event_22summer_title"
-                    : EventManager.GetMainBgmName());
+                    : EventManager.GetEventInfo().MainBGM.name);
             });
         }
 

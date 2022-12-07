@@ -8,7 +8,8 @@ namespace Nekoyume.UI.Module
 {
     public interface IShopView
     {
-        public void Show(ReactiveProperty<List<OrderDigest>> digests,
-            System.Action<ShopItem, RectTransform> clickItem);
+        public void Show(
+            ReactiveProperty<List<OrderDigest>> digests,
+            System.Action<ShopItem> clickItem);
     }
 }

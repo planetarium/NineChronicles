@@ -4,6 +4,7 @@ using System.Text;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
 using Nekoyume.TableData.Event;
+using Nekoyume.TableData.GrandFinale;
 
 namespace Nekoyume.Game
 {
@@ -176,6 +177,8 @@ namespace Nekoyume.Game
 
         public EventConsumableItemRecipeSheet EventConsumableItemRecipeSheet { get; private set; }
 
+        public EventMaterialItemRecipeSheet EventMaterialItemRecipeSheet { get; private set; }
+
         public StakeActionPointCoefficientSheet StakeActionPointCoefficientSheet { get; private set; }
 
         public WorldBossListSheet WorldBossListSheet { get; private set; }
@@ -202,6 +205,13 @@ namespace Nekoyume.Game
 
         public ActionBuffSheet ActionBuffSheet { get; private set; }
 
+        public GrandFinaleScheduleSheet GrandFinaleScheduleSheet { get; private set; }
+
+        public GrandFinaleParticipantsSheet GrandFinaleParticipantsSheet { get; private set; }
+        public RuneListSheet RuneListSheet { get; private set; }
+        public RuneCostSheet RuneCostSheet { get; private set; }
+        public RuneOptionSheet RuneOptionSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet = new ItemSheet();
@@ -227,9 +237,9 @@ namespace Nekoyume.Game
             QuestSheet.Set(CombinationEquipmentQuestSheet);
         }
 
-        public SimulatorSheets GetSimulatorSheets()
+        public SimulatorSheetsV1 GetSimulatorSheetsV1()
         {
-            return new SimulatorSheets(
+            return new SimulatorSheetsV1(
                 MaterialItemSheet,
                 SkillSheet,
                 SkillBuffSheet,
@@ -256,13 +266,14 @@ namespace Nekoyume.Game
                 EquipmentItemSetEffectSheet,
                 StageSheet,
                 StageWaveSheet,
-                EnemySkillSheet
+                EnemySkillSheet,
+                RuneOptionSheet
             );
         }
 
-        public RankingSimulatorSheets GetRankingSimulatorSheets()
+        public RankingSimulatorSheetsV1 GetRankingSimulatorSheetsV1()
         {
-            return new RankingSimulatorSheets(
+            return new RankingSimulatorSheetsV1(
                 MaterialItemSheet,
                 SkillSheet,
                 SkillBuffSheet,
@@ -276,15 +287,20 @@ namespace Nekoyume.Game
             );
         }
 
-        public AvatarSheets GetAvatarSheets()
+        public ArenaSimulatorSheetsV1 GetArenaSimulatorSheetsV1()
         {
-            return new AvatarSheets(
-                WorldSheet,
-                QuestSheet,
-                QuestRewardSheet,
-                QuestItemRewardSheet,
-                EquipmentItemRecipeSheet,
-                EquipmentItemSubRecipeSheet
+            return new ArenaSimulatorSheetsV1(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
+                EquipmentItemSetEffectSheet,
+                CostumeStatSheet,
+                WeeklyArenaRewardSheet
             );
         }
 
@@ -301,7 +317,28 @@ namespace Nekoyume.Game
                 CharacterLevelSheet,
                 EquipmentItemSetEffectSheet,
                 CostumeStatSheet,
-                WeeklyArenaRewardSheet
+                WeeklyArenaRewardSheet,
+                RuneOptionSheet
+            );
+        }
+
+        public RaidSimulatorSheetsV1 GetRaidSimulatorSheetsV1()
+        {
+            return new RaidSimulatorSheetsV1(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
+                EquipmentItemSetEffectSheet,
+                WorldBossCharacterSheet,
+                WorldBossActionPatternSheet,
+                WorldBossBattleRewardSheet,
+                RuneWeightSheet,
+                RuneSheet
             );
         }
 
@@ -321,7 +358,20 @@ namespace Nekoyume.Game
                 WorldBossActionPatternSheet,
                 WorldBossBattleRewardSheet,
                 RuneWeightSheet,
-                RuneSheet
+                RuneSheet,
+                RuneOptionSheet
+            );
+        }
+
+        public AvatarSheets GetAvatarSheets()
+        {
+            return new AvatarSheets(
+                WorldSheet,
+                QuestSheet,
+                QuestRewardSheet,
+                QuestItemRewardSheet,
+                EquipmentItemRecipeSheet,
+                EquipmentItemSubRecipeSheet
             );
         }
     }

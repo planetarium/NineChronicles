@@ -189,8 +189,7 @@ namespace Nekoyume.UI.Scroller
                         tooltip.Show(item,
                             string.Empty,
                             false,
-                            null,
-                            target: rewardView.RectTransform);
+                            null);
                     }).AddTo(_disposables);
                 }
                 else

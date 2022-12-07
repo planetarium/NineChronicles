@@ -29,6 +29,9 @@ namespace Nekoyume.Game
         public static readonly UnityEvent<int> OnWaveStart = new UnityEvent<int>();
 
         public static readonly UnityEvent<int> OnPlayerTurnEnd = new UnityEvent<int>();
+        
         public static readonly UnityEvent OnUpdateAddresses = new UnityEvent();
+
+        public static readonly UnityEvent OnUpdateRuneState = new();
     }
 }

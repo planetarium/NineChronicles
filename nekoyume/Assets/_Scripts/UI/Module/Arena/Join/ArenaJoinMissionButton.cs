@@ -30,7 +30,7 @@ namespace Nekoyume.UI.Module.Arena.Join
             _originalProgressRectMaskPadding = _progressRectMask.padding;
         }
 
-        public void SetConditions((int required, int current) conditions)
+        public void Show((int required, int current) conditions)
         {
             var (required, current) = conditions;
             if (current >= required)
@@ -51,6 +51,12 @@ namespace Nekoyume.UI.Module.Arena.Join
             }
 
             _progressText.text = $"{current}/{required}";
+            gameObject.SetActive(true);
+        }
+
+        public void Hide()
+        {
+            gameObject.SetActive(false);
         }
     }
 }

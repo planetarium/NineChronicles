@@ -1,3 +1,4 @@
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using TMPro;
 using UnityEngine;
@@ -14,6 +15,13 @@ namespace Nekoyume.UI.Module
         public void Set(ItemBase itemBase, int count, int benefitsRate)
         {
             iconImage.sprite = BaseItemView.GetItemIcon(itemBase);
+            countText.text = $"+{count}";
+            benefitsText.text = $"{benefitsRate}%";
+        }
+
+        public void Set(int runeId, int count, int benefitsRate)
+        {
+            iconImage.sprite = SpriteHelper.GetItemIcon(runeId);
             countText.text = $"+{count}";
             benefitsText.text = $"{benefitsRate}%";
         }

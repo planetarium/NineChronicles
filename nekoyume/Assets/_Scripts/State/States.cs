@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Libplanet;
@@ -14,6 +15,9 @@ using StateExtensions = Nekoyume.Model.State.StateExtensions;
 using Libplanet.Assets;
 using Nekoyume.Game;
 using Nekoyume.Helper;
+using Nekoyume.Model.EnumType;
+using Nekoyume.Model.Item;
+using Nekoyume.Model.Rune;
 using Nekoyume.UI;
 
 namespace Nekoyume.State
@@ -48,8 +52,17 @@ namespace Nekoyume.State
 
         public FungibleAssetValue CrystalBalance { get; private set; }
 
+        public Dictionary<int, FungibleAssetValue> RuneStoneBalance { get; } = new();
+
+        public List<RuneState> RuneStates { get; } = new();
+
+        public Dictionary<BattleType, RuneSlotState> RuneSlotStates { get; } = new();
+
+        public Dictionary<BattleType, ItemSlotState> ItemSlotStates { get; } = new();
+
         public int StakingLevel { get; private set; }
 
+        public GrandFinaleStates GrandFinaleStates { get; } = new GrandFinaleStates();
         private class Workshop
         {
             public Dictionary<int, CombinationSlotState> States { get; }= new();
@@ -126,6 +139,156 @@ namespace Nekoyume.State
 
             CrystalBalance = LocalLayer.Instance.ModifyCrystal(fav);
             AgentStateSubject.OnNextCrystal(CrystalBalance);
+        }
+
+        public async Task InitRuneStoneBalance()
+        {
+            RuneStoneBalance.Clear();
+            var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
+            var avatarAddress = CurrentAvatarState.address;
+            var task = Task.Run(async () =>
+            {
+                var runes = new List<FungibleAssetValue>();
+                await foreach (var row in runeSheet.Values)
+                {
+                    var rune = RuneHelper.ToCurrency(row, 0, null);
+                    var fungibleAsset = await Game.Game.instance.Agent.GetBalanceAsync(avatarAddress, rune);
+                    RuneStoneBalance.Add(row.Id, fungibleAsset);
+                }
+
+                return runes;
+            });
+
+            await task;
+        }
+
+        public async Task InitRuneStates()
+        {
+            var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
+            var avatarAddress = CurrentAvatarState.address;
+            var runeIds = runeListSheet.Values.Select(x => x.Id).ToList();
+            var runeAddresses = runeIds.Select(id => RuneState.DeriveAddress(avatarAddress, id)).ToList();
+            var stateBulk = await Game.Game.instance.Agent.GetStateBulk(runeAddresses);
+            RuneStates.Clear();
+            var task = Task.Run(async () =>
+            {
+                var states = new List<RuneState>();
+                foreach (var value in stateBulk.Values)
+                {
+                    if (value is List list)
+                    {
+                        RuneStates.Add(new RuneState(list));
+                    }
+                }
+
+                return states;
+            });
+
+            await task;
+        }
+
+        public async Task InitRuneSlotStates()
+        {
+            var avatarAddress = CurrentAvatarState.address;
+            var addresses = new List<Address>
+            {
+                RuneSlotState.DeriveAddress(avatarAddress, BattleType.Adventure),
+                RuneSlotState.DeriveAddress(avatarAddress, BattleType.Arena),
+                RuneSlotState.DeriveAddress(avatarAddress, BattleType.Raid)
+            };
+
+            var stateBulk = await Game.Game.instance.Agent.GetStateBulk(addresses);
+            RuneSlotStates.Clear();
+            RuneSlotStates.Add(BattleType.Adventure, new RuneSlotState(BattleType.Adventure));
+            RuneSlotStates.Add(BattleType.Arena, new RuneSlotState(BattleType.Arena));
+            RuneSlotStates.Add(BattleType.Raid, new RuneSlotState(BattleType.Raid));
+
+            var task = Task.Run(async () =>
+            {
+                var states = new Dictionary<BattleType, RuneSlotState>();
+                foreach (var value in stateBulk.Values)
+                {
+                    if (value is List list)
+                    {
+                        var slotState = new RuneSlotState(list);
+                        RuneSlotStates[slotState.BattleType] = slotState;
+                    }
+                }
+
+                return states;
+            });
+
+            await task;
+        }
+
+        public void UpdateRuneSlotState()
+        {
+            foreach (var runeSlotState in RuneSlotStates)
+            {
+                var states = RuneSlotStates[runeSlotState.Key].GetRuneSlot();
+                foreach (var runeSlot in states)
+                {
+                    if (!runeSlot.RuneId.HasValue)
+                    {
+                        continue;
+                    }
+
+                    runeSlot.Equip(runeSlot.RuneId.Value);
+                }
+            }
+
+            Event.OnUpdateRuneState.Invoke();
+        }
+
+        public async Task InitItemSlotStates()
+        {
+            var avatarAddress = CurrentAvatarState.address;
+            var addresses = new List<Address>
+            {
+                ItemSlotState.DeriveAddress(avatarAddress, BattleType.Adventure),
+                ItemSlotState.DeriveAddress(avatarAddress, BattleType.Arena),
+                ItemSlotState.DeriveAddress(avatarAddress, BattleType.Raid)
+            };
+
+            var stateBulk = await Game.Game.instance.Agent.GetStateBulk(addresses);
+            ItemSlotStates.Clear();
+            ItemSlotStates.Add(BattleType.Adventure, new ItemSlotState(BattleType.Adventure));
+            ItemSlotStates.Add(BattleType.Arena, new ItemSlotState(BattleType.Arena));
+            ItemSlotStates.Add(BattleType.Raid, new ItemSlotState(BattleType.Raid));
+
+            var task = Task.Run(async () =>
+            {
+                var states = new Dictionary<BattleType, ItemSlotState>();
+                foreach (var value in stateBulk.Values)
+                {
+                    if (value is List list)
+                    {
+                        var slotState = new ItemSlotState(list);
+                        ItemSlotStates[slotState.BattleType] = slotState;
+                    }
+                }
+
+                return states;
+            });
+
+            await task;
+        }
+
+        public async Task<FungibleAssetValue?> SetRuneStoneBalance(int runeId)
+        {
+            var avatarAddress = CurrentAvatarState.address;
+            var costSheet = Game.Game.instance.TableSheets.RuneCostSheet;
+            if (!costSheet.TryGetValue(runeId, out var costRow))
+            {
+                return null;
+            }
+
+            var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
+            var runeRow = runeSheet.Values.First(x => x.Id == runeId);
+            var rune = RuneHelper.ToCurrency(runeRow, 0, null);
+            var fungibleAsset = await Game.Game.instance.Agent.GetBalanceAsync(avatarAddress, rune);
+            RuneStoneBalance[runeRow.Id] = fungibleAsset;
+            return fungibleAsset;
         }
 
         public void SetMonsterCollectionState(
@@ -528,6 +691,49 @@ namespace Nekoyume.State
                     HammerPointStatesSubject.OnReplaceHammerPointState(tuple.recipeId, state);
                 }
             }).Forget();
+        }
+
+        public (List<Equipment>, List<Costume>) GetEquippedItems(BattleType battleType)
+        {
+            var itemSlotState = ItemSlotStates[battleType];
+            var avatarState = CurrentAvatarState;
+            var equipmentInventory = avatarState.inventory.Equipments;
+            var equipments = itemSlotState.Equipments
+                .Select(guid => equipmentInventory.FirstOrDefault(x => x.ItemId == guid))
+                .Where(item => item != null).ToList();
+
+            var costumeInventory = avatarState.inventory.Costumes;
+            var costumes = itemSlotState.Costumes
+                .Select(guid => costumeInventory.FirstOrDefault(x => x.ItemId == guid))
+                .Where(item => item != null).ToList();
+            return (equipments, costumes);
+        }
+
+        public List<RuneState> GetEquippedRuneStates(BattleType battleType)
+        {
+            var states = RuneSlotStates[battleType].GetRuneSlot();
+            var runeStates = new List<RuneState>();
+            foreach (var slot in states)
+            {
+                if (!slot.RuneId.HasValue)
+                {
+                    continue;
+                }
+
+                var runeState = RuneStates.FirstOrDefault(x => x.RuneId == slot.RuneId);
+                if (runeState != null)
+                {
+                    runeStates.Add(runeState);
+                }
+            }
+
+            return runeStates;
+        }
+
+        public bool TryGetRuneState(int runeId, out RuneState runeState)
+        {
+            runeState = RuneStates.FirstOrDefault(x => x.RuneId == runeId);
+            return runeState != null;
         }
     }
 }

@@ -224,6 +224,8 @@ namespace Nekoyume.Helper
         {
             Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
             var worldMap = Widget.Find<WorldMap>();
+            worldMap.SetWorldInformation(States.Instance.CurrentAvatarState
+                .worldInformation);
             worldMap.Show(worldId, stageId, false);
             worldMap.SharedViewModel.WorldInformation.TryGetWorld(worldId,
                 out var worldModel);

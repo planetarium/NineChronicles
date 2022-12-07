@@ -48,3 +48,10 @@ MonoBehaviour:
     scale: {x: 0.35, y: 0.35, z: 1}
     rotation: {x: 0, y: 0, z: 0}
     gradeColor: {r: 0.69803923, g: 0.20392157, b: 0.7372549, a: 1}
+  - resourceID: 40100010
+    prefab: {fileID: 8972405577410727509, guid: 5c4f787c77cad4e42bc7cc8f2dab2900,
+      type: 3}
+    position: {x: -166, y: -283, z: 0}
+    scale: {x: 0.23, y: 0.23, z: 1}
+    rotation: {x: 0, y: 0, z: 0}
+    gradeColor: {r: 0.69803923, g: 0.20392157, b: 0.7372549, a: 1}

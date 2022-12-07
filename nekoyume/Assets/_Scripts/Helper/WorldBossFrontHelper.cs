@@ -51,19 +51,6 @@ namespace Nekoyume.Helper
             return true;
         }
 
-        public static bool TryGetRuneIcon(string ticker, out Sprite icon)
-        {
-            var result = WorldBossData.Runes.FirstOrDefault(x => x.ticker == ticker);
-            if (result is null)
-            {
-                icon = null;
-                return false;
-            }
-
-            icon = result.icon;
-            return true;
-        }
-
         public static bool TryGetRaid(int raidId, out WorldBossListSheet.Row row)
         {
             var sheet = Game.Game.instance.TableSheets.WorldBossListSheet;

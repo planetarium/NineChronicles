@@ -1,5 +1,6 @@
 using Libplanet;
 using Nekoyume.L10n;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
@@ -68,7 +69,7 @@ namespace Nekoyume.UI.Scroller
                         var (exist, state) = await States.TryGetAvatarStateAsync(address);
                         avatarState = exist ? state : null;
                     }
-                    Widget.Find<FriendInfoPopup>().Show(avatarState);
+                    Widget.Find<FriendInfoPopup>().ShowAsync(avatarState, BattleType.Adventure).Forget();
                     loadingScreen.Close();
                 })
                 .AddTo(gameObject);
