@@ -43,7 +43,7 @@ namespace Nekoyume
             var activeType = GetEventInfo().EventType;
             foreach (var ec in eventContainers)
             {
-                ec.gameObject.SetActive(ec.Type == activeType);
+                ec.gameObject.SetActive(ec.Types.Contains(activeType));
             }
         }
     }
