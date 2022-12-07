@@ -68,11 +68,13 @@ namespace Nekoyume.UI
             {
                 if (eventTabButton.Equals(toggle))
                 {
+                    RenderNotice(_selectedEventBannerItem.Data);
                     objectsForEvent.ForEach(go => go.SetActive(true));
                     objectsForNotice.ForEach(go => go.SetActive(false));
                 }
                 else
                 {
+                    RenderNotice(_selectedNoticeItem.Data);
                     objectsForNotice.ForEach(go => go.SetActive(true));
                     objectsForEvent.ForEach(go => go.SetActive(false));
                 }
@@ -119,7 +121,6 @@ namespace Nekoyume.UI
             }
 
             RenderNotice(_selectedEventBannerItem.Data);
-            RenderNotice(_selectedNoticeItem.Data);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
