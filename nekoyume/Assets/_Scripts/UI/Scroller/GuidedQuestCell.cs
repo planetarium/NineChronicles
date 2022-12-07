@@ -117,13 +117,13 @@ namespace Nekoyume.UI.Scroller
                     });
             }
 
-            var eventInfo = EventManager.GetEventDungeonInfo();
+            var eventInfo = EventManager.GetEventInfo() as EventDungeonIdBasedEventInfo;
             if (isEvent && eventInfo is not null)
             {
                 iconImage.sprite = Quest switch
                 {
-                    WorldQuest => eventInfo.eventDungeonGuidedQuestIcon,
-                    CombinationEquipmentQuest => eventInfo.eventRecipeGuidedQuestIcon,
+                    WorldQuest => eventInfo.EventDungeonGuidedQuestIcon,
+                    CombinationEquipmentQuest => eventInfo.EventRecipeGuidedQuestIcon,
                     _ => iconImage.sprite
                 };
             }

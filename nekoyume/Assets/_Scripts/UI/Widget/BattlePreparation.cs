@@ -302,7 +302,7 @@ namespace Nekoyume.UI
                     hasBg.SetActive(false);
                     mimisbrunnrBg.SetActive(false);
                     eventDungeonBg.gameObject.SetActive(true);
-                    eventDungeonBg.sprite = EventManager.GetEventDungeonInfo().eventDungeonBattlePreparationBg;
+                    eventDungeonBg.sprite = (EventManager.GetEventInfo() as EventDungeonIdBasedEventInfo)?.EventDungeonBattlePreparationBg;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
