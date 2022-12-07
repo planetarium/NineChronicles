@@ -159,10 +159,30 @@ namespace Nekoyume.UI
             {
                 informationButton.gameObject.SetActive(false);
             });
-            plusButton.onClick.AddListener(() => TryCount.Value = math.min(_maxTryCount, TryCount.Value + 1));
-            minusButton.onClick.AddListener(() => TryCount.Value = math.max(1, TryCount.Value - 1));
-            closeButton.onClick.AddListener(() => Close(true));
-            CloseWidget = () => Close(true);
+            plusButton.onClick.AddListener(() =>
+            {
+                if (_maxTryCount <= 0)
+                {
+                    return;
+                }
+                TryCount.Value = math.min(_maxTryCount, TryCount.Value + 1);
+            });
+            minusButton.onClick.AddListener(() =>
+            {
+                TryCount.Value = math.max(1, TryCount.Value - 1);
+            });
+            closeButton.onClick.AddListener(() =>
+            {
+                base.Close(true);
+                Find<CombinationMain>().Show();
+                Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
+            });
+            CloseWidget = () =>
+            {
+                base.Close(true);
+                Find<CombinationMain>().Show();
+                Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
+            };
             LoadingHelper.RuneEnhancement
                          .Subscribe(b => loadingObjects.ForEach(x => x.SetActive(b)))
                          .AddTo(gameObject);
@@ -173,13 +193,6 @@ namespace Nekoyume.UI
                 _costItems[RuneCostType.Ncg].UpdateCount(x);
                 _costItems[RuneCostType.Crystal].UpdateCount(x);
             }).AddTo(gameObject);
-        }
-
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            base.Close(ignoreCloseAnimation);
-            Find<CombinationMain>().Show();
-            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
         }
 
         public void Show(bool ignoreShowAnimation = false)
@@ -479,8 +492,12 @@ namespace Nekoyume.UI
             }
         }
 
-        private static void UpdateHeaderMenu(Sprite runeStoneIcon, FungibleAssetValue runeStone)
+        private void UpdateHeaderMenu(Sprite runeStoneIcon, FungibleAssetValue runeStone)
         {
+            if (!gameObject.activeSelf)
+            {
+                return;
+            }
             var headerMenu = Find<HeaderMenuStatic>();
             headerMenu.UpdateAssets(HeaderMenuStatic.AssetVisibleState.RuneStone);
             headerMenu.RuneStone.SetRuneStone(runeStoneIcon, runeStone.GetQuantityString());
