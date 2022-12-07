@@ -88,7 +88,7 @@ namespace Nekoyume.BlockChain
               var tableSheets = Game.Game.GetTableCsvAssets();
               string goldDistributionCsvPath = Path.Combine(Application.streamingAssetsPath, "GoldDistribution.csv");
               GoldDistribution[] goldDistributions = GoldDistribution.LoadInDescendingEndBlockOrder(goldDistributionCsvPath);
-              return Nekoyume.BlockHelper.MineGenesisBlock(
+              return Nekoyume.BlockHelper.ProposeGenesisBlock(
                   tableSheets,
                   goldDistributions,
                   pendingActivationStates,
