@@ -1295,8 +1295,7 @@ namespace Nekoyume.BlockChain
                     LocalLayerModifier.AddItem(avatarAddress, row.ItemId, eval.Action.apStoneCount);
                 }
 
-                UpdateCurrentAvatarStateAsync().Forget();
-
+                await UpdateCurrentAvatarStateAsync();
                 await Task.WhenAll(States.Instance.InitRuneSlotStates(), States.Instance.InitItemSlotStates());
                 Widget.Find<BattlePreparation>().UpdateInventoryView();
             }
