@@ -789,11 +789,13 @@ namespace Nekoyume.UI.Module
                 {
                     _eventDungeonQuestCell.ShowAsNew(
                         eventDungeonQuest,
-                        _ => EnterToShown());
+                        _ => EnterToShown(),
+                        false,
+                        true);
                 }
                 else
                 {
-                    _eventDungeonQuestCell.Show(eventDungeonQuest);
+                    _eventDungeonQuestCell.Show(eventDungeonQuest,true);
                 }
             }
         }
@@ -826,11 +828,13 @@ namespace Nekoyume.UI.Module
                 {
                     _craftEventItemQuestCell.ShowAsNew(
                         craftEventItemQuest,
-                        _ => EnterToShown());
+                        _ => EnterToShown(),
+                        false,
+                        true);
                 }
                 else
                 {
-                    _craftEventItemQuestCell.Show(craftEventItemQuest);
+                    _craftEventItemQuestCell.Show(craftEventItemQuest, true);
                 }
             }
         }

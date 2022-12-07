@@ -129,9 +129,9 @@ namespace Nekoyume.UI.Scroller
             }
         }
 
-        public void Show(Quest quest)
+        public void Show(Quest quest, bool isEvent = false)
         {
-            ShowAsNew(quest, null, true);
+            ShowAsNew(quest, null, true, isEvent);
         }
 
         public void SetToInProgress(bool inProgress)
