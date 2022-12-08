@@ -172,7 +172,7 @@ namespace Nekoyume.UI
                         ? option.SkillValue * 100
                         : option.SkillValue;
                     var desc = L10nManager.Localize(
-                        $"SKILL_DESCRIPTION_{option.SkillId}", option.SkillChance, option.SkillCooldown, skillValue);
+                        $"SKILL_DESCRIPTION_{option.SkillId}", option.SkillChance, option.BuffDuration, skillValue);
                     var cooldown = $"{L10nManager.Localize($"UI_COOLDOWN")} : {option.SkillCooldown}";
                     skillView.Show(name, desc, cooldown);
                 }
@@ -253,7 +253,7 @@ namespace Nekoyume.UI
                         : option.SkillValue;
                     var skillValue = power == (int)power ? $"{(int)power}" : $"{power}";
                     var desc = L10nManager.Localize(
-                        $"SKILL_DESCRIPTION_{option.SkillId}", option.SkillChance, option.SkillCooldown, skillValue);
+                        $"SKILL_DESCRIPTION_{option.SkillId}", option.SkillChance, option.BuffDuration, skillValue);
                     var cooldown = $"{L10nManager.Localize($"UI_COOLDOWN")} : {option.SkillCooldown}";
                     skillView.Show(name, desc, cooldown);
                 }

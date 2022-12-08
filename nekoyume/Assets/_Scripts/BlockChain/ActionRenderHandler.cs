@@ -273,7 +273,7 @@ namespace Nekoyume.BlockChain
             _actionRenderer.EveryRender<DailyReward>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseDailyReward)
+                .Subscribe(ResponseDailyRewardAsync)
                 .AddTo(_disposables);
         }
 
@@ -486,7 +486,7 @@ namespace Nekoyume.BlockChain
             _actionRenderer.EveryRender<UnlockRuneSlot>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseUnlockRuneSlotAsync)
+                .Subscribe(ResponseUnlockRuneSlot)
                 .AddTo(_disposables);
         }
 
@@ -1156,7 +1156,7 @@ namespace Nekoyume.BlockChain
             RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
-        private void ResponseDailyReward(ActionBase.ActionEvaluation<DailyReward> eval)
+        private async void ResponseDailyRewardAsync(ActionBase.ActionEvaluation<DailyReward> eval)
         {
             if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.avatarAddress))
             {
@@ -1166,6 +1166,7 @@ namespace Nekoyume.BlockChain
             if (eval.Exception is null &&
                 eval.Action.avatarAddress == States.Instance.CurrentAvatarState.address)
             {
+                await States.Instance.InitRuneStoneBalance();
                 LocalLayer.Instance.ClearAvatarModifiers<AvatarDailyRewardReceivedIndexModifier>(
                     eval.Action.avatarAddress);
                 UpdateCurrentAvatarStateAsync(eval).Forget();
@@ -1295,8 +1296,7 @@ namespace Nekoyume.BlockChain
                     LocalLayerModifier.AddItem(avatarAddress, row.ItemId, eval.Action.apStoneCount);
                 }
 
-                UpdateCurrentAvatarStateAsync().Forget();
-
+                await UpdateCurrentAvatarStateAsync();
                 await Task.WhenAll(States.Instance.InitRuneSlotStates(), States.Instance.InitItemSlotStates());
                 Widget.Find<BattlePreparation>().UpdateInventoryView();
             }
@@ -2401,14 +2401,18 @@ namespace Nekoyume.BlockChain
             UpdateAgentStateAsync(eval).Forget();
         }
 
-        private async void ResponseUnlockRuneSlotAsync(ActionBase.ActionEvaluation<UnlockRuneSlot> eval)
+        private void ResponseUnlockRuneSlot(ActionBase.ActionEvaluation<UnlockRuneSlot> eval)
         {
             if (eval.Exception is not null)
             {
                 return;
             }
 
-            await States.Instance.InitRuneSlotStates();
+            for (var i = 1; i < (int)BattleType.End; i++)
+            {
+                States.Instance.RuneSlotStates[(BattleType)i].Unlock(eval.Action.SlotIndex);
+            }
+
             LoadingHelper.UnlockRuneSlot.Remove(eval.Action.SlotIndex);
             UpdateAgentStateAsync(eval).Forget();
             NotificationSystem.Push(

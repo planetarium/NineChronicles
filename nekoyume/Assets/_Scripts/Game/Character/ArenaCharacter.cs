@@ -66,6 +66,15 @@ namespace Nekoyume.Game.Character
             _speechBubble.UpdatePosition(ActionCamera.instance.Cam, gameObject, HUDOffset);
         }
 
+        private void OnDisable()
+        {
+            foreach (var vfx in _persistingVFXMap.Values)
+            {
+                vfx.gameObject.SetActive(false);
+            }
+            _persistingVFXMap.Clear();
+        }
+
         public void Init(ArenaPlayerDigest digest, ArenaCharacter target, bool isEnemy)
         {
             gameObject.SetActive(true);
@@ -120,7 +129,7 @@ namespace Nekoyume.Game.Character
             {
                 if (!_characterModel.Buffs.Keys.Contains(buff))
                 {
-                    _persistingVFXMap[buff].Stop();
+                    _persistingVFXMap[buff].LazyStop();
                     removedVfx.Add(buff);
                 }
             }
@@ -306,8 +315,15 @@ namespace Nekoyume.Game.Character
             effect.Play();
             if (effect.IsPersisting)
             {
-                _persistingVFXMap[buff.BuffInfo.GroupId] = effect;
+                target.AttachPersistingVFX(buff.BuffInfo.GroupId, effect);
             }
+
+            target._characterModel = info.Target;
+        }
+
+        private void AttachPersistingVFX(int groupId, BuffVFX vfx)
+        {
+            _persistingVFXMap[groupId] = vfx;
         }
 
         #region Animation
@@ -650,6 +666,10 @@ namespace Nekoyume.Game.Character
         {
             ShowSpeech("PLAYER_LOSE");
             Animator.Die();
+            foreach (var vfx in _persistingVFXMap.Values)
+            {
+                vfx.LazyStop();
+            }
         }
 
         private void OnDeadEnd()
