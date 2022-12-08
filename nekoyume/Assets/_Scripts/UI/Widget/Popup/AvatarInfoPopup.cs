@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.Game.Controller;
@@ -176,26 +177,69 @@ namespace Nekoyume.UI
             arenaButton.HasNotification.Value = false;
             raidButton.HasNotification.Value = false;
 
-            var bestItems = information.GetBestItems();
             var adventure = States.Instance.ItemSlotStates[BattleType.Adventure];
             var arena = States.Instance.ItemSlotStates[BattleType.Arena];
             var raid = States.Instance.ItemSlotStates[BattleType.Raid];
-
-            foreach (var bestItem in bestItems)
+            var bestEquipments = information.GetBestEquipments();
+            foreach (var guid in bestEquipments)
             {
-                if (!adventure.Equipments.Exists(x => x == bestItem))
+                if (!adventure.Equipments.Exists(x => x == guid))
                 {
                     adventureButton.HasNotification.Value = true;
                 }
 
-                if (!arena.Equipments.Exists(x => x == bestItem))
+                if (!arena.Equipments.Exists(x => x == guid))
                 {
                     arenaButton.HasNotification.Value = true;
                 }
 
-                if (!raid.Equipments.Exists(x => x == bestItem))
+                if (!raid.Equipments.Exists(x => x == guid))
                 {
                     raidButton.HasNotification.Value = true;
+                }
+            }
+
+            var bestCostumes = information.GetBestCostumes();
+            foreach (var guid in bestCostumes)
+            {
+                if (!adventure.Costumes.Exists(x => x == guid))
+                {
+                    adventureButton.HasNotification.Value = true;
+                }
+
+                if (!arena.Costumes.Exists(x => x == guid))
+                {
+                    arenaButton.HasNotification.Value = true;
+                }
+
+                if (!raid.Costumes.Exists(x => x == guid))
+                {
+                    raidButton.HasNotification.Value = true;
+                }
+            }
+
+            for (var i = 1; i < (int)BattleType.End; i++)
+            {
+                var battleType = (BattleType)i;
+                var inventoryItems = information.GetBestRunes(battleType);
+                foreach (var inventoryItem in inventoryItems)
+                {
+                    var slots = States.Instance.RuneSlotStates[battleType].GetRuneSlot();
+                    if (!slots.Exists(x => x.RuneId == inventoryItem.RuneState.RuneId))
+                    {
+                        switch (battleType)
+                        {
+                            case BattleType.Adventure:
+                                adventureButton.HasNotification.Value = true;
+                                break;
+                            case BattleType.Arena:
+                                arenaButton.HasNotification.Value = true;
+                                break;
+                            case BattleType.Raid:
+                                raidButton.HasNotification.Value = true;
+                                break;
+                        }
+                    }
                 }
             }
         }

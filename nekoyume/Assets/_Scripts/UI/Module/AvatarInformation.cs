@@ -126,9 +126,19 @@ namespace Nekoyume.UI.Module
             StartCoroutine(CoUpdateView(battleType, Inventory.InventoryTabType.Equipment));
         }
 
-        public List<Guid> GetBestItems()
+        public List<Guid> GetBestEquipments()
         {
-            return inventory.GetBestItems();
+            return inventory.GetBestEquipments();
+        }
+
+        public List<Guid> GetBestCostumes()
+        {
+            return inventory.GetBestCostumes();
+        }
+
+        public List<InventoryItem> GetBestRunes(BattleType battleType)
+        {
+            return inventory.GetBestRunes(battleType);
         }
 
         private IEnumerator CoUpdateView(BattleType battleType, Inventory.InventoryTabType tabType)
