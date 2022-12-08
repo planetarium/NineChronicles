@@ -273,7 +273,7 @@ namespace Nekoyume.BlockChain
             _actionRenderer.EveryRender<DailyReward>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseDailyReward)
+                .Subscribe(ResponseDailyRewardAsync)
                 .AddTo(_disposables);
         }
 
@@ -1156,7 +1156,7 @@ namespace Nekoyume.BlockChain
             RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
-        private void ResponseDailyReward(ActionBase.ActionEvaluation<DailyReward> eval)
+        private async void ResponseDailyRewardAsync(ActionBase.ActionEvaluation<DailyReward> eval)
         {
             if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.avatarAddress))
             {
@@ -1166,6 +1166,7 @@ namespace Nekoyume.BlockChain
             if (eval.Exception is null &&
                 eval.Action.avatarAddress == States.Instance.CurrentAvatarState.address)
             {
+                await States.Instance.InitRuneStoneBalance();
                 LocalLayer.Instance.ClearAvatarModifiers<AvatarDailyRewardReceivedIndexModifier>(
                     eval.Action.avatarAddress);
                 UpdateCurrentAvatarStateAsync(eval).Forget();
