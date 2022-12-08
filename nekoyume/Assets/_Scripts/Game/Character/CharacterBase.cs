@@ -15,6 +15,8 @@ using Nekoyume.Model.Character;
 using UnityEngine.Rendering;
 using Nekoyume.Model.Buff;
 using DG.Tweening.Plugins.Options;
+using Cysharp.Threading.Tasks.Triggers;
+using Nekoyume.Model.BattleStatus;
 
 namespace Nekoyume.Game.Character
 {
@@ -125,6 +127,12 @@ namespace Nekoyume.Game.Character
 
         protected virtual void OnDisable()
         {
+            foreach (var vfx in _persistingVFXMap.Values)
+            {
+                vfx.gameObject.SetActive(false);
+            }
+            _persistingVFXMap.Clear();
+
             RunSpeed = 0.0f;
             _root = null;
             actions.Clear();
@@ -217,7 +225,7 @@ namespace Nekoyume.Game.Character
             {
                 if (!CharacterModel.Buffs.Keys.Contains(buff))
                 {
-                    _persistingVFXMap[buff].Stop();
+                    _persistingVFXMap[buff].LazyStop();
                     removedVfx.Add(buff);
                 }
             }
@@ -298,8 +306,7 @@ namespace Nekoyume.Game.Character
         {
             foreach (var vfx in _persistingVFXMap.Values)
             {
-                vfx.transform.parent = Game.instance.Stage.transform;
-                vfx.Stop();
+                vfx.LazyStop();
             }
         }
 
@@ -549,12 +556,17 @@ namespace Nekoyume.Game.Character
                 effect.Play();
                 if (effect.IsPersisting)
                 {
-                    _persistingVFXMap[buff.BuffInfo.GroupId] = effect;
+                    target.AttachPersistingVFX(buff.BuffInfo.GroupId, effect);
                 }
 
                 target.UpdateHpBar();
                 //Debug.LogWarning($"{Animator.Target.name}'s {nameof(ProcessBuff)} called: {CurrentHP}({Model.Stats.CurrentHP}) / {HP}({Model.Stats.LevelStats.HP}+{Model.Stats.BuffStats.HP})");
             }
+        }
+
+        private void AttachPersistingVFX(int groupId, BuffVFX vfx)
+        {
+            _persistingVFXMap[groupId] = vfx;
         }
 
         private void PopUpHeal(Vector3 position, Vector3 force, string dmg, bool critical)

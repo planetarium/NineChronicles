@@ -54,6 +54,12 @@ namespace Nekoyume.Game.Character
 
         private void OnDisable()
         {
+            foreach (var vfx in _persistingVFXMap.Values)
+            {
+                vfx.gameObject.SetActive(false);
+            }
+            _persistingVFXMap.Clear();
+
             if (!_isAppQuitting)
             {
                 DisableHUD();
@@ -65,7 +71,7 @@ namespace Nekoyume.Game.Character
             foreach (var vfx in _persistingVFXMap.Values)
             {
                 vfx.transform.parent = Game.instance.Stage.transform;
-                vfx.Stop();
+                vfx.LazyStop();
             }
         }
 
@@ -132,7 +138,7 @@ namespace Nekoyume.Game.Character
             {
                 if (!Model.Buffs.Keys.Contains(buff))
                 {
-                    _persistingVFXMap[buff].Stop();
+                    _persistingVFXMap[buff].LazyStop();
                     removedVfx.Add(buff);
                 }
             }
@@ -181,7 +187,7 @@ namespace Nekoyume.Game.Character
             _hudContainer.UpdatePosition(Game.instance.RaidStage.Camera.Cam, gameObject, HUDOffset);
         }
 
-        private void AddNextBuff(Model.Buff.Buff buff)
+        public void AddNextBuff(Model.Buff.Buff buff)
         {
             _characterModel.AddBuff(buff);
         }
@@ -573,11 +579,16 @@ namespace Nekoyume.Game.Character
             effect.Play();
             if (effect.IsPersisting)
             {
-                _persistingVFXMap[buff.BuffInfo.GroupId] = effect;
+                target.AttachPersistingVFX(buff.BuffInfo.GroupId, effect);
             }
 
-            AddNextBuff(buff);
+            target.AddNextBuff(buff);
             target.UpdateStatusUI();
+        }
+
+        private void AttachPersistingVFX(int groupId, BuffVFX vfx)
+        {
+            _persistingVFXMap[groupId] = vfx;
         }
 
         protected void ProcessHeal(Skill.SkillInfo info)
@@ -629,6 +640,10 @@ namespace Nekoyume.Game.Character
         {
             ShowSpeech("PLAYER_LOSE");
             Animator.Die();
+            foreach (var vfx in _persistingVFXMap.Values)
+            {
+                vfx.Stop();
+            }
         }
 
         protected virtual void OnDeadEnd()
