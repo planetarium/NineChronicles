@@ -562,16 +562,6 @@ namespace Nekoyume.UI.Module
 
         private void EquipRune(InventoryItem inventoryItem)
         {
-            if (Game.Game.instance.IsInWorld)
-            {
-                return;
-            }
-
-            if (inventoryItem.DimObjectEnabled.Value)
-            {
-                return;
-            }
-
             var states = States.Instance.RuneSlotStates[_battleType].GetRuneSlot();
             var sheet = Game.Game.instance.TableSheets.RuneListSheet;
             if (!sheet.TryGetValue(inventoryItem.RuneState.RuneId, out var row))
@@ -872,6 +862,19 @@ namespace Nekoyume.UI.Module
                 }
                 else
                 {
+                    if (Game.Game.instance.IsInWorld)
+                    {
+                        return;
+                    }
+
+                    if (inventoryItem.DimObjectEnabled.Value)
+                    {
+                        NotificationSystem.Push(MailType.System,
+                            L10nManager.Localize("UI_MESSAGE_CAN_NOT_EQUIPPED"),
+                            NotificationCell.NotificationType.Alert);
+                        return;
+                    }
+
                     EquipRune(inventoryItem);
                 }
             }
