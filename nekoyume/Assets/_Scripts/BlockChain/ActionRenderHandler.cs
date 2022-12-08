@@ -486,7 +486,7 @@ namespace Nekoyume.BlockChain
             _actionRenderer.EveryRender<UnlockRuneSlot>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseUnlockRuneSlotAsync)
+                .Subscribe(ResponseUnlockRuneSlot)
                 .AddTo(_disposables);
         }
 
@@ -2400,14 +2400,18 @@ namespace Nekoyume.BlockChain
             UpdateAgentStateAsync(eval).Forget();
         }
 
-        private async void ResponseUnlockRuneSlotAsync(ActionBase.ActionEvaluation<UnlockRuneSlot> eval)
+        private void ResponseUnlockRuneSlot(ActionBase.ActionEvaluation<UnlockRuneSlot> eval)
         {
             if (eval.Exception is not null)
             {
                 return;
             }
 
-            await States.Instance.InitRuneSlotStates();
+            for (var i = 1; i < (int)BattleType.End; i++)
+            {
+                States.Instance.RuneSlotStates[(BattleType)i].Unlock(eval.Action.SlotIndex);
+            }
+
             LoadingHelper.UnlockRuneSlot.Remove(eval.Action.SlotIndex);
             UpdateAgentStateAsync(eval).Forget();
             NotificationSystem.Push(
