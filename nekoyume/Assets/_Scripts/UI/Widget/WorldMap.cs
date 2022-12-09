@@ -314,6 +314,7 @@ namespace Nekoyume.UI
             SharedViewModel.SelectedStageId.Value = stageId;
             var stageInfo = Find<StageInformation>();
             stageInfo.Show(SharedViewModel, worldRow, StageType.HackAndSlash);
+            UpdateNotificationInfo();
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
             Find<HeaderMenuStatic>().Show();
         }
@@ -348,6 +349,7 @@ namespace Nekoyume.UI
                 eventDungeonRow,
                 openedStageId,
                 openedStageId);
+            StageIdToNotify = openedStageId;
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.EventDungeon);
             Find<HeaderMenuStatic>().Show();
         }
