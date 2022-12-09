@@ -23,7 +23,7 @@ SpriteAtlas:
     platformSettings:
     - serializedVersion: 3
       m_BuildTarget: DefaultTexturePlatform
-      m_MaxTextureSize: 2048
+      m_MaxTextureSize: 1024
       m_ResizeAlgorithm: 0
       m_TextureFormat: -1
       m_TextureCompression: 0
@@ -44,19 +44,15 @@ SpriteAtlas:
     secondaryTextureSettings: {}
     variantMultiplier: 1
     packables:
-    - {fileID: 2800000, guid: 434a57f964276774897e163780704f27, type: 3}
-    - {fileID: 2800000, guid: 062bcff8bbe031442bb1e3c7b4ca7a33, type: 3}
-    - {fileID: 2800000, guid: ef5ce465b5dce7845bdf707d9abd8e11, type: 3}
-    - {fileID: 2800000, guid: 85deaed82cd21ee4a848cb921b376f0d, type: 3}
-    - {fileID: 2800000, guid: 120ee2b2c85ab66478d95777be81fe4e, type: 3}
-    - {fileID: 2800000, guid: d794583b3484d694fbb7ee1813ecfbdf, type: 3}
-    - {fileID: 2800000, guid: d627ea8947aca434abbd8b609b731310, type: 3}
+    - {fileID: 102900000, guid: 0352d0f9d4214bf41aed8e35183c9be8, type: 3}
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
+  - {fileID: 21300000, guid: 5aeff051295524ccd9d27f538ad53788, type: 3}
   - {fileID: 21300000, guid: 120ee2b2c85ab66478d95777be81fe4e, type: 3}
+  - {fileID: 21300000, guid: 842315c383fd94aacba40c31c784a3a2, type: 3}
   - {fileID: 21300000, guid: ef5ce465b5dce7845bdf707d9abd8e11, type: 3}
   - {fileID: 21300000, guid: 85deaed82cd21ee4a848cb921b376f0d, type: 3}
   - {fileID: 21300000, guid: 062bcff8bbe031442bb1e3c7b4ca7a33, type: 3}
@@ -64,7 +60,9 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 434a57f964276774897e163780704f27, type: 3}
   - {fileID: 21300000, guid: d794583b3484d694fbb7ee1813ecfbdf, type: 3}
   m_PackedSpriteNamesToIndex:
+  - Common_bg_2R
   - bg_character_select_04
+  - Common_Gradiant_bg_01
   - bg_character_select_02
   - bg_character_select_03
   - bg_character_select_01

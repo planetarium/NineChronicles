@@ -45,26 +45,75 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 16e535e80e8b44c9a929bd279ae092f5, type: 3}
+    - {fileID: 102900000, guid: 5de5d741dd95f4b109fcb2db189fadfa, type: 3}
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
+  - {fileID: 21300000, guid: 16855f106d4444a88a52d91ef380a1f0, type: 3}
+  - {fileID: 21300000, guid: 0404b330db07240ecb8e7eeac481c6c0, type: 3}
   - {fileID: 21300000, guid: efca56502a2314fc186df53e27171c97, type: 3}
+  - {fileID: 21300000, guid: 8fd6a071175b4465eb2b8a91a967e50f, type: 3}
+  - {fileID: 21300000, guid: 30178091cf81e45ff86d2d68aef412f5, type: 3}
   - {fileID: 21300000, guid: f67d055214ff44647ba21583c199b147, type: 3}
   - {fileID: 21300000, guid: 34afd1b218d2b40acb1467ed4f97575c, type: 3}
   - {fileID: 21300000, guid: 63e987c260665414a8e918783da8e99b, type: 3}
+  - {fileID: 21300000, guid: 736422d3b90bf4e9aa2af40f1b0bc61c, type: 3}
   - {fileID: 21300000, guid: 50beafe3a8a704c1d97a9adadf60ac44, type: 3}
+  - {fileID: 21300000, guid: f5b2ed64a57f24985b84eec8ebb25567, type: 3}
+  - {fileID: 21300000, guid: 0756a2a43a1f84321932365cd619164c, type: 3}
+  - {fileID: 21300000, guid: 355d8ab4520e14d1bbc624fd2fa615c4, type: 3}
+  - {fileID: 21300000, guid: f72f38058d8a6446188ca930e4ce0af6, type: 3}
+  - {fileID: 21300000, guid: 8d40d526142654912bb1b7fd398d9310, type: 3}
+  - {fileID: 21300000, guid: 53bf0a57798894a1f8d5389dd47ec1eb, type: 3}
+  - {fileID: 21300000, guid: 2ccc5e57f9ec549508dbc27349d3bfed, type: 3}
+  - {fileID: 21300000, guid: 82bdb2d7c8a734063bde448c9e202f0e, type: 3}
+  - {fileID: 21300000, guid: dd04a198e5d6d46e482b6ab0a54afeb5, type: 3}
   - {fileID: 21300000, guid: 2ba4e849ae6d94b889c7f2a97601e303, type: 3}
+  - {fileID: 21300000, guid: 9f2f159a849654418b15408258c81548, type: 3}
+  - {fileID: 21300000, guid: 185aaf8bb42334190a6f4d375e6e6f67, type: 3}
+  - {fileID: 21300000, guid: cf3941ab6508d4ee7b66668948a7358e, type: 3}
+  - {fileID: 21300000, guid: 11da2efc3a40748dcb0b6549824f2431, type: 3}
+  - {fileID: 21300000, guid: e123146d88eb44a739883087e4b9967b, type: 3}
+  - {fileID: 21300000, guid: 132a748d4bc454c9a875713c7648699b, type: 3}
+  - {fileID: 21300000, guid: dbbea63e22bbe4013ac537b338a69f84, type: 3}
+  - {fileID: 21300000, guid: 64d3712fd3c144545b6a9ec5674a529b, type: 3}
   - {fileID: 21300000, guid: f0ec393f2b2d041baa9d61466ba8d892, type: 3}
+  - {fileID: 21300000, guid: bab990cfa756e49299b6b288c502eaf3, type: 3}
+  - {fileID: 21300000, guid: 8bda4bcf7806f417ca4a3e4d3b6628d3, type: 3}
   m_PackedSpriteNamesToIndex:
+  - UI_Combination_mainmenu_bg_01
+  - icon_Combination_mainmenu_03
   - bg_combination_Main_stone
+  - UI_Combination_bg_07
+  - UI_bg_frame_05
   - bg_combination_Main_03
   - bg_combination_Main_02
   - bg_combination_Main_06
+  - Item_Recipebg_Lock
   - bg_combination_Main_05
+  - icon_Combination_mainmenu_01
+  - UI_Combination_bg_06
+  - UI_Combination_Elementbg
+  - UI_Combination_Slotbg
+  - UI_bg_frame_17
+  - icon_Combination_food
+  - Item_Recipebg_04
+  - UI_Tooltip_Close
+  - Item_Recipebg_Tag
   - bg_combination_Main_01
+  - UI_Tooltip_Grind
+  - icon_Combination_Event
+  - Item_Recipebg_02
+  - icon_Combination_equip
+  - Item_Recipebg_03
+  - icon_Combination_mainmenu_04
+  - icon_Combination_mainmenu_02
+  - Item_Recipebg_01
   - bg_combination_Main_04
+  - Item_Recipebg_05
+  - bubble_talk_01_1
   m_RenderDataMap: {}
   m_Tag: Combination_Main
   m_IsVariant: 0
