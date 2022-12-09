@@ -166,7 +166,7 @@
             </summary>
             <param name="policyBlockAction">The <see cref="T:Libplanet.Action.IAction"/> provided by
             <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction"/> to evaluate at the end for each
-            <see cref="T:Libplanet.Blocks.Block`1"/> that gets evaluated.</param>
+            <see cref="T:Libplanet.Blocks.IPreEvaluationBlock"/> that gets evaluated.</param>
             <param name="blockChainStates">The <see cref="T:Libplanet.Blockchain.IBlockChainStates`1"/> to use to retrieve
             the states for a provided <see cref="T:Libplanet.Address"/>.</param>
             <param name="trieGetter">The function to retrieve a trie for
@@ -176,6 +176,10 @@
             <param name="nativeTokenPredicate">A predicate function to determine whether
             the specified <see cref="T:Libplanet.Assets.Currency"/> is a native token defined by chain's
             <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.NativeTokens"/> or not.</param>
+        </member>
+        <member name="M:Libplanet.Action.ActionEvaluator`1.#ctor(Libplanet.Action.IAction,Libplanet.Blockchain.IBlockChainStates{`0},System.Func{Libplanet.Blocks.BlockHash,Libplanet.Store.Trie.ITrie},System.Nullable{Libplanet.Blocks.BlockHash},System.Predicate{Libplanet.Assets.Currency},Libplanet.Action.IActionTypeLoader)">
+            <inheritdoc cref="M:Libplanet.Action.ActionEvaluator`1.#ctor(Libplanet.Action.IAction,Libplanet.Blockchain.IBlockChainStates{`0},System.Func{Libplanet.Blocks.BlockHash,Libplanet.Store.Trie.ITrie},System.Nullable{Libplanet.Blocks.BlockHash},System.Predicate{Libplanet.Assets.Currency})" />
+            <param name="actionTypeLoader"> A <see cref="T:Libplanet.Action.IActionTypeLoader"/> implementation using action type lookup.</param>
         </member>
         <member name="M:Libplanet.Action.ActionEvaluator`1.GenerateRandomSeed(System.Byte[],System.Byte[],System.Byte[],System.Int32)">
             <summary>
@@ -189,9 +193,9 @@
             <returns>An integer of the random seed.
             </returns>
         </member>
-        <member name="M:Libplanet.Action.ActionEvaluator`1.Evaluate(Libplanet.Blocks.IPreEvaluationBlock{`0},Libplanet.Blockchain.StateCompleterSet{`0})">
+        <member name="M:Libplanet.Action.ActionEvaluator`1.Evaluate(Libplanet.Blocks.IPreEvaluationBlock,Libplanet.Blockchain.StateCompleterSet{`0})">
             <summary>
-            The main entry point for evaluating a <see cref="T:Libplanet.Blocks.Block`1"/>.
+            The main entry point for evaluating a <see cref="T:Libplanet.Blocks.IPreEvaluationBlock"/>.
             </summary>
             <param name="block">The block to evaluate.</param>
             <param name="stateCompleterSet">The <see cref="T:Libplanet.Blockchain.StateCompleterSet`1"/> to use.</param>
@@ -200,9 +204,10 @@
             <see cref="T:Libplanet.Action.ActionEvaluation"/>s.</returns>
             <remarks>
             <para>Publicly exposed for benchmarking.</para>
-            <para>First evaluates all <see cref="T:Libplanet.Action.IAction"/>s in <see cref="P:Libplanet.Blocks.Block`1.Transactions"/>
-            of <paramref name="block"/> and appends the evaluation of
-            the <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction"/> held by the instance at the end.</para>
+            <para>First evaluates all <see cref="T:Libplanet.Action.IAction"/>s in
+            <see cref="P:Libplanet.Blocks.IBlockContent.Transactions"/> of <paramref name="block"/> and appends the
+            evaluation of the <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction"/> held by the instance at
+            the end.</para>
             </remarks>
         </member>
         <member name="M:Libplanet.Action.ActionEvaluator`1.GetUpdatedAddresses(Libplanet.Tx.Transaction{`0})">
@@ -227,19 +232,20 @@
             </summary>
             <param name="genesisHash"> A <see cref="T:Libplanet.Blocks.BlockHash"/> value of the genesis block.
             </param>
-            <param name="preEvaluationHash">The <see cref="P:Libplanet.Blocks.Block`1.PreEvaluationHash"/> of
-            the <see cref="T:Libplanet.Blocks.Block`1"/> that <paramref name="actions"/> belong to.</param>
+            <param name="preEvaluationHash">The
+            <see cref="P:Libplanet.Blocks.IPreEvaluationBlockHeader.PreEvaluationHash"/> of
+            the <see cref="T:Libplanet.Blocks.IPreEvaluationBlock"/> that <paramref name="actions"/> belong to.</param>
             <param name="blockIndex">The <see cref="P:Libplanet.Blocks.Block`1.Index"/> of the <see cref="T:Libplanet.Blocks.Block`1"/>
             that <paramref name="actions"/> belong to.</param>
-            <param name="txid">The <see cref="P:Libplanet.Tx.Transaction`1.Id"/> of the
-            <see cref="T:Libplanet.Tx.Transaction`1"/> that <paramref name="actions"/> belong to.
+            <param name="txid">The <see cref="P:Libplanet.Tx.ITxExcerpt.Id"/> of the
+            <see cref="T:Libplanet.Tx.ITransaction"/> that <paramref name="actions"/> belong to.
             This can be <see langword="null"/> on rehearsal mode or if an <see cref="T:Libplanet.Action.IAction"/> is a
             <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction"/>.</param>
             <param name="previousStates">The states immediately before <paramref name="actions"/>
             being executed.</param>
             <param name="miner">An address of block miner.</param>
             <param name="signer">Signer of the <paramref name="actions"/>.</param>
-            <param name="signature"><see cref="T:Libplanet.Tx.Transaction`1"/> signature used to generate random
+            <param name="signature"><see cref="T:Libplanet.Tx.ITransaction"/> signature used to generate random
             seeds.</param>
             <param name="actions">Actions to evaluate.</param>
             <param name="nativeTokenPredicate">A predicate function to determine whether
@@ -274,33 +280,34 @@
             </para>
             </remarks>
         </member>
-        <member name="M:Libplanet.Action.ActionEvaluator`1.OrderTxsForEvaluation(System.Int32,System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}},System.Collections.Immutable.ImmutableArray{System.Byte})">
+        <member name="M:Libplanet.Action.ActionEvaluator`1.OrderTxsForEvaluation(System.Int32,System.Collections.Generic.IEnumerable{Libplanet.Tx.ITransaction},System.Collections.Immutable.ImmutableArray{System.Byte})">
             <summary>
             Deterministically shuffles <paramref name="txs"/> for evaluation using
             <paramref name="preEvaluationHash"/> as a random seed.
             </summary>
-            <param name="protocolVersion">The <see cref="P:Libplanet.Blocks.Block`1.ProtocolVersion"/> that
-            <paramref name="txs"/> belong to.</param>
-            <param name="txs">The list of <see cref="T:Libplanet.Tx.Transaction`1"/>s to shuffle.</param>
-            <param name="preEvaluationHash">The <see cref="P:Libplanet.Blocks.Block`1.PreEvaluationHash"/> to use
-            as a random seed when shuffling.</param>
-            <returns>An <see cref="T:System.Collections.Generic.IEnumerable`1"/> of <see cref="T:Libplanet.Tx.Transaction`1"/>s in evaluation
+            <param name="protocolVersion">The <see cref="P:Libplanet.Blocks.IBlockMetadata.ProtocolVersion"/>
+            that <paramref name="txs"/> belong to.</param>
+            <param name="txs">The list of <see cref="T:Libplanet.Tx.ITransaction"/>s to shuffle.</param>
+            <param name="preEvaluationHash">The
+            <see cref="P:Libplanet.Blocks.IPreEvaluationBlockHeader.PreEvaluationHash"/> to use as a random seed when
+            shuffling.</param>
+            <returns>An <see cref="T:System.Collections.Generic.IEnumerable`1"/> of <see cref="T:Libplanet.Tx.ITransaction"/>s in evaluation
             order with the following properties:
             <list type="bullet">
-            <item><see cref="T:Libplanet.Tx.Transaction`1"/>s with the same <see cref="P:Libplanet.Tx.Transaction`1.Signer"/>
+            <item><see cref="T:Libplanet.Tx.ITransaction"/>s with the same <see cref="P:Libplanet.Tx.ITxMetadata.Signer"/>
             value appear consecutive in the list.</item>
-            <item><see cref="T:Libplanet.Tx.Transaction`1"/>s with the same <see cref="P:Libplanet.Tx.Transaction`1.Signer"/>
-            value are ordered by <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/> value in ascending order.</item>
+            <item><see cref="T:Libplanet.Tx.ITransaction"/>s with the same <see cref="P:Libplanet.Tx.ITxMetadata.Signer"/>
+            value are ordered by <see cref="P:Libplanet.Tx.ITxMetadata.Nonce"/> value in ascending order.</item>
             </list>
             </returns>
             <remarks>
             This is to prevent an attempt to gain a first move advantage by participants.
             </remarks>
         </member>
-        <member name="M:Libplanet.Action.ActionEvaluator`1.EvaluateBlock(Libplanet.Blocks.IPreEvaluationBlock{`0},Libplanet.Action.IAccountStateDelta,Libplanet.Store.Trie.ITrie)">
+        <member name="M:Libplanet.Action.ActionEvaluator`1.EvaluateBlock(Libplanet.Blocks.IPreEvaluationBlock,Libplanet.Action.IAccountStateDelta,Libplanet.Store.Trie.ITrie)">
             <summary>
-            Evaluates <see cref="T:Libplanet.Action.IAction"/>s in <see cref="P:Libplanet.Blocks.IBlockContent`1.Transactions"/>
-            of a given <see cref="T:Libplanet.Blocks.Block`1"/>.
+            Evaluates <see cref="T:Libplanet.Action.IAction"/>s in <see cref="P:Libplanet.Blocks.IBlockContent.Transactions"/>
+            of a given <see cref="T:Libplanet.Blocks.IPreEvaluationBlock"/>.
             </summary>
             <param name="block">The block to evaluate.</param>
             <param name="previousStates">The states immediately before an execution of any
@@ -310,87 +317,28 @@
             <returns>An <see cref="T:System.Collections.Generic.IEnumerable`1"/> of <see cref="T:Libplanet.Action.ActionEvaluation"/>s
             where each <see cref="T:Libplanet.Action.ActionEvaluation"/> is the evaluation of an <see cref="T:Libplanet.Action.IAction"/>.
             </returns>
-            <seealso cref="M:Libplanet.Action.ActionEvaluator`1.EvaluateTxs(Libplanet.Blocks.IPreEvaluationBlock{`0},Libplanet.Action.IAccountStateDelta,Libplanet.Store.Trie.ITrie)"/>
         </member>
-        <member name="M:Libplanet.Action.ActionEvaluator`1.EvaluateTxs(Libplanet.Blocks.IPreEvaluationBlock{`0},Libplanet.Action.IAccountStateDelta,Libplanet.Store.Trie.ITrie)">
-            <summary>
-            Evaluates every <see cref="T:Libplanet.Action.IAction"/> in <see cref="P:Libplanet.Blocks.IBlockContent`1.Transactions"
-            /> of a given <see cref="T:Libplanet.Blocks.IPreEvaluationBlock`1"/>.
-            </summary>
-            <param name="block">The block to evaluate.</param>
-            <param name="previousStates">The states immediately before any <see cref="T:Libplanet.Action.IAction"/>s
-            being evaluated.</param>
-            <param name="previousBlockStatesTrie">The trie to contain states at previous block.
-            </param>
-            <returns>Enumerates an <see cref="T:Libplanet.Action.ActionEvaluation"/> for each action where
-            the order is determined by <see cref="P:Libplanet.Blocks.IBlockContent`1.Transactions"/> of
-            <paramref name="block"/> and each respective <see cref="P:Libplanet.Tx.Transaction`1.Actions"/>.
-            </returns>
-        </member>
-        <member name="M:Libplanet.Action.ActionEvaluator`1.EvaluateTx(Libplanet.Blocks.IPreEvaluationBlock{`0},Libplanet.Tx.Transaction{`0},Libplanet.Action.IAccountStateDelta,System.Boolean,Libplanet.Store.Trie.ITrie)">
-            <summary>
-            Evaluates <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> of a given <see cref="T:Libplanet.Tx.Transaction`1"/>.
-            </summary>
-            <param name="block">The block that <paramref name="tx"/> belongs to.</param>
-            <param name="tx">A <see cref="T:Libplanet.Tx.Transaction`1"/> instance to evaluate.</param>
-            <param name="previousStates">The states immediately before
-            <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> of <paramref name="tx"/> being executed.</param>
-            <param name="rehearsal">Pass <see langword="true"/> if it is intended
-            to be dry-run (i.e., the returned result will be never used).
-            The default value is <see langword="false"/>.</param>
-            <param name="previousBlockStatesTrie">The trie to contain states at previous block.
-            </param>
-            <returns>An <see cref="T:System.Collections.Generic.IEnumerable`1"/> of <see cref="T:Libplanet.Action.ActionEvaluation"/>s for each
-            <see cref="T:Libplanet.Action.IAction"/> in <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> of <paramref name="tx"/>
-            where the order of <see cref="T:Libplanet.Action.ActionEvaluation"/>s is the same as the corresponding
-            <see cref="P:Libplanet.Tx.Transaction`1.Actions"/>.</returns>
-            <remarks>
-            <para>If only the final states are needed, use <see cref="M:Libplanet.Action.ActionEvaluator`1.EvaluateTxResult(Libplanet.Blocks.IPreEvaluationBlock{`0},Libplanet.Tx.Transaction{`0},Libplanet.Action.IAccountStateDelta,System.Boolean)"/> instead.
-            </para>
-            <para>If a <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> of <paramref name="tx"/> has more than
-            one <see cref="T:Libplanet.Action.IAction"/>s, each <see cref="T:Libplanet.Action.ActionEvaluation"/> includes all previous
-            <see cref="T:Libplanet.Action.ActionEvaluation"/>s' delta besides its own delta.</para>
-            </remarks>
-            <seealso cref="M:Libplanet.Action.ActionEvaluator`1.EvaluateTxResult(Libplanet.Blocks.IPreEvaluationBlock{`0},Libplanet.Tx.Transaction{`0},Libplanet.Action.IAccountStateDelta,System.Boolean)"/>
-        </member>
-        <member name="M:Libplanet.Action.ActionEvaluator`1.EvaluateTxResult(Libplanet.Blocks.IPreEvaluationBlock{`0},Libplanet.Tx.Transaction{`0},Libplanet.Action.IAccountStateDelta,System.Boolean)">
-            <summary>
-            Evaluates <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> of a given
-            <see cref="T:Libplanet.Tx.Transaction`1"/> and gets the resulting states.
-            </summary>
-            <param name="block">The <see cref="T:Libplanet.Blocks.IPreEvaluationBlock`1"/> that <paramref name="tx"/>
-            belongs to.</param>
-            <param name="tx">The <see cref="T:Libplanet.Tx.Transaction`1"/> to evaluate.</param>
-            <param name="previousStates">The states immediately before evaluating
-            <paramref name="tx"/>.</param>
-            <param name="rehearsal">Pass <see langword="true"/> if it is intended
-            to be a dry-run (i.e., the returned result will be never used).
-            The default value is <see langword="false"/>.</param>
-            <returns>The resulting states of evaluating the <see cref="T:Libplanet.Action.IAction"/>s in
-            <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> of <paramref name="tx"/>.  Note that it maintains
-            <see cref="P:Libplanet.Action.IAccountStateDelta.UpdatedAddresses"/> of the given
-            <paramref name="previousStates"/> as well.</returns>
-        </member>
-        <member name="M:Libplanet.Action.ActionEvaluator`1.EvaluatePolicyBlockAction(Libplanet.Blocks.IPreEvaluationBlock{`0},Libplanet.Action.IAccountStateDelta,Libplanet.Store.Trie.ITrie)">
+        <member name="M:Libplanet.Action.ActionEvaluator`1.EvaluatePolicyBlockAction(Libplanet.Blocks.IPreEvaluationBlockHeader,Libplanet.Action.IAccountStateDelta,Libplanet.Store.Trie.ITrie)">
             <summary>
             Evaluates the <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction"/> set by the policy when
             this <see cref="T:Libplanet.Action.ActionEvaluator`1"/> was instantiated for a given
-            <see cref="T:Libplanet.Blocks.Block`1"/>.
+            <see cref="T:Libplanet.Blocks.IPreEvaluationBlockHeader"/>.
             </summary>
-            <param name="block">The block to evaluate.</param>
+            <param name="blockHeader">The header of the block to evaluate.</param>
             <param name="previousStates">The states immediately before the evaluation of
             the <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction"/> held by the instance.</param>
             <param name="previousBlockStatesTrie">The trie to contain states at previous block.
             </param>
             <returns>The <see cref="T:Libplanet.Action.ActionEvaluation"/> of evaluating
             the <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction"/> held by the instance
-            for the <paramref name="block"/>.</returns>
+            for the <paramref name="blockHeader"/>.</returns>
         </member>
-        <member name="M:Libplanet.Action.ActionEvaluator`1.GetPreviousBlockOutputStates(Libplanet.Blocks.IPreEvaluationBlock{`0},Libplanet.Blockchain.StateCompleterSet{`0})">
+        <member name="M:Libplanet.Action.ActionEvaluator`1.GetPreviousBlockOutputStates(Libplanet.Blocks.IPreEvaluationBlockHeader,Libplanet.Blockchain.StateCompleterSet{`0})">
             <summary>
-            Retrieves the last previous states for the previous block of <paramref name="block"/>.
+            Retrieves the last previous states for the previous block of
+            <paramref name="blockHeader"/>.
             </summary>
-            <param name="block">The block to reference.</param>
+            <param name="blockHeader">The header of block to reference.</param>
             <param name="stateCompleterSet">The <see cref="T:Libplanet.Blockchain.StateCompleterSet`1"/> to use.</param>
             <returns>The last previous <see cref="T:Libplanet.Action.IAccountStateDelta"/> for the previous
             <see cref="T:Libplanet.Blocks.Block`1"/>.
@@ -1034,6 +982,19 @@
             <returns>A clone instance, which is distinct from its original.  Its internal state
             is entirely equivalent to the original's unconsumed initial state.</returns>
         </member>
+        <member name="T:Libplanet.Action.IActionTypeLoader">
+            <summary>
+            An interface to load action types branched by block index.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Action.IActionTypeLoader.Load(Libplanet.Blocks.IPreEvaluationBlockHeader)">
+            <summary>
+            Load action types branched by <paramref name="blockHeader"/>.
+            </summary>
+            <param name="blockHeader">A <see cref="T:Libplanet.Blocks.BlockHeader"/> to determine what action types to
+            use.</param>
+            <returns>A dictionary made of action id to action type pairs.</returns>
+        </member>
         <member name="T:Libplanet.Action.IExtractableException">
             <summary>
             Marks an exception type as able to extract its metadata, so that these metadata can be
@@ -1379,6 +1340,27 @@
             <returns> Generated random <see cref="T:System.Guid"/>.
             </returns>
             <seealso cref="T:Libplanet.Action.IRandom"/>
+        </member>
+        <member name="T:Libplanet.Action.StaticActionTypeLoader">
+            <summary>
+            An <see cref="T:Libplanet.Action.IActionTypeLoader"/> implementation to load action types
+            without branching by block index.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Action.StaticActionTypeLoader.#ctor(System.Collections.Generic.IEnumerable{System.Reflection.Assembly},System.Type)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Action.StaticActionTypeLoader"/> instance.
+            </summary>
+            <param name="assemblies">The assemblies to load actions from.</param>
+            <param name="baseType">The base type of actions to load.</param>
+        </member>
+        <member name="M:Libplanet.Action.StaticActionTypeLoader.Load(Libplanet.Blocks.IPreEvaluationBlockHeader)">
+            <summary>
+            Load action types from assemblies.
+            </summary>
+            <param name="blockHeader">A <see cref="T:Libplanet.Blocks.BlockHeader"/> to determine what action types to
+            use. But it isn't used in this implementation.</param>
+            <returns>A dictionary made of action id to action type pairs.</returns>
         </member>
         <member name="T:Libplanet.Action.SupplyOverflowException">
             <summary>
@@ -2463,16 +2445,17 @@
             <inheritdoc cref="M:System.Exception.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)"/>
         </member>
         <member name="T:Libplanet.Blockchain.BlockChain`1">
-            <summary>
-            A class have <see cref="T:Libplanet.Blocks.Block`1"/>s, <see cref="T:Libplanet.Tx.Transaction`1"/>s, and the chain
-            information.
-            <para>In order to watch its state changes, implement <see cref="T:Libplanet.Blockchain.Renderers.IRenderer`1"/>
-            interface and pass it to the <see cref="M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Blockchain.Policies.IStagePolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block{`0},System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer{`0}})"/> constructor.</para>
-            </summary>
-            <remarks>This object is guaranteed that it has at least one block, since it takes a genesis
-            block when it's instantiated.</remarks>
-            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
-            to <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
+             <summary>
+             A class have <see cref="T:Libplanet.Blocks.Block`1"/>s, <see cref="T:Libplanet.Tx.Transaction`1"/>s, and the chain
+             information.
+             <para>In order to watch its state changes, implement <see cref="T:Libplanet.Blockchain.Renderers.IRenderer`1"/>
+             interface and pass it to the <see cref="M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Blockchain.Policies.IStagePolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block{`0},System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer{`0}})"/> constructor.</para>
+             </summary>
+             <remarks>This object is guaranteed that it has at least one block, since it takes a genesis
+             block when it's instantiated.</remarks>
+             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
+             to <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
+            
         </member>
         <member name="F:Libplanet.Blockchain.BlockChain`1._blocks">
             <summary>
@@ -2510,6 +2493,14 @@
             <exception cref="T:Libplanet.Blocks.InvalidGenesisBlockException">Thrown when the <paramref name="store"/>
             has a genesis block and it does not match to what the network expects
             (i.e., <paramref name="genesisBlock"/>).</exception>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Blockchain.Policies.IStagePolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block{`0},System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer{`0}},Libplanet.Blockchain.IBlockChainStates{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Blockchain.Policies.IStagePolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block{`0},System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer{`0}})" />
+            <param name="blockChainStates">The <see cref="T:Libplanet.Blockchain.IBlockChainStates`1"/> implementation to state lookup.</param>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Blockchain.Policies.IStagePolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block{`0},System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer{`0}},Libplanet.Blockchain.IBlockChainStates{`0},Libplanet.Action.ActionEvaluator{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Blockchain.Policies.IStagePolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block{`0},System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer{`0}},Libplanet.Blockchain.IBlockChainStates{`0})" />
+            <param name="actionEvaluator">The <see cref="T:Libplanet.Action.ActionEvaluator`1" /> implementation to calculate next states when append new blocks.</param>
         </member>
         <member name="E:Libplanet.Blockchain.BlockChain`1.TipChanged">
             <summary>
@@ -2801,24 +2792,6 @@
             <returns>The next <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/> value of the
             <paramref name="address"/>.</returns>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.PerceiveBlock(Libplanet.Blocks.IBlockExcerpt,System.Nullable{System.DateTimeOffset})">
-            <summary>
-            Records and queries the <paramref name="perceivedTime"/> of the given
-            <paramref name="blockExcerpt"/>.
-            <para>Although blocks have their own <see cref="P:Libplanet.Blocks.Block`1.Timestamp"/>, but these values
-            are untrustworthy as they are arbitrarily determined by their miners.</para>
-            <para>On the other hand, this method returns the subjective time according to the local
-            node's perception.</para>
-            <para>If the local node has never perceived the <paramref name="blockExcerpt"/> yet,
-            it is perceived at that moment and the current time is returned instead. (However, you
-            can replace the current time with the <paramref name="perceivedTime"/> option.)
-            In other words, this method is idempotent.</para>
-            </summary>
-            <param name="blockExcerpt">The perceived block.</param>
-            <param name="perceivedTime">The time the local node perceived the given <paramref
-            name="blockExcerpt"/>.  The current time by default.</param>
-            <returns>A pair of a block and the time it was perceived.</returns>
-        </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.MakeTransaction(Libplanet.Crypto.PrivateKey,Libplanet.Action.IAction,System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})">
             <summary>
             Creates a new <see cref="T:Libplanet.Tx.Transaction`1"/> with a system action and stage it.
@@ -2921,7 +2894,7 @@
             by the same address, those with greater nonce never comes before those with
             lesser nonce.</returns>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.MineBlock(Libplanet.Crypto.PrivateKey,System.Nullable{System.DateTimeOffset},System.Nullable{System.Boolean},System.Nullable{System.Int64},System.Nullable{System.Int32},System.Nullable{System.Int32},System.Collections.Generic.IComparer{Libplanet.Tx.Transaction{`0}},System.Nullable{System.Threading.CancellationToken})">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.MineBlock(Libplanet.Crypto.PrivateKey,System.Nullable{System.DateTimeOffset},System.Nullable{System.Boolean},System.Collections.Generic.IComparer{Libplanet.Tx.Transaction{`0}},System.Nullable{System.Threading.CancellationToken})">
             <summary>
             <para>
             Mines a next <see cref="T:Libplanet.Blocks.Block`1"/> using staged <see cref="T:Libplanet.Tx.Transaction`1"/>s.
@@ -2936,14 +2909,6 @@
             <param name="miner">The miner's <see cref="T:Libplanet.Crypto.PublicKey"/> that mines the block.</param>
             <param name="timestamp">The <see cref="T:System.DateTimeOffset"/> when mining started.</param>
             <param name="append">Whether to append the mined block immediately after mining.</param>
-            <param name="maxTransactionsBytes">The maximum number of bytes a block can have.
-            See also <see cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxTransactionsBytes(System.Int64)"/>.</param>
-            <param name="maxTransactions">The maximum number of transactions that a block can
-            accept.  See also <see cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxTransactionsPerBlock(System.Int64)"/>.
-            </param>
-            <param name="maxTransactionsPerSigner">The maximum number of transactions
-            that a block can accept per signer.  See also
-            <see cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxTransactionsPerSignerPerBlock(System.Int64)"/>.</param>
             <param name="txPriority">An optional comparer for give certain transactions to
             priority to belong to the block.  No certain priority by default.</param>
             <param name="cancellationToken">A cancellation token used to propagate notification
@@ -3100,6 +3065,21 @@
             <param name="block">The block that evaluated actions belong to.</param>
             <param name="evaluations">The result of evaluated actions.</param>
             <returns>The corresponding <see cref="T:Libplanet.Tx.TxExecution"/>s.</returns>
+        </member>
+        <member name="T:Libplanet.Blockchain.BlockChainStates`1">
+            <summary>
+            A default implementation of <see cref="T:Libplanet.Blockchain.IBlockChainStates`1" /> interface.
+            </summary>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.</typeparam>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChainStates`1.GetStates(System.Collections.Generic.IReadOnlyList{Libplanet.Address},Libplanet.Blocks.BlockHash,Libplanet.Blockchain.StateCompleter{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.IBlockChainStates`1.GetStates(System.Collections.Generic.IReadOnlyList{Libplanet.Address},Libplanet.Blocks.BlockHash,Libplanet.Blockchain.StateCompleter{`0})"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChainStates`1.GetBalance(Libplanet.Address,Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash,Libplanet.Blockchain.FungibleAssetStateCompleter{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.IBlockChainStates`1.GetBalance(Libplanet.Address,Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash,Libplanet.Blockchain.FungibleAssetStateCompleter{`0})"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChainStates`1.GetTotalSupply(Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash,Libplanet.Blockchain.TotalSupplyStateCompleter{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.IBlockChainStates`1.GetTotalSupply(Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash,Libplanet.Blockchain.TotalSupplyStateCompleter{`0})"/>
         </member>
         <member name="T:Libplanet.Blockchain.BlockLocator">
             <summary>
@@ -3271,7 +3251,7 @@
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
             to <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.Nullable{System.TimeSpan},System.Nullable{System.Int64},System.Nullable{System.Int64},System.Func{Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.Transaction{`0},Libplanet.Tx.TxPolicyViolationException},System.Func{Libplanet.Blockchain.BlockChain{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.BlockPolicyViolationException},System.Collections.Generic.IComparer{Libplanet.Blocks.IBlockExcerpt},System.Func{System.Int64,System.Int64},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int32},System.Collections.Immutable.IImmutableSet{Libplanet.Assets.Currency})">
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.Nullable{System.TimeSpan},System.Nullable{System.Int64},System.Nullable{System.Int64},System.Func{Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.Transaction{`0},Libplanet.Tx.TxPolicyViolationException},System.Func{Libplanet.Blockchain.BlockChain{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.BlockPolicyViolationException},System.Collections.Generic.IComparer{Libplanet.Blocks.IBlockExcerpt},System.Func{System.Int64,System.Int64},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int32},System.Collections.Immutable.IImmutableSet{Libplanet.Assets.Currency})">
             <summary>
             <para>
             Creates a default <see cref="T:Libplanet.Blockchain.Policies.BlockPolicy`1"/> instance.
@@ -3321,6 +3301,9 @@
             a <see cref="T:Libplanet.Blocks.Block`1"/> given the <see cref="T:Libplanet.Blocks.Block`1"/>'s index.
             Goes to <see cref="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetMaxTransactionsPerSignerPerBlock(System.Int64)"/>.  Set to
             <see cref="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetMaxTransactionsPerBlock(System.Int64)"/> by default.</param>
+            <param name="getMinBlockProtocolVersion">The function determining the minimum
+            block protocol version of a <see cref="T:Libplanet.Blocks.Block`1"/> given the <see cref="T:Libplanet.Blocks.Block`1"/>'s
+            index.  Set to a constant function of <c>0</c> by default.</param>
             <param name="nativeTokens">A fixed set of <see cref="T:Libplanet.Assets.Currency"/> objects that are
             supported by the blockchain as first-class citizens.  Empty by default.</param>
         </member>
@@ -3373,6 +3356,9 @@
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetMaxTransactionsPerSignerPerBlock(System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetMinBlockProtocolVersion(System.Int64)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Blockchain.Policies.DifficultyAdjustment`1.BaseAlgorithm(Libplanet.Blockchain.BlockChain{`0},System.TimeSpan,System.Int64,System.Int64)">
@@ -3549,6 +3535,16 @@
             <returns>The maximum number of <see cref="T:Libplanet.Tx.Transaction`1"/>s allowed per signer for
             a valid <see cref="T:Libplanet.Blocks.Block`1"/> can accept.</returns>
         </member>
+        <member name="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMinBlockProtocolVersion(System.Int64)">
+            <summary>
+            Gets the minimum <see cref="P:Libplanet.Blocks.Block`1.ProtocolVersion"/> allowed for
+            a valid <see cref="T:Libplanet.Blocks.Block`1"/>.
+            </summary>
+            <param name="index">The <see cref="P:Libplanet.Blocks.Block`1.Index"/> of the <see cref="T:Libplanet.Blocks.Block`1"/>
+            for which this constraint should apply.</param>
+            <returns>The minimum value for <see cref="P:Libplanet.Blocks.Block`1.ProtocolVersion"/> allowed for
+            a valid <see cref="T:Libplanet.Blocks.Block`1"/>.</returns>
+        </member>
         <member name="T:Libplanet.Blockchain.Policies.IStagePolicy`1">
             <summary>
             An interface to configure a <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s strategy to deal with staged
@@ -3720,6 +3716,12 @@
         </member>
         <member name="M:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.GetNextTxNonce(Libplanet.Blockchain.BlockChain{`0},Libplanet.Address)">
             <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.GetInner(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId,System.Boolean)">
+            <remarks>
+            It has been intended to avoid recursive lock, hence doesn't hold any synchronous scope.
+            Therefore, we should manage the lock from its caller side.
+            </remarks>
         </member>
         <member name="T:Libplanet.Blockchain.Renderers.AnonymousActionRenderer`1">
             <summary>
@@ -5179,6 +5181,9 @@
         <member name="P:Libplanet.Blocks.Block`1.Transactions">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockContent`1.Transactions"/>
         </member>
+        <member name="P:Libplanet.Blocks.Block`1.Libplanet#Blocks#IBlockContent#Transactions">
+            <inheritdoc cref="P:Libplanet.Blocks.IBlockContent.Transactions"/>
+        </member>
         <member name="M:Libplanet.Blocks.Block`1.op_Equality(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
             <summary>
             Equivalent to <see cref="M:System.IEquatable`1.Equals(`0)"/>.
@@ -5740,49 +5745,6 @@
             <param name="nonce">The proof-of-work nonce.</param>
             <returns>A <see cref="T:Bencodex.Types.Dictionary"/> representation for mining.</returns>
         </member>
-        <member name="T:Libplanet.Blocks.BlockPerception">
-            <summary>
-            <para>
-            An implementation of <see cref="T:Libplanet.Blocks.IBlockExcerpt"/> with a timestamp attached.
-            </para>
-            <para>
-            Used for keeping track of when the local node has percieved <see cref="T:Libplanet.Blocks.IBlockExcerpt"/>s.
-            </para>
-            </summary>
-        </member>
-        <member name="M:Libplanet.Blocks.BlockPerception.#ctor(Libplanet.Blocks.IBlockExcerpt,System.DateTimeOffset)">
-            <summary>
-            Creates an instance of <see cref="T:Libplanet.Blocks.BlockPerception"/> with
-            a provided timestamp.
-            </summary>
-            <param name="blockExcerpt">The excerpt of a block to attach a timestamp to.</param>
-            <param name="perceivedTime">The time in UTC when the local node perceived
-            <paramref name="blockExcerpt"/>.</param>
-        </member>
-        <member name="M:Libplanet.Blocks.BlockPerception.#ctor(Libplanet.Blocks.IBlockExcerpt)">
-            <summary>
-            Creates an instance of <see cref="T:Libplanet.Blocks.BlockPerception"/> with the local time in UTC.
-            </summary>
-            <param name="blockExcerpt">The excerpt of a block to attach a timestamp to.</param>
-        </member>
-        <member name="P:Libplanet.Blocks.BlockPerception.ProtocolVersion">
-            <inheritdoc/>
-        </member>
-        <member name="P:Libplanet.Blocks.BlockPerception.Index">
-            <inheritdoc/>
-        </member>
-        <member name="P:Libplanet.Blocks.BlockPerception.Hash">
-            <inheritdoc/>
-        </member>
-        <member name="P:Libplanet.Blocks.BlockPerception.TotalDifficulty">
-            <inheritdoc/>
-        </member>
-        <member name="P:Libplanet.Blocks.BlockPerception.PerceivedTime">
-            <summary>
-            The time in UTC when the local node perceived
-            the corresponding <see cref="T:Libplanet.Blocks.IBlockExcerpt"/>.
-            </summary>
-        </member>
         <member name="T:Libplanet.Blocks.BlockPolicyViolationException">
             <summary>
             An exception <em>returned</em> when a <see cref="T:Libplanet.Blocks.Block`1"/> violates
@@ -5810,6 +5772,21 @@
             Transactions belonging to the block.
             </summary>
             <remarks>This is always ordered by <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.</remarks>
+        </member>
+        <member name="T:Libplanet.Blocks.IBlockContent">
+            <summary>
+            A common interface for blocks that do not have any proofs, but have their metadata and
+            containing <see cref="P:Libplanet.Blocks.IBlockContent.Transactions"/>.
+            </summary>
+            <remarks>This is always ordered by <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.</remarks>
+            <remarks>It is similar with <see cref="T:Libplanet.Blocks.IBlockContent`1"/> but
+            it is non-generic interface. It means that it doesn't check the action types
+            in serialization.</remarks>
+        </member>
+        <member name="P:Libplanet.Blocks.IBlockContent.Transactions">
+            <summary>
+            Transactions belonging to the block.
+            </summary>
         </member>
         <member name="T:Libplanet.Blocks.IBlockExcerpt">
             <summary>
@@ -6205,6 +6182,17 @@
             <typeparam name="T">A class implementing <see cref="T:Libplanet.Action.IAction"/> to include.  This type
             parameter is aligned with <see cref="T:Libplanet.Tx.Transaction`1"/>'s type parameter.</typeparam>
         </member>
+        <member name="T:Libplanet.Blocks.IPreEvaluationBlock">
+            <summary>
+            A common interface for blocks that have their proof-of-work
+            <see cref="P:Libplanet.Blocks.IPreEvaluationBlockHeader.Nonce"/>s and
+            <see cref="P:Libplanet.Blocks.IBlockContent.Transactions"/>, but are not evaluated yet (i.e., their state
+            root hashes are not yet determined).
+            </summary>
+            <remarks>It is similar with <see cref="T:Libplanet.Blocks.IPreEvaluationBlock`1"/> but
+            it is non-generic interface. It means that it doesn't check the action types
+            in serialization.</remarks>
+        </member>
         <member name="T:Libplanet.Blocks.IPreEvaluationBlockHeader">
             <summary>
             A common interface for blocks that have their proof-of-work <see cref="P:Libplanet.Blocks.IPreEvaluationBlockHeader.Nonce"/>s,
@@ -6260,6 +6248,9 @@
         </member>
         <member name="P:Libplanet.Blocks.PreEvaluationBlock`1.Transactions">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockContent`1.Transactions"/>
+        </member>
+        <member name="P:Libplanet.Blocks.PreEvaluationBlock`1.Libplanet#Blocks#IBlockContent#Transactions">
+            <inheritdoc cref="P:Libplanet.Blocks.IBlockContent.Transactions" />
         </member>
         <member name="P:Libplanet.Blocks.PreEvaluationBlock`1.ProtocolVersion">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.ProtocolVersion"/>
@@ -8403,12 +8394,6 @@
         <member name="M:Libplanet.Store.BaseStore.DeleteTxIdBlockHashIndex(Libplanet.Tx.TxId,Libplanet.Blocks.BlockHash)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.BaseStore.SetBlockPerceivedTime(Libplanet.Blocks.BlockHash,System.DateTimeOffset)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.BaseStore.GetBlockPerceivedTime(Libplanet.Blocks.BlockHash)">
-            <inheritdoc/>
-        </member>
         <member name="M:Libplanet.Store.BaseStore.ListTxNonces(System.Guid)">
             <inheritdoc/>
         </member>
@@ -8886,12 +8871,6 @@
         <member name="M:Libplanet.Store.DefaultStore.DeleteTxIdBlockHashIndex(Libplanet.Tx.TxId,Libplanet.Blocks.BlockHash)">
             <inheritdoc cref="M:Libplanet.Store.BaseStore.DeleteTxIdBlockHashIndex(Libplanet.Tx.TxId,Libplanet.Blocks.BlockHash)"/>
         </member>
-        <member name="M:Libplanet.Store.DefaultStore.SetBlockPerceivedTime(Libplanet.Blocks.BlockHash,System.DateTimeOffset)">
-            <inheritdoc cref="M:Libplanet.Store.BaseStore.SetBlockPerceivedTime(Libplanet.Blocks.BlockHash,System.DateTimeOffset)"/>
-        </member>
-        <member name="M:Libplanet.Store.DefaultStore.GetBlockPerceivedTime(Libplanet.Blocks.BlockHash)">
-            <inheritdoc cref="M:Libplanet.Store.BaseStore.GetBlockPerceivedTime(Libplanet.Blocks.BlockHash)"/>
-        </member>
         <member name="M:Libplanet.Store.DefaultStore.ListTxNonces(System.Guid)">
             <inheritdoc/>
         </member>
@@ -9163,22 +9142,6 @@
             <param name="txId">The <see cref="T:Libplanet.Tx.TxId"/> of the <see cref="T:Libplanet.Tx.Transaction`1"/>.</param>
             <param name="blockHash">The <see cref="T:Libplanet.Blocks.BlockHash"/>
             of the <see cref="T:Libplanet.Blocks.Block`1"/>.</param>.
-        </member>
-        <member name="M:Libplanet.Store.IStore.SetBlockPerceivedTime(Libplanet.Blocks.BlockHash,System.DateTimeOffset)">
-            <summary>
-            Records the perceived time of a block.  If there is already a record, it is overwritten.
-            </summary>
-            <param name="blockHash"><see cref="P:Libplanet.Blocks.Block`1.Hash"/> to record its perceived time.
-            </param>
-            <param name="perceivedTime">The perceived time to record.</param>
-        </member>
-        <member name="M:Libplanet.Store.IStore.GetBlockPerceivedTime(Libplanet.Blocks.BlockHash)">
-            <summary>
-            Queries the perceived time of a block, if it has been recorded.
-            </summary>
-            <param name="blockHash"><see cref="P:Libplanet.Blocks.Block`1.Hash"/> to query.</param>
-            <returns>The perceived time of a block, if it exists.  Otherwise,
-            <see langword="null"/>.</returns>
         </member>
         <member name="M:Libplanet.Store.IStore.ListTxNonces(System.Guid)">
             <summary>
@@ -10067,6 +10030,34 @@
             <param name="txid">The invalid <see cref="T:Libplanet.Tx.Transaction`1"/>'s
             <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.  It is automatically included to
             the <see cref="P:System.Exception.Message"/> string.</param>
+        </member>
+        <member name="T:Libplanet.Tx.ITransaction">
+            <summary>
+            Similar to <see cref="T:Libplanet.Tx.ITxExcerpt"/> except that it has <see cref="P:Libplanet.Tx.ITransaction.Signature"/>,
+            <see cref="P:Libplanet.Tx.ITransaction.SystemAction"/> and <see cref="P:Libplanet.Tx.ITransaction.CustomActions"/> as well.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Tx.ITransaction.Signature">
+            <summary>
+            A digital signature of the content of this <see cref="T:Libplanet.Tx.ITransaction"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Tx.ITransaction.SystemAction">
+            <summary>
+            A system action (if any) that this <see cref="T:Libplanet.Tx.ITransaction"/> contains.
+            </summary>
+            <remarks>It is similar with <see cref="P:Libplanet.Tx.Transaction`1.SystemAction"/> but
+            it is non-generic.  (i.e., it doesn't require to deserialize the system action to
+            <see cref="T:Libplanet.Action.IAction"/> while serialization.</remarks>
+        </member>
+        <member name="P:Libplanet.Tx.ITransaction.CustomActions">
+            <summary>
+            Zero or more user-defined custom actions that this <see cref="T:Libplanet.Tx.ITransaction"/>
+            contains.
+            </summary>
+            <remarks>It is similar with <see cref="P:Libplanet.Tx.Transaction`1.CustomActions"/> but
+            it is non-generic.  (i.e., it doesn't require to deserialize the custom actions to
+            <see cref="T:Libplanet.Action.IAction"/> while serialization.</remarks>
         </member>
         <member name="T:Libplanet.Tx.ITxExcerpt">
             <summary>
