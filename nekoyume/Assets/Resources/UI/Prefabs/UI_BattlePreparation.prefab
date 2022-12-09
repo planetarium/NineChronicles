@@ -17621,7 +17621,11 @@ MonoBehaviour:
   enemyCp: {fileID: 2036304415623430632}
   boostPopupButton: {fileID: 183432576108830691}
   mimisbrunnrBg: {fileID: 7610461272151471522}
-  eventDungeonBg: {fileID: 473706535001784168}
+  eventDungeonBgs:
+  - eventType: 3
+    background: {fileID: 1580173362770384484}
+  - eventType: 4
+    background: {fileID: 8151580400578758334}
   hasBg: {fileID: 1886977658}
   blockStartingTextObject: {fileID: 1382415843525520753}
   enemyCpContainer: {fileID: 5677835682297504188}

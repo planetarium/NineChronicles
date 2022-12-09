@@ -20,6 +20,7 @@ using Nekoyume.Model.Mail;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.EnumType;
 using Nekoyume.TableData;
+using EventType = Nekoyume.EnumType.EventType;
 using Toggle = Nekoyume.UI.Module.Toggle;
 using Material = Nekoyume.Model.Item.Material;
 
@@ -30,6 +31,13 @@ namespace Nekoyume.UI
 
     public class BattlePreparation : Widget
     {
+        [Serializable]
+        public class EventDungeonBg
+        {
+            public EventType eventType;
+            public GameObject background;
+        }
+
         [SerializeField]
         private AvatarInformation information;
 
@@ -83,7 +91,7 @@ namespace Nekoyume.UI
         private GameObject mimisbrunnrBg;
 
         [SerializeField]
-        private Image eventDungeonBg;
+        private EventDungeonBg[] eventDungeonBgs;
 
         [SerializeField]
         private GameObject hasBg;
@@ -291,18 +299,34 @@ namespace Nekoyume.UI
                 case StageType.HackAndSlash:
                     hasBg.SetActive(true);
                     mimisbrunnrBg.SetActive(false);
-                    eventDungeonBg.gameObject.SetActive(false);
+                    foreach (var eventDungeonBg in eventDungeonBgs)
+                    {
+                        eventDungeonBg.background.SetActive(false);
+                    }
                     break;
                 case StageType.Mimisbrunnr:
                     hasBg.SetActive(false);
                     mimisbrunnrBg.SetActive(true);
-                    eventDungeonBg.gameObject.SetActive(false);
+                    foreach (var eventDungeonBg in eventDungeonBgs)
+                    {
+                        eventDungeonBg.background.SetActive(false);
+                    }
                     break;
                 case StageType.EventDungeon:
                     hasBg.SetActive(false);
                     mimisbrunnrBg.SetActive(false);
-                    eventDungeonBg.gameObject.SetActive(true);
-                    eventDungeonBg.sprite = (EventManager.GetEventInfo() as EventDungeonIdBasedEventInfo)?.EventDungeonBattlePreparationBg;
+                    foreach (var eventDungeonBg in eventDungeonBgs)
+                    {
+                        eventDungeonBg.background.SetActive(false);
+                    }
+
+                    var eventType = EventManager.GetEventInfo().EventType;
+                    var eventDungeonBackground = eventDungeonBgs
+                        .FirstOrDefault(bg => bg.eventType == eventType)?.background;
+                    if (eventDungeonBackground != null)
+                    {
+                        eventDungeonBackground.SetActive(true);
+                    }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
