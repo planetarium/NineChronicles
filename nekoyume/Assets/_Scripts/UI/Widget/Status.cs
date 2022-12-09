@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Game.Character;
+using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
@@ -176,8 +177,9 @@ namespace Nekoyume.UI
             List<Costume> costumes
         )
         {
-            // frame
-            characterView.Set(equipments, costumes);
+            // portrait
+            var portraitId = Util.GetPortraitId(equipments, costumes);
+            characterView.SetByFullCostumeOrArmorId(portraitId);
 
             // level& name
             textLvName.text = $"<color=#B38271>LV. {avatarState.level}</color> {avatarState.NameWithHash}";

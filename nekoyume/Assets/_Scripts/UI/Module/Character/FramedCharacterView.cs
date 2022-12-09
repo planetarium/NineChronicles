@@ -43,24 +43,6 @@ namespace Nekoyume.UI.Module
             _avatarStateToDisplay = avatarState;
         }
 
-        public void Set(List<Equipment> equipments, List<Costume> costumes)
-        {
-            var itemId = GameConfig.DefaultAvatarArmorId;
-            var armor = equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
-            if (armor != null)
-            {
-                itemId = armor.Id;
-            }
-
-            var fullCostume = costumes.FirstOrDefault(x => x.ItemSubType == ItemSubType.FullCostume);
-            if (fullCostume != null)
-            {
-                itemId = fullCostume.Id;
-            }
-
-            SetByFullCostumeOrArmorId(itemId);
-        }
-
         protected override void SetDim(bool isDim)
         {
             base.SetDim(isDim);
