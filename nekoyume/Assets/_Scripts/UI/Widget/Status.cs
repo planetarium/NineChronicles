@@ -177,7 +177,7 @@ namespace Nekoyume.UI
         )
         {
             // frame
-            characterView.Set(equipments, costumes, avatarState.characterId);
+            characterView.Set(equipments, costumes);
 
             // level& name
             textLvName.text = $"<color=#B38271>LV. {avatarState.level}</color> {avatarState.NameWithHash}";

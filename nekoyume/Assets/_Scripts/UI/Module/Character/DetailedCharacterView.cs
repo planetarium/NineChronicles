@@ -28,18 +28,13 @@ namespace Nekoyume.UI.Module
             int? titleId,
             int level) =>
             SetByFullCostumeOrArmorId(armorId, titleId, level.ToString());
-        
+
         public void SetByFullCostumeOrArmorId(
             int armorId,
             int? titleId,
             string level)
         {
             SetByFullCostumeOrArmorId(armorId);
-            if (titleId.HasValue)
-            {
-                var sprite = SpriteHelper.GetTitleFrame(titleId.Value);
-                SetFrame(sprite);
-            }
             levelText.text = level;
         }
 

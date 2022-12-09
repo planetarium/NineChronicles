@@ -13,9 +13,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private BattleTimerView battleTimerView = null;
 
-        public void SetData(List<Equipment> equipments, List<Costume> costumes, int characterId, int turnLimit)
+        public void SetData(List<Equipment> equipments, List<Costume> costumes, int turnLimit)
         {
-            characterView.Set(equipments, costumes, characterId);
+            characterView.Set(equipments, costumes);
             battleTimerView.Show(turnLimit);
         }
 
