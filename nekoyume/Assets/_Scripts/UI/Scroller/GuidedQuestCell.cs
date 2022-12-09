@@ -51,6 +51,9 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private Image iconImage;
 
+        [SerializeField]
+        private Image effectedIconImage;
+
         private bool _inProgress;
 
         public readonly ISubject<GuidedQuestCell> onClick = new Subject<GuidedQuestCell>();
@@ -120,12 +123,14 @@ namespace Nekoyume.UI.Scroller
             var eventInfo = EventManager.GetEventInfo() as EventDungeonIdBasedEventInfo;
             if (isEvent && eventInfo is not null)
             {
-                iconImage.sprite = Quest switch
+                var sprite = Quest switch
                 {
                     WorldQuest => eventInfo.EventDungeonGuidedQuestIcon,
                     CombinationEquipmentQuest => eventInfo.EventRecipeGuidedQuestIcon,
                     _ => iconImage.sprite
                 };
+                iconImage.sprite = sprite;
+                effectedIconImage.sprite = sprite;
             }
         }
 
