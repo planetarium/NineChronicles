@@ -111,7 +111,7 @@ jobs:
       - name: Set up Python # FIXME: 나중에 내장 파이썬 버전이 3.7 이상으로 올라가면 삭제할 것
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8.6
+          python-version: 3.11.0
 
       - uses: actions/setup-dotnet@v1
         with:
