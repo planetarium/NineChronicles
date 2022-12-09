@@ -240,6 +240,8 @@ namespace Nekoyume.UI
                         Find<ArenaBattlePreparation>().Show(
                             _grandFinaleScheduleRow?.Id ?? 0,
                             _grandFinaleParticipants[index].AvatarState,
+                            equipments,
+                            costumes,
                             CPHelper.TotalCP(equipments, costumes, runeOptions, lv, row, costumeSheet));
                     }
                     else
@@ -247,6 +249,8 @@ namespace Nekoyume.UI
                         Find<ArenaBattlePreparation>().Show(
                             _roundData,
                             _boundedData[index].AvatarState,
+                            equipments,
+                            costumes,
                             CPHelper.TotalCP(equipments, costumes, runeOptions, lv, row, costumeSheet));
                     }
                 })
