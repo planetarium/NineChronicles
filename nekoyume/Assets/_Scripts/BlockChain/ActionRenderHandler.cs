@@ -1170,10 +1170,22 @@ namespace Nekoyume.BlockChain
                 LocalLayer.Instance.ClearAvatarModifiers<AvatarDailyRewardReceivedIndexModifier>(
                     eval.Action.avatarAddress);
                 UpdateCurrentAvatarStateAsync(eval).Forget();
-                UI.NotificationSystem.Push(
+                NotificationSystem.Push(
                     MailType.System,
                     L10nManager.Localize("UI_RECEIVED_DAILY_REWARD"),
                     NotificationCell.NotificationType.Notification);
+
+                if (!RuneFrontHelper.TryGetRuneData(RuneHelper.DailyRewardRune.Ticker, out var data))
+                {
+                    return;
+                }
+
+                var runeName = L10nManager.Localize($"RUNE_NAME_{data.id}");
+                var amount = States.Instance.GameConfigState.DailyRuneRewardAmount;
+                NotificationSystem.Push(
+                    MailType.System,
+                    $" {L10nManager.Localize("OBTAIN")} : {runeName} x {amount}",
+                    NotificationCell.NotificationType.RuneAcquisition);
             }
         }
 
