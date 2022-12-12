@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.L10n;
+using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module.WorldBoss;
@@ -138,6 +139,32 @@ namespace Nekoyume.Helper
                     }
                     return true;
             }
+        }
+
+        public static string GetRuneValueString(RuneOptionSheet.Row.RuneOptionInfo option)
+        {
+            var isPercent = option.SkillValueType == StatModifier.OperationType.Percentage;
+            var curPower = isPercent ? option.SkillValue * 100 : option.SkillValue;
+            string valueString;
+
+            var tableSheets = Game.Game.instance.TableSheets;
+            if (tableSheets.SkillSheet.TryGetValue(option.SkillId, out var skillRow) &&
+                tableSheets.SkillBuffSheet.TryGetValue(skillRow.Id, out var skillBuffRow) &&
+                tableSheets.StatBuffSheet.TryGetValue(skillBuffRow.BuffIds.First(), out var buffRow))
+            {
+                valueString = $"{StatExtensions.ValueToString(buffRow.StatModifier.StatType, (int)curPower)}";
+            }
+            else if (isPercent)
+            {
+                valueString = $"{curPower}%";
+            }
+            else
+            {
+                valueString = curPower == (int)curPower ?
+                    $"{(int)curPower}" : $"{curPower}";
+            }
+
+            return valueString;
         }
     }
 }

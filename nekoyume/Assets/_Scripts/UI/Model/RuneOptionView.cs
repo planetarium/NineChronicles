@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System.Linq;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Stat;
+using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Common;
@@ -81,24 +84,20 @@ namespace Nekoyume.UI.Model
                 skillObjects.ForEach(x => x.SetActive(true));
                 skillArrows.ForEach(x => x.SetActive(true));
 
-                var isPercent = option.SkillValueType == StatModifier.OperationType.Percentage;
                 var skillName = L10nManager.Localize($"SKILL_NAME_{option.SkillId}");
-                var curPower = isPercent ? option.SkillValue * 100 : option.SkillValue;
-                var nextPower = isPercent ? nextOption.SkillValue * 100 : nextOption.SkillValue;
-                var curSkillValue = curPower == (int)curPower ? $"{(int)curPower}" : $"{curPower}";
-                var nextSkillValue =
-                    nextPower == (int)nextPower ? $"{(int)nextPower}" : $"{nextPower}";
-                var skillDescription = L10nManager.Localize($"SKILL_DESCRIPTION_{option.SkillId}",
-                    option.SkillChance, option.BuffDuration, curSkillValue);
                 var curChance = $"{option.SkillChance}%";
                 var nextChance = option.SkillChance == nextOption.SkillChance ? string.Empty : $"{nextOption.SkillChance}%";
                 var curCooldown = $"{option.SkillCooldown}";
                 var nextCooldown = option.SkillCooldown == nextOption.SkillCooldown ? string.Empty : $"{nextOption.SkillCooldown}";
+                var currentValueString = RuneFrontHelper.GetRuneValueString(option);
+                var nextValueString = RuneFrontHelper.GetRuneValueString(nextOption);
 
+                var skillDescription = L10nManager.Localize($"SKILL_DESCRIPTION_{option.SkillId}",
+                    nextOption.SkillChance, nextOption.BuffDuration, nextValueString);
                 skill.Set(skillName,
                     skillDescription,
-                    isPercent ? $"{curSkillValue}%" : $"{curSkillValue}",
-                    isPercent ? $"{nextSkillValue}%" : $"{nextSkillValue}",
+                    currentValueString,
+                    nextValueString,
                     curChance,
                     nextChance,
                     curCooldown,
@@ -144,15 +143,14 @@ namespace Nekoyume.UI.Model
             {
                 skill.gameObject.SetActive(true);
                 skillObjects.ForEach(x => x.SetActive(true));
-                var isPercent = option.SkillValueType == StatModifier.OperationType.Percentage;
                 var skillName = L10nManager.Localize($"SKILL_NAME_{option.SkillId}");
-                var power = isPercent ? option.SkillValue * 100 : option.SkillValue;
-                var skillValue = power == (int)power ? $"{(int)power}" : $"{power}";
+                var skillValueString = RuneFrontHelper.GetRuneValueString(option);
+
                 var skillDescription = L10nManager.Localize($"SKILL_DESCRIPTION_{option.SkillId}",
-                    option.SkillChance, option.BuffDuration, skillValue);
+                    option.SkillChance, option.BuffDuration, skillValueString);
                 skill.Set(skillName,
                     skillDescription,
-                    isPercent ? $"{skillValue}%" : $"{skillValue}",
+                    skillValueString,
                     string.Empty,
                     $"{option.SkillChance}%",
                     string.Empty,
