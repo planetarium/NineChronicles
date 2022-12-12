@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
@@ -184,8 +185,7 @@ namespace Nekoyume.UI.Module
         private void SetInventory(
             Nekoyume.Model.Item.Inventory inventory,
             Action<Inventory, Nekoyume.Model.Item.Inventory> onUpdateInventory = null,
-            bool reverseOrder = false,
-            BattleType battleType = BattleType.Adventure)
+            bool reverseOrder = false)
         {
             _equipments.Clear();
             _consumables.Clear();
@@ -723,6 +723,37 @@ namespace Nekoyume.UI.Module
             SetAction(clickItem);
             SetInventoryTab(predicateList, onUpdateInventory:onUpdateInventory, reverseOrder:reverseOrder);
             _toggleGroup.DisabledFunc = () => true;
+            StartCoroutine(CoUpdateEquipped());
+        }
+
+        private IEnumerator CoUpdateEquipped()
+        {
+            yield return null;
+            yield return new WaitForEndOfFrame();
+            UpdateEquipped();
+        }
+
+        public void UpdateEquipped()
+        {
+            var equipments = new List<Guid>();
+            for (var i = 1; i < (int)BattleType.End; i++)
+            {
+                var battleType = (BattleType)i;
+                equipments.AddRange(States.Instance.ItemSlotStates[battleType].Equipments);
+            }
+
+            foreach (var eps in _equipments.Values)
+            {
+                foreach (var equipment in eps)
+                {
+                    var equipped = equipments.Exists(x => x == ((Equipment)equipment.ItemBase).ItemId);
+                    if (equipped)
+                    {
+                        Debug.Log($"guid ");
+                    }
+                    equipment.Equipped.SetValueAndForceNotify(equipped);
+                }
+            }
         }
 
         public void ClearSelectedItem()
