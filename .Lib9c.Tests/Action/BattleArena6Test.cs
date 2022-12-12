@@ -262,20 +262,20 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void Execute_SheetRowNotFoundException()
+        public void Execute_ActionObsoletedException()
         {
             var action = new BattleArena6
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
-                championshipId = 9999999,
+                championshipId = 3,
                 round = 1,
                 ticket = 1,
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
             };
 
-            Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext
+            Assert.Throws<ActionObsoletedException>(() => action.Execute(new ActionContext
             {
                 PreviousStates = _initialStates,
                 Signer = _agent1Address,
