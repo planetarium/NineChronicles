@@ -14,7 +14,7 @@ namespace Nekoyume.Model.Stat
         protected readonly DecimalStat hit = new DecimalStat(StatType.HIT);
         protected readonly DecimalStat spd = new DecimalStat(StatType.SPD);
         protected readonly IntStat drv = new IntStat(StatType.DRV);
-        protected readonly DecimalStat drr = new DecimalStat(StatType.DRR);
+        protected readonly IntStat drr = new IntStat(StatType.DRR);
 
         public int HP => hp.Value;
         public int ATK => atk.Value;
@@ -23,7 +23,7 @@ namespace Nekoyume.Model.Stat
         public int HIT => hit.ValueAsInt;
         public int SPD => spd.ValueAsInt;
         public int DRV => drv.Value;
-        public int DRR => drr.ValueAsInt;
+        public int DRR => drr.Value;
 
         public bool HasHP => HP > 0;
         public bool HasATK => ATK > 0;
@@ -53,7 +53,7 @@ namespace Nekoyume.Model.Stat
             hit = (DecimalStat)value.hit.Clone();
             spd = (DecimalStat)value.spd.Clone();
             drv = (IntStat)value.drv.Clone();
-            drr = (DecimalStat)value.drr.Clone();
+            drr = (IntStat)value.drr.Clone();
         }
 
         public void Reset()
