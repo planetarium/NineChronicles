@@ -168,5 +168,9 @@ namespace Lib9c
         public const string TicketKey = "tk";
         public const string CostumesKey = "cs";
         public const string EquipmentsKey = "es";
+        public const string RuneInfos = "ri";
+
+        // Grand Finale
+        public const string GrandFinaleIdKey = "gfi";
     }
 }

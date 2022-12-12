@@ -14,6 +14,10 @@ namespace Nekoyume.Model.Skill.Arena
         public int Power { get; private set; }
         public int Chance { get; private set; }
 
+        // When used as model
+        [field: NonSerialized]
+        public SkillCustomField? CustomField { get; set; }
+
         protected ArenaSkill(SkillSheet.Row skillRow, int power, int chance)
         {
             SkillRow = skillRow;

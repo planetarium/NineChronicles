@@ -123,3 +123,6 @@ _300001,힐(전체),Normal,Heal,Heal,Ally,1,1 // 미구현
 510003,광폭화 Wave 3,Normal,Buff,Buff,Self,1,0
 510004,광폭화 Wave 4,Normal,Buff,Buff,Self,1,0
 510005,광폭화 Wave 5,Normal,Buff,Buff,Self,1,0
+600001,출혈,Normal,Debuff,Buff,Enemy,1,15
+700001,피해 감소 (고정),Normal,Buff,DamageReductionBuff,Self,1,15
+700002,피해 감소 (비율),Normal,Buff,DamageReductionBuff,Self,1,15

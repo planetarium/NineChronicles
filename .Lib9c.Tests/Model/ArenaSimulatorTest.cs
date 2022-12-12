@@ -6,7 +6,6 @@ namespace Lib9c.Tests
     using Libplanet.Action;
     using Nekoyume.Arena;
     using Nekoyume.Model;
-    using Nekoyume.Model.Arena;
     using Nekoyume.Model.BattleStatus.Arena;
     using Nekoyume.Model.State;
     using Xunit;
@@ -56,50 +55,6 @@ namespace Lib9c.Tests
             var enemyDigest = new ArenaPlayerDigest(_avatarState2, _arenaAvatarState2);
             var arenaSheets = _tableSheets.GetArenaSimulatorSheets();
             var log = simulator.Simulate(myDigest, enemyDigest, arenaSheets);
-
-            Assert.Equal(_random, simulator.Random);
-
-            var turn = log.Events.OfType<ArenaTurnEnd>().Count();
-            Assert.Equal(simulator.Turn, turn);
-
-            var players = log.Events.OfType<ArenaSpawnCharacter>();
-            var arenaCharacters = new List<ArenaCharacter>();
-            foreach (var player in players)
-            {
-                if (player.Character is ArenaCharacter arenaCharacter)
-                {
-                    arenaCharacters.Add(arenaCharacter);
-                }
-            }
-
-            Assert.Equal(2, players.Count());
-            Assert.Equal(2, arenaCharacters.Count);
-            Assert.Equal(1, arenaCharacters.Count(x => x.IsEnemy));
-            Assert.Equal(1, arenaCharacters.Count(x => !x.IsEnemy));
-
-            var dead = log.Events.OfType<ArenaDead>();
-            Assert.Single(dead);
-            var deadCharacter = dead.First().Character;
-            Assert.True(deadCharacter.IsDead);
-            Assert.Equal(0, deadCharacter.CurrentHP);
-            if (log.Result == ArenaLog.ArenaResult.Win)
-            {
-                Assert.True(deadCharacter.IsEnemy);
-            }
-            else
-            {
-                Assert.False(deadCharacter.IsEnemy);
-            }
-        }
-
-        [Fact]
-        public void SimulateV1()
-        {
-            var simulator = new ArenaSimulator(_random);
-            var myDigest = new ArenaPlayerDigest(_avatarState1, _arenaAvatarState1);
-            var enemyDigest = new ArenaPlayerDigest(_avatarState2, _arenaAvatarState2);
-            var arenaSheets = _tableSheets.GetArenaSimulatorSheets();
-            var log = simulator.SimulateV1(myDigest, enemyDigest, arenaSheets);
 
             Assert.Equal(_random, simulator.Random);
 

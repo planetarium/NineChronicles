@@ -1,6 +1,7 @@
 namespace Lib9c.Tests.Model.State
 {
     using Bencodex.Types;
+    using Nekoyume.Action;
     using Nekoyume.BlockChain.Policy;
     using Nekoyume.Model.State;
     using Xunit;
@@ -52,6 +53,19 @@ namespace Lib9c.Tests.Model.State
             Assert.Equal(state.StartedBlockIndex, deserialized.StartedBlockIndex);
             Assert.Equal(state.ReceivedBlockIndex, deserialized.ReceivedBlockIndex);
             Assert.Equal(state.CancellableBlockIndex, deserialized.CancellableBlockIndex);
+        }
+
+        [Theory]
+        [InlineData(1L, 1L, -110)]
+        [InlineData(1L, ClaimStakeReward.ObsoletedIndex, 0)]
+        [InlineData(1L, ClaimStakeReward.ObsoletedIndex + StakeState.RewardInterval, 1)]
+        public void CalculateAccumulateRuneRewards(
+            long startedBlockIndex,
+            long blockIndex,
+            int expected)
+        {
+            var state = new StakeState(default, startedBlockIndex);
+            Assert.Equal(expected, state.CalculateAccumulatedRuneRewards(blockIndex));
         }
     }
 }

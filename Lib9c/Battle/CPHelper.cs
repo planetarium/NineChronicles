@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Model;
 using Nekoyume.Model.Item;
@@ -10,13 +11,23 @@ namespace Nekoyume.Battle
 {
     public static class CPHelper
     {
-        /// <summary>
-        /// `AvatarState`의 CP를 반환한다.
-        /// 레벨 스탯, 그리고 장착한 장비의 스탯과 스킬을 고려합니다.
-        /// </summary>
-        /// <param name="avatarState"></param>
-        /// <param name="characterSheet"></param>
-        /// <returns></returns>
+        public static int TotalCP(
+            IEnumerable<Equipment> equipments,
+            IEnumerable<Costume> costumes,
+            IEnumerable<RuneOptionSheet.Row.RuneOptionInfo> runeOptions,
+            int level,
+            CharacterSheet.Row row,
+            CostumeStatSheet costumeStatSheet)
+        {
+            var levelStatsCp = GetStatsCP(row.ToStats(level), level);
+            var equipmentsCp = equipments.Sum(GetCP);
+            var costumeCp = costumes.Sum(c => GetCP(c, costumeStatSheet));
+            var runeCp = runeOptions.Sum(x => x.Cp);
+            var totalCp = DecimalToInt(levelStatsCp + equipmentsCp + costumeCp + runeCp);
+            return totalCp;
+        }
+
+        [Obsolete("Use TotalCP")]
         public static int GetCP(AvatarState avatarState, CharacterSheet characterSheet)
         {
             if (!characterSheet.TryGetValue(avatarState.characterId, out var row))
@@ -35,6 +46,7 @@ namespace Nekoyume.Battle
             return DecimalToInt(levelStatsCP + equipmentsCP);
         }
 
+        [Obsolete("Use TotalCP")]
         public static int GetCPV2(
             AvatarState avatarState,
             CharacterSheet characterSheet,
@@ -48,13 +60,6 @@ namespace Nekoyume.Battle
             return DecimalToInt(current + costumeCP);
         }
 
-        /// <summary>
-        /// return `Player` Combat Point.
-        /// Calculate Level Stat, Equipment Stat, Equipment SKills, Costume Stat.
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="costumeStatSheet"></param>
-        /// <returns></returns>
         public static int GetCP(Player player, CostumeStatSheet costumeStatSheet)
         {
             var levelStatsCP = GetStatsCP(player.Stats.BaseStats, player.Level);
@@ -64,12 +69,6 @@ namespace Nekoyume.Battle
             return DecimalToInt(levelStatsCP + equipmentsCP + costumeCP);
         }
 
-        /// <summary>
-        /// `Enemy`의 CP를 반환합니다.
-        /// 레벨 스탯, 별도 설정한 스킬을 고려한다. 그리고 장비는 없는 것으로 간주합니다.
-        /// </summary>
-        /// <param name="enemy"></param>
-        /// <returns></returns>
         public static int GetCP(Enemy enemy)
         {
             var levelStatsCP = GetStatsCP(enemy.Stats.BaseStats, enemy.Level);
@@ -77,11 +76,6 @@ namespace Nekoyume.Battle
             return DecimalToInt(levelStatsCP * GetSkillsMultiplier(skills.Length));
         }
 
-        /// <summary>
-        /// `ItemUsable`의 CP를 반환합니다.
-        /// </summary>
-        /// <param name="itemUsable"></param>
-        /// <returns></returns>
         public static int GetCP(ItemUsable itemUsable)
         {
             var statsCP = GetStatsCP(itemUsable.StatsMap);
@@ -100,6 +94,7 @@ namespace Nekoyume.Battle
             return DecimalToInt(GetStatsCP(statsMap));
         }
 
+        [Obsolete("Use GetCp")]
         public static int GetCP(ITradableItem tradableItem, CostumeStatSheet sheet)
         {
             if (tradableItem is ItemUsable itemUsable)
@@ -115,7 +110,7 @@ namespace Nekoyume.Battle
             return 0;
         }
 
-        public static decimal GetStatsCP(IStats stats, int characterLevel = 1)
+        private static decimal GetStatsCP(IStats stats, int characterLevel = 1)
         {
             var statTuples = stats.GetStats(true);
             return statTuples.Sum(tuple => GetStatCP(tuple.statType, tuple.value, characterLevel));
@@ -139,6 +134,10 @@ namespace Nekoyume.Battle
                     return GetCPOfHIT(statValue);
                 case StatType.SPD:
                     return GetCPOfSPD(statValue);
+                case StatType.DRV:
+                    return GetCPOfDamageReductionValue(statValue);
+                case StatType.DRR:
+                    return GetCPOfDamageReductionRate(statValue, characterLevel);
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -153,6 +152,13 @@ namespace Nekoyume.Battle
         public static decimal GetCPOfSPD(decimal value) => value * 3m;
 
         public static decimal GetCPOfHIT(decimal value) => value * 2.3m;
+
+        // NOTE : Temp formula
+        public static decimal GetCPOfDamageReductionValue(decimal value) => value * 10.5m;
+
+        // NOTE : Temp formula
+        public static decimal GetCPOfDamageReductionRate(decimal value, int characterLevel) =>
+            value * characterLevel * 20m;
 
         public static decimal GetCPOfCRI(decimal value, int characterLevel) =>
             value * characterLevel * 20m;

@@ -108,24 +108,57 @@ namespace Lib9c.Tests.Action
             Assert.Equal(action.AvatarAddress, deserialized.AvatarAddress);
         }
 
-        [Fact]
-        public void Execute_Success()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Execute_Success(bool useOldTable)
         {
-            Execute(_avatarAddress);
+            Execute(_avatarAddress, useOldTable);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Execute_With_Old_AvatarState_Success(bool useOldTable)
+        {
+            Execute(_avatarAddressForBackwardCompatibility, useOldTable);
         }
 
         [Fact]
-        public void Execute_With_Old_AvatarState_Success()
+        public void Execute_Throw_ActionObsoletedException()
         {
-            Execute(_avatarAddressForBackwardCompatibility);
+            var action = new ClaimStakeReward(_avatarAddress);
+            Assert.Throws<ActionObsoletedException>(() => action.Execute(new ActionContext
+            {
+                PreviousStates = _initialState,
+                Signer = _signerAddress,
+                BlockIndex = ClaimStakeReward.ObsoletedIndex + 1,
+            }));
         }
 
-        private void Execute(Address avatarAddress)
+        private void Execute(Address avatarAddress, bool useOldTable)
         {
+            var state = _initialState;
+            if (useOldTable)
+            {
+                var sheet = @"level,required_gold,item_id,rate
+1,50,400000,10
+1,50,500000,800
+2,500,400000,8
+2,500,500000,800
+3,5000,400000,5
+3,5000,500000,800
+4,50000,400000,5
+4,50000,500000,800
+5,500000,400000,5
+5,500000,500000,800".Serialize();
+                state = state.SetState(Addresses.GetSheetAddress<StakeRegularRewardSheet>(), sheet);
+            }
+
             var action = new ClaimStakeReward(avatarAddress);
             var states = action.Execute(new ActionContext
             {
-                PreviousStates = _initialState,
+                PreviousStates = state,
                 Signer = _signerAddress,
                 BlockIndex = StakeState.LockupInterval,
             });

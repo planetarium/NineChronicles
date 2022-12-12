@@ -76,7 +76,7 @@ namespace Nekoyume.Model
         {
         }
 
-        public EnemyPlayer(AvatarState avatarState, SimulatorSheets simulatorSheets) : base(
+        public EnemyPlayer(AvatarState avatarState, SimulatorSheetsV1 simulatorSheets) : base(
             avatarState, simulatorSheets)
         {
             NameWithHash = avatarState.NameWithHash;
@@ -87,7 +87,7 @@ namespace Nekoyume.Model
             NameWithHash = value.NameWithHash;
         }
 
-        public EnemyPlayer(ArenaPlayerDigest arenaPlayerDigest, ArenaSimulatorSheets simulatorSheets)
+        public EnemyPlayer(ArenaPlayerDigest arenaPlayerDigest, ArenaSimulatorSheetsV1 simulatorSheets)
             : base(arenaPlayerDigest, simulatorSheets)
         {
             NameWithHash = arenaPlayerDigest.NameWithHash;
@@ -96,7 +96,7 @@ namespace Nekoyume.Model
         public override void Spawn()
         {
             InitAI();
-            var spawn = new SpawnEnemyPlayer((CharacterBase) Clone());
+            var spawn = new SpawnEnemyPlayer((CharacterBase)Clone());
             Simulator.Log.Add(spawn);
         }
 

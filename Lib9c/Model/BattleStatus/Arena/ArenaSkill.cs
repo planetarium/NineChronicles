@@ -1,6 +1,6 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
-using JetBrains.Annotations;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Skill;
 
@@ -20,12 +20,12 @@ namespace Nekoyume.Model.BattleStatus.Arena
             public readonly SkillTargetType SkillTargetType;
             public readonly int Turn;
 
-            [CanBeNull]
-            public readonly Model.Buff.Buff Buff;
+            
+            public readonly Model.Buff.Buff? Buff;
 
             public ArenaSkillInfo(ArenaCharacter character, int effect, bool critical, SkillCategory skillCategory,
                 int turn, ElementalType elementalType = ElementalType.Normal,
-                SkillTargetType targetType = SkillTargetType.Enemy, [CanBeNull] Model.Buff.Buff buff = null)
+                SkillTargetType targetType = SkillTargetType.Enemy, Model.Buff.Buff? buff = null)
             {
                 Target = character;
                 Effect = effect;
@@ -40,8 +40,8 @@ namespace Nekoyume.Model.BattleStatus.Arena
 
         public readonly IEnumerable<ArenaSkillInfo> SkillInfos;
 
-        [CanBeNull]
-        public readonly IEnumerable<ArenaSkillInfo> BuffInfos;
+        
+        public readonly IEnumerable<ArenaSkillInfo>? BuffInfos;
 
         protected ArenaSkill(
             ArenaCharacter character,

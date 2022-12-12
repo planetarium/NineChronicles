@@ -1,5 +1,6 @@
 namespace Lib9c.Tests.TableData
 {
+    using System;
     using Libplanet.Action;
     using Libplanet.Assets;
     using Nekoyume.Extensions;
@@ -42,6 +43,43 @@ namespace Lib9c.Tests.TableData
             Assert.Equal(50, _sheet[1].Rewards[0].Rate);
             Assert.Equal(500000, _sheet[1].Rewards[1].ItemId);
             Assert.Equal(50, _sheet[1].Rewards[1].Rate);
+
+            Assert.All(_sheet.Values, r => Assert.Equal(StakeRegularRewardSheet.StakeRewardType.Item, r.Rewards[0].Type));
+
+            var patchedSheet = new StakeRegularRewardSheet();
+            const string tableContentWithRune = @"level,required_gold,item_id,rate,type
+1,50,400000,10,Item
+1,50,500000,800,Item
+1,50,20001,6000,Rune
+";
+            patchedSheet.Set(tableContentWithRune);
+            Assert.Single(patchedSheet);
+            Assert.Equal(50, patchedSheet[1].RequiredGold);
+            Assert.Equal(3, patchedSheet[1].Rewards.Count);
+            for (int i = 0; i < 3; i++)
+            {
+                var reward = patchedSheet[1].Rewards[i];
+                var itemId = i switch
+                {
+                    0 => 400000,
+                    1 => 500000,
+                    2 => 20001,
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+                var rate = i switch
+                {
+                    0 => 10,
+                    1 => 800,
+                    2 => 6000,
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+                var rewardType = i == 2
+                    ? StakeRegularRewardSheet.StakeRewardType.Rune
+                    : StakeRegularRewardSheet.StakeRewardType.Item;
+                Assert.Equal(itemId, reward.ItemId);
+                Assert.Equal(rate, reward.Rate);
+                Assert.Equal(rewardType, reward.Type);
+            }
         }
 
         [Theory]

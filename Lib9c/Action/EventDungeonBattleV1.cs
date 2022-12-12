@@ -153,7 +153,7 @@ namespace Nekoyume.Action
                     typeof(CostumeStatSheet),
                     typeof(MaterialItemSheet),
                 })
-            : states.GetSheets(
+            : states.GetSheetsV1(
                 containSimulatorSheets: true,
                 containValidateItemRequirementSheets: true,
                 sheetTypes: new[]
@@ -298,8 +298,8 @@ namespace Nekoyume.Action
                 PlayCount);
             var simulatorSheets = useV100291Sheets
                 ? sheets.GetSimulatorSheetsV100291()
-                : sheets.GetSimulatorSheets();
-            var simulator = new StageSimulator(
+                : sheets.GetSimulatorSheetsV1();
+            var simulator = new StageSimulatorV2(
                 context.Random,
                 avatarState,
                 Foods,
@@ -313,7 +313,7 @@ namespace Nekoyume.Action
                 simulatorSheets,
                 sheets.GetSheet<EnemySkillSheet>(),
                 sheets.GetSheet<CostumeStatSheet>(),
-                StageSimulator.GetWaveRewards(
+                StageSimulatorV2.GetWaveRewards(
                     context.Random,
                     stageRow,
                     sheets.GetSheet<MaterialItemSheet>(),

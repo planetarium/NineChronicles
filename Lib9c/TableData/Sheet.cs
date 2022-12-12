@@ -1,13 +1,14 @@
+#nullable enable
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 #if UNITY_EDITOR
 using System.Text;
 #endif
 using Bencodex.Types;
-using JetBrains.Annotations;
 using Nekoyume.Model.State;
 using Serilog;
 #if UNITY_EDITOR
@@ -19,22 +20,23 @@ namespace Nekoyume.TableData
     [Serializable]
     public abstract class Sheet<TKey, TValue> : IDictionary<TKey, TValue>, ISheet
         where TValue : SheetRow<TKey>, new()
+        where TKey : notnull
     {
         private Dictionary<TKey, TValue> _impl;
 
         private readonly List<int> _invalidColumnIndexes = new List<int>();
 
-        private List<TValue> _orderedList;
+        private List<TValue>? _orderedList;
 
         public string Name { get; }
 
-        public IReadOnlyList<TValue> OrderedList => _orderedList;
+        public IReadOnlyList<TValue>? OrderedList => _orderedList;
 
-        [CanBeNull]
-        public TValue First { get; private set; }
+        
+        public TValue? First { get; private set; }
 
-        [CanBeNull]
-        public TValue Last { get; private set; }
+        
+        public TValue? Last { get; private set; }
 
         public ICollection<TKey> Keys => ((IDictionary<TKey, TValue>)_impl).Keys;
 
@@ -52,11 +54,7 @@ namespace Nekoyume.TableData
             _impl = new Dictionary<TKey, TValue>();
         }
 
-        private string _csv;
-
-        protected Sheet()
-        {
-        }
+        private string? _csv;
 
         /// <summary>
         ///
@@ -135,13 +133,19 @@ namespace Nekoyume.TableData
 
         public IEnumerator<TValue> GetEnumerator()
         {
+            if (_orderedList is null)
+            {
+                throw new InvalidOperationException($"{nameof(_orderedList)} is null.");
+            }
+
             return _orderedList.GetEnumerator();
         }
 
-        public bool TryGetValue(TKey key, out TValue value, bool throwException)
+        public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value, bool throwException)
         {
-            if (_impl.TryGetValue(key, out value))
+            if (_impl.TryGetValue(key, out TValue? v) && !(v is null))
             {
+                value = v;
                 return true;
             }
 
@@ -151,6 +155,7 @@ namespace Nekoyume.TableData
             }
 
             Log.Debug("{sheetName}: Key - {value}", Name, key.ToString());
+            value = default;
             return false;
         }
 
@@ -214,7 +219,7 @@ namespace Nekoyume.TableData
             return ((IDictionary<TKey, TValue>)_impl).Remove(key);
         }
 
-        public bool TryGetValue(TKey key, out TValue value)
+        public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
         {
             return ((IDictionary<TKey, TValue>)_impl).TryGetValue(key, out value);
         }
@@ -251,6 +256,11 @@ namespace Nekoyume.TableData
 
         IEnumerator IEnumerable.GetEnumerator()
         {
+            if (_orderedList is null)
+            {
+                throw new InvalidOperationException($"{nameof(_orderedList)} is null.");
+            }
+
             return _orderedList.GetEnumerator();
         }
 

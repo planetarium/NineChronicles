@@ -125,14 +125,14 @@ namespace Lib9c.Tests.Action
                     if (_state.TryGetState(arenaInformationAdr, out List _))
                     {
                         throw new ArenaInformationAlreadyContainsException(
-                            $"[{nameof(JoinArena)}] id({roundData.ChampionshipId}) / round({roundData.Round})");
+                            $"[{nameof(JoinArena0)}] id({roundData.ChampionshipId}) / round({roundData.Round})");
                     }
 
                     var arenaInformation = new ArenaInformation(_avatar1Address, roundData.ChampionshipId, roundData.Round);
-                    var max = ArenaHelper.GetMaxPurchasedTicketCount(roundData);
+                    var max = roundData.MaxPurchaseCount;
                     for (var i = 0; i < max; i++)
                     {
-                        arenaInformation.BuyTicket(roundData);
+                        arenaInformation.BuyTicket(roundData.MaxPurchaseCount);
 
                         var ticketPrice = 0;
                         var additionalTicketPrice = 0;

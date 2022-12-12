@@ -1,4 +1,5 @@
 using System;
+using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 
@@ -8,6 +9,7 @@ namespace Nekoyume.Model.Buff
     public class StatBuff : Buff
     {
         public StatBuffSheet.Row RowData { get; }
+        public SkillCustomField? CustomField { get; }
 
         protected StatBuff(StatBuffSheet.Row row) : base(
             new BuffInfo(row.Id, row.GroupId, row.Chance, row.Duration, row.TargetType))
@@ -15,39 +17,31 @@ namespace Nekoyume.Model.Buff
             RowData = row;
         }
 
+        protected StatBuff(SkillCustomField customField, StatBuffSheet.Row row) : base(
+            new BuffInfo(row.Id, row.GroupId, row.Chance, customField.BuffDuration, row.TargetType))
+        {
+            RowData = row;
+            CustomField = customField;
+        }
+
         protected StatBuff(StatBuff value) : base(value)
         {
             RowData = value.RowData;
+            CustomField = value.CustomField;
         }
 
-        public int Use(CharacterBase characterBase)
+        public StatModifier GetModifier()
         {
-            var value = 0;
-            switch (RowData.StatModifier.StatType)
+            if (CustomField.HasValue)
             {
-                case StatType.HP:
-                    value = characterBase.HP;
-                    break;
-                case StatType.ATK:
-                    value = characterBase.ATK;
-                    break;
-                case StatType.DEF:
-                    value = characterBase.DEF;
-                    break;
-                case StatType.CRI:
-                    value = characterBase.CRI;
-                    break;
-                case StatType.HIT:
-                    value = characterBase.HIT;
-                    break;
-                case StatType.SPD:
-                    value = characterBase.SPD;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                var modifier = new StatModifier(
+                    RowData.StatModifier.StatType,
+                    RowData.StatModifier.Operation,
+                    CustomField.Value.BuffValue);
+                return modifier;
             }
 
-            return RowData.StatModifier.GetModifiedAll(value);
+            return RowData.StatModifier;
         }
 
         public override object Clone()

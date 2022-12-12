@@ -246,7 +246,7 @@ namespace Nekoyume.Action
                 {
                     var ticketBalance = ArenaHelper.GetTicketPrice(roundData, arenaInformation, goldCurrency);
                     states = states.TransferAsset(context.Signer, arenaAdr, ticketBalance);
-                    arenaInformation.BuyTicket(roundData);
+                    arenaInformation.BuyTicket(ArenaHelper.GetMaxPurchasedTicketCount(roundData));
                 }
             }
 
@@ -265,7 +265,7 @@ namespace Nekoyume.Action
             var rewards = new List<ItemBase>();
             for (var i = 0; i < ticket; i++)
             {
-                var simulator = new ArenaSimulator(context.Random);
+                var simulator = new ArenaSimulatorV1(context.Random);
                 var log = simulator.Simulate(ExtraMyArenaPlayerDigest, ExtraEnemyArenaPlayerDigest, arenaSheets);
                 if (log.Result.Equals(ArenaLog.ArenaResult.Win))
                 {

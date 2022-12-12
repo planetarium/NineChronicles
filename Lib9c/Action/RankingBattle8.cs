@@ -193,7 +193,7 @@ namespace Nekoyume.Action
                 avatarState,
                 enemyAvatarState,
                 consumableIds,
-                states.GetRankingSimulatorSheets(),
+                states.GetRankingSimulatorSheetsV1(),
                 StageId,
                 arenaInfo,
                 enemyArenaInfo,

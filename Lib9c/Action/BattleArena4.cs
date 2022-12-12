@@ -24,6 +24,7 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1330
     /// </summary>
     [Serializable]
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100320ObsoleteIndex)]
     [ActionType("battle_arena4")]
     public class BattleArena4 : GameAction
     {
@@ -74,6 +75,8 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100320ObsoleteIndex, context);
+
             var addressesHex =
                 GetSignerAndOtherAddressesHex(context, myAvatarAddress, enemyAvatarAddress);
 
@@ -118,7 +121,7 @@ namespace Nekoyume.Action
                         typeof(EquipmentItemOptionSheet),
                         typeof(MaterialItemSheet),
                     })
-                : states.GetSheets(
+                : states.GetSheetsV1(
                     containArenaSimulatorSheets: true,
                     sheetTypes: new[]
                     {
@@ -262,7 +265,7 @@ namespace Nekoyume.Action
                 {
                     var ticketBalance = ArenaHelper.GetTicketPrice(roundData, arenaInformation, goldCurrency);
                     states = states.TransferAsset(context.Signer, arenaAdr, ticketBalance);
-                    arenaInformation.BuyTicket(roundData);
+                    arenaInformation.BuyTicket(ArenaHelper.GetMaxPurchasedTicketCount(roundData));
                 }
             }
 
@@ -278,13 +281,13 @@ namespace Nekoyume.Action
             ExtraPreviousMyScore = myArenaScore.Score;
             var arenaSheets = useV100291Sheets
                 ? sheets.GetArenaSimulatorSheets_v100291()
-                : sheets.GetArenaSimulatorSheets();
+                : sheets.GetArenaSimulatorSheetsV1();
             var winCount = 0;
             var defeatCount = 0;
             var rewards = new List<ItemBase>();
             for (var i = 0; i < ticket; i++)
             {
-                var simulator = new ArenaSimulator(context.Random);
+                var simulator = new ArenaSimulatorV1(context.Random);
                 var log = simulator.Simulate(ExtraMyArenaPlayerDigest, ExtraEnemyArenaPlayerDigest, arenaSheets);
                 if (log.Result.Equals(ArenaLog.ArenaResult.Win))
                 {

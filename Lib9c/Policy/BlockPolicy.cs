@@ -30,7 +30,8 @@ namespace Nekoyume.BlockChain.Policy
             Func<long, int> getMaxTransactionsPerBlock = null,
             Func<long, int> getMaxTransactionsPerSignerPerBlock = null,
             Func<BlockChain<NCAction>, long> getNextBlockDifficulty = null,
-            Func<Address, long, bool> isAllowedToMine = null)
+            Func<Address, long, bool> isAllowedToMine = null,
+            Func<long, int> getMinBlockProtocolVersion = null)
             : base(
                 blockAction: blockAction,
                 blockInterval: blockInterval,
@@ -42,7 +43,8 @@ namespace Nekoyume.BlockChain.Policy
                 getMaxTransactionsBytes: getMaxTransactionsBytes,
                 getMinTransactionsPerBlock: getMinTransactionsPerBlock,
                 getMaxTransactionsPerBlock: getMaxTransactionsPerBlock,
-                getMaxTransactionsPerSignerPerBlock: getMaxTransactionsPerSignerPerBlock)
+                getMaxTransactionsPerSignerPerBlock: getMaxTransactionsPerSignerPerBlock,
+                getMinBlockProtocolVersion: getMinBlockProtocolVersion)
         {
             _getNextBlockDifficulty = getNextBlockDifficulty;
             _isAllowedToMine = isAllowedToMine;

@@ -79,6 +79,11 @@ namespace Nekoyume.Model
             return PostSelect(random, GetSelectableSkills());
         }
 
+        public ArenaSkill SelectWithoutDefaultAttack(IRandom random)
+        {
+            return PostSelectWithoutDefaultAttack(random, GetSelectableSkills());
+        }
+
         private IEnumerable<ArenaSkill> GetSelectableSkills()
         {
             return _skills.Where(skill => !_skillsCooldown.ContainsKey(skill.SkillRow.Id));
@@ -105,6 +110,22 @@ namespace Nekoyume.Model
                 .ToList();
 
             return selectedSkills.Any() ? selectedSkills.First() : defaultAttack;
+        }
+
+        private ArenaSkill PostSelectWithoutDefaultAttack(IRandom random, IEnumerable<ArenaSkill> skills)
+        {
+            if (!skills.Any())
+            {
+                return null;
+            }
+
+            var skillList = skills.ToList();
+            var chance = random.Next(0, 100);
+            var selectedSkills = skillList
+                .Where(x => x.SkillRow.Id != GameConfig.DefaultAttackId && chance < x.Chance)
+                .OrderBy(x => x.Power)
+                .ToList();
+            return selectedSkills.FirstOrDefault();
         }
     }
 }

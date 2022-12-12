@@ -84,19 +84,21 @@ namespace Nekoyume.BlockChain.Policy
 
         public const long V100290ObsoleteIndex = 4_913_153;
 
-        // NOTE:
-        // Current block index: 4_945_493
-        // Current time(KST): 2022. 9. 13 오후 6:00:55
-        // Target block index: 5_150_000
-        // Target time(KST): 2022. 10. 12 오전 3:42:19
         public const long V100300ObsoleteIndex = 5_150_000;
 
-        public const long V100310ObsoleteIndex = 5_200_400;
+        public const long V100310ObsoleteIndex = 5_300_000;
+
+        // NOTE:
+        // V100311: ArenaSheet-2,6,Championship,5398001(start arena block index)
+        public const long V100320ObsoleteIndex = 5_398_001;
+
+        public const long V100340ObsoleteIndex = 6_000_000;
 
         public const long PermissionedMiningStartIndex = 2_225_500;
 
         public const long V100301ExecutedBlockIndex = 5_048_399L;
 
+        public const long V100310ExecutedBlockIndex = 5_217_577L;
 
         public static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(8);
 
@@ -138,7 +140,8 @@ namespace Nekoyume.BlockChain.Policy
                 maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy.Mainnet,
                 maxTransactionsPerSignerPerBlockPolicy: MaxTransactionsPerSignerPerBlockPolicy.Mainnet,
                 authorizedMinersPolicy: AuthorizedMinersPolicy.Mainnet,
-                permissionedMinersPolicy: PermissionedMinersPolicy.Mainnet);
+                permissionedMinersPolicy: PermissionedMinersPolicy.Mainnet,
+                minBlockProtocolVersionPolicy: MinBlockProtocolVersionPolicy.Mainnet);
 
         /// <summary>
         /// Creates an <see cref="IBlockPolicy{T}"/> instance for 9c-internal deployment.
@@ -151,7 +154,8 @@ namespace Nekoyume.BlockChain.Policy
                 maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy.Mainnet,
                 maxTransactionsPerSignerPerBlockPolicy: MaxTransactionsPerSignerPerBlockPolicy.Internal,
                 authorizedMinersPolicy: AuthorizedMinersPolicy.Mainnet,
-                permissionedMinersPolicy: PermissionedMinersPolicy.Mainnet);
+                permissionedMinersPolicy: PermissionedMinersPolicy.Mainnet,
+                minBlockProtocolVersionPolicy: MinBlockProtocolVersionPolicy.Mainnet);
 
         /// <summary>
         /// Creates an <see cref="IBlockPolicy{T}"/> instance for 9c-permanent-test deployment.
@@ -164,7 +168,8 @@ namespace Nekoyume.BlockChain.Policy
                 maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy.Mainnet,
                 maxTransactionsPerSignerPerBlockPolicy: MaxTransactionsPerSignerPerBlockPolicy.Mainnet,
                 authorizedMinersPolicy: AuthorizedMinersPolicy.Permanent,
-                permissionedMinersPolicy: PermissionedMinersPolicy.Permanent);
+                permissionedMinersPolicy: PermissionedMinersPolicy.Permanent,
+                minBlockProtocolVersionPolicy: MinBlockProtocolVersionPolicy.Mainnet);
 
         /// <summary>
         /// Creates an <see cref="IBlockPolicy{T}"/> instance identical to the one deployed
@@ -178,7 +183,8 @@ namespace Nekoyume.BlockChain.Policy
                 maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy.Mainnet,
                 maxTransactionsPerSignerPerBlockPolicy: MaxTransactionsPerSignerPerBlockPolicy.Mainnet,
                 authorizedMinersPolicy: AuthorizedMinersPolicy.Mainnet,
-                permissionedMinersPolicy: PermissionedMinersPolicy.Mainnet);
+                permissionedMinersPolicy: PermissionedMinersPolicy.Mainnet,
+                minBlockProtocolVersionPolicy: MinBlockProtocolVersionPolicy.Mainnet);
 
         /// <summary>
         /// Creates an <see cref="IBlockPolicy{T}"/> instance for networks
@@ -192,7 +198,8 @@ namespace Nekoyume.BlockChain.Policy
                 maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy.Default,
                 maxTransactionsPerSignerPerBlockPolicy: MaxTransactionsPerSignerPerBlockPolicy.Default,
                 authorizedMinersPolicy: AuthorizedMinersPolicy.Default,
-                permissionedMinersPolicy: PermissionedMinersPolicy.Default);
+                permissionedMinersPolicy: PermissionedMinersPolicy.Default,
+                minBlockProtocolVersionPolicy: MinBlockProtocolVersionPolicy.Default);
 
         /// <summary>
         /// Gets a <see cref="BlockPolicy"/> constructed from given parameters.
@@ -216,7 +223,8 @@ namespace Nekoyume.BlockChain.Policy
             IVariableSubPolicy<int> maxTransactionsPerBlockPolicy,
             IVariableSubPolicy<int> maxTransactionsPerSignerPerBlockPolicy,
             IVariableSubPolicy<ImmutableHashSet<Address>> authorizedMinersPolicy,
-            IVariableSubPolicy<ImmutableHashSet<Address>> permissionedMinersPolicy)
+            IVariableSubPolicy<ImmutableHashSet<Address>> permissionedMinersPolicy,
+            IVariableSubPolicy<int> minBlockProtocolVersionPolicy)
         {
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
             var data = TestbedHelper.LoadData<TestbedCreateAvatar>("TestbedCreateAvatar");
@@ -234,6 +242,8 @@ namespace Nekoyume.BlockChain.Policy
                 ?? AuthorizedMinersPolicy.Default;
             permissionedMinersPolicy = permissionedMinersPolicy
                 ?? PermissionedMinersPolicy.Default;
+            minBlockProtocolVersionPolicy = minBlockProtocolVersionPolicy
+                ?? MinBlockProtocolVersionPolicy.Default;
 
             // FIXME: Ad hoc solution to poorly defined tx validity.
             ImmutableHashSet<Address> allAuthorizedMiners =
@@ -257,7 +267,8 @@ namespace Nekoyume.BlockChain.Policy
                     maxTransactionsPerBlockPolicy,
                     maxTransactionsPerSignerPerBlockPolicy,
                     authorizedMinersPolicy,
-                    permissionedMinersPolicy);
+                    permissionedMinersPolicy,
+                    minBlockProtocolVersionPolicy);
             Func<BlockChain<NCAction>, long> getNextBlockDifficulty = blockChain =>
                 GetNextBlockDifficultyRaw(
                     blockChain,
@@ -287,7 +298,8 @@ namespace Nekoyume.BlockChain.Policy
                 getMaxTransactionsPerBlock: maxTransactionsPerBlockPolicy.Getter,
                 getMaxTransactionsPerSignerPerBlock: maxTransactionsPerSignerPerBlockPolicy.Getter,
                 getNextBlockDifficulty: getNextBlockDifficulty,
-                isAllowedToMine: isAllowedToMine);
+                isAllowedToMine: isAllowedToMine,
+                getMinBlockProtocolVersion: minBlockProtocolVersionPolicy.Getter);
 #endif
         }
 
@@ -404,9 +416,16 @@ namespace Nekoyume.BlockChain.Policy
             IVariableSubPolicy<int> maxTransactionsPerBlockPolicy,
             IVariableSubPolicy<int> maxTransactionsPerSignerPerBlockPolicy,
             IVariableSubPolicy<ImmutableHashSet<Address>> authorizedMinersPolicy,
-            IVariableSubPolicy<ImmutableHashSet<Address>> permissionedMinersPolicy)
+            IVariableSubPolicy<ImmutableHashSet<Address>> permissionedMinersPolicy,
+            IVariableSubPolicy<int> minBlockProtocolVersionPolicy)
         {
-            if (ValidateTransactionsBytesRaw(
+            if (ValidateBlockProtocolVersionRaw(
+                nextBlock,
+                minBlockProtocolVersionPolicy) is BlockPolicyViolationException bpve)
+            {
+                return bpve;
+            }
+            else if (ValidateTransactionsBytesRaw(
                 nextBlock,
                 maxTransactionsBytesPolicy) is InvalidBlockBytesLengthException ibble)
             {

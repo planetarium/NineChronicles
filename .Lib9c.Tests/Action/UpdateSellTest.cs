@@ -363,5 +363,49 @@
                 Signer = _agentAddress,
             }));
         }
+
+        [Theory]
+        [InlineData(100, false)]
+        [InlineData(1, false)]
+        [InlineData(101, true)]
+        public void PurchaseInfos_Capacity(int count, bool exc)
+        {
+            var updateSellInfo = new UpdateSellInfo(
+                default,
+                default,
+                default,
+                default,
+                -1 * _currency,
+                1);
+            var updateSellInfos = new List<UpdateSellInfo>();
+            for (int i = 0; i < count; i++)
+            {
+                updateSellInfos.Add(updateSellInfo);
+            }
+
+            var action = new UpdateSell
+            {
+                sellerAvatarAddress = _avatarAddress,
+                updateSellInfos = updateSellInfos,
+            };
+            if (exc)
+            {
+                Assert.Throws<ArgumentOutOfRangeException>(() => action.Execute(new ActionContext
+                {
+                    BlockIndex = 0,
+                    PreviousStates = _initialState,
+                    Signer = _agentAddress,
+                }));
+            }
+            else
+            {
+                Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
+                {
+                    BlockIndex = 0,
+                    PreviousStates = _initialState,
+                    Signer = _agentAddress,
+                }));
+            }
+        }
     }
 }
