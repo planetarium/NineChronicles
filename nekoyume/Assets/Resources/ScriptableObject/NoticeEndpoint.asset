@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8b5b913404f40efa1cd6deb4d8165b8, type: 3}
+  m_Name: NoticeEndpoint
+  m_EditorClassIdentifier: 
+  <EventJsonUrl>k__BackingField: https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/Event.json
+  <NoticeJsonUrl>k__BackingField: https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/TextNotice.json
+  <ImageRootUrl>k__BackingField: https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Images
