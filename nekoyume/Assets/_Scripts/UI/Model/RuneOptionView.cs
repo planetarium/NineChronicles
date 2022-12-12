@@ -89,7 +89,7 @@ namespace Nekoyume.UI.Model
                 var nextSkillValue =
                     nextPower == (int)nextPower ? $"{(int)nextPower}" : $"{nextPower}";
                 var skillDescription = L10nManager.Localize($"SKILL_DESCRIPTION_{option.SkillId}",
-                    nextOption.SkillChance, nextOption.BuffDuration, nextSkillValue);
+                    option.SkillChance, option.BuffDuration, curSkillValue);
                 var curChance = $"{option.SkillChance}%";
                 var nextChance = option.SkillChance == nextOption.SkillChance ? string.Empty : $"{nextOption.SkillChance}%";
                 var curCooldown = $"{option.SkillCooldown}";
