@@ -76,8 +76,8 @@ namespace Nekoyume.UI.Module
                         : (value / 100f).ToString(CultureInfo.InvariantCulture);
                 case StatType.DRR:
                     return isSigned
-                        ? value.ToString("+0.##\\%;-0.##\\%")
-                        : $"{value:0.#\\%}";
+                        ? (value / 100f).ToString("+0.##;-0.##", CultureInfo.InvariantCulture)
+                        : (value / 100f).ToString(CultureInfo.InvariantCulture);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
             }

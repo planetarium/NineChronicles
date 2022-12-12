@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.L10n;
 using Nekoyume.Model.Stat;
+using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Common;
@@ -88,17 +90,35 @@ namespace Nekoyume.UI.Model
                 var curSkillValue = curPower == (int)curPower ? $"{(int)curPower}" : $"{curPower}";
                 var nextSkillValue =
                     nextPower == (int)nextPower ? $"{(int)nextPower}" : $"{nextPower}";
-                var skillDescription = L10nManager.Localize($"SKILL_DESCRIPTION_{option.SkillId}",
-                    option.SkillChance, option.BuffDuration, curSkillValue);
                 var curChance = $"{option.SkillChance}%";
                 var nextChance = option.SkillChance == nextOption.SkillChance ? string.Empty : $"{nextOption.SkillChance}%";
                 var curCooldown = $"{option.SkillCooldown}";
                 var nextCooldown = option.SkillCooldown == nextOption.SkillCooldown ? string.Empty : $"{nextOption.SkillCooldown}";
 
+                var tableSheets = Game.Game.instance.TableSheets;
+                var currentValueString = curSkillValue;
+                var nextValueString = nextSkillValue;
+                if (tableSheets.SkillSheet.TryGetValue(option.SkillId, out var skillRow) &&
+                    tableSheets.SkillBuffSheet.TryGetValue(skillRow.Id, out var skillBuffRow) &&
+                    tableSheets.StatBuffSheet.TryGetValue(skillBuffRow.BuffIds.First(), out var buffRow))
+                {
+                    currentValueString =
+                        $"{StatExtensions.ValueToString(buffRow.StatModifier.StatType, (int)curPower)}";
+                    nextValueString =
+                        $"{StatExtensions.ValueToString(buffRow.StatModifier.StatType, (int)nextPower)}";
+                }
+                else if (isPercent)
+                {
+                    currentValueString = $"{curSkillValue}%";
+                    nextValueString = $"{nextSkillValue}%";
+                }
+
+                var skillDescription = L10nManager.Localize($"SKILL_DESCRIPTION_{option.SkillId}",
+                    nextOption.SkillChance, nextOption.BuffDuration, nextValueString);
                 skill.Set(skillName,
                     skillDescription,
-                    isPercent ? $"{curSkillValue}%" : $"{curSkillValue}",
-                    isPercent ? $"{nextSkillValue}%" : $"{nextSkillValue}",
+                    currentValueString,
+                    nextValueString,
                     curChance,
                     nextChance,
                     curCooldown,
@@ -148,11 +168,26 @@ namespace Nekoyume.UI.Model
                 var skillName = L10nManager.Localize($"SKILL_NAME_{option.SkillId}");
                 var power = isPercent ? option.SkillValue * 100 : option.SkillValue;
                 var skillValue = power == (int)power ? $"{(int)power}" : $"{power}";
+
+                var tableSheets = Game.Game.instance.TableSheets;
+                var skillValueString = skillValue;
+                if (tableSheets.SkillSheet.TryGetValue(option.SkillId, out var skillRow) &&
+                    tableSheets.SkillBuffSheet.TryGetValue(skillRow.Id, out var skillBuffRow) &&
+                    tableSheets.StatBuffSheet.TryGetValue(skillBuffRow.BuffIds.First(), out var buffRow))
+                {
+                    skillValueString =
+                        $"{StatExtensions.ValueToString(buffRow.StatModifier.StatType, (int)power)}";
+                }
+                else if (isPercent)
+                {
+                    skillValueString = $"{power}%";
+                }
+
                 var skillDescription = L10nManager.Localize($"SKILL_DESCRIPTION_{option.SkillId}",
-                    option.SkillChance, option.BuffDuration, skillValue);
+                    option.SkillChance, option.BuffDuration, skillValueString);
                 skill.Set(skillName,
                     skillDescription,
-                    isPercent ? $"{skillValue}%" : $"{skillValue}",
+                    skillValueString,
                     string.Empty,
                     $"{option.SkillChance}%",
                     string.Empty,
