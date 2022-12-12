@@ -974,7 +974,7 @@ namespace Nekoyume.UI.Module
 
         private void ShowCpScreen(InventoryItem inventoryItem)
         {
-            if (inventoryItem.ItemBase.ItemType is ItemType.Material)
+            if (inventoryItem.ItemBase?.ItemType is ItemType.Material)
             {
                 return;
             }
