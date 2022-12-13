@@ -52,12 +52,13 @@ namespace Nekoyume.UI
             int purchasedCount,
             int maxPurchaseCount,
             System.Action onConfirm,
-            System.Action goToMarget)
+            System.Action goToMarget,
+            bool isShowMaxPurchase = true)
         {
-            if (purchasedCount < maxPurchaseCount)
+            if (purchasedCount < maxPurchaseCount || !isShowMaxPurchase)
             {
                 ShowPurchaseTicketPopup(ticketType, costType, balance, cost,
-                    purchasedCount, maxPurchaseCount, onConfirm, goToMarget);
+                    purchasedCount, maxPurchaseCount, onConfirm, goToMarget, isShowMaxPurchase);
             }
             else
             {
@@ -75,7 +76,8 @@ namespace Nekoyume.UI
             int purchasedCount,
             int maxPurchaseCount,
             System.Action onConfirm,
-            System.Action goToMarget)
+            System.Action goToMarget,
+            bool isShowMaxPurchase = true)
         {
             ticketIcon.overrideSprite = costIconData.GetIcon(ticketType);
             costIcon.overrideSprite = costIconData.GetIcon(costType);
@@ -91,7 +93,7 @@ namespace Nekoyume.UI
                 : Palette.GetColor(EnumType.ColorType.ButtonDisabled);
 
             maxPurchaseText.text = L10nManager.Localize("UI_TICKET_PURCHASE_LIMIT",
-                purchasedCount, maxPurchaseCount);
+                purchasedCount, isShowMaxPurchase ? maxPurchaseCount : "∞");
             maxPurchaseText.color = Palette.GetColor(EnumType.ColorType.TextElement06);
 
             cancelButton.gameObject.SetActive(true);
