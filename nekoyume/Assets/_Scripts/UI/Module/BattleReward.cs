@@ -141,7 +141,10 @@ namespace Nekoyume.UI.Module
             L10nManager.OnLanguageChange.Subscribe(_ =>
             {
                 _stageClearText = L10nManager.Localize("UI_BATTLE_RESULT_CLEAR");
-                failedText.text = GetFailedText();
+                if (index > -1)
+                {
+                    failedText.text = GetFailedText();
+                }
             });
         }
 
