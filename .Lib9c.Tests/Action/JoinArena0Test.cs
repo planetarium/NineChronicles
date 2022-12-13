@@ -274,7 +274,7 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(9999)]
+        [InlineData(3)]
         public void Execute_SheetRowNotFoundException(int championshipId)
         {
             var avatarState = _state.GetAvatarStateV2(_avatarAddress);
@@ -290,7 +290,7 @@ namespace Lib9c.Tests.Action
                 avatarAddress = _avatarAddress,
             };
 
-            Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext()
+            Assert.Throws<ActionObsoletedException>(() => action.Execute(new ActionContext()
             {
                 PreviousStates = state,
                 Signer = _signer,

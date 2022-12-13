@@ -44,8 +44,8 @@ namespace Nekoyume.Model.Skill
                         damage = totalDamage - target.DEF;
                         // Apply multiple hits
                         damage = (int) (damage * multiplier);
-                        // Apply damage reduce
-                        damage = (int) ((damage - target.DRV) * (1 - target.DRR / 100m));
+                        // Apply damage reduction
+                        damage = (int) ((damage - target.DRV) * (1 - target.DRR / 10000m));
 
                         if (damage < 1)
                         {
