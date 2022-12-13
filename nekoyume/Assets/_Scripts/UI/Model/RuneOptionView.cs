@@ -92,7 +92,7 @@ namespace Nekoyume.UI.Model
                 var currentValueString = RuneFrontHelper.GetRuneValueString(option);
                 var nextValueString = RuneFrontHelper.GetRuneValueString(nextOption);
                 var skillDescription = L10nManager.Localize($"SKILL_DESCRIPTION_{option.SkillId}",
-                    option.SkillChance, option.BuffDuration, nextValueString);
+                    option.SkillChance, option.BuffDuration, currentValueString);
 
                 skill.Set(skillName,
                     skillDescription,
