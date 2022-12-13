@@ -15,7 +15,7 @@ MonoBehaviour:
   Runes:
   - id: 30001
     groupdId: 0
-    ticker: RUNESTONE_ADVENTURER
+    ticker: RUNE_ADVENTURER
     icon: {fileID: 21300000, guid: 1cb46b66b7dab8947a0e3a0425d707d0, type: 3}
   - id: 10001
     groupdId: 1
@@ -31,7 +31,7 @@ MonoBehaviour:
     icon: {fileID: 21300000, guid: 000b7b5b45f709f4782b1ec62f9f9f56, type: 3}
   - id: 20001
     groupdId: 2
-    ticker: RUNESTONE_GOLDENLEAF
+    ticker: RUNE_GOLDENLEAF
     icon: {fileID: 21300000, guid: 9ab11e6491b814cf6ab1b509d180e8de, type: 3}
   GroupNames:
   - UI_RUNE_ADVENTURER

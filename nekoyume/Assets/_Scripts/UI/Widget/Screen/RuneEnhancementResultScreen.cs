@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Coffee.UIEffects;
 using Libplanet.Action;
@@ -173,12 +173,10 @@ namespace Nekoyume.UI
             {
                 skill.gameObject.SetActive(true);
                 skillNameText.text = L10nManager.Localize($"SKILL_NAME_{option.SkillId}");
-                var power = option.SkillValueType == StatModifier.OperationType.Percentage
-                    ? option.SkillValue * 100
-                    : option.SkillValue;
-                var skillValue = power == (int)power ? $"{(int)power}" : $"{power}";
+                var skillValueString = RuneFrontHelper.GetRuneValueString(option);
+                
                 skillDescText.text = L10nManager.Localize(
-                    $"SKILL_DESCRIPTION_{option.SkillId}", option.SkillChance, skillValue);
+                    $"SKILL_DESCRIPTION_{option.SkillId}", option.SkillChance, option.BuffDuration, skillValueString);
             }
         }
 

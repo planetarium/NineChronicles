@@ -34,6 +34,7 @@ namespace Nekoyume.UI.Scroller
             Notification,
             Alert,
             UnlockCondition,
+            RuneAcquisition,
         }
 
         public class ViewModel
@@ -67,6 +68,9 @@ namespace Nekoyume.UI.Scroller
 
         [SerializeField]
         private Content alertContent;
+
+        [SerializeField]
+        private Content runeAcquisitionContent;
 
         private ViewModel _viewModel;
 
@@ -139,6 +143,8 @@ namespace Nekoyume.UI.Scroller
                 .SetActive(_viewModel.notificationType == NotificationType.Notification);
             alertContent.root
                 .SetActive(_viewModel.notificationType == NotificationType.Alert);
+            runeAcquisitionContent.root
+                .SetActive(_viewModel.notificationType == NotificationType.RuneAcquisition);
 
             var iconSprite = _viewModel.notificationType == NotificationType.UnlockCondition ?
                 Resources.Load<Sprite>("UI/Icons/Mail/icon_mail_unlockCondition") :
@@ -157,6 +163,9 @@ namespace Nekoyume.UI.Scroller
                     break;
                 case NotificationType.Alert:
                     alertContent.messageText.text = _viewModel.message;
+                    break;
+                case NotificationType.RuneAcquisition:
+                    runeAcquisitionContent.messageText.text = _viewModel.message;
                     break;
             }
         }

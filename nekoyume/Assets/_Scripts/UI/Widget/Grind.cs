@@ -12,6 +12,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button closeButton;
 
+        [SerializeField]
+        private Inventory inventory;
+
         protected override void Awake()
         {
             base.Awake();
@@ -32,6 +35,11 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreShowAnimation);
             grindModule.Show();
+        }
+
+        public void UpdateInventory()
+        {
+            inventory.UpdateEquipped();
         }
     }
 }
