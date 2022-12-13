@@ -136,7 +136,8 @@ namespace Nekoyume.Game.Character
             var removedVfx = new List<int>();
             foreach (var buff in _persistingVFXMap.Keys)
             {
-                if (!Model.Buffs.Keys.Contains(buff))
+                if (Model.IsDead ||
+                    !Model.Buffs.Keys.Contains(buff))
                 {
                     _persistingVFXMap[buff].LazyStop();
                     removedVfx.Add(buff);
@@ -588,6 +589,12 @@ namespace Nekoyume.Game.Character
 
         private void AttachPersistingVFX(int groupId, BuffVFX vfx)
         {
+            if (_persistingVFXMap.TryGetValue(groupId, out var prevVFX))
+            {
+                prevVFX.LazyStop();
+                _persistingVFXMap.Remove(groupId);
+            }
+
             _persistingVFXMap[groupId] = vfx;
         }
 

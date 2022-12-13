@@ -10,5 +10,15 @@ namespace Nekoyume.Game.VFX.Skill
 
         [field: SerializeField]
         public bool IsPersisting { get; set; } = false;
+
+        public override void Play()
+        {
+            base.Play();
+
+            if (IsPersisting)
+            {
+                _isPlaying = true;
+            }
+        }
     }
 }
