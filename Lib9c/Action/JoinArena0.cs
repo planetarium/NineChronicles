@@ -60,6 +60,11 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            if (championshipId > 2)
+            {
+                throw new ActionObsoletedException();
+            }
+
             CheckObsolete(BlockChain.Policy.BlockPolicySource.V100340ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
