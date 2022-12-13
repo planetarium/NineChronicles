@@ -37,14 +37,16 @@ namespace Nekoyume.Model.Skill
                 {
                     var damage = 0;
                     var isCritical = false;
-                    // 일반 공격이 아니거나 일반 공격인데 명중한 경우.
+                    // Skill or when normal attack hit.
                     if (!isNormalAttack ||
                         target.IsHit(caster))
                     {
-                        // 방깎 적용.
                         damage = totalDamage - target.DEF;
-                        // 멀티 히트 적용.
+                        // Apply multiple hits
                         damage = (int) (damage * multiplier);
+                        // Apply damage reduction
+                        damage = (int) ((damage - target.DRV) * (1 - target.DRR / 10000m));
+
                         if (damage < 1)
                         {
                             damage = 1;

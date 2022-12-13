@@ -21,7 +21,7 @@ namespace Lib9c.Tests.Action
     using Xunit.Abstractions;
     using static Lib9c.SerializeKeys;
 
-    public class BattleArenaTest
+    public class BattleArena6Test
     {
         private readonly Dictionary<string, string> _sheets;
         private readonly TableSheets _tableSheets;
@@ -38,7 +38,7 @@ namespace Lib9c.Tests.Action
         private readonly Currency _ncg;
         private IAccountStateDelta _initialStates;
 
-        public BattleArenaTest(ITestOutputHelper outputHelper)
+        public BattleArena6Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -48,6 +48,7 @@ namespace Lib9c.Tests.Action
             _initialStates = new State();
 
             _sheets = TableSheetsImporter.ImportSheets();
+            _sheets.Remove(nameof(RuneOptionSheet));
             foreach (var (key, value) in _sheets)
             {
                 _initialStates = _initialStates.SetState(
@@ -195,7 +196,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_InvalidAddressException()
         {
-            var action = new BattleArena
+            var action = new BattleArena6
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar1Address,
@@ -217,7 +218,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_FailedLoadStateException()
         {
-            var action = new BattleArena
+            var action = new BattleArena6
             {
                 myAvatarAddress = _avatar2Address,
                 enemyAvatarAddress = _avatar1Address,
@@ -239,7 +240,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_NotEnoughClearedStageLevelException()
         {
-            var action = new BattleArena
+            var action = new BattleArena6
             {
                 myAvatarAddress = _avatar4Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -261,20 +262,20 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void Execute_SheetRowNotFoundException()
+        public void Execute_ActionObsoletedException()
         {
-            var action = new BattleArena
+            var action = new BattleArena6
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
-                championshipId = 9999999,
+                championshipId = 3,
                 round = 1,
                 ticket = 1,
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
             };
 
-            Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext
+            Assert.Throws<ActionObsoletedException>(() => action.Execute(new ActionContext
             {
                 PreviousStates = _initialStates,
                 Signer = _agent1Address,
@@ -285,7 +286,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_ThisArenaIsClosedException()
         {
-            var action = new BattleArena
+            var action = new BattleArena6
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -308,7 +309,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_ArenaParticipantsNotFoundException()
         {
-            var action = new BattleArena
+            var action = new BattleArena6
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -343,7 +344,7 @@ namespace Lib9c.Tests.Action
             if (!row.TryGetRound(round, out var roundData))
             {
                 throw new RoundNotFoundException(
-                    $"[{nameof(BattleArena)}] ChampionshipId({row.ChampionshipId}) - round({round})");
+                    $"[{nameof(BattleArena6)}] ChampionshipId({row.ChampionshipId}) - round({round})");
             }
 
             var random = new TestRandom();
@@ -365,7 +366,7 @@ namespace Lib9c.Tests.Action
                     round,
                     random);
 
-            var action = new BattleArena
+            var action = new BattleArena6
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -401,7 +402,7 @@ namespace Lib9c.Tests.Action
             if (!row.TryGetRound(round, out var roundData))
             {
                 throw new RoundNotFoundException(
-                    $"[{nameof(BattleArena)}] ChampionshipId({row.ChampionshipId}) - round({round})");
+                    $"[{nameof(BattleArena6)}] ChampionshipId({row.ChampionshipId}) - round({round})");
             }
 
             var random = new TestRandom();
@@ -431,7 +432,7 @@ namespace Lib9c.Tests.Action
             arenaScore.AddScore(900);
             previousStates = previousStates.SetState(arenaScoreAdr, arenaScore.Serialize());
 
-            var action = new BattleArena
+            var action = new BattleArena6
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -465,7 +466,7 @@ namespace Lib9c.Tests.Action
             if (!row.TryGetRound(round, out var roundData))
             {
                 throw new RoundNotFoundException(
-                    $"[{nameof(BattleArena)}] ChampionshipId({row.ChampionshipId}) - round({round})");
+                    $"[{nameof(BattleArena6)}] ChampionshipId({row.ChampionshipId}) - round({round})");
             }
 
             var random = new TestRandom();
@@ -496,7 +497,7 @@ namespace Lib9c.Tests.Action
             beforeInfo.UseTicket(beforeInfo.Ticket);
             previousStates = previousStates.SetState(arenaInfoAdr, beforeInfo.Serialize());
 
-            var action = new BattleArena
+            var action = new BattleArena6
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -530,7 +531,7 @@ namespace Lib9c.Tests.Action
             if (!row.TryGetRound(round, out var roundData))
             {
                 throw new RoundNotFoundException(
-                    $"[{nameof(BattleArena)}] ChampionshipId({row.ChampionshipId}) - round({round})");
+                    $"[{nameof(BattleArena6)}] ChampionshipId({row.ChampionshipId}) - round({round})");
             }
 
             var random = new TestRandom();
@@ -558,7 +559,7 @@ namespace Lib9c.Tests.Action
                 throw new ArenaInformationNotFoundException($"arenaInfoAdr : {arenaInfoAdr}");
             }
 
-            var action = new BattleArena
+            var action = new BattleArena6
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -592,7 +593,7 @@ namespace Lib9c.Tests.Action
             if (!row.TryGetRound(round, out var roundData))
             {
                 throw new RoundNotFoundException(
-                    $"[{nameof(BattleArena)}] ChampionshipId({row.ChampionshipId}) - round({round})");
+                    $"[{nameof(BattleArena6)}] ChampionshipId({row.ChampionshipId}) - round({round})");
             }
 
             var random = new TestRandom();
@@ -634,7 +635,7 @@ namespace Lib9c.Tests.Action
                 previousStates.GetGoldCurrency());
             previousStates = previousStates.MintAsset(_agent1Address, price);
 
-            var action = new BattleArena
+            var action = new BattleArena6
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -668,7 +669,7 @@ namespace Lib9c.Tests.Action
             if (!row.TryGetRound(round, out var roundData))
             {
                 throw new RoundNotFoundException(
-                    $"[{nameof(BattleArena)}] ChampionshipId({row.ChampionshipId}) - round({round})");
+                    $"[{nameof(BattleArena6)}] ChampionshipId({row.ChampionshipId}) - round({round})");
             }
 
             var random = new TestRandom();
@@ -703,7 +704,7 @@ namespace Lib9c.Tests.Action
                 beforeInfo.BuyTicket(roundData.MaxPurchaseCount);
             }
 
-            var purchasedCountDuringInterval = arenaInfoAdr.Derive(BattleArena.PurchasedCountKey);
+            var purchasedCountDuringInterval = arenaInfoAdr.Derive(BattleArena6.PurchasedCountKey);
             previousStates = previousStates
                 .SetState(arenaInfoAdr, beforeInfo.Serialize())
                 .SetState(
@@ -715,7 +716,7 @@ namespace Lib9c.Tests.Action
                 previousStates.GetGoldCurrency());
             previousStates = previousStates.MintAsset(_agent1Address, price);
 
-            var action = new BattleArena
+            var action = new BattleArena6
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -749,7 +750,7 @@ namespace Lib9c.Tests.Action
             if (!row.TryGetRound(round, out var roundData))
             {
                 throw new RoundNotFoundException(
-                    $"[{nameof(BattleArena)}] ChampionshipId({row.ChampionshipId}) - round({round})");
+                    $"[{nameof(BattleArena6)}] ChampionshipId({row.ChampionshipId}) - round({round})");
             }
 
             var random = new TestRandom();
@@ -790,7 +791,7 @@ namespace Lib9c.Tests.Action
                 beforeInfo.BuyTicket(roundData.MaxPurchaseCount);
             }
 
-            var action = new BattleArena
+            var action = new BattleArena6
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -869,7 +870,7 @@ namespace Lib9c.Tests.Action
             if (!row.TryGetRound(round, out var roundData))
             {
                 throw new RoundNotFoundException(
-                    $"[{nameof(BattleArena)}] ChampionshipId({row.ChampionshipId}) - round({round})");
+                    $"[{nameof(BattleArena6)}] ChampionshipId({row.ChampionshipId}) - round({round})");
             }
 
             var random = new TestRandom(randomSeed);
@@ -912,7 +913,7 @@ namespace Lib9c.Tests.Action
                 }
             }
 
-            var action = new BattleArena
+            var action = new BattleArena6
             {
                 myAvatarAddress = myAvatarAddress,
                 enemyAvatarAddress = enemyAvatarAddress,
@@ -1047,7 +1048,7 @@ namespace Lib9c.Tests.Action
             var preCurrency = 1000 * _crystal;
             states = states.MintAsset(signer, preCurrency);
 
-            var action = new JoinArena
+            var action = new JoinArena0
             {
                 championshipId = championshipId,
                 round = round,

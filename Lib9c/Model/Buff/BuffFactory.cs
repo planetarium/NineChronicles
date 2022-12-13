@@ -24,6 +24,33 @@ namespace Nekoyume.Model.Buff
                     return new HitBuff(row);
                 case StatType.SPD:
                     return new SpeedBuff(row);
+                case StatType.DRR:
+                case StatType.DRV:
+                    return new DamageReductionBuff(row);
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public static StatBuff GetCustomStatBuff(StatBuffSheet.Row row, SkillCustomField customField)
+        {
+            switch (row.StatModifier.StatType)
+            {
+                case StatType.HP:
+                    return new HPBuff(customField, row);
+                case StatType.ATK:
+                    return new AttackBuff(customField, row);
+                case StatType.DEF:
+                    return new DefenseBuff(customField, row);
+                case StatType.CRI:
+                    return new CriticalBuff(customField, row);
+                case StatType.HIT:
+                    return new HitBuff(customField, row);
+                case StatType.SPD:
+                    return new SpeedBuff(customField, row);
+                case StatType.DRR:
+                case StatType.DRV:
+                    return new DamageReductionBuff(customField, row);
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -35,6 +62,17 @@ namespace Nekoyume.Model.Buff
             {
                 case ActionBuffType.Bleed:
                     return new Bleed(row, power);
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public static ActionBuff GetCustomActionBuff(SkillCustomField customField, ActionBuffSheet.Row row)
+        {
+            switch (row.ActionBuffType)
+            {
+                case ActionBuffType.Bleed:
+                    return new Bleed(customField, row);
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -57,7 +95,14 @@ namespace Nekoyume.Model.Buff
                     if (!statBuffSheet.TryGetValue(buffId, out var buffRow))
                         continue;
 
-                    buffs.Add(GetStatBuff(buffRow));
+                    if (!skill.CustomField.HasValue)
+                    {
+                        buffs.Add(GetStatBuff(buffRow));
+                    }
+                    else
+                    {
+                        buffs.Add(GetCustomStatBuff(buffRow, skill.CustomField.Value));
+                    }
                 }
             }
 
@@ -68,7 +113,14 @@ namespace Nekoyume.Model.Buff
                     if (!actionBuffSheet.TryGetValue(buffId, out var buffRow))
                         continue;
 
-                    buffs.Add(GetActionBuff(power, buffRow));
+                    if (!skill.CustomField.HasValue)
+                    {
+                        buffs.Add(GetActionBuff(power, buffRow));
+                    }
+                    else
+                    {
+                        buffs.Add(GetCustomActionBuff(skill.CustomField.Value, buffRow));
+                    }
                 }
             }
 

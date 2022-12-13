@@ -40,7 +40,7 @@ namespace Nekoyume.Battle
             List<Guid> foods,
             int worldId,
             int stageId,
-            StageSimulatorSheets stageSimulatorSheets,
+            StageSimulatorSheetsV1 stageSimulatorSheets,
             int constructorVersion,
             int playCount
             )
@@ -120,7 +120,7 @@ namespace Nekoyume.Battle
             List<Guid> foods,
             int worldId,
             int stageId,
-            StageSimulatorSheets stageSimulatorSheets
+            StageSimulatorSheetsV1 stageSimulatorSheets
         )
             : base(
                 random,
@@ -163,7 +163,7 @@ namespace Nekoyume.Battle
             List<Guid> foods,
             int worldId,
             int stageId,
-            StageSimulatorSheets stageSimulatorSheets,
+            StageSimulatorSheetsV1 stageSimulatorSheets,
             Model.Skill.Skill skill,
             int constructorVersion,
             int playCount
@@ -201,7 +201,7 @@ namespace Nekoyume.Battle
             List<Guid> foods,
             int worldId,
             int stageId,
-            StageSimulatorSheets stageSimulatorSheets,
+            StageSimulatorSheetsV1 stageSimulatorSheets,
             Model.Skill.Skill skill
         )
             : this(
@@ -233,7 +233,7 @@ namespace Nekoyume.Battle
             List<Model.Skill.Skill> skillsOnWaveStart,
             int worldId,
             int stageId,
-            StageSimulatorSheets stageSimulatorSheets,
+            StageSimulatorSheetsV1 stageSimulatorSheets,
             CostumeStatSheet costumeStatSheet,
             int constructorVersion,
             int playCount = 1
@@ -259,7 +259,7 @@ namespace Nekoyume.Battle
             List<Guid> foods,
             int worldId,
             int stageId,
-            StageSimulatorSheets stageSimulatorSheets,
+            StageSimulatorSheetsV1 stageSimulatorSheets,
             CostumeStatSheet costumeStatSheet,
             int constructorVersion,
             int playCount = 1
@@ -287,7 +287,7 @@ namespace Nekoyume.Battle
             List<Guid> foods,
             int worldId,
             int stageId,
-            StageSimulatorSheets stageSimulatorSheets,
+            StageSimulatorSheetsV1 stageSimulatorSheets,
             CostumeStatSheet costumeStatSheet
         )
             : this(

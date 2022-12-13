@@ -11,9 +11,6 @@ namespace Nekoyume.Model
 {
     public class RaidBoss : Enemy
     {
-        [NonSerialized]
-        public RaidSimulator RaidSimulator;
-
         public new WorldBossCharacterSheet.Row RowData { get; }
         public WorldBossActionPatternSheet.Row PatternRowData { get; }
 
@@ -23,27 +20,28 @@ namespace Nekoyume.Model
         private int _wave;
 
         public bool Enraged { get; protected set; }
+        public bool IgnoreLevelCorrectionOnHit { get; protected set; }
 
         public RaidBoss(
             CharacterBase player,
             WorldBossCharacterSheet.Row characterRow,
             WorldBossActionPatternSheet.Row patternRow,
-            WorldBossCharacterSheet.WaveStatData statData)
+            WorldBossCharacterSheet.WaveStatData statData,
+            bool ignoreLevelCorrectionOnHit)
             : base(
                 player,
                 new CharacterStats(statData),
                 characterRow.BossId,
                 statData.ElementalType)
         {
-            RaidSimulator = (RaidSimulator) player.Simulator;
             RowData = characterRow;
             PatternRowData = patternRow;
+            IgnoreLevelCorrectionOnHit = ignoreLevelCorrectionOnHit;
             _wave = statData.Wave;
         }
 
         public RaidBoss(RaidBoss value) : base(value)
         {
-            RaidSimulator = value.RaidSimulator;
             RowData = value.RowData;
             PatternRowData = value.PatternRowData;
             _orderedSkills = value._orderedSkills;
@@ -51,6 +49,7 @@ namespace Nekoyume.Model
             _actionCount = value._actionCount;
             _wave = value._wave;
             Enraged = value.Enraged;
+            IgnoreLevelCorrectionOnHit = value.IgnoreLevelCorrectionOnHit;
         }
 
         public override object Clone() => new RaidBoss(this);
@@ -101,6 +100,27 @@ namespace Nekoyume.Model
 
             Simulator.Log.Add(usedSkill);
             return usedSkill;
+        }
+
+        public override bool IsHit(CharacterBase caster)
+        {
+            if (!IgnoreLevelCorrectionOnHit)
+            {
+                return base.IsHit(caster);
+            }
+
+            var isHit = HitHelper.IsHitWithoutLevelCorrection(
+                caster.Level,
+                caster.HIT,
+                Level,
+                HIT,
+                Simulator.Random.Next(0, 100));
+            if (!isHit)
+            {
+                caster.AttackCount = 0;
+            }
+
+            return isHit;
         }
 
         public void Enrage()

@@ -18,61 +18,65 @@ using Nekoyume.TableData;
 using Serilog;
 using Skill = Nekoyume.Model.Skill.Skill;
 using static Lib9c.SerializeKeys;
+using Nekoyume.Model.EnumType;
+using Nekoyume.Model.Rune;
 
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1241
-    /// Updated at https://github.com/planetarium/lib9c/pull/1244
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1495
     /// </summary>
     [Serializable]
-    [ActionType("mimisbrunnr_battle10")]
+    [ActionType("mimisbrunnr_battle11")]
     public class MimisbrunnrBattle : GameAction
     {
-        public List<Guid> costumes;
-        public List<Guid> equipments;
-        public List<Guid> foods;
-        public int worldId;
-        public int stageId;
-        public int playCount = 1;
-        public Address avatarAddress;
+        public List<Guid> Costumes;
+        public List<Guid> Equipments;
+        public List<Guid> Foods;
+        public List<RuneSlotInfo> RuneInfos;
+        public int WorldId;
+        public int StageId;
+        public int PlayCount = 1;
+        public Address AvatarAddress;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
             {
-                ["costumes"] = new List(costumes.OrderBy(i => i).Select(e => e.Serialize())),
-                ["equipments"] = new List(equipments.OrderBy(i => i).Select(e => e.Serialize())),
-                ["foods"] = new List(foods.OrderBy(i => i).Select(e => e.Serialize())),
-                ["worldId"] = worldId.Serialize(),
-                ["stageId"] = stageId.Serialize(),
-                ["playCount"] = playCount.Serialize(),
-                ["avatarAddress"] = avatarAddress.Serialize(),
+                ["costumes"] = new List(Costumes.OrderBy(i => i).Select(e => e.Serialize())),
+                ["equipments"] = new List(Equipments.OrderBy(i => i).Select(e => e.Serialize())),
+                ["foods"] = new List(Foods.OrderBy(i => i).Select(e => e.Serialize())),
+                ["r"] = RuneInfos.OrderBy(x => x.SlotIndex).Select(x=> x.Serialize()).Serialize(),
+                ["worldId"] = WorldId.Serialize(),
+                ["stageId"] = StageId.Serialize(),
+                ["playCount"] = PlayCount.Serialize(),
+                ["avatarAddress"] = AvatarAddress.Serialize(),
             }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(
             IImmutableDictionary<string, IValue> plainValue)
         {
-            costumes = ((List)plainValue["costumes"]).Select(e => e.ToGuid()).ToList();
-            equipments = ((List)plainValue["equipments"]).Select(e => e.ToGuid()).ToList();
-            foods = ((List)plainValue["foods"]).Select(e => e.ToGuid()).ToList();
-            worldId = plainValue["worldId"].ToInteger();
-            stageId = plainValue["stageId"].ToInteger();
-            playCount = plainValue["playCount"].ToInteger();
-            avatarAddress = plainValue["avatarAddress"].ToAddress();
+            Costumes = ((List)plainValue["costumes"]).Select(e => e.ToGuid()).ToList();
+            Equipments = ((List)plainValue["equipments"]).Select(e => e.ToGuid()).ToList();
+            Foods = ((List)plainValue["foods"]).Select(e => e.ToGuid()).ToList();
+            RuneInfos = plainValue["r"].ToList(x => new RuneSlotInfo((List)x));
+            WorldId = plainValue["worldId"].ToInteger();
+            StageId = plainValue["stageId"].ToInteger();
+            PlayCount = plainValue["playCount"].ToInteger();
+            AvatarAddress = plainValue["avatarAddress"].ToAddress();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
             var states = context.PreviousStates;
-            var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
-            var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
-            var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
+            var inventoryAddress = AvatarAddress.Derive(LegacyInventoryKey);
+            var worldInformationAddress = AvatarAddress.Derive(LegacyWorldInformationKey);
+            var questListAddress = AvatarAddress.Derive(LegacyQuestListKey);
             if (context.Rehearsal)
             {
                 return states;
             }
 
-            var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
+            var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
@@ -82,7 +86,7 @@ namespace Nekoyume.Action
 
             if (!states.TryGetAvatarStateV2(
                     context.Signer,
-                    avatarAddress,
+                    AvatarAddress,
                     out var avatarState,
                     out _))
             {
@@ -97,11 +101,7 @@ namespace Nekoyume.Action
                 sw.Elapsed);
 
             sw.Restart();
-
-            // FIXME Delete this check next hard fork.
-            bool useV100291Sheets = UseV100291Sheets(context.BlockIndex);
-            var sheets = useV100291Sheets
-                ? states.GetSheetsV100291(
+            var sheets = states.GetSheets(
                     containSimulatorSheets: true,
                     sheetTypes: new[]
                     {
@@ -117,23 +117,7 @@ namespace Nekoyume.Action
                         typeof(EquipmentItemSubRecipeSheetV2),
                         typeof(EquipmentItemOptionSheet),
                         typeof(MaterialItemSheet),
-                    })
-                : states.GetSheets(
-                    containSimulatorSheets: true,
-                    sheetTypes: new[]
-                    {
-                        typeof(WorldSheet),
-                        typeof(StageSheet),
-                        typeof(StageWaveSheet),
-                        typeof(EnemySkillSheet),
-                        typeof(CostumeStatSheet),
-                        typeof(WorldUnlockSheet),
-                        typeof(MimisbrunnrSheet),
-                        typeof(ItemRequirementSheet),
-                        typeof(EquipmentItemRecipeSheet),
-                        typeof(EquipmentItemSubRecipeSheetV2),
-                        typeof(EquipmentItemOptionSheet),
-                        typeof(MaterialItemSheet),
+                        typeof(RuneListSheet),
                     });
             sw.Stop();
             Log.Verbose(
@@ -143,27 +127,27 @@ namespace Nekoyume.Action
 
             sw.Restart();
             var worldSheet = sheets.GetSheet<WorldSheet>();
-            if (!worldSheet.TryGetValue(worldId, out var worldRow, false))
+            if (!worldSheet.TryGetValue(WorldId, out var worldRow, false))
             {
-                throw new SheetRowNotFoundException(addressesHex, nameof(WorldSheet), worldId);
+                throw new SheetRowNotFoundException(addressesHex, nameof(WorldSheet), WorldId);
             }
 
-            if (stageId < worldRow.StageBegin ||
-                stageId > worldRow.StageEnd)
+            if (StageId < worldRow.StageBegin ||
+                StageId > worldRow.StageEnd)
             {
                 throw new SheetRowColumnException(
-                    $"{addressesHex}{worldId} world is not contains {worldRow.Id} stage:" +
+                    $"{addressesHex}{WorldId} world is not contains {worldRow.Id} stage:" +
                     $" {worldRow.StageBegin}-{worldRow.StageEnd}");
             }
 
-            if (!sheets.GetSheet<StageSheet>().TryGetValue(stageId, out var stageRow))
+            if (!sheets.GetSheet<StageSheet>().TryGetValue(StageId, out var stageRow))
             {
-                throw new SheetRowNotFoundException(addressesHex, nameof(StageSheet), stageId);
+                throw new SheetRowNotFoundException(addressesHex, nameof(StageSheet), StageId);
             }
 
             var worldUnlockSheet = sheets.GetSheet<WorldUnlockSheet>();
             var worldInformation = avatarState.worldInformation;
-            if (!worldInformation.TryGetWorld(worldId, out var world))
+            if (!worldInformation.TryGetWorld(WorldId, out var world))
             {
                 // NOTE: Add new World from WorldSheet
                 worldInformation.AddAndUnlockMimisbrunnrWorld(
@@ -171,7 +155,7 @@ namespace Nekoyume.Action
                     context.BlockIndex,
                     worldSheet,
                     worldUnlockSheet);
-                if (!worldInformation.TryGetWorld(worldId, out world))
+                if (!worldInformation.TryGetWorld(WorldId, out world))
                 {
                     // Do nothing.
                 }
@@ -180,13 +164,13 @@ namespace Nekoyume.Action
             if (!world.IsUnlocked)
             {
                 var worldUnlockSheetRow = worldUnlockSheet.OrderedList
-                    .FirstOrDefault(row => row.WorldIdToUnlock == worldId);
+                    .FirstOrDefault(row => row.WorldIdToUnlock == WorldId);
                 if (!(worldUnlockSheetRow is null) &&
                     worldInformation.IsWorldUnlocked(worldUnlockSheetRow.WorldId) &&
                     worldInformation.IsStageCleared(worldUnlockSheetRow.StageId))
                 {
-                    worldInformation.UnlockWorld(worldId, context.BlockIndex, worldSheet);
-                    if (!worldInformation.TryGetWorld(worldId, out world))
+                    worldInformation.UnlockWorld(WorldId, context.BlockIndex, worldSheet);
+                    if (!worldInformation.TryGetWorld(WorldId, out world))
                     {
                         // Do nothing.
                     }
@@ -195,7 +179,7 @@ namespace Nekoyume.Action
 
             if (!world.IsUnlocked)
             {
-                throw new InvalidWorldException($"{addressesHex}{worldId} is locked.");
+                throw new InvalidWorldException($"{addressesHex}{WorldId} is locked.");
             }
 
             if (world.StageBegin != worldRow.StageBegin ||
@@ -204,26 +188,26 @@ namespace Nekoyume.Action
                 worldInformation.UpdateWorld(worldRow);
             }
 
-            if (world.IsStageCleared && stageId > world.StageClearedId + 1 ||
-                !world.IsStageCleared && stageId != world.StageBegin)
+            if (world.IsStageCleared && StageId > world.StageClearedId + 1 ||
+                !world.IsStageCleared && StageId != world.StageBegin)
             {
                 throw new InvalidStageException(
-                    $"{addressesHex}Aborted as the stage ({worldId}/{stageId}) is not" +
+                    $"{addressesHex}Aborted as the stage ({WorldId}/{StageId}) is not" +
                     $" cleared; cleared stage: {world.StageClearedId}"
                 );
             }
 
             sw.Restart();
             var mimisbrunnrSheet = sheets.GetSheet<MimisbrunnrSheet>();
-            if (!mimisbrunnrSheet.TryGetValue(stageId, out var mimisbrunnrSheetRow))
+            if (!mimisbrunnrSheet.TryGetValue(StageId, out var mimisbrunnrSheetRow))
             {
                 throw new SheetRowNotFoundException(
                     addressesHex,
                     "MimisbrunnrSheet",
-                    stageId);
+                    StageId);
             }
 
-            foreach (var equipmentId in equipments)
+            foreach (var equipmentId in Equipments)
             {
                 if (!avatarState.inventory.TryGetNonFungibleItem(
                         equipmentId,
@@ -247,20 +231,20 @@ namespace Nekoyume.Action
                 addressesHex,
                 sw.Elapsed);
 
-            var equipmentList = avatarState.ValidateEquipmentsV2(equipments, context.BlockIndex);
-            var foodIds = avatarState.ValidateConsumable(foods, context.BlockIndex);
-            var costumeIds = avatarState.ValidateCostume(costumes);
+            var equipmentList = avatarState.ValidateEquipmentsV2(Equipments, context.BlockIndex);
+            var foodIds = avatarState.ValidateConsumable(Foods, context.BlockIndex);
+            var costumeIds = avatarState.ValidateCostume(Costumes);
 
             sw.Restart();
 
-            if (playCount <= 0)
+            if (PlayCount <= 0)
             {
                 throw new PlayCountIsZeroException(
                     $"{addressesHex}playCount must be greater than 0." +
-                    $" current playCount : {playCount}");
+                    $" current playCount : {PlayCount}");
             }
 
-            var totalCostActionPoint = stageRow.CostAP * playCount;
+            var totalCostActionPoint = stageRow.CostAP * PlayCount;
             if (avatarState.actionPoint < totalCostActionPoint)
             {
                 throw new NotEnoughActionPointException(
@@ -269,7 +253,7 @@ namespace Nekoyume.Action
                 );
             }
 
-            var equippableItem = costumes.Concat(equipments);
+            var equippableItem = Costumes.Concat(Equipments);
             avatarState.EquipItems(equippableItem);
             var requirementSheet = sheets.GetSheet<ItemRequirementSheet>();
             avatarState.ValidateItemRequirement(
@@ -289,25 +273,69 @@ namespace Nekoyume.Action
                 sw.Elapsed);
 
             sw.Restart();
-            var simulatorSheets = useV100291Sheets
-                ? sheets.GetSimulatorSheetsV100291()
-                : sheets.GetSimulatorSheets();
             var materialSheet = sheets.GetSheet<MaterialItemSheet>();
+
+            // update rune slot
+            if (RuneInfos is null)
+            {
+                throw new RuneInfosIsEmptyException(
+                    $"[{nameof(MimisbrunnrBattle)}] my avatar address : {AvatarAddress}");
+            }
+
+            if (RuneInfos.GroupBy(x => x.SlotIndex).Count() != RuneInfos.Count)
+            {
+                throw new DuplicatedRuneSlotIndexException(
+                    $"[{nameof(MimisbrunnrBattle)}] my avatar address : {AvatarAddress}");
+            }
+
+            var runeSlotStateAddress = RuneSlotState.DeriveAddress(AvatarAddress, BattleType.Adventure);
+            var runeSlotState = states.TryGetState(runeSlotStateAddress, out List rawRuneSlotState)
+                ? new RuneSlotState(rawRuneSlotState)
+                : new RuneSlotState(BattleType.Adventure);
+
+            if (RuneInfos.Exists(x => x.SlotIndex >= runeSlotState.GetRuneSlot().Count))
+            {
+                throw new SlotNotFoundException(
+                    $"[{nameof(MimisbrunnrBattle)}] my avatar address : {AvatarAddress}");
+            }
+
+            var runeStates = new List<RuneState>();
+            foreach (var address in RuneInfos.Select(info => RuneState.DeriveAddress(AvatarAddress, info.RuneId)))
+            {
+                if (states.TryGetState(address, out List rawRuneState))
+                {
+                    runeStates.Add(new RuneState(rawRuneState));
+                }
+            }
+            var runeListSheet = sheets.GetSheet<RuneListSheet>();
+            runeSlotState.UpdateSlot(RuneInfos, runeListSheet);
+            states = states.SetState(runeSlotStateAddress, runeSlotState.Serialize());
+
+            // update item slot
+            var itemSlotStateAddress = ItemSlotState.DeriveAddress(AvatarAddress, BattleType.Adventure);
+            var itemSlotState = states.TryGetState(itemSlotStateAddress, out List rawItemSlotState)
+                ? new ItemSlotState(rawItemSlotState)
+                : new ItemSlotState(BattleType.Adventure);
+            itemSlotState.UpdateEquipment(Equipments);
+            itemSlotState.UpdateCostumes(Costumes);
+            states = states.SetState(itemSlotStateAddress, itemSlotState.Serialize());
+
             var simulator = new StageSimulator(
                 context.Random,
                 avatarState,
-                foods,
+                Foods,
+                runeStates,
                 new List<Skill>(),
-                worldId,
-                stageId,
+                WorldId,
+                StageId,
                 stageRow,
-                sheets.GetSheet<StageWaveSheet>()[stageId],
-                avatarState.worldInformation.IsStageCleared(stageId),
+                sheets.GetSheet<StageWaveSheet>()[StageId],
+                avatarState.worldInformation.IsStageCleared(StageId),
                 0,
-                simulatorSheets,
+                sheets.GetSimulatorSheets(),
                 sheets.GetSheet<EnemySkillSheet>(),
                 sheets.GetSheet<CostumeStatSheet>(),
-                StageSimulator.GetWaveRewards(context.Random, stageRow, materialSheet, playCount));
+                StageSimulator.GetWaveRewards(context.Random, stageRow, materialSheet, PlayCount));
             sw.Stop();
             Log.Verbose(
                 "{AddressesHex}Mimisbrunnr Initialize Simulator: {Elapsed}",
@@ -327,9 +355,9 @@ namespace Nekoyume.Action
                 " worldId: {WorldId}, stageId: {StageId}, result: {Result}," +
                 " clearWave: {ClearWave}, totalWave: {TotalWave}",
                 addressesHex,
-                avatarAddress,
-                worldId,
-                stageId,
+                AvatarAddress,
+                WorldId,
+                StageId,
                 simulator.Log.result,
                 simulator.Log.clearedWaveNumber,
                 simulator.Log.waveCount
@@ -339,8 +367,8 @@ namespace Nekoyume.Action
             if (simulator.Log.IsClear)
             {
                 simulator.Player.worldInformation.ClearStage(
-                    worldId,
-                    stageId,
+                    WorldId,
+                    StageId,
                     context.BlockIndex,
                     worldSheet,
                     worldUnlockSheet
@@ -383,7 +411,7 @@ namespace Nekoyume.Action
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
                 .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
                 .SetState(questListAddress, avatarState.questList.Serialize())
-                .SetState(avatarAddress, avatarState.SerializeV2());
+                .SetState(AvatarAddress, avatarState.SerializeV2());
 
             sw.Stop();
             Log.Verbose(

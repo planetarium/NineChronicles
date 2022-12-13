@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -10,9 +10,8 @@ using Nekoyume.Battle;
 using Nekoyume.BlockChain.Policy;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
-using Nekoyume.Model;
-using Nekoyume.Model.BattleStatus;
-using Nekoyume.Model.Quest;
+using Nekoyume.Model.EnumType;
+using Nekoyume.Model.Rune;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
@@ -23,15 +22,16 @@ using Skill = Nekoyume.Model.Skill.Skill;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1338
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1495
     /// </summary>
     [Serializable]
-    [ActionType("hack_and_slash18")]
+    [ActionType("hack_and_slash19")]
     public class HackAndSlash : GameAction
     {
         public List<Guid> Costumes;
         public List<Guid> Equipments;
         public List<Guid> Foods;
+        public List<RuneSlotInfo> RuneInfos;
         public int WorldId;
         public int StageId;
         public int? StageBuffId;
@@ -47,6 +47,7 @@ namespace Nekoyume.Action
                     ["costumes"] = new List(Costumes.OrderBy(i => i).Select(e => e.Serialize())),
                     ["equipments"] =
                         new List(Equipments.OrderBy(i => i).Select(e => e.Serialize())),
+                    ["r"] = RuneInfos.OrderBy(x => x.SlotIndex).Select(x=> x.Serialize()).Serialize(),
                     ["foods"] = new List(Foods.OrderBy(i => i).Select(e => e.Serialize())),
                     ["worldId"] = WorldId.Serialize(),
                     ["stageId"] = StageId.Serialize(),
@@ -67,6 +68,7 @@ namespace Nekoyume.Action
             Costumes = ((List)plainValue["costumes"]).Select(e => e.ToGuid()).ToList();
             Equipments = ((List)plainValue["equipments"]).Select(e => e.ToGuid()).ToList();
             Foods = ((List)plainValue["foods"]).Select(e => e.ToGuid()).ToList();
+            RuneInfos = plainValue["r"].ToList(x => new RuneSlotInfo((List)x));
             WorldId = plainValue["worldId"].ToInteger();
             StageId = plainValue["stageId"].ToInteger();
             if (plainValue.ContainsKey("stageBuffId"))
@@ -126,10 +128,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}HAS Get AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-            // FIXME Delete this check next hard fork.
-            bool useV100291Sheets = UseV100291Sheets(blockIndex);
-            var sheets = useV100291Sheets
-                ? states.GetSheetsV100291(
+            var sheets = states.GetSheets(
                     containQuestSheet: true,
                     containSimulatorSheets: true,
                     sheetTypes: new[]
@@ -152,30 +151,7 @@ namespace Nekoyume.Action
                         typeof(CrystalStageBuffGachaSheet),
                         typeof(CrystalRandomBuffSheet),
                         typeof(StakeActionPointCoefficientSheet),
-                    })
-                : states.GetSheets(
-                    containQuestSheet: true,
-                    containSimulatorSheets: true,
-                    sheetTypes: new[]
-                    {
-                        typeof(WorldSheet),
-                        typeof(StageSheet),
-                        typeof(StageWaveSheet),
-                        typeof(EnemySkillSheet),
-                        typeof(CostumeStatSheet),
-                        typeof(SkillSheet),
-                        typeof(QuestRewardSheet),
-                        typeof(QuestItemRewardSheet),
-                        typeof(EquipmentItemRecipeSheet),
-                        typeof(WorldUnlockSheet),
-                        typeof(MaterialItemSheet),
-                        typeof(ItemRequirementSheet),
-                        typeof(EquipmentItemRecipeSheet),
-                        typeof(EquipmentItemSubRecipeSheetV2),
-                        typeof(EquipmentItemOptionSheet),
-                        typeof(CrystalStageBuffGachaSheet),
-                        typeof(CrystalRandomBuffSheet),
-                        typeof(StakeActionPointCoefficientSheet),
+                        typeof(RuneListSheet),
                     });
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Get Sheets: {Elapsed}", addressesHex, sw.Elapsed);
@@ -292,9 +268,34 @@ namespace Nekoyume.Action
             var materialItemSheet = sheets.GetSheet<MaterialItemSheet>();
             sw.Restart();
             // if PlayCount > 1, it is Multi-HAS.
-            var simulatorSheets = useV100291Sheets
-                ? sheets.GetSimulatorSheetsV100291()
-                : sheets.GetSimulatorSheets();
+            var simulatorSheets = sheets.GetSimulatorSheets();
+
+            // update rune slot
+            var runeSlotStateAddress = RuneSlotState.DeriveAddress(AvatarAddress, BattleType.Adventure);
+            var runeSlotState = states.TryGetState(runeSlotStateAddress, out List rawRuneSlotState)
+                ? new RuneSlotState(rawRuneSlotState)
+                : new RuneSlotState(BattleType.Adventure);
+            var runeListSheet = sheets.GetSheet<RuneListSheet>();
+            runeSlotState.UpdateSlot(RuneInfos, runeListSheet);
+            states = states.SetState(runeSlotStateAddress, runeSlotState.Serialize());
+
+            // update item slot
+            var itemSlotStateAddress = ItemSlotState.DeriveAddress(AvatarAddress, BattleType.Adventure);
+            var itemSlotState = states.TryGetState(itemSlotStateAddress, out List rawItemSlotState)
+                ? new ItemSlotState(rawItemSlotState)
+                : new ItemSlotState(BattleType.Adventure);
+            itemSlotState.UpdateEquipment(Equipments);
+            itemSlotState.UpdateCostumes(Costumes);
+            states = states.SetState(itemSlotStateAddress, itemSlotState.Serialize());
+
+            var runeStates = new List<RuneState>();
+            foreach (var address in RuneInfos.Select(info => RuneState.DeriveAddress(AvatarAddress, info.RuneId)))
+            {
+                if (states.TryGetState(address, out List rawRuneState))
+                {
+                    runeStates.Add(new RuneState(rawRuneState));
+                }
+            }
             for (var i = 0; i < PlayCount; i++)
             {
                 sw.Restart();
@@ -304,6 +305,7 @@ namespace Nekoyume.Action
                     random,
                     avatarState,
                     i == 0 ? Foods : new List<Guid>(),
+                    runeStates,
                     i == 0 ? skillsOnWaveStart : new List<Skill>(),
                     WorldId,
                     StageId,

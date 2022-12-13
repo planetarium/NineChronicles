@@ -150,7 +150,7 @@ namespace Lib9c.DevExtensions.Action
                 if (!row.TryGetRound(round, out var roundData))
                 {
                     throw new RoundNotFoundException(
-                        $"[{nameof(JoinArena)}] ChampionshipId({row.ChampionshipId}) - round({round})");
+                        $"[{nameof(CreateArenaDummy)}] ChampionshipId({row.ChampionshipId}) - round({round})");
                 }
 
                 var arenaScoreAdr =
@@ -159,7 +159,7 @@ namespace Lib9c.DevExtensions.Action
                 if (states.TryGetState(arenaScoreAdr, out List _))
                 {
                     throw new ArenaScoreAlreadyContainsException(
-                        $"[{nameof(JoinArena)}] id({roundData.ChampionshipId}) / round({roundData.Round})");
+                        $"[{nameof(CreateArenaDummy)}] id({roundData.ChampionshipId}) / round({roundData.Round})");
                 }
 
                 var arenaScore = new ArenaScore(avatarAddress, roundData.ChampionshipId,
@@ -172,7 +172,7 @@ namespace Lib9c.DevExtensions.Action
                 if (states.TryGetState(arenaInformationAdr, out List _))
                 {
                     throw new ArenaInformationAlreadyContainsException(
-                        $"[{nameof(JoinArena)}] id({roundData.ChampionshipId}) / round({roundData.Round})");
+                        $"[{nameof(CreateArenaDummy)}] id({roundData.ChampionshipId}) / round({roundData.Round})");
                 }
 
                 var arenaInformation =

@@ -13,6 +13,8 @@ namespace Nekoyume.Model.Stat
         protected readonly DecimalStat cri = new DecimalStat(StatType.CRI);
         protected readonly DecimalStat hit = new DecimalStat(StatType.HIT);
         protected readonly DecimalStat spd = new DecimalStat(StatType.SPD);
+        protected readonly IntStat drv = new IntStat(StatType.DRV);
+        protected readonly IntStat drr = new IntStat(StatType.DRR);
 
         public int HP => hp.Value;
         public int ATK => atk.Value;
@@ -20,6 +22,8 @@ namespace Nekoyume.Model.Stat
         public int CRI => cri.ValueAsInt;
         public int HIT => hit.ValueAsInt;
         public int SPD => spd.ValueAsInt;
+        public int DRV => drv.Value;
+        public int DRR => drr.Value;
 
         public bool HasHP => HP > 0;
         public bool HasATK => ATK > 0;
@@ -27,6 +31,8 @@ namespace Nekoyume.Model.Stat
         public bool HasCRI => CRI > 0;
         public bool HasHIT => HIT > 0;
         public bool HasSPD => SPD > 0;
+        public bool HasDRV => DRV > 0;
+        public bool HasDRR => DRR > 0;
 
         public int CurrentHP
         {
@@ -46,6 +52,8 @@ namespace Nekoyume.Model.Stat
             cri = (DecimalStat)value.cri.Clone();
             hit = (DecimalStat)value.hit.Clone();
             spd = (DecimalStat)value.spd.Clone();
+            drv = (IntStat)value.drv.Clone();
+            drr = (IntStat)value.drr.Clone();
         }
 
         public void Reset()
@@ -56,6 +64,8 @@ namespace Nekoyume.Model.Stat
             cri.Reset();
             hit.Reset();
             spd.Reset();
+            drv.Reset();
+            drr.Reset();
         }
 
         /// <summary>
@@ -70,6 +80,8 @@ namespace Nekoyume.Model.Stat
             cri.SetValue(statsArray.Sum(stats => stats.cri.Value));
             hit.SetValue(statsArray.Sum(stats => stats.hit.Value));
             spd.SetValue(statsArray.Sum(stats => stats.spd.Value));
+            drv.SetValue(statsArray.Sum(stats => stats.drv.Value));
+            drr.SetValue(statsArray.Sum(stats => stats.drr.Value));
         }
 
         /// <summary>
@@ -104,6 +116,12 @@ namespace Nekoyume.Model.Stat
                     case StatType.SPD:
                         spd.AddValue(statModifier.GetModifiedPart(baseStatsArray.Sum(stats => stats.spd.Value)));
                         break;
+                    case StatType.DRV:
+                        drv.AddValue(statModifier.GetModifiedPart(baseStatsArray.Sum(stats => stats.drv.Value)));
+                        break;
+                    case StatType.DRR:
+                        drr.AddValue(statModifier.GetModifiedPart(baseStatsArray.Sum(stats => stats.drr.Value)));
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -122,10 +140,12 @@ namespace Nekoyume.Model.Stat
             cri.SetValue(value.CRI);
             hit.SetValue(value.HIT);
             spd.SetValue(value.SPD);
+            drv.SetValue(value.DRV);
+            drr.SetValue(value.DRR);
         }
 
         /// <summary>
-        /// Please to use only test.
+        /// Use this only for testing.
         /// </summary>
         /// <param name="statType"></param>
         /// <param name="value"></param>
@@ -152,6 +172,12 @@ namespace Nekoyume.Model.Stat
                 case StatType.SPD:
                     spd.SetValue(value);
                     break;
+                case StatType.DRV:
+                    drv.SetValue(value);
+                    break;
+                case StatType.DRR:
+                    drr.SetValue(value);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
             }
@@ -173,6 +199,10 @@ namespace Nekoyume.Model.Stat
                     yield return (StatType.HIT, HIT);
                 if (HasSPD)
                     yield return (StatType.SPD, SPD);
+                if (HasDRV)
+                    yield return (StatType.DRV, DRV);
+                if (HasDRR)
+                    yield return (StatType.DRR, DRR);
             }
             else
             {
@@ -182,6 +212,8 @@ namespace Nekoyume.Model.Stat
                 yield return (StatType.CRI, CRI);
                 yield return (StatType.HIT, HIT);
                 yield return (StatType.SPD, SPD);
+                yield return (StatType.DRV, DRV);
+                yield return (StatType.DRR, DRR);
             }
         }
 

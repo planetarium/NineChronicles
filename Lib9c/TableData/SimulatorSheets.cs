@@ -1,16 +1,9 @@
+
 namespace Nekoyume.TableData
 {
-    public class SimulatorSheets
+    public class SimulatorSheets : SimulatorSheetsV1
     {
-        public readonly MaterialItemSheet MaterialItemSheet;
-        public readonly SkillSheet SkillSheet;
-        public readonly SkillBuffSheet SkillBuffSheet;
-        public readonly SkillActionBuffSheet SkillActionBuffSheet;
-        public readonly ActionBuffSheet ActionBuffSheet;
-        public readonly StatBuffSheet StatBuffSheet;
-        public readonly CharacterSheet CharacterSheet;
-        public readonly CharacterLevelSheet CharacterLevelSheet;
-        public readonly EquipmentItemSetEffectSheet EquipmentItemSetEffectSheet;
+        public readonly RuneOptionSheet RuneOptionSheet;
 
         public SimulatorSheets(
             MaterialItemSheet materialItemSheet,
@@ -21,18 +14,20 @@ namespace Nekoyume.TableData
             ActionBuffSheet actionBuffSheet,
             CharacterSheet characterSheet,
             CharacterLevelSheet characterLevelSheet,
-            EquipmentItemSetEffectSheet equipmentItemSetEffectSheet
-        )
+            EquipmentItemSetEffectSheet equipmentItemSetEffectSheet,
+            RuneOptionSheet runeOptionSheet
+        ) : base(
+            materialItemSheet,
+            skillSheet,
+            skillBuffSheet,
+            statBuffSheet,
+            skillActionBuffSheet,
+            actionBuffSheet,
+            characterSheet,
+            characterLevelSheet,
+            equipmentItemSetEffectSheet)
         {
-            MaterialItemSheet = materialItemSheet;
-            SkillSheet = skillSheet;
-            SkillBuffSheet = skillBuffSheet;
-            StatBuffSheet = statBuffSheet;
-            SkillActionBuffSheet = skillActionBuffSheet;
-            ActionBuffSheet = actionBuffSheet;
-            CharacterSheet = characterSheet;
-            CharacterLevelSheet = characterLevelSheet;
-            EquipmentItemSetEffectSheet = equipmentItemSetEffectSheet;
+            RuneOptionSheet = runeOptionSheet;
         }
     }
 
@@ -54,7 +49,8 @@ namespace Nekoyume.TableData
             EquipmentItemSetEffectSheet equipmentItemSetEffectSheet,
             StageSheet stageSheet,
             StageWaveSheet stageWaveSheet,
-            EnemySkillSheet enemySkillSheet
+            EnemySkillSheet enemySkillSheet,
+            RuneOptionSheet runeOptionSheet
         ) : base(
             materialItemSheet,
             skillSheet,
@@ -64,7 +60,8 @@ namespace Nekoyume.TableData
             actionBuffSheet,
             characterSheet,
             characterLevelSheet,
-            equipmentItemSetEffectSheet
+            equipmentItemSetEffectSheet,
+            runeOptionSheet
         )
         {
             StageSheet = stageSheet;
@@ -87,7 +84,8 @@ namespace Nekoyume.TableData
             CharacterSheet characterSheet,
             CharacterLevelSheet characterLevelSheet,
             EquipmentItemSetEffectSheet equipmentItemSetEffectSheet,
-            WeeklyArenaRewardSheet weeklyArenaRewardSheet
+            WeeklyArenaRewardSheet weeklyArenaRewardSheet,
+            RuneOptionSheet runeOptionSheet
         ) : base(
             materialItemSheet,
             skillSheet,
@@ -97,7 +95,8 @@ namespace Nekoyume.TableData
             actionBuffSheet,
             characterSheet,
             characterLevelSheet,
-            equipmentItemSetEffectSheet
+            equipmentItemSetEffectSheet,
+            runeOptionSheet
         )
         {
             WeeklyArenaRewardSheet = weeklyArenaRewardSheet;
@@ -120,7 +119,8 @@ namespace Nekoyume.TableData
             CharacterLevelSheet characterLevelSheet,
             EquipmentItemSetEffectSheet equipmentItemSetEffectSheet,
             CostumeStatSheet costumeStatSheet,
-            WeeklyArenaRewardSheet weeklyArenaRewardSheet
+            WeeklyArenaRewardSheet weeklyArenaRewardSheet,
+            RuneOptionSheet runeOptionSheet
         ) : base(materialItemSheet,
             skillSheet,
             skillBuffSheet,
@@ -129,7 +129,8 @@ namespace Nekoyume.TableData
             actionBuffSheet,
             characterSheet,
             characterLevelSheet,
-            equipmentItemSetEffectSheet)
+            equipmentItemSetEffectSheet,
+            runeOptionSheet)
         {
             CostumeStatSheet = costumeStatSheet;
             WeeklyArenaRewardSheet = weeklyArenaRewardSheet;
@@ -159,7 +160,8 @@ namespace Nekoyume.TableData
             WorldBossActionPatternSheet worldBossActionPatternSheet,
             WorldBossBattleRewardSheet worldBossBattleRewardSheet,
             RuneWeightSheet runeWeightSheet,
-            RuneSheet runeSheet
+            RuneSheet runeSheet,
+            RuneOptionSheet runeOptionSheet
         ) : base(materialItemSheet,
             skillSheet,
             skillBuffSheet,
@@ -168,7 +170,8 @@ namespace Nekoyume.TableData
             actionBuffSheet,
             characterSheet,
             characterLevelSheet,
-            equipmentItemSetEffectSheet)
+            equipmentItemSetEffectSheet,
+            runeOptionSheet)
         {
             WorldBossCharacterSheet = worldBossCharacterSheet;
             WorldBossActionPatternSheet = worldBossActionPatternSheet;
