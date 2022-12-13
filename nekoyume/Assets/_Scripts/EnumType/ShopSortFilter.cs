@@ -7,7 +7,7 @@ namespace Nekoyume.EnumType
         CP = 0,
         Price = 1,
         Class = 2,
-        CrystalPerNcg = 3,
+        Crystal = 3,
     }
 
     public static class ShopSortFilterExtension
@@ -21,7 +21,7 @@ namespace Nekoyume.EnumType
                     ShopSortFilter.CP,
                     ShopSortFilter.Price,
                     ShopSortFilter.Class,
-                    ShopSortFilter.CrystalPerNcg,
+                    ShopSortFilter.Crystal,
                 };
             }
         }

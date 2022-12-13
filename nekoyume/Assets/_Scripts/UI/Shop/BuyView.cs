@@ -441,7 +441,7 @@ namespace Nekoyume
                     : models.OrderByDescending(x => x.Grade)
                         .ThenByDescending(x => x.ItemBase.ItemType)
                         .ToList(),
-                ShopSortFilter.CrystalPerNcg => _isAscending.Value
+                ShopSortFilter.Crystal => _isAscending.Value
                     ? models.OrderBy(GetCrystalPerPrice).ToList()
                     : models.OrderByDescending(GetCrystalPerPrice).ToList(),
                 _ => throw new ArgumentOutOfRangeException()

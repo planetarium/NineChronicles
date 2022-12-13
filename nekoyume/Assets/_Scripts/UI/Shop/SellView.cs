@@ -127,7 +127,7 @@ namespace Nekoyume
                 ShopSortFilter.Price => models.OrderByDescending(x => x.OrderDigest.Price).ToList(),
                 ShopSortFilter.Class => models.OrderByDescending(x => x.Grade)
                     .ThenByDescending(x => x.ItemBase.ItemType).ToList(),
-                ShopSortFilter.CrystalPerNcg => models.OrderByDescending(x => x.ItemBase.ItemType == ItemType.Equipment
+                ShopSortFilter.Crystal => models.OrderByDescending(x => x.ItemBase.ItemType == ItemType.Equipment
                     ? CrystalCalculator.CalculateCrystal(
                             new[] {(Equipment) x.ItemBase},
                             false,
