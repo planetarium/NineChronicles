@@ -128,8 +128,8 @@ namespace Nekoyume.UI
 
             foreach (var eventDungeonButton in eventDungeonObjects.Select(i => i.button))
             {
-                eventDungeonButton.Lock(true);
-                eventDungeonButton.Show();
+                eventDungeonButton.Lock();
+                eventDungeonButton.Hide();
                 eventDungeonButton.OnClickSubject.Subscribe(_ =>
                 {
                     if (RxProps.EventScheduleRowForDungeon.Value is null)
@@ -194,8 +194,7 @@ namespace Nekoyume.UI
             {
                 foreach (var eventDungeonObject in eventDungeonObjects)
                 {
-                    eventDungeonObject.button.gameObject.SetActive(false);
-                    eventDungeonObject.button.Lock(true);
+                    eventDungeonObject.button.Hide();
                     eventDungeonObject.remainingTimeObject.SetActive(false);
                 }
 
@@ -209,9 +208,8 @@ namespace Nekoyume.UI
                     Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.EventDungeon);
 
                     eventDungeonLockButton.gameObject.SetActive(false);
-                    var eventDungeonObject = eventDungeonObjects
-                        .Last(o => o.eventId == value.Id);
-                    eventDungeonObject.button.gameObject.SetActive(true);
+                    var eventDungeonObject = eventDungeonObjects.Last(o => o.eventId == value.Id);
+                    eventDungeonObject.button.Show();
                     eventDungeonObject.button.HasNotification.Value = true;
                     eventDungeonObject.button.Unlock();
                     eventDungeonObject.remainingTimeObject.SetActive(true);
@@ -328,6 +326,7 @@ namespace Nekoyume.UI
             {
                 SharedViewModel.IsWorldShown.SetValueAndForceNotify(showWorld);
             }
+            SubscribeAtShow();
 
             TableSheets.Instance.WorldSheet.TryGetValue(
                 worldId,
@@ -354,6 +353,7 @@ namespace Nekoyume.UI
             {
                 SharedViewModel.IsWorldShown.SetValueAndForceNotify(showWorld);
             }
+            SubscribeAtShow();
 
             Show(true);
             var openedStageId =
