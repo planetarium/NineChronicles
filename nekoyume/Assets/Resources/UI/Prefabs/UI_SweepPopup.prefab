@@ -9556,7 +9556,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 10
   m_WholeNumbers: 1
-  m_Value: 0
+  m_Value: 10
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -13940,7 +13940,7 @@ PrefabInstance:
     - target: {fileID: 5730728711148222432, guid: f28b579a9755c49b5b5d1a1763a906a8,
         type: 3}
       propertyPath: m_fontColor.b
-      value: 0.21226418
+      value: 0.51005465
       objectReference: {fileID: 0}
     - target: {fileID: 5730728711148222432, guid: f28b579a9755c49b5b5d1a1763a906a8,
         type: 3}
@@ -13950,7 +13950,7 @@ PrefabInstance:
     - target: {fileID: 5730728711148222432, guid: f28b579a9755c49b5b5d1a1763a906a8,
         type: 3}
       propertyPath: m_fontColor.r
-      value: 0.35193366
+      value: 0.30588233
       objectReference: {fileID: 0}
     - target: {fileID: 5730728711148222432, guid: f28b579a9755c49b5b5d1a1763a906a8,
         type: 3}
@@ -13966,7 +13966,7 @@ PrefabInstance:
     - target: {fileID: 5730728711148222432, guid: f28b579a9755c49b5b5d1a1763a906a8,
         type: 3}
       propertyPath: m_fontColor32.rgba
-      value: 4281794394
+      value: 4286775118
       objectReference: {fileID: 0}
     - target: {fileID: 5730728711148222432, guid: f28b579a9755c49b5b5d1a1763a906a8,
         type: 3}

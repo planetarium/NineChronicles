@@ -42,6 +42,7 @@ namespace Nekoyume.Game.Character
         private int _currentHp;
         private readonly List<Costume> _costumes = new List<Costume>();
         private readonly List<Equipment> _equipments = new List<Equipment>();
+        private readonly Dictionary<int, VFX.VFX> _persistingVFXMap = new();
 
         public List<ArenaActionParams> Actions { get; } = new List<ArenaActionParams>();
 
@@ -63,6 +64,15 @@ namespace Nekoyume.Game.Character
         {
             _hudContainer.UpdatePosition(ActionCamera.instance.Cam, gameObject, HUDOffset);
             _speechBubble.UpdatePosition(ActionCamera.instance.Cam, gameObject, HUDOffset);
+        }
+
+        private void OnDisable()
+        {
+            foreach (var vfx in _persistingVFXMap.Values)
+            {
+                vfx.gameObject.SetActive(false);
+            }
+            _persistingVFXMap.Clear();
         }
 
         public void Init(ArenaPlayerDigest digest, ArenaCharacter target, bool isEnemy)
@@ -111,6 +121,24 @@ namespace Nekoyume.Game.Character
 
             _hudContainer.UpdatePosition(ActionCamera.instance.Cam, gameObject, HUDOffset);
             _arenaBattle.UpdateStatus(_characterModel.IsEnemy, _currentHp, _characterModel.HP, _characterModel.Buffs);
+
+
+            // delete existing vfx
+            var removedVfx = new List<int>();
+            foreach (var buff in _persistingVFXMap.Keys)
+            {
+                if (_characterModel.IsDead ||
+                    !_characterModel.Buffs.Keys.Contains(buff))
+                {
+                    _persistingVFXMap[buff].LazyStop();
+                    removedVfx.Add(buff);
+                }
+            }
+
+            foreach (var id in removedVfx)
+            {
+                _persistingVFXMap.Remove(id);
+            }
         }
 
         public void ShowSpeech(string key, params int[] list)
@@ -239,7 +267,7 @@ namespace Nekoyume.Game.Character
             ShowSpeech("PLAYER_ATTACK");
         }
 
-        private IEnumerator CoProcessDamage(ArenaSkill.ArenaSkillInfo info, bool isConsiderElementalType)
+        public IEnumerator CoProcessDamage(ArenaSkill.ArenaSkillInfo info, bool isConsiderElementalType)
         {
             var dmg = info.Effect;
 
@@ -286,6 +314,23 @@ namespace Nekoyume.Game.Character
             var buff = info.Buff;
             var effect = Game.instance.Arena.BuffController.Get<ArenaCharacter, BuffVFX>(target, buff);
             effect.Play();
+            if (effect.IsPersisting)
+            {
+                target.AttachPersistingVFX(buff.BuffInfo.GroupId, effect);
+            }
+
+            target._characterModel = info.Target;
+        }
+
+        private void AttachPersistingVFX(int groupId, BuffVFX vfx)
+        {
+            if (_persistingVFXMap.TryGetValue(groupId, out var prevVFX))
+            {
+                prevVFX.LazyStop();
+                _persistingVFXMap.Remove(groupId);
+            }
+
+            _persistingVFXMap[groupId] = vfx;
         }
 
         #region Animation
@@ -590,6 +635,23 @@ namespace Nekoyume.Game.Character
             Animator.Idle();
         }
 
+        public IEnumerator CoTickDamage(IReadOnlyList<ArenaSkill.ArenaSkillInfo> skillInfos)
+        {
+            if (skillInfos is null ||
+                skillInfos.Count == 0)
+                yield break;
+
+            yield return StartCoroutine(CoAnimationBuffCast(skillInfos.First()));
+
+            foreach (var info in skillInfos)
+            {
+                var target = info.Target.Id == Id ? this : _target;
+                target.ProcessBuff(target, info);
+            }
+
+            Animator.Idle();
+        }
+
         #endregion
 
         public void Dead()
@@ -611,6 +673,10 @@ namespace Nekoyume.Game.Character
         {
             ShowSpeech("PLAYER_LOSE");
             Animator.Die();
+            foreach (var vfx in _persistingVFXMap.Values)
+            {
+                vfx.LazyStop();
+            }
         }
 
         private void OnDeadEnd()

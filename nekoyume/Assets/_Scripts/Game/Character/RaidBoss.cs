@@ -72,6 +72,7 @@ namespace Nekoyume.Game.Character
                 case SkillCategory.CriticalBuff:
                 case SkillCategory.SpeedBuff:
                 case SkillCategory.HitBuff:
+                case SkillCategory.DamageReductionBuff:
                     foreach (var info in infos)
                     {
                         var buffTarget = info.Target.Id == Id ? this : _target;
@@ -87,8 +88,16 @@ namespace Nekoyume.Game.Character
                 default:
                     foreach (var info in infos)
                     {
-                        var attackTarget = info.Target.Id == Id ? this : _target;
-                        ProcessAttack(attackTarget, info, true);
+                        if (info.Buff == null)
+                        {
+                            var attackTarget = info.Target.Id == Id ? this : _target;
+                            ProcessAttack(attackTarget, info, true);
+                        }
+                        else
+                        {
+                            var buffTarget = info.Target.Id == Id ? this : _target;
+                            ProcessBuff(buffTarget, info);
+                        }
                     }
                     break;
             }

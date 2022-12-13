@@ -33,6 +33,14 @@ namespace Nekoyume.UI.Module
             Model.chance.SubscribeTo(chanceText).AddTo(_disposablesForModel);
         }
 
+        public void Show(string name, string power, string chance)
+        {
+            nameText.text = name;
+            powerText.text = power;
+            chanceText.text = chance;
+            base.Show();
+        }
+
         public override void Hide()
         {
             base.Hide();

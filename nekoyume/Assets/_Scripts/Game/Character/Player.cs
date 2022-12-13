@@ -288,44 +288,6 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public void UnequipCostume(Costume costume, bool ignoreEquipmentsAndCustomize = false)
-        {
-            if (costume is null)
-            {
-                return;
-            }
-
-            switch (costume.ItemSubType)
-            {
-                case ItemSubType.EarCostume:
-                    UpdateEar();
-                    break;
-                case ItemSubType.EyeCostume:
-                    UpdateEye();
-                    break;
-                case ItemSubType.FullCostume:
-                    if (!ignoreEquipmentsAndCustomize)
-                    {
-                        var armor = (Armor)Equipments.FirstOrDefault(equipment =>
-                            equipment.ItemSubType == ItemSubType.Armor);
-                        var weapon = (Weapon)Equipments.FirstOrDefault(equipment =>
-                            equipment.ItemSubType == ItemSubType.Weapon);
-                        EquipEquipmentsAndUpdateCustomize(armor, weapon);
-                    }
-
-                    break;
-                case ItemSubType.HairCostume:
-                    UpdateHair();
-                    break;
-                case ItemSubType.TailCostume:
-                    UpdateTail();
-                    break;
-                case ItemSubType.Title:
-                    UpdateTitle();
-                    break;
-            }
-        }
-
         #endregion
 
         #region Equipments

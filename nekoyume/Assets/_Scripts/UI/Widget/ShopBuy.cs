@@ -165,12 +165,12 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        private void ShowItemTooltip(ShopItem model, RectTransform target)
+        private void ShowItemTooltip(ShopItem model)
         {
             var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
             tooltip.Show(model,
                 () => ShowBuyPopup(new List<ShopItem> { model }),
-                view.ClearSelectedItems, target);
+                view.ClearSelectedItems);
         }
 
         private void ShowBuyPopup(List<ShopItem> models)
@@ -196,9 +196,10 @@ namespace Nekoyume.UI
             }
 
             var content = string.Format(L10nManager.Localize("UI_BUY_MULTIPLE_FORMAT"),
-                models.Count, sumPrice.GetQuantityString());
-
-            Find<TwoButtonSystem>().Show(content, L10nManager.Localize("UI_BUY"),
+                models.Count, sumPrice);
+            Find<TwoButtonSystem>().Show(
+                content,
+                L10nManager.Localize("UI_BUY"),
                 L10nManager.Localize("UI_CANCEL"),
                 (() => Buy(models)));
         }

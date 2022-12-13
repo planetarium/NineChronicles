@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
 using Nekoyume.Model;
+using Nekoyume.Model.EnumType;
+using Nekoyume.State;
 using Nekoyume.UI.Module;
 using UnityEngine;
 
@@ -27,9 +29,7 @@ namespace Nekoyume.UI
             CloseWidget = null;
         }
 
-        public void SetData(
-            int bossId,
-            Game.Character.Player player)
+        public void SetData(int bossId)
         {
             var turnLimit = 150;
             var sheet = Game.Game.instance.TableSheets.WorldBossCharacterSheet;
@@ -38,9 +38,11 @@ namespace Nekoyume.UI
                 turnLimit = boss.WaveStats.FirstOrDefault().TurnLimit;
             }
 
-            comboText.comboMax = AttackCountHelper.GetCountMax(player.Level);
+            var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Raid);
+            var level = States.Instance.CurrentAvatarState.level;
+            comboText.comboMax = AttackCountHelper.GetCountMax(level);
             comboText.Close();
-            playerStatus.SetData(player, turnLimit);
+            playerStatus.SetData(equipments, costumes, turnLimit);
             progressBar.Clear(bossId);
         }
 

@@ -9,7 +9,7 @@ jobs:
   build-unity:
     name: Build for ${{ matrix.targetPlatform }} on version ${{ matrix.unityVersion }}
     runs-on: 
-      labels: ["linux", "4cores"]
+      labels: ["linux", "8cores"]
     strategy:
       fail-fast: false
       matrix:
@@ -89,7 +89,7 @@ jobs:
           if-no-files-found: error
   publish:
     name: Publish Unity Player for ${{ matrix.targetPlatform }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
       matrix:
@@ -111,7 +111,7 @@ jobs:
       - name: Set up Python # FIXME: 나중에 내장 파이썬 버전이 3.7 이상으로 올라가면 삭제할 것
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8.6
+          python-version: 3.11.0
 
       - uses: actions/setup-dotnet@v1
         with:

@@ -62,6 +62,7 @@ namespace Nekoyume.UI.Module
                 case StatType.ATK:
                 case StatType.DEF:
                 case StatType.HIT:
+                case StatType.DRV:
                     return isSigned
                         ? value.ToString("+0.##;-0.##")
                         : value.ToString();
@@ -70,6 +71,10 @@ namespace Nekoyume.UI.Module
                         ? value.ToString("+0.##\\%;-0.##\\%")
                         : $"{value:0.#\\%}";
                 case StatType.SPD:
+                    return isSigned
+                        ? (value / 100f).ToString("+0.##;-0.##", CultureInfo.InvariantCulture)
+                        : (value / 100f).ToString(CultureInfo.InvariantCulture);
+                case StatType.DRR:
                     return isSigned
                         ? (value / 100f).ToString("+0.##;-0.##", CultureInfo.InvariantCulture)
                         : (value / 100f).ToString(CultureInfo.InvariantCulture);

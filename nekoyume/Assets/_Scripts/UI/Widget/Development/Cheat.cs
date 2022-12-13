@@ -422,7 +422,7 @@ namespace Nekoyume
             var tableSheets = Game.Game.instance.TableSheets;
             var random = new DebugRandom();
             var avatarState = States.Instance.CurrentAvatarState;
-            var simulator = new StageSimulator(
+            var simulator = new StageSimulatorV2(
                 random,
                 avatarState,
                 new List<Guid>(),
@@ -433,10 +433,10 @@ namespace Nekoyume
                 tableSheets.StageWaveSheet[stageId],
                 avatarState.worldInformation.IsStageCleared(stageId),
                 StageRewardExpHelper.GetExp(avatarState.level, stageId),
-                tableSheets.GetSimulatorSheets(),
+                tableSheets.GetSimulatorSheetsV1(),
                 tableSheets.EnemySkillSheet,
                 tableSheets.CostumeStatSheet,
-                StageSimulator.GetWaveRewards(
+                StageSimulatorV2.GetWaveRewards(
                     random,
                     tableSheets.StageSheet[stageId],
                     tableSheets.MaterialItemSheet)

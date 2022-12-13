@@ -93,7 +93,7 @@ namespace Nekoyume.UI
         {
             AudioController.PlayClick();
             ItemTooltip.Find(view.Data.ItemType)
-                .Show(view.Data, string.Empty, false, null, target: view.RectTransform);
+                .Show(view.Data, string.Empty, false, null);
         }
 
         private void OnClickClose()
