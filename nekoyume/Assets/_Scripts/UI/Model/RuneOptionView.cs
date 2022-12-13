@@ -91,9 +91,9 @@ namespace Nekoyume.UI.Model
                 var nextCooldown = option.SkillCooldown == nextOption.SkillCooldown ? string.Empty : $"{nextOption.SkillCooldown}";
                 var currentValueString = RuneFrontHelper.GetRuneValueString(option);
                 var nextValueString = RuneFrontHelper.GetRuneValueString(nextOption);
-
                 var skillDescription = L10nManager.Localize($"SKILL_DESCRIPTION_{option.SkillId}",
-                    nextOption.SkillChance, nextOption.BuffDuration, nextValueString);
+                    option.SkillChance, option.BuffDuration, nextValueString);
+
                 skill.Set(skillName,
                     skillDescription,
                     currentValueString,
@@ -145,9 +145,9 @@ namespace Nekoyume.UI.Model
                 skillObjects.ForEach(x => x.SetActive(true));
                 var skillName = L10nManager.Localize($"SKILL_NAME_{option.SkillId}");
                 var skillValueString = RuneFrontHelper.GetRuneValueString(option);
-
                 var skillDescription = L10nManager.Localize($"SKILL_DESCRIPTION_{option.SkillId}",
                     option.SkillChance, option.BuffDuration, skillValueString);
+
                 skill.Set(skillName,
                     skillDescription,
                     skillValueString,
