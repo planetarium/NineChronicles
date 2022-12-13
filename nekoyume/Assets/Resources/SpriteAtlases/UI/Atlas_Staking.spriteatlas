@@ -52,6 +52,7 @@ SpriteAtlas:
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
+  - {fileID: 21300000, guid: 9a1667005c6884fbbbb42efd64f77e80, type: 3}
   - {fileID: 21300000, guid: 860f4340f969c4e16b2724697c57623d, type: 3}
   - {fileID: 21300000, guid: 989260c08253b4788afa6e066e62899d, type: 3}
   - {fileID: 21300000, guid: c510f332d38e62546bf8027bd0474cdf, type: 3}
@@ -95,6 +96,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 51e8f24f3128440eda247f226efd038c, type: 3}
   - {fileID: 21300000, guid: 92ad0ceffd9fa472a9584e39f8c17e7f, type: 3}
   m_PackedSpriteNamesToIndex:
+  - Icon_Buff_Grade_add
   - UI_bg_Staking_Benefits
   - Grind_buff_bg_05
   - Random_Buff
