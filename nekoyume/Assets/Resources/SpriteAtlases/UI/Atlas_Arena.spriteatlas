@@ -26,7 +26,7 @@ SpriteAtlas:
       m_MaxTextureSize: 2048
       m_ResizeAlgorithm: 0
       m_TextureFormat: -1
-      m_TextureCompression: 1
+      m_TextureCompression: 0
       m_CompressionQuality: 50
       m_CrunchedCompression: 0
       m_AllowsAlphaSplitting: 0
@@ -59,11 +59,13 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 1a225762a424c4e0185fe27ae9b25231, type: 3}
   - {fileID: 21300000, guid: 917cea82e2a094ccea64e4d1baa5655e, type: 3}
   - {fileID: 21300000, guid: faff65925c1b54f3fba70dd1b06fb336, type: 3}
+  - {fileID: 21300000, guid: b78fa9a3b38844bccb5d534205479932, type: 3}
   - {fileID: 21300000, guid: 0966ff344db114553b3ade4a6602a91a, type: 3}
   - {fileID: 21300000, guid: 6d6f3f54b8fdd4560890908ee4d35295, type: 3}
   - {fileID: 21300000, guid: 602d55353ca9d43949d458db838a5896, type: 3}
   - {fileID: 21300000, guid: 3c0e4d959e53744fcb2da76ac7e5f0f8, type: 3}
   - {fileID: 21300000, guid: ac1418c565633422ca661aa129a3f277, type: 3}
+  - {fileID: 21300000, guid: 840cc2d5e98f14c72a8c50d75aa15c50, type: 3}
   - {fileID: 21300000, guid: 8fb8d7d5f798b46aba22e35060379282, type: 3}
   - {fileID: 21300000, guid: ec9d84e57356440dc8aa44d6d8408f89, type: 3}
   - {fileID: 21300000, guid: 51b0970616b1247e78a070bc2d97faf1, type: 3}
@@ -74,6 +76,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 3595f898485cb4466b74e2e8cfe51185, type: 3}
   - {fileID: 21300000, guid: 23588dc8e4b9a46f5aa5f8532a82514e, type: 3}
   - {fileID: 21300000, guid: 7ed7bbc94e9c14018af966d17f344221, type: 3}
+  - {fileID: 21300000, guid: bb89d25a3b21f467db279a30f4eeeee0, type: 3}
   - {fileID: 21300000, guid: fbf9879ad40de4494ad8b698ae79b3a4, type: 3}
   - {fileID: 21300000, guid: a8b169aa8c8f77a468365ee4d3c10849, type: 3}
   - {fileID: 21300000, guid: 8c6fe71b9dce844ed84850afb73a48b2, type: 3}
@@ -96,11 +99,13 @@ SpriteAtlas:
   - Bg_Arena_Season
   - Arena_bg_01
   - Arena_bg_08_add
+  - Rank_bg_10
   - Arena_bg_05
   - Arena_bg_12
   - Arena_bg_gauge_01_Type3
   - Arena_bg_03
   - Arena_bg_06
+  - Rank_bg_13
   - Icon_OfficialChampionshipMedal
   - icon_Arena_lose
   - Arena_bg_19
@@ -111,6 +116,7 @@ SpriteAtlas:
   - Arena_bg_04
   - Bg_Arena_Championship
   - Arena_bg_25
+  - Rank_bg_12
   - Bg_Arena_Championship_icon
   - Arena_bg_22_2
   - Bg_Arena_Championship_add
