@@ -55,6 +55,7 @@ namespace Nekoyume.UI
         private BattlePreparation _battlePreparation;
         private ArenaBattlePreparation _arenaPreparation;
         private RaidPreparation _raidPreparation;
+        private Grind _grind;
         private readonly ToggleGroup _toggleGroup = new();
         private readonly Dictionary<BattleType, System.Action> _onToggleCallback = new()
         {
@@ -103,6 +104,8 @@ namespace Nekoyume.UI
             _battlePreparation = Find<BattlePreparation>();
             _arenaPreparation = Find<ArenaBattlePreparation>();
             _raidPreparation = Find<RaidPreparation>();
+            _grind = Find<Grind>();
+
             information.Initialize(true, UpdateNotification);
 
             grindModeToggle.onValueChanged.AddListener(toggledOn =>
@@ -148,6 +151,11 @@ namespace Nekoyume.UI
             if (_raidPreparation.isActiveAndEnabled)
             {
                 _raidPreparation.UpdateInventory();
+            }
+
+            if (_grind.isActiveAndEnabled)
+            {
+                _grind.UpdateInventory();
             }
         }
 
