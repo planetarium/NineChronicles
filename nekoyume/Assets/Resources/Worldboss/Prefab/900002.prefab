@@ -450,10 +450,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 3131037016693458774}
-  skillAnimationInfos:
-  - SkillId: 900001
-    AnimationType: 19
-    AnimationTime: 3.4
 --- !u!1 &2334821906908147141
 GameObject:
   m_ObjectHideFlags: 0
@@ -797,6 +793,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: beadb176c12928b498bb620dd72fae40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  skipButton: {fileID: 0}
+  skillCutsceneInfos: []
   director: {fileID: 3932926034676862881}
   player: {fileID: 6063278470799193284}
   boss: {fileID: 4966907011472140292}
@@ -809,6 +807,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 644d45699be4e6945991f8ab2e1c184f, type: 2}
   - {fileID: 11400000, guid: 644d45699be4e6945991f8ab2e1c184f, type: 2}
   fallDownCutscene: {fileID: 11400000, guid: 9a344bfb59796e8458291034d729bb9e, type: 2}
+  playerDefeatCutscene: {fileID: 0}
 --- !u!114 &1292220910054991738
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -989,10 +988,10 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 11.36, y: 32.001762}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!95 &1794125584092958649
