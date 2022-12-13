@@ -39,11 +39,10 @@ namespace Nekoyume.UI
             }
 
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Raid);
-            var characterId = States.Instance.CurrentAvatarState.characterId;
             var level = States.Instance.CurrentAvatarState.level;
             comboText.comboMax = AttackCountHelper.GetCountMax(level);
             comboText.Close();
-            playerStatus.SetData(equipments, costumes, characterId, turnLimit);
+            playerStatus.SetData(equipments, costumes, turnLimit);
             progressBar.Clear(bossId);
         }
 

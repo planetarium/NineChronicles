@@ -234,7 +234,7 @@ namespace Nekoyume.UI
                         if (i == 0)
                         {
                             var stat = resultItem.GetUniqueStat();
-                            var statValueText = stat.Type == StatType.SPD
+                            var statValueText = stat.Type == StatType.SPD || stat.Type == StatType.DRR
                                 ? (stat.ValueAsInt * 0.01m).ToString(CultureInfo.InvariantCulture)
                                 : stat.ValueAsInt.ToString();
                             mainStatText.text = string.Format(StatTextFormat, stat.Type, statValueText);
@@ -260,7 +260,7 @@ namespace Nekoyume.UI
                         if (i < statsCount)
                         {
                             var stat = resultItem.Stats[i];
-                            var statValueText = stat.StatType == StatType.SPD
+                            var statValueText = stat.StatType == StatType.SPD || stat.StatType == StatType.DRR
                                 ? (stat.ValueAsInt * 0.01m).ToString(CultureInfo.InvariantCulture)
                                 : stat.ValueAsInt.ToString();
                             mainStatText.text = string.Format(StatTextFormat, stat.StatType, statValueText);

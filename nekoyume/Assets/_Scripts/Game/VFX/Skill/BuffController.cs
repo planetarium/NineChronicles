@@ -57,6 +57,11 @@ namespace Nekoyume.Game.VFX.Skill
             {
                 buffName = "buff_hp_casting";
             }
+            else if (buff is DamageReductionBuff)
+            {
+                // TODO : Will be removed when damage reduction buff is attached on equipments
+                buffName = "buff_staking_casting";
+            }
             else if (buff is StatBuff statBuff)
             {
                 buffName = statBuff.RowData.StatModifier.Value >= 0

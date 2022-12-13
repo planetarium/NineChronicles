@@ -86,7 +86,6 @@ namespace Nekoyume.UI.Scroller
             UpdateRank(rankingInfo.Rank);
             characterView.SetByFullCostumeOrArmorId(
                 rankingInfo.ArmorId,
-                rankingInfo.TitleId,
                 rankingInfo.AvatarLevel);
             gameObject.SetActive(true);
 

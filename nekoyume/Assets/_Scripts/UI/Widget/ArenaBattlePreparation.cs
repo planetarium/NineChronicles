@@ -69,7 +69,8 @@ namespace Nekoyume.UI
         private const int TicketCountToUse = 1;
         private ArenaSheet.RoundData _roundData;
         private AvatarState _chooseAvatarState;
-
+        private List<Equipment> _chooseAvatarEquipments = new ();
+        private List<Costume> _chooseAvatarCostumes = new ();
 
         private readonly List<IDisposable> _disposables = new();
 
@@ -132,12 +133,18 @@ namespace Nekoyume.UI
         public void Show(
             ArenaSheet.RoundData roundData,
             AvatarState chooseAvatarState,
+            List<Equipment> chooseAvatarEquipments,
+            List<Costume> chooseAvatarCostumes,
             int chooseAvatarCp,
             bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
             _roundData = roundData;
             _chooseAvatarState = chooseAvatarState;
+            _chooseAvatarEquipments.Clear();
+            _chooseAvatarEquipments.AddRange(chooseAvatarEquipments);
+            _chooseAvatarCostumes.Clear();
+            _chooseAvatarCostumes.AddRange(chooseAvatarCostumes);
             enemyCp.text = chooseAvatarCp.ToString();
             UpdateStartButton();
             information.UpdateInventory(BattleType.Arena, chooseAvatarCp);
@@ -152,11 +159,17 @@ namespace Nekoyume.UI
         public void Show(
             int grandFinaleId,
             AvatarState chooseAvatarState,
+            List<Equipment> chooseAvatarEquipments,
+            List<Costume> chooseAvatarCostumes,
             int chooseAvatarCp,
             bool ignoreShowAnimation = false)
         {
             _grandFinaleId = grandFinaleId;
             _chooseAvatarState = chooseAvatarState;
+            _chooseAvatarEquipments.Clear();
+            _chooseAvatarEquipments.AddRange(chooseAvatarEquipments);
+            _chooseAvatarCostumes.Clear();
+            _chooseAvatarCostumes.AddRange(chooseAvatarCostumes);
             enemyCp.text = chooseAvatarCp.ToString();
             UpdateStartButton();
             information.UpdateInventory(BattleType.Arena, chooseAvatarCp);
@@ -319,15 +332,16 @@ namespace Nekoyume.UI
 
         private void SendBattleArenaAction()
         {
+
             startButton.gameObject.SetActive(false);
             var playerAvatar = RxProps.PlayersArenaParticipant.Value.AvatarState;
             Find<ArenaBattleLoadingScreen>().Show(
                 playerAvatar.NameWithHash,
                 playerAvatar.level,
-                playerAvatar.inventory.GetEquippedFullCostumeOrArmorId(),
+                Util.GetPortraitId(BattleType.Arena),
                 _chooseAvatarState.NameWithHash,
                 _chooseAvatarState.level,
-                _chooseAvatarState.inventory.GetEquippedFullCostumeOrArmorId());
+                Util.GetPortraitId(_chooseAvatarEquipments, _chooseAvatarCostumes));
 
             var costumes = States.Instance.ItemSlotStates[BattleType.Arena].Costumes;
             var equipments = States.Instance.ItemSlotStates[BattleType.Arena].Equipments;
@@ -352,10 +366,10 @@ namespace Nekoyume.UI
             Find<ArenaBattleLoadingScreen>().Show(
                 playerAvatar.NameWithHash,
                 playerAvatar.level,
-                playerAvatar.inventory.GetEquippedFullCostumeOrArmorId(),
+                Util.GetPortraitId(BattleType.Arena),
                 _chooseAvatarState.NameWithHash,
                 _chooseAvatarState.level,
-                _chooseAvatarState.inventory.GetEquippedFullCostumeOrArmorId());
+                Util.GetPortraitId(_chooseAvatarEquipments, _chooseAvatarCostumes));
 
             var costumes = States.Instance.ItemSlotStates[BattleType.Arena].Costumes;
             var equipments = States.Instance.ItemSlotStates[BattleType.Arena].Equipments;

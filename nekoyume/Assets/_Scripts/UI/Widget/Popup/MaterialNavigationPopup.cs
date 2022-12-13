@@ -66,7 +66,8 @@ namespace Nekoyume.UI
             _callback = callback;
             itemImage.sprite = itemIcon;
             itemNameText.text = itemName;
-            itemCountText.text = string.Format(L10nManager.Localize("UI_COUNT_FORMAT"), itemCount);
+            var split = itemCount.Split('.');
+            itemCountText.text = string.Format(L10nManager.Localize("UI_COUNT_FORMAT"), split[0]);
             contentText.text = content;
             actionButtonText.text = buttonText;
             infoText.gameObject.SetActive(infoText.text != string.Empty);
