@@ -316,11 +316,11 @@ namespace Nekoyume.BlockChain.Policy
             // will be included.
             long index = blockChain.Count > 0 ? blockChain.Tip.Index : 0;
 
-            if (transaction.Actions.Count > 1)
+            if (((ITransaction)transaction).CustomActions?.Count > 1)
             {
                 return new TxPolicyViolationException(
                     $"Transaction {transaction.Id} has too many actions: " +
-                    $"{transaction.Actions.Count}",
+                    $"{((ITransaction)transaction).CustomActions?.Count}",
                     transaction.Id);
             }
             else if (IsObsolete(transaction, index))
@@ -338,22 +338,61 @@ namespace Nekoyume.BlockChain.Policy
                     // FIXME: This works under a strong assumption that any miner that was ever
                     // in a set of authorized miners can only create transactions without
                     // any actions.
-                    return transaction.Actions.Any()
+                    return ((ITransaction)transaction).CustomActions?.Any() is true
                         ? new TxPolicyViolationException(
                             $"Transaction {transaction.Id} by an authorized miner should not " +
-                            $"have any action: {transaction.Actions.Count}",
+                            $"have any action: {((ITransaction)transaction).CustomActions?.Count}",
                             transaction.Id)
                         : null;
                 }
 
                 // Check ActivateAccount
-                if (transaction.CustomActions is { } customActions &&
+                if (((ITransaction)transaction).CustomActions is { } customActions &&
                     customActions.Count == 1 &&
-                    customActions.First().InnerAction is IActivateAction aa)
+                    customActions.First() is Dictionary dictionary &&
+                    dictionary.TryGetValue((Text)"type_id", out IValue typeIdValue) &&
+                    typeIdValue is Text typeId &&
+                    (typeId == "activate_account2" || typeId == "activate_account"))
                 {
+                    if (!(dictionary.TryGetValue((Text)"values", out IValue valuesValue) &&
+                          valuesValue is Dictionary values))
+                    {
+                        return new TxPolicyViolationException(
+                            $"Transaction {transaction.Id} has an invalid action.",
+                            transaction.Id);
+                    }
+
+                    Address pendingAddress;
+                    byte[] signature;
+                    (string pendingAddressKey, string signatureKey) = (string)(typeId) switch
+                    {
+                        "activate_account" => ("pending_address", "signature"),
+                        "activate_account2" => ("pa", "s"),
+                        _ => throw new ArgumentOutOfRangeException()
+                    };
+
+                    if (!(values.TryGetValue((Text)pendingAddressKey,
+                            out IValue pendingAddressValue) && pendingAddressValue is Binary pendingAddressBinary))
+                    {
+                        return new TxPolicyViolationException(
+                            $"Transaction {transaction.Id} has an invalid action.",
+                            transaction.Id);
+                    }
+
+                    if (!(values.TryGetValue((Text)signatureKey,
+                            out IValue signatureValue) && signatureValue is Binary signatureBinary))
+                    {
+                        return new TxPolicyViolationException(
+                            $"Transaction {transaction.Id} has an invalid action.",
+                            transaction.Id);
+                    }
+
+                    pendingAddress = new Address(pendingAddressBinary);
+                    signature = signatureBinary;
+
                     return transaction.Nonce == 0 &&
-                        blockChain.GetState(aa.GetPendingAddress()) is Dictionary rawPending &&
-                        new PendingActivationState(rawPending).Verify(aa.GetSignature())
+                           blockChain.GetState(pendingAddress) is Dictionary rawPending &&
+                           new PendingActivationState(rawPending).Verify(signature)
                         ? null
                         : new TxPolicyViolationException(
                             $"Transaction {transaction.Id} has an invalid activate action.",
