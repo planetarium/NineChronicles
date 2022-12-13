@@ -83,9 +83,5 @@ namespace Nekoyume
         [field: SerializeField]
         [Tooltip("The sprite used by GuideQuestCell.prefab as event recipe icon")]
         public Sprite EventRecipeGuidedQuestIcon { get; private set; }
-
-        [field: SerializeField]
-        [Tooltip("The sprite used by UI_BattlePreparation.prefab")]
-        public Sprite EventDungeonBattlePreparationBg { get; private set; }
     }
 }
