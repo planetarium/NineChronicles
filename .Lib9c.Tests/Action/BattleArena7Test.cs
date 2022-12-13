@@ -349,7 +349,7 @@ namespace Lib9c.Tests.Action
             if (!row.TryGetRound(round, out var roundData))
             {
                 throw new RoundNotFoundException(
-                    $"[{nameof(BattleArena6)}] ChampionshipId({row.ChampionshipId}) - round({round})");
+                    $"[{nameof(BattleArena)}] ChampionshipId({row.ChampionshipId}) - round({round})");
             }
 
             var random = new TestRandom();
@@ -408,7 +408,7 @@ namespace Lib9c.Tests.Action
             if (!row.TryGetRound(round, out var roundData))
             {
                 throw new RoundNotFoundException(
-                    $"[{nameof(BattleArena6)}] ChampionshipId({row.ChampionshipId}) - round({round})");
+                    $"[{nameof(BattleArena)}] ChampionshipId({row.ChampionshipId}) - round({round})");
             }
 
             var random = new TestRandom();
@@ -473,7 +473,7 @@ namespace Lib9c.Tests.Action
             if (!row.TryGetRound(round, out var roundData))
             {
                 throw new RoundNotFoundException(
-                    $"[{nameof(BattleArena6)}] ChampionshipId({row.ChampionshipId}) - round({round})");
+                    $"[{nameof(BattleArena)}] ChampionshipId({row.ChampionshipId}) - round({round})");
             }
 
             var random = new TestRandom();
@@ -539,7 +539,7 @@ namespace Lib9c.Tests.Action
             if (!row.TryGetRound(round, out var roundData))
             {
                 throw new RoundNotFoundException(
-                    $"[{nameof(BattleArena6)}] ChampionshipId({row.ChampionshipId}) - round({round})");
+                    $"[{nameof(BattleArena)}] ChampionshipId({row.ChampionshipId}) - round({round})");
             }
 
             var random = new TestRandom();
@@ -602,7 +602,7 @@ namespace Lib9c.Tests.Action
             if (!row.TryGetRound(round, out var roundData))
             {
                 throw new RoundNotFoundException(
-                    $"[{nameof(BattleArena6)}] ChampionshipId({row.ChampionshipId}) - round({round})");
+                    $"[{nameof(BattleArena)}] ChampionshipId({row.ChampionshipId}) - round({round})");
             }
 
             var random = new TestRandom();
@@ -679,7 +679,7 @@ namespace Lib9c.Tests.Action
             if (!row.TryGetRound(round, out var roundData))
             {
                 throw new RoundNotFoundException(
-                    $"[{nameof(BattleArena6)}] ChampionshipId({row.ChampionshipId}) - round({round})");
+                    $"[{nameof(BattleArena)}] ChampionshipId({row.ChampionshipId}) - round({round})");
             }
 
             var random = new TestRandom();
@@ -714,7 +714,7 @@ namespace Lib9c.Tests.Action
                 beforeInfo.BuyTicket(roundData.MaxPurchaseCount);
             }
 
-            var purchasedCountDuringInterval = arenaInfoAdr.Derive(BattleArena6.PurchasedCountKey);
+            var purchasedCountDuringInterval = arenaInfoAdr.Derive(BattleArena.PurchasedCountKey);
             previousStates = previousStates
                 .SetState(arenaInfoAdr, beforeInfo.Serialize())
                 .SetState(
@@ -761,7 +761,7 @@ namespace Lib9c.Tests.Action
             if (!row.TryGetRound(round, out var roundData))
             {
                 throw new RoundNotFoundException(
-                    $"[{nameof(BattleArena6)}] ChampionshipId({row.ChampionshipId}) - round({round})");
+                    $"[{nameof(BattleArena)}] ChampionshipId({row.ChampionshipId}) - round({round})");
             }
 
             var random = new TestRandom();
@@ -882,7 +882,7 @@ namespace Lib9c.Tests.Action
             if (!row.TryGetRound(round, out var roundData))
             {
                 throw new RoundNotFoundException(
-                    $"[{nameof(BattleArena6)}] ChampionshipId({row.ChampionshipId}) - round({round})");
+                    $"[{nameof(BattleArena)}] ChampionshipId({row.ChampionshipId}) - round({round})");
             }
 
             var random = new TestRandom(randomSeed);
