@@ -272,6 +272,21 @@ namespace Nekoyume.State
                     }
                 }
 
+                var equippedRuneStates = new List<RuneState>();
+                foreach (var slot in runeSlotState.GetRuneSlot())
+                {
+                    if (!slot.RuneId.HasValue)
+                    {
+                        continue;
+                    }
+
+                    var runeState = runeStates.FirstOrDefault(x => x.RuneId == slot.RuneId);
+                    if (runeState != null)
+                    {
+                        equippedRuneStates.Add(runeState);
+                    }
+                }
+
                 return new GrandFinaleParticipant(
                     avatarAddr,
                     avatarAddr.Equals(currentAvatarAddr)
@@ -281,7 +296,7 @@ namespace Nekoyume.State
                     avatar,
                     itemSlotState,
                     runeSlotState,
-                    runeStates);
+                    equippedRuneStates);
             }).Where(value => value is not null).ToArray();
 
             if (isGrandFinaleParticipant)
