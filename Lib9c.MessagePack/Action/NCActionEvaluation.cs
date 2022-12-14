@@ -28,7 +28,7 @@ namespace Nekoyume.Action
         public IAccountStateDelta OutputStates { get; set; }
 
         [Key(4)]
-        public Exception Exception { get; set; }
+        public Exception? Exception { get; set; }
 
         [Key(5)]
         public IAccountStateDelta PreviousStates { get; set; }
