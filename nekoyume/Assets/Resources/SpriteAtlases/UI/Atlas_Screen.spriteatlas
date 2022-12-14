@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Atlas_Screen
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 1
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 512
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 0
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 1
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 0
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: f7cbaadeb0667470e85d512340aba9f6, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 45a827c8d50db6c4ca25d476621e86eb, type: 3}
+  - {fileID: 21300000, guid: 5919d91a7aac17f45804849fbcbea1a3, type: 3}
+  - {fileID: 21300000, guid: 71a5985a3fe3b5f45ae57f9ea04e9e1c, type: 3}
+  - {fileID: 21300000, guid: 20955f5cae4fabb4ea6e95aba5f4019e, type: 3}
+  - {fileID: 21300000, guid: 31dce9acfd8278a46bdd726bc66c77ab, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - UI_box
+  - UI_box_ribbon_L
+  - UI_box_cap_ribbon
+  - UI_bg_title
+  - UI_box_cap
+  m_RenderDataMap: {}
+  m_Tag: Atlas_Screen
+  m_IsVariant: 0

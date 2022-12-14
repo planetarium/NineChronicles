@@ -2544,16 +2544,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: ArenaJoinSeasonBarScroll
       objectReference: {fileID: 0}
-    - target: {fileID: 4026959687730850518, guid: 7234fd34c7c4fed4095ec78762f68339,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7331910370150813974, guid: 7234fd34c7c4fed4095ec78762f68339,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7234fd34c7c4fed4095ec78762f68339, type: 3}
 --- !u!114 &2374795209658091307 stripped
