@@ -537,7 +537,8 @@ namespace Nekoyume.UI
                     _maxTryCount > 0 ? _maxTryCount : 1,
                     1,
                     (x) => TryCount.Value = x,
-                    _maxTryCount > 0);
+                    _maxTryCount > 0,
+                    true);
             }
         }
 
