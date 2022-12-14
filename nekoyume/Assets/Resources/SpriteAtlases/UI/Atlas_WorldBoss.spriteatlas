@@ -71,6 +71,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 20cfb2802ede847b3bd7399ebb092084, type: 3}
   - {fileID: 21300000, guid: 56be9690d73c74df2a4d3d28f6dcdddf, type: 3}
   - {fileID: 21300000, guid: 67408a906b2fa4a70a373d337e76c56b, type: 3}
+  - {fileID: 21300000, guid: 89fa96a0c6f24e647822a23dda315e70, type: 3}
   - {fileID: 21300000, guid: b2f41eb0c71cfcc46abf397537150b99, type: 3}
   - {fileID: 21300000, guid: 981b3fb0e216846e39571136f99c1c60, type: 3}
   - {fileID: 21300000, guid: e3f4f6c0067de4aaf9d8e7a138a3c147, type: 3}
@@ -173,6 +174,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 566c89d4a28fb4e40b551dafa334d523, type: 3}
   - {fileID: 21300000, guid: 088d5ed4f9ed3ee4e84fa769ffdc26be, type: 3}
   - {fileID: 21300000, guid: 28d2cfe41f72e0c4d95868272f87b823, type: 3}
+  - {fileID: 21300000, guid: 16198a050e27a4bddbd8e1f8993a4ee0, type: 3}
   - {fileID: 21300000, guid: 29ce6b055ee080446af30591e666ab39, type: 3}
   - {fileID: 21300000, guid: 71e445159298d4016b0ba4538f624b57, type: 3}
   - {fileID: 21300000, guid: bc14e915d42f04ccb9e4e9e1ed6749ae, type: 3}
@@ -234,6 +236,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: f5c0d7a70f64d4bf898c6310e903b9d2, type: 3}
   - {fileID: 21300000, guid: 23dd06b7b55074de082337d088f0674d, type: 3}
   - {fileID: 21300000, guid: a5b808b7d8dc74c89ae19864eda853c4, type: 3}
+  - {fileID: 21300000, guid: 7c2c7cb7675da4328bbe8666b5c70e5f, type: 3}
   - {fileID: 21300000, guid: 363d1fb713d3d7544bba7bd873af24d3, type: 3}
   - {fileID: 21300000, guid: 730423c7b350b734c88ec26134454349, type: 3}
   - {fileID: 21300000, guid: 808104c7483594cdb8dcfbd83cf135d3, type: 3}
@@ -253,6 +256,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 716a6f5800255498cbda1cf8013f3f2c, type: 3}
   - {fileID: 21300000, guid: c5fd33687c5184f45846042df877e93a, type: 3}
   - {fileID: 21300000, guid: 71ed9c68f6f7347c794619bff4783e41, type: 3}
+  - {fileID: 21300000, guid: 14a25478ed5921d41a621923b36b4af1, type: 3}
   - {fileID: 21300000, guid: 54d89478eaa7fae4381e88cbc455485d, type: 3}
   - {fileID: 21300000, guid: 77754b783c6284da7860fb0a2cdd44a8, type: 3}
   - {fileID: 21300000, guid: 0680de78f71e9a042aee974aa278b528, type: 3}
@@ -390,6 +394,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 3c39dfed8a782494f9def5a4cdfe99b4, type: 3}
   - {fileID: 21300000, guid: 91a933fd00b22ca41a1f84a0c26836b9, type: 3}
   - {fileID: 21300000, guid: 3a0ea20e8e0254404a27b6c827aab686, type: 3}
+  - {fileID: 21300000, guid: 3039830e96fb0134aaa61e13c672fef4, type: 3}
   - {fileID: 21300000, guid: 1a2f661ed7471524c9fde8f945f75580, type: 3}
   - {fileID: 21300000, guid: a9885d1ec8c1dae4294b4bf8a9a9e178, type: 3}
   - {fileID: 21300000, guid: 0d11282efb8a045558d8b1364266b5c0, type: 3}
@@ -435,6 +440,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 74e8e5cfd6eba45eda812b8314fb17ea, type: 3}
   - {fileID: 21300000, guid: 02433fcf8ea93034fb9055a7d5fcd06e, type: 3}
   - {fileID: 21300000, guid: a18eb9df865d04b50b612032626d60b4, type: 3}
+  - {fileID: 21300000, guid: 21f780ff017fe4d569549793625de121, type: 3}
   m_PackedSpriteNamesToIndex:
   - UI_icon_Mainmenu_02
   - WB_Grade_1
@@ -449,6 +455,7 @@ SpriteAtlas:
   - UI_icon_new
   - Common_Tooltipbg6
   - button_gold_close
+  - bubble_talk_03
   - UI_Tooltip_Desc_01
   - UI_Popup_bg_06
   - UI_Popup_bg_02_1
@@ -551,6 +558,7 @@ SpriteAtlas:
   - UI_bg_frame_09_tooltip
   - UI_mail_popup_bg
   - Icon_BestRecord
+  - UI_box_08
   - UI_icon_item_bg_07
   - icon_ViewCount
   - UI_Combination_Slot_Questionbg
@@ -612,6 +620,7 @@ SpriteAtlas:
   - Common_Tooltipbg3
   - 8x8_rect_transparent_border2px
   - UI_Mask_Slot
+  - UI_box_11
   - UI_bg_chat_02
   - Icon_Reward
   - UI_page_normal
@@ -631,6 +640,7 @@ SpriteAtlas:
   - 8x8_rect_transparent_border3px
   - UI_line_04
   - UI_bg_Start_00
+  - bubble_talk_03_cat
   - Icon_IngameWB_Saehrimnir
   - icon_notice_07_black
   - UI_bg_chat
@@ -768,6 +778,7 @@ SpriteAtlas:
   - UI_icon_login_lock
   - WB_Grade_Bg_4
   - UI_Popup_bg_09
+  - UI_box_05_ef
   - Icon_Personnel_2
   - UI_mail_popup_01
   - Common_bg_7R_Gradiant
@@ -813,6 +824,7 @@ SpriteAtlas:
   - UI_icon_Popup_03
   - icon_combination_05_black
   - UI_bg_frame_13_Round8
+  - Common_mask_Gradient
   m_RenderDataMap: {}
   m_Tag: Atlas_WorldBoss
   m_IsVariant: 0

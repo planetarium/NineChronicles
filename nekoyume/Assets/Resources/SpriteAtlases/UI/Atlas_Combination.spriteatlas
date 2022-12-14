@@ -61,6 +61,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 5575f570c11ee684595adeb4eb642a72, type: 3}
   - {fileID: 21300000, guid: 20cfb2802ede847b3bd7399ebb092084, type: 3}
   - {fileID: 21300000, guid: 67408a906b2fa4a70a373d337e76c56b, type: 3}
+  - {fileID: 21300000, guid: 89fa96a0c6f24e647822a23dda315e70, type: 3}
   - {fileID: 21300000, guid: 44f317d0df36bb54d82683fe84aa74f1, type: 3}
   - {fileID: 21300000, guid: b79266015aaca415cae370462ef89a95, type: 3}
   - {fileID: 21300000, guid: 281ce1318b6071040a4c7cee4ab5be4e, type: 3}
@@ -125,6 +126,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 7866f2c4f85f74b3b895838c9004d9d5, type: 3}
   - {fileID: 21300000, guid: 077447c4c563047088dafc1975450cf3, type: 3}
   - {fileID: 21300000, guid: f72f38058d8a6446188ca930e4ce0af6, type: 3}
+  - {fileID: 21300000, guid: 16198a050e27a4bddbd8e1f8993a4ee0, type: 3}
   - {fileID: 21300000, guid: 71e445159298d4016b0ba4538f624b57, type: 3}
   - {fileID: 21300000, guid: bc14e915d42f04ccb9e4e9e1ed6749ae, type: 3}
   - {fileID: 21300000, guid: a99ef02502f3b4638a5e1d1813aa6327, type: 3}
@@ -162,6 +164,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 93657a87b123b4944a663548895b4636, type: 3}
   - {fileID: 21300000, guid: e68e2297f452742c68fc0695d102d78d, type: 3}
   - {fileID: 21300000, guid: 23dd06b7b55074de082337d088f0674d, type: 3}
+  - {fileID: 21300000, guid: 7c2c7cb7675da4328bbe8666b5c70e5f, type: 3}
   - {fileID: 21300000, guid: 363d1fb713d3d7544bba7bd873af24d3, type: 3}
   - {fileID: 21300000, guid: 808104c7483594cdb8dcfbd83cf135d3, type: 3}
   - {fileID: 21300000, guid: 1cd1aec7ea4bb4cd580a77754dd8250d, type: 3}
@@ -177,6 +180,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 45179b48ce56c4ed18b4c1f9ef4e72b2, type: 3}
   - {fileID: 21300000, guid: 716a6f5800255498cbda1cf8013f3f2c, type: 3}
   - {fileID: 21300000, guid: c5fd33687c5184f45846042df877e93a, type: 3}
+  - {fileID: 21300000, guid: 14a25478ed5921d41a621923b36b4af1, type: 3}
   - {fileID: 21300000, guid: 77754b783c6284da7860fb0a2cdd44a8, type: 3}
   - {fileID: 21300000, guid: 0680de78f71e9a042aee974aa278b528, type: 3}
   - {fileID: 21300000, guid: 282d2788e4dc2cd4da4e4e0570d08529, type: 3}
@@ -265,6 +269,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: dea2fb8dbd1b04d4c97d39d6f65f984e, type: 3}
   - {fileID: 21300000, guid: 62c9b5bde9eb5478283fe5454c87d0bf, type: 3}
   - {fileID: 21300000, guid: 3c39dfed8a782494f9def5a4cdfe99b4, type: 3}
+  - {fileID: 21300000, guid: 3039830e96fb0134aaa61e13c672fef4, type: 3}
   - {fileID: 21300000, guid: 1a2f661ed7471524c9fde8f945f75580, type: 3}
   - {fileID: 21300000, guid: a9885d1ec8c1dae4294b4bf8a9a9e178, type: 3}
   - {fileID: 21300000, guid: 0d11282efb8a045558d8b1364266b5c0, type: 3}
@@ -294,6 +299,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: bab990cfa756e49299b6b288c502eaf3, type: 3}
   - {fileID: 21300000, guid: 8bda4bcf7806f417ca4a3e4d3b6628d3, type: 3}
   - {fileID: 21300000, guid: 02433fcf8ea93034fb9055a7d5fcd06e, type: 3}
+  - {fileID: 21300000, guid: 21f780ff017fe4d569549793625de121, type: 3}
   m_PackedSpriteNamesToIndex:
   - UI_Combination_mainmenu_bg_01
   - UI_bg_lockchain
@@ -304,6 +310,7 @@ SpriteAtlas:
   - icon_notice_03_black
   - UI_icon_new
   - button_gold_close
+  - bubble_talk_03
   - UI_scroll_bg1
   - UI_Combination_bg_08
   - UI_main_icon_box
@@ -368,6 +375,7 @@ SpriteAtlas:
   - UI_Quest_bg_Select
   - UI_icon_Button_Arrow
   - UI_Combination_Slotbg
+  - UI_box_08
   - icon_ViewCount
   - UI_Combination_Slot_Questionbg
   - icon_Quest_01_black
@@ -405,6 +413,7 @@ SpriteAtlas:
   - icon_combination_02_black
   - UI_check
   - 8x8_rect_transparent_border2px
+  - UI_box_11
   - UI_bg_chat_02
   - UI_page_normal
   - button_orange_close
@@ -420,6 +429,7 @@ SpriteAtlas:
   - button_yellow_02
   - 8x8_rect_transparent_border3px
   - UI_line_04
+  - bubble_talk_03_cat
   - icon_notice_07_black
   - UI_bg_chat
   - Icon_SeasonTop_01_Black
@@ -508,6 +518,7 @@ SpriteAtlas:
   - icon_Material_01_black
   - Common_bg_2R
   - UI_icon_login_lock
+  - UI_box_05_ef
   - Icon_Personnel_2
   - UI_mail_popup_01
   - Common_bg_7R_Gradiant
@@ -537,6 +548,7 @@ SpriteAtlas:
   - Item_Recipebg_05
   - bubble_talk_01_1
   - icon_combination_05_black
+  - Common_mask_Gradient
   m_RenderDataMap: {}
   m_Tag: Atlas_Combination
   m_IsVariant: 0

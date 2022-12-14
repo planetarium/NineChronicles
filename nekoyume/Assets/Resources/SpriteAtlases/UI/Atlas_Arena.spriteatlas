@@ -45,6 +45,9 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: f12e95fcfc3724c3981de60d231d889e, type: 3}
+    - {fileID: 2800000, guid: bb54f98a20a734874b2ebd4c0cb247f1, type: 3}
+    - {fileID: 2800000, guid: 4a2f2ada36ca3470e8abaee98f19c6c6, type: 3}
+    - {fileID: 2800000, guid: 315b8e12138034a6e83aa0f943fa1ed3, type: 3}
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -54,6 +57,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 858b5b10dc3be434f8f68b83ecabb1bb, type: 3}
   - {fileID: 21300000, guid: ac32aa804681c49d5a29473fbc520a21, type: 3}
   - {fileID: 21300000, guid: 40ef27b1744b5418e804ae7d87823539, type: 3}
+  - {fileID: 21300000, guid: 315b8e12138034a6e83aa0f943fa1ed3, type: 3}
   - {fileID: 21300000, guid: 2d4ae042985ba684f957343ceacc835e, type: 3}
   - {fileID: 21300000, guid: b838d452ee0d547179f51bc5f1f14791, type: 3}
   - {fileID: 21300000, guid: 1a225762a424c4e0185fe27ae9b25231, type: 3}
@@ -77,8 +81,10 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 23588dc8e4b9a46f5aa5f8532a82514e, type: 3}
   - {fileID: 21300000, guid: 7ed7bbc94e9c14018af966d17f344221, type: 3}
   - {fileID: 21300000, guid: bb89d25a3b21f467db279a30f4eeeee0, type: 3}
+  - {fileID: 21300000, guid: bb54f98a20a734874b2ebd4c0cb247f1, type: 3}
   - {fileID: 21300000, guid: fbf9879ad40de4494ad8b698ae79b3a4, type: 3}
   - {fileID: 21300000, guid: a8b169aa8c8f77a468365ee4d3c10849, type: 3}
+  - {fileID: 21300000, guid: 4a2f2ada36ca3470e8abaee98f19c6c6, type: 3}
   - {fileID: 21300000, guid: 8c6fe71b9dce844ed84850afb73a48b2, type: 3}
   - {fileID: 21300000, guid: b7c13f6b7601e43458b8a37944fd03a4, type: 3}
   - {fileID: 21300000, guid: c7e3508ba831348f78885adaaa1e0065, type: 3}
@@ -94,6 +100,7 @@ SpriteAtlas:
   - Arena_bg_gauge_01
   - Arena_bg_02
   - Bg_Arena_Season_add
+  - Main_Cloud_02
   - Arena_bg_21
   - Icon_OfficialSeasonMedal
   - Bg_Arena_Season
@@ -117,8 +124,10 @@ SpriteAtlas:
   - Bg_Arena_Championship
   - Arena_bg_25
   - Rank_bg_12
+  - Main_Cloud_05
   - Bg_Arena_Championship_icon
   - Arena_bg_22_2
+  - Main_rock_05
   - Bg_Arena_Championship_add
   - Arena_bg_28
   - Arena_bg_11
