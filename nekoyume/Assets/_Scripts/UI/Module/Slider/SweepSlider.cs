@@ -43,11 +43,12 @@ namespace Nekoyume
 
         public void Set(int sliderMinValue, int sliderMaxValue, int sliderCurValue,
             int max, int multiplier,
-            Action<int> callback = null, bool interactable = true)
+            Action<int> callback = null, bool interactable = true, bool isMax = false)
         {
             UpdateListener(multiplier, callback);
-            UpdateSliderValues(sliderMinValue, sliderMaxValue, sliderCurValue);
-            UpdateText(sliderCurValue, max, multiplier);
+            var curValue = isMax ? max : sliderCurValue;
+            UpdateSliderValues(sliderMinValue, sliderMaxValue, curValue);
+            UpdateText(curValue, max, multiplier);
             UpdateContainer(sliderMaxValue);
             UpdateSliderWidth(sliderMaxValue, max, multiplier);
             UpdateBackground(sliderMaxValue, max, multiplier);
@@ -81,7 +82,6 @@ namespace Nekoyume
         {
             maxText.text = max.ToString();
             curText.text = $"{sliderCurValue * multiplier}";
-            slider.value = max;
         }
 
         private void UpdateContainer(int sliderMaxValue)
