@@ -301,8 +301,8 @@ namespace Nekoyume.Helper
             var now = DateTime.UtcNow;
             if (everyYear)
             {
-                begin = $"{now.Year}/{begin}";
-                end = $"{now.Year}/{end}";
+                begin = $"{now.Year}-{begin}";
+                end = $"{now.Year}-{end}";
             }
 
             if (DateTime.TryParseExact(begin, "yyyy-MM-ddTHH:mm:ss", null, DateTimeStyles.None,
@@ -370,6 +370,30 @@ namespace Nekoyume.Helper
             }
 
             return option.Cp;
+        }
+
+        public static int GetPortraitId(List<Equipment> equipments, List<Costume> costumes)
+        {
+            var id = GameConfig.DefaultAvatarArmorId;
+            var armor = equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
+            if (armor != null)
+            {
+                id = armor.Id;
+            }
+
+            var fullCostume = costumes.FirstOrDefault(x => x.ItemSubType == ItemSubType.FullCostume);
+            if (fullCostume != null)
+            {
+                id = fullCostume.Id;
+            }
+
+            return id;
+        }
+
+        public static int GetPortraitId(BattleType battleType)
+        {
+            var (equipments, costumes) = States.Instance.GetEquippedItems(battleType);
+            return GetPortraitId(equipments, costumes);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
@@ -23,13 +24,6 @@ namespace Nekoyume.UI.Module
 
     public class Inventory : MonoBehaviour
     {
-        public enum InventoryType
-        {
-            Default,
-            Arena,
-            Raid,
-        }
-
         public enum InventoryTabType
         {
             Equipment,
@@ -72,7 +66,9 @@ namespace Nekoyume.UI.Module
         private readonly ToggleGroup _toggleGroup = new();
 
         private readonly List<IDisposable> _disposablesOnSet = new();
-        private readonly List<InventoryItem> _cachedNotificationItems = new();
+        private readonly List<InventoryItem> _cachedNotificationEquipments = new();
+        private readonly List<InventoryItem> _cachedNotificationCostumes = new();
+        private readonly List<InventoryItem> _cachedNotificationRunes = new();
         private readonly List<InventoryItem> _cachedFocusItems = new();
         private readonly List<ElementalType> _elementalTypes = new();
 
@@ -189,8 +185,7 @@ namespace Nekoyume.UI.Module
         private void SetInventory(
             Nekoyume.Model.Item.Inventory inventory,
             Action<Inventory, Nekoyume.Model.Item.Inventory> onUpdateInventory = null,
-            bool reverseOrder = false,
-            BattleType battleType = BattleType.Adventure)
+            bool reverseOrder = false)
         {
             _equipments.Clear();
             _consumables.Clear();
@@ -429,18 +424,56 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            foreach (var item in _cachedNotificationItems)
+            foreach (var item in _cachedNotificationEquipments)
             {
                 item.HasNotification.Value = false;
             }
 
-            _cachedNotificationItems.Clear();
+            _cachedNotificationEquipments.Clear();
 
             foreach (var item in bestItems.Where(item => !item.Equipped.Value))
             {
                 item.HasNotification.Value = true;
-                _cachedNotificationItems.Add(item);
+                _cachedNotificationEquipments.Add(item);
             }
+
+            equipmentButton.HasNotification.SetValueAndForceNotify(_cachedNotificationEquipments.Any());
+        }
+
+        private void UpdateCostumeNotification(IEnumerable<InventoryItem> bestItems)
+        {
+            foreach (var item in _cachedNotificationCostumes)
+            {
+                item.HasNotification.Value = false;
+            }
+
+            _cachedNotificationCostumes.Clear();
+
+            foreach (var item in bestItems.Where(item => !item.Equipped.Value))
+            {
+                item.HasNotification.Value = true;
+                _cachedNotificationCostumes.Add(item);
+            }
+
+            costumeButton.HasNotification.SetValueAndForceNotify(_cachedNotificationCostumes.Any());
+        }
+
+        private void UpdateRuneNotification(IEnumerable<InventoryItem> bestItems)
+        {
+            foreach (var item in _cachedNotificationRunes)
+            {
+                item.HasNotification.Value = false;
+            }
+
+            _cachedNotificationRunes.Clear();
+
+            foreach (var item in bestItems.Where(item => !item.Equipped.Value))
+            {
+                item.HasNotification.Value = true;
+                _cachedNotificationRunes.Add(item);
+            }
+
+            runeButton.HasNotification.SetValueAndForceNotify(_cachedNotificationRunes.Any());
         }
 
         private List<InventoryItem> GetUsableBestEquipments()
@@ -494,6 +527,37 @@ namespace Nekoyume.UI.Module
             return bestItems;
         }
 
+        private List<InventoryItem> GetUsableBestCostumes()
+        {
+            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            if (currentAvatarState is null)
+            {
+                return new List<InventoryItem>();
+            }
+
+            var sortedCostumes = new Dictionary<ItemSubType, List<InventoryItem>>()
+            {
+                { ItemSubType.FullCostume, new List<InventoryItem>()},
+                { ItemSubType.Title, new List<InventoryItem>()},
+            };
+            foreach (var inventoryItem in _costumes.Where(x => sortedCostumes.ContainsKey(x.ItemBase.ItemSubType)))
+            {
+                sortedCostumes[inventoryItem.ItemBase.ItemSubType].Add(inventoryItem);
+            }
+
+            var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+            var best = new List<InventoryItem>();
+            foreach (var pair in sortedCostumes)
+            {
+                var item = pair.Value.Where(x => Util.IsUsableItem(x.ItemBase))
+                    .OrderByDescending(x => CPHelper.GetCP(x.ItemBase as Costume, costumeSheet))
+                    .Take(1);
+                best.AddRange(item);
+            }
+
+            return best;
+        }
+
         private void UpdateDimmedInventoryItem()
         {
             foreach (var itemType in ItemTypes)
@@ -519,16 +583,34 @@ namespace Nekoyume.UI.Module
 
         public bool HasNotification()
         {
-            var bestItems = GetUsableBestEquipments()
-                .Select(x => x.ItemBase as Equipment)
-                .Select(x => x.ItemId)
-                .ToList();
-
-            foreach (var guid in bestItems)
+            var equipments = GetBestEquipments();
+            foreach (var guid in equipments)
             {
-                foreach (var state in States.Instance.ItemSlotStates.Values)
+                var slots = States.Instance.ItemSlotStates.Values;
+                if (slots.Any(x => !x.Equipments.Exists(x => x == guid)))
                 {
-                    if (!state.Equipments.Exists(x => x == guid))
+                    return true;
+                }
+            }
+
+            var costumes = GetBestCostumes();
+            foreach (var guid in costumes)
+            {
+                var slots = States.Instance.ItemSlotStates.Values;
+                if (slots.Any(x => !x.Costumes.Exists(x => x == guid)))
+                {
+                    return true;
+                }
+            }
+
+            for (var i = 1; i < (int)BattleType.End; i++)
+            {
+                var battleType = (BattleType)i;
+                var inventoryItems = GetBestRunes(battleType);
+                foreach (var inventoryItem in inventoryItems)
+                {
+                    var slots = States.Instance.RuneSlotStates[battleType].GetRuneSlot();
+                    if (!slots.Exists(x => x.RuneId == inventoryItem.RuneState.RuneId))
                     {
                         return true;
                     }
@@ -538,12 +620,70 @@ namespace Nekoyume.UI.Module
             return false;
         }
 
-        public List<Guid> GetBestItems()
+        public List<Guid> GetBestEquipments()
         {
             return GetUsableBestEquipments()
                 .Select(x => x.ItemBase as Equipment)
                 .Select(x => x.ItemId)
                 .ToList();
+        }
+
+        public List<Guid> GetBestCostumes()
+        {
+            return GetUsableBestCostumes()
+                .Select(x => x.ItemBase as Costume)
+                .Select(x => x.ItemId)
+                .ToList();
+        }
+
+        public List<InventoryItem> GetBestRunes(BattleType battleType)
+        {
+            var runes = new Dictionary<RuneType, List<InventoryItem>>()
+            {
+                { RuneType.Stat, new List<InventoryItem>() },
+                { RuneType.Skill, new List<InventoryItem>() },
+            };
+
+            var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
+            foreach (var item in _runes)
+            {
+                if (!runeListSheet.TryGetValue(item.RuneState.RuneId, out var rune))
+                {
+                    continue;
+                }
+
+                if (!battleType.IsEquippableRune((RuneUsePlace)rune.UsePlace))
+                {
+                    continue;
+                }
+
+                runes[(RuneType)rune.RuneType].Add(item);
+            }
+
+            var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
+            var bestRunes = new List<InventoryItem>();
+            foreach (var rune in runes.Values)
+            {
+                var best = rune.OrderByDescending(x =>
+                    {
+                        if (!runeOptionSheet.TryGetValue(x.RuneState.RuneId, out var optionRow))
+                        {
+                            return 0;
+                        }
+
+                        if (!optionRow.LevelOptionMap.TryGetValue(x.RuneState.Level, out var option))
+                        {
+                            return 0;
+                        }
+
+                        return option.Cp;
+                    })
+                    .Take(1);
+
+                bestRunes.AddRange(best);
+            }
+
+            return bestRunes;
         }
 
         public void SetAvatarInformation(
@@ -554,6 +694,8 @@ namespace Nekoyume.UI.Module
             Action<Inventory, Nekoyume.Model.Item.Inventory> onUpdateInventory = null,
             bool useConsumable = false)
         {
+            _elementalTypes.Clear();
+            _elementalTypes.AddRange(elementalTypes);
             SetAction(clickItem, doubleClickItem, onClickTab);
             var predicateByElementalType =
                 InventoryHelper.GetDimmedFuncByElementalTypes(elementalTypes.ToList());
@@ -581,6 +723,37 @@ namespace Nekoyume.UI.Module
             SetAction(clickItem);
             SetInventoryTab(predicateList, onUpdateInventory:onUpdateInventory, reverseOrder:reverseOrder);
             _toggleGroup.DisabledFunc = () => true;
+            StartCoroutine(CoUpdateEquipped());
+        }
+
+        private IEnumerator CoUpdateEquipped()
+        {
+            yield return null;
+            yield return new WaitForEndOfFrame();
+            UpdateEquipped();
+        }
+
+        public void UpdateEquipped()
+        {
+            var equipments = new List<Guid>();
+            for (var i = 1; i < (int)BattleType.End; i++)
+            {
+                var battleType = (BattleType)i;
+                equipments.AddRange(States.Instance.ItemSlotStates[battleType].Equipments);
+            }
+
+            foreach (var eps in _equipments.Values)
+            {
+                foreach (var equipment in eps)
+                {
+                    var equipped = equipments.Exists(x => x == ((Equipment)equipment.ItemBase).ItemId);
+                    if (equipped)
+                    {
+                        Debug.Log($"guid ");
+                    }
+                    equipment.Equipped.SetValueAndForceNotify(equipped);
+                }
+            }
         }
 
         public void ClearSelectedItem()
@@ -606,6 +779,7 @@ namespace Nekoyume.UI.Module
                 rune.DimObjectEnabled.SetValueAndForceNotify(!equippable);
             }
 
+            UpdateRuneNotification(GetBestRunes(battleType));
             var models = GetModels(_activeTabType);
             scroll.UpdateData(models, resetScrollOnEnable);
         }
@@ -617,6 +791,9 @@ namespace Nekoyume.UI.Module
                 var equipped = costumes.Exists(x => x == ((Costume)costume.ItemBase).ItemId);
                 costume.Equipped.SetValueAndForceNotify(equipped);
             }
+
+            var bestItem = GetUsableBestCostumes();
+            UpdateCostumeNotification(bestItem);
         }
 
         public void UpdateEquipments(List<Guid> equipments)

@@ -76,7 +76,7 @@ namespace Nekoyume.UI.Scroller
                 })
                 .AddTo(gameObject);
             L10nManager.OnLanguageChange
-                .Subscribe(_ => SetContent(Quest))
+                .Subscribe(_ => { if (Quest != null) SetContent(Quest); })
                 .AddTo(gameObject);
         }
 

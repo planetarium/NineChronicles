@@ -1,11 +1,10 @@
 using UnityEngine;
 using UnityEngine.UI;
-using Nekoyume.UI.Model;
-using System.Text.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine.ResourceManagement.AsyncOperations;
+using Nekoyume.Game.Notice;
 
 namespace Nekoyume.UI.Module
 {
@@ -29,20 +28,11 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private PageView pageView;
 
-        private AsyncOperationHandle _handle;
-
-        private const string Url =
-            "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/Banner.json";
-
-        private void Start()
+        private IEnumerator Start()
         {
-            StartCoroutine(RequestManager.instance.GetJson(Url, Set));
-        }
+            yield return new WaitUntil(() => NoticeManager.instance.IsInitialized);
 
-        private void Set(string json)
-        {
-            var eb = JsonSerializer.Deserialize<EventBanners>(json);
-            var dataList = eb.Banners.OrderBy(x => x.Priority);
+            var dataList = NoticeManager.instance.BannerData;
             foreach (var data in dataList)
             {
                 if (data.UseDateTime &&

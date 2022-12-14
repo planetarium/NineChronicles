@@ -126,9 +126,19 @@ namespace Nekoyume.UI.Module
             StartCoroutine(CoUpdateView(battleType, Inventory.InventoryTabType.Equipment));
         }
 
-        public List<Guid> GetBestItems()
+        public List<Guid> GetBestEquipments()
         {
-            return inventory.GetBestItems();
+            return inventory.GetBestEquipments();
+        }
+
+        public List<Guid> GetBestCostumes()
+        {
+            return inventory.GetBestCostumes();
+        }
+
+        public List<InventoryItem> GetBestRunes(BattleType battleType)
+        {
+            return inventory.GetBestRunes(battleType);
         }
 
         private IEnumerator CoUpdateView(BattleType battleType, Inventory.InventoryTabType tabType)
@@ -562,16 +572,6 @@ namespace Nekoyume.UI.Module
 
         private void EquipRune(InventoryItem inventoryItem)
         {
-            if (Game.Game.instance.IsInWorld)
-            {
-                return;
-            }
-
-            if (inventoryItem.DimObjectEnabled.Value)
-            {
-                return;
-            }
-
             var states = States.Instance.RuneSlotStates[_battleType].GetRuneSlot();
             var sheet = Game.Game.instance.TableSheets.RuneListSheet;
             if (!sheet.TryGetValue(inventoryItem.RuneState.RuneId, out var row))
@@ -872,6 +872,19 @@ namespace Nekoyume.UI.Module
                 }
                 else
                 {
+                    if (Game.Game.instance.IsInWorld)
+                    {
+                        return;
+                    }
+
+                    if (inventoryItem.DimObjectEnabled.Value)
+                    {
+                        NotificationSystem.Push(MailType.System,
+                            L10nManager.Localize("UI_MESSAGE_CAN_NOT_EQUIPPED"),
+                            NotificationCell.NotificationType.Alert);
+                        return;
+                    }
+
                     EquipRune(inventoryItem);
                 }
             }
@@ -905,12 +918,13 @@ namespace Nekoyume.UI.Module
             }
 
             var characterStats = new CharacterStats(row, avatarState.level);
+            var consumables = GetEquippedConsumables();
             var (equipments, costumes) = States.Instance.GetEquippedItems(_battleType);
             characterStats.SetAll(
                 avatarState.level,
                 equipments,
                 costumes,
-                null,
+                consumables,
                 equipmentSetEffectSheet,
                 costumeSheet);
 
@@ -943,7 +957,8 @@ namespace Nekoyume.UI.Module
         private void UpdateCp()
         {
             _previousCp = _currentCp;
-            _currentCp = Util.TotalCP(_battleType);
+            var consumables = GetEquippedConsumables();
+            _currentCp = Util.TotalCP(_battleType) + consumables.Sum(CPHelper.GetCP);;
             cp.text = _currentCp.ToString();
             if (_compareCp.HasValue)
             {
@@ -959,9 +974,18 @@ namespace Nekoyume.UI.Module
 
         private void ShowCpScreen(InventoryItem inventoryItem)
         {
-            if (inventoryItem.ItemBase is { ItemType: ItemType.Material or ItemType.Consumable })
+            if (inventoryItem.ItemBase?.ItemType is ItemType.Material)
             {
                 return;
+            }
+
+            if (inventoryItem.ItemBase is Consumable consumable)
+            {
+                var consumables = GetEquippedConsumables();
+                if (!consumables.Exists(x => x.ItemId == consumable.ItemId))
+                {
+                    return;
+                }
             }
 
             var cpScreen = Widget.Find<CPScreen>();

@@ -579,7 +579,7 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             _disposablesAtShow.DisposeAllAndClear();
-            Find<NoticePopup>().Close(true);
+            Find<EventReleaseNotePopup>().Close(true);
             StopSpeeches();
             guidedQuest.Hide(true);
             Find<Status>().Close(true);

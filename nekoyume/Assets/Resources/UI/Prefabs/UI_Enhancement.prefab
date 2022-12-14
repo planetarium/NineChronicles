@@ -305,11 +305,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   typeText: {fileID: 5880207478169168097}
+  contentText: {fileID: 0}
   currentText: {fileID: 7334700936434648967}
-  addText: {fileID: 1926970472686703761}
   currentExText: {fileID: 0}
+  addText: {fileID: 1926970472686703761}
   addExText: {fileID: 0}
   etcText: {fileID: 0}
+  etcExText: {fileID: 0}
   star: {fileID: 5933923379369600674}
 --- !u!1 &268997067771209855
 GameObject:
@@ -864,11 +866,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   typeText: {fileID: 6463779011674071072}
+  contentText: {fileID: 0}
   currentText: {fileID: 7533404325805903395}
-  addText: {fileID: 6310320797683655756}
   currentExText: {fileID: 5220103423414557588}
+  addText: {fileID: 6310320797683655756}
   addExText: {fileID: 5338170709110291880}
   etcText: {fileID: 0}
+  etcExText: {fileID: 0}
   star: {fileID: 0}
 --- !u!1 &450169256266826341
 GameObject:
@@ -3392,8 +3396,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -330, y: -12}
-  m_SizeDelta: {x: 1136, y: 1280}
+  m_AnchoredPosition: {x: -330, y: -60}
+  m_SizeDelta: {x: 1130, y: 1280}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6171981019359441818
 CanvasRenderer:
@@ -3642,7 +3646,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -90}
+  m_AnchoredPosition: {x: 0, y: -60}
   m_SizeDelta: {x: 1136, y: 640}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8351274240692457327
@@ -5530,11 +5534,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   typeText: {fileID: 3497912534890633955}
+  contentText: {fileID: 0}
   currentText: {fileID: 687073251943480819}
-  addText: {fileID: 3727065432727665975}
   currentExText: {fileID: 255961665773990259}
+  addText: {fileID: 3727065432727665975}
   addExText: {fileID: 5687858099532913538}
   etcText: {fileID: 0}
+  etcExText: {fileID: 0}
   star: {fileID: 0}
 --- !u!1 &2133850267985883043
 GameObject:
@@ -6178,7 +6184,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2618545773133534014
 RectTransform:
   m_ObjectHideFlags: 0
@@ -13046,8 +13052,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 310, y: -12}
-  m_SizeDelta: {x: 1136, y: 1280}
+  m_AnchoredPosition: {x: 300, y: -60}
+  m_SizeDelta: {x: 1130, y: 1280}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2009670126973573243
 CanvasRenderer:
@@ -14239,8 +14245,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 10, y: 93}
-  m_SizeDelta: {x: 638, y: 608}
+  m_AnchoredPosition: {x: 14, y: 96.4}
+  m_SizeDelta: {x: 640, y: 650}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8808718226329992862
 CanvasRenderer:
@@ -16666,11 +16672,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   typeText: {fileID: 6361785660407824211}
+  contentText: {fileID: 0}
   currentText: {fileID: 8721533606172226236}
-  addText: {fileID: 1709520135320215207}
   currentExText: {fileID: 7304848218521454026}
+  addText: {fileID: 1709520135320215207}
   addExText: {fileID: 2294378542248365737}
   etcText: {fileID: 0}
+  etcExText: {fileID: 0}
   star: {fileID: 0}
 --- !u!1 &5805460822868582915
 GameObject:
@@ -17741,11 +17749,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   typeText: {fileID: 4291017601324291154}
+  contentText: {fileID: 0}
   currentText: {fileID: 8468806049997114274}
-  addText: {fileID: 8316203907443577124}
   currentExText: {fileID: 9028819612320428091}
+  addText: {fileID: 8316203907443577124}
   addExText: {fileID: 5737208335873028134}
   etcText: {fileID: 0}
+  etcExText: {fileID: 0}
   star: {fileID: 0}
 --- !u!1 &6029497992367919486
 GameObject:
@@ -19529,7 +19539,7 @@ RectTransform:
   m_GameObject: {fileID: 6741425431571313181}
   m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 8000}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2618545773133534014}
@@ -24222,7 +24232,7 @@ ParticleSystemRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6741425431571313181}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -25079,11 +25089,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   typeText: {fileID: 7321181247674667442}
+  contentText: {fileID: 0}
   currentText: {fileID: 1918668379361423810}
-  addText: {fileID: 6326084380545639969}
   currentExText: {fileID: 0}
+  addText: {fileID: 6326084380545639969}
   addExText: {fileID: 0}
   etcText: {fileID: 0}
+  etcExText: {fileID: 0}
   star: {fileID: 8420015299094811192}
 --- !u!1 &7153988267142730440
 GameObject:
@@ -25315,11 +25327,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   typeText: {fileID: 2358140715401832956}
+  contentText: {fileID: 0}
   currentText: {fileID: 2541767543020914080}
-  addText: {fileID: 1229234684588085119}
   currentExText: {fileID: 0}
+  addText: {fileID: 1229234684588085119}
   addExText: {fileID: 0}
   etcText: {fileID: 0}
+  etcExText: {fileID: 0}
   star: {fileID: 4638366347647269982}
 --- !u!1 &7171435864491744801
 GameObject:
@@ -39991,8 +40005,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -15, y: -320}
-  m_SizeDelta: {x: 1136, y: 640}
+  m_AnchoredPosition: {x: -15, y: -330}
+  m_SizeDelta: {x: 525.5, y: 674}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &7277973232368053373
 CanvasRenderer:
@@ -46108,11 +46122,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   typeText: {fileID: 1453193198262392938}
+  contentText: {fileID: 0}
   currentText: {fileID: 8508896766549596336}
-  addText: {fileID: 36027773617278691}
   currentExText: {fileID: 0}
+  addText: {fileID: 36027773617278691}
   addExText: {fileID: 0}
   etcText: {fileID: 0}
+  etcExText: {fileID: 0}
   star: {fileID: 7826583086600318582}
 --- !u!1 &7826583086600318582
 GameObject:
@@ -49401,11 +49417,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   typeText: {fileID: 5012738497326770949}
+  contentText: {fileID: 0}
   currentText: {fileID: 3424560710124316751}
-  addText: {fileID: 1911403105111940470}
   currentExText: {fileID: 0}
+  addText: {fileID: 1911403105111940470}
   addExText: {fileID: 0}
   etcText: {fileID: 0}
+  etcExText: {fileID: 0}
   star: {fileID: 0}
 --- !u!1001 &45850969305254936
 PrefabInstance:
@@ -49762,7 +49780,7 @@ PrefabInstance:
     - target: {fileID: 8136804997809114372, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 56.999996
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8136804997809114372, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
@@ -49772,7 +49790,7 @@ PrefabInstance:
     - target: {fileID: 8136804997809114372, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 97
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8136804997809114372, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
@@ -50233,6 +50251,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: BaseSlot
+      objectReference: {fileID: 0}
+    - target: {fileID: 4259604619136084128, guid: 3b1a792bddbb55d4f94d6b551bb6cf5a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4293818057765909861, guid: 3b1a792bddbb55d4f94d6b551bb6cf5a,
         type: 3}
@@ -51429,7 +51452,7 @@ PrefabInstance:
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 88
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}

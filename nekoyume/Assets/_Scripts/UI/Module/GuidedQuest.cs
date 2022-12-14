@@ -633,13 +633,9 @@ namespace Nekoyume.UI.Module
             {
                 goal = RxProps.EventDungeonRow.StageBegin;
             }
-            else if (info.ClearedStageId == RxProps.EventDungeonRow.StageEnd)
-            {
-                return null;
-            }
             else
             {
-                goal = info.ClearedStageId + 1;
+                goal = Math.Min(RxProps.EventDungeonRow.StageEnd, info.ClearedStageId + 1);
             }
 
             if (SharedViewModel.eventDungeonQuest.Value is not null &&

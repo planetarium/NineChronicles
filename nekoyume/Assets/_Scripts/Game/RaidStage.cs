@@ -130,7 +130,10 @@ namespace Nekoyume.Game
                         if (container.SkillCutsceneExists(param.SkillId))
                         {
                             container.OnAttackPoint = () =>
-                                boss.ProcessSkill(param.SkillId, param.SkillInfos);
+                            {
+                                var infos = param.SkillInfos.Concat(param.BuffInfos);
+                                boss.ProcessSkill(param.SkillId, infos);
+                            };
                             yield return StartCoroutine(container.CoPlaySkillCutscene(param.SkillId));
                             _player.UpdateStatusUI();
                             _boss.UpdateStatusUI();

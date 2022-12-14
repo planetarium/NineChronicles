@@ -536,8 +536,17 @@ namespace Nekoyume.BlockChain
             int apStoneCount,
             int actionPoint,
             int worldId,
-            int stageId)
+            int stageId,
+            int? playCount)
         {
+            var sentryTrace = Analyzer.Instance.Track("Unity/HackAndSlashSweep", new Dictionary<string, Value>()
+            {
+                ["stageId"] = stageId,
+                ["apStoneCount"] = apStoneCount,
+                ["playCount"] = playCount,
+                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+            }, true);
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var action = new HackAndSlashSweep
             {
@@ -566,7 +575,7 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e =>
                 {
                     Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
-                });
+                }).Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
         public IObservable<ActionBase.ActionEvaluation<Sell>> Sell(
@@ -576,6 +585,14 @@ namespace Nekoyume.BlockChain
             ItemSubType itemSubType)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var sentryTrace = Analyzer.Instance.Track("Unity/Sell", new Dictionary<string, Value>()
+            {
+                ["TradableItemId"] = tradableItem.TradableId.ToString(),
+                ["Count"] = count.ToString(),
+                ["Price"] = price.ToString(),
+                ["AvatarAddress"] = avatarAddress.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+            }, true);
 
             if (!(tradableItem is TradableMaterial))
             {
@@ -606,7 +623,8 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e => throw HandleException(action.Id, e));
+                .DoOnError(e => throw HandleException(action.Id, e))
+                .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
         public IObservable<ActionBase.ActionEvaluation<SellCancellation>> SellCancellation(
@@ -615,6 +633,11 @@ namespace Nekoyume.BlockChain
             Guid tradableId,
             ItemSubType itemSubType)
         {
+            var sentryTrace = Analyzer.Instance.Track("Unity/Sell Cancellation", new Dictionary<string, Value>()
+            {
+                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+            }, true);
             var action = new SellCancellation
             {
                 orderId = orderId,
@@ -631,12 +654,18 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e => throw HandleException(action.Id, e));
+                .DoOnError(e => throw HandleException(action.Id, e))
+                .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
         public IObservable<ActionBase.ActionEvaluation<UpdateSell>> UpdateSell(List<UpdateSellInfo> updateSellInfos)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var sentryTrace = Analyzer.Instance.Track("Unity/UpdateSell", new Dictionary<string, Value>()
+            {
+                ["AvatarAddress"] = avatarAddress.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+            }, true);
 
             var action = new UpdateSell
             {
@@ -653,7 +682,8 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e => throw HandleException(action.Id, e));
+                .DoOnError(e => throw HandleException(action.Id, e))
+                .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
         public IObservable<ActionBase.ActionEvaluation<Buy>> Buy(List<PurchaseInfo> purchaseInfos)
@@ -753,7 +783,7 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e =>
                 {
                     Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
-                });
+                }).Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
         public IObservable<ActionBase.ActionEvaluation<RankingBattle>> RankingBattle(
@@ -856,6 +886,16 @@ namespace Nekoyume.BlockChain
                 round = round,
                 ticket = ticket,
             };
+
+            var sentryTrace = Analyzer.Instance.Track("Unity/BattleArena",
+                new Dictionary<string, Value>()
+                {
+                    ["championshipId"] = championshipId,
+                    ["round"] = round,
+                    ["enemyAvatarAddress"] = enemyAvatarAddress.ToString(),
+                    ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                }, true);
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
@@ -873,7 +913,7 @@ namespace Nekoyume.BlockChain
                     }
 
                     Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
-                });
+                }).Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
         public IObservable<ActionBase.ActionEvaluation<PatchTableSheet>> PatchTableSheet(
@@ -1057,7 +1097,10 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<Grinding>> Grinding(List<Equipment> equipmentList, bool chargeAp)
+        public IObservable<ActionBase.ActionEvaluation<Grinding>> Grinding(
+            List<Equipment> equipmentList,
+            bool chargeAp,
+            int gainedCrystal)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             equipmentList.ForEach(equipment =>
@@ -1083,6 +1126,13 @@ namespace Nekoyume.BlockChain
 
                 GameConfigStateSubject.ActionPointState.Add(address, true);
             }
+            var sentryTrace = Analyzer.Instance.Track("Unity/Grinding", new Dictionary<string, Value>()
+            {
+                ["EquipmentCount"] = equipmentList.Count,
+                ["GainedCrystal"] = gainedCrystal,
+                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+            }, true);
 
             var action = new Grinding
             {
@@ -1097,7 +1147,8 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => HandleException(action.Id, e))
+                .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
         public IObservable<ActionBase.ActionEvaluation<UnlockEquipmentRecipe>> UnlockEquipmentRecipe(
@@ -1111,6 +1162,12 @@ namespace Nekoyume.BlockChain
                 .Forget();
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var sentryTrace = Analyzer.Instance.Track("Unity/UnlockEquipmentRecipe", new Dictionary<string, Value>()
+            {
+                ["BurntCrystal"] = (long) openCost,
+                ["AvatarAddress"] = avatarAddress.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+            }, true);
             var action = new UnlockEquipmentRecipe
             {
                 AvatarAddress = avatarAddress,
@@ -1123,13 +1180,20 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => HandleException(action.Id, e))
+                .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
 
-        public IObservable<ActionBase.ActionEvaluation<UnlockWorld>> UnlockWorld(List<int> worldIdList)
+        public IObservable<ActionBase.ActionEvaluation<UnlockWorld>> UnlockWorld(List<int> worldIdList, int cost)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var sentryTrace = Analyzer.Instance.Track("Unity/UnlockWorld", new Dictionary<string, Value>()
+            {
+                ["BurntCrystal"] = cost,
+                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+            }, true);
 
             var action = new UnlockWorld
             {
@@ -1143,11 +1207,19 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => HandleException(action.Id, e))
+                .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<HackAndSlashRandomBuff>> HackAndSlashRandomBuff(bool advanced)
+        public IObservable<ActionBase.ActionEvaluation<HackAndSlashRandomBuff>> HackAndSlashRandomBuff(bool advanced, long burntCrystal)
         {
+            var sentryTrace = Analyzer.Instance.Track("Unity/Purchase Crystal Bonus Skill", new Dictionary<string, Value>()
+            {
+                ["BurntCrystal"] = burntCrystal,
+                ["isAdvanced"] = advanced,
+                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+            }, true);
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
             var action = new HackAndSlashRandomBuff
@@ -1162,7 +1234,8 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => HandleException(action.Id, e))
+                .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
         public IObservable<ActionBase.ActionEvaluation<Raid>> Raid(
