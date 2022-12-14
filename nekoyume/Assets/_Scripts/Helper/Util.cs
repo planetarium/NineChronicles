@@ -301,8 +301,8 @@ namespace Nekoyume.Helper
             var now = DateTime.UtcNow;
             if (everyYear)
             {
-                begin = $"{now.Year}/{begin}";
-                end = $"{now.Year}/{end}";
+                begin = $"{now.Year}-{begin}";
+                end = $"{now.Year}-{end}";
             }
 
             if (DateTime.TryParseExact(begin, "yyyy-MM-ddTHH:mm:ss", null, DateTimeStyles.None,
