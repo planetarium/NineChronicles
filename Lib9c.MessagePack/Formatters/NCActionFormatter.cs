@@ -13,15 +13,18 @@ using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
 namespace Lib9c.Formatters
 {
-    public class NCActionFormatter : IMessagePackFormatter<NCAction>
+    public class NCActionFormatter : IMessagePackFormatter<NCAction?>
     {
         private static readonly IDictionary<string, Type> Types = typeof(ActionBase)
             .Assembly
             .GetTypes()
             .Where(t => t.IsDefined(typeof(ActionTypeAttribute)))
-            .ToDictionary(ActionTypeAttribute.ValueOf, t => t);
+            .ToDictionary(
+                t => ActionTypeAttribute.ValueOf(t)
+                    ?? throw new InvalidOperationException("Unreachable code."),
+                t => t);
 
-        public void Serialize(ref MessagePackWriter writer, PolymorphicAction<ActionBase> value,
+        public void Serialize(ref MessagePackWriter writer, PolymorphicAction<ActionBase>? value,
             MessagePackSerializerOptions options)
         {
             if (value is null)
@@ -32,7 +35,7 @@ namespace Lib9c.Formatters
             writer.Write(new Codec().Encode(value.PlainValue));
         }
 
-        public PolymorphicAction<ActionBase> Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
+        public PolymorphicAction<ActionBase>? Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
         {
             var bytes = reader.ReadBytes();
             if (bytes is null)
@@ -43,7 +46,7 @@ namespace Lib9c.Formatters
             IValue value = new Codec().Decode(bytes.Value.ToArray());
             var plainValue = (Dictionary)value;
             var typeStr = plainValue["type_id"];
-            var innerAction = (ActionBase)Activator.CreateInstance(Types[(Text)typeStr]);
+            var innerAction = (ActionBase)(Activator.CreateInstance(Types[(Text)typeStr]) ?? throw new InvalidOperationException("Failed to instatiate an action instance."));
             innerAction.LoadPlainValue(plainValue["values"]);
             return new NCAction(innerAction);
         }

@@ -11,7 +11,7 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: true
     - name: Check if .Libplanet refers to a tagged commit
@@ -36,7 +36,7 @@ jobs:
         fi
         popd
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 6.0.100
     - name: Install dependencies
@@ -50,7 +50,7 @@ jobs:
     if: github.ref_type == 'tag' && startsWith(github.ref_name, 'v')
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: true
     - name: Check if a new tag refers a merge commit
@@ -81,7 +81,7 @@ jobs:
           ${{ github.repository_owner }}/NineChronicles:rc-${{ github.ref_name }}?
           ${{ github.repository_owner }}/NineChronicles.Headless:rc-${{ github.ref_name }}?
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 6.0.100
     - name: Collect available action type ids

@@ -40,13 +40,13 @@ namespace Nekoyume.BlockChain
 
         public Address Address => _privateKey.ToAddress();
 
-        public async Task<Block<NCAction>> MineBlockAsync(
+        public async Task<Block<NCAction>?> MineBlockAsync(
             CancellationToken cancellationToken)
         {
             var txs = new HashSet<Transaction<NCAction>>();
             var invalidTxs = txs;
 
-            Block<NCAction> block = null;
+            Block<NCAction>? block = null;
             try
             {
                 IEnumerable<Transaction<NCAction>> bannedTxs = _chain.GetStagedTransactionIds()

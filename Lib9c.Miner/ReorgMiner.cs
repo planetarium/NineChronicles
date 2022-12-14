@@ -43,15 +43,15 @@ namespace Nekoyume.BlockChain
         }
 
         public async Task<(
-                Block<PolymorphicAction<ActionBase>> MainBlock,
-                Block<PolymorphicAction<ActionBase>> SubBlock)>
+                Block<PolymorphicAction<ActionBase>>? MainBlock,
+                Block<PolymorphicAction<ActionBase>>? SubBlock)>
             MineBlockAsync(CancellationToken cancellationToken)
         {
             var txs = new HashSet<Transaction<PolymorphicAction<ActionBase>>>();
 
             var invalidTxs = txs;
-            Block<PolymorphicAction<ActionBase>> mainBlock = null;
-            Block<PolymorphicAction<ActionBase>> subBlock = null;
+            Block<PolymorphicAction<ActionBase>>? mainBlock = null;
+            Block<PolymorphicAction<ActionBase>>? subBlock = null;
             try
             {
                 mainBlock = await _mainChain.MineBlock(

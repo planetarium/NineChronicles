@@ -13,14 +13,14 @@ namespace Lib9c.Formatters
         }
 
         // GetFormatter<T>'s get cost should be minimized so use type cache.
-        public IMessagePackFormatter<T> GetFormatter<T>()
+        public IMessagePackFormatter<T>? GetFormatter<T>()
         {
             return FormatterCache<T>.Formatter;
         }
 
         private static class FormatterCache<T>
         {
-            public static readonly IMessagePackFormatter<T> Formatter;
+            public static readonly IMessagePackFormatter<T>? Formatter;
 
             // generic's static constructor should be minimized for reduce type generation size!
             // use outer helper method.
@@ -28,8 +28,8 @@ namespace Lib9c.Formatters
             static FormatterCache()
             {
                 Formatter =
-                    (IMessagePackFormatter<T>)NineChroniclesResolverGetFormatterHelper.GetFormatter(
-                        typeof(T));
+                    (IMessagePackFormatter<T>?)(NineChroniclesResolverGetFormatterHelper
+                        .GetFormatter(typeof(T)));
             }
 #pragma warning restore S3963
         }
