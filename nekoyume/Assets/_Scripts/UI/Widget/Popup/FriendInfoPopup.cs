@@ -228,7 +228,7 @@ namespace Nekoyume.UI
             var runeSlot = _runes[battleType].GetRuneSlot();
             costumeSlots.SetPlayerCostumes(level, costumes, ShowTooltip, null);
             equipmentSlots.SetPlayerEquipments(level, equipments, ShowTooltip, null);
-            runeSlots.Set(runeSlot, ShowRuneTooltip, null);
+            runeSlots.Set(runeSlot, _runeStates,ShowRuneTooltip);
         }
 
         private void UpdateStatViews(AvatarState avatarState, BattleType battleType)
