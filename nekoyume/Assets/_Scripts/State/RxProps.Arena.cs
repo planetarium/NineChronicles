@@ -444,6 +444,21 @@ namespace Nekoyume.State
                     }
                 }
 
+                var equippedRuneStates = new List<RuneState>();
+                foreach (var slot in runeSlotState.GetRuneSlot())
+                {
+                    if (!slot.RuneId.HasValue)
+                    {
+                        continue;
+                    }
+
+                    var runeState = runeStates.FirstOrDefault(x => x.RuneId == slot.RuneId);
+                    if (runeState != null)
+                    {
+                        equippedRuneStates.Add(runeState);
+                    }
+                }
+
                 var (win, lose, _) =
                     ArenaHelper.GetScores(playerScore, score);
                 return new ArenaParticipant(
@@ -455,7 +470,7 @@ namespace Nekoyume.State
                     avatar,
                     itemSlotState,
                     runeSlotState,
-                    runeStates,
+                    equippedRuneStates,
                     (win, lose)
                 );
             }).ToArray();
