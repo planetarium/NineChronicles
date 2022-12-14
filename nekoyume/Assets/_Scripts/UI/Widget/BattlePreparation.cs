@@ -396,40 +396,24 @@ namespace Nekoyume.UI
                         break;
                     }
 
-                    var ncgHas = States.Instance.GoldBalanceState.Gold;
-                    var ncgCost = RxProps.EventScheduleRowForDungeon.Value
+                    var balance = States.Instance.GoldBalanceState.Gold;
+                    var cost = RxProps.EventScheduleRowForDungeon.Value
                         .GetDungeonTicketCost(
                             RxProps.EventDungeonInfo.Value?.NumberOfTicketPurchases ?? 0,
                             States.Instance.GoldBalanceState.Gold.Currency);
-                    if (ncgHas >= ncgCost)
-                    {
-                        // FIXME: `UI_CONFIRM_PAYMENT_CURRENCY_FORMAT_FOR_BATTLE_ARENA` key
-                        //        is temporary.
-                        var notEnoughTicketMsg = L10nManager.Localize(
-                            "UI_CONFIRM_PAYMENT_CURRENCY_FORMAT_FOR_BATTLE_ARENA",
-                            ncgCost.ToString());
-                        Find<PaymentPopup>().ShowAttract(
-                            CostType.EventDungeonTicket,
-                            _requiredCost.ToString(),
-                            notEnoughTicketMsg,
-                            L10nManager.Localize("UI_YES"),
-                            () => StartCoroutine(
-                                CoBattleStart(
-                                    StageType.EventDungeon,
-                                    CostType.NCG,
-                                    true)));
+                    var purchasedCount = RxProps.EventDungeonInfo.Value?.NumberOfTicketPurchases ?? 0;
 
-                        return;
-                    }
-
-                    var notEnoughNCGMsg =
-                        L10nManager.Localize("UI_NOT_ENOUGH_NCG_WITH_SUPPLIER_INFO");
-                    Find<PaymentPopup>().ShowAttract(
+                    Find<TicketPurchasePopup>().Show(
+                        CostType.EventDungeonTicket,
                         CostType.NCG,
-                        ncgCost.GetQuantityString(),
-                        notEnoughNCGMsg,
-                        L10nManager.Localize("UI_GO_TO_MARKET"),
-                        () => GoToMarket(TradeType.Sell));
+                        balance,
+                        cost,
+                        purchasedCount,
+                        1,
+                        () => StartCoroutine(CoBattleStart(_stageType, CostType.NCG, true)),
+                        () => GoToMarket(TradeType.Sell),
+                        false
+                    );
                     return;
                 }
                 default:
@@ -638,8 +622,7 @@ namespace Nekoyume.UI
             Close(true);
             Find<WorldMap>().Close(true);
             Find<StageInformation>().Close(true);
-            Find<HeaderMenuStatic>()
-                .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
             switch (tradeType)
             {
                 case TradeType.Buy:
