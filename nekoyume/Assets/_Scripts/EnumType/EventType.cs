@@ -5,6 +5,7 @@ namespace Nekoyume.EnumType
 	Default,
 	Christmas,
 	Valentine,
-	EventDungeon,
+	EventSummer,
+	EventWinter,
     }
 }

@@ -19,47 +19,75 @@ namespace Nekoyume
     [Serializable]
     public class EventInfo
     {
+        [field: SerializeField]
         [Tooltip("The type that describes the event")]
-        public EnumType.EventType eventType;
+        public EnumType.EventType EventType { get; private set; }
 
+        [field: SerializeField]
         [Tooltip("The sprite used by UI_IntroScreen.prefab")]
-        public Sprite intro;
+        public Sprite Intro { get; private set; }
 
+        [field: SerializeField]
         [Tooltip("The sprite used by WorldMapStage.prefab")]
-        public Sprite stageIcon;
+        public Sprite StageIcon { get; private set; }
 
+        [field: SerializeField]
         [Tooltip("Value to modify step icon coordinates")]
-        public Vector2 stageIconOffset;
+        public Vector2 StageIconOffset { get; private set; }
 
+        [field: SerializeField]
         [Tooltip(
             "Main lobby bgm. Reference only name of audio clip. Audio is managed by AudioController")]
-        public AudioClip mainBGM;
+        public AudioClip MainBGM { get; private set; }
     }
 
     [Serializable]
     public class TimeBasedEventInfo : EventInfo
     {
+        [field: SerializeField]
         [Tooltip("DateTimeFormat(UTC):MM/dd/ HH:mm:ss (E.g: 05/10 10:20:30)")]
-        public string beginDateTime;
+        public string BeginDateTime { get; private set; }
 
+        [field: SerializeField]
         [Tooltip("DateTimeFormat(UTC):MM/dd/ HH:mm:ss (E.g: 05/10 11:22:33)")]
-        public string endDateTime;
+        public string EndDateTime { get; private set; }
     }
 
     [Serializable]
     public class BlockIndexBasedEventInfo : EventInfo
     {
+        [field: SerializeField]
         [Tooltip("Beginning block index")]
-        public long beginBlockIndex;
+        public long BeginBlockIndex { get; private set; }
 
+        [field: SerializeField]
         [Tooltip("End block index")]
-        public long endBlockIndex;
+        public long EndBlockIndex { get; private set; }
     }
 
     [Serializable]
     public class EventDungeonIdBasedEventInfo : EventInfo
     {
+        [Serializable]
+        public struct EventGuidedQuestData
+        {
+            [Tooltip("The sprite used by GuidedQuestCell.prefab as icon")]
+            public Sprite icon;
+
+            [Tooltip("The color used by GuideQuestCell.prefab as gradiant image")]
+            public Color gradiantColor;
+        }
+
+        [field: SerializeField]
         [Tooltip("ID list of `EventDungeonSheet`")]
-        public int[] targetDungeonIds;
+        public int[] TargetDungeonIds { get; private set; }
+
+        [field: SerializeField]
+        [Tooltip("The EventGuidedQuestData used by GuidedQuestCell.prefab as eventDungeon")]
+        public EventGuidedQuestData EventDungeonGuidedQuest { get; private set; }
+
+        [field: SerializeField]
+        [Tooltip("The EventGuidedQuestData used by GuidedQuestCell.prefab as eventRecipe")]
+        public EventGuidedQuestData EventRecipeGuidedQuest { get; private set; }
     }
 }

@@ -76,8 +76,7 @@ namespace Nekoyume.UI.Module
             public readonly ReactiveProperty<WorldQuest> eventDungeonQuest = new();
 
             // NOTE: This is fake quest.
-            public readonly ReactiveProperty<CombinationEquipmentQuest>
-                craftEventItemQuest = new();
+            public readonly ReactiveProperty<CombinationEquipmentQuest> craftEventItemQuest = new();
         }
 
         private static readonly ViewModel SharedViewModel = new();
@@ -786,11 +785,13 @@ namespace Nekoyume.UI.Module
                 {
                     _eventDungeonQuestCell.ShowAsNew(
                         eventDungeonQuest,
-                        _ => EnterToShown());
+                        _ => EnterToShown(),
+                        false,
+                        true);
                 }
                 else
                 {
-                    _eventDungeonQuestCell.Show(eventDungeonQuest);
+                    _eventDungeonQuestCell.Show(eventDungeonQuest,true);
                 }
             }
         }
@@ -823,11 +824,13 @@ namespace Nekoyume.UI.Module
                 {
                     _craftEventItemQuestCell.ShowAsNew(
                         craftEventItemQuest,
-                        _ => EnterToShown());
+                        _ => EnterToShown(),
+                        false,
+                        true);
                 }
                 else
                 {
-                    _craftEventItemQuestCell.Show(craftEventItemQuest);
+                    _craftEventItemQuestCell.Show(craftEventItemQuest, true);
                 }
             }
         }

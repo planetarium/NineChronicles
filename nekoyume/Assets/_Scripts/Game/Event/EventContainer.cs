@@ -5,6 +5,6 @@ namespace Nekoyume
 {
     public class EventContainer : MonoBehaviour
     {
-        public EventType Type;
+        public EventType[] Types;
     }
 }

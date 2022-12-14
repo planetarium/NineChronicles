@@ -212,8 +212,8 @@ namespace Nekoyume.UI.Module
 
         private void Set(bool isBoss)
         {
-            var icon = EventManager.GetStageIcon();
-            var offset = EventManager.GetStageIconOffset();
+            var icon = EventManager.GetEventInfo().StageIcon;
+            var offset = EventManager.GetEventInfo().StageIconOffset;
             normalImage.sprite = icon;
             normalImage.SetNativeSize();
             normalImage.rectTransform.anchoredPosition = offset;

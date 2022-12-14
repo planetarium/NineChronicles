@@ -684,26 +684,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5576043802618445466, guid: b7da2e478063a4ce983620ce161c9005,
-        type: 3}
-      propertyPath: m_Color.a
-      value: 0.68235296
-      objectReference: {fileID: 0}
-    - target: {fileID: 5576043802618445466, guid: b7da2e478063a4ce983620ce161c9005,
-        type: 3}
-      propertyPath: m_Color.b
-      value: 0.53580827
-      objectReference: {fileID: 0}
-    - target: {fileID: 5576043802618445466, guid: b7da2e478063a4ce983620ce161c9005,
-        type: 3}
-      propertyPath: m_Color.g
-      value: 0.3254717
-      objectReference: {fileID: 0}
-    - target: {fileID: 5576043802618445466, guid: b7da2e478063a4ce983620ce161c9005,
-        type: 3}
-      propertyPath: m_Material
-      value: 
-      objectReference: {fileID: 2100000, guid: 0f61099b14515e846a095f60b3b832a9, type: 2}
     - target: {fileID: 6807063646331198469, guid: b7da2e478063a4ce983620ce161c9005,
         type: 3}
       propertyPath: m_Enabled
@@ -1319,26 +1299,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5576043802618445466, guid: b7da2e478063a4ce983620ce161c9005,
-        type: 3}
-      propertyPath: m_Color.a
-      value: 0.2901961
-      objectReference: {fileID: 0}
-    - target: {fileID: 5576043802618445466, guid: b7da2e478063a4ce983620ce161c9005,
-        type: 3}
-      propertyPath: m_Color.b
-      value: 0.3528928
-      objectReference: {fileID: 0}
-    - target: {fileID: 5576043802618445466, guid: b7da2e478063a4ce983620ce161c9005,
-        type: 3}
-      propertyPath: m_Color.r
-      value: 0.09019607
-      objectReference: {fileID: 0}
-    - target: {fileID: 5576043802618445466, guid: b7da2e478063a4ce983620ce161c9005,
-        type: 3}
-      propertyPath: m_Material
-      value: 
-      objectReference: {fileID: 2100000, guid: 0f61099b14515e846a095f60b3b832a9, type: 2}
     - target: {fileID: 6807063646331198469, guid: b7da2e478063a4ce983620ce161c9005,
         type: 3}
       propertyPath: m_Enabled

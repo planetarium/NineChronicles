@@ -16,7 +16,7 @@ namespace Nekoyume.UI
         {
             base.Awake();
             indicator.Close();
-            _background.sprite = EventManager.GetIntroSprite();
+            _background.sprite = EventManager.GetEventInfo().Intro;
         }
 
         public void Show(string keyStorePath, string privateKey)
