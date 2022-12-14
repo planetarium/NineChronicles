@@ -32,6 +32,9 @@ namespace Nekoyume.UI
         protected TextMeshProUGUI maxPurchaseText;
 
         [SerializeField]
+        protected TextMeshProUGUI infiniteEmojiText;
+
+        [SerializeField]
         protected TextButton confirmButton;
 
         [SerializeField]
@@ -93,8 +96,9 @@ namespace Nekoyume.UI
                 : Palette.GetColor(EnumType.ColorType.ButtonDisabled);
 
             maxPurchaseText.text = L10nManager.Localize("UI_TICKET_PURCHASE_LIMIT",
-                purchasedCount, isShowMaxPurchase ? maxPurchaseCount : "∞");
+                purchasedCount, isShowMaxPurchase ? maxPurchaseCount : "");
             maxPurchaseText.color = Palette.GetColor(EnumType.ColorType.TextElement06);
+            infiniteEmojiText.gameObject.SetActive(!isShowMaxPurchase);
 
             cancelButton.gameObject.SetActive(true);
             contentText.text = L10nManager.Localize("UI_BUY_TICKET_AND_START", GetTicketName(ticketType));
