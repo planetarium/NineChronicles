@@ -38,7 +38,7 @@ namespace Nekoyume.Game.Character
         public bool IsActing => CurrentAction != null;
 
         private bool _isAppQuitting = false;
-        private readonly Dictionary<int, VFX.VFX> _actionBuffVFXMap = new();
+        private readonly Dictionary<int, VFX.VFX> _persistingVFXMap = new();
         protected override Vector3 HUDOffset => base.HUDOffset + new Vector3(0f, 0.35f, 0f);
 
         protected virtual void Awake()
@@ -54,6 +54,12 @@ namespace Nekoyume.Game.Character
 
         private void OnDisable()
         {
+            foreach (var vfx in _persistingVFXMap.Values)
+            {
+                vfx.gameObject.SetActive(false);
+            }
+            _persistingVFXMap.Clear();
+
             if (!_isAppQuitting)
             {
                 DisableHUD();
@@ -62,10 +68,10 @@ namespace Nekoyume.Game.Character
 
         private void OnDestroy()
         {
-            foreach (var vfx in _actionBuffVFXMap.Values)
+            foreach (var vfx in _persistingVFXMap.Values)
             {
                 vfx.transform.parent = Game.instance.Stage.transform;
-                vfx.Stop();
+                vfx.LazyStop();
             }
         }
 
@@ -127,36 +133,20 @@ namespace Nekoyume.Game.Character
             HPBar.SetBuffs(_characterModel.Buffs);
 
             // delete existing vfx
-
             var removedVfx = new List<int>();
-            foreach (var buff in _actionBuffVFXMap.Keys)
+            foreach (var buff in _persistingVFXMap.Keys)
             {
-                if (!_characterModel.Buffs.Keys.Contains(buff))
+                if (Model.IsDead ||
+                    !Model.Buffs.Keys.Contains(buff))
                 {
-                    _actionBuffVFXMap[buff].Stop();
+                    _persistingVFXMap[buff].LazyStop();
                     removedVfx.Add(buff);
                 }
             }
 
             foreach (var id in removedVfx)
             {
-                var vfx = _actionBuffVFXMap[id];
-                vfx.transform.parent = Game.instance.Stage.transform;
-                _actionBuffVFXMap.Remove(id);
-            }
-
-            // apply new vfx
-            foreach (var buff in _characterModel.Buffs.Values.OfType<ActionBuff>())
-            {
-                var id = buff.BuffInfo.GroupId;
-                if (!_actionBuffVFXMap.ContainsKey(id))
-                {
-                    var vfx = Game.instance.RaidStage.BuffController.Get<BleedVFX>(gameObject, buff);
-                    _actionBuffVFXMap[id] = vfx;
-                    vfx.transform.parent = transform;
-                    vfx.transform.localPosition = Vector3.zero;
-                    vfx.Play();
-                }
+                _persistingVFXMap.Remove(id);
             }
 
             HPBar.SetLevel(_characterModel.Level);
@@ -198,7 +188,7 @@ namespace Nekoyume.Game.Character
             _hudContainer.UpdatePosition(Game.instance.RaidStage.Camera.Cam, gameObject, HUDOffset);
         }
 
-        private void AddNextBuff(Model.Buff.Buff buff)
+        public void AddNextBuff(Model.Buff.Buff buff)
         {
             _characterModel.AddBuff(buff);
         }
@@ -588,8 +578,24 @@ namespace Nekoyume.Game.Character
             var buff = info.Buff;
             var effect = Game.instance.RaidStage.BuffController.Get<RaidCharacter, BuffVFX>(target, buff);
             effect.Play();
-            AddNextBuff(buff);
+            if (effect.IsPersisting)
+            {
+                target.AttachPersistingVFX(buff.BuffInfo.GroupId, effect);
+            }
+
+            target.AddNextBuff(buff);
             target.UpdateStatusUI();
+        }
+
+        private void AttachPersistingVFX(int groupId, BuffVFX vfx)
+        {
+            if (_persistingVFXMap.TryGetValue(groupId, out var prevVFX))
+            {
+                prevVFX.LazyStop();
+                _persistingVFXMap.Remove(groupId);
+            }
+
+            _persistingVFXMap[groupId] = vfx;
         }
 
         protected void ProcessHeal(Skill.SkillInfo info)
@@ -641,6 +647,10 @@ namespace Nekoyume.Game.Character
         {
             ShowSpeech("PLAYER_LOSE");
             Animator.Die();
+            foreach (var vfx in _persistingVFXMap.Values)
+            {
+                vfx.Stop();
+            }
         }
 
         protected virtual void OnDeadEnd()

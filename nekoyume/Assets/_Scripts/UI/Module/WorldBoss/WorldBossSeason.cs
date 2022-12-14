@@ -131,7 +131,7 @@ namespace Nekoyume.UI.Module.WorldBoss
 
             for (var i = 0; i < runeRows.Count; i++)
             {
-                if (WorldBossFrontHelper.TryGetRuneIcon(runeRows[i].Ticker, out var sprite))
+                if (RuneFrontHelper.TryGetRuneStoneIcon(runeRows[i].Ticker, out var sprite))
                 {
                     runeIcons[i].sprite = sprite;
                 }

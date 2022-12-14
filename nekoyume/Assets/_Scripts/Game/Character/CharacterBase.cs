@@ -13,6 +13,10 @@ using Nekoyume.Model.Skill;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Character;
 using UnityEngine.Rendering;
+using Nekoyume.Model.Buff;
+using DG.Tweening.Plugins.Options;
+using Cysharp.Threading.Tasks.Triggers;
+using Nekoyume.Model.BattleStatus;
 
 namespace Nekoyume.Game.Character
 {
@@ -75,6 +79,7 @@ namespace Nekoyume.Game.Character
         private ProgressBar CastingBar { get; set; }
         protected SpeechBubble SpeechBubble { get; set; }
 
+        private readonly Dictionary<int, VFX.VFX> _persistingVFXMap = new();
 
         protected virtual bool CanRun
         {
@@ -122,6 +127,12 @@ namespace Nekoyume.Game.Character
 
         protected virtual void OnDisable()
         {
+            foreach (var vfx in _persistingVFXMap.Values)
+            {
+                vfx.gameObject.SetActive(false);
+            }
+            _persistingVFXMap.Clear();
+
             RunSpeed = 0.0f;
             _root = null;
             actions.Clear();
@@ -208,6 +219,23 @@ namespace Nekoyume.Game.Character
             HPBar.SetBuffs(CharacterModel.Buffs);
             HPBar.SetLevel(Level);
 
+            // delete existing vfx
+            var removedVfx = new List<int>();
+            foreach (var buff in _persistingVFXMap.Keys)
+            {
+                if (CharacterModel.IsDead ||
+                    !CharacterModel.Buffs.Keys.Contains(buff))
+                {
+                    _persistingVFXMap[buff].LazyStop();
+                    removedVfx.Add(buff);
+                }
+            }
+
+            foreach (var id in removedVfx)
+            {
+                _persistingVFXMap.Remove(id);
+            }
+
             OnUpdateHPBar.OnNext(this);
         }
 
@@ -277,6 +305,10 @@ namespace Nekoyume.Game.Character
 
         protected virtual void OnDeadStart()
         {
+            foreach (var vfx in _persistingVFXMap.Values)
+            {
+                vfx.LazyStop();
+            }
         }
 
         protected virtual void OnDeadEnd()
@@ -523,9 +555,25 @@ namespace Nekoyume.Game.Character
                 var buff = info.Buff;
                 var effect = Game.instance.Stage.BuffController.Get<CharacterBase, BuffVFX>(target, buff);
                 effect.Play();
+                if (effect.IsPersisting)
+                {
+                    target.AttachPersistingVFX(buff.BuffInfo.GroupId, effect);
+                }
+
                 target.UpdateHpBar();
-//                Debug.LogWarning($"{Animator.Target.name}'s {nameof(ProcessBuff)} called: {CurrentHP}({Model.Stats.CurrentHP}) / {HP}({Model.Stats.LevelStats.HP}+{Model.Stats.BuffStats.HP})");
+                //Debug.LogWarning($"{Animator.Target.name}'s {nameof(ProcessBuff)} called: {CurrentHP}({Model.Stats.CurrentHP}) / {HP}({Model.Stats.LevelStats.HP}+{Model.Stats.BuffStats.HP})");
             }
+        }
+
+        private void AttachPersistingVFX(int groupId, BuffVFX vfx)
+        {
+            if (_persistingVFXMap.TryGetValue(groupId, out var prevVFX))
+            {
+                prevVFX.LazyStop();
+                _persistingVFXMap.Remove(groupId);
+            }
+
+            _persistingVFXMap[groupId] = vfx;
         }
 
         private void PopUpHeal(Vector3 position, Vector3 force, string dmg, bool critical)
@@ -616,13 +664,15 @@ namespace Nekoyume.Game.Character
 
             var pos = transform.position;
             yield return CoAnimationCastAttack(infos.Any(skillInfo => skillInfo.Critical));
-            var effect = Game.instance.Stage.SkillController.GetBlowCasting(
-                pos,
-                info.SkillCategory,
-                info.ElementalType);
-            effect.Play();
+            if (info.ElementalType != ElementalType.Normal)
+            {
+                var effect = Game.instance.Stage.SkillController.GetBlowCasting(
+                    pos,
+                    info.SkillCategory,
+                    info.ElementalType);
+                effect.Play();
+            }
             yield return new WaitForSeconds(0.2f);
-
             PostAnimationForTheKindOfAttack();
         }
 
@@ -719,11 +769,14 @@ namespace Nekoyume.Game.Character
                 if (target is null)
                     continue;
 
-                var effect = Game.instance.Stage.SkillController.Get<SkillBlowVFX>(target, info);
-                if (effect is null)
-                    continue;
+                if (info.ElementalType != ElementalType.Normal)
+                {
+                    var effect = Game.instance.Stage.SkillController.Get<SkillBlowVFX>(target, info);
+                    if (effect is null)
+                        continue;
+                    effect.Play();
+                }
 
-                effect.Play();
                 ProcessAttack(target, info, info.Target.IsDead, true);
             }
         }

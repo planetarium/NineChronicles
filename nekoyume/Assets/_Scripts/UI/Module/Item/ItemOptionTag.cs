@@ -3,6 +3,7 @@ using System.Linq;
 using Coffee.UIEffects;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
+using Nekoyume.TableData;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -64,6 +65,27 @@ namespace Nekoyume.UI.Module
             }
 
             background.gameObject.SetActive(true);
+        }
+
+        public void Set(int grade)
+        {
+            var data = optionTagData.GetOptionTagData(grade);
+            foreach (var image in optionTagImages)
+            {
+                image.gameObject.SetActive(false);
+            }
+
+            var first = optionTagImages.First();
+            first.gameObject.SetActive(true);
+            first.sprite = optionTagData.SkillOptionSprite;
+
+            background.range = data.GradeHsvRange;
+            background.hue = data.GradeHsvHue;
+            background.saturation = data.GradeHsvSaturation;
+            background.value = data.GradeHsvValue;
+            background.gameObject.SetActive(true);
+
+
         }
     }
 }

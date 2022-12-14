@@ -41,7 +41,7 @@ namespace Nekoyume.UI.Module.Arena.Join
         private int _championshipId;
         private int _round;
         private long _cost;
-        
+
         private readonly Subject<Unit> _onGoToGrinding = new Subject<Unit>();
         public IObservable<Unit> OnGoToGrinding => _onGoToGrinding;
 
@@ -135,17 +135,14 @@ namespace Nekoyume.UI.Module.Arena.Join
                 return;
             }
 
-            var inventory = States.Instance.CurrentAvatarState.inventory;
+            var itemSlotState = States.Instance.ItemSlotStates[BattleType.Arena];
+            var runeInfos = States.Instance.RuneSlotStates[BattleType.Arena]
+                .GetEquippedRuneSlotInfos();
             ActionManager.Instance
                 .JoinArena(
-                    inventory.Costumes
-                        .Where(e => e.Equipped)
-                        .Select(e => e.NonFungibleId)
-                        .ToList(),
-                    inventory.Equipments
-                        .Where(e => e.Equipped)
-                        .Select(e => e.NonFungibleId)
-                        .ToList(),
+                    itemSlotState.Costumes,
+                    itemSlotState.Equipments,
+                    runeInfos,
                     _championshipId,
                     _round)
                 .Subscribe();

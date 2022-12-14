@@ -1,5 +1,12 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.Game.Character;
+using Nekoyume.Helper;
+using Nekoyume.Model.EnumType;
+using Nekoyume.Model.Item;
+using Nekoyume.Model.Stat;
+using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Timer;
@@ -11,6 +18,8 @@ using ObservableExtensions = UniRx.ObservableExtensions;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class Status : Widget
     {
         [SerializeField]
@@ -40,7 +49,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private BattleTimerView battleTimerView = null;
 
-        private string _avatarName = "";
         private Player _player;
 
         #region Mono
@@ -50,9 +58,9 @@ namespace Nekoyume.UI
             base.Awake();
 
             Game.Event.OnRoomEnter.AddListener(b => Show());
-            ObservableExtensions.Subscribe(Game.Event.OnUpdatePlayerEquip, characterView.SetByPlayer)
+            Game.Event.OnUpdatePlayerEquip.Subscribe(characterView.SetByPlayer)
                 .AddTo(gameObject);
-            ObservableExtensions.Subscribe(Game.Event.OnUpdatePlayerStatus, SubscribeOnUpdatePlayerStatus)
+            Game.Event.OnUpdatePlayerStatus.Subscribe(SubscribeOnUpdatePlayerStatus)
                 .AddTo(gameObject);
 
             CloseWidget = null;
@@ -96,6 +104,18 @@ namespace Nekoyume.UI
             buffTooltip.gameObject.SetActive(false);
         }
 
+        public void UpdateOnlyPlayer(Player player)
+        {
+            characterView.SetByPlayer(player);
+
+            if (player)
+            {
+                _player = player;
+            }
+
+            UpdateExp();
+        }
+
         public void UpdatePlayer(Player player)
         {
             characterView.SetByPlayer(player);
@@ -131,8 +151,8 @@ namespace Nekoyume.UI
 
             var level = _player.Level;
 
-            _avatarName = States.Instance.CurrentAvatarState.NameWithHash;
-            textLvName.text = $"<color=#B38271>LV. {level}</color> {_avatarName}";
+            var avatarName = States.Instance.CurrentAvatarState.NameWithHash;
+            textLvName.text = $"<color=#B38271>LV. {level}</color> {avatarName}";
             var displayHp = _player.CurrentHP;
             textHp.text = $"{displayHp} / {_player.HP}";
             textExp.text =
@@ -149,6 +169,29 @@ namespace Nekoyume.UI
             expBar.gameObject.SetActive(expValue > 0.0f);
             expValue = Mathf.Min(Mathf.Max(expValue, 0.1f), 1.0f);
             expBar.fillAmount = expValue;
+        }
+
+        public void UpdateForLobby(
+            AvatarState avatarState,
+            List<Equipment> equipments,
+            List<Costume> costumes
+        )
+        {
+            // portrait
+            var portraitId = Util.GetPortraitId(equipments, costumes);
+            characterView.SetByFullCostumeOrArmorId(portraitId);
+
+            // level& name
+            textLvName.text = $"<color=#B38271>LV. {avatarState.level}</color> {avatarState.NameWithHash}";
+
+            // exp
+            var levelSheet = Game.Game.instance.TableSheets.CharacterLevelSheet;
+            if (levelSheet.TryGetValue(avatarState.level, out var levelRow))
+            {
+                var currentExp = avatarState.exp - levelRow.Exp;
+                textExp.text = $"{currentExp} / {levelRow.ExpNeed}";
+                expBar.fillAmount = (float)currentExp / levelRow.ExpNeed;
+            }
         }
     }
 }

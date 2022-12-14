@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Model
 {
-    public class EnhancementInventoryItem : IItemViewModel
+    public class EnhancementInventoryItem
     {
         public ItemBase ItemBase { get; }
 
@@ -15,8 +15,6 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<bool> SelectedMaterial;
         public readonly ReactiveProperty<bool> Disabled;
         public readonly ReactiveProperty<bool> HasNotification;
-
-        public RectTransform View { get; set; }
 
         public EnhancementInventoryItem(ItemBase itemBase, bool equipped, bool levelLimited)
         {

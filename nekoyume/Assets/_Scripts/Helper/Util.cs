@@ -7,12 +7,15 @@ using System.Threading.Tasks;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
+using Nekoyume.Battle;
 using Nekoyume.Extensions;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Factory;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using UnityEngine;
 using Inventory = Nekoyume.Model.Item.Inventory;
@@ -236,22 +239,19 @@ namespace Nekoyume.Helper
             }
         }
 
-        public static bool CanBattle(Player player, IEnumerable<int> foodIds)
+        public static bool CanBattle(
+            List<Equipment> equipments,
+            List<Costume> costumes,
+            IEnumerable<int> foodIds)
         {
-            if (player == null)
-            {
-                return false;
-            }
-
             var isValidated = false;
             var tableSheets = Game.Game.instance.TableSheets;
             try
             {
-                var equipmentList = player.Equipments;
-                var costumeIds = player.Costumes.Select(costume => costume.Id);
+                var costumeIds = costumes.Select(costume => costume.Id);
                 States.Instance.CurrentAvatarState.ValidateItemRequirement(
                     costumeIds.Concat(foodIds).ToList(),
-                    equipmentList,
+                    equipments,
                     tableSheets.ItemRequirementSheet,
                     tableSheets.EquipmentItemRecipeSheet,
                     tableSheets.EquipmentItemSubRecipeSheetV2,
@@ -314,6 +314,86 @@ namespace Nekoyume.Helper
             }
 
             return false;
+        }
+
+        public static int TotalCP(BattleType battleType)
+        {
+            var avatarState = Game.Game.instance.States.CurrentAvatarState;
+            var level = avatarState.level;
+            var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
+            if (!characterSheet.TryGetValue(avatarState.characterId, out var row))
+            {
+                throw new SheetRowNotFoundException("CharacterSheet", avatarState.characterId);
+            }
+
+            var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+            var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
+            var (equipments, costumes) = States.Instance.GetEquippedItems(battleType);
+            var runeStated = States.Instance.GetEquippedRuneStates(battleType);
+            var runeOptionInfos = GetRuneOptions(runeStated, runeOptionSheet);
+            return CPHelper.TotalCP(equipments, costumes, runeOptionInfos, level, row, costumeSheet);
+        }
+
+        public static List<RuneOptionSheet.Row.RuneOptionInfo> GetRuneOptions(
+            List<RuneState> runeStates,
+            RuneOptionSheet sheet)
+        {
+            var result = new List<RuneOptionSheet.Row.RuneOptionInfo>();
+            foreach (var runeState in runeStates)
+            {
+                if (!sheet.TryGetValue(runeState.RuneId, out var row))
+                {
+                    continue;
+                }
+
+                if (!row.LevelOptionMap.TryGetValue(runeState.Level, out var statInfo))
+                {
+                    continue;
+                }
+
+                result.Add(statInfo);
+            }
+
+            return result;
+        }
+
+        public static int GetRuneCp(RuneState runeState)
+        {
+            var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
+            if (!runeOptionSheet.TryGetValue(runeState.RuneId, out var optionRow))
+            {
+                return 0;
+            }
+            if (!optionRow.LevelOptionMap.TryGetValue(runeState.Level, out var option))
+            {
+                return 0;
+            }
+
+            return option.Cp;
+        }
+
+        public static int GetPortraitId(List<Equipment> equipments, List<Costume> costumes)
+        {
+            var id = GameConfig.DefaultAvatarArmorId;
+            var armor = equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
+            if (armor != null)
+            {
+                id = armor.Id;
+            }
+
+            var fullCostume = costumes.FirstOrDefault(x => x.ItemSubType == ItemSubType.FullCostume);
+            if (fullCostume != null)
+            {
+                id = fullCostume.Id;
+            }
+
+            return id;
+        }
+
+        public static int GetPortraitId(BattleType battleType)
+        {
+            var (equipments, costumes) = States.Instance.GetEquippedItems(battleType);
+            return GetPortraitId(equipments, costumes);
         }
     }
 }

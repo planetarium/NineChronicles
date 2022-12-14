@@ -6,6 +6,7 @@ using Nekoyume.Action;
 using Nekoyume.Exceptions;
 using Nekoyume.L10n;
 using Nekoyume.Model.Arena;
+using Nekoyume.Model.Rune;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -235,9 +236,8 @@ namespace Nekoyume.BlockChain
                     code = "45";
                     key = "ERROR_COMBINATION_SLOT_UNLOCK_EXCEPTION";
                     break;
-
                 case NotEnoughRankException _:
-                    code = "42";
+                    code = "46";
                     key = "NOT_ENOUGH_RANK_EXCEPTION";
                     break;
                 case CoolDownBlockException _:
@@ -245,6 +245,42 @@ namespace Nekoyume.BlockChain
                     var battleArenaInterval = States.Instance.GameConfigState.BattleArenaInterval;
                     errorMsg = $"Arena battle is possible after at least {battleArenaInterval} blocks." +
                                $"\nError Code: {code}";
+                    break;
+                case MismatchRuneSlotTypeException _:
+                    code = "48";
+                    break;
+                case RuneCostNotFoundException _:
+                    code = "49";
+                    break;
+                case RuneCostDataNotFoundException _:
+                    code = "50";
+                    break;
+                case RuneNotFoundException _:
+                    code = "51";
+                    break;
+                case IsUsableSlotException _:
+                    code = "52";
+                    break;
+                case SlotIsLockedException _:
+                    code = "53";
+                    break;
+                case RuneListNotFoundException _:
+                    code = "54";
+                    break;
+                case SlotRuneTypeException _:
+                    code = "55";
+                    break;
+                case IsEquippableRuneException _:
+                    code = "56";
+                    break;
+                case RuneStateNotFoundException _:
+                    code = "57";
+                    break;
+                case SlotIsAlreadyUnlockedException _:
+                    code = "58";
+                    break;
+                case SlotNotFoundException _:
+                    code = "59";
                     break;
             }
 

@@ -174,6 +174,9 @@ namespace Nekoyume.UI
                 Widget.Create<BuffBonusLoadingScreen>(),
                 Widget.Create<PreloadingScreen>(),
                 Widget.Create<WorldBossRewardScreen>(),
+                Widget.Create<RuneCombineResultScreen>(),
+                Widget.Create<RuneEnhancementResultScreen>(),
+                Widget.Create<CPScreen>(),
 
                 // 팝업 영역.
                 Widget.Create<SettingPopup>(),
@@ -270,6 +273,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<Grind>());
             yield return null;
+            secondWidgets.Add(Widget.Create<Rune>());
+            yield return null;
 
             // header menu
             secondWidgets.Add(Widget.Create<HeaderMenuStatic>());
@@ -358,6 +363,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<TicketPurchasePopup>());
             yield return null;
+            secondWidgets.Add(Widget.Create<MaterialNavigationPopup>());
+            yield return null;
             secondWidgets.Add(Widget.Create<ArenaTicketPurchasePopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<ItemMaterialSelectPopup>());
@@ -371,6 +378,8 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<MaterialTooltip>());
             yield return null;
             secondWidgets.Add(Widget.Create<CostumeTooltip>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<RuneTooltip>());
             yield return null;
             secondWidgets.Add(Widget.Create<AvatarTooltip>());
             yield return null;

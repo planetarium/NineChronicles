@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Atlas_Staking
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 0
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 0
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: e62c61b5e385349cf8f85c5b0b2906f4, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 860f4340f969c4e16b2724697c57623d, type: 3}
+  - {fileID: 21300000, guid: 5fed8862a4e0a4981bac1a69113a803e, type: 3}
+  - {fileID: 21300000, guid: b21cbe451c9d74724be3962754247a2e, type: 3}
+  - {fileID: 21300000, guid: 28de4bb53520d4141a26ac790bb88a4f, type: 3}
+  - {fileID: 21300000, guid: 0fd932e603eb03049a100b49a122e8ea, type: 3}
+  - {fileID: 21300000, guid: a6b977a974d7e424f84d886a19008f87, type: 3}
+  - {fileID: 21300000, guid: d0d333d99f2ce394f841e9ac89a71ef9, type: 3}
+  - {fileID: 21300000, guid: 71c2af3ba3eb3fd4d86758894b695e1c, type: 3}
+  - {fileID: 21300000, guid: 526543acef05941d199181047dd59c9d, type: 3}
+  - {fileID: 21300000, guid: b294ca5dc9d360f4083e55046e22eb77, type: 3}
+  - {fileID: 21300000, guid: 92ad0ceffd9fa472a9584e39f8c17e7f, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - UI_bg_Staking_Benefits
+  - UI_Popup_bg_30
+  - UI_bg_Staking_Select
+  - UI_bg_Staking_Press
+  - Staking_Mob_01
+  - Staking_Mob_02
+  - Staking_Mob_05
+  - Staking_Mob_04
+  - UI_Popup_bg_31
+  - Staking_Mob_03
+  - UI_bg_Staking_Normal
+  m_RenderDataMap: {}
+  m_Tag: Atlas_Staking
+  m_IsVariant: 0

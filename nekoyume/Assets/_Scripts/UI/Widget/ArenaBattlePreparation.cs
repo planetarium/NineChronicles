@@ -5,81 +5,72 @@ using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.Arena;
 using Nekoyume.BlockChain;
+using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State;
-using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Nekoyume.Helper;
-using Nekoyume.L10n;
-using Nekoyume.Model.Mail;
-using Nekoyume.Game.Character;
-using Nekoyume.Game.Factory;
-using Nekoyume.Model.Elemental;
+using Nekoyume.Model.EnumType;
 using Nekoyume.State.Subjects;
 using Nekoyume.TableData;
-using Inventory = Nekoyume.UI.Module.Inventory;
+using TMPro;
 
 namespace Nekoyume.UI
 {
-    using Scroller;
     using UniRx;
 
     public class ArenaBattlePreparation : Widget
     {
-        private static readonly Vector3 PlayerPosition = new(1999.8f, 1999.3f, 3f);
+        [SerializeField]
+        private AvatarInformation information;
 
-        [SerializeField] private Inventory inventory;
+        [SerializeField]
+        private ParticleSystem[] particles;
 
-        [SerializeField] private EquipmentSlots equipmentSlots;
+        [SerializeField]
+        private ConditionalCostButton startButton;
 
-        [SerializeField] private EquipmentSlots costumeSlots;
+        [SerializeField]
+        private Button closeButton;
 
-        [SerializeField] private Transform titleSocket;
+        [SerializeField]
+        private Transform buttonStarImageTransform;
 
-        [SerializeField] private AvatarStats stats;
+        [SerializeField, Range(.5f, 3.0f)]
+        private float animationTime = 1f;
 
-        [SerializeField] private ParticleSystem[] particles;
-
-        [SerializeField] private TMP_InputField levelField;
-
-        [SerializeField] private ConditionalCostButton startButton;
-
-        [SerializeField] private Button closeButton;
-
-        [SerializeField] private Button simulateButton;
-
-        [SerializeField] private Transform buttonStarImageTransform;
-
-        [SerializeField, Range(.5f, 3.0f)] private float animationTime = 1f;
-
-        [SerializeField] private bool moveToLeft = false;
+        [SerializeField]
+        private bool moveToLeft = false;
 
         [SerializeField, Range(0f, 10f),
          Tooltip("Gap between start position X and middle position X")]
         private float middleXGap = 1f;
 
-        [SerializeField] private GameObject coverToBlockClick;
+        [SerializeField]
+        private GameObject coverToBlockClick;
 
-        [SerializeField] private GameObject blockStartingTextObject;
+        [SerializeField]
+        private GameObject blockStartingTextObject;
+
+        [SerializeField]
+        private TextMeshProUGUI enemyCp;
 
         [SerializeField]
         private ConditionalButton grandFinaleStartButton;
 
-        private EquipmentSlot _weaponSlot;
-        private EquipmentSlot _armorSlot;
-        private ArenaSheet.RoundData _roundData;
-        private AvatarState _chooseAvatarState;
-        private Player _player;
         private GameObject _cachedCharacterTitle;
         private int _grandFinaleId;
 
         private const int TicketCountToUse = 1;
+        private ArenaSheet.RoundData _roundData;
+        private AvatarState _chooseAvatarState;
+        private List<Equipment> _chooseAvatarEquipments = new ();
+        private List<Costume> _chooseAvatarCostumes = new ();
 
         private readonly List<IDisposable> _disposables = new();
 
@@ -108,37 +99,6 @@ namespace Nekoyume.UI
 
         protected override void Awake()
         {
-            base.Awake();
-            simulateButton.gameObject.SetActive(GameConfig.IsEditor);
-            levelField.gameObject.SetActive(GameConfig.IsEditor);
-        }
-
-        public override void Initialize()
-        {
-            base.Initialize();
-
-            if (!equipmentSlots.TryGetSlot(ItemSubType.Weapon, out _weaponSlot))
-            {
-                throw new Exception($"Not found {ItemSubType.Weapon} slot in {equipmentSlots}");
-            }
-
-            if (!equipmentSlots.TryGetSlot(ItemSubType.Armor, out _armorSlot))
-            {
-                throw new Exception($"Not found {ItemSubType.Armor} slot in {equipmentSlots}");
-            }
-
-            foreach (var slot in equipmentSlots)
-            {
-                slot.ShowUnlockTooltip = true;
-            }
-
-            foreach (var slot in costumeSlots)
-            {
-                slot.ShowUnlockTooltip = true;
-            }
-
-            startButton.SetCost(CostType.ArenaTicket, TicketCountToUse);
-
             closeButton.onClick.AddListener(() =>
             {
                 Close();
@@ -146,7 +106,15 @@ namespace Nekoyume.UI
             });
 
             CloseWidget = () => Close(true);
+            base.Awake();
+        }
 
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            information.Initialize();
+            startButton.SetCost(CostType.ArenaTicket, TicketCountToUse);
             startButton.OnSubmitSubject
                 .Where(_ => !Game.Game.instance.IsInWorld)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
@@ -165,83 +133,59 @@ namespace Nekoyume.UI
         public void Show(
             ArenaSheet.RoundData roundData,
             AvatarState chooseAvatarState,
+            List<Equipment> chooseAvatarEquipments,
+            List<Costume> chooseAvatarCostumes,
+            int chooseAvatarCp,
             bool ignoreShowAnimation = false)
         {
+            base.Show(ignoreShowAnimation);
             _roundData = roundData;
             _chooseAvatarState = chooseAvatarState;
-
-            UpdateArenaAvatarState();
-            var avatarState = RxProps.PlayersArenaParticipant.Value.AvatarState;
-            if (!_player)
-            {
-                _player = PlayerFactory.Create(avatarState).GetComponent<Player>();
-            }
-
-            _player.transform.position = PlayerPosition;
-            _player.Set(avatarState);
-            _player.SpineController.Appear();
-            _player.gameObject.SetActive(true);
-
-            UpdateInventory();
-            UpdateTitle();
-            UpdateStat(avatarState);
-            UpdateSlot(avatarState);
-            UpdateStartButton(avatarState);
-
-            startButton.gameObject.SetActive(true);
+            _chooseAvatarEquipments.Clear();
+            _chooseAvatarEquipments.AddRange(chooseAvatarEquipments);
+            _chooseAvatarCostumes.Clear();
+            _chooseAvatarCostumes.AddRange(chooseAvatarCostumes);
+            enemyCp.text = chooseAvatarCp.ToString();
+            UpdateStartButton();
+            information.UpdateInventory(BattleType.Arena, chooseAvatarCp);
             grandFinaleStartButton.gameObject.SetActive(false);
-            startButton.Interactable = true;
+            grandFinaleStartButton.Interactable = false;
             coverToBlockClick.SetActive(false);
-            costumeSlots.gameObject.SetActive(false);
-            equipmentSlots.gameObject.SetActive(true);
             AgentStateSubject.Crystal
                 .Subscribe(_ => ReadyToBattle())
                 .AddTo(_disposables);
-            base.Show(ignoreShowAnimation);
         }
 
         public void Show(
             int grandFinaleId,
             AvatarState chooseAvatarState,
+            List<Equipment> chooseAvatarEquipments,
+            List<Costume> chooseAvatarCostumes,
+            int chooseAvatarCp,
             bool ignoreShowAnimation = false)
         {
             _grandFinaleId = grandFinaleId;
             _chooseAvatarState = chooseAvatarState;
-
-            UpdateArenaAvatarState();
-            var avatarState = RxProps.PlayersArenaParticipant.Value.AvatarState;
-            if (!_player)
-            {
-                _player = PlayerFactory.Create(avatarState).GetComponent<Player>();
-            }
-
-            _player.transform.position = PlayerPosition;
-            _player.Set(avatarState);
-            _player.SpineController.Appear();
-            _player.gameObject.SetActive(true);
-
-            UpdateInventory();
-            UpdateTitle();
-            UpdateStat(avatarState);
-            UpdateSlot(avatarState);
-            UpdateStartButton(avatarState);
-
-            startButton.gameObject.SetActive(false);
+            _chooseAvatarEquipments.Clear();
+            _chooseAvatarEquipments.AddRange(chooseAvatarEquipments);
+            _chooseAvatarCostumes.Clear();
+            _chooseAvatarCostumes.AddRange(chooseAvatarCostumes);
+            enemyCp.text = chooseAvatarCp.ToString();
+            UpdateStartButton();
+            information.UpdateInventory(BattleType.Arena, chooseAvatarCp);
             grandFinaleStartButton.gameObject.SetActive(true);
             grandFinaleStartButton.Interactable = true;
             coverToBlockClick.SetActive(false);
-            costumeSlots.gameObject.SetActive(false);
-            equipmentSlots.gameObject.SetActive(true);
             base.Show(ignoreShowAnimation);
+        }
+
+        public void UpdateInventory()
+        {
+            information.UpdateInventory(BattleType.Arena);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            if (_player)
-            {
-                _player.gameObject.SetActive(false);
-            }
-
             _disposables.DisposeAllAndClear();
             base.Close(ignoreCloseAnimation);
         }
@@ -287,309 +231,14 @@ namespace Nekoyume.UI
                     var isValid = existItem is { Locked: false, item: ITradableItem tradableItem }
                                   && tradableItem.RequiredBlockIndex <= currentBlockIndex;
 
-                    if (arenaAvatarState.inventory.Items[i] is { item: IEquippableItem { Equipped: true } equippedItem }
+                    if (arenaAvatarState.inventory.Items[i] is
+                            { item: IEquippableItem { Equipped: true } equippedItem }
                         && !isValid)
                     {
                         equippedItem.Unequip();
                     }
                 }
             }
-        }
-
-        private void UpdateInventory()
-        {
-            inventory.SetAvatarInfo(
-                clickItem: ShowItemTooltip,
-                doubleClickItem: Equip,
-                clickEquipmentToggle: () =>
-                {
-                    costumeSlots.gameObject.SetActive(false);
-                    equipmentSlots.gameObject.SetActive(true);
-                },
-                clickCostumeToggle: () =>
-                {
-                    costumeSlots.gameObject.SetActive(true);
-                    equipmentSlots.gameObject.SetActive(false);
-                },
-                ElementalTypeExtension.GetAllTypes(),
-                isArena: true);
-        }
-
-        private void UpdateTitle()
-        {
-            var title = _player.Costumes.FirstOrDefault(x =>
-                x.ItemSubType == ItemSubType.Title &&
-                x.Equipped);
-            if (title is null)
-            {
-                return;
-            }
-
-            Destroy(_cachedCharacterTitle);
-            var clone = ResourcesHelper.GetCharacterTitle(
-                title.Grade,
-                title.GetLocalizedNonColoredName(false));
-            _cachedCharacterTitle = Instantiate(clone, titleSocket);
-        }
-
-        private void UpdateSlot(AvatarState avatarState)
-        {
-            _player.Set(avatarState);
-            equipmentSlots.SetPlayerEquipments(
-                _player.Model,
-                OnClickSlot,
-                OnDoubleClickSlot,
-                ElementalTypeExtension.GetAllTypes());
-            costumeSlots.SetPlayerCostumes(
-                _player.Model,
-                OnClickSlot,
-                OnDoubleClickSlot);
-        }
-
-        private void UpdateStat(AvatarState avatarState)
-        {
-            _player.Set(avatarState);
-            var equipments = _player.Equipments;
-            var costumes = _player.Costumes;
-            var equipmentSetEffectSheet =
-                Game.Game.instance.TableSheets.EquipmentItemSetEffectSheet;
-            var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
-            var s = _player.Model.Stats.SetAll(
-                _player.Model.Stats.Level,
-                equipments, costumes, null,
-                equipmentSetEffectSheet, costumeSheet);
-            stats.SetData(s);
-        }
-
-        private void OnClickSlot(EquipmentSlot slot)
-        {
-            if (slot.IsEmpty)
-            {
-                inventory.Focus(
-                    slot.ItemType,
-                    slot.ItemSubType,
-                    ElementalTypeExtension.GetAllTypes());
-            }
-            else
-            {
-                if (!inventory.TryGetModel(slot.Item, out var model))
-                {
-                    return;
-                }
-
-                inventory.ClearFocus();
-                ShowItemTooltip(model, slot.RectTransform);
-            }
-        }
-
-        private void OnDoubleClickSlot(EquipmentSlot slot)
-        {
-            Unequip(slot, false);
-        }
-
-        private void Equip(InventoryItem inventoryItem)
-        {
-            if (inventoryItem.LevelLimited.Value &&
-                !inventoryItem.Equipped.Value)
-            {
-                return;
-            }
-
-            var itemBase = inventoryItem.ItemBase;
-            if (!(itemBase is INonFungibleItem nonFungibleItem))
-            {
-                return;
-            }
-
-            if (TryToFindSlotAlreadyEquip(itemBase, out var slot))
-            {
-                Unequip(slot, false);
-                return;
-            }
-
-            if (!TryToFindSlotToEquip(itemBase, out slot))
-            {
-                return;
-            }
-
-            if (!slot.IsEmpty)
-            {
-                Unequip(slot, true);
-            }
-
-            slot.Set(itemBase, OnClickSlot, OnDoubleClickSlot);
-            var arenaPlayer = RxProps.PlayersArenaParticipant.Value;
-            var targetItem =
-                arenaPlayer.AvatarState.inventory.Items
-                    .Select(e => e.item)
-                    .OfType<INonFungibleItem>()
-                    .FirstOrDefault(e =>
-                        e.NonFungibleId == nonFungibleItem.NonFungibleId);
-            if (!(targetItem is IEquippableItem equippableItem))
-            {
-                return;
-            }
-
-            equippableItem.Equip();
-            inventoryItem.Equipped.Value = true;
-            switch (equippableItem)
-            {
-                default:
-                    return;
-                case Costume costume:
-                {
-                    _player.EquipCostume(costume);
-                    if (costume.ItemSubType == ItemSubType.Title)
-                    {
-                        Destroy(_cachedCharacterTitle);
-                        var clone = ResourcesHelper.GetCharacterTitle(
-                            costume.Grade,
-                            costume.GetLocalizedNonColoredName(false));
-                        _cachedCharacterTitle = Instantiate(clone, titleSocket);
-                    }
-
-                    break;
-                }
-                case Equipment _:
-                {
-                    switch (slot.ItemSubType)
-                    {
-                        case ItemSubType.Armor:
-                        {
-                            var armor = (Armor)_armorSlot.Item;
-                            var weapon = (Weapon)_weaponSlot.Item;
-                            _player.EquipEquipmentsAndUpdateCustomize(armor, weapon);
-                            break;
-                        }
-                        case ItemSubType.Weapon:
-                            _player.EquipWeapon((Weapon)slot.Item);
-                            break;
-                    }
-
-                    break;
-                }
-            }
-
-            Game.Event.OnUpdatePlayerEquip.OnNext(_player);
-            PostEquipOrUnequip(slot);
-        }
-
-        private void Unequip(EquipmentSlot slot, bool considerInventoryOnly)
-        {
-            if (slot.IsEmpty)
-            {
-                return;
-            }
-
-            if (!inventory.TryGetModel(slot.Item, out var targetInventoryItem) ||
-                targetInventoryItem.ItemBase is not IEquippableItem equippableItem)
-            {
-                return;
-            }
-
-            slot.Clear();
-            equippableItem.Unequip();
-            targetInventoryItem.Equipped.Value = false;
-            if (!considerInventoryOnly)
-            {
-                switch (equippableItem)
-                {
-                    default:
-                        return;
-                    case Costume costume:
-                        _player.UnequipCostume(
-                            costume,
-                            true);
-                        _player.EquipEquipmentsAndUpdateCustomize(
-                            (Armor)_armorSlot.Item,
-                            (Weapon)_weaponSlot.Item);
-                        Game.Event.OnUpdatePlayerEquip.OnNext(_player);
-
-                        if (costume.ItemSubType == ItemSubType.Title)
-                        {
-                            Destroy(_cachedCharacterTitle);
-                        }
-
-                        break;
-                    case Equipment _:
-                        switch (slot.ItemSubType)
-                        {
-                            case ItemSubType.Armor:
-                            {
-                                _player.EquipEquipmentsAndUpdateCustomize(
-                                    (Armor)_armorSlot.Item,
-                                    (Weapon)_weaponSlot.Item);
-                                break;
-                            }
-                            case ItemSubType.Weapon:
-                                _player.EquipWeapon((Weapon)_weaponSlot.Item);
-                                break;
-                        }
-
-                        Game.Event.OnUpdatePlayerEquip.OnNext(_player);
-                        break;
-                }
-            }
-
-            PostEquipOrUnequip(slot);
-        }
-
-        private void ShowItemTooltip(InventoryItem model, RectTransform target)
-        {
-            var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
-            var (submitText, interactable, submit, blocked)
-                = GetToolTipParams(model);
-            tooltip.Show(
-                model,
-                submitText,
-                interactable,
-                submit,
-                () => inventory.ClearSelectedItem(),
-                blocked,
-                target);
-        }
-
-        private (string, bool, System.Action, System.Action) GetToolTipParams(
-            InventoryItem model)
-        {
-            var item = model.ItemBase;
-            var submitText = string.Empty;
-            var interactable = false;
-            System.Action submit = null;
-            System.Action blocked = null;
-
-            switch (item.ItemType)
-            {
-                case ItemType.Costume:
-                case ItemType.Equipment:
-                    submitText = model.Equipped.Value
-                        ? L10nManager.Localize("UI_UNEQUIP")
-                        : L10nManager.Localize("UI_EQUIP");
-                    if (model.DimObjectEnabled.Value)
-                    {
-                        interactable = model.Equipped.Value;
-                    }
-                    else
-                    {
-                        interactable = !model.LevelLimited.Value ||
-                                       model.LevelLimited.Value &&
-                                       model.Equipped.Value;
-                    }
-
-                    submit = () => Equip(model);
-                    blocked = () => NotificationSystem.Push(
-                        MailType.System,
-                        L10nManager.Localize("UI_EQUIP_FAILED"),
-                        NotificationCell.NotificationType.Alert);
-
-                    break;
-                case ItemType.Consumable:
-                case ItemType.Material:
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
-            return (submitText, interactable, submit, blocked);
         }
 
         private void ReadyToBattle()
@@ -681,74 +330,58 @@ namespace Nekoyume.UI
             AudioController.PlayClick();
         }
 
-        private void PostEquipOrUnequip(EquipmentSlot slot)
-        {
-            UpdateStat(RxProps.PlayersArenaParticipant.Value.AvatarState);
-            AudioController.instance.PlaySfx(slot.ItemSubType == ItemSubType.Food
-                ? AudioController.SfxCode.ChainMail2
-                : AudioController.SfxCode.Equipment);
-            Find<HeaderMenuStatic>().UpdateInventoryNotification(inventory.HasNotification);
-        }
-
-        private bool TryToFindSlotAlreadyEquip(ItemBase item, out EquipmentSlot slot)
-        {
-            switch (item.ItemType)
-            {
-                case ItemType.Equipment:
-                    return equipmentSlots.TryGetAlreadyEquip(item, out slot);
-                case ItemType.Costume:
-                    return costumeSlots.TryGetAlreadyEquip(item, out slot);
-                case ItemType.Consumable:
-                case ItemType.Material:
-                default:
-                    slot = null;
-                    return false;
-            }
-        }
-
-        private bool TryToFindSlotToEquip(ItemBase item, out EquipmentSlot slot)
-        {
-            switch (item.ItemType)
-            {
-                case ItemType.Equipment:
-                    return equipmentSlots.TryGetToEquip((Equipment)item, out slot);
-                case ItemType.Costume:
-                    return costumeSlots.TryGetToEquip((Costume)item, out slot);
-                case ItemType.Consumable:
-                case ItemType.Material:
-                default:
-                    slot = null;
-                    return false;
-            }
-        }
-
         private void SendBattleArenaAction()
+        {
+
+            startButton.gameObject.SetActive(false);
+            var playerAvatar = RxProps.PlayersArenaParticipant.Value.AvatarState;
+            Find<ArenaBattleLoadingScreen>().Show(
+                playerAvatar.NameWithHash,
+                playerAvatar.level,
+                Util.GetPortraitId(BattleType.Arena),
+                _chooseAvatarState.NameWithHash,
+                _chooseAvatarState.level,
+                Util.GetPortraitId(_chooseAvatarEquipments, _chooseAvatarCostumes));
+
+            var costumes = States.Instance.ItemSlotStates[BattleType.Arena].Costumes;
+            var equipments = States.Instance.ItemSlotStates[BattleType.Arena].Equipments;
+            var runeInfos = States.Instance.RuneSlotStates[BattleType.Arena]
+                .GetEquippedRuneSlotInfos();
+            ActionRenderHandler.Instance.Pending = true;
+            ActionManager.Instance.BattleArena(
+                    _chooseAvatarState.address,
+                    costumes,
+                    equipments,
+                    runeInfos,
+                    _roundData.ChampionshipId,
+                    _roundData.Round,
+                    TicketCountToUse)
+                .Subscribe();
+        }
+
+        private void SendBattleGrandFinaleAction()
         {
             startButton.gameObject.SetActive(false);
             var playerAvatar = RxProps.PlayersArenaParticipant.Value.AvatarState;
             Find<ArenaBattleLoadingScreen>().Show(
                 playerAvatar.NameWithHash,
                 playerAvatar.level,
-                playerAvatar.inventory.GetEquippedFullCostumeOrArmorId(),
+                Util.GetPortraitId(BattleType.Arena),
                 _chooseAvatarState.NameWithHash,
                 _chooseAvatarState.level,
-                _chooseAvatarState.inventory.GetEquippedFullCostumeOrArmorId());
+                Util.GetPortraitId(_chooseAvatarEquipments, _chooseAvatarCostumes));
 
-            _player.StopRun();
-            _player.gameObject.SetActive(false);
+            var costumes = States.Instance.ItemSlotStates[BattleType.Arena].Costumes;
+            var equipments = States.Instance.ItemSlotStates[BattleType.Arena].Equipments;
+            var runeInfos = States.Instance.RuneSlotStates[BattleType.Arena]
+                .GetEquippedRuneSlotInfos();
 
             ActionRenderHandler.Instance.Pending = true;
-            ActionManager.Instance.BattleArena(
+            ActionManager.Instance.BattleGrandFinale(
                     _chooseAvatarState.address,
-                    _player.Costumes
-                        .Select(e => e.NonFungibleId)
-                        .ToList(),
-                    _player.Equipments
-                        .Select(e => e.NonFungibleId)
-                        .ToList(),
-                    _roundData.ChampionshipId,
-                    _roundData.Round,
-                    TicketCountToUse)
+                    costumes,
+                    equipments,
+                    _grandFinaleId)
                 .Subscribe();
         }
 
@@ -765,34 +398,6 @@ namespace Nekoyume.UI
             game.IsInWorld = true;
             game.Stage.IsShowHud = true;
             SendBattleGrandFinaleAction();
-        }
-
-        private void SendBattleGrandFinaleAction()
-        {
-            startButton.gameObject.SetActive(false);
-            var playerAvatar = RxProps.PlayersArenaParticipant.Value.AvatarState;
-            Find<ArenaBattleLoadingScreen>().Show(
-                playerAvatar.NameWithHash,
-                playerAvatar.level,
-                playerAvatar.inventory.GetEquippedFullCostumeOrArmorId(),
-                _chooseAvatarState.NameWithHash,
-                _chooseAvatarState.level,
-                _chooseAvatarState.inventory.GetEquippedFullCostumeOrArmorId());
-
-            _player.StopRun();
-            _player.gameObject.SetActive(false);
-
-            ActionRenderHandler.Instance.Pending = true;
-            ActionManager.Instance.BattleGrandFinale(
-                    _chooseAvatarState.address,
-                    _player.Costumes
-                        .Select(e => e.NonFungibleId)
-                        .ToList(),
-                    _player.Equipments
-                        .Select(e => e.NonFungibleId)
-                        .ToList(),
-                    _grandFinaleId)
-                .Subscribe();
         }
 
         public void OnRenderBattleArena(ActionBase.ActionEvaluation<BattleArena> eval)
@@ -819,14 +424,16 @@ namespace Nekoyume.UI
             Find<ArenaBattleLoadingScreen>().Close();
         }
 
-        private void UpdateStartButton(AvatarState avatarState)
+        private void UpdateStartButton()
         {
-            _player.Set(avatarState);
-            var canBattle = Util.CanBattle(
-                _player,
-                Array.Empty<int>());
+            var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Arena);
+            var runes = States.Instance.GetEquippedRuneStates(BattleType.Arena)
+                .Select(x => x.RuneId).ToList();
+            var consumables = information.GetEquippedConsumables().Select(x => x.Id).ToList();
+            var canBattle = Util.CanBattle(equipments, costumes, consumables);
             startButton.gameObject.SetActive(canBattle);
             grandFinaleStartButton.gameObject.SetActive(canBattle);
+            startButton.Interactable = true;
             blockStartingTextObject.SetActive(!canBattle);
         }
 

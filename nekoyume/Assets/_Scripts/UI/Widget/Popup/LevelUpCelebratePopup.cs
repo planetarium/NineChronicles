@@ -29,6 +29,16 @@ namespace Nekoyume.UI
 
         private Player _model = null;
 
+        private readonly StatType[] StatTypes = new StatType[]
+        {
+            StatType.HP,
+            StatType.ATK,
+            StatType.DEF,
+            StatType.CRI,
+            StatType.HIT,
+            StatType.SPD,
+        };
+
         protected override void PlayPopupSound()
         {
             AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
@@ -57,25 +67,21 @@ namespace Nekoyume.UI
             var beforeStat = row.ToStats(beforeLevel);
             var afterStat = row.ToStats(afterLevel);
 
-            using (var enumerator = ((IEnumerable<StatType>) Enum.GetValues(typeof(StatType))).GetEnumerator())
+            var enumerator = ((IEnumerable<StatType>)StatTypes).GetEnumerator();
+            foreach (var view in statViews)
             {
-                // StatType.None 스킵
-                enumerator.MoveNext();
-                foreach (var view in statViews)
+                if (!enumerator.MoveNext())
                 {
-                    if (!enumerator.MoveNext())
-                    {
-                        view.gameObject.SetActive(false);
-                        continue;
-                    }
-
-                    var type = enumerator.Current;
-
-                    view.Show(type,
-                        beforeStat.GetStat(type, true),
-                        afterStat.GetStat(type, true));
-                    view.gameObject.SetActive(true);
+                    view.gameObject.SetActive(false);
+                    continue;
                 }
+
+                var type = enumerator.Current;
+
+                view.Show(type,
+                    beforeStat.GetStat(type, true),
+                    afterStat.GetStat(type, true));
+                view.gameObject.SetActive(true);
             }
 
             base.Show(ignoreShowAnimation);

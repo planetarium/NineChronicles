@@ -97,7 +97,6 @@ namespace Nekoyume.UI.Module.Arena.Board
             _currentData = itemData;
             _characterView.SetByFullCostumeOrArmorId(
                 _currentData.fullCostumeOrArmorId,
-                _currentData.titleId,
                 _currentData.level.ToString("N0", CultureInfo.CurrentCulture));
             _nameText.text = _currentData.name;
             _cpText.text =

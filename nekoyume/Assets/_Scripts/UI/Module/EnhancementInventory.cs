@@ -61,6 +61,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private bool resetScrollOnEnable;
 
+        [SerializeField]
+        private RectTransform tooltipSocket;
+
         private readonly Dictionary<ItemSubType, List<EnhancementInventoryItem>> _equipments =
             new Dictionary<ItemSubType, List<EnhancementInventoryItem>>();
 
@@ -204,10 +207,36 @@ namespace Nekoyume.UI.Module
                 ClearSelectedItem();
                 _selectedModel = item;
                 _selectedModel.Selected.SetValueAndForceNotify(true);
-                _onSelectItem?.Invoke(_selectedModel, _selectedModel.View); // Show tooltip popup
+                _onSelectItem?.Invoke(_selectedModel, tooltipSocket); // Show tooltip popup
             }
 
             UpdateView();
+        }
+
+        public void Select(ItemSubType itemSubType,Guid itemId)
+        {
+            var items = _equipments[itemSubType];
+            foreach (var item in items)
+            {
+                if (item.ItemBase is not Equipment equipment)
+                {
+                    continue;
+                }
+
+                if (equipment.ItemId != itemId)
+                {
+                    continue;
+                }
+
+
+                var toggle = categoryToggles.FirstOrDefault(x => x.Type == itemSubType);
+                toggle.Toggle.isOn = true;
+                ClearSelectedItem();
+                _selectedModel = item;
+                // _selectedModel.Selected.SetValueAndForceNotify(true);
+                SelectItem();
+                return;
+            }
         }
 
         private void OnDoubleClickItem(EnhancementInventoryItem item)

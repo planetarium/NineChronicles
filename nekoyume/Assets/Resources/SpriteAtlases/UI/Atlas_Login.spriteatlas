@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Atlas_Login
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 1
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 1024
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 1
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 0
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: 89ed10032859a4ef68ecc6e930f74ea0, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 458045e03f73942eeb79242e8d6db1da, type: 3}
+  - {fileID: 21300000, guid: 78ed6351595354af58e275117df8043e, type: 3}
+  - {fileID: 21300000, guid: 901817d50b6854b4691a49a1b42099de, type: 3}
+  - {fileID: 21300000, guid: 4d321c6670b874a1880fb7f419933103, type: 3}
+  - {fileID: 21300000, guid: b5e74757ee5904c54a77990610344818, type: 3}
+  - {fileID: 21300000, guid: 76ca7c08578e94117904036584a951d7, type: 3}
+  - {fileID: 21300000, guid: f28ab4882acdaaa42a6defd604c58428, type: 3}
+  - {fileID: 21300000, guid: 5adace8ac60d64a3ba97de48de6307ef, type: 3}
+  - {fileID: 21300000, guid: b66179cb64c0241b3ad6ff165e4fd1fd, type: 3}
+  - {fileID: 21300000, guid: 7e1e3b9caddbd49e18ebb126cc6eed33, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - UI_icon_login_lock_Login
+  - UI_Popup_bg_02_Login
+  - UI_main_icon_quest_02_Login
+  - UI_icon_login_id_Login
+  - ui_line_07_Login
+  - UI_box_01_Login
+  - logo
+  - UI_box_Inventory_04_Login
+  - UI_icon_login_lock_check_Login
+  - UI_Btn_bg_02_Login
+  m_RenderDataMap: {}
+  m_Tag: Atlas_Login
+  m_IsVariant: 0

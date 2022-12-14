@@ -11,6 +11,7 @@ using System.Numerics;
 using Nekoyume.Action;
 using Nekoyume.Extensions;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
@@ -127,6 +128,19 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
         }
 
+        public void Show(ItemSubType itemSubType, Guid itemId, bool ignoreShowAnimation = false)
+        {
+            Show(ignoreShowAnimation);
+            StartCoroutine(CoSelect(itemSubType, itemId));
+        }
+
+        private IEnumerator CoSelect(ItemSubType itemSubType, Guid itemId)
+        {
+            yield return null;
+            yield return new WaitForEndOfFrame();
+            enhancementInventory.Select(itemSubType, itemId);
+        }
+
         private void Close()
         {
             animator.Play(HashToClose);
@@ -143,8 +157,7 @@ namespace Nekoyume.UI
                 () => enhancementInventory.ClearSelectedItem(),
                 () => NotificationSystem.Push(MailType.System,
                     L10nManager.Localize("NOTIFICATION_MISMATCH_MATERIAL"),
-                    NotificationCell.NotificationType.Alert),
-                target);
+                    NotificationCell.NotificationType.Alert));
         }
 
         private void Action()

@@ -19,8 +19,8 @@ namespace Nekoyume.Game.VFX
         protected Renderer _rootRenderer = null;
         protected virtual float EmitDuration { get; set; } = 1.0f;
 
-        private bool _isPlaying = false;
-        private bool _isFinished = false;
+        protected bool _isPlaying = false;
+        protected bool _isFinished = false;
 
         [SerializeField]
         private bool _initializeSortingProbsOfChildren;

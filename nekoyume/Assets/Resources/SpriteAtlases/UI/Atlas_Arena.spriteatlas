@@ -1,0 +1,161 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Atlas_Arena
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 1
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 1
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 0
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: f12e95fcfc3724c3981de60d231d889e, type: 3}
+    - {fileID: 102900000, guid: 80483617273b445e389fa8ff1b768ec4, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 63d40a003394684469bc73122fe6111f, type: 3}
+  - {fileID: 21300000, guid: 858b5b10dc3be434f8f68b83ecabb1bb, type: 3}
+  - {fileID: 21300000, guid: ac32aa804681c49d5a29473fbc520a21, type: 3}
+  - {fileID: 21300000, guid: e6af7801e4afae842aad64f0eb1ea196, type: 3}
+  - {fileID: 21300000, guid: 40ef27b1744b5418e804ae7d87823539, type: 3}
+  - {fileID: 21300000, guid: ee155c0290a0f4865b5d9a33c35a88fb, type: 3}
+  - {fileID: 21300000, guid: c4648932d941ce743990f79103054e17, type: 3}
+  - {fileID: 21300000, guid: 2d4ae042985ba684f957343ceacc835e, type: 3}
+  - {fileID: 21300000, guid: b838d452ee0d547179f51bc5f1f14791, type: 3}
+  - {fileID: 21300000, guid: 1a225762a424c4e0185fe27ae9b25231, type: 3}
+  - {fileID: 21300000, guid: 917cea82e2a094ccea64e4d1baa5655e, type: 3}
+  - {fileID: 21300000, guid: faff65925c1b54f3fba70dd1b06fb336, type: 3}
+  - {fileID: 21300000, guid: 61af3f532224049e99eb8255ea7e4ef8, type: 3}
+  - {fileID: 21300000, guid: 0966ff344db114553b3ade4a6602a91a, type: 3}
+  - {fileID: 21300000, guid: 6d6f3f54b8fdd4560890908ee4d35295, type: 3}
+  - {fileID: 21300000, guid: 4a9e07749f32744a785b72e76d354331, type: 3}
+  - {fileID: 21300000, guid: 602d55353ca9d43949d458db838a5896, type: 3}
+  - {fileID: 21300000, guid: 3c0e4d959e53744fcb2da76ac7e5f0f8, type: 3}
+  - {fileID: 21300000, guid: ac1418c565633422ca661aa129a3f277, type: 3}
+  - {fileID: 21300000, guid: 8fb8d7d5f798b46aba22e35060379282, type: 3}
+  - {fileID: 21300000, guid: ec9d84e57356440dc8aa44d6d8408f89, type: 3}
+  - {fileID: 21300000, guid: 51b0970616b1247e78a070bc2d97faf1, type: 3}
+  - {fileID: 21300000, guid: e6ee4f46a9a2c403abfe9bff514fb55f, type: 3}
+  - {fileID: 21300000, guid: bcf7bc76df2865a4ca89fa5a2b563ba6, type: 3}
+  - {fileID: 21300000, guid: feee77e617145495a89b3867dbd15293, type: 3}
+  - {fileID: 21300000, guid: 4649ac77358d0484cb8918e5b853ac69, type: 3}
+  - {fileID: 21300000, guid: f83d5d87983d443f8bb265739347826f, type: 3}
+  - {fileID: 21300000, guid: 5d3b000808ef14a41b10fc2266acd58d, type: 3}
+  - {fileID: 21300000, guid: b24fc508fd6de3e44873c7bdb2e9188d, type: 3}
+  - {fileID: 21300000, guid: c8527d68d1dfe4292ae2c67a3b182a34, type: 3}
+  - {fileID: 21300000, guid: 3595f898485cb4466b74e2e8cfe51185, type: 3}
+  - {fileID: 21300000, guid: 23588dc8e4b9a46f5aa5f8532a82514e, type: 3}
+  - {fileID: 21300000, guid: 8ec05d396b838486fbb917b41aed27d0, type: 3}
+  - {fileID: 21300000, guid: b8782f99c61308e46a40f19eab48eb32, type: 3}
+  - {fileID: 21300000, guid: 7ed7bbc94e9c14018af966d17f344221, type: 3}
+  - {fileID: 21300000, guid: fbf9879ad40de4494ad8b698ae79b3a4, type: 3}
+  - {fileID: 21300000, guid: a8b169aa8c8f77a468365ee4d3c10849, type: 3}
+  - {fileID: 21300000, guid: 8c6fe71b9dce844ed84850afb73a48b2, type: 3}
+  - {fileID: 21300000, guid: a2e2153b2bf9a44a9bf7db4c2c21f896, type: 3}
+  - {fileID: 21300000, guid: b7c13f6b7601e43458b8a37944fd03a4, type: 3}
+  - {fileID: 21300000, guid: c7e3508ba831348f78885adaaa1e0065, type: 3}
+  - {fileID: 21300000, guid: 1da7810c87905014f9fbdb32107e7405, type: 3}
+  - {fileID: 21300000, guid: 11db721c2f333f54f8966f96ea7f650f, type: 3}
+  - {fileID: 21300000, guid: 628f92ec71bb44df08091d2ced1cce25, type: 3}
+  - {fileID: 21300000, guid: 07c139ec8d49cf84e96d63653bd823c5, type: 3}
+  - {fileID: 21300000, guid: 84eb597da9adac04ab24c801a6f3719a, type: 3}
+  - {fileID: 21300000, guid: 11627b8dedc85451d92bd8a2660da33d, type: 3}
+  - {fileID: 21300000, guid: eaf5f99de2cecfd4586e57ead99d756c, type: 3}
+  - {fileID: 21300000, guid: d492db3e1b5b243e2b504cdff757e9b7, type: 3}
+  - {fileID: 21300000, guid: b4ab13ae582544a6895d04f0717aba97, type: 3}
+  - {fileID: 21300000, guid: 0461f2be2e10940879088d0d7a370923, type: 3}
+  - {fileID: 21300000, guid: a1b86b2fa0332462f8274003a727f53d, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - Arena_bg_23
+  - Arena_bg_gauge_01
+  - Arena_bg_02
+  - bg_pvp_vs
+  - Bg_Arena_Season_add
+  - Arena_bg_gauge_04_Line
+  - UI_pvp_wing
+  - Arena_bg_21
+  - Icon_OfficialSeasonMedal
+  - Bg_Arena_Season
+  - Arena_bg_01
+  - Arena_bg_08_add
+  - Arena_bg_17
+  - Arena_bg_05
+  - Arena_bg_12
+  - Bg_Season_bg_02
+  - Arena_bg_gauge_01_Type3
+  - Arena_bg_03
+  - Arena_bg_06
+  - Icon_OfficialChampionshipMedal
+  - icon_Arena_lose
+  - Arena_bg_19
+  - icon_Arena_win
+  - bg_pvp_02
+  - Arena_bg_07
+  - Arena_bg_10
+  - Arena_bg_18
+  - Arena_bg_22_1
+  - UI_pvp_emblem
+  - Arena_bg_gauge_02
+  - Arena_bg_04
+  - Bg_Arena_Championship
+  - Bg_Arena_Grade
+  - bg_pvp_emblem
+  - Arena_bg_25
+  - Bg_Arena_Championship_icon
+  - Arena_bg_22_2
+  - Bg_Arena_Championship_add
+  - Arena_bg_gauge_02_mask
+  - Arena_bg_28
+  - Arena_bg_11
+  - bg_pvp_back
+  - Arena_bg_24
+  - Arena_bg_09
+  - bg_pvp_03
+  - Arena_bg_20
+  - Arena_bg_08
+  - bg_pvp_vs_effect
+  - Arena_bg_gauge_01_Type2
+  - Arena_bg_gauge_03_mask
+  - Arena_bg_16
+  - Arena_bg_27
+  m_RenderDataMap: {}
+  m_Tag: Atlas_Arena
+  m_IsVariant: 0

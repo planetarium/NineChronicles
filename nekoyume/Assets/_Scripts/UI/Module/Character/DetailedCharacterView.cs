@@ -23,23 +23,12 @@ namespace Nekoyume.UI.Module
             levelText.text = player.Level.ToString();
         }
 
-        public void SetByFullCostumeOrArmorId(
-            int armorId,
-            int? titleId,
-            int level) =>
-            SetByFullCostumeOrArmorId(armorId, titleId, level.ToString());
-        
-        public void SetByFullCostumeOrArmorId(
-            int armorId,
-            int? titleId,
-            string level)
+        public void SetByFullCostumeOrArmorId(int armorId, int level) =>
+            SetByFullCostumeOrArmorId(armorId, level.ToString());
+
+        public void SetByFullCostumeOrArmorId(int armorId, string level)
         {
             SetByFullCostumeOrArmorId(armorId);
-            if (titleId.HasValue)
-            {
-                var sprite = SpriteHelper.GetTitleFrame(titleId.Value);
-                SetFrame(sprite);
-            }
             levelText.text = level;
         }
 

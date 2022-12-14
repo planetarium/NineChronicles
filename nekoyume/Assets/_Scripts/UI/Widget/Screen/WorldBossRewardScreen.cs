@@ -197,7 +197,7 @@ namespace Nekoyume.UI
             {
                 runes[index].Object.SetActive(true);
                 runes[index].Count.text = $"{count:#,0}";
-                if (WorldBossFrontHelper.TryGetRuneIcon(ticker, out var icon))
+                if (RuneFrontHelper.TryGetRuneStoneIcon(ticker, out var icon))
                 {
                     runes[index].Icon.sprite = icon;
                 }
@@ -234,7 +234,7 @@ namespace Nekoyume.UI
             {
                 runes[index].Object.SetActive(true);
                 runes[index].Count.text = $"{count:#,0}";
-                if (WorldBossFrontHelper.TryGetRuneIcon(ticker, out var icon))
+                if (RuneFrontHelper.TryGetRuneStoneIcon(ticker, out var icon))
                 {
                     runes[index].Icon.sprite = icon;
                 }

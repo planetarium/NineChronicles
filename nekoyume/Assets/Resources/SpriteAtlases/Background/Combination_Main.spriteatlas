@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Combination_Main
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 1024
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 0
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 1
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 0
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: 16e535e80e8b44c9a929bd279ae092f5, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: efca56502a2314fc186df53e27171c97, type: 3}
+  - {fileID: 21300000, guid: f67d055214ff44647ba21583c199b147, type: 3}
+  - {fileID: 21300000, guid: 34afd1b218d2b40acb1467ed4f97575c, type: 3}
+  - {fileID: 21300000, guid: 63e987c260665414a8e918783da8e99b, type: 3}
+  - {fileID: 21300000, guid: 50beafe3a8a704c1d97a9adadf60ac44, type: 3}
+  - {fileID: 21300000, guid: 2ba4e849ae6d94b889c7f2a97601e303, type: 3}
+  - {fileID: 21300000, guid: f0ec393f2b2d041baa9d61466ba8d892, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - bg_combination_Main_stone
+  - bg_combination_Main_03
+  - bg_combination_Main_02
+  - bg_combination_Main_06
+  - bg_combination_Main_05
+  - bg_combination_Main_01
+  - bg_combination_Main_04
+  m_RenderDataMap: {}
+  m_Tag: Combination_Main
+  m_IsVariant: 0

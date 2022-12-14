@@ -13,7 +13,6 @@ namespace Nekoyume
     {
         public List<MonsterData> Monsters;
         public List<GradeData> Grades;
-        public List<RuneData> Runes;
         public List<GameObject> Rank;
 
         [Serializable]
@@ -33,13 +32,6 @@ namespace Nekoyume
             public GameObject namePrefab;
             public GameObject nameWithBackgroundPrefab;
             public GameObject spinePrefab;
-        }
-
-        [Serializable]
-        public class RuneData
-        {
-            public string ticker;
-            public Sprite icon;
         }
     }
 }

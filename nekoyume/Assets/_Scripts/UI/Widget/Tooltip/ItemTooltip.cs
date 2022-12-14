@@ -25,6 +25,9 @@ namespace Nekoyume.UI
         protected ConditionalButton submitButton;
 
         [SerializeField]
+        private Button enhancementButton;
+
+        [SerializeField]
         protected ItemTooltipBuy buy;
 
         [SerializeField]
@@ -40,18 +43,22 @@ namespace Nekoyume.UI
         protected Button descriptionButton;
 
         [SerializeField]
+        protected GameObject submitButtonContainer;
+
+        [SerializeField]
         protected AcquisitionPlaceDescription acquisitionPlaceDescription;
 
-        protected readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForModel = new();
 
-        protected RectTransform _descriptionButtonRectTransform;
+        private RectTransform _descriptionButtonRectTransform;
 
-        protected System.Action _onSubmit;
-        protected System.Action _onClose;
-        protected System.Action _onBlocked;
+        private System.Action _onSubmit;
+        private System.Action _onClose;
+        private System.Action _onBlocked;
+        private System.Action _onEnhancement;
 
-        protected bool _isPointerOnScrollArea;
-        protected bool _isClickedButtonArea;
+        public bool _isPointerOnScrollArea;
+        public bool _isClickedButtonArea;
 
         protected override PivotPresetType TargetPivotPresetType => PivotPresetType.TopRight;
 
@@ -65,6 +72,11 @@ namespace Nekoyume.UI
             }).AddTo(gameObject);
             submitButton.OnClickDisabledSubject.Subscribe(_ => _onBlocked?.Invoke())
                 .AddTo(gameObject);
+            enhancementButton.onClick.AddListener(() =>
+            {
+                _onEnhancement?.Invoke();
+                Close(true);
+            });
             CloseWidget = () => Close();
             SubmitWidget = () =>
             {
@@ -102,8 +114,7 @@ namespace Nekoyume.UI
             System.Action onSubmit,
             System.Action onClose = null,
             System.Action onBlocked = null,
-            int itemCount = 0,
-            RectTransform target = null)
+            int itemCount = 0)
         {
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
@@ -115,7 +126,7 @@ namespace Nekoyume.UI
                 (item.ItemType == ItemType.Equipment ||
                  item.ItemType == ItemType.Costume));
 
-            submitButton.gameObject.SetActive(onSubmit != null);
+            submitButtonContainer.SetActive(onSubmit != null);
             submitButton.Interactable = interactable;
             submitButton.Text = submitText;
             _onSubmit = onSubmit;
@@ -123,9 +134,8 @@ namespace Nekoyume.UI
             _onBlocked = onBlocked;
 
             scrollbar.value = 1f;
-            UpdatePosition(target);
             base.Show();
-            StartCoroutine(CoUpdate(submitButton.gameObject));
+            StartCoroutine(CoUpdate(submitButtonContainer.gameObject));
         }
 
         public virtual void Show(
@@ -135,7 +145,7 @@ namespace Nekoyume.UI
             System.Action onSubmit,
             System.Action onClose = null,
             System.Action onBlocked = null,
-            RectTransform target = null)
+            System.Action onEnhancement = null)
         {
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
@@ -147,27 +157,27 @@ namespace Nekoyume.UI
                 (item.ItemBase.ItemType == ItemType.Equipment ||
                  item.ItemBase.ItemType == ItemType.Costume));
 
-            submitButton.gameObject.SetActive(onSubmit != null);
+            submitButtonContainer.SetActive(onSubmit != null);
             submitButton.Interactable = interactable;
             submitButton.Text = submitText;
             _onSubmit = onSubmit;
             _onClose = onClose;
             _onBlocked = onBlocked;
+            _onEnhancement = onEnhancement;
+            enhancementButton.gameObject.SetActive(onEnhancement != null);
 
             scrollbar.value = 1f;
-            UpdatePosition(target);
             base.Show();
-            StartCoroutine(CoUpdate(submitButton.gameObject));
+            StartCoroutine(CoUpdate(submitButtonContainer.gameObject));
         }
 
         public virtual void Show(
             ShopItem item,
             System.Action onRegister,
             System.Action onSellCancellation,
-            System.Action onClose,
-            RectTransform target = null)
+            System.Action onClose)
         {
-            submitButton.gameObject.SetActive(false);
+            submitButtonContainer.SetActive(false);
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(true);
             sell.Set(item.OrderDigest.ExpiredBlockIndex,
@@ -189,7 +199,6 @@ namespace Nekoyume.UI
             _onClose = onClose;
 
             scrollbar.value = 1f;
-            UpdatePosition(target);
             base.Show();
             StartCoroutine(CoUpdate(sell.gameObject));
         }
@@ -197,10 +206,9 @@ namespace Nekoyume.UI
         public virtual void Show(
             ShopItem item,
             System.Action onBuy,
-            System.Action onClose,
-            RectTransform target = null)
+            System.Action onClose)
         {
-            submitButton.gameObject.SetActive(false);
+            submitButtonContainer.SetActive(false);
             sell.gameObject.SetActive(false);
             buy.gameObject.SetActive(true);
             buy.Set(item.OrderDigest.ExpiredBlockIndex,
@@ -220,7 +228,6 @@ namespace Nekoyume.UI
             _onClose = onClose;
 
             scrollbar.value = 1f;
-            UpdatePosition(target);
             base.Show();
             StartCoroutine(CoUpdate(buy.gameObject));
         }
@@ -231,9 +238,9 @@ namespace Nekoyume.UI
             bool interactable,
             System.Action onSubmit,
             System.Action onClose = null,
-            System.Action onBlocked = null,
-            RectTransform target = null)
+            System.Action onBlocked = null)
         {
+            enhancementButton.gameObject.SetActive(false);
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
             detail.Set(
@@ -243,7 +250,7 @@ namespace Nekoyume.UI
                 (item.ItemBase.ItemType == ItemType.Equipment ||
                  item.ItemBase.ItemType == ItemType.Costume));
 
-            submitButton.gameObject.SetActive(onSubmit != null);
+            submitButtonContainer.SetActive(onSubmit != null);
             submitButton.Interactable = interactable;
             submitButton.Text = submitText;
             _onSubmit = onSubmit;
@@ -251,9 +258,8 @@ namespace Nekoyume.UI
             _onBlocked = onBlocked;
 
             scrollbar.value = 1f;
-            UpdatePosition(target);
             base.Show();
-            StartCoroutine(CoUpdate(submitButton.gameObject));
+            StartCoroutine(CoUpdate(submitButtonContainer.gameObject));
         }
 
         public static ItemTooltip Find(ItemType type)
@@ -266,32 +272,6 @@ namespace Nekoyume.UI
                 ItemType.Material => Find<MaterialTooltip>(),
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, $"invalid ItemType : {type}")
             };
-        }
-
-        protected void UpdatePosition(RectTransform target)
-        {
-            LayoutRebuilder.ForceRebuildLayoutImmediate(panel);
-            panel.SetAnchorAndPivot(AnchorPresetType.TopLeft, PivotPresetType.TopLeft);
-            LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)verticalLayoutGroup.transform);
-            if (target)
-            {
-                panel.MoveToRelatedPosition(target, TargetPivotPresetType, OffsetFromTarget);
-            }
-            else
-            {
-                panel.SetAnchor(AnchorPresetType.MiddleCenter);
-                panel.anchoredPosition =
-                    new Vector2(-(panel.sizeDelta.x / 2), panel.sizeDelta.y / 2);
-            }
-            panel.MoveInsideOfParent(MarginFromParent);
-
-            if (!(target is null) && panel.position.x - target.position.x < 0)
-            {
-                panel.SetAnchorAndPivot(AnchorPresetType.TopRight, PivotPresetType.TopRight);
-                panel.MoveToRelatedPosition(target, TargetPivotPresetType.ReverseX(),
-                    DefaultOffsetFromTarget.ReverseX());
-                UpdateAnchoredPosition(target);
-            }
         }
 
         protected IEnumerator CoUpdate(GameObject target)
