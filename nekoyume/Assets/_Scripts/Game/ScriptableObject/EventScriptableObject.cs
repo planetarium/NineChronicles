@@ -68,20 +68,26 @@ namespace Nekoyume
     [Serializable]
     public class EventDungeonIdBasedEventInfo : EventInfo
     {
+        [Serializable]
+        public struct EventGuidedQuestData
+        {
+            [Tooltip("The sprite used by GuidedQuestCell.prefab as icon")]
+            public Sprite icon;
+
+            [Tooltip("The color used by GuideQuestCell.prefab as gradiant image")]
+            public Color gradiantColor;
+        }
+
         [field: SerializeField]
         [Tooltip("ID list of `EventDungeonSheet`")]
         public int[] TargetDungeonIds { get; private set; }
 
         [field: SerializeField]
-        [Tooltip("The Key used by WorldMapPage in WorldMapWorld.prefab")]
-        public string EventDungeonKey { get; private set; }
+        [Tooltip("The EventGuidedQuestData used by GuidedQuestCell.prefab as eventDungeon")]
+        public EventGuidedQuestData EventDungeonGuidedQuest { get; private set; }
 
         [field: SerializeField]
-        [Tooltip("The sprite used by GuidedQuestCell.prefab as event dungeon icon")]
-        public Sprite EventDungeonGuidedQuestIcon { get; private set; }
-
-        [field: SerializeField]
-        [Tooltip("The sprite used by GuideQuestCell.prefab as event recipe icon")]
-        public Sprite EventRecipeGuidedQuestIcon { get; private set; }
+        [Tooltip("The EventGuidedQuestData used by GuidedQuestCell.prefab as eventRecipe")]
+        public EventGuidedQuestData EventRecipeGuidedQuest { get; private set; }
     }
 }

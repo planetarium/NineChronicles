@@ -60,11 +60,12 @@ MonoBehaviour:
     <MainBGM>k__BackingField: {fileID: 8300000, guid: f461d703e65c9ea4f85f37f198af9f5f,
       type: 3}
     <TargetDungeonIds>k__BackingField: 91bd9800a1e49800
-    <EventDungeonKey>k__BackingField: EventSummer
-    <EventDungeonGuidedQuestIcon>k__BackingField: {fileID: 21300000, guid: fe8e6c68cc5ce48f1b5a148d6e80d6ad,
-      type: 3}
-    <EventRecipeGuidedQuestIcon>k__BackingField: {fileID: 21300000, guid: 2307dcba620744161ab8508dd933199c,
-      type: 3}
+    <EventDungeonGuidedQuest>k__BackingField:
+      icon: {fileID: 21300000, guid: 9280eabeaa0244db9aa93984db26a46e, type: 3}
+      gradiantColor: {r: 1, g: 0.3254902, b: 0.5372549, a: 0.6784314}
+    <EventRecipeGuidedQuest>k__BackingField:
+      icon: {fileID: 21300000, guid: e5d53d7d2c57e411d9a7108c9723c6cf, type: 3}
+      gradiantColor: {r: 0.09019608, g: 1, b: 0.3529412, a: 0.2901961}
   - <EventType>k__BackingField: 4
     <Intro>k__BackingField: {fileID: 21300000, guid: d66925166185a4c9499ebb9359b58649,
       type: 3}
@@ -74,8 +75,9 @@ MonoBehaviour:
     <MainBGM>k__BackingField: {fileID: 8300000, guid: 7093635f328f84c59af6f67a2e028a3e,
       type: 3}
     <TargetDungeonIds>k__BackingField: b10b9900
-    <EventDungeonKey>k__BackingField: EventWinter
-    <EventDungeonGuidedQuestIcon>k__BackingField: {fileID: 21300000, guid: a9ff32e70226c43dbbfcb26d6eae5228,
-      type: 3}
-    <EventRecipeGuidedQuestIcon>k__BackingField: {fileID: 21300000, guid: 5809096ebbef04aea8564d60ba43bb46,
-      type: 3}
+    <EventDungeonGuidedQuest>k__BackingField:
+      icon: {fileID: 21300000, guid: a9ff32e70226c43dbbfcb26d6eae5228, type: 3}
+      gradiantColor: {r: 0.48235294, g: 1, b: 0.3254902, a: 0.5294118}
+    <EventRecipeGuidedQuest>k__BackingField:
+      icon: {fileID: 21300000, guid: 5809096ebbef04aea8564d60ba43bb46, type: 3}
+      gradiantColor: {r: 1, g: 0.3647059, b: 0.3254902, a: 0.5294118}
