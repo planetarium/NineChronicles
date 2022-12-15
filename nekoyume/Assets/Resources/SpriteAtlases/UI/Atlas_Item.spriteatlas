@@ -39,7 +39,7 @@ SpriteAtlas:
       blockOffset: 1
       allowAlphaSplitting: 0
       enableRotation: 1
-      enableTightPacking: 1
+      enableTightPacking: 0
       enableAlphaDilation: 0
     secondaryTextureSettings: {}
     variantMultiplier: 1
@@ -385,6 +385,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 8742f20a73ee44a2681b1ac567865a78, type: 3}
   - {fileID: 21300000, guid: 499ed30aa1d416c4f97a2679127db225, type: 3}
   - {fileID: 21300000, guid: 1427f70a96a08422392f1c9ba4551d4f, type: 3}
+  - {fileID: 21300000, guid: 5c85a80a68239479da7866a9243cd434, type: 3}
   - {fileID: 21300000, guid: 096b0a0a952e84cfe89e824dab39c14b, type: 3}
   - {fileID: 21300000, guid: f538541af643d4c5da223f9d7808a51e, type: 3}
   - {fileID: 21300000, guid: 094ff22abe64d43a8998b7d351faf42b, type: 3}
@@ -911,6 +912,7 @@ SpriteAtlas:
   - 10341000
   - 201023
   - 700108
+  - UI_icon_equip
   - 40300008
   - 302011
   - 201008
