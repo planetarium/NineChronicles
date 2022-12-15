@@ -141,6 +141,7 @@ namespace Nekoyume.UI
             if (hasUnreadContents || notReadAtToday)
             {
                 base.Show(ignoreShowAnimation);
+                _tabGroup.SetToggledOn(eventTabButton);
                 PlayerPrefs.SetString(LastReadingDayKey, DateTime.Today.ToString(DateTimeFormat));
             }
         }
