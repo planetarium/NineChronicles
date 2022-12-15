@@ -240,6 +240,18 @@ namespace Nekoyume.State
             Event.OnUpdateRuneState.Invoke();
         }
 
+        public async Task UpdateRuneSlotStates(BattleType battleType)
+        {
+            var avatarAddress = CurrentAvatarState.address;
+            var address = RuneSlotState.DeriveAddress(avatarAddress, battleType);
+            var value = await Game.Game.instance.Agent.GetStateAsync(address);
+            if (value is List list)
+            {
+                var slotState = new RuneSlotState(list);
+                RuneSlotStates[slotState.BattleType] = slotState;
+            }
+        }
+
         public async Task InitItemSlotStates()
         {
             var avatarAddress = CurrentAvatarState.address;
@@ -272,6 +284,18 @@ namespace Nekoyume.State
             });
 
             await task;
+        }
+
+        public async Task UpdateItemSlotStates(BattleType battleType)
+        {
+            var avatarAddress = CurrentAvatarState.address;
+            var address = ItemSlotState.DeriveAddress(avatarAddress, battleType);
+            var value = await Game.Game.instance.Agent.GetStateAsync(address);
+            if (value is List list)
+            {
+                var slotState = new ItemSlotState(list);
+                ItemSlotStates[slotState.BattleType] = slotState;
+            }
         }
 
         public async Task<FungibleAssetValue?> SetRuneStoneBalance(int runeId)
