@@ -661,21 +661,6 @@ namespace Nekoyume.UI
             }
         }
 
-        private static void ShowRefillConfirmPopup(Material material)
-        {
-            var confirm = Find<IconAndButtonSystem>();
-            confirm.ShowWithTwoButton(
-                "UI_CONFIRM",
-                "UI_AP_REFILL_CONFIRM_CONTENT",
-                "UI_OK",
-                "UI_CANCEL",
-                true,
-                IconAndButtonSystem.SystemType.Information);
-            confirm.ConfirmCallback = () =>
-                ActionManager.Instance.ChargeActionPoint(material).Subscribe();
-            confirm.CancelCallback = () => confirm.Close();
-        }
-
         private static int GetBoostMaxCount(int stageId)
         {
             if (!TableSheets.Instance.GameConfigSheet.TryGetValue(

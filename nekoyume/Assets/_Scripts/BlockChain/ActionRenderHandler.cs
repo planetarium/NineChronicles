@@ -964,6 +964,14 @@ namespace Nekoyume.BlockChain
 
                 UpdateCurrentAvatarStateAsync(eval).Forget();
                 ReactiveShopState.UpdateSellDigestsAsync().Forget();
+
+                for (var i = 1; i < (int)BattleType.End; i++)
+                {
+                    var battleType = (BattleType)i;
+                    var itemSlotState = States.Instance.ItemSlotStates[battleType];
+                    itemSlotState.Costumes.Remove(eval.Action.tradableId);
+                    itemSlotState.Equipments.Remove(eval.Action.tradableId);
+                }
             }
         }
 
@@ -2035,7 +2043,6 @@ namespace Nekoyume.BlockChain
             {
                 var myAvatarState = eval.OutputStates.GetAvatarStateV2(eval.Action.myAvatarAddress);
                 var itemSlotState = States.Instance.ItemSlotStates[BattleType.Arena];
-                var runeSlotState = States.Instance.RuneSlotStates[BattleType.Arena];
                 var runeStates = States.Instance.GetEquippedRuneStates(BattleType.Arena);
                 myDigest = new ArenaPlayerDigest(myAvatarState,
                     itemSlotState.Equipments,

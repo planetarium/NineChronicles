@@ -141,6 +141,7 @@ namespace Nekoyume.UI.Module
         private void SetInventoryTab(
             List<(ItemType type, Predicate<InventoryItem> predicate)> itemSetDimPredicates = null,
             Action<Inventory, Nekoyume.Model.Item.Inventory> onUpdateInventory = null,
+            BattleType battleType = BattleType.Adventure,
             bool useConsumable = false,
             bool reverseOrder = false)
         {
@@ -154,7 +155,10 @@ namespace Nekoyume.UI.Module
                 _dimConditionFuncsByItemType[tuple.type]?.Add(tuple.predicate));
 
             ReactiveAvatarState.Inventory
-                .Subscribe(e => SetInventory(e, onUpdateInventory, reverseOrder))
+                .Subscribe(e =>
+                {
+                    SetInventory(e, onUpdateInventory, battleType, reverseOrder);
+                })
                 .AddTo(_disposablesOnSet);
 
             if (useConsumable && _consumables.Any())
@@ -185,6 +189,7 @@ namespace Nekoyume.UI.Module
         private void SetInventory(
             Nekoyume.Model.Item.Inventory inventory,
             Action<Inventory, Nekoyume.Model.Item.Inventory> onUpdateInventory = null,
+            BattleType battleType = BattleType.Adventure,
             bool reverseOrder = false)
         {
             _equipments.Clear();
@@ -224,6 +229,14 @@ namespace Nekoyume.UI.Module
             scroll.UpdateData(models, resetScrollOnEnable);
             UpdateDimmedInventoryItem();
             onUpdateInventory?.Invoke(this, inventory);
+
+            var itemSlotState = States.Instance.ItemSlotStates[battleType];
+            UpdateEquipmentEquipped(itemSlotState.Equipments);
+            UpdateCostumes(itemSlotState.Costumes);
+            var equippedRuneState = States.Instance.GetEquippedRuneStates(battleType);
+            var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
+            UpdateRuneEquipped(equippedRuneState, battleType, runeListSheet);
+            UpdateRuneNotification(GetBestRunes(battleType));
         }
 
         private void AddItem(ItemBase itemBase, int count = 1)
@@ -440,7 +453,7 @@ namespace Nekoyume.UI.Module
             equipmentButton.HasNotification.SetValueAndForceNotify(_cachedNotificationEquipments.Any());
         }
 
-        private void UpdateCostumeNotification(IEnumerable<InventoryItem> bestItems)
+        private void UpdateCostumeNotification(List<Guid> costumes, IEnumerable<InventoryItem> bestItems)
         {
             foreach (var item in _cachedNotificationCostumes)
             {
@@ -449,13 +462,26 @@ namespace Nekoyume.UI.Module
 
             _cachedNotificationCostumes.Clear();
 
+            var equippedCostumes = costumes
+                .Select(costume => _costumes.FirstOrDefault(x => ((Costume)x.ItemBase).ItemId == costume))
+                .ToList();
             foreach (var item in bestItems.Where(item => !item.Equipped.Value))
             {
-                item.HasNotification.Value = true;
+                var equippedItem = equippedCostumes.FirstOrDefault(
+                    x => x.ItemBase.ItemSubType == item.ItemBase.ItemSubType);
+                if (equippedItem != null)
+                {
+                    var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+                    var cp = CPHelper.GetCP(item.ItemBase as Costume, costumeSheet);
+                    var equippedCostumeCp = CPHelper.GetCP(equippedItem.ItemBase as Costume, costumeSheet);
+                    item.HasNotification.Value = cp > equippedCostumeCp;
+                }
+                else
+                {
+                    item.HasNotification.Value = true;
+                }
                 _cachedNotificationCostumes.Add(item);
             }
-
-            costumeButton.HasNotification.SetValueAndForceNotify(_cachedNotificationCostumes.Any());
         }
 
         private void UpdateRuneNotification(IEnumerable<InventoryItem> bestItems)
@@ -549,9 +575,12 @@ namespace Nekoyume.UI.Module
             var best = new List<InventoryItem>();
             foreach (var pair in sortedCostumes)
             {
+                var highScore = pair.Value.Where(x => Util.IsUsableItem(x.ItemBase))
+                    .Select(inventoryItem => CPHelper.GetCP(inventoryItem.ItemBase as Costume, costumeSheet))
+                    .Prepend(0)
+                    .Max();
                 var item = pair.Value.Where(x => Util.IsUsableItem(x.ItemBase))
-                    .OrderByDescending(x => CPHelper.GetCP(x.ItemBase as Costume, costumeSheet))
-                    .Take(1);
+                    .Where(x => CPHelper.GetCP(x.ItemBase as Costume, costumeSheet) == highScore);
                 best.AddRange(item);
             }
 
@@ -593,16 +622,6 @@ namespace Nekoyume.UI.Module
                 }
             }
 
-            var costumes = GetBestCostumes();
-            foreach (var guid in costumes)
-            {
-                var slots = States.Instance.ItemSlotStates.Values;
-                if (slots.Any(x => !x.Costumes.Exists(x => x == guid)))
-                {
-                    return true;
-                }
-            }
-
             for (var i = 1; i < (int)BattleType.End; i++)
             {
                 var battleType = (BattleType)i;
@@ -624,14 +643,6 @@ namespace Nekoyume.UI.Module
         {
             return GetUsableBestEquipments()
                 .Select(x => x.ItemBase as Equipment)
-                .Select(x => x.ItemId)
-                .ToList();
-        }
-
-        public List<Guid> GetBestCostumes()
-        {
-            return GetUsableBestCostumes()
-                .Select(x => x.ItemBase as Costume)
                 .Select(x => x.ItemId)
                 .ToList();
         }
@@ -691,6 +702,7 @@ namespace Nekoyume.UI.Module
             Action<InventoryItem> doubleClickItem,
             Action<InventoryTabType> onClickTab,
             IEnumerable<ElementalType> elementalTypes,
+            BattleType battleType,
             Action<Inventory, Nekoyume.Model.Item.Inventory> onUpdateInventory = null,
             bool useConsumable = false)
         {
@@ -703,7 +715,7 @@ namespace Nekoyume.UI.Module
                 ? new List<(ItemType type, Predicate<InventoryItem>)>
                     { (ItemType.Equipment, predicateByElementalType) }
                 : null;
-            SetInventoryTab(predicateList, onUpdateInventory:onUpdateInventory, useConsumable:useConsumable);
+            SetInventoryTab(predicateList, onUpdateInventory:onUpdateInventory, battleType, useConsumable:useConsumable);
             _toggleGroup.DisabledFunc = () => false;
         }
 
@@ -747,10 +759,6 @@ namespace Nekoyume.UI.Module
                 foreach (var equipment in eps)
                 {
                     var equipped = equipments.Exists(x => x == ((Equipment)equipment.ItemBase).ItemId);
-                    if (equipped)
-                    {
-                        Debug.Log($"guid ");
-                    }
                     equipment.Equipped.SetValueAndForceNotify(equipped);
                 }
             }
@@ -765,6 +773,41 @@ namespace Nekoyume.UI.Module
 
         public void UpdateRunes(List<RuneState> runeStates, BattleType battleType, RuneListSheet sheet)
         {
+            UpdateRuneEquipped(runeStates, battleType, sheet);
+            UpdateRuneNotification(GetBestRunes(battleType));
+            var models = GetModels(_activeTabType);
+            scroll.UpdateData(models, resetScrollOnEnable);
+        }
+
+        public void UpdateCostumes(List<Guid> costumes)
+        {
+            UpdateCostumeEquipped(costumes);
+            var bestItem = GetUsableBestCostumes();
+            UpdateCostumeNotification(costumes, bestItem);
+        }
+
+        public void UpdateEquipments(List<Guid> equipments)
+        {
+            UpdateEquipmentEquipped(equipments);
+
+            var bestItems = GetUsableBestEquipments();
+            UpdateEquipmentNotification(bestItems);
+        }
+
+        public void UpdateConsumables(List<Guid> consumables)
+        {
+            foreach (var consumable in _consumables)
+            {
+                var equipped = consumables.Exists(x => x == ((Consumable)consumable.ItemBase).ItemId);
+                consumable.Equipped.SetValueAndForceNotify(equipped);
+            }
+        }
+
+        private void UpdateRuneEquipped(
+            List<RuneState> runeStates,
+            BattleType battleType,
+            RuneListSheet sheet)
+        {
             foreach (var rune in _runes)
             {
                 var equipped = runeStates.Exists(x => x.RuneId == rune.RuneState.RuneId);
@@ -778,45 +821,26 @@ namespace Nekoyume.UI.Module
                 var equippable = battleType.IsEquippableRune((RuneUsePlace)row.UsePlace);
                 rune.DimObjectEnabled.SetValueAndForceNotify(!equippable);
             }
-
-            UpdateRuneNotification(GetBestRunes(battleType));
-            var models = GetModels(_activeTabType);
-            scroll.UpdateData(models, resetScrollOnEnable);
         }
 
-        public void UpdateCostumes(List<Guid> costumes)
+        private void UpdateCostumeEquipped(List<Guid> costumes)
         {
             foreach (var costume in _costumes)
             {
                 var equipped = costumes.Exists(x => x == ((Costume)costume.ItemBase).ItemId);
                 costume.Equipped.SetValueAndForceNotify(equipped);
             }
-
-            var bestItem = GetUsableBestCostumes();
-            UpdateCostumeNotification(bestItem);
         }
 
-        public void UpdateEquipments(List<Guid> equipments)
+        private void UpdateEquipmentEquipped(List<Guid> equipments)
         {
             foreach (var eps in _equipments.Values)
             {
                 foreach (var equipment in eps)
                 {
                     var equipped = equipments.Exists(x => x == ((Equipment)equipment.ItemBase).ItemId);
-                    equipment.Equipped.SetValueAndForceNotify(equipped);
+                    equipment.Equipped.Value = equipped;
                 }
-            }
-
-            var bestItems = GetUsableBestEquipments();
-            UpdateEquipmentNotification(bestItems);
-        }
-
-        public void UpdateConsumables(List<Guid> consumables)
-        {
-            foreach (var consumable in _consumables)
-            {
-                var equipped = consumables.Exists(x => x == ((Consumable)consumable.ItemBase).ItemId);
-                consumable.Equipped.SetValueAndForceNotify(equipped);
             }
         }
 
