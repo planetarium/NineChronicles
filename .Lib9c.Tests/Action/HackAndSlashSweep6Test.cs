@@ -718,8 +718,8 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(1, 3, true)]
-        [InlineData(1, 3, false)]
+        [InlineData(1, 24, true)]
+        [InlineData(1, 24, false)]
         public void Execute_NotEnoughCombatPointException(int worldId, int stageId, bool backward)
         {
             var gameConfigState = _initialState.GetGameConfigState();
