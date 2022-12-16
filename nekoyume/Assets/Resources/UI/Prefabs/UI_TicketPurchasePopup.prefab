@@ -104,7 +104,7 @@ GameObject:
   - component: {fileID: 1893891022771704547}
   - component: {fileID: 6345783740899057004}
   m_Layer: 5
-  m_Name: MaxPurchaseText
+  m_Name: PurchaseText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -199,7 +199,7 @@ GameObject:
   - component: {fileID: 2512741338382125282}
   - component: {fileID: 2485493543121884458}
   m_Layer: 5
-  m_Name: MaxPurchaseText
+  m_Name: PurchaseText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1259,8 +1259,8 @@ MonoBehaviour:
   costContainer: {fileID: 6672321457336155686}
   costText: {fileID: 8083865719572753621}
   contentText: {fileID: 8933993629951700762}
-  maxPurchaseText: {fileID: 2512741338382125282}
-  infiniteEmojiText: {fileID: 3377624663983122193}
+  purchaseText: {fileID: 2512741338382125282}
+  purchaseCountText: {fileID: 3377624663983122193}
   confirmButton: {fileID: 4947803094370721464}
   cancelButton: {fileID: 7494157555943781938}
 --- !u!1 &2625503650159746150
@@ -2894,12 +2894,12 @@ GameObject:
   - component: {fileID: 3377624663983122193}
   - component: {fileID: 7785779985128981686}
   m_Layer: 5
-  m_Name: InfiniteEmojiText
+  m_Name: PurchaseCountText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1707247067501932056
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2915,10 +2915,10 @@ RectTransform:
   m_Father: {fileID: 343113076271096880}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 500.00003, y: -39.783333}
-  m_SizeDelta: {x: 93.08, y: 79.566666}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &3209155480892144115
 CanvasRenderer:
