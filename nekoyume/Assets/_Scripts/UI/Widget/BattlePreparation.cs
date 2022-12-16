@@ -437,7 +437,7 @@ namespace Nekoyume.UI
                         1,
                         () => StartCoroutine(CoBattleStart(_stageType, CostType.NCG, true)),
                         () => GoToMarket(TradeType.Sell),
-                        false
+                        true
                     );
                     return;
                 }
