@@ -1,5 +1,3 @@
-#define TEST_9c
-
 namespace Lib9c.Tests.Action
 {
     using Libplanet;
@@ -8,20 +6,19 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
-    using Nekoyume.Action.Factory;
     using Nekoyume.Model.State;
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class FaucetTest
+    public class FaucetCurrencyTest
     {
         private readonly IAccountStateDelta _initialState;
+        private readonly Address _agentAddress;
         private readonly Currency _ncg;
         private readonly Currency _crystal;
-        private readonly Address _agentAddress;
 
-        public FaucetTest(ITestOutputHelper outputHelper)
+        public FaucetCurrencyTest(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -36,7 +33,6 @@ namespace Lib9c.Tests.Action
                     _initialState.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
             }
 
-            var tableSheets = new TableSheets(sheets);
             _ncg = Currency.Legacy("NCG", 2, null);
             _crystal = Currency.Legacy("CRYSTAL", 18, null);
             var goldCurrencyState = new GoldCurrencyState(_ncg);
@@ -56,9 +52,14 @@ namespace Lib9c.Tests.Action
         [InlineData(10, 10, 10, 10)]
         [InlineData(-10, 0, 0, 0)]
         [InlineData(0, -10, 0, 0)]
-        public void Execute_Faucet(int faucetNcg, int faucetCrystal, int expectedNcg, int expectedCrystal)
+        public void Execute_FaucetCurrency(
+            int faucetNcg,
+            int faucetCrystal,
+            int expectedNcg,
+            int expectedCrystal
+        )
         {
-            var action = FaucetFactory.CreateFaucet(_agentAddress, faucetNcg, faucetCrystal);
+            var action = new FaucetCurrency(_agentAddress, faucetNcg, faucetCrystal);
             var state = action.Execute(new ActionContext { PreviousStates = _initialState });
             AgentState agentState = state.GetAgentState(_agentAddress);
             FungibleAssetValue expectedNcgAsset =
