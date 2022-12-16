@@ -263,6 +263,7 @@ namespace Nekoyume.State
                         ? new RuneSlotState(runeSlotList)
                         : new RuneSlotState(BattleType.Arena);
 
+                runeStates.Clear();
                 foreach (var id in runeIds)
                 {
                     var address = RuneState.DeriveAddress(tuple.avatarAddr, id);
