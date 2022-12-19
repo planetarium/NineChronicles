@@ -53,11 +53,9 @@ SpriteAtlas:
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
-  - {fileID: 21300000, guid: 6d76650021450c44c854ba1ce7235527, type: 3}
   - {fileID: 21300000, guid: 05a67b00d3cda4f439b7eed00fd9676f, type: 3}
   - {fileID: 21300000, guid: 211666107e50d43909fe24e487662bac, type: 3}
   - {fileID: 21300000, guid: c3a719101f2b6401587db8857b0e43ba, type: 3}
-  - {fileID: 21300000, guid: 68186e40fcf7847cca0c04b8f942d6c1, type: 3}
   - {fileID: 21300000, guid: 4dc792505e23afb4ab8c7cbd22782ae3, type: 3}
   - {fileID: 21300000, guid: 8491f4605045a4ace956851cd5aec008, type: 3}
   - {fileID: 21300000, guid: b084db9065ab4ca4cbfa8a17658ad616, type: 3}
@@ -95,7 +93,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 1607b2d4d21b243a4a553cb1dfd30540, type: 3}
   - {fileID: 21300000, guid: 6f5519d4a79507c49953651cfc1c022e, type: 3}
   - {fileID: 21300000, guid: 5272f4f47ac464bda9534ac398b76603, type: 3}
-  - {fileID: 21300000, guid: fed7f6f402cdcb34494343052e5ecd7f, type: 3}
   - {fileID: 21300000, guid: e6501135ff8154112a0211dbf110f904, type: 3}
   - {fileID: 21300000, guid: 94902365b5e0e49e3b751fb8856c8cac, type: 3}
   - {fileID: 21300000, guid: cc7b736598da441908b017ea5ff1f82c, type: 3}
@@ -106,10 +103,8 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 6ca33495efcd448acad7095905ef87d4, type: 3}
   - {fileID: 21300000, guid: 77d9cdd507e7a7d4b912eb3701182d22, type: 3}
   - {fileID: 21300000, guid: 910448e5740265746bb24c1fcf93991b, type: 3}
-  - {fileID: 21300000, guid: 004bdbf5d65412540b066f5d53cb0c0d, type: 3}
   - {fileID: 21300000, guid: 424b5236291800848a622965dfedf3b2, type: 3}
   - {fileID: 21300000, guid: 5ec6d146ae1744756927cac2c7d94a09, type: 3}
-  - {fileID: 21300000, guid: 41b4a846bfda5f046a3449541cd4075e, type: 3}
   - {fileID: 21300000, guid: 45901b46b66d24d9daf3b2530b715753, type: 3}
   - {fileID: 21300000, guid: b10781a6ee75b1a4a9f563f9e57c5ba6, type: 3}
   - {fileID: 21300000, guid: a8f557b653cd3924db3ab5a28c18ea48, type: 3}
@@ -133,7 +128,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: df48d588f1558b747bbd796e79ffa89f, type: 3}
   - {fileID: 21300000, guid: 09c16498545c24e11859a801f79bb8db, type: 3}
   - {fileID: 21300000, guid: 3f987db8e23d0164897578c32fca16cb, type: 3}
-  - {fileID: 21300000, guid: adb586c8603f24e3f80b2ee0f045b1a8, type: 3}
   - {fileID: 21300000, guid: b32371e81f00449eba1143b34c808951, type: 3}
   - {fileID: 21300000, guid: 06a8dfe8d66adbc48b0425a1816d5ffa, type: 3}
   - {fileID: 21300000, guid: cc733bf8392f944dfabdaf1045287f84, type: 3}
@@ -147,17 +141,13 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 98643db945dfd4bbb8892a22fa24f946, type: 3}
   - {fileID: 21300000, guid: f1309fd9b72ec464ba2c265c5d8c411e, type: 3}
   - {fileID: 21300000, guid: b0f0d13a905e14ae2b9d05c821ebb219, type: 3}
-  - {fileID: 21300000, guid: 773d883a0a55c4084b32a5a8bc4208a4, type: 3}
   - {fileID: 21300000, guid: 1402b85ae950dd64f911cea59c53d8f9, type: 3}
   - {fileID: 21300000, guid: b235196af13ed7a4e9f665e072233413, type: 3}
-  - {fileID: 21300000, guid: fd34118ae67c8401fab5c5f9c3a2e757, type: 3}
   - {fileID: 21300000, guid: bb54f98a20a734874b2ebd4c0cb247f1, type: 3}
   - {fileID: 21300000, guid: c9b052ba45d9f479ab3362cb153c6d4f, type: 3}
   - {fileID: 21300000, guid: c6f878caf3260430083d07b425095017, type: 3}
   - {fileID: 21300000, guid: 4a2f2ada36ca3470e8abaee98f19c6c6, type: 3}
   - {fileID: 21300000, guid: ffad3c0b2d31d471c906dacfd7c65899, type: 3}
-  - {fileID: 21300000, guid: a5074e0b4d57a4717b1675b14326e9de, type: 3}
-  - {fileID: 21300000, guid: baaa902bd5d370e4b8032e3ba5d8db4f, type: 3}
   - {fileID: 21300000, guid: c8bfe22b1b08f452b82dca491a7073bf, type: 3}
   - {fileID: 21300000, guid: 7181962b9ea38f74ab75b90bee588abb, type: 3}
   - {fileID: 21300000, guid: 401ef88bc3b154fb28b4cda4d9c90fed, type: 3}
@@ -174,8 +164,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 70d1443db16d2ec49a61f893dd46888b, type: 3}
   - {fileID: 21300000, guid: 62f1404db9387224ab831ae46092ab38, type: 3}
   - {fileID: 21300000, guid: 6543e94d8c1874b72a2d3a5265dd548a, type: 3}
-  - {fileID: 21300000, guid: cbab796de65f5b34aafdd9ab77b0f533, type: 3}
-  - {fileID: 21300000, guid: 0ebc0a7d95a074cedb6cc8c4ee164471, type: 3}
   - {fileID: 21300000, guid: a6df7a8d91c42424c9fe3422dc4a6163, type: 3}
   - {fileID: 21300000, guid: 9a5fdb8db91be4f4881d3f823199d1a5, type: 3}
   - {fileID: 21300000, guid: db11b5cda8ec3b245bac2b7d3a6035b3, type: 3}
@@ -194,11 +182,9 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 20a16defdc4cd4e9e9ba758c05f2d5e6, type: 3}
   - {fileID: 21300000, guid: 0a338fffed88d774e8269dc38d226163, type: 3}
   m_PackedSpriteNamesToIndex:
-  - worldboss_03_Support_Back
   - Staking_02
   - UI_icon_Speech_05
   - bg_valentine_bg_04
-  - bg_character_main_10_1_Result
   - worldboss_03_Chain_Front_2
   - UI_icon_Speech_06
   - bg_xmas_tree_02_light_01
@@ -222,36 +208,33 @@ SpriteAtlas:
   - bg_valentine_monster_01_Outline
   - Staking_03
   - Main_tower_09
-  - Mian_rock_04
+  - Main_rock_04
   - bg_xmas_tree_01_02
-  - Mian_Leaf_02
-  - Mian_Leaf_03
+  - Main_Leaf_02
+  - Main_Leaf_03
   - shop_02_01
   - bg_valentine_monster_01
   - bg_xmas_lamp_01_light_01
-  - Mian_Leaf_01
+  - Main_Leaf_01
   - Main_info_00
   - Main_tower_05
   - Main_mimisbrunnr_05
-  - Mian_Leaf_10
+  - Main_Leaf_10
   - bg_xmas_lamp_01
   - bg_valentine_monster_03
-  - worldboss_03_Light
   - Main_tower_01
   - bg_valentine_bg_01
   - Main_Cloud_00
-  - Mian_rock_01
+  - Main_rock_01
   - Shop_01_add
-  - Mian_Leaf_12
+  - Main_Leaf_12
   - bg_character_main_10
   - UI_SpeechBox_01
   - bg_xmas_box_01
   - worldboss_03_Support_Front
-  - bg_character_main_05
   - worldboss_03_Chain_Front_5
-  - Mian_Leaf_13
-  - bg_character_main_09
-  - Mian_Leaf_06
+  - Main_Leaf_13
+  - Main_Leaf_06
   - bg_xmas_tree_02
   - worldboss_03_Chain_Back_2
   - bg_xmas_tree_01_01_Eff
@@ -269,17 +252,16 @@ SpriteAtlas:
   - ranking_01
   - bg_character_main_06
   - Main_tower_02
-  - Mian_Leaf_07
-  - Mian_Leaf_11
+  - Main_Leaf_07
+  - Main_Leaf_11
   - bg_Character_main_03_distortion_00
   - Main_Cloud_01
   - bg_xmas_bell_01
-  - bg_character_main_10_1
   - UI_icon_Speech_04
   - worldboss_03_Chain_Back_4
   - UI_icon_new_Mainmenu
   - Main_mimisbrunnr_05_2
-  - Mian_Leaf_05
+  - Main_Leaf_05
   - Main_mimisbrunnr_04
   - shop_01_02
   - bg_valentine_bg_13
@@ -287,18 +269,14 @@ SpriteAtlas:
   - bg_xmas_tree_01_01
   - Menu_Season_bg
   - Main_tower_06
-  - Mian_rock_03
-  - worldboss_03_Distortion
+  - Main_rock_03
   - bg_xmas_tree_02_light_03
   - Staking_05
-  - worldboss_Reward_Distortion
   - Main_Cloud_05
   - Main_Cloud_03
   - Main_tower_00
-  - Mian_rock_05
+  - Main_rock_05
   - bg_valentine_bg_02
-  - worldboss_04_Light
-  - bg
   - Main_mimisbrunnr_03
   - worldboss_Reward_2
   - bg_valentine_bg_03
@@ -310,24 +288,22 @@ SpriteAtlas:
   - Main_Cloud_04
   - Staking_01
   - bg_xmas_tree_02_Eff
-  - Mian_rock_02
-  - Mian_Leaf_09
+  - Main_rock_02
+  - Main_Leaf_09
   - bg_character_main_08
   - worldboss_03_Chain_Front_4
   - Menu_Season_bg_02
-  - bg_character_main_04
-  - bg_character_main_10_Result
   - bg_valentine_bg_12
   - worldboss_Reward
   - bg_xmas_Island_01
-  - Mian_Leaf_08
+  - Main_Leaf_08
   - worldboss_03_Chain_Back_5
-  - Mian_Leaf_04
+  - Main_Leaf_04
   - combination_01_01
   - worldboss_03_Chain_Back_1
   - bg_valentine_monster_02
   - Main_tower_08
-  - Mian_rock_00
+  - Main_rock_00
   - worldboss_03_Chain_Front_1
   - UI_icon_Speech_02
   - bg_valentine_bg_10

@@ -1987,7 +1987,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b77c75f587df4fc79c16ae97933f7dd4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Type: 2
+  Types: 02000000
 --- !u!1 &2371805035770685768
 GameObject:
   m_ObjectHideFlags: 0
@@ -2776,8 +2776,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3318801027660297170}
   - component: {fileID: 3318801027660297175}
-  - component: {fileID: 3318801027660297172}
-  - component: {fileID: 3318801027660297173}
   m_Layer: 5
   m_Name: Character
   m_TagString: Untagged
@@ -2813,100 +2811,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3318801027660297171}
   m_CullTransparentMesh: 1
---- !u!114 &3318801027660297172
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3318801027660297171}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: ccd76e1f9980e418fa6644758a01736b, type: 3}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!114 &3318801027660297173
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3318801027660297171}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4094aa220462d1c488822526fe0797a6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fps: 32
-  loop: 1
-  startAutomatically: 1
-  startIndex: 0
-  frames:
-  - {fileID: 21300000, guid: ccd76e1f9980e418fa6644758a01736b, type: 3}
-  - {fileID: 21300000, guid: 2e28020fe42f047108a63a32f4fc0532, type: 3}
-  - {fileID: 21300000, guid: 5b214bce1f3174f48b74deb9ce992766, type: 3}
-  - {fileID: 21300000, guid: 834d36fa750b84058825698536326034, type: 3}
-  - {fileID: 21300000, guid: 1fccdb46fd46d421c98b00299851064c, type: 3}
-  - {fileID: 21300000, guid: 48652ad2899214584baf29623f3aa13b, type: 3}
-  - {fileID: 21300000, guid: 376b8540626454e10ab8db94ebb94323, type: 3}
-  - {fileID: 21300000, guid: ef97dca437da7450db3c18f73f4eaa54, type: 3}
-  - {fileID: 21300000, guid: fb3a9fdd2bd784355b6c5063a7d7b2b2, type: 3}
-  - {fileID: 21300000, guid: f128f88358e8d4390a20b9efd74070dd, type: 3}
-  - {fileID: 21300000, guid: 96914b177e480407b9706f21967c6f55, type: 3}
-  - {fileID: 21300000, guid: fa9d63234ae2949adb9099dcd5f66337, type: 3}
-  - {fileID: 21300000, guid: 0767b850e217743d192901f23b864b63, type: 3}
-  - {fileID: 21300000, guid: cc41f1fffc07e47bb844d32160c58281, type: 3}
-  - {fileID: 21300000, guid: 8c4c0a0205d5a4a8a8ae3ca515dc3b8f, type: 3}
-  - {fileID: 21300000, guid: 48eac2a5f5119442080d8d289b5b57ae, type: 3}
-  - {fileID: 21300000, guid: e6c11e56cccf24b39a81af96ac028830, type: 3}
-  - {fileID: 21300000, guid: b4b0f1c991bf2457594d5e887971d29b, type: 3}
-  - {fileID: 21300000, guid: 9de06b9e818db410f9fb6a658cf89b0e, type: 3}
-  - {fileID: 21300000, guid: a37e5495b89b94243b85ba81d65994c8, type: 3}
-  - {fileID: 21300000, guid: dbca5bd001dc54aeda6644c4b102b67f, type: 3}
-  - {fileID: 21300000, guid: 37c0c38dda89843ffa6f792da4cf6b67, type: 3}
-  - {fileID: 21300000, guid: fe9b52c95e66c4c64b5282185c2d38e2, type: 3}
-  - {fileID: 21300000, guid: 1b0a0a58bfafa476cb6eacf08b85f6d2, type: 3}
-  - {fileID: 21300000, guid: e586feab3924a471aa716720a23cc81f, type: 3}
-  - {fileID: 21300000, guid: fcca91ff554d34ae2abb3987478fbbb7, type: 3}
-  - {fileID: 21300000, guid: d932553423f6741aa80ca90e549a72de, type: 3}
-  - {fileID: 21300000, guid: 3fc84fe2d719e4aba9475e3afa066f00, type: 3}
-  - {fileID: 21300000, guid: 52c38e6f917ec4491b2df75de75ee8be, type: 3}
-  - {fileID: 21300000, guid: a26dcc505a6e545a880b63aacae79a1b, type: 3}
-  - {fileID: 21300000, guid: d0be882f66fa64a119c3814a429ee089, type: 3}
-  - {fileID: 21300000, guid: 6bdb4e5125185444abc8b79a911a5dd9, type: 3}
-  - {fileID: 21300000, guid: 9b71811d5f0824cfcab3412407fcd37e, type: 3}
-  - {fileID: 21300000, guid: 23c289cc583fc4e1fad6a55b1d7533e1, type: 3}
-  - {fileID: 21300000, guid: c03f2fc0b6bbf43bc9565149d716e214, type: 3}
-  - {fileID: 21300000, guid: 686f32934b9c14c5387f7bf2b786e713, type: 3}
-  - {fileID: 21300000, guid: 8d1ccf77a55a3485fb8845be5cdd211c, type: 3}
-  - {fileID: 21300000, guid: 5587a3d3edd81490d8a8928090841add, type: 3}
-  - {fileID: 21300000, guid: d36966533e472455b9c6aab88994f71f, type: 3}
-  - {fileID: 21300000, guid: ef2cf4108379e46ab86b6a659170841c, type: 3}
-  - {fileID: 21300000, guid: 69bbde073403d4cd48d33482f5ec2dc5, type: 3}
-  - {fileID: 21300000, guid: f758de7393ffc43f7a07f3236f39f234, type: 3}
-  - {fileID: 21300000, guid: 0f2faf3f473f04210b9bc0f120763258, type: 3}
-  - {fileID: 21300000, guid: 7611f3666d08f48a7ab47e3c2e05a7d8, type: 3}
-  - {fileID: 21300000, guid: 36fdac650a5b34b7c897e85ff9f6f6d0, type: 3}
-  - {fileID: 21300000, guid: c11f96470967348f0bcce9a7681b4958, type: 3}
-  - {fileID: 21300000, guid: b0655da7a1960429ea635bde2cc62fca, type: 3}
 --- !u!1 &3360826052926004284
 GameObject:
   m_ObjectHideFlags: 0
@@ -4892,7 +4796,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b77c75f587df4fc79c16ae97933f7dd4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Type: 2
+  Types: 02000000
 --- !u!1 &6520908441768266708
 GameObject:
   m_ObjectHideFlags: 0
@@ -5571,7 +5475,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b77c75f587df4fc79c16ae97933f7dd4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Type: 1
+  Types: 0100000004000000
 --- !u!1 &7525403510631244869
 GameObject:
   m_ObjectHideFlags: 0
@@ -6117,7 +6021,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b77c75f587df4fc79c16ae97933f7dd4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Type: 1
+  Types: 0100000004000000
 --- !u!1 &8435794167357276755
 GameObject:
   m_ObjectHideFlags: 0

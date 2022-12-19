@@ -118,10 +118,11 @@ namespace Nekoyume.UI.Module
             _consumables.Clear();
             var elementalTypes = GetElementalTypes();
             inventory.SetAvatarInformation(
-                clickItem: OnClickInventoryItem,
-                doubleClickItem: EquipOrUnequip,
+                OnClickInventoryItem,
+                EquipOrUnequip,
                 OnClickTab,
-                elementalTypes);
+                elementalTypes,
+                _battleType);
 
             StartCoroutine(CoUpdateView(battleType, Inventory.InventoryTabType.Equipment));
         }
@@ -129,11 +130,6 @@ namespace Nekoyume.UI.Module
         public List<Guid> GetBestEquipments()
         {
             return inventory.GetBestEquipments();
-        }
-
-        public List<Guid> GetBestCostumes()
-        {
-            return inventory.GetBestCostumes();
         }
 
         public List<InventoryItem> GetBestRunes(BattleType battleType)

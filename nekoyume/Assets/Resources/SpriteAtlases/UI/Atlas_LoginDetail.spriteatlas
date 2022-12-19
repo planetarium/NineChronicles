@@ -1,0 +1,116 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Atlas_LoginDetail
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 1
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 0
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 1
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 0
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: 89ed10032859a4ef68ecc6e930f74ea0, type: 3}
+    - {fileID: 102900000, guid: 9bc80a3d80eb8448ca722faa16cc1c4d, type: 3}
+    - {fileID: 102900000, guid: 0352d0f9d4214bf41aed8e35183c9be8, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 31dedc50bb4714d4fad1b722aa7bfc4a, type: 3}
+  - {fileID: 21300000, guid: b5274c905e48e864db7cf8d87318211b, type: 3}
+  - {fileID: 21300000, guid: 458045e03f73942eeb79242e8d6db1da, type: 3}
+  - {fileID: 21300000, guid: 5aeff051295524ccd9d27f538ad53788, type: 3}
+  - {fileID: 21300000, guid: 78ed6351595354af58e275117df8043e, type: 3}
+  - {fileID: 21300000, guid: f418ac628d270234fbb562ed8e254349, type: 3}
+  - {fileID: 21300000, guid: 120ee2b2c85ab66478d95777be81fe4e, type: 3}
+  - {fileID: 21300000, guid: 089159331fd48491ba0f05d9a284b9f1, type: 3}
+  - {fileID: 21300000, guid: 842315c383fd94aacba40c31c784a3a2, type: 3}
+  - {fileID: 21300000, guid: f62d2c4415a334243a0218c3db3cd69e, type: 3}
+  - {fileID: 21300000, guid: ef5ce465b5dce7845bdf707d9abd8e11, type: 3}
+  - {fileID: 21300000, guid: 901817d50b6854b4691a49a1b42099de, type: 3}
+  - {fileID: 21300000, guid: 63ba0b6605fe647dab7391f2ab8e1f7d, type: 3}
+  - {fileID: 21300000, guid: 4d321c6670b874a1880fb7f419933103, type: 3}
+  - {fileID: 21300000, guid: ea1e44b615e5aea4a9cb20055e5d443c, type: 3}
+  - {fileID: 21300000, guid: b5e74757ee5904c54a77990610344818, type: 3}
+  - {fileID: 21300000, guid: 76ca7c08578e94117904036584a951d7, type: 3}
+  - {fileID: 21300000, guid: e368b5d8e378942f9b77267457f38b74, type: 3}
+  - {fileID: 21300000, guid: 85deaed82cd21ee4a848cb921b376f0d, type: 3}
+  - {fileID: 21300000, guid: 062bcff8bbe031442bb1e3c7b4ca7a33, type: 3}
+  - {fileID: 21300000, guid: 42d370593facd4f2384d20d3b889b1bf, type: 3}
+  - {fileID: 21300000, guid: d627ea8947aca434abbd8b609b731310, type: 3}
+  - {fileID: 21300000, guid: 434a57f964276774897e163780704f27, type: 3}
+  - {fileID: 21300000, guid: 5adace8ac60d64a3ba97de48de6307ef, type: 3}
+  - {fileID: 21300000, guid: d794583b3484d694fbb7ee1813ecfbdf, type: 3}
+  - {fileID: 21300000, guid: b66179cb64c0241b3ad6ff165e4fd1fd, type: 3}
+  - {fileID: 21300000, guid: c9d7094cb42bf4e79bb5a35e5876a498, type: 3}
+  - {fileID: 21300000, guid: 7e1e3b9caddbd49e18ebb126cc6eed33, type: 3}
+  - {fileID: 21300000, guid: e6f2407f53f03432f867584c025d5345, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - UI_Btn_Back_bg
+  - characterselect_mage_00
+  - UI_icon_login_lock_Login
+  - Common_bg_2R
+  - UI_Popup_bg_02_Login
+  - characterselect_archer_00
+  - bg_character_select_04
+  - button_page_02_reverse
+  - Common_Gradiant_bg_01
+  - characterselect_acolyte_00
+  - bg_character_select_02
+  - UI_main_icon_quest_02_Login
+  - button_page_02
+  - UI_icon_login_id_Login
+  - button_gray_plus
+  - ui_line_07_Login
+  - UI_box_01_Login
+  - UI_box_gold_01
+  - bg_character_select_03
+  - bg_character_select_01
+  - UI_bg_Start_01
+  - bg_character_select_06
+  - bg_character_effect_01
+  - UI_box_Inventory_04_Login
+  - bg_character_select_05
+  - UI_icon_login_lock_check_Login
+  - UI_bg_Start_00
+  - UI_Btn_bg_02_Login
+  - characterselect_warrior_01
+  m_RenderDataMap: {}
+  m_Tag: Atlas_LoginDetail
+  m_IsVariant: 0

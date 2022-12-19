@@ -5,7 +5,7 @@ using System.Linq;
 using DG.Tweening;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
-using Nekoyume.TableData;
+using Nekoyume.Model.Quest;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Tween;
 using NUnit.Framework;
@@ -48,12 +48,21 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private TransformLocalScaleTweener inProgressTweener;
 
+        [SerializeField]
+        private Image iconImage;
+
+        [SerializeField]
+        private Image effectedIconImage;
+
+        [SerializeField]
+        private Image gradientImage;
+
         private bool _inProgress;
 
         public readonly ISubject<GuidedQuestCell> onClick = new Subject<GuidedQuestCell>();
         private readonly List<IDisposable> _disposables = new();
 
-        public Nekoyume.Model.Quest.Quest Quest { get; private set; }
+        public Quest Quest { get; private set; }
 
         #region MonoBehaviour
 
@@ -67,7 +76,7 @@ namespace Nekoyume.UI.Scroller
                 })
                 .AddTo(gameObject);
             L10nManager.OnLanguageChange
-                .Subscribe(_ => SetContent(Quest))
+                .Subscribe(_ => { if (Quest != null) SetContent(Quest); })
                 .AddTo(gameObject);
         }
 
@@ -81,9 +90,10 @@ namespace Nekoyume.UI.Scroller
         #region Control
 
         public void ShowAsNew(
-            Nekoyume.Model.Quest.Quest quest,
+            Quest quest,
             Action<GuidedQuestCell> onComplete = null,
-            bool ignoreAnimation = false)
+            bool ignoreAnimation = false,
+            bool isEvent = false)
         {
             if (quest is null)
             {
@@ -112,11 +122,24 @@ namespace Nekoyume.UI.Scroller
                         onComplete?.Invoke(this);
                     });
             }
+
+            var eventInfo = EventManager.GetEventInfo() as EventDungeonIdBasedEventInfo;
+            if (isEvent && eventInfo is not null)
+            {
+                var guidedQuestData = Quest switch
+                {
+                    WorldQuest => eventInfo.EventDungeonGuidedQuest,
+                    CombinationEquipmentQuest => eventInfo.EventRecipeGuidedQuest,
+                };
+                iconImage.sprite = guidedQuestData.icon;
+                effectedIconImage.sprite = guidedQuestData.icon;
+                gradientImage.color = guidedQuestData.gradiantColor;
+            }
         }
 
-        public void Show(Nekoyume.Model.Quest.Quest quest)
+        public void Show(Quest quest, bool isEvent = false)
         {
-            ShowAsNew(quest, null, true);
+            ShowAsNew(quest, null, true, isEvent);
         }
 
         public void SetToInProgress(bool inProgress)
@@ -174,7 +197,7 @@ namespace Nekoyume.UI.Scroller
             HideAsClear(null, true, true);
         }
 
-        private void PostHideAsClear(System.Action<GuidedQuestCell> onComplete)
+        private void PostHideAsClear(Action<GuidedQuestCell> onComplete)
         {
             Quest = null;
             gameObject.SetActive(false);
@@ -193,7 +216,7 @@ namespace Nekoyume.UI.Scroller
 
         #region Update view objects
 
-        private void SetContent(Nekoyume.Model.Quest.Quest quest)
+        private void SetContent(Quest quest)
         {
             contentText.text = effectedContentText.text = quest.GetContent();
         }

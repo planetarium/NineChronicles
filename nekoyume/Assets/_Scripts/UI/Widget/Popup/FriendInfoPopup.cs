@@ -188,11 +188,26 @@ namespace Nekoyume.UI
                 throw new SheetRowNotFoundException("CharacterSheet", avatarState.characterId);
             }
 
+            var equippedRuneStates = new List<RuneState>();
+            foreach (var slot in _runes[battleType].GetRuneSlot())
+            {
+                if (!slot.RuneId.HasValue)
+                {
+                    continue;
+                }
+
+                var runeState = _runeStates.FirstOrDefault(x => x.RuneId == slot.RuneId);
+                if (runeState != null)
+                {
+                    equippedRuneStates.Add(runeState);
+                }
+            }
+
             var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
             var equipments = _equipments[battleType];
             var costumes = _costumes[battleType];
             var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
-            var runeOptions = Util.GetRuneOptions(_runeStates, runeOptionSheet);
+            var runeOptions = Util.GetRuneOptions(equippedRuneStates, runeOptionSheet);
             var cp = CPHelper.TotalCP(equipments, costumes, runeOptions, level, row, costumeSheet);
             cpText.text = $"{cp}";
         }
@@ -228,7 +243,7 @@ namespace Nekoyume.UI
             var runeSlot = _runes[battleType].GetRuneSlot();
             costumeSlots.SetPlayerCostumes(level, costumes, ShowTooltip, null);
             equipmentSlots.SetPlayerEquipments(level, equipments, ShowTooltip, null);
-            runeSlots.Set(runeSlot, ShowRuneTooltip, null);
+            runeSlots.Set(runeSlot, _runeStates,ShowRuneTooltip);
         }
 
         private void UpdateStatViews(AvatarState avatarState, BattleType battleType)

@@ -9,6 +9,7 @@ using System.Linq;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Rune;
+using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
 
@@ -101,6 +102,27 @@ namespace Nekoyume.UI.Module
             }
         }
 
+        public void Set(
+            RuneSlot runeSlot,
+            RuneState runeState,
+            Action<RuneSlotView> onClick)
+        {
+            RuneSlot = runeSlot;
+            _onClick = onClick;
+            _onDoubleClick = null;
+            UpdateLoading(runeSlot);
+            UpdateLockState(runeSlot);
+            optionTagBg.gameObject.SetActive(false);
+            if (runeSlot.RuneId.HasValue)
+            {
+                Equip(runeState);
+            }
+            else
+            {
+                Unequip();
+            }
+        }
+
         private void UpdateLoading(RuneSlot runeSlot)
         {
             var value = LoadingHelper.UnlockRuneSlot.Any(x => x == runeSlot.Index);
@@ -160,6 +182,44 @@ namespace Nekoyume.UI.Module
             }
 
             enhancementText.text = $"+{state.Level}";
+            itemImage.enabled = true;
+            itemImage.overrideSprite = icon;
+            itemImage.SetNativeSize();
+
+            UpdateGrade(row);
+            UpdateOptionTag(option, row.Grade);
+        }
+
+        private void Equip(RuneState runeState)
+        {
+            if (runeState is null)
+            {
+                return;
+            }
+
+            if(!RuneFrontHelper.TryGetRuneIcon(runeState.RuneId, out var icon))
+            {
+                return;
+            }
+
+            var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
+            if (!runeListSheet.TryGetValue(runeState.RuneId, out var row))
+            {
+                return;
+            }
+
+            var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
+            if (!runeOptionSheet.TryGetValue(row.Id, out var optionRow))
+            {
+                return;
+            }
+
+            if (!optionRow.LevelOptionMap.TryGetValue(runeState.Level, out var option))
+            {
+                return;
+            }
+
+            enhancementText.text = $"+{runeState.Level}";
             itemImage.enabled = true;
             itemImage.overrideSprite = icon;
             itemImage.SetNativeSize();

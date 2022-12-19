@@ -13,7 +13,6 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
-using Nekoyume.State.Subjects;
 using Nekoyume.TableData.Event;
 using Nekoyume.UI.Scroller;
 using TMPro;
@@ -37,6 +36,15 @@ namespace Nekoyume.UI
             public List<int> UnlockedWorldIds;
         }
 
+        [Serializable]
+        public class EventDungeonObject
+        {
+            public int eventId;
+            public WorldButton button;
+            public GameObject remainingTimeObject;
+            public TextMeshProUGUI remainingTimeText;
+        }
+
         [SerializeField]
         private GameObject worldMapRoot;
 
@@ -47,13 +55,10 @@ namespace Nekoyume.UI
         private WorldButton[] _worldButtons;
 
         [SerializeField]
-        private WorldButton _eventDungeonButton;
+        private EventDungeonObject[] eventDungeonObjects;
 
         [SerializeField]
-        private GameObject _eventDungeonRemainingTimeObject;
-
-        [SerializeField]
-        private TextMeshProUGUI _eventDungeonRemainingTimeText;
+        private Button eventDungeonLockButton;
 
         private readonly List<IDisposable> _disposablesAtShow = new();
 
@@ -121,9 +126,22 @@ namespace Nekoyume.UI
                     }).AddTo(gameObject);
             }
 
-            _eventDungeonButton.Lock(true);
-            _eventDungeonButton.Show();
-            _eventDungeonButton.OnClickSubject.Subscribe(_ =>
+            foreach (var eventDungeonButton in eventDungeonObjects.Select(i => i.button))
+            {
+                eventDungeonButton.Lock();
+                eventDungeonButton.Hide();
+                eventDungeonButton.OnClickSubject.Subscribe(_ =>
+                {
+                    if (RxProps.EventScheduleRowForDungeon.Value is null)
+                    {
+                        return;
+                    }
+
+                    ShowEventDungeonStage(RxProps.EventDungeonRow, false);
+                }).AddTo(gameObject);
+            }
+
+            eventDungeonLockButton.onClick.AddListener(() =>
             {
                 if (RxProps.EventScheduleRowForDungeon.Value is null)
                 {
@@ -131,18 +149,8 @@ namespace Nekoyume.UI
                         MailType.System,
                         L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS"),
                         NotificationCell.NotificationType.Information);
-                    return;
                 }
-
-                ShowEventDungeonStage(RxProps.EventDungeonRow, false);
-            }).AddTo(gameObject);
-
-            AgentStateSubject.Crystal.Subscribe(SetWorldOpenCostTextColor).AddTo(gameObject);
-
-            ReactiveAvatarState.WorldInformation.Subscribe(worldInformation =>
-            {
-                SharedViewModel.WorldInformation = worldInformation;
-            }).AddTo(gameObject);
+            });
         }
 
         #endregion
@@ -181,26 +189,39 @@ namespace Nekoyume.UI
                 .Where(_ => gameObject.activeSelf)
                 .Subscribe(_ => SubscribeAtShow())
                 .AddTo(_disposablesAtShow);
+            TextMeshProUGUI eventDungeonRemainingTimeText = null;
             RxProps.EventScheduleRowForDungeon.Subscribe(value =>
             {
-                if (value is null)
+                foreach (var eventDungeonObject in eventDungeonObjects)
                 {
-                    Find<HeaderMenuStatic>().UpdateAssets(
-                        HeaderMenuStatic.AssetVisibleState.Battle);
-                    _eventDungeonButton.Lock(true);
-                    _eventDungeonRemainingTimeObject.SetActive(false);
-                    return;
+                    eventDungeonObject.button.Hide();
+                    eventDungeonObject.remainingTimeObject.SetActive(false);
                 }
 
-                Find<HeaderMenuStatic>().UpdateAssets(
-                    HeaderMenuStatic.AssetVisibleState.EventDungeon);
-                _eventDungeonButton.HasNotification.Value = true;
-                _eventDungeonButton.Unlock();
-                _eventDungeonRemainingTimeObject.SetActive(true);
+                if (value is null)
+                {
+                    Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
+                    eventDungeonLockButton.gameObject.SetActive(true);
+                }
+                else
+                {
+                    Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.EventDungeon);
+
+                    eventDungeonLockButton.gameObject.SetActive(false);
+                    var eventDungeonObject = eventDungeonObjects.Last(o => o.eventId == value.Id);
+                    eventDungeonObject.button.Show();
+                    eventDungeonObject.button.HasNotification.Value = true;
+                    eventDungeonObject.button.Unlock();
+                    eventDungeonObject.remainingTimeObject.SetActive(true);
+                    eventDungeonRemainingTimeText = eventDungeonObject.remainingTimeText;
+                }
             }).AddTo(_disposablesAtShow);
-            RxProps.EventDungeonRemainingTimeText
-                .SubscribeTo(_eventDungeonRemainingTimeText)
-                .AddTo(_disposablesAtShow);
+            if (eventDungeonRemainingTimeText != null)
+            {
+                RxProps.EventDungeonRemainingTimeText
+                    .SubscribeTo(eventDungeonRemainingTimeText)
+                    .AddTo(_disposablesAtShow);
+            }
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -305,6 +326,7 @@ namespace Nekoyume.UI
             {
                 SharedViewModel.IsWorldShown.SetValueAndForceNotify(showWorld);
             }
+            SubscribeAtShow();
 
             TableSheets.Instance.WorldSheet.TryGetValue(
                 worldId,
@@ -314,6 +336,7 @@ namespace Nekoyume.UI
             SharedViewModel.SelectedStageId.Value = stageId;
             var stageInfo = Find<StageInformation>();
             stageInfo.Show(SharedViewModel, worldRow, StageType.HackAndSlash);
+            UpdateNotificationInfo();
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
             Find<HeaderMenuStatic>().Show();
         }
@@ -331,6 +354,7 @@ namespace Nekoyume.UI
             {
                 SharedViewModel.IsWorldShown.SetValueAndForceNotify(showWorld);
             }
+            SubscribeAtShow();
 
             Show(true);
             var openedStageId =
@@ -348,6 +372,7 @@ namespace Nekoyume.UI
                 eventDungeonRow,
                 openedStageId,
                 openedStageId);
+            StageIdToNotify = openedStageId;
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.EventDungeon);
             Find<HeaderMenuStatic>().Show();
         }
@@ -397,13 +422,7 @@ namespace Nekoyume.UI
                 () =>
                 {
                     Find<UnlockWorldLoadingScreen>().Show();
-                    Analyzer.Instance.Track("Unity/UnlockWorld", new Dictionary<string, Value>()
-                    {
-                        ["BurntCrystal"] = (long)cost,
-                        ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                        ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
-                    });
-                    ActionManager.Instance.UnlockWorld(new List<int> { worldId }).Subscribe();
+                    ActionManager.Instance.UnlockWorld(new List<int> { worldId }, (int) cost).Subscribe();
                 },
                 OnAttractInPaymentPopup);
         }
@@ -434,13 +453,7 @@ namespace Nekoyume.UI
                         () =>
                         {
                             Find<UnlockWorldLoadingScreen>().Show();
-                            Analyzer.Instance.Track("Unity/UnlockWorld", new Dictionary<string, Value>()
-                            {
-                                ["BurntCrystal"] = (long)cost,
-                                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
-                            });
-                            ActionManager.Instance.UnlockWorld(worldIdListForUnlock).Subscribe();
+                            ActionManager.Instance.UnlockWorld(worldIdListForUnlock, (int) cost).Subscribe();
                         },
                         OnAttractInPaymentPopup);
                     return true;

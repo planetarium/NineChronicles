@@ -5137,8 +5137,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 312.32, y: 58}
+  m_AnchoredPosition: {x: 2, y: 0}
+  m_SizeDelta: {x: 285, y: 58}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &1712664898370918284
 CanvasRenderer:
@@ -5488,7 +5488,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 20}
-  m_SizeDelta: {x: 312.32, y: 54}
+  m_SizeDelta: {x: 280, y: 54}
   m_Pivot: {x: 0, y: 1.0000001}
 --- !u!222 &5041609050175108179
 CanvasRenderer:
@@ -5709,6 +5709,9 @@ MonoBehaviour:
   bodyButton: {fileID: 1879522505491201657}
   showingAndHidingTweener: {fileID: 0}
   inProgressTweener: {fileID: 7750695606491973167}
+  iconImage: {fileID: 3068299724612639539}
+  effectedIconImage: {fileID: 3765675580913142185}
+  gradientImage: {fileID: 5576043802618445466}
 --- !u!114 &7750695606491973167
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6499,8 +6502,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Material: {fileID: 2100000, guid: 0f61099b14515e846a095f60b3b832a9, type: 2}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.29803923}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

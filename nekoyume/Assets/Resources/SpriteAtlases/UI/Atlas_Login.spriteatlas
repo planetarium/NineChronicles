@@ -26,7 +26,7 @@ SpriteAtlas:
       m_MaxTextureSize: 1024
       m_ResizeAlgorithm: 0
       m_TextureFormat: -1
-      m_TextureCompression: 1
+      m_TextureCompression: 0
       m_CompressionQuality: 50
       m_CrunchedCompression: 0
       m_AllowsAlphaSplitting: 0
@@ -50,26 +50,38 @@ SpriteAtlas:
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
+  - {fileID: 21300000, guid: 31dedc50bb4714d4fad1b722aa7bfc4a, type: 3}
   - {fileID: 21300000, guid: 458045e03f73942eeb79242e8d6db1da, type: 3}
   - {fileID: 21300000, guid: 78ed6351595354af58e275117df8043e, type: 3}
+  - {fileID: 21300000, guid: 089159331fd48491ba0f05d9a284b9f1, type: 3}
   - {fileID: 21300000, guid: 901817d50b6854b4691a49a1b42099de, type: 3}
+  - {fileID: 21300000, guid: 63ba0b6605fe647dab7391f2ab8e1f7d, type: 3}
   - {fileID: 21300000, guid: 4d321c6670b874a1880fb7f419933103, type: 3}
+  - {fileID: 21300000, guid: ea1e44b615e5aea4a9cb20055e5d443c, type: 3}
   - {fileID: 21300000, guid: b5e74757ee5904c54a77990610344818, type: 3}
   - {fileID: 21300000, guid: 76ca7c08578e94117904036584a951d7, type: 3}
-  - {fileID: 21300000, guid: f28ab4882acdaaa42a6defd604c58428, type: 3}
+  - {fileID: 21300000, guid: e368b5d8e378942f9b77267457f38b74, type: 3}
+  - {fileID: 21300000, guid: 42d370593facd4f2384d20d3b889b1bf, type: 3}
   - {fileID: 21300000, guid: 5adace8ac60d64a3ba97de48de6307ef, type: 3}
   - {fileID: 21300000, guid: b66179cb64c0241b3ad6ff165e4fd1fd, type: 3}
+  - {fileID: 21300000, guid: c9d7094cb42bf4e79bb5a35e5876a498, type: 3}
   - {fileID: 21300000, guid: 7e1e3b9caddbd49e18ebb126cc6eed33, type: 3}
   m_PackedSpriteNamesToIndex:
+  - UI_Btn_Back_bg
   - UI_icon_login_lock_Login
   - UI_Popup_bg_02_Login
+  - button_page_02_reverse
   - UI_main_icon_quest_02_Login
+  - button_page_02
   - UI_icon_login_id_Login
+  - button_gray_plus
   - ui_line_07_Login
   - UI_box_01_Login
-  - logo
+  - UI_box_gold_01
+  - UI_bg_Start_01
   - UI_box_Inventory_04_Login
   - UI_icon_login_lock_check_Login
+  - UI_bg_Start_00
   - UI_Btn_bg_02_Login
   m_RenderDataMap: {}
   m_Tag: Atlas_Login

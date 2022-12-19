@@ -20,6 +20,7 @@ using Nekoyume.Model.Mail;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.EnumType;
 using Nekoyume.TableData;
+using EventType = Nekoyume.EnumType.EventType;
 using Toggle = Nekoyume.UI.Module.Toggle;
 using Material = Nekoyume.Model.Item.Material;
 
@@ -30,6 +31,13 @@ namespace Nekoyume.UI
 
     public class BattlePreparation : Widget
     {
+        [Serializable]
+        public class EventDungeonBg
+        {
+            public EventType eventType;
+            public GameObject background;
+        }
+
         [SerializeField]
         private AvatarInformation information;
 
@@ -83,7 +91,7 @@ namespace Nekoyume.UI
         private GameObject mimisbrunnrBg;
 
         [SerializeField]
-        private GameObject eventDungeonBg;
+        private EventDungeonBg[] eventDungeonBgs;
 
         [SerializeField]
         private GameObject hasBg;
@@ -291,17 +299,34 @@ namespace Nekoyume.UI
                 case StageType.HackAndSlash:
                     hasBg.SetActive(true);
                     mimisbrunnrBg.SetActive(false);
-                    eventDungeonBg.SetActive(false);
+                    foreach (var eventDungeonBg in eventDungeonBgs)
+                    {
+                        eventDungeonBg.background.SetActive(false);
+                    }
                     break;
                 case StageType.Mimisbrunnr:
                     hasBg.SetActive(false);
                     mimisbrunnrBg.SetActive(true);
-                    eventDungeonBg.SetActive(false);
+                    foreach (var eventDungeonBg in eventDungeonBgs)
+                    {
+                        eventDungeonBg.background.SetActive(false);
+                    }
                     break;
                 case StageType.EventDungeon:
                     hasBg.SetActive(false);
                     mimisbrunnrBg.SetActive(false);
-                    eventDungeonBg.SetActive(true);
+                    foreach (var eventDungeonBg in eventDungeonBgs)
+                    {
+                        eventDungeonBg.background.SetActive(false);
+                    }
+
+                    var eventType = EventManager.GetEventInfo().EventType;
+                    var eventDungeonBackground = eventDungeonBgs
+                        .FirstOrDefault(bg => bg.eventType == eventType)?.background;
+                    if (eventDungeonBackground != null)
+                    {
+                        eventDungeonBackground.SetActive(true);
+                    }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -396,40 +421,24 @@ namespace Nekoyume.UI
                         break;
                     }
 
-                    var ncgHas = States.Instance.GoldBalanceState.Gold;
-                    var ncgCost = RxProps.EventScheduleRowForDungeon.Value
+                    var balance = States.Instance.GoldBalanceState.Gold;
+                    var cost = RxProps.EventScheduleRowForDungeon.Value
                         .GetDungeonTicketCost(
                             RxProps.EventDungeonInfo.Value?.NumberOfTicketPurchases ?? 0,
                             States.Instance.GoldBalanceState.Gold.Currency);
-                    if (ncgHas >= ncgCost)
-                    {
-                        // FIXME: `UI_CONFIRM_PAYMENT_CURRENCY_FORMAT_FOR_BATTLE_ARENA` key
-                        //        is temporary.
-                        var notEnoughTicketMsg = L10nManager.Localize(
-                            "UI_CONFIRM_PAYMENT_CURRENCY_FORMAT_FOR_BATTLE_ARENA",
-                            ncgCost.ToString());
-                        Find<PaymentPopup>().ShowAttract(
-                            CostType.EventDungeonTicket,
-                            _requiredCost.ToString(),
-                            notEnoughTicketMsg,
-                            L10nManager.Localize("UI_YES"),
-                            () => StartCoroutine(
-                                CoBattleStart(
-                                    StageType.EventDungeon,
-                                    CostType.NCG,
-                                    true)));
+                    var purchasedCount = RxProps.EventDungeonInfo.Value?.NumberOfTicketPurchases ?? 0;
 
-                        return;
-                    }
-
-                    var notEnoughNCGMsg =
-                        L10nManager.Localize("UI_NOT_ENOUGH_NCG_WITH_SUPPLIER_INFO");
-                    Find<PaymentPopup>().ShowAttract(
+                    Find<TicketPurchasePopup>().Show(
+                        CostType.EventDungeonTicket,
                         CostType.NCG,
-                        ncgCost.GetQuantityString(),
-                        notEnoughNCGMsg,
-                        L10nManager.Localize("UI_GO_TO_MARKET"),
-                        () => GoToMarket(TradeType.Sell));
+                        balance,
+                        cost,
+                        purchasedCount,
+                        1,
+                        () => StartCoroutine(CoBattleStart(_stageType, CostType.NCG, true)),
+                        () => GoToMarket(TradeType.Sell),
+                        true
+                    );
                     return;
                 }
                 default:
@@ -638,8 +647,7 @@ namespace Nekoyume.UI
             Close(true);
             Find<WorldMap>().Close(true);
             Find<StageInformation>().Close(true);
-            Find<HeaderMenuStatic>()
-                .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
             switch (tradeType)
             {
                 case TradeType.Buy:
@@ -651,21 +659,6 @@ namespace Nekoyume.UI
                 default:
                     throw new ArgumentOutOfRangeException(nameof(tradeType), tradeType, null);
             }
-        }
-
-        private static void ShowRefillConfirmPopup(Material material)
-        {
-            var confirm = Find<IconAndButtonSystem>();
-            confirm.ShowWithTwoButton(
-                "UI_CONFIRM",
-                "UI_AP_REFILL_CONFIRM_CONTENT",
-                "UI_OK",
-                "UI_CANCEL",
-                true,
-                IconAndButtonSystem.SystemType.Information);
-            confirm.ConfirmCallback = () =>
-                ActionManager.Instance.ChargeActionPoint(material).Subscribe();
-            confirm.CancelCallback = () => confirm.Close();
         }
 
         private static int GetBoostMaxCount(int stageId)

@@ -29,7 +29,10 @@ namespace Nekoyume.UI
         protected TextMeshProUGUI contentText;
 
         [SerializeField]
-        protected TextMeshProUGUI maxPurchaseText;
+        protected TextMeshProUGUI purchaseText;
+
+        [SerializeField]
+        protected TextMeshProUGUI purchaseCountText;
 
         [SerializeField]
         protected TextButton confirmButton;
@@ -52,12 +55,13 @@ namespace Nekoyume.UI
             int purchasedCount,
             int maxPurchaseCount,
             System.Action onConfirm,
-            System.Action goToMarget)
+            System.Action goToMarget,
+            bool isMaxPurchaseInfinite = false)
         {
-            if (purchasedCount < maxPurchaseCount)
+            if (purchasedCount < maxPurchaseCount || isMaxPurchaseInfinite)
             {
                 ShowPurchaseTicketPopup(ticketType, costType, balance, cost,
-                    purchasedCount, maxPurchaseCount, onConfirm, goToMarget);
+                    purchasedCount, maxPurchaseCount, onConfirm, goToMarget, isMaxPurchaseInfinite);
             }
             else
             {
@@ -75,7 +79,8 @@ namespace Nekoyume.UI
             int purchasedCount,
             int maxPurchaseCount,
             System.Action onConfirm,
-            System.Action goToMarget)
+            System.Action goToMarget,
+            bool isMaxPurchaseInfinite = false)
         {
             ticketIcon.overrideSprite = costIconData.GetIcon(ticketType);
             costIcon.overrideSprite = costIconData.GetIcon(costType);
@@ -90,9 +95,21 @@ namespace Nekoyume.UI
                 ? Color.white
                 : Palette.GetColor(EnumType.ColorType.ButtonDisabled);
 
-            maxPurchaseText.text = L10nManager.Localize("UI_TICKET_PURCHASE_LIMIT",
-                purchasedCount, maxPurchaseCount);
-            maxPurchaseText.color = Palette.GetColor(EnumType.ColorType.TextElement06);
+
+            var purchaseMessage = L10nManager.Localize("UI_TICKET_PURCHASE_LIMIT");
+            if(isMaxPurchaseInfinite)
+            {
+                purchaseCountText.gameObject.SetActive(true);
+                purchaseCountText.text = $"<size=150%>{purchasedCount}/∞</size>";
+                purchaseCountText.color = Palette.GetColor(EnumType.ColorType.TextElement06);
+            }
+            else
+            {
+                purchaseCountText.gameObject.SetActive(false);
+                purchaseMessage = $"{purchaseMessage} {purchasedCount}/{maxPurchaseCount}";
+            }
+            purchaseText.text = purchaseMessage;
+            purchaseText.color = Palette.GetColor(EnumType.ColorType.TextElement06);
 
             cancelButton.gameObject.SetActive(true);
             contentText.text = L10nManager.Localize("UI_BUY_TICKET_AND_START", GetTicketName(ticketType));
@@ -122,9 +139,12 @@ namespace Nekoyume.UI
 
             costContainer.SetActive(false);
             cancelButton.gameObject.SetActive(false);
-            maxPurchaseText.text = L10nManager.Localize("UI_TICKET_PURCHASE_LIMIT",
-                purchasedCount, maxPurchaseCount);
-            maxPurchaseText.color = Palette.GetColor(EnumType.ColorType.ButtonDisabled);
+
+            var purchaseMessage = L10nManager.Localize("UI_TICKET_PURCHASE_LIMIT");
+            purchaseText.text = $"{purchaseMessage} {purchasedCount}/{maxPurchaseCount}";
+            purchaseText.color = Palette.GetColor(EnumType.ColorType.ButtonDisabled);
+            purchaseCountText.gameObject.SetActive(false);
+
             confirmButton.Text = L10nManager.Localize("UI_OK");
             contentText.text = L10nManager.Localize("UI_REACHED_TICKET_BUY_LIMIT", GetTicketName(ticketType));
             confirmButton.OnClick = () => Close();
@@ -136,6 +156,7 @@ namespace Nekoyume.UI
             {
                 CostType.ArenaTicket => L10nManager.Localize("UI_ARENA_JOIN_BACK_BUTTON"),
                 CostType.WorldBossTicket => L10nManager.Localize("UI_WORLD_BOSS"),
+                CostType.EventDungeonTicket => L10nManager.Localize("UI_EVENT_DUNGEON"),
                 _ => string.Empty
             };
         }

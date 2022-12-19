@@ -187,7 +187,7 @@ namespace Nekoyume.UI
                 }
             }).AddTo(gameObject);
 
-            stagePreparationButton.OnClickAsObservable().Subscribe(_ => { OnClickStage(); }).AddTo(gameObject);
+            stagePreparationButton.OnClickAsObservable().Subscribe(_ => OnClickStage()).AddTo(gameObject);
 
             nextButton.OnClickAsObservable()
                 .Subscribe(_ => StartCoroutine(OnClickNext()))
@@ -230,14 +230,40 @@ namespace Nekoyume.UI
                 yield break;
             }
 
-            if (SharedModel.StageType == StageType.EventDungeon &&
-                RxProps.EventScheduleRowForDungeon.Value is null)
+            if (SharedModel.StageType == StageType.EventDungeon)
             {
-                NotificationSystem.Push(
-                    MailType.System,
-                    L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS"),
-                    NotificationCell.NotificationType.Information);
-                yield break;
+                if (RxProps.EventScheduleRowForDungeon.Value is null)
+                {
+                    NotificationSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS"),
+                        NotificationCell.NotificationType.Information);
+                    yield break;
+                }
+
+                if (SharedModel.ActionPointNotEnough)
+                {
+                    var balance = States.Instance.GoldBalanceState.Gold;
+                    var cost = RxProps.EventScheduleRowForDungeon.Value
+                        .GetDungeonTicketCost(
+                            RxProps.EventDungeonInfo.Value?.NumberOfTicketPurchases ?? 0,
+                            States.Instance.GoldBalanceState.Gold.Currency);
+                    var purchasedCount =
+                        RxProps.EventDungeonInfo.Value?.NumberOfTicketPurchases ?? 0;
+
+                    Find<TicketPurchasePopup>().Show(
+                        CostType.EventDungeonTicket,
+                        CostType.NCG,
+                        balance,
+                        cost,
+                        purchasedCount,
+                        1,
+                        () => StartCoroutine(CoProceedNextStage(true)),
+                        GoToMarket,
+                        true
+                    );
+                    yield break;
+                }
             }
 
             AudioController.PlayClick();
@@ -251,14 +277,40 @@ namespace Nekoyume.UI
                 yield break;
             }
 
-            if (SharedModel.StageType == StageType.EventDungeon &&
-                RxProps.EventScheduleRowForDungeon.Value is null)
+            if (SharedModel.StageType == StageType.EventDungeon)
             {
-                NotificationSystem.Push(
-                    MailType.System,
-                    L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS"),
-                    NotificationCell.NotificationType.Information);
-                yield break;
+                if (RxProps.EventScheduleRowForDungeon.Value is null)
+                {
+                    NotificationSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS"),
+                        NotificationCell.NotificationType.Information);
+                    yield break;
+                }
+
+                if (SharedModel.ActionPointNotEnough)
+                {
+                    var balance = States.Instance.GoldBalanceState.Gold;
+                    var cost = RxProps.EventScheduleRowForDungeon.Value
+                        .GetDungeonTicketCost(
+                            RxProps.EventDungeonInfo.Value?.NumberOfTicketPurchases ?? 0,
+                            States.Instance.GoldBalanceState.Gold.Currency);
+                    var purchasedCount =
+                        RxProps.EventDungeonInfo.Value?.NumberOfTicketPurchases ?? 0;
+
+                    Find<TicketPurchasePopup>().Show(
+                        CostType.EventDungeonTicket,
+                        CostType.NCG,
+                        balance,
+                        cost,
+                        purchasedCount,
+                        1,
+                        () => StartCoroutine(CoRepeatStage(true)),
+                        GoToMarket,
+                        true
+                    );
+                    yield break;
+                }
             }
 
             AudioController.PlayClick();
@@ -545,7 +597,9 @@ namespace Nekoyume.UI
                 stagePreparationButton.interactable = true;
             }
 
-            if (!SharedModel.ActionPointNotEnough)
+            var isActionPointEnough = !SharedModel.ActionPointNotEnough ||
+                                      SharedModel.StageType == StageType.EventDungeon;
+            if (isActionPointEnough)
             {
                 var value =
                     SharedModel.StageID >= Battle.RequiredStageForExitButton ||
@@ -554,9 +608,7 @@ namespace Nekoyume.UI
                 repeatButton.interactable = value;
             }
 
-            if (!SharedModel.IsEndStage &&
-                !SharedModel.ActionPointNotEnough &&
-                SharedModel.IsClear)
+            if (!SharedModel.IsEndStage && isActionPointEnough && SharedModel.IsClear)
             {
                 nextButton.gameObject.SetActive(true);
                 nextButton.interactable = true;
@@ -631,7 +683,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private IEnumerator CoProceedNextStage()
+        private IEnumerator CoProceedNextStage(bool buyTicketIfNeeded = false)
         {
             if (!nextButton.interactable)
             {
@@ -667,10 +719,10 @@ namespace Nekoyume.UI
             player.DisableHUD();
             ActionRenderHandler.Instance.Pending = true;
 
-            yield return StartCoroutine(SendBattleActionAsync(1));
+            yield return StartCoroutine(SendBattleActionAsync(1, buyTicketIfNeeded));
         }
 
-        private IEnumerator CoRepeatStage()
+        private IEnumerator CoRepeatStage(bool buyTicketIfNeeded = false)
         {
             if (!repeatButton.interactable)
             {
@@ -717,10 +769,10 @@ namespace Nekoyume.UI
             var eventName = $"Unity/Stage Exit {eventKey}";
             Analyzer.Instance.Track(eventName, props);
 
-            yield return StartCoroutine(SendBattleActionAsync(0));
+            yield return StartCoroutine(SendBattleActionAsync(0, buyTicketIfNeeded));
         }
 
-        private IEnumerator SendBattleActionAsync(int stageIdOffset)
+        private IEnumerator SendBattleActionAsync(int stageIdOffset, bool buyTicketIfNeeded = false)
         {
             var itemSlotState = States.Instance.ItemSlotStates[BattleType.Adventure];
             var costumes = itemSlotState.Costumes;
@@ -756,7 +808,7 @@ namespace Nekoyume.UI
                         costumes,
                         new List<Consumable>(),
                         runeSlotInfos,
-                        false)
+                        buyTicketIfNeeded)
                     .StartAsCoroutine(),
                 _ => throw new ArgumentOutOfRangeException()
             };
@@ -895,6 +947,21 @@ namespace Nekoyume.UI
                     true);
 
                 worldMapLoading.Close(true);
+            });
+        }
+
+        private void GoToMarket()
+        {
+            Find<Battle>().Close(true);
+            Game.Game.instance.Stage.DestroyBackground();
+            Game.Event.OnRoomEnter.Invoke(true);
+            Close();
+
+            Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
+            {
+                CloseWithOtherWidgets();
+                Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+                Find<ShopSell>().Show();
             });
         }
 

@@ -1,0 +1,115 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: EventDungeon_03
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 0
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 1
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 0
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 2800000, guid: 3d40b45a3ce3648c1abde345cbe2d598, type: 3}
+    - {fileID: 2800000, guid: 05783bf6b38404852a0115155c0a3881, type: 3}
+    - {fileID: 2800000, guid: 7a99edc2fede249c2866d1878cb3261a, type: 3}
+    - {fileID: 2800000, guid: 9e5239054604440aabab495481cc08c5, type: 3}
+    - {fileID: 2800000, guid: fa2cc7b416f314814951612d728debb1, type: 3}
+    - {fileID: 2800000, guid: 17dd401ff10cf457dbb0c9b5e29b254e, type: 3}
+    - {fileID: 2800000, guid: 42bb32ea212f74f9fb8c3a2460753a6e, type: 3}
+    - {fileID: 2800000, guid: 30d57f0ee0cd34c6eb8e9f4dcedb2762, type: 3}
+    - {fileID: 2800000, guid: 59de0e7feaa9442fbb6b4c4e6d5b3d0c, type: 3}
+    - {fileID: 2800000, guid: e9494613fa0a04dc981f79cbb35f9b0a, type: 3}
+    - {fileID: 2800000, guid: c28eadd0c85a04737abbde2a2abcc89d, type: 3}
+    - {fileID: 2800000, guid: f3cbc93771084434f8f72c36febfaeb6, type: 3}
+    - {fileID: 2800000, guid: a108231b45dd04ee6a502048b2a9dfa5, type: 3}
+    - {fileID: 2800000, guid: b3e209ab71cbb4302b950f5114d9bd23, type: 3}
+    - {fileID: 2800000, guid: 3529feed02ea7437ab1273bd1ea9931d, type: 3}
+    - {fileID: 2800000, guid: 04074aa22ea774dcdb6d23296da6d359, type: 3}
+    - {fileID: 2800000, guid: 347e46f7ed5c348a9a4b42e4733ec98a, type: 3}
+    - {fileID: 2800000, guid: de62c2eb6d5b840508a3ef72d950452d, type: 3}
+    - {fileID: 2800000, guid: 3742b32a5cee84216be5a238a48357ab, type: 3}
+    - {fileID: 2800000, guid: e3436e2a76c744909946f726978087ba, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: c28eadd0c85a04737abbde2a2abcc89d, type: 3}
+  - {fileID: 21300000, guid: 04074aa22ea774dcdb6d23296da6d359, type: 3}
+  - {fileID: 21300000, guid: 7a99edc2fede249c2866d1878cb3261a, type: 3}
+  - {fileID: 21300000, guid: e9494613fa0a04dc981f79cbb35f9b0a, type: 3}
+  - {fileID: 21300000, guid: fa2cc7b416f314814951612d728debb1, type: 3}
+  - {fileID: 21300000, guid: 9e5239054604440aabab495481cc08c5, type: 3}
+  - {fileID: 21300000, guid: 05783bf6b38404852a0115155c0a3881, type: 3}
+  - {fileID: 21300000, guid: f3cbc93771084434f8f72c36febfaeb6, type: 3}
+  - {fileID: 21300000, guid: 347e46f7ed5c348a9a4b42e4733ec98a, type: 3}
+  - {fileID: 21300000, guid: 3742b32a5cee84216be5a238a48357ab, type: 3}
+  - {fileID: 21300000, guid: e3436e2a76c744909946f726978087ba, type: 3}
+  - {fileID: 21300000, guid: 3d40b45a3ce3648c1abde345cbe2d598, type: 3}
+  - {fileID: 21300000, guid: 42bb32ea212f74f9fb8c3a2460753a6e, type: 3}
+  - {fileID: 21300000, guid: a108231b45dd04ee6a502048b2a9dfa5, type: 3}
+  - {fileID: 21300000, guid: b3e209ab71cbb4302b950f5114d9bd23, type: 3}
+  - {fileID: 21300000, guid: de62c2eb6d5b840508a3ef72d950452d, type: 3}
+  - {fileID: 21300000, guid: 3529feed02ea7437ab1273bd1ea9931d, type: 3}
+  - {fileID: 21300000, guid: 30d57f0ee0cd34c6eb8e9f4dcedb2762, type: 3}
+  - {fileID: 21300000, guid: 17dd401ff10cf457dbb0c9b5e29b254e, type: 3}
+  - {fileID: 21300000, guid: 59de0e7feaa9442fbb6b4c4e6d5b3d0c, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - bg_eventdungeon_03_03_02
+  - eventdungeon_03_01_02
+  - bg_eventdungeon_03_01_03
+  - bg_eventdungeon_03_03_01
+  - bg_eventdungeon_03_02_01
+  - bg_eventdungeon_03_01_04
+  - bg_eventdungeon_03_01_02
+  - bg_eventdungeon_03_03_03
+  - eventdungeon_03_02_01
+  - eventdungeon_03_03_01
+  - eventdungeon_03_03_02
+  - bg_eventdungeon_03_01_01
+  - bg_eventdungeon_03_02_03
+  - bg_eventdungeon_03_03_04
+  - bg_eventdungeon_03_03_05
+  - eventdungeon_03_02_02
+  - eventdungeon_03_01_01
+  - bg_eventdungeon_03_02_04
+  - bg_eventdungeon_03_02_02
+  - bg_eventdungeon_03_02_05
+  m_RenderDataMap: {}
+  m_Tag: EventDungeon_03
+  m_IsVariant: 0

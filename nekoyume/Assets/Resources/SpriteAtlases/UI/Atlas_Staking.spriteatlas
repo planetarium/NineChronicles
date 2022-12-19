@@ -23,7 +23,7 @@ SpriteAtlas:
     platformSettings:
     - serializedVersion: 3
       m_BuildTarget: DefaultTexturePlatform
-      m_MaxTextureSize: 2048
+      m_MaxTextureSize: 1024
       m_ResizeAlgorithm: 0
       m_TextureFormat: -1
       m_TextureCompression: 0
@@ -45,33 +45,99 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: e62c61b5e385349cf8f85c5b0b2906f4, type: 3}
+    - {fileID: 102900000, guid: 7ba1f0320920c46de8d4d205cb31a8e6, type: 3}
+    - {fileID: 102900000, guid: c15853f15215b484d92ffecf46906877, type: 3}
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
+  - {fileID: 21300000, guid: 9a1667005c6884fbbbb42efd64f77e80, type: 3}
   - {fileID: 21300000, guid: 860f4340f969c4e16b2724697c57623d, type: 3}
+  - {fileID: 21300000, guid: 989260c08253b4788afa6e066e62899d, type: 3}
+  - {fileID: 21300000, guid: c510f332d38e62546bf8027bd0474cdf, type: 3}
   - {fileID: 21300000, guid: 5fed8862a4e0a4981bac1a69113a803e, type: 3}
+  - {fileID: 21300000, guid: d44c3272c9671423b83361285576b68c, type: 3}
+  - {fileID: 21300000, guid: 1c2b3ed25f6254869bfdf465d3f02b0e, type: 3}
+  - {fileID: 21300000, guid: 3b669d23596674942885f501b559505b, type: 3}
+  - {fileID: 21300000, guid: d597c2536643f4c1b8a10deb7e425299, type: 3}
+  - {fileID: 21300000, guid: a4e70e24b9d9342c9bc6f16b1793a235, type: 3}
+  - {fileID: 21300000, guid: ded920c499c5b7948976f05c7b554959, type: 3}
+  - {fileID: 21300000, guid: ffe885c45049d41e4baa6f87db790c7d, type: 3}
+  - {fileID: 21300000, guid: 73cb9b15da45a6c498e8887afb4c0fa5, type: 3}
+  - {fileID: 21300000, guid: a2193235ab58842a2ae358cceb6b8394, type: 3}
   - {fileID: 21300000, guid: b21cbe451c9d74724be3962754247a2e, type: 3}
+  - {fileID: 21300000, guid: 49914665360c7dd41a5a01a1bcdbdcb9, type: 3}
   - {fileID: 21300000, guid: 28de4bb53520d4141a26ac790bb88a4f, type: 3}
-  - {fileID: 21300000, guid: 0fd932e603eb03049a100b49a122e8ea, type: 3}
-  - {fileID: 21300000, guid: a6b977a974d7e424f84d886a19008f87, type: 3}
-  - {fileID: 21300000, guid: d0d333d99f2ce394f841e9ac89a71ef9, type: 3}
-  - {fileID: 21300000, guid: 71c2af3ba3eb3fd4d86758894b695e1c, type: 3}
+  - {fileID: 21300000, guid: 2eb8497622881d04aad7ff63b4894baf, type: 3}
+  - {fileID: 21300000, guid: a2d1f5e68537cf04ea4c5e13c9ddbc89, type: 3}
+  - {fileID: 21300000, guid: 8efd7a17ae635458c812966d604e1b9c, type: 3}
+  - {fileID: 21300000, guid: 896c02083c1ec438b9e7a7b536aea628, type: 3}
+  - {fileID: 21300000, guid: 7ae8bd7862d1e49e69ac5b00a093bb12, type: 3}
+  - {fileID: 21300000, guid: e6d998a86151ab94f8157ff8f4285d1c, type: 3}
+  - {fileID: 21300000, guid: 7b5b2ab85ffd345b9b3bec7307e2ba56, type: 3}
+  - {fileID: 21300000, guid: 205240e83493044159b76c1484bbaa2c, type: 3}
+  - {fileID: 21300000, guid: ccaf8329f07255f499c0bc8376e27dd0, type: 3}
+  - {fileID: 21300000, guid: a17d9639b997784438094f272394c8de, type: 3}
+  - {fileID: 21300000, guid: 2eb2e04962d584832b47c58fbbc57679, type: 3}
+  - {fileID: 21300000, guid: 13aa00d95e7886b4e852d384f0f133ec, type: 3}
+  - {fileID: 21300000, guid: 8b32627b591c7704ea5bd5e6a9424b75, type: 3}
+  - {fileID: 21300000, guid: 2de1008b5226e4244aeb6a0971d3c2f1, type: 3}
+  - {fileID: 21300000, guid: 919e9b9bb96e3449db489f23e5c3e7c9, type: 3}
+  - {fileID: 21300000, guid: b1251b7c529554deca93f9d250c68cc9, type: 3}
   - {fileID: 21300000, guid: 526543acef05941d199181047dd59c9d, type: 3}
-  - {fileID: 21300000, guid: b294ca5dc9d360f4083e55046e22eb77, type: 3}
+  - {fileID: 21300000, guid: 3e0660bc845693445ba7e03b782e9782, type: 3}
+  - {fileID: 21300000, guid: 88d51e7e327427048826ed48bc9eae22, type: 3}
+  - {fileID: 21300000, guid: f15bf6bec64cf82459fe705a0f8024ec, type: 3}
+  - {fileID: 21300000, guid: 946a840ff480143048f6914738451d2a, type: 3}
+  - {fileID: 21300000, guid: 9c118b2f0c5d5453da4cca84acd35acc, type: 3}
+  - {fileID: 21300000, guid: 1690bd2f063e54e999e17582dbc3a6fc, type: 3}
+  - {fileID: 21300000, guid: 3097c23faa86f433e9a107fa1df746bf, type: 3}
+  - {fileID: 21300000, guid: 51e8f24f3128440eda247f226efd038c, type: 3}
   - {fileID: 21300000, guid: 92ad0ceffd9fa472a9584e39f8c17e7f, type: 3}
   m_PackedSpriteNamesToIndex:
+  - Icon_Buff_Grade_add
   - UI_bg_Staking_Benefits
+  - Grind_buff_bg_05
+  - Random_Buff
   - UI_Popup_bg_30
+  - StageBuff_SuperCraft_bg
+  - Grind_Buff_bg
+  - Icon_Buff_Grade_3
+  - Buff_bg_00
+  - Icon_Staking_Buff_04
+  - Icon_Buff_Grade_Bg_4
+  - Grind_Buff_bg_02
+  - Buff_Grade_4
+  - Buff_bg_SkillIcon
   - UI_bg_Staking_Select
+  - Buff_Grade_2
   - UI_bg_Staking_Press
-  - Staking_Mob_01
-  - Staking_Mob_02
-  - Staking_Mob_05
-  - Staking_Mob_04
+  - Icon_Buff_Grade_1
+  - Icon_Buff_Grade_Bg_3
+  - icon_Staking_Buff_05
+  - UI_bg_frame_deco_05
+  - icon_Staking_Buff_02
+  - Icon_Buff_Grade_2
+  - Grind_buff_bg_04
+  - Bg_buff_Deco
+  - Buff_Grade_3
+  - Buff_Grade_1
+  - UI_bg_Staking
+  - UI_Grade_Confirmation
+  - Random_Buff_Glow
+  - Buff_bg_icon_Staking
+  - StageBuff_Random_bg
+  - Grind_Buff_bg_01
   - UI_Popup_bg_31
-  - Staking_Mob_03
+  - Icon_Buff_Grade_Bg_2
+  - Icon_Buff_Grade_Bg_1
+  - Icon_Buff_Grade_4
+  - icon_Staking_Buff_01
+  - icon_Staking_Buff_03
+  - Buff_bg_10
+  - StageBuff_SuperCraft_icon
+  - Grind_buff_bg_03
   - UI_bg_Staking_Normal
   m_RenderDataMap: {}
   m_Tag: Atlas_Staking

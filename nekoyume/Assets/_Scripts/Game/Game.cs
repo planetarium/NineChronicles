@@ -20,6 +20,7 @@ using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.Notice;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -198,6 +199,12 @@ namespace Nekoyume.Game
             yield return SyncTableSheetsAsync().ToCoroutine();
             Debug.Log("[Game] Start() TableSheets synchronized");
             RxProps.Start(Agent, States, TableSheets);
+            // Initialize RequestManager and NoticeManager
+            gameObject.AddComponent<RequestManager>();
+            var noticeManager = gameObject.AddComponent<NoticeManager>();
+            noticeManager.InitializeData();
+            yield return new WaitUntil(() => noticeManager.IsInitialized);
+            Debug.Log("[Game] Start() RequestManager & NoticeManager initialized");
             // Initialize MainCanvas second
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
             // Initialize NineChroniclesAPIClient.
@@ -206,8 +213,6 @@ namespace Nekoyume.Game
             {
                 _rpcClient = new NineChroniclesAPIClient($"http://{_options.RpcServerHost}/graphql");
             }
-
-            gameObject.AddComponent<RequestManager>();
 
             WorldBossQuery.SetUrl(_options.OnBoardingHost);
 

@@ -435,12 +435,28 @@ namespace Nekoyume.State
                         ? new RuneSlotState(runeSlotList)
                         : new RuneSlotState(BattleType.Arena);
 
+                runeStates.Clear();
                 foreach (var id in runeIds)
                 {
                     var address = RuneState.DeriveAddress(tuple.avatarAddr, id);
                     if (stateBulk[address] is List runeStateList)
                     {
                         runeStates.Add(new RuneState(runeStateList));
+                    }
+                }
+
+                var equippedRuneStates = new List<RuneState>();
+                foreach (var slot in runeSlotState.GetRuneSlot())
+                {
+                    if (!slot.RuneId.HasValue)
+                    {
+                        continue;
+                    }
+
+                    var runeState = runeStates.FirstOrDefault(x => x.RuneId == slot.RuneId);
+                    if (runeState != null)
+                    {
+                        equippedRuneStates.Add(runeState);
                     }
                 }
 
@@ -455,7 +471,7 @@ namespace Nekoyume.State
                     avatar,
                     itemSlotState,
                     runeSlotState,
-                    runeStates,
+                    equippedRuneStates,
                     (win, lose)
                 );
             }).ToArray();

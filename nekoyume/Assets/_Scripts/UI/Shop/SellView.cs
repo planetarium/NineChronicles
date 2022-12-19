@@ -2,11 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.EnumType;
+using Nekoyume.Game;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
-using Nekoyume.UI.Model;
+using Nekoyume.Model.Item;
+using Nekoyume.State;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
+using ShopItem = Nekoyume.UI.Model.ShopItem;
 
 namespace Nekoyume
 {
@@ -123,6 +127,16 @@ namespace Nekoyume
                 ShopSortFilter.Price => models.OrderByDescending(x => x.OrderDigest.Price).ToList(),
                 ShopSortFilter.Class => models.OrderByDescending(x => x.Grade)
                     .ThenByDescending(x => x.ItemBase.ItemType).ToList(),
+                ShopSortFilter.Crystal => models.OrderByDescending(x => x.ItemBase.ItemType == ItemType.Equipment
+                    ? CrystalCalculator.CalculateCrystal(
+                            new[] {(Equipment) x.ItemBase},
+                            false,
+                            TableSheets.Instance.CrystalEquipmentGrindingSheet,
+                            TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet,
+                            States.Instance.StakingLevel).DivRem(x.OrderDigest.Price.MajorUnit)
+                        .Quotient
+                        .MajorUnit
+                    : 0),
                 _ => throw new ArgumentOutOfRangeException()
             };
         }

@@ -101,6 +101,46 @@ namespace Nekoyume.UI.Module
 
             RectTransform = GetComponent<RectTransform>();
 
+            UpdateRequireLevel();
+
+            _messageForCat =
+                $"{L10nManager.Localize($"ITEM_SUB_TYPE_{ItemSubType.ToString()}")}\n<sprite name=\"UI_icon_lock_01\"> LV.{_requireLevel}";
+
+            gameObject.AddComponent<ObservablePointerEnterTrigger>()
+                .OnPointerEnterAsObservable()
+                .Subscribe(x =>
+                {
+                    if (!ShowUnlockTooltip || !IsLock)
+                    {
+                        return;
+                    }
+
+                    if (_cat)
+                    {
+                        _cat.Hide();
+                    }
+
+                    _cat = Widget.Find<MessageCatTooltip>().Show(true, _messageForCat, gameObject);
+                })
+                .AddTo(gameObject);
+
+            gameObject.AddComponent<ObservablePointerExitTrigger>()
+                .OnPointerExitAsObservable()
+                .Subscribe(x =>
+                {
+                    if (!IsLock || !_cat)
+                    {
+                        return;
+                    }
+
+                    _cat.Hide();
+                    _cat = null;
+                })
+                .AddTo(gameObject);
+        }
+
+        private void UpdateRequireLevel()
+        {
             switch (ItemSubType)
             {
                 case ItemSubType.FullCostume:
@@ -164,45 +204,11 @@ namespace Nekoyume.UI.Module
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
+
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-
-            _messageForCat =
-                $"{L10nManager.Localize($"ITEM_SUB_TYPE_{ItemSubType.ToString()}")}\n<sprite name=\"UI_icon_lock_01\"> LV.{_requireLevel}";
-
-            gameObject.AddComponent<ObservablePointerEnterTrigger>()
-                .OnPointerEnterAsObservable()
-                .Subscribe(x =>
-                {
-                    if (!ShowUnlockTooltip || !IsLock)
-                    {
-                        return;
-                    }
-
-                    if (_cat)
-                    {
-                        _cat.Hide();
-                    }
-
-                    _cat = Widget.Find<MessageCatTooltip>().Show(true, _messageForCat, gameObject);
-                })
-                .AddTo(gameObject);
-
-            gameObject.AddComponent<ObservablePointerExitTrigger>()
-                .OnPointerExitAsObservable()
-                .Subscribe(x =>
-                {
-                    if (!IsLock || !_cat)
-                    {
-                        return;
-                    }
-
-                    _cat.Hide();
-                    _cat = null;
-                })
-                .AddTo(gameObject);
         }
 
         public void Set(

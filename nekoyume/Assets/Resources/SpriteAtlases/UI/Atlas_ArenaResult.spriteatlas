@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Atlas_ArenaResult
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 1
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 1024
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 0
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 1
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 0
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: 80483617273b445e389fa8ff1b768ec4, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: e6af7801e4afae842aad64f0eb1ea196, type: 3}
+  - {fileID: 21300000, guid: c4648932d941ce743990f79103054e17, type: 3}
+  - {fileID: 21300000, guid: 4a9e07749f32744a785b72e76d354331, type: 3}
+  - {fileID: 21300000, guid: bcf7bc76df2865a4ca89fa5a2b563ba6, type: 3}
+  - {fileID: 21300000, guid: b24fc508fd6de3e44873c7bdb2e9188d, type: 3}
+  - {fileID: 21300000, guid: b8782f99c61308e46a40f19eab48eb32, type: 3}
+  - {fileID: 21300000, guid: 1da7810c87905014f9fbdb32107e7405, type: 3}
+  - {fileID: 21300000, guid: 07c139ec8d49cf84e96d63653bd823c5, type: 3}
+  - {fileID: 21300000, guid: eaf5f99de2cecfd4586e57ead99d756c, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - bg_pvp_vs
+  - UI_pvp_wing
+  - Bg_Season_bg_02
+  - bg_pvp_02
+  - UI_pvp_emblem
+  - bg_pvp_emblem
+  - bg_pvp_back
+  - bg_pvp_03
+  - bg_pvp_vs_effect
+  m_RenderDataMap: {}
+  m_Tag: Atlas_ArenaResult
+  m_IsVariant: 0

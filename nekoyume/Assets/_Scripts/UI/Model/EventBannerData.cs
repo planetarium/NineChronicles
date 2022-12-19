@@ -6,7 +6,8 @@ namespace Nekoyume.UI.Model
     public class EventBannerData
     {
         public int Priority { get; set; }
-        public string ImageName { get; set; }
+        public string BannerImageName { get; set; }
+        public string PopupImageName { get; set; }
         public bool UseDateTime { get; set; }
         public string BeginDateTime { get; set; }
         public string EndDateTime { get; set; }

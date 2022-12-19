@@ -164,9 +164,7 @@ namespace Nekoyume.Game.Controller
             CurrentState = State.None;
             Event.OnRoomEnter.AddListener(_ =>
             {
-                PlayMusic(RxProps.EventScheduleRowForDungeon.Value is not null
-                    ? "bgm_event_22summer_title"
-                    : EventManager.GetMainBgmName());
+                PlayMusic(EventManager.GetEventInfo().MainBGM.name);
             });
         }
 

@@ -11,6 +11,7 @@ using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
@@ -424,7 +425,7 @@ namespace Nekoyume.UI
                     return;
                 }
 
-                currentOptions.Set(1, statInfo);
+                currentOptions.Set(1, statInfo, (RuneUsePlace)item.Row.UsePlace);
             }
             else
             {
@@ -436,11 +437,16 @@ namespace Nekoyume.UI
                 var nextLevel = item.Level + 1;
                 if (item.OptionRow.LevelOptionMap.TryGetValue(nextLevel, out var nextStatInfo))
                 {
-                    currentOptions.Set(item.Level, nextLevel, statInfo, nextStatInfo);
+                    currentOptions.Set(
+                    item.Level,
+                    nextLevel,
+                    statInfo,
+                    nextStatInfo,
+                    (RuneUsePlace)item.Row.UsePlace);
                 }
                 else
                 {
-                    currentOptions.Set(item.Level, statInfo); // max level
+                    currentOptions.Set(item.Level, statInfo, (RuneUsePlace)item.Row.UsePlace); // max level
                 }
             }
         }
@@ -537,7 +543,8 @@ namespace Nekoyume.UI
                     _maxTryCount > 0 ? _maxTryCount : 1,
                     1,
                     (x) => TryCount.Value = x,
-                    _maxTryCount > 0);
+                    _maxTryCount > 0,
+                    true);
             }
         }
 

@@ -581,13 +581,22 @@ namespace Nekoyume.Game
             }
             else if (_battleResultModel.ActionPointNotEnough)
             {
-                _battleResultModel.NextState = BattleResultPopup.NextState.GoToMain;
+                _battleResultModel.NextState = StageType == StageType.EventDungeon
+                    ? BattleResultPopup.NextState.None
+                    : BattleResultPopup.NextState.GoToMain;
             }
             else if (isClear)
             {
-                _battleResultModel.NextState = _battleResultModel.IsEndStage
-                    ? BattleResultPopup.NextState.GoToMain
-                    : BattleResultPopup.NextState.NextStage;
+                if (_battleResultModel.IsEndStage)
+                {
+                    _battleResultModel.NextState = StageType == StageType.EventDungeon
+                        ? BattleResultPopup.NextState.None
+                        : BattleResultPopup.NextState.GoToMain;
+                }
+                else
+                {
+                    _battleResultModel.NextState = BattleResultPopup.NextState.NextStage;
+                }
             }
             else
             {

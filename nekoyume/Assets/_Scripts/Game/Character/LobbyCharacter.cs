@@ -44,10 +44,7 @@ namespace Nekoyume.Game.Character
                 avatarState.tail);
 
             var title = costumes.FirstOrDefault(x => x.ItemSubType == ItemSubType.Title);
-            if (title != null)
-            {
-                Widget.Find<Menu>().UpdateTitle(title);
-            }
+            Widget.Find<Menu>().UpdateTitle(title);
 
             var items = new List<Guid>();
             items.AddRange(costumes.Select(x=> x.ItemId));
