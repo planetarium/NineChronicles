@@ -26,7 +26,7 @@ namespace Lib9c.Formatters
             // add more your own custom serializers.
         };
 
-        internal static object GetFormatter(Type t)
+        internal static object? GetFormatter(Type t)
         {
             if (FormatterMap.TryGetValue(t, out var formatter))
             {
