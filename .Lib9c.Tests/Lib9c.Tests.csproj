@@ -9,6 +9,9 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>$(NoWarn);CS0162;CS8032;CS0618;CS0612;SYSLIB0011</NoWarn>
     <CodeAnalysisRuleSet>.\Lib9c.Tests.ruleset</CodeAnalysisRuleSet>
+    <PreBuildEvent>
+      dotnet build $(SolutionDir)Lib9c/Lib9c.csproj /p:DefineConstants="TEST_9C" /t:Rebuild
+    </PreBuildEvent>
   </PropertyGroup>
 
   <PropertyGroup Condition="&#xD;&#xA;    '$([System.Runtime.InteropServices.RuntimeInformation]::&#xD;&#xA;      OSArchitecture.ToString())' == 'Arm64' ">
