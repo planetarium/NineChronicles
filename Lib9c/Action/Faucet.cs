@@ -30,7 +30,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
-// #if UNITY_EDITOR || TEST_9C
+#if TEST_9C
             if (context.Rehearsal)
             {
                 return context.PreviousStates;
@@ -51,7 +51,7 @@ namespace Nekoyume.Action
 
 
             return states;
-// #endif
+#endif
             throw new ActionUnavailableException("This action is only for test.");
         }
 
@@ -92,7 +92,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
-// #if TEST_9C
+#if TEST_9C
             if (context.Rehearsal)
             {
                 return context.PreviousStates;
@@ -116,7 +116,7 @@ namespace Nekoyume.Action
 
             return states;
 
-// #endif
+#endif
             throw new ActionUnavailableException("This action is only for test.");
         }
 
