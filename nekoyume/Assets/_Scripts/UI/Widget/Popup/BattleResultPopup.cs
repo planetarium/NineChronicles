@@ -260,7 +260,7 @@ namespace Nekoyume.UI
                         1,
                         () => StartCoroutine(CoProceedNextStage(true)),
                         GoToMarket,
-                        false
+                        true
                     );
                     yield break;
                 }
@@ -307,7 +307,7 @@ namespace Nekoyume.UI
                         1,
                         () => StartCoroutine(CoRepeatStage(true)),
                         GoToMarket,
-                        false
+                        true
                     );
                     yield break;
                 }

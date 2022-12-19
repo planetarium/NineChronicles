@@ -62,11 +62,11 @@ namespace Nekoyume.UI
             bool showRemaining = false)
         {
             ticketIcon.overrideSprite = costIconData.GetIcon(ticketType);
-            maxPurchaseText.color = Palette.GetColor(EnumType.ColorType.ButtonDisabled);
-
-            maxPurchaseText.text = L10nManager.Localize(
-                isInternalLimit ? "UI_TICKET_INTERVAL_PURCHASE_LIMIT" : "UI_TICKET_PURCHASE_LIMIT",
-                purchasedCount, maxPurchaseCount);
+            var purchaseMessage = L10nManager.Localize(
+                isInternalLimit ? "UI_TICKET_INTERVAL_PURCHASE_LIMIT" : "UI_TICKET_PURCHASE_LIMIT");
+            purchaseMessage = $"{purchaseMessage} {purchasedCount}/{maxPurchaseCount}";
+            purchaseText.text = purchaseMessage;
+            purchaseText.color = Palette.GetColor(EnumType.ColorType.ButtonDisabled);
 
             contentText.text = L10nManager.Localize(
                 isInternalLimit ? "UI_REACHED_TICKET_BUY_INTERVAL_LIMIT" : "UI_REACHED_TICKET_BUY_LIMIT",
@@ -118,16 +118,15 @@ namespace Nekoyume.UI
                 : Palette.GetColor(EnumType.ColorType.ButtonDisabled);
 
             var purchaseMessage = L10nManager.Localize(
-                isInternalLimit ? "UI_TICKET_INTERVAL_PURCHASE_LIMIT" : "UI_TICKET_PURCHASE_LIMIT",
-                purchasedCount, maxPurchaseCount);
+                isInternalLimit ? "UI_TICKET_INTERVAL_PURCHASE_LIMIT" : "UI_TICKET_PURCHASE_LIMIT");
+            purchaseMessage = $"{purchaseMessage} {purchasedCount}/{maxPurchaseCount}";
             if (showRemaining)
             {
                 var remaining = RxProps.ArenaTicketsProgress.Value.remainTimespanToReset;
                 purchaseMessage = $"{purchaseMessage}\n({remaining})";
             }
-
-            maxPurchaseText.text = purchaseMessage;
-            maxPurchaseText.color = Palette.GetColor(EnumType.ColorType.TextElement06);
+            purchaseText.text = purchaseMessage;
+            purchaseText.color = Palette.GetColor(EnumType.ColorType.TextElement06);
 
             cancelButton.gameObject.SetActive(true);
             contentText.text = L10nManager.Localize("UI_BUY_TICKET_AND_START", GetTicketName(ticketType));

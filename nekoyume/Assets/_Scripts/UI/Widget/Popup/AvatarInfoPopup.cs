@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.EnumType;
@@ -202,25 +200,6 @@ namespace Nekoyume.UI
                 }
 
                 if (!raid.Equipments.Exists(x => x == guid))
-                {
-                    raidButton.HasNotification.Value = true;
-                }
-            }
-
-            var bestCostumes = information.GetBestCostumes();
-            foreach (var guid in bestCostumes)
-            {
-                if (!adventure.Costumes.Exists(x => x == guid))
-                {
-                    adventureButton.HasNotification.Value = true;
-                }
-
-                if (!arena.Costumes.Exists(x => x == guid))
-                {
-                    arenaButton.HasNotification.Value = true;
-                }
-
-                if (!raid.Costumes.Exists(x => x == guid))
                 {
                     raidButton.HasNotification.Value = true;
                 }

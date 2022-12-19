@@ -437,7 +437,7 @@ namespace Nekoyume.UI
                         1,
                         () => StartCoroutine(CoBattleStart(_stageType, CostType.NCG, true)),
                         () => GoToMarket(TradeType.Sell),
-                        false
+                        true
                     );
                     return;
                 }
@@ -659,21 +659,6 @@ namespace Nekoyume.UI
                 default:
                     throw new ArgumentOutOfRangeException(nameof(tradeType), tradeType, null);
             }
-        }
-
-        private static void ShowRefillConfirmPopup(Material material)
-        {
-            var confirm = Find<IconAndButtonSystem>();
-            confirm.ShowWithTwoButton(
-                "UI_CONFIRM",
-                "UI_AP_REFILL_CONFIRM_CONTENT",
-                "UI_OK",
-                "UI_CANCEL",
-                true,
-                IconAndButtonSystem.SystemType.Information);
-            confirm.ConfirmCallback = () =>
-                ActionManager.Instance.ChargeActionPoint(material).Subscribe();
-            confirm.CancelCallback = () => confirm.Close();
         }
 
         private static int GetBoostMaxCount(int stageId)
