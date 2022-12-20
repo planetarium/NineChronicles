@@ -1,11 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Bencodex.Types;
-using Libplanet;
+using Lib9c.DevExtensions.Action.Interface;
 using Libplanet.Action;
+using Libplanet.Assets;
 using Nekoyume.Action;
+using Nekoyume.Helper;
 using Nekoyume.Model.State;
+using Nekoyume.TableData;
 
 namespace Lib9c.DevExtensions.Action
 {
@@ -13,20 +17,12 @@ namespace Lib9c.DevExtensions.Action
     [ActionType("faucet_currency")]
     public class FaucetCurrency : GameAction, IFaucet
     {
-        public Address AgentAddress;
+        public Libplanet.Address AgentAddress;
         public int FaucetNcg;
         public int FaucetCrystal;
 
-        public FaucetCurrency(Address agentAddress, int faucetNcg = 0, int faucetCrystal = 0)
-        {
-            AgentAddress = agentAddress;
-            FaucetNcg = faucetNcg;
-            FaucetCrystal = faucetCrystal;
-        }
-
         public override IAccountStateDelta Execute(IActionContext context)
         {
-#if TEST_9C
             if (context.Rehearsal)
             {
                 return context.PreviousStates;
@@ -45,31 +41,30 @@ namespace Lib9c.DevExtensions.Action
                 states = states.MintAsset(AgentAddress, crystal * FaucetCrystal);
             }
 
-
             return states;
-#endif
-            throw new ActionUnavailableException("This action is only for test.");
         }
 
-        protected override IImmutableDictionary<string, IValue> PlainValueInternal { get; }
+        protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
+            new Dictionary<string, IValue>
+            {
+                ["agentAddress"] = AgentAddress.Serialize(),
+                ["faucetNcg"] = FaucetNcg.Serialize(),
+                ["faucetCrystal"] = FaucetCrystal.Serialize()
+            }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(
             IImmutableDictionary<string, IValue> plainValue)
         {
-            AgentAddress = plainValue["agent_address"].ToAddress();
-            if (plainValue.ContainsKey("ncg"))
+            AgentAddress = plainValue["agentAddress"].ToAddress();
+            if (plainValue.ContainsKey("faucetNcg"))
             {
-                FaucetNcg = plainValue["ncg"].ToInteger();
+                FaucetNcg = plainValue["faucetNcg"].ToInteger();
             }
 
-            if (plainValue.ContainsKey("crystal"))
+            if (plainValue.ContainsKey("faucetCrystal"))
             {
-                FaucetCrystal = plainValue["crystal"].ToInteger();
+                FaucetCrystal = plainValue["faucetCrystal"].ToInteger();
             }
-
-            // AvatarAddress = plainValue["avatar_address"].ToAddress();
-            // Runes = ((Dictionary)plainValue["runes"]).ToDictionary(pair =>
-            // pair.Key.ToInteger(), pair => pair.Value.ToInteger());
         }
     }
 
@@ -77,51 +72,52 @@ namespace Lib9c.DevExtensions.Action
     [ActionType("faucet_rune")]
     public class FaucetRune : GameAction, IFaucet
     {
-        public Address AvatarAddress;
-        public Dictionary<int, int> FaucetRunes;
-
-        public FaucetRune(Address avatarAddress, Dictionary<int, int> faucetRunes)
-        {
-            AvatarAddress = avatarAddress;
-            FaucetRunes = faucetRunes;
-        }
+        public Libplanet.Address AvatarAddress;
+        public List<FaucetRuneInfo> FaucetRuneInfos;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
-#if TEST_9C
             if (context.Rehearsal)
             {
                 return context.PreviousStates;
             }
 
             var states = context.PreviousStates;
-            if (!(FaucetRunes is null))
+            if (!(FaucetRuneInfos is null))
             {
                 RuneSheet runeSheet = states.GetSheet<RuneSheet>();
                 if (runeSheet.OrderedList != null)
                 {
-                    foreach (var rune in FaucetRunes.OrderBy(x => x.Key))
+                    foreach (var rune in FaucetRuneInfos)
                     {
                         states = states.MintAsset(AvatarAddress, RuneHelper.ToFungibleAssetValue(
-                            runeSheet.OrderedList.First(r => r.Id == rune.Key),
-                            rune.Value
+                            runeSheet.OrderedList.First(r => r.Id == rune.RuneId),
+                            rune.Amount
                         ));
                     }
                 }
             }
 
             return states;
-
-#endif
-            throw new ActionUnavailableException("This action is only for test.");
         }
 
-        protected override IImmutableDictionary<string, IValue> PlainValueInternal { get; }
+        protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
+            new Dictionary<string, IValue>
+            {
+                ["avatarAddress"] = AvatarAddress.Serialize(),
+                ["faucetRuneInfos"] = FaucetRuneInfos
+                    .OrderBy(x => x.RuneId)
+                    .Select(x => x.Serialize())
+                    .Serialize()
+            }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(
             IImmutableDictionary<string, IValue> plainValue)
         {
-            throw new NotImplementedException();
+            AvatarAddress = plainValue["avatarAddress"].ToAddress();
+            FaucetRuneInfos = plainValue["faucetRuneInfos"].ToList(
+                x => new FaucetRuneInfo((List)x)
+            );
         }
     }
 }
