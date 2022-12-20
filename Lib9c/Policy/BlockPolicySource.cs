@@ -16,6 +16,9 @@ using Nekoyume.Model.State;
 using Serilog;
 using Serilog.Events;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
+using Libplanet.Action;
+using Lib9c.Abstractions;
+using System.Reflection;
 
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
@@ -110,6 +113,8 @@ namespace Nekoyume.BlockChain.Policy
             new Address("636d187B4d434244A92B65B06B5e7da14b3810A9"),
         }.ToImmutableHashSet();
 
+        private readonly IActionTypeLoader _actionTypeLoader;
+
         public readonly ActionRenderer ActionRenderer = new ActionRenderer();
 
         public readonly BlockRenderer BlockRenderer = new BlockRenderer();
@@ -120,8 +125,16 @@ namespace Nekoyume.BlockChain.Policy
 
         public BlockPolicySource(
             ILogger logger,
-            LogEventLevel logEventLevel = LogEventLevel.Verbose)
+            LogEventLevel logEventLevel = LogEventLevel.Verbose,
+            IActionTypeLoader actionTypeLoader = null)
         {
+            _actionTypeLoader = actionTypeLoader ?? new StaticActionTypeLoader(
+                Assembly.GetEntryAssembly() is Assembly entryAssembly
+                    ? new[] { typeof(NCAction).Assembly, entryAssembly }
+                    : new[] { typeof(NCAction).Assembly },
+                typeof(ActionBase)
+            );
+
             LoggedActionRenderer =
                 new LoggedActionRenderer<NCAction>(ActionRenderer, logger, logEventLevel);
 
@@ -257,7 +270,7 @@ namespace Nekoyume.BlockChain.Policy
 
             Func<BlockChain<NCAction>, Transaction<NCAction>, TxPolicyViolationException> validateNextBlockTx =
                 (blockChain, transaction) => ValidateNextBlockTxRaw(
-                    blockChain, transaction, allAuthorizedMiners);
+                    blockChain, _actionTypeLoader, transaction, allAuthorizedMiners);
             Func<BlockChain<NCAction>, Block<NCAction>, BlockPolicyViolationException> validateNextBlock =
                 (blockChain, block) => ValidateNextBlockRaw(
                     blockChain,
@@ -308,6 +321,7 @@ namespace Nekoyume.BlockChain.Policy
 
         internal static TxPolicyViolationException ValidateNextBlockTxRaw(
             BlockChain<NCAction> blockChain,
+            IActionTypeLoader actionTypeLoader,
             Transaction<NCAction> transaction,
             ImmutableHashSet<Address> allAuthorizedMiners)
         {
@@ -346,6 +360,7 @@ namespace Nekoyume.BlockChain.Policy
                         : null;
                 }
 
+                var actionTypes = actionTypeLoader.Load(MakeFakeNextBlockHeader(blockChain.Tip.Header));
                 // Check ActivateAccount
                 if (((ITransaction)transaction).CustomActions is { } customActions &&
                     customActions.Count == 1 &&
@@ -362,37 +377,17 @@ namespace Nekoyume.BlockChain.Policy
                             transaction.Id);
                     }
 
-                    Address pendingAddress;
-                    byte[] signature;
-                    (string pendingAddressKey, string signatureKey) = (string)(typeId) switch
-                    {
-                        "activate_account" => ("pending_address", "signature"),
-                        "activate_account2" => ("pa", "s"),
-                        _ => throw new ArgumentOutOfRangeException()
-                    };
-
-                    if (!(values.TryGetValue((Text)pendingAddressKey,
-                            out IValue pendingAddressValue) && pendingAddressValue is Binary pendingAddressBinary))
+                    var action = Activator.CreateInstance(actionTypes[typeId]);
+                    if (!(action is IActivateAccount activateAccount))
                     {
                         return new TxPolicyViolationException(
                             $"Transaction {transaction.Id} has an invalid action.",
                             transaction.Id);
                     }
-
-                    if (!(values.TryGetValue((Text)signatureKey,
-                            out IValue signatureValue) && signatureValue is Binary signatureBinary))
-                    {
-                        return new TxPolicyViolationException(
-                            $"Transaction {transaction.Id} has an invalid action.",
-                            transaction.Id);
-                    }
-
-                    pendingAddress = new Address(pendingAddressBinary);
-                    signature = signatureBinary;
 
                     return transaction.Nonce == 0 &&
-                           blockChain.GetState(pendingAddress) is Dictionary rawPending &&
-                           new PendingActivationState(rawPending).Verify(signature)
+                           blockChain.GetState(activateAccount.PendingAddress) is Dictionary rawPending &&
+                           new PendingActivationState(rawPending).Verify(activateAccount.Signature)
                         ? null
                         : new TxPolicyViolationException(
                             $"Transaction {transaction.Id} has an invalid activate action.",
@@ -582,6 +577,23 @@ namespace Nekoyume.BlockChain.Policy
                     return nextDifficulty;
                 }
             }
+
+        }
+
+        private static IPreEvaluationBlockHeader MakeFakeNextBlockHeader(BlockHeader blockHeader)
+        {
+            var fakeMetadata = new BlockMetadata(
+                blockHeader.ProtocolVersion,
+                blockHeader.Index + 1,
+                blockHeader.Timestamp,
+                blockHeader.Miner,
+                blockHeader.PublicKey,
+                1,
+                1,
+                blockHeader.Hash,
+                blockHeader.TxHash
+            );
+            return new PreEvaluationBlockHeader(fakeMetadata, fakeMetadata.MineNonce());
         }
     }
 }
