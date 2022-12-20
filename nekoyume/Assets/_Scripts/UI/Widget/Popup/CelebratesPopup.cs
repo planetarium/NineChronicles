@@ -1,3 +1,4 @@
+using System;
 using DG.Tweening;
 using Nekoyume.Game.Character;
 using Nekoyume.UI.Model;
@@ -28,6 +29,19 @@ namespace Nekoyume.UI
 {
     public class CelebratesPopup : PopupWidget
     {
+        [Serializable]
+        private class Menu
+        {
+            [SerializeField]
+            private string menuName;
+
+            [SerializeField]
+            private GameObject menu;
+
+            public string MenuName => menuName;
+            public GameObject MenuObject => menu;
+        }
+
         private const float ContinueTime = 3f;
 
         [SerializeField]
@@ -72,6 +86,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private SkeletonGraphic npcSkeletonGraphic;
 
+        [SerializeField]
+        private List<Menu> menuList = new();
+
         private readonly List<Tweener> _tweeners = new List<Tweener>();
         private readonly WaitForSeconds _waitItemInterval = new WaitForSeconds(0.4f);
         private readonly WaitForSeconds _waitForDisappear = new WaitForSeconds(.3f);
@@ -100,27 +117,12 @@ namespace Nekoyume.UI
             titleText.text = L10nManager.Localize("UI_NEW_MENU");
             continueText.alpha = 0f;
 
-            menuImage.overrideSprite = SpriteHelper.GetMenuIllustration(menuName);
-            menuImage.SetNativeSize();
-
-            switch (menuName)
+            foreach (var menu in menuList)
             {
-                case nameof(ArenaJoin):
-                    menuText.text = L10nManager.Localize("UI_MAIN_MENU_RANKING");
-                    break;
-                case nameof(Shop):
-                    menuText.text = L10nManager.Localize("UI_MAIN_MENU_SHOP");
-                    break;
-                case "Mimisbrunnr":
-                    menuText.text = L10nManager.Localize("UI_MAIN_MENU_MIMISBRUNNR");
-                    break;
-                case nameof(Raid):
-                    menuText.text = L10nManager.Localize("UI_WORLD_BOSS");
-                    break;
-                default:
-                    menuText.text = string.Empty;
-                    break;
+                menu.MenuObject.SetActive(menu.MenuName == menuName);
             }
+
+            menuText.text = L10nManager.Localize(menuName);
 
             menuContainer.SetActive(true);
             questRewards.SetActive(false);
