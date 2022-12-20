@@ -54,7 +54,7 @@ namespace Nekoyume.BlockChain
             try
             {
                 // Each validator should return true when the transaction can be mined.
-                var txValidators = new List<Func<ITransaction, bool>>
+                var txValidators = new List<Predicate<ITransaction>>
                 {
                     tx => !_bannedAccounts.Contains(tx.Signer),
                 };
