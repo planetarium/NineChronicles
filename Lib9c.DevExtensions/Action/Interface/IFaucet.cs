@@ -1,6 +1,6 @@
 using Libplanet.Action;
 
-namespace Nekoyume.Action.Interface
+namespace Lib9c.DevExtensions.Action.Interface
 {
     public interface IFaucet: IAction
     {

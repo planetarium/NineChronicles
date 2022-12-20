@@ -1,17 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
-using Libplanet.Assets;
-using Nekoyume.Action.Interface;
-using Nekoyume.Helper;
+using Nekoyume.Action;
 using Nekoyume.Model.State;
-using Nekoyume.TableData;
 
-namespace Nekoyume.Action
+namespace Lib9c.DevExtensions.Action
 {
     [Serializable]
     [ActionType("faucet_currency")]
