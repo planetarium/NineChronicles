@@ -317,6 +317,7 @@ namespace Nekoyume.Game.Character
             if (effect.IsPersisting)
             {
                 target.AttachPersistingVFX(buff.BuffInfo.GroupId, effect);
+                StartCoroutine(BuffController.CoChaseTarget(effect, transform));
             }
 
             target._characterModel = info.Target;
