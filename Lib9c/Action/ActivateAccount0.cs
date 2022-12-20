@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.State;
@@ -11,7 +12,7 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("activate_account")]
-    public class ActivateAccount0 : ActionBase, IActivateAction
+    public class ActivateAccount0 : ActionBase, IActivateAccount
     {
         public Address PendingAddress { get; private set; }
 
