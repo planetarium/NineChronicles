@@ -325,11 +325,6 @@ namespace Nekoyume.BlockChain.Policy
             Transaction<NCAction> transaction,
             ImmutableHashSet<Address> allAuthorizedMiners)
         {
-            // Avoid NRE when genesis block appended
-            // Here, index is the index of a prospective block that transaction
-            // will be included.
-            long index = blockChain.Count > 0 ? blockChain.Tip.Index : 0;
-
             if (((ITransaction)transaction).CustomActions?.Count > 1)
             {
                 return new TxPolicyViolationException(
@@ -337,7 +332,7 @@ namespace Nekoyume.BlockChain.Policy
                     $"{((ITransaction)transaction).CustomActions?.Count}",
                     transaction.Id);
             }
-            else if (IsObsolete(transaction, index))
+            else if (IsObsolete(transaction, actionTypeLoader, blockChain.Tip.Header))
             {
                 return new TxPolicyViolationException(
                     $"Transaction {transaction.Id} is obsolete.",
