@@ -34,4 +34,8 @@
       <!-- https://github.com/dotnet/roslyn/issues/18093#issuecomment-405702631 -->
     </ProjectReference>
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Action\Interface" />
+  </ItemGroup>
 </Project>
