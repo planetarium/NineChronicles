@@ -1,25 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
-using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Mail;
-using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -115,12 +110,6 @@ namespace Nekoyume.UI
         private static readonly int HashToLevelUp =
             Animator.StringToHash("LevelUp");
 
-        private static readonly int HashToCombineLoop =
-            Animator.StringToHash("CombineLoop");
-
-        private static readonly int HashToLevelUpLoop =
-            Animator.StringToHash("LevelUpLoop");
-
         private static readonly int HashToMaterialUse =
             Animator.StringToHash("MaterialUse");
 
@@ -166,11 +155,11 @@ namespace Nekoyume.UI
                 {
                     return;
                 }
-                TryCount.Value = math.min(_maxTryCount, TryCount.Value + 1);
+                TryCount.Value = Math.Min(_maxTryCount, TryCount.Value + 1);
             });
             minusButton.onClick.AddListener(() =>
             {
-                TryCount.Value = math.max(1, TryCount.Value - 1);
+                TryCount.Value = Math.Max(1, TryCount.Value - 1);
             });
             closeButton.onClick.AddListener(() =>
             {
@@ -293,26 +282,6 @@ namespace Nekoyume.UI
             scroll.OnClick.Subscribe(OnClickItem).AddTo(_disposables);
         }
 
-        private async Task<List<RuneState>> GetRuneStatesAsync()
-        {
-            var listSheet = Game.Game.instance.TableSheets.RuneListSheet;
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-
-            var runeIds = listSheet.Values.Select(x => x.Id).ToList();
-            var runeAddresses = runeIds.Select(id => RuneState.DeriveAddress(avatarAddress, id)).ToList();
-            var stateBulk = await Game.Game.instance.Agent.GetStateBulk(runeAddresses);
-            var runeStates = new List<RuneState>();
-            foreach (var value in stateBulk.Values)
-            {
-                if (value is List list)
-                {
-                    runeStates.Add(new RuneState(list));
-                }
-            }
-
-            return runeStates;
-        }
-
         private void OnClickItem(RuneItem item)
         {
             _selectedRuneItem = null;
@@ -356,12 +325,6 @@ namespace Nekoyume.UI
             loadingText.text = item.Level > 0
                 ? L10nManager.Localize($"UI_RUNE_LEVEL_UP_PROCESSING")
                 : L10nManager.Localize($"UI_RUNE_COMBINE_PROCESSING");
-
-            var isActive = item.Level != 0;
-            if (item.IsMaxLevel)
-            {
-                isActive = false;
-            }
 
             successContainer.SetActive(!item.IsMaxLevel);
             costContainer.SetActive(!item.IsMaxLevel);
@@ -536,7 +499,7 @@ namespace Nekoyume.UI
                     : -1;
                 var maxValues = new List<int> { maxRuneStone, maxCrystal, maxNcg };
                 _maxTryCount = maxValues.Where(x => x >= 0).Min();
-                _maxTryCount = math.min(100, _maxTryCount);
+                _maxTryCount = Math.Min(100, _maxTryCount);
                 slider.Set(1,
                     _maxTryCount > 0 ? _maxTryCount : 1,
                     1,
