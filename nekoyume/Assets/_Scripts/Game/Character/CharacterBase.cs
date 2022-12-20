@@ -558,7 +558,7 @@ namespace Nekoyume.Game.Character
                 if (effect.IsPersisting)
                 {
                     target.AttachPersistingVFX(buff.BuffInfo.GroupId, effect);
-                    StartCoroutine(BuffController.CoChaseTarget(effect, transform));
+                    StartCoroutine(BuffController.CoChaseTarget(effect, target.transform));
                 }
 
                 target.UpdateHpBar();
