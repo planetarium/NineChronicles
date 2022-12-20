@@ -120,8 +120,8 @@ namespace Nekoyume.Helper
         {
             switch (runeStoneId)
             {
-                case 3001:
-                case 2001:
+                case 30001:
+                case 20001:
                     info = string.Empty;
                     canObtain = false;
                     return false;

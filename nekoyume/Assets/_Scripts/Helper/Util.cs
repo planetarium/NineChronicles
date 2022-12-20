@@ -130,13 +130,6 @@ namespace Nekoyume.Helper
             });
         }
 
-        public static ItemBase CreateItemBaseByItemId(int itemId)
-        {
-            var row = Game.Game.instance.TableSheets.ItemSheet[itemId];
-            var item = ItemFactory.CreateItem(row, new Cheat.DebugRandom());
-            return item;
-        }
-
         public static int GetHourglassCount(Inventory inventory, long currentBlockIndex)
         {
             if (inventory is null)
@@ -266,16 +259,6 @@ namespace Nekoyume.Helper
             }
 
             return isValidated;
-        }
-
-        public static Player CreatePlayer(AvatarState avatarState, Vector3 position)
-        {
-            var player = PlayerFactory.Create(avatarState).GetComponent<Player>();
-            var t = player.transform;
-            t.localScale = Vector3.one;
-            t.position = position;
-            player.gameObject.SetActive(true);
-            return player;
         }
 
         public static int GetGridItemCount(float cellSize, float spacing, float size)

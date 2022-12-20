@@ -6,7 +6,6 @@ using Libplanet.Assets;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
-using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using TMPro;
@@ -174,7 +173,7 @@ namespace Nekoyume.UI
                 skill.gameObject.SetActive(true);
                 skillNameText.text = L10nManager.Localize($"SKILL_NAME_{option.SkillId}");
                 var skillValueString = RuneFrontHelper.GetRuneValueString(option);
-                
+
                 skillDescText.text = L10nManager.Localize(
                     $"SKILL_DESCRIPTION_{option.SkillId}", option.SkillChance, option.BuffDuration, skillValueString);
             }

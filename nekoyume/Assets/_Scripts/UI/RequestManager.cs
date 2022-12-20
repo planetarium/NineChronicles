@@ -7,9 +7,6 @@ namespace Nekoyume.UI
 {
     public class RequestManager : MonoSingleton<RequestManager>
     {
-        private const float RetryTime = 20f;
-        private const float ShortRetryTime = 1f;
-        private const int MaxRetryCount = 8;
         private int _isExistSeasonRewardRetryCount;
         private int _getSeasonRewardRetryCount;
 
