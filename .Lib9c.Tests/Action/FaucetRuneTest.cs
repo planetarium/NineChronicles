@@ -3,6 +3,7 @@ namespace Lib9c.Tests.Action
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
+    using Lib9c.DevExtensions.Action;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Crypto;
@@ -55,54 +56,74 @@ namespace Lib9c.Tests.Action
 
             _initialState = _initialState
                     .SetState(agentAddress, agentState.Serialize())
-                    .SetState(_avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
-                    .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), avatarState.worldInformation.Serialize())
-                    .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
-                    .SetState(_avatarAddress, avatarState.Serialize())
+                    .SetState(
+                        _avatarAddress.Derive(LegacyInventoryKey),
+                        avatarState.inventory.Serialize()
+                    )
+                    .SetState(
+                        _avatarAddress.Derive(LegacyWorldInformationKey),
+                        avatarState.worldInformation.Serialize()
+                    )
+                    .SetState(
+                        _avatarAddress.Derive(LegacyQuestListKey),
+                        avatarState.questList.Serialize()
+                    )
+                    .SetState(
+                        _avatarAddress, avatarState.Serialize()
+                    )
                 ;
         }
 
         [Theory]
-        [ClassData(typeof(FaucetRuneGenerator))]
-        public void Execute_FaucetRune(Dictionary<int, int> faucetRune)
+        [ClassData(typeof(FaucetRuneInfoGenerator))]
+        public void Execute_FaucetRune(List<FaucetRuneInfo> faucetRuneInfos)
         {
-            var action = new FaucetRune(_avatarAddress, faucetRune);
+            var action = new FaucetRune
+            {
+                AvatarAddress = _avatarAddress,
+                FaucetRuneInfos = faucetRuneInfos,
+            };
             var states = action.Execute(new ActionContext { PreviousStates = _initialState });
-            foreach (var (runeId, runeCount) in faucetRune)
+            foreach (var rune in faucetRuneInfos)
             {
                 var expectedRune = RuneHelper.ToCurrency(
-                    _runeSheet.OrderedList.First(r => r.Id == runeId),
+                    _runeSheet.OrderedList.First(r => r.Id == rune.RuneId),
                     0,
                     null
                 );
-                Assert.Equal(runeCount * expectedRune, states.GetBalance(_avatarAddress, expectedRune)
+                Assert.Equal(
+                    rune.Amount * expectedRune,
+                    states.GetBalance(_avatarAddress, expectedRune)
                 );
             }
         }
 
-        private class FaucetRuneGenerator : IEnumerable<object[]>
+        private class FaucetRuneInfoGenerator : IEnumerable<object[]>
         {
             private readonly List<object[]> _data = new List<object[]>
             {
                 new object[]
                 {
-                    new Dictionary<int, int>
+                    new List<FaucetRuneInfo>
                     {
-                        { 10001, 10 },
+                        new FaucetRuneInfo(10001, 10),
                     },
                 },
                 new object[]
                 {
-                    new Dictionary<int, int>
+                    new List<FaucetRuneInfo>
                     {
-                        { 10001, 10 }, { 30001, 10 },
+                        new FaucetRuneInfo(10001, 10),
+                        new FaucetRuneInfo(30001, 10),
                     },
                 },
                 new object[]
                 {
-                    new Dictionary<int, int>
+                    new List<FaucetRuneInfo>
                     {
-                        { 10001, 10 }, { 10002, 10 }, { 30001, 10 },
+                        new FaucetRuneInfo(10001, 10),
+                        new FaucetRuneInfo(10002, 10),
+                        new FaucetRuneInfo(30001, 10),
                     },
                 },
             };
