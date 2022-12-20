@@ -31,7 +31,7 @@ namespace Lib9c.DevExtensions.Action
             var states = context.PreviousStates;
             if (FaucetNcg > 0)
             {
-                var ncg = Currency.Legacy("NCG", 2, null);
+                var ncg = states.GetGoldCurrency();
                 states = states.MintAsset(AgentAddress, ncg * FaucetNcg);
             }
 
