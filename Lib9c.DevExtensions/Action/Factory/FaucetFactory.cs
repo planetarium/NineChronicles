@@ -1,7 +1,7 @@
 using System.Collections.Generic;
+using Lib9c.DevExtensions.Action.Interface;
 using Libplanet;
 using Nekoyume.Action;
-using Nekoyume.Action.Interface;
 
 namespace Lib9c.DevExtensions.Action.Factory
 {
@@ -13,13 +13,22 @@ namespace Lib9c.DevExtensions.Action.Factory
             int faucetCrystal
         )
         {
-            return new FaucetCurrency(agentAddress, faucetNcg, faucetCrystal);
+            return new FaucetCurrency
+            {
+                AgentAddress = agentAddress,
+                FaucetNcg = faucetNcg,
+                FaucetCrystal = faucetCrystal,
+            };
         }
 
         public static IFaucet CreateFaucetRune(
-            Address avatarAddress, Dictionary<int, int> faucetRunes)
+            Address avatarAddress, List<FaucetRuneInfo> faucetRunes)
         {
-            return new FaucetRune(avatarAddress, faucetRunes);
+            return new FaucetRune
+            {
+                AvatarAddress = avatarAddress,
+                FaucetRuneInfos = faucetRunes,
+            };
         }
     }
 }

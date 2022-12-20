@@ -1,5 +1,6 @@
 namespace Lib9c.Tests.Action
 {
+    using Lib9c.DevExtensions.Action;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
@@ -59,7 +60,12 @@ namespace Lib9c.Tests.Action
             int expectedCrystal
         )
         {
-            var action = new FaucetCurrency(_agentAddress, faucetNcg, faucetCrystal);
+            var action = new FaucetCurrency
+            {
+                AgentAddress = _agentAddress,
+                FaucetNcg = faucetNcg,
+                FaucetCrystal = faucetCrystal,
+            };
             var state = action.Execute(new ActionContext { PreviousStates = _initialState });
             AgentState agentState = state.GetAgentState(_agentAddress);
             FungibleAssetValue expectedNcgAsset =
