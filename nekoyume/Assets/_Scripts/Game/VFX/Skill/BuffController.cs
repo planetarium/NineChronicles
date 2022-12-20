@@ -1,6 +1,7 @@
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Util;
 using Nekoyume.Model.Buff;
+using System.Collections;
 using UnityEngine;
 
 namespace Nekoyume.Game.VFX.Skill
@@ -112,6 +113,18 @@ namespace Nekoyume.Game.VFX.Skill
                      _pool.Get(resourceName, true, position);
 
             return GetEffect<T>(go);
+        }
+
+        public static IEnumerator CoChaseTarget(Component vfx, Transform target)
+        {
+            var g = vfx.gameObject;
+            var t = vfx.transform;
+            while (g.activeSelf &&
+                   target)
+            {
+                t.position = target.position + new Vector3(0f, 0.55f, 0f);
+                yield return null;
+            }
         }
     }
 }
