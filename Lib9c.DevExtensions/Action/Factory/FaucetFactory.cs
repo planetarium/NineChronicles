@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using Libplanet;
+using Nekoyume.Action;
 using Nekoyume.Action.Interface;
 
-namespace Nekoyume.Action.Factory
+namespace Lib9c.DevExtensions.Action.Factory
 {
     public class FaucetFactory
     {
