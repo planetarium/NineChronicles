@@ -37,7 +37,9 @@ namespace Lib9c.DevExtensions.Action
 
             if (FaucetCrystal > 0)
             {
+#pragma warning disable CS0618
                 var crystal = Currency.Legacy("CRYSTAL", 18, null);
+#pragma warning restore CS0618
                 states = states.MintAsset(AgentAddress, crystal * FaucetCrystal);
             }
 
