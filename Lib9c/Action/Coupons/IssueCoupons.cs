@@ -71,7 +71,7 @@ namespace Nekoyume.Action.Coupons
             Rewards = ((Bencodex.Types.List)plainValue["rewards"])
                 .OfType<Bencodex.Types.Dictionary>()
                 .ToImmutableDictionary(
-                    d => new RewardSet((Dictionary)d["rewordSet"]),
+                    d => new RewardSet((Dictionary)d["rewardSet"]),
                     d => (uint)(Integer)d["quantity"]
                 );
         }
