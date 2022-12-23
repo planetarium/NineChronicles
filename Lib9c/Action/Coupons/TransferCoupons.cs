@@ -30,6 +30,11 @@ namespace Nekoyume.Action.Coupons
             var orderedRecipients = CouponsPerRecipient.OrderBy(pair => pair.Key);
             foreach ((Address recipient, IImmutableSet<Guid> couponIds) in orderedRecipients)
             {
+                if (recipient == context.Signer)
+                {
+                    continue;
+                }
+
                 var recipientWallet = states.GetCouponWallet(recipient);
                 foreach (Guid id in couponIds)
                 {
@@ -52,18 +57,22 @@ namespace Nekoyume.Action.Coupons
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
-            CouponsPerRecipient.ToImmutableDictionary(
-                pair => pair.Key.ToHex(),
+            ImmutableDictionary<string, IValue>.Empty
+                .Add(
+                    "couponsPerRecipient",
+                    new Bencodex.Types.Dictionary(
+                        CouponsPerRecipient.ToImmutableDictionary(
+                            pair => new Binary(pair.Key.ByteArray),
                 pair => (IValue)new Bencodex.Types.List(
-                    pair.Value.OrderBy(id => id).Select(id => id.ToByteArray()))
-            );
+                    pair.Value.OrderBy(id => id).Select(id => id.ToByteArray())))));
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue) =>
-            CouponsPerRecipient = plainValue.ToImmutableDictionary(
-                pair => new Address(pair.Key),
-                pair => (IImmutableSet<Guid>)((Bencodex.Types.List)pair.Value).Select(
-                    value => new Guid((Binary)value)
-                ).ToImmutableHashSet()
+            CouponsPerRecipient = ((Bencodex.Types.Dictionary)plainValue["couponsPerRecipient"])
+                .ToImmutableDictionary(
+                    pair => new Address(pair.Key),
+                    pair => (IImmutableSet<Guid>)((Bencodex.Types.List)pair.Value).Select(
+                        value => new Guid((Binary)value)
+                        ).ToImmutableHashSet()
             );
     }
 }
