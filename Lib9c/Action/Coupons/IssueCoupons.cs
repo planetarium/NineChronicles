@@ -33,6 +33,8 @@ namespace Nekoyume.Action.Coupons
                     rehearsal: true);
             }
 
+            CheckPermission(context);
+
             var wallet = states.GetCouponWallet(Recipient);
             var random = context.Random;
             var idBytes = new byte[16];

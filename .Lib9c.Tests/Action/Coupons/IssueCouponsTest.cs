@@ -17,8 +17,40 @@ namespace Lib9c.Tests.Action.Coupons
         [Fact]
         public void Execute()
         {
-            IAccountStateDelta state = new Lib9c.Tests.Action.State();
+            IAccountStateDelta state = new Lib9c.Tests.Action.State()
+                .SetState(
+                    AdminState.Address,
+                    new AdminState(CouponsFixture.AgentAddress1, 1)
+                        .Serialize());
             IRandom random = new TestRandom();
+
+            Assert.Throws<PolicyExpiredException>(() =>
+                new IssueCoupons(
+                        ImmutableDictionary<RewardSet, uint>.Empty,
+                        CouponsFixture.AgentAddress1)
+                    .Execute(
+                        new ActionContext
+                        {
+                            PreviousStates = state,
+                            Rehearsal = false,
+                            Random = random,
+                            BlockIndex = long.MaxValue,
+                            Signer = CouponsFixture.AgentAddress1,
+                        }));
+
+            Assert.Throws<PermissionDeniedException>(() =>
+                new IssueCoupons(
+                        ImmutableDictionary<RewardSet, uint>.Empty,
+                        CouponsFixture.AgentAddress1)
+                    .Execute(
+                        new ActionContext
+                        {
+                            PreviousStates = state,
+                            Rehearsal = false,
+                            Random = random,
+                            BlockIndex = 0,
+                            Signer = CouponsFixture.AgentAddress2,
+                        }));
 
             Assert.Equal(
                 ImmutableDictionary<Guid, Coupon>.Empty,
@@ -31,6 +63,8 @@ namespace Lib9c.Tests.Action.Coupons
                             PreviousStates = state,
                             Rehearsal = false,
                             Random = random,
+                            BlockIndex = 0,
+                            Signer = CouponsFixture.AgentAddress1,
                         })
                     .GetCouponWallet(CouponsFixture.AgentAddress1));
 
@@ -47,6 +81,8 @@ namespace Lib9c.Tests.Action.Coupons
                             PreviousStates = state,
                             Rehearsal = true,
                             Random = random,
+                            BlockIndex = 0,
+                            Signer = CouponsFixture.AgentAddress1,
                         })
                     .GetState(CouponsFixture.AgentAddress1.Derive(SerializeKeys.CouponWalletKey)));
 
@@ -61,6 +97,8 @@ namespace Lib9c.Tests.Action.Coupons
                         PreviousStates = state,
                         Rehearsal = false,
                         Random = random,
+                        BlockIndex = 0,
+                        Signer = CouponsFixture.AgentAddress1,
                     });
 
             state = new IssueCoupons(
@@ -73,6 +111,8 @@ namespace Lib9c.Tests.Action.Coupons
                         PreviousStates = state,
                         Rehearsal = false,
                         Random = random,
+                        BlockIndex = 0,
+                        Signer = CouponsFixture.AgentAddress1,
                     });
 
             var agent1CouponWallet = state.GetCouponWallet(CouponsFixture.AgentAddress1);
