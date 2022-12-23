@@ -18,6 +18,12 @@ namespace Nekoyume.Action.Coupons
         public Guid CouponId { get; private set; }
         public Address AvatarAddress { get; private set; }
 
+        public RedeemCoupon(Guid couponId, Address avatarAddress)
+        {
+            CouponId = couponId;
+            AvatarAddress = avatarAddress;
+        }
+
         public override IAccountStateDelta Execute(IActionContext context)
         {
             var states = context.PreviousStates;
