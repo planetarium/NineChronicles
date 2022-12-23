@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8b5b913404f40efa1cd6deb4d8165b8, type: 3}
   m_Name: NoticeEndpoint
   m_EditorClassIdentifier: 
-  <EventJsonUrl>k__BackingField: https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/Event.json
-  <NoticeJsonUrl>k__BackingField: https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/TextNotice.json
-  <ImageRootUrl>k__BackingField: https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Images
+  <EventJsonUrl>k__BackingField: https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/bugfix/221221/Assets/Json/Event.json
+  <NoticeJsonUrl>k__BackingField: https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/bugfix/221221/Assets/Json/TextNotice.json
+  <ImageRootUrl>k__BackingField: https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/bugfix/221221/Assets/Images
