@@ -1,11 +1,11 @@
-namespace Lib9c.Tests.Action
+namespace Lib9c.DevExtensions.Tests.Action
 {
     using Lib9c.DevExtensions.Action;
+    using Lib9c.Tests.Action;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
     using Libplanet.Crypto;
-    using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model.State;
     using Serilog;
@@ -26,13 +26,7 @@ namespace Lib9c.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new State();
-            var sheets = TableSheetsImporter.ImportSheets();
-            foreach (var (key, value) in sheets)
-            {
-                _initialState =
-                    _initialState.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
-            }
+            _initialState = new Lib9c.Tests.Action.State();
 
             _ncg = Currency.Legacy("NCG", 2, null);
             _crystal = Currency.Legacy("CRYSTAL", 18, null);

@@ -1,9 +1,11 @@
-namespace Lib9c.Tests.Action
+namespace Lib9c.DevExtensions.Tests.Action
 {
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using Lib9c.DevExtensions.Action;
+    using Lib9c.Tests;
+    using Lib9c.Tests.Action;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Crypto;
@@ -30,7 +32,7 @@ namespace Lib9c.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new State();
+            _initialState = new Lib9c.Tests.Action.State();
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
