@@ -1,13 +1,14 @@
 namespace Lib9c.Tests
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
 
     public static class TableSheetsImporter
     {
-        public static Dictionary<string, string> ImportSheets(string path = null)
+        public static Dictionary<string, string> ImportSheets()
         {
-            path ??= GetDefaultPath();
+            var path = GetLib9cTableCsvPath();
             var files = Directory.GetFiles(path, "*.csv", SearchOption.AllDirectories);
             var sheets = new Dictionary<string, string>();
             foreach (var filePath in files)
@@ -26,7 +27,7 @@ namespace Lib9c.Tests
 
         public static bool TryGetCsv(string sheetName, out string csv)
         {
-            var path = GetDefaultPath();
+            var path = GetLib9cTableCsvPath();
             var filePaths = Directory.GetFiles(path, "*.csv", SearchOption.AllDirectories);
             foreach (var filePath in filePaths)
             {
@@ -47,10 +48,12 @@ namespace Lib9c.Tests
             return false;
         }
 
-        private static string GetDefaultPath() => Path
-            .GetFullPath($"..{Path.DirectorySeparatorChar}")
-            .Replace(
-                $".Lib9c.Tests{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}Debug{Path.DirectorySeparatorChar}",
-                $"Lib9c{Path.DirectorySeparatorChar}TableCSV{Path.DirectorySeparatorChar}");
+        private static string GetLib9cTableCsvPath()
+        {
+            var fullPath = Path.GetFullPath("./");
+            var index = fullPath.IndexOf("Lib9c", StringComparison.Ordinal);
+            var projPath = fullPath[..index];
+            return Path.Combine(projPath, "Lib9c", "TableCSV");
+        }
     }
 }
