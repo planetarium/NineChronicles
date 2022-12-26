@@ -14,9 +14,9 @@ namespace Lib9c.DevExtensions.Action
     [ActionType("faucet_currency")]
     public class FaucetCurrency : GameAction, IFaucetCurrency
     {
-        public Libplanet.Address AgentAddress;
-        public int FaucetNcg;
-        public int FaucetCrystal;
+        public Libplanet.Address AgentAddress { get; set; }
+        public int FaucetNcg { get; set; }
+        public int FaucetCrystal { get; set; }
 
         public override IAccountStateDelta Execute(IActionContext context)
         {

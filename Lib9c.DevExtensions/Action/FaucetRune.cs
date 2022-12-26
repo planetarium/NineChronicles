@@ -16,8 +16,8 @@ namespace Lib9c.DevExtensions.Action;
 [ActionType("faucet_rune")]
 public class FaucetRune : GameAction, IFaucetRune
 {
-    public Libplanet.Address AvatarAddress;
-    public List<FaucetRuneInfo> FaucetRuneInfos;
+    public Libplanet.Address AvatarAddress { get; set; }
+    public List<FaucetRuneInfo> FaucetRuneInfos { get; set; }
 
     public override IAccountStateDelta Execute(IActionContext context)
     {
