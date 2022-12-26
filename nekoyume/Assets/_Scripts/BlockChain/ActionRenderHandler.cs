@@ -1458,6 +1458,8 @@ namespace Nekoyume.BlockChain
             await Task.WhenAll(
                 States.Instance.UpdateItemSlotStates(BattleType.Adventure),
                 States.Instance.UpdateRuneSlotStates(BattleType.Adventure));
+            UpdateAgentStateAsync(eval).Forget();
+
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd =
                 Game.Game.instance.Stage.onEnterToStageEnd
