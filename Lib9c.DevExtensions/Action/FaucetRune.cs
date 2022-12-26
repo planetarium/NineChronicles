@@ -7,6 +7,7 @@ using Lib9c.DevExtensions.Action.Interface;
 using Libplanet.Action;
 using Nekoyume.Action;
 using Nekoyume.Helper;
+using Nekoyume.Model.Faucet;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 

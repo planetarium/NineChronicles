@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Libplanet;
-using Nekoyume.Action;
+using Nekoyume.Model.Faucet;
 
 namespace Lib9c.DevExtensions.Action.Interface;
 

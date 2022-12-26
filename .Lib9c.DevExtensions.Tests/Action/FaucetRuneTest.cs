@@ -12,6 +12,7 @@ namespace Lib9c.DevExtensions.Tests.Action
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Helper;
+    using Nekoyume.Model.Faucet;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Serilog;
