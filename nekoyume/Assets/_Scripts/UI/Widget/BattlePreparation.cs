@@ -22,7 +22,6 @@ using Nekoyume.Model.EnumType;
 using Nekoyume.TableData;
 using EventType = Nekoyume.EnumType.EventType;
 using Toggle = Nekoyume.UI.Module.Toggle;
-using Material = Nekoyume.Model.Item.Material;
 
 namespace Nekoyume.UI
 {
@@ -244,26 +243,29 @@ namespace Nekoyume.UI
             switch (_stageType)
             {
                 case StageType.HackAndSlash:
-                    if (TableSheets.Instance.SweepRequiredCPSheet.TryGetValue(_stageId, out var row))
+                    var sweepRequiredCpSheet = TableSheets.Instance.SweepRequiredCPSheet;
+                    if (!sweepRequiredCpSheet.TryGetValue(_stageId, out var row))
                     {
-                        enemyCpContainer.gameObject.SetActive(true);
-                        var cp = (int)(row.RequiredCP * 1.25f);
-                        enemyCp.text = $"{cp}";
-                        return cp;
+                        return null;
                     }
 
-                    break;
+                    enemyCpContainer.gameObject.SetActive(true);
+                    var cp = row.RequiredCP;
+                    enemyCp.text = $"{cp}";
+                    return cp;
                 case StageType.Mimisbrunnr:
                 case StageType.EventDungeon:
                     enemyCpContainer.gameObject.SetActive(false);
-                    break;
+                    return null;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
-            return null;
         }
 
         public void UpdateInventory()
         {
-            information.UpdateInventory(BattleType.Adventure);
+            var cp = UpdateCp();
+            information.UpdateInventory(BattleType.Adventure, cp);
         }
 
         public void UpdateInventoryView()
