@@ -106,6 +106,10 @@ namespace Nekoyume.UI.Model
                 var nextCooldown = option.SkillCooldown == nextOption.SkillCooldown ? string.Empty : $"{nextOption.SkillCooldown}";
                 var currentValueString = RuneFrontHelper.GetRuneValueString(option);
                 var nextValueString = RuneFrontHelper.GetRuneValueString(nextOption);
+                if (currentValueString.Equals(nextValueString))
+                {
+                    nextValueString = string.Empty;
+                }
                 var skillDescription = L10nManager.Localize($"SKILL_DESCRIPTION_{option.SkillId}",
                     option.SkillChance, option.BuffDuration, currentValueString);
 
