@@ -51,6 +51,7 @@ public class FaucetRune : GameAction, IFaucetRune
             ["avatarAddress"] = AvatarAddress.Serialize(),
             ["faucetRuneInfos"] = FaucetRuneInfos
                 .OrderBy(x => x.RuneId)
+                .ThenBy(x => x.Amount)
                 .Select(x => x.Serialize())
                 .Serialize()
         }.ToImmutableDictionary();
