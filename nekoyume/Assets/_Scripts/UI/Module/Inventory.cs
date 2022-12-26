@@ -464,6 +464,7 @@ namespace Nekoyume.UI.Module
 
             var equippedCostumes = costumes
                 .Select(costume => _costumes.FirstOrDefault(x => ((Costume)x.ItemBase).ItemId == costume))
+                .Where(x => x is not null)
                 .ToList();
             foreach (var item in bestItems.Where(item => !item.Equipped.Value))
             {

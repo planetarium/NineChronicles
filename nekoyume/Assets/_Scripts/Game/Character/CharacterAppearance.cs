@@ -140,6 +140,11 @@ namespace Nekoyume.Game.Character
         private void UpdateTitle(ItemBase costume)
         {
             Destroy(_cachedCharacterTitle);
+            if (costume == null)
+            {
+                return;
+            }
+
             var clone = ResourcesHelper.GetCharacterTitle(costume.Grade,
                 costume.GetLocalizedNonColoredName(false));
             _cachedCharacterTitle = Instantiate(clone, _hudContainer.transform);

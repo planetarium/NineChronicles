@@ -190,19 +190,12 @@ namespace Nekoyume.Game.Character
 
         private void UpdateTitle(Costume costume = null)
         {
+            Destroy(_cachedCharacterTitle);
+
             if (costume == null)
             {
-                Destroy(_cachedCharacterTitle);
                 return;
             }
-
-            if (_cachedCharacterTitle &&
-                costume.Id.ToString().Equals(_cachedCharacterTitle.name))
-            {
-                return;
-            }
-
-            Destroy(_cachedCharacterTitle);
 
             if (sortingGroup != null &&
                 sortingGroup.sortingLayerID == SortingLayer.NameToID("UI"))
