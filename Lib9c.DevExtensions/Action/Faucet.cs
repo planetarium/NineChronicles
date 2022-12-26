@@ -15,7 +15,7 @@ namespace Lib9c.DevExtensions.Action
 {
     [Serializable]
     [ActionType("faucet_currency")]
-    public class FaucetCurrency : GameAction, IFaucet
+    public class FaucetCurrency : GameAction, IFaucetCurrency
     {
         public Libplanet.Address AgentAddress;
         public int FaucetNcg;
@@ -72,7 +72,7 @@ namespace Lib9c.DevExtensions.Action
 
     [Serializable]
     [ActionType("faucet_rune")]
-    public class FaucetRune : GameAction, IFaucet
+    public class FaucetRune : GameAction, IFaucetRune
     {
         public Libplanet.Address AvatarAddress;
         public List<FaucetRuneInfo> FaucetRuneInfos;

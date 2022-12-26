@@ -7,7 +7,7 @@ namespace Lib9c.DevExtensions.Action.Factory
 {
     public class FaucetFactory
     {
-        public static IFaucet CreateFaucetCurrency(
+        public static IFaucetCurrency CreateFaucetCurrency(
             Address agentAddress,
             int faucetNcg,
             int faucetCrystal
@@ -21,7 +21,7 @@ namespace Lib9c.DevExtensions.Action.Factory
             };
         }
 
-        public static IFaucet CreateFaucetRune(
+        public static IFaucetRune CreateFaucetRune(
             Address avatarAddress, List<FaucetRuneInfo> faucetRunes)
         {
             return new FaucetRune
