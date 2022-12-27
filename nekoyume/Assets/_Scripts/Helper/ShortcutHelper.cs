@@ -292,7 +292,7 @@ namespace Nekoyume.Helper
                     }
 
                     var sharedViewModel = Widget.Find<WorldMap>().SharedViewModel;
-                    if (sharedViewModel.WorldInformation
+                    if (States.Instance.CurrentAvatarState.worldInformation
                         .TryGetWorldByStageId(stageId, out var world))
                     {
                         return stageId <= world.StageClearedId + 1 &&
