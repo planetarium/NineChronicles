@@ -1,6 +1,5 @@
 namespace Lib9c.Tests
 {
-    using System;
     using System.Collections.Generic;
     using System.IO;
 
@@ -48,12 +47,10 @@ namespace Lib9c.Tests
             return false;
         }
 
-        private static string GetDefaultPath()
-        {
-            var fullPath = Path.GetFullPath("./");
-            var index = fullPath.IndexOf("Lib9c", StringComparison.Ordinal);
-            var projPath = fullPath[..index];
-            return Path.Combine(projPath, "Lib9c", "TableCSV");
-        }
+        private static string GetDefaultPath() => Path
+            .GetFullPath("../")
+            .Replace(
+                Path.Combine(".Lib9c.Tests", "bin", "Debug"),
+                Path.Combine("Lib9c", "TableCSV"));
     }
 }
