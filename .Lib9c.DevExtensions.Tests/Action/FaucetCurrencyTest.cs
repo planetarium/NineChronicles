@@ -1,17 +1,17 @@
+using Lib9c.DevExtensions.Action;
+using Lib9c.Tests.Action;
+using Libplanet;
+using Libplanet.Action;
+using Libplanet.Assets;
+using Libplanet.Crypto;
+using Nekoyume.Action;
+using Nekoyume.Model.State;
+using Serilog;
+using Xunit;
+using Xunit.Abstractions;
+
 namespace Lib9c.DevExtensions.Tests.Action
 {
-    using Lib9c.DevExtensions.Action;
-    using Lib9c.Tests.Action;
-    using Libplanet;
-    using Libplanet.Action;
-    using Libplanet.Assets;
-    using Libplanet.Crypto;
-    using Nekoyume.Action;
-    using Nekoyume.Model.State;
-    using Serilog;
-    using Xunit;
-    using Xunit.Abstractions;
-
     public class FaucetCurrencyTest
     {
         private readonly IAccountStateDelta _initialState;
