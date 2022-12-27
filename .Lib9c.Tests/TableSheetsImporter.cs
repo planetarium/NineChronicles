@@ -6,9 +6,9 @@ namespace Lib9c.Tests
 
     public static class TableSheetsImporter
     {
-        public static Dictionary<string, string> ImportSheets()
+        public static Dictionary<string, string> ImportSheets(string path = null)
         {
-            var path = GetLib9cTableCsvPath();
+            path ??= GetDefaultPath();
             var files = Directory.GetFiles(path, "*.csv", SearchOption.AllDirectories);
             var sheets = new Dictionary<string, string>();
             foreach (var filePath in files)
@@ -27,7 +27,7 @@ namespace Lib9c.Tests
 
         public static bool TryGetCsv(string sheetName, out string csv)
         {
-            var path = GetLib9cTableCsvPath();
+            var path = GetDefaultPath();
             var filePaths = Directory.GetFiles(path, "*.csv", SearchOption.AllDirectories);
             foreach (var filePath in filePaths)
             {
@@ -48,7 +48,7 @@ namespace Lib9c.Tests
             return false;
         }
 
-        private static string GetLib9cTableCsvPath()
+        private static string GetDefaultPath()
         {
             var fullPath = Path.GetFullPath("./");
             var index = fullPath.IndexOf("Lib9c", StringComparison.Ordinal);
