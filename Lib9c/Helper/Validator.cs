@@ -70,12 +70,19 @@ namespace Nekoyume.Helper
                 worldInformation.UpdateWorld(worldRow);
             }
 
-            if (world.IsStageCleared && stageId - 1 > world.StageClearedId ||
-                !world.IsStageCleared && stageId != world.StageBegin)
+            if (!world.IsStageCleared && stageId != world.StageBegin)
             {
                 throw new InvalidStageException(
                     $"{addressesHex}Aborted as the stage ({worldId}/{stageId - 1}) is not cleared; " +
-                    $"cleared stage: {world.StageClearedId}"
+                    $"clear the stage first: ({world.Id}/{world.StageBegin})"
+                );
+            }
+
+            if (world.IsStageCleared && stageId - 1 > world.StageClearedId)
+            {
+                throw new InvalidStageException(
+                    $"{addressesHex}Aborted as the stage ({worldId}/{stageId - 1}) is not cleared; " +
+                    $"cleared stage: ({world.Id}/{world.StageClearedId})"
                 );
             }
 
