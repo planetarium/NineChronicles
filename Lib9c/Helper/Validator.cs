@@ -70,11 +70,11 @@ namespace Nekoyume.Helper
                 worldInformation.UpdateWorld(worldRow);
             }
 
-            if (world.IsStageCleared && stageId > world.StageClearedId + 1 ||
+            if (world.IsStageCleared && stageId - 1 > world.StageClearedId ||
                 !world.IsStageCleared && stageId != world.StageBegin)
             {
                 throw new InvalidStageException(
-                    $"{addressesHex}Aborted as the stage ({worldId}/{stageId}) is not cleared; " +
+                    $"{addressesHex}Aborted as the stage ({worldId}/{stageId - 1}) is not cleared; " +
                     $"cleared stage: {world.StageClearedId}"
                 );
             }
