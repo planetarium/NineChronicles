@@ -262,7 +262,7 @@ namespace Nekoyume.UI
 
         private void PracticeRaid()
         {
-            var itemSlotState = States.Instance.ItemSlotStates[BattleType.Raid];
+            var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Raid];
             var equipments = itemSlotState.Equipments;
             var costumes = itemSlotState.Costumes;
             var runeStates = States.Instance.GetEquippedRuneStates(BattleType.Raid);
@@ -283,7 +283,7 @@ namespace Nekoyume.UI
                 tableSheets.CostumeStatSheet
             );
             var log = simulator.Simulate();
-            var slotInfos = States.Instance.RuneSlotStates.TryGetValue(BattleType.Raid, out var state) ?
+            var slotInfos = States.Instance.CurrentRuneSlotStates.TryGetValue(BattleType.Raid, out var state) ?
                 state.GetEquippedRuneSlotInfos() :
                 null;
             var digest = new ArenaPlayerDigest(avatarState, runeStates);
@@ -350,11 +350,11 @@ namespace Nekoyume.UI
 
         private void Raid(bool payNcg)
         {
-            var itemSlotState = States.Instance.ItemSlotStates[BattleType.Raid];
+            var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Raid];
             var costumes = itemSlotState.Costumes;
             var equipments = itemSlotState.Equipments;
             var consumables = information.GetEquippedConsumables().Select(x => x.ItemId).ToList();
-            var runeInfos = States.Instance.RuneSlotStates[BattleType.Raid]
+            var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.Raid]
                 .GetEquippedRuneSlotInfos();
 
             ActionManager.Instance.Raid(costumes, equipments, consumables, runeInfos, payNcg).Subscribe();

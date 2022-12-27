@@ -230,7 +230,7 @@ namespace Nekoyume.UI.Module
             UpdateDimmedInventoryItem();
             onUpdateInventory?.Invoke(this, inventory);
 
-            var itemSlotState = States.Instance.ItemSlotStates[battleType];
+            var itemSlotState = States.Instance.CurrentItemSlotStates[battleType];
             UpdateEquipmentEquipped(itemSlotState.Equipments);
             UpdateCostumes(itemSlotState.Costumes);
             var equippedRuneState = States.Instance.GetEquippedRuneStates(battleType);
@@ -616,7 +616,7 @@ namespace Nekoyume.UI.Module
             var equipments = GetBestEquipments();
             foreach (var guid in equipments)
             {
-                var slots = States.Instance.ItemSlotStates.Values;
+                var slots = States.Instance.CurrentItemSlotStates.Values;
                 if (slots.Any(x => !x.Equipments.Exists(x => x == guid)))
                 {
                     return true;
@@ -629,7 +629,7 @@ namespace Nekoyume.UI.Module
                 var inventoryItems = GetBestRunes(battleType);
                 foreach (var inventoryItem in inventoryItems)
                 {
-                    var slots = States.Instance.RuneSlotStates[battleType].GetRuneSlot();
+                    var slots = States.Instance.CurrentRuneSlotStates[battleType].GetRuneSlot();
                     if (!slots.Exists(x => x.RuneId == inventoryItem.RuneState.RuneId))
                     {
                         return true;
@@ -752,7 +752,7 @@ namespace Nekoyume.UI.Module
             for (var i = 1; i < (int)BattleType.End; i++)
             {
                 var battleType = (BattleType)i;
-                equipments.AddRange(States.Instance.ItemSlotStates[battleType].Equipments);
+                equipments.AddRange(States.Instance.CurrentItemSlotStates[battleType].Equipments);
             }
 
             foreach (var eps in _equipments.Values)

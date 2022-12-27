@@ -165,6 +165,32 @@ namespace Nekoyume.Game.Character
             }
         }
 
+        public void Set(Model.Player model,
+            IEnumerable<Costume> costumes,
+            Armor armor,
+            Weapon weapon,
+            bool updateCurrentHP)
+        {
+            InitStats(model);
+            base.Set(model, updateCurrentHP);
+
+            _disposablesForModel.DisposeAllAndClear();
+            CharacterModel = model;
+            EquipCostumes(costumes);
+            EquipEquipmentsAndUpdateCustomize(armor, weapon);
+
+            if (!SpeechBubble)
+            {
+                SpeechBubble = Widget.Create<SpeechBubble>();
+            }
+
+            SpeechBubble.speechBreakTime = GameConfig.PlayerSpeechBreakTime;
+            if (!(this is EnemyPlayer))
+            {
+                Widget.Find<UI.Battle>().ComboText.comboMax = CharacterModel.AttackCountMax;
+            }
+        }
+
         protected override IEnumerator Dying()
         {
             if (SpeechBubble)

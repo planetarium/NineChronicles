@@ -343,9 +343,9 @@ namespace Nekoyume.UI
                 _chooseAvatarState.level,
                 Util.GetPortraitId(_chooseAvatarEquipments, _chooseAvatarCostumes));
 
-            var costumes = States.Instance.ItemSlotStates[BattleType.Arena].Costumes;
-            var equipments = States.Instance.ItemSlotStates[BattleType.Arena].Equipments;
-            var runeInfos = States.Instance.RuneSlotStates[BattleType.Arena]
+            var costumes = States.Instance.CurrentItemSlotStates[BattleType.Arena].Costumes;
+            var equipments = States.Instance.CurrentItemSlotStates[BattleType.Arena].Equipments;
+            var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.Arena]
                 .GetEquippedRuneSlotInfos();
             ActionRenderHandler.Instance.Pending = true;
             ActionManager.Instance.BattleArena(
@@ -371,9 +371,9 @@ namespace Nekoyume.UI
                 _chooseAvatarState.level,
                 Util.GetPortraitId(_chooseAvatarEquipments, _chooseAvatarCostumes));
 
-            var costumes = States.Instance.ItemSlotStates[BattleType.Arena].Costumes;
-            var equipments = States.Instance.ItemSlotStates[BattleType.Arena].Equipments;
-            var runeInfos = States.Instance.RuneSlotStates[BattleType.Arena]
+            var costumes = States.Instance.CurrentItemSlotStates[BattleType.Arena].Costumes;
+            var equipments = States.Instance.CurrentItemSlotStates[BattleType.Arena].Equipments;
+            var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.Arena]
                 .GetEquippedRuneSlotInfos();
 
             ActionRenderHandler.Instance.Pending = true;

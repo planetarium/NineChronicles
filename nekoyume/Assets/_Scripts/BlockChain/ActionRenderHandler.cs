@@ -965,10 +965,18 @@ namespace Nekoyume.BlockChain
                 UpdateCurrentAvatarStateAsync(eval).Forget();
                 ReactiveShopState.UpdateSellDigestsAsync().Forget();
 
+                var slotIndex = States.Instance.AvatarStates
+                    .FirstOrDefault(x => x.Value.address == eval.Action.sellerAvatarAddress).Key;
+                var itemSlotStates = States.Instance.ItemSlotStates[slotIndex];
+
                 for (var i = 1; i < (int)BattleType.End; i++)
                 {
                     var battleType = (BattleType)i;
-                    var itemSlotState = States.Instance.ItemSlotStates[battleType];
+                    var currentItemSlotState = States.Instance.CurrentItemSlotStates[battleType];
+                    currentItemSlotState.Costumes.Remove(eval.Action.tradableId);
+                    currentItemSlotState.Equipments.Remove(eval.Action.tradableId);
+
+                    var itemSlotState = itemSlotStates[battleType];
                     itemSlotState.Costumes.Remove(eval.Action.tradableId);
                     itemSlotState.Equipments.Remove(eval.Action.tradableId);
                 }
@@ -2049,7 +2057,7 @@ namespace Nekoyume.BlockChain
             if (!myDigest.HasValue)
             {
                 var myAvatarState = eval.OutputStates.GetAvatarStateV2(eval.Action.myAvatarAddress);
-                var itemSlotState = States.Instance.ItemSlotStates[BattleType.Arena];
+                var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Arena];
                 var runeStates = States.Instance.GetEquippedRuneStates(BattleType.Arena);
                 myDigest = new ArenaPlayerDigest(myAvatarState,
                     itemSlotState.Equipments,
@@ -2437,7 +2445,7 @@ namespace Nekoyume.BlockChain
 
             for (var i = 1; i < (int)BattleType.End; i++)
             {
-                States.Instance.RuneSlotStates[(BattleType)i].Unlock(eval.Action.SlotIndex);
+                States.Instance.CurrentRuneSlotStates[(BattleType)i].Unlock(eval.Action.SlotIndex);
             }
 
             LoadingHelper.UnlockRuneSlot.Remove(eval.Action.SlotIndex);
