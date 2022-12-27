@@ -1,14 +1,37 @@
 namespace Lib9c.Tests.Model.State
 {
-    using System;
     using System.Numerics;
-    using Nekoyume.Battle;
-    using Nekoyume.Model.BattleStatus;
     using Nekoyume.Model.State;
     using Xunit;
 
     public class StateExtensionsTest
     {
+        [Theory]
+        [InlineData(long.MinValue)]
+        [InlineData(0L)]
+        [InlineData(long.MaxValue)]
+        public void Long(long value)
+        {
+            var ser = value.Serialize();
+            var de = ser.ToLong();
+            Assert.Equal(value, de);
+            var ser2 = de.Serialize();
+            Assert.Equal(ser, ser2);
+        }
+
+        [Theory]
+        [InlineData(long.MinValue)]
+        [InlineData(0L)]
+        [InlineData(long.MaxValue)]
+        public void NullableLong(long? value)
+        {
+            var ser = value.Serialize();
+            var de = ser.ToNullableLong();
+            Assert.Equal(value, de);
+            var ser2 = de.Serialize();
+            Assert.Equal(ser, ser2);
+        }
+
         [Fact]
         public void SerializeBigInteger()
         {
