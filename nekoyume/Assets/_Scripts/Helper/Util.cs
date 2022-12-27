@@ -378,5 +378,18 @@ namespace Nekoyume.Helper
             var (equipments, costumes) = States.Instance.GetEquippedItems(battleType);
             return GetPortraitId(equipments, costumes);
         }
+
+        public static int GetArmorId()
+        {
+            var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Adventure);
+            var id = GameConfig.DefaultAvatarArmorId;
+            var armor = equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
+            if (armor != null)
+            {
+                id = armor.Id;
+            }
+
+            return id;
+        }
     }
 }

@@ -25,6 +25,9 @@ namespace Nekoyume.Game
         private PrologueCharacter _pig;
         private PrologueCharacter _knight;
         private UI.Battle _battle;
+        private int _armorId = 10251001;
+        private int _weaponId = 10151000;
+        private int _characterId = 205007;
 
         public void StartPrologue()
         {
@@ -43,7 +46,7 @@ namespace Nekoyume.Game
             Game.instance.Stage.LoadBackground("Chapter_Prologue");
             var go = PlayerFactory.Create();
             _player = go.GetComponent<Player>();
-            _player.Equip(10251001, 10151000);
+            _player.Equip(_armorId, _weaponId);
             var position = _player.transform.position;
             position.y = Stage.StageStartPosition;
             _player.transform.position = position;
@@ -53,7 +56,7 @@ namespace Nekoyume.Game
             _battle.ShowForTutorial(true);
             Widget.Find<HeaderMenuStatic>().Close(true);
             yield return new WaitForSeconds(2f);
-            var go2 = EnemyFactory.Create(205007, _player.transform.position, 7f, _player);
+            var go2 = EnemyFactory.Create(_characterId, _player.transform.position, 7f, _player);
             _fenrir = go2.GetComponent<PrologueCharacter>();
             yield return new WaitUntil(() => 6f > Mathf.Abs(go.transform.position.x - go2.transform.position.x));
             _player.ShowSpeech("PLAYER_PROLOGUE_SPEECH");
@@ -176,7 +179,7 @@ namespace Nekoyume.Game
             var pos = _player.transform.position;
             var castingEffect = Game.instance.Stage.SkillController.Get(pos, ElementalType.Fire);
             castingEffect.Play();
-            AreaAttackCutscene.Show(_player.GetArmorId());
+            AreaAttackCutscene.Show(_armorId);
             yield return new WaitForSeconds(0.6f);
             var effect = Game.instance.Stage.SkillController.Get<SkillAreaVFX>(_knight.gameObject, ElementalType.Fire, SkillCategory.AreaAttack, SkillTargetType.Enemies);
             effect.Play();
