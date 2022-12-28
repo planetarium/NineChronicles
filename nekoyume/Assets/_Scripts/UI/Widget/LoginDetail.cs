@@ -23,6 +23,7 @@ using Nekoyume.UI.Module.WorldBoss;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.Model.Stat;
     using UniRx;
 
     public class LoginDetail : Widget
@@ -61,6 +62,16 @@ namespace Nekoyume.UI
             { ItemSubType.EyeCostume, 0 },
             { ItemSubType.EarCostume, 0 },
             { ItemSubType.TailCostume, 0 },
+        };
+
+        private HashSet<StatType> visibleStats = new()
+        {
+            StatType.HP,
+            StatType.ATK,
+            StatType.DEF,
+            StatType.CRI,
+            StatType.HIT,
+            StatType.SPD
         };
 
         private int _selectedIndex;
@@ -269,6 +280,11 @@ namespace Nekoyume.UI
             var idx = 0;
             foreach (var (statType, value, additionalValue) in tuples)
             {
+                if (!visibleStats.Contains(statType))
+                {
+                    continue;
+                }
+
                 var info = statusRows[idx];
                 info.Show(statType, value + additionalValue, 0);
                 ++idx;
