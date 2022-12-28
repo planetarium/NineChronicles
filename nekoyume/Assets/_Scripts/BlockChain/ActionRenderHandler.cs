@@ -492,7 +492,8 @@ namespace Nekoyume.BlockChain
             var avatarState = await States.Instance.SelectAvatarAsync(eval.Action.index);
             await States.Instance.InitRuneStoneBalance();
             await States.Instance.InitRuneStates();
-            await Task.WhenAll(States.Instance.InitItemSlotStates(), States.Instance.InitRuneSlotStates());
+            await States.Instance.InitItemSlotStates();
+            await States.Instance.InitRuneSlotStates();
 
             RenderQuest(
                 avatarState.address,

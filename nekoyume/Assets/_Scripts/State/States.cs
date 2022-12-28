@@ -19,6 +19,8 @@ using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Rune;
 using Nekoyume.UI;
+using UnityEngine;
+using Event = Nekoyume.Game.Event;
 
 namespace Nekoyume.State
 {
@@ -188,7 +190,7 @@ namespace Nekoyume.State
             await task;
         }
 
-        public async Task InitRuneSlotStates()
+        public async UniTask InitRuneSlotStates()
         {
             CurrentRuneSlotStates.Clear();
             CurrentRuneSlotStates.Add(BattleType.Adventure, new RuneSlotState(BattleType.Adventure));
@@ -268,7 +270,7 @@ namespace Nekoyume.State
             }
         }
 
-        public async Task InitItemSlotStates()
+        public async UniTask InitItemSlotStates()
         {
             CurrentItemSlotStates.Clear();
             CurrentItemSlotStates.Add(BattleType.Adventure, new ItemSlotState(BattleType.Adventure));
@@ -312,6 +314,44 @@ namespace Nekoyume.State
                 });
                 await task;
             }
+        }
+
+        private async UniTask InitItemSlotState(int slotIndex, AvatarState avatarState)
+        {
+            if (ItemSlotStates.ContainsKey(slotIndex))
+            {
+                return;
+            }
+
+            ItemSlotStates.Add(slotIndex, new Dictionary<BattleType, ItemSlotState>());
+            ItemSlotStates[slotIndex].Add(BattleType.Adventure, new ItemSlotState(BattleType.Adventure));
+            ItemSlotStates[slotIndex].Add(BattleType.Arena, new ItemSlotState(BattleType.Arena));
+            ItemSlotStates[slotIndex].Add(BattleType.Raid, new ItemSlotState(BattleType.Raid));
+
+            var addresses = new List<Address>
+            {
+                ItemSlotState.DeriveAddress(avatarState.address, BattleType.Adventure),
+                ItemSlotState.DeriveAddress(avatarState.address, BattleType.Arena),
+                ItemSlotState.DeriveAddress(avatarState.address, BattleType.Raid)
+            };
+
+            var stateBulk = await Game.Game.instance.Agent.GetStateBulk(addresses);
+            var task = Task.Run(async () =>
+            {
+                var states = new Dictionary<BattleType, ItemSlotState>();
+                foreach (var value in stateBulk.Values)
+                {
+                    if (value is List list)
+                    {
+                        var slotState = new ItemSlotState(list);
+                        ItemSlotStates[slotIndex][slotState.BattleType] = slotState;
+                    }
+                }
+
+                return states;
+            });
+
+            await task;
         }
 
         public async Task UpdateItemSlotStates(BattleType battleType)
@@ -481,6 +521,8 @@ namespace Nekoyume.State
             {
                 _avatarStates.Add(index, state);
             }
+
+            await InitItemSlotState(index, state);
 
             if (index == CurrentAvatarKey)
             {
