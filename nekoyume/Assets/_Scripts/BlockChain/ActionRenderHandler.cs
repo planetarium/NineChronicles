@@ -492,7 +492,8 @@ namespace Nekoyume.BlockChain
             var avatarState = await States.Instance.SelectAvatarAsync(eval.Action.index);
             await States.Instance.InitRuneStoneBalance();
             await States.Instance.InitRuneStates();
-            await Task.WhenAll(States.Instance.InitItemSlotStates(), States.Instance.InitRuneSlotStates());
+            await States.Instance.InitItemSlotStates();
+            await States.Instance.InitRuneSlotStates();
 
             RenderQuest(
                 avatarState.address,
@@ -2311,6 +2312,7 @@ namespace Nekoyume.BlockChain
             var preKillReward = WorldBossStates.GetKillReward(avatarAddress);
             var latestBossLevel = preRaiderState?.LatestBossLevel ?? 0;
             var runeStates = States.Instance.GetEquippedRuneStates(BattleType.Raid);
+            var itemSlotStates = States.Instance.CurrentItemSlotStates[BattleType.Raid];
 
             var simulator = new RaidSimulator(
                 row.BossId,
@@ -2327,6 +2329,8 @@ namespace Nekoyume.BlockChain
 
             var playerDigest = new ArenaPlayerDigest(
                 clonedAvatarState,
+                itemSlotStates.Equipments,
+                itemSlotStates.Costumes,
                 runeStates);
 
             await WorldBossStates.Set(avatarAddress);
