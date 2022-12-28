@@ -279,26 +279,6 @@ namespace Nekoyume.Helper
             return count;
         }
 
-        public static bool IsInTime(string begin, string end, bool everyYear = true)
-        {
-            var now = DateTime.UtcNow;
-            if (everyYear)
-            {
-                begin = $"{now.Year}-{begin}";
-                end = $"{now.Year}-{end}";
-            }
-
-            if (DateTime.TryParseExact(begin, "yyyy-MM-ddTHH:mm:ss", null, DateTimeStyles.None,
-                    out var bDt) &&
-                DateTime.TryParseExact(end, "yyyy-MM-ddTHH:mm:ss", null, DateTimeStyles.None,
-                    out var eDt))
-            {
-                return now.IsInTime(bDt, eDt);
-            }
-
-            return false;
-        }
-
         public static int TotalCP(BattleType battleType)
         {
             var avatarState = Game.Game.instance.States.CurrentAvatarState;

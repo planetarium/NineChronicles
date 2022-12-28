@@ -82,7 +82,7 @@ namespace Nekoyume.Game.Notice
             var tasks = new List<UniTask>();
             foreach (var banner in bannerData)
             {
-                if (banner.UseDateTime && !Helper.Util.IsInTime(banner.BeginDateTime, banner.EndDateTime))
+                if (banner.UseDateTime && !DateTime.UtcNow.IsInTime(banner.BeginDateTime, banner.EndDateTime))
                 {
                     continue;
                 }

@@ -30,7 +30,8 @@ namespace Nekoyume
             return SO.eventDungeonIdBasedEvents.FirstOrDefault(e =>
                        e.TargetDungeonIds.Contains(currentEventDungeonId)) ??
                    SO.timeBasedEvents.FirstOrDefault(e =>
-                       Util.IsInTime(e.BeginDateTime, e.EndDateTime)) ??
+                       DateTime.UtcNow.IsInTime($"{DateTime.UtcNow.Year}-{e.BeginDateTime}",
+                           $"{DateTime.UtcNow.Year}-{e.EndDateTime}")) ??
                    SO.blockIndexBasedEvents.FirstOrDefault(e =>
                        e.BeginBlockIndex <= currentBlockIndex &&
                        e.EndBlockIndex >= currentBlockIndex) ??
