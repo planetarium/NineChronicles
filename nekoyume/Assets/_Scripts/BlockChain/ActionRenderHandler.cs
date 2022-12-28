@@ -42,7 +42,7 @@ using Lib9c.DevExtensions.Action;
 
 namespace Nekoyume.BlockChain
 {
-    using Nekoyume.Model;
+    using Model;
     using UI.Scroller;
     using UniRx;
 
@@ -109,7 +109,6 @@ namespace Nekoyume.BlockChain
             GameConfig();
             CreateAvatar();
             TransferAsset();
-            MonsterCollect();
             Stake();
 
             // Battle
@@ -354,15 +353,6 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseChargeActionPoint)
-                .AddTo(_disposables);
-        }
-
-        private void MonsterCollect()
-        {
-            _actionRenderer.EveryRender<MonsterCollect>()
-                .Where(ValidateEvaluationForCurrentAgent)
-                .ObserveOnMainThread()
-                .Subscribe(ResponseMonsterCollect)
                 .AddTo(_disposables);
         }
 
@@ -1577,29 +1567,6 @@ namespace Nekoyume.BlockChain
                 }
 
                 UpdateCurrentAvatarStateAsync(eval).Forget();
-            }
-        }
-
-        private void ResponseMonsterCollect(ActionBase.ActionEvaluation<MonsterCollect> eval)
-        {
-            if (!(eval.Exception is null))
-            {
-                return;
-            }
-
-            NotificationSystem.Push(
-                MailType.System,
-                L10nManager.Localize("UI_MONSTERCOLLECTION_UPDATED"),
-                NotificationCell.NotificationType.Information);
-
-            UpdateAgentStateAsync(eval).Forget();
-            UpdateCurrentAvatarStateAsync(eval).Forget();
-            var (mcState, level, balance) = GetMonsterCollectionState(eval);
-            if (mcState != null)
-            {
-                UpdateMonsterCollectionState(mcState,
-                    new GoldBalanceState(mcState.address, balance),
-                    level);
             }
         }
 

@@ -346,23 +346,6 @@ namespace Nekoyume.State
             return fungibleAsset;
         }
 
-        public void SetMonsterCollectionState(
-            MonsterCollectionState monsterCollectionState,
-            GoldBalanceState stakedBalanceState,
-            int level)
-        {
-            if (monsterCollectionState is null)
-            {
-                Debug.LogWarning(
-                    $"[{nameof(States)}.{nameof(SetMonsterCollectionState)}] {nameof(monsterCollectionState)} is null.");
-                return;
-            }
-
-            StakingLevel = level;
-            StakedBalanceState = stakedBalanceState;
-            MonsterCollectionStateSubject.OnNextLevel(StakingLevel);
-        }
-
         public void SetStakeState(StakeState stakeState, GoldBalanceState stakedBalanceState, int stakingLevel)
         {
             if (stakeState is null)
@@ -374,7 +357,7 @@ namespace Nekoyume.State
             StakeState = stakeState;
             StakedBalanceState = stakedBalanceState;
             StakingLevel = stakingLevel;
-            MonsterCollectionStateSubject.OnNextLevel(stakingLevel);
+            StakingLevelSubject.OnNextLevel(stakingLevel);
         }
 
         public void SetCrystalRandomSkillState(CrystalRandomSkillState skillState)
@@ -382,7 +365,6 @@ namespace Nekoyume.State
             if (skillState is null)
             {
                 Debug.LogWarning($"[{nameof(States)}.{nameof(SetCrystalRandomSkillState)}] {nameof(skillState)} is null.");
-                return;
             }
 
             CrystalRandomSkillState = skillState;

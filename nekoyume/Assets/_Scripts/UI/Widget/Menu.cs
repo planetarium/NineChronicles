@@ -148,7 +148,7 @@ namespace Nekoyume.UI
                 buttonList.ForEach(button => button.interactable = stateType == AnimationStateType.Shown);
             }).AddTo(gameObject);
 
-            MonsterCollectionStateSubject.Level
+            StakingLevelSubject.Level
                 .Subscribe(level =>
                     stakingLevelIcon.sprite = stakeIconData.GetIcon(level, IconType.Bubble))
                 .AddTo(gameObject);
