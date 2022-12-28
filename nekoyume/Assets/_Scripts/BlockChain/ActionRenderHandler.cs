@@ -2312,6 +2312,7 @@ namespace Nekoyume.BlockChain
             var preKillReward = WorldBossStates.GetKillReward(avatarAddress);
             var latestBossLevel = preRaiderState?.LatestBossLevel ?? 0;
             var runeStates = States.Instance.GetEquippedRuneStates(BattleType.Raid);
+            var itemSlotStates = States.Instance.CurrentItemSlotStates[BattleType.Raid];
 
             var simulator = new RaidSimulator(
                 row.BossId,
@@ -2328,6 +2329,8 @@ namespace Nekoyume.BlockChain
 
             var playerDigest = new ArenaPlayerDigest(
                 clonedAvatarState,
+                itemSlotStates.Equipments,
+                itemSlotStates.Costumes,
                 runeStates);
 
             await WorldBossStates.Set(avatarAddress);
