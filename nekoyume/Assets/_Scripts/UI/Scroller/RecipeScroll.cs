@@ -225,7 +225,7 @@ namespace Nekoyume.UI.Scroller
             // `Scroller.ViewportSize`(viewport.rect.size.x,y) was not initialized.
             const float viewportSizeVertical = 458f;  // in `UI_Craft` prefab
             AdjustCellIntervalAndScrollOffset(viewportSizeVertical);
-            JumpTo(max-1);
+            JumpTo(max - 1);
 
             AnimateScroller();
 
@@ -295,12 +295,36 @@ namespace Nekoyume.UI.Scroller
                 .ToList();
             emptyObjectText.text = L10nManager.Localize("UI_WORKSHOP_EMPTY_CATEGORY");
             emptyObject.SetActive(!items.Any());
-            Show(items, true);
+            Show(items);
+
+            var max = -1;
+            foreach (var item in items)
+            {
+                if (item.Rows.Any(row => row is ConsumableItemRecipeSheet.Row consumableRow
+                    && !IsConsumableLocked(consumableRow)))
+                {
+                    max = Mathf.Max(max, items.IndexOf(item));
+                }
+            }
+            max = max != -1 ? max : items.Count - 1;
+            JumpTo(max - 1);
+
             AnimateScroller();
 
             Craft.SharedModel.NotifiedRow
                 .Subscribe(SubscribeNotifiedRow)
                 .AddTo(_disposablesAtShow);
+        }
+
+        private static bool IsConsumableLocked(ConsumableItemRecipeSheet.Row consumableRow)
+        {
+            var sheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
+            if (!sheet.TryGetValue(consumableRow.ResultConsumableItemId, out var requirementRow))
+            {
+                return true;
+            }
+
+            return States.Instance.CurrentAvatarState.level < requirementRow.Level;
         }
 
         public void ShowAsEventConsumable()

@@ -4,13 +4,13 @@ using UniRx;
 
 namespace Nekoyume.State.Subjects
 {
-    public static class MonsterCollectionStateSubject
+    public static class StakingLevelSubject
     {
         private static readonly Subject<int> _level;
 
         public static readonly IObservable<int> Level;
 
-        static MonsterCollectionStateSubject()
+        static StakingLevelSubject()
         {
             _level = new Subject<int>();
             Level = _level.ObserveOnMainThread();

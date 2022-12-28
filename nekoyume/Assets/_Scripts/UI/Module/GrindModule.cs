@@ -230,7 +230,7 @@ namespace Nekoyume.UI.Module
                 .Subscribe(_ => grindButton.Interactable = CanGrind)
                 .AddTo(_disposables);
 
-            MonsterCollectionStateSubject.Level
+            StakingLevelSubject.Level
                 .Subscribe(UpdateStakingBonusObject)
                 .AddTo(_disposables);
 

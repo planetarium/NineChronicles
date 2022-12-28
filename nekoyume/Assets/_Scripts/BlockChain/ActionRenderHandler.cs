@@ -42,7 +42,7 @@ using Lib9c.DevExtensions.Action;
 
 namespace Nekoyume.BlockChain
 {
-    using Nekoyume.Model;
+    using Model;
     using UI.Scroller;
     using UniRx;
 
@@ -109,7 +109,6 @@ namespace Nekoyume.BlockChain
             GameConfig();
             CreateAvatar();
             TransferAsset();
-            MonsterCollect();
             Stake();
 
             // Battle
@@ -357,15 +356,6 @@ namespace Nekoyume.BlockChain
                 .AddTo(_disposables);
         }
 
-        private void MonsterCollect()
-        {
-            _actionRenderer.EveryRender<MonsterCollect>()
-                .Where(ValidateEvaluationForCurrentAgent)
-                .ObserveOnMainThread()
-                .Subscribe(ResponseMonsterCollect)
-                .AddTo(_disposables);
-        }
-
         private void ClaimMonsterCollectionReward()
         {
             _actionRenderer.EveryRender<ClaimMonsterCollectionReward>()
@@ -502,7 +492,8 @@ namespace Nekoyume.BlockChain
             var avatarState = await States.Instance.SelectAvatarAsync(eval.Action.index);
             await States.Instance.InitRuneStoneBalance();
             await States.Instance.InitRuneStates();
-            await Task.WhenAll(States.Instance.InitItemSlotStates(), States.Instance.InitRuneSlotStates());
+            await States.Instance.InitItemSlotStates();
+            await States.Instance.InitRuneSlotStates();
 
             RenderQuest(
                 avatarState.address,
@@ -1466,6 +1457,8 @@ namespace Nekoyume.BlockChain
             await Task.WhenAll(
                 States.Instance.UpdateItemSlotStates(BattleType.Adventure),
                 States.Instance.UpdateRuneSlotStates(BattleType.Adventure));
+            UpdateAgentStateAsync(eval).Forget();
+
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd =
                 Game.Game.instance.Stage.onEnterToStageEnd
@@ -1575,29 +1568,6 @@ namespace Nekoyume.BlockChain
                 }
 
                 UpdateCurrentAvatarStateAsync(eval).Forget();
-            }
-        }
-
-        private void ResponseMonsterCollect(ActionBase.ActionEvaluation<MonsterCollect> eval)
-        {
-            if (!(eval.Exception is null))
-            {
-                return;
-            }
-
-            NotificationSystem.Push(
-                MailType.System,
-                L10nManager.Localize("UI_MONSTERCOLLECTION_UPDATED"),
-                NotificationCell.NotificationType.Information);
-
-            UpdateAgentStateAsync(eval).Forget();
-            UpdateCurrentAvatarStateAsync(eval).Forget();
-            var (mcState, level, balance) = GetMonsterCollectionState(eval);
-            if (mcState != null)
-            {
-                UpdateMonsterCollectionState(mcState,
-                    new GoldBalanceState(mcState.address, balance),
-                    level);
             }
         }
 
@@ -2340,6 +2310,7 @@ namespace Nekoyume.BlockChain
             var preKillReward = WorldBossStates.GetKillReward(avatarAddress);
             var latestBossLevel = preRaiderState?.LatestBossLevel ?? 0;
             var runeStates = States.Instance.GetEquippedRuneStates(BattleType.Raid);
+            var itemSlotStates = States.Instance.CurrentItemSlotStates[BattleType.Raid];
 
             var simulator = new RaidSimulator(
                 row.BossId,
@@ -2357,8 +2328,8 @@ namespace Nekoyume.BlockChain
             var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Raid];
             var playerDigest = new ArenaPlayerDigest(
                 clonedAvatarState,
-                itemSlotState.Equipments,
-                itemSlotState.Costumes,
+                itemSlotStates.Equipments,
+                itemSlotStates.Costumes,
                 runeStates);
 
             await WorldBossStates.Set(avatarAddress);
