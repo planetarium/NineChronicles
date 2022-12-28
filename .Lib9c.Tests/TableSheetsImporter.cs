@@ -48,9 +48,9 @@ namespace Lib9c.Tests
         }
 
         private static string GetDefaultPath() => Path
-            .GetFullPath("../")
+            .GetFullPath("../../")
             .Replace(
-                Path.Combine(".Lib9c.Tests", "bin", "Debug"),
+                Path.Combine(".Lib9c.Tests", "bin"),
                 Path.Combine("Lib9c", "TableCSV"));
     }
 }
