@@ -74,7 +74,7 @@ namespace Nekoyume.Helper
             {
                 throw new InvalidStageException(
                     $"{addressesHex}Aborted as the stage ({worldId}/{stageId - 1}) is not cleared; " +
-                    $"clear the stage first: ({world.Id}/{world.StageBegin})"
+                    $"clear the stage ({world.Id}/{world.StageBegin}) first"
                 );
             }
 
@@ -82,7 +82,8 @@ namespace Nekoyume.Helper
             {
                 throw new InvalidStageException(
                     $"{addressesHex}Aborted as the stage ({worldId}/{stageId - 1}) is not cleared; " +
-                    $"cleared stage: ({world.Id}/{world.StageClearedId})"
+                    $"cleared stage is ({world.Id}/{world.StageClearedId}), so you can play stage " +
+                    $"({world.Id}/{world.StageClearedId + 1})"
                 );
             }
 
