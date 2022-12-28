@@ -2305,9 +2305,7 @@ namespace Nekoyume.BlockChain
             }
 
             var clonedAvatarState = (AvatarState)States.Instance.CurrentAvatarState.Clone();
-            // todo : 장비 잘 착용하고 전투하는지 체크 필요
             var random = new LocalRandom(eval.RandomSeed);
-
             var preRaiderState = WorldBossStates.GetRaiderState(avatarAddress);
             var preKillReward = WorldBossStates.GetKillReward(avatarAddress);
             var latestBossLevel = preRaiderState?.LatestBossLevel ?? 0;
@@ -2327,6 +2325,7 @@ namespace Nekoyume.BlockChain
             var log = simulator.Log;
             Widget.Find<Menu>().Close();
 
+            var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Raid];
             var playerDigest = new ArenaPlayerDigest(
                 clonedAvatarState,
                 itemSlotStates.Equipments,

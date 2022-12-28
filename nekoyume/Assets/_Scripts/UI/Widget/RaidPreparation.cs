@@ -283,9 +283,6 @@ namespace Nekoyume.UI
                 tableSheets.CostumeStatSheet
             );
             var log = simulator.Simulate();
-            var slotInfos = States.Instance.CurrentRuneSlotStates.TryGetValue(BattleType.Raid, out var state) ?
-                state.GetEquippedRuneSlotInfos() :
-                null;
             var digest = new ArenaPlayerDigest(avatarState,
                 itemSlotState.Equipments,
                 itemSlotState.Costumes,
