@@ -149,20 +149,13 @@ namespace Nekoyume.State
             RuneStoneBalance.Clear();
             var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
             var avatarAddress = CurrentAvatarState.address;
-            var task = Task.Run(async () =>
+            var runes = new List<FungibleAssetValue>();
+            await foreach (var row in runeSheet.Values)
             {
-                var runes = new List<FungibleAssetValue>();
-                await foreach (var row in runeSheet.Values)
-                {
-                    var rune = RuneHelper.ToCurrency(row, 0, null);
-                    var fungibleAsset = await Game.Game.instance.Agent.GetBalanceAsync(avatarAddress, rune);
-                    RuneStoneBalance.Add(row.Id, fungibleAsset);
-                }
-
-                return runes;
-            });
-
-            await task;
+                var rune = RuneHelper.ToCurrency(row, 0, null);
+                var fungibleAsset = await Game.Game.instance.Agent.GetBalanceAsync(avatarAddress, rune);
+                RuneStoneBalance.Add(row.Id, fungibleAsset);
+            }
         }
 
         public async Task InitRuneStates()
@@ -173,21 +166,13 @@ namespace Nekoyume.State
             var runeAddresses = runeIds.Select(id => RuneState.DeriveAddress(avatarAddress, id)).ToList();
             var stateBulk = await Game.Game.instance.Agent.GetStateBulk(runeAddresses);
             RuneStates.Clear();
-            var task = Task.Run(async () =>
+            foreach (var value in stateBulk.Values)
             {
-                var states = new List<RuneState>();
-                foreach (var value in stateBulk.Values)
+                if (value is List list)
                 {
-                    if (value is List list)
-                    {
-                        RuneStates.Add(new RuneState(list));
-                    }
+                    RuneStates.Add(new RuneState(list));
                 }
-
-                return states;
-            });
-
-            await task;
+            }
         }
 
         public async UniTask InitRuneSlotStates()
@@ -198,41 +183,33 @@ namespace Nekoyume.State
             CurrentRuneSlotStates.Add(BattleType.Raid, new RuneSlotState(BattleType.Raid));
 
             RuneSlotStates.Clear();
-            await foreach (var pair in _avatarStates)
+            foreach (var (index, avatarState) in _avatarStates)
             {
-                RuneSlotStates.Add(pair.Key, new Dictionary<BattleType, RuneSlotState>());
-                RuneSlotStates[pair.Key].Add(BattleType.Adventure, new RuneSlotState(BattleType.Adventure));
-                RuneSlotStates[pair.Key].Add(BattleType.Arena, new RuneSlotState(BattleType.Arena));
-                RuneSlotStates[pair.Key].Add(BattleType.Raid, new RuneSlotState(BattleType.Raid));
+                RuneSlotStates.Add(index, new Dictionary<BattleType, RuneSlotState>());
+                RuneSlotStates[index].Add(BattleType.Adventure, new RuneSlotState(BattleType.Adventure));
+                RuneSlotStates[index].Add(BattleType.Arena, new RuneSlotState(BattleType.Arena));
+                RuneSlotStates[index].Add(BattleType.Raid, new RuneSlotState(BattleType.Raid));
 
                 var addresses = new List<Address>
                 {
-                    RuneSlotState.DeriveAddress(pair.Value.address, BattleType.Adventure),
-                    RuneSlotState.DeriveAddress(pair.Value.address, BattleType.Arena),
-                    RuneSlotState.DeriveAddress(pair.Value.address, BattleType.Raid)
+                    RuneSlotState.DeriveAddress(avatarState.address, BattleType.Adventure),
+                    RuneSlotState.DeriveAddress(avatarState.address, BattleType.Arena),
+                    RuneSlotState.DeriveAddress(avatarState.address, BattleType.Raid)
                 };
                 var stateBulk = await Game.Game.instance.Agent.GetStateBulk(addresses);
-                var task = Task.Run(async () =>
+                foreach (var value in stateBulk.Values)
                 {
-                    var states = new Dictionary<BattleType, RuneSlotState>();
-                    foreach (var value in stateBulk.Values)
+                    if (value is List list)
                     {
-                        if (value is List list)
+                        var slotState = new RuneSlotState(list);
+                        RuneSlotStates[index][slotState.BattleType] = slotState;
+
+                        if (avatarState.address == CurrentAvatarState.address)
                         {
-                            var slotState = new RuneSlotState(list);
-                            RuneSlotStates[pair.Key][slotState.BattleType] = slotState;
-
-                            if (pair.Value.address == CurrentAvatarState.address)
-                            {
-                                CurrentRuneSlotStates[slotState.BattleType] = slotState;
-                            }
-
+                            CurrentRuneSlotStates[slotState.BattleType] = slotState;
                         }
                     }
-
-                    return states;
-                });
-                await task;
+                }
             }
         }
 
@@ -278,41 +255,32 @@ namespace Nekoyume.State
             CurrentItemSlotStates.Add(BattleType.Raid, new ItemSlotState(BattleType.Raid));
 
             ItemSlotStates.Clear();
-            await foreach (var pair in _avatarStates)
+            foreach (var (index, avatarState) in _avatarStates)
             {
-                ItemSlotStates.Add(pair.Key, new Dictionary<BattleType, ItemSlotState>());
-                ItemSlotStates[pair.Key].Add(BattleType.Adventure, new ItemSlotState(BattleType.Adventure));
-                ItemSlotStates[pair.Key].Add(BattleType.Arena, new ItemSlotState(BattleType.Arena));
-                ItemSlotStates[pair.Key].Add(BattleType.Raid, new ItemSlotState(BattleType.Raid));
+                ItemSlotStates.Add(index, new Dictionary<BattleType, ItemSlotState>());
+                ItemSlotStates[index].Add(BattleType.Adventure, new ItemSlotState(BattleType.Adventure));
+                ItemSlotStates[index].Add(BattleType.Arena, new ItemSlotState(BattleType.Arena));
+                ItemSlotStates[index].Add(BattleType.Raid, new ItemSlotState(BattleType.Raid));
 
                 var addresses = new List<Address>
                 {
-                    ItemSlotState.DeriveAddress(pair.Value.address, BattleType.Adventure),
-                    ItemSlotState.DeriveAddress(pair.Value.address, BattleType.Arena),
-                    ItemSlotState.DeriveAddress(pair.Value.address, BattleType.Raid)
+                    ItemSlotState.DeriveAddress(avatarState.address, BattleType.Adventure),
+                    ItemSlotState.DeriveAddress(avatarState.address, BattleType.Arena),
+                    ItemSlotState.DeriveAddress(avatarState.address, BattleType.Raid)
                 };
                 var stateBulk = await Game.Game.instance.Agent.GetStateBulk(addresses);
-                var task = Task.Run(async () =>
+                foreach (var value in stateBulk.Values)
                 {
-                    var states = new Dictionary<BattleType, ItemSlotState>();
-                    foreach (var value in stateBulk.Values)
+                    if (value is List list)
                     {
-                        if (value is List list)
+                        var slotState = new ItemSlotState(list);
+                        ItemSlotStates[index][slotState.BattleType] = slotState;
+                        if (avatarState.address == CurrentAvatarState.address)
                         {
-                            var slotState = new ItemSlotState(list);
-                            ItemSlotStates[pair.Key][slotState.BattleType] = slotState;
-
-                            if (pair.Value.address == CurrentAvatarState.address)
-                            {
-                                CurrentItemSlotStates[slotState.BattleType] = slotState;
-                            }
-
+                            CurrentItemSlotStates[slotState.BattleType] = slotState;
                         }
                     }
-
-                    return states;
-                });
-                await task;
+                }
             }
         }
 
@@ -336,22 +304,14 @@ namespace Nekoyume.State
             };
 
             var stateBulk = await Game.Game.instance.Agent.GetStateBulk(addresses);
-            var task = Task.Run(async () =>
+            foreach (var value in stateBulk.Values)
             {
-                var states = new Dictionary<BattleType, ItemSlotState>();
-                foreach (var value in stateBulk.Values)
+                if (value is List list)
                 {
-                    if (value is List list)
-                    {
-                        var slotState = new ItemSlotState(list);
-                        ItemSlotStates[slotIndex][slotState.BattleType] = slotState;
-                    }
+                    var slotState = new ItemSlotState(list);
+                    ItemSlotStates[slotIndex][slotState.BattleType] = slotState;
                 }
-
-                return states;
-            });
-
-            await task;
+            }
         }
 
         public async Task UpdateItemSlotStates(BattleType battleType)
