@@ -21,16 +21,15 @@ namespace Nekoyume.BlockChain.Policy
         internal static bool IsObsolete(
             ITransaction transaction,
             IActionTypeLoader actionTypeLoader,
-            BlockHeader blockHeader
+            long blockIndex
         )
         {
-            long blockIndex = blockHeader.Index;
             if (!(transaction.CustomActions is { } customActions))
             {
                 return false;
             }
 
-            var types = actionTypeLoader.Load(MakeFakeNextBlockHeader(blockHeader));
+            var types = actionTypeLoader.Load(new ActionTypeLoaderContext(blockIndex));
             return customActions.Any(
                 ca => ca is Dictionary dictionary
                     && dictionary.TryGetValue((Text)"type_id", out IValue typeIdValue)

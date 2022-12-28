@@ -63,20 +63,8 @@ namespace Nekoyume.BlockChain
                 {
                     txValidators.Add(tx =>
                     {
-                        var fakeMetadata = new BlockMetadata(
-                            _chain.Tip.Header.ProtocolVersion,
-                            _chain.Tip.Header.Index + 1,
-                            _chain.Tip.Header.Timestamp,
-                            _chain.Tip.Header.Miner,
-                            _chain.Tip.Header.PublicKey,
-                            1,
-                            1,
-                            _chain.Tip.Header.Hash,
-                            _chain.Tip.Header.TxHash
-                        );
-                        var fakeHeader =
-                            new PreEvaluationBlockHeader(fakeMetadata, fakeMetadata.MineNonce());
-                        var types = actionTypeLoader.Load(fakeHeader);
+                        var nextBlockIndex = _chain.Tip.Header.Index + 1;
+                        var types = actionTypeLoader.Load(new ActionTypeLoaderContext(nextBlockIndex));
 
                         return tx.CustomActions?.All(ca =>
                             ca is Dictionary dictionary &&
@@ -159,6 +147,17 @@ namespace Nekoyume.BlockChain
             _swarm = swarm;
             _privateKey = privateKey;
             _actionTypeLoader = actionTypeLoader;
+        }
+
+
+        private class ActionTypeLoaderContext : IActionTypeLoaderContext
+        {
+            public ActionTypeLoaderContext(long index)
+            {
+                Index = index;
+            }
+
+            public long Index { get; }
         }
     }
 }

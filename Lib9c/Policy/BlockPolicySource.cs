@@ -325,6 +325,11 @@ namespace Nekoyume.BlockChain.Policy
             Transaction<NCAction> transaction,
             ImmutableHashSet<Address> allAuthorizedMiners)
         {
+            // Avoid NRE when genesis block appended
+            // Here, index is the index of a prospective block that transaction
+            // will be included.
+            long index = blockChain.Count > 0 ? blockChain.Tip.Index : 0;
+
             if (((ITransaction)transaction).CustomActions?.Count > 1)
             {
                 return new TxPolicyViolationException(
@@ -332,7 +337,7 @@ namespace Nekoyume.BlockChain.Policy
                     $"{((ITransaction)transaction).CustomActions?.Count}",
                     transaction.Id);
             }
-            else if (IsObsolete(transaction, actionTypeLoader, blockChain.Tip.Header))
+            else if (IsObsolete(transaction, actionTypeLoader, index))
             {
                 return new TxPolicyViolationException(
                     $"Transaction {transaction.Id} is obsolete.",
@@ -355,7 +360,7 @@ namespace Nekoyume.BlockChain.Policy
                         : null;
                 }
 
-                var actionTypes = actionTypeLoader.Load(MakeFakeNextBlockHeader(blockChain.Tip.Header));
+                var actionTypes = actionTypeLoader.Load(new ActionTypeLoaderContext(index));
                 // Check ActivateAccount
                 if (((ITransaction)transaction).CustomActions is { } customActions &&
                     customActions.Count == 1 &&
@@ -575,20 +580,14 @@ namespace Nekoyume.BlockChain.Policy
 
         }
 
-        private static IPreEvaluationBlockHeader MakeFakeNextBlockHeader(BlockHeader blockHeader)
+        private class ActionTypeLoaderContext : IActionTypeLoaderContext
         {
-            var fakeMetadata = new BlockMetadata(
-                blockHeader.ProtocolVersion,
-                blockHeader.Index + 1,
-                blockHeader.Timestamp,
-                blockHeader.Miner,
-                blockHeader.PublicKey,
-                1,
-                1,
-                blockHeader.Hash,
-                blockHeader.TxHash
-            );
-            return new PreEvaluationBlockHeader(fakeMetadata, fakeMetadata.MineNonce());
+            public ActionTypeLoaderContext(long index)
+            {
+                Index = index;
+            }
+
+            public long Index { get; }
         }
     }
 }
