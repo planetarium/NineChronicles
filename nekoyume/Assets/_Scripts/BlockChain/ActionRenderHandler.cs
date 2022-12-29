@@ -1457,7 +1457,11 @@ namespace Nekoyume.BlockChain
             await Task.WhenAll(
                 States.Instance.UpdateItemSlotStates(BattleType.Adventure),
                 States.Instance.UpdateRuneSlotStates(BattleType.Adventure));
-            UpdateAgentStateAsync(eval).Forget();
+
+            if (eval.Action.BuyTicketIfNeeded)
+            {
+                UpdateAgentStateAsync(eval).Forget();
+            }
 
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd =
@@ -2276,7 +2280,12 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
+            if (eval.Action.PayNcg)
+            {
+                UpdateAgentStateAsync(eval).Forget();
+            }
             UpdateCrystalBalance(eval);
+
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd =
                 Game.Game.instance.RaidStage.OnBattleEnded
