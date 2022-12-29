@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Bencodex.Types;
-using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model;
@@ -12,7 +11,7 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("activate_account2")]
-    public class ActivateAccount : ActionBase, IActivateAccount
+    public class ActivateAccount : ActionBase, IActivateAction
     {
         public Address PendingAddress { get; private set; }
 
