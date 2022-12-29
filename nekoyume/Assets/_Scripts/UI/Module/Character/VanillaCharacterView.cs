@@ -1,5 +1,6 @@
 using System.Linq;
 using Nekoyume.Helper;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using UnityEngine;
@@ -31,22 +32,8 @@ namespace Nekoyume.UI.Module
 
         public virtual void SetByPlayer(Player player)
         {
-            var fullCostume = player.Costumes
-                .FirstOrDefault(costume => costume.ItemSubType == ItemSubType.FullCostume);
-            if (!(fullCostume is null))
-            {
-                SetByFullCostumeOrArmorId(fullCostume.Id);
-                return;
-            }
-
-            var armor = player.Equipments
-                .FirstOrDefault(equipment => equipment.ItemSubType == ItemSubType.Armor);
-            if (!(armor is null))
-            {
-                SetByFullCostumeOrArmorId(armor.Id);
-                return;
-            }
-
+            var id = Util.GetPortraitId(BattleType.Adventure);
+            SetByFullCostumeOrArmorId(id);
             SetByCharacterId(player.Model.RowData.Id);
         }
 
