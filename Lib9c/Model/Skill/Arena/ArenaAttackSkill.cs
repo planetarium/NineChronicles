@@ -38,7 +38,9 @@ namespace Nekoyume.Model.Skill.Arena
                     isCritical = caster.IsCritical(isNormalAttack);
                     if (isCritical)
                     {
-                        damage = (int) (damage * ArenaCharacter.CriticalMultiplier);
+                        var critMultiplier =
+                            Math.Max(1m, ArenaCharacter.CriticalMultiplier + (caster.CDMG / 10000m));
+                        damage = (int) (damage * critMultiplier);
                     }
 
                     damage = Math.Max(damage - target.DEF, 1);

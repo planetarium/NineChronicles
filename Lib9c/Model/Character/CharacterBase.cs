@@ -56,6 +56,7 @@ namespace Nekoyume.Model
         public int SPD => Stats.SPD;
         public int DRV => Stats.DRV;
         public int DRR => Stats.DRR;
+        public int CDMG => Stats.CDMG;
 
         public int CurrentHP
         {

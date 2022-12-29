@@ -61,7 +61,9 @@ namespace Nekoyume.Model.Skill
                             isCritical = caster.IsCritical(isNormalAttack);
                             if (isCritical)
                             {
-                                damage = (int) (damage * CharacterBase.CriticalMultiplier);
+                                var critMultiplier =
+                                    Math.Max(1m, CharacterBase.CriticalMultiplier + (caster.CDMG / 10000m));
+                                damage = (int) (damage * critMultiplier);
                             }
 
                             // 연타공격은 항상 연출이 크리티컬로 보이도록 처리.

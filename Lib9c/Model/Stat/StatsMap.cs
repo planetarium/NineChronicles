@@ -18,6 +18,7 @@ namespace Nekoyume.Model.Stat
         public int SPD => HasSPD ? _statMaps[StatType.SPD].TotalValueAsInt : 0;
         public int DRV => HasDRV ? _statMaps[StatType.DRV].TotalValueAsInt : 0;
         public int DRR => HasDRR ? _statMaps[StatType.DRR].TotalValueAsInt : 0;
+        public int CDMG => HasCDMG ? _statMaps[StatType.CDMG].TotalValueAsInt : 0;
 
         public bool HasHP => _statMaps.ContainsKey(StatType.HP) &&
                              (_statMaps[StatType.HP].HasValue || _statMaps[StatType.HP].HasAdditionalValue);
@@ -43,6 +44,8 @@ namespace Nekoyume.Model.Stat
         public bool HasDRR => _statMaps.ContainsKey(StatType.DRR) &&
                               (_statMaps[StatType.DRR].HasValue || _statMaps[StatType.DRR].HasAdditionalValue);
 
+        public bool HasCDMG => _statMaps.ContainsKey(StatType.CDMG) &&
+                      (_statMaps[StatType.CDMG].HasValue || _statMaps[StatType.CDMG].HasAdditionalValue);
 
         public int BaseHP => HasBaseHP ? _statMaps[StatType.HP].ValueAsInt : 0;
         public int BaseATK => HasBaseATK ? _statMaps[StatType.ATK].ValueAsInt : 0;
@@ -52,6 +55,7 @@ namespace Nekoyume.Model.Stat
         public int BaseSPD => HasBaseSPD ? _statMaps[StatType.SPD].ValueAsInt : 0;
         public int BaseDRV => HasBaseDRV ? _statMaps[StatType.DRV].ValueAsInt : 0;
         public int BaseDRR => HasBaseDRR ? _statMaps[StatType.DRR].ValueAsInt : 0;
+        public int BaseCDMG => HasBaseCDMG ? _statMaps[StatType.CDMG].ValueAsInt : 0;
 
         public bool HasBaseHP => _statMaps.ContainsKey(StatType.HP) && _statMaps[StatType.HP].HasValue;
         public bool HasBaseATK => _statMaps.ContainsKey(StatType.ATK) && _statMaps[StatType.ATK].HasValue;
@@ -61,6 +65,7 @@ namespace Nekoyume.Model.Stat
         public bool HasBaseSPD => _statMaps.ContainsKey(StatType.SPD) && _statMaps[StatType.SPD].HasValue;
         public bool HasBaseDRV => _statMaps.ContainsKey(StatType.DRV) && _statMaps[StatType.DRV].HasValue;
         public bool HasBaseDRR => _statMaps.ContainsKey(StatType.DRR) && _statMaps[StatType.DRR].HasValue;
+        public bool HasBaseCDMG => _statMaps.ContainsKey(StatType.CDMG) && _statMaps[StatType.CDMG].HasValue;
 
         public int AdditionalHP => HasAdditionalHP ? _statMaps[StatType.HP].AdditionalValueAsInt : 0;
         public int AdditionalATK => HasAdditionalATK ? _statMaps[StatType.ATK].AdditionalValueAsInt : 0;
@@ -70,6 +75,7 @@ namespace Nekoyume.Model.Stat
         public int AdditionalSPD => HasAdditionalSPD ? _statMaps[StatType.SPD].AdditionalValueAsInt : 0;
         public int AdditionalDRV => HasAdditionalDRV ? _statMaps[StatType.DRV].AdditionalValueAsInt : 0;
         public int AdditionalDRR => HasAdditionalDRR ? _statMaps[StatType.DRR].AdditionalValueAsInt : 0;
+        public int AdditionalCDMG => HasAdditionalCDMG ? _statMaps[StatType.CDMG].AdditionalValueAsInt : 0;
 
         public bool HasAdditionalHP => _statMaps.ContainsKey(StatType.HP) && _statMaps[StatType.HP].HasAdditionalValue;
 
@@ -94,8 +100,12 @@ namespace Nekoyume.Model.Stat
         public bool HasAdditionalDRR =>
             _statMaps.ContainsKey(StatType.DRR) && _statMaps[StatType.DRR].HasAdditionalValue;
 
+        public bool HasAdditionalCDMG =>
+            _statMaps.ContainsKey(StatType.CDMG) && _statMaps[StatType.CDMG].HasAdditionalValue;
+
         public bool HasAdditionalStats => HasAdditionalHP || HasAdditionalATK || HasAdditionalDEF || HasAdditionalCRI ||
-                                          HasAdditionalHIT || HasAdditionalSPD || HasAdditionalDRV || HasAdditionalDRR;
+                                          HasAdditionalHIT || HasAdditionalSPD || HasAdditionalDRV || HasAdditionalDRR ||
+                                          HasAdditionalCDMG;
 
         private readonly Dictionary<StatType, StatMapEx> _statMaps =
             new Dictionary<StatType, StatMapEx>(StatTypeComparer.Instance);
@@ -212,6 +222,8 @@ namespace Nekoyume.Model.Stat
                     return ignoreAdditional ? BaseDRV : DRV;
                 case StatType.DRR:
                     return ignoreAdditional ? BaseDRR : DRR;
+                case StatType.CDMG:
+                    return ignoreAdditional ? BaseCDMG : CDMG;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
             }
@@ -237,6 +249,8 @@ namespace Nekoyume.Model.Stat
                     yield return (StatType.DRV, DRV);
                 if (HasDRR)
                     yield return (StatType.DRR, DRR);
+                if (HasCDMG)
+                    yield return (StatType.CDMG, CDMG);
             }
             else
             {
@@ -248,6 +262,7 @@ namespace Nekoyume.Model.Stat
                 yield return (StatType.SPD, SPD);
                 yield return (StatType.DRV, DRV);
                 yield return (StatType.DRR, DRR);
+                yield return (StatType.CDMG, CDMG);
             }
         }
 
@@ -271,6 +286,8 @@ namespace Nekoyume.Model.Stat
                     yield return (StatType.DRV, BaseDRV);
                 if (HasBaseDRR)
                     yield return (StatType.DRR, BaseDRR);
+                if (HasBaseCDMG)
+                    yield return (StatType.CDMG, BaseCDMG);
             }
             else
             {
@@ -282,6 +299,7 @@ namespace Nekoyume.Model.Stat
                 yield return (StatType.SPD, BaseSPD);
                 yield return (StatType.DRV, BaseDRV);
                 yield return (StatType.DRR, BaseDRR);
+                yield return (StatType.CDMG, BaseCDMG);
             }
         }
 
@@ -305,6 +323,8 @@ namespace Nekoyume.Model.Stat
                     yield return (StatType.DRV, AdditionalDRV);
                 if (HasAdditionalDRR)
                     yield return (StatType.DRR, AdditionalDRR);
+                if (HasAdditionalCDMG)
+                    yield return (StatType.CDMG, AdditionalCDMG);
             }
             else
             {
@@ -316,6 +336,7 @@ namespace Nekoyume.Model.Stat
                 yield return (StatType.SPD, AdditionalSPD);
                 yield return (StatType.DRV, AdditionalDRV);
                 yield return (StatType.DRR, AdditionalDRR);
+                yield return (StatType.CDMG, AdditionalCDMG);
             }
         }
 
@@ -340,6 +361,8 @@ namespace Nekoyume.Model.Stat
                     yield return (StatType.DRV, BaseDRV, AdditionalDRV);
                 if (HasBaseDRR || HasAdditionalDRR)
                     yield return (StatType.DRR, BaseDRR, AdditionalDRR);
+                if (HasBaseCDMG || HasAdditionalCDMG)
+                    yield return (StatType.CDMG, BaseCDMG, AdditionalCDMG);
             }
             else
             {
@@ -351,6 +374,7 @@ namespace Nekoyume.Model.Stat
                 yield return (StatType.SPD, BaseSPD, AdditionalSPD);
                 yield return (StatType.DRV, BaseDRV, AdditionalDRV);
                 yield return (StatType.DRR, BaseDRR, AdditionalDRR);
+                yield return (StatType.CDMG, BaseCDMG, AdditionalCDMG);
             }
         }
 
@@ -372,6 +396,8 @@ namespace Nekoyume.Model.Stat
                 yield return _statMaps[StatType.DRV];
             if (HasDRR)
                 yield return _statMaps[StatType.DRR];
+            if (HasCDMG)
+                yield return _statMaps[StatType.CDMG];
         }
 
         /// <summery>
@@ -396,6 +422,8 @@ namespace Nekoyume.Model.Stat
                 yield return _statMaps[StatType.DRV];
             if (HasAdditionalDRR)
                 yield return _statMaps[StatType.DRR];
+            if (HasAdditionalCDMG)
+                yield return _statMaps[StatType.CDMG];
         }
     }
 }
