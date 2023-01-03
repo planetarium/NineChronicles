@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using Lib9c.Tests.Action;
 using Libplanet;
 using Libplanet.Action;
@@ -25,12 +26,18 @@ namespace Lib9c.DevExtensions.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new Lib9c.Tests.Action.State();
-
 #pragma warning disable CS0618
             _ncg = Currency.Legacy("NCG", 2, null);
             _crystal = Currency.Legacy("CRYSTAL", 18, null);
 #pragma warning restore CS0618
+
+            var balance = ImmutableDictionary
+                .CreateBuilder<(Address Address, Currency Currency), FungibleAssetValue>();
+            balance.Add((GoldCurrencyState.Address, _ncg), _ncg * int.MaxValue);
+            _initialState = new Lib9c.Tests.Action.State(
+                balance: balance.ToImmutable()
+            );
+
             var goldCurrencyState = new GoldCurrencyState(_ncg);
             _agentAddress = new PrivateKey().ToAddress();
             var agentState = new AgentState(_agentAddress);
