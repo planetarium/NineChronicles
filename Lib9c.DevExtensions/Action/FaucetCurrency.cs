@@ -29,7 +29,7 @@ namespace Lib9c.DevExtensions.Action
             if (FaucetNcg > 0)
             {
                 var ncg = states.GetGoldCurrency();
-                states = states.MintAsset(AgentAddress, ncg * FaucetNcg);
+                states = states.TransferAsset(GoldCurrencyState.Address, AgentAddress, ncg * FaucetNcg);
             }
 
             if (FaucetCrystal > 0)
