@@ -1,5 +1,4 @@
-﻿using Nekoyume.Action;
-using Nekoyume.Arena;
+﻿using Nekoyume.Arena;
 using Nekoyume.Model.Arena;
 
 namespace Nekoyume
@@ -33,6 +32,7 @@ namespace Nekoyume
                 blockIndex,
                 roundStartBlockIndex,
                 gameConfigStateDailyArenaInterval);
+
             return arenaInfo.TicketResetCount < currentTicketResetCount
                 ? 0
                 : purchasedCountDuringInterval;

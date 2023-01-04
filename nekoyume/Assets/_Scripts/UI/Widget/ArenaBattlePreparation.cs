@@ -5,7 +5,6 @@ using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.Arena;
 using Nekoyume.BlockChain;
-using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Item;
@@ -87,7 +86,7 @@ namespace Nekoyume.UI
                     TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(blockIndex);
                 var ticketCount = RxProps.PlayersArenaParticipant.HasValue
                     ? RxProps.PlayersArenaParticipant.Value.CurrentArenaInfo.GetTicketCount(
-                        Game.Game.instance.Agent.BlockIndex,
+                        blockIndex,
                         currentRound.StartBlockIndex,
                         States.Instance.GameConfigState.DailyArenaInterval)
                     : 0;
@@ -151,9 +150,7 @@ namespace Nekoyume.UI
             grandFinaleStartButton.gameObject.SetActive(false);
             grandFinaleStartButton.Interactable = false;
             coverToBlockClick.SetActive(false);
-            AgentStateSubject.Crystal
-                .Subscribe(_ => ReadyToBattle())
-                .AddTo(_disposables);
+            AgentStateSubject.Crystal.Subscribe(_ => ReadyToBattle()).AddTo(_disposables);
         }
 
         public void Show(
@@ -191,55 +188,6 @@ namespace Nekoyume.UI
         }
 
         #endregion
-
-        private void UpdateArenaAvatarState()
-        {
-            var avatarState = Game.Game.instance.States.CurrentAvatarState;
-            var arenaAvatarState = RxProps.PlayersArenaParticipant.Value.AvatarState;
-            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
-
-            for (int i = arenaAvatarState.inventory.Items.Count - 1; i > 0; i--)
-            {
-                Nekoyume.Model.Item.Inventory.Item existItem;
-                switch (arenaAvatarState.inventory.Items[i].item)
-                {
-                    case Equipment arenaEquipment:
-                    {
-                        existItem = avatarState.inventory.Items.FirstOrDefault(item =>
-                            item.item is Equipment equipment
-                            && equipment.ItemId == arenaEquipment.ItemId);
-                        break;
-                    }
-                    case Costume arenaCostume:
-                    {
-                        existItem = avatarState.inventory.Items.FirstOrDefault(item =>
-                            item.item is Costume costume
-                            && costume.ItemId == arenaCostume.ItemId);
-                        break;
-                    }
-                    default:
-                        continue;
-                }
-
-                if (existItem is null)
-                {
-                    // It cause modifying arenaAvatarState.inventory collection in a loop
-                    arenaAvatarState.inventory.RemoveItem(arenaAvatarState.inventory.Items[i]);
-                }
-                else
-                {
-                    var isValid = existItem is { Locked: false, item: ITradableItem tradableItem }
-                                  && tradableItem.RequiredBlockIndex <= currentBlockIndex;
-
-                    if (arenaAvatarState.inventory.Items[i] is
-                            { item: IEquippableItem { Equipped: true } equippedItem }
-                        && !isValid)
-                    {
-                        equippedItem.Unequip();
-                    }
-                }
-            }
-        }
 
         private void ReadyToBattle()
         {
@@ -332,7 +280,6 @@ namespace Nekoyume.UI
 
         private void SendBattleArenaAction()
         {
-
             startButton.gameObject.SetActive(false);
             var playerAvatar = RxProps.PlayersArenaParticipant.Value.AvatarState;
             Find<ArenaBattleLoadingScreen>().Show(

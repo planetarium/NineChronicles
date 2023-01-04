@@ -110,7 +110,10 @@ namespace Nekoyume.State
                 int totalBlockRange = 0,
                 int purchasedCountDuringInterval = 0)
             {
-                base.Reset(currentTicketCount, maxTicketCount, progressedBlockRange,
+                base.Reset(
+                    currentTicketCount,
+                    maxTicketCount,
+                    progressedBlockRange,
                     totalBlockRange);
                 this.purchasedCountDuringInterval = purchasedCountDuringInterval;
             }
