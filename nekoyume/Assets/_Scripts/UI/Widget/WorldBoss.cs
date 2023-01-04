@@ -68,6 +68,9 @@ namespace Nekoyume.UI
         private Transform bossSpineContainer;
 
         [SerializeField]
+        private Transform backgroundContainer;
+
+        [SerializeField]
         private ShaderPropertySlider timerSlider;
 
         [SerializeField]
@@ -84,6 +87,7 @@ namespace Nekoyume.UI
 
         private GameObject _bossNamePrefab;
         private GameObject _bossSpinePrefab;
+        private GameObject _backgroundPrefab;
         private int _bossId;
         private (long, long) _period;
 
@@ -286,12 +290,18 @@ namespace Nekoyume.UI
                     Destroy(_bossSpinePrefab);
                 }
 
+                if (_backgroundPrefab != null)
+                {
+                    Destroy(_backgroundPrefab);
+                }
+
                 if (isOffSeason)
                 {
                     _bossNamePrefab = Instantiate(data.namePrefab, bossNameContainer);
                 }
 
                 _bossSpinePrefab = Instantiate(data.spinePrefab, bossSpineContainer);
+                _backgroundPrefab = Instantiate(data.backgroundPrefab, backgroundContainer);
                 _bossId = row.BossId;
             }
         }
