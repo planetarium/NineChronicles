@@ -121,10 +121,10 @@ namespace Nekoyume.Model.State
             Serialize(Serialize, number);
 
         public static long ToLong(this IValue serialized) =>
-            int.Parse(((Text)serialized).Value, CultureInfo.InvariantCulture);
+            long.Parse(((Text)serialized).Value, CultureInfo.InvariantCulture);
 
         public static long? ToNullableLong(this IValue serialized) =>
-            Deserialize(ToInteger, serialized);
+            Deserialize(ToLong, serialized);
 
         #endregion
 
