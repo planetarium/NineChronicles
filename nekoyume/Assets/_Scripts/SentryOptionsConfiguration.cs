@@ -19,7 +19,7 @@ public class SentryOptionsConfiguration : ScriptableOptionsConfiguration
         var _options = CommandLineOptions.Load(
             CommandLineOptionsJsonPath
         );
-        options.SampleRate = _options.SentrySampleRate > 0 ? (float) _options.SentrySampleRate : 0.01f;
+        options.SampleRate = 0.01f;
         options.TracesSampleRate = _options.SentrySampleRate;
         options.AddExceptionFilterForType<NullReferenceException>();
     }
