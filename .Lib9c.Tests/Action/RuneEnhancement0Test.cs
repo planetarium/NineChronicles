@@ -15,11 +15,11 @@ namespace Lib9c.Tests.Action
     using Nekoyume.TableData;
     using Xunit;
 
-    public class RuneEnhancementTest
+    public class RuneEnhancement0Test
     {
         private readonly Currency _goldCurrency;
 
-        public RuneEnhancementTest()
+        public RuneEnhancement0Test()
         {
             _goldCurrency = Currency.Legacy("NCG", 2, null);
         }
@@ -98,7 +98,7 @@ namespace Lib9c.Tests.Action
             state = state.MintAsset(agentAddress, crystalBal);
             state = state.MintAsset(avatarState.address, runeBal);
 
-            var action = new RuneEnhancement()
+            var action = new RuneEnhancement0()
             {
                 AvatarAddress = avatarState.address,
                 RuneId = runeId,
@@ -192,7 +192,7 @@ namespace Lib9c.Tests.Action
             var runeStateAddress = RuneState.DeriveAddress(avatarState.address, runeId);
             var runeState = new RuneState(128381293);
             state = state.SetState(runeStateAddress, runeState.Serialize());
-            var action = new RuneEnhancement()
+            var action = new RuneEnhancement0()
             {
                 AvatarAddress = avatarState.address,
                 RuneId = runeId,
@@ -257,7 +257,7 @@ namespace Lib9c.Tests.Action
 
             state = state.SetState(runeStateAddress, runeState.Serialize());
 
-            var action = new RuneEnhancement()
+            var action = new RuneEnhancement0()
             {
                 AvatarAddress = avatarState.address,
                 RuneId = runeId,
@@ -350,7 +350,7 @@ namespace Lib9c.Tests.Action
                 state = state.MintAsset(avatarState.address, cost.RuneStoneQuantity * runeCurrency);
             }
 
-            var action = new RuneEnhancement()
+            var action = new RuneEnhancement0()
             {
                 AvatarAddress = avatarState.address,
                 RuneId = runeId,
@@ -427,7 +427,7 @@ namespace Lib9c.Tests.Action
             var runeState = new RuneState(runeId);
             state = state.SetState(runeStateAddress, runeState.Serialize());
 
-            var action = new RuneEnhancement()
+            var action = new RuneEnhancement0()
             {
                 AvatarAddress = avatarState.address,
                 RuneId = runeId,

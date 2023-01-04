@@ -15,8 +15,9 @@ using Nekoyume.TableData;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100360ObsoleteIndex)]
     [ActionType("runeEnhancement")]
-    public class RuneEnhancement : GameAction
+    public class RuneEnhancement0 : GameAction
     {
         public Address AvatarAddress;
         public int RuneId;
@@ -45,6 +46,8 @@ namespace Nekoyume.Action
             {
                 return states;
             }
+
+            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100360ObsoleteIndex, context);
 
             var sheets = states.GetSheets(
                 sheetTypes: new[]
@@ -77,21 +80,21 @@ namespace Nekoyume.Action
             if (!costSheet.TryGetValue(runeState.RuneId, out var costRow))
             {
                 throw new RuneCostNotFoundException(
-                    $"[{nameof(RuneEnhancement)}] my avatar address : {AvatarAddress}");
+                    $"[{nameof(RuneEnhancement0)}] my avatar address : {AvatarAddress}");
             }
 
             var targetLevel = runeState.Level + 1;
             if (!costRow.TryGetCost(targetLevel, out var cost))
             {
                 throw new RuneCostDataNotFoundException(
-                    $"[{nameof(RuneEnhancement)}] my avatar address : {AvatarAddress}");
+                    $"[{nameof(RuneEnhancement0)}] my avatar address : {AvatarAddress}");
             }
 
             var runeSheet = sheets.GetSheet<RuneSheet>();
             if (!runeSheet.TryGetValue(runeState.RuneId, out var runeRow))
             {
                 throw new RuneNotFoundException(
-                    $"[{nameof(RuneEnhancement)}] my avatar address : {AvatarAddress}");
+                    $"[{nameof(RuneEnhancement0)}] my avatar address : {AvatarAddress}");
             }
 
             var ncgCurrency = states.GetGoldCurrency();
