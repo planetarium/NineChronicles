@@ -16,11 +16,11 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static Lib9c.SerializeKeys;
 
-    public class RuneEnhancement2Test
+    public class RuneEnhancementTest
     {
         private readonly Currency _goldCurrency;
 
-        public RuneEnhancement2Test()
+        public RuneEnhancementTest()
         {
             _goldCurrency = Currency.Legacy("NCG", 2, null);
         }

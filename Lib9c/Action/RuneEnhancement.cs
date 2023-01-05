@@ -7,7 +7,6 @@ using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
-using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Rune;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -15,7 +14,6 @@ using Nekoyume.TableData;
 namespace Nekoyume.Action
 {
     [Serializable]
-
     [ActionType("runeEnhancement2")]
     public class RuneEnhancement : GameAction
     {
