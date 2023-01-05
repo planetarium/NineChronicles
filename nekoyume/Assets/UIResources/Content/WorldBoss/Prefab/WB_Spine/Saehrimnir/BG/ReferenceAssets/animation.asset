@@ -9,9 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a6b194f808b1af6499c93410e504af42, type: 3}
-  m_Name: main_illu06-2_Atlas
+  m_Script: {fileID: 11500000, guid: 6e3e95a05e4c9774397eeeb7bdee8ccb, type: 3}
+  m_Name: animation
   m_EditorClassIdentifier: 
-  atlasFile: {fileID: 4900000, guid: e9a3c5de57bab495db17e69ff222e832, type: 3}
-  materials:
-  - {fileID: 2100000, guid: f6316cd75536241eb84a0ea5df890158, type: 2}
+  skeletonDataAsset: {fileID: 11400000, guid: dcf3659c1204244438736cdcd8a039ab, type: 2}
+  animationName: animation
