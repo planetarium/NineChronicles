@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using DG.Tweening;
-using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
@@ -13,7 +12,6 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 using mixpanel;
 using Nekoyume.EnumType;
-using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
@@ -99,6 +97,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private RectTransform player;
+
+        [SerializeField]
+        private RectTransform playerPosition;
 
         [SerializeField]
         private Transform titleSocket;
@@ -208,8 +209,8 @@ namespace Nekoyume.UI
 
         public void EnterRoom()
         {
-            player.localPosition = new Vector3(-700, -149, 0);
-            player.DOLocalMoveX(-470, 1.0f);
+            player.localPosition = playerPosition.localPosition + (Vector3.left * 300);
+            player.DOLocalMoveX(playerPosition.localPosition.x, 1.0f);
         }
 
         public void GoToStage(BattleLog battleLog)
