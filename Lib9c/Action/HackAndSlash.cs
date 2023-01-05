@@ -11,7 +11,7 @@ using Nekoyume.BlockChain.Policy;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
-using Nekoyume.Model.Rune;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
@@ -22,12 +22,14 @@ using Skill = Nekoyume.Model.Skill.Skill;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1495
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1628
     /// </summary>
     [Serializable]
-    [ActionType("hack_and_slash19")]
+    [ActionType("hack_and_slash20")]
     public class HackAndSlash : GameAction
     {
+        public const int UsableApStoneCount = 10;
+
         public List<Guid> Costumes;
         public List<Guid> Equipments;
         public List<Guid> Foods;
@@ -37,6 +39,7 @@ namespace Nekoyume.Action
         public int? StageBuffId;
         public Address AvatarAddress;
         public int PlayCount = 1;
+        public int ApStoneCount = 0;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal
         {
@@ -53,6 +56,7 @@ namespace Nekoyume.Action
                     ["stageId"] = StageId.Serialize(),
                     ["avatarAddress"] = AvatarAddress.Serialize(),
                     ["playCount"] = PlayCount.Serialize(),
+                    ["apStoneCount"] = ApStoneCount.Serialize(),
                 };
                 if (StageBuffId.HasValue)
                 {
@@ -77,6 +81,7 @@ namespace Nekoyume.Action
             }
             AvatarAddress = plainValue["avatarAddress"].ToAddress();
             PlayCount = plainValue["playCount"].ToInteger();
+            ApStoneCount = plainValue["apStoneCount"].ToInteger();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -107,14 +112,24 @@ namespace Nekoyume.Action
             var started = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}HAS exec started", addressesHex);
 
-            states.ValidateWorldId(AvatarAddress, WorldId);
-
-            if (PlayCount <= 0)
+            if (ApStoneCount > UsableApStoneCount)
             {
-                throw new PlayCountIsZeroException(
-                    $"{addressesHex}playCount must be greater than 0. " +
-                    $"current playCount : {PlayCount}");
+                throw new UsageLimitExceedException(
+                    $"Exceeded the amount of ap stones that can be used " +
+                    $"apStoneCount : {ApStoneCount} > UsableApStoneCount : {UsableApStoneCount}");
             }
+
+            if (ApStoneCount < 0
+                || PlayCount < 0
+                || ApStoneCount + PlayCount <= 0)
+            {
+                throw new InvalidRepeatPlayException(
+                    $"{addressesHex}playCount must not be negative. " +
+                    $"Ap stone count : {ApStoneCount}, "+
+                    $"Play count : {PlayCount}");
+            }
+
+            states.ValidateWorldId(AvatarAddress, WorldId);
 
             var sw = new Stopwatch();
             sw.Start();
@@ -183,20 +198,39 @@ namespace Nekoyume.Action
                 addressesHex,
                 PlayCount,
                 stakingLevel);
-            var costAp = sheets.GetSheet<StageSheet>()[StageId].CostAP;
+            var minimumCostAp = sheets.GetSheet<StageSheet>()[StageId].CostAP;
             if (actionPointCoefficientSheet != null && stakingLevel > 0)
             {
-                costAp = actionPointCoefficientSheet.GetActionPointByStaking(
-                    costAp,
-                    PlayCount,
+                minimumCostAp = actionPointCoefficientSheet.GetActionPointByStaking(
+                    minimumCostAp,
+                    1,
                     stakingLevel);
             }
-            else
+
+            var costAp = minimumCostAp * PlayCount;
+            avatarState.actionPoint -= costAp;
+
+            var gameConfigState = states.GetGameConfigState();
+            if (gameConfigState is null)
             {
-                costAp *= PlayCount;
+                throw new FailedLoadStateException(
+                    $"{addressesHex}Aborted as the game config state was failed to load.");
             }
 
-            avatarState.actionPoint -= costAp;
+            var materialItemSheet = sheets.GetSheet<MaterialItemSheet>();
+            if (ApStoneCount > 0)
+            {
+                // use apStone
+                var row = materialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.ApStone);
+                if (!avatarState.inventory.RemoveFungibleItem(row.ItemId, blockIndex,
+                        count: ApStoneCount))
+                {
+                    throw new NotEnoughMaterialException(
+                        $"{addressesHex}Aborted as the player has no enough material ({row.Id})");
+                }
+
+                PlayCount += ApStoneCount * (gameConfigState.ActionPointMax / minimumCostAp);
+            }
 
             var items = Equipments.Concat(Costumes);
             avatarState.EquipItems(items);
@@ -265,7 +299,6 @@ namespace Nekoyume.Action
             var worldUnlockSheet = sheets.GetSheet<WorldUnlockSheet>();
             var crystalStageBuffSheet = sheets.GetSheet<CrystalStageBuffGachaSheet>();
             var stageRow = sheets.GetSheet<StageSheet>()[StageId];
-            var materialItemSheet = sheets.GetSheet<MaterialItemSheet>();
             sw.Restart();
             // if PlayCount > 1, it is Multi-HAS.
             var simulatorSheets = sheets.GetSimulatorSheets();
@@ -296,6 +329,7 @@ namespace Nekoyume.Action
                     runeStates.Add(new RuneState(rawRuneState));
                 }
             }
+
             for (var i = 0; i < PlayCount; i++)
             {
                 sw.Restart();
