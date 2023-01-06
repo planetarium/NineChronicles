@@ -1,10 +1,11 @@
 using Libplanet;
 
-namespace Lib9c.DevExtensions.Action.Interface;
-
-public interface IFaucetCurrency
+namespace Lib9c.DevExtensions.Action.Interface
 {
-    Address AgentAddress { get; set; }
-    int FaucetNcg { get; set; }
-    int FaucetCrystal { get; set; }
+    public interface IFaucetCurrency
+    {
+        Address AgentAddress { get; set; }
+        int FaucetNcg { get; set; }
+        int FaucetCrystal { get; set; }
+    }
 }
