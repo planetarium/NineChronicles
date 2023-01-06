@@ -1,6 +1,6 @@
 using Libplanet;
 
-namespace Lib9c.DevExtensions.Action.Interface
+namespace Nekoyume.Action.Interface
 {
     public interface IFaucetCurrency
     {

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Libplanet;
 using Nekoyume.Model.Faucet;
 
-namespace Lib9c.DevExtensions.Action.Interface
+namespace Nekoyume.Action.Interface
 {
     public interface IFaucetRune
     {

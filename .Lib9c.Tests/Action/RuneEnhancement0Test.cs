@@ -14,13 +14,12 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
-    using static Lib9c.SerializeKeys;
 
-    public class RuneEnhancementTest
+    public class RuneEnhancement0Test
     {
         private readonly Currency _goldCurrency;
 
-        public RuneEnhancementTest()
+        public RuneEnhancement0Test()
         {
             _goldCurrency = Currency.Legacy("NCG", 2, null);
         }
@@ -32,9 +31,6 @@ namespace Lib9c.Tests.Action
         {
             var agentAddress = new PrivateKey().ToAddress();
             var avatarAddress = new PrivateKey().ToAddress();
-            var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
-            var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
-            var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
             var sheets = TableSheetsImporter.ImportSheets();
             var tableSheets = new TableSheets(sheets);
             var blockIndex = tableSheets.WorldBossListSheet.Values
@@ -43,29 +39,23 @@ namespace Lib9c.Tests.Action
                 .StartedBlockIndex;
 
             var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
-            var rankingMapAddress = avatarAddress.Derive("ranking_map");
-            var agentState = new AgentState(agentAddress);
+            var state = new State()
+                .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
+                .SetState(agentAddress, new AgentState(agentAddress).Serialize());
+
+            foreach (var (key, value) in sheets)
+            {
+                state = state.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
+            }
+
             var avatarState = new AvatarState(
                 avatarAddress,
                 agentAddress,
                 0,
                 tableSheets.GetAvatarSheets(),
                 new GameConfigState(),
-                rankingMapAddress
+                default
             );
-            agentState.avatarAddresses.Add(0, avatarAddress);
-            var state = new State()
-                .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
-                .SetState(agentAddress, agentState.SerializeV2())
-                .SetState(avatarAddress, avatarState.SerializeV2())
-                .SetState(inventoryAddress, avatarState.inventory.Serialize())
-                .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
-                .SetState(questListAddress, avatarState.questList.Serialize());
-
-            foreach (var (key, value) in sheets)
-            {
-                state = state.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
-            }
 
             var runeListSheet = state.GetSheet<RuneListSheet>();
             var runeId = runeListSheet.First().Value.Id;
@@ -108,7 +98,7 @@ namespace Lib9c.Tests.Action
             state = state.MintAsset(agentAddress, crystalBal);
             state = state.MintAsset(avatarState.address, runeBal);
 
-            var action = new RuneEnhancement()
+            var action = new RuneEnhancement0()
             {
                 AvatarAddress = avatarState.address,
                 RuneId = runeId,
@@ -171,9 +161,6 @@ namespace Lib9c.Tests.Action
         {
             var agentAddress = new PrivateKey().ToAddress();
             var avatarAddress = new PrivateKey().ToAddress();
-            var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
-            var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
-            var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
             var sheets = TableSheetsImporter.ImportSheets();
             var tableSheets = new TableSheets(sheets);
             var blockIndex = tableSheets.WorldBossListSheet.Values
@@ -182,36 +169,30 @@ namespace Lib9c.Tests.Action
                 .StartedBlockIndex;
 
             var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
-            var rankingMapAddress = avatarAddress.Derive("ranking_map");
-            var agentState = new AgentState(agentAddress);
-            var avatarState = new AvatarState(
-                avatarAddress,
-                agentAddress,
-                0,
-                tableSheets.GetAvatarSheets(),
-                new GameConfigState(),
-                rankingMapAddress
-            );
-            agentState.avatarAddresses.Add(0, avatarAddress);
             var state = new State()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
-                .SetState(agentAddress, agentState.SerializeV2())
-                .SetState(avatarAddress, avatarState.SerializeV2())
-                .SetState(inventoryAddress, avatarState.inventory.Serialize())
-                .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
-                .SetState(questListAddress, avatarState.questList.Serialize());
+                .SetState(agentAddress, new AgentState(agentAddress).Serialize());
 
             foreach (var (key, value) in sheets)
             {
                 state = state.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
             }
 
+            var avatarState = new AvatarState(
+                avatarAddress,
+                agentAddress,
+                0,
+                tableSheets.GetAvatarSheets(),
+                new GameConfigState(),
+                default
+            );
+
             var runeListSheet = state.GetSheet<RuneListSheet>();
             var runeId = runeListSheet.First().Value.Id;
             var runeStateAddress = RuneState.DeriveAddress(avatarState.address, runeId);
             var runeState = new RuneState(128381293);
             state = state.SetState(runeStateAddress, runeState.Serialize());
-            var action = new RuneEnhancement()
+            var action = new RuneEnhancement0()
             {
                 AvatarAddress = avatarState.address,
                 RuneId = runeId,
@@ -233,9 +214,6 @@ namespace Lib9c.Tests.Action
         {
             var agentAddress = new PrivateKey().ToAddress();
             var avatarAddress = new PrivateKey().ToAddress();
-            var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
-            var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
-            var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
             var sheets = TableSheetsImporter.ImportSheets();
             var tableSheets = new TableSheets(sheets);
             var blockIndex = tableSheets.WorldBossListSheet.Values
@@ -244,29 +222,23 @@ namespace Lib9c.Tests.Action
                 .StartedBlockIndex;
 
             var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
-            var rankingMapAddress = avatarAddress.Derive("ranking_map");
-            var agentState = new AgentState(agentAddress);
+            var state = new State()
+                .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
+                .SetState(agentAddress, new AgentState(agentAddress).Serialize());
+
+            foreach (var (key, value) in sheets)
+            {
+                state = state.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
+            }
+
             var avatarState = new AvatarState(
                 avatarAddress,
                 agentAddress,
                 0,
                 tableSheets.GetAvatarSheets(),
                 new GameConfigState(),
-                rankingMapAddress
+                default
             );
-            agentState.avatarAddresses.Add(0, avatarAddress);
-            var state = new State()
-                .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
-                .SetState(agentAddress, agentState.SerializeV2())
-                .SetState(avatarAddress, avatarState.SerializeV2())
-                .SetState(inventoryAddress, avatarState.inventory.Serialize())
-                .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
-                .SetState(questListAddress, avatarState.questList.Serialize());
-
-            foreach (var (key, value) in sheets)
-            {
-                state = state.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
-            }
 
             var runeListSheet = state.GetSheet<RuneListSheet>();
             var runeId = runeListSheet.First().Value.Id;
@@ -285,7 +257,7 @@ namespace Lib9c.Tests.Action
 
             state = state.SetState(runeStateAddress, runeState.Serialize());
 
-            var action = new RuneEnhancement()
+            var action = new RuneEnhancement0()
             {
                 AvatarAddress = avatarState.address,
                 RuneId = runeId,
@@ -310,9 +282,6 @@ namespace Lib9c.Tests.Action
         {
             var agentAddress = new PrivateKey().ToAddress();
             var avatarAddress = new PrivateKey().ToAddress();
-            var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
-            var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
-            var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
             var sheets = TableSheetsImporter.ImportSheets();
             var tableSheets = new TableSheets(sheets);
             var blockIndex = tableSheets.WorldBossListSheet.Values
@@ -321,29 +290,23 @@ namespace Lib9c.Tests.Action
                 .StartedBlockIndex;
 
             var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
-            var rankingMapAddress = avatarAddress.Derive("ranking_map");
-            var agentState = new AgentState(agentAddress);
+            var state = new State()
+                .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
+                .SetState(agentAddress, new AgentState(agentAddress).Serialize());
+
+            foreach (var (key, value) in sheets)
+            {
+                state = state.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
+            }
+
             var avatarState = new AvatarState(
                 avatarAddress,
                 agentAddress,
                 0,
                 tableSheets.GetAvatarSheets(),
                 new GameConfigState(),
-                rankingMapAddress
+                default
             );
-            agentState.avatarAddresses.Add(0, avatarAddress);
-            var state = new State()
-                .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
-                .SetState(agentAddress, agentState.SerializeV2())
-                .SetState(avatarAddress, avatarState.SerializeV2())
-                .SetState(inventoryAddress, avatarState.inventory.Serialize())
-                .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
-                .SetState(questListAddress, avatarState.questList.Serialize());
-
-            foreach (var (key, value) in sheets)
-            {
-                state = state.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
-            }
 
             var runeListSheet = state.GetSheet<RuneListSheet>();
             var runeId = runeListSheet.First().Value.Id;
@@ -387,7 +350,7 @@ namespace Lib9c.Tests.Action
                 state = state.MintAsset(avatarState.address, cost.RuneStoneQuantity * runeCurrency);
             }
 
-            var action = new RuneEnhancement()
+            var action = new RuneEnhancement0()
             {
                 AvatarAddress = avatarState.address,
                 RuneId = runeId,
@@ -432,69 +395,6 @@ namespace Lib9c.Tests.Action
         {
             var agentAddress = new PrivateKey().ToAddress();
             var avatarAddress = new PrivateKey().ToAddress();
-            var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
-            var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
-            var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
-            var sheets = TableSheetsImporter.ImportSheets();
-            var tableSheets = new TableSheets(sheets);
-            var blockIndex = tableSheets.WorldBossListSheet.Values
-                .OrderBy(x => x.StartedBlockIndex)
-                .First()
-                .StartedBlockIndex;
-
-            var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
-            var rankingMapAddress = avatarAddress.Derive("ranking_map");
-            var agentState = new AgentState(agentAddress);
-            var avatarState = new AvatarState(
-                avatarAddress,
-                agentAddress,
-                0,
-                tableSheets.GetAvatarSheets(),
-                new GameConfigState(),
-                rankingMapAddress
-            );
-            agentState.avatarAddresses.Add(0, avatarAddress);
-            var state = new State()
-                .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
-                .SetState(agentAddress, agentState.SerializeV2())
-                .SetState(avatarAddress, avatarState.SerializeV2())
-                .SetState(inventoryAddress, avatarState.inventory.Serialize())
-                .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
-                .SetState(questListAddress, avatarState.questList.Serialize());
-
-            foreach (var (key, value) in sheets)
-            {
-                state = state.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
-            }
-
-            var runeListSheet = state.GetSheet<RuneListSheet>();
-            var runeId = runeListSheet.First().Value.Id;
-            var runeStateAddress = RuneState.DeriveAddress(avatarState.address, runeId);
-            var runeState = new RuneState(runeId);
-            state = state.SetState(runeStateAddress, runeState.Serialize());
-
-            var action = new RuneEnhancement()
-            {
-                AvatarAddress = avatarState.address,
-                RuneId = runeId,
-                TryCount = 0,
-            };
-
-            Assert.Throws<TryCountIsZeroException>(() =>
-                action.Execute(new ActionContext()
-                {
-                    PreviousStates = state,
-                    Signer = agentAddress,
-                    Random = new TestRandom(),
-                    BlockIndex = blockIndex,
-                }));
-        }
-
-        [Fact]
-        public void Execute_FailedLoadStateException()
-        {
-            var agentAddress = new PrivateKey().ToAddress();
-            var avatarAddress = new PrivateKey().ToAddress();
             var sheets = TableSheetsImporter.ImportSheets();
             var tableSheets = new TableSheets(sheets);
             var blockIndex = tableSheets.WorldBossListSheet.Values
@@ -520,19 +420,21 @@ namespace Lib9c.Tests.Action
                 new GameConfigState(),
                 default
             );
-            state = state.SetState(avatarAddress, avatarState.SerializeV2());
 
             var runeListSheet = state.GetSheet<RuneListSheet>();
             var runeId = runeListSheet.First().Value.Id;
+            var runeStateAddress = RuneState.DeriveAddress(avatarState.address, runeId);
+            var runeState = new RuneState(runeId);
+            state = state.SetState(runeStateAddress, runeState.Serialize());
 
-            var action = new RuneEnhancement()
+            var action = new RuneEnhancement0()
             {
                 AvatarAddress = avatarState.address,
                 RuneId = runeId,
                 TryCount = 0,
             };
 
-            Assert.Throws<FailedLoadStateException>(() =>
+            Assert.Throws<TryCountIsZeroException>(() =>
                 action.Execute(new ActionContext()
                 {
                     PreviousStates = state,

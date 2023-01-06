@@ -2,13 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Bencodex.Types;
-using Lib9c.DevExtensions.Action.Interface;
 using Libplanet.Action;
 using Libplanet.Assets;
-using Nekoyume.Action;
+using Nekoyume.Action.Interface;
 using Nekoyume.Model.State;
 
-namespace Lib9c.DevExtensions.Action
+namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("faucet_currency")]
@@ -29,7 +28,7 @@ namespace Lib9c.DevExtensions.Action
             if (FaucetNcg > 0)
             {
                 var ncg = states.GetGoldCurrency();
-                states = states.TransferAsset(GoldCurrencyState.Address, AgentAddress, ncg * FaucetNcg);
+                states = states.MintAsset(AgentAddress, ncg * FaucetNcg);
             }
 
             if (FaucetCrystal > 0)
