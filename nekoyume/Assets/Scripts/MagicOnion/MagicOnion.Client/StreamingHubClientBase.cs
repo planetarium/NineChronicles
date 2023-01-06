@@ -103,7 +103,7 @@ namespace MagicOnion.Client
                 await firstMoveNextTask.ConfigureAwait(false);
 
                 // NOTE: C-core: If the execution reaches here, Connect method returns without any error (StatusCode = OK). but MessageVersion isn't provided from the server.
-                throw new RpcException(new Status(StatusCode.Internal, $"The message version of StreamingHub is not provided from the server."));
+                throw new RpcException(new Status(StatusCode.Internal, $"The request started successfully (StatusCode = OK), but the StreamingHub client has failed to negotiate with the server."));
             }
 
             this.subscription = StartSubscribe(syncContext, firstMoveNextTask);
@@ -187,6 +187,7 @@ namespace MagicOnion.Client
         {
             var messagePackReader = new MessagePackReader(data);
             var arrayLength = messagePackReader.ReadArrayHeader();
+            UnityEngine.Debug.Log($"ConsumeData, arrayLength={arrayLength}");
             if (arrayLength == 3)
             {
                 var messageId = messagePackReader.ReadInt32();
@@ -237,6 +238,7 @@ namespace MagicOnion.Client
             {
                 var methodId = messagePackReader.ReadInt32();
                 var offset = (int)messagePackReader.Consumed;
+                UnityEngine.Debug.Log($"ConsumeData, before OnBroadcastEvent, methodId={methodId},syncContext={syncContext}");
                 if (syncContext != null)
                 {
                     var tuple = Tuple.Create(methodId, data, offset, data.Length - offset);

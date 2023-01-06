@@ -12,9 +12,26 @@ using UnityEditor.OSXStandalone;
 namespace Editor
 {
     [ExecuteInEditMode]
-    public class Builder {
+    public class Builder
+    {
         private static readonly string PlayerName = PlayerSettings.productName;
         private const string BuildBasePath = "Build";
+
+        [MenuItem("Build/Standalone/Android Arm64")]
+        public static void BuildAndroidStandalone()
+        {
+            Debug.Log("Build Android");
+            BuildOptions options = BuildOptions.None;
+            PlayerSettings.SetAdditionalIl2CppArgs("--maximum-recursive-generic-depth=20");
+            Build(BuildTarget.Android, options, "Android", true);
+        }
+
+        [MenuItem("IL2CPP/SetIl2CppArgs")]
+        public static void SetIl2CppArgs()
+        {
+            PlayerSettings.SetAdditionalIl2CppArgs("--maximum-recursive-generic-depth=20 --emit-source-mapping");
+            Debug.LogWarning($"I2CAddArgs={PlayerSettings.GetAdditionalIl2CppArgs()}");
+        }
 
         [MenuItem("Build/Standalone/Windows + macOS + Linux")]
         public static void BuildAll()
@@ -99,6 +116,22 @@ namespace Editor
             Build(BuildTarget.StandaloneWindows64, BuildOptions.EnableHeadlessMode, "WindowsHeadless");
         }
 
+        [MenuItem("Build/Standalone/iOS")]
+        public static void BuildiOS()
+        {
+            Debug.Log("Build iOS");
+            PreProcessBuildForIOS();
+            PlayerSettings.iOS.sdkVersion = iOSSdkVersion.DeviceSDK;
+            Build(BuildTarget.iOS, BuildOptions.Development | BuildOptions.EnableDeepProfilingSupport | BuildOptions.ConnectWithProfiler | BuildOptions.AllowDebugging | BuildOptions.WaitForPlayerConnection, targetDirName: "iOS", isDevelopment: false);
+        }
+
+        [MenuItem("Build/Development/Android")]
+        public static void BuildAndroidDevelopment()
+        {
+            Debug.Log("Build Android Development");
+            Build(BuildTarget.Android, BuildOptions.Development | BuildOptions.AllowDebugging, "Android");
+        }
+
         [MenuItem("Build/Development/Windows + macOS + Linux")]
         public static void BuildAllDevelopment()
         {
@@ -152,13 +185,27 @@ namespace Editor
             Build(BuildTarget.StandaloneWindows64, BuildOptions.EnableHeadlessMode, "WindowsHeadless");
         }
 
-        [MenuItem("Build/QA")]
+        [MenuItem("Build/QA/Windwos")]
         public static void BuildWindowsForQA()
         {
             Debug.Log("Build Windows For QA");
             CopyJsonDataFile("TestbedSell");
             CopyJsonDataFile("TestbedCreateAvatar");
             Build(BuildTarget.StandaloneWindows64, BuildOptions.Development | BuildOptions.AllowDebugging, "Windows", true);
+        }
+
+        [MenuItem("Build/QA/iOS")]
+        public static void BuildIOSForQA()
+        {
+            Debug.Log("Build iOS for QA");
+            CopyJsonDataFile("TestbedSell");
+            CopyJsonDataFile("TestbedCreateAvatar");
+
+            PreProcessBuildForIOS();
+
+            PlayerSettings.iOS.sdkVersion = iOSSdkVersion.DeviceSDK;
+
+            Build(BuildTarget.iOS, BuildOptions.Development | BuildOptions.AllowDebugging | BuildOptions.WaitForPlayerConnection, "iOS-QA", true);
         }
 
         private static void Build(
@@ -208,7 +255,7 @@ namespace Editor
             Debug.Log($"UpdateDefines : {isDevelopment}");
             var buildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
             var preDefines = PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup);
-            var newDefines = preDefines.Split( ';' ).ToList();
+            var newDefines = preDefines.Split(';').ToList();
             const string qaDefine = "LIB9C_DEV_EXTENSIONS";
             if (isDevelopment)
             {
@@ -240,6 +287,11 @@ namespace Editor
         [PostProcessBuild(0)]
         public static void CopyNativeLibraries(BuildTarget target, string pathToBuiltProject)
         {
+            if (target == BuildTarget.Android || target == BuildTarget.iOS)
+            {
+                return;
+            }
+
             var binaryName = Path.GetFileNameWithoutExtension(pathToBuiltProject);
             var destLibPath = pathToBuiltProject;
             var libDir = "runtimes";
@@ -259,10 +311,12 @@ namespace Editor
                     destLibPath = Path.Combine(
                         Path.GetDirectoryName(destLibPath), $"{binaryName}_Data/Managed", libDir);
                     break;
-                default:
+                case BuildTarget.StandaloneLinux64:
                     libDir = Path.Combine(libDir, "linux-x64", "native");
                     destLibPath = Path.Combine(
                         Path.GetDirectoryName(destLibPath), $"{binaryName}_Data/Managed", libDir);
+                    break;
+                default:
                     break;
             }
 
@@ -281,6 +335,14 @@ namespace Editor
 
                 fileInfo.CopyTo(Path.Combine(dest.FullName, fileInfo.Name), true);
             }
+        }
+
+        private static void PreProcessBuildForIOS()
+        {
+            string identifier = "com." + PlayerSettings.companyName + '.' + PlayerSettings.productName;
+            PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.iOS, identifier);
+            PlayerSettings.SetAdditionalIl2CppArgs("--maximum-recursive-generic-depth=30");
+            PlayerSettings.iOS.targetDevice = iOSTargetDevice.iPhoneAndiPad;
         }
 
         private static void CopyToBuildDirectory(string basePath, string targetDirName, string filename)

@@ -33,6 +33,8 @@ using Nekoyume.UI.Scroller;
 using UnityEngine;
 using UnityEngine.Playables;
 using Menu = Nekoyume.UI.Menu;
+using RocksDbSharp;
+using UnityEngine.Android;
 
 namespace Nekoyume.Game
 {
@@ -106,23 +108,58 @@ namespace Nekoyume.Game
 
         private string _msg;
 
-        private static readonly string CommandLineOptionsJsonPath =
-            Path.Combine(Application.streamingAssetsPath, "clo.json");
+        public static string CommandLineOptionsJsonPath =
+            Platform.GetStreamingAssetsPath("clo.json");
 
         #region Mono & Initialization
 
         protected override void Awake()
         {
             Debug.Log("[Game] Awake() invoked");
+            Application.runInBackground = true;
+#if UNITY_IOS && !UNITY_IOS_SIMULATOR && !UNITY_EDITOR
+            string prefix = Path.Combine(Platform.DataPath.Replace("Data", ""), "Frameworks");
+            //Load dynamic library of rocksdb
+            string RocksdbLibPath = Path.Combine(prefix, "rocksdb.framework", "librocksdb");
+            Native.LoadLibrary(RocksdbLibPath);
 
+            //Set the path of secp256k1's dynamic library
+            string secp256k1LibPath = Path.Combine(prefix, "secp256k1.framework", "libsecp256k1");
+            Secp256k1Net.UnityPathHelper.SetSpecificPath(secp256k1LibPath);
+#elif UNITY_IOS_SIMULATOR && !UNITY_EDITOR
+            string rocksdbLibPath = Platform.GetStreamingAssetsPath("librocksdb.dylib");
+            Native.LoadLibrary(rocksdbLibPath);
+
+            string secp256LibPath = Platform.GetStreamingAssetsPath("libsecp256k1.dylib");
+            Secp256k1Net.UnityPathHelper.SetSpecificPath(secp256LibPath);
+#elif UNITY_ANDROID
+            LoadRocksDBNative();
+            bool HasStoragePermission() =>
+                Permission.HasUserAuthorizedPermission(Permission.ExternalStorageWrite)
+                && Permission.HasUserAuthorizedPermission(Permission.ExternalStorageRead);
+        
+            String[] permission = new String[]
+            {
+                Permission.ExternalStorageRead,
+                Permission.ExternalStorageWrite
+            };
+        
+            while (!HasStoragePermission())
+            {
+                Permission.RequestUserPermissions(permission);
+            }
+#endif
             Application.targetFrameRate = 60;
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             base.Awake();
 
+#if UNITY_IOS
+            _options = CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.json"));
+#else
             _options = CommandLineOptions.Load(
                 CommandLineOptionsJsonPath
             );
-
+#endif
             Debug.Log("[Game] Awake() CommandLineOptions loaded");
 
             if (_options.RpcClient)
@@ -141,13 +178,57 @@ namespace Nekoyume.Game
             MainCanvas.instance.InitializeIntro();
         }
 
+        private void LoadRocksDBNativeLib()
+        {
+            string Path_RocksDB = default;
+            if (Application.platform == RuntimePlatform.Android)
+            {
+                Path_RocksDB = Application.dataPath.Split("/base.apk")[0];
+                Path_RocksDB = Path.Combine(Path_RocksDB, "lib");
+                Path_RocksDB = Path.Combine(Path_RocksDB, Environment.Is64BitOperatingSystem? "arm64": "arm");
+                Path_RocksDB = Path.Combine(Path_RocksDB, "librocksdb.so");
+                Debug.LogWarning($"native load path = {Path_RocksDB}");
+            }
+            else if (Application.platform == RuntimePlatform.WindowsEditor)
+            {
+                //D:\NineChronicles\NineChro\nekoyume
+                Path_RocksDB = Environment.CurrentDirectory;
+                Path_RocksDB = Path.Combine(Path_RocksDB, "Assets", "Packages", "runtimes");
+                Path_RocksDB = Path.Combine(Path_RocksDB, "win-x64", "native", "rocksdb.dll");
+            }
+            else if(Application.platform == RuntimePlatform.WindowsPlayer)
+            {
+                // pc standalone
+                Path_RocksDB = Path.Combine(Application.dataPath, "Plugins");
+                Path_RocksDB = Path.Combine(Path_RocksDB, "x86_64", "rocksdb.dll");
+            }
+            // Load native library for rocksdb 
+            RocksDbSharp.Native.LoadLibrary(Path_RocksDB);    
+        }
+
         private IEnumerator Start()
         {
+            // fix android can't use www in sub thread
+#if LIB9C_DEV_EXTENSIONS
+            Lib9c.DevExtensions.TestbedHelper.LoadTestbedCreateAvatarForQA();
+#endif
             Debug.Log("[Game] Start() invoked");
+
+#if ENABLE_IL2CPP
+            // Because of strict AOT environments, use StaticCompositeResolver for IL2CPP.
+            StaticCompositeResolver.Instance.Register(
+                    MagicOnion.Resolvers.MagicOnionResolver.Instance,
+                    Lib9c.Formatters.NineChroniclesResolver.Instance,
+                    MessagePack.Resolvers.GeneratedResolver.Instance,
+                    MessagePack.Resolvers.StandardResolver.Instance
+                );
+            var resolver = StaticCompositeResolver.Instance;
+#else
             var resolver = MessagePack.Resolvers.CompositeResolver.Create(
                 NineChroniclesResolver.Instance,
                 StandardResolver.Instance
             );
+#endif
             var options = MessagePackSerializerOptions.Standard.WithResolver(resolver);
             MessagePackSerializer.DefaultOptions = options;
 
@@ -859,5 +940,48 @@ namespace Nekoyume.Game
                 rpcServerHost,
                 isTrackable);
         }
+        void Update()
+        {
+#if UNITY_ANDROID
+            if (Platform.IsMobilePlatform())
+            {
+                int width = Screen.resolutions[0].width;
+                int height = Screen.resolutions[0].height;
+                if (Screen.currentResolution.width != height || Screen.currentResolution.height != width)
+                {
+                    Debug.LogWarning($"fix Resolution to w={width} h={height}");
+                    Screen.SetResolution(height, width, true);
+                }
+            }
+#endif
+        }
+        private void LoadRocksDBNative()
+        {
+            string loadPath = default;
+            if (Application.platform == RuntimePlatform.Android)
+            {
+                loadPath = Application.dataPath.Split("/base.apk")[0];
+                loadPath = Path.Combine(loadPath, "lib");
+                loadPath = Path.Combine(loadPath, Environment.Is64BitOperatingSystem ? "arm64" : "arm");
+                loadPath = Path.Combine(loadPath, "librocksdb.so");
+                Debug.LogWarning($"native load path = {loadPath}");
+            }
+            else if (Application.platform == RuntimePlatform.WindowsEditor)
+            {
+                //D:\NineChronicles\NineChro\nekoyume
+                loadPath = Environment.CurrentDirectory;
+                loadPath = Path.Combine(loadPath, "Assets", "Packages", "runtimes");
+                loadPath = Path.Combine(loadPath, "win-x64", "native", "rocksdb.dll");
+            }
+            else if (Application.platform == RuntimePlatform.WindowsPlayer)
+            {
+                // pc standalone
+                loadPath = Path.Combine(Application.dataPath, "Plugins");
+                loadPath = Path.Combine(loadPath, "x86_64", "rocksdb.dll");
+            }
+
+            RocksDbSharp.Native.LoadLibrary(loadPath);
+        }
+
     }
 }

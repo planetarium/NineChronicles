@@ -109,13 +109,12 @@ namespace Nekoyume.BlockChain
             Action<bool> callback)
         {
             PrivateKey = privateKey;
-
-            _channel = new Channel(
+            _channel = new Grpc.Core.Channel(
                 options.RpcServerHost,
                 options.RpcServerPort,
                 ChannelCredentials.Insecure,
                 new[]
-                {
+                {                    
                     new ChannelOption("grpc.max_receive_message_length", -1)
                 }
             );
@@ -129,16 +128,31 @@ namespace Nekoyume.BlockChain
             yield return new WaitUntil(() => getTipTask.IsCompleted);
             OnRenderBlock(null, getTipTask.Result);
             yield return null;
-            var task = Task.Run(async () =>
+
+            // Android Mono only support arm7(32bit) backend in unity engine.
+            bool architecture_is_32bit = ! Environment.Is64BitProcess;
+            bool is_Android = Application.platform == RuntimePlatform.Android;
+            if (is_Android && architecture_is_32bit)
             {
-                _genesis = await BlockManager.ImportBlockAsync(options.GenesisBlockPath ?? BlockManager.GenesisBlockPath);
-            });
-            yield return new WaitUntil(() => task.IsCompleted);
+                // 1. System.Net.WebClient is invaild when use Android Mono in currnet unity version.
+                // See this: https://issuetracker.unity3d.com/issues/system-dot-net-dot-webclient-not-working-when-building-on-android
+                // 2. If we use WWW class as a workaround, unfortunately, this class can't be used in aysnc function.
+                // So I can only use normal ImportBlock() function when build in Android Mono backend :(
+                _genesis = BlockManager.ImportBlock(null);
+            }
+            else
+            {
+                var task = Task.Run(async () =>
+                {
+                    _genesis = await BlockManager.ImportBlockAsync(options.GenesisBlockPath ?? BlockManager.GenesisBlockPath());
+                });
+                yield return new WaitUntil(() => task.IsCompleted);
+            }
+
             var appProtocolVersion = options.AppProtocolVersion is null
                 ? default
                 : Libplanet.Net.AppProtocolVersion.FromToken(options.AppProtocolVersion);
             AppProtocolVersion = appProtocolVersion.Version;
-
             RegisterDisconnectEvent(_hub);
             StartCoroutine(CoTxProcessor());
             StartCoroutine(CoJoin(callback));
@@ -448,6 +462,7 @@ namespace Nekoyume.BlockChain
 
         private IEnumerator CoTxProcessor()
         {
+            int i = 0;
             while (true)
             {
                 yield return new WaitForSeconds(TxProcessInterval);
@@ -456,7 +471,7 @@ namespace Nekoyume.BlockChain
                 {
                     continue;
                 }
-
+                Debug.Log($"[ActionDebug] before MakeTransaction {++i}");
                 Task task = Task.Run(async () =>
                 {
                     await MakeTransaction(new List<NCAction> { action });
@@ -486,11 +501,23 @@ namespace Nekoyume.BlockChain
                 _genesis?.Hash,
                 actions
             );
-            _onMakeTransactionSubject.OnNext((tx, actions));
-            await _service.PutTransaction(tx.Serialize(true));
 
+            string actionsName = default;
             foreach (var action in actions)
             {
+                actionsName += "\n#";
+                actionsName += action.ToString();
+                actionsName += ", id=" + ((GameAction)action.InnerAction)?.Id;
+            }
+            Debug.Log($"[Transaction]\nnonce={nonce}\nPrivateKeyAddr={PrivateKey.ToAddress().ToString()}" +
+                $"\nHash={_genesis?.Hash}\nactionsName={actionsName}");
+
+            _onMakeTransactionSubject.OnNext((tx, actions));
+            await _service.PutTransaction(tx.Serialize(true));
+            foreach (var action in actions)
+            {
+                Debug.Log($"[Transaction] action = {action.ToString()}");
+
                 if (action.InnerAction is GameAction gameAction)
                 {
                     _transactions.TryAdd(gameAction.Id, tx.Id);
@@ -711,6 +738,7 @@ namespace Nekoyume.BlockChain
 
             foreach (var address in addresses)
             {
+                string add = address.ToString();
                 Game.Game.instance.CachedAddresses[address] = false;
                 if (!Game.Game.instance.CachedStates.ContainsKey(address))
                 {

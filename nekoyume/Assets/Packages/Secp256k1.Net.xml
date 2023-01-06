@@ -198,6 +198,12 @@
         <member name="F:Secp256k1Net.Flags.SECP256K1_EC_COMPRESSED">
             Flag to pass to secp256k1_ec_pubkey_serialize and secp256k1_ec_privkey_export. 
         </member>
+        <member name="M:Secp256k1Net.UnityPathHelper.SetSpecificPath(System.String,System.Runtime.InteropServices.OSPlatform,System.Runtime.InteropServices.Architecture)">
+            <summary>
+            Use specific path to load native library
+            </summary>
+            <param name="nativeLibPath">Absolute path refer to native lib (include lib name and its extension).</param>
+        </member>
         <member name="T:Secp256k1Net.EcdhHashFunction">
             <summary>
             A pointer to a function that applies hash function to a point.

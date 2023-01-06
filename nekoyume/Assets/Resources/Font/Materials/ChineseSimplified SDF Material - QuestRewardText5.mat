@@ -2,14 +2,18 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!21 &2100000
 Material:
-  serializedVersion: 6
+  serializedVersion: 8
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: ChineseSimplified SDF Material - QuestRewardText5
   m_Shader: {fileID: 4800000, guid: 68e6db2ebdc24f95958faec2be5558d6, type: 3}
-  m_ShaderKeywords: BEVEL_ON GLOW_ON UNDERLAY_ON
+  m_ValidKeywords:
+  - BEVEL_ON
+  - GLOW_ON
+  - UNDERLAY_ON
+  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -40,6 +44,7 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 20.1, y: 4}
         m_Offset: {x: 20, y: 20}
+    m_Ints: []
     m_Floats:
     - _Ambient: 0
     - _Bevel: 0.107
@@ -68,9 +73,9 @@ Material:
     - _OutlineWidth: 0
     - _PerspectiveFilter: 0.875
     - _Reflectivity: 9.54
-    - _ScaleRatioA: 0.9
-    - _ScaleRatioB: 0.53325
-    - _ScaleRatioC: 0.34716797
+    - _ScaleRatioA: 0.875
+    - _ScaleRatioB: 0.5184375
+    - _ScaleRatioC: 0.3375244
     - _ScaleX: 1
     - _ScaleY: 1
     - _ShaderFlags: 1

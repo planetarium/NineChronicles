@@ -50,6 +50,7 @@ namespace MagicOnion.Client
             if (invoker == null) throw new ArgumentNullException(nameof(invoker));
 
             var ctor = MagicOnionClientRegistry<T>.consturtor;
+            UnityEngine.Debug.Log($"ctor={ctor.ToString()}");
             if (ctor == null)
             {
 #if ((ENABLE_IL2CPP && !UNITY_EDITOR) || NET_STANDARD_2_0)
