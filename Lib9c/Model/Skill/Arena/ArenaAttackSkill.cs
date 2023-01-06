@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.Battle;
 using Nekoyume.Model.Elemental;
 using Nekoyume.TableData;
 
@@ -38,9 +39,7 @@ namespace Nekoyume.Model.Skill.Arena
                     isCritical = caster.IsCritical(isNormalAttack);
                     if (isCritical)
                     {
-                        var critMultiplier =
-                            Math.Max(1m, ArenaCharacter.CriticalMultiplier + (caster.CDMG / 10000m));
-                        damage = (int) (damage * critMultiplier);
+                        damage = CriticalHelper.GetCriticalDamageForArena(caster, damage);
                     }
 
                     damage = Math.Max(damage - target.DEF, 1);
@@ -48,7 +47,7 @@ namespace Nekoyume.Model.Skill.Arena
                     damage = (int)((damage - target.DRV) * (1 - target.DRR / 100m));
                     target.CurrentHP -= damage;
 
-                    // double attack must be showed critical attack
+                    // double attack must be shown as critical attack
                     isCritical |= SkillRow.SkillCategory == SkillCategory.DoubleAttack;
                 }
 

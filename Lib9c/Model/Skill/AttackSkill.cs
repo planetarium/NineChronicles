@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Battle;
 using Nekoyume.Model.Elemental;
 using Nekoyume.TableData;
 
@@ -61,12 +62,10 @@ namespace Nekoyume.Model.Skill
                             isCritical = caster.IsCritical(isNormalAttack);
                             if (isCritical)
                             {
-                                var critMultiplier =
-                                    Math.Max(1m, CharacterBase.CriticalMultiplier + (caster.CDMG / 10000m));
-                                damage = (int) (damage * critMultiplier);
+                                damage = CriticalHelper.GetCriticalDamage(caster, damage);
                             }
 
-                            // 연타공격은 항상 연출이 크리티컬로 보이도록 처리.
+                            // double attack must be shown as critical attack
                             isCritical |= SkillRow.SkillCategory == SkillCategory.DoubleAttack;
                         }
 
