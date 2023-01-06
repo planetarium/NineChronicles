@@ -174,7 +174,16 @@ namespace Editor
 
         void FillAttributes()
         {
-            _keyStore = Web3KeyStore.DefaultKeyStore;
+            if (Platform.IsMobilePlatform())
+            {
+                string dataPath = Platform.GetPersistentDataPath("KeyStore");
+                _keyStore = new Web3KeyStore(dataPath);
+            }
+            else
+            {
+                _keyStore = Web3KeyStore.DefaultKeyStore;
+            }
+
             maxSize = new Vector2(600, 450);
             _timestamp = DateTimeOffset.UtcNow;
             titleContent = new GUIContent("Libplanet Version Signer");

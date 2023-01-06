@@ -1,0 +1,10 @@
+{
+	"PrivateKey": "c48f1c726bbdd55300f98efea57b51d4fab9198effeb306f0ecf86c6677ab0fd",
+	"NoMiner": true,
+	"RpcClient": true,
+	"Language": "en",
+	"RpcServerHost":"9c-main-rpc-1.nine-chronicles.com",
+	"RpcServerPort": 31238,
+	"GenesisBlockPath": "https://release.nine-chronicles.com/genesis-block-9c-main",
+	"ApiServerHost": "https://api.9c.gg/graphql"
+}

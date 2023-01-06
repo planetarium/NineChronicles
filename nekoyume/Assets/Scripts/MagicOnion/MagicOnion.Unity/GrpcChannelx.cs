@@ -7,9 +7,14 @@ using System.Threading;
 using System.Threading.Tasks;
 #if MAGICONION_UNITASK_SUPPORT
 using Cysharp.Threading.Tasks;
+#if !USE_GRPC_NET_CLIENT_ONLY
 using Channel = Grpc.Core.Channel;
 #endif
+#endif
 using Grpc.Core;
+#if USE_GRPC_NET_CLIENT
+using Grpc.Net.Client;
+#endif
 using MagicOnion.Client;
 using MagicOnion.Unity;
 using UnityEngine;
@@ -29,25 +34,25 @@ namespace MagicOnion
     {
         private readonly Action<GrpcChannelx> _onDispose;
         private readonly Dictionary<IStreamingHubMarker, (Func<Task> DisposeAsync, ManagedStreamingHubInfo StreamingHubInfo)> _streamingHubs = new Dictionary<IStreamingHubMarker, (Func<Task>, ManagedStreamingHubInfo)>();
-        private readonly Channel _channel;
+        private readonly ChannelBase _channel;
         private bool _disposed;
 
         public Uri TargetUri { get; }
         public int Id { get; }
 
-        public ChannelState ChannelState => _channel.State;
 
 #if UNITY_EDITOR || MAGICONION_ENABLE_CHANNEL_DIAGNOSTICS
         private readonly string _stackTrace;
-        private readonly IReadOnlyList<ChannelOption> _channelOptions;
         private readonly ChannelStats _channelStats;
+        private readonly GrpcChannelOptionsBag _channelOptions;
 
         string IGrpcChannelxDiagnosticsInfo.StackTrace => _stackTrace;
         ChannelStats IGrpcChannelxDiagnosticsInfo.Stats => _channelStats;
-        IReadOnlyList<ChannelOption> IGrpcChannelxDiagnosticsInfo.ChannelOptions => _channelOptions;
+        GrpcChannelOptionsBag IGrpcChannelxDiagnosticsInfo.ChannelOptions => _channelOptions;
+        ChannelBase IGrpcChannelxDiagnosticsInfo.UnderlyingChannel => _channel;
 #endif
 
-        public GrpcChannelx(int id, Action<GrpcChannelx> onDispose, Channel channel, Uri targetUri, IReadOnlyList<ChannelOption> channelOptions)
+        public GrpcChannelx(int id, Action<GrpcChannelx> onDispose, ChannelBase channel, Uri targetUri, GrpcChannelOptionsBag channelOptions)
             : base(targetUri.ToString())
         {
             Id = id;
@@ -81,7 +86,7 @@ namespace MagicOnion
         [Obsolete("Use ForAddress instead.")]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static GrpcChannelx FromAddress(Uri target)
-            => GrpcChannelProvider.Default.CreateChannel(target.Host, target.Port, (target.Scheme == "http" ? ChannelCredentials.Insecure : new SslCredentials()));
+            => GrpcChannelProvider.Default.CreateChannel(new GrpcChannelTarget(target.Host, target.Port, target.Scheme == "http"));
 
         /// <summary>
         /// Create a channel to the specified target.
@@ -105,7 +110,7 @@ namespace MagicOnion
         /// <param name="target"></param>
         /// <returns></returns>
         public static GrpcChannelx ForAddress(Uri target)
-            => GrpcChannelProvider.Default.CreateChannel(target.Host, target.Port, (target.Scheme == "http" ? ChannelCredentials.Insecure : new SslCredentials()));
+            => GrpcChannelProvider.Default.CreateChannel(new GrpcChannelTarget(target.Host, target.Port, target.Scheme == "http"));
 
         /// <summary>
         /// Create a <see cref="CallInvoker"/>.
@@ -135,6 +140,7 @@ namespace MagicOnion
         /// </summary>
         /// <param name="deadline"></param>
         /// <returns></returns>
+        [Obsolete]
 #if MAGICONION_UNITASK_SUPPORT
         public async UniTask ConnectAsync(DateTime? deadline = null)
 #else
@@ -142,9 +148,13 @@ namespace MagicOnion
 #endif
         {
             ThrowIfDisposed();
-            await _channel.ConnectAsync(deadline);
+#if !USE_GRPC_NET_CLIENT_ONLY
+            if (_channel is Channel grpcCChannel)
+            {
+                await grpcCChannel.ConnectAsync(deadline);
+            }
+#endif
         }
-
 
         /// <inheritdoc />
         IReadOnlyCollection<ManagedStreamingHubInfo> IMagicOnionAwareGrpcChannel.GetAllManagedStreamingHubs()
@@ -434,7 +444,9 @@ namespace MagicOnion
 
         GrpcChannelx.ChannelStats Stats { get; }
 
-        IReadOnlyList<ChannelOption> ChannelOptions { get; }
+        GrpcChannelOptionsBag ChannelOptions { get; }
+
+        ChannelBase UnderlyingChannel { get; }
     }
 #endif
 }

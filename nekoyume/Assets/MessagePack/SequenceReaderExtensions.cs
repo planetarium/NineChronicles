@@ -5,12 +5,13 @@
  * The .NET Foundation licenses this file to you under the MIT license.
  * See the LICENSE file in the project root for more information. */
 
+using System;
 using System.Buffers.Binary;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace System.Buffers
+namespace MessagePack
 {
     internal static partial class SequenceReaderExtensions
     {
@@ -42,7 +43,7 @@ namespace System.Buffers
         }
 
 #if UNITY_ANDROID
-        
+
         /// <summary>
         /// In Android 32bit device(armv7) + IL2CPP does not work correctly on Unsafe.ReadUnaligned.
         /// Perhaps it is about memory alignment bug of Unity's IL2CPP VM.
@@ -58,35 +59,9 @@ namespace System.Buffers
                 return TryReadMultisegment(ref reader, out value);
             }
 
-            value = BitConverterToInt64(span, 0);
+            value = MessagePack.SafeBitConverter.ToInt64(span);
             reader.Advance(sizeof(long));
             return true;
-        }
-
-        private static unsafe long BitConverterToInt64(ReadOnlySpan<byte> value, int startIndex)
-        {
-            fixed (byte* pbyte = &value[startIndex])
-            {
-                if (startIndex % 8 == 0)
-                {
-                    return *((long*)pbyte);
-                }
-                else
-                {
-                    if (BitConverter.IsLittleEndian)
-                    {
-                        int i1 = (*pbyte) | (*(pbyte + 1) << 8) | (*(pbyte + 2) << 16) | (*(pbyte + 3) << 24);
-                        int i2 = (*(pbyte + 4)) | (*(pbyte + 5) << 8) | (*(pbyte + 6) << 16) | (*(pbyte + 7) << 24);
-                        return (uint)i1 | ((long)i2 << 32);
-                    }
-                    else
-                    {
-                        int i1 = (*pbyte << 24) | (*(pbyte + 1) << 16) | (*(pbyte + 2) << 8) | (*(pbyte + 3));
-                        int i2 = (*(pbyte + 4) << 24) | (*(pbyte + 5) << 16) | (*(pbyte + 6) << 8) | (*(pbyte + 7));
-                        return (uint)i2 | ((long)i1 << 32);
-                    }
-                }
-            }
         }
 
 #endif
@@ -127,7 +102,7 @@ namespace System.Buffers
                 return false;
             }
 
-            value = BitConverterToInt64(tempSpan, 0);
+            value = MessagePack.SafeBitConverter.ToInt64(tempSpan);
             reader.Advance(sizeof(long));
             return true;
         }

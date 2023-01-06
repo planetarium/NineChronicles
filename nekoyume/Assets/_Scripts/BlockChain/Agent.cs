@@ -44,9 +44,11 @@ using Serilog.Events;
 using UnityEngine;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 using NCTx = Libplanet.Tx.Transaction<Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>>;
+using System.Runtime.InteropServices;
 
 namespace Nekoyume.BlockChain
 {
+    using System.Runtime.InteropServices;
     using UniRx;
 
     /// <summary>
@@ -59,7 +61,7 @@ namespace Nekoyume.BlockChain
 
         private const int MaxSeed = 3;
 
-        public static readonly string DefaultStoragePath = StorePath.GetDefaultStoragePath();
+        public static string DefaultStoragePath;
 
         public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
         public Subject<BlockHash> BlockTipHashSubject { get; } = new Subject<BlockHash>();
@@ -126,19 +128,6 @@ namespace Nekoyume.BlockChain
 
         public bool disposed;
 
-        static Agent()
-        {
-            try
-            {
-                Libplanet.Crypto.CryptoConfig.CryptoBackend = new Secp256K1CryptoBackend<SHA256>();
-            }
-            catch (Exception e)
-            {
-                Debug.Log("Secp256K1CryptoBackend initialize failed. Use default backend.");
-                Debug.LogException(e);
-            }
-        }
-
         public IEnumerator Initialize(
             CommandLineOptions options,
             PrivateKey privateKey,
@@ -170,7 +159,7 @@ namespace Nekoyume.BlockChain
             InitializeLogger(consoleSink, development);
             BlockPolicySource = new BlockPolicySource(Log.Logger, LogEventLevel.Debug);
 
-            var genesisBlock = BlockManager.ImportBlock(genesisBlockPath ?? BlockManager.GenesisBlockPath);
+            var genesisBlock = BlockManager.ImportBlock(genesisBlockPath ?? BlockManager.GenesisBlockPath());
             if (genesisBlock is null)
             {
                 Debug.LogError("There is no genesis block.");
@@ -187,11 +176,13 @@ namespace Nekoyume.BlockChain
             var policy = BlockPolicySource.GetPolicy();
             _stagePolicy = new VolatileStagePolicy<NCAction>();
             PrivateKey = privateKey;
+
             store = LoadStore(path, storageType);
 
             try
             {
-                IKeyValueStore stateKeyValueStore = new RocksDBKeyValueStore(Path.Combine(path, "states"));
+                string keyPath = path + "/states";
+                IKeyValueStore stateKeyValueStore = new RocksDBKeyValueStore(keyPath);
                 _stateStore = new TrieStateStore(stateKeyValueStore);
                 blocks = new BlockChain<NCAction>(
                     policy,
@@ -354,7 +345,26 @@ namespace Nekoyume.BlockChain
 
         private void Awake()
         {
+            PrepareForNativeLib_256K1();
+            // Move static constructor to there to avoid conflict of native library loading
+            try
+            {
+                // Avoid to construct repeatly
+                if(Libplanet.Crypto.CryptoConfig.CryptoBackend is not Secp256K1CryptoBackend<SHA256>)
+                {
+                    Libplanet.Crypto.CryptoConfig.CryptoBackend = new Secp256K1CryptoBackend<SHA256>();
+                }                
+            }
+            catch (Exception e)
+            {
+                Debug.Log("Secp256K1CryptoBackend initialize failed. Use default backend.");
+                Debug.LogException(e);
+            }
+
+            DefaultStoragePath = StorePath.GetDefaultStoragePath();
+
             ForceDotNet.Force();
+
             string parentDir = Path.GetDirectoryName(DefaultStoragePath);
             if (!Directory.Exists(parentDir))
             {
@@ -362,6 +372,24 @@ namespace Nekoyume.BlockChain
             }
 
             DeletePreviousStore();
+        }
+
+        private void PrepareForNativeLib_256K1()
+        {
+            if (Application.platform == RuntimePlatform.Android)
+            {
+                string Path_256K1 = default;
+                OSPlatform os = default;
+                Architecture arc = default;
+                Path_256K1 = Application.dataPath.Split("/base.apk")[0];
+                Path_256K1 = Path.Combine(Path_256K1, "lib");
+                Path_256K1 = Path.Combine(Path_256K1, Environment.Is64BitProcess ? "arm64" : "arm");
+                Path_256K1 = Path.Combine(Path_256K1, "libsecp256k1.so");
+                os = OSPlatform.Linux;
+                arc = Environment.Is64BitProcess ? Architecture.Arm64 : Architecture.Arm;
+                // Load native library for secp256k1
+                Secp256k1Net.UnityPathHelper.SetSpecificPath(Path_256K1, os, arc);
+            }
         }
 
         protected void OnDestroy()
@@ -391,6 +419,7 @@ namespace Nekoyume.BlockChain
             var host = GetHost(options);
             var port = options.Port;
             var consoleSink = options.ConsoleSink;
+
             var storagePath = options.StoragePath ?? DefaultStoragePath;
             var storageType = options.StorageType;
             var development = options.Development;
@@ -441,7 +470,6 @@ namespace Nekoyume.BlockChain
                     await GetBalanceAsync(Address, goldCurrency)));
                 States.Instance.SetCrystalBalance(
                     await GetBalanceAsync(Address, CrystalCalculator.CRYSTAL));
-
                 if (await GetStateAsync(
                         StakeState.DeriveAddress(States.Instance.AgentState.address))
                     is Dictionary stakeDict)
@@ -523,7 +551,6 @@ namespace Nekoyume.BlockChain
                 LoadQueuedActions();
                 TipChanged += (___, index) => { BlockIndexSubject.OnNext(index); };
             };
-
             _miner = options.NoMiner ? null : CoMiner();
             _autoPlayer = options.AutoPlay ? CoAutoPlayer() : null;
 
@@ -801,6 +828,8 @@ namespace Nekoyume.BlockChain
                 );
             }
 
+            Debug.Log("PreloadEndedAsync=" + PreloadEndedAsync == null ? "null" : "ok");
+
             yield return PreloadEndedAsync?.Invoke().ToCoroutine();
 
             var swarmStartTask = Task.Run(async () =>
@@ -966,7 +995,7 @@ namespace Nekoyume.BlockChain
 
         private void LoadQueuedActions()
         {
-            var path = Path.Combine(Application.persistentDataPath, QueuedActionsFileName);
+            var path = Platform.GetPersistentDataPath(QueuedActionsFileName);
             if (File.Exists(path))
             {
                 var actionsListBytes = File.ReadAllBytes(path);
@@ -989,8 +1018,7 @@ namespace Nekoyume.BlockChain
             if (_queuedActions.Any())
             {
                 List<GameAction> actionsList;
-
-                var path = Path.Combine(Application.persistentDataPath, QueuedActionsFileName);
+                var path = Platform.GetPersistentDataPath(QueuedActionsFileName);
                 if (!File.Exists(path))
                 {
                     Debug.Log("Create new queuedActions list.");

@@ -18,14 +18,14 @@ namespace Planetarium.Nekoyume.Editor
         public static void DeleteAllEditorAndMakeGenesisBlock()
         {
             DeleteAll(StorePath.GetDefaultStoragePath(StorePath.Env.Development));
-            MakeGenesisBlock(BlockManager.GenesisBlockPath);
+            MakeGenesisBlock(BlockManager.GenesisBlockPath());
         }
 
         [MenuItem("Tools/Libplanet/Delete All(Player) - Make Genesis Block For Prod To StreamingAssets Folder")]
         public static void DeleteAllPlayerAndMakeGenesisBlock()
         {
             DeleteAll(StorePath.GetDefaultStoragePath(StorePath.Env.Production));
-            MakeGenesisBlock(BlockManager.GenesisBlockPath);
+            MakeGenesisBlock(BlockManager.GenesisBlockPath());
         }
 
         [MenuItem("Tools/Libplanet/Make Genesis Block")]
