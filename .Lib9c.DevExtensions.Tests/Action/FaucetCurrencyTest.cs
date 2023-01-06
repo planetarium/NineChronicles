@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using Lib9c.DevExtensions.Action;
 using Lib9c.Tests.Action;
 using Libplanet;
 using Libplanet.Action;
@@ -60,7 +61,7 @@ namespace Lib9c.DevExtensions.Tests.Action
             int expectedCrystal
         )
         {
-            var action = new Lib9c.DevExtensions.Action.FaucetCurrency
+            var action = new FaucetCurrency
             {
                 AgentAddress = _agentAddress,
                 FaucetNcg = faucetNcg,
