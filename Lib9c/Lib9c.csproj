@@ -9,6 +9,10 @@
     <IntermediateOutputPath>.obj</IntermediateOutputPath>
     <RootNamespace>Nekoyume</RootNamespace>
     <LangVersion>8</LangVersion>
+    <PreBuildEvent Condition="$(ExtraDefineConstants.Contains('TEST_9C'))">
+      echo "TEST_9C: Build Lib9c with test actions"
+    </PreBuildEvent>
+    <DefineConstants Condition="$(ExtraDefineConstants.Contains('TEST_9C'))">$(DefineConstants);TEST_9C</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

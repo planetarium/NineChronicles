@@ -2,7 +2,6 @@ using Lib9c.Tests;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Lib9c.DevExtensions.Action;
 using Lib9c.Tests.Action;
 using Libplanet;
 using Libplanet.Action;
@@ -81,7 +80,7 @@ namespace Lib9c.DevExtensions.Tests.Action
         [ClassData(typeof(FaucetRuneInfoGenerator))]
         public void Execute_FaucetRune(List<FaucetRuneInfo> faucetRuneInfos)
         {
-            var action = new FaucetRune
+            var action = new Lib9c.DevExtensions.Action.FaucetRune
             {
                 AvatarAddress = _avatarAddress,
                 FaucetRuneInfos = faucetRuneInfos,
