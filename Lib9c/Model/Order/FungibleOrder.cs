@@ -87,7 +87,7 @@ namespace Lib9c.Model.Order
                 {
                     int removeCount = Math.Min(totalCount, item.count);
                     ITradableFungibleItem tradableFungibleItem = (ITradableFungibleItem) item.item;
-                    avatarState.inventory.RemoveTradableItem(TradableId, tradableFungibleItem.RequiredBlockIndex, removeCount);
+                    avatarState.inventory.RemoveTradableItemV1(TradableId, tradableFungibleItem.RequiredBlockIndex, removeCount);
                     totalCount -= removeCount;
                     if (totalCount < 1)
                     {
@@ -116,7 +116,7 @@ namespace Lib9c.Model.Order
                 {
                     int removeCount = Math.Min(totalCount, item.count);
                     ITradableFungibleItem tradableFungibleItem = (ITradableFungibleItem) item.item;
-                    avatarState.inventory.RemoveTradableItem(TradableId, tradableFungibleItem.RequiredBlockIndex, removeCount);
+                    avatarState.inventory.RemoveTradableItemV1(TradableId, tradableFungibleItem.RequiredBlockIndex, removeCount);
                     totalCount -= removeCount;
                     if (totalCount < 1)
                     {
@@ -145,7 +145,7 @@ namespace Lib9c.Model.Order
                 {
                     int removeCount = Math.Min(totalCount, item.count);
                     ITradableFungibleItem tradableFungibleItem = (ITradableFungibleItem) item.item;
-                    avatarState.inventory.RemoveTradableItem(TradableId, tradableFungibleItem.RequiredBlockIndex, removeCount);
+                    avatarState.inventory.RemoveTradableItemV1(TradableId, tradableFungibleItem.RequiredBlockIndex, removeCount);
                     totalCount -= removeCount;
                     if (totalCount < 1)
                     {
@@ -211,7 +211,7 @@ namespace Lib9c.Model.Order
                 out Inventory.Item inventoryItem))
             {
                 TradableMaterial tradableItem = (TradableMaterial) inventoryItem.item;
-                seller.inventory.RemoveTradableItem(tradableItem, ItemCount);
+                seller.inventory.RemoveTradableItemV1(tradableItem, ItemCount);
                 TradableMaterial copy = (TradableMaterial) tradableItem.Clone();
                 copy.RequiredBlockIndex = blockIndex;
                 buyer.UpdateFromAddItem2(copy, ItemCount, false);
@@ -370,7 +370,7 @@ namespace Lib9c.Model.Order
                 out Inventory.Item inventoryItem))
             {
                 ITradableFungibleItem copy = (ITradableFungibleItem) ((ITradableFungibleItem) inventoryItem.item).Clone();
-                avatarState.inventory.RemoveTradableItem(TradableId, ExpiredBlockIndex, ItemCount);
+                avatarState.inventory.RemoveTradableItemV1(TradableId, ExpiredBlockIndex, ItemCount);
                 copy.RequiredBlockIndex = blockIndex;
                 avatarState.inventory.AddItem2((ItemBase) copy, ItemCount);
                 return copy;
