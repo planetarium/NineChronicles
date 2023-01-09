@@ -27,7 +27,7 @@ RectTransform:
   m_GameObject: {fileID: 780248562797237898}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: -0.23, y: 0.23, z: 1}
+  m_LocalScale: {x: 0.22, y: 0.22, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2245020104025123783}
@@ -66,9 +66,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  skeletonDataAsset: {fileID: 11400000, guid: 17ee54e705e4345d9b97d39c2c958d6e, type: 2}
+  skeletonDataAsset: {fileID: 11400000, guid: c0843725677444653a05822e68bc09fe, type: 2}
   initialSkinName: default
-  initialFlipX: 0
+  initialFlipX: 1
   initialFlipY: 0
   startingAnimation: animation
   startingLoop: 1
