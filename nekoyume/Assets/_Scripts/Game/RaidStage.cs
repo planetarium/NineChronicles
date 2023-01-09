@@ -131,7 +131,13 @@ namespace Nekoyume.Game
                         {
                             container.OnAttackPoint = () =>
                             {
-                                var infos = param.SkillInfos.Concat(param.BuffInfos);
+                                var infos = param.SkillInfos;
+                                if (param.BuffInfos is not null &&
+                                    param.BuffInfos.Any())
+                                {
+                                    infos = infos.Concat(param.BuffInfos);
+                                }
+
                                 boss.ProcessSkill(param.SkillId, infos);
                             };
                             yield return StartCoroutine(container.CoPlaySkillCutscene(param.SkillId));
