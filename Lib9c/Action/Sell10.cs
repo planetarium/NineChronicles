@@ -128,7 +128,7 @@ namespace Nekoyume.Action
                 context.BlockIndex, itemSubType, count);
             order.Validate(avatarState, count);
 
-            ITradableItem tradableItem = order.Sell(avatarState);
+            ITradableItem tradableItem = order.Sell4(avatarState);
 
             var shardedShopState = states.TryGetState(shopAddress, out Dictionary serializedState)
                 ? new ShardedShopStateV2(serializedState)

@@ -175,7 +175,7 @@ namespace Nekoyume.Action
 
                 newOrder.Validate(avatarState, updateSellInfo.count);
 
-                var tradableItem = newOrder.Sell(avatarState);
+                var tradableItem = newOrder.Sell4(avatarState);
                 var orderDigest = newOrder.Digest(avatarState, costumeStatSheet);
                 updateSellShopState.Add(orderDigest, context.BlockIndex);
 

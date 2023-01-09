@@ -123,12 +123,18 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}Sell IsStageCleared: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            Order order = OrderFactory.Create(context.Signer, sellerAvatarAddress, orderId, price,
+            Order order = OrderFactory.Create(
+                context.Signer,
+                sellerAvatarAddress,
+                orderId,
+                price,
                 tradableId,
-                context.BlockIndex, itemSubType, count);
+                context.BlockIndex,
+                itemSubType,
+                count);
             order.Validate(avatarState, count);
 
-            ITradableItem tradableItem = order.Sell(avatarState);
+            ITradableItem tradableItem = order.Sell4(avatarState);
 
             var shardedShopState = states.TryGetState(shopAddress, out Dictionary serializedState)
                 ? new ShardedShopStateV2(serializedState)

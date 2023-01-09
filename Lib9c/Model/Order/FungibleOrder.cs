@@ -78,30 +78,41 @@ namespace Lib9c.Model.Order
 
         public override ITradableItem Sell(AvatarState avatarState)
         {
-            if (avatarState.inventory.TryGetTradableItems(TradableId, StartedBlockIndex, ItemCount, out List<Inventory.Item> items))
+            if (!avatarState.inventory.TryGetTradableItems(
+                    TradableId,
+                    StartedBlockIndex,
+                    ItemCount,
+                    out List<Inventory.Item> items))
             {
-                int totalCount = ItemCount;
-                // Copy ITradableFungible item for separate inventory slots.
-                ITradableFungibleItem copy = (ITradableFungibleItem) ((ITradableFungibleItem) items.First().item).Clone();
-                foreach (var item in items)
-                {
-                    int removeCount = Math.Min(totalCount, item.count);
-                    ITradableFungibleItem tradableFungibleItem = (ITradableFungibleItem) item.item;
-                    avatarState.inventory.RemoveTradableItemV1(TradableId, tradableFungibleItem.RequiredBlockIndex, removeCount);
-                    totalCount -= removeCount;
-                    if (totalCount < 1)
-                    {
-                        break;
-                    }
-                }
-                // Lock item.
-                copy.RequiredBlockIndex = ExpiredBlockIndex;
-                avatarState.inventory.AddItem((ItemBase) copy, ItemCount, new OrderLock(OrderId));
-                return copy;
+                throw new ItemDoesNotExistException(
+                    $"Can't find available item in seller inventory. TradableId: {TradableId}. RequiredBlockIndex: {StartedBlockIndex}, Count: {ItemCount}");
             }
 
-            throw new ItemDoesNotExistException(
-                $"Can't find available item in seller inventory. TradableId: {TradableId}. RequiredBlockIndex: {StartedBlockIndex}, Count: {ItemCount}");
+            var totalCount = ItemCount;
+            // Copy ITradableFungible item for separate inventory slots.
+            var copy = (ITradableFungibleItem) ((ITradableFungibleItem) items.First().item).Clone();
+            foreach (var item in items)
+            {
+                var removeCount = Math.Min(totalCount, item.count);
+                var tradableFungibleItem = (ITradableFungibleItem) item.item;
+                if (!avatarState.inventory.RemoveTradableItem(
+                        TradableId,
+                        tradableFungibleItem.RequiredBlockIndex,
+                        removeCount))
+                {
+                    throw new Exception("Aborted because failed to remove item from inventory.");
+                }
+
+                totalCount -= removeCount;
+                if (totalCount < 1)
+                {
+                    break;
+                }
+            }
+            // Lock item.
+            copy.RequiredBlockIndex = ExpiredBlockIndex;
+            avatarState.inventory.AddItem((ItemBase) copy, ItemCount, new OrderLock(OrderId));
+            return copy;
         }
 
         [Obsolete("Use Sell")]
@@ -155,6 +166,35 @@ namespace Lib9c.Model.Order
                 // Lock item.
                 copy.RequiredBlockIndex = ExpiredBlockIndex;
                 avatarState.inventory.AddItem2((ItemBase) copy, ItemCount, new OrderLock(OrderId));
+                return copy;
+            }
+
+            throw new ItemDoesNotExistException(
+                $"Can't find available item in seller inventory. TradableId: {TradableId}. RequiredBlockIndex: {StartedBlockIndex}, Count: {ItemCount}");
+        }
+
+        [Obsolete("Use Sell")]
+        public override ITradableItem Sell4(AvatarState avatarState)
+        {
+            if (avatarState.inventory.TryGetTradableItems(TradableId, StartedBlockIndex, ItemCount, out List<Inventory.Item> items))
+            {
+                int totalCount = ItemCount;
+                // Copy ITradableFungible item for separate inventory slots.
+                ITradableFungibleItem copy = (ITradableFungibleItem) ((ITradableFungibleItem) items.First().item).Clone();
+                foreach (var item in items)
+                {
+                    int removeCount = Math.Min(totalCount, item.count);
+                    ITradableFungibleItem tradableFungibleItem = (ITradableFungibleItem) item.item;
+                    avatarState.inventory.RemoveTradableItemV1(TradableId, tradableFungibleItem.RequiredBlockIndex, removeCount);
+                    totalCount -= removeCount;
+                    if (totalCount < 1)
+                    {
+                        break;
+                    }
+                }
+                // Lock item.
+                copy.RequiredBlockIndex = ExpiredBlockIndex;
+                avatarState.inventory.AddItem((ItemBase) copy, ItemCount, new OrderLock(OrderId));
                 return copy;
             }
 
