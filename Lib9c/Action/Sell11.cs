@@ -7,6 +7,7 @@ using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Nekoyume.BlockChain.Policy;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -19,8 +20,9 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1376
     /// </summary>
     [Serializable]
-    [ActionType("sell12")]
-    public class Sell : GameAction
+    [ActionType("sell11")]
+    [ActionObsolete(BlockPolicySource.V100351ObsoleteIndex)]
+    public class Sell11 : GameAction
     {
         public Address sellerAvatarAddress;
         public Guid tradableId;
@@ -75,6 +77,7 @@ namespace Nekoyume.Action
                     .SetState(sellerAvatarAddress, MarkChanged);
             }
 
+            CheckObsolete(BlockPolicySource.V100351ObsoleteIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, sellerAvatarAddress);
 
             var sw = new Stopwatch();
@@ -134,7 +137,7 @@ namespace Nekoyume.Action
                 count);
             order.Validate(avatarState, count);
 
-            ITradableItem tradableItem = order.Sell(avatarState);
+            ITradableItem tradableItem = order.Sell4(avatarState);
 
             var shardedShopState = states.TryGetState(shopAddress, out Dictionary serializedState)
                 ? new ShardedShopStateV2(serializedState)

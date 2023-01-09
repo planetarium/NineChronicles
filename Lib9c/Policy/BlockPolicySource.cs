@@ -94,6 +94,11 @@ namespace Nekoyume.BlockChain.Policy
 
         public const long V100340ObsoleteIndex = 5_800_000;
 
+        // NOTE:
+        // Current: 2023-01-09T21:30:00 5_813_276
+        // Target: 2023-01-11T00:00:00 5_813_276 + 7_950 = 5_821_226
+        public const long V100351ObsoleteIndex = 5_821_226;
+
         public const long PermissionedMiningStartIndex = 2_225_500;
 
         public const long V100301ExecutedBlockIndex = 5_048_399L;
