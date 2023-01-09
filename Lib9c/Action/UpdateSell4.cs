@@ -8,6 +8,7 @@ using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
+using Nekoyume.BlockChain.Policy;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -23,8 +24,9 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/1022
     /// </summary>
     [Serializable]
-    [ActionType("update_sell5")]
-    public class UpdateSell : GameAction
+    [ActionType("update_sell4")]
+    [ActionObsolete(BlockPolicySource.V100351ObsoleteIndex)]
+    public class UpdateSell4 : GameAction
     {
         private const int UpdateCapacity = 100;
         public Address sellerAvatarAddress;
@@ -56,6 +58,8 @@ namespace Nekoyume.Action
             {
                 return states;
             }
+
+            CheckObsolete(BlockPolicySource.V100351ObsoleteIndex, context);
 
             if (updateSellInfos.Count() > UpdateCapacity)
             {
@@ -177,7 +181,7 @@ namespace Nekoyume.Action
 
                 newOrder.Validate(avatarState, updateSellInfo.count);
 
-                var tradableItem = newOrder.Sell(avatarState);
+                var tradableItem = newOrder.Sell4(avatarState);
                 var orderDigest = newOrder.Digest(avatarState, costumeStatSheet);
                 updateSellShopState.Add(orderDigest, context.BlockIndex);
 
