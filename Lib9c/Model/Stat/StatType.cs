@@ -42,14 +42,19 @@ namespace Nekoyume.Model.Stat
         SPD,
 
         /// <summary>
-        /// Damage Reduction (Subtract)
+        /// Damage Reduction Value. Subtracted from original damage.
         /// </summary>
         DRV,
 
         /// <summary>
-        /// Damage Reduction (Multiply)
+        /// Damage Reduction Rate. Multiplied on original damage. (Permyriad)
         /// </summary>
         DRR,
+
+        /// <summary>
+        /// Crit Damage (Permyriad)
+        /// </summary>
+        CDMG,
     }
 
     [Serializable]

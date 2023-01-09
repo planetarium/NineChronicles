@@ -135,9 +135,11 @@ namespace Nekoyume.Battle
                 case StatType.SPD:
                     return GetCPOfSPD(statValue);
                 case StatType.DRV:
-                    return GetCPOfDamageReductionValue(statValue);
+                    return GetCPOfDRV(statValue);
                 case StatType.DRR:
-                    return GetCPOfDamageReductionRate(statValue, characterLevel);
+                    return GetCPOfDRR(statValue, characterLevel);
+                case StatType.CDMG:
+                    return GetCPOfCDMG(statValue, characterLevel);
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -154,14 +156,18 @@ namespace Nekoyume.Battle
         public static decimal GetCPOfHIT(decimal value) => value * 2.3m;
 
         // NOTE : Temp formula
-        public static decimal GetCPOfDamageReductionValue(decimal value) => value * 10.5m;
+        public static decimal GetCPOfDRV(decimal value) => value * 10.5m;
 
         // NOTE : Temp formula
-        public static decimal GetCPOfDamageReductionRate(decimal value, int characterLevel) =>
+        public static decimal GetCPOfDRR(decimal value, int characterLevel) =>
             value * characterLevel * 20m;
 
         public static decimal GetCPOfCRI(decimal value, int characterLevel) =>
             value * characterLevel * 20m;
+
+        // NOTE : Temp formula
+        public static decimal GetCPOfCDMG(decimal value, int characterLevel) =>
+            value * characterLevel * 3m;
 
         public static decimal GetSkillsMultiplier(int skillsCount)
         {
