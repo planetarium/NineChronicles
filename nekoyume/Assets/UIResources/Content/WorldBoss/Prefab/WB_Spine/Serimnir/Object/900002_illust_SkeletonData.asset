@@ -10,17 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1b3b4b945939a54ea0b23d3396115fb, type: 3}
-  m_Name: main_illu05_W2_SkeletonData
+  m_Name: 900002_illust_SkeletonData
   m_EditorClassIdentifier: 
   atlasAssets:
-  - {fileID: 11400000, guid: f9d47fe4083b658458240c59ea11de83, type: 2}
+  - {fileID: 11400000, guid: 3d75ca2f4d577431eab0f8013372620a, type: 2}
   scale: 0.01
-  skeletonJSON: {fileID: 4900000, guid: f73ad8122f58fb04aa2df183828dc8b7, type: 3}
+  skeletonJSON: {fileID: 4900000, guid: b428f23fdc2c34945a8f7ee81021f1ef, type: 3}
   isUpgradingBlendModeMaterials: 0
   blendModeMaterials:
-    requiresBlendModeMaterials: 0
+    requiresBlendModeMaterials: 1
     applyAdditiveMaterial: 1
-    additiveMaterials: []
+    additiveMaterials:
+    - pageName: 900002_illust.png
+      material: {fileID: 2100000, guid: c184ba875f2744933a2a0b8a8b0f066b, type: 2}
     multiplyMaterials: []
     screenMaterials: []
   skeletonDataModifiers: []
