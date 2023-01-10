@@ -333,31 +333,10 @@ namespace Nekoyume.Action
             Address avatarAddress,
             IAccountStateDelta states)
         {
-            var runes = new List<(int id, int count)>
-            {
-                // RUNE_ADVENTURER
-                (30001, 100_000),
-                // RUNE_FENRIR1
-                (10001, 100_000),
-                // RUNE_FENRIR2
-                (10002, 100_000),
-                // RUNE_FENRIR3
-                (10003, 100_000),
-                // RUNE_SERIMNIR1
-                (10011, 100_000),
-                // RUNE_SERIMNIR2
-                (10012, 100_000),
-                // RUNE_SERIMNIR3
-                (10013, 100_000),
-                // RUNE_GOLDENLEAF
-                (20001, 100_000)
-            };
-
             var runeSheet = states.GetSheet<RuneSheet>();
-            foreach (var (id, count) in runes)
+            foreach (var row in runeSheet.Values)
             {
-                var row = runeSheet[id];
-                var rune = RuneHelper.ToFungibleAssetValue(row, count);
+                var rune = RuneHelper.ToFungibleAssetValue(row, int.MaxValue);
                 states = states.MintAsset(avatarAddress, rune);
             }
             return states;
