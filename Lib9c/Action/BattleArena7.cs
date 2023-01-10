@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Text;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
@@ -15,6 +16,7 @@ using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Rune;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
@@ -260,8 +262,8 @@ namespace Nekoyume.Action
                     $" - ChampionshipId({roundData.ChampionshipId}) - round({roundData.Round})");
             }
 
-            if (!ArenaHelper.ValidateScoreDifference(
-                    ArenaHelper.ScoreLimits,
+            if (!ArenaHelper.ValidateScoreDifferenceV2(
+                    ArenaHelper.ScoreLimitsV2,
                     roundData.ArenaType,
                     myArenaScore.Score,
                     enemyArenaScore.Score))

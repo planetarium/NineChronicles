@@ -1192,7 +1192,7 @@ namespace Lib9c.Tests.Action
             var sheet = _tableSheets.GameConfigSheet;
             foreach (var value in sheet.Values)
             {
-                if (value.Key.Equals("daily_arena_interval"))
+                if (value.Key.Equals("battle_arena_interval"))
                 {
                     IReadOnlyList<string> field = new[]
                     {
