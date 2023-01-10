@@ -1,4 +1,304 @@
 rune_id,_name,level,total_cp,stat_type_1,value_1,value_type_1,stat_type_2,value_2,value_type_2,stat_type_3,value_3,value_type3,skillId,cooldown,chance,skill_value,skill_stat_ratio,skill_value_type,stat_reference_type,buff_duration
+30001,Adventurer's Rune,1,714,HP,1020,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,2,728,HP,1040,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,3,742,HP,1060,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,4,756,HP,1080,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,5,770,HP,1100,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,6,784,HP,1120,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,7,798,HP,1140,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,8,812,HP,1160,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,9,826,HP,1180,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,10,840,HP,1200,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,11,854,HP,1220,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,12,868,HP,1240,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,13,882,HP,1260,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,14,896,HP,1280,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,15,910,HP,1300,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,16,924,HP,1320,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,17,938,HP,1340,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,18,952,HP,1360,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,19,966,HP,1380,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,20,980,HP,1400,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,21,994,HP,1420,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,22,1008,HP,1440,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,23,1022,HP,1460,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,24,1036,HP,1480,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,25,1050,HP,1500,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,26,1064,HP,1520,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,27,1078,HP,1540,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,28,1092,HP,1560,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,29,1106,HP,1580,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,30,1120,HP,1600,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,31,1134,HP,1620,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,32,1148,HP,1640,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,33,1162,HP,1660,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,34,1176,HP,1680,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,35,1190,HP,1700,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,36,1204,HP,1720,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,37,1218,HP,1740,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,38,1232,HP,1760,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,39,1246,HP,1780,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,40,1260,HP,1800,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,41,1274,HP,1820,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,42,1288,HP,1840,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,43,1302,HP,1860,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,44,1316,HP,1880,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,45,1330,HP,1900,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,46,1344,HP,1920,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,47,1358,HP,1940,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,48,1372,HP,1960,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,49,1386,HP,1980,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,50,1400,HP,2000,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,51,1414,HP,2020,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,52,1428,HP,2040,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,53,1442,HP,2060,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,54,1456,HP,2080,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,55,1470,HP,2100,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,56,1484,HP,2120,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,57,1498,HP,2140,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,58,1512,HP,2160,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,59,1526,HP,2180,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,60,1540,HP,2200,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,61,1554,HP,2220,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,62,1568,HP,2240,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,63,1582,HP,2260,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,64,1596,HP,2280,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,65,1610,HP,2300,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,66,1624,HP,2320,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,67,1638,HP,2340,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,68,1652,HP,2360,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,69,1666,HP,2380,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,70,1680,HP,2400,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,71,1694,HP,2420,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,72,1708,HP,2440,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,73,1722,HP,2460,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,74,1736,HP,2480,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,75,1750,HP,2500,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,76,1764,HP,2520,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,77,1778,HP,2540,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,78,1792,HP,2560,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,79,1806,HP,2580,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,80,1820,HP,2600,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,81,1834,HP,2620,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,82,1848,HP,2640,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,83,1862,HP,2660,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,84,1876,HP,2680,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,85,1890,HP,2700,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,86,1904,HP,2720,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,87,1918,HP,2740,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,88,1932,HP,2760,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,89,1946,HP,2780,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,90,1960,HP,2800,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,91,1974,HP,2820,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,92,1988,HP,2840,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,93,2002,HP,2860,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,94,2016,HP,2880,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,95,2030,HP,2900,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,96,2044,HP,2920,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,97,2058,HP,2940,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,98,2072,HP,2960,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,99,2086,HP,2980,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,100,2100,HP,3000,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,101,2114,HP,3020,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,102,2128,HP,3040,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,103,2142,HP,3060,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,104,2156,HP,3080,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,105,2170,HP,3100,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,106,2184,HP,3120,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,107,2198,HP,3140,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,108,2212,HP,3160,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,109,2226,HP,3180,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,110,2240,HP,3200,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,111,2254,HP,3220,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,112,2268,HP,3240,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,113,2282,HP,3260,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,114,2296,HP,3280,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,115,2310,HP,3300,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,116,2324,HP,3320,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,117,2338,HP,3340,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,118,2352,HP,3360,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,119,2366,HP,3380,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,120,2380,HP,3400,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,121,2394,HP,3420,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,122,2408,HP,3440,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,123,2422,HP,3460,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,124,2436,HP,3480,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,125,2450,HP,3500,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,126,2464,HP,3520,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,127,2478,HP,3540,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,128,2492,HP,3560,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,129,2506,HP,3580,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,130,2520,HP,3600,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,131,2534,HP,3620,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,132,2548,HP,3640,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,133,2562,HP,3660,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,134,2576,HP,3680,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,135,2590,HP,3700,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,136,2604,HP,3720,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,137,2618,HP,3740,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,138,2632,HP,3760,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,139,2646,HP,3780,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,140,2660,HP,3800,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,141,2674,HP,3820,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,142,2688,HP,3840,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,143,2702,HP,3860,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,144,2716,HP,3880,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,145,2730,HP,3900,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,146,2744,HP,3920,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,147,2758,HP,3940,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,148,2772,HP,3960,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,149,2786,HP,3980,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,150,2800,HP,4000,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,151,2814,HP,4020,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,152,2828,HP,4040,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,153,2842,HP,4060,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,154,2856,HP,4080,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,155,2870,HP,4100,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,156,2884,HP,4120,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,157,2898,HP,4140,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,158,2912,HP,4160,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,159,2926,HP,4180,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,160,2940,HP,4200,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,161,2954,HP,4220,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,162,2968,HP,4240,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,163,2982,HP,4260,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,164,2996,HP,4280,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,165,3010,HP,4300,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,166,3024,HP,4320,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,167,3038,HP,4340,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,168,3052,HP,4360,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,169,3066,HP,4380,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,170,3080,HP,4400,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,171,3094,HP,4420,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,172,3108,HP,4440,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,173,3122,HP,4460,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,174,3136,HP,4480,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,175,3150,HP,4500,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,176,3164,HP,4520,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,177,3178,HP,4540,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,178,3192,HP,4560,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,179,3206,HP,4580,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,180,3220,HP,4600,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,181,3234,HP,4620,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,182,3248,HP,4640,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,183,3262,HP,4660,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,184,3276,HP,4680,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,185,3290,HP,4700,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,186,3304,HP,4720,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,187,3318,HP,4740,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,188,3332,HP,4760,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,189,3346,HP,4780,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,190,3360,HP,4800,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,191,3374,HP,4820,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,192,3388,HP,4840,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,193,3402,HP,4860,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,194,3416,HP,4880,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,195,3430,HP,4900,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,196,3444,HP,4920,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,197,3458,HP,4940,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,198,3472,HP,4960,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,199,3486,HP,4980,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,200,3500,HP,5000,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,201,3514,HP,5020,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,202,3528,HP,5040,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,203,3542,HP,5060,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,204,3556,HP,5080,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,205,3570,HP,5100,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,206,3584,HP,5120,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,207,3598,HP,5140,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,208,3612,HP,5160,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,209,3626,HP,5180,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,210,3640,HP,5200,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,211,3654,HP,5220,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,212,3668,HP,5240,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,213,3682,HP,5260,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,214,3696,HP,5280,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,215,3710,HP,5300,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,216,3724,HP,5320,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,217,3738,HP,5340,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,218,3752,HP,5360,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,219,3766,HP,5380,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,220,3780,HP,5400,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,221,3794,HP,5420,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,222,3808,HP,5440,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,223,3822,HP,5460,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,224,3836,HP,5480,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,225,3850,HP,5500,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,226,3864,HP,5520,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,227,3878,HP,5540,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,228,3892,HP,5560,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,229,3906,HP,5580,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,230,3920,HP,5600,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,231,3934,HP,5620,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,232,3948,HP,5640,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,233,3962,HP,5660,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,234,3976,HP,5680,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,235,3990,HP,5700,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,236,4004,HP,5720,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,237,4018,HP,5740,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,238,4032,HP,5760,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,239,4046,HP,5780,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,240,4060,HP,5800,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,241,4074,HP,5820,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,242,4088,HP,5840,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,243,4102,HP,5860,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,244,4116,HP,5880,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,245,4130,HP,5900,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,246,4144,HP,5920,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,247,4158,HP,5940,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,248,4172,HP,5960,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,249,4186,HP,5980,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,250,4200,HP,6000,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,251,4214,HP,6020,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,252,4228,HP,6040,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,253,4242,HP,6060,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,254,4256,HP,6080,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,255,4270,HP,6100,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,256,4284,HP,6120,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,257,4298,HP,6140,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,258,4312,HP,6160,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,259,4326,HP,6180,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,260,4340,HP,6200,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,261,4354,HP,6220,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,262,4368,HP,6240,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,263,4382,HP,6260,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,264,4396,HP,6280,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,265,4410,HP,6300,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,266,4424,HP,6320,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,267,4438,HP,6340,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,268,4452,HP,6360,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,269,4466,HP,6380,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,270,4480,HP,6400,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,271,4494,HP,6420,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,272,4508,HP,6440,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,273,4522,HP,6460,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,274,4536,HP,6480,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,275,4550,HP,6500,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,276,4564,HP,6520,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,277,4578,HP,6540,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,278,4592,HP,6560,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,279,4606,HP,6580,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,280,4620,HP,6600,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,281,4634,HP,6620,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,282,4648,HP,6640,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,283,4662,HP,6660,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,284,4676,HP,6680,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,285,4690,HP,6700,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,286,4704,HP,6720,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,287,4718,HP,6740,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,288,4732,HP,6760,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,289,4746,HP,6780,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,290,4760,HP,6800,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,291,4774,HP,6820,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,292,4788,HP,6840,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,293,4802,HP,6860,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,294,4816,HP,6880,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,295,4830,HP,6900,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,296,4844,HP,6920,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,297,4858,HP,6940,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,298,4872,HP,6960,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,299,4886,HP,6980,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+30001,Adventurer's Rune,300,4900,HP,7000,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
 10001,Fenrir HP Rune,1,770,HP,1099,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
 10001,Fenrir HP Rune,2,917,HP,1309,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
 10001,Fenrir HP Rune,3,1064,HP,1519,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
@@ -899,306 +1199,906 @@ rune_id,_name,level,total_cp,stat_type_1,value_1,value_type_1,stat_type_2,value_
 10003,Fenrir Bleeding Rune,298,80166,ATK,6639,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.44,Percentage,ATK,Caster,10
 10003,Fenrir Bleeding Rune,299,80577,ATK,6673,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.44,Percentage,ATK,Caster,10
 10003,Fenrir Bleeding Rune,300,80988,ATK,6707,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.49,Percentage,ATK,Caster,10
-30001,Adventurer's Rune,1,714,HP,1020,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,2,728,HP,1040,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,3,742,HP,1060,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,4,756,HP,1080,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,5,770,HP,1100,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,6,784,HP,1120,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,7,798,HP,1140,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,8,812,HP,1160,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,9,826,HP,1180,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,10,840,HP,1200,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,11,854,HP,1220,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,12,868,HP,1240,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,13,882,HP,1260,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,14,896,HP,1280,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,15,910,HP,1300,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,16,924,HP,1320,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,17,938,HP,1340,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,18,952,HP,1360,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,19,966,HP,1380,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,20,980,HP,1400,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,21,994,HP,1420,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,22,1008,HP,1440,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,23,1022,HP,1460,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,24,1036,HP,1480,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,25,1050,HP,1500,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,26,1064,HP,1520,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,27,1078,HP,1540,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,28,1092,HP,1560,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,29,1106,HP,1580,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,30,1120,HP,1600,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,31,1134,HP,1620,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,32,1148,HP,1640,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,33,1162,HP,1660,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,34,1176,HP,1680,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,35,1190,HP,1700,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,36,1204,HP,1720,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,37,1218,HP,1740,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,38,1232,HP,1760,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,39,1246,HP,1780,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,40,1260,HP,1800,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,41,1274,HP,1820,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,42,1288,HP,1840,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,43,1302,HP,1860,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,44,1316,HP,1880,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,45,1330,HP,1900,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,46,1344,HP,1920,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,47,1358,HP,1940,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,48,1372,HP,1960,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,49,1386,HP,1980,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,50,1400,HP,2000,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,51,1414,HP,2020,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,52,1428,HP,2040,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,53,1442,HP,2060,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,54,1456,HP,2080,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,55,1470,HP,2100,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,56,1484,HP,2120,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,57,1498,HP,2140,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,58,1512,HP,2160,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,59,1526,HP,2180,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,60,1540,HP,2200,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,61,1554,HP,2220,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,62,1568,HP,2240,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,63,1582,HP,2260,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,64,1596,HP,2280,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,65,1610,HP,2300,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,66,1624,HP,2320,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,67,1638,HP,2340,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,68,1652,HP,2360,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,69,1666,HP,2380,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,70,1680,HP,2400,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,71,1694,HP,2420,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,72,1708,HP,2440,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,73,1722,HP,2460,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,74,1736,HP,2480,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,75,1750,HP,2500,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,76,1764,HP,2520,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,77,1778,HP,2540,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,78,1792,HP,2560,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,79,1806,HP,2580,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,80,1820,HP,2600,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,81,1834,HP,2620,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,82,1848,HP,2640,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,83,1862,HP,2660,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,84,1876,HP,2680,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,85,1890,HP,2700,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,86,1904,HP,2720,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,87,1918,HP,2740,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,88,1932,HP,2760,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,89,1946,HP,2780,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,90,1960,HP,2800,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,91,1974,HP,2820,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,92,1988,HP,2840,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,93,2002,HP,2860,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,94,2016,HP,2880,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,95,2030,HP,2900,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,96,2044,HP,2920,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,97,2058,HP,2940,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,98,2072,HP,2960,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,99,2086,HP,2980,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,100,2100,HP,3000,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,101,2114,HP,3020,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,102,2128,HP,3040,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,103,2142,HP,3060,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,104,2156,HP,3080,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,105,2170,HP,3100,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,106,2184,HP,3120,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,107,2198,HP,3140,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,108,2212,HP,3160,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,109,2226,HP,3180,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,110,2240,HP,3200,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,111,2254,HP,3220,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,112,2268,HP,3240,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,113,2282,HP,3260,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,114,2296,HP,3280,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,115,2310,HP,3300,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,116,2324,HP,3320,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,117,2338,HP,3340,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,118,2352,HP,3360,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,119,2366,HP,3380,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,120,2380,HP,3400,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,121,2394,HP,3420,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,122,2408,HP,3440,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,123,2422,HP,3460,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,124,2436,HP,3480,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,125,2450,HP,3500,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,126,2464,HP,3520,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,127,2478,HP,3540,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,128,2492,HP,3560,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,129,2506,HP,3580,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,130,2520,HP,3600,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,131,2534,HP,3620,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,132,2548,HP,3640,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,133,2562,HP,3660,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,134,2576,HP,3680,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,135,2590,HP,3700,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,136,2604,HP,3720,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,137,2618,HP,3740,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,138,2632,HP,3760,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,139,2646,HP,3780,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,140,2660,HP,3800,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,141,2674,HP,3820,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,142,2688,HP,3840,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,143,2702,HP,3860,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,144,2716,HP,3880,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,145,2730,HP,3900,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,146,2744,HP,3920,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,147,2758,HP,3940,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,148,2772,HP,3960,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,149,2786,HP,3980,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,150,2800,HP,4000,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,151,2814,HP,4020,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,152,2828,HP,4040,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,153,2842,HP,4060,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,154,2856,HP,4080,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,155,2870,HP,4100,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,156,2884,HP,4120,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,157,2898,HP,4140,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,158,2912,HP,4160,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,159,2926,HP,4180,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,160,2940,HP,4200,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,161,2954,HP,4220,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,162,2968,HP,4240,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,163,2982,HP,4260,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,164,2996,HP,4280,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,165,3010,HP,4300,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,166,3024,HP,4320,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,167,3038,HP,4340,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,168,3052,HP,4360,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,169,3066,HP,4380,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,170,3080,HP,4400,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,171,3094,HP,4420,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,172,3108,HP,4440,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,173,3122,HP,4460,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,174,3136,HP,4480,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,175,3150,HP,4500,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,176,3164,HP,4520,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,177,3178,HP,4540,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,178,3192,HP,4560,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,179,3206,HP,4580,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,180,3220,HP,4600,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,181,3234,HP,4620,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,182,3248,HP,4640,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,183,3262,HP,4660,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,184,3276,HP,4680,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,185,3290,HP,4700,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,186,3304,HP,4720,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,187,3318,HP,4740,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,188,3332,HP,4760,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,189,3346,HP,4780,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,190,3360,HP,4800,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,191,3374,HP,4820,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,192,3388,HP,4840,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,193,3402,HP,4860,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,194,3416,HP,4880,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,195,3430,HP,4900,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,196,3444,HP,4920,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,197,3458,HP,4940,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,198,3472,HP,4960,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,199,3486,HP,4980,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,200,3500,HP,5000,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,201,3514,HP,5020,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,202,3528,HP,5040,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,203,3542,HP,5060,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,204,3556,HP,5080,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,205,3570,HP,5100,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,206,3584,HP,5120,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,207,3598,HP,5140,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,208,3612,HP,5160,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,209,3626,HP,5180,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,210,3640,HP,5200,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,211,3654,HP,5220,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,212,3668,HP,5240,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,213,3682,HP,5260,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,214,3696,HP,5280,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,215,3710,HP,5300,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,216,3724,HP,5320,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,217,3738,HP,5340,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,218,3752,HP,5360,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,219,3766,HP,5380,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,220,3780,HP,5400,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,221,3794,HP,5420,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,222,3808,HP,5440,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,223,3822,HP,5460,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,224,3836,HP,5480,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,225,3850,HP,5500,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,226,3864,HP,5520,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,227,3878,HP,5540,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,228,3892,HP,5560,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,229,3906,HP,5580,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,230,3920,HP,5600,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,231,3934,HP,5620,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,232,3948,HP,5640,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,233,3962,HP,5660,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,234,3976,HP,5680,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,235,3990,HP,5700,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,236,4004,HP,5720,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,237,4018,HP,5740,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,238,4032,HP,5760,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,239,4046,HP,5780,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,240,4060,HP,5800,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,241,4074,HP,5820,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,242,4088,HP,5840,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,243,4102,HP,5860,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,244,4116,HP,5880,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,245,4130,HP,5900,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,246,4144,HP,5920,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,247,4158,HP,5940,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,248,4172,HP,5960,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,249,4186,HP,5980,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,250,4200,HP,6000,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,251,4214,HP,6020,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,252,4228,HP,6040,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,253,4242,HP,6060,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,254,4256,HP,6080,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,255,4270,HP,6100,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,256,4284,HP,6120,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,257,4298,HP,6140,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,258,4312,HP,6160,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,259,4326,HP,6180,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,260,4340,HP,6200,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,261,4354,HP,6220,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,262,4368,HP,6240,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,263,4382,HP,6260,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,264,4396,HP,6280,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,265,4410,HP,6300,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,266,4424,HP,6320,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,267,4438,HP,6340,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,268,4452,HP,6360,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,269,4466,HP,6380,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,270,4480,HP,6400,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,271,4494,HP,6420,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,272,4508,HP,6440,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,273,4522,HP,6460,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,274,4536,HP,6480,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,275,4550,HP,6500,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,276,4564,HP,6520,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,277,4578,HP,6540,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,278,4592,HP,6560,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,279,4606,HP,6580,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,280,4620,HP,6600,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,281,4634,HP,6620,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,282,4648,HP,6640,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,283,4662,HP,6660,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,284,4676,HP,6680,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,285,4690,HP,6700,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,286,4704,HP,6720,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,287,4718,HP,6740,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,288,4732,HP,6760,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,289,4746,HP,6780,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,290,4760,HP,6800,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,291,4774,HP,6820,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,292,4788,HP,6840,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,293,4802,HP,6860,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,294,4816,HP,6880,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,295,4830,HP,6900,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,296,4844,HP,6920,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,297,4858,HP,6940,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,298,4872,HP,6960,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,299,4886,HP,6980,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
-30001,Adventurer's Rune,300,4900,HP,7000,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,1,1,HIT,1,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,2,2,HIT,2,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,3,3,HIT,3,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,4,4,HIT,4,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,5,5,HIT,5,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,6,6,HIT,6,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,7,7,HIT,7,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,8,8,HIT,8,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,9,9,HIT,9,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,10,10,HIT,10,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,11,11,HIT,11,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,12,12,HIT,12,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,13,13,HIT,13,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,14,14,HIT,14,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,15,15,HIT,15,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,16,16,HIT,16,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,17,17,HIT,17,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,18,18,HIT,18,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,19,19,HIT,19,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,20,20,HIT,20,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,21,21,HIT,21,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,22,22,HIT,22,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,23,23,HIT,23,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,24,24,HIT,24,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,25,25,HIT,25,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,26,26,HIT,26,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,27,27,HIT,27,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,28,28,HIT,28,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,29,29,HIT,29,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,30,30,HIT,30,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,31,31,HIT,31,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,32,32,HIT,32,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,33,33,HIT,33,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,34,34,HIT,34,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,35,35,HIT,35,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,36,36,HIT,36,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,37,37,HIT,37,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,38,38,HIT,38,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,39,39,HIT,39,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,40,40,HIT,40,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,41,41,HIT,41,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,42,42,HIT,42,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,43,43,HIT,43,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,44,44,HIT,44,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,45,45,HIT,45,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,46,46,HIT,46,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,47,47,HIT,47,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,48,48,HIT,48,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,49,49,HIT,49,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,50,50,HIT,50,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,51,51,HIT,51,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,52,52,HIT,52,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,53,53,HIT,53,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,54,54,HIT,54,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,55,55,HIT,55,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,56,56,HIT,56,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,57,57,HIT,57,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,58,58,HIT,58,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,59,59,HIT,59,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,60,60,HIT,60,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,61,61,HIT,61,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,62,62,HIT,62,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,63,63,HIT,63,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,64,64,HIT,64,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,65,65,HIT,65,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,66,66,HIT,66,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,67,67,HIT,67,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,68,68,HIT,68,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,69,69,HIT,69,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,70,70,HIT,70,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,71,71,HIT,71,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,72,72,HIT,72,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,73,73,HIT,73,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,74,74,HIT,74,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,75,75,HIT,75,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,76,76,HIT,76,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,77,77,HIT,77,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,78,78,HIT,78,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,79,79,HIT,79,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,80,80,HIT,80,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,81,81,HIT,81,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,82,82,HIT,82,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,83,83,HIT,83,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,84,84,HIT,84,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,85,85,HIT,85,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,86,86,HIT,86,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,87,87,HIT,87,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,88,88,HIT,88,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,89,89,HIT,89,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,90,90,HIT,90,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,91,91,HIT,91,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,92,92,HIT,92,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,93,93,HIT,93,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,94,94,HIT,94,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,95,95,HIT,95,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,96,96,HIT,96,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,97,97,HIT,97,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,98,98,HIT,98,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,99,99,HIT,99,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,100,100,HIT,100,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,101,101,HIT,101,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,102,102,HIT,102,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,103,103,HIT,103,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,104,104,HIT,104,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,105,105,HIT,105,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,106,106,HIT,106,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,107,107,HIT,107,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,108,108,HIT,108,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,109,109,HIT,109,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,110,110,HIT,110,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,111,111,HIT,111,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,112,112,HIT,112,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,113,113,HIT,113,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,114,114,HIT,114,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,115,115,HIT,115,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,116,116,HIT,116,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,117,117,HIT,117,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,118,118,HIT,118,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,119,119,HIT,119,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,120,120,HIT,120,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,121,121,HIT,121,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,122,122,HIT,122,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,123,123,HIT,123,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,124,124,HIT,124,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,125,125,HIT,125,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,126,126,HIT,126,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,127,127,HIT,127,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,128,128,HIT,128,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,129,129,HIT,129,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,130,130,HIT,130,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,131,131,HIT,131,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,132,132,HIT,132,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,133,133,HIT,133,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,134,134,HIT,134,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,135,135,HIT,135,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,136,136,HIT,136,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,137,137,HIT,137,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,138,138,HIT,138,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,139,139,HIT,139,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,140,140,HIT,140,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,141,141,HIT,141,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,142,142,HIT,142,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,143,143,HIT,143,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,144,144,HIT,144,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,145,145,HIT,145,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,146,146,HIT,146,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,147,147,HIT,147,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,148,148,HIT,148,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,149,149,HIT,149,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,150,150,HIT,150,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,151,151,HIT,151,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,152,152,HIT,152,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,153,153,HIT,153,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,154,154,HIT,154,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,155,155,HIT,155,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,156,156,HIT,156,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,157,157,HIT,157,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,158,158,HIT,158,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,159,159,HIT,159,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,160,160,HIT,160,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,161,161,HIT,161,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,162,162,HIT,162,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,163,163,HIT,163,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,164,164,HIT,164,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,165,165,HIT,165,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,166,166,HIT,166,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,167,167,HIT,167,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,168,168,HIT,168,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,169,169,HIT,169,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,170,170,HIT,170,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,171,171,HIT,171,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,172,172,HIT,172,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,173,173,HIT,173,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,174,174,HIT,174,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,175,175,HIT,175,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,176,176,HIT,176,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,177,177,HIT,177,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,178,178,HIT,178,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,179,179,HIT,179,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,180,180,HIT,180,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,181,181,HIT,181,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,182,182,HIT,182,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,183,183,HIT,183,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,184,184,HIT,184,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,185,185,HIT,185,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,186,186,HIT,186,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,187,187,HIT,187,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,188,188,HIT,188,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,189,189,HIT,189,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,190,190,HIT,190,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,191,191,HIT,191,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,192,192,HIT,192,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,193,193,HIT,193,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,194,194,HIT,194,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,195,195,HIT,195,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,196,196,HIT,196,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,197,197,HIT,197,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,198,198,HIT,198,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,199,199,HIT,199,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,200,200,HIT,200,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,201,201,HIT,201,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,202,202,HIT,202,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,203,203,HIT,203,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,204,204,HIT,204,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,205,205,HIT,205,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,206,206,HIT,206,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,207,207,HIT,207,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,208,208,HIT,208,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,209,209,HIT,209,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,210,210,HIT,210,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,211,211,HIT,211,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,212,212,HIT,212,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,213,213,HIT,213,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,214,214,HIT,214,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,215,215,HIT,215,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,216,216,HIT,216,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,217,217,HIT,217,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,218,218,HIT,218,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,219,219,HIT,219,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,220,220,HIT,220,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,221,221,HIT,221,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,222,222,HIT,222,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,223,223,HIT,223,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,224,224,HIT,224,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,225,225,HIT,225,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,226,226,HIT,226,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,227,227,HIT,227,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,228,228,HIT,228,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,229,229,HIT,229,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,230,230,HIT,230,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,231,231,HIT,231,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,232,232,HIT,232,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,233,233,HIT,233,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,234,234,HIT,234,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,235,235,HIT,235,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,236,236,HIT,236,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,237,237,HIT,237,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,238,238,HIT,238,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,239,239,HIT,239,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,240,240,HIT,240,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,241,241,HIT,241,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,242,242,HIT,242,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,243,243,HIT,243,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,244,244,HIT,244,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,245,245,HIT,245,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,246,246,HIT,246,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,247,247,HIT,247,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,248,248,HIT,248,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,249,249,HIT,249,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,250,250,HIT,250,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,251,251,HIT,251,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,252,252,HIT,252,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,253,253,HIT,253,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,254,254,HIT,254,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,255,255,HIT,255,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,256,256,HIT,256,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,257,257,HIT,257,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,258,258,HIT,258,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,259,259,HIT,259,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,260,260,HIT,260,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,261,261,HIT,261,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,262,262,HIT,262,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,263,263,HIT,263,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,264,264,HIT,264,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,265,265,HIT,265,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,266,266,HIT,266,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,267,267,HIT,267,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,268,268,HIT,268,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,269,269,HIT,269,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,270,270,HIT,270,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,271,271,HIT,271,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,272,272,HIT,272,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,273,273,HIT,273,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,274,274,HIT,274,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,275,275,HIT,275,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,276,276,HIT,276,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,277,277,HIT,277,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,278,278,HIT,278,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,279,279,HIT,279,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,280,280,HIT,280,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,281,281,HIT,281,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,282,282,HIT,282,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,283,283,HIT,283,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,284,284,HIT,284,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,285,285,HIT,285,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,286,286,HIT,286,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,287,287,HIT,287,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,288,288,HIT,288,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,289,289,HIT,289,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,290,290,HIT,290,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,291,291,HIT,291,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,292,292,HIT,292,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,293,293,HIT,293,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,294,294,HIT,294,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,295,295,HIT,295,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,296,296,HIT,296,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,297,297,HIT,297,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,298,298,HIT,298,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,299,299,HIT,299,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10011,Serimnir Rune 1,300,300,HIT,300,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,1,1,DEF,1,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,2,2,DEF,2,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,3,3,DEF,3,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,4,4,DEF,4,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,5,5,DEF,5,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,6,6,DEF,6,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,7,7,DEF,7,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,8,8,DEF,8,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,9,9,DEF,9,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,10,10,DEF,10,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,11,11,DEF,11,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,12,12,DEF,12,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,13,13,DEF,13,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,14,14,DEF,14,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,15,15,DEF,15,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,16,16,DEF,16,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,17,17,DEF,17,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,18,18,DEF,18,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,19,19,DEF,19,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,20,20,DEF,20,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,21,21,DEF,21,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,22,22,DEF,22,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,23,23,DEF,23,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,24,24,DEF,24,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,25,25,DEF,25,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,26,26,DEF,26,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,27,27,DEF,27,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,28,28,DEF,28,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,29,29,DEF,29,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,30,30,DEF,30,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,31,31,DEF,31,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,32,32,DEF,32,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,33,33,DEF,33,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,34,34,DEF,34,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,35,35,DEF,35,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,36,36,DEF,36,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,37,37,DEF,37,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,38,38,DEF,38,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,39,39,DEF,39,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,40,40,DEF,40,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,41,41,DEF,41,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,42,42,DEF,42,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,43,43,DEF,43,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,44,44,DEF,44,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,45,45,DEF,45,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,46,46,DEF,46,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,47,47,DEF,47,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,48,48,DEF,48,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,49,49,DEF,49,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,50,50,DEF,50,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,51,51,DEF,51,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,52,52,DEF,52,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,53,53,DEF,53,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,54,54,DEF,54,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,55,55,DEF,55,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,56,56,DEF,56,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,57,57,DEF,57,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,58,58,DEF,58,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,59,59,DEF,59,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,60,60,DEF,60,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,61,61,DEF,61,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,62,62,DEF,62,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,63,63,DEF,63,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,64,64,DEF,64,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,65,65,DEF,65,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,66,66,DEF,66,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,67,67,DEF,67,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,68,68,DEF,68,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,69,69,DEF,69,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,70,70,DEF,70,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,71,71,DEF,71,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,72,72,DEF,72,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,73,73,DEF,73,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,74,74,DEF,74,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,75,75,DEF,75,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,76,76,DEF,76,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,77,77,DEF,77,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,78,78,DEF,78,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,79,79,DEF,79,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,80,80,DEF,80,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,81,81,DEF,81,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,82,82,DEF,82,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,83,83,DEF,83,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,84,84,DEF,84,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,85,85,DEF,85,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,86,86,DEF,86,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,87,87,DEF,87,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,88,88,DEF,88,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,89,89,DEF,89,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,90,90,DEF,90,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,91,91,DEF,91,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,92,92,DEF,92,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,93,93,DEF,93,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,94,94,DEF,94,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,95,95,DEF,95,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,96,96,DEF,96,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,97,97,DEF,97,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,98,98,DEF,98,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,99,99,DEF,99,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,100,100,DEF,100,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,101,101,DEF,101,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,102,102,DEF,102,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,103,103,DEF,103,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,104,104,DEF,104,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,105,105,DEF,105,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,106,106,DEF,106,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,107,107,DEF,107,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,108,108,DEF,108,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,109,109,DEF,109,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,110,110,DEF,110,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,111,111,DEF,111,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,112,112,DEF,112,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,113,113,DEF,113,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,114,114,DEF,114,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,115,115,DEF,115,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,116,116,DEF,116,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,117,117,DEF,117,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,118,118,DEF,118,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,119,119,DEF,119,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,120,120,DEF,120,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,121,121,DEF,121,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,122,122,DEF,122,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,123,123,DEF,123,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,124,124,DEF,124,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,125,125,DEF,125,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,126,126,DEF,126,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,127,127,DEF,127,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,128,128,DEF,128,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,129,129,DEF,129,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,130,130,DEF,130,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,131,131,DEF,131,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,132,132,DEF,132,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,133,133,DEF,133,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,134,134,DEF,134,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,135,135,DEF,135,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,136,136,DEF,136,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,137,137,DEF,137,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,138,138,DEF,138,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,139,139,DEF,139,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,140,140,DEF,140,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,141,141,DEF,141,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,142,142,DEF,142,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,143,143,DEF,143,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,144,144,DEF,144,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,145,145,DEF,145,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,146,146,DEF,146,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,147,147,DEF,147,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,148,148,DEF,148,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,149,149,DEF,149,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,150,150,DEF,150,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,151,151,DEF,151,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,152,152,DEF,152,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,153,153,DEF,153,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,154,154,DEF,154,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,155,155,DEF,155,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,156,156,DEF,156,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,157,157,DEF,157,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,158,158,DEF,158,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,159,159,DEF,159,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,160,160,DEF,160,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,161,161,DEF,161,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,162,162,DEF,162,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,163,163,DEF,163,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,164,164,DEF,164,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,165,165,DEF,165,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,166,166,DEF,166,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,167,167,DEF,167,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,168,168,DEF,168,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,169,169,DEF,169,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,170,170,DEF,170,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,171,171,DEF,171,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,172,172,DEF,172,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,173,173,DEF,173,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,174,174,DEF,174,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,175,175,DEF,175,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,176,176,DEF,176,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,177,177,DEF,177,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,178,178,DEF,178,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,179,179,DEF,179,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,180,180,DEF,180,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,181,181,DEF,181,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,182,182,DEF,182,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,183,183,DEF,183,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,184,184,DEF,184,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,185,185,DEF,185,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,186,186,DEF,186,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,187,187,DEF,187,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,188,188,DEF,188,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,189,189,DEF,189,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,190,190,DEF,190,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,191,191,DEF,191,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,192,192,DEF,192,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,193,193,DEF,193,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,194,194,DEF,194,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,195,195,DEF,195,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,196,196,DEF,196,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,197,197,DEF,197,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,198,198,DEF,198,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,199,199,DEF,199,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,200,200,DEF,200,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,201,201,DEF,201,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,202,202,DEF,202,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,203,203,DEF,203,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,204,204,DEF,204,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,205,205,DEF,205,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,206,206,DEF,206,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,207,207,DEF,207,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,208,208,DEF,208,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,209,209,DEF,209,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,210,210,DEF,210,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,211,211,DEF,211,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,212,212,DEF,212,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,213,213,DEF,213,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,214,214,DEF,214,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,215,215,DEF,215,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,216,216,DEF,216,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,217,217,DEF,217,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,218,218,DEF,218,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,219,219,DEF,219,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,220,220,DEF,220,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,221,221,DEF,221,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,222,222,DEF,222,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,223,223,DEF,223,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,224,224,DEF,224,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,225,225,DEF,225,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,226,226,DEF,226,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,227,227,DEF,227,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,228,228,DEF,228,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,229,229,DEF,229,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,230,230,DEF,230,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,231,231,DEF,231,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,232,232,DEF,232,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,233,233,DEF,233,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,234,234,DEF,234,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,235,235,DEF,235,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,236,236,DEF,236,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,237,237,DEF,237,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,238,238,DEF,238,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,239,239,DEF,239,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,240,240,DEF,240,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,241,241,DEF,241,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,242,242,DEF,242,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,243,243,DEF,243,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,244,244,DEF,244,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,245,245,DEF,245,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,246,246,DEF,246,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,247,247,DEF,247,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,248,248,DEF,248,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,249,249,DEF,249,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,250,250,DEF,250,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,251,251,DEF,251,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,252,252,DEF,252,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,253,253,DEF,253,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,254,254,DEF,254,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,255,255,DEF,255,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,256,256,DEF,256,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,257,257,DEF,257,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,258,258,DEF,258,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,259,259,DEF,259,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,260,260,DEF,260,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,261,261,DEF,261,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,262,262,DEF,262,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,263,263,DEF,263,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,264,264,DEF,264,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,265,265,DEF,265,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,266,266,DEF,266,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,267,267,DEF,267,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,268,268,DEF,268,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,269,269,DEF,269,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,270,270,DEF,270,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,271,271,DEF,271,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,272,272,DEF,272,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,273,273,DEF,273,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,274,274,DEF,274,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,275,275,DEF,275,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,276,276,DEF,276,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,277,277,DEF,277,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,278,278,DEF,278,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,279,279,DEF,279,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,280,280,DEF,280,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,281,281,DEF,281,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,282,282,DEF,282,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,283,283,DEF,283,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,284,284,DEF,284,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,285,285,DEF,285,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,286,286,DEF,286,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,287,287,DEF,287,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,288,288,DEF,288,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,289,289,DEF,289,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,290,290,DEF,290,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,291,291,DEF,291,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,292,292,DEF,292,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,293,293,DEF,293,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,294,294,DEF,294,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,295,295,DEF,295,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,296,296,DEF,296,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,297,297,DEF,297,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,298,298,DEF,298,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,299,299,DEF,299,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10012,Serimnir Rune 2,300,300,DEF,300,Add,NONE,0,Add,NONE,0,Add,,,,,,,,
+10013,Serimnir Rune 3,1,1,HIT,1,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,2,2,HIT,2,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,3,3,HIT,3,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,4,4,HIT,4,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,5,5,HIT,5,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.13,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,6,6,HIT,6,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.13,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,7,7,HIT,7,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.13,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,8,8,HIT,8,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.13,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,9,9,HIT,9,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.13,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,10,10,HIT,10,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.26,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,11,11,HIT,11,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.26,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,12,12,HIT,12,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.26,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,13,13,HIT,13,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.26,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,14,14,HIT,14,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.26,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,15,15,HIT,15,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.39,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,16,16,HIT,16,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.39,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,17,17,HIT,17,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.39,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,18,18,HIT,18,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.39,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,19,19,HIT,19,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.39,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,20,20,HIT,20,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.52,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,21,21,HIT,21,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.52,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,22,22,HIT,22,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.52,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,23,23,HIT,23,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.52,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,24,24,HIT,24,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.52,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,25,25,HIT,25,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.65,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,26,26,HIT,26,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.65,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,27,27,HIT,27,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.65,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,28,28,HIT,28,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.65,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,29,29,HIT,29,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.65,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,30,30,HIT,30,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.78,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,31,31,HIT,31,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.78,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,32,32,HIT,32,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.78,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,33,33,HIT,33,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.78,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,34,34,HIT,34,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.78,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,35,35,HIT,35,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.91,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,36,36,HIT,36,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.91,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,37,37,HIT,37,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.91,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,38,38,HIT,38,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.91,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,39,39,HIT,39,Add,NONE,0,Add,NONE,0,Add,600001,10,20,1.91,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,40,40,HIT,40,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.01,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,41,41,HIT,41,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.01,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,42,42,HIT,42,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.01,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,43,43,HIT,43,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.01,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,44,44,HIT,44,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.01,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,45,45,HIT,45,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.11,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,46,46,HIT,46,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.11,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,47,47,HIT,47,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.11,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,48,48,HIT,48,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.11,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,49,49,HIT,49,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.11,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,50,50,HIT,50,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.21,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,51,51,HIT,51,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.21,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,52,52,HIT,52,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.21,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,53,53,HIT,53,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.21,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,54,54,HIT,54,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.21,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,55,55,HIT,55,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.31,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,56,56,HIT,56,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.31,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,57,57,HIT,57,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.31,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,58,58,HIT,58,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.31,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,59,59,HIT,59,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.31,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,60,60,HIT,60,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.41,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,61,61,HIT,61,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.41,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,62,62,HIT,62,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.41,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,63,63,HIT,63,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.41,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,64,64,HIT,64,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.41,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,65,65,HIT,65,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.51,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,66,66,HIT,66,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.51,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,67,67,HIT,67,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.51,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,68,68,HIT,68,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.51,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,69,69,HIT,69,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.51,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,70,70,HIT,70,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.61,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,71,71,HIT,71,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.61,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,72,72,HIT,72,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.61,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,73,73,HIT,73,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.61,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,74,74,HIT,74,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.61,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,75,75,HIT,75,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.71,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,76,76,HIT,76,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.71,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,77,77,HIT,77,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.71,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,78,78,HIT,78,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.71,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,79,79,HIT,79,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.71,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,80,80,HIT,80,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.81,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,81,81,HIT,81,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.81,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,82,82,HIT,82,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.81,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,83,83,HIT,83,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.81,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,84,84,HIT,84,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.81,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,85,85,HIT,85,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.89,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,86,86,HIT,86,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.89,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,87,87,HIT,87,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.89,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,88,88,HIT,88,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.89,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,89,89,HIT,89,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.89,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,90,90,HIT,90,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.97,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,91,91,HIT,91,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.97,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,92,92,HIT,92,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.97,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,93,93,HIT,93,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.97,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,94,94,HIT,94,Add,NONE,0,Add,NONE,0,Add,600001,10,20,2.97,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,95,95,HIT,95,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.05,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,96,96,HIT,96,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.05,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,97,97,HIT,97,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.05,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,98,98,HIT,98,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.05,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,99,99,HIT,99,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.05,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,100,100,HIT,100,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.13,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,101,101,HIT,101,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.13,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,102,102,HIT,102,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.13,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,103,103,HIT,103,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.13,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,104,104,HIT,104,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.13,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,105,105,HIT,105,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.21,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,106,106,HIT,106,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.21,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,107,107,HIT,107,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.21,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,108,108,HIT,108,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.21,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,109,109,HIT,109,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.21,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,110,110,HIT,110,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.29,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,111,111,HIT,111,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.29,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,112,112,HIT,112,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.29,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,113,113,HIT,113,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.29,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,114,114,HIT,114,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.29,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,115,115,HIT,115,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.37,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,116,116,HIT,116,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.37,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,117,117,HIT,117,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.37,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,118,118,HIT,118,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.37,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,119,119,HIT,119,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.37,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,120,120,HIT,120,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.45,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,121,121,HIT,121,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.45,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,122,122,HIT,122,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.45,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,123,123,HIT,123,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.45,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,124,124,HIT,124,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.45,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,125,125,HIT,125,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.53,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,126,126,HIT,126,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.53,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,127,127,HIT,127,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.53,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,128,128,HIT,128,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.53,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,129,129,HIT,129,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.53,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,130,130,HIT,130,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.61,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,131,131,HIT,131,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.61,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,132,132,HIT,132,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.61,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,133,133,HIT,133,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.61,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,134,134,HIT,134,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.61,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,135,135,HIT,135,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.69,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,136,136,HIT,136,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.69,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,137,137,HIT,137,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.69,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,138,138,HIT,138,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.69,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,139,139,HIT,139,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.69,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,140,140,HIT,140,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.75,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,141,141,HIT,141,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.75,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,142,142,HIT,142,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.75,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,143,143,HIT,143,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.75,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,144,144,HIT,144,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.75,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,145,145,HIT,145,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.81,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,146,146,HIT,146,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.81,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,147,147,HIT,147,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.81,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,148,148,HIT,148,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.81,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,149,149,HIT,149,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.81,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,150,150,HIT,150,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.87,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,151,151,HIT,151,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.87,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,152,152,HIT,152,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.87,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,153,153,HIT,153,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.87,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,154,154,HIT,154,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.87,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,155,155,HIT,155,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.93,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,156,156,HIT,156,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.93,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,157,157,HIT,157,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.93,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,158,158,HIT,158,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.93,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,159,159,HIT,159,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.93,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,160,160,HIT,160,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.99,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,161,161,HIT,161,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.99,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,162,162,HIT,162,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.99,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,163,163,HIT,163,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.99,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,164,164,HIT,164,Add,NONE,0,Add,NONE,0,Add,600001,10,20,3.99,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,165,165,HIT,165,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.05,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,166,166,HIT,166,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.05,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,167,167,HIT,167,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.05,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,168,168,HIT,168,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.05,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,169,169,HIT,169,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.05,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,170,170,HIT,170,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.11,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,171,171,HIT,171,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.11,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,172,172,HIT,172,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.11,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,173,173,HIT,173,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.11,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,174,174,HIT,174,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.11,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,175,175,HIT,175,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.17,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,176,176,HIT,176,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.17,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,177,177,HIT,177,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.17,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,178,178,HIT,178,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.17,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,179,179,HIT,179,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.17,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,180,180,HIT,180,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.23,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,181,181,HIT,181,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.23,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,182,182,HIT,182,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.23,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,183,183,HIT,183,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.23,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,184,184,HIT,184,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.23,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,185,185,HIT,185,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.29,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,186,186,HIT,186,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.29,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,187,187,HIT,187,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.29,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,188,188,HIT,188,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.29,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,189,189,HIT,189,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.29,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,190,190,HIT,190,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.35,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,191,191,HIT,191,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.35,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,192,192,HIT,192,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.35,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,193,193,HIT,193,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.35,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,194,194,HIT,194,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.35,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,195,195,HIT,195,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.41,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,196,196,HIT,196,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.41,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,197,197,HIT,197,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.41,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,198,198,HIT,198,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.41,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,199,199,HIT,199,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.41,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,200,200,HIT,200,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.47,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,201,201,HIT,201,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.47,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,202,202,HIT,202,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.47,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,203,203,HIT,203,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.47,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,204,204,HIT,204,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.47,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,205,205,HIT,205,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.53,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,206,206,HIT,206,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.53,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,207,207,HIT,207,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.53,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,208,208,HIT,208,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.53,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,209,209,HIT,209,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.53,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,210,210,HIT,210,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.59,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,211,211,HIT,211,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.59,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,212,212,HIT,212,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.59,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,213,213,HIT,213,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.59,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,214,214,HIT,214,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.59,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,215,215,HIT,215,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.64,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,216,216,HIT,216,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.64,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,217,217,HIT,217,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.64,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,218,218,HIT,218,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.64,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,219,219,HIT,219,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.64,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,220,220,HIT,220,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.69,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,221,221,HIT,221,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.69,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,222,222,HIT,222,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.69,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,223,223,HIT,223,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.69,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,224,224,HIT,224,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.69,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,225,225,HIT,225,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.74,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,226,226,HIT,226,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.74,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,227,227,HIT,227,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.74,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,228,228,HIT,228,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.74,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,229,229,HIT,229,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.74,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,230,230,HIT,230,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.79,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,231,231,HIT,231,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.79,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,232,232,HIT,232,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.79,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,233,233,HIT,233,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.79,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,234,234,HIT,234,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.79,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,235,235,HIT,235,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.84,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,236,236,HIT,236,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.84,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,237,237,HIT,237,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.84,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,238,238,HIT,238,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.84,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,239,239,HIT,239,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.84,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,240,240,HIT,240,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.89,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,241,241,HIT,241,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.89,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,242,242,HIT,242,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.89,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,243,243,HIT,243,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.89,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,244,244,HIT,244,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.89,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,245,245,HIT,245,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.94,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,246,246,HIT,246,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.94,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,247,247,HIT,247,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.94,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,248,248,HIT,248,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.94,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,249,249,HIT,249,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.94,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,250,250,HIT,250,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.99,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,251,251,HIT,251,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.99,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,252,252,HIT,252,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.99,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,253,253,HIT,253,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.99,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,254,254,HIT,254,Add,NONE,0,Add,NONE,0,Add,600001,10,20,4.99,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,255,255,HIT,255,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.04,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,256,256,HIT,256,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.04,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,257,257,HIT,257,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.04,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,258,258,HIT,258,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.04,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,259,259,HIT,259,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.04,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,260,260,HIT,260,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.09,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,261,261,HIT,261,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.09,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,262,262,HIT,262,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.09,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,263,263,HIT,263,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.09,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,264,264,HIT,264,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.09,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,265,265,HIT,265,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.14,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,266,266,HIT,266,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.14,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,267,267,HIT,267,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.14,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,268,268,HIT,268,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.14,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,269,269,HIT,269,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.14,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,270,270,HIT,270,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.19,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,271,271,HIT,271,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.19,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,272,272,HIT,272,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.19,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,273,273,HIT,273,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.19,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,274,274,HIT,274,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.19,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,275,275,HIT,275,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.24,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,276,276,HIT,276,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.24,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,277,277,HIT,277,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.24,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,278,278,HIT,278,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.24,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,279,279,HIT,279,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.24,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,280,280,HIT,280,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.29,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,281,281,HIT,281,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.29,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,282,282,HIT,282,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.29,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,283,283,HIT,283,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.29,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,284,284,HIT,284,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.29,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,285,285,HIT,285,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.34,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,286,286,HIT,286,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.34,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,287,287,HIT,287,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.34,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,288,288,HIT,288,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.34,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,289,289,HIT,289,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.34,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,290,290,HIT,290,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.39,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,291,291,HIT,291,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.39,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,292,292,HIT,292,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.39,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,293,293,HIT,293,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.39,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,294,294,HIT,294,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.39,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,295,295,HIT,295,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.44,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,296,296,HIT,296,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.44,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,297,297,HIT,297,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.44,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,298,298,HIT,298,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.44,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,299,299,HIT,299,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.44,Percentage,ATK,Caster,10
+10013,Serimnir Rune 3,300,300,HIT,300,Add,NONE,0,Add,NONE,0,Add,600001,10,20,5.49,Percentage,ATK,Caster,10
 20001,Golden leaf Rune,1,2215,HIT,642,Add,NONE,0,Add,NONE,0,Add,700002,10,30,1535,Add,NONE,Caster,6
 20001,Golden leaf Rune,2,2367,HIT,686,Add,NONE,0,Add,NONE,0,Add,700002,10,30,1570,Add,NONE,Caster,6
 20001,Golden leaf Rune,3,2519,HIT,730,Add,NONE,0,Add,NONE,0,Add,700002,10,30,1605,Add,NONE,Caster,6
