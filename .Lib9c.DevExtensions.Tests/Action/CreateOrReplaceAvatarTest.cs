@@ -57,9 +57,7 @@ namespace Lib9c.DevExtensions.Tests.Action
 
             yield return new object[]
             {
-                int.MaxValue / 2, // int.MaxValue / 2:
-                                  // Avoid overflow and
-                                  // parse error at StateExtensions.ToLong().
+                long.MaxValue / 2, // long.MaxValue / 2: Avoid overflow
                 GameConfig.SlotCount - 1,
                 "12345678901234567890",
                 int.MaxValue,
