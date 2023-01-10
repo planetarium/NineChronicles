@@ -14,6 +14,7 @@ using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
+using Nekoyume.Helper;
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
 using Lib9c.DevExtensions;
@@ -326,6 +327,19 @@ namespace Nekoyume.Action
             }
 
             return optionIds;
+        }
+
+        public static IAccountStateDelta AddRunesForTest(
+            Address avatarAddress,
+            IAccountStateDelta states)
+        {
+            var runeSheet = states.GetSheet<RuneSheet>();
+            foreach (var row in runeSheet.Values)
+            {
+                var rune = RuneHelper.ToFungibleAssetValue(row, int.MaxValue);
+                states = states.MintAsset(avatarAddress, rune);
+            }
+            return states;
         }
     }
 }
