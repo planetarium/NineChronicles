@@ -38,7 +38,7 @@ namespace Nekoyume.Action
         public int StageId;
         public int? StageBuffId;
         public Address AvatarAddress;
-        public int PlayCount = 1;
+        public int TotalPlayCount = 1;
         public int ApStoneCount = 0;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal
@@ -55,7 +55,7 @@ namespace Nekoyume.Action
                     ["worldId"] = WorldId.Serialize(),
                     ["stageId"] = StageId.Serialize(),
                     ["avatarAddress"] = AvatarAddress.Serialize(),
-                    ["playCount"] = PlayCount.Serialize(),
+                    ["totalPlayCount"] = TotalPlayCount.Serialize(),
                     ["apStoneCount"] = ApStoneCount.Serialize(),
                 };
                 if (StageBuffId.HasValue)
@@ -80,7 +80,7 @@ namespace Nekoyume.Action
                 StageBuffId = plainValue["stageBuffId"].ToNullableInteger();
             }
             AvatarAddress = plainValue["avatarAddress"].ToAddress();
-            PlayCount = plainValue["playCount"].ToInteger();
+            TotalPlayCount = plainValue["totalPlayCount"].ToInteger();
             ApStoneCount = plainValue["apStoneCount"].ToInteger();
         }
 
@@ -115,18 +115,22 @@ namespace Nekoyume.Action
             if (ApStoneCount > UsableApStoneCount)
             {
                 throw new UsageLimitExceedException(
-                    $"Exceeded the amount of ap stones that can be used " +
+                    "Exceeded the amount of ap stones that can be used " +
                     $"apStoneCount : {ApStoneCount} > UsableApStoneCount : {UsableApStoneCount}");
             }
 
-            if (ApStoneCount < 0
-                || PlayCount < 0
-                || ApStoneCount + PlayCount <= 0)
+            if (ApStoneCount < 0)
             {
-                throw new InvalidRepeatPlayException(
-                    $"{addressesHex}playCount must not be negative. " +
-                    $"Ap stone count : {ApStoneCount}, "+
-                    $"Play count : {PlayCount}");
+                throw new InvalidItemCountException(
+                    "ApStone count must not be negative. " +
+                    $"Ap stone count: {ApStoneCount}");
+            }
+
+            if (TotalPlayCount <= 0)
+            {
+                throw new PlayCountIsZeroException(
+                    $"{addressesHex}playCount must not be zero or negative. " +
+                    $"Total play count : {TotalPlayCount}");
             }
 
             states.ValidateWorldId(AvatarAddress, WorldId);
@@ -185,20 +189,79 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Check StakeState: {Elapsed}", addressesHex, sw.Elapsed);
 
-            // Validate about avatar state.
-            Validator.ValidateForHackAndSlash(avatarState,
-                sheets,
-                WorldId,
-                StageId,
-                Equipments,
-                Costumes,
-                Foods,
-                sw,
-                blockIndex,
-                addressesHex,
-                PlayCount,
-                stakingLevel);
-            var minimumCostAp = sheets.GetSheet<StageSheet>()[StageId].CostAP;
+            var worldSheet = sheets.GetSheet<WorldSheet>();
+            if (!worldSheet.TryGetValue(WorldId, out var worldRow, false))
+            {
+                throw new SheetRowNotFoundException(addressesHex, nameof(WorldSheet), WorldId);
+            }
+
+            if (StageId < worldRow.StageBegin ||
+                StageId > worldRow.StageEnd)
+            {
+                throw new SheetRowColumnException(
+                    $"{addressesHex}{WorldId} world is not contains {worldRow.Id} stage: " +
+                    $"{worldRow.StageBegin}-{worldRow.StageEnd}");
+            }
+
+            sw.Restart();
+            if (!sheets.GetSheet<StageSheet>().TryGetValue(StageId, out var stageRow))
+            {
+                throw new SheetRowNotFoundException(addressesHex, nameof(StageSheet), StageId);
+            }
+
+            sw.Stop();
+            Log.Verbose("{AddressesHex}HAS Get StageSheet: {Elapsed}", addressesHex, sw.Elapsed);
+
+            sw.Restart();
+            var worldInformation = avatarState.worldInformation;
+            if (!worldInformation.TryGetWorld(WorldId, out var world))
+            {
+                // NOTE: Add new World from WorldSheet
+                worldInformation.AddAndUnlockNewWorld(worldRow, blockIndex, worldSheet);
+                worldInformation.TryGetWorld(WorldId, out world);
+            }
+
+            if (!world.IsUnlocked)
+            {
+                throw new InvalidWorldException($"{addressesHex}{WorldId} is locked.");
+            }
+
+            if (world.StageBegin != worldRow.StageBegin ||
+                world.StageEnd != worldRow.StageEnd)
+            {
+                worldInformation.UpdateWorld(worldRow);
+            }
+
+            if (!world.IsStageCleared && StageId != world.StageBegin)
+            {
+                throw new InvalidStageException(
+                    $"{addressesHex}Aborted as the stage ({WorldId}/{StageId - 1}) is not cleared; " +
+                    $"clear the stage ({world.Id}/{world.StageBegin}) first"
+                );
+            }
+
+            if (world.IsStageCleared && StageId - 1 > world.StageClearedId)
+            {
+                throw new InvalidStageException(
+                    $"{addressesHex}Aborted as the stage ({WorldId}/{StageId - 1}) is not cleared; " +
+                    $"cleared stage is ({world.Id}/{world.StageClearedId}), so you can play stage " +
+                    $"({world.Id}/{world.StageClearedId + 1})"
+                );
+            }
+
+            sw.Stop();
+            Log.Verbose("{AddressesHex}HAS Validate World: {Elapsed}", addressesHex, sw.Elapsed);
+
+            sw.Restart();
+            var equipmentList = avatarState.ValidateEquipmentsV2(Equipments, blockIndex);
+            var foodIds = avatarState.ValidateConsumable(Foods, blockIndex);
+            var costumeIds = avatarState.ValidateCostume(Costumes);
+            sw.Stop();
+            Log.Verbose("{AddressesHex}HAS Validate Items: {Elapsed}", addressesHex, sw.Elapsed);
+
+            var materialItemSheet = sheets.GetSheet<MaterialItemSheet>();
+            var apPlayCount = TotalPlayCount;
+            var minimumCostAp = stageRow.CostAP;
             if (actionPointCoefficientSheet != null && stakingLevel > 0)
             {
                 minimumCostAp = actionPointCoefficientSheet.GetActionPointByStaking(
@@ -207,19 +270,15 @@ namespace Nekoyume.Action
                     stakingLevel);
             }
 
-            var costAp = minimumCostAp * PlayCount;
-            avatarState.actionPoint -= costAp;
-
-            var gameConfigState = states.GetGameConfigState();
-            if (gameConfigState is null)
-            {
-                throw new FailedLoadStateException(
-                    $"{addressesHex}Aborted as the game config state was failed to load.");
-            }
-
-            var materialItemSheet = sheets.GetSheet<MaterialItemSheet>();
             if (ApStoneCount > 0)
             {
+                var gameConfigState = states.GetGameConfigState();
+                if (gameConfigState is null)
+                {
+                    throw new FailedLoadStateException(
+                        $"{addressesHex}Aborted as the game config state was failed to load.");
+                }
+
                 // use apStone
                 var row = materialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.ApStone);
                 if (!avatarState.inventory.RemoveFungibleItem(row.ItemId, blockIndex,
@@ -229,8 +288,26 @@ namespace Nekoyume.Action
                         $"{addressesHex}Aborted as the player has no enough material ({row.Id})");
                 }
 
-                PlayCount += ApStoneCount * (gameConfigState.ActionPointMax / minimumCostAp);
+                apPlayCount = TotalPlayCount - ApStoneCount * (gameConfigState.ActionPointMax / minimumCostAp);
             }
+
+            if (avatarState.actionPoint < minimumCostAp * apPlayCount)
+            {
+                throw new NotEnoughActionPointException(
+                    $"{addressesHex}Aborted due to insufficient action point: " +
+                    $"{avatarState.actionPoint} < cost({minimumCostAp * apPlayCount}))"
+                );
+            }
+
+            avatarState.actionPoint -= minimumCostAp * apPlayCount;
+            avatarState.ValidateItemRequirement(
+                costumeIds.Concat(foodIds).ToList(),
+                equipmentList,
+                sheets.GetSheet<ItemRequirementSheet>(),
+                sheets.GetSheet<EquipmentItemRecipeSheet>(),
+                sheets.GetSheet<EquipmentItemSubRecipeSheetV2>(),
+                sheets.GetSheet<EquipmentItemOptionSheet>(),
+                addressesHex);
 
             var items = Equipments.Concat(Costumes);
             avatarState.EquipItems(items);
@@ -295,10 +372,8 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}HAS Get skillState : {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-            var worldSheet = sheets.GetSheet<WorldSheet>();
             var worldUnlockSheet = sheets.GetSheet<WorldUnlockSheet>();
             var crystalStageBuffSheet = sheets.GetSheet<CrystalStageBuffGachaSheet>();
-            var stageRow = sheets.GetSheet<StageSheet>()[StageId];
             sw.Restart();
             // if PlayCount > 1, it is Multi-HAS.
             var simulatorSheets = sheets.GetSimulatorSheets();
@@ -330,7 +405,7 @@ namespace Nekoyume.Action
                 }
             }
 
-            for (var i = 0; i < PlayCount; i++)
+            for (var i = 0; i < TotalPlayCount; i++)
             {
                 sw.Restart();
                 // First simulating will use Foods and Random Skills.
@@ -415,7 +490,7 @@ namespace Nekoyume.Action
             }
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS loop Simulate: {Elapsed}, Count: {PlayCount}",
-                addressesHex, sw.Elapsed, PlayCount);
+                addressesHex, sw.Elapsed, TotalPlayCount);
 
             sw.Restart();
             avatarState.UpdateQuestRewards(materialItemSheet);

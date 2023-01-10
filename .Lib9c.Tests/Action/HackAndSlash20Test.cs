@@ -753,7 +753,7 @@
                 WorldId = 1,
                 StageId = 1,
                 AvatarAddress = _avatarAddress,
-                PlayCount = playCount,
+                TotalPlayCount = playCount,
             };
 
             var state = _initialState;
@@ -905,13 +905,8 @@
             }
         }
 
-        [Theory]
-        [InlineData(0, 0)]
-        [InlineData(1, -1)]
-        [InlineData(-1, 1)]
-        [InlineData(0, -1)]
-        [InlineData(-1, 0)]
-        public void ExecuteThrowInvalidRepeatPlayException(int playCount, int apStoneCount)
+        [Fact]
+        public void ExecuteThrowInvalidItemCountException()
         {
             var avatarState = new AvatarState(_avatarState)
             {
@@ -929,18 +924,55 @@
                 WorldId = 1,
                 StageId = 1,
                 AvatarAddress = avatarState.address,
-                PlayCount = playCount,
-                ApStoneCount = apStoneCount,
+                TotalPlayCount = 24,
+                ApStoneCount = -1,
             };
 
-            var exec = Assert.Throws<InvalidRepeatPlayException>(() => action.Execute(new ActionContext
+            var exec = Assert.Throws<InvalidItemCountException>(() => action.Execute(new ActionContext
             {
                 PreviousStates = state,
                 Signer = avatarState.agentAddress,
                 Random = new TestRandom(),
             }));
 
-            SerializeException<InvalidRepeatPlayException>(exec);
+            SerializeException<InvalidItemCountException>(exec);
+        }
+
+        [Theory]
+        [InlineData(0, 0)]
+        [InlineData(-1, 0)]
+        [InlineData(0, 1)]
+        [InlineData(-1, 1)]
+        public void ExecuteThrowPlayCountIsZeroException(int totalPlayCount, int apStoneCount)
+        {
+            var avatarState = new AvatarState(_avatarState)
+            {
+                actionPoint = 99999999,
+                level = 1,
+            };
+
+            var state = _initialState;
+            var action = new HackAndSlash
+            {
+                Costumes = new List<Guid>(),
+                Equipments = new List<Guid>(),
+                Foods = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>(),
+                WorldId = 1,
+                StageId = 1,
+                AvatarAddress = avatarState.address,
+                TotalPlayCount = totalPlayCount,
+                ApStoneCount = apStoneCount,
+            };
+
+            var exec = Assert.Throws<PlayCountIsZeroException>(() => action.Execute(new ActionContext
+            {
+                PreviousStates = state,
+                Signer = avatarState.agentAddress,
+                Random = new TestRandom(),
+            }));
+
+            SerializeException<PlayCountIsZeroException>(exec);
         }
 
         [Fact]
@@ -962,7 +994,7 @@
                 WorldId = 1,
                 StageId = 1,
                 AvatarAddress = avatarState.address,
-                PlayCount = 1,
+                TotalPlayCount = 1,
                 ApStoneCount = 11,
             };
 
@@ -995,7 +1027,7 @@
                 WorldId = 1,
                 StageId = 1,
                 AvatarAddress = avatarState.address,
-                PlayCount = 1,
+                TotalPlayCount = 1,
                 ApStoneCount = 1,
             };
 
@@ -1394,7 +1426,7 @@
                 StageId = stageId,
                 AvatarAddress = _avatarAddress,
                 StageBuffId = null,
-                PlayCount = playCount,
+                TotalPlayCount = playCount,
             };
 
             var ctx = new ActionContext
@@ -1411,19 +1443,24 @@
         }
 
         [Theory]
-        [InlineData(1, 1, 24)]
-        [InlineData(2, 1, 24)]
-        [InlineData(3, 1, 30)]
-        [InlineData(4, 1, 30)]
-        [InlineData(5, 1, 40)]
-        public void CheckUsingApStoneWithStaking(int level, int apStoneCount, int expectedRepeatCount)
+        [InlineData(1, 1, 24, 0)]
+        [InlineData(1, 1, 25, 5)]
+        [InlineData(2, 1, 24, 0)]
+        [InlineData(2, 1, 25, 5)]
+        [InlineData(3, 1, 30, 0)]
+        [InlineData(3, 1, 31, 4)]
+        [InlineData(4, 1, 30, 0)]
+        [InlineData(4, 1, 31, 4)]
+        [InlineData(5, 1, 40, 0)]
+        [InlineData(5, 1, 41, 3)]
+        public void CheckUsingApStoneWithStaking(int level, int apStoneCount, int totalRepeatCount, int expectedUsingAp)
         {
             const int worldId = 1;
             const int stageId = 5;
             const int clearedStageId = 4;
             const int itemId = 303100;
             var previousAvatarState = _initialState.GetAvatarStateV2(_avatarAddress);
-            previousAvatarState.actionPoint = 0;
+            previousAvatarState.actionPoint = expectedUsingAp;
             previousAvatarState.level = 400;
             previousAvatarState.worldInformation = new WorldInformation(
                 0,
@@ -1456,7 +1493,7 @@
 
             var itemCount = previousAvatarState.inventory.Items
                 .FirstOrDefault(i => i.item.Id == itemId)?.count ?? 0;
-            var expectedItemCount = itemCount + expectedRepeatCount;
+            var expectedItemCount = itemCount + totalRepeatCount;
             var action = new HackAndSlash
             {
                 Costumes = new List<Guid>(),
@@ -1467,7 +1504,7 @@
                 StageId = stageId,
                 AvatarAddress = _avatarAddress,
                 StageBuffId = null,
-                PlayCount = 0,
+                TotalPlayCount = totalRepeatCount,
                 ApStoneCount = apStoneCount,
             };
 
@@ -1483,6 +1520,7 @@
             var nextAvatar = nextState.GetAvatarStateV2(_avatarAddress);
             Assert.Equal(expectedItemCount, nextAvatar.inventory.Items.First(i => i.item.Id == itemId).count);
             Assert.False(nextAvatar.inventory.HasItem(apStoneRow.Id));
+            Assert.Equal(0, nextAvatar.actionPoint);
         }
 
         private static void SerializeException<T>(Exception exec)
