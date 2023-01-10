@@ -2129,7 +2129,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-             private void ResponseBattleGrandFinale(ActionBase.ActionEvaluation<BattleGrandFinale> eval)
+        private void ResponseBattleGrandFinale(ActionBase.ActionEvaluation<BattleGrandFinale> eval)
         {
             if (!ActionManager.IsLastBattleActionId(eval.Action.Id) ||
                 eval.Action.myAvatarAddress != States.Instance.CurrentAvatarState.address)
@@ -2208,8 +2208,7 @@ namespace Nekoyume.BlockChain
                     Debug.LogError("Failed to get ArenaAvatarState of mine");
                 }
 
-                myDigest
-                    = new ArenaPlayerDigest(myAvatarState, myArenaAvatarState);
+                myDigest = new ArenaPlayerDigest(myAvatarState, myArenaAvatarState);
             }
 
             if (!enemyDigest.HasValue)
@@ -2223,8 +2222,7 @@ namespace Nekoyume.BlockChain
                     Debug.LogError("Failed to get ArenaAvatarState of enemy");
                 }
 
-                enemyDigest
-                    = new ArenaPlayerDigest(enemyAvatarState, enemyArenaAvatarState);
+                enemyDigest = new ArenaPlayerDigest(enemyAvatarState, enemyArenaAvatarState);
             }
 
             int? outputMyScore = eval.OutputStates.TryGetState(
