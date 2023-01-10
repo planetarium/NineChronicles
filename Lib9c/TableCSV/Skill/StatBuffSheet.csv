@@ -97,9 +97,9 @@ id,group,_name,chance,duration,target_type,stat_type,modify_type,modify_value,ic
 504005,504005,Serimnir Furious CRI,100,150,Self,CRI,Percentage,40,icon_buff_plus_critical
 504006,504005,Serimnir Furious CRI,100,150,Self,CRI,Percentage,60,icon_buff_plus_critical
 504007,504005,Serimnir Furious CRI,100,150,Self,CRI,Percentage,100,icon_buff_plus_critical
-504008,504008,Serimnir Furious CDMG,100,150,Self,CDMG,Add,50,icon_buff_plus_critical
-504009,504008,Serimnir Furious CDMG,100,150,Self,CDMG,Add,100,icon_buff_plus_critical
-504010,504008,Serimnir Furious CDMG,100,150,Self,CDMG,Add,200,icon_buff_plus_critical
+504008,504008,Serimnir Furious CDMG,100,150,Self,CDMG,Add,5000,icon_buff_plus_critical_damage
+504009,504008,Serimnir Furious CDMG,100,150,Self,CDMG,Add,10000,icon_buff_plus_critical_damage
+504010,504008,Serimnir Furious CDMG,100,150,Self,CDMG,Add,20000,icon_buff_plus_critical_damage
 701000,701000,DRV (Rune),100,0,Self,DRV,Add,0,icon_buff_plus_damage_reduction_value
 702000,701000,DRR (Rune),100,0,Self,DRR,Add,0,icon_buff_plus_damage_reduction_rate
 703000,703000,CDMG (Rune),100,0,Self,CDMG,Add,0,icon_buff_plus_critical
