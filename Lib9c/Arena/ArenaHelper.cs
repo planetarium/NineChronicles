@@ -42,7 +42,6 @@ namespace Nekoyume.Arena
         public static readonly IReadOnlyDictionary<ArenaType, (int upper, int lower)> ScoreLimits =
             new Dictionary<ArenaType, (int, int)>
             {
-                { ArenaType.OffSeason, (100, -100) },
                 { ArenaType.Season, (100, -100) },
                 { ArenaType.Championship, (100, -100) }
             };
@@ -133,7 +132,7 @@ namespace Nekoyume.Arena
         {
             if (!scoreLimits.ContainsKey(arenaType))
             {
-                return false;
+                return true;
             }
 
             var (upper, lower) = scoreLimits[arenaType];

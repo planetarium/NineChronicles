@@ -206,7 +206,9 @@ namespace Nekoyume.Action
             }
 
             var gameConfigState = states.GetGameConfigState();
-            var battleArenaInterval = gameConfigState.BattleArenaInterval;
+            var battleArenaInterval = roundData.ArenaType == ArenaType.OffSeason
+                ? 0
+                : gameConfigState.BattleArenaInterval;
             if (context.BlockIndex - myArenaAvatarState.LastBattleBlockIndex < battleArenaInterval)
             {
                 throw new CoolDownBlockException(
