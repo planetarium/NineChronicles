@@ -14,6 +14,7 @@ using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
+using Nekoyume.Helper;
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
 using Lib9c.DevExtensions;
@@ -326,6 +327,40 @@ namespace Nekoyume.Action
             }
 
             return optionIds;
+        }
+
+        public static IAccountStateDelta AddRunesForTest(
+            Address avatarAddress,
+            IAccountStateDelta states)
+        {
+            var runes = new List<(int id, int count)>
+            {
+                // RUNE_ADVENTURER
+                (30001, 100_000),
+                // RUNE_FENRIR1
+                (10001, 100_000),
+                // RUNE_FENRIR2
+                (10002, 100_000),
+                // RUNE_FENRIR3
+                (10003, 100_000),
+                // RUNE_SERIMNIR1
+                (10011, 100_000),
+                // RUNE_SERIMNIR2
+                (10012, 100_000),
+                // RUNE_SERIMNIR3
+                (10013, 100_000),
+                // RUNE_GOLDENLEAF
+                (20001, 100_000)
+            };
+
+            var runeSheet = states.GetSheet<RuneSheet>();
+            foreach (var (id, count) in runes)
+            {
+                var row = runeSheet[id];
+                var rune = RuneHelper.ToFungibleAssetValue(row, count);
+                states = states.MintAsset(avatarAddress, rune);
+            }
+            return states;
         }
     }
 }
