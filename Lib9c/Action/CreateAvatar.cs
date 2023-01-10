@@ -149,6 +149,36 @@ namespace Nekoyume.Action
 
             avatarState.UpdateQuestRewards(materialItemSheet);
 
+            // Add Runes for test
+#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
+            var runes = new List<(int id, int count)>
+            {
+                // RUNE_ADVENTURER
+                (30001, 100_000),
+                // RUNE_FENRIR1
+                (10001, 100_000),
+                // RUNE_FENRIR2
+                (10002, 2_5000),
+                // RUNE_FENRIR3
+                (10003, 5_000),
+                // RUNE_SERIMNIR1
+                (10011, 5_000),
+                // RUNE_SERIMNIR2
+                (10012, 5_000),
+                // RUNE_SERIMNIR3
+                (10013, 5_000),
+                // RUNE_GOLDENLEAF
+                (20001, 5_000)
+            };
+            var runeSheet = states.GetSheet<RuneSheet>();
+            foreach (var values in runes)
+            {
+                var row = runeSheet[values.id];
+                var rune = RuneHelper.ToFungibleAssetValue(row, values.count);
+                states = states.MintAsset(avatarAddress, rune);
+            }
+#endif
+
             sw.Stop();
             Log.Verbose("{AddressesHex}CreateAvatar CreateAvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             var ended = DateTimeOffset.UtcNow;
