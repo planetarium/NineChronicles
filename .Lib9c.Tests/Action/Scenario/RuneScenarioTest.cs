@@ -29,12 +29,13 @@ namespace Lib9c.Tests.Action.Scenario
             var sheets = TableSheetsImporter.ImportSheets();
             var tableSheets = new TableSheets(sheets);
             agentState.avatarAddresses.Add(0, avatarAddress);
+            var gameConfigState = new GameConfigState(sheets[nameof(GameConfigSheet)]);
             var avatarState = new AvatarState(
                 avatarAddress,
                 agentAddress,
                 0,
                 tableSheets.GetAvatarSheets(),
-                new GameConfigState(sheets[nameof(GameConfigSheet)]),
+                gameConfigState,
                 rankingMapAddress
             );
 
@@ -52,7 +53,8 @@ namespace Lib9c.Tests.Action.Scenario
                     avatarState.questList.Serialize())
                 .SetState(
                     Addresses.GoldCurrency,
-                    new GoldCurrencyState(Currency.Legacy("NCG", 2, minters: null)).Serialize());
+                    new GoldCurrencyState(Currency.Legacy("NCG", 2, minters: null)).Serialize())
+                .SetState(gameConfigState.address, gameConfigState.Serialize());
             foreach (var (key, value) in sheets)
             {
                 initialState = initialState

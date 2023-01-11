@@ -13,6 +13,7 @@ namespace Nekoyume.Helper
 {
     public static class Validator
     {
+        [Obsolete("Not use since \"hack_and_slash20\".")]
         public static void ValidateForHackAndSlash(
             AvatarState avatarState,
             Dictionary<Type, (Address address, ISheet sheet)> sheets,
