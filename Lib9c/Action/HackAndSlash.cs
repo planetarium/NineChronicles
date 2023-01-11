@@ -289,6 +289,18 @@ namespace Nekoyume.Action
                 }
 
                 apPlayCount = TotalPlayCount - ApStoneCount * (gameConfigState.ActionPointMax / minimumCostAp);
+                Log.Verbose(
+                    "{AddressesHex}TotalPlayCount: {TotalPlayCount}, " +
+                    "ApStoneCount: {ApStoneCount}, PlayCount by Ap stone: {ApStonePlayCount}, " +
+                    "Ap cost per 1 play: {MinimumCostAp}, " +
+                    "PlayCount by action point: {ApPlayCount}, Used AP: {UsedAp}",
+                    addressesHex,
+                    TotalPlayCount,
+                    ApStoneCount,
+                    ApStoneCount * (gameConfigState.ActionPointMax / minimumCostAp),
+                    minimumCostAp,
+                    apPlayCount,
+                    apPlayCount * minimumCostAp);
             }
 
             if (avatarState.actionPoint < minimumCostAp * apPlayCount)
