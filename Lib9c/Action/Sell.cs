@@ -16,10 +16,10 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1376
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1640
     /// </summary>
     [Serializable]
-    [ActionType("sell11")]
+    [ActionType("sell12")]
     public class Sell : GameAction
     {
         public Address sellerAvatarAddress;
@@ -123,9 +123,15 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}Sell IsStageCleared: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            Order order = OrderFactory.Create(context.Signer, sellerAvatarAddress, orderId, price,
+            Order order = OrderFactory.Create(
+                context.Signer,
+                sellerAvatarAddress,
+                orderId,
+                price,
                 tradableId,
-                context.BlockIndex, itemSubType, count);
+                context.BlockIndex,
+                itemSubType,
+                count);
             order.Validate(avatarState, count);
 
             ITradableItem tradableItem = order.Sell(avatarState);
