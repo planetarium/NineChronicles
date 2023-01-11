@@ -1,7 +1,6 @@
 [submodule "nekoyume/Assets/_Scripts/Lib9c/lib9c"]
 	path = nekoyume/Assets/_Scripts/Lib9c/lib9c
-	url = git@gitlab.virtuosgames.com:ninechronicles/lib9c.git
-	branch = virtuos_dev
+	url = https://github.com/planetarium/lib9c.git
 [submodule "nekoyume/Assets/_Scripts/NineChronicles.RPC.Shared"]
 	path = nekoyume/Assets/_Scripts/NineChronicles.RPC.Shared
-	url = git@gitlab.virtuosgames.com:ninechronicles/ninechronicles.rpc.shared.git
+	url = https://github.com/planetarium/NineChronicles.RPC.Shared.git
