@@ -36,6 +36,8 @@ namespace Nekoyume.BlockChain
             new Address("b8D7bD4394980dcc2579019C39bA6b41cb6424E1"),
             new Address("555221D1CEA826C55929b8A559CA929574f7C6B3"),
             new Address("B892052f1E10bf700143dd9bEcd81E31CD7f7095"),
+            // v100351
+            new Address("0xd7e1b90dea34108fb2d3a6ac7dbf3f33bae2c77d"),
         }.ToImmutableHashSet();
 
         public Address Address => _privateKey.ToAddress();
