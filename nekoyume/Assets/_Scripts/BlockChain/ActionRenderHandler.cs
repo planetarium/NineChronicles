@@ -1249,9 +1249,9 @@ namespace Nekoyume.BlockChain
                     tableSheets,
                     out var simulator);
                 var log = simulator.Log;
-                Game.Game.instance.Stage.PlayCount = eval.Action.PlayCount;
+                Game.Game.instance.Stage.PlayCount = eval.Action.TotalPlayCount;
                 Game.Game.instance.Stage.StageType = StageType.HackAndSlash;
-                if (eval.Action.PlayCount > 1)
+                if (eval.Action.TotalPlayCount > 1)
                 {
                     Widget.Find<BattleResultPopup>().ModelForMultiHackAndSlash = resultModel;
                 }

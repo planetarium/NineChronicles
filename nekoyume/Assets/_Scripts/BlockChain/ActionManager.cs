@@ -253,7 +253,7 @@ namespace Nekoyume.BlockChain
                 StageId = stageId,
                 StageBuffId = stageBuffId,
                 AvatarAddress = avatarAddress,
-                PlayCount = playCount,
+                TotalPlayCount = playCount,
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
