@@ -484,7 +484,7 @@ namespace Lib9c.Tests.Action
             Block<PolymorphicAction<ActionBase>> genesis;
             if (mainnet)
             {
-                const string genesisBlockPath = "https://9c-test.s3.ap-northeast-2.amazonaws.com/genesis-block-9c-main";
+                const string genesisBlockPath = "https://release.nine-chronicles.com/genesis-block-9c-main";
                 var uri = new Uri(genesisBlockPath);
                 using var client = new HttpClient();
                 var rawBlock = await client.GetByteArrayAsync(uri);

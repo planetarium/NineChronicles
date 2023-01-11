@@ -254,7 +254,7 @@ namespace Nekoyume.Action
                     count = shopItem.TradableFungibleItemCount;
                 }
 
-                if (!sellerAvatarState.inventory.RemoveTradableItem(tradableItem, count) && !fromLegacy)
+                if (!sellerAvatarState.inventory.RemoveTradableItemV1(tradableItem, count) && !fromLegacy)
                 {
                     purchaseResult.errorCode = ErrorCodeItemDoesNotExist;
                     continue;

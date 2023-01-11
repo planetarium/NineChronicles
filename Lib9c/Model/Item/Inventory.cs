@@ -441,16 +441,45 @@ namespace Nekoyume.Model.Item
             return true;
         }
 
-        public bool RemoveTradableItem(ITradableItem tradableItem, int count = 1) =>
-            RemoveTradableItem(tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
+        [Obsolete("Use RemoveTradableItem()")]
+        public bool RemoveTradableItemV1(ITradableItem tradableItem, int count = 1) =>
+            RemoveTradableItemV1(tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
 
-        public bool RemoveTradableItem(Guid tradableId, long blockIndex, int count = 1)
+        [Obsolete("Use RemoveTradableItem()")]
+        public bool RemoveTradableItemV1(Guid tradableId, long blockIndex, int count = 1)
         {
             var target = _items.FirstOrDefault(e =>
                 !e.Locked &&
                 e.item is ITradableItem tradableItem &&
                 tradableItem.TradableId.Equals(tradableId) &&
                 tradableItem.RequiredBlockIndex == blockIndex);
+            if (target is null ||
+                target.count < count)
+            {
+                return false;
+            }
+
+            target.count -= count;
+            if (target.count == 0)
+            {
+                _items.Remove(target);
+            }
+
+            return true;
+        }
+
+        public bool RemoveTradableItem(Guid tradableId, long blockIndex, int count = 1)
+        {
+            var target = _items
+                .Where(i =>
+                    !i.Locked &&
+                    i.item is ITradableItem item &&
+                    item.TradableId.Equals(tradableId) &&
+                    item.RequiredBlockIndex == blockIndex
+                )
+                .OrderBy(i => ((ITradableItem)i.item).RequiredBlockIndex)
+                .ThenBy(i => i.count)
+                .FirstOrDefault();
             if (target is null ||
                 target.count < count)
             {
@@ -693,7 +722,7 @@ namespace Nekoyume.Model.Item
                             recipeSheet,
                             subRecipeSheet,
                             itemOptionSheet);
-                        
+
 
                         if (level >= requirementLevel && CPHelper.GetCP(i) < cp)
                         {

@@ -7,6 +7,7 @@ using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Nekoyume.BlockChain.Policy;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -16,13 +17,12 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/602
-    /// Updated at https://github.com/planetarium/lib9c/pull/957
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1376
     /// </summary>
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100300ObsoleteIndex)]
-    [ActionType("sell10")]
-    public class Sell10 : GameAction
+    [ActionType("sell11")]
+    [ActionObsolete(BlockPolicySource.V100351ObsoleteIndex)]
+    public class Sell11 : GameAction
     {
         public Address sellerAvatarAddress;
         public Guid tradableId;
@@ -77,27 +77,29 @@ namespace Nekoyume.Action
                     .SetState(sellerAvatarAddress, MarkChanged);
             }
 
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100300ObsoleteIndex, context);
-
+            CheckObsolete(BlockPolicySource.V100351ObsoleteIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, sellerAvatarAddress);
 
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Verbose("{AddressesHex}Sell exec started", addressesHex);
+            Log.Debug("{AddressesHex}Sell exec started", addressesHex);
 
-            if (price.Sign < 0)
+            var ncg = states.GetGoldCurrency();
+            if (!price.Currency.Equals(ncg) ||
+                !price.MinorUnit.IsZero ||
+                price.Sign < 0)
             {
                 throw new InvalidPriceException(
                     $"{addressesHex}Aborted as the price is less than zero: {price}.");
             }
 
             if (!states.TryGetAgentAvatarStatesV2(
-                context.Signer,
-                sellerAvatarAddress,
-                out _,
-                out var avatarState,
-                out _))
+                    context.Signer,
+                    sellerAvatarAddress,
+                    out _,
+                    out var avatarState,
+                    out _))
             {
                 throw new FailedLoadStateException(
                     $"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
@@ -111,7 +113,7 @@ namespace Nekoyume.Action
             sw.Restart();
 
             if (!avatarState.worldInformation.IsStageCleared(
-                GameConfig.RequireClearedStageLevel.ActionsInShop))
+                    GameConfig.RequireClearedStageLevel.ActionsInShop))
             {
                 avatarState.worldInformation.TryGetLastClearedStageId(out var current);
                 throw new NotEnoughClearedStageLevelException(
@@ -124,8 +126,15 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}Sell IsStageCleared: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            Order order = OrderFactory.Create(context.Signer, sellerAvatarAddress, orderId, price, tradableId,
-                context.BlockIndex, itemSubType, count);
+            Order order = OrderFactory.Create(
+                context.Signer,
+                sellerAvatarAddress,
+                orderId,
+                price,
+                tradableId,
+                context.BlockIndex,
+                itemSubType,
+                count);
             order.Validate(avatarState, count);
 
             ITradableItem tradableItem = order.Sell4(avatarState);
@@ -148,9 +157,10 @@ namespace Nekoyume.Action
             avatarState.updatedAt = context.BlockIndex;
             avatarState.blockIndex = context.BlockIndex;
 
-            var orderReceiptList = states.TryGetState(orderReceiptAddress, out Dictionary receiptDict)
-                ? new OrderDigestListState(receiptDict)
-                : new OrderDigestListState(orderReceiptAddress);
+            var orderReceiptList =
+                states.TryGetState(orderReceiptAddress, out Dictionary receiptDict)
+                    ? new OrderDigestListState(receiptDict)
+                    : new OrderDigestListState(orderReceiptAddress);
 
             orderReceiptList.Add(orderDigest);
 
@@ -171,7 +181,7 @@ namespace Nekoyume.Action
             sw.Stop();
             var ended = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}Sell Set ShopState: {Elapsed}", addressesHex, sw.Elapsed);
-            Log.Verbose(
+            Log.Debug(
                 "{AddressesHex}Sell Total Executed Time: {Elapsed}",
                 addressesHex,
                 ended - started);
