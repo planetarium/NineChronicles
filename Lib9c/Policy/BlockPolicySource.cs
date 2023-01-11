@@ -379,13 +379,14 @@ namespace Nekoyume.BlockChain.Policy
                             transaction.Id);
                     }
 
-                    var action = Activator.CreateInstance(actionTypes[typeId]);
+                    IAction action = (IAction)Activator.CreateInstance(actionTypes[typeId]);
                     if (!(action is IActivateAccount activateAccount))
                     {
                         return new TxPolicyViolationException(
                             $"Transaction {transaction.Id} has an invalid action.",
                             transaction.Id);
                     }
+                    action.LoadPlainValue(values);
 
                     return transaction.Nonce == 0 &&
                            blockChain.GetState(activateAccount.PendingAddress) is Dictionary rawPending &&
