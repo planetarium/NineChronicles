@@ -218,15 +218,22 @@ namespace Nekoyume.BlockChain
 
             // FIXME: this should be changed to reflect libplanet API change after it is reworked.
             // for context, refer to https://github.com/planetarium/libplanet/discussions/2303.
+            var appProtocolVersionOptions = new AppProtocolVersionOptions();
+            appProtocolVersionOptions.AppProtocolVersion =
+                appProtocolVersion;
+            appProtocolVersionOptions.TrustedAppProtocolVersionSigners =
+                trustedAppProtocolVersionSigners.ToImmutableHashSet();
+            appProtocolVersionOptions.DifferentAppProtocolVersionEncountered =
+                DifferentAppProtocolVersionEncountered;
+            var swarmOptions = new SwarmOptions();
             var initSwarmTask = Task.Run(() => new Swarm<NCAction>(
-                blocks,
-                privateKey,
-                appProtocolVersion: appProtocolVersion,
+                blockChain: blocks,
+                privateKey: privateKey,
+                appProtocolVersionOptions: appProtocolVersionOptions,
                 host: host,
                 listenPort: port,
                 iceServers: iceServers,
-                differentAppProtocolVersionEncountered: DifferentAppProtocolVersionEncountered,
-                trustedAppProtocolVersionSigners: trustedAppProtocolVersionSigners));
+                options: swarmOptions));
 
             initSwarmTask.Wait();
             _swarm = initSwarmTask.Result;
