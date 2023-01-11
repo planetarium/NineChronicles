@@ -110,6 +110,12 @@ namespace Lib9c.Model.Order
             return Sell(avatarState);
         }
 
+        [Obsolete("Use Sell")]
+        public override ITradableItem Sell4(AvatarState avatarState)
+        {
+            return Sell(avatarState);
+        }
+
         public override OrderDigest Digest(AvatarState avatarState, CostumeStatSheet costumeStatSheet)
         {
             if (avatarState.inventory.TryGetLockedItem(new OrderLock(OrderId), out Inventory.Item inventoryItem))

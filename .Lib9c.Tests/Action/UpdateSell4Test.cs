@@ -20,7 +20,7 @@
     using Xunit.Abstractions;
     using static Lib9c.SerializeKeys;
 
-    public class UpdateSellTest
+    public class UpdateSell4Test
     {
         private const long ProductPrice = 100;
         private readonly Address _agentAddress;
@@ -31,7 +31,7 @@
         private readonly GoldCurrencyState _goldCurrencyState;
         private IAccountStateDelta _initialState;
 
-        public UpdateSellTest(ITestOutputHelper outputHelper)
+        public UpdateSell4Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -222,7 +222,7 @@
                 itemCount
             );
 
-            var action = new UpdateSell
+            var action = new UpdateSell4
             {
                 sellerAvatarAddress = _avatarAddress,
                 updateSellInfos = new[] { updateSellInfo },
@@ -249,7 +249,7 @@
         [Fact]
         public void Execute_Throw_ListEmptyException()
         {
-            var action = new UpdateSell
+            var action = new UpdateSell4
             {
                 sellerAvatarAddress = _avatarAddress,
                 updateSellInfos = new List<UpdateSellInfo>(),
@@ -274,7 +274,7 @@
                 0 * _currency,
                 1);
 
-            var action = new UpdateSell
+            var action = new UpdateSell4
             {
                 sellerAvatarAddress = _avatarAddress,
                 updateSellInfos = new[] { updateSellInfo },
@@ -310,7 +310,7 @@
                 0 * _currency,
                 1);
 
-            var action = new UpdateSell
+            var action = new UpdateSell4
             {
                 sellerAvatarAddress = _avatarAddress,
                 updateSellInfos = new[] { updateSellInfo },
@@ -349,7 +349,7 @@
                 -1 * _currency,
                 1);
 
-            var action = new UpdateSell
+            var action = new UpdateSell4
             {
                 sellerAvatarAddress = _avatarAddress,
                 updateSellInfos = new[] { updateSellInfo },
@@ -382,7 +382,7 @@
                 updateSellInfos.Add(updateSellInfo);
             }
 
-            var action = new UpdateSell
+            var action = new UpdateSell4
             {
                 sellerAvatarAddress = _avatarAddress,
                 updateSellInfos = updateSellInfos,

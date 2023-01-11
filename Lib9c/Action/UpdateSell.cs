@@ -19,11 +19,10 @@ using BxList = Bencodex.Types.List;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1022
-    /// Updated at https://github.com/planetarium/lib9c/pull/1022
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1640
     /// </summary>
     [Serializable]
-    [ActionType("update_sell4")]
+    [ActionType("update_sell5")]
     public class UpdateSell : GameAction
     {
         private const int UpdateCapacity = 100;
