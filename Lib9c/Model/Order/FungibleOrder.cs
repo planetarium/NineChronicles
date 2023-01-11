@@ -109,6 +109,12 @@ namespace Lib9c.Model.Order
                     break;
                 }
             }
+
+            if (totalCount != 0)
+            {
+                throw new Exception("Aborted because failed to remove item from inventory.");
+            }
+
             // Lock item.
             copy.RequiredBlockIndex = ExpiredBlockIndex;
             avatarState.inventory.AddItem((ItemBase) copy, ItemCount, new OrderLock(OrderId));
