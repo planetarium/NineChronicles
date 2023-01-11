@@ -132,8 +132,8 @@ namespace Nekoyume.BlockChain.Policy
         {
             _actionTypeLoader = actionTypeLoader ?? new StaticActionTypeLoader(
                 Assembly.GetEntryAssembly() is Assembly entryAssembly
-                    ? new[] { typeof(NCAction).Assembly, entryAssembly }
-                    : new[] { typeof(NCAction).Assembly },
+                    ? new[] { typeof(ActionBase).Assembly, entryAssembly }
+                    : new[] { typeof(ActionBase).Assembly },
                 typeof(ActionBase)
             );
 
