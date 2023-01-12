@@ -16,6 +16,7 @@ using UnityEngine;
 
 namespace Nekoyume.Game
 {
+    using Nekoyume.Helper;
     using Nekoyume.L10n;
     using Nekoyume.UI.Scroller;
     using UniRx;
@@ -179,7 +180,11 @@ namespace Nekoyume.Game
             _player.Init(playerDigest, _boss);
             _boss.Init(_player);
 
-            AudioController.instance.PlayMusic(AudioController.MusicCode.WorldBossBattle01);
+            if (WorldBossFrontHelper.TryGetBossData(bossId, out var data))
+            {
+                AudioController.instance.PlayMusic(data.battleMusicName);
+            }
+
             Widget.Find<LoadingScreen>().Close();
             Game.instance.IsInWorld = true;
             _waveTurn = 1;

@@ -90,6 +90,7 @@ namespace Nekoyume.UI
         private GameObject _backgroundPrefab;
         private int _bossId;
         private (long, long) _period;
+        private string _bgmName;
 
         private WorldBossStatus _status = WorldBossStatus.None;
         private HeaderMenuStatic _headerMenu;
@@ -152,11 +153,11 @@ namespace Nekoyume.UI
 
         public async UniTaskVoid ShowAsync(bool ignoreShowAnimation = false)
         {
-            AudioController.instance.PlayMusic(AudioController.MusicCode.WorldBossTitle);
             var loading = Find<DataLoadingScreen>();
             loading.Show();
             await UpdateViewAsync(Game.Game.instance.Agent.BlockIndex, forceUpdate: true);
             loading.Close();
+            AudioController.instance.PlayMusic(_bgmName);
             base.Show(ignoreShowAnimation);
         }
 
@@ -303,6 +304,11 @@ namespace Nekoyume.UI
                 _bossSpinePrefab = Instantiate(data.spinePrefab, bossSpineContainer);
                 _backgroundPrefab = Instantiate(data.backgroundPrefab, backgroundContainer);
                 _bossId = row.BossId;
+
+                if (string.IsNullOrWhiteSpace(_bgmName))
+                {
+                    _bgmName = data.entranceMusicName;
+                }
             }
         }
 

@@ -24,6 +24,8 @@ MonoBehaviour:
       type: 3}
     backgroundPrefab: {fileID: 8526523070135228836, guid: 2c485e315a298bd48a0cc22798bae5d4,
       type: 3}
+    entranceMusicName: bgm_worldboss_title
+    battleMusicName: bgm_worldboss_battle_01
   - id: 900002
     name: serimnir of the abyss
     illustration: {fileID: 21300000, guid: 1242f629318f1db4bac418b773e128c9, type: 3}
@@ -35,6 +37,8 @@ MonoBehaviour:
       type: 3}
     backgroundPrefab: {fileID: 8526523070135228836, guid: 496ce6f44f68943bc990461494373be7,
       type: 3}
+    entranceMusicName: bgm_worldboss_title
+    battleMusicName: bgm_worldboss_battle_02
   Grades:
   - grade: 0
     prefab: {fileID: 2544424707153549116, guid: 4c9186057d81d974c9fbafe8e56645d5,
