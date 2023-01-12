@@ -23,7 +23,7 @@ SpriteAtlas:
     platformSettings:
     - serializedVersion: 3
       m_BuildTarget: DefaultTexturePlatform
-      m_MaxTextureSize: 1024
+      m_MaxTextureSize: 2048
       m_ResizeAlgorithm: 0
       m_TextureFormat: -1
       m_TextureCompression: 0
@@ -52,6 +52,7 @@ SpriteAtlas:
   m_PackedSprites:
   - {fileID: 21300000, guid: c5987ff0873d112488b9d127ae29af85, type: 3}
   - {fileID: 21300000, guid: 56d294a1866f9db4fac59f87e955bccb, type: 3}
+  - {fileID: 21300000, guid: 2453e54390760604ba51c91fcc49e3fb, type: 3}
   - {fileID: 21300000, guid: 3cd9f3c941ccd3541b91b50eeb8f83c0, type: 3}
   - {fileID: 21300000, guid: 550f437a382323b4f84050e8d2f56778, type: 3}
   - {fileID: 21300000, guid: 4c73912bce2812e41a42751dff965bde, type: 3}
@@ -59,6 +60,7 @@ SpriteAtlas:
   m_PackedSpriteNamesToIndex:
   - WorldBoss_Bg_03
   - WorldBoss_Bg_02
+  - WB_Bg_Left
   - WorldBoss_Bg_06
   - WorldBoss_Bg_04
   - WorldBoss_Bg_05
