@@ -9,6 +9,7 @@ using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Assets;
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using UniRx;
@@ -290,6 +291,14 @@ namespace Nekoyume.State
                 var itemValue = itemValues[address];
                 if (!(itemValue is Dictionary dictionary))
                 {
+                    if (orderDigest.ItemId == 30001)
+                    {
+                        var materialItemSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+                        var tempMaterial = ItemFactory.CreateMaterial(materialItemSheet.Values.First(r => r.Id == orderDigest.ItemId));
+                        Debug.Log("Create temp material for fungible asset value");
+                        CachedShopItems.TryAdd(orderDigest.OrderId, tempMaterial);
+                        continue;
+                    }
                     Debug.LogWarning($"[{nameof(ReactiveShopState)}] {nameof(itemValue)}" +
                                      $" cannot cast to {typeof(Bencodex.Types.Dictionary).FullName}");
                     continue;

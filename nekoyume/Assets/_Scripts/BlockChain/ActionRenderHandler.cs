@@ -34,6 +34,7 @@ using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.UI.Module.WorldBoss;
+using OrderDigestListState = Lib9c.Model.Order.OrderDigestListState;
 using Skill = Nekoyume.Model.Skill.Skill;
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
@@ -255,6 +256,14 @@ namespace Nekoyume.BlockChain
             _actionRenderer.EveryRender<Buy>()
                 .ObserveOnMainThread()
                 .Subscribe(ResponseBuy)
+                .AddTo(_disposables);
+        }
+
+        private void SellFungibleAsset()
+        {
+            _actionRenderer.EveryRender<SellFungibleAsset>()
+                .ObserveOnMainThread()
+                .Subscribe(ResponseSellFungibleAsset)
                 .AddTo(_disposables);
         }
 
@@ -1163,6 +1172,25 @@ namespace Nekoyume.BlockChain
             RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
+        private void ResponseSellFungibleAsset(
+            ActionBase.ActionEvaluation<SellFungibleAsset> eval)
+        {
+            if (eval.Exception is null)
+            {
+                var outputStates = eval.OutputStates;
+                Address orderReceiptAddress = OrderDigestListState.DeriveAddress(States.Instance.CurrentAvatarState.address);
+                var orderReceiptList =
+                    new OrderDigestListState((Dictionary)outputStates.GetState(orderReceiptAddress));
+                foreach (var digest in orderReceiptList.OrderDigestList)
+                {
+                    OneLineSystem.Push(
+                        MailType.Auction,
+                        $"{digest.Price}, {digest.ItemCount}",
+                        NotificationCell.NotificationType.Information);
+                }
+                ReactiveShopState.UpdateSellDigestsAsync().Forget();
+            }
+        }
         private async void ResponseDailyRewardAsync(ActionBase.ActionEvaluation<DailyReward> eval)
         {
             if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.avatarAddress))

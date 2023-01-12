@@ -191,12 +191,12 @@ namespace Nekoyume.EnumType
                     return new List<ItemSubTypeFilter> { ItemSubTypeFilter.Title };
                 case ItemSubType.Hourglass:
                 case ItemSubType.ApStone:
+                case ItemSubType.NormalMaterial:
                     return new List<ItemSubTypeFilter> { ItemSubTypeFilter.Materials };
                 case ItemSubType.Food:
                 case ItemSubType.EquipmentMaterial:
                 case ItemSubType.FoodMaterial:
                 case ItemSubType.MonsterPart:
-                case ItemSubType.NormalMaterial:
                 case ItemSubType.Chest:
                 default:
                     throw new ArgumentOutOfRangeException();

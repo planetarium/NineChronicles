@@ -712,6 +712,29 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => throw HandleException(action.Id, e));
         }
 
+        public IObservable<ActionBase.ActionEvaluation<SellFungibleAsset>> SellFungibleAsset(
+            FungibleAssetValue asset,
+            FungibleAssetValue price)
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var action = new SellFungibleAsset
+            {
+                SellerAvatarAddress = avatarAddress,
+                Asset = asset,
+                Price = price,
+            };
+
+            Debug.Log($"action: {action.Asset}");
+            ProcessAction(action);
+
+            return _agent.ActionRenderer.EveryRender<SellFungibleAsset>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e => throw HandleException(action.Id, e));
+        }
+
         public IObservable<ActionBase.ActionEvaluation<DailyReward>> DailyReward()
         {
             var blockCount = Game.Game.instance.Agent.BlockIndex -

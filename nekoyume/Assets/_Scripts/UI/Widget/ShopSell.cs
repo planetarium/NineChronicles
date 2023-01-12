@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Libplanet.Assets;
 using mixpanel;
 using Nekoyume.Action;
+using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -65,7 +66,7 @@ namespace Nekoyume.UI
                     L10nManager.Localize("UI_SHOP_UPDATESELLALL_POPUP"),
                     L10nManager.Localize("UI_YES"),
                     L10nManager.Localize("UI_NO"),
-                    SubscribeUpdateSellPopupSubmit);
+                    SubscribeSellFungibleAssetPopupSubmit);
             });
 
             buyButton.onClick.AddListener(() =>
@@ -248,6 +249,13 @@ namespace Nekoyume.UI
             data.Item.Value.CountEnabled.Value = false;
         }
 
+        private void SubscribeSellFungibleAssetPopupSubmit()
+        {
+            var rune = RuneHelper.DailyRewardRune * 100;
+            var currency = States.Instance.GoldBalanceState.Gold.Currency;
+            ActionManager.Instance.SellFungibleAsset(rune, 100 * currency);
+            OneLineSystem.Push(MailType.Auction, $"sell {rune}", NotificationCell.NotificationType.Information);
+        }
         private void SubscribeUpdateSellPopupSubmit()
         {
             var digests = ReactiveShopState.SellDigest.Value;

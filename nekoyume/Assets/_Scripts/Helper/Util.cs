@@ -73,7 +73,7 @@ namespace Nekoyume.Helper
             return sb.ToString();
         }
 
-        public static async Task<Order> GetOrder(Guid orderId)
+        public static async Task<IOrder> GetOrder(Guid orderId)
         {
             var address = Order.DeriveAddress(orderId);
             return await UniTask.Run(async () =>

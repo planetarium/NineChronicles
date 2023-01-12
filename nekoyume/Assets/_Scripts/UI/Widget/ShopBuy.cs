@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Lib9c.Model.Order;
 using Libplanet.Assets;
 using mixpanel;
 using Nekoyume.Action;
@@ -262,7 +263,7 @@ namespace Nekoyume.UI
 
         private static async Task<PurchaseInfo> GetPurchaseInfo(System.Guid orderId)
         {
-            var order = await Util.GetOrder(orderId);
+            var order = (Order) await Util.GetOrder(orderId);
             return new PurchaseInfo(orderId, order.TradableId, order.SellerAgentAddress,
                 order.SellerAvatarAddress, order.ItemSubType, order.Price);
         }

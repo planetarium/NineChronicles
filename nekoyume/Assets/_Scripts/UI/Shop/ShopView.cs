@@ -226,7 +226,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            var model = CreateItem(itemBase, digest, sheet);
+            var model = CreateItem(itemBase, digest, sheet, digest.ItemId);
             var filters = ItemSubTypeFilterExtension.GetItemSubTypeFilter(digest.ItemId);
             foreach (var filter in filters)
             {
@@ -254,12 +254,11 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private static ShopItem CreateItem(
-            ItemBase item,
+        private static ShopItem CreateItem(ItemBase item,
             OrderDigest digest,
-            ItemSheet sheet)
+            ItemSheet sheet, int digestItemId)
         {
-            var grade = sheet[digest.ItemId].Grade;
+            var grade = digestItemId == 30001 ? 0 : sheet[digest.ItemId].Grade;
             var limit = item.ItemType != ItemType.Material &&
                         !Util.IsUsableItem(item);
             return new ShopItem(item, digest, grade, limit);
