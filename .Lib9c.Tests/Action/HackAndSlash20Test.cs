@@ -978,12 +978,6 @@
         [Fact]
         public void ExecuteThrowUsageLimitExceedException()
         {
-            var avatarState = new AvatarState(_avatarState)
-            {
-                actionPoint = 99999999,
-                level = 1,
-            };
-
             var state = _initialState;
             var action = new HackAndSlash
             {
@@ -993,7 +987,7 @@
                 RuneInfos = new List<RuneSlotInfo>(),
                 WorldId = 1,
                 StageId = 1,
-                AvatarAddress = avatarState.address,
+                AvatarAddress = _avatarState.address,
                 TotalPlayCount = 1,
                 ApStoneCount = 11,
             };
@@ -1001,7 +995,7 @@
             var exec = Assert.Throws<UsageLimitExceedException>(() => action.Execute(new ActionContext
             {
                 PreviousStates = state,
-                Signer = avatarState.agentAddress,
+                Signer = _avatarState.agentAddress,
                 Random = new TestRandom(),
             }));
 
@@ -1011,12 +1005,6 @@
         [Fact]
         public void ExecuteThrowNotEnoughMaterialException()
         {
-            var avatarState = new AvatarState(_avatarState)
-            {
-                actionPoint = 99999999,
-                level = 1,
-            };
-
             var state = _initialState;
             var action = new HackAndSlash
             {
@@ -1026,7 +1014,7 @@
                 RuneInfos = new List<RuneSlotInfo>(),
                 WorldId = 1,
                 StageId = 1,
-                AvatarAddress = avatarState.address,
+                AvatarAddress = _avatarState.address,
                 TotalPlayCount = 1,
                 ApStoneCount = 1,
             };
@@ -1034,7 +1022,7 @@
             var exec = Assert.Throws<NotEnoughMaterialException>(() => action.Execute(new ActionContext
             {
                 PreviousStates = state,
-                Signer = avatarState.agentAddress,
+                Signer = _avatarState.agentAddress,
                 Random = new TestRandom(),
             }));
 
@@ -1521,6 +1509,53 @@
             Assert.Equal(expectedItemCount, nextAvatar.inventory.Items.First(i => i.item.Id == itemId).count);
             Assert.False(nextAvatar.inventory.HasItem(apStoneRow.Id));
             Assert.Equal(0, nextAvatar.actionPoint);
+        }
+
+        [Fact]
+        public void ExecuteThrowInvalidRepeatPlayException()
+        {
+            var avatarState = new AvatarState(_avatarState)
+            {
+                actionPoint = 99999999,
+                level = 1,
+            };
+
+            var apStoneRow = _tableSheets.MaterialItemSheet.Values.First(r =>
+                r.ItemSubType == ItemSubType.ApStone);
+            var apStone = ItemFactory.CreateTradableMaterial(apStoneRow);
+            avatarState.inventory.AddItem(apStone);
+            var state = _initialState
+                .SetState(_avatarAddress, avatarState.SerializeV2())
+                .SetState(
+                    _avatarAddress.Derive(LegacyInventoryKey),
+                    avatarState.inventory.Serialize())
+                .SetState(
+                    _avatarAddress.Derive(LegacyWorldInformationKey),
+                    avatarState.worldInformation.Serialize())
+                .SetState(
+                    _avatarAddress.Derive(LegacyQuestListKey),
+                    avatarState.questList.Serialize());
+            var action = new HackAndSlash
+            {
+                Costumes = new List<Guid>(),
+                Equipments = new List<Guid>(),
+                Foods = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>(),
+                WorldId = 1,
+                StageId = 1,
+                AvatarAddress = avatarState.address,
+                TotalPlayCount = 1,
+                ApStoneCount = 1,
+            };
+
+            var exec = Assert.Throws<InvalidRepeatPlayException>(() => action.Execute(new ActionContext
+            {
+                PreviousStates = state,
+                Signer = avatarState.agentAddress,
+                Random = new TestRandom(),
+            }));
+
+            SerializeException<InvalidRepeatPlayException>(exec);
         }
 
         private static void SerializeException<T>(Exception exec)

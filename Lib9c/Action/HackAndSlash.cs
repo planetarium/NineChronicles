@@ -288,7 +288,17 @@ namespace Nekoyume.Action
                         $"{addressesHex}Aborted as the player has no enough material ({row.Id})");
                 }
 
-                apPlayCount = TotalPlayCount - ApStoneCount * (gameConfigState.ActionPointMax / minimumCostAp);
+                var apStonePlayCount =
+                    ApStoneCount * (gameConfigState.ActionPointMax / minimumCostAp);
+                apPlayCount = TotalPlayCount - apStonePlayCount;
+                if (apPlayCount < 0)
+                {
+                    throw new InvalidRepeatPlayException(
+                        $"{addressesHex}Invalid TotalPlayCount({TotalPlayCount}) and ApStoneCount({ApStoneCount}). " +
+                        $"TotalPlayCount must be at least calculated apStonePlayCount({apStonePlayCount}). " +
+                        $"Calculated ap play count: {apPlayCount}");
+                }
+
                 Log.Verbose(
                     "{AddressesHex}TotalPlayCount: {TotalPlayCount}, " +
                     "ApStoneCount: {ApStoneCount}, PlayCount by Ap stone: {ApStonePlayCount}, " +
@@ -297,7 +307,7 @@ namespace Nekoyume.Action
                     addressesHex,
                     TotalPlayCount,
                     ApStoneCount,
-                    ApStoneCount * (gameConfigState.ActionPointMax / minimumCostAp),
+                    apStonePlayCount,
                     minimumCostAp,
                     apPlayCount,
                     apPlayCount * minimumCostAp);
