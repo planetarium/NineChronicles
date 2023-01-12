@@ -1243,7 +1243,7 @@ namespace Nekoyume.BlockChain
                 }
 
                 var resultModel = eval.GetHackAndSlashReward(
-                    States.Instance.CurrentAvatarState,
+                    new AvatarState((Dictionary)States.Instance.CurrentAvatarState.Serialize()),
                     States.Instance.GetEquippedRuneStates(BattleType.Adventure),
                     skillsOnWaveStart,
                     tableSheets,
