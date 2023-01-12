@@ -351,7 +351,7 @@ MonoBehaviour:
     m_PreExtrapolationMode: 0
     m_PostExtrapolationTime: 0
     m_PreExtrapolationTime: 0
-    m_DisplayName: Casting
+    m_DisplayName: Idle
   - m_Version: 1
     m_Start: 0.26666666666666666
     m_ClipIn: 0
@@ -420,7 +420,7 @@ MonoBehaviour:
     m_PreExtrapolationMode: 0
     m_PostExtrapolationTime: 0
     m_PreExtrapolationTime: 0
-    m_DisplayName: Casting
+    m_DisplayName: Hit
   - m_Version: 1
     m_Start: 0.9166666666666666
     m_ClipIn: 0
@@ -489,7 +489,7 @@ MonoBehaviour:
     m_PreExtrapolationMode: 0
     m_PostExtrapolationTime: 0
     m_PreExtrapolationTime: 0
-    m_DisplayName: Casting
+    m_DisplayName: Idle
   - m_Version: 1
     m_Start: 1.9833333333333334
     m_ClipIn: 0
@@ -567,7 +567,7 @@ MonoBehaviour:
     m_PreExtrapolationMode: 0
     m_PostExtrapolationTime: 0
     m_PreExtrapolationTime: 0
-    m_DisplayName: SpineAnimationStateClip
+    m_DisplayName: Die
   m_Markers:
     m_Objects: []
   trackIndex: 0
@@ -2248,7 +2248,7 @@ MonoBehaviour:
     m_PreExtrapolationMode: 0
     m_PostExtrapolationTime: 0
     m_PreExtrapolationTime: 0
-    m_DisplayName: SpineAnimationStateClip
+    m_DisplayName: Attack
   - m_Version: 1
     m_Start: 1
     m_ClipIn: 0
@@ -2317,7 +2317,7 @@ MonoBehaviour:
     m_PreExtrapolationMode: 0
     m_PostExtrapolationTime: 0
     m_PreExtrapolationTime: 0
-    m_DisplayName: SpineAnimationStateClip
+    m_DisplayName: CriticalAttack
   - m_Version: 1
     m_Start: 2.966666666666667
     m_ClipIn: 0
@@ -2386,7 +2386,7 @@ MonoBehaviour:
     m_PreExtrapolationMode: 0
     m_PostExtrapolationTime: 0
     m_PreExtrapolationTime: 0
-    m_DisplayName: SpineAnimationStateClip
+    m_DisplayName: Idle
   - m_Version: 1
     m_Start: 3.85
     m_ClipIn: 0
@@ -2455,7 +2455,7 @@ MonoBehaviour:
     m_PreExtrapolationMode: 0
     m_PostExtrapolationTime: 0
     m_PreExtrapolationTime: 0
-    m_DisplayName: SpineAnimationStateClip
+    m_DisplayName: Idle
   - m_Version: 1
     m_Start: 4.8
     m_ClipIn: 0
@@ -2524,7 +2524,7 @@ MonoBehaviour:
     m_PreExtrapolationMode: 0
     m_PostExtrapolationTime: 0
     m_PreExtrapolationTime: 0
-    m_DisplayName: SpineAnimationStateClip
+    m_DisplayName: Win
   m_Markers:
     m_Objects: []
   trackIndex: 0
