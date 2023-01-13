@@ -11,6 +11,8 @@ using Libplanet;
 using Libplanet.Assets;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
+using Nekoyume.UI.Model;
+using Nekoyume.UI.Module.WorldBoss;
 using UniRx;
 using UnityEngine;
 
@@ -58,7 +60,7 @@ namespace Nekoyume.State
         // key: orderId
         private static ConcurrentDictionary<Guid, ItemBase> CachedShopItems { get; } = new();
 
-
+        private static ConcurrentBag<ShopEquipment> CachedShopEquipments { get; } = new();
         private static readonly Dictionary<ItemSubType, List<OrderDigest>> _buyDigest = new();
         private static List<Guid> _removedOrderIds { get; } = new();
 
@@ -95,9 +97,20 @@ namespace Nekoyume.State
             {
                 _removedOrderIds.Clear();
 
+                if (!CachedShopEquipments.Any())
+                {
+                    var shopResponse = await WorldBossQuery.QueryShopEquipments();
+                    var shopEquipments = shopResponse.shopQuery.shopEquipments;
+                    foreach (var shopEquipment in shopEquipments)
+                    {
+                        CachedShopEquipments.Add(shopEquipment);
+                    }
+                }
+
                 foreach (var itemSubType in list)
                 {
-                    var digests = await GetBuyOrderDigestsAsync(itemSubType);
+                    var digests = GetBuyOrderDigestsFromQuery(itemSubType);
+                    // var digests = await GetBuyOrderDigestsAsync(itemSubType);
                     var result = await UpdateCachedShopItemsAsync(digests);
                     if (result)
                     {
@@ -215,6 +228,18 @@ namespace Nekoyume.State
             return digests;
         }
 
+        private static List<OrderDigest> GetBuyOrderDigestsFromQuery(ItemSubType itemSubType)
+        {
+            var orderDigests = new Dictionary<Address, List<OrderDigest>>();
+            AddOrderDigest(orderDigests, itemSubType);
+            var digests = new List<OrderDigest>();
+            foreach (var items in orderDigests.Values)
+            {
+                digests.AddRange(items);
+            }
+
+            return digests;
+        }
         private static void AddOrderDigest(
             List<ShardedShopStateV2> shopStates,
             IDictionary<Address, List<OrderDigest>> orderDigests)
@@ -234,6 +259,26 @@ namespace Nekoyume.State
 
                         orderDigests[agentAddress].Add(orderDigest);
                     }
+                }
+            }
+        }
+
+        private static void AddOrderDigest(IDictionary<Address, List<OrderDigest>> orderDigests, ItemSubType itemSubType)
+        {
+            var currency = States.Instance.GoldBalanceState.Gold.Currency;
+            var cachedDigests = CachedShopEquipments.Where(i => Enum.Parse(typeof(ItemSubType), i.itemSubType).Equals(itemSubType)).Select(s => s.ToOrderDigest(currency)).ToList();
+            foreach (var orderDigest in cachedDigests)
+            {
+                if (orderDigest.ExpiredBlockIndex != 0 &&
+                    orderDigest.ExpiredBlockIndex > Game.Game.instance.Agent.BlockIndex)
+                {
+                    var agentAddress = orderDigest.SellerAgentAddress;
+                    if (!orderDigests.ContainsKey(agentAddress))
+                    {
+                        orderDigests[agentAddress] = new List<OrderDigest>();
+                    }
+
+                    orderDigests[agentAddress].Add(orderDigest);
                 }
             }
         }
