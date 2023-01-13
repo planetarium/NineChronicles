@@ -528,7 +528,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 1}
-  m_SizeDelta: {x: -227.19, y: 2}
+  m_SizeDelta: {x: 0, y: 2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2262247296998960638
 CanvasRenderer:
@@ -1867,6 +1867,7 @@ MonoBehaviour:
   workshopButton: {fileID: 5105692124886159941}
   marketButton: {fileID: 3894685320775905761}
   systemButton: {fileID: 1079843984555229313}
+  readAllButton: {fileID: 4006480479187035412}
   scroll: {fileID: 6371732826344056819}
   emptyImage: {fileID: 1341912697623964642}
   emptyText: {fileID: 3042454381435730380}
@@ -3590,7 +3591,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2613737386854179490
 RectTransform:
   m_ObjectHideFlags: 0

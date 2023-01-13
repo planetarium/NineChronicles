@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
+using Libplanet.Action;
 using Nekoyume.Action;
+using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -16,7 +19,9 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
+using Random = System.Random;
 
 namespace Nekoyume.UI
 {
@@ -46,6 +51,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private CategoryTabButton systemButton = null;
+
+        [SerializeField]
+        private Button readAllButton;
 
         [SerializeField]
         private MailScroll scroll = null;
@@ -82,6 +90,96 @@ namespace Nekoyume.UI
                 Close();
                 AudioController.PlayClick();
             });
+
+            readAllButton.onClick.AddListener(ReadAll);
+        }
+
+        private async void ReadAll()
+        {
+            var mailPopup = Widget.Find<MailPopup>();
+            var mailRewards = new List<MailReward>();
+            foreach (var mail in MailBox)
+            {
+                if (mail.New)
+                {
+                    await AddRewards(mail, mailRewards);
+                    mail.New = false;
+                }
+            }
+
+            ChangeState(0);
+            mailPopup.UpdateTabs();
+            Find<MailRewardScreen>().Show(mailRewards);
+        }
+
+        private static async Task AddRewards(Mail mail, List<MailReward> mailRewards)
+        {
+            switch (mail)
+            {
+                case OrderBuyerMail buyerMail:
+                    var bOrder = await Util.GetOrder(buyerMail.OrderId);
+                    var bItem = await Util.GetItemBaseByTradableId(bOrder.TradableId, bOrder.ExpiredBlockIndex);
+                    var count = bOrder is FungibleOrder bFungibleOrder ? bFungibleOrder.ItemCount : 1;
+                    mailRewards.Add(new MailReward(bItem, count, true));
+                    break;
+
+                case OrderSellerMail sellerMail:
+                    var sOrder = await Util.GetOrder(sellerMail.OrderId);
+                    var sItem = await Util.GetItemBaseByTradableId(sOrder.TradableId, sOrder.ExpiredBlockIndex);
+                    var sCount = sOrder is FungibleOrder sFungibleOrder ? sFungibleOrder.ItemCount : 1;
+                    mailRewards.Add(new MailReward(sItem, sCount));
+                    break;
+
+                case CombinationMail combinationMail:
+                    var cItem = combinationMail?.attachment?.itemUsable;
+                    if (cItem is not null)
+                    {
+                        mailRewards.Add(new MailReward(cItem, 1));
+                    }
+                    break;
+
+                case ItemEnhanceMail itemEnhanceMail:
+                    var eItem = itemEnhanceMail?.attachment?.itemUsable;
+                    if (eItem is not null)
+                    {
+                        mailRewards.Add(new MailReward(eItem, 1));
+                    }
+                    break;
+
+                case MonsterCollectionMail monsterCollectionMail:
+                    if (monsterCollectionMail.attachment is not MonsterCollectionResult
+                        mResult)
+                    {
+                        break;
+                    }
+
+                    foreach (var reward in mResult.rewards)
+                    {
+                        if (!reward.ItemId.TryParseAsTradableId(
+                                Game.Game.instance.TableSheets.ItemSheet,
+                                out _))
+                        {
+                            continue;
+                        }
+
+                        if (!reward.ItemId.TryGetFungibleId(
+                                Game.Game.instance.TableSheets.ItemSheet,
+                                out var fungibleId))
+                        {
+                            continue;
+                        }
+
+                        var avatarState = States.Instance.CurrentAvatarState;
+                        avatarState.inventory.TryGetFungibleItems(fungibleId, out var items);
+                        var item = items.FirstOrDefault(x => x.item is ITradableItem);
+                        if (item != null)
+                        {
+                            mailRewards.Add(new MailReward(item.item, reward.Quantity));
+                        }
+                    }
+
+                    break;
+            }
         }
 
         public override void Initialize()
@@ -473,5 +571,100 @@ namespace Nekoyume.UI
         public void Read(SellerMail sellerMail)
         {
         }
+
+#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
+        public void Update()
+        {
+            if(Input.GetKeyDown(KeyCode.Z))
+            {
+                var mailRewards = new List<MailReward>();
+                var itemsheet = Game.Game.instance.TableSheets.ItemSheet;
+                var rand = new ActionRenderHandler.LocalRandom(0);
+                var item = ItemFactory.CreateItem(itemsheet.Values.First(), rand);
+                for (var i = 0; i < 81; i++)
+                {
+                    mailRewards.Add(new MailReward(item, 1));
+                }
+                Find<MailRewardScreen>().Show(mailRewards);
+            }
+
+            if(Input.GetKeyDown(KeyCode.X))
+            {
+                var mailRewards = new List<MailReward>();
+                var itemsheet = Game.Game.instance.TableSheets.ItemSheet;
+                var rand = new ActionRenderHandler.LocalRandom(0);
+
+                var weapon = itemsheet.Values.FirstOrDefault(x => x.ItemSubType == ItemSubType.Weapon);
+                for (var i = 0; i < 9; i++)
+                {
+                    mailRewards.Add(new MailReward(ItemFactory.CreateItem(weapon, rand), 1, true));
+                }
+
+                var food2 = itemsheet.Values.LastOrDefault(x => x.ItemType == ItemType.Consumable);
+                for (var i = 0; i < 12; i++)
+                {
+                    mailRewards.Add(new MailReward(ItemFactory.CreateItem(food2, rand), 1, true));
+                }
+
+                var apStone = itemsheet.Values.FirstOrDefault(x => x.ItemSubType == ItemSubType.ApStone);
+                for (var i = 0; i < 6; i++)
+                {
+                    mailRewards.Add(new MailReward(ItemFactory.CreateItem(apStone, rand), 56));
+                }
+
+                var armor = itemsheet.Values.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
+                for (var i = 0; i < 3; i++)
+                {
+                    mailRewards.Add(new MailReward(ItemFactory.CreateItem(armor, rand), 1));
+                }
+
+                var hourglass = itemsheet.Values.FirstOrDefault(x => x.ItemSubType == ItemSubType.Hourglass);
+                for (var i = 0; i < 3; i++)
+                {
+                    mailRewards.Add(new MailReward(ItemFactory.CreateItem(hourglass, rand), 999));
+                }
+
+                var costume = itemsheet.Values.FirstOrDefault(x => x.ItemSubType == ItemSubType.FullCostume);
+                for (var i = 0; i < 11; i++)
+                {
+                    mailRewards.Add(new MailReward(ItemFactory.CreateItem(costume, rand), 1, true));
+                }
+
+                var food = itemsheet.Values.FirstOrDefault(x => x.ItemType == ItemType.Consumable);
+                for (var i = 0; i < 2; i++)
+                {
+                    mailRewards.Add(new MailReward(ItemFactory.CreateItem(food, rand), 1));
+                }
+
+                Find<MailRewardScreen>().Show(mailRewards);
+            }
+
+            if(Input.GetKeyDown(KeyCode.C))
+            {
+                var mailRewards = new List<MailReward>();
+                var itemsheet = Game.Game.instance.TableSheets.ItemSheet;
+                var rand = new ActionRenderHandler.LocalRandom(0);
+                var item = ItemFactory.CreateItem(itemsheet.Values.First(), rand);
+                for (var i = 0; i < 43; i++)
+                {
+                    mailRewards.Add(new MailReward(item, 1));
+                }
+                Find<MailRewardScreen>().Show(mailRewards);
+            }
+
+            if(Input.GetKeyDown(KeyCode.V))
+            {
+                var mailRewards = new List<MailReward>();
+                var itemsheet = Game.Game.instance.TableSheets.ItemSheet;
+                var rand = new ActionRenderHandler.LocalRandom(0);
+                var item = ItemFactory.CreateItem(itemsheet.Values.First(), rand);
+                for (var i = 0; i < 13; i++)
+                {
+                    mailRewards.Add(new MailReward(item, 1));
+                }
+                Find<MailRewardScreen>().Show(mailRewards);
+            }
+        }
+#endif
     }
 }

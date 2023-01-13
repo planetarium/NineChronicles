@@ -176,6 +176,7 @@ namespace Nekoyume.UI
                 Widget.Create<WorldBossRewardScreen>(),
                 Widget.Create<RuneCombineResultScreen>(),
                 Widget.Create<RuneEnhancementResultScreen>(),
+                Widget.Create<MailRewardScreen>(),
                 Widget.Create<CPScreen>(),
 
                 // 팝업 영역.
