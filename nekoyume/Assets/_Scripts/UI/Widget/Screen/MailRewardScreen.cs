@@ -33,7 +33,7 @@ namespace Nekoyume.UI
         private float moveDuration;
 
         [SerializeField]
-        private Ease moveGraph;
+        private AnimationCurve moveGraph;
 
         [SerializeField]
         private float fadeDelay;
@@ -42,7 +42,7 @@ namespace Nekoyume.UI
         private float fadeDuration;
 
         [SerializeField]
-        private Ease fadeGraph;
+        private AnimationCurve fadeGraph;
 
         private int _count;
         private readonly List<MailRewards> _mailRewardsList = new();
