@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Libplanet;
 using Nekoyume.UI.Model;
+using UnityEngine;
 using UnityEngine.Networking;
 
 namespace Nekoyume.UI.Module.WorldBoss
@@ -43,6 +45,37 @@ namespace Nekoyume.UI.Module.WorldBoss
             }}";
 
             var response = await apiClient.GetObjectAsync<WorldBossRankingResponse>(query);
+            return response;
+        }
+
+        public static async Task<ShopResponse> QueryShopEquipments()
+        {
+            var apiClient = Game.Game.instance.ApiClient;
+            if (!apiClient.IsInitialized)
+            {
+                return null;
+            }
+
+            var query = @$"query {{
+                shopQuery {{
+                shopEquipments(sellerAvatarAddress: ""0xA0cC54AF585Eb8E1A694da90A9385FC1EB33d854"") {{
+                    id
+                    sellerAgentAddress
+                    sellerAvatarAddress
+                    orderId
+                    tradableId
+                    sellStartedBlockIndex
+                    sellExpiredBlockIndex
+                    price
+                    combatPoint
+                    level
+                    itemCount
+                    itemSubType
+                }}
+            }}
+            }}";
+
+            var response = await apiClient.GetObjectAsync<ShopResponse>(query);
             return response;
         }
 
