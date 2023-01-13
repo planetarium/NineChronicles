@@ -49,5 +49,9 @@ namespace Lib9c.Tests.Action
                 PreviousStateRootHash = PreviousStateRootHash,
             };
         }
+
+        public void PutLog(string log)
+        {
+        }
     }
 }
