@@ -88,7 +88,7 @@ namespace Nekoyume.UI
                 .ToList();
 
             _count = (sortedRewards.Count - 1) / MaxItemCount;
-            var textAnchor = _count == 0 ? TextAnchor.MiddleCenter : TextAnchor.UpperCenter;
+            var textAnchor = _count == 0 ? TextAnchor.MiddleCenter : TextAnchor.MiddleCenter;
             var offset = _count == 0 ? 0 : Offset;
             for (var i = 0; i < _count + 1; i++)
             {
