@@ -49,7 +49,7 @@ namespace Nekoyume
             }
         }
 
-        public void FadeOut(float duration, float delay, Ease graph)
+        public void FadeOut(float duration, float delay, AnimationCurve graph)
         {
             canvasGroup.DOFade(0, duration).SetDelay(delay).SetEase(graph);
         }
