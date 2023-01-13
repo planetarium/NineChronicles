@@ -61,6 +61,8 @@ namespace Lib9c.Model.Order
         public abstract ITradableItem Sell2(AvatarState avatarState);
         [Obsolete("Use Sell")]
         public abstract ITradableItem Sell3(AvatarState avatarState);
+        [Obsolete("Use Sell")]
+        public abstract ITradableItem Sell4(AvatarState avatarState);
 
         public abstract OrderDigest Digest(AvatarState avatarState, CostumeStatSheet costumeStatSheet);
         [Obsolete("Use Digest")]
