@@ -500,10 +500,10 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var itemSlotState = States.Instance.ItemSlotStates[BattleType.Adventure];
+            var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Adventure];
             var costumes = itemSlotState.Costumes;
             var equipments = itemSlotState.Equipments;
-            var runeInfos = States.Instance.RuneSlotStates[BattleType.Adventure]
+            var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.Adventure]
                 .GetEquippedRuneSlotInfos();
             var consumables = information.GetEquippedConsumables();
             var stage = Game.Game.instance.Stage;
@@ -532,10 +532,10 @@ namespace Nekoyume.UI
             Find<LoadingScreen>().Show();
 
             startButton.gameObject.SetActive(false);
-            var itemSlotState = States.Instance.ItemSlotStates[BattleType.Adventure];
+            var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Adventure];
             var costumes = itemSlotState.Costumes;
             var equipments = itemSlotState.Equipments;
-            var runeInfos = States.Instance.RuneSlotStates[BattleType.Adventure]
+            var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.Adventure]
                 .GetEquippedRuneSlotInfos();
             var consumables = information.GetEquippedConsumables();
 

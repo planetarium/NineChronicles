@@ -111,13 +111,16 @@
             <paramref name="addresses"/>.  Absent states are represented as <see langword="null"/>.
             </returns>
         </member>
+        <member name="M:Libplanet.Action.ActionContext.PutLog(System.String)">
+            <inheritdoc cref="M:Libplanet.Action.IActionContext.PutLog(System.String)"/>
+        </member>
         <member name="T:Libplanet.Action.ActionEvaluation">
             <summary>
             A record type to represent an evaluation plan and result of
             a single action.
             </summary>
         </member>
-        <member name="M:Libplanet.Action.ActionEvaluation.#ctor(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta,System.Exception)">
+        <member name="M:Libplanet.Action.ActionEvaluation.#ctor(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta,System.Exception,System.Collections.Generic.List{System.String})">
             <summary>
             Creates an <see cref="T:Libplanet.Action.ActionEvaluation"/> instance
             with filling properties.
@@ -127,6 +130,7 @@
             evaluate <paramref name="action"/>.</param>
             <param name="outputStates">The result states that
             <paramref name="action"/> makes.</param>
+            <param name="logs">The logs recorded while executing action.</param>
             <param name="exception">An exception that has risen during evaluating a given
             <paramref name="action"/>.</param>
         </member>
@@ -153,6 +157,12 @@
             An exception that had risen during evaluation.
             </summary>
         </member>
+        <member name="P:Libplanet.Action.ActionEvaluation.Logs">
+            <summary>
+            Logs recorded while executing an action through
+            <see cref="M:Libplanet.Action.IActionContext.PutLog(System.String)"/>.
+            </summary>
+        </member>
         <member name="T:Libplanet.Action.ActionEvaluator`1">
             <summary>
             Class responsible for handling of <see cref="T:Libplanet.Action.IAction"/> evaluations.
@@ -160,13 +170,12 @@
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
             the <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
         </member>
-        <member name="M:Libplanet.Action.ActionEvaluator`1.#ctor(Libplanet.Action.IAction,Libplanet.Blockchain.IBlockChainStates{`0},System.Func{Libplanet.Blocks.BlockHash,Libplanet.Store.Trie.ITrie},System.Nullable{Libplanet.Blocks.BlockHash},System.Predicate{Libplanet.Assets.Currency})">
+        <member name="M:Libplanet.Action.ActionEvaluator`1.#ctor(Libplanet.Action.PolicyBlockActionGetter,Libplanet.Blockchain.IBlockChainStates{`0},System.Func{Libplanet.Blocks.BlockHash,Libplanet.Store.Trie.ITrie},System.Nullable{Libplanet.Blocks.BlockHash},System.Predicate{Libplanet.Assets.Currency})">
             <summary>
             Creates a new <see cref="T:Libplanet.Action.ActionEvaluator`1"/>.
             </summary>
-            <param name="policyBlockAction">The <see cref="T:Libplanet.Action.IAction"/> provided by
-            <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction"/> to evaluate at the end for each
-            <see cref="T:Libplanet.Blocks.IPreEvaluationBlock"/> that gets evaluated.</param>
+            <param name="policyBlockActionGetter">A delegator to get policy block action to evaluate
+            at the end for each <see cref="T:Libplanet.Blocks.IPreEvaluationBlock"/> that gets evaluated.</param>
             <param name="blockChainStates">The <see cref="T:Libplanet.Blockchain.IBlockChainStates`1"/> to use to retrieve
             the states for a provided <see cref="T:Libplanet.Address"/>.</param>
             <param name="trieGetter">The function to retrieve a trie for
@@ -177,8 +186,8 @@
             the specified <see cref="T:Libplanet.Assets.Currency"/> is a native token defined by chain's
             <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.NativeTokens"/> or not.</param>
         </member>
-        <member name="M:Libplanet.Action.ActionEvaluator`1.#ctor(Libplanet.Action.IAction,Libplanet.Blockchain.IBlockChainStates{`0},System.Func{Libplanet.Blocks.BlockHash,Libplanet.Store.Trie.ITrie},System.Nullable{Libplanet.Blocks.BlockHash},System.Predicate{Libplanet.Assets.Currency},Libplanet.Action.IActionTypeLoader)">
-            <inheritdoc cref="M:Libplanet.Action.ActionEvaluator`1.#ctor(Libplanet.Action.IAction,Libplanet.Blockchain.IBlockChainStates{`0},System.Func{Libplanet.Blocks.BlockHash,Libplanet.Store.Trie.ITrie},System.Nullable{Libplanet.Blocks.BlockHash},System.Predicate{Libplanet.Assets.Currency})" />
+        <member name="M:Libplanet.Action.ActionEvaluator`1.#ctor(Libplanet.Action.PolicyBlockActionGetter,Libplanet.Blockchain.IBlockChainStates{`0},System.Func{Libplanet.Blocks.BlockHash,Libplanet.Store.Trie.ITrie},System.Nullable{Libplanet.Blocks.BlockHash},System.Predicate{Libplanet.Assets.Currency},Libplanet.Action.IActionTypeLoader)">
+            <inheritdoc cref="M:Libplanet.Action.ActionEvaluator`1.#ctor(Libplanet.Action.PolicyBlockActionGetter,Libplanet.Blockchain.IBlockChainStates{`0},System.Func{Libplanet.Blocks.BlockHash,Libplanet.Store.Trie.ITrie},System.Nullable{Libplanet.Blocks.BlockHash},System.Predicate{Libplanet.Assets.Currency})" />
             <param name="actionTypeLoader"> A <see cref="T:Libplanet.Action.IActionTypeLoader"/> implementation using action type lookup.</param>
         </member>
         <member name="M:Libplanet.Action.ActionEvaluator`1.GenerateRandomSeed(System.Byte[],System.Byte[],System.Byte[],System.Int32)">
@@ -376,6 +385,14 @@
             <paramref name="actionType"/> if it's annotated with
             <see cref="T:Libplanet.Action.ActionTypeAttribute"/>.  If it's not annotated returns
             <see langword="null"/>.</returns>
+        </member>
+        <member name="T:Libplanet.Action.ActionTypeLoaderContext">
+            <summary>
+            An <see cref="T:Libplanet.Action.IActionTypeLoaderContext" /> implementation.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Action.ActionTypeLoaderContext.Index">
+            <inheritdoc />
         </member>
         <member name="T:Libplanet.Action.CurrencyPermissionException">
             <summary>
@@ -962,6 +979,12 @@
             <see langword="false"/> if it belongs to a transaction.
             </summary>
         </member>
+        <member name="M:Libplanet.Action.IActionContext.PutLog(System.String)">
+            <summary>
+            Record a log in <see cref="T:Libplanet.Tx.TxExecution"/>.
+            </summary>
+            <param name="log">A log to record in <see cref="T:Libplanet.Tx.TxExecution"/>.</param>
+        </member>
         <member name="M:Libplanet.Action.IActionContext.IsNativeToken(Libplanet.Assets.Currency)">
             <summary>
             Checks whether the specified <paramref name="currency"/> is a native token defined by
@@ -987,13 +1010,32 @@
             An interface to load action types branched by block index.
             </summary>
         </member>
-        <member name="M:Libplanet.Action.IActionTypeLoader.Load(Libplanet.Blocks.IPreEvaluationBlockHeader)">
+        <member name="M:Libplanet.Action.IActionTypeLoader.Load(Libplanet.Action.IActionTypeLoaderContext)">
             <summary>
-            Load action types branched by <paramref name="blockHeader"/>.
+            Load action types branched by <paramref name="context"/>.
             </summary>
-            <param name="blockHeader">A <see cref="T:Libplanet.Blocks.BlockHeader"/> to determine what action types to
-            use.</param>
+            <param name="context">A <see cref="T:Libplanet.Action.IActionTypeLoaderContext"/> to determine
+            what action types to use.</param>
             <returns>A dictionary made of action id to action type pairs.</returns>
+        </member>
+        <member name="M:Libplanet.Action.IActionTypeLoader.LoadAllActionTypes(Libplanet.Action.IActionTypeLoaderContext)">
+            <summary>
+            Load action types branched by <paramref name="context"/>.
+            </summary>
+            <param name="context">A <see cref="T:Libplanet.Action.IActionTypeLoader"/> to determine
+            what action types to use.</param>
+            <returns>Types of available actions. It also includes actions not having
+            <see cref="T:Libplanet.Action.ActionTypeAttribute"/>.</returns>
+        </member>
+        <member name="T:Libplanet.Action.IActionTypeLoaderContext">
+            <summary>
+            An interface to provide contextual variables to load action types.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Action.IActionTypeLoaderContext.Index">
+            <summary>
+            A block index.
+            </summary>
         </member>
         <member name="T:Libplanet.Action.IExtractableException">
             <summary>
@@ -1354,12 +1396,20 @@
             <param name="assemblies">The assemblies to load actions from.</param>
             <param name="baseType">The base type of actions to load.</param>
         </member>
-        <member name="M:Libplanet.Action.StaticActionTypeLoader.Load(Libplanet.Blocks.IPreEvaluationBlockHeader)">
+        <member name="M:Libplanet.Action.StaticActionTypeLoader.Load(Libplanet.Action.IActionTypeLoaderContext)">
             <summary>
-            Load action types from assemblies.
+            Load action types inherited the base type given in the constructor from assemblies.
             </summary>
-            <param name="blockHeader">A <see cref="T:Libplanet.Blocks.BlockHeader"/> to determine what action types to
-            use. But it isn't used in this implementation.</param>
+            <param name="context">A <see cref="T:Libplanet.Action.IActionTypeLoaderContext"/> to determine
+            what action types to use. But it isn't used in this implementation.</param>
+            <returns>A dictionary made of action id to action type pairs.</returns>
+        </member>
+        <member name="M:Libplanet.Action.StaticActionTypeLoader.LoadAllActionTypes(Libplanet.Action.IActionTypeLoaderContext)">
+            <summary>
+            Load all action types from assemblies.
+            </summary>
+            <param name="context">A <see cref="T:Libplanet.Action.IActionTypeLoaderContext"/> to determine what action
+            types to use. But it isn't used in this implementation.</param>
             <returns>A dictionary made of action id to action type pairs.</returns>
         </member>
         <member name="T:Libplanet.Action.SupplyOverflowException">
@@ -2490,6 +2540,8 @@
             events made by unsuccessful transactions too; see also
             <see cref="T:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1"/> for workaround.</param>
             <param name="stateStore"><see cref="T:Libplanet.Store.IStateStore"/> to store states.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when either of <paramref name="store"/>
+            or <paramref name="stateStore"/> is <see langword="null"/>.</exception>
             <exception cref="T:Libplanet.Blocks.InvalidGenesisBlockException">Thrown when the <paramref name="store"/>
             has a genesis block and it does not match to what the network expects
             (i.e., <paramref name="genesisBlock"/>).</exception>
@@ -8340,9 +8392,6 @@
         <member name="M:Libplanet.Store.BaseStore.SetCanonicalChainId(System.Guid)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.BaseStore.GetCanonicalGenesisBlock``1">
-            <inheritdoc/>
-        </member>
         <member name="M:Libplanet.Store.BaseStore.IterateIndexes(System.Guid,System.Int32,System.Nullable{System.Int32})">
             <inheritdoc/>
         </member>
@@ -8941,14 +8990,6 @@
             </summary>
             <param name="chainId">The ID of a new canonical chain.</param>
             <seealso cref="M:Libplanet.Store.IStore.GetCanonicalChainId"/>
-        </member>
-        <member name="M:Libplanet.Store.IStore.GetCanonicalGenesisBlock``1">
-            <summary>
-            Returns the genesis block of the current canonical chain.
-            </summary>
-            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
-            to <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
-            <returns>The genesis block of the current canonical chain.</returns>
         </member>
         <member name="M:Libplanet.Store.IStore.IterateIndexes(System.Guid,System.Int32,System.Nullable{System.Int32})">
             <summary>
@@ -10574,6 +10615,11 @@
             The executed <see cref="T:Libplanet.Tx.Transaction`1"/>'s <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.
             </summary>
         </member>
+        <member name="P:Libplanet.Tx.TxExecution.ActionsLogsList">
+            <summary>
+            The logs recorded while executing <see cref="T:Libplanet.Tx.Transaction`1"/>'s actions.
+            </summary>
+        </member>
         <member name="M:Libplanet.Tx.TxExecution.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <inheritdoc cref="M:System.Runtime.Serialization.ISerializable.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)"/>
         </member>
@@ -10583,7 +10629,7 @@
             actions.
             </summary>
         </member>
-        <member name="M:Libplanet.Tx.TxFailure.#ctor(Libplanet.Blocks.BlockHash,Libplanet.Tx.TxId,System.String,Bencodex.Types.IValue)">
+        <member name="M:Libplanet.Tx.TxFailure.#ctor(Libplanet.Blocks.BlockHash,Libplanet.Tx.TxId,System.Collections.Generic.List{System.Collections.Generic.List{System.String}},System.String,Bencodex.Types.IValue)">
             <summary>
             Creates a <see cref="T:Libplanet.Tx.TxFailure"/> instance.
             </summary>
@@ -10591,11 +10637,12 @@
             that the <see cref="T:Libplanet.Tx.Transaction`1"/> is executed within.</param>
             <param name="txId">The executed <see cref="T:Libplanet.Tx.Transaction`1"/>'s <see
             cref="P:Libplanet.Tx.Transaction`1.Id"/>.</param>
+            <param name="actionsLogsList">The logs recorded while executing actions.</param>
             <param name="exceptionName">The name of the exception type,
             e.g., <c>System.ArgumentException</c>.</param>
             <param name="exceptionMetadata">Optional metadata about the exception.</param>
         </member>
-        <member name="M:Libplanet.Tx.TxFailure.#ctor(Libplanet.Blocks.BlockHash,Libplanet.Tx.TxId,System.Exception)">
+        <member name="M:Libplanet.Tx.TxFailure.#ctor(Libplanet.Blocks.BlockHash,Libplanet.Tx.TxId,System.Collections.Generic.List{System.Collections.Generic.List{System.String}},System.Exception)">
             <summary>
             Creates a <see cref="T:Libplanet.Tx.TxFailure"/> instance.
             </summary>
@@ -10603,6 +10650,7 @@
             that the <see cref="T:Libplanet.Tx.Transaction`1"/> is executed within.</param>
             <param name="txId">The executed <see cref="T:Libplanet.Tx.Transaction`1"/>'s <see
             cref="P:Libplanet.Tx.Transaction`1.Id"/>.</param>
+            <param name="actionsLogsList">The logs recorded while executing actions.</param>
             <param name="exception">The uncaught exception thrown by an action in the transaction.
             </param>
         </member>
@@ -10802,7 +10850,7 @@
             Summarizes an execution result of a successful <see cref="T:Libplanet.Tx.Transaction`1"/>.
             </summary>
         </member>
-        <member name="M:Libplanet.Tx.TxSuccess.#ctor(Libplanet.Blocks.BlockHash,Libplanet.Tx.TxId,System.Collections.Immutable.IImmutableDictionary{Libplanet.Address,Bencodex.Types.IValue},System.Collections.Immutable.IImmutableDictionary{Libplanet.Address,System.Collections.Immutable.IImmutableDictionary{Libplanet.Assets.Currency,Libplanet.Assets.FungibleAssetValue}},System.Collections.Immutable.IImmutableDictionary{Libplanet.Address,System.Collections.Immutable.IImmutableDictionary{Libplanet.Assets.Currency,Libplanet.Assets.FungibleAssetValue}})">
+        <member name="M:Libplanet.Tx.TxSuccess.#ctor(Libplanet.Blocks.BlockHash,Libplanet.Tx.TxId,System.Collections.Generic.List{System.Collections.Generic.List{System.String}},System.Collections.Immutable.IImmutableDictionary{Libplanet.Address,Bencodex.Types.IValue},System.Collections.Immutable.IImmutableDictionary{Libplanet.Address,System.Collections.Immutable.IImmutableDictionary{Libplanet.Assets.Currency,Libplanet.Assets.FungibleAssetValue}},System.Collections.Immutable.IImmutableDictionary{Libplanet.Address,System.Collections.Immutable.IImmutableDictionary{Libplanet.Assets.Currency,Libplanet.Assets.FungibleAssetValue}})">
             <summary>
             Creates a <see cref="T:Libplanet.Tx.TxSuccess"/> instance.
             </summary>
@@ -10810,6 +10858,7 @@
             that the <see cref="T:Libplanet.Tx.Transaction`1"/> is executed within.</param>
             <param name="txId">The executed <see cref="T:Libplanet.Tx.Transaction`1"/>'s <see
             cref="P:Libplanet.Tx.Transaction`1.Id"/>.</param>
+            <param name="actionsLogsList">The logs recorded while executing actions.</param>
             <param name="updatedStates">The states delta made by the actions in
             the transaction within the block.</param>
             <param name="fungibleAssetsDelta"><see cref="T:Libplanet.Address"/>es and sets of

@@ -219,17 +219,6 @@ namespace Nekoyume.BlockChain
             States.Instance.SetGameConfigState(state);
         }
 
-        protected static void UpdateMonsterCollectionState(
-            MonsterCollectionState mcState,
-            GoldBalanceState stakedGoldBalance,
-            int level)
-        {
-            if (mcState is { })
-            {
-                States.Instance.SetMonsterCollectionState(mcState, stakedGoldBalance, level);
-            }
-        }
-
         protected static void UpdateStakeState(
             StakeState state,
             GoldBalanceState stakedBalanceState,

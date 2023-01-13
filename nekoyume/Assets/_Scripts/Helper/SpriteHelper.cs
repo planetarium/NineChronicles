@@ -1,7 +1,5 @@
 using System;
-using Nekoyume.Action;
 using Nekoyume.Model.Mail;
-using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using UnityEngine;
 
@@ -18,9 +16,6 @@ namespace Nekoyume.Helper
         private const string ItemBackgroundDefaultPath = "UI/Textures/item_bg_1";
         private const string ItemBackgroundPathFormat = "UI/Textures/item_bg_{0}";
 
-        private const string SmallItemBackgroundDefaultPath = "UI/Textures/item_bg_1_s";
-        private const string SmallItemBackgroundPathFormat = "UI/Textures/item_bg_{0}_s";
-
         private const string BuffIconDefaultPath = "UI/Icons/Buff/icon_buff_resurrection";
         private const string BuffIconPathFormat = "UI/Icons/Buff/{0}";
 
@@ -28,14 +23,6 @@ namespace Nekoyume.Helper
         private const string AreaAttackCutscenePath = "Character/PlayerSpineTexture/AreaAttackCutscene/";
 
         private const string RankIconPath = "UI/Textures/UI_icon_ranking_{0}";
-
-        private const string TitleFramePathFormat = "UI/Textures/00_TitleFrames/{0}";
-        private static readonly string TitleFrameDefaultPath = string.Format(TitleFramePathFormat, 49900001);
-
-        private const string MenuIllustratePathFormat = "UI/Textures/00_MenuIllustrates/{0}";
-
-        private static readonly string MenuIllustrateDefaultPath =
-            string.Format(MenuIllustratePathFormat, "UI_bg_combination");
 
         private const string MailIconPathFormat = "UI/Icons/Mail/{0}";
 
@@ -66,12 +53,6 @@ namespace Nekoyume.Helper
                    Resources.Load<Sprite>(ItemBackgroundDefaultPath);
         }
 
-        public static Sprite GetSmallItemBackground(int grade)
-        {
-            return Resources.Load<Sprite>(string.Format(SmallItemBackgroundPathFormat, grade)) ??
-                   Resources.Load<Sprite>(SmallItemBackgroundDefaultPath);
-        }
-
         public static Sprite GetBuffIcon(string iconResource)
         {
             if (string.IsNullOrEmpty(iconResource))
@@ -98,38 +79,6 @@ namespace Nekoyume.Helper
         public static Sprite GetRankIcon(int rank)
         {
             return Resources.Load<Sprite>(string.Format(RankIconPath, rank.ToString("D2")));
-        }
-
-        public static Sprite GetTitleFrame(int titleId)
-        {
-            return Resources.Load<Sprite>(string.Format(TitleFramePathFormat, titleId)) ??
-                   Resources.Load<Sprite>(TitleFrameDefaultPath);
-        }
-
-        public static Sprite GetMenuIllustration(string menuName)
-        {
-            Sprite result = null;
-            switch (menuName)
-            {
-                case nameof(ArenaJoin):
-                    result = Resources.Load<Sprite>(
-                        string.Format(MenuIllustratePathFormat, "UI_bg_ranking"));
-                    break;
-                case nameof(Shop):
-                    result = Resources.Load<Sprite>(
-                        string.Format(MenuIllustratePathFormat, "UI_bg_shop"));
-                    break;
-                case "Mimisbrunnr":
-                    result = Resources.Load<Sprite>(
-                        string.Format(MenuIllustratePathFormat, "UI_bg_mimisbrunnr"));
-                    break;
-                case nameof(Raid):
-                    result = Resources.Load<Sprite>(
-                        string.Format(MenuIllustratePathFormat, "UI_bg_worldboss"));
-                    break;
-            }
-
-            return result ? result : Resources.Load<Sprite>(MenuIllustrateDefaultPath);
         }
 
         public static Sprite GetMailIcon(MailType mailType)

@@ -185,8 +185,8 @@ namespace Nekoyume.State
                         BattleGrandFinale.DefaultScore,
                         0,
                         currentAvatar,
-                        States.Instance.ItemSlotStates[BattleType.Arena],
-                        States.Instance.RuneSlotStates[BattleType.Arena],
+                        States.Instance.CurrentItemSlotStates[BattleType.Arena],
+                        States.Instance.CurrentRuneSlotStates[BattleType.Arena],
                         States.Instance.GetEquippedRuneStates(BattleType.Arena),
                         default);
                     playerScore = playerGrandFinaleParticipant.Score;
