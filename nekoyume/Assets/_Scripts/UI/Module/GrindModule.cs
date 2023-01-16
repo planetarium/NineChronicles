@@ -113,7 +113,7 @@ namespace Nekoyume.UI.Module
             Subscribe();
 
             _selectedItemsForGrind.Clear();
-            grindInventory.SetGrinding(ShowItemTooltip,
+            grindInventory.SetGrinding(OnClickItem,
                 OnUpdateInventory,
                 DimConditionPredicateList,
                 reverseInventoryOrder);
@@ -236,17 +236,16 @@ namespace Nekoyume.UI.Module
                 slot.OnClick.Subscribe(_ => { _selectedItemsForGrind.Remove(slot.AssignedItem); }).AddTo(_disposables));
         }
 
-        private void ShowItemTooltip(InventoryItem model)
+        private void OnClickItem(InventoryItem model)
         {
-            var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
             var isRegister = !_selectedItemsForGrind.Contains(model);
             var isEquipment = model.ItemBase.ItemType == ItemType.Equipment;
             var isEquipped = model.Equipped.Value;
-            var interactable =
+            var isValid =
                 _selectedItemsForGrind.Count < 10 && isEquipment
                 || !isRegister;
 
-            void OnSubmit()
+            if (isValid)
             {
                 if (isEquipped)
                 {
@@ -262,21 +261,15 @@ namespace Nekoyume.UI.Module
                     RegisterToGrindingList(model, isRegister);
                 }
             }
-
-            var blockMessage = model.Equipped.Value ? "ERROR_NOT_GRINDING_EQUIPPED" : "ERROR_NOT_GRINDING_10OVER";
-            var onBlock = new System.Action(() =>
+            else
+            {
+                const string blockMessage = "ERROR_NOT_GRINDING_10OVER";
                 OneLineSystem.Push(MailType.System,
                     L10nManager.Localize(blockMessage),
-                    NotificationCell.NotificationType.Alert));
-            tooltip.Show(
-                model,
-                isRegister
-                    ? L10nManager.Localize("UI_COMBINATION_REGISTER_MATERIAL")
-                    : L10nManager.Localize("UI_COMBINATION_UNREGISTER_MATERIAL"),
-                interactable,
-                OnSubmit,
-                grindInventory.ClearSelectedItem,
-                onBlock);
+                    NotificationCell.NotificationType.Alert);
+            }
+
+            grindInventory.ClearSelectedItem();
         }
 
         private void OnUpdateInventory(Inventory inventory, Nekoyume.Model.Item.Inventory inventoryModel)
