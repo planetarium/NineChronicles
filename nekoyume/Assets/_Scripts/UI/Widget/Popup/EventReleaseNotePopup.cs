@@ -125,6 +125,11 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            if (!Game.Game.instance.Stage.TutorialController.IsCompleted)
+            {
+                return;
+            }
+
             var hasUnreadContents = NoticeManager.instance.HasUnreadEvent ||
                                     NoticeManager.instance.HasUnreadNotice;
             var notReadAtToday = true;
