@@ -525,6 +525,7 @@ namespace Nekoyume.UI
         private void SendBattleAction(
             StageType stageType,
             int playCount = 1,
+            int apStoneCount = 0,
             bool buyTicketIfNeeded = false)
         {
             Find<WorldMap>().Close(true);
@@ -563,6 +564,7 @@ namespace Nekoyume.UI
                                 _worldId,
                                 _stageId,
                                 playCount: playCount,
+                                apStoneCount: apStoneCount,
                                 trackGuideQuest: _trackGuideQuest
                             ).Subscribe();
                             break;
@@ -590,6 +592,7 @@ namespace Nekoyume.UI
                         _stageId,
                         skillId,
                         playCount,
+                        apStoneCount,
                         _trackGuideQuest
                     ).Subscribe();
                     PlayerPrefs.SetInt("HackAndSlash.SelectedBonusSkillId", 0);

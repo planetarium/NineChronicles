@@ -25,7 +25,7 @@ namespace Nekoyume
             var model = new BattleResultPopup.Model();
             var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
             var stageRow = sheets.StageSheet[eval.Action.StageId];
-            for (var i = 0; i < eval.Action.PlayCount; i++)
+            for (var i = 0; i < eval.Action.TotalPlayCount; i++)
             {
                 var prevExp = avatarState.exp;
                 var simulator = new StageSimulator(
