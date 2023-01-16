@@ -71,6 +71,12 @@ namespace Nekoyume.UI
             _isDone.Subscribe(b => pressToContinue.SetActive(b)).AddTo(_disposables);
         }
 
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            _disposables.DisposeAllAndClear();
+        }
+
         public void Show(List<MailReward> mailRewards, bool ignoreShowAnimation = false)
         {
             foreach (var rewards in _mailRewardsList)
