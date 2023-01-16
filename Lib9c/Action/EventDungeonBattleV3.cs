@@ -11,6 +11,7 @@ using Nekoyume.Exceptions;
 using Nekoyume.Extensions;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Event;
+using Nekoyume.Model.Rune;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -21,13 +22,14 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1663
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/
     /// </summary>
     [Serializable]
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100360ObsoleteIndex)]
     [ActionType(ActionTypeText)]
-    public class EventDungeonBattle : GameAction
+    public class EventDungeonBattleV3 : GameAction
     {
-        private const string ActionTypeText = "event_dungeon_battle4";
+        private const string ActionTypeText = "event_dungeon_battle3";
         public const int PlayCount = 1;
 
         public Address AvatarAddress;
@@ -108,6 +110,8 @@ namespace Nekoyume.Action
             {
                 return states;
             }
+
+            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100360ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             var started = DateTimeOffset.UtcNow;
@@ -288,7 +292,7 @@ namespace Nekoyume.Action
                 ? new RuneSlotState(rawRuneSlotState)
                 : new RuneSlotState(BattleType.Adventure);
             var runeListSheet = sheets.GetSheet<RuneListSheet>();
-            runeSlotState.UpdateSlot(RuneInfos, runeListSheet);
+            runeSlotState.UpdateSlotV2(RuneInfos, runeListSheet);
             states = states.SetState(runeSlotStateAddress, runeSlotState.Serialize());
 
             // update item slot

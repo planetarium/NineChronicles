@@ -22,7 +22,7 @@ using Skill = Nekoyume.Model.Skill.Skill;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1628
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1663
     /// </summary>
     [Serializable]
     [ActionType("hack_and_slash20")]

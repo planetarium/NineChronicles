@@ -278,7 +278,7 @@ namespace Nekoyume.Action
                 ? new RuneSlotState(rawRuneSlotState)
                 : new RuneSlotState(BattleType.Adventure);
             var runeListSheet = sheets.GetSheet<RuneListSheet>();
-            runeSlotState.UpdateSlot(RuneInfos, runeListSheet);
+            runeSlotState.UpdateSlotV2(RuneInfos, runeListSheet);
             states = states.SetState(runeSlotStateAddress, runeSlotState.Serialize());
 
             // update item slot

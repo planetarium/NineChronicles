@@ -24,11 +24,12 @@ using Nekoyume.Model.Rune;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1663
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1495
     /// </summary>
     [Serializable]
-    [ActionType("mimisbrunnr_battle12")]
-    public class MimisbrunnrBattle : GameAction
+    [ActionObsolete(BlockPolicySource.V100360ObsoleteIndex)]
+    [ActionType("mimisbrunnr_battle11")]
+    public class MimisbrunnrBattle11 : GameAction
     {
         public List<Guid> Costumes;
         public List<Guid> Equipments;
@@ -75,6 +76,8 @@ namespace Nekoyume.Action
             {
                 return states;
             }
+
+            CheckObsolete(BlockPolicySource.V100360ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             var sw = new Stopwatch();
@@ -308,7 +311,7 @@ namespace Nekoyume.Action
                 }
             }
             var runeListSheet = sheets.GetSheet<RuneListSheet>();
-            runeSlotState.UpdateSlot(RuneInfos, runeListSheet);
+            runeSlotState.UpdateSlotV2(RuneInfos, runeListSheet);
             states = states.SetState(runeSlotStateAddress, runeSlotState.Serialize());
 
             // update item slot

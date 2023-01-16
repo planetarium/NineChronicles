@@ -195,7 +195,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_InvalidAddressException()
         {
-            var action = new BattleArena
+            var action = new BattleArena7
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar1Address,
@@ -218,7 +218,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_FailedLoadStateException()
         {
-            var action = new BattleArena
+            var action = new BattleArena7
             {
                 myAvatarAddress = _avatar2Address,
                 enemyAvatarAddress = _avatar1Address,
@@ -241,7 +241,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_NotEnoughClearedStageLevelException()
         {
-            var action = new BattleArena
+            var action = new BattleArena7
             {
                 myAvatarAddress = _avatar4Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -266,7 +266,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_SheetRowNotFoundException()
         {
-            var action = new BattleArena
+            var action = new BattleArena7
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -289,7 +289,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_ThisArenaIsClosedException()
         {
-            var action = new BattleArena
+            var action = new BattleArena7
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -313,7 +313,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_ArenaParticipantsNotFoundException()
         {
-            var action = new BattleArena
+            var action = new BattleArena7
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -371,7 +371,7 @@ namespace Lib9c.Tests.Action
                     round,
                     random);
 
-            var action = new BattleArena
+            var action = new BattleArena7
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -438,7 +438,7 @@ namespace Lib9c.Tests.Action
             arenaScore.AddScore(900);
             previousStates = previousStates.SetState(arenaScoreAdr, arenaScore.Serialize());
 
-            var action = new BattleArena
+            var action = new BattleArena7
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -504,7 +504,7 @@ namespace Lib9c.Tests.Action
             beforeInfo.UseTicket(beforeInfo.Ticket);
             previousStates = previousStates.SetState(arenaInfoAdr, beforeInfo.Serialize());
 
-            var action = new BattleArena
+            var action = new BattleArena7
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -567,7 +567,7 @@ namespace Lib9c.Tests.Action
                 throw new ArenaInformationNotFoundException($"arenaInfoAdr : {arenaInfoAdr}");
             }
 
-            var action = new BattleArena
+            var action = new BattleArena7
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -644,7 +644,7 @@ namespace Lib9c.Tests.Action
                 previousStates.GetGoldCurrency());
             previousStates = previousStates.MintAsset(_agent1Address, price);
 
-            var action = new BattleArena
+            var action = new BattleArena7
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -726,7 +726,7 @@ namespace Lib9c.Tests.Action
                 previousStates.GetGoldCurrency());
             previousStates = previousStates.MintAsset(_agent1Address, price);
 
-            var action = new BattleArena
+            var action = new BattleArena7
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -802,7 +802,7 @@ namespace Lib9c.Tests.Action
                 beforeInfo.BuyTicket(roundData.MaxPurchaseCount);
             }
 
-            var action = new BattleArena
+            var action = new BattleArena7
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -925,7 +925,7 @@ namespace Lib9c.Tests.Action
                 }
             }
 
-            var action = new BattleArena
+            var action = new BattleArena7
             {
                 myAvatarAddress = myAvatarAddress,
                 enemyAvatarAddress = enemyAvatarAddress,
@@ -1061,7 +1061,7 @@ namespace Lib9c.Tests.Action
             var preCurrency = 1000 * _crystal;
             states = states.MintAsset(signer, preCurrency);
 
-            var action = new JoinArena0
+            var action = new JoinArena1
             {
                 championshipId = championshipId,
                 round = round,

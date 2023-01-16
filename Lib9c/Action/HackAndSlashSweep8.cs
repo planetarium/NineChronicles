@@ -6,6 +6,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
+using Nekoyume.BlockChain.Policy;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
@@ -18,11 +19,12 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1663
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1495
     /// </summary>
     [Serializable]
-    [ActionType("hack_and_slash_sweep9")]
-    public class HackAndSlashSweep : GameAction
+    [ActionObsolete(BlockPolicySource.V100360ObsoleteIndex)]
+    [ActionType("hack_and_slash_sweep8")]
+    public class HackAndSlashSweep8 : GameAction
     {
         public const int UsableApStoneCount = 10;
 
@@ -68,6 +70,8 @@ namespace Nekoyume.Action
             {
                 return states;
             }
+
+            CheckObsolete(BlockPolicySource.V100360ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             var started = DateTimeOffset.UtcNow;
@@ -186,7 +190,7 @@ namespace Nekoyume.Action
                 ? new RuneSlotState(rawRuneSlotState)
                 : new RuneSlotState(BattleType.Adventure);
             var runeListSheet = sheets.GetSheet<RuneListSheet>();
-            runeSlotState.UpdateSlot(runeInfos, runeListSheet);
+            runeSlotState.UpdateSlotV2(runeInfos, runeListSheet);
             states = states.SetState(runeSlotStateAddress, runeSlotState.Serialize());
 
             // update item slot
