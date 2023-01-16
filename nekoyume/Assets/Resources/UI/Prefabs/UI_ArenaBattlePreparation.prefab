@@ -725,7 +725,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: UI_EQUIP_FAILED
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
@@ -813,7 +813,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 0
-  l10nKey: UI_EQUIP_FAILED
+  l10nKey: 
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -1615,7 +1615,7 @@ MonoBehaviour:
   moveToLeft: 1
   middleXGap: 0.82
   coverToBlockClick: {fileID: 527046033499987006}
-  blockStartingTextObject: {fileID: 1382415843525520753}
+  blockStartingText: {fileID: 3825596338296283455}
   enemyCp: {fileID: 6660863341963916870}
   grandFinaleStartButton: {fileID: 7888146263270468867}
 --- !u!114 &6585390573125795877
