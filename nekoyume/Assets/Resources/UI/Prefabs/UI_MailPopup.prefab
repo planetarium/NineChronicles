@@ -558,7 +558,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Receive all
+  m_text: UI_RECEIVE_ALL
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ee85c922f6a7b4b5ba900ec7f0dedb49, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 0dd5ff07d6b414a099a10f9e2c6f9c2a, type: 2}
@@ -645,7 +645,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 1
-  l10nKey: UI_UNLOCK_RECIPES
+  l10nKey: UI_RECEIVE_ALL
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -739,7 +739,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: If you click Receive All, the directing result will be omitted.
+  m_text: UI_RECEIVE_ALL_CONTENT
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
@@ -827,7 +827,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 0
-  l10nKey: UI_TOOLTIP_UNLOCK_RECIPES
+  l10nKey: UI_RECEIVE_ALL_CONTENT
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
