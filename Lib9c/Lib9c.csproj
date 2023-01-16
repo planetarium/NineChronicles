@@ -9,6 +9,7 @@
     <IntermediateOutputPath>.obj</IntermediateOutputPath>
     <RootNamespace>Nekoyume</RootNamespace>
     <LangVersion>8</LangVersion>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,7 +28,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\.Libplanet\Libplanet\Libplanet.csproj" />
+    <ProjectReference Include="..\.Libplanet\Libplanet\Libplanet.csproj" >
+      <Private>false</Private>
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </ProjectReference>
     <ProjectReference Include="..\.Libplanet\Libplanet.Analyzers\Libplanet.Analyzers.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <OutputItemType>Analyzer</OutputItemType>
