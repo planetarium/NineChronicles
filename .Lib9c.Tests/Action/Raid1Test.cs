@@ -30,7 +30,6 @@ namespace Lib9c.Tests.Action
         public Raid1Test()
         {
             _sheets = TableSheetsImporter.ImportSheets();
-            _sheets.Remove(nameof(RuneOptionSheet));
             _tableSheets = new TableSheets(_sheets);
             _agentAddress = new PrivateKey().ToAddress();
             _avatarAddress = new PrivateKey().ToAddress();
@@ -41,34 +40,33 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        // Join new raid.
-        [InlineData(null, true, true, true, false, 0, 0L, false, false, 0, false, false, false, -Raid.RequiredInterval, false)]
-        [InlineData(null, true, true, true, false, 0, 0L, false, false, 0, false, false, false, -Raid.RequiredInterval, true)]
+        // Join new Raid1.
+        [InlineData(null, true, true, true, false, 0, 0L, false, false, 0, false, false, false, -Raid.RequiredInterval)]
         // Refill by interval.
-        [InlineData(null, true, true, false, true, 0, -WorldBossHelper.RefillInterval, false, false, 0, false, false, false, -Raid.RequiredInterval, true)]
+        [InlineData(null, true, true, false, true, 0, -WorldBossHelper.RefillInterval, false, false, 0, false, false, false, -Raid.RequiredInterval)]
         // Refill by NCG.
-        [InlineData(null, true, true, false, true, 0, 200L, true, true, 0, false, false, false, -Raid.RequiredInterval, true)]
-        [InlineData(null, true, true, false, true, 0, 200L, true, true, 1, false, false, false, -Raid.RequiredInterval, true)]
+        [InlineData(null, true, true, false, true, 0, 200L, true, true, 0, false, false, false, -Raid.RequiredInterval)]
+        [InlineData(null, true, true, false, true, 0, 200L, true, true, 1, false, false, false, -Raid.RequiredInterval)]
         // Boss level up.
-        [InlineData(null, true, true, false, true, 3, 100L, false, false, 0, true, true, false, -Raid.RequiredInterval, true)]
+        [InlineData(null, true, true, false, true, 3, 100L, false, false, 0, true, true, false, -Raid.RequiredInterval)]
         // Update RaidRewardInfo.
-        [InlineData(null, true, true, false, true, 3, 100L, false, false, 0, true, true, true, -Raid.RequiredInterval, true)]
+        [InlineData(null, true, true, false, true, 3, 100L, false, false, 0, true, true, true, -Raid.RequiredInterval)]
         // Boss skip level up.
-        [InlineData(null, true, true, false, true, 3, 100L, false, false, 0, true, false, false, -Raid.RequiredInterval, true)]
+        [InlineData(null, true, true, false, true, 3, 100L, false, false, 0, true, false, false, -Raid.RequiredInterval)]
         // AvatarState null.
-        [InlineData(typeof(FailedLoadStateException), false, false, false, false, 0, 0L, false, false, 0, false, false, false, -Raid.RequiredInterval, false)]
+        [InlineData(typeof(FailedLoadStateException), false, false, false, false, 0, 0L, false, false, 0, false, false, false, -Raid.RequiredInterval)]
         // Stage not cleared.
-        [InlineData(typeof(NotEnoughClearedStageLevelException), true, false, false, false, 0, 0L, false, false, 0, false, false, false, -Raid.RequiredInterval, false)]
+        [InlineData(typeof(NotEnoughClearedStageLevelException), true, false, false, false, 0, 0L, false, false, 0, false, false, false, -Raid.RequiredInterval)]
         // Insufficient CRYSTAL.
-        [InlineData(typeof(InsufficientBalanceException), true, true, false, false, 0, 0L, false, false, 0, false, false, false, -Raid.RequiredInterval, false)]
+        [InlineData(typeof(InsufficientBalanceException), true, true, false, false, 0, 0L, false, false, 0, false, false, false, -Raid.RequiredInterval)]
         // Insufficient NCG.
-        [InlineData(typeof(InsufficientBalanceException), true, true, false, true, 0, 0L, true, false, 0, false, false, false, -Raid.RequiredInterval, false)]
+        [InlineData(typeof(InsufficientBalanceException), true, true, false, true, 0, 0L, true, false, 0, false, false, false, -Raid.RequiredInterval)]
         // Wait interval.
-        [InlineData(typeof(RequiredBlockIntervalException), true, true, false, true, 3, 10L, false, false, 0, false, false, false, -Raid.RequiredInterval + 4L, false)]
+        [InlineData(typeof(RequiredBlockIntervalException), true, true, false, true, 3, 10L, false, false, 0, false, false, false, -Raid.RequiredInterval + 4L)]
         // Exceed purchase limit.
-        [InlineData(typeof(ExceedTicketPurchaseLimitException), true, true, false, true, 0, 100L, true, false, 1_000, false, false, false, -Raid.RequiredInterval, false)]
+        [InlineData(typeof(ExceedTicketPurchaseLimitException), true, true, false, true, 0, 100L, true, false, 1_000, false, false, false, -Raid.RequiredInterval)]
         // Exceed challenge count.
-        [InlineData(typeof(ExceedPlayCountException), true, true, false, true, 0, 100L, false, false, 0, false, false, false, -Raid.RequiredInterval, false)]
+        [InlineData(typeof(ExceedPlayCountException), true, true, false, true, 0, 100L, false, false, 0, false, false, false, -Raid.RequiredInterval)]
         public void Execute(
             Type exc,
             bool avatarExist,
@@ -83,8 +81,7 @@ namespace Lib9c.Tests.Action
             bool kill,
             bool levelUp,
             bool rewardRecordExist,
-            long updatedBlockIndexOffset,
-            bool raiderListExist
+            long updatedBlockIndexOffset
         )
         {
             var blockIndex = _tableSheets.WorldBossListSheet.Values
@@ -108,7 +105,6 @@ namespace Lib9c.Tests.Action
             var hpSheet = _tableSheets.WorldBossGlobalHpSheet;
             Address bossAddress = Addresses.GetWorldBossAddress(raidId);
             Address worldBossKillRewardRecordAddress = Addresses.GetWorldBossKillRewardRecordAddress(_avatarAddress, raidId);
-            Address raiderListAddress = Addresses.GetRaiderListAddress(raidId);
             int level = 1;
             if (kill & !levelUp)
             {
@@ -174,15 +170,6 @@ namespace Lib9c.Tests.Action
                     raiderState.UpdatedBlockIndex = blockIndex + updatedBlockIndexOffset;
 
                     state = state.SetState(raiderAddress, raiderState.Serialize());
-
-                    var raiderList = new List().Add(raiderAddress.Serialize());
-
-                    if (raiderListExist)
-                    {
-                        raiderList = raiderList.Add(new PrivateKey().ToAddress().Serialize());
-                    }
-
-                    state = state.SetState(raiderListAddress, raiderList);
                 }
 
                 if (rewardRecordExist)
@@ -351,11 +338,6 @@ namespace Lib9c.Tests.Action
                         Assert.DoesNotContain(1, rewardRecord.Keys);
                     }
                 }
-
-                Assert.True(nextState.TryGetState(raiderListAddress, out List rawRaiderList));
-                List<Address> raiderList = rawRaiderList.ToList(StateExtensions.ToAddress);
-
-                Assert.Contains(raiderAddress, raiderList);
             }
             else
             {
@@ -520,6 +502,65 @@ namespace Lib9c.Tests.Action
             Assert.True(nextState.TryGetState(worldBossKillRewardRecordAddress, out List rawRewardInfo));
             var nextRewardInfo = new WorldBossKillRewardRecord(rawRewardInfo);
             Assert.True(nextRewardInfo[1]);
+        }
+
+        [Fact]
+        public void Execute_Throw_ActionObsoletedException()
+        {
+            var action = new Raid1
+            {
+                AvatarAddress = _avatarAddress,
+                EquipmentIds = new List<Guid>(),
+                CostumeIds = new List<Guid>(),
+                FoodIds = new List<Guid>(),
+                PayNcg = false,
+            };
+            var row = _tableSheets.WorldBossListSheet.Values.First(r => r.Id > 1);
+            long blockIndex = row.StartedBlockIndex;
+            int raidId = row.Id;
+            Address raiderAddress = Addresses.GetRaiderAddress(_avatarAddress, raidId);
+            var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
+            WorldBossListSheet.Row worldBossRow = _tableSheets.WorldBossListSheet.FindRowByBlockIndex(blockIndex);
+            Address bossAddress = Addresses.GetWorldBossAddress(raidId);
+            Address worldBossKillRewardRecordAddress = Addresses.GetWorldBossKillRewardRecordAddress(_avatarAddress, raidId);
+
+            IAccountStateDelta state = new State()
+                .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
+                .SetState(_agentAddress, new AgentState(_agentAddress).Serialize());
+
+            foreach (var (key, value) in _sheets)
+            {
+                state = state.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
+            }
+
+            var avatarState = new AvatarState(
+                _avatarAddress,
+                _agentAddress,
+                0,
+                _tableSheets.GetAvatarSheets(),
+                new GameConfigState(),
+                default
+            );
+
+            for (int i = 0; i < 50; i++)
+            {
+                avatarState.worldInformation.ClearStage(1, i + 1, 0, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
+            }
+
+            state = state
+                .SetState(_avatarAddress, avatarState.SerializeV2())
+                .SetState(_avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
+                .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), avatarState.worldInformation.Serialize())
+                .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize());
+
+            Assert.Throws<ActionObsoletedException>(() => action.Execute(new ActionContext
+            {
+                BlockIndex = blockIndex,
+                PreviousStates = state,
+                Random = new TestRandom(),
+                Rehearsal = false,
+                Signer = _agentAddress,
+            }));
         }
     }
 }
