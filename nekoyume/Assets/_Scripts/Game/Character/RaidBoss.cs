@@ -1,5 +1,6 @@
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Skill;
+using Nekoyume.TableData;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,6 +12,9 @@ namespace Nekoyume.Game.Character
 {
     public class RaidBoss : RaidCharacter
     {
+        [SerializeField]
+        private float buffVFXInterval = 0.5f;
+
         [SerializeField]
         private SpineController controller;
 
@@ -62,6 +66,12 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
+            StartCoroutine(CoProcessSkill(skillRow, infos));
+        }
+
+        public IEnumerator CoProcessSkill(SkillSheet.Row skillRow,
+            IEnumerable<Model.BattleStatus.Skill.SkillInfo> infos)
+        {
             switch (skillRow.SkillCategory)
             {
                 case SkillCategory.Buff:
@@ -77,6 +87,7 @@ namespace Nekoyume.Game.Character
                     {
                         var buffTarget = info.Target.Id == Id ? this : _target;
                         ProcessBuff(buffTarget, info);
+                        yield return new WaitForSeconds(buffVFXInterval);
                     }
                     break;
                 case SkillCategory.Heal:
@@ -86,7 +97,8 @@ namespace Nekoyume.Game.Character
                     }
                     break;
                 default:
-                    foreach (var info in infos)
+                    var sorted = infos.OrderBy(x => x.Buff == null);
+                    foreach (var info in sorted)
                     {
                         if (info.Buff == null)
                         {
@@ -97,6 +109,7 @@ namespace Nekoyume.Game.Character
                         {
                             var buffTarget = info.Target.Id == Id ? this : _target;
                             ProcessBuff(buffTarget, info);
+                            yield return new WaitForSeconds(buffVFXInterval);
                         }
                     }
                     break;
