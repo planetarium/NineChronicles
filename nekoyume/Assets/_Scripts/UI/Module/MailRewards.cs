@@ -9,23 +9,17 @@ namespace Nekoyume
     public class MailRewards : MonoBehaviour
     {
         [SerializeField]
-        private GridLayoutGroup gridLayoutGroup;
-
-        [SerializeField]
         private CanvasGroup canvasGroup;
 
         [SerializeField]
         private List<MailRewardItemView> items;
 
-        public void Set(List<MailReward> mailRewards, TextAnchor textAnchor, int topOffset)
+        public void Set(List<MailReward> mailRewards)
         {
             if (mailRewards.Count > items.Count)
             {
                 return;
             }
-
-            gridLayoutGroup.padding.top = topOffset;
-            gridLayoutGroup.childAlignment = textAnchor;
 
             foreach (var item in items)
             {
