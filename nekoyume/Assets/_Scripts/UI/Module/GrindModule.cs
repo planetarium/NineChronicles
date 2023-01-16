@@ -76,26 +76,24 @@ namespace Nekoyume.UI.Module
 
         private FungibleAssetValue _cachedGrindingRewardCrystal;
 
-        private readonly ReactiveCollection<InventoryItem> _selectedItemsForGrind =
-            new ReactiveCollection<InventoryItem>();
+        private readonly ReactiveCollection<InventoryItem> _selectedItemsForGrind = new();
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposables = new();
 
         private static readonly List<(ItemType type, Predicate<InventoryItem>)>
-            DimConditionPredicateList
-                = new List<(ItemType type, Predicate<InventoryItem>)>
-                {
-                    (ItemType.Equipment, _ => false),
-                    (ItemType.Consumable, _ => true),
-                    (ItemType.Material, _ => true),
-                    (ItemType.Costume, _ => true),
-                };
+            DimConditionPredicateList = new()
+            {
+                (ItemType.Equipment, _ => false),
+                (ItemType.Consumable, _ => true),
+                (ItemType.Material, _ => true),
+                (ItemType.Costume, _ => true),
+            };
 
         private const int LimitGrindingCount = 10;
         private static readonly BigInteger MaximumCrystal = 100_000;
         private static readonly BigInteger MiddleCrystal = 1_000;
 
-        public static readonly Vector3 CrystalMovePositionOffset = new Vector3(0.05f, 0.05f);
+        public static readonly Vector3 CrystalMovePositionOffset = new(0.05f, 0.05f);
         private static readonly int FirstRegister = Animator.StringToHash("FirstRegister");
         private static readonly int StartGrind = Animator.StringToHash("StartGrind");
         private static readonly int EmptySlot = Animator.StringToHash("EmptySlot");
