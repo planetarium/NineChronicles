@@ -53,7 +53,10 @@ namespace Nekoyume.UI
         private CategoryTabButton systemButton = null;
 
         [SerializeField]
-        private Button readAllButton;
+        private Button receiveAllButton;
+
+        [SerializeField]
+        private GameObject receiveAllContainer;
 
         [SerializeField]
         private MailScroll scroll = null;
@@ -91,24 +94,25 @@ namespace Nekoyume.UI
                 AudioController.PlayClick();
             });
 
-            readAllButton.onClick.AddListener(ReadAll);
+            receiveAllButton.onClick.AddListener(ReadAll);
         }
 
         private async void ReadAll()
         {
-            var mailPopup = Widget.Find<MailPopup>();
             var mailRewards = new List<MailReward>();
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
             foreach (var mail in MailBox)
             {
                 if (mail.New)
                 {
                     await AddRewards(mail, mailRewards);
                     mail.New = false;
+                    LocalLayerModifier.RemoveNewMail(avatarAddress, mail.id, true);
                 }
             }
 
             ChangeState(0);
-            mailPopup.UpdateTabs();
+            UpdateTabs();
             Find<MailRewardScreen>().Show(mailRewards);
         }
 
@@ -263,9 +267,10 @@ namespace Nekoyume.UI
         {
             blockIndex ??= Game.Game.instance.Agent.BlockIndex;
 
-            // 전체 탭
-            allButton.HasNotification.Value = MailBox
-                .Any(mail => mail.New && mail.requiredBlockIndex <= blockIndex);
+            var isNew = MailBox.Any(mail => mail.New && mail.requiredBlockIndex <= blockIndex);
+            allButton.HasNotification.Value = isNew;
+            receiveAllContainer.SetActive(isNew);
+            Find<HeaderMenuStatic>().UpdateMailNotification(isNew);
 
             var list = GetAvailableMailList(blockIndex.Value, MailTabState.Workshop);
             var recent = list?.FirstOrDefault();
