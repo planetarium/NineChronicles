@@ -1021,8 +1021,8 @@ MonoBehaviour:
     type: 3}
   content: {fileID: 8570266457624025397}
   pressToContinue: {fileID: 787484896246014035}
-  moveDelay: 1
-  moveDuration: 0.6
+  moveDelay: 0.5
+  moveDuration: 0.5
   moveGraph:
     serializedVersion: 2
     m_Curve:
@@ -1056,7 +1056,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  fadeDelay: 1
+  fadeDelay: 0.8
   fadeDuration: 0.3
   fadeGraph:
     serializedVersion: 2
