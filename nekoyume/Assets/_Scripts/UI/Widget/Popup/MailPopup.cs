@@ -149,40 +149,6 @@ namespace Nekoyume.UI
                         mailRewards.Add(new MailReward(eItem, 1));
                     }
                     break;
-
-                case MonsterCollectionMail monsterCollectionMail:
-                    if (monsterCollectionMail.attachment is not MonsterCollectionResult
-                        mResult)
-                    {
-                        break;
-                    }
-
-                    foreach (var reward in mResult.rewards)
-                    {
-                        if (!reward.ItemId.TryParseAsTradableId(
-                                Game.Game.instance.TableSheets.ItemSheet,
-                                out _))
-                        {
-                            continue;
-                        }
-
-                        if (!reward.ItemId.TryGetFungibleId(
-                                Game.Game.instance.TableSheets.ItemSheet,
-                                out var fungibleId))
-                        {
-                            continue;
-                        }
-
-                        var avatarState = States.Instance.CurrentAvatarState;
-                        avatarState.inventory.TryGetFungibleItems(fungibleId, out var items);
-                        var item = items.FirstOrDefault(x => x.item is ITradableItem);
-                        if (item != null)
-                        {
-                            mailRewards.Add(new MailReward(item.item, reward.Quantity));
-                        }
-                    }
-
-                    break;
             }
         }
 
