@@ -112,7 +112,6 @@ namespace Nekoyume.UI
                 item.Set(rewards, textAnchor, offset);
             }
 
-
             base.Show(ignoreShowAnimation);
             _isDone.SetValueAndForceNotify(false);
             StartCoroutine(PlayAnimation());
