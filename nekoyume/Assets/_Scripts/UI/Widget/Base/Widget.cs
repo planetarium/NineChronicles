@@ -71,7 +71,7 @@ namespace Nekoyume.UI
 
         #region Mono
 
-        private bool isClosed;
+        private bool _isClosed;
 
         protected virtual void Awake()
         {
@@ -107,7 +107,7 @@ namespace Nekoyume.UI
 
         protected virtual void OnEnable()
         {
-            isClosed = false;
+            _isClosed = false;
             OnEnableStaticSubject.OnNext(this);
             _onEnableSubject.OnNext(this);
         }
@@ -312,7 +312,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (isClosed)
+            if (_isClosed)
             {
                 return;
             }
@@ -348,7 +348,7 @@ namespace Nekoyume.UI
                 _coClose = StartCoroutine(CoClose());
             }
 
-            isClosed = true;
+            _isClosed = true;
         }
 
         protected void Push()
