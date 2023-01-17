@@ -2,6 +2,9 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Bencodex.Types;
@@ -60,7 +63,7 @@ namespace Nekoyume.State
         // key: orderId
         private static ConcurrentDictionary<Guid, ItemBase> CachedShopItems { get; } = new();
 
-        private static ConcurrentBag<ShopEquipment> CachedShopEquipments { get; } = new();
+        private static ConcurrentBag<ShopProductModel> CachedShopProducts { get; } = new();
         private static readonly Dictionary<ItemSubType, List<OrderDigest>> _buyDigest = new();
         private static List<Guid> _removedOrderIds { get; } = new();
 
@@ -97,13 +100,15 @@ namespace Nekoyume.State
             {
                 _removedOrderIds.Clear();
 
-                if (!CachedShopEquipments.Any())
+                if (!CachedShopProducts.Any())
                 {
-                    var shopResponse = await WorldBossQuery.QueryShopEquipments();
-                    var shopEquipments = shopResponse.shopQuery.shopEquipments;
-                    foreach (var shopEquipment in shopEquipments)
+                    foreach (var itemSubType in list)
                     {
-                        CachedShopEquipments.Add(shopEquipment);
+                        var products = await Game.Game.instance.ShopServiceClient.GetProducts(itemSubType);
+                        foreach (var product in products)
+                        {
+                            CachedShopProducts.Add(product);
+                        }
                     }
                 }
 
@@ -265,8 +270,7 @@ namespace Nekoyume.State
 
         private static void AddOrderDigest(IDictionary<Address, List<OrderDigest>> orderDigests, ItemSubType itemSubType)
         {
-            var currency = States.Instance.GoldBalanceState.Gold.Currency;
-            var cachedDigests = CachedShopEquipments.Where(i => Enum.Parse(typeof(ItemSubType), i.itemSubType).Equals(itemSubType)).Select(s => s.ToOrderDigest(currency)).ToList();
+            var cachedDigests = CachedShopProducts.Where(i => i.ItemSubType.Equals(itemSubType)).Select(s => s.ToOrderDigest()).ToList();
             foreach (var orderDigest in cachedDigests)
             {
                 if (orderDigest.ExpiredBlockIndex != 0 &&
