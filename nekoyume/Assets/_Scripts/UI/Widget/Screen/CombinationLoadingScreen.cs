@@ -55,11 +55,14 @@ namespace Nekoyume.UI
                 }
 
                 DisappearNpc();
+
+                button.interactable = false;
             });
         }
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            button.interactable = true;
             _buttonCanvasGroup.alpha = 0f;
             _bgCanvasGroup.alpha = 0f;
             var format = L10nManager.Localize("UI_PRESS_TO_CONTINUE_FORMAT");

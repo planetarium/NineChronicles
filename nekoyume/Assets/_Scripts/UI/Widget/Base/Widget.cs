@@ -71,6 +71,8 @@ namespace Nekoyume.UI
 
         #region Mono
 
+        private bool _isClosed;
+
         protected virtual void Awake()
         {
             Animator = GetComponent<Animator>();
@@ -105,6 +107,7 @@ namespace Nekoyume.UI
 
         protected virtual void OnEnable()
         {
+            _isClosed = false;
             OnEnableStaticSubject.OnNext(this);
             _onEnableSubject.OnNext(this);
         }
@@ -309,6 +312,11 @@ namespace Nekoyume.UI
                 return;
             }
 
+            if (_isClosed)
+            {
+                return;
+            }
+
             _onClose?.Invoke();
 
             if (!Animator ||
@@ -339,6 +347,8 @@ namespace Nekoyume.UI
             {
                 _coClose = StartCoroutine(CoClose());
             }
+
+            _isClosed = true;
         }
 
         protected void Push()
