@@ -592,7 +592,7 @@ namespace Nekoyume.Game.Character
         {
             if (_persistingVFXMap.TryGetValue(groupId, out var prevVFX))
             {
-                prevVFX.LazyStop();
+                prevVFX.Stop();
                 _persistingVFXMap.Remove(groupId);
             }
 
