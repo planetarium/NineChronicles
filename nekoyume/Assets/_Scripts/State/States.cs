@@ -274,10 +274,11 @@ namespace Nekoyume.State
                     if (value is List list)
                     {
                         var slotState = new ItemSlotState(list);
-                        ItemSlotStates[index][slotState.BattleType] = slotState;
+                        var checkedState = GetVerifiedItemSlotState(slotState, avatarState);
+                        ItemSlotStates[index][checkedState.BattleType] = checkedState;
                         if (avatarState.address == CurrentAvatarState.address)
                         {
-                            CurrentItemSlotStates[slotState.BattleType] = slotState;
+                            CurrentItemSlotStates[checkedState.BattleType] = checkedState;
                         }
                     }
                 }
@@ -309,7 +310,8 @@ namespace Nekoyume.State
                 if (value is List list)
                 {
                     var slotState = new ItemSlotState(list);
-                    ItemSlotStates[slotIndex][slotState.BattleType] = slotState;
+                    var checkedState = GetVerifiedItemSlotState(slotState, avatarState);
+                    ItemSlotStates[slotIndex][checkedState.BattleType] = checkedState;
                 }
             }
         }
@@ -322,11 +324,38 @@ namespace Nekoyume.State
             if (value is List list)
             {
                 var slotState = new ItemSlotState(list);
-                CurrentItemSlotStates[slotState.BattleType] = slotState;
+                var checkedState = GetVerifiedItemSlotState(slotState, CurrentAvatarState);
+                CurrentItemSlotStates[checkedState.BattleType] = checkedState;
                 var slotIndex = AvatarStates
                     .FirstOrDefault(x => x.Value.address == avatarAddress).Key;
-                ItemSlotStates[slotIndex][battleType] = slotState;
+                ItemSlotStates[slotIndex][battleType] = checkedState;
             }
+        }
+
+        private ItemSlotState GetVerifiedItemSlotState(ItemSlotState itemSlotState, AvatarState avatarState)
+        {
+            var items = avatarState.inventory.Items;
+            var checkedItems = new List<Guid>();
+            foreach (var item in items)
+            {
+                if (item.item is Equipment equipment)
+                {
+                    if (itemSlotState.Equipments.Exists(x => x == equipment.ItemId))
+                    {
+                        if (!item.Locked)
+                        {
+                            var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
+                            if (equipment.RequiredBlockIndex <= blockIndex)
+                            {
+                                checkedItems.Add(equipment.ItemId);
+                            }
+                        }
+                    }
+                }
+            }
+
+            itemSlotState.UpdateEquipment(checkedItems);
+            return itemSlotState;
         }
 
         public async Task<FungibleAssetValue?> SetRuneStoneBalance(int runeId)
