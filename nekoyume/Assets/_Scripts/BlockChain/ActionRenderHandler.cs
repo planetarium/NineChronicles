@@ -2021,7 +2021,7 @@ namespace Nekoyume.BlockChain
                     out var myDigestValue)
                     ? myDigestValue is List myDigestList
                         ? new ArenaPlayerDigest(myDigestList)
-                        : (ArenaPlayerDigest?)null
+                        : null
                     : null;
 
                 enemyDigest = eval.Extra.TryGetValue(
@@ -2029,7 +2029,7 @@ namespace Nekoyume.BlockChain
                     out var enemyDigestValue)
                     ? enemyDigestValue is List enemyDigestList
                         ? new ArenaPlayerDigest(enemyDigestList)
-                        : (ArenaPlayerDigest?)null
+                        : null
                     : null;
 
                 previousMyScore = eval.Extra.TryGetValue(
@@ -2061,15 +2061,8 @@ namespace Nekoyume.BlockChain
                 var (itemSlotStates, runeSlotStates) = await enemyAvatarState.GetSlotStatesAsync();
                 var itemSlotState = itemSlotStates.FirstOrDefault(x => x.BattleType == BattleType.Arena);
                 var runeSlotState = runeSlotStates.FirstOrDefault(x => x.BattleType == BattleType.Arena);
-                if (itemSlotState == null)
-                {
-                    itemSlotState = new ItemSlotState(BattleType.Arena);
-                }
-
-                if (runeSlotState == null)
-                {
-                    runeSlotState = new RuneSlotState(BattleType.Arena);
-                }
+                itemSlotState ??= new ItemSlotState(BattleType.Arena);
+                runeSlotState ??= new RuneSlotState(BattleType.Arena);
 
                 var runeStates = await enemyAvatarState.GetRuneStatesAsync();
                 enemyDigest = new ArenaPlayerDigest(
@@ -2083,65 +2076,70 @@ namespace Nekoyume.BlockChain
                 ? RxProps.PlayersArenaParticipant.Value.Score
                 : ArenaScore.ArenaScoreDefault;
 
+            var championshipId = eval.Action.championshipId;
+            var round = eval.Action.round;
+            var hasMedalReward =
+                tableSheets.ArenaSheet[championshipId].TryGetRound(round, out var row) &&
+                row.ArenaType != ArenaType.OffSeason;
+            var medalItem = ItemFactory.CreateMaterial(
+                tableSheets.MaterialItemSheet,
+                ArenaHelper.GetMedalItemId(championshipId, round));
+
             outputMyScore ??= eval.OutputStates.TryGetState(
-                ArenaScore.DeriveAddress(
-                    eval.Action.myAvatarAddress,
-                    eval.Action.championshipId,
-                    eval.Action.round),
+                ArenaScore.DeriveAddress(eval.Action.myAvatarAddress, championshipId, round),
                 out List outputMyScoreList)
-                ? (int)(Integer)outputMyScoreList[1]
+                ? (Integer)outputMyScoreList[1]
                 : ArenaScore.ArenaScoreDefault;
 
             var random = new LocalRandom(eval.RandomSeed);
-            // TODO!!!! ticket 수 만큼 돌려서 마지막 전투 결과를 띄운다.
-            // eval.Action.ticket
-            var simulator = new ArenaSimulator(random);
-            var log = simulator.Simulate(
-                myDigest.Value,
-                enemyDigest.Value,
-                tableSheets.GetArenaSimulatorSheets());
-            log.Score = outputMyScore.Value;
-
-            var rewards = RewardSelector.Select(
-                random,
-                tableSheets.WeeklyArenaRewardSheet,
-                tableSheets.MaterialItemSheet,
-                myDigest.Value.Level,
-                maxCount: ArenaHelper.GetRewardCount(previousMyScore.Value));
-            if (log.Result == ArenaLog.ArenaResult.Win)
+            var winCount = 0;
+            var defeatCount = 0;
+            var logs = new List<ArenaLog>();
+            var rewards = new List<ItemBase>();
+            for (int i = 0; i < eval.Action.ticket; i++)
             {
-                var championshipId = eval.Action.championshipId;
-                var round = eval.Action.round;
-                var hasMedalReward =
-                    tableSheets.ArenaSheet.TryGetValue(
-                        championshipId,
-                        out var row) &&
-                    row.Round.Any(e =>
-                        e.Round == round &&
-                        e.ArenaType != ArenaType.OffSeason);
-                if (hasMedalReward)
+                var simulator = new ArenaSimulator(random);
+                var log = simulator.Simulate(
+                    myDigest.Value,
+                    enemyDigest.Value,
+                    tableSheets.GetArenaSimulatorSheets());
+
+                var reward = RewardSelector.Select(
+                    random,
+                    tableSheets.WeeklyArenaRewardSheet,
+                    tableSheets.MaterialItemSheet,
+                    myDigest.Value.Level,
+                    ArenaHelper.GetRewardCount(previousMyScore.Value));
+
+                if (log.Result.Equals(ArenaLog.ArenaResult.Win))
                 {
-                    var medalItemId = ArenaHelper.GetMedalItemId(
-                        eval.Action.championshipId,
-                        eval.Action.round);
-                    var medalItem = ItemFactory.CreateMaterial(
-                        tableSheets.MaterialItemSheet,
-                        medalItemId);
-                    if (medalItem is { })
+                    if (hasMedalReward && medalItem is { })
                     {
-                        rewards.Add(medalItem);
+                        reward.Add(medalItem);
                     }
+
+                    winCount++;
                 }
+                else
+                {
+                    defeatCount++;
+                }
+
+                log.Score = outputMyScore.Value;
+
+                logs.Add(log);
+                rewards.AddRange(reward);
             }
 
             if (arenaBattlePreparation && arenaBattlePreparation.IsActive())
             {
                 arenaBattlePreparation.OnRenderBattleArena(eval);
                 Game.Game.instance.Arena.Enter(
-                    log,
+                    logs.First(),
                     rewards,
                     myDigest.Value,
-                    enemyDigest.Value);
+                    enemyDigest.Value,
+                    winCount + defeatCount > 1 ? (winCount, defeatCount) : null);
             }
         }
 
