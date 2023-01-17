@@ -14,6 +14,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Helper;
     using Nekoyume.Model;
     using Nekoyume.Model.Item;
+    using Nekoyume.Model.Rune;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
@@ -877,6 +878,84 @@ namespace Lib9c.Tests.Action
                 var nextAvatar = nextState.GetAvatarStateV2(_avatarAddress);
                 Assert.Equal(expectedLevel, nextAvatar.level);
                 Assert.Equal(expectedExp, nextAvatar.exp);
+            }
+            else
+            {
+                throw new SheetRowNotFoundException(nameof(StageSheet), stageId);
+            }
+        }
+
+        [Theory]
+        [InlineData(0, 30001, 1, 30001, typeof(DuplicatedRuneIdException))]
+        [InlineData(1, 10002, 1, 30001, typeof(DuplicatedRuneSlotIndexException))]
+        public void ExecuteDuplicatedException(int slotIndex, int runeId, int slotIndex2, int runeId2, Type exception)
+        {
+            var stakingLevel = 1;
+            const int worldId = 1;
+            const int stageId = 1;
+            var gameConfigState = _initialState.GetGameConfigState();
+            var avatarState = new AvatarState(
+                _avatarAddress,
+                _agentAddress,
+                0,
+                _initialState.GetAvatarSheets(),
+                gameConfigState,
+                _rankingMapAddress)
+            {
+                worldInformation =
+                    new WorldInformation(0, _initialState.GetSheet<WorldSheet>(), 25),
+                actionPoint = 120,
+                level = 3,
+            };
+            var itemRow = _tableSheets.MaterialItemSheet.Values.First(r =>
+                r.ItemSubType == ItemSubType.ApStone);
+            var apStone = ItemFactory.CreateTradableMaterial(itemRow);
+            avatarState.inventory.AddItem(apStone);
+
+            var stakeStateAddress = StakeState.DeriveAddress(_agentAddress);
+            var stakeState = new StakeState(stakeStateAddress, 1);
+            var requiredGold = _tableSheets.StakeRegularRewardSheet.OrderedRows
+                .FirstOrDefault(r => r.Level == stakingLevel)?.RequiredGold ?? 0;
+            var state = _initialState
+                .SetState(_avatarAddress, avatarState.Serialize())
+                .SetState(stakeStateAddress, stakeState.Serialize())
+                .MintAsset(stakeStateAddress, requiredGold * _initialState.GetGoldCurrency());
+            var stageSheet = _initialState.GetSheet<StageSheet>();
+            if (stageSheet.TryGetValue(stageId, out var stageRow))
+            {
+                var apSheet = _initialState.GetSheet<StakeActionPointCoefficientSheet>();
+                var costAp = apSheet.GetActionPointByStaking(stageRow.CostAP, 1, stakingLevel);
+                var itemPlayCount =
+                    gameConfigState.ActionPointMax / costAp * 1;
+                var apPlayCount = avatarState.actionPoint / costAp;
+                var playCount = apPlayCount + itemPlayCount;
+                var (expectedLevel, expectedExp) = avatarState.GetLevelAndExp(
+                    _initialState.GetSheet<CharacterLevelSheet>(),
+                    stageId,
+                    playCount);
+
+                var action = new HackAndSlashSweep
+                {
+                    costumes = new List<Guid>(),
+                    equipments = new List<Guid>(),
+                    runeInfos = new List<RuneSlotInfo>()
+                    {
+                        new RuneSlotInfo(slotIndex, runeId),
+                        new RuneSlotInfo(slotIndex2, runeId2),
+                    },
+                    avatarAddress = _avatarAddress,
+                    actionPoint = avatarState.actionPoint,
+                    apStoneCount = 1,
+                    worldId = worldId,
+                    stageId = stageId,
+                };
+
+                Assert.Throws(exception, () => action.Execute(new ActionContext
+                {
+                    PreviousStates = state,
+                    Signer = _agentAddress,
+                    Random = new TestRandom(),
+                }));
             }
             else
             {

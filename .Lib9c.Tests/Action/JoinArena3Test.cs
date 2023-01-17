@@ -15,6 +15,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.Arena;
     using Nekoyume.Model.EnumType;
     using Nekoyume.Model.Item;
+    using Nekoyume.Model.Rune;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Serilog;
@@ -501,6 +502,49 @@ namespace Lib9c.Tests.Action
             {
                 PreviousStates = _state,
                 Signer = _signer2,
+                Random = new TestRandom(),
+            }));
+        }
+
+        [Theory]
+        [InlineData(0, 30001, 1, 30001, typeof(DuplicatedRuneIdException))]
+        [InlineData(1, 10002, 1, 30001, typeof(DuplicatedRuneSlotIndexException))]
+        public void ExecuteDuplicatedException(int slotIndex, int runeId, int slotIndex2, int runeId2, Type exception)
+        {
+            int championshipId = 1;
+            int round = 1;
+            string balance = "0";
+            var arenaSheet = _state.GetSheet<ArenaSheet>();
+            if (!arenaSheet.TryGetValue(championshipId, out var row))
+            {
+                throw new SheetRowNotFoundException(
+                    nameof(ArenaSheet), $"championship Id : {championshipId}");
+            }
+
+            var avatarState = _state.GetAvatarStateV2(_avatarAddress);
+            avatarState = GetAvatarState(avatarState, out var equipments, out var costumes);
+            avatarState = AddMedal(avatarState, row, 80);
+
+            var state = _state.MintAsset(_signer, FungibleAssetValue.Parse(_currency, balance));
+
+            var action = new JoinArena()
+            {
+                championshipId = championshipId,
+                round = round,
+                costumes = costumes,
+                equipments = equipments,
+                runeInfos = new List<RuneSlotInfo>()
+                {
+                    new RuneSlotInfo(slotIndex, runeId),
+                    new RuneSlotInfo(slotIndex2, runeId2),
+                },
+                avatarAddress = _avatarAddress,
+            };
+
+            Assert.Throws(exception, () => action.Execute(new ActionContext
+            {
+                PreviousStates = state,
+                Signer = _signer,
                 Random = new TestRandom(),
             }));
         }

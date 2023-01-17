@@ -14,6 +14,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model;
     using Nekoyume.Model.Arena;
     using Nekoyume.Model.EnumType;
+    using Nekoyume.Model.Rune;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Serilog;
@@ -830,6 +831,110 @@ namespace Lib9c.Tests.Action
                 PreviousStates = nextStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
+            }));
+        }
+
+        [Theory]
+        [InlineData(0, 30001, 1, 30001, typeof(DuplicatedRuneIdException))]
+        [InlineData(1, 10002, 1, 30001, typeof(DuplicatedRuneSlotIndexException))]
+        public void ExecuteDuplicatedException(int slotIndex, int runeId, int slotIndex2, int runeId2, Type exception)
+        {
+            long nextBlockIndex = 4;
+            int championshipId = 1;
+            int round = 1;
+            int ticket = 1;
+            int arenaInterval = 5;
+            int randomSeed = 3;
+
+            var previousStates = _initialStates;
+            Assert.True(_initialStates.GetSheet<ArenaSheet>().TryGetValue(
+                championshipId,
+                out var row));
+
+            if (!row.TryGetRound(round, out var roundData))
+            {
+                throw new RoundNotFoundException(
+                    $"[{nameof(BattleArena)}] ChampionshipId({row.ChampionshipId}) - round({round})");
+            }
+
+            var random = new TestRandom(randomSeed);
+            previousStates = JoinArena(
+                previousStates,
+                _agent1Address,
+                _avatar1Address,
+                roundData.StartBlockIndex,
+                championshipId,
+                round,
+                random);
+            previousStates = JoinArena(
+                previousStates,
+                _agent2Address,
+                _avatar2Address,
+                roundData.StartBlockIndex,
+                championshipId,
+                round,
+                random);
+
+            var arenaInfoAdr =
+                ArenaInformation.DeriveAddress(_avatar1Address, championshipId, round);
+            if (!previousStates.TryGetArenaInformation(arenaInfoAdr, out var beforeInfo))
+            {
+                throw new ArenaInformationNotFoundException($"arenaInfoAdr : {arenaInfoAdr}");
+            }
+
+            var action = new BattleArena
+            {
+                myAvatarAddress = _avatar1Address,
+                enemyAvatarAddress = _avatar2Address,
+                championshipId = championshipId,
+                round = round,
+                ticket = ticket,
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                runeInfos = new List<RuneSlotInfo>()
+                {
+                    new RuneSlotInfo(slotIndex, runeId),
+                    new RuneSlotInfo(slotIndex2, runeId2),
+                },
+            };
+
+            var myScoreAdr = ArenaScore.DeriveAddress(
+                _avatar1Address,
+                championshipId,
+                round);
+            var enemyScoreAdr = ArenaScore.DeriveAddress(
+                _avatar2Address,
+                championshipId,
+                round);
+            if (!previousStates.TryGetArenaScore(myScoreAdr, out var beforeMyScore))
+            {
+                throw new ArenaScoreNotFoundException($"myScoreAdr : {myScoreAdr}");
+            }
+
+            if (!previousStates.TryGetArenaScore(enemyScoreAdr, out var beforeEnemyScore))
+            {
+                throw new ArenaScoreNotFoundException($"enemyScoreAdr : {enemyScoreAdr}");
+            }
+
+            Assert.True(previousStates.TryGetAvatarStateV2(
+                _agent1Address,
+                _avatar1Address,
+                out var previousMyAvatarState,
+                out _));
+            Assert.Empty(previousMyAvatarState.inventory.Materials);
+
+            var gameConfigState = SetArenaInterval(arenaInterval);
+            previousStates = previousStates.SetState(GameConfigState.Address, gameConfigState.Serialize());
+
+            var blockIndex = roundData.StartBlockIndex + nextBlockIndex;
+
+            Assert.Throws(exception, () => action.Execute(new ActionContext
+            {
+                PreviousStates = previousStates,
+                Signer = _agent1Address,
+                Random = random,
+                Rehearsal = false,
+                BlockIndex = blockIndex,
             }));
         }
 
