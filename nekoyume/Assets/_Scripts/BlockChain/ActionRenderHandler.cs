@@ -919,6 +919,22 @@ namespace Nekoyume.BlockChain
                     result.itemUsable.TradableId);
                 // ~Notify
 
+                var avatarSlotIndex = States.Instance.AvatarStates
+                    .FirstOrDefault(x => x.Value.address == eval.Action.avatarAddress).Key;
+                var itemSlotStates = States.Instance.ItemSlotStates[avatarSlotIndex];
+
+                for (var i = 1; i < (int)BattleType.End; i++)
+                {
+                    var battleType = (BattleType)i;
+                    var currentItemSlotState = States.Instance.CurrentItemSlotStates[battleType];
+                    currentItemSlotState.Costumes.Remove(eval.Action.itemId);
+                    currentItemSlotState.Equipments.Remove(eval.Action.itemId);
+
+                    var itemSlotState = itemSlotStates[battleType];
+                    itemSlotState.Costumes.Remove(eval.Action.itemId);
+                    itemSlotState.Equipments.Remove(eval.Action.itemId);
+                }
+
                 Widget.Find<CombinationSlotsPopup>().SetCaching(avatarAddress, eval.Action.slotIndex, false);
             }
         }
