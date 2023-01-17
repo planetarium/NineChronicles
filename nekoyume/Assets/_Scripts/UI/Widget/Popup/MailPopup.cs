@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
+using Libplanet.Action;
 using Nekoyume.Action;
+using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -16,7 +19,9 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
+using Random = System.Random;
 
 namespace Nekoyume.UI
 {
@@ -46,6 +51,12 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private CategoryTabButton systemButton = null;
+
+        [SerializeField]
+        private Button receiveAllButton;
+
+        [SerializeField]
+        private GameObject receiveAllContainer;
 
         [SerializeField]
         private MailScroll scroll = null;
@@ -82,6 +93,63 @@ namespace Nekoyume.UI
                 Close();
                 AudioController.PlayClick();
             });
+
+            receiveAllButton.onClick.AddListener(ReadAll);
+        }
+
+        private async void ReadAll()
+        {
+            var mailRewards = new List<MailReward>();
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            foreach (var mail in MailBox)
+            {
+                if (mail.New)
+                {
+                    await AddRewards(mail, mailRewards);
+                    mail.New = false;
+                    LocalLayerModifier.RemoveNewMail(avatarAddress, mail.id, true);
+                }
+            }
+
+            ChangeState(0);
+            UpdateTabs();
+            Find<MailRewardScreen>().Show(mailRewards);
+        }
+
+        private static async Task AddRewards(Mail mail, List<MailReward> mailRewards)
+        {
+            switch (mail)
+            {
+                case OrderBuyerMail buyerMail:
+                    var bOrder = await Util.GetOrder(buyerMail.OrderId);
+                    var bItem = await Util.GetItemBaseByTradableId(bOrder.TradableId, bOrder.ExpiredBlockIndex);
+                    var count = bOrder is FungibleOrder bFungibleOrder ? bFungibleOrder.ItemCount : 1;
+                    mailRewards.Add(new MailReward(bItem, count, true));
+                    break;
+
+                case OrderSellerMail sellerMail:
+                    var sOrder = await Util.GetOrder(sellerMail.OrderId);
+                    var sItem = await Util.GetItemBaseByTradableId(sOrder.TradableId, sOrder.ExpiredBlockIndex);
+                    var sCount = sOrder is FungibleOrder sFungibleOrder ? sFungibleOrder.ItemCount : 1;
+                    mailRewards.Add(new MailReward(sItem, sCount));
+                    break;
+
+                case CombinationMail combinationMail:
+                    var cItem = combinationMail?.attachment?.itemUsable;
+                    if (cItem is not null)
+                    {
+                        mailRewards.Add(new MailReward(cItem, 1));
+                    }
+                    break;
+
+                case ItemEnhanceMail itemEnhanceMail:
+                    var eItem = itemEnhanceMail?.attachment?.itemUsable;
+                    if (eItem is not null)
+                    {
+                        mailRewards.Add(new MailReward(eItem, 1));
+                    }
+                    break;
+            }
         }
 
         public override void Initialize()
@@ -165,9 +233,10 @@ namespace Nekoyume.UI
         {
             blockIndex ??= Game.Game.instance.Agent.BlockIndex;
 
-            // 전체 탭
-            allButton.HasNotification.Value = MailBox
-                .Any(mail => mail.New && mail.requiredBlockIndex <= blockIndex);
+            var isNew = MailBox.Any(mail => mail.New && mail.requiredBlockIndex <= blockIndex);
+            allButton.HasNotification.Value = isNew;
+            receiveAllContainer.SetActive(isNew);
+            Find<HeaderMenuStatic>().UpdateMailNotification(isNew);
 
             var list = GetAvailableMailList(blockIndex.Value, MailTabState.Workshop);
             var recent = list?.FirstOrDefault();
