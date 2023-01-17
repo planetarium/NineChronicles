@@ -1022,7 +1022,7 @@ GameObject:
   - component: {fileID: 1999777664928581735}
   - component: {fileID: 551774636917850936}
   - component: {fileID: 3772828481787680937}
-  - component: {fileID: 3449431152153508449}
+  - component: {fileID: 191342420183719779}
   m_Layer: 5
   m_Name: UI_ArenaTicketPopup
   m_TagString: Untagged
@@ -1136,7 +1136,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &3449431152153508449
+--- !u!114 &191342420183719779
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1145,44 +1145,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 1788435547851897477}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef1028ee3e11cae429457f8f7ba2ec1e, type: 3}
+  m_Script: {fileID: 11500000, guid: 6eacb40efc394db6b5846f28c54fa375, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
-  apSlider: {fileID: 0}
-  apStoneSlider: {fileID: 0}
-  startButton: {fileID: 0}
-  cancelButton: {fileID: 3093391251066596574}
-  expText: {fileID: 0}
-  starText: {fileID: 0}
-  totalApText: {fileID: 0}
-  apStoneText: {fileID: 0}
-  haveApText: {fileID: 0}
-  haveApStoneText: {fileID: 0}
-  enoughCpText: {fileID: 0}
-  insufficientCpText: {fileID: 0}
-  contentText: {fileID: 0}
-  enoughCpContainer: {fileID: 0}
-  insufficientCpContainer: {fileID: 0}
-  information: {fileID: 0}
-  expGlow: {fileID: 0}
-  pageToggle: {fileID: 0}
-  canvasGroupForRepeat: {fileID: 0}
-  objectsForSweep:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  objectsForRepeat:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  ticketSlider: {fileID: 2483552609661244784}
+  haveTicketText: {fileID: 8956261678014738217}
+  ticketCountToUseText: {fileID: 2701752307472586200}
+  startButton: {fileID: 6624913363482709341}
+  closeButton: {fileID: 3093391251066596574}
 --- !u!1 &1850280734406964865
 GameObject:
   m_ObjectHideFlags: 0
@@ -2132,7 +2104,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Ticket you have
+  m_text: UI_TICKET_YOU_HAVE
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
@@ -2220,7 +2192,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 0
-  l10nKey: UI_AP_YOU_HAVE
+  l10nKey: UI_TICKET_YOU_HAVE
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -2478,7 +2450,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 1
-  l10nKey: UI_BOOSTER_POPUP_DESCRIPTION
+  l10nKey: UI_ARENA_TICKET_POPUP_DESCRIPTION
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -3892,7 +3864,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &329462938049960006
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5455,7 +5427,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 0
-  l10nKey: UI_SWEEP_COUNT
+  l10nKey: UI_REPEAT_COUNT
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -6494,6 +6466,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &6624913363482709341 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5718414708290026654, guid: 5423cf792096944a3884ee1f4b0d4183,
+    type: 3}
+  m_PrefabInstance: {fileID: 1489434166454841795}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd36e9ecf7775ae45bc40a208c43fc92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1784122099928546704
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6700,6 +6684,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: EnoughCpText
+      objectReference: {fileID: 0}
+    - target: {fileID: 8876903551215801234, guid: b2ed3c0ed67b64dc9bc309cbb7156632,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b2ed3c0ed67b64dc9bc309cbb7156632, type: 3}
@@ -7353,3 +7342,15 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 7708242878406976056}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2701752307472586200 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5730728711148222432, guid: f28b579a9755c49b5b5d1a1763a906a8,
+    type: 3}
+  m_PrefabInstance: {fileID: 7708242878406976056}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
