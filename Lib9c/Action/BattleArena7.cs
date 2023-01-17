@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Text;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Arena;
 using Nekoyume.Battle;
+using Nekoyume.BlockChain.Policy;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model;
@@ -15,7 +15,6 @@ using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.Rune;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
@@ -24,11 +23,12 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1663
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1495
     /// </summary>
     [Serializable]
-    [ActionType("battle_arena8")]
-    public class BattleArena : GameAction
+    [ActionObsolete(BlockPolicySource.V100360ObsoleteIndex)]
+    [ActionType("battle_arena7")]
+    public class BattleArena7 : GameAction
     {
         public const string PurchasedCountKey = "purchased_count_during_interval";
         public Address myAvatarAddress;
@@ -81,13 +81,15 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            CheckObsolete(BlockPolicySource.V100360ObsoleteIndex, context);
+
             var addressesHex = GetSignerAndOtherAddressesHex(
                 context,
                 myAvatarAddress,
                 enemyAvatarAddress);
 
             var started = DateTimeOffset.UtcNow;
-            Log.Debug("{AddressesHex}BattleArena exec started", addressesHex);
+            Log.Debug("{AddressesHex}BattleArena7 exec started", addressesHex);
             if (myAvatarAddress.Equals(enemyAvatarAddress))
             {
                 throw new InvalidAddressException(
@@ -145,7 +147,7 @@ namespace Nekoyume.Action
                 ? new RuneSlotState(rawRuneSlotState)
                 : new RuneSlotState(BattleType.Arena);
             var runeListSheet = sheets.GetSheet<RuneListSheet>();
-            runeSlotState.UpdateSlot(runeInfos, runeListSheet);
+            runeSlotState.UpdateSlotV2(runeInfos, runeListSheet);
             states = states.SetState(runeSlotStateAddress, runeSlotState.Serialize());
 
             // update item slot
@@ -167,14 +169,14 @@ namespace Nekoyume.Action
             if (!arenaRow.TryGetRound(round, out var roundData))
             {
                 throw new RoundNotFoundException(
-                    $"[{nameof(BattleArena)}] ChampionshipId({arenaRow.ChampionshipId}) - " +
+                    $"[{nameof(BattleArena7)}] ChampionshipId({arenaRow.ChampionshipId}) - " +
                     $"round({round})");
             }
 
             if (!roundData.IsTheRoundOpened(context.BlockIndex))
             {
                 throw new ThisArenaIsClosedException(
-                    $"{nameof(BattleArena)} : block index({context.BlockIndex}) - " +
+                    $"{nameof(BattleArena7)} : block index({context.BlockIndex}) - " +
                     $"championshipId({roundData.ChampionshipId}) - round({roundData.Round})");
             }
 
@@ -183,27 +185,27 @@ namespace Nekoyume.Action
             if (!states.TryGetArenaParticipants(arenaParticipantsAdr, out var arenaParticipants))
             {
                 throw new ArenaParticipantsNotFoundException(
-                    $"[{nameof(BattleArena)}] ChampionshipId({roundData.ChampionshipId}) - " +
+                    $"[{nameof(BattleArena7)}] ChampionshipId({roundData.ChampionshipId}) - " +
                     $"round({roundData.Round})");
             }
 
             if (!arenaParticipants.AvatarAddresses.Contains(myAvatarAddress))
             {
                 throw new AddressNotFoundInArenaParticipantsException(
-                    $"[{nameof(BattleArena)}] my avatar address : {myAvatarAddress}");
+                    $"[{nameof(BattleArena7)}] my avatar address : {myAvatarAddress}");
             }
 
             if (!arenaParticipants.AvatarAddresses.Contains(enemyAvatarAddress))
             {
                 throw new AddressNotFoundInArenaParticipantsException(
-                    $"[{nameof(BattleArena)}] enemy avatar address : {enemyAvatarAddress}");
+                    $"[{nameof(BattleArena7)}] enemy avatar address : {enemyAvatarAddress}");
             }
 
             var myArenaAvatarStateAdr = ArenaAvatarState.DeriveAddress(myAvatarAddress);
             if (!states.TryGetArenaAvatarState(myArenaAvatarStateAdr, out var myArenaAvatarState))
             {
                 throw new ArenaAvatarStateNotFoundException(
-                    $"[{nameof(BattleArena)}] my avatar address : {myAvatarAddress}");
+                    $"[{nameof(BattleArena7)}] my avatar address : {myAvatarAddress}");
             }
 
             var gameConfigState = states.GetGameConfigState();
@@ -211,7 +213,7 @@ namespace Nekoyume.Action
             if (context.BlockIndex - myArenaAvatarState.LastBattleBlockIndex < battleArenaInterval)
             {
                 throw new CoolDownBlockException(
-                    $"[{nameof(BattleArena)}] LastBattleBlockIndex : " +
+                    $"[{nameof(BattleArena7)}] LastBattleBlockIndex : " +
                     $"{myArenaAvatarState.LastBattleBlockIndex} " +
                     $"CurrentBlockIndex : {context.BlockIndex}");
             }
@@ -222,7 +224,7 @@ namespace Nekoyume.Action
                     out var enemyArenaAvatarState))
             {
                 throw new ArenaAvatarStateNotFoundException(
-                    $"[{nameof(BattleArena)}] enemy avatar address : {enemyAvatarAddress}");
+                    $"[{nameof(BattleArena7)}] enemy avatar address : {enemyAvatarAddress}");
             }
 
             var myArenaScoreAdr = ArenaScore.DeriveAddress(
@@ -232,7 +234,7 @@ namespace Nekoyume.Action
             if (!states.TryGetArenaScore(myArenaScoreAdr, out var myArenaScore))
             {
                 throw new ArenaScoreNotFoundException(
-                    $"[{nameof(BattleArena)}] my avatar address : {myAvatarAddress}" +
+                    $"[{nameof(BattleArena7)}] my avatar address : {myAvatarAddress}" +
                     $" - ChampionshipId({roundData.ChampionshipId}) - round({roundData.Round})");
             }
 
@@ -243,7 +245,7 @@ namespace Nekoyume.Action
             if (!states.TryGetArenaScore(enemyArenaScoreAdr, out var enemyArenaScore))
             {
                 throw new ArenaScoreNotFoundException(
-                    $"[{nameof(BattleArena)}] enemy avatar address : {enemyAvatarAddress}" +
+                    $"[{nameof(BattleArena7)}] enemy avatar address : {enemyAvatarAddress}" +
                     $" - ChampionshipId({roundData.ChampionshipId}) - round({roundData.Round})");
             }
 
@@ -254,7 +256,7 @@ namespace Nekoyume.Action
             if (!states.TryGetArenaInformation(arenaInformationAdr, out var arenaInformation))
             {
                 throw new ArenaInformationNotFoundException(
-                    $"[{nameof(BattleArena)}] my avatar address : {myAvatarAddress}" +
+                    $"[{nameof(BattleArena7)}] my avatar address : {myAvatarAddress}" +
                     $" - ChampionshipId({roundData.ChampionshipId}) - round({roundData.Round})");
             }
 
@@ -266,7 +268,7 @@ namespace Nekoyume.Action
             {
                 var scoreDiff = enemyArenaScore.Score - myArenaScore.Score;
                 throw new ValidateScoreDifferenceException(
-                    $"[{nameof(BattleArena)}] Arena Type({roundData.ArenaType}) : " +
+                    $"[{nameof(BattleArena7)}] Arena Type({roundData.ArenaType}) : " +
                     $"enemyScore({enemyArenaScore.Score}) - myScore({myArenaScore.Score}) = " +
                     $"diff({scoreDiff})");
             }
@@ -289,7 +291,7 @@ namespace Nekoyume.Action
 
             if (roundData.ArenaType != ArenaType.OffSeason && ticket > 1)
             {
-                throw new ExceedPlayCountException($"[{nameof(BattleArena)}] " +
+                throw new ExceedPlayCountException($"[{nameof(BattleArena7)}] " +
                                                    $"ticket : {ticket} / arenaType : " +
                                                    $"{roundData.ArenaType}");
             }
@@ -434,7 +436,7 @@ namespace Nekoyume.Action
             }
 
             var ended = DateTimeOffset.UtcNow;
-            Log.Debug("{AddressesHex}BattleArena Total Executed Time: {Elapsed}", addressesHex, ended - started);
+            Log.Debug("{AddressesHex}BattleArena7 Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states
                 .SetState(myArenaAvatarStateAdr, myArenaAvatarState.Serialize())
                 .SetState(myArenaScoreAdr, myArenaScore.Serialize())

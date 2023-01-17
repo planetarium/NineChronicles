@@ -125,7 +125,7 @@ namespace Lib9c.Tests.Action
                     if (_state.TryGetState(arenaInformationAdr, out List _))
                     {
                         throw new ArenaInformationAlreadyContainsException(
-                            $"[{nameof(JoinArena0)}] id({roundData.ChampionshipId}) / round({roundData.Round})");
+                            $"[{nameof(JoinArena)}] id({roundData.ChampionshipId}) / round({roundData.Round})");
                     }
 
                     var arenaInformation = new ArenaInformation(_avatar1Address, roundData.ChampionshipId, roundData.Round);

@@ -14,12 +14,13 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.Elemental;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
+    using Nekoyume.Model.Rune;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
     using static Lib9c.SerializeKeys;
 
-    public class MimisbrunnrBattle11Test
+    public class MimisbrunnrBattle12Test
     {
         private readonly TableSheets _tableSheets;
 
@@ -30,7 +31,7 @@ namespace Lib9c.Tests.Action
         private readonly IAccountStateDelta _initialState;
         private readonly Dictionary<string, string> _sheets;
 
-        public MimisbrunnrBattle11Test()
+        public MimisbrunnrBattle12Test()
         {
             _sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(_sheets);
@@ -144,7 +145,7 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress, previousAvatarState.SerializeV2());
             }
 
-            var action = new MimisbrunnrBattle11
+            var action = new MimisbrunnrBattle
             {
                 Costumes = new List<Guid> { ((Costume)costume).ItemId },
                 Equipments = equipments.Select(e => e.NonFungibleId).ToList(),
@@ -217,7 +218,7 @@ namespace Lib9c.Tests.Action
                 }
             }
 
-            var action = new MimisbrunnrBattle11
+            var action = new MimisbrunnrBattle
             {
                 Costumes = new List<Guid> { costume.ItemId },
                 Equipments = new List<Guid> { equipment.ItemId },
@@ -244,7 +245,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowFailedLoadStateException()
         {
-            var action = new MimisbrunnrBattle11
+            var action = new MimisbrunnrBattle
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -269,7 +270,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowSheetRowNotFound()
         {
-            var action = new MimisbrunnrBattle11
+            var action = new MimisbrunnrBattle
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -294,7 +295,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowSheetRowColumn()
         {
-            var action = new MimisbrunnrBattle11
+            var action = new MimisbrunnrBattle
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -334,7 +335,7 @@ namespace Lib9c.Tests.Action
                 _tableSheets.WorldSheet,
                 _tableSheets.WorldUnlockSheet);
 
-            var action = new MimisbrunnrBattle11
+            var action = new MimisbrunnrBattle
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -421,7 +422,7 @@ namespace Lib9c.Tests.Action
 
             var state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
 
-            var action = new MimisbrunnrBattle11
+            var action = new MimisbrunnrBattle
             {
                 Costumes = new List<Guid> { ((Costume)costume).ItemId },
                 Equipments = new List<Guid> { equipment.ItemId },
@@ -461,7 +462,7 @@ namespace Lib9c.Tests.Action
             avatarState.worldInformation = new WorldInformation(0, worldSheet, alreadyClearedStageId);
             var nextState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
-            var action = new MimisbrunnrBattle11
+            var action = new MimisbrunnrBattle
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -506,7 +507,7 @@ namespace Lib9c.Tests.Action
             avatarState.inventory.AddItem(equipment);
             var nextState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
-            var action = new MimisbrunnrBattle11
+            var action = new MimisbrunnrBattle
             {
                 Costumes = new List<Guid> { ((Costume)costume).ItemId },
                 Equipments = new List<Guid> { equipment.ItemId },
@@ -597,7 +598,7 @@ namespace Lib9c.Tests.Action
                         avatarState.address.Derive(LegacyInventoryKey),
                         avatarState.inventory.Serialize());
 
-                var action = new MimisbrunnrBattle11
+                var action = new MimisbrunnrBattle
                 {
                     Costumes = costumes,
                     Equipments = equipments,
@@ -703,7 +704,7 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress.Derive(LegacyQuestListKey), previousAvatarState.questList.Serialize());
             }
 
-            var action = new MimisbrunnrBattle11
+            var action = new MimisbrunnrBattle
             {
                 Costumes = costumes,
                 Equipments = equipments.Select(e => e.NonFungibleId).ToList(),
@@ -742,6 +743,99 @@ namespace Lib9c.Tests.Action
             var totalMax = max * playCount * stageRow.DropItemMax;
             var totalCount = rewardItem.Sum(x => x.count);
             Assert.InRange(totalCount, totalMin, totalMax);
+        }
+
+        [Theory]
+        [InlineData(0, 30001, 1, 30001, typeof(DuplicatedRuneIdException))]
+        [InlineData(1, 10002, 1, 30001, typeof(DuplicatedRuneSlotIndexException))]
+        public void ExecuteDuplicatedException(int slotIndex, int runeId, int slotIndex2, int runeId2, Type exception)
+        {
+            int avatarLevel = 200;
+            int worldId = GameConfig.MimisbrunnrWorldId;
+            int stageId = GameConfig.MimisbrunnrStartStageId;
+            int clearStageId = 140;
+            Assert.True(_tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow));
+            Assert.True(stageId >= worldRow.StageBegin);
+            Assert.True(stageId <= worldRow.StageEnd);
+            Assert.True(_tableSheets.StageSheet.TryGetValue(stageId, out _));
+
+            var previousAvatarState = _initialState.GetAvatarState(_avatarAddress);
+            previousAvatarState.level = avatarLevel;
+            previousAvatarState.worldInformation = new WorldInformation(
+                0,
+                _tableSheets.WorldSheet,
+                clearStageId);
+
+            var costumeId = _tableSheets
+                .CostumeItemSheet
+                .Values
+                .First(r => r.ItemSubType == ItemSubType.FullCostume)
+                .Id;
+            var costume =
+                ItemFactory.CreateItem(_tableSheets.ItemSheet[costumeId], new TestRandom());
+            previousAvatarState.inventory.AddItem(costume);
+
+            var mimisbrunnrSheet = _tableSheets.MimisbrunnrSheet;
+            if (!mimisbrunnrSheet.TryGetValue(stageId, out var mimisbrunnrSheetRow))
+            {
+                throw new SheetRowNotFoundException("MimisbrunnrSheet", stageId);
+            }
+
+            var elementalType = _tableSheets.MimisbrunnrSheet.TryGetValue(stageId, out var mimisbrunnrRow)
+                ? mimisbrunnrRow.ElementalTypes.First()
+                : ElementalType.Normal;
+            var equipments = Doomfist.GetAllParts(_tableSheets, previousAvatarState.level, elementalType);
+            foreach (var equipment in equipments)
+            {
+                previousAvatarState.inventory.AddItem(equipment);
+            }
+
+            var result = new CombinationConsumable5.ResultModel
+            {
+                id = default,
+                gold = 0,
+                actionPoint = 0,
+                recipeId = 1,
+                materials = new Dictionary<Material, int>(),
+                itemUsable = equipments.First(),
+            };
+            for (var i = 0; i < 100; i++)
+            {
+                var mail = new CombinationMail(result, i, default, 0);
+                previousAvatarState.Update(mail);
+            }
+
+            var state = _initialState;
+            state = _initialState
+                .SetState(_avatarAddress.Derive(LegacyInventoryKey), previousAvatarState.inventory.Serialize())
+                .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), previousAvatarState.worldInformation.Serialize())
+                .SetState(_avatarAddress.Derive(LegacyQuestListKey), previousAvatarState.questList.Serialize())
+                .SetState(_avatarAddress, previousAvatarState.SerializeV2());
+
+            var action = new MimisbrunnrBattle
+            {
+                Costumes = new List<Guid> { ((Costume)costume).ItemId },
+                Equipments = equipments.Select(e => e.NonFungibleId).ToList(),
+                Foods = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>()
+                {
+                    new RuneSlotInfo(slotIndex, runeId),
+                    new RuneSlotInfo(slotIndex2, runeId2),
+                },
+                WorldId = worldId,
+                StageId = stageId,
+                PlayCount = 1,
+                AvatarAddress = _avatarAddress,
+            };
+
+            Assert.Throws(exception, () => action.Execute(new ActionContext
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+                Rehearsal = false,
+                BlockIndex = BlockPolicySource.V100301ExecutedBlockIndex,
+            }));
         }
     }
 }

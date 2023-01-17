@@ -14,13 +14,14 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Exceptions;
     using Nekoyume.Extensions;
     using Nekoyume.Model.Event;
+    using Nekoyume.Model.Rune;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Nekoyume.TableData.Event;
     using Xunit;
     using static Lib9c.SerializeKeys;
 
-    public class EventDungeonBattleV3Test
+    public class EventDungeonBattleV4Test
     {
         private readonly Currency _ncgCurrency;
         private readonly TableSheets _tableSheets;
@@ -29,7 +30,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _avatarAddress;
         private IAccountStateDelta _initialStates;
 
-        public EventDungeonBattleV3Test()
+        public EventDungeonBattleV4Test()
         {
             _initialStates = new State();
 
@@ -345,6 +346,27 @@ namespace Lib9c.Tests.Action
                     blockIndex: scheduleRow.StartBlockIndex));
         }
 
+        [Theory]
+        [InlineData(0, 30001, 1, 30001, typeof(DuplicatedRuneIdException))]
+        [InlineData(1, 10002, 1, 30001, typeof(DuplicatedRuneSlotIndexException))]
+        public void Execute_DuplicatedException(int slotIndex, int runeId, int slotIndex2, int runeId2, Type exception)
+        {
+            Assert.True(_tableSheets.EventScheduleSheet
+                .TryGetValue(1001, out var scheduleRow));
+            Assert.Throws(exception, () =>
+                Execute(
+                    _initialStates,
+                    1001,
+                    10010001,
+                    10010001,
+                    false,
+                    scheduleRow.StartBlockIndex,
+                    slotIndex,
+                    runeId,
+                    slotIndex2,
+                    runeId2));
+        }
+
         [Fact]
         public void Execute_V100301()
         {
@@ -395,7 +417,11 @@ namespace Lib9c.Tests.Action
             int eventDungeonId,
             int eventDungeonStageId,
             bool buyTicketIfNeeded = false,
-            long blockIndex = 0)
+            long blockIndex = 0,
+            int slotIndex = 0,
+            int runeId = 10002,
+            int slotIndex2 = 1,
+            int runeId2 = 30001)
         {
             var previousAvatarState = previousStates.GetAvatarStateV2(_avatarAddress);
             var equipments =
@@ -405,7 +431,7 @@ namespace Lib9c.Tests.Action
                 previousAvatarState.inventory.AddItem(equipment, iLock: null);
             }
 
-            var action = new EventDungeonBattleV3
+            var action = new EventDungeonBattle
             {
                 AvatarAddress = _avatarAddress,
                 EventScheduleId = eventScheduleId,
@@ -416,7 +442,11 @@ namespace Lib9c.Tests.Action
                     .ToList(),
                 Costumes = new List<Guid>(),
                 Foods = new List<Guid>(),
-                RuneInfos = new List<RuneSlotInfo>(),
+                RuneInfos = new List<RuneSlotInfo>()
+                {
+                    new RuneSlotInfo(slotIndex, runeId),
+                    new RuneSlotInfo(slotIndex2, runeId2),
+                },
                 BuyTicketIfNeeded = buyTicketIfNeeded,
             };
 

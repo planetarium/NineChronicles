@@ -14,12 +14,13 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Helper;
     using Nekoyume.Model;
     using Nekoyume.Model.Item;
+    using Nekoyume.Model.Rune;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
     using static Lib9c.SerializeKeys;
 
-    public class HackAndSlashSweep8Test
+    public class HackAndSlashSweep9Test
     {
         private readonly Dictionary<string, string> _sheets;
         private readonly TableSheets _tableSheets;
@@ -39,7 +40,7 @@ namespace Lib9c.Tests.Action
         private readonly IAccountStateDelta _initialState;
         private readonly IRandom _random;
 
-        public HackAndSlashSweep8Test()
+        public HackAndSlashSweep9Test()
         {
             _random = new TestRandom();
             _sheets = TableSheetsImporter.ImportSheets();
@@ -213,7 +214,7 @@ namespace Lib9c.Tests.Action
                     _tableSheets.MaterialItemSheet);
 
                 var (equipments, costumes) = GetDummyItems(avatarState);
-                var action = new HackAndSlashSweep8
+                var action = new HackAndSlashSweep
                 {
                     actionPoint = avatarState.actionPoint,
                     costumes = costumes,
@@ -252,7 +253,7 @@ namespace Lib9c.Tests.Action
         [InlineData(false)]
         public void Execute_FailedLoadStateException(bool backward)
         {
-            var action = new HackAndSlashSweep8
+            var action = new HackAndSlashSweep
             {
                 runeInfos = new List<RuneSlotInfo>(),
                 apStoneCount = 1,
@@ -283,7 +284,7 @@ namespace Lib9c.Tests.Action
         [InlineData(100, 1)]
         public void Execute_SheetRowNotFoundException(int worldId, int stageId)
         {
-            var action = new HackAndSlashSweep8
+            var action = new HackAndSlashSweep
             {
                 runeInfos = new List<RuneSlotInfo>(),
                 apStoneCount = 1,
@@ -310,7 +311,7 @@ namespace Lib9c.Tests.Action
         [InlineData(2, 50)]
         public void Execute_SheetRowColumnException(int worldId, int stageId)
         {
-            var action = new HackAndSlashSweep8
+            var action = new HackAndSlashSweep
             {
                 runeInfos = new List<RuneSlotInfo>(),
                 apStoneCount = 1,
@@ -339,7 +340,7 @@ namespace Lib9c.Tests.Action
         [InlineData(1, 49, 2, 51, false)]
         public void Execute_InvalidStageException(int clearedWorldId, int clearedStageId, int worldId, int stageId, bool backward)
         {
-            var action = new HackAndSlashSweep8
+            var action = new HackAndSlashSweep
             {
                 runeInfos = new List<RuneSlotInfo>(),
                 apStoneCount = 1,
@@ -426,7 +427,7 @@ namespace Lib9c.Tests.Action
                 );
             }
 
-            var action = new HackAndSlashSweep8
+            var action = new HackAndSlashSweep
             {
                 runeInfos = new List<RuneSlotInfo>(),
                 apStoneCount = 1,
@@ -481,7 +482,7 @@ namespace Lib9c.Tests.Action
                         avatarState.questList.Serialize());
             }
 
-            var action = new HackAndSlashSweep8
+            var action = new HackAndSlashSweep
             {
                 runeInfos = new List<RuneSlotInfo>(),
                 apStoneCount = apStoneCount,
@@ -557,7 +558,7 @@ namespace Lib9c.Tests.Action
 
                 var (equipments, costumes) = GetDummyItems(avatarState);
 
-                var action = new HackAndSlashSweep8
+                var action = new HackAndSlashSweep
                 {
                     equipments = equipments,
                     costumes = costumes,
@@ -632,7 +633,7 @@ namespace Lib9c.Tests.Action
                     playCount);
 
                 var (equipments, costumes) = GetDummyItems(avatarState);
-                var action = new HackAndSlashSweep8
+                var action = new HackAndSlashSweep
                 {
                     runeInfos = new List<RuneSlotInfo>(),
                     costumes = costumes,
@@ -708,7 +709,7 @@ namespace Lib9c.Tests.Action
                     playCount);
 
                 var (equipments, costumes) = GetDummyItems(avatarState);
-                var action = new HackAndSlashSweep8
+                var action = new HackAndSlashSweep
                 {
                     costumes = costumes,
                     equipments = equipments,
@@ -783,7 +784,7 @@ namespace Lib9c.Tests.Action
                     stageId,
                     playCount);
 
-                var action = new HackAndSlashSweep8
+                var action = new HackAndSlashSweep
                 {
                     costumes = new List<Guid>(),
                     equipments = new List<Guid>(),
@@ -856,7 +857,7 @@ namespace Lib9c.Tests.Action
                     stageId,
                     playCount);
 
-                var action = new HackAndSlashSweep8
+                var action = new HackAndSlashSweep
                 {
                     costumes = new List<Guid>(),
                     equipments = new List<Guid>(),
@@ -877,6 +878,84 @@ namespace Lib9c.Tests.Action
                 var nextAvatar = nextState.GetAvatarStateV2(_avatarAddress);
                 Assert.Equal(expectedLevel, nextAvatar.level);
                 Assert.Equal(expectedExp, nextAvatar.exp);
+            }
+            else
+            {
+                throw new SheetRowNotFoundException(nameof(StageSheet), stageId);
+            }
+        }
+
+        [Theory]
+        [InlineData(0, 30001, 1, 30001, typeof(DuplicatedRuneIdException))]
+        [InlineData(1, 10002, 1, 30001, typeof(DuplicatedRuneSlotIndexException))]
+        public void ExecuteDuplicatedException(int slotIndex, int runeId, int slotIndex2, int runeId2, Type exception)
+        {
+            var stakingLevel = 1;
+            const int worldId = 1;
+            const int stageId = 1;
+            var gameConfigState = _initialState.GetGameConfigState();
+            var avatarState = new AvatarState(
+                _avatarAddress,
+                _agentAddress,
+                0,
+                _initialState.GetAvatarSheets(),
+                gameConfigState,
+                _rankingMapAddress)
+            {
+                worldInformation =
+                    new WorldInformation(0, _initialState.GetSheet<WorldSheet>(), 25),
+                actionPoint = 120,
+                level = 3,
+            };
+            var itemRow = _tableSheets.MaterialItemSheet.Values.First(r =>
+                r.ItemSubType == ItemSubType.ApStone);
+            var apStone = ItemFactory.CreateTradableMaterial(itemRow);
+            avatarState.inventory.AddItem(apStone);
+
+            var stakeStateAddress = StakeState.DeriveAddress(_agentAddress);
+            var stakeState = new StakeState(stakeStateAddress, 1);
+            var requiredGold = _tableSheets.StakeRegularRewardSheet.OrderedRows
+                .FirstOrDefault(r => r.Level == stakingLevel)?.RequiredGold ?? 0;
+            var state = _initialState
+                .SetState(_avatarAddress, avatarState.Serialize())
+                .SetState(stakeStateAddress, stakeState.Serialize())
+                .MintAsset(stakeStateAddress, requiredGold * _initialState.GetGoldCurrency());
+            var stageSheet = _initialState.GetSheet<StageSheet>();
+            if (stageSheet.TryGetValue(stageId, out var stageRow))
+            {
+                var apSheet = _initialState.GetSheet<StakeActionPointCoefficientSheet>();
+                var costAp = apSheet.GetActionPointByStaking(stageRow.CostAP, 1, stakingLevel);
+                var itemPlayCount =
+                    gameConfigState.ActionPointMax / costAp * 1;
+                var apPlayCount = avatarState.actionPoint / costAp;
+                var playCount = apPlayCount + itemPlayCount;
+                var (expectedLevel, expectedExp) = avatarState.GetLevelAndExp(
+                    _initialState.GetSheet<CharacterLevelSheet>(),
+                    stageId,
+                    playCount);
+
+                var action = new HackAndSlashSweep
+                {
+                    costumes = new List<Guid>(),
+                    equipments = new List<Guid>(),
+                    runeInfos = new List<RuneSlotInfo>()
+                    {
+                        new RuneSlotInfo(slotIndex, runeId),
+                        new RuneSlotInfo(slotIndex2, runeId2),
+                    },
+                    avatarAddress = _avatarAddress,
+                    actionPoint = avatarState.actionPoint,
+                    apStoneCount = 1,
+                    worldId = worldId,
+                    stageId = stageId,
+                };
+
+                Assert.Throws(exception, () => action.Execute(new ActionContext
+                {
+                    PreviousStates = state,
+                    Signer = _agentAddress,
+                    Random = new TestRandom(),
+                }));
             }
             else
             {

@@ -19,6 +19,7 @@
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.Quest;
+    using Nekoyume.Model.Rune;
     using Nekoyume.Model.Skill;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
@@ -1556,6 +1557,220 @@
             }));
 
             SerializeException<InvalidRepeatPlayException>(exec);
+        }
+
+        [Fact]
+        public void ExecuteTwoRepetitions()
+        {
+            var avatarLevel = 50;
+            var worldId = 1;
+            var stageId = 20;
+            Assert.True(_tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow));
+            Assert.True(stageId >= worldRow.StageBegin);
+            Assert.True(stageId <= worldRow.StageEnd);
+            Assert.True(_tableSheets.StageSheet.TryGetValue(stageId, out _));
+
+            var previousAvatarState = _initialState.GetAvatarStateV2(_avatarAddress);
+            previousAvatarState.level = avatarLevel;
+            var clearedStageId = _tableSheets.StageSheet.First?.Id ?? 0;
+            clearedStageId = Math.Max(clearedStageId, stageId - 1);
+            previousAvatarState.worldInformation = new WorldInformation(
+                0,
+                _tableSheets.WorldSheet,
+                clearedStageId);
+
+            var costumes = new List<Guid>();
+            IRandom random = new TestRandom();
+            if (avatarLevel >= GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot)
+            {
+                var costumeId = _tableSheets
+                .CostumeItemSheet
+                .Values
+                .First(r => r.ItemSubType == ItemSubType.FullCostume)
+                .Id;
+
+                var costume = (Costume)ItemFactory.CreateItem(
+                    _tableSheets.ItemSheet[costumeId], random);
+                previousAvatarState.inventory.AddItem(costume);
+                costumes.Add(costume.ItemId);
+            }
+
+            var equipments = Doomfist.GetAllParts(_tableSheets, previousAvatarState.level);
+            foreach (var equipment in equipments)
+            {
+                previousAvatarState.inventory.AddItem(equipment);
+            }
+
+            var mailEquipmentRow = _tableSheets.EquipmentItemSheet.Values.First();
+            var mailEquipment = ItemFactory.CreateItemUsable(mailEquipmentRow, default, 0);
+            var result = new CombinationConsumable5.ResultModel
+            {
+                id = default,
+                gold = 0,
+                actionPoint = 0,
+                recipeId = 1,
+                materials = new Dictionary<Material, int>(),
+                itemUsable = mailEquipment,
+            };
+            for (var i = 0; i < 100; i++)
+            {
+                var mail = new CombinationMail(result, i, default, 0);
+                previousAvatarState.Update(mail);
+            }
+
+            var state = _initialState
+                .SetState(_avatarAddress, previousAvatarState.SerializeV2())
+                .SetState(_avatarAddress.Derive(LegacyInventoryKey), previousAvatarState.inventory.Serialize())
+                .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), previousAvatarState.worldInformation.Serialize())
+                .SetState(_avatarAddress.Derive(LegacyQuestListKey), previousAvatarState.questList.Serialize());
+
+            state = state.SetState(
+                _avatarAddress.Derive("world_ids"),
+                List.Empty.Add(worldId.Serialize())
+            );
+
+            var action = new HackAndSlash
+            {
+                Costumes = costumes,
+                Equipments = equipments.Select(e => e.NonFungibleId).ToList(),
+                Foods = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>()
+                {
+                    new RuneSlotInfo(0, 30001),
+                    new RuneSlotInfo(1, 10002),
+                },
+                WorldId = worldId,
+                StageId = stageId,
+                AvatarAddress = _avatarAddress,
+            };
+
+            var nextState = action.Execute(new ActionContext
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+                Rehearsal = false,
+                BlockIndex = BlockPolicySource.V100301ExecutedBlockIndex,
+            });
+
+            var action2 = new HackAndSlash
+            {
+                Costumes = costumes,
+                Equipments = equipments.Select(e => e.NonFungibleId).ToList(),
+                Foods = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>()
+                {
+                    new RuneSlotInfo(0, 10002),
+                    new RuneSlotInfo(1, 30001),
+                },
+                WorldId = worldId,
+                StageId = stageId,
+                AvatarAddress = _avatarAddress,
+            };
+
+            action2.Execute(new ActionContext
+            {
+                PreviousStates = nextState,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+                Rehearsal = false,
+                BlockIndex = BlockPolicySource.V100301ExecutedBlockIndex,
+            });
+        }
+
+        [Theory]
+        [InlineData(0, 30001, 1, 30001, typeof(DuplicatedRuneIdException))]
+        [InlineData(1, 10002, 1, 30001, typeof(DuplicatedRuneSlotIndexException))]
+        public void ExecuteDuplicatedException(int slotIndex, int runeId, int slotIndex2, int runeId2, Type exception)
+        {
+            var avatarLevel = 50;
+            var worldId = 1;
+            var stageId = 20;
+            Assert.True(_tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow));
+            Assert.True(stageId >= worldRow.StageBegin);
+            Assert.True(stageId <= worldRow.StageEnd);
+            Assert.True(_tableSheets.StageSheet.TryGetValue(stageId, out _));
+
+            var previousAvatarState = _initialState.GetAvatarStateV2(_avatarAddress);
+            previousAvatarState.level = avatarLevel;
+            var clearedStageId = _tableSheets.StageSheet.First?.Id ?? 0;
+            clearedStageId = Math.Max(clearedStageId, stageId - 1);
+            previousAvatarState.worldInformation = new WorldInformation(
+                0,
+                _tableSheets.WorldSheet,
+                clearedStageId);
+
+            var costumes = new List<Guid>();
+            IRandom random = new TestRandom();
+            if (avatarLevel >= GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot)
+            {
+                var costumeId = _tableSheets
+                .CostumeItemSheet
+                .Values
+                .First(r => r.ItemSubType == ItemSubType.FullCostume)
+                .Id;
+
+                var costume = (Costume)ItemFactory.CreateItem(
+                    _tableSheets.ItemSheet[costumeId], random);
+                previousAvatarState.inventory.AddItem(costume);
+                costumes.Add(costume.ItemId);
+            }
+
+            var equipments = Doomfist.GetAllParts(_tableSheets, previousAvatarState.level);
+            foreach (var equipment in equipments)
+            {
+                previousAvatarState.inventory.AddItem(equipment);
+            }
+
+            var mailEquipmentRow = _tableSheets.EquipmentItemSheet.Values.First();
+            var mailEquipment = ItemFactory.CreateItemUsable(mailEquipmentRow, default, 0);
+            var result = new CombinationConsumable5.ResultModel
+            {
+                id = default,
+                gold = 0,
+                actionPoint = 0,
+                recipeId = 1,
+                materials = new Dictionary<Material, int>(),
+                itemUsable = mailEquipment,
+            };
+            for (var i = 0; i < 100; i++)
+            {
+                var mail = new CombinationMail(result, i, default, 0);
+                previousAvatarState.Update(mail);
+            }
+
+            var state = _initialState
+                .SetState(_avatarAddress, previousAvatarState.SerializeV2())
+                .SetState(_avatarAddress.Derive(LegacyInventoryKey), previousAvatarState.inventory.Serialize())
+                .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), previousAvatarState.worldInformation.Serialize())
+                .SetState(_avatarAddress.Derive(LegacyQuestListKey), previousAvatarState.questList.Serialize());
+
+            state = state.SetState(
+                _avatarAddress.Derive("world_ids"),
+                List.Empty.Add(worldId.Serialize())
+            );
+
+            var action = new HackAndSlash
+            {
+                Costumes = costumes,
+                Equipments = equipments.Select(e => e.NonFungibleId).ToList(),
+                Foods = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>()
+                {
+                    new RuneSlotInfo(slotIndex, runeId),
+                    new RuneSlotInfo(slotIndex2, runeId2),
+                },
+                WorldId = worldId,
+                StageId = stageId,
+                AvatarAddress = _avatarAddress,
+            };
+
+            Assert.Throws(exception, () => action.Execute(new ActionContext
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+            }));
         }
 
         private static void SerializeException<T>(Exception exec)
