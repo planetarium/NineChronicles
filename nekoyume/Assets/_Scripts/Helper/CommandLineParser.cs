@@ -63,6 +63,8 @@ namespace Nekoyume.Helper
 
         private double sentrySampleRate = 0;
 
+        private string shopServiceHost;
+
         public bool Empty { get; private set; } = true;
 
         public string genesisBlockPath;
@@ -358,6 +360,18 @@ namespace Nekoyume.Helper
                 Empty = false;
             }
         }
+
+        [Option("shop-service-host", Required = false, HelpText = "shop service host")]
+        public string ShopServiceHost
+        {
+            get => shopServiceHost;
+            set
+            {
+                shopServiceHost = value;
+                Empty = false;
+            }
+        }
+
 
         public static CommandLineOptions Load(string localPath)
         {
