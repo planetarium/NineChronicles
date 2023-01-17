@@ -130,18 +130,33 @@ namespace Nekoyume.Game
                     {
                         if (container.SkillCutsceneExists(param.SkillId))
                         {
+                            if (!Game.instance.TableSheets.SkillSheet
+                                .TryGetValue(param.SkillId, out var skillRow))
+                            {
+                                continue;
+                            }
+
+                            var playAll = skillRow.SkillType != Model.Skill.SkillType.Attack;
                             container.OnAttackPoint = () =>
                             {
-                                var infos = param.SkillInfos;
-                                if (param.BuffInfos is not null &&
-                                    param.BuffInfos.Any())
-                                {
-                                    infos = infos.Concat(param.BuffInfos);
-                                }
-
-                                boss.ProcessSkill(param.SkillId, infos);
+                                boss.ProceedSkill(playAll);
                             };
+
+                            var infos = param.SkillInfos;
+                            if (param.BuffInfos is not null &&
+                                param.BuffInfos.Any())
+                            {
+                                infos = infos.Concat(param.BuffInfos);
+                            }
+
+                            boss.SetSkillInfos(skillRow, infos);
                             yield return StartCoroutine(container.CoPlaySkillCutscene(param.SkillId));
+                            if (!playAll)
+                            {
+                                // Show remaining skill infos
+                                boss.ProceedSkill(playAll);
+                            }
+
                             _player.UpdateStatusUI();
                             _boss.UpdateStatusUI();
                         }
