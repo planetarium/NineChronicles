@@ -154,7 +154,7 @@ namespace Nekoyume.Game
                             if (!playAll)
                             {
                                 // Show remaining skill infos
-                                boss.ProceedSkill(playAll);
+                                boss.ProceedSkill(true);
                             }
 
                             _player.UpdateStatusUI();

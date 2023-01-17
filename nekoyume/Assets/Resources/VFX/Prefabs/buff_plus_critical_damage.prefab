@@ -9676,7 +9676,7 @@ GameObject:
   - component: {fileID: 3380005104545845031}
   - component: {fileID: 1357680692235841710}
   - component: {fileID: 2025779400190687346}
-  - component: {fileID: -1183944438220990190}
+  - component: {fileID: 3251190406783041691}
   m_Layer: 14
   m_Name: buff_plus_critical_damage
   m_TagString: Untagged
@@ -14483,7 +14483,7 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
---- !u!114 &-1183944438220990190
+--- !u!114 &3251190406783041691
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -14492,7 +14492,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1391978601354276969}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f351a36e8acd4e569c95f702b4c5006c, type: 3}
+  m_Script: {fileID: 11500000, guid: ff9c74dc6c9aeb2428066d24d9a6763f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _initializeSortingProbsOfChildren: 0

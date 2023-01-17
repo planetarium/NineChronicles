@@ -113,6 +113,24 @@ MonoBehaviour:
     MinusVFX: {fileID: 7837708294353371776, guid: 3b552c3dc88c3477b90888b571e718cb,
       type: 3}
   OverrideDataList:
+  - Id: 500001
+    Icon: {fileID: 21300000, guid: a3c38c985c66a42b1b20aaaba99934b1, type: 3}
+    CastingVFX: {fileID: 5166876917278104467, guid: 5b2f8b6efafe66b4b864000303377aab,
+      type: 3}
+    BuffVFX: {fileID: 7171611368931243746, guid: 717216517b03d4c57bae5a9a59286335,
+      type: 3}
+  - Id: 500002
+    Icon: {fileID: 21300000, guid: a3c38c985c66a42b1b20aaaba99934b1, type: 3}
+    CastingVFX: {fileID: 5166876917278104467, guid: 5b2f8b6efafe66b4b864000303377aab,
+      type: 3}
+    BuffVFX: {fileID: 7171611368931243746, guid: 717216517b03d4c57bae5a9a59286335,
+      type: 3}
+  - Id: 500003
+    Icon: {fileID: 21300000, guid: a3c38c985c66a42b1b20aaaba99934b1, type: 3}
+    CastingVFX: {fileID: 5166876917278104467, guid: 5b2f8b6efafe66b4b864000303377aab,
+      type: 3}
+    BuffVFX: {fileID: 7171611368931243746, guid: 717216517b03d4c57bae5a9a59286335,
+      type: 3}
   - Id: 600001
     Icon: {fileID: 21300000, guid: a3c38c985c66a42b1b20aaaba99934b1, type: 3}
     CastingVFX: {fileID: 5166876917278104467, guid: 5b2f8b6efafe66b4b864000303377aab,

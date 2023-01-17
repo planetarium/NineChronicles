@@ -125,10 +125,12 @@ namespace Nekoyume.Game.Character
                         while (_skillEnumerator.MoveNext())
                         {
                             var info = _skillEnumerator.Current;
-                            var attackTarget = info.Target.Id == Id ? this : _target;
-                            ProcessAttack(attackTarget, info, true);
-
-                            if (info.Buff != null)
+                            if (info.Buff == null)
+                            {
+                                var attackTarget = info.Target.Id == Id ? this : _target;
+                                ProcessAttack(attackTarget, info, true);
+                            }
+                            else
                             {
                                 var buffTarget = info.Target.Id == Id ? this : _target;
                                 ProcessBuff(buffTarget, info);
@@ -140,10 +142,13 @@ namespace Nekoyume.Game.Character
                     {
                         _skillEnumerator.MoveNext();
                         var info = _skillEnumerator.Current;
-                        var attackTarget = info.Target.Id == Id ? this : _target;
-                        ProcessAttack(attackTarget, info, true);
 
-                        if (info.Buff != null)
+                        if (info.Buff == null)
+                        {
+                            var attackTarget = info.Target.Id == Id ? this : _target;
+                            ProcessAttack(attackTarget, info, true);
+                        }
+                        else
                         {
                             var buffTarget = info.Target.Id == Id ? this : _target;
                             ProcessBuff(buffTarget, info);
