@@ -120,7 +120,7 @@ _300001,힐(전체),Normal,Heal,Heal,Ally,1,1 // 미구현
 500005,할퀴기 Wave 5,Normal,Attack,BlowAttack,Enemy,1,0
 500011,분노,Normal,Attack,BlowAttack,Enemy,1,0
 500012,부식,Normal,Attack,BlowAttack,Enemy,1,0
-500013,연타,Normal,Attack,DoubleAttack,Enemy,1,0
+500013,연타,Normal,Attack,AreaAttack,Enemy,1,0
 500014,진노,Normal,Buff,CriticalBuff,Self,1,0
 500015,진노 Wave 4,Normal,Buff,CriticalBuff,Self,1,0
 500016,진노 Wave 5,Normal,Buff,CriticalBuff,Self,1,0
