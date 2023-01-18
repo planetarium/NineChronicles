@@ -21,6 +21,7 @@ using WorldBossState = Nekoyume.Model.State.WorldBossState;
 
 namespace Nekoyume.UI
 {
+    using TMPro;
     using UniRx;
 
     public class WorldBoss : Widget
@@ -54,6 +55,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private ConditionalButton enterButton;
+
+        [SerializeField]
+        private TextMeshProUGUI titleText;
 
         [SerializeField]
         private GameObject offSeasonContainer;
@@ -251,6 +255,10 @@ namespace Nekoyume.UI
                     : 0;
             _period = (begin, nextRow.StartedBlockIndex);
 
+            var bossName = WorldBossFrontHelper.TryGetBossData(nextRow.BossId, out var data)
+                ? data.name
+                : string.Empty;
+            titleText.text = bossName;
             UpdateBossPrefab(nextRow, true);
         }
 
