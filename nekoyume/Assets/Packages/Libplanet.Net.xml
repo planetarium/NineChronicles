@@ -365,6 +365,31 @@
             <param name="localVersion">The currently running application's
             <see cref="T:Libplanet.Net.AppProtocolVersion"/>.</param>
         </member>
+        <member name="T:Libplanet.Net.HostOptions">
+            <summary>
+            Various options for determining <see cref="T:Libplanet.Net.Swarm`1"/>'s <see cref="T:Libplanet.Net.BoundPeer"/> identity.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.HostOptions.Host">
+            <summary>
+            The hostname to be a part of a public endpoint that peers may use when
+            they connect to this node.  This is set to <see langword="null"/> when
+            a non-empty <see cref="P:Libplanet.Net.HostOptions.IceServers"/> is provided.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.HostOptions.IceServers">
+            <summary>
+            The set of
+            <a href="https://en.wikipedia.org/wiki/Interactive_Connectivity_Establishment">ICE</a>
+            servers to use for TURN/STUN to traverse NAT.  This is empty when <see cref="P:Libplanet.Net.HostOptions.Host"/>
+            is provided.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.HostOptions.Port">
+            <summary>
+            The port number to use for the host.  If set to zero, a free port will be assigned.
+            </summary>
+        </member>
         <member name="M:Libplanet.Net.IceServer.#ctor(System.Uri)">
             <summary>
             Creates an instance by parsing given <paramref name="url"/>.
@@ -1425,7 +1450,7 @@
             operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
         </member>
-        <member name="M:Libplanet.Net.Swarm`1.#ctor(Libplanet.Blockchain.BlockChain{`0},Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersionOptions,System.String,System.Nullable{System.Int32},System.Collections.Generic.IEnumerable{Libplanet.Net.IceServer},Libplanet.Net.SwarmOptions)">
+        <member name="M:Libplanet.Net.Swarm`1.#ctor(Libplanet.Blockchain.BlockChain{`0},Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersionOptions,Libplanet.Net.HostOptions,Libplanet.Net.SwarmOptions)">
             <summary>
             Creates a <see cref="T:Libplanet.Net.Swarm`1"/>.  This constructor in only itself does not start
             any communication with the network.
@@ -1436,13 +1461,8 @@
             <param name="appProtocolVersionOptions">The <see cref="T:Libplanet.Net.AppProtocolVersionOptions"/>
             to use when handling an <see cref="P:Libplanet.Net.Swarm`1.AppProtocolVersion"/> attached to
             a <see cref="T:Libplanet.Net.Messages.Message"/>.</param>
-            <param name="host">A hostname to be a part of a public endpoint, that peers use when
-            they connect to this node.  Note that this is not a hostname to listen to;
-            <see cref="T:Libplanet.Net.Swarm`1"/> always listens to 0.0.0.0 &amp; ::/0.</param>
-            <param name="listenPort">A port number to listen to.</param>
-            <param name="iceServers">
-            <a href="https://en.wikipedia.org/wiki/Interactive_Connectivity_Establishment">ICE</a>
-            servers to use for TURN/STUN.  Purposes to traverse NAT.</param>
+            <param name="hostOptions">The <see cref="T:Libplanet.Net.HostOptions"/> to use when binding
+            to the network.</param>
             <param name="options">Options for <see cref="T:Libplanet.Net.Swarm`1"/>.</param>
         </member>
         <member name="P:Libplanet.Net.Swarm`1.LastMessageTimestamp">
@@ -2110,7 +2130,7 @@
             Implementation of <see cref="T:Libplanet.Net.Transports.ITransport"/> interface using NetMQ.
             </summary>
         </member>
-        <member name="M:Libplanet.Net.Transports.NetMQTransport.#ctor(Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersionOptions,System.String,System.Nullable{System.Int32},System.Collections.Generic.IEnumerable{Libplanet.Net.IceServer},System.Nullable{System.TimeSpan})">
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.#ctor(Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersionOptions,Libplanet.Net.HostOptions,System.Nullable{System.TimeSpan})">
             <summary>
             Creates a <see cref="T:Libplanet.Net.Transports.NetMQTransport"/> instance.
             </summary>
@@ -2118,20 +2138,13 @@
             <param name="appProtocolVersionOptions">The <see cref="T:Libplanet.Net.AppProtocolVersionOptions"/>
             to use when handling an <see cref="T:Libplanet.Net.AppProtocolVersion"/> attached to
             a <see cref="T:Libplanet.Net.Messages.Message"/>.</param>
-            <param name="host">A hostname to be a part of a public endpoint, that peers use when
-            they connect to this node.  Note that this is not a hostname to listen to;
-            <see cref="T:Libplanet.Net.Transports.NetMQTransport"/> always listens to 0.0.0.0 &amp; ::/0.</param>
-            <param name="listenPort">A port number to listen to.</param>
-            <param name="iceServers">
-            <a href="https://en.wikipedia.org/wiki/Interactive_Connectivity_Establishment">ICE</a>
-            servers to use for TURN/STUN.  Purposes to traverse NAT.</param>
+            <param name="hostOptions">The <see cref="T:Libplanet.Net.HostOptions"/> to use when binding
+            to the network.</param>
             <param name="messageTimestampBuffer">The amount in <see cref="T:System.TimeSpan"/>
             that is allowed for the timestamp of a <see cref="T:Libplanet.Net.Messages.Message"/> to differ from
             the current time of a local node.  Every <see cref="T:Libplanet.Net.Messages.Message"/> with its timestamp
             differing greater than <paramref name="messageTimestampBuffer"/> will be ignored.
             If <see langword="null"/>, any timestamp is accepted.</param>
-            <exception cref="T:System.ArgumentException">Thrown when both <paramref name="host"/> and
-            <paramref name="iceServers"/> are <see langword="null"/>.</exception>
         </member>
         <member name="P:Libplanet.Net.Transports.NetMQTransport.ProcessMessageHandler">
             <inheritdoc/>
@@ -2145,7 +2158,7 @@
         <member name="P:Libplanet.Net.Transports.NetMQTransport.Running">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Net.Transports.NetMQTransport.Create(Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersionOptions,System.String,System.Nullable{System.Int32},System.Collections.Generic.IEnumerable{Libplanet.Net.IceServer},System.Nullable{System.TimeSpan})">
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.Create(Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersionOptions,Libplanet.Net.HostOptions,System.Nullable{System.TimeSpan})">
             <summary>
             Creates an initialized <see cref="T:Libplanet.Net.Transports.NetMQTransport"/> instance.
             </summary>
@@ -2153,20 +2166,13 @@
             <param name="appProtocolVersionOptions">The <see cref="T:Libplanet.Net.AppProtocolVersionOptions"/>
             to use when handling an <see cref="T:Libplanet.Net.AppProtocolVersion"/> attached to
             a <see cref="T:Libplanet.Net.Messages.Message"/>.</param>
-            <param name="host">A hostname to be a part of a public endpoint, that peers use when
-            they connect to this node.  Note that this is not a hostname to listen to;
-            <see cref="T:Libplanet.Net.Transports.NetMQTransport"/> always listens to 0.0.0.0 &amp; ::/0.</param>
-            <param name="listenPort">A port number to listen to.</param>
-            <param name="iceServers">
-            <a href="https://en.wikipedia.org/wiki/Interactive_Connectivity_Establishment">ICE</a>
-            servers to use for TURN/STUN.  Purposes to traverse NAT.</param>
+            <param name="hostOptions">The <see cref="T:Libplanet.Net.HostOptions"/> to use when binding
+            to the network.</param>
             <param name="messageTimestampBuffer">The amount in <see cref="T:System.TimeSpan"/>
             that is allowed for the timestamp of a <see cref="T:Libplanet.Net.Messages.Message"/> to differ from
             the current time of a local node.  Every <see cref="T:Libplanet.Net.Messages.Message"/> with its timestamp
             differing greater than <paramref name="messageTimestampBuffer"/> will be ignored.
             If <see langword="null"/>, any timestamp is accepted.</param>
-            <exception cref="T:System.ArgumentException">Thrown when both <paramref name="host"/> and
-            <paramref name="iceServers"/> are <see langword="null"/>.</exception>
             <returns>
             An awaitable <see cref="T:System.Threading.Tasks.Task"/> returning a <see cref="T:Libplanet.Net.Transports.NetMQTransport"/>
             when awaited that is ready to send request <see cref="T:Libplanet.Net.Messages.Message"/>s and
