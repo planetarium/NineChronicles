@@ -29,16 +29,7 @@ namespace Nekoyume
 
         public static Sprite GetIcon(this Buff buff)
         {
-            if (buff is StatBuff stat)
-            {
-                return SpriteHelper.GetBuffIcon(stat.RowData.IconResource);
-            }
-            else if (buff is ActionBuff action)
-            {
-                return SpriteHelper.GetBuffIcon($"icon_{action.RowData.ActionBuffType}");
-            }
-
-            return null;
+            return BuffHelper.GetBuffIcon(buff);
         }
     }
 }

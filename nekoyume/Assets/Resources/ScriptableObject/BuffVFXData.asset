@@ -1,0 +1,162 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 510b4ed31bf193f4595806794f747a2b, type: 3}
+  m_Name: BuffVFXData
+  m_EditorClassIdentifier: 
+  DataList:
+  - StatType: 1
+    PlusIcon: {fileID: 21300000, guid: c4377040b973b41eb82d99b5e2022d75, type: 3}
+    MinusIcon: {fileID: 21300000, guid: 0e3b4f674f3b24e9a82bca31a8e7a4ca, type: 3}
+    PlusCastingVFX: {fileID: 5017518310604546558, guid: 36e65a2ed190362428fb2dcd5c013ab4,
+      type: 3}
+    MinusCastingVFX: {fileID: 5166876917278104467, guid: 96b1b4bff4a56f249a2c0b5bd7b05bba,
+      type: 3}
+    PlusVFX: {fileID: 1410163034875605269, guid: cf04e3ceafa3919448c9180dc44ed2b4,
+      type: 3}
+    MinusVFX: {fileID: 1410163034875605269, guid: cf04e3ceafa3919448c9180dc44ed2b4,
+      type: 3}
+  - StatType: 2
+    PlusIcon: {fileID: 21300000, guid: eec6d1b368b8a4a2db5a3ed5c2f8a8b7, type: 3}
+    MinusIcon: {fileID: 21300000, guid: 6eac0da9f310d4cb58fcf290faa964f7, type: 3}
+    PlusCastingVFX: {fileID: 2280207480576973039, guid: 6b823acc2182e4f45ab6ee216761e7c8,
+      type: 3}
+    MinusCastingVFX: {fileID: 5166876917278104467, guid: 96b1b4bff4a56f249a2c0b5bd7b05bba,
+      type: 3}
+    PlusVFX: {fileID: 7756120939619406518, guid: 18a90bf73ccf9834db3f450f3e3b3278,
+      type: 3}
+    MinusVFX: {fileID: 1996707557506405315, guid: 6fe12a834fc003f408a09b938b32c7f3,
+      type: 3}
+  - StatType: 3
+    PlusIcon: {fileID: 21300000, guid: b9c62b18b33cc4ed7b4f112a7465aa93, type: 3}
+    MinusIcon: {fileID: 21300000, guid: 4537cb95832134896930efed2d215e00, type: 3}
+    PlusCastingVFX: {fileID: 2280207480576973039, guid: 6b823acc2182e4f45ab6ee216761e7c8,
+      type: 3}
+    MinusCastingVFX: {fileID: 5166876917278104467, guid: 96b1b4bff4a56f249a2c0b5bd7b05bba,
+      type: 3}
+    PlusVFX: {fileID: 6810647246816719368, guid: 4b357436a5426bb478488e833722282d,
+      type: 3}
+    MinusVFX: {fileID: 7238275187206761792, guid: 33e92766a330b984682f59148f7644df,
+      type: 3}
+  - StatType: 4
+    PlusIcon: {fileID: 21300000, guid: 6ab32b560c4d64605a912204ad375e49, type: 3}
+    MinusIcon: {fileID: 21300000, guid: e08fac2f55a71427ca0e7317ed54a54f, type: 3}
+    PlusCastingVFX: {fileID: 2280207480576973039, guid: 6b823acc2182e4f45ab6ee216761e7c8,
+      type: 3}
+    MinusCastingVFX: {fileID: 5166876917278104467, guid: 96b1b4bff4a56f249a2c0b5bd7b05bba,
+      type: 3}
+    PlusVFX: {fileID: 1391978601354276969, guid: d4e8ac3a96bf779479d4e319e54a84b8,
+      type: 3}
+    MinusVFX: {fileID: 7837708294353371776, guid: 7838f11a94751cc4699b5ecbd7356fdb,
+      type: 3}
+  - StatType: 5
+    PlusIcon: {fileID: 21300000, guid: 366576646055b4ba084889e06f1ec5b6, type: 3}
+    MinusIcon: {fileID: 21300000, guid: 44d9c42a0c400454ea8cca6ae9e028cc, type: 3}
+    PlusCastingVFX: {fileID: 2280207480576973039, guid: 6b823acc2182e4f45ab6ee216761e7c8,
+      type: 3}
+    MinusCastingVFX: {fileID: 5166876917278104467, guid: 96b1b4bff4a56f249a2c0b5bd7b05bba,
+      type: 3}
+    PlusVFX: {fileID: 835950259379135100, guid: 8182ba2ebf91ac1469558addbc2bf9da,
+      type: 3}
+    MinusVFX: {fileID: 3521581728064383097, guid: 00ecd915d6decf848a77f07cd7cc4788,
+      type: 3}
+  - StatType: 6
+    PlusIcon: {fileID: 21300000, guid: ec94c68a4e1d14659bcbabe96c99236b, type: 3}
+    MinusIcon: {fileID: 21300000, guid: a18d6991aaa6c4847a3f7f8f20b3a98e, type: 3}
+    PlusCastingVFX: {fileID: 2280207480576973039, guid: 6b823acc2182e4f45ab6ee216761e7c8,
+      type: 3}
+    MinusCastingVFX: {fileID: 5166876917278104467, guid: 96b1b4bff4a56f249a2c0b5bd7b05bba,
+      type: 3}
+    PlusVFX: {fileID: 1133045817728898068, guid: a4afff1d8b868d649975261c3f0dbdb5,
+      type: 3}
+    MinusVFX: {fileID: 3314862535276026310, guid: 7b35f1bd4056b3447904ccd838f5f9cc,
+      type: 3}
+  - StatType: 7
+    PlusIcon: {fileID: 21300000, guid: b44fd3fdbb6304b45aa8a18aad5db6d5, type: 3}
+    MinusIcon: {fileID: 21300000, guid: 4537cb95832134896930efed2d215e00, type: 3}
+    PlusCastingVFX: {fileID: 2280207480576973039, guid: 6b823acc2182e4f45ab6ee216761e7c8,
+      type: 3}
+    MinusCastingVFX: {fileID: 5166876917278104467, guid: 96b1b4bff4a56f249a2c0b5bd7b05bba,
+      type: 3}
+    PlusVFX: {fileID: 7171611368931243746, guid: 43ee623d0e6b7476bb804588b3b8c2bc,
+      type: 3}
+    MinusVFX: {fileID: 7171611368931243746, guid: 43ee623d0e6b7476bb804588b3b8c2bc,
+      type: 3}
+  - StatType: 8
+    PlusIcon: {fileID: 21300000, guid: 4b87d7e8068a69745ae995cf6cac5f12, type: 3}
+    MinusIcon: {fileID: 21300000, guid: 4537cb95832134896930efed2d215e00, type: 3}
+    PlusCastingVFX: {fileID: 2280207480576973039, guid: 6b823acc2182e4f45ab6ee216761e7c8,
+      type: 3}
+    MinusCastingVFX: {fileID: 5166876917278104467, guid: 96b1b4bff4a56f249a2c0b5bd7b05bba,
+      type: 3}
+    PlusVFX: {fileID: 7171611368931243746, guid: e42d4875d0702e844970f798a3f2bbd1,
+      type: 3}
+    MinusVFX: {fileID: 7171611368931243746, guid: e42d4875d0702e844970f798a3f2bbd1,
+      type: 3}
+  - StatType: 9
+    PlusIcon: {fileID: 21300000, guid: bec94c8a7472b43ae8536decac34f162, type: 3}
+    MinusIcon: {fileID: 21300000, guid: 92ee568aec0e148b998650268ec02add, type: 3}
+    PlusCastingVFX: {fileID: 2280207480576973039, guid: 6b823acc2182e4f45ab6ee216761e7c8,
+      type: 3}
+    MinusCastingVFX: {fileID: 5166876917278104467, guid: 96b1b4bff4a56f249a2c0b5bd7b05bba,
+      type: 3}
+    PlusVFX: {fileID: 1391978601354276969, guid: bcbcfa4b5d2e148ed94d37debecd2d34,
+      type: 3}
+    MinusVFX: {fileID: 7837708294353371776, guid: 3b552c3dc88c3477b90888b571e718cb,
+      type: 3}
+  OverrideDataList:
+  - Id: 500001
+    Icon: {fileID: 21300000, guid: a3c38c985c66a42b1b20aaaba99934b1, type: 3}
+    CastingVFX: {fileID: 5166876917278104467, guid: 5b2f8b6efafe66b4b864000303377aab,
+      type: 3}
+    BuffVFX: {fileID: 7171611368931243746, guid: 717216517b03d4c57bae5a9a59286335,
+      type: 3}
+  - Id: 500002
+    Icon: {fileID: 21300000, guid: a3c38c985c66a42b1b20aaaba99934b1, type: 3}
+    CastingVFX: {fileID: 5166876917278104467, guid: 5b2f8b6efafe66b4b864000303377aab,
+      type: 3}
+    BuffVFX: {fileID: 7171611368931243746, guid: 717216517b03d4c57bae5a9a59286335,
+      type: 3}
+  - Id: 500003
+    Icon: {fileID: 21300000, guid: a3c38c985c66a42b1b20aaaba99934b1, type: 3}
+    CastingVFX: {fileID: 5166876917278104467, guid: 5b2f8b6efafe66b4b864000303377aab,
+      type: 3}
+    BuffVFX: {fileID: 7171611368931243746, guid: 717216517b03d4c57bae5a9a59286335,
+      type: 3}
+  - Id: 600001
+    Icon: {fileID: 21300000, guid: a3c38c985c66a42b1b20aaaba99934b1, type: 3}
+    CastingVFX: {fileID: 5166876917278104467, guid: 5b2f8b6efafe66b4b864000303377aab,
+      type: 3}
+    BuffVFX: {fileID: 7171611368931243746, guid: 717216517b03d4c57bae5a9a59286335,
+      type: 3}
+  - Id: 701000
+    Icon: {fileID: 21300000, guid: b44fd3fdbb6304b45aa8a18aad5db6d5, type: 3}
+    CastingVFX: {fileID: 5166876917278104467, guid: 5e3a035730f654cc5a4edd3cee17a180,
+      type: 3}
+    BuffVFX: {fileID: 7171611368931243746, guid: 43ee623d0e6b7476bb804588b3b8c2bc,
+      type: 3}
+  - Id: 702000
+    Icon: {fileID: 21300000, guid: 4b87d7e8068a69745ae995cf6cac5f12, type: 3}
+    CastingVFX: {fileID: 5166876917278104467, guid: 5e3a035730f654cc5a4edd3cee17a180,
+      type: 3}
+    BuffVFX: {fileID: 7171611368931243746, guid: e42d4875d0702e844970f798a3f2bbd1,
+      type: 3}
+  - Id: 703000
+    Icon: {fileID: 21300000, guid: bec94c8a7472b43ae8536decac34f162, type: 3}
+    CastingVFX: {fileID: 5166876917278104467, guid: 5b2f8b6efafe66b4b864000303377aab,
+      type: 3}
+    BuffVFX: {fileID: 1391978601354276969, guid: bcbcfa4b5d2e148ed94d37debecd2d34,
+      type: 3}
+  FallbackIcon: {fileID: 21300000, guid: 39d46914ec312d8469b6bb4740099db4, type: 3}
+  FallbackCastingVFX: {fileID: 2327172370517842916, guid: 8e07f2c1b187b68428f03f03327fa497,
+    type: 3}
+  FallbackBuffVFX: {fileID: 7756120939619406518, guid: 18a90bf73ccf9834db3f450f3e3b3278,
+    type: 3}

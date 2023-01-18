@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: TestbedCreateAvatar
   m_EditorClassIdentifier: 
   Data:
-    BlockDifficulty: 200000
-    TradableMaterialCount: 9999
-    MaterialCount: 10
+    BlockDifficulty: 32768
+    TradableMaterialCount: 9999999
+    MaterialCount: 999999
+    FoodCount: 50
     CustomEquipmentItems:
     - ID: 10143001
       Level: 10
@@ -26,21 +27,93 @@ MonoBehaviour:
     - ID: 10143001
       Level: 12
       OptionIds: 07000000090000000a000000
-    - ID: 10110000
-      Level: 1
-      OptionIds: 07000000
-    - ID: 10110000
-      Level: 1
-      OptionIds: 0b000000
-    - ID: 10110000
-      Level: 1
-      OptionIds: 0e000000
+    - ID: 10114000
+      Level: 4
+      OptionIds: 25000000260000002700000028000000
+    - ID: 10214000
+      Level: 4
+      OptionIds: 85010000860100008701000088010000
+    - ID: 10331000
+      Level: 4
+      OptionIds: 1c0300001d0300001e0300001f030000
+    - ID: 10431000
+      Level: 4
+      OptionIds: f8030000f9030000fa030000fb030000
+    - ID: 10513000
+      Level: 4
+      OptionIds: 92040000930400009404000095040000
+    - ID: 10513000
+      Level: 4
+      OptionIds: 8f0400009004000091040000
+    - ID: 10133000
+      Level: 4
+      OptionIds: 72000000730000007400000075000000
+    - ID: 10224000
+      Level: 4
+      OptionIds: b1010000b2010000b3010000b4010000
+    - ID: 10323000
+      Level: 4
+      OptionIds: 06030000070300000803000009030000
+    - ID: 10423000
+      Level: 4
+      OptionIds: e2030000e3030000e4030000e5030000
+    - ID: 10514000
+      Level: 4
+      OptionIds: 9d0400009e0400009f040000a0040000
+    - ID: 10514000
+      Level: 4
+      OptionIds: 9a0400009b0400009c040000
+    - ID: 10133001
+      Level: 7
+      OptionIds: 9e0000009f000000a0000000a1000000
+    - ID: 10233001
+      Level: 7
+      OptionIds: fe010000ff0100000002000001020000
+    - ID: 10333000
+      Level: 7
+      OptionIds: 32030000330300003403000035030000
+    - ID: 10433000
+      Level: 7
+      OptionIds: 0e0400000f0400001004000011040000
+    - ID: 10533000
+      Level: 7
+      OptionIds: ea040000eb040000ec040000ed040000
+    - ID: 10533000
+      Level: 7
+      OptionIds: e7040000e8040000e9040000
+    - ID: 10141000
+      Level: 4
+      OptionIds: 35f0713c36f0713c37f0713c38f0713c
+    - ID: 10234000
+      Level: 10
+      OptionIds: 090200000a0200000b0200000c020000
+    - ID: 10343000
+      Level: 10
+      OptionIds: 5e0300005f0300006003000061030000
+    - ID: 10451000
+      Level: 4
+      OptionIds: f5f54a3ef6f54a3ef7f54a3ef8f54a3e
+    - ID: 10541000
+      Level: 4
+      OptionIds: 354ad43e364ad43e374ad43e384ad43e
+    - ID: 10541000
+      Level: 4
+      OptionIds: 2b4ad43e2c4ad43e2d4ad43e
+    - ID: 10140000
+      Level: 12
+      OptionIds: 9569703c9669703c9769703c9869703c
     - ID: 10240000
-      Level: 1
-      OptionIds: 0e000000
-    - ID: 10240000
-      Level: 1
-      OptionIds: 0b000000
-    - ID: 10240000
-      Level: 1
-      OptionIds: 07000000
+      Level: 12
+      OptionIds: 1500093d1600093d1700093d1800093d
+    - ID: 10350000
+      Level: 12
+      OptionIds: d5d8b03dd6d8b03dd7d8b03dd8d8b03d
+    - ID: 10450000
+      Level: 12
+      OptionIds: 556f493e566f493e576f493e586f493e
+    - ID: 10540000
+      Level: 12
+      OptionIds: 95c3d23e96c3d23e97c3d23e98c3d23e
+    - ID: 10540000
+      Level: 12
+      OptionIds: 8bc3d23e8cc3d23e8dc3d23e
