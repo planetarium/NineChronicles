@@ -146,15 +146,16 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(4, 1, 1, false, 1, 5, 3)]
-        [InlineData(4, 1, 1, false, 1, 5, 4)]
-        [InlineData(4, 1, 1, false, 5, 5, 3)]
-        [InlineData(4, 1, 1, true, 1, 5, 3)]
-        [InlineData(4, 1, 1, true, 3, 5, 3)]
-        [InlineData(1, 1, 2, false, 1, 5, 3)]
-        [InlineData(1, 1, 2, true, 1, 5, 3)]
+        [InlineData(1, 1, false, 1, 5, 3)]
+        [InlineData(1, 1, false, 1, 5, 4)]
+        [InlineData(1, 1, false, 5, 5, 3)]
+        [InlineData(1, 1, true, 1, 5, 3)]
+        [InlineData(1, 1, false, 3, 5, 4)]
+        [InlineData(1, 2, false, 1, 5, 3)]
+        [InlineData(1, 2, true, 1, 5, 3)]
+        [InlineData(1, 3, false, 1, int.MaxValue, 3)]
+        [InlineData(1, 3, true, 1, int.MaxValue, 3)]
         public void Execute_Success(
-            long nextBlockIndex,
             int championshipId,
             int round,
             bool isPurchased,
@@ -163,7 +164,6 @@ namespace Lib9c.Tests.Action
             int randomSeed)
         {
             Execute(
-                nextBlockIndex,
                 championshipId,
                 round,
                 isPurchased,
@@ -180,7 +180,6 @@ namespace Lib9c.Tests.Action
         public void Execute_Backward_Compatibility_Success()
         {
             Execute(
-                1,
                 1,
                 2,
                 default,
@@ -938,6 +937,88 @@ namespace Lib9c.Tests.Action
             }));
         }
 
+        [Fact]
+        public void Execute_ValidateDuplicateTicketPurchaseException()
+        {
+            const int championshipId = 1;
+            const int round = 1;
+            var previousStates = _initialStates;
+            Assert.True(previousStates.GetSheet<ArenaSheet>().TryGetValue(
+                championshipId,
+                out var row));
+
+            if (!row.TryGetRound(round, out var roundData))
+            {
+                throw new RoundNotFoundException(
+                    $"[{nameof(BattleArena)}] ChampionshipId({row.ChampionshipId}) - round({round})");
+            }
+
+            if (roundData.ArenaType != ArenaType.OffSeason)
+            {
+                throw new InvalidSeasonException($"[{nameof(BattleArena)}] This test is only for OffSeason. ArenaType : {roundData.ArenaType}");
+            }
+
+            var random = new TestRandom();
+            previousStates = JoinArena(
+                previousStates,
+                _agent1Address,
+                _avatar1Address,
+                roundData.StartBlockIndex,
+                championshipId,
+                round,
+                random);
+            previousStates = JoinArena(
+                previousStates,
+                _agent2Address,
+                _avatar2Address,
+                roundData.StartBlockIndex,
+                championshipId,
+                round,
+                random);
+
+            var arenaInfoAdr =
+                ArenaInformation.DeriveAddress(_avatar1Address, championshipId, round);
+            if (!previousStates.TryGetArenaInformation(arenaInfoAdr, out var beforeInfo))
+            {
+                throw new ArenaInformationNotFoundException($"arenaInfoAdr : {arenaInfoAdr}");
+            }
+
+            beforeInfo.UseTicket(ArenaInformation.MaxTicketCount);
+
+            var purchasedCountDuringInterval = arenaInfoAdr.Derive(BattleArena.PurchasedCountKey);
+            previousStates = previousStates
+                .SetState(arenaInfoAdr, beforeInfo.Serialize())
+                .SetState(
+                    purchasedCountDuringInterval,
+                    new Integer(beforeInfo.PurchasedTicketCount));
+            var price = ArenaHelper.GetTicketPrice(
+                roundData,
+                beforeInfo,
+                previousStates.GetGoldCurrency());
+            previousStates = previousStates.MintAsset(_agent1Address, price);
+
+            var action = new BattleArena
+            {
+                myAvatarAddress = _avatar1Address,
+                enemyAvatarAddress = _avatar2Address,
+                championshipId = championshipId,
+                round = round,
+                ticket = 8,
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                runeInfos = new List<RuneSlotInfo>(),
+            };
+
+            var blockIndex = roundData.StartBlockIndex + 1;
+            Assert.Throws<TicketPurchaseLimitExceedException>(() => action.Execute(new ActionContext
+            {
+                BlockIndex = blockIndex,
+                PreviousStates = previousStates,
+                Signer = _agent1Address,
+                Random = new TestRandom(),
+            }));
+        }
+
         private static (AgentState AgentState, AvatarState AvatarState) GetAgentStateWithAvatarState(
             IReadOnlyDictionary<string, string> sheets,
             TableSheets tableSheets,
@@ -967,7 +1048,6 @@ namespace Lib9c.Tests.Action
         }
 
         private void Execute(
-            long nextBlockIndex,
             int championshipId,
             int round,
             bool isPurchased,
@@ -1070,7 +1150,9 @@ namespace Lib9c.Tests.Action
             var gameConfigState = SetArenaInterval(arenaInterval);
             previousStates = previousStates.SetState(GameConfigState.Address, gameConfigState.Serialize());
 
-            var blockIndex = roundData.StartBlockIndex + nextBlockIndex;
+            var blockIndex = roundData.StartBlockIndex < arenaInterval
+                ? roundData.StartBlockIndex
+                : roundData.StartBlockIndex + arenaInterval;
             var nextStates = action.Execute(new ActionContext
             {
                 PreviousStates = previousStates,

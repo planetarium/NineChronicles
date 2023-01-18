@@ -299,26 +299,29 @@ namespace Nekoyume.Action
             {
                 arenaInformation.UseTicket(ticket);
             }
+            else if (ticket > 1)
+            {
+                throw new TicketPurchaseLimitExceedException(
+                    $"[{nameof(ArenaInformation)}] tickets to buy : {ticket}");
+            }
             else
             {
                 var arenaAdr =
                     ArenaHelper.DeriveArenaAddress(roundData.ChampionshipId, roundData.Round);
                 var goldCurrency = states.GetGoldCurrency();
-                for (var i = 0; i < ticket; i++)
+                var ticketBalance =
+                    ArenaHelper.GetTicketPrice(roundData, arenaInformation, goldCurrency);
+                arenaInformation.BuyTicket(roundData.MaxPurchaseCount);
+                if (purchasedCountDuringInterval >= roundData.MaxPurchaseCountWithInterval)
                 {
-                    var ticketBalance =
-                        ArenaHelper.GetTicketPrice(roundData, arenaInformation, goldCurrency);
-                    arenaInformation.BuyTicket(roundData.MaxPurchaseCount);
-                    if (purchasedCountDuringInterval >= roundData.MaxPurchaseCountWithInterval)
-                    {
-                        throw new ExceedTicketPurchaseLimitDuringIntervalException(
-                            $"[{nameof(ArenaInformation)}] PurchasedTicketCount({purchasedCountDuringInterval}) >= MAX({{max}})");
-                    }
-
-                    states = states
-                        .TransferAsset(context.Signer, arenaAdr, ticketBalance)
-                        .SetState(purchasedCountAddr, ++purchasedCountDuringInterval);
+                    throw new ExceedTicketPurchaseLimitDuringIntervalException(
+                        $"[{nameof(ArenaInformation)}] PurchasedTicketCount({purchasedCountDuringInterval}) >= MAX({{max}})");
                 }
+
+                purchasedCountDuringInterval++;
+                states = states
+                    .TransferAsset(context.Signer, arenaAdr, ticketBalance)
+                    .SetState(purchasedCountAddr, purchasedCountDuringInterval);
             }
 
             // update arena avatar state
