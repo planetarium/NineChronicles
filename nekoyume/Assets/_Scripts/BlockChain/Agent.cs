@@ -226,13 +226,12 @@ namespace Nekoyume.BlockChain
             appProtocolVersionOptions.DifferentAppProtocolVersionEncountered =
                 DifferentAppProtocolVersionEncountered;
             var swarmOptions = new SwarmOptions();
+            var hostOptions = new HostOptions(host, iceServers, port ?? default);
             var initSwarmTask = Task.Run(() => new Swarm<NCAction>(
                 blockChain: blocks,
                 privateKey: privateKey,
                 appProtocolVersionOptions: appProtocolVersionOptions,
-                host: host,
-                listenPort: port,
-                iceServers: iceServers,
+                hostOptions: hostOptions,
                 options: swarmOptions));
 
             initSwarmTask.Wait();
