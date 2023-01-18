@@ -613,12 +613,10 @@ namespace Nekoyume.State
             ArenaType arenaType,
             int playerScore)
         {
-            if (!ArenaHelper.ScoreLimits.ContainsKey(arenaType))
-            {
-                throw new ArgumentOutOfRangeException(nameof(arenaType), arenaType, null);
-            }
+            var bounds = ArenaHelper.ScoreLimits.ContainsKey(arenaType)
+                ? ArenaHelper.ScoreLimits[arenaType]
+                : ArenaHelper.ScoreLimits.First().Value;
 
-            var bounds = ArenaHelper.ScoreLimits[arenaType];
             bounds = (bounds.upper + playerScore, bounds.lower + playerScore);
             return tuples
                 .Where(tuple => tuple.score <= bounds.upper && tuple.score >= bounds.lower)
