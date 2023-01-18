@@ -36,6 +36,9 @@ namespace Nekoyume.UI
         private ConditionalCostButton startButton;
 
         [SerializeField]
+        private Button repeatPopupButton;
+
+        [SerializeField]
         private Button closeButton;
 
         [SerializeField]
@@ -121,6 +124,10 @@ namespace Nekoyume.UI
                 .Subscribe(_ => OnClickBattle())
                 .AddTo(gameObject);
 
+            repeatPopupButton.OnClickAsObservable()
+                .Subscribe(_ => ShowArenaTicketPopup())
+                .AddTo(gameObject);
+
             grandFinaleStartButton.OnSubmitSubject
                 .Where(_ => !Game.Game.instance.IsInWorld)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
@@ -202,6 +209,11 @@ namespace Nekoyume.UI
             }
         }
 
+        private void ShowArenaTicketPopup()
+        {
+            Find<ArenaTicketPopup>().Show(SendBattleArenaAction);
+        }
+
         private void OnClickBattle()
         {
             AudioController.PlayClick();
@@ -275,7 +287,7 @@ namespace Nekoyume.UI
             AudioController.PlayClick();
         }
 
-        private void SendBattleArenaAction()
+        private void SendBattleArenaAction(int ticket = TicketCountToUse)
         {
             startButton.gameObject.SetActive(false);
             var playerAvatar = RxProps.PlayersArenaParticipant.Value.AvatarState;
@@ -299,7 +311,7 @@ namespace Nekoyume.UI
                     runeInfos,
                     _roundData.ChampionshipId,
                     _roundData.Round,
-                    TicketCountToUse)
+                    ticket)
                 .Subscribe();
         }
 
@@ -406,6 +418,8 @@ namespace Nekoyume.UI
             startButton.gameObject.SetActive(!isGrandFinale && canBattle);
             grandFinaleStartButton.gameObject.SetActive(isGrandFinale && canBattle);
             blockStartingText.gameObject.SetActive(!canBattle);
+            repeatPopupButton.gameObject.SetActive(!isGrandFinale && canBattle &&
+                                                   _roundData.ArenaType == ArenaType.OffSeason);
 
             if (!canBattle)
             {

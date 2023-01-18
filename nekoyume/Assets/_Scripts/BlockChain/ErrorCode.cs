@@ -300,6 +300,9 @@ namespace Nekoyume.BlockChain
                 case PlayCountIsZeroException _:
                     code = "65";
                     break;
+                case TicketPurchaseLimitExceedException _:
+                    code = "66";
+                    break;
             }
 
             Analyzer.Instance.Track(

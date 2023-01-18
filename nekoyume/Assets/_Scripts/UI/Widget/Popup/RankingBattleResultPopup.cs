@@ -25,6 +25,9 @@ namespace Nekoyume.UI
         private TextMeshProUGUI scoreText = null;
 
         [SerializeField]
+        private TextMeshProUGUI winLoseCountText = null;
+
+        [SerializeField]
         private List<SimpleCountableItemView> rewards = null;
 
         private static readonly Vector3 VfxBattleWinOffset = new Vector3(-0.05f, .25f, 10f);
@@ -42,7 +45,8 @@ namespace Nekoyume.UI
         public void Show(
             ArenaLog log,
             IReadOnlyList<ItemBase> rewardItems,
-            System.Action onClose)
+            System.Action onClose,
+            (int win, int defeat)? winDefeatCount = null)
         {
             base.Show();
 
@@ -60,6 +64,10 @@ namespace Nekoyume.UI
             }
 
             scoreText.text = $"{log.Score}";
+            winLoseCountText.text = winDefeatCount.HasValue
+                ? $"Win: {winDefeatCount.Value.win} Defeat: {winDefeatCount.Value.defeat}"
+                : string.Empty;
+            winLoseCountText.gameObject.SetActive(winDefeatCount.HasValue);
 
             var items = rewardItems.ToCountableItems();
             for (var i = 0; i < rewards.Count; i++)
