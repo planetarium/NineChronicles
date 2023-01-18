@@ -2,10 +2,7 @@ using Nekoyume.Model.Skill;
 using Nekoyume.TableData;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using static Nekoyume.Battle.AttackCountHelper;
-using static UnityEditor.PlayerSettings;
 using Skill = Nekoyume.Model.BattleStatus.Skill;
 
 namespace Nekoyume.Game.Character
