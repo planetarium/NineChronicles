@@ -77,8 +77,8 @@ id,group,_name,chance,duration,target_type,stat_type,modify_type,modify_value,ic
 306010,306000,SS 올스탯,100,150,Self,SPD,Percentage,50,icon_buff_plus_speed
 306011,306000,S 속도1,100,150,Self,SPD,Percentage,60,icon_buff_plus_speed
 306012,306000,SS 속도,100,150,Self,SPD,Percentage,90,icon_buff_plus_speed
-501001,501001,공격 강화 (분노),100,5,Self,ATK,Percentage,50,icon_buff_plus_attack
-502001,502001,속도 강화 (분노),100,5,Self,SPD,Percentage,50,icon_buff_plus_speed
+501001,501001,Fenrir Rage ATK,100,5,Self,ATK,Percentage,50,icon_buff_plus_attack
+502001,502001,Fenrir Rage SPD,100,5,Self,SPD,Percentage,50,icon_buff_plus_speed
 503011,503011,Berserk ATK(60) Wave 1,100,150,Self,ATK,Percentage,60,icon_buff_plus_attack
 503012,503012,Berserk DEF(-100) Wave 1,100,150,Self,DEF,Percentage,-100,icon_buff_minus_defense
 503021,503011,Berserk ATK(80) Wave 2,100,150,Self,ATK,Percentage,80,icon_buff_plus_attack
@@ -90,5 +90,17 @@ id,group,_name,chance,duration,target_type,stat_type,modify_type,modify_value,ic
 503051,503011,Berserk ATK(150) Wave 5,100,150,Self,ATK,Percentage,150,icon_buff_plus_attack
 503052,503012,Berserk DEF(-100) Wave 5,100,150,Self,DEF,Percentage,-100,icon_buff_minus_defense
 503015,503015,Berserk CRI(1500),100,150,Self,CRI,Percentage,1500,icon_buff_plus_critical
+504001,504001,Serimnir Rage ATK,100,5,Self,ATK,Percentage,50,icon_buff_plus_attack
+504002,504002,Serimnir Rage SPD,100,5,Self,SPD,Percentage,50,icon_buff_plus_speed
+504003,504003,Serimnir Corrosion,100,6,Enemy,DEF,Percentage,-50,icon_buff_minus_defense
+504004,504004,Serimnir a Series Of Hits,100,3,Self,ATK,Percentage,50,icon_buff_plus_attack
+504005,504005,Serimnir Furious CRI,100,5,Self,CRI,Add,36,icon_buff_plus_critical
+504006,504005,Serimnir Furious CRI,100,5,Self,CRI,Add,56,icon_buff_plus_critical
+504007,504005,Serimnir Furious CRI,100,5,Self,CRI,Add,86,icon_buff_plus_critical
+504008,504008,Serimnir Furious CDMG,100,5,Self,CDMG,Add,5000,icon_buff_plus_critical
+504009,504008,Serimnir Furious CDMG,100,5,Self,CDMG,Add,10000,icon_buff_plus_critical
+504010,504008,Serimnir Furious CDMG,100,5,Self,CDMG,Add,20000,icon_buff_plus_critical
+504011,504011,Serimnir Furious Enemy CDMG,100,8,Enemy,CDMG,Add,10000,icon_buff_plus_critical
 701000,701000,DRV (Rune),100,0,Self,DRV,Add,0,icon_buff_plus_damage_reduction_value
 702000,701000,DRR (Rune),100,0,Self,DRR,Add,0,icon_buff_plus_damage_reduction_rate
+703000,703000,CDMG (Rune),100,0,Self,CDMG,Add,0,icon_buff_plus_critical

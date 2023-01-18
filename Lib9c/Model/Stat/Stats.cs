@@ -15,6 +15,7 @@ namespace Nekoyume.Model.Stat
         protected readonly DecimalStat spd = new DecimalStat(StatType.SPD);
         protected readonly IntStat drv = new IntStat(StatType.DRV);
         protected readonly IntStat drr = new IntStat(StatType.DRR);
+        protected readonly IntStat cdmg = new IntStat(StatType.CDMG);
 
         public int HP => hp.Value;
         public int ATK => atk.Value;
@@ -24,6 +25,7 @@ namespace Nekoyume.Model.Stat
         public int SPD => spd.ValueAsInt;
         public int DRV => drv.Value;
         public int DRR => drr.Value;
+        public int CDMG => cdmg.Value;
 
         public bool HasHP => HP > 0;
         public bool HasATK => ATK > 0;
@@ -33,6 +35,7 @@ namespace Nekoyume.Model.Stat
         public bool HasSPD => SPD > 0;
         public bool HasDRV => DRV > 0;
         public bool HasDRR => DRR > 0;
+        public bool HasCDMG => CDMG > 0;
 
         public int CurrentHP
         {
@@ -54,6 +57,7 @@ namespace Nekoyume.Model.Stat
             spd = (DecimalStat)value.spd.Clone();
             drv = (IntStat)value.drv.Clone();
             drr = (IntStat)value.drr.Clone();
+            cdmg = (IntStat)value.cdmg.Clone();
         }
 
         public void Reset()
@@ -66,6 +70,7 @@ namespace Nekoyume.Model.Stat
             spd.Reset();
             drv.Reset();
             drr.Reset();
+            cdmg.Reset();
         }
 
         /// <summary>
@@ -82,6 +87,7 @@ namespace Nekoyume.Model.Stat
             spd.SetValue(statsArray.Sum(stats => stats.spd.Value));
             drv.SetValue(statsArray.Sum(stats => stats.drv.Value));
             drr.SetValue(statsArray.Sum(stats => stats.drr.Value));
+            cdmg.SetValue(statsArray.Sum(stats => stats.cdmg.Value));
         }
 
         /// <summary>
@@ -122,6 +128,9 @@ namespace Nekoyume.Model.Stat
                     case StatType.DRR:
                         drr.AddValue(statModifier.GetModifiedPart(baseStatsArray.Sum(stats => stats.drr.Value)));
                         break;
+                    case StatType.CDMG:
+                        cdmg.AddValue(statModifier.GetModifiedPart(baseStatsArray.Sum(stats => stats.cdmg.Value)));
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -142,6 +151,7 @@ namespace Nekoyume.Model.Stat
             spd.SetValue(value.SPD);
             drv.SetValue(value.DRV);
             drr.SetValue(value.DRR);
+            cdmg.SetValue(value.CDMG);
         }
 
         /// <summary>
@@ -178,6 +188,9 @@ namespace Nekoyume.Model.Stat
                 case StatType.DRR:
                     drr.SetValue(value);
                     break;
+                case StatType.CDMG:
+                    cdmg.SetValue(value);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
             }
@@ -203,6 +216,8 @@ namespace Nekoyume.Model.Stat
                     yield return (StatType.DRV, DRV);
                 if (HasDRR)
                     yield return (StatType.DRR, DRR);
+                if (HasCDMG)
+                    yield return (StatType.CDMG, CDMG);
             }
             else
             {
@@ -214,6 +229,7 @@ namespace Nekoyume.Model.Stat
                 yield return (StatType.SPD, SPD);
                 yield return (StatType.DRV, DRV);
                 yield return (StatType.DRR, DRR);
+                yield return (StatType.CDMG, CDMG);
             }
         }
 
