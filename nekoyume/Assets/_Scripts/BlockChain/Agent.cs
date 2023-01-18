@@ -157,9 +157,7 @@ namespace Nekoyume.BlockChain
             PrivateKey privateKey,
             string path,
             IEnumerable<BoundPeer> peers,
-            IEnumerable<IceServer> iceServers,
-            string host,
-            int? port,
+            HostOptions hostOptions,
             bool consoleSink,
             bool development,
             AppProtocolVersion appProtocolVersion,
@@ -226,7 +224,6 @@ namespace Nekoyume.BlockChain
             appProtocolVersionOptions.DifferentAppProtocolVersionEncountered =
                 DifferentAppProtocolVersionEncountered;
             var swarmOptions = new SwarmOptions();
-            var hostOptions = new HostOptions(host, iceServers, port ?? default);
             var initSwarmTask = Task.Run(() => new Swarm<NCAction>(
                 blockChain: blocks,
                 privateKey: privateKey,
@@ -407,13 +404,12 @@ namespace Nekoyume.BlockChain
             AppProtocolVersion = appProtocolVersion.Version;
             var trustedAppProtocolVersionSigners = options.TrustedAppProtocolVersionSigners
                 .Select(s => new PublicKey(ByteUtil.ParseHex(s)));
+            var hostOptions = new HostOptions(host, iceServers, port ?? default);
             Init(
                 privateKey,
                 storagePath,
                 peers,
-                iceServers,
-                host,
-                port,
+                hostOptions,
                 consoleSink,
                 development,
                 appProtocolVersion,
