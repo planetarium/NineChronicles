@@ -299,6 +299,11 @@ namespace Nekoyume.UI
             Animator.Play("Show", 0, 0);
         }
 
+        public void ForceClose()
+        {
+            _isClosed = false;
+            Close();
+        }
         public virtual void Close(bool ignoreCloseAnimation = false)
         {
             if (WidgetStack.Count > 0 &&

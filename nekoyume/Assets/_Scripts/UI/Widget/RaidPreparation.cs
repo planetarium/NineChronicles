@@ -298,7 +298,7 @@ namespace Nekoyume.UI
                 null,
                 new List<FungibleAssetValue>());
 
-            Find<WorldBoss>().Close();
+            Find<WorldBoss>().ForceClose();
             Close();
         }
 
