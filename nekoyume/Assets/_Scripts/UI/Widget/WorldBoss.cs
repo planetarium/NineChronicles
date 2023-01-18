@@ -68,6 +68,9 @@ namespace Nekoyume.UI
         private Transform bossSpineContainer;
 
         [SerializeField]
+        private Transform backgroundContainer;
+
+        [SerializeField]
         private ShaderPropertySlider timerSlider;
 
         [SerializeField]
@@ -84,8 +87,10 @@ namespace Nekoyume.UI
 
         private GameObject _bossNamePrefab;
         private GameObject _bossSpinePrefab;
+        private GameObject _backgroundPrefab;
         private int _bossId;
         private (long, long) _period;
+        private string _bgmName;
 
         private WorldBossStatus _status = WorldBossStatus.None;
         private HeaderMenuStatic _headerMenu;
@@ -148,11 +153,11 @@ namespace Nekoyume.UI
 
         public async UniTaskVoid ShowAsync(bool ignoreShowAnimation = false)
         {
-            AudioController.instance.PlayMusic(AudioController.MusicCode.WorldBossTitle);
             var loading = Find<DataLoadingScreen>();
             loading.Show();
             await UpdateViewAsync(Game.Game.instance.Agent.BlockIndex, forceUpdate: true);
             loading.Close();
+            AudioController.instance.PlayMusic(_bgmName);
             base.Show(ignoreShowAnimation);
         }
 
@@ -286,13 +291,24 @@ namespace Nekoyume.UI
                     Destroy(_bossSpinePrefab);
                 }
 
+                if (_backgroundPrefab != null)
+                {
+                    Destroy(_backgroundPrefab);
+                }
+
                 if (isOffSeason)
                 {
                     _bossNamePrefab = Instantiate(data.namePrefab, bossNameContainer);
                 }
 
                 _bossSpinePrefab = Instantiate(data.spinePrefab, bossSpineContainer);
+                _backgroundPrefab = Instantiate(data.backgroundPrefab, backgroundContainer);
                 _bossId = row.BossId;
+
+                if (string.IsNullOrWhiteSpace(_bgmName))
+                {
+                    _bgmName = data.entranceMusicName;
+                }
             }
         }
 

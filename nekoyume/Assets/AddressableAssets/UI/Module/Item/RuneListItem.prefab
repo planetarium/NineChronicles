@@ -5374,7 +5374,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 106, y: 122}
+  m_SizeDelta: {x: 95, y: 110}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2953838784359964275
 CanvasRenderer:
@@ -11335,7 +11335,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -23.1, y: 35.6}
+  m_AnchoredPosition: {x: -23.1, y: 24}
   m_SizeDelta: {x: 0, y: 20}
   m_Pivot: {x: 1, y: 0}
 --- !u!222 &3590754077475067928
@@ -16470,7 +16470,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 112}
+  m_SizeDelta: {x: 90, y: 105}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5775121569249207518
 CanvasRenderer:
@@ -21690,6 +21690,7 @@ GameObject:
   - component: {fileID: 4088883159245693937}
   - component: {fileID: 463878341468522416}
   - component: {fileID: 2820752402108969948}
+  - component: {fileID: 6520912508950694770}
   m_Layer: 5
   m_Name: icon
   m_TagString: Untagged
@@ -21774,6 +21775,80 @@ MonoBehaviour:
   m_ColorMode: 0
   m_BlurMode: 0
   m_AdvancedBlur: 0
+--- !u!114 &6520912508950694770
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6740037100189552624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c10d422b52559da41aa9676770a8fc65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animationSteps:
+  - rid: 1713354883680174080
+  duration: 7.5
+  initializeMode: 2
+  references:
+    version: 2
+    RefIds:
+    - rid: 1713354883680174080
+      type: {class: DOTweenAnimationStep, ns: BrunoMikoski.AnimationSequencer, asm: BrunoMikoski.AnimationSequencer}
+      data:
+        delay: 0
+        flowType: 0
+        target: {fileID: 6740037100189552624}
+        duration: 2.5
+        loopCount: -1
+        loopType: 0
+        actions:
+        - rid: 1713354883680174081
+    - rid: 1713354883680174081
+      type: {class: AnchoredPositionMoveToPositionDOTweenActionBase, ns: BrunoMikoski.AnimationSequencer,
+        asm: BrunoMikoski.AnimationSequencer}
+      data:
+        direction: 0
+        ease:
+          ease: 37
+          curve:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 0
+              inSlope: 6.8535333
+              outSlope: 6.8535333
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0.04196651
+            - serializedVersion: 3
+              time: 0.4964276
+              value: 1
+              inSlope: 0.0000011956456
+              outSlope: 0.0000011956456
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0.33333334
+              outWeight: 0.39598224
+            - serializedVersion: 3
+              time: 1
+              value: 0
+              inSlope: -5.0943456
+              outSlope: -5.0943456
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0.04137104
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+        isRelative: 0
+        autoKill: 0
+        axisConstraint: 0
+        position: {x: 0, y: -47.5}
 --- !u!1 &6897362093284827038
 GameObject:
   m_ObjectHideFlags: 0
