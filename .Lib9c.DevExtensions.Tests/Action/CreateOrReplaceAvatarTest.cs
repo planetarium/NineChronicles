@@ -81,34 +81,6 @@ namespace Lib9c.DevExtensions.Tests.Action
             };
         }
 
-        [Theory]
-        [MemberData(nameof(Get_Execute_Success_MemberData))]
-        public void Execute_Success(
-            long blockIndex,
-            int avatarIndex,
-            string name,
-            int hair,
-            int lens,
-            int ear,
-            int tail,
-            int level,
-            (int itemId, int enhancement)[] equipments)
-        {
-            var agentAddr = new PrivateKey().ToAddress();
-            Execute(
-                _initialStates,
-                blockIndex,
-                agentAddr,
-                avatarIndex,
-                name,
-                hair,
-                lens,
-                ear,
-                tail,
-                level,
-                equipments);
-        }
-
         public static IEnumerable<object[]>
             Get_Execute_Failure_MemberData()
         {
@@ -194,6 +166,69 @@ namespace Lib9c.DevExtensions.Tests.Action
                     (0, -1),
                 },
             };
+        }
+
+        [Theory]
+        [MemberData(nameof(Get_Execute_Success_MemberData))]
+        public void Serialize(
+            long blockIndex,
+            int avatarIndex,
+            string name,
+            int hair,
+            int lens,
+            int ear,
+            int tail,
+            int level,
+            (int itemId, int enhancement)[] equipments)
+        {
+            var action = new CreateOrReplaceAvatar(
+                avatarIndex,
+                name,
+                hair,
+                lens,
+                ear,
+                tail,
+                level,
+                equipments);
+            var ser = action.PlainValue;
+            var de = new CreateOrReplaceAvatar();
+            de.LoadPlainValue(ser);
+            Assert.Equal(action.AvatarIndex, de.AvatarIndex);
+            Assert.Equal(action.Name, de.Name);
+            Assert.Equal(action.Hair, de.Hair);
+            Assert.Equal(action.Lens, de.Lens);
+            Assert.Equal(action.Ear, de.Ear);
+            Assert.Equal(action.Tail, de.Tail);
+            Assert.Equal(action.Level, de.Level);
+            Assert.True(action.Equipments.SequenceEqual(de.Equipments));
+        }
+
+        [Theory]
+        [MemberData(nameof(Get_Execute_Success_MemberData))]
+        public void Execute_Success(
+            long blockIndex,
+            int avatarIndex,
+            string name,
+            int hair,
+            int lens,
+            int ear,
+            int tail,
+            int level,
+            (int itemId, int enhancement)[] equipments)
+        {
+            var agentAddr = new PrivateKey().ToAddress();
+            Execute(
+                _initialStates,
+                blockIndex,
+                agentAddr,
+                avatarIndex,
+                name,
+                hair,
+                lens,
+                ear,
+                tail,
+                level,
+                equipments);
         }
 
         [Theory]
