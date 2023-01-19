@@ -186,12 +186,21 @@ namespace Lib9c.DevExtensions
         public static string GetDataPath(string fileName)
         {
 #if UNITY_EDITOR
-             return Path.Combine(Directory.GetCurrentDirectory(),
-                 "Assets", "_Scripts", "Lib9c", "lib9c", "Lib9c.DevExtensions", "Data", $"{fileName}.json");
-#elif LIB9C_DEV_EXTENSIONS
-            return Path.Combine($"{Directory.GetCurrentDirectory()}", "9c_Data", "StreamingAssets", $"{fileName}.json");
+            return Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "Assets", "_Scripts", "Lib9c", "lib9c", "Lib9c.DevExtensions",
+                "Data", $"{fileName}.json");
+#elif LIB9C_DEV_EXTENSIONS && UNITY_STANDALONE_WIN
+            return Path.Combine(
+                $"{Directory.GetCurrentDirectory()}",
+                "9c_Data", "StreamingAssets", $"{fileName}.json");
+#elif LIB9C_DEV_EXTENSIONS && UNITY_STANDALONE_OSX
+            return Path.Combine(
+                $"{Directory.GetCurrentDirectory()}", "9c.app", "Contents", "Resources",
+                "Data", "StreamingAssets", $"{fileName}.json");
 #else
-            return Path.Combine("..", "..", "..", "..", "Lib9c.DevExtensions", "Data", $"{fileName}.json");;
+            return Path.Combine("..", "..", "..", "..", "Lib9c.DevExtensions",
+                "Data", $"{fileName}.json");
 #endif
         }
 
