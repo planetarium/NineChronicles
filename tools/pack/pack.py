@@ -26,17 +26,6 @@ def main() -> None:
     logging.basicConfig(level=args.verbose)
 
     temp_dir = tempfile.mkdtemp()
-    for root in [args.game_dir]:
-        for name in os.listdir(root):
-            path = os.path.join(root, name)
-            tmppath = os.path.join(temp_dir, name)
-            if os.path.isdir(path):
-                if not os.path.isdir(tmppath):  # skip duplicate dirs
-                    shutil.copytree(path, tmppath)
-            else:
-                if not os.path.isfile(tmppath):  # skip duplicate files
-                    shutil.copy2(path, tmppath)
-            logging.info('Copy: %s -> %s', path, tmppath)
 
     # 아카이브 생성
     os.makedirs(args.out_dir, exist_ok=True)
