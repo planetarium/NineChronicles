@@ -359,7 +359,7 @@ namespace Nekoyume.UI
 
             ActionManager.Instance.Raid(costumes, equipments, consumables, runeInfos, payNcg).Subscribe();
             Find<LoadingScreen>().Show();
-            Find<WorldBoss>().Close();
+            Find<WorldBoss>().ForceClose();
             Close();
         }
 
