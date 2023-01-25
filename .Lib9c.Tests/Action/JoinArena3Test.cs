@@ -54,12 +54,13 @@ namespace Lib9c.Tests.Action
             var tableSheets = new TableSheets(sheets);
             var rankingMapAddress = new PrivateKey().ToAddress();
             var agentState = new AgentState(_signer);
+            var gameConfigState = new GameConfigState(_sheets[nameof(GameConfigSheet)]);
             var avatarState = new AvatarState(
                 _avatarAddress,
                 _signer,
                 0,
                 tableSheets.GetAvatarSheets(),
-                new GameConfigState(),
+                gameConfigState,
                 rankingMapAddress)
             {
                 worldInformation = new WorldInformation(
@@ -109,6 +110,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatar2Address.Derive(LegacyWorldInformationKey), avatar2State.worldInformation.Serialize())
                 .SetState(_avatar2Address.Derive(LegacyQuestListKey), avatar2State.questList.Serialize())
                 .SetState(_avatar2Address, avatar2State.SerializeV2())
+                .SetState(gameConfigState.address, gameConfigState.Serialize())
                 .SetState(Addresses.GoldCurrency, goldCurrencyState.Serialize());
 
             foreach ((string key, string value) in sheets)
@@ -526,6 +528,22 @@ namespace Lib9c.Tests.Action
             avatarState = AddMedal(avatarState, row, 80);
 
             var state = _state.MintAsset(_signer, FungibleAssetValue.Parse(_currency, balance));
+            var ncgCurrency = state.GetGoldCurrency();
+            state = state.MintAsset(_signer, 99999 * ncgCurrency);
+
+            var unlockRuneSlot = new UnlockRuneSlot()
+            {
+                AvatarAddress = _avatarAddress,
+                SlotIndex = 1,
+            };
+
+            state = unlockRuneSlot.Execute(new ActionContext
+            {
+                BlockIndex = 1,
+                PreviousStates = state,
+                Signer = _signer,
+                Random = new TestRandom(),
+            });
 
             var action = new JoinArena()
             {

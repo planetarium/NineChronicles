@@ -71,6 +71,11 @@ namespace Nekoyume.Model.State
 
             foreach (var slot in _slots)
             {
+                if (slot.IsLock)
+                {
+                    continue;
+                }
+
                 var runeInfo = runeInfos.FirstOrDefault(x => x.SlotIndex == slot.Index);
                 if (runeInfo == null)
                 {

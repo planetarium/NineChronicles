@@ -2,10 +2,10 @@ namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.Immutable;
     using System.Linq;
     using Libplanet;
     using Libplanet.Action;
+    using Libplanet.Assets;
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
@@ -55,8 +55,13 @@ namespace Lib9c.Tests.Action
                 level = 400,
             };
             agentState.avatarAddresses.Add(0, _avatarAddress);
-
+#pragma warning disable CS0618
+            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+            var currency = Currency.Legacy("NCG", 2, null);
+#pragma warning restore CS0618
+            var goldCurrencyState = new GoldCurrencyState(currency);
             _initialState = new State()
+                .SetState(Addresses.GoldCurrency, goldCurrencyState.Serialize())
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(_avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
@@ -811,6 +816,23 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), previousAvatarState.worldInformation.Serialize())
                 .SetState(_avatarAddress.Derive(LegacyQuestListKey), previousAvatarState.questList.Serialize())
                 .SetState(_avatarAddress, previousAvatarState.SerializeV2());
+
+            var ncgCurrency = state.GetGoldCurrency();
+            state = state.MintAsset(_agentAddress, 99999 * ncgCurrency);
+
+            var unlockRuneSlot = new UnlockRuneSlot()
+            {
+                AvatarAddress = _avatarAddress,
+                SlotIndex = 1,
+            };
+
+            state = unlockRuneSlot.Execute(new ActionContext
+            {
+                BlockIndex = 1,
+                PreviousStates = state,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+            });
 
             var action = new MimisbrunnrBattle
             {

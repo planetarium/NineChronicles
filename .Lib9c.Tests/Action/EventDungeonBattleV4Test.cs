@@ -353,6 +353,23 @@ namespace Lib9c.Tests.Action
         {
             Assert.True(_tableSheets.EventScheduleSheet
                 .TryGetValue(1001, out var scheduleRow));
+
+            _initialStates = _initialStates.MintAsset(_agentAddress, 99999 * _ncgCurrency);
+
+            var unlockRuneSlot = new UnlockRuneSlot()
+            {
+                AvatarAddress = _avatarAddress,
+                SlotIndex = 1,
+            };
+
+            _initialStates = unlockRuneSlot.Execute(new ActionContext
+            {
+                BlockIndex = 1,
+                PreviousStates = _initialStates,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+            });
+
             Assert.Throws(exception, () =>
                 Execute(
                     _initialStates,
