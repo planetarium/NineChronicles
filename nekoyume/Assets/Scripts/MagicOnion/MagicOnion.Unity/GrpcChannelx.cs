@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,9 +8,14 @@ using System.Threading;
 using System.Threading.Tasks;
 #if MAGICONION_UNITASK_SUPPORT
 using Cysharp.Threading.Tasks;
+#if !USE_GRPC_NET_CLIENT_ONLY
 using Channel = Grpc.Core.Channel;
 #endif
+#endif
 using Grpc.Core;
+#if USE_GRPC_NET_CLIENT
+using Grpc.Net.Client;
+#endif
 using MagicOnion.Client;
 using MagicOnion.Unity;
 using UnityEngine;
@@ -29,25 +35,27 @@ namespace MagicOnion
     {
         private readonly Action<GrpcChannelx> _onDispose;
         private readonly Dictionary<IStreamingHubMarker, (Func<Task> DisposeAsync, ManagedStreamingHubInfo StreamingHubInfo)> _streamingHubs = new Dictionary<IStreamingHubMarker, (Func<Task>, ManagedStreamingHubInfo)>();
-        private readonly Channel _channel;
+        private readonly ChannelBase _channel;
+
         private bool _disposed;
+        private bool _shutdownRequested;
 
         public Uri TargetUri { get; }
         public int Id { get; }
 
-        public ChannelState ChannelState => _channel.State;
 
 #if UNITY_EDITOR || MAGICONION_ENABLE_CHANNEL_DIAGNOSTICS
         private readonly string _stackTrace;
-        private readonly IReadOnlyList<ChannelOption> _channelOptions;
         private readonly ChannelStats _channelStats;
+        private readonly GrpcChannelOptionsBag _channelOptions;
 
         string IGrpcChannelxDiagnosticsInfo.StackTrace => _stackTrace;
         ChannelStats IGrpcChannelxDiagnosticsInfo.Stats => _channelStats;
-        IReadOnlyList<ChannelOption> IGrpcChannelxDiagnosticsInfo.ChannelOptions => _channelOptions;
+        GrpcChannelOptionsBag IGrpcChannelxDiagnosticsInfo.ChannelOptions => _channelOptions;
+        ChannelBase IGrpcChannelxDiagnosticsInfo.UnderlyingChannel => _channel;
 #endif
 
-        public GrpcChannelx(int id, Action<GrpcChannelx> onDispose, Channel channel, Uri targetUri, IReadOnlyList<ChannelOption> channelOptions)
+        public GrpcChannelx(int id, Action<GrpcChannelx> onDispose, ChannelBase channel, Uri targetUri, GrpcChannelOptionsBag channelOptions)
             : base(targetUri.ToString())
         {
             Id = id;
@@ -81,7 +89,7 @@ namespace MagicOnion
         [Obsolete("Use ForAddress instead.")]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static GrpcChannelx FromAddress(Uri target)
-            => GrpcChannelProvider.Default.CreateChannel(target.Host, target.Port, (target.Scheme == "http" ? ChannelCredentials.Insecure : new SslCredentials()));
+            => GrpcChannelProvider.Default.CreateChannel(new GrpcChannelTarget(target.Host, target.Port, target.Scheme == "http"));
 
         /// <summary>
         /// Create a channel to the specified target.
@@ -105,7 +113,7 @@ namespace MagicOnion
         /// <param name="target"></param>
         /// <returns></returns>
         public static GrpcChannelx ForAddress(Uri target)
-            => GrpcChannelProvider.Default.CreateChannel(target.Host, target.Port, (target.Scheme == "http" ? ChannelCredentials.Insecure : new SslCredentials()));
+            => GrpcChannelProvider.Default.CreateChannel(new GrpcChannelTarget(target.Host, target.Port, target.Scheme == "http"));
 
         /// <summary>
         /// Create a <see cref="CallInvoker"/>.
@@ -135,6 +143,7 @@ namespace MagicOnion
         /// </summary>
         /// <param name="deadline"></param>
         /// <returns></returns>
+        [Obsolete]
 #if MAGICONION_UNITASK_SUPPORT
         public async UniTask ConnectAsync(DateTime? deadline = null)
 #else
@@ -142,9 +151,13 @@ namespace MagicOnion
 #endif
         {
             ThrowIfDisposed();
-            await _channel.ConnectAsync(deadline);
+#if !USE_GRPC_NET_CLIENT_ONLY
+            if (_channel is Channel grpcCChannel)
+            {
+                await grpcCChannel.ConnectAsync(deadline);
+            }
+#endif
         }
-
 
         /// <inheritdoc />
         IReadOnlyCollection<ManagedStreamingHubInfo> IMagicOnionAwareGrpcChannel.GetAllManagedStreamingHubs()
@@ -262,6 +275,9 @@ namespace MagicOnion
         private async Task ShutdownInternalAsync()
 #endif
         {
+            if (_shutdownRequested) return;
+            _shutdownRequested = true;
+            
             await _channel.ShutdownAsync().ConfigureAwait(false);
         }
 
@@ -407,21 +423,61 @@ namespace MagicOnion
                         method.Type,
                         method.ServiceName,
                         method.Name,
-                        new Marshaller<TRequest>(x =>
+                        new Marshaller<TRequest>((request, context) =>
                         {
-                            var bytes = method.RequestMarshaller.Serializer(x);
-                            _channelStats.AddSentBytes(bytes.Length);
-                            return bytes;
-                        }, x => method.RequestMarshaller.Deserializer(x)),
-                        new Marshaller<TResponse>(x => method.ResponseMarshaller.Serializer(x), x =>
+                            var wrapper = new SerializationContextWrapper(context);
+                            method.RequestMarshaller.ContextualSerializer(request, context);
+                            _channelStats.AddSentBytes(wrapper.Written);
+                        }, (context) => method.RequestMarshaller.ContextualDeserializer(context)),
+                        new Marshaller<TResponse>((request, context) => method.ResponseMarshaller.ContextualSerializer(request, context), x =>
                         {
-                            _channelStats.AddReceivedBytes(x.Length);
-                            return method.ResponseMarshaller.Deserializer(x);
+                            _channelStats.AddReceivedBytes(x.PayloadLength);
+                            return method.ResponseMarshaller.ContextualDeserializer(x);
                         })
                     );
 
                     return wrappedMethod;
                 }
+            }
+
+            private class SerializationContextWrapper : SerializationContext, IBufferWriter<byte>
+            {
+                private readonly SerializationContext _inner;
+                private IBufferWriter<byte> _bufferWriter;
+                public int Written { get; private set; }
+
+                public SerializationContextWrapper(SerializationContext inner)
+                {
+                    _inner = inner;
+                }
+
+                public override IBufferWriter<byte> GetBufferWriter()
+                    => _bufferWriter ?? (_bufferWriter = _inner.GetBufferWriter());
+
+                public override void Complete(byte[] payload)
+                {
+                    Written = payload.Length;
+                    _inner.Complete(payload);
+                }
+
+                public override void Complete()
+                    => _inner.Complete();
+
+                public override void SetPayloadLength(int payloadLength)
+                {
+                    Written = payloadLength;
+                    _inner.SetPayloadLength(payloadLength);
+                }
+
+                public void Advance(int count)
+                {
+                    Written += count;
+                    GetBufferWriter().Advance(count);
+                }
+
+                public Memory<byte> GetMemory(int sizeHint = 0) => GetBufferWriter().GetMemory(sizeHint);
+
+                public Span<byte> GetSpan(int sizeHint = 0) => GetBufferWriter().GetSpan(sizeHint);
             }
         }
 #endif
@@ -434,7 +490,9 @@ namespace MagicOnion
 
         GrpcChannelx.ChannelStats Stats { get; }
 
-        IReadOnlyList<ChannelOption> ChannelOptions { get; }
+        GrpcChannelOptionsBag ChannelOptions { get; }
+
+        ChannelBase UnderlyingChannel { get; }
     }
 #endif
 }

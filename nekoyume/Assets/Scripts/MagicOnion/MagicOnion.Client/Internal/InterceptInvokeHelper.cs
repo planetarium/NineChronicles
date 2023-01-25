@@ -1,12 +1,12 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 
-namespace MagicOnion.Client
+namespace MagicOnion.Client.Internal
 {
     internal static class InterceptInvokeHelper
     {
         public static ValueTask<ResponseContext> InvokeWithFilter(RequestContext context)
         {
-            switch (context.Filters.Length)
+            switch (context.Filters.Count)
             {
                 case 0:
                     return new ValueTask<ResponseContext>(context.RequestMethod(context));
@@ -145,7 +145,7 @@ namespace MagicOnion.Client
         static ValueTask<ResponseContext> InvokeRecursive(int index, RequestContext context)
         {
             index += 1; // start from -1
-            if (index != context.Filters.Length)
+            if (index != context.Filters.Count)
             {
                 return context.Filters[index].SendAsync(context, ctx => InvokeRecursive(index, ctx));
             }
