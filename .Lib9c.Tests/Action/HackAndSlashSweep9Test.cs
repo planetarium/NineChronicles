@@ -934,6 +934,23 @@ namespace Lib9c.Tests.Action
                     stageId,
                     playCount);
 
+                var ncgCurrency = state.GetGoldCurrency();
+                state = state.MintAsset(_agentAddress, 99999 * ncgCurrency);
+
+                var unlockRuneSlot = new UnlockRuneSlot()
+                {
+                    AvatarAddress = _avatarAddress,
+                    SlotIndex = 1,
+                };
+
+                state = unlockRuneSlot.Execute(new ActionContext
+                {
+                    BlockIndex = 1,
+                    PreviousStates = state,
+                    Signer = _agentAddress,
+                    Random = new TestRandom(),
+                });
+
                 var action = new HackAndSlashSweep
                 {
                     costumes = new List<Guid>(),

@@ -137,12 +137,13 @@ namespace Lib9c.Tests.Action
                 state = state.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
             }
 
+            var gameConfigState = new GameConfigState(_sheets[nameof(GameConfigSheet)]);
             var avatarState = new AvatarState(
                 _avatarAddress,
                 _agentAddress,
                 0,
                 _tableSheets.GetAvatarSheets(),
-                new GameConfigState(),
+                gameConfigState,
                 default
             );
 
@@ -215,7 +216,8 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress, avatarState.SerializeV2())
                     .SetState(_avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
                     .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), avatarState.worldInformation.Serialize())
-                    .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize());
+                    .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
+                    .SetState(gameConfigState.address, gameConfigState.Serialize());
             }
 
             if (kill)
@@ -375,6 +377,26 @@ namespace Lib9c.Tests.Action
             }
             else
             {
+                if (exc == typeof(DuplicatedRuneIdException) || exc == typeof(DuplicatedRuneSlotIndexException))
+                {
+                    var ncgCurrency = state.GetGoldCurrency();
+                    state = state.MintAsset(_agentAddress, 99999 * ncgCurrency);
+
+                    var unlockRuneSlot = new UnlockRuneSlot()
+                    {
+                        AvatarAddress = _avatarAddress,
+                        SlotIndex = 1,
+                    };
+
+                    state = unlockRuneSlot.Execute(new ActionContext
+                    {
+                        BlockIndex = 1,
+                        PreviousStates = state,
+                        Signer = _agentAddress,
+                        Random = new TestRandom(),
+                    });
+                }
+
                 Assert.Throws(exc, () => action.Execute(new ActionContext
                 {
                     BlockIndex = blockIndex + executeOffset,
