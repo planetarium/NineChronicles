@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData.Pet
 {
+    [Serializable]
     public class PetSheet : Sheet<int, PetSheet.Row>
     {
         public class Row : SheetRow<int>
