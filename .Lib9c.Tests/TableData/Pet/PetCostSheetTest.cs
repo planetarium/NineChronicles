@@ -25,8 +25,8 @@
         public void SetToSheet()
         {
             const string content =
-                @"ID,_PET NAME,PetLevel,SoulStoneQuantity,NcgQuantity,PetFeedQuantity
-1,D:CC 블랙캣,1,10,0,0
+                @"ID,_PET NAME,PetLevel,SoulStoneQuantity,NcgQuantity
+1,D:CC 블랙캣,1,10,0
         ";
 
             var sheet = new PetCostSheet();
@@ -40,19 +40,19 @@
         public void GetRowTest()
         {
             const string content =
-                @"ID,_PET NAME,PetLevel,SoulStoneQuantity,NcgQuantity,PetFeedQuantity
-1,D:CC 블랙캣,1,10,100,100
+                @"ID,_PET NAME,PetLevel,SoulStoneQuantity,NcgQuantity
+1,D:CC 블랙캣,1,10,0
         ";
 
             var sheet = new PetCostSheet();
             sheet.Set(content);
 
-            var random = new TestRandom();
-            var expectRow = sheet.OrderedList[random.Next(0, sheet.Count)];
-            Assert.Equal(1, expectRow.Cost.First().Level);
-            Assert.Equal(10, expectRow.Cost.First().SoulStoneQuantity);
-            Assert.Equal(100, expectRow.Cost.First().NcgQuantity);
-            Assert.Equal(100, expectRow.Cost.First().PetFeedQuantity);
+            var expectRow = sheet.First;
+            Assert.NotNull(expectRow);
+            Assert.True(expectRow.TryGetCost(1, out var cost));
+            Assert.Equal(1, cost.Level);
+            Assert.Equal(10, cost.SoulStoneQuantity);
+            Assert.Equal(0, cost.NcgQuantity);
         }
     }
 }

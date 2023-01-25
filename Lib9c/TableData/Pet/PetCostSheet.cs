@@ -16,18 +16,15 @@ namespace Nekoyume.TableData.Pet
             public int Level { get; }
             public int SoulStoneQuantity { get; }
             public int NcgQuantity { get; }
-            public int PetFeedQuantity { get; }
 
             public PetCostData(
                 int level,
                 int soulStoneQuantity,
-                int ncgQuantity,
-                int petFeedQuantity)
+                int ncgQuantity)
             {
                 Level = level;
                 SoulStoneQuantity = soulStoneQuantity;
                 NcgQuantity = ncgQuantity;
-                PetFeedQuantity = petFeedQuantity;
             }
         }
 
@@ -46,10 +43,9 @@ namespace Nekoyume.TableData.Pet
                 var level = ParseInt(fields[1]);
                 var soulStone = ParseInt(fields[2]);
                 var ncg = ParseInt(fields[3]);
-                var petFeed = ParseInt(fields[4]);
                 Cost = new List<PetCostData>
                 {
-                   new PetCostData(level, soulStone, ncg, petFeed)
+                   new PetCostData(level, soulStone, ncg)
                 };
             }
 
