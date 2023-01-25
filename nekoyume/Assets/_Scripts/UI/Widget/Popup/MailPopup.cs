@@ -73,6 +73,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button closeButton = null;
 
+        [SerializeField]
+        private GameObject loading;
+
         private readonly Module.ToggleGroup _toggleGroup = new Module.ToggleGroup();
 
         private const int TutorialEquipmentId = 10110000;
@@ -101,16 +104,23 @@ namespace Nekoyume.UI
         {
             var mailRewards = new List<MailReward>();
             var avatarAddress = States.Instance.CurrentAvatarState.address;
+            loading.SetActive(true);
             foreach (var mail in MailBox)
             {
                 if (mail.New)
                 {
                     await AddRewards(mail, mailRewards);
-                    mail.New = false;
-                    LocalLayerModifier.RemoveNewMail(avatarAddress, mail.id, true);
                 }
             }
 
+            foreach (var mail in MailBox)
+            {
+                if (mail.New)
+                {
+                    LocalLayerModifier.RemoveNewMail(avatarAddress, mail.id, true);
+                }
+            }
+            loading.SetActive(false);
             ChangeState(0);
             UpdateTabs();
             Find<MailRewardScreen>().Show(mailRewards);
@@ -170,6 +180,7 @@ namespace Nekoyume.UI
             MailBox = States.Instance.CurrentAvatarState.mailBox;
             _toggleGroup.SetToggledOffAll();
             allButton.SetToggledOn();
+            loading.SetActive(false);
             ChangeState(0);
             UpdateTabs();
             base.Show(ignoreShowAnimation);
