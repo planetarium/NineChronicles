@@ -5,16 +5,13 @@
     <LangVersion>8</LangVersion>
     <OutputPath>.bin</OutputPath>
     <IntermediateOutputPath>.obj</IntermediateOutputPath>
-    <Configurations>Debug;Release;Debug DevEx</Configurations>
+    <Configurations>Debug;Release;DevEx</Configurations>
     <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug DevEx' ">
+  <PropertyGroup Condition=" '$(Configuration)' == 'DevEx' ">
     <DebugSymbols Condition=" '$(DebugSymbols)' == '' ">true</DebugSymbols>
     <Optimize Condition=" '$(Optimize)' == '' ">false</Optimize>
-    <!-- NOTE: `CS0436` occurred when the configuration is `Debug DevEx`
-               because the Lib9c project was already contains
-               this Lib9c.DevExtensions.-->
     <NoWarn>$(NoWarn);CS0436</NoWarn>
   </PropertyGroup>
 
