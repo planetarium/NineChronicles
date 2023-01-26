@@ -1,31 +1,41 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <OutputPath>.bin</OutputPath>
-        <IntermediateOutputPath>.obj</IntermediateOutputPath>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>8</LangVersion>
+    <OutputPath>.bin</OutputPath>
+    <IntermediateOutputPath>.obj</IntermediateOutputPath>
+    <Configurations>Debug;Release;Debug DevEx</Configurations>
+    <Platforms>AnyCPU</Platforms>
+  </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug DevEx' ">
+    <DebugSymbols Condition=" '$(DebugSymbols)' == '' ">true</DebugSymbols>
+    <Optimize Condition=" '$(Optimize)' == '' ">false</Optimize>
+    <!-- NOTE: `CS0436` occurred when the configuration is `Debug DevEx`
+               because the Lib9c project was already contains
+               this Lib9c.DevExtensions.-->
+    <NoWarn>$(NoWarn);CS0436</NoWarn>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\.Libplanet\Libplanet.Analyzers\Libplanet.Analyzers.csproj" />
-      <ProjectReference Include="..\.Libplanet\Libplanet.RocksDBStore\Libplanet.RocksDBStore.csproj" />
-      <ProjectReference Include="..\.Libplanet\Libplanet.Stun\Libplanet.Stun.csproj" />
-      <ProjectReference Include="..\.Libplanet\Libplanet\Libplanet.csproj" />
-      <ProjectReference Include="..\Lib9c\Lib9c.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\.Libplanet\Libplanet.RocksDBStore\Libplanet.RocksDBStore.csproj" />
+    <ProjectReference Include="..\.Libplanet\Libplanet.Stun\Libplanet.Stun.csproj" />
+    <ProjectReference Include="..\.Libplanet\Libplanet\Libplanet.csproj" />
+    <ProjectReference Include="..\Lib9c\Lib9c.csproj" />
+  </ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="Cocona.Core" Version="1.5.0" />
-      <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-      <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
-      <PackageReference Include="System.Collections" Version="4.3.0" />
-      <PackageReference Include="System.Diagnostics.Debug" Version="4.3.0" />
-      <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
-      <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />
-      <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
-      <PackageReference Include="System.Text.Encoding.Extensions" Version="4.3.0" />
-      <PackageReference Include="System.Xml.ReaderWriter" Version="4.3.0" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Cocona.Core" Version="1.5.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
+    <PackageReference Include="System.Collections" Version="4.3.0" />
+    <PackageReference Include="System.Diagnostics.Debug" Version="4.3.0" />
+    <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
+    <PackageReference Include="System.Text.Encoding.Extensions" Version="4.3.0" />
+    <PackageReference Include="System.Xml.ReaderWriter" Version="4.3.0" />
+  </ItemGroup>
 
 </Project>

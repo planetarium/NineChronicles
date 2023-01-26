@@ -4,6 +4,8 @@
         <OutputType>Exe</OutputType>
         <TargetFramework>net6.0</TargetFramework>
         <AssemblyName>9c-tools</AssemblyName>
+        <Configurations>Debug;Release;Debug DevEx</Configurations>
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <PropertyGroup Condition="
@@ -12,11 +14,21 @@
       <TargetFramework>net6.0</TargetFramework>
     </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug DevEx' ">
+      <DebugSymbols Condition=" '$(DebugSymbols)' == '' ">true</DebugSymbols>
+      <Optimize Condition=" '$(Optimize)' == '' ">false</Optimize>
+    </PropertyGroup>
+
     <ItemGroup>
       <ProjectReference Include="..\.Libplanet\Libplanet.RocksDBStore\Libplanet.RocksDBStore.csproj" />
-      <ProjectReference Include="..\Lib9c.DevExtensions\Lib9c.DevExtensions.csproj" />
       <ProjectReference Include="..\Lib9c\Lib9c.csproj" />
     </ItemGroup>
+
+  <ItemGroup Condition=" '$(Configuration)' != 'Debug DevEx' ">
+    <!-- NOTE: Lib9c.DevExtensions project will be contained by Lib9c project
+             when the configuration is 'Debug DevEx'.-->
+    <ProjectReference Include="..\Lib9c.DevExtensions\Lib9c.DevExtensions.csproj" />
+  </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="Cocona.Lite" Version="1.5.0" />

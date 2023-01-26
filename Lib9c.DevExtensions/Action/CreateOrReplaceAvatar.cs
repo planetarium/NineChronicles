@@ -48,7 +48,7 @@ namespace Lib9c.DevExtensions.Action
                     .Add(Level.Serialize());
 
                 var equipmentList = List.Empty;
-                if (Equipments is not null &&
+                if (Equipments != null &&
                     Equipments.Length > 0)
                 {
                     for (var i = 0; i < Equipments.Length; i++)
@@ -101,7 +101,8 @@ namespace Lib9c.DevExtensions.Action
             int level = 1,
             (int itemId, int enhancement)[] equipments = null)
         {
-            if (avatarIndex is not (>= 0 and < GameConfig.SlotCount))
+            if (avatarIndex < 0 ||
+                avatarIndex >= GameConfig.SlotCount)
             {
                 throw new ArgumentException(
                     $"Invalid avatarIndex: ({avatarIndex})." +
@@ -158,7 +159,7 @@ namespace Lib9c.DevExtensions.Action
                     nameof(level));
             }
 
-            if (equipments is not null)
+            if (equipments != null)
             {
                 foreach (var tuple in equipments)
                 {
