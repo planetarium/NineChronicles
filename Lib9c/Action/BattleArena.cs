@@ -24,7 +24,7 @@ namespace Nekoyume.Action
     /// <summary>
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1663
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1649
-    /// Updated at 
+    /// Updated at https://github.com/planetarium/lib9c/pull/1679
     /// </summary>
     [Serializable]
     [ActionType("battle_arena8")]
