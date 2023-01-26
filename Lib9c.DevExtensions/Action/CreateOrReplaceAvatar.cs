@@ -60,7 +60,7 @@ namespace Lib9c.DevExtensions.Action
                     }
                 }
 
-                list.Add(equipmentList);
+                list = list.Add(equipmentList);
 
                 return new Dictionary<string, IValue>
                 {
@@ -74,7 +74,7 @@ namespace Lib9c.DevExtensions.Action
         {
             var list = (List)plainValue["l"];
             AvatarIndex = list[0].ToInteger();
-            Name = list[1].ToString();
+            Name = list[1].ToDotnetString();
             Hair = list[2].ToInteger();
             Lens = list[3].ToInteger();
             Ear = list[4].ToInteger();
@@ -91,8 +91,12 @@ namespace Lib9c.DevExtensions.Action
             }
         }
 
+        public CreateOrReplaceAvatar() : this(0)
+        {
+        }
+
         public CreateOrReplaceAvatar(
-            int avatarIndex = 0,
+            int avatarIndex,
             string name = "Avatar",
             int hair = 0,
             int lens = 0,
