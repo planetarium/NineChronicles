@@ -9,9 +9,9 @@ using Priority_Queue;
 namespace Nekoyume.Arena
 {
     /// <summary>
-    /// Introduced at https://github.com/planetarium/lib9c/pull/
+    /// Introduced at https://github.com/planetarium/lib9c/pull/1501
     /// </summary>
-    public class ArenaSimulator : IArenaSimulator
+    public class ArenaSimulatorV2 : IArenaSimulator
     {
         private const decimal TurnPriority = 100m;
         private const int MaxTurn = 200;
@@ -20,7 +20,7 @@ namespace Nekoyume.Arena
         public int Turn { get; private set; }
         public ArenaLog Log { get; private set; }
 
-        public ArenaSimulator(IRandom random)
+        public ArenaSimulatorV2(IRandom random)
         {
             Random = random;
             Turn = 1;
@@ -96,7 +96,7 @@ namespace Nekoyume.Arena
 
 
         private static SimplePriorityQueue<ArenaCharacter, decimal> SpawnPlayers(
-            ArenaSimulator simulator,
+            ArenaSimulatorV2 simulator,
             ArenaPlayerDigest challengerDigest,
             ArenaPlayerDigest enemyDigest,
             ArenaSimulatorSheets simulatorSheets,
@@ -105,7 +105,7 @@ namespace Nekoyume.Arena
             var challenger = new ArenaCharacter(simulator, challengerDigest, simulatorSheets);
             if (challengerDigest.Runes != null)
             {
-                challenger.SetRuneV2(
+                challenger.SetRune(
                     challengerDigest.Runes,
                     simulatorSheets.RuneOptionSheet,
                     simulatorSheets.SkillSheet);
@@ -114,7 +114,7 @@ namespace Nekoyume.Arena
             var enemy = new ArenaCharacter(simulator, enemyDigest, simulatorSheets, true);
             if (enemyDigest.Runes != null)
             {
-                enemy.SetRuneV2(
+                enemy.SetRune(
                     enemyDigest.Runes,
                     simulatorSheets.RuneOptionSheet,
                     simulatorSheets.SkillSheet);
