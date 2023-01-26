@@ -235,7 +235,8 @@ namespace Nekoyume.Model
             return statModifiers.Any();
         }
 
-        public void SetRune(
+        [Obsolete("Use SetRune")]
+        public void SetRuneV1(
             List<RuneState> runes,
             RuneOptionSheet runeOptionSheet,
             SkillSheet skillSheet)
@@ -296,7 +297,7 @@ namespace Nekoyume.Model
             }
         }
 
-        public void SetRuneV2(
+        public void SetRune(
             List<RuneState> runes,
             RuneOptionSheet runeOptionSheet,
             SkillSheet skillSheet)

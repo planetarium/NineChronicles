@@ -23,7 +23,7 @@ namespace Lib9c.Tests.Action
     using Xunit.Abstractions;
     using static Lib9c.SerializeKeys;
 
-    public class BattleGrandFinale2Test
+    public class BattleGrandFinaleTest
     {
         private readonly int _validSeason;
         private readonly Dictionary<string, string> _sheets;
@@ -39,7 +39,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _avatar4Address;
         private IAccountStateDelta _initialStates;
 
-        public BattleGrandFinale2Test(ITestOutputHelper outputHelper)
+        public BattleGrandFinaleTest(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()

@@ -197,7 +197,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_AlreadyFoughtAvatarException()
         {
-            var action = new BattleGrandFinale
+            var action = new BattleGrandFinale1
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -225,7 +225,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_InvalidAddressException()
         {
-            var action = new BattleGrandFinale
+            var action = new BattleGrandFinale1
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar1Address,
@@ -245,7 +245,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_FailedLoadStateException()
         {
-            var action = new BattleGrandFinale
+            var action = new BattleGrandFinale1
             {
                 myAvatarAddress = _avatar2Address,
                 enemyAvatarAddress = _avatar1Address,
@@ -265,7 +265,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_SheetRowNotFoundException()
         {
-            var action = new BattleGrandFinale
+            var action = new BattleGrandFinale1
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -288,7 +288,7 @@ namespace Lib9c.Tests.Action
             var blockIndex =
                 _tableSheets.GrandFinaleScheduleSheet.GetRowByBlockIndex(0)?.StartBlockIndex - 1 ??
                 0;
-            var action = new BattleGrandFinale
+            var action = new BattleGrandFinale1
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -335,7 +335,7 @@ namespace Lib9c.Tests.Action
                 .SetState(myAvatar.address, myAvatar.Serialize())
                 .SetState(enemyAvatar.address, enemyAvatar.Serialize());
 
-            var action = new BattleGrandFinale
+            var action = new BattleGrandFinale1
             {
                 myAvatarAddress = myAvatar.address,
                 enemyAvatarAddress = enemyAvatar.address,
@@ -414,7 +414,7 @@ namespace Lib9c.Tests.Action
                         new ArenaAvatarState(enemyAvatar).Serialize());
             }
 
-            var action = new BattleGrandFinale
+            var action = new BattleGrandFinale1
             {
                 myAvatarAddress = myAvatarAddr,
                 enemyAvatarAddress = enemyAvatarAddr,

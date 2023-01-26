@@ -105,7 +105,7 @@ namespace Nekoyume.Arena
             var challenger = new ArenaCharacter(simulator, challengerDigest, simulatorSheets);
             if (challengerDigest.Runes != null)
             {
-                challenger.SetRuneV2(
+                challenger.SetRune(
                     challengerDigest.Runes,
                     simulatorSheets.RuneOptionSheet,
                     simulatorSheets.SkillSheet);
@@ -114,7 +114,7 @@ namespace Nekoyume.Arena
             var enemy = new ArenaCharacter(simulator, enemyDigest, simulatorSheets, true);
             if (enemyDigest.Runes != null)
             {
-                enemy.SetRuneV2(
+                enemy.SetRune(
                     enemyDigest.Runes,
                     simulatorSheets.RuneOptionSheet,
                     simulatorSheets.SkillSheet);
