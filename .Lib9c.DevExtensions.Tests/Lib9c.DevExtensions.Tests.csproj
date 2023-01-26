@@ -4,6 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <LangVersion>8.0</LangVersion>
     <IsPackable>false</IsPackable>
+    <NoWarn>$(NoWarn);xUnit1026</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="&#xA;      '$([System.Runtime.InteropServices.RuntimeInformation]::&#xA;        OSArchitecture.ToString())' == 'Arm64' ">
