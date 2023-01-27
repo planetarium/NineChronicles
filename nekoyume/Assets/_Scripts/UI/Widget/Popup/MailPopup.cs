@@ -115,11 +115,26 @@ namespace Nekoyume.UI
 
             foreach (var mail in MailBox)
             {
-                if (mail.New)
+                if (!mail.New)
                 {
-                    LocalLayerModifier.RemoveNewMail(avatarAddress, mail.id, true);
+                    continue;
+                }
+
+                switch (mail)
+                {
+                    case OrderBuyerMail:
+                    case OrderSellerMail:
+                    case OrderExpirationMail:
+                    case CancelOrderMail:
+                        LocalLayerModifier.RemoveNewMail(avatarAddress, mail.id, true);
+                        break;
+                    case ItemEnhanceMail:
+                    case CombinationMail:
+                        LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id, true);
+                        break;
                 }
             }
+
             loading.SetActive(false);
             ChangeState(0);
             UpdateTabs();
@@ -142,6 +157,20 @@ namespace Nekoyume.UI
                     var sItem = await Util.GetItemBaseByTradableId(sOrder.TradableId, sOrder.ExpiredBlockIndex);
                     var sCount = sOrder is FungibleOrder sFungibleOrder ? sFungibleOrder.ItemCount : 1;
                     mailRewards.Add(new MailReward(sItem, sCount));
+                    break;
+
+                case OrderExpirationMail expirationMail:
+                    var exOrder = await Util.GetOrder(expirationMail.OrderId);
+                    var exItem = await Util.GetItemBaseByTradableId(exOrder.TradableId, exOrder.ExpiredBlockIndex);
+                    var exCount = exOrder is FungibleOrder exFungibleOrder ? exFungibleOrder.ItemCount : 1;
+                    mailRewards.Add(new MailReward(exItem, exCount));
+                    break;
+
+                case CancelOrderMail cancelOrderMail:
+                    var ccOrder = await Util.GetOrder(cancelOrderMail.OrderId);
+                    var ccItem = await Util.GetItemBaseByTradableId(ccOrder.TradableId, ccOrder.ExpiredBlockIndex);
+                    var ccCount = ccOrder is FungibleOrder ccFungibleOrder ? ccFungibleOrder.ItemCount : 1;
+                    mailRewards.Add(new MailReward(ccItem, ccCount));
                     break;
 
                 case CombinationMail combinationMail:
