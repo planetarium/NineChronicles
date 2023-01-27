@@ -1,6 +1,8 @@
+using Libplanet.Action;
+
 namespace Lib9c.DevExtensions.Action.Interface
 {
-    public interface ICreateOrReplaceAvatar
+    public interface ICreateOrReplaceAvatar : IAction
     {
         int AvatarIndex { get; }
         string Name { get; }
