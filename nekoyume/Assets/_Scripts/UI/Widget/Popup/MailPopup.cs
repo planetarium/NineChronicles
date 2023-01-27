@@ -104,10 +104,12 @@ namespace Nekoyume.UI
         {
             var mailRewards = new List<MailReward>();
             var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+
             loading.SetActive(true);
             foreach (var mail in MailBox)
             {
-                if (mail.New)
+                if (mail.New && mail.requiredBlockIndex <= currentBlockIndex)
                 {
                     await AddRewards(mail, mailRewards);
                 }
@@ -115,7 +117,7 @@ namespace Nekoyume.UI
 
             foreach (var mail in MailBox)
             {
-                if (!mail.New)
+                if (!mail.New || mail.requiredBlockIndex > currentBlockIndex)
                 {
                     continue;
                 }
@@ -143,6 +145,8 @@ namespace Nekoyume.UI
 
         private static async Task AddRewards(Mail mail, List<MailReward> mailRewards)
         {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+
             switch (mail)
             {
                 case OrderBuyerMail buyerMail:
@@ -178,6 +182,12 @@ namespace Nekoyume.UI
                     if (cItem is not null)
                     {
                         mailRewards.Add(new MailReward(cItem, 1));
+                        LocalLayerModifier.AddItem(
+                            avatarAddress,
+                            cItem.TradableId,
+                            cItem.RequiredBlockIndex,
+                            1,
+                            false);
                     }
                     break;
 
@@ -186,6 +196,12 @@ namespace Nekoyume.UI
                     if (eItem is not null)
                     {
                         mailRewards.Add(new MailReward(eItem, 1));
+                        LocalLayerModifier.AddItem(
+                            avatarAddress,
+                            eItem.TradableId,
+                            eItem.RequiredBlockIndex,
+                            1,
+                            false);
                     }
                     break;
             }
