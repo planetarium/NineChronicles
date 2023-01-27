@@ -23,13 +23,13 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1679
+    /// Introduced at ...
     /// </summary>
     [Serializable]
     [ActionType(ActionTypeName)]
-    public class BattleGrandFinale : GameAction
+    public class BattleGrandFinale1 : GameAction
     {
-        private const string ActionTypeName = "battle_grand_finale2";
+        private const string ActionTypeName = "battle_grand_finale";
         public const int WinScore = 20;
         public const int LoseScore = 1;
         public const int DefaultScore = 1000;
@@ -131,7 +131,7 @@ namespace Nekoyume.Action
             if (!grandFinaleRow.IsOpened(context.BlockIndex))
             {
                 throw new ThisArenaIsClosedException(
-                    $"{nameof(BattleGrandFinale)} : block index({context.BlockIndex}) - ");
+                    $"{nameof(BattleGrandFinale1)} : block index({context.BlockIndex}) - ");
             }
 
             var grandFinaleParticipantsSheet = sheets.GetSheet<GrandFinaleParticipantsSheet>();
@@ -144,20 +144,20 @@ namespace Nekoyume.Action
             if (!participantsRow.Participants.Contains(myAvatarAddress))
             {
                 throw new AddressNotFoundInArenaParticipantsException(
-                    $"[{nameof(BattleGrandFinale)}] my avatar address : {myAvatarAddress}");
+                    $"[{nameof(BattleGrandFinale1)}] my avatar address : {myAvatarAddress}");
             }
 
             if (!participantsRow.Participants.Contains(enemyAvatarAddress))
             {
                 throw new AddressNotFoundInArenaParticipantsException(
-                    $"[{nameof(BattleGrandFinale)}] enemy avatar address : {enemyAvatarAddress}");
+                    $"[{nameof(BattleGrandFinale1)}] enemy avatar address : {enemyAvatarAddress}");
             }
 
             var myArenaAvatarStateAdr = ArenaAvatarState.DeriveAddress(myAvatarAddress);
             if (!states.TryGetArenaAvatarState(myArenaAvatarStateAdr, out var myArenaAvatarState))
             {
                 throw new ArenaAvatarStateNotFoundException(
-                    $"[{nameof(BattleGrandFinale)}] my avatar address : {myAvatarAddress}");
+                    $"[{nameof(BattleGrandFinale1)}] my avatar address : {myAvatarAddress}");
             }
 
             var enemyArenaAvatarStateAdr = ArenaAvatarState.DeriveAddress(enemyAvatarAddress);
@@ -194,7 +194,7 @@ namespace Nekoyume.Action
                     out _))
             {
                 throw new AlreadyFoughtAvatarException(
-                    $"[{nameof(BattleGrandFinale)}] enemy avatar address : {enemyAvatarAddress}");
+                    $"[{nameof(BattleGrandFinale1)}] enemy avatar address : {enemyAvatarAddress}");
             }
 
             #endregion
@@ -209,7 +209,7 @@ namespace Nekoyume.Action
             ExtraEnemyArenaPlayerDigest =
                 new ArenaPlayerDigest(enemyAvatarState, enemyArenaAvatarState);
             var arenaSheets = sheets.GetArenaSimulatorSheets();
-            var simulator = new ArenaSimulator(context.Random);
+            var simulator = new ArenaSimulatorV2(context.Random);
             var log = simulator.Simulate(
                 ExtraMyArenaPlayerDigest,
                 ExtraEnemyArenaPlayerDigest,
