@@ -975,15 +975,10 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            if (inventoryItem.ItemBase is Consumable consumable)
+            if (_previousCp == _currentCp)
             {
-                var consumables = GetEquippedConsumables();
-                if (!consumables.Exists(x => x.ItemId == consumable.ItemId))
-                {
-                    return;
-                }
+                return;
             }
-
             var cpScreen = Widget.Find<CPScreen>();
             cpScreen.Show(_previousCp, _currentCp);
         }
