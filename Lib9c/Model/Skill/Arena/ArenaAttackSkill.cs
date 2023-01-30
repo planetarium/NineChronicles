@@ -44,7 +44,7 @@ namespace Nekoyume.Model.Skill.Arena
 
                     damage = Math.Max(damage - target.DEF, 1);
                     // Apply damage reduce
-                    damage = (int)((damage - target.DRV) * (1 - target.DRR / 100m));
+                    damage = (int)((damage - target.DRV) * (1 - target.DRR / 10000m));
                     target.CurrentHP -= damage;
 
                     // double attack must be shown as critical attack

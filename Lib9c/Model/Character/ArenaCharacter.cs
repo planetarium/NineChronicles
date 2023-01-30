@@ -328,29 +328,27 @@ namespace Nekoyume.Model
                 }
 
                 var power = 0;
-                if (optionInfo.StatReferenceType == EnumType.StatReferenceType.Caster)
-                {
-                    if (optionInfo.SkillValueType == StatModifier.OperationType.Add)
-                    {
-                        power = (int)optionInfo.SkillValue;
-                    }
-                    else
-                    {
-                        switch (optionInfo.SkillStatType)
-                        {
-                            case StatType.HP:
-                                power = HP;
-                                break;
-                            case StatType.ATK:
-                                power = ATK;
-                                break;
-                            case StatType.DEF:
-                                power = DEF;
-                                break;
-                        }
 
-                        power = (int)Math.Round(power * optionInfo.SkillValue);
+                if (optionInfo.SkillValueType == StatModifier.OperationType.Add)
+                {
+                    power = (int)optionInfo.SkillValue;
+                }
+                else if (optionInfo.StatReferenceType == EnumType.StatReferenceType.Caster)
+                {
+                    switch (optionInfo.SkillStatType)
+                    {
+                        case StatType.HP:
+                            power = HP;
+                            break;
+                        case StatType.ATK:
+                            power = ATK;
+                            break;
+                        case StatType.DEF:
+                            power = DEF;
+                            break;
                     }
+
+                    power = (int)Math.Round(power * optionInfo.SkillValue);
                 }
                 var skill = SkillFactory.GetForArena(skillRow, power, optionInfo.SkillChance);
                 var customField = new SkillCustomField
