@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Atlas_PFP
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 1
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 1024
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 0
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: 5cf1d0b410d9bb44fb7e1f653abfc839, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 1b3f70b266c320e409043ea6db7019ff, type: 3}
+  - {fileID: 21300000, guid: cbe2eae2bd404614c896530c3382bb7b, type: 3}
+  - {fileID: 21300000, guid: ffbe6a3312190fc4cb7782f7401ed8ea, type: 3}
+  - {fileID: 21300000, guid: d07a62555a5d5d74a8df03ed9758e539, type: 3}
+  - {fileID: 21300000, guid: b4825365a43d5f049adeba349c042838, type: 3}
+  - {fileID: 21300000, guid: d04e181a2ccf16549b48175981781ee0, type: 3}
+  - {fileID: 21300000, guid: 054c37aa5a3ecd446886c495ea0308c3, type: 3}
+  - {fileID: 21300000, guid: ae81098d2bb269a47838d3bc5a78322f, type: 3}
+  - {fileID: 21300000, guid: 1dc2a57ef1703774282843515937c8cc, type: 3}
+  - {fileID: 21300000, guid: 0f1521be3033af74eaf4d7ba3e83c5a7, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - EquipPet_bg_Empty
+  - Img_DCC
+  - Img_DccCollection
+  - EquipPet_Mask
+  - EquipPet_bg_5
+  - EquipPet_Select
+  - EquipPet_bg_1
+  - EquipPet_bg_4
+  - EquipPet_bg_2
+  - EquipPet_bg_3
+  m_RenderDataMap: {}
+  m_Tag: Atlas_PFP
+  m_IsVariant: 0
