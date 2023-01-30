@@ -26,7 +26,7 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100290ObsoleteIndex)]
     [ActionType("battle_arena")]
-    public class BattleArena1 : GameAction
+    public class BattleArena1 : GameAction, IBattleArena
     {
         public Address myAvatarAddress;
         public Address enemyAvatarAddress;
@@ -40,6 +40,21 @@ namespace Nekoyume.Action
         public ArenaPlayerDigest ExtraMyArenaPlayerDigest;
         public ArenaPlayerDigest ExtraEnemyArenaPlayerDigest;
         public int ExtraPreviousMyScore;
+
+
+        public Address MyAvatarAddress => myAvatarAddress;
+
+        public Address EnemyAvatarAddress => enemyAvatarAddress;
+
+        public int ChampionshipId => championshipId;
+
+        public int Round => round;
+
+        public int Ticket => ticket;
+
+        public IEnumerable<Guid> Costumes => costumes;
+
+        public IEnumerable<Guid> Equipments => equipments;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>()

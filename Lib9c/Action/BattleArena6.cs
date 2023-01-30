@@ -27,7 +27,7 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100340ObsoleteIndex)]
     [ActionType("battle_arena6")]
-    public class BattleArena6 : GameAction
+    public class BattleArena6 : GameAction, IBattleArena
     {
         public const string PurchasedCountKey = "purchased_count_during_interval";
         public Address myAvatarAddress;
@@ -42,6 +42,20 @@ namespace Nekoyume.Action
         public ArenaPlayerDigest ExtraMyArenaPlayerDigest;
         public ArenaPlayerDigest ExtraEnemyArenaPlayerDigest;
         public int ExtraPreviousMyScore;
+
+        public Address MyAvatarAddress => myAvatarAddress;
+
+        public Address EnemyAvatarAddress => enemyAvatarAddress;
+
+        public int ChampionshipId => championshipId;
+
+        public int Round => round;
+
+        public int Ticket => ticket;
+
+        public IEnumerable<Guid> Costumes => costumes;
+
+        public IEnumerable<Guid> Equipments => equipments;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>()
