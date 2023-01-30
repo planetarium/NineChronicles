@@ -116,12 +116,30 @@ namespace Nekoyume.Action
             var ncgCost = ncgQuantity * ncgCurrency;
             if (ncgQuantity > 0)
             {
+                var nowBalance = states.GetBalance(context.Signer, ncgCurrency);
+                if (nowBalance < ncgCost)
+                {
+                    throw new NotEnoughFungibleAssetValueException(
+                        GetSignerAndOtherAddressesHex(context),
+                        ncgCost,
+                        nowBalance);
+                }
+
                 states = states.TransferAsset(context.Signer, feeStoreAddress, ncgCost);
             }
 
             var soulStoneCost = soulStoneQuantity * soulStoneCurrency;
             if (soulStoneQuantity > 0)
             {
+                var nowBalance = states.GetBalance(AvatarAddress, soulStoneCurrency);
+                if (nowBalance < soulStoneCost)
+                {
+                    throw new NotEnoughFungibleAssetValueException(
+                        GetSignerAndOtherAddressesHex(context, AvatarAddress),
+                        soulStoneCost,
+                        nowBalance);
+                }
+
                 states = states.TransferAsset(AvatarAddress, feeStoreAddress, soulStoneCost);
             }
 
