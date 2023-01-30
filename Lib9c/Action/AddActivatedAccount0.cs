@@ -10,7 +10,7 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("add_activated_account")]
-    public class AddActivatedAccount0 : ActionBase
+    public class AddActivatedAccount0 : ActionBase, IAddActivatedAccount
     {
         public AddActivatedAccount0(Address address)
         {

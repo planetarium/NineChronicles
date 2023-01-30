@@ -10,7 +10,7 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("add_activated_account2")]
-    public class AddActivatedAccount : ActionBase
+    public class AddActivatedAccount : ActionBase, IAddActivatedAccount
     {
         public AddActivatedAccount(Address address)
         {
