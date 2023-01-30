@@ -22,13 +22,19 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100340ObsoleteIndex)]
     [ActionType("join_arena")]
-    public class JoinArena1 : GameAction
+    public class JoinArena1 : GameAction, IJoinArena
     {
         public Address avatarAddress;
         public int championshipId;
         public int round;
         public List<Guid> costumes;
         public List<Guid> equipments;
+
+        public Address AvatarAddress => avatarAddress;
+        public int ChampionshipId => championshipId;
+        public int Round => round;
+        public IEnumerable<Guid> Costumes => costumes;
+        public IEnumerable<Guid> Equipments => equipments;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>()
