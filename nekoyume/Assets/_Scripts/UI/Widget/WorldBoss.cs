@@ -106,13 +106,13 @@ namespace Nekoyume.UI
 
             CloseWidget = () =>
             {
-                Close(true);
+                ForceClose(true);
                 Game.Event.OnRoomEnter.Invoke(true);
             };
 
             backButton.OnClickAsObservable().Subscribe(_ =>
             {
-                Close(true);
+                ForceClose(true);
                 Game.Event.OnRoomEnter.Invoke(true);
             }).AddTo(gameObject);
 
