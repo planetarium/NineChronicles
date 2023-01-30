@@ -9,9 +9,11 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("add_redeem_code")]
-    public class AddRedeemCode : GameAction
+    public class AddRedeemCode : GameAction, IAddRedeemCode
     {
         public string redeemCsv;
+
+        public string RedeemCsv => redeemCsv;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
