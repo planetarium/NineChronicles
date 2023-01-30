@@ -17,7 +17,7 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockPolicySource.V100083ObsoleteIndex)]
     [ActionType("rapid_combination5")]
-    public class RapidCombination5 : GameAction
+    public class RapidCombination5 : GameAction, IRapidCombination
     {
         [Serializable]
         public class ResultModel : AttachmentActionResult
@@ -48,6 +48,9 @@ namespace Nekoyume.Action
 
         public Address avatarAddress;
         public int slotIndex;
+
+        public Address AvatarAddress => avatarAddress;
+        public int SlotIndex => slotIndex;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {

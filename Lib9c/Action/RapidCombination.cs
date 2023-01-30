@@ -20,10 +20,13 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("rapid_combination8")]
-    public class RapidCombination : GameAction
+    public class RapidCombination : GameAction, IRapidCombination
     {
         public Address avatarAddress;
         public int slotIndex;
+
+        public Address AvatarAddress => avatarAddress;
+        public int SlotIndex => slotIndex;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {

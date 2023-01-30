@@ -22,10 +22,13 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100310ObsoleteIndex)]
     [ActionType("rapid_combination6")]
-    public class RapidCombination6 : GameAction
+    public class RapidCombination6 : GameAction, IRapidCombination
     {
         public Address avatarAddress;
         public int slotIndex;
+
+        public Address AvatarAddress => avatarAddress;
+        public int SlotIndex => slotIndex;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
