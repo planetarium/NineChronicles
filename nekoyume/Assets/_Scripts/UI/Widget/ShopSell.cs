@@ -163,7 +163,7 @@ namespace Nekoyume.UI
             var result = await task;
             if (result)
             {
-                // view.Show(ReactiveShopState.SellDigest, ShowSellTooltip);
+                view.Show(ReactiveShopState.SellProducts, ShowSellTooltip);
             }
         }
 

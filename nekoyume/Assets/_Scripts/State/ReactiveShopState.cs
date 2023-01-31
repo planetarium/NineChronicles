@@ -12,6 +12,7 @@ using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Assets;
+using Nekoyume.Game;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Market;
 using Nekoyume.Model.Skill;
@@ -80,7 +81,7 @@ namespace Nekoyume.State
         {
             return SellProducts.Value.FirstOrDefault(x =>
                 x.TradableId.Equals(tradableId) &&
-                // x.ExpiredBlockIndex.Equals(requiredBlockIndex) &&
+                (x.RegisteredBlockIndex + Order.ExpirationInterval).Equals(requiredBlockIndex) &&
                 x.Price.Equals(price) &&
                 x.Quantity.Equals(count));
         }
@@ -105,17 +106,14 @@ namespace Nekoyume.State
             {
                 _removedOrderIds.Clear();
 
-                if (!CachedShopProducts.Any())
+                foreach (var itemSubType in list)
                 {
-                    var products = await Game.Game.instance.MarketServiceClient.GetProducts();
+                    var products = await Game.Game.instance.MarketServiceClient.GetProducts(itemSubType);
                     foreach (var product in products)
                     {
                         CachedShopProducts.Add(product);
                     }
-                }
 
-                foreach (var itemSubType in list)
-                {
                     var digests = GetBuyProductsFromQuery(itemSubType);
                     // var digests = await GetBuyOrderDigestsAsync(itemSubType);
                     var result = UpdateCachedShopItemsAsync(digests);
@@ -161,12 +159,12 @@ namespace Nekoyume.State
 
         public static async UniTask UpdateSellDigestsAsync()
         {
-            var digests = await GetSellOrderDigestsAsync();
-            // var result = await UpdateCachedShopItemsAsync(digests);
-            // if (result)
-            // {
-            //     SellDigest.Value = digests;
-            // }
+            var digests = await GetSellProductsAsync();
+            var result = UpdateCachedShopItemsAsync(digests);
+            if (result)
+            {
+                SellProducts.Value = digests;
+            }
         }
 
         public static void RemoveBuyDigest(Guid orderId)
@@ -275,37 +273,31 @@ namespace Nekoyume.State
             var cachedDigests = CachedShopProducts.Where(i => i.ItemSubType.Equals(itemSubType)).Select(s => s).ToList();
             foreach (var product in cachedDigests)
             {
-                if (!products.ContainsKey(product.SellerAgentAddress))
+                if (product.RegisteredBlockIndex > 0)
                 {
-                    products[product.SellerAgentAddress] = new List<ItemProductModel>();
-                }
+                    if (!products.ContainsKey(product.SellerAgentAddress))
+                    {
+                        products[product.SellerAgentAddress] = new List<ItemProductModel>();
+                    }
 
-                products[product.SellerAgentAddress].Add(product);
+                    products[product.SellerAgentAddress].Add(product);
+                }
             }
         }
 
-        private static async UniTask<List<OrderDigest>> GetSellOrderDigestsAsync()
+        private static async UniTask<List<ItemProductModel>> GetSellProductsAsync()
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var receiptAddress = OrderDigestListState.DeriveAddress(avatarAddress);
-            var receiptState = await Game.Game.instance.Agent.GetStateAsync(receiptAddress);
-            var receipts = new List<OrderDigest>();
-            if (receiptState is Dictionary dictionary)
-            {
-                var state = new OrderDigestListState(dictionary);
-                var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
-                var validOrderDigests = state.OrderDigestList
-                    .Where(x => x.ExpiredBlockIndex > currentBlockIndex);
-                receipts.AddRange(validOrderDigests);
+            var receipts = new List<ItemProductModel>();
+            var products = await Game.Game.instance.MarketServiceClient.GetProducts(avatarAddress);
+            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+            var validOrderDigests = products
+                .Where(x => x.RegisteredBlockIndex + Order.ExpirationInterval > currentBlockIndex);
+            receipts.AddRange(validOrderDigests);
 
-                var expiredOrderDigests = state.OrderDigestList
-                    .Where(x => x.ExpiredBlockIndex <= currentBlockIndex);
-                var inventory = States.Instance.CurrentAvatarState.inventory;
-                var lockedDigests = expiredOrderDigests
-                    .Where(x => inventory.TryGetLockedItem(new OrderLock(x.OrderId), out _))
-                    .ToList();
-                receipts.AddRange(lockedDigests);
-            }
+            var expiredOrderDigests = products
+                .Where(x => x.RegisteredBlockIndex + Order.ExpirationInterval <= currentBlockIndex);
+            receipts.AddRange(expiredOrderDigests);
 
             return receipts;
         }
@@ -317,98 +309,77 @@ namespace Nekoyume.State
                 .Where(product => !CachedShopItems.ContainsKey(product.ProductId))
                 .ToList();
             Debug.Log($"CachedShopItems: {CachedShopItems.Count}");
-            // var tuples = selectedDigests
-            //     .Select(e => (Address: Addresses.GetItemAddress(e.TradableId), OrderDigest: e))
-            //     .ToArray();
-            // var itemAddresses = tuples
-            //     .Select(tuple => tuple.Address)
-            //     .Distinct();
-            // var itemValues =
-            //     await Game.Game.instance.Agent.GetStateBulk(itemAddresses);
             foreach (var product in selectedProducts)
             {
-                // if (!itemValues.ContainsKey(address))
-                // {
-                //     Debug.LogWarning($"[{nameof(ReactiveShopState)}] Not found address:" +
-                //                      $" {address.ToHex()}");
-                //     continue;
-                // }
-                //
-                // var itemValue = itemValues[address];
-                // if (!(itemValue is Dictionary dictionary))
-                // {
-                //     Debug.LogWarning($"[{nameof(ReactiveShopState)}] {nameof(itemValue)}" +
-                //                      $" cannot cast to {typeof(Bencodex.Types.Dictionary).FullName}");
-                //     continue;
-                // }
-                //
-                // var itemBase = ItemFactory.Deserialize(dictionary);
-                // switch (itemBase)
-                // {
-                //     case TradableMaterial tm:
-                //         tm.RequiredBlockIndex = orderDigest.ExpiredBlockIndex;
-                //         break;
-                //     case ItemUsable iu:
-                //         iu.RequiredBlockIndex = orderDigest.ExpiredBlockIndex;
-                //         break;
-                //     case Costume c:
-                //         c.RequiredBlockIndex = orderDigest.ExpiredBlockIndex;
-                //         break;
-                // }
                 var itemRow = Game.Game.instance.TableSheets.ItemSheet[product.ItemId];
                 var id = product.TradableId;
-                long requiredBlockIndex = 0L;
+                long requiredBlockIndex = product.RegisteredBlockIndex + Order.ExpirationInterval;
                 bool madeWithMimisbrunnrRecipe = false;
-                ItemUsable itemUsable = null;
+                ITradableItem tradableItem = null;
                 switch (itemRow.ItemSubType)
                 {
                     // Consumable
                     case ItemSubType.Food:
-                        itemUsable = new Consumable((ConsumableItemSheet.Row) itemRow, id, requiredBlockIndex);
+                        tradableItem = new Consumable((ConsumableItemSheet.Row) itemRow, id, requiredBlockIndex);
                         break;
                     // Equipment
                     case ItemSubType.Weapon:
-                        itemUsable = new Weapon((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex, madeWithMimisbrunnrRecipe);
+                        tradableItem = new Weapon((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex, madeWithMimisbrunnrRecipe);
                         break;
                     case ItemSubType.Armor:
-                        itemUsable = new Armor((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex, madeWithMimisbrunnrRecipe);
+                        tradableItem = new Armor((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex, madeWithMimisbrunnrRecipe);
                         break;
                     case ItemSubType.Belt:
-                        itemUsable = new Belt((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex, madeWithMimisbrunnrRecipe);
+                        tradableItem = new Belt((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex, madeWithMimisbrunnrRecipe);
                         break;
                     case ItemSubType.Necklace:
-                        itemUsable = new Necklace((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex, madeWithMimisbrunnrRecipe);
+                        tradableItem = new Necklace((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex, madeWithMimisbrunnrRecipe);
                         break;
                     case ItemSubType.Ring:
-                        itemUsable = new Ring((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex, madeWithMimisbrunnrRecipe);
+                        tradableItem = new Ring((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex, madeWithMimisbrunnrRecipe);
+                        break;
+                    case ItemSubType.ApStone:
+                    case ItemSubType.Hourglass:
+                        tradableItem = new TradableMaterial((MaterialItemSheet.Row)itemRow);
+                        break;
+                    case ItemSubType.EarCostume:
+                    case ItemSubType.EyeCostume:
+                    case ItemSubType.FullCostume:
+                    case ItemSubType.HairCostume:
+                    case ItemSubType.TailCostume:
+                    case ItemSubType.Title:
+                        tradableItem =  new Costume((CostumeItemSheet.Row)itemRow, id);
                         break;
                 }
 
-                foreach (var skillModel in product.Skills)
+                if (tradableItem is ItemUsable itemUsable)
                 {
-                    var skillRow = Game.Game.instance.TableSheets.SkillSheet[skillModel.SkillId];
-                    var skill = SkillFactory.Get(skillRow, skillModel.Power, skillModel.Chance);
-                    itemUsable.Skills.Add(skill);
-                }
-
-                foreach (var statModel in product.Stats)
-                {
-                    if (statModel.Additional)
+                    foreach (var skillModel in product.Skills)
                     {
-                        itemUsable.StatsMap.AddStatAdditionalValue(statModel.Type, statModel.Value);
+                        var skillRow = Game.Game.instance.TableSheets.SkillSheet[skillModel.SkillId];
+                        var skill = SkillFactory.Get(skillRow, skillModel.Power, skillModel.Chance);
+                        itemUsable.Skills.Add(skill);
                     }
-                    else
-                    {
-                        var current = itemUsable.StatsMap.GetBaseStats(true).First(r => r.statType == statModel.Type).baseValue;
-                        itemUsable.StatsMap.AddStatValue(statModel.Type, statModel.Value - current);
-                    }
-                }
 
-                if (itemUsable is Equipment equipment)
+                    foreach (var statModel in product.Stats)
+                    {
+                        if (statModel.Additional)
+                        {
+                            itemUsable.StatsMap.AddStatAdditionalValue(statModel.Type, statModel.Value);
+                        }
+                        else
+                        {
+                            var current = itemUsable.StatsMap.GetBaseStats(true).First(r => r.statType == statModel.Type).baseValue;
+                            itemUsable.StatsMap.AddStatValue(statModel.Type, statModel.Value - current);
+                        }
+                    }
+
+                }
+                if (tradableItem is Equipment equipment)
                 {
                     equipment.level = product.Level;
                 }
-                CachedShopItems.TryAdd(product.ProductId, itemUsable);
+                CachedShopItems.TryAdd(product.ProductId, (ItemBase)tradableItem);
             }
 
             return true;

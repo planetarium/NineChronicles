@@ -271,8 +271,7 @@ namespace Nekoyume.UI.Module
         {
             foreach (var model in _selectedModels)
             {
-                // var isExpired = model.OrderDigest.ExpiredBlockIndex - blockIndex <= 0;
-                var isExpired = false;
+                var isExpired = model.OrderDigest.RegisteredBlockIndex + Order.ExpirationInterval - blockIndex <= 0;
                 model.Expired.Value = isExpired;
             }
         }

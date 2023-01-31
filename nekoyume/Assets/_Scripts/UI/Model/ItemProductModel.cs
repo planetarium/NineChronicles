@@ -35,71 +35,7 @@ namespace Nekoyume.UI.Model
         public int Level { get; set; }
         public List<SkillModel> Skills { get; set; }
         public List<StatModel> Stats { get; set; } = new();
-
-        public ItemProduct ToItemProduct(TableSheets tableSheets, Currency goldCurrency)
-        {
-            var itemRow = tableSheets.ItemSheet[ItemId];
-                var id = TradableId;
-                long requiredBlockIndex = 0L;
-                bool madeWithMimisbrunnrRecipe = false;
-                ItemUsable itemUsable = null;
-                switch (itemRow.ItemSubType)
-                {
-                    // Consumable
-                    case ItemSubType.Food:
-                        itemUsable = new Consumable((ConsumableItemSheet.Row) itemRow, id, requiredBlockIndex);
-                        break;
-                    // Equipment
-                    case ItemSubType.Weapon:
-                        itemUsable = new Weapon((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex, madeWithMimisbrunnrRecipe);
-                        break;
-                    case ItemSubType.Armor:
-                        itemUsable = new Armor((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex, madeWithMimisbrunnrRecipe);
-                        break;
-                    case ItemSubType.Belt:
-                        itemUsable = new Belt((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex, madeWithMimisbrunnrRecipe);
-                        break;
-                    case ItemSubType.Necklace:
-                        itemUsable = new Necklace((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex, madeWithMimisbrunnrRecipe);
-                        break;
-                    case ItemSubType.Ring:
-                        itemUsable = new Ring((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex, madeWithMimisbrunnrRecipe);
-                        break;
-                }
-
-                foreach (var skillModel in Skills)
-                {
-                    var skillRow = tableSheets.SkillSheet[skillModel.SkillId];
-                    var skill = SkillFactory.Get(skillRow, skillModel.Power, skillModel.Chance);
-                    itemUsable.Skills.Add(skill);
-                }
-
-                foreach (var statModel in Stats)
-                {
-                    if (statModel.Additional)
-                    {
-                        itemUsable.StatsMap.AddStatAdditionalValue(statModel.Type, statModel.Value);
-                    }
-                    else
-                    {
-                        var current = itemUsable.StatsMap.GetBaseStats(true).First(r => r.statType == statModel.Type).baseValue;
-                        itemUsable.StatsMap.AddStatValue(statModel.Type, statModel.Value - current);
-                    }
-                }
-
-                if (itemUsable is Equipment equipment)
-                {
-                    equipment.level = Level;
-                }
-
-                return new ItemProduct
-                {
-                    ProductId = ProductId,
-                    Price = (BigInteger) Price * goldCurrency,
-                    TradableItem = itemUsable,
-                    ItemCount = (int) Quantity,
-                };
-        }
+        public long RegisteredBlockIndex { get; set; }
     }
 
     [Serializable]

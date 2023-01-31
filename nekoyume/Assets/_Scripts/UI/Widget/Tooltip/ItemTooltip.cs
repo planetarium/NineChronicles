@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using Lib9c.Model.Order;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
@@ -182,7 +183,7 @@ namespace Nekoyume.UI
             submitButtonContainer.SetActive(false);
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(true);
-            sell.Set(0L,
+            sell.Set(item.OrderDigest.RegisteredBlockIndex + Order.ExpirationInterval,
                 () =>
                 {
                     onSellCancellation?.Invoke();
@@ -213,7 +214,7 @@ namespace Nekoyume.UI
             submitButtonContainer.SetActive(false);
             sell.gameObject.SetActive(false);
             buy.gameObject.SetActive(true);
-            buy.Set(0L,
+            buy.Set(item.OrderDigest.RegisteredBlockIndex + Order.ExpirationInterval,
                 (BigInteger)item.OrderDigest.Price * States.Instance.GoldBalanceState.Gold.Currency,
                 () =>
                 {
