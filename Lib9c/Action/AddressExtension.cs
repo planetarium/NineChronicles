@@ -19,6 +19,7 @@ namespace Nekoyume.Action
             return new Address(hashed);
         }
 
-        public static Address Derive(this Address address, string key) => address.Derive(Encoding.UTF8.GetBytes(key));
+        public static Address Derive(this Address address, string key) =>
+            address.Derive(Encoding.UTF8.GetBytes(key));
     }
 }
