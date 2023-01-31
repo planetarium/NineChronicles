@@ -6,7 +6,7 @@ namespace Nekoyume.Exceptions
     [Serializable]
     public class InvalidActionFieldException : Exception
     {
-        public InvalidActionFieldException()
+        public InvalidActionFieldException(string message) : base(message)
         {
         }
 

@@ -7,6 +7,10 @@ namespace Nekoyume.Action
     [Serializable]
     public class FailedLoadStateException : Exception
     {
+        public FailedLoadStateException(string message) : base(message)
+        {
+        }
+
         public FailedLoadStateException(string message, Exception innerException = null) :
             base(message, innerException)
         {
