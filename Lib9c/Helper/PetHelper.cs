@@ -1,4 +1,6 @@
-﻿using Nekoyume.TableData.Pet;
+﻿using System;
+using Nekoyume.TableData;
+using Nekoyume.TableData.Pet;
 
 namespace Nekoyume.Helper
 {
@@ -7,13 +9,41 @@ namespace Nekoyume.Helper
         public static (int ncgQuantity, int soulStoneQuantity) CalculateEnhancementCost(
             PetCostSheet costSheet,
             int petId,
-            int nowLevel,
+            int currentLevel,
             int targetLevel)
         {
-            var costList = costSheet[petId].Cost;
-            var range = targetLevel - nowLevel;
-            var startIndex = nowLevel != 0
-                ? costList.FindIndex(cost => cost.Level == nowLevel) + 1
+            if (costSheet is null)
+            {
+                throw new ArgumentNullException(nameof(costSheet));
+            }
+
+            if (petId < 0)
+            {
+                throw new ArgumentException(
+                    $"{nameof(petId)} must be greater than or equal to 0.");
+            }
+
+            if (currentLevel < 0)
+            {
+                throw new ArgumentException(
+                    $"{nameof(currentLevel)} must be greater than or equal to 0.");
+            }
+
+            if (targetLevel < 0)
+            {
+                throw new ArgumentException(
+                    $"{nameof(targetLevel)} must be greater than or equal to 0.");
+            }
+
+            if (!costSheet.TryGetValue(petId, out var row))
+            {
+                throw new SheetRowNotFoundException(nameof(PetCostSheet), petId);
+            }
+
+            var costList = row.Cost;
+            var range = targetLevel - currentLevel;
+            var startIndex = currentLevel != 0
+                ? costList.FindIndex(cost => cost.Level == currentLevel) + 1
                 : 0;
             var ncgCost = 0;
             var soulStoneCost = 0;
