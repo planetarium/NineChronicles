@@ -5,11 +5,19 @@ namespace Nekoyume.Exceptions
     [Serializable]
     public class PetCostNotFoundException : Exception
     {
-        public PetCostNotFoundException()
+        public PetCostNotFoundException(string message, Exception innerException = null) :
+            base(message, innerException)
         {
         }
 
-        public PetCostNotFoundException(string message) : base(message)
+        public PetCostNotFoundException(
+            string actionType,
+            string addressesHex,
+            string message,
+            Exception innerException = null)
+            : base(
+                $"[{actionType}][{addressesHex}] {message}",
+                innerException)
         {
         }
     }

@@ -15,9 +15,11 @@ using Nekoyume.TableData.Pet;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("pet_enhancement")]
+    [ActionType(ActionTypeIdentifier)]
     public class PetEnhancement : GameAction
     {
+        public const string ActionTypeIdentifier = "pet_enhancement";
+
         public Address AvatarAddress;
         public int PetId;
         public int TargetLevel;
@@ -30,7 +32,8 @@ namespace Nekoyume.Action
                 ["t"] = TargetLevel.Serialize(),
             }.ToImmutableDictionary();
 
-        protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
+        protected override void LoadPlainValueInternal(
+            IImmutableDictionary<string, IValue> plainValue)
         {
             AvatarAddress = plainValue["a"].ToAddress();
             PetId = plainValue["p"].ToInteger();
@@ -45,12 +48,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            if (!states.TryGetAvatarStateV2(context.Signer, AvatarAddress, out _, out _))
-            {
-                throw new FailedLoadStateException(
-                    $"Aborted as the avatar state of the signer was failed to load.");
-            }
-
+            var addresses = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             var sheets = states.GetSheets(
                 sheetTypes: new[]
                 {
@@ -62,79 +60,95 @@ namespace Nekoyume.Action
             if (TargetLevel < 1)
             {
                 throw new InvalidActionFieldException(
-                    $"{AvatarAddress}TargetLevel must be greater than 0. " +
-                    $"current TargetLevel : {TargetLevel}");
+                    ActionTypeIdentifier,
+                    addresses,
+                    nameof(TargetLevel),
+                    $"TargetLevel({TargetLevel}) must be greater than 0.");
             }
 
             var petStateAddress = PetState.DeriveAddress(AvatarAddress, PetId);
             var petState = states.TryGetState(petStateAddress, out List rawState)
                 ? new PetState(rawState)
                 : new PetState(PetId);
-
-            if (petState.Level >= TargetLevel)
+            if (TargetLevel <= petState.Level)
             {
                 throw new InvalidActionFieldException(
-                    $"TargetLevel({TargetLevel}) must be higher than now pet level({petState.Level}).");
+                    ActionTypeIdentifier,
+                    addresses,
+                    nameof(TargetLevel),
+                    $"TargetLevel({TargetLevel}) must be greater than" +
+                    $" current pet level({petState.Level}).");
             }
 
             var petSheet = sheets.GetSheet<PetSheet>();
             if (!petSheet.TryGetValue(petState.PetId, out var petRow))
             {
-                throw new SheetRowNotFoundException(nameof(petSheet), PetId);
+                throw new SheetRowNotFoundException(
+                    ActionTypeIdentifier,
+                    addresses,
+                    nameof(PetSheet),
+                    PetId);
             }
 
             var costSheet = sheets.GetSheet<PetCostSheet>();
             if (!costSheet.TryGetValue(petState.PetId, out var costRow))
             {
-                throw new SheetRowNotFoundException(nameof(costSheet), petState.PetId);
+                throw new SheetRowNotFoundException(
+                    ActionTypeIdentifier,
+                    addresses,
+                    nameof(PetCostSheet),
+                    petState.PetId);
             }
 
             if (!costRow.TryGetCost(TargetLevel, out _))
             {
                 // cost not found with level
                 throw new PetCostNotFoundException(
-                    $"[{nameof(PetEnhancement)}] Can not find cost by TargetLevel({TargetLevel}).");
+                    ActionTypeIdentifier,
+                    addresses,
+                    $"Can not find cost by TargetLevel({TargetLevel}).");
             }
 
             var ncgCurrency = states.GetGoldCurrency();
-            var soulStoneCurrency = Currency.Legacy(petRow.SoulStoneTicker, 0, minters: null);
+            var soulStoneCurrency = Currency.Legacy(
+                petRow.SoulStoneTicker,
+                0,
+                minters: null);
             var (ncgQuantity, soulStoneQuantity) = PetHelper.CalculateEnhancementCost(
                 costSheet,
                 PetId,
                 petState.Level,
                 TargetLevel);
-            while (petState.Level < TargetLevel)
-            {
-                petState.LevelUp();
-            }
-
-            states = states.SetState(petStateAddress, petState.Serialize());
 
             var arenaSheet = sheets.GetSheet<ArenaSheet>();
             var arenaData = arenaSheet.GetRoundByBlockIndex(context.BlockIndex);
-            var feeStoreAddress = Addresses.GetBlacksmithFeeAddress(arenaData.ChampionshipId, arenaData.Round);
-            var ncgCost = ncgQuantity * ncgCurrency;
+            var feeStoreAddress = Addresses.GetBlacksmithFeeAddress(
+                arenaData.ChampionshipId,
+                arenaData.Round);
             if (ncgQuantity > 0)
             {
-                var nowBalance = states.GetBalance(context.Signer, ncgCurrency);
-                if (nowBalance < ncgCost)
+                var ncgCost = ncgQuantity * ncgCurrency;
+                var currentNcg = states.GetBalance(context.Signer, ncgCurrency);
+                if (currentNcg < ncgCost)
                 {
                     throw new NotEnoughFungibleAssetValueException(
+                        ActionTypeIdentifier,
                         GetSignerAndOtherAddressesHex(context),
                         ncgCost,
-                        nowBalance);
+                        currentNcg);
                 }
 
                 states = states.TransferAsset(context.Signer, feeStoreAddress, ncgCost);
             }
 
-            var soulStoneCost = soulStoneQuantity * soulStoneCurrency;
             if (soulStoneQuantity > 0)
             {
+                var soulStoneCost = soulStoneQuantity * soulStoneCurrency;
                 var nowBalance = states.GetBalance(AvatarAddress, soulStoneCurrency);
                 if (nowBalance < soulStoneCost)
                 {
                     throw new NotEnoughFungibleAssetValueException(
+                        ActionTypeIdentifier,
                         GetSignerAndOtherAddressesHex(context, AvatarAddress),
                         soulStoneCost,
                         nowBalance);
@@ -143,7 +157,12 @@ namespace Nekoyume.Action
                 states = states.TransferAsset(AvatarAddress, feeStoreAddress, soulStoneCost);
             }
 
-            return states;
+            while (petState.Level < TargetLevel)
+            {
+                petState.LevelUp();
+            }
+
+            return states.SetState(petStateAddress, petState.Serialize());
         }
     }
 }
