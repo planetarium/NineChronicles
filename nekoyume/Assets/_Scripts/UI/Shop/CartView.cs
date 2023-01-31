@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using Libplanet.Assets;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
@@ -69,7 +70,7 @@ namespace Nekoyume.UI.Module
             {
                 if (i < sortedItems.Count)
                 {
-                    price += sortedItems[i].OrderDigest.Price;
+                    price += (BigInteger)sortedItems[i].OrderDigest.Price * States.Instance.GoldBalanceState.Gold.Currency;
                     cartItems[i].gameObject.SetActive(true);
                     cartItems[i].Set(sortedItems[i], (item) =>
                     {

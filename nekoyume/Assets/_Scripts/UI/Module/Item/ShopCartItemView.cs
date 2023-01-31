@@ -78,7 +78,7 @@ namespace Nekoyume.UI.Module
             baseItemView.OptionTag.Set(model.ItemBase);
 
             baseItemView.CountText.gameObject.SetActive(model.ItemBase.ItemType == ItemType.Material);
-            baseItemView.CountText.text = model.OrderDigest.ItemCount.ToString();
+            baseItemView.CountText.text = model.OrderDigest.Quantity.ToString();
 
             baseItemView.ExpiredObject.SetActive(model.Expired.Value);
 

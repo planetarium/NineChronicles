@@ -6,8 +6,10 @@ using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Market;
 using Nekoyume.State;
 using Nekoyume.TableData;
+using Nekoyume.UI.Model;
 using TMPro;
 using Unity.Mathematics;
 using UnityEngine;
@@ -78,8 +80,7 @@ namespace Nekoyume.UI.Module
             UpdateExpired(Game.Game.instance.Agent.BlockIndex);
         }
 
-        public void Show(
-            ReactiveProperty<List<OrderDigest>> digests,
+        public void Show(ReactiveProperty<List<ItemProductModel>> digests,
             Action<ShopItem> clickItem)
         {
             Reset();
@@ -191,7 +192,7 @@ namespace Nekoyume.UI.Module
             ClickItemAction = clickItem;
         }
 
-        private void Set(IObservable<List<OrderDigest>> orderDigests)
+        private void Set(ReactiveProperty<List<ItemProductModel>> orderDigests)
         {
             _disposables.DisposeAllAndClear();
             orderDigests.ObserveOnMainThread().Subscribe(digests =>
@@ -219,7 +220,7 @@ namespace Nekoyume.UI.Module
                 .AddTo(_disposables);
         }
 
-        private void AddItem(OrderDigest digest, ItemSheet sheet)
+        private void AddItem(ItemProductModel digest, ItemSheet sheet)
         {
             if (!ReactiveShopState.TryGetShopItem(digest, out var itemBase))
             {
@@ -256,12 +257,13 @@ namespace Nekoyume.UI.Module
 
         private static ShopItem CreateItem(
             ItemBase item,
-            OrderDigest digest,
+            ItemProductModel digest,
             ItemSheet sheet)
         {
             var grade = sheet[digest.ItemId].Grade;
-            var limit = item.ItemType != ItemType.Material &&
-                        !Util.IsUsableItem(item);
+            // var limit = item.ItemType != ItemType.Material &&
+            //             !Util.IsUsableItem(item);
+            var limit = false;
             return new ShopItem(item, digest, grade, limit);
         }
 
@@ -269,17 +271,18 @@ namespace Nekoyume.UI.Module
         {
             foreach (var model in _selectedModels)
             {
-                var isExpired = model.OrderDigest.ExpiredBlockIndex - blockIndex <= 0;
+                // var isExpired = model.OrderDigest.ExpiredBlockIndex - blockIndex <= 0;
+                var isExpired = false;
                 model.Expired.Value = isExpired;
             }
         }
 
-        public void SetLoading(List<OrderDigest> digests, bool isLoading = true)
+        public void SetLoading(List<ItemProductModel> digests, bool isLoading = true)
         {
             var items = _items[ItemSubTypeFilter.All];
             foreach (var digest in digests)
             {
-                var item = items.Find(x => x.OrderDigest.OrderId == digest.OrderId);
+                var item = items.Find(x => x.OrderDigest.ProductId == digest.ProductId);
                 if (item is null)
                 {
                     continue;

@@ -11,27 +11,27 @@ using UnityEngine.Networking;
 
 namespace Nekoyume.Game
 {
-    public class ShopServiceClient
+    public class MarketServiceClient
     {
         private string _url;
         private HttpClient _client;
 
-        public ShopServiceClient(string url)
+        public MarketServiceClient(string url)
         {
             _url = url;
             _client = new HttpClient();
         }
 
-        public async Task<List<ShopProductModel>> GetProducts(ItemSubType itemSubType)
+        public async Task<List<ItemProductModel>> GetProducts()
         {
-            var url = $"{_url}/products/{(int)itemSubType}";
+            var url = $"{_url}/products/";
             var json = await _client.GetStringAsync(url);
             var options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             };
             var response = JsonSerializer.Deserialize<ProductResponse>(json, options);
-            return response.Products.ToList();
+            return response.ItemProducts.ToList();
         }
     }
 }

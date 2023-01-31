@@ -87,7 +87,7 @@ namespace Nekoyume.Game
         public NineChroniclesAPIClient ApiClient => _apiClient;
         public NineChroniclesAPIClient RpcClient => _rpcClient;
 
-        public ShopServiceClient ShopServiceClient;
+        public MarketServiceClient MarketServiceClient;
 
         public readonly LruCache<Address, IValue> CachedStates = new LruCache<Address, IValue>();
 
@@ -217,7 +217,7 @@ namespace Nekoyume.Game
             }
 
             WorldBossQuery.SetUrl(_options.OnBoardingHost);
-            ShopServiceClient = new ShopServiceClient(_options.ShopServiceHost);
+            MarketServiceClient = new MarketServiceClient(_options.ShopServiceHost);
             // Initialize Rank.SharedModel
             RankPopup.UpdateSharedModel();
             // Initialize Stage

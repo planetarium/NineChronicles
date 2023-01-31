@@ -8,7 +8,7 @@ namespace Nekoyume.UI.Model
     public class ShopItem
     {
         public ItemBase ItemBase { get; }
-        public OrderDigest OrderDigest { get; }
+        public ItemProductModel OrderDigest { get; }
         public int Grade { get; }
         public bool LevelLimited { get; }
 
@@ -16,7 +16,7 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<bool> Expired;
         public readonly ReactiveProperty<bool> Loading;
 
-        public ShopItem(ItemBase itemBase, OrderDigest orderDigest,
+        public ShopItem(ItemBase itemBase, ItemProductModel orderDigest,
             int grade, bool limited)
         {
             ItemBase = itemBase;

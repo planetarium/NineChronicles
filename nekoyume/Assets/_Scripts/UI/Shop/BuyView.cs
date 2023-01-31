@@ -327,7 +327,7 @@ namespace Nekoyume
                     if (_selectedItems.Any())
                     {
                         if (_selectedItems.Exists(x =>
-                                x.OrderDigest.OrderId.Equals(item.OrderDigest.OrderId)))
+                                x.OrderDigest.ProductId.Equals(item.OrderDigest.ProductId)))
                         {
                             ClearSelectedItems();
                         }
@@ -350,7 +350,7 @@ namespace Nekoyume
 
                 case BuyMode.Multiple:
                     var selectedItem = _selectedItems.FirstOrDefault(x =>
-                        x.OrderDigest.OrderId.Equals(item.OrderDigest.OrderId));
+                        x.OrderDigest.ProductId.Equals(item.OrderDigest.ProductId));
                     if (selectedItem == null)
                     {
                         if (item.Expired.Value)
@@ -429,13 +429,14 @@ namespace Nekoyume
 
             BigInteger GetCrystalPerPrice(ShopItem item)
             {
+                var price = (BigInteger) item.OrderDigest.Price;
                 return item.ItemBase.ItemType == ItemType.Equipment
                     ? CrystalCalculator.CalculateCrystal(
                             new[] {(Equipment) item.ItemBase},
                             false,
                             TableSheets.Instance.CrystalEquipmentGrindingSheet,
                             TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet,
-                            States.Instance.StakingLevel).DivRem(item.OrderDigest.Price.MajorUnit)
+                            States.Instance.StakingLevel).DivRem(price)
                         .Quotient
                         .MajorUnit
                     : 0;

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Helper;
@@ -133,7 +134,7 @@ namespace Nekoyume
                             false,
                             TableSheets.Instance.CrystalEquipmentGrindingSheet,
                             TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet,
-                            States.Instance.StakingLevel).DivRem(x.OrderDigest.Price.MajorUnit)
+                            States.Instance.StakingLevel).DivRem((BigInteger) x.OrderDigest.Price)
                         .Quotient
                         .MajorUnit
                     : 0),

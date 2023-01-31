@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using Libplanet.Assets;
@@ -90,7 +91,7 @@ namespace Nekoyume.UI
             var initWeaponTask = Task.Run(async () =>
             {
                 var list = new List<ItemSubType> { ItemSubType.Weapon, };
-                await ReactiveShopState.SetBuyDigestsAsync(list);
+                await ReactiveShopState.SetBuyProductsAsync(list);
                 return true;
             });
 
@@ -98,7 +99,7 @@ namespace Nekoyume.UI
             if (initWeaponResult)
             {
                 base.Show(ignoreShowAnimation);
-                view.Show(ReactiveShopState.BuyDigest, ShowItemTooltip);
+                view.Show(ReactiveShopState.BuyProducts, ShowItemTooltip);
                 Find<DataLoadingScreen>().Close();
                 HelpTooltip.HelpMe(100018, true);
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
@@ -123,7 +124,7 @@ namespace Nekoyume.UI
                     ItemSubType.Hourglass,
                     ItemSubType.ApStone,
                 };
-                await ReactiveShopState.SetBuyDigestsAsync(list);
+                await ReactiveShopState.SetBuyProductsAsync(list);
                 return true;
             }, _cancellationTokenSource.Token);
 
@@ -144,7 +145,7 @@ namespace Nekoyume.UI
         public void Open()
         {
             base.Show(true);
-            view.Show(ReactiveShopState.BuyDigest, ShowItemTooltip);
+            view.Show(ReactiveShopState.BuyProducts, ShowItemTooltip);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -184,7 +185,7 @@ namespace Nekoyume.UI
                 new FungibleAssetValue(States.Instance.GoldBalanceState.Gold.Currency, 0, 0);
             foreach (var model in models)
             {
-                sumPrice += model.OrderDigest.Price;
+                sumPrice += (BigInteger)model.OrderDigest.Price * States.Instance.GoldBalanceState.Gold.Currency;
             }
 
             if (States.Instance.GoldBalanceState.Gold < sumPrice)
@@ -209,7 +210,7 @@ namespace Nekoyume.UI
             var purchaseInfos = new ConcurrentBag<PurchaseInfo>();
             await foreach (var item in models.ToAsyncEnumerable())
             {
-                var purchaseInfo = await GetPurchaseInfo(item.OrderDigest.OrderId);
+                var purchaseInfo = await GetPurchaseInfo(item.OrderDigest.ProductId);
                 purchaseInfos.Add(purchaseInfo);
             }
 
@@ -230,15 +231,15 @@ namespace Nekoyume.UI
             {
                 var props = new Dictionary<string, Value>()
                 {
-                    ["Price"] = model.OrderDigest.Price.GetQuantityString(),
+                    ["Price"] = model.OrderDigest.Price,
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                     ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                 };
                 Analyzer.Instance.Track("Unity/Buy", props);
 
-                var count = model.OrderDigest.ItemCount;
+                var count = model.OrderDigest.Quantity;
                 model.Selected.Value = false;
-                ReactiveShopState.RemoveBuyDigest(model.OrderDigest.OrderId);
+                ReactiveShopState.RemoveBuyDigest(model.OrderDigest.ProductId);
 
                 string message;
                 if (count > 1)
