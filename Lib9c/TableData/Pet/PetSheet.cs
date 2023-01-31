@@ -9,10 +9,11 @@ namespace Nekoyume.TableData.Pet
     {
         public class Row : SheetRow<int>
         {
-            public int Id;
-            public int Grade;
-            public string SoulStoneTicker;
+            public int Id { get; private set; }
+            public int Grade { get; private set; }
+            public string SoulStoneTicker { get; private set; }
             public override int Key => Id;
+
             public override void Set(IReadOnlyList<string> fields)
             {
                 Id = ParseInt(fields[0]);
