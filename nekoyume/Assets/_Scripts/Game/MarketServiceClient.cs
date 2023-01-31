@@ -24,7 +24,7 @@ namespace Nekoyume.Game
 
         public async Task<List<ItemProductModel>> GetProducts()
         {
-            var url = $"{_url}/products/";
+            var url = $"{_url}/Market/";
             var json = await _client.GetStringAsync(url);
             var options = new JsonSerializerOptions
             {
