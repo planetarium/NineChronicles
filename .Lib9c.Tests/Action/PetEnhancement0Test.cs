@@ -1,519 +1,338 @@
 ﻿namespace Lib9c.Tests.Action
 {
-    using System;
     using System.Linq;
     using Bencodex.Types;
     using Libplanet;
+    using Libplanet.Action;
     using Libplanet.Assets;
-    using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Exceptions;
     using Nekoyume.Helper;
-    using Nekoyume.Model.Rune;
+    using Nekoyume.Model.Arena;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Nekoyume.TableData.Pet;
     using Xunit;
-    using static Lib9c.SerializeKeys;
 
     public class PetEnhancement0Test
     {
-        private Currency _goldCurrency;
+        private readonly Address _agentAddr;
+        private readonly Address _avatarAddr;
+        private readonly IAccountStateDelta _initialStatesWithAvatarStateV1;
+        private readonly IAccountStateDelta _initialStatesWithAvatarStateV2;
+        private readonly int _targetPetId;
+        private readonly long _firstRoundStartBlockIndex;
 
         public PetEnhancement0Test()
         {
-            _goldCurrency = Currency.Legacy("NCG", 2, null);
+            TableSheets tableSheets;
+            (
+                tableSheets,
+                _agentAddr,
+                _avatarAddr,
+                _initialStatesWithAvatarStateV1,
+                _initialStatesWithAvatarStateV2
+            ) = TestUtils.InitializeState();
+            _targetPetId = tableSheets.PetSheet.First!.Id;
+            var firstRound = tableSheets.ArenaSheet.OrderedList!
+                .SelectMany(row => row.Round)
+                .MinBy(round => round.StartBlockIndex);
+            Assert.NotNull(firstRound);
+            _firstRoundStartBlockIndex = firstRound.StartBlockIndex;
         }
 
         [Theory]
-        [InlineData(1, 1)]
-        [InlineData(1, 2, 1)]
-        [InlineData(1, 10, 1)]
-        public void Execute(int petId, int targetLevel, int prevLevel = 0)
-        {
-            var agentAddress = new PrivateKey().ToAddress();
-            var avatarAddress = new PrivateKey().ToAddress();
-            var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
-            var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
-            var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
-            var sheets = TableSheetsImporter.ImportSheets();
-            var tableSheets = new TableSheets(sheets);
-            var blockIndex = tableSheets.WorldBossListSheet.Values
-                .OrderBy(x => x.StartedBlockIndex)
-                .First()
-                .StartedBlockIndex;
-
-            var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
-            var rankingMapAddress = avatarAddress.Derive("ranking_map");
-            var agentState = new AgentState(agentAddress);
-            var avatarState = new AvatarState(
-                avatarAddress,
-                agentAddress,
-                0,
-                tableSheets.GetAvatarSheets(),
-                new GameConfigState(),
-                rankingMapAddress
-            );
-            agentState.avatarAddresses.Add(0, avatarAddress);
-            var state = new State()
-                .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
-                .SetState(agentAddress, agentState.SerializeV2())
-                .SetState(avatarAddress, avatarState.SerializeV2())
-                .SetState(inventoryAddress, avatarState.inventory.Serialize())
-                .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
-                .SetState(questListAddress, avatarState.questList.Serialize());
-
-            foreach (var (key, value) in sheets)
-            {
-                state = state.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
-            }
-
-            var costSheet = state.GetSheet<PetCostSheet>();
-            if (!costSheet.TryGetValue(petId, out var costRow))
-            {
-                throw new SheetRowNotFoundException(nameof(costSheet), petId);
-            }
-
-            if (!costRow.TryGetCost(targetLevel, out var cost))
-            {
-                throw new PetCostNotFoundException($"Can not find cost by TargetLevel({targetLevel}).");
-            }
-
-            var petSheet = state.GetSheet<PetSheet>();
-            if (!petSheet.TryGetValue(petId, out var petRow))
-            {
-                throw new RuneNotFoundException($"[{nameof(Execute)}] ");
-            }
-
-            var petAddress = PetState.DeriveAddress(avatarAddress, petId);
-            if (prevLevel > 0)
-            {
-                var petState = new PetState(petId);
-                while (petState.Level < prevLevel)
-                {
-                    petState.LevelUp();
-                }
-
-                state = state.SetState(
-                    petAddress,
-                    petState.Serialize());
-            }
-
-            var ncgCurrency = state.GetGoldCurrency();
-            var soulStoneCurrency = Currency.Legacy(petRow.SoulStoneTicker, 0, minters: null);
-
-            var (ncgBal, soulStoneBal) = PetHelper.CalculateEnhancementCost(costSheet, petId, prevLevel, targetLevel);
-
-            state = state.MintAsset(agentAddress, (ncgBal + 1) * ncgCurrency);
-            state = state.MintAsset(avatarState.address, (soulStoneBal + 1) * soulStoneCurrency);
-
-            var action = new PetEnhancement
-            {
-                AvatarAddress = avatarState.address,
-                PetId = petId,
-                TargetLevel = targetLevel,
-            };
-            var ctx = new ActionContext
-            {
-                BlockIndex = blockIndex,
-                PreviousStates = state,
-                Random = new TestRandom(),
-                Rehearsal = false,
-                Signer = agentAddress,
-            };
-
-            var nextState = action.Execute(ctx);
-            if (!nextState.TryGetState(petAddress, out List rawPetState))
-            {
-                throw new Exception();
-            }
-
-            var nextNcgBal = nextState.GetBalance(agentAddress, ncgCurrency);
-            var nextSoulStoneBal = nextState.GetBalance(avatarAddress, soulStoneCurrency);
-
-            if (cost.NcgQuantity != 0)
-            {
-                Assert.Equal(1, nextNcgBal.MajorUnit);
-            }
-
-            if (cost.SoulStoneQuantity != 0)
-            {
-                Assert.Equal(1, nextSoulStoneBal.MajorUnit);
-            }
-
-            var nextPetState = new PetState(rawPetState);
-            Assert.Equal(targetLevel, nextPetState.Level);
-        }
-
-        [Fact]
-        public void ExecuteFailedLoadStateException()
-        {
-            var agentAddress = new PrivateKey().ToAddress();
-            var avatarAddress = new PrivateKey().ToAddress();
-            var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
-            var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
-            var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
-            var sheets = TableSheetsImporter.ImportSheets();
-            var tableSheets = new TableSheets(sheets);
-            var blockIndex = tableSheets.WorldBossListSheet.Values
-                .OrderBy(x => x.StartedBlockIndex)
-                .First()
-                .StartedBlockIndex;
-
-            var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
-            var rankingMapAddress = avatarAddress.Derive("ranking_map");
-            var agentState = new AgentState(agentAddress);
-            var anotherAgent = new AgentState(new PrivateKey().ToAddress());
-            var avatarState = new AvatarState(
-                avatarAddress,
-                anotherAgent.address,
-                0,
-                tableSheets.GetAvatarSheets(),
-                new GameConfigState(),
-                rankingMapAddress
-            );
-            var state = new State()
-                .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
-                .SetState(agentAddress, agentState.Serialize())
-                .SetState(anotherAgent.address, anotherAgent.Serialize())
-                .SetState(avatarAddress, avatarState.SerializeV2())
-                .SetState(inventoryAddress, avatarState.inventory.Serialize())
-                .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
-                .SetState(questListAddress, avatarState.questList.Serialize());
-
-            foreach (var (key, value) in sheets)
-            {
-                state = state.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
-            }
-
-            var action = new PetEnhancement
-            {
-                AvatarAddress = avatarState.address,
-                PetId = 1,
-                TargetLevel = 1,
-            };
-
-            Assert.Throws<FailedLoadStateException>(() =>
-            {
-                action.Execute(new ActionContext
-                {
-                    BlockIndex = blockIndex,
-                    PreviousStates = state,
-                    Random = new TestRandom(),
-                    Rehearsal = false,
-                    Signer = agentAddress,
-                });
-            });
-        }
-
-        [Theory]
-        [InlineData(0)]
-        [InlineData(-1)]
-        [InlineData(1, 1)]
-        [InlineData(1, 2)]
-        public void ExecuteInvalidActionFieldException(int targetLevel, int prevLevel = 0)
-        {
-            const int petId = 1;
-            var agentAddress = new PrivateKey().ToAddress();
-            var avatarAddress = new PrivateKey().ToAddress();
-            var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
-            var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
-            var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
-            var sheets = TableSheetsImporter.ImportSheets();
-            var tableSheets = new TableSheets(sheets);
-            var blockIndex = tableSheets.WorldBossListSheet.Values
-                .OrderBy(x => x.StartedBlockIndex)
-                .First()
-                .StartedBlockIndex;
-
-            var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
-            var rankingMapAddress = avatarAddress.Derive("ranking_map");
-            var agentState = new AgentState(agentAddress);
-            var avatarState = new AvatarState(
-                avatarAddress,
-                agentAddress,
-                0,
-                tableSheets.GetAvatarSheets(),
-                new GameConfigState(),
-                rankingMapAddress
-            );
-            agentState.avatarAddresses.Add(0, avatarAddress);
-            var state = new State()
-                .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
-                .SetState(agentAddress, agentState.SerializeV2())
-                .SetState(avatarAddress, avatarState.SerializeV2())
-                .SetState(inventoryAddress, avatarState.inventory.Serialize())
-                .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
-                .SetState(questListAddress, avatarState.questList.Serialize());
-
-            foreach (var (key, value) in sheets)
-            {
-                state = state.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
-            }
-
-            var petAddress = PetState.DeriveAddress(avatarAddress, petId);
-            if (prevLevel > 0)
-            {
-                var petState = new PetState(petId);
-                while (petState.Level < prevLevel)
-                {
-                    petState.LevelUp();
-                }
-
-                state = state.SetState(
-                    petAddress,
-                    petState.Serialize());
-            }
-
-            var action = new PetEnhancement
-            {
-                AvatarAddress = avatarState.address,
-                PetId = petId,
-                TargetLevel = targetLevel,
-            };
-            var ctx = new ActionContext
-            {
-                BlockIndex = blockIndex,
-                PreviousStates = state,
-                Random = new TestRandom(),
-                Rehearsal = false,
-                Signer = agentAddress,
-            };
-
-            Assert.Throws<InvalidActionFieldException>(() =>
-            {
-                action.Execute(ctx);
-            });
-        }
-
-        [Theory]
-        [InlineData(1, 0)]
         [InlineData(0, 1)]
-        public void ExecuteSheetRowNotFoundException(int idToIncludeInPetSheet, int idToIncludeInPetCostSheet)
+        [InlineData(1, 2)]
+        [InlineData(1, 10)]
+        public void Execute_Success(
+            int currentPetLevel,
+            int targetPetLevel)
         {
-            var agentAddress = new PrivateKey().ToAddress();
-            var avatarAddress = new PrivateKey().ToAddress();
-            var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
-            var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
-            var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
-            var sheets = TableSheetsImporter.ImportSheets();
-            var tableSheets = new TableSheets(sheets);
-            var blockIndex = tableSheets.WorldBossListSheet.Values
-                .OrderBy(x => x.StartedBlockIndex)
-                .First()
-                .StartedBlockIndex;
+            Execute(
+                _initialStatesWithAvatarStateV1,
+                _firstRoundStartBlockIndex,
+                _agentAddr,
+                _avatarAddr,
+                _targetPetId,
+                currentPetLevel,
+                targetPetLevel);
+            Execute(
+                _initialStatesWithAvatarStateV2,
+                _firstRoundStartBlockIndex,
+                _agentAddr,
+                _avatarAddr,
+                _targetPetId,
+                currentPetLevel,
+                targetPetLevel);
+        }
 
-            var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
-            var rankingMapAddress = avatarAddress.Derive("ranking_map");
-            var agentState = new AgentState(agentAddress);
-            var avatarState = new AvatarState(
-                avatarAddress,
-                agentAddress,
-                0,
-                tableSheets.GetAvatarSheets(),
-                new GameConfigState(),
-                rankingMapAddress
-            );
-            agentState.avatarAddresses.Add(0, avatarAddress);
-            var state = new State()
-                .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
-                .SetState(agentAddress, agentState.SerializeV2())
-                .SetState(avatarAddress, avatarState.SerializeV2())
-                .SetState(inventoryAddress, avatarState.inventory.Serialize())
-                .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
-                .SetState(questListAddress, avatarState.questList.Serialize());
-
-            foreach (var (key, value) in sheets)
-            {
-                state = state.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
-            }
-
-            var petSheet = new PetSheet();
-            petSheet.Set(@$"id,grade,SoulStoneTicker,_petName
-{idToIncludeInPetSheet},1,Soulstone_001,D:CC 블랙캣");
-            state = state.SetState(Addresses.TableSheet.Derive(petSheet.Name), petSheet.Serialize());
-
-            var petCostSheet = new PetCostSheet();
-            petCostSheet.Set(@$"ID,_PET NAME,PetLevel,SoulStoneQuantity,NcgQuantity
-{idToIncludeInPetCostSheet},D:CC 블랙캣,1,10,0");
-            state = state.SetState(Addresses.TableSheet.Derive(petCostSheet.Name), petCostSheet.Serialize());
-
-            var action = new PetEnhancement
-            {
-                AvatarAddress = avatarState.address,
-                PetId = 1,
-                TargetLevel = 1,
-            };
-            var ctx = new ActionContext
-            {
-                BlockIndex = blockIndex,
-                PreviousStates = state,
-                Random = new TestRandom(),
-                Rehearsal = false,
-                Signer = agentAddress,
-            };
-
-            Assert.Throws<SheetRowNotFoundException>(() =>
-            {
-                action.Execute(ctx);
-            });
+        [Theory]
+        [InlineData(0, int.MinValue)]
+        [InlineData(0, 0)]
+        [InlineData(1, 0)]
+        [InlineData(int.MaxValue, int.MaxValue)]
+        public void Execute_Throw_InvalidActionFieldException(
+            int currentPetLevel,
+            int targetPetLevel)
+        {
+            Assert.Throws<InvalidActionFieldException>(() =>
+                Execute(
+                    _initialStatesWithAvatarStateV1,
+                    _firstRoundStartBlockIndex,
+                    _agentAddr,
+                    _avatarAddr,
+                    _targetPetId,
+                    currentPetLevel,
+                    targetPetLevel));
+            Assert.Throws<InvalidActionFieldException>(() =>
+                Execute(
+                    _initialStatesWithAvatarStateV2,
+                    _firstRoundStartBlockIndex,
+                    _agentAddr,
+                    _avatarAddr,
+                    _targetPetId,
+                    currentPetLevel,
+                    targetPetLevel));
         }
 
         [Fact]
-        public void ExecutePetCostNotFoundException()
+        public void Execute_Throw_SheetRowNotFoundException()
         {
-            const int petId = 1;
-            var agentAddress = new PrivateKey().ToAddress();
-            var avatarAddress = new PrivateKey().ToAddress();
-            var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
-            var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
-            var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
-            var sheets = TableSheetsImporter.ImportSheets();
-            var tableSheets = new TableSheets(sheets);
-            var blockIndex = tableSheets.WorldBossListSheet.Values
-                .OrderBy(x => x.StartedBlockIndex)
-                .First()
-                .StartedBlockIndex;
+            // PetSheet
+            Assert.Throws<SheetRowNotFoundException>(() =>
+                Execute(
+                    _initialStatesWithAvatarStateV1,
+                    _firstRoundStartBlockIndex,
+                    _agentAddr,
+                    _avatarAddr,
+                    _targetPetId,
+                    0,
+                    1,
+                    removePetRow: true));
+            Assert.Throws<SheetRowNotFoundException>(() =>
+                Execute(
+                    _initialStatesWithAvatarStateV2,
+                    _firstRoundStartBlockIndex,
+                    _agentAddr,
+                    _avatarAddr,
+                    _targetPetId,
+                    0,
+                    1,
+                    removePetRow: true));
 
-            var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
-            var rankingMapAddress = avatarAddress.Derive("ranking_map");
-            var agentState = new AgentState(agentAddress);
-            var avatarState = new AvatarState(
-                avatarAddress,
-                agentAddress,
-                0,
-                tableSheets.GetAvatarSheets(),
-                new GameConfigState(),
-                rankingMapAddress
-            );
-            agentState.avatarAddresses.Add(0, avatarAddress);
-            var state = new State()
-                .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
-                .SetState(agentAddress, agentState.SerializeV2())
-                .SetState(avatarAddress, avatarState.SerializeV2())
-                .SetState(inventoryAddress, avatarState.inventory.Serialize())
-                .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
-                .SetState(questListAddress, avatarState.questList.Serialize());
+            // PetCostSheet
+            Assert.Throws<SheetRowNotFoundException>(() =>
+                Execute(
+                    _initialStatesWithAvatarStateV1,
+                    _firstRoundStartBlockIndex,
+                    _agentAddr,
+                    _avatarAddr,
+                    _targetPetId,
+                    0,
+                    1,
+                    removePetCostRow: true));
+            Assert.Throws<SheetRowNotFoundException>(() =>
+                Execute(
+                    _initialStatesWithAvatarStateV2,
+                    _firstRoundStartBlockIndex,
+                    _agentAddr,
+                    _avatarAddr,
+                    _targetPetId,
+                    0,
+                    1,
+                    removePetCostRow: true));
+        }
 
-            foreach (var (key, value) in sheets)
-            {
-                state = state.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
-            }
-
-            var action = new PetEnhancement
-            {
-                AvatarAddress = avatarState.address,
-                PetId = petId,
-                TargetLevel = int.MaxValue,
-            };
-            var ctx = new ActionContext
-            {
-                BlockIndex = blockIndex,
-                PreviousStates = state,
-                Random = new TestRandom(),
-                Rehearsal = false,
-                Signer = agentAddress,
-            };
+        [Fact]
+        public void Execute_Throw_PetCostNotFoundException()
+        {
+            const int targetPetLevel = 1;
 
             Assert.Throws<PetCostNotFoundException>(() =>
-            {
-                action.Execute(ctx);
-            });
+                Execute(
+                    _initialStatesWithAvatarStateV1,
+                    _firstRoundStartBlockIndex,
+                    _agentAddr,
+                    _avatarAddr,
+                    _targetPetId,
+                    0,
+                    targetPetLevel,
+                    removePetCostRowWithTargetPetLevel: true));
+            Assert.Throws<PetCostNotFoundException>(() =>
+                Execute(
+                    _initialStatesWithAvatarStateV2,
+                    _firstRoundStartBlockIndex,
+                    _agentAddr,
+                    _avatarAddr,
+                    _targetPetId,
+                    0,
+                    targetPetLevel,
+                    removePetCostRowWithTargetPetLevel: true));
+        }
+
+        [Fact]
+        public void Execute_Throw_RoundNotFoundException()
+        {
+            Assert.Throws<RoundNotFoundException>(() =>
+                Execute(
+                    _initialStatesWithAvatarStateV1,
+                    _firstRoundStartBlockIndex - 1,
+                    _agentAddr,
+                    _avatarAddr,
+                    _targetPetId,
+                    0,
+                    1));
+            Assert.Throws<RoundNotFoundException>(() =>
+                Execute(
+                    _initialStatesWithAvatarStateV2,
+                    _firstRoundStartBlockIndex - 1,
+                    _agentAddr,
+                    _avatarAddr,
+                    _targetPetId,
+                    0,
+                    1));
         }
 
         [Theory]
-        [InlineData(1, true, true)]
-        [InlineData(10, true, false)]
-        [InlineData(10, false, true)]
-        [InlineData(10, true, true)]
-        [InlineData(30, false, true)]
-        [InlineData(30, true, false)]
-        [InlineData(30, true, true)]
-        public void ExecuteNotEnoughFungibleAssetValueException(int targetLevel, bool notEnoughNcg, bool notEnoughSoulStone)
+        [InlineData(0, 1)]
+        public void Execute_Throw_NotEnoughFungibleAssetValueException(
+            int currentPetLevel,
+            int targetPetLevel)
         {
-            const int petId = 1;
-            var agentAddress = new PrivateKey().ToAddress();
-            var avatarAddress = new PrivateKey().ToAddress();
-            var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
-            var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
-            var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
-            var sheets = TableSheetsImporter.ImportSheets();
-            var tableSheets = new TableSheets(sheets);
-            var blockIndex = tableSheets.WorldBossListSheet.Values
-                .OrderBy(x => x.StartedBlockIndex)
-                .First()
-                .StartedBlockIndex;
+            Assert.Throws<NotEnoughFungibleAssetValueException>(() =>
+                Execute(
+                    _initialStatesWithAvatarStateV1,
+                    _firstRoundStartBlockIndex,
+                    _agentAddr,
+                    _avatarAddr,
+                    1,
+                    currentPetLevel,
+                    targetPetLevel,
+                    false));
+            Assert.Throws<NotEnoughFungibleAssetValueException>(() =>
+                Execute(
+                    _initialStatesWithAvatarStateV2,
+                    _firstRoundStartBlockIndex,
+                    _agentAddr,
+                    _avatarAddr,
+                    1,
+                    currentPetLevel,
+                    targetPetLevel,
+                    false));
+        }
 
-            var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
-            var rankingMapAddress = avatarAddress.Derive("ranking_map");
-            var agentState = new AgentState(agentAddress);
-            var avatarState = new AvatarState(
-                avatarAddress,
-                agentAddress,
-                0,
-                tableSheets.GetAvatarSheets(),
-                new GameConfigState(),
-                rankingMapAddress
-            );
-            agentState.avatarAddresses.Add(0, avatarAddress);
-            var state = new State()
-                .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
-                .SetState(agentAddress, agentState.SerializeV2())
-                .SetState(avatarAddress, avatarState.SerializeV2())
-                .SetState(inventoryAddress, avatarState.inventory.Serialize())
-                .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
-                .SetState(questListAddress, avatarState.questList.Serialize());
-
-            foreach (var (key, value) in sheets)
+        private static IAccountStateDelta Execute(
+            IAccountStateDelta prevStates,
+            long blockIndex,
+            Address agentAddr,
+            Address avatarAddr,
+            int petId,
+            int currentPetLevel,
+            int targetPetLevel,
+            bool mintAssets = true,
+            bool removePetRow = false,
+            bool removePetCostRow = false,
+            bool removePetCostRowWithTargetPetLevel = false)
+        {
+            var petAddress = PetState.DeriveAddress(avatarAddr, petId);
+            if (currentPetLevel > 0)
             {
-                state = state.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
+                prevStates = prevStates.SetState(
+                    petAddress,
+                    new List(petId.Serialize(), currentPetLevel.Serialize()));
             }
 
-            var costSheet = state.GetSheet<PetCostSheet>();
-            if (!costSheet.TryGetValue(petId, out var costRow))
-            {
-                throw new SheetRowNotFoundException(nameof(costSheet), petId);
-            }
-
-            if (!costRow.TryGetCost(targetLevel, out _))
-            {
-                throw new PetCostNotFoundException($"Can not find cost by TargetLevel({targetLevel}).");
-            }
-
-            var petSheet = state.GetSheet<PetSheet>();
-            if (!petSheet.TryGetValue(petId, out var petRow))
-            {
-                throw new RuneNotFoundException($"[{nameof(Execute)}] ");
-            }
-
-            var ncgCurrency = state.GetGoldCurrency();
+            var ncgCurrency = prevStates.GetGoldCurrency();
+            var petSheet = prevStates.GetSheet<PetSheet>();
+            Assert.True(petSheet.TryGetValue(petId, out var petRow));
             var soulStoneCurrency = Currency.Legacy(petRow.SoulStoneTicker, 0, minters: null);
+            if (mintAssets &&
+                // NOTE: If the currentPetLevel does not less than targetPetLevel,
+                //       ArgumentOutOfRangeException will be thrown.
+                //       For this reason, the following condition is added.
+                currentPetLevel < targetPetLevel)
+            {
+                var costSheet = prevStates.GetSheet<PetCostSheet>();
+                var (ncgCost, soulStoneCost) = PetHelper.CalculateEnhancementCost(
+                    costSheet,
+                    petId,
+                    currentPetLevel,
+                    targetPetLevel);
 
-            var (ncgBal, soulStoneBal) = PetHelper.CalculateEnhancementCost(costSheet, petId, 0, targetLevel);
+                prevStates = prevStates
+                    .MintAsset(agentAddr, ncgCost * ncgCurrency)
+                    .MintAsset(avatarAddr, soulStoneCost * soulStoneCurrency);
+            }
 
-            state = state.MintAsset(agentAddress, (ncgBal + (notEnoughNcg ? -1 : 0)) * ncgCurrency);
-            state = state.MintAsset(avatarState.address, (soulStoneBal + (notEnoughSoulStone ? -1 : 0)) * soulStoneCurrency);
+            if (removePetRow)
+            {
+                var petSheetCsv = prevStates.GetSheetCsv<PetSheet>();
+                var insolventPetSheetCsv = TestUtils.CsvLinqWhere(
+                    petSheetCsv,
+                    line => !line.StartsWith($"{petId},"));
+                prevStates = prevStates.SetState(
+                    Addresses.GetSheetAddress<PetSheet>(),
+                    insolventPetSheetCsv.Serialize());
+            }
+
+            if (removePetCostRow || removePetCostRowWithTargetPetLevel)
+            {
+                var targetPetLevelString = targetPetLevel.ToString();
+                var petCostSheetCsv = prevStates.GetSheetCsv<PetCostSheet>();
+                string insolventPetCostSheetCsv;
+                if (removePetCostRow)
+                {
+                    insolventPetCostSheetCsv = TestUtils.CsvLinqWhere(
+                        petCostSheetCsv,
+                        line => !line.StartsWith($"{petId},"));
+                }
+                else
+                {
+                    insolventPetCostSheetCsv = TestUtils.CsvLinqWhere(
+                        petCostSheetCsv,
+                        line =>
+                        {
+                            if (!line.StartsWith($"{petId},"))
+                            {
+                                return true;
+                            }
+
+                            var fields = line.Split(',');
+                            return !fields[2].Equals(targetPetLevelString);
+                        });
+                }
+
+                prevStates = prevStates.SetState(
+                    Addresses.GetSheetAddress<PetCostSheet>(),
+                    insolventPetCostSheetCsv.Serialize());
+            }
 
             var action = new PetEnhancement
             {
-                AvatarAddress = avatarState.address,
+                AvatarAddress = avatarAddr,
                 PetId = petId,
-                TargetLevel = targetLevel,
+                TargetLevel = targetPetLevel,
             };
-            var ctx = new ActionContext
+            var nextStates = action.Execute(new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = state,
+                PreviousStates = prevStates,
                 Random = new TestRandom(),
                 Rehearsal = false,
-                Signer = agentAddress,
-            };
-
-            Assert.Throws<NotEnoughFungibleAssetValueException>(() =>
-            {
-                action.Execute(ctx);
+                Signer = agentAddr,
             });
+            var nextNcgBal = nextStates.GetBalance(agentAddr, ncgCurrency);
+            var nextSoulStoneBal = nextStates.GetBalance(avatarAddr, soulStoneCurrency);
+            Assert.Equal(0, nextNcgBal.MajorUnit);
+            Assert.Equal(0, nextSoulStoneBal.MajorUnit);
+
+            var rawPetState = (List)nextStates.GetState(petAddress);
+            var nextPetState = new PetState(rawPetState);
+            Assert.Equal(targetPetLevel, nextPetState.Level);
+
+            return nextStates;
         }
     }
 }
