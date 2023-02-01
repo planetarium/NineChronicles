@@ -12,6 +12,7 @@ using Libplanet.Action;
 using Serilog;
 using Nekoyume.Model.State;
 using Libplanet.Assets;
+using Libplanet.Consensus;
 using Libplanet.Tx;
 using Nekoyume.BlockChain.Policy;
 #if UNITY_EDITOR || UNITY_STANDALONE
@@ -250,6 +251,16 @@ namespace Nekoyume.Action
                             (GetTotalSupply(currency) - value).RawValue)
                         : _totalSupplies
                 );
+            }
+
+            public IAccountStateDelta SetValidator(Validator validator)
+            {
+                return new AccountStateDelta();
+            }
+
+            public ValidatorSet GetValidatorSet()
+            {
+                return new ValidatorSet();
             }
         }
 

@@ -15,6 +15,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.Arena;
     using Nekoyume.Model.EnumType;
     using Nekoyume.Model.Item;
+    using Nekoyume.Model.Rune;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Serilog;
@@ -22,7 +23,7 @@ namespace Lib9c.Tests.Action
     using Xunit.Abstractions;
     using static Lib9c.SerializeKeys;
 
-    public class JoinArena0Test
+    public class JoinArena3Test
     {
         private readonly Dictionary<string, string> _sheets;
         private readonly TableSheets _tableSheets;
@@ -34,7 +35,7 @@ namespace Lib9c.Tests.Action
         private readonly Currency _currency;
         private IAccountStateDelta _state;
 
-        public JoinArena0Test(ITestOutputHelper outputHelper)
+        public JoinArena3Test(ITestOutputHelper outputHelper)
         {
             _random = new TestRandom();
             _sheets = TableSheetsImporter.ImportSheets();
@@ -53,12 +54,13 @@ namespace Lib9c.Tests.Action
             var tableSheets = new TableSheets(sheets);
             var rankingMapAddress = new PrivateKey().ToAddress();
             var agentState = new AgentState(_signer);
+            var gameConfigState = new GameConfigState(_sheets[nameof(GameConfigSheet)]);
             var avatarState = new AvatarState(
                 _avatarAddress,
                 _signer,
                 0,
                 tableSheets.GetAvatarSheets(),
-                new GameConfigState(),
+                gameConfigState,
                 rankingMapAddress)
             {
                 worldInformation = new WorldInformation(
@@ -108,6 +110,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatar2Address.Derive(LegacyWorldInformationKey), avatar2State.worldInformation.Serialize())
                 .SetState(_avatar2Address.Derive(LegacyQuestListKey), avatar2State.questList.Serialize())
                 .SetState(_avatar2Address, avatar2State.SerializeV2())
+                .SetState(gameConfigState.address, gameConfigState.Serialize())
                 .SetState(Addresses.GoldCurrency, goldCurrencyState.Serialize());
 
             foreach ((string key, string value) in sheets)
@@ -204,12 +207,13 @@ namespace Lib9c.Tests.Action
 
             var state = _state.MintAsset(_signer, FungibleAssetValue.Parse(_currency, balance));
 
-            var action = new JoinArena0()
+            var action = new JoinArena()
             {
                 championshipId = championshipId,
                 round = round,
                 costumes = costumes,
                 equipments = equipments,
+                runeInfos = new List<RuneSlotInfo>(),
                 avatarAddress = _avatarAddress,
             };
 
@@ -267,30 +271,31 @@ namespace Lib9c.Tests.Action
 
             if (!row.TryGetRound(round, out var roundData))
             {
-                throw new RoundNotFoundException($"{nameof(JoinArena0)} : {row.ChampionshipId} / {round}");
+                throw new RoundNotFoundException($"{nameof(JoinArena1)} : {row.ChampionshipId} / {round}");
             }
 
             Assert.Equal(0 * _currency, state.GetBalance(_signer, _currency));
         }
 
         [Theory]
-        [InlineData(3)]
+        [InlineData(9999)]
         public void Execute_SheetRowNotFoundException(int championshipId)
         {
             var avatarState = _state.GetAvatarStateV2(_avatarAddress);
             avatarState = GetAvatarState(avatarState, out var equipments, out var costumes);
             var state = _state.SetState(_avatarAddress, avatarState.SerializeV2());
 
-            var action = new JoinArena0()
+            var action = new JoinArena()
             {
                 championshipId = championshipId,
                 round = 1,
                 costumes = costumes,
                 equipments = equipments,
+                runeInfos = new List<RuneSlotInfo>(),
                 avatarAddress = _avatarAddress,
             };
 
-            Assert.Throws<ActionObsoletedException>(() => action.Execute(new ActionContext()
+            Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext()
             {
                 PreviousStates = state,
                 Signer = _signer,
@@ -306,12 +311,13 @@ namespace Lib9c.Tests.Action
             avatarState = GetAvatarState(avatarState, out var equipments, out var costumes);
             var state = _state.SetState(_avatarAddress, avatarState.SerializeV2());
 
-            var action = new JoinArena0()
+            var action = new JoinArena()
             {
                 championshipId = 1,
                 round = round,
                 costumes = costumes,
                 equipments = equipments,
+                runeInfos = new List<RuneSlotInfo>(),
                 avatarAddress = _avatarAddress,
             };
 
@@ -333,12 +339,13 @@ namespace Lib9c.Tests.Action
             var preCurrency = 99800100000 * _currency;
             var state = _state.MintAsset(_signer, preCurrency);
 
-            var action = new JoinArena0()
+            var action = new JoinArena()
             {
                 championshipId = 1,
                 round = round,
                 costumes = costumes,
                 equipments = equipments,
+                runeInfos = new List<RuneSlotInfo>(),
                 avatarAddress = _avatarAddress,
             };
 
@@ -360,12 +367,13 @@ namespace Lib9c.Tests.Action
             GetAvatarState(avatarState, out var equipments, out var costumes);
             var state = _state.SetState(_avatarAddress, avatarState.SerializeV2());
 
-            var action = new JoinArena0()
+            var action = new JoinArena()
             {
                 championshipId = 1,
                 round = round,
                 costumes = costumes,
                 equipments = equipments,
+                runeInfos = new List<RuneSlotInfo>(),
                 avatarAddress = _avatarAddress,
             };
 
@@ -385,12 +393,13 @@ namespace Lib9c.Tests.Action
             avatarState = GetAvatarState(avatarState, out var equipments, out var costumes);
             var state = _state.SetState(_avatarAddress, avatarState.SerializeV2());
 
-            var action = new JoinArena0()
+            var action = new JoinArena()
             {
                 championshipId = 1,
                 round = 1,
                 costumes = costumes,
                 equipments = equipments,
+                runeInfos = new List<RuneSlotInfo>(),
                 avatarAddress = _avatarAddress,
             };
 
@@ -426,12 +435,13 @@ namespace Lib9c.Tests.Action
             var arenaScore = new ArenaScore(_avatarAddress, championshipId, round);
             state = state.SetState(arenaScoreAdr, arenaScore.Serialize());
 
-            var action = new JoinArena0()
+            var action = new JoinArena()
             {
                 championshipId = championshipId,
                 round = round,
                 costumes = costumes,
                 equipments = equipments,
+                runeInfos = new List<RuneSlotInfo>(),
                 avatarAddress = _avatarAddress,
             };
 
@@ -458,12 +468,13 @@ namespace Lib9c.Tests.Action
             var arenaInformation = new ArenaInformation(_avatarAddress, championshipId, round);
             state = state.SetState(arenaInformationAdr, arenaInformation.Serialize());
 
-            var action = new JoinArena0()
+            var action = new JoinArena()
             {
                 championshipId = championshipId,
                 round = round,
                 costumes = costumes,
                 equipments = equipments,
+                runeInfos = new List<RuneSlotInfo>(),
                 avatarAddress = _avatarAddress,
             };
 
@@ -479,12 +490,13 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_NotEnoughClearedStageLevelException()
         {
-            var action = new JoinArena0()
+            var action = new JoinArena()
             {
                 championshipId = 1,
                 round = 1,
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
+                runeInfos = new List<RuneSlotInfo>(),
                 avatarAddress = _avatar2Address,
             };
 
@@ -492,6 +504,65 @@ namespace Lib9c.Tests.Action
             {
                 PreviousStates = _state,
                 Signer = _signer2,
+                Random = new TestRandom(),
+            }));
+        }
+
+        [Theory]
+        [InlineData(0, 30001, 1, 30001, typeof(DuplicatedRuneIdException))]
+        [InlineData(1, 10002, 1, 30001, typeof(DuplicatedRuneSlotIndexException))]
+        public void ExecuteDuplicatedException(int slotIndex, int runeId, int slotIndex2, int runeId2, Type exception)
+        {
+            int championshipId = 1;
+            int round = 1;
+            string balance = "0";
+            var arenaSheet = _state.GetSheet<ArenaSheet>();
+            if (!arenaSheet.TryGetValue(championshipId, out var row))
+            {
+                throw new SheetRowNotFoundException(
+                    nameof(ArenaSheet), $"championship Id : {championshipId}");
+            }
+
+            var avatarState = _state.GetAvatarStateV2(_avatarAddress);
+            avatarState = GetAvatarState(avatarState, out var equipments, out var costumes);
+            avatarState = AddMedal(avatarState, row, 80);
+
+            var state = _state.MintAsset(_signer, FungibleAssetValue.Parse(_currency, balance));
+            var ncgCurrency = state.GetGoldCurrency();
+            state = state.MintAsset(_signer, 99999 * ncgCurrency);
+
+            var unlockRuneSlot = new UnlockRuneSlot()
+            {
+                AvatarAddress = _avatarAddress,
+                SlotIndex = 1,
+            };
+
+            state = unlockRuneSlot.Execute(new ActionContext
+            {
+                BlockIndex = 1,
+                PreviousStates = state,
+                Signer = _signer,
+                Random = new TestRandom(),
+            });
+
+            var action = new JoinArena()
+            {
+                championshipId = championshipId,
+                round = round,
+                costumes = costumes,
+                equipments = equipments,
+                runeInfos = new List<RuneSlotInfo>()
+                {
+                    new RuneSlotInfo(slotIndex, runeId),
+                    new RuneSlotInfo(slotIndex2, runeId2),
+                },
+                avatarAddress = _avatarAddress,
+            };
+
+            Assert.Throws(exception, () => action.Execute(new ActionContext
+            {
+                PreviousStates = state,
+                Signer = _signer,
                 Random = new TestRandom(),
             }));
         }

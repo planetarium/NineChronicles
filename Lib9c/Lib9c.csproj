@@ -33,5 +33,7 @@
       <OutputItemType>Analyzer</OutputItemType>
       <!-- https://github.com/dotnet/roslyn/issues/18093#issuecomment-405702631 -->
     </ProjectReference>
+    <ProjectReference Include="..\Lib9c.Abstractions\Lib9c.Abstractions.csproj" />
   </ItemGroup>
+
 </Project>

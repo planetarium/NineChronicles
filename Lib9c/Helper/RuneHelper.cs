@@ -148,7 +148,7 @@ namespace Nekoyume.Helper
             {
                 if (tryCount == 1)
                 {
-                    throw new NotEnoughFungibleAssetValueException($"{nameof(RuneEnhancement)}" +
+                    throw new NotEnoughFungibleAssetValueException($"{nameof(RuneHelper)}" +
                         $"[ncg:{ncg} < {ncgCost}] [crystal:{crystal} < {crystalCost}] [rune:{rune} < {runeCost}]");
                 }
 

@@ -30,10 +30,18 @@ namespace Nekoyume.Arena
                 { ArenaType.Championship, (100, -100) }
             };
 
-        public static readonly IReadOnlyDictionary<ArenaType, (int upper, int lower)> ScoreLimits =
+        [Obsolete("Use `ScoreLimits` instead.")]
+        public static readonly IReadOnlyDictionary<ArenaType, (int upper, int lower)> ScoreLimitsV2 =
             new Dictionary<ArenaType, (int, int)>
             {
                 { ArenaType.OffSeason, (100, -100) },
+                { ArenaType.Season, (100, -100) },
+                { ArenaType.Championship, (100, -100) }
+            };
+
+        public static readonly IReadOnlyDictionary<ArenaType, (int upper, int lower)> ScoreLimits =
+            new Dictionary<ArenaType, (int, int)>
+            {
                 { ArenaType.Season, (100, -100) },
                 { ArenaType.Championship, (100, -100) }
             };
@@ -99,7 +107,8 @@ namespace Nekoyume.Arena
             return lower <= diff && diff <= upper;
         }
 
-        public static bool ValidateScoreDifference(
+        [Obsolete("Use `ValidateScoreDifference()` instead.")]
+        public static bool ValidateScoreDifferenceV2(
             IReadOnlyDictionary<ArenaType, (int, int)> scoreLimits,
             ArenaType arenaType,
             int myScore,
@@ -108,6 +117,22 @@ namespace Nekoyume.Arena
             if (!scoreLimits.ContainsKey(arenaType))
             {
                 return false;
+            }
+
+            var (upper, lower) = scoreLimits[arenaType];
+            var diff = enemyScore - myScore;
+            return lower <= diff && diff <= upper;
+        }
+
+        public static bool ValidateScoreDifference(
+            IReadOnlyDictionary<ArenaType, (int, int)> scoreLimits,
+            ArenaType arenaType,
+            int myScore,
+            int enemyScore)
+        {
+            if (!scoreLimits.ContainsKey(arenaType))
+            {
+                return true;
             }
 
             var (upper, lower) = scoreLimits[arenaType];

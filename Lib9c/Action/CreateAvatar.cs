@@ -149,6 +149,11 @@ namespace Nekoyume.Action
 
             avatarState.UpdateQuestRewards(materialItemSheet);
 
+            // Add Runes when executing on editor mode.
+#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
+            states = CreateAvatar0.AddRunesForTest(avatarAddress, states);
+#endif
+
             sw.Stop();
             Log.Verbose("{AddressesHex}CreateAvatar CreateAvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             var ended = DateTimeOffset.UtcNow;

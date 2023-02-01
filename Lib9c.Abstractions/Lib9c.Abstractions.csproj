@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <OutputPath>.bin</OutputPath>
+    <IntermediateOutputPath>.obj</IntermediateOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\.Libplanet\Libplanet\Libplanet.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
@@ -47,12 +48,65 @@ namespace Nekoyume.Model.State
         {
             if (runeInfos is null)
             {
-                throw new RuneInfosIsEmptyException($"[{nameof(BattleArena)}]");
+                throw new RuneInfosIsEmptyException($"[{nameof(RuneSlotState)}]");
             }
 
             if (runeInfos.GroupBy(x => x.SlotIndex).Count() != runeInfos.Count)
             {
-                throw new DuplicatedRuneSlotIndexException($"[{nameof(BattleArena)}]");
+                throw new DuplicatedRuneSlotIndexException($"[{nameof(RuneSlotState)}]");
+            }
+
+            foreach (var runeSlotInfo in runeInfos)
+            {
+                if (_slots.All(x => x.Index != runeSlotInfo.SlotIndex))
+                {
+                    throw new SlotNotFoundException($"[{nameof(RuneSlotState)}]");
+                }
+            }
+
+            foreach (var slot in _slots)
+            {
+                slot.Unequip();
+            }
+
+            foreach (var slot in _slots)
+            {
+                if (slot.IsLock)
+                {
+                    continue;
+                }
+
+                var runeInfo = runeInfos.FirstOrDefault(x => x.SlotIndex == slot.Index);
+                if (runeInfo == null)
+                {
+                    continue;
+                }
+
+                if (IsUsableSlot(runeListSheet, slot, runeInfo))
+                {
+                    slot.Equip(runeInfo.RuneId);
+                }
+            }
+
+            var emptySlotCount = _slots.Count(x => !x.RuneId.HasValue);
+            var slotCount = _slots.Where(x => x.RuneId.HasValue).GroupBy(x => x.RuneId).Count();
+            if(emptySlotCount + slotCount != _slots.Count)
+            {
+                throw new DuplicatedRuneIdException($"[{nameof(RuneSlotState)}]");
+            }
+        }
+
+        [Obsolete("UpdateSlotV2")]
+        public void UpdateSlotV2(List<RuneSlotInfo> runeInfos, RuneListSheet runeListSheet)
+        {
+            if (runeInfos is null)
+            {
+                throw new RuneInfosIsEmptyException($"[{nameof(RuneSlotState)}]");
+            }
+
+            if (runeInfos.GroupBy(x => x.SlotIndex).Count() != runeInfos.Count)
+            {
+                throw new DuplicatedRuneSlotIndexException($"[{nameof(RuneSlotState)}]");
             }
 
             foreach (var runeSlotInfo in runeInfos)
@@ -72,7 +126,7 @@ namespace Nekoyume.Model.State
                 }
                 else
                 {
-                    if (IsUsableSlot(runeListSheet, slot, runeInfo))
+                    if (IsUsableSlotV2(runeListSheet, slot, runeInfo))
                     {
                         slot.Equip(runeInfo.RuneId);
                     }
@@ -86,6 +140,39 @@ namespace Nekoyume.Model.State
         }
 
         private bool IsUsableSlot(RuneListSheet runeListSheet, RuneSlot slot, RuneSlotInfo runeInfo)
+        {
+            if (slot.IsLock)
+            {
+                throw new SlotIsLockedException(
+                    $"[{nameof(RuneSlotState)}] Index : {slot.Index}");
+            }
+
+            var runeId = runeInfo.RuneId;
+            if (!runeListSheet.TryGetValue(runeId, out var row))
+            {
+                throw new RuneListNotFoundException(
+                    $"[{nameof(RuneSlotState)}] Index : {slot.Index} / runeId : {runeId}");
+            }
+
+            var runeType = (RuneType)row.RuneType;
+            if (slot.RuneType != runeType)
+            {
+                throw new SlotRuneTypeException(
+                    $"[{nameof(RuneSlotState)}] Index : {slot.Index} / {slot.RuneType} != {runeType}");
+            }
+
+            var runePlace = (RuneUsePlace)row.UsePlace;
+            if (!BattleType.IsEquippableRune(runePlace))
+            {
+                throw new IsEquippableRuneException(
+                    $"[{nameof(RuneSlotState)}] Index : {slot.Index} / runePlace : {runePlace}");
+            }
+
+            return true;
+        }
+
+        [Obsolete("IsUsableSlot")]
+        private bool IsUsableSlotV2(RuneListSheet runeListSheet, RuneSlot slot, RuneSlotInfo runeInfo)
         {
             if (slot.IsLock)
             {

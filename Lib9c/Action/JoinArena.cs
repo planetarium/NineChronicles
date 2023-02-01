@@ -18,10 +18,10 @@ using Serilog;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Introduced at https://github.com/planetarium/lib9c/pull/1495
+    /// Introduced at https://github.com/planetarium/lib9c/pull/1663
     /// </summary>
     [Serializable]
-    [ActionType("join_arena2")]
+    [ActionType("join_arena3")]
     public class JoinArena : GameAction
     {
         public Address avatarAddress;

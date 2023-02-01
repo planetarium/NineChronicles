@@ -242,8 +242,8 @@ namespace Nekoyume.Action
                     $" - ChampionshipId({roundData.ChampionshipId}) - round({roundData.Round})");
             }
 
-            if (!ArenaHelper.ValidateScoreDifference(
-                    ArenaHelper.ScoreLimits,
+            if (!ArenaHelper.ValidateScoreDifferenceV2(
+                    ArenaHelper.ScoreLimitsV2,
                     roundData.ArenaType,
                     myArenaScore.Score,
                     enemyArenaScore.Score))
