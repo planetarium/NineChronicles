@@ -50,27 +50,39 @@ SpriteAtlas:
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
+  - {fileID: 21300000, guid: 9160df216b828254590cd4e68ad49945, type: 3}
+  - {fileID: 21300000, guid: 4e96a1815f8863e41aad82d37d6560d8, type: 3}
   - {fileID: 21300000, guid: 1b3f70b266c320e409043ea6db7019ff, type: 3}
   - {fileID: 21300000, guid: cbe2eae2bd404614c896530c3382bb7b, type: 3}
   - {fileID: 21300000, guid: ffbe6a3312190fc4cb7782f7401ed8ea, type: 3}
+  - {fileID: 21300000, guid: f1f836542da5c6d489b671b46fda966e, type: 3}
   - {fileID: 21300000, guid: d07a62555a5d5d74a8df03ed9758e539, type: 3}
   - {fileID: 21300000, guid: b4825365a43d5f049adeba349c042838, type: 3}
+  - {fileID: 21300000, guid: 030c91b740a177446817a8d10da63d18, type: 3}
   - {fileID: 21300000, guid: d04e181a2ccf16549b48175981781ee0, type: 3}
   - {fileID: 21300000, guid: 054c37aa5a3ecd446886c495ea0308c3, type: 3}
+  - {fileID: 21300000, guid: 2997addc9e775794884925e7615d5d47, type: 3}
   - {fileID: 21300000, guid: ae81098d2bb269a47838d3bc5a78322f, type: 3}
   - {fileID: 21300000, guid: 1dc2a57ef1703774282843515937c8cc, type: 3}
   - {fileID: 21300000, guid: 0f1521be3033af74eaf4d7ba3e83c5a7, type: 3}
+  - {fileID: 21300000, guid: 7993c8df5e2eaa34ebd42392d5a55f25, type: 3}
   m_PackedSpriteNamesToIndex:
+  - Button_Tab_bg_Normal_05
+  - Button_Tab_bg_Press_05
   - EquipPet_bg_Empty
   - Img_DCC
   - Img_DccCollection
+  - UI_popup_title_bg_06
   - EquipPet_Mask
   - EquipPet_bg_5
+  - UI_bg_frame_deco_05
   - EquipPet_Select
   - EquipPet_bg_1
+  - Image_WhatPat
   - EquipPet_bg_4
   - EquipPet_bg_2
   - EquipPet_bg_3
+  - UI_popup_title_bg_05
   m_RenderDataMap: {}
   m_Tag: Atlas_PFP
   m_IsVariant: 0

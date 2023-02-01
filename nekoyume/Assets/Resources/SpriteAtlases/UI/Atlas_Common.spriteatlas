@@ -78,6 +78,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 394623c0c45124e0cbc9a2158932e894, type: 3}
   - {fileID: 21300000, guid: e3f4f6c0067de4aaf9d8e7a138a3c147, type: 3}
   - {fileID: 21300000, guid: 633313d0ff9414b49bd1914e1334107e, type: 3}
+  - {fileID: 21300000, guid: c92fe3d095abff94c91406ab49eb834d, type: 3}
   - {fileID: 21300000, guid: 44f317d0df36bb54d82683fe84aa74f1, type: 3}
   - {fileID: 21300000, guid: f440aaf02c7b7d545b9d7d61d21d65b9, type: 3}
   - {fileID: 21300000, guid: eb8ae001e201248ec82527da02ac7069, type: 3}
@@ -156,6 +157,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 27f5c7643ad9ea2489ca76e7550f3cb0, type: 3}
   - {fileID: 21300000, guid: 9a3f0a848a4064a41b6cb2b0bf4c11f9, type: 3}
   - {fileID: 21300000, guid: 6bf78f84bdcddd24cbb4f798d6041c04, type: 3}
+  - {fileID: 21300000, guid: 27a301945de5b8647846a0adf2417f08, type: 3}
   - {fileID: 21300000, guid: 284213a4ede8c4d5dbafbf695ff4c0f5, type: 3}
   - {fileID: 21300000, guid: 23d16fa48a0c1421ebe1ed94052dbff5, type: 3}
   - {fileID: 21300000, guid: 7866f2c4f85f74b3b895838c9004d9d5, type: 3}
@@ -231,6 +233,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 04898ed75ffe51c40ae4c9780e119436, type: 3}
   - {fileID: 21300000, guid: 0c2ed0f79d8d543699b1c942e15eb8ea, type: 3}
   - {fileID: 21300000, guid: 976e45f79faa74901a2a753b1fb7f8d0, type: 3}
+  - {fileID: 21300000, guid: 20a26ef78a45f0446b05e93a53b3acef, type: 3}
   - {fileID: 21300000, guid: c48e1ff7c8e3b4faa9c64fedd4677b03, type: 3}
   - {fileID: 21300000, guid: 4923171869059394684a493231f79ade, type: 3}
   - {fileID: 21300000, guid: 167f2b38b89704086bf478780507d38f, type: 3}
@@ -443,6 +446,7 @@ SpriteAtlas:
   - item_bg_Active
   - UI_Popup_bg_02_1
   - item_bg_Plusbg
+  - UI_PFP_Bg_Inside
   - UI_scroll_bg1
   - UI_icon_item_bg_05
   - UI_icon_Mainmenu_main
@@ -521,6 +525,7 @@ SpriteAtlas:
   - UI_bar_quest
   - UI_bg_frame_16_deco
   - UI_scroll_bar1
+  - UI_PFP_Bg_Light
   - UI_Quest_Event_Bg_02
   - button_Orange_04
   - UI_Quest_bg_Select
@@ -596,6 +601,7 @@ SpriteAtlas:
   - UI_icon_item_bg_06
   - UI_Btn_bg_03
   - icon_Equip_01_black
+  - button_brown_change
   - UI_main_icon_gold_big
   - UI_icon_item_bg_04
   - Icon_EventPeriod
