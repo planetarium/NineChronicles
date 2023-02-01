@@ -500,10 +500,10 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var itemSlotState = States.Instance.ItemSlotStates[BattleType.Adventure];
+            var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Adventure];
             var costumes = itemSlotState.Costumes;
             var equipments = itemSlotState.Equipments;
-            var runeInfos = States.Instance.RuneSlotStates[BattleType.Adventure]
+            var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.Adventure]
                 .GetEquippedRuneSlotInfos();
             var consumables = information.GetEquippedConsumables();
             var stage = Game.Game.instance.Stage;
@@ -525,6 +525,7 @@ namespace Nekoyume.UI
         private void SendBattleAction(
             StageType stageType,
             int playCount = 1,
+            int apStoneCount = 0,
             bool buyTicketIfNeeded = false)
         {
             Find<WorldMap>().Close(true);
@@ -532,10 +533,10 @@ namespace Nekoyume.UI
             Find<LoadingScreen>().Show();
 
             startButton.gameObject.SetActive(false);
-            var itemSlotState = States.Instance.ItemSlotStates[BattleType.Adventure];
+            var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Adventure];
             var costumes = itemSlotState.Costumes;
             var equipments = itemSlotState.Equipments;
-            var runeInfos = States.Instance.RuneSlotStates[BattleType.Adventure]
+            var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.Adventure]
                 .GetEquippedRuneSlotInfos();
             var consumables = information.GetEquippedConsumables();
 
@@ -549,7 +550,9 @@ namespace Nekoyume.UI
                 case StageType.HackAndSlash:
                 {
                     var skillState = States.Instance.CrystalRandomSkillState;
-                    var skillId = PlayerPrefs.GetInt("HackAndSlash.SelectedBonusSkillId", 0);
+                    var avatarAddress = States.Instance.CurrentAvatarState.address;
+                    var key = string.Format("HackAndSlash.SelectedBonusSkillId.{0}", avatarAddress);
+                    var skillId = PlayerPrefs.GetInt(key, 0);
                     if (skillId == 0)
                     {
                         if (skillState == null ||
@@ -563,6 +566,7 @@ namespace Nekoyume.UI
                                 _worldId,
                                 _stageId,
                                 playCount: playCount,
+                                apStoneCount: apStoneCount,
                                 trackGuideQuest: _trackGuideQuest
                             ).Subscribe();
                             break;
@@ -590,9 +594,10 @@ namespace Nekoyume.UI
                         _stageId,
                         skillId,
                         playCount,
+                        apStoneCount,
                         _trackGuideQuest
                     ).Subscribe();
-                    PlayerPrefs.SetInt("HackAndSlash.SelectedBonusSkillId", 0);
+                    PlayerPrefs.SetInt(key, 0);
                     break;
                 }
                 case StageType.Mimisbrunnr:

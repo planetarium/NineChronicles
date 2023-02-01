@@ -110,9 +110,7 @@ namespace Nekoyume.UI
 
             remainingContainer.SetActive(false);
             costContainer.SetActive(true);
-            costText.text = cost.MinorUnit > 0
-                ? $"{cost.MajorUnit:#,0}.{cost.MinorUnit}"
-                : $"{cost.MajorUnit:#,0}";
+            costText.text = cost.GetQuantityString();
             costText.color = enoughBalance
                 ? Color.white
                 : Palette.GetColor(EnumType.ColorType.ButtonDisabled);

@@ -131,6 +131,35 @@
             </summary>
             <returns>A deterministic message to sign.</returns>
         </member>
+        <member name="T:Libplanet.Net.AppProtocolVersionOptions">
+            <summary>
+            Various options for a <see cref="T:Libplanet.Net.Swarm`1"/>'s
+            <see cref="T:Libplanet.Net.AppProtocolVersion"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.AppProtocolVersionOptions.AppProtocolVersion">
+            <summary>
+            The application protocol version to comply.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.AppProtocolVersionOptions.TrustedAppProtocolVersionSigners">
+            <summary>
+            The set of <see cref="T:Libplanet.Crypto.PublicKey"/>s to trust when a node encounters
+            a <see cref="T:Libplanet.Net.Messages.Message"/> with an <see cref="T:Libplanet.Net.AppProtocolVersion"/> that is different
+            from <see cref="P:Libplanet.Net.AppProtocolVersionOptions.AppProtocolVersion"/>.  Any <see cref="T:Libplanet.Net.Messages.Message"/> with an untrusted
+            <see cref="T:Libplanet.Net.AppProtocolVersion"/> is ignored by the node.  To trust any party,
+            set this to <see langword="null"/>.  Set to <see langword="null"/> by default.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.AppProtocolVersionOptions.DifferentAppProtocolVersionEncountered">
+            <summary>
+            The callback triggered when a node encounters
+            an <see cref="T:Libplanet.Net.AppProtocolVersion"/> that is different from
+            <see cref="P:Libplanet.Net.AppProtocolVersionOptions.AppProtocolVersion"/> that is signed by
+            a <em>trusted party</em>, that is, one of
+            <see cref="P:Libplanet.Net.AppProtocolVersionOptions.TrustedAppProtocolVersionSigners"/>.  Does nothing by default.
+            </summary>
+        </member>
         <member name="T:Libplanet.Net.BlockCandidateTable`1">
             <summary>
             A class which table data structure that stores <see cref="T:Libplanet.Blocks.Block`1"/>s
@@ -335,6 +364,31 @@
             </param>
             <param name="localVersion">The currently running application's
             <see cref="T:Libplanet.Net.AppProtocolVersion"/>.</param>
+        </member>
+        <member name="T:Libplanet.Net.HostOptions">
+            <summary>
+            Various options for determining <see cref="T:Libplanet.Net.Swarm`1"/>'s <see cref="T:Libplanet.Net.BoundPeer"/> identity.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.HostOptions.Host">
+            <summary>
+            The hostname to be a part of a public endpoint that peers may use when
+            they connect to this node.  This is set to <see langword="null"/> when
+            a non-empty <see cref="P:Libplanet.Net.HostOptions.IceServers"/> is provided.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.HostOptions.IceServers">
+            <summary>
+            The set of
+            <a href="https://en.wikipedia.org/wiki/Interactive_Connectivity_Establishment">ICE</a>
+            servers to use for TURN/STUN to traverse NAT.  This is empty when <see cref="P:Libplanet.Net.HostOptions.Host"/>
+            is provided.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.HostOptions.Port">
+            <summary>
+            The port number to use for the host.  If set to zero, a free port will be assigned.
+            </summary>
         </member>
         <member name="M:Libplanet.Net.IceServer.#ctor(System.Uri)">
             <summary>
@@ -1396,7 +1450,7 @@
             operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
         </member>
-        <member name="M:Libplanet.Net.Swarm`1.#ctor(Libplanet.Blockchain.BlockChain{`0},Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,System.Int32,System.String,System.Nullable{System.Int32},System.Collections.Generic.IEnumerable{Libplanet.Net.IceServer},Libplanet.Net.DifferentAppProtocolVersionEncountered,System.Collections.Generic.IEnumerable{Libplanet.Crypto.PublicKey},Libplanet.Net.SwarmOptions)">
+        <member name="M:Libplanet.Net.Swarm`1.#ctor(Libplanet.Blockchain.BlockChain{`0},Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersionOptions,Libplanet.Net.HostOptions,Libplanet.Net.SwarmOptions)">
             <summary>
             Creates a <see cref="T:Libplanet.Net.Swarm`1"/>.  This constructor in only itself does not start
             any communication with the network.
@@ -1404,23 +1458,11 @@
             <param name="blockChain">A blockchain to publicize on the network.</param>
             <param name="privateKey">A private key to sign messages.  The public part of
             this key become a part of its end address for being pointed by peers.</param>
-            <param name="appProtocolVersion">An app protocol to comply.</param>
-            <param name="workers">The number of background workers (i.e., threads).</param>
-            <param name="host">A hostname to be a part of a public endpoint, that peers use when
-            they connect to this node.  Note that this is not a hostname to listen to;
-            <see cref="T:Libplanet.Net.Swarm`1"/> always listens to 0.0.0.0 &amp; ::/0.</param>
-            <param name="listenPort">A port number to listen to.</param>
-            <param name="iceServers">
-            <a href="https://en.wikipedia.org/wiki/Interactive_Connectivity_Establishment">ICE</a>
-            servers to use for TURN/STUN.  Purposes to traverse NAT.</param>
-            <param name="differentAppProtocolVersionEncountered">A delegate called back when this
-            node encounters a peer with one different from <paramref name="appProtocolVersion"/>,
-            and their version is signed by a trusted party (i.e.,
-            <paramref name="trustedAppProtocolVersionSigners"/>).
-            </param>
-            <param name="trustedAppProtocolVersionSigners"><see cref="T:Libplanet.Crypto.PublicKey"/>s of parties who
-            signed <see cref="P:Libplanet.Net.Swarm`1.AppProtocolVersion"/>s to trust.  To trust any party, pass
-            <see langword="null"/>, which is the default.</param>
+            <param name="appProtocolVersionOptions">The <see cref="T:Libplanet.Net.AppProtocolVersionOptions"/>
+            to use when handling an <see cref="P:Libplanet.Net.Swarm`1.AppProtocolVersion"/> attached to
+            a <see cref="T:Libplanet.Net.Messages.Message"/>.</param>
+            <param name="hostOptions">The <see cref="T:Libplanet.Net.HostOptions"/> to use when binding
+            to the network.</param>
             <param name="options">Options for <see cref="T:Libplanet.Net.Swarm`1"/>.</param>
         </member>
         <member name="P:Libplanet.Net.Swarm`1.LastMessageTimestamp">
@@ -2088,38 +2130,21 @@
             Implementation of <see cref="T:Libplanet.Net.Transports.ITransport"/> interface using NetMQ.
             </summary>
         </member>
-        <member name="M:Libplanet.Net.Transports.NetMQTransport.#ctor(Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,System.Collections.Immutable.IImmutableSet{Libplanet.Crypto.PublicKey},System.Int32,System.String,System.Nullable{System.Int32},System.Collections.Generic.IEnumerable{Libplanet.Net.IceServer},Libplanet.Net.DifferentAppProtocolVersionEncountered,System.Nullable{System.TimeSpan})">
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.#ctor(Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersionOptions,Libplanet.Net.HostOptions,System.Nullable{System.TimeSpan})">
             <summary>
             Creates a <see cref="T:Libplanet.Net.Transports.NetMQTransport"/> instance.
             </summary>
             <param name="privateKey"><see cref="T:Libplanet.Crypto.PrivateKey"/> of the transport layer.</param>
-            <param name="appProtocolVersion"><see cref="T:Libplanet.Net.AppProtocolVersion"/>-typed
-            version of the transport layer.</param>
-            <param name="trustedAppProtocolVersionSigners"><see cref="T:Libplanet.Crypto.PublicKey"/>s of parties
-            to trust <see cref="T:Libplanet.Net.AppProtocolVersion"/>s they signed.  To trust any party, pass
-            <see langword="null"/>.</param>
-            <param name="workers">The number of background workers (i.e., threads).</param>
-            <param name="host">A hostname to be a part of a public endpoint, that peers use when
-            they connect to this node.  Note that this is not a hostname to listen to;
-            <see cref="T:Libplanet.Net.Transports.NetMQTransport"/> always listens to 0.0.0.0 &amp; ::/0.</param>
-            <param name="listenPort">A port number to listen to.</param>
-            <param name="iceServers">
-            <a href="https://en.wikipedia.org/wiki/Interactive_Connectivity_Establishment">ICE</a>
-            servers to use for TURN/STUN.  Purposes to traverse NAT.</param>
-            <param name="differentAppProtocolVersionEncountered">A delegate called back when a peer
-            with one different from <paramref name="appProtocolVersion"/>, and their version is
-            signed by a trusted party (i.e., <paramref name="trustedAppProtocolVersionSigners"/>).
-            If this callback returns <see langword="false"/>, an encountered peer is ignored.
-            If this callback is omitted, all peers with different <see cref="T:Libplanet.Net.AppProtocolVersion"/>s
-            are ignored.
-            </param>
+            <param name="appProtocolVersionOptions">The <see cref="T:Libplanet.Net.AppProtocolVersionOptions"/>
+            to use when handling an <see cref="T:Libplanet.Net.AppProtocolVersion"/> attached to
+            a <see cref="T:Libplanet.Net.Messages.Message"/>.</param>
+            <param name="hostOptions">The <see cref="T:Libplanet.Net.HostOptions"/> to use when binding
+            to the network.</param>
             <param name="messageTimestampBuffer">The amount in <see cref="T:System.TimeSpan"/>
             that is allowed for the timestamp of a <see cref="T:Libplanet.Net.Messages.Message"/> to differ from
             the current time of a local node.  Every <see cref="T:Libplanet.Net.Messages.Message"/> with its timestamp
             differing greater than <paramref name="messageTimestampBuffer"/> will be ignored.
             If <see langword="null"/>, any timestamp is accepted.</param>
-            <exception cref="T:System.ArgumentException">Thrown when both <paramref name="host"/> and
-            <paramref name="iceServers"/> are <see langword="null"/>.</exception>
         </member>
         <member name="P:Libplanet.Net.Transports.NetMQTransport.ProcessMessageHandler">
             <inheritdoc/>
@@ -2133,38 +2158,21 @@
         <member name="P:Libplanet.Net.Transports.NetMQTransport.Running">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Net.Transports.NetMQTransport.Create(Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,System.Collections.Immutable.IImmutableSet{Libplanet.Crypto.PublicKey},System.Int32,System.String,System.Nullable{System.Int32},System.Collections.Generic.IEnumerable{Libplanet.Net.IceServer},Libplanet.Net.DifferentAppProtocolVersionEncountered,System.Nullable{System.TimeSpan})">
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.Create(Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersionOptions,Libplanet.Net.HostOptions,System.Nullable{System.TimeSpan})">
             <summary>
             Creates an initialized <see cref="T:Libplanet.Net.Transports.NetMQTransport"/> instance.
             </summary>
             <param name="privateKey"><see cref="T:Libplanet.Crypto.PrivateKey"/> of the transport layer.</param>
-            <param name="appProtocolVersion"><see cref="T:Libplanet.Net.AppProtocolVersion"/>-typed
-            version of the transport layer.</param>
-            <param name="trustedAppProtocolVersionSigners"><see cref="T:Libplanet.Crypto.PublicKey"/>s of parties
-            to trust <see cref="T:Libplanet.Net.AppProtocolVersion"/>s they signed.  To trust any party, pass
-            <see langword="null"/>.</param>
-            <param name="workers">The number of background workers (i.e., threads).</param>
-            <param name="host">A hostname to be a part of a public endpoint, that peers use when
-            they connect to this node.  Note that this is not a hostname to listen to;
-            <see cref="T:Libplanet.Net.Transports.NetMQTransport"/> always listens to 0.0.0.0 &amp; ::/0.</param>
-            <param name="listenPort">A port number to listen to.</param>
-            <param name="iceServers">
-            <a href="https://en.wikipedia.org/wiki/Interactive_Connectivity_Establishment">ICE</a>
-            servers to use for TURN/STUN.  Purposes to traverse NAT.</param>
-            <param name="differentAppProtocolVersionEncountered">A delegate called back when a peer
-            with one different from <paramref name="appProtocolVersion"/>, and their version is
-            signed by a trusted party (i.e., <paramref name="trustedAppProtocolVersionSigners"/>).
-            If this callback returns <see langword="false"/>, an encountered peer is ignored.
-            If this callback is omitted, all peers with different <see cref="T:Libplanet.Net.AppProtocolVersion"/>s
-            are ignored.
-            </param>
+            <param name="appProtocolVersionOptions">The <see cref="T:Libplanet.Net.AppProtocolVersionOptions"/>
+            to use when handling an <see cref="T:Libplanet.Net.AppProtocolVersion"/> attached to
+            a <see cref="T:Libplanet.Net.Messages.Message"/>.</param>
+            <param name="hostOptions">The <see cref="T:Libplanet.Net.HostOptions"/> to use when binding
+            to the network.</param>
             <param name="messageTimestampBuffer">The amount in <see cref="T:System.TimeSpan"/>
             that is allowed for the timestamp of a <see cref="T:Libplanet.Net.Messages.Message"/> to differ from
             the current time of a local node.  Every <see cref="T:Libplanet.Net.Messages.Message"/> with its timestamp
             differing greater than <paramref name="messageTimestampBuffer"/> will be ignored.
             If <see langword="null"/>, any timestamp is accepted.</param>
-            <exception cref="T:System.ArgumentException">Thrown when both <paramref name="host"/> and
-            <paramref name="iceServers"/> are <see langword="null"/>.</exception>
             <returns>
             An awaitable <see cref="T:System.Threading.Tasks.Task"/> returning a <see cref="T:Libplanet.Net.Transports.NetMQTransport"/>
             when awaited that is ready to send request <see cref="T:Libplanet.Net.Messages.Message"/>s and

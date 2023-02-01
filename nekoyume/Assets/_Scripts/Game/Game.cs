@@ -124,6 +124,7 @@ namespace Nekoyume.Game
             );
 
             Debug.Log("[Game] Awake() CommandLineOptions loaded");
+            Debug.Log($"APV: {_options.AppProtocolVersion}");
 
             if (_options.RpcClient)
             {

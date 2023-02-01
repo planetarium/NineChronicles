@@ -21,6 +21,8 @@ namespace Nekoyume.Game.Character
 
     public class ArenaCharacter : Character
     {
+        public Model.ArenaCharacter CharacterModel { get; set; }
+
         [SerializeField]
         private CharacterAppearance appearance;
 
@@ -31,7 +33,6 @@ namespace Nekoyume.Game.Character
         private float AttackTime;
         private float CriticalAttackTime;
 
-        private Model.ArenaCharacter _characterModel;
         private ArenaCharacter _target;
         private ArenaBattle _arenaBattle;
         private ArenaActionParams _runningAction;
@@ -97,15 +98,15 @@ namespace Nekoyume.Game.Character
 
         public void Spawn(Model.ArenaCharacter model)
         {
-            _characterModel = model;
-            Id = _characterModel.Id;
-            SizeType = _characterModel.SizeType;
-            _currentHp = _characterModel.HP;
+            CharacterModel = model;
+            Id = CharacterModel.Id;
+            SizeType = CharacterModel.SizeType;
+            _currentHp = CharacterModel.HP;
             UpdateStatusUI();
-            _arenaBattle.ShowStatus(_characterModel.IsEnemy);
+            _arenaBattle.ShowStatus(CharacterModel.IsEnemy);
             Animator.Run();
             var endPos = appearance.BoxCollider.size.x * 0.5f;
-            transform.DOLocalMoveX(_characterModel.IsEnemy ? endPos : -endPos, RunDuration)
+            transform.DOLocalMoveX(CharacterModel.IsEnemy ? endPos : -endPos, RunDuration)
                 .SetEase(Ease.OutSine)
                 .OnComplete(() =>
                 {
@@ -120,15 +121,15 @@ namespace Nekoyume.Game.Character
                 return;
 
             _hudContainer.UpdatePosition(ActionCamera.instance.Cam, gameObject, HUDOffset);
-            _arenaBattle.UpdateStatus(_characterModel.IsEnemy, _currentHp, _characterModel.HP, _characterModel.Buffs);
+            _arenaBattle.UpdateStatus(CharacterModel.IsEnemy, _currentHp, CharacterModel.HP, CharacterModel.Buffs);
 
 
             // delete existing vfx
             var removedVfx = new List<int>();
             foreach (var buff in _persistingVFXMap.Keys)
             {
-                if (_characterModel.IsDead ||
-                    !_characterModel.Buffs.Keys.Contains(buff))
+                if (CharacterModel.IsDead ||
+                    !CharacterModel.Buffs.Keys.Contains(buff))
                 {
                     _persistingVFXMap[buff].LazyStop();
                     removedVfx.Add(buff);
@@ -181,7 +182,7 @@ namespace Nekoyume.Game.Character
             var pos = transform.position;
             pos.x -= 0.2f;
             pos.y += 0.32f;
-            var group = _characterModel.IsEnemy
+            var group = CharacterModel.IsEnemy
                 ? DamageText.TextGroupState.Damage
                 : DamageText.TextGroupState.Basic;
 
@@ -269,6 +270,7 @@ namespace Nekoyume.Game.Character
 
         public IEnumerator CoProcessDamage(ArenaSkill.ArenaSkillInfo info, bool isConsiderElementalType)
         {
+            CharacterModel = info.Target;
             var dmg = info.Effect;
 
             var position = transform.TransformPoint(0f, 1.7f, 0f);
@@ -276,13 +278,13 @@ namespace Nekoyume.Game.Character
 
             if (dmg <= 0)
             {
-                var index = _characterModel.IsEnemy ? 1 : 0;
+                var index = CharacterModel.IsEnemy ? 1 : 0;
                 MissText.Show(ActionCamera.instance.Cam, position, force, index);
                 yield break;
             }
 
             var value = _currentHp - dmg;
-            _currentHp = Mathf.Clamp(value, 0, _characterModel.HP);
+            _currentHp = Mathf.Clamp(value, 0, CharacterModel.HP);
 
             UpdateStatusUI();
             PopUpDmg(position, force, info, isConsiderElementalType);
@@ -295,7 +297,7 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            _currentHp = Math.Min(_currentHp + info.Effect, _characterModel.HP);
+            _currentHp = Math.Min(_currentHp + info.Effect, CharacterModel.HP);
 
             var position = transform.TransformPoint(0f, 1.7f, 0f);
             var force = new Vector3(-0.1f, 0.5f);
@@ -317,16 +319,17 @@ namespace Nekoyume.Game.Character
             if (effect.IsPersisting)
             {
                 target.AttachPersistingVFX(buff.BuffInfo.GroupId, effect);
+                StartCoroutine(BuffController.CoChaseTarget(effect, target.transform));
             }
 
-            target._characterModel = info.Target;
+            target.CharacterModel = info.Target;
         }
 
         private void AttachPersistingVFX(int groupId, BuffVFX vfx)
         {
             if (_persistingVFXMap.TryGetValue(groupId, out var prevVFX))
             {
-                prevVFX.LazyStop();
+                prevVFX.Stop();
                 _persistingVFXMap.Remove(groupId);
             }
 

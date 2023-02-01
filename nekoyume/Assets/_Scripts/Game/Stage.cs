@@ -1209,22 +1209,22 @@ namespace Nekoyume.Game
 
             if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuShop)
             {
-                menuNames.Add(nameof(Shop));
+                menuNames.Add("UI_MAIN_MENU_SHOP");
             }
 
             if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuRankingBoard)
             {
-                menuNames.Add(nameof(ArenaJoin));
+                menuNames.Add("UI_MAIN_MENU_RANKING");
             }
 
             if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuMimisbrunnr)
             {
-                menuNames.Add("Mimisbrunnr");
+                menuNames.Add("UI_MAIN_MENU_MIMISBRUNNR");
             }
 
             if (stageId == GameConfig.RequireClearedStageLevel.ActionsInRaid)
             {
-                menuNames.Add(nameof(Raid));
+                menuNames.Add("UI_WORLD_BOSS");
             }
 
             var celebratesPopup = Widget.Find<CelebratesPopup>();

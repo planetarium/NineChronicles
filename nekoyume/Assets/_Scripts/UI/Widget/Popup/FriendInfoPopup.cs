@@ -222,8 +222,8 @@ namespace Nekoyume.UI
 
         private void UpdateTitle(BattleType battleType)
         {
-            var costumes = _costumes[battleType];
             Destroy(_cachedCharacterTitle);
+            var costumes = _costumes[battleType];
             var title = costumes.FirstOrDefault(costume => costume.ItemSubType == ItemSubType.Title);
             if (title == null)
             {

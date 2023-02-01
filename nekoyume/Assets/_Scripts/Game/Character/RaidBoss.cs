@@ -1,18 +1,22 @@
-using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Skill;
-using System;
+using Nekoyume.TableData;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.Timeline;
+using Skill = Nekoyume.Model.BattleStatus.Skill;
 
 namespace Nekoyume.Game.Character
 {
     public class RaidBoss : RaidCharacter
     {
         [SerializeField]
+        private float buffVFXInterval = 0.5f;
+
+        [SerializeField]
         private SpineController controller;
+
+        private IEnumerator<Skill.SkillInfo> _skillEnumerator;
+        private SkillSheet.Row _skillRow;
 
         protected override void Awake()
         {
@@ -40,7 +44,7 @@ namespace Nekoyume.Game.Character
         }
 
         public override void ProcessDamage(
-            Model.BattleStatus.Skill.SkillInfo info,
+            Skill.SkillInfo info,
             bool isConsiderElementalType)
         {
             var dmg = info.Effect;
@@ -53,15 +57,19 @@ namespace Nekoyume.Game.Character
             base.ProcessDamage(info, isConsiderElementalType);
         }
 
-        public void ProcessSkill(
-            int skillId,
-            IEnumerable<Model.BattleStatus.Skill.SkillInfo> infos)
+        public void SetSkillInfos(SkillSheet.Row skillRow, IEnumerable<Skill.SkillInfo> infos)
         {
-            if (!Game.instance.TableSheets.SkillSheet.TryGetValue(skillId, out var skillRow))
-            {
-                return;
-            }
+            _skillRow = skillRow;
+            _skillEnumerator = infos.GetEnumerator();
+        }
 
+        public void ProceedSkill(bool playAll)
+        {
+            StartCoroutine(CoProcessSkill(_skillRow, playAll));
+        }
+
+        public IEnumerator CoProcessSkill(SkillSheet.Row skillRow, bool playAll)
+        {
             switch (skillRow.SkillCategory)
             {
                 case SkillCategory.Buff:
@@ -73,21 +81,65 @@ namespace Nekoyume.Game.Character
                 case SkillCategory.SpeedBuff:
                 case SkillCategory.HitBuff:
                 case SkillCategory.DamageReductionBuff:
-                    foreach (var info in infos)
+                    if (playAll)
                     {
+                        while (_skillEnumerator.MoveNext())
+                        {
+                            var info = _skillEnumerator.Current;
+                            var buffTarget = info.Target.Id == Id ? this : _target;
+                            ProcessBuff(buffTarget, info);
+                            yield return new WaitForSeconds(buffVFXInterval);
+                        }
+                    }
+                    else
+                    {
+                        _skillEnumerator.MoveNext();
+                        var info = _skillEnumerator.Current;
                         var buffTarget = info.Target.Id == Id ? this : _target;
                         ProcessBuff(buffTarget, info);
+                        yield return new WaitForSeconds(buffVFXInterval);
                     }
                     break;
                 case SkillCategory.Heal:
-                    foreach (var info in infos)
+                    if (playAll)
                     {
+                        while (_skillEnumerator.MoveNext())
+                        {
+                            var info = _skillEnumerator.Current;
+                            ProcessHeal(info);
+                        }
+                    }
+                    else
+                    {
+                        _skillEnumerator.MoveNext();
+                        var info = _skillEnumerator.Current;
                         ProcessHeal(info);
                     }
                     break;
                 default:
-                    foreach (var info in infos)
+                    if (playAll)
                     {
+                        while (_skillEnumerator.MoveNext())
+                        {
+                            var info = _skillEnumerator.Current;
+                            if (info.Buff == null)
+                            {
+                                var attackTarget = info.Target.Id == Id ? this : _target;
+                                ProcessAttack(attackTarget, info, true);
+                            }
+                            else
+                            {
+                                var buffTarget = info.Target.Id == Id ? this : _target;
+                                ProcessBuff(buffTarget, info);
+                                yield return new WaitForSeconds(buffVFXInterval);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        _skillEnumerator.MoveNext();
+                        var info = _skillEnumerator.Current;
+
                         if (info.Buff == null)
                         {
                             var attackTarget = info.Target.Id == Id ? this : _target;
@@ -97,6 +149,7 @@ namespace Nekoyume.Game.Character
                         {
                             var buffTarget = info.Target.Id == Id ? this : _target;
                             ProcessBuff(buffTarget, info);
+                            yield return new WaitForSeconds(buffVFXInterval);
                         }
                     }
                     break;
