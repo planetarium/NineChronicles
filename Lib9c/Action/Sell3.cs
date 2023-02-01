@@ -16,11 +16,15 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("sell3")]
-    public class Sell3 : GameAction
+    public class Sell3 : GameAction, ISellV1
     {
         public Address sellerAvatarAddress;
         public Guid itemId;
         public FungibleAssetValue price;
+
+        public Address SellerAvatarAddress => sellerAvatarAddress;
+        public Guid ItemId => itemId;
+        public FungibleAssetValue Price => price;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {
@@ -50,7 +54,7 @@ namespace Nekoyume.Action
             CheckObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, sellerAvatarAddress);
-            
+
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
@@ -113,7 +117,7 @@ namespace Nekoyume.Action
             if (avatarState.inventory.TryGetNonFungibleItem<Equipment>(itemId, out var equipment))
             {
                 CheckRequiredBlockIndex(equipment);
-                // FIXME: Use `equipment.Unequip()` 
+                // FIXME: Use `equipment.Unequip()`
                 equipment.equipped = false;
                 shopItem = PopShopItemFromInventory(equipment, null);
             }
