@@ -41,33 +41,32 @@ namespace Lib9c.Tests.Helper
                     null,
                     0,
                     0,
-                    0));
+                    1));
+        }
+
+        [Theory]
+        [InlineData(-1, 0, 0)]
+        [InlineData(null, 0, 0)]
+        [InlineData(null, -1, 0)]
+        [InlineData(null, 0, -1)]
+        public void CalculateEnhancementCost_Throw_ArgumentException_PetId_PetLevel(
+            int? petId,
+            int currentLevel,
+            int targetLevel)
+        {
+            petId ??= _petCostSheet.First!.PetId;
+            Assert.Throws<ArgumentException>(() =>
+                PetHelper.CalculateEnhancementCost(
+                    _petCostSheet,
+                    petId.Value,
+                    currentLevel,
+                    targetLevel));
         }
 
         [Fact]
-        public void CalculateEnhancementCost_Throw_ArgumentException()
+        public void CalculateEnhancementCost_Throw_ArgumentException_Undefined_PetLevel()
         {
             var row = _petCostSheet.First!;
-            var petId = row.PetId;
-            Assert.Throws<ArgumentException>(() =>
-                PetHelper.CalculateEnhancementCost(
-                    _petCostSheet,
-                    -1,
-                    0,
-                    1));
-            Assert.Throws<ArgumentException>(() =>
-                PetHelper.CalculateEnhancementCost(
-                    _petCostSheet,
-                    petId,
-                    -1,
-                    1));
-            Assert.Throws<ArgumentException>(() =>
-                PetHelper.CalculateEnhancementCost(
-                    _petCostSheet,
-                    petId,
-                    0,
-                    -1));
-
             var cost = row.Cost.LastOrDefault(e =>
                 e.NcgQuantity > 0 ||
                 e.SoulStoneQuantity > 0);
@@ -75,33 +74,9 @@ namespace Lib9c.Tests.Helper
             Assert.Throws<ArgumentException>(() =>
                 PetHelper.CalculateEnhancementCost(
                     _petCostSheet,
-                    petId,
+                    row.PetId,
                     cost.Level,
                     cost.Level + 1));
-        }
-
-        [Fact]
-        public void CalculateEnhancementCost_Throw_ArgumentOutOfRangeException()
-        {
-            var row = _petCostSheet.First!;
-            var petId = row.PetId;
-            Assert.Throws<ArgumentOutOfRangeException>(() =>
-                PetHelper.CalculateEnhancementCost(
-                    _petCostSheet,
-                    petId,
-                    2,
-                    1));
-
-            var cost = row.Cost.FirstOrDefault(e =>
-                e.NcgQuantity > 0 ||
-                e.SoulStoneQuantity > 0);
-            Assert.NotNull(cost);
-            Assert.Throws<ArgumentOutOfRangeException>(() =>
-                PetHelper.CalculateEnhancementCost(
-                    _petCostSheet,
-                    petId,
-                    cost.Level + 1,
-                    cost.Level));
         }
     }
 }

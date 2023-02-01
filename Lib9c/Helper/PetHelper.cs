@@ -29,10 +29,16 @@ namespace Nekoyume.Helper
                     $"{nameof(currentLevel)} must be greater than or equal to 0.");
             }
 
-            if (targetLevel < 0)
+            if (targetLevel < 1)
             {
                 throw new ArgumentException(
                     $"{nameof(targetLevel)} must be greater than or equal to 0.");
+            }
+
+            if (currentLevel >= targetLevel)
+            {
+                throw new ArgumentException(
+                    $"{nameof(currentLevel)} must be less than {nameof(targetLevel)}.");
             }
 
             if (!costSheet.TryGetValue(petId, out var row))
