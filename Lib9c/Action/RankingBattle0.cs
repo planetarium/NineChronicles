@@ -18,7 +18,7 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("ranking_battle")]
-    public class RankingBattle0 : GameAction
+    public class RankingBattle0 : GameAction, IRankingBattleV1
     {
         public const int StageId = 999999;
         public static readonly BigInteger EntranceFee = 100;
@@ -30,6 +30,13 @@ namespace Nekoyume.Action
         public List<Guid> equipmentIds;
         public List<Guid> consumableIds;
         public BattleLog Result { get; private set; }
+
+        Address IRankingBattleV1.AvatarAddress => AvatarAddress;
+        Address IRankingBattleV1.EnemyAddress => EnemyAddress;
+        Address IRankingBattleV1.WeeklyArenaAddress => WeeklyArenaAddress;
+        IEnumerable<int> IRankingBattleV1.CostumeIds => costumeIds;
+        IEnumerable<Guid> IRankingBattleV1.EquipmentIds => equipmentIds;
+        IEnumerable<Guid> IRankingBattleV1.ConsumableIds => consumableIds;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
