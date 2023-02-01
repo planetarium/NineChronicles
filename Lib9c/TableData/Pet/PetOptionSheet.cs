@@ -14,8 +14,8 @@ namespace Nekoyume.TableData.Pet
         {
             public class PetOptionInfo
             {
-                public PetOptionType OptionType { get; set; }
-                public decimal OptionValue { get; set; }
+                public PetOptionType OptionType { get; }
+                public decimal OptionValue { get; }
 
                 public PetOptionInfo(
                     PetOptionType optionType,
