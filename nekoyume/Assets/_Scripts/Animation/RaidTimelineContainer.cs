@@ -22,6 +22,9 @@ namespace Nekoyume
         }
 
         [SerializeField]
+        private List<Transform> vfxList = null;
+
+        [SerializeField]
         private Button skipButton = null;
 
         [SerializeField]
@@ -156,6 +159,14 @@ namespace Nekoyume
                 -transform.localScale.x,
                 transform.localScale.y,
                 transform.localScale.z);
+
+            foreach (var vfx in vfxList)
+            {
+                vfx.localScale = new Vector3(
+                    -vfx.localScale.x,
+                    vfx.localScale.y,
+                    vfx.localScale.z);
+            }
         }
 
         public void AttackPoint()

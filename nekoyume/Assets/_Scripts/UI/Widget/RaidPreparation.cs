@@ -228,7 +228,7 @@ namespace Nekoyume.UI
                                 () =>
                                 {
                                     Find<Grind>().Show();
-                                    Find<WorldBoss>().Close();
+                                    Find<WorldBoss>().ForceClose();
                                     Close();
                                 });
                         }
@@ -359,7 +359,7 @@ namespace Nekoyume.UI
 
             ActionManager.Instance.Raid(costumes, equipments, consumables, runeInfos, payNcg).Subscribe();
             Find<LoadingScreen>().Show();
-            Find<WorldBoss>().Close();
+            Find<WorldBoss>().ForceClose(true);
             Close();
         }
 
@@ -393,7 +393,7 @@ namespace Nekoyume.UI
 
         private void GoToMarket()
         {
-            Find<WorldBoss>().Close(true);
+            Find<WorldBoss>().ForceClose();
             Find<RaidPreparation>().Close(true);
             Find<ShopBuy>().Show();
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);

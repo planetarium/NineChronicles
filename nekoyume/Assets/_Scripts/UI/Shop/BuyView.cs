@@ -149,6 +149,7 @@ namespace Nekoyume
 
         public bool IsFocused => inputField.isFocused;
         public bool IsDoneLoadItem { get; set; }
+        public bool IsCartEmpty => !_selectedItems.Any();
 
         public void ClearSelectedItems()
         {
@@ -188,7 +189,6 @@ namespace Nekoyume
 
             showCartButton.onClick.AddListener(() =>
             {
-                cartView.gameObject.SetActive(true);
                 _mode.SetValueAndForceNotify(BuyMode.Multiple);
             });
 
@@ -316,6 +316,15 @@ namespace Nekoyume
             _mode.Subscribe(x =>
             {
                 ClearSelectedItems();
+                switch (_mode.Value)
+                {
+                    case BuyMode.Single:
+                        cartView.gameObject.SetActive(false);
+                        break;
+                    case BuyMode.Multiple:
+                        cartView.gameObject.SetActive(true);
+                        break;
+                }
             }).AddTo(gameObject);
         }
 
@@ -349,6 +358,7 @@ namespace Nekoyume
                     break;
 
                 case BuyMode.Multiple:
+                    cartView.gameObject.SetActive(true);
                     var selectedItem = _selectedItems.FirstOrDefault(x =>
                         x.OrderDigest.OrderId.Equals(item.OrderDigest.OrderId));
                     if (selectedItem == null)

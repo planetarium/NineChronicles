@@ -449,7 +449,7 @@ namespace Nekoyume.BlockChain
             _actionRenderer.EveryRender<ClaimRaidReward>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseClaimRaidReward)
+                .Subscribe(ResponseClaimRaidRewardAsync)
                 .AddTo(_disposables);
         }
 
@@ -2403,13 +2403,14 @@ namespace Nekoyume.BlockChain
                 killRewards);
         }
 
-        private void ResponseClaimRaidReward(ActionBase.ActionEvaluation<ClaimRaidReward> eval)
+        private async void ResponseClaimRaidRewardAsync(ActionBase.ActionEvaluation<ClaimRaidReward> eval)
         {
             if (eval.Exception is not null)
             {
                 return;
             }
 
+            await States.Instance.InitRuneStoneBalance();
             UpdateCrystalBalance(eval);
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             WorldBossStates.SetReceivingGradeRewards(avatarAddress, false);
