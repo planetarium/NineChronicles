@@ -9,11 +9,22 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>$(NoWarn);CS0162;CS8032;CS0618;CS0612;SYSLIB0011</NoWarn>
     <CodeAnalysisRuleSet>.\Lib9c.Tests.ruleset</CodeAnalysisRuleSet>
+    <Configurations>Debug;Release;DevEx</Configurations>
+    <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
 
   <PropertyGroup Condition="&#xD;&#xA;    '$([System.Runtime.InteropServices.RuntimeInformation]::&#xD;&#xA;      OSArchitecture.ToString())' == 'Arm64' ">
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'DevEx' ">
+    <DebugSymbols Condition=" '$(DebugSymbols)' == '' ">true</DebugSymbols>
+    <Optimize Condition=" '$(Optimize)' == '' ">false</Optimize>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Data/**/*.*" CopyToOutputDirectory="Always" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="DiffPlex" Version="1.7.0" />
@@ -36,13 +47,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Lib9c.DevExtensions\Lib9c.DevExtensions.csproj" />
     <ProjectReference Include="..\Lib9c\Lib9c.csproj" />
     <ProjectReference Include="..\Lib9c.MessagePack\Lib9c.MessagePack.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="Data/**/*.*" CopyToOutputDirectory="Always" />
+  <ItemGroup Condition=" '$(Configuration)' != 'DevEx' ">
+    <!-- NOTE: Lib9c.DevExtensions project will be contained by Lib9c project
+               when the configuration is 'DevEx'.-->
+    <ProjectReference Include="..\Lib9c.DevExtensions\Lib9c.DevExtensions.csproj" />
   </ItemGroup>
 
 </Project>
