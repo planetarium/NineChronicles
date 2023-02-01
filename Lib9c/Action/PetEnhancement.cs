@@ -49,6 +49,17 @@ namespace Nekoyume.Action
             }
 
             var addresses = GetSignerAndOtherAddressesHex(context, AvatarAddress);
+            // NOTE: The `AvatarAddress` must contained in `Signer`'s `AgentState.avatarAddresses`.
+            if (!Addresses.IsContainedInAgent(context.Signer, AvatarAddress))
+            {
+                throw new InvalidActionFieldException(
+                    ActionTypeIdentifier,
+                    addresses,
+                    nameof(AvatarAddress),
+                    $"Signer({context.Signer}) is not contained in" +
+                    $" AvatarAddress({AvatarAddress}).");
+            }
+
             var sheets = states.GetSheets(
                 sheetTypes: new[]
                 {
@@ -144,17 +155,22 @@ namespace Nekoyume.Action
             if (soulStoneQuantity > 0)
             {
                 var soulStoneCost = soulStoneQuantity * soulStoneCurrency;
-                var nowBalance = states.GetBalance(AvatarAddress, soulStoneCurrency);
-                if (nowBalance < soulStoneCost)
+                var currentSoulStone = states.GetBalance(
+                    AvatarAddress,
+                    soulStoneCurrency);
+                if (currentSoulStone < soulStoneCost)
                 {
                     throw new NotEnoughFungibleAssetValueException(
                         ActionTypeIdentifier,
                         GetSignerAndOtherAddressesHex(context, AvatarAddress),
                         soulStoneCost,
-                        nowBalance);
+                        currentSoulStone);
                 }
 
-                states = states.TransferAsset(AvatarAddress, feeStoreAddress, soulStoneCost);
+                states = states.TransferAsset(
+                    AvatarAddress,
+                    feeStoreAddress,
+                    soulStoneCost);
             }
 
             while (petState.Level < TargetLevel)

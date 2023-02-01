@@ -19,7 +19,7 @@ namespace Lib9c.Tests
             Address agentAddress,
             Address avatarAddress,
             IAccountStateDelta initialStatesWithAvatarStateV1,
-            IAccountStateDelta initialStatesWithAvatarStateV2) InitializeState()
+            IAccountStateDelta initialStatesWithAvatarStateV2) InitializeStates()
         {
             IAccountStateDelta states = new State();
             var sheets = TableSheetsImporter.ImportSheets();
@@ -38,7 +38,7 @@ namespace Lib9c.Tests
                 goldCurrencyState.Serialize());
 
             var agentAddr = new PrivateKey().ToAddress();
-            var avatarAddr = new PrivateKey().ToAddress();
+            var avatarAddr = Addresses.GetAvatarAddress(agentAddr, 0);
             var agentState = new AgentState(agentAddr);
             var avatarState = new AvatarState(
                 avatarAddr,

@@ -5,6 +5,7 @@
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
+    using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Exceptions;
@@ -33,7 +34,7 @@
                 _avatarAddr,
                 _initialStatesWithAvatarStateV1,
                 _initialStatesWithAvatarStateV2
-            ) = TestUtils.InitializeState();
+            ) = TestUtils.InitializeStates();
             _targetPetId = tableSheets.PetSheet.First!.Id;
             var firstRound = tableSheets.ArenaSheet.OrderedList!
                 .SelectMany(row => row.Round)
@@ -68,12 +69,60 @@
                 targetPetLevel);
         }
 
+        [Fact]
+        public void Execute_Throw_InvalidActionFieldException_AgentAddress()
+        {
+            var invalidAgentAddr = new PrivateKey().ToAddress();
+            Assert.Throws<InvalidActionFieldException>(() =>
+                Execute(
+                    _initialStatesWithAvatarStateV1,
+                    _firstRoundStartBlockIndex,
+                    invalidAgentAddr,
+                    _avatarAddr,
+                    _targetPetId,
+                    0,
+                    1));
+            Assert.Throws<InvalidActionFieldException>(() =>
+                Execute(
+                    _initialStatesWithAvatarStateV2,
+                    _firstRoundStartBlockIndex,
+                    invalidAgentAddr,
+                    _avatarAddr,
+                    _targetPetId,
+                    0,
+                    1));
+        }
+
+        [Fact]
+        public void Execute_Throw_InvalidActionFieldException_AvatarAddress()
+        {
+            var invalidAvatarAddr = new PrivateKey().ToAddress();
+            Assert.Throws<InvalidActionFieldException>(() =>
+                Execute(
+                    _initialStatesWithAvatarStateV1,
+                    _firstRoundStartBlockIndex,
+                    _agentAddr,
+                    invalidAvatarAddr,
+                    _targetPetId,
+                    0,
+                    1));
+            Assert.Throws<InvalidActionFieldException>(() =>
+                Execute(
+                    _initialStatesWithAvatarStateV2,
+                    _firstRoundStartBlockIndex,
+                    _agentAddr,
+                    invalidAvatarAddr,
+                    _targetPetId,
+                    0,
+                    1));
+        }
+
         [Theory]
         [InlineData(0, int.MinValue)]
         [InlineData(0, 0)]
         [InlineData(1, 0)]
         [InlineData(int.MaxValue, int.MaxValue)]
-        public void Execute_Throw_InvalidActionFieldException(
+        public void Execute_Throw_InvalidActionFieldException_PetLevel(
             int currentPetLevel,
             int targetPetLevel)
         {
@@ -210,7 +259,7 @@
                     1,
                     currentPetLevel,
                     targetPetLevel,
-                    false));
+                    mintAssets: false));
             Assert.Throws<NotEnoughFungibleAssetValueException>(() =>
                 Execute(
                     _initialStatesWithAvatarStateV2,
@@ -220,7 +269,7 @@
                     1,
                     currentPetLevel,
                     targetPetLevel,
-                    false));
+                    mintAssets: false));
         }
 
         private static IAccountStateDelta Execute(
