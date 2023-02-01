@@ -16,7 +16,7 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("rapid_combination")]
-    public class RapidCombination0 : GameAction, IRapidCombination
+    public class RapidCombination0 : GameAction, IRapidCombinationV1
     {
         [Serializable]
         public class ResultModel : CombinationConsumable5.ResultModel

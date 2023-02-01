@@ -19,7 +19,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [ActionType("grinding")]
-    public class Grinding : GameAction, IGrinding
+    public class Grinding : GameAction, IGrindingV1
     {
         public const int CostAp = 5;
         public const int Limit = 10;
@@ -27,9 +27,9 @@ namespace Nekoyume.Action
         public List<Guid> EquipmentIds;
         public bool ChargeAp;
 
-        Address IGrinding.AvatarAddress => AvatarAddress;
-        List<Guid> IGrinding.EquipmentsIds => EquipmentIds;
-        bool IGrinding.ChargeAp => ChargeAp;
+        Address IGrindingV1.AvatarAddress => AvatarAddress;
+        List<Guid> IGrindingV1.EquipmentsIds => EquipmentIds;
+        bool IGrindingV1.ChargeAp => ChargeAp;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {

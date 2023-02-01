@@ -4,7 +4,7 @@ using Libplanet;
 
 namespace Nekoyume.Action
 {
-    public interface IRapidCombination
+    public interface IRapidCombinationV1
     {
         Address AvatarAddress { get; }
         int SlotIndex { get; }

@@ -4,7 +4,7 @@ using Libplanet;
 
 namespace Nekoyume.Action
 {
-    public interface IAddActivatedAccount
+    public interface IAddActivatedAccountV1
     {
         Address Address { get; }
     }

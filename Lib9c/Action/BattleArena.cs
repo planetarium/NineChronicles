@@ -30,7 +30,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("battle_arena8")]
-    public class BattleArena : GameAction, IBattleArena
+    public class BattleArena : GameAction, IBattleArenaV1
     {
         public const string PurchasedCountKey = "purchased_count_during_interval";
         public Address myAvatarAddress;

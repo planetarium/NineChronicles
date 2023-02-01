@@ -20,7 +20,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("rapid_combination8")]
-    public class RapidCombination : GameAction, IRapidCombination
+    public class RapidCombination : GameAction, IRapidCombinationV1
     {
         public Address avatarAddress;
         public int slotIndex;

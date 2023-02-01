@@ -23,7 +23,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("join_arena3")]
-    public class JoinArena : GameAction, IJoinArena
+    public class JoinArena : GameAction, IJoinArenaV1
     {
         public Address avatarAddress;
         public int championshipId;

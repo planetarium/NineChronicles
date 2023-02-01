@@ -25,7 +25,7 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockPolicySource.V100360ObsoleteIndex)]
     [ActionType("join_arena2")]
-    public class JoinArena2 : GameAction, IJoinArena
+    public class JoinArena2 : GameAction, IJoinArenaV1
     {
         public Address avatarAddress;
         public int championshipId;

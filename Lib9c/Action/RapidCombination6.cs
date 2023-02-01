@@ -22,7 +22,7 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100310ObsoleteIndex)]
     [ActionType("rapid_combination6")]
-    public class RapidCombination6 : GameAction, IRapidCombination
+    public class RapidCombination6 : GameAction, IRapidCombinationV1
     {
         public Address avatarAddress;
         public int slotIndex;

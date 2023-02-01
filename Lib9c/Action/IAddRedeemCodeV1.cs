@@ -2,7 +2,7 @@
 
 namespace Nekoyume.Action
 {
-    public interface IAddRedeemCode
+    public interface IAddRedeemCodeV1
     {
         string RedeemCsv { get; }
     }

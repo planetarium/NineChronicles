@@ -6,7 +6,7 @@ using Libplanet;
 
 namespace Nekoyume.Action
 {
-    public interface IGrinding
+    public interface IGrindingV1
     {
         Address AvatarAddress { get; }
         List<Guid> EquipmentsIds { get; }

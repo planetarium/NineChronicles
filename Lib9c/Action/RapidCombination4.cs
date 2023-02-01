@@ -16,7 +16,7 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("rapid_combination4")]
-    public class RapidCombination4 : GameAction, IRapidCombination
+    public class RapidCombination4 : GameAction, IRapidCombinationV1
     {
         public Address avatarAddress;
         public int slotIndex;

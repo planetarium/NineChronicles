@@ -3,18 +3,15 @@
 using System;
 using System.Collections.Generic;
 using Libplanet;
-
 using BencodexList = Bencodex.Types.List;
 
 namespace Nekoyume.Action
 {
-    public interface IBattleArena
+    public interface IJoinArenaV1
     {
-        Address MyAvatarAddress { get; }
-        Address EnemyAvatarAddress { get; }
+        Address AvatarAddress { get; }
         int ChampionshipId { get; }
         int Round { get; }
-        int Ticket { get; }
         IEnumerable<Guid> Costumes { get; }
         IEnumerable<Guid> Equipments { get; }
         IEnumerable<BencodexList>? RuneSlotInfos => null;

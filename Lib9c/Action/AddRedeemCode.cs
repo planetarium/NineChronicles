@@ -9,7 +9,7 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("add_redeem_code")]
-    public class AddRedeemCode : GameAction, IAddRedeemCode
+    public class AddRedeemCode : GameAction, IAddRedeemCodeV1
     {
         public string redeemCsv;
 
