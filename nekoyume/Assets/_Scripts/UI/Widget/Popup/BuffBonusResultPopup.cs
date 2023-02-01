@@ -67,7 +67,10 @@ namespace Nekoyume.UI
                         selectedBuffText.text = view.CurrentSkillName;
                         selectedBuffIcon.sprite = view.CurrentIcon;
                         selectedBuffBg.sprite = view.CurrentGradeData.BgSprite;
-                        PlayerPrefs.SetInt("HackAndSlash.SelectedBonusSkillId", row.Id);
+
+                        var avatarAddress = States.Instance.CurrentAvatarState.address;
+                        var key = string.Format("HackAndSlash.SelectedBonusSkillId.{0}", avatarAddress);
+                        PlayerPrefs.SetInt(key, row.Id);
                     }
                 }
             })
@@ -104,13 +107,15 @@ namespace Nekoyume.UI
                 viewParent.SetActive(true);
             }
 
-            var selectedId = PlayerPrefs.GetInt("HackAndSlash.SelectedBonusSkillId", 0);
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var key = string.Format("HackAndSlash.SelectedBonusSkillId.{0}", avatarAddress);
+            var selectedId = PlayerPrefs.GetInt(key, 0);
             var contains = buffs.Any(x => x.Id == selectedId);
             var selectedBuff = contains ?
                 buffs.First(x => x.Id == selectedId) : buffs.First();
             if (!contains)
             {
-                PlayerPrefs.SetInt("HackAndSlash.SelectedBonusSkillId", selectedBuff.Id);
+                PlayerPrefs.SetInt(key, selectedBuff.Id);
             }
 
             OnBuffSelectedSubject.OnNext(selectedBuff);
@@ -120,7 +125,10 @@ namespace Nekoyume.UI
         private void Retry()
         {
             Close();
-            PlayerPrefs.SetInt("HackAndSlash.SelectedBonusSkillId", 0);
+
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var key = string.Format("HackAndSlash.SelectedBonusSkillId.{0}", avatarAddress);
+            PlayerPrefs.SetInt(key, 0);
             var hasEnoughStar =
                 Game.Game.instance.TableSheets.CrystalStageBuffGachaSheet.TryGetValue(_stageId, out var row)
                 && States.Instance.CrystalRandomSkillState.StarCount >= row.MaxStar;

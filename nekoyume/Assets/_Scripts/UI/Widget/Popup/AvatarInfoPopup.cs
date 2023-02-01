@@ -183,9 +183,9 @@ namespace Nekoyume.UI
             arenaButton.HasNotification.Value = false;
             raidButton.HasNotification.Value = false;
 
-            var adventure = States.Instance.ItemSlotStates[BattleType.Adventure];
-            var arena = States.Instance.ItemSlotStates[BattleType.Arena];
-            var raid = States.Instance.ItemSlotStates[BattleType.Raid];
+            var adventure = States.Instance.CurrentItemSlotStates[BattleType.Adventure];
+            var arena = States.Instance.CurrentItemSlotStates[BattleType.Arena];
+            var raid = States.Instance.CurrentItemSlotStates[BattleType.Raid];
             var bestEquipments = information.GetBestEquipments();
             foreach (var guid in bestEquipments)
             {
@@ -211,7 +211,7 @@ namespace Nekoyume.UI
                 var inventoryItems = information.GetBestRunes(battleType);
                 foreach (var inventoryItem in inventoryItems)
                 {
-                    var slots = States.Instance.RuneSlotStates[battleType].GetRuneSlot();
+                    var slots = States.Instance.CurrentRuneSlotStates[battleType].GetRuneSlot();
                     if (!slots.Exists(x => x.RuneId == inventoryItem.RuneState.RuneId))
                     {
                         switch (battleType)

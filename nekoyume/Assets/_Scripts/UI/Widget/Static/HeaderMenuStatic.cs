@@ -434,6 +434,11 @@ namespace Nekoyume.UI.Module
             _toggleNotifications[ToggleType.AvatarInfo].Value = hasNotification;
         }
 
+        public void UpdateMailNotification(bool hasNotification)
+        {
+            _toggleNotifications[ToggleType.Mail].Value = hasNotification;
+        }
+
         public void SetActiveAvatarInfo(bool value)
         {
             var avatarInfo = toggles.FirstOrDefault(x => x.Type == ToggleType.AvatarInfo);

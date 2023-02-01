@@ -16,6 +16,7 @@ using UnityEngine;
 
 namespace Nekoyume.Game
 {
+    using Nekoyume.Helper;
     using Nekoyume.L10n;
     using Nekoyume.UI.Scroller;
     using UniRx;
@@ -129,12 +130,33 @@ namespace Nekoyume.Game
                     {
                         if (container.SkillCutsceneExists(param.SkillId))
                         {
+                            if (!Game.instance.TableSheets.SkillSheet
+                                .TryGetValue(param.SkillId, out var skillRow))
+                            {
+                                continue;
+                            }
+
+                            var playAll = skillRow.SkillType != Model.Skill.SkillType.Attack;
                             container.OnAttackPoint = () =>
                             {
-                                var infos = param.SkillInfos.Concat(param.BuffInfos);
-                                boss.ProcessSkill(param.SkillId, infos);
+                                boss.ProceedSkill(playAll);
                             };
+
+                            var infos = param.SkillInfos;
+                            if (param.BuffInfos is not null &&
+                                param.BuffInfos.Any())
+                            {
+                                infos = infos.Concat(param.BuffInfos);
+                            }
+
+                            boss.SetSkillInfos(skillRow, infos);
                             yield return StartCoroutine(container.CoPlaySkillCutscene(param.SkillId));
+                            if (!playAll)
+                            {
+                                // Show remaining skill infos
+                                boss.ProceedSkill(true);
+                            }
+
                             _player.UpdateStatusUI();
                             _boss.UpdateStatusUI();
                         }
@@ -173,7 +195,11 @@ namespace Nekoyume.Game
             _player.Init(playerDigest, _boss);
             _boss.Init(_player);
 
-            AudioController.instance.PlayMusic(AudioController.MusicCode.WorldBossBattle01);
+            if (WorldBossFrontHelper.TryGetBossData(bossId, out var data))
+            {
+                AudioController.instance.PlayMusic(data.battleMusicName);
+            }
+
             Widget.Find<LoadingScreen>().Close();
             Game.instance.IsInWorld = true;
             _waveTurn = 1;

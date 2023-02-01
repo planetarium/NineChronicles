@@ -228,7 +228,7 @@ namespace Nekoyume.UI
                                 () =>
                                 {
                                     Find<Grind>().Show();
-                                    Find<WorldBoss>().Close();
+                                    Find<WorldBoss>().ForceClose();
                                     Close();
                                 });
                         }
@@ -262,7 +262,7 @@ namespace Nekoyume.UI
 
         private void PracticeRaid()
         {
-            var itemSlotState = States.Instance.ItemSlotStates[BattleType.Raid];
+            var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Raid];
             var equipments = itemSlotState.Equipments;
             var costumes = itemSlotState.Costumes;
             var runeStates = States.Instance.GetEquippedRuneStates(BattleType.Raid);
@@ -283,10 +283,10 @@ namespace Nekoyume.UI
                 tableSheets.CostumeStatSheet
             );
             var log = simulator.Simulate();
-            var slotInfos = States.Instance.RuneSlotStates.TryGetValue(BattleType.Raid, out var state) ?
-                state.GetEquippedRuneSlotInfos() :
-                null;
-            var digest = new ArenaPlayerDigest(avatarState, runeStates);
+            var digest = new ArenaPlayerDigest(avatarState,
+                itemSlotState.Equipments,
+                itemSlotState.Costumes,
+                runeStates);
             var raidStage = Game.Game.instance.RaidStage;
             raidStage.Play(
                 simulator.BossId,
@@ -298,7 +298,7 @@ namespace Nekoyume.UI
                 null,
                 new List<FungibleAssetValue>());
 
-            Find<WorldBoss>().Close();
+            Find<WorldBoss>().ForceClose();
             Close();
         }
 
@@ -350,16 +350,16 @@ namespace Nekoyume.UI
 
         private void Raid(bool payNcg)
         {
-            var itemSlotState = States.Instance.ItemSlotStates[BattleType.Raid];
+            var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Raid];
             var costumes = itemSlotState.Costumes;
             var equipments = itemSlotState.Equipments;
             var consumables = information.GetEquippedConsumables().Select(x => x.ItemId).ToList();
-            var runeInfos = States.Instance.RuneSlotStates[BattleType.Raid]
+            var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.Raid]
                 .GetEquippedRuneSlotInfos();
 
             ActionManager.Instance.Raid(costumes, equipments, consumables, runeInfos, payNcg).Subscribe();
             Find<LoadingScreen>().Show();
-            Find<WorldBoss>().Close();
+            Find<WorldBoss>().ForceClose(true);
             Close();
         }
 
@@ -393,7 +393,7 @@ namespace Nekoyume.UI
 
         private void GoToMarket()
         {
-            Find<WorldBoss>().Close(true);
+            Find<WorldBoss>().ForceClose();
             Find<RaidPreparation>().Close(true);
             Find<ShopBuy>().Show();
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);

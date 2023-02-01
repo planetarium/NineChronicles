@@ -176,6 +176,7 @@ namespace Nekoyume.UI
                 Widget.Create<WorldBossRewardScreen>(),
                 Widget.Create<RuneCombineResultScreen>(),
                 Widget.Create<RuneEnhancementResultScreen>(),
+                Widget.Create<MailRewardScreen>(),
                 Widget.Create<CPScreen>(),
 
                 // 팝업 영역.
@@ -368,6 +369,8 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<ArenaTicketPurchasePopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<ItemMaterialSelectPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<ArenaTicketPopup>());
             yield return null;
 
             // tooltip

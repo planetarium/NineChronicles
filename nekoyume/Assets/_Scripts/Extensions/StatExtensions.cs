@@ -8,7 +8,10 @@ namespace Nekoyume
     {
         public static string DecimalStatToString(this DecimalStat stat)
         {
-            var value = stat.Type == StatType.SPD || stat.Type == StatType.DRR ?
+            var value =
+                stat.Type == StatType.SPD ||
+                stat.Type == StatType.DRR ||
+                stat.Type == StatType.CDMG ?
                 (stat.Value / 100m) : stat.Value;
 
             return $"{stat.Type} +{(float)value}";
@@ -27,7 +30,10 @@ namespace Nekoyume
         {
             if (string.IsNullOrEmpty(format))
             {
-                var str = statType == StatType.SPD || statType == StatType.DRR
+                var str =
+                    statType == StatType.SPD ||
+                    statType == StatType.DRR ||
+                    statType == StatType.CDMG
                     ? (value / 100f).ToString(CultureInfo.InvariantCulture)
                     : value.ToString();
 
@@ -35,7 +41,10 @@ namespace Nekoyume
             }
             else
             {
-                var str = statType == StatType.SPD || statType == StatType.DRR
+                var str =
+                    statType == StatType.SPD ||
+                    statType == StatType.DRR ||
+                    statType == StatType.CDMG
                     ? (value / 100f).ToString(format, CultureInfo.InvariantCulture)
                     : value.ToString();
 

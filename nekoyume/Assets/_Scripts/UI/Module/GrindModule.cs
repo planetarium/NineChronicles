@@ -76,26 +76,24 @@ namespace Nekoyume.UI.Module
 
         private FungibleAssetValue _cachedGrindingRewardCrystal;
 
-        private readonly ReactiveCollection<InventoryItem> _selectedItemsForGrind =
-            new ReactiveCollection<InventoryItem>();
+        private readonly ReactiveCollection<InventoryItem> _selectedItemsForGrind = new();
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposables = new();
 
         private static readonly List<(ItemType type, Predicate<InventoryItem>)>
-            DimConditionPredicateList
-                = new List<(ItemType type, Predicate<InventoryItem>)>
-                {
-                    (ItemType.Equipment, _ => false),
-                    (ItemType.Consumable, _ => true),
-                    (ItemType.Material, _ => true),
-                    (ItemType.Costume, _ => true),
-                };
+            DimConditionPredicateList = new()
+            {
+                (ItemType.Equipment, _ => false),
+                (ItemType.Consumable, _ => true),
+                (ItemType.Material, _ => true),
+                (ItemType.Costume, _ => true),
+            };
 
         private const int LimitGrindingCount = 10;
         private static readonly BigInteger MaximumCrystal = 100_000;
         private static readonly BigInteger MiddleCrystal = 1_000;
 
-        public static readonly Vector3 CrystalMovePositionOffset = new Vector3(0.05f, 0.05f);
+        public static readonly Vector3 CrystalMovePositionOffset = new(0.05f, 0.05f);
         private static readonly int FirstRegister = Animator.StringToHash("FirstRegister");
         private static readonly int StartGrind = Animator.StringToHash("StartGrind");
         private static readonly int EmptySlot = Animator.StringToHash("EmptySlot");
@@ -115,7 +113,7 @@ namespace Nekoyume.UI.Module
             Subscribe();
 
             _selectedItemsForGrind.Clear();
-            grindInventory.SetGrinding(ShowItemTooltip,
+            grindInventory.SetGrinding(OnClickItem,
                 OnUpdateInventory,
                 DimConditionPredicateList,
                 reverseInventoryOrder);
@@ -230,7 +228,7 @@ namespace Nekoyume.UI.Module
                 .Subscribe(_ => grindButton.Interactable = CanGrind)
                 .AddTo(_disposables);
 
-            MonsterCollectionStateSubject.Level
+            StakingLevelSubject.Level
                 .Subscribe(UpdateStakingBonusObject)
                 .AddTo(_disposables);
 
@@ -238,17 +236,16 @@ namespace Nekoyume.UI.Module
                 slot.OnClick.Subscribe(_ => { _selectedItemsForGrind.Remove(slot.AssignedItem); }).AddTo(_disposables));
         }
 
-        private void ShowItemTooltip(InventoryItem model)
+        private void OnClickItem(InventoryItem model)
         {
-            var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
             var isRegister = !_selectedItemsForGrind.Contains(model);
             var isEquipment = model.ItemBase.ItemType == ItemType.Equipment;
             var isEquipped = model.Equipped.Value;
-            var interactable =
+            var isValid =
                 _selectedItemsForGrind.Count < 10 && isEquipment
                 || !isRegister;
 
-            void OnSubmit()
+            if (isValid)
             {
                 if (isEquipped)
                 {
@@ -264,21 +261,15 @@ namespace Nekoyume.UI.Module
                     RegisterToGrindingList(model, isRegister);
                 }
             }
-
-            var blockMessage = model.Equipped.Value ? "ERROR_NOT_GRINDING_EQUIPPED" : "ERROR_NOT_GRINDING_10OVER";
-            var onBlock = new System.Action(() =>
+            else
+            {
+                const string blockMessage = "ERROR_NOT_GRINDING_10OVER";
                 OneLineSystem.Push(MailType.System,
                     L10nManager.Localize(blockMessage),
-                    NotificationCell.NotificationType.Alert));
-            tooltip.Show(
-                model,
-                isRegister
-                    ? L10nManager.Localize("UI_COMBINATION_REGISTER_MATERIAL")
-                    : L10nManager.Localize("UI_COMBINATION_UNREGISTER_MATERIAL"),
-                interactable,
-                OnSubmit,
-                grindInventory.ClearSelectedItem,
-                onBlock);
+                    NotificationCell.NotificationType.Alert);
+            }
+
+            grindInventory.ClearSelectedItem();
         }
 
         private void OnUpdateInventory(Inventory inventory, Nekoyume.Model.Item.Inventory inventoryModel)

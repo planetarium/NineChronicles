@@ -71,6 +71,8 @@ namespace Nekoyume.UI
 
         #region Mono
 
+        private bool _isClosed;
+
         protected virtual void Awake()
         {
             Animator = GetComponent<Animator>();
@@ -105,6 +107,7 @@ namespace Nekoyume.UI
 
         protected virtual void OnEnable()
         {
+            _isClosed = false;
             OnEnableStaticSubject.OnNext(this);
             _onEnableSubject.OnNext(this);
         }
@@ -296,6 +299,11 @@ namespace Nekoyume.UI
             Animator.Play("Show", 0, 0);
         }
 
+        public void ForceClose(bool ignoreCloseAnimation = false)
+        {
+            _isClosed = false;
+            Close(ignoreCloseAnimation);
+        }
         public virtual void Close(bool ignoreCloseAnimation = false)
         {
             if (WidgetStack.Count > 0 &&
@@ -305,6 +313,11 @@ namespace Nekoyume.UI
             }
 
             if (!gameObject.activeSelf)
+            {
+                return;
+            }
+
+            if (_isClosed)
             {
                 return;
             }
@@ -339,6 +352,8 @@ namespace Nekoyume.UI
             {
                 _coClose = StartCoroutine(CoClose());
             }
+
+            _isClosed = true;
         }
 
         protected void Push()

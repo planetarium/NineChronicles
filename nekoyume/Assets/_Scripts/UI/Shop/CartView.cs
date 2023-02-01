@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Libplanet.Assets;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
@@ -11,7 +9,6 @@ using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 
 namespace Nekoyume.UI.Module
@@ -20,19 +17,7 @@ namespace Nekoyume.UI.Module
     public class CartView : MonoBehaviour
     {
         [SerializeField]
-        private GameObject defaultObject;
-
-        [SerializeField]
-        private GameObject cartObject;
-
-        [SerializeField]
-        private List<ShopCartItemView> cartItems = new List<ShopCartItemView>();
-
-        [SerializeField]
-        private Button historyButton;
-
-        [SerializeField]
-        private Button showCartButton;
+        private List<ShopCartItemView> cartItems = new();
 
         [SerializeField]
         private ConditionalButton hideCartButton;
@@ -44,22 +29,10 @@ namespace Nekoyume.UI.Module
         private TextMeshProUGUI priceText;
 
         private System.Action _onClickBuy;
-        private System.Action _onClickShowCart;
         private System.Action _onClickHideCart;
 
         private void Awake()
         {
-            historyButton.onClick.AddListener(() =>
-            {
-                Widget.Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
-                    "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
-            });
-
-            showCartButton.onClick.AddListener(() =>
-            {
-                _onClickShowCart?.Invoke();
-            });
-
             hideCartButton.Text = L10nManager.Localize("UI_CANCEL");
             hideCartButton.OnSubmitSubject.Subscribe(_ =>
             {
@@ -81,29 +54,10 @@ namespace Nekoyume.UI.Module
         }
 
         public void Set(System.Action onClickBuy,
-            System.Action onClickShowCart,
             System.Action onClickHideCart)
         {
             _onClickBuy = onClickBuy;
-            _onClickShowCart = onClickShowCart;
             _onClickHideCart = onClickHideCart;
-        }
-
-        public void SetMode(BuyView.BuyMode mode)
-        {
-            switch (mode)
-            {
-                case BuyView.BuyMode.Single:
-                    defaultObject.SetActive(true);
-                    cartObject.SetActive(false);
-                    break;
-                case BuyView.BuyMode.Multiple:
-                    defaultObject.SetActive(false);
-                    cartObject.SetActive(true);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
-            }
         }
 
         public void UpdateCart(List<ShopItem> selectedItems)

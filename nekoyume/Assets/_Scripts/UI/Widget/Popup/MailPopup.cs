@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
+using Libplanet.Action;
 using Nekoyume.Action;
+using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -16,7 +19,9 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
+using Random = System.Random;
 
 namespace Nekoyume.UI
 {
@@ -48,6 +53,12 @@ namespace Nekoyume.UI
         private CategoryTabButton systemButton = null;
 
         [SerializeField]
+        private Button receiveAllButton;
+
+        [SerializeField]
+        private GameObject receiveAllContainer;
+
+        [SerializeField]
         private MailScroll scroll = null;
 
         [SerializeField]
@@ -61,6 +72,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private Button closeButton = null;
+
+        [SerializeField]
+        private GameObject loading;
 
         private readonly Module.ToggleGroup _toggleGroup = new Module.ToggleGroup();
 
@@ -82,6 +96,115 @@ namespace Nekoyume.UI
                 Close();
                 AudioController.PlayClick();
             });
+
+            receiveAllButton.onClick.AddListener(ReadAll);
+        }
+
+        private async void ReadAll()
+        {
+            var mailRewards = new List<MailReward>();
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+
+            loading.SetActive(true);
+            foreach (var mail in MailBox)
+            {
+                if (mail.New && mail.requiredBlockIndex <= currentBlockIndex)
+                {
+                    await AddRewards(mail, mailRewards);
+                }
+            }
+
+            foreach (var mail in MailBox)
+            {
+                if (!mail.New || mail.requiredBlockIndex > currentBlockIndex)
+                {
+                    continue;
+                }
+
+                switch (mail)
+                {
+                    case OrderBuyerMail:
+                    case OrderSellerMail:
+                    case OrderExpirationMail:
+                    case CancelOrderMail:
+                        LocalLayerModifier.RemoveNewMail(avatarAddress, mail.id, true);
+                        break;
+                    case ItemEnhanceMail:
+                    case CombinationMail:
+                        LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id, true);
+                        break;
+                }
+            }
+
+            loading.SetActive(false);
+            ChangeState(0);
+            UpdateTabs();
+            Find<MailRewardScreen>().Show(mailRewards);
+        }
+
+        private static async Task AddRewards(Mail mail, List<MailReward> mailRewards)
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+
+            switch (mail)
+            {
+                case OrderBuyerMail buyerMail:
+                    var bOrder = await Util.GetOrder(buyerMail.OrderId);
+                    var bItem = await Util.GetItemBaseByTradableId(bOrder.TradableId, bOrder.ExpiredBlockIndex);
+                    var count = bOrder is FungibleOrder bFungibleOrder ? bFungibleOrder.ItemCount : 1;
+                    mailRewards.Add(new MailReward(bItem, count, true));
+                    break;
+
+                case OrderSellerMail sellerMail:
+                    var sOrder = await Util.GetOrder(sellerMail.OrderId);
+                    var sItem = await Util.GetItemBaseByTradableId(sOrder.TradableId, sOrder.ExpiredBlockIndex);
+                    var sCount = sOrder is FungibleOrder sFungibleOrder ? sFungibleOrder.ItemCount : 1;
+                    mailRewards.Add(new MailReward(sItem, sCount));
+                    break;
+
+                case OrderExpirationMail expirationMail:
+                    var exOrder = await Util.GetOrder(expirationMail.OrderId);
+                    var exItem = await Util.GetItemBaseByTradableId(exOrder.TradableId, exOrder.ExpiredBlockIndex);
+                    var exCount = exOrder is FungibleOrder exFungibleOrder ? exFungibleOrder.ItemCount : 1;
+                    mailRewards.Add(new MailReward(exItem, exCount));
+                    break;
+
+                case CancelOrderMail cancelOrderMail:
+                    var ccOrder = await Util.GetOrder(cancelOrderMail.OrderId);
+                    var ccItem = await Util.GetItemBaseByTradableId(ccOrder.TradableId, ccOrder.ExpiredBlockIndex);
+                    var ccCount = ccOrder is FungibleOrder ccFungibleOrder ? ccFungibleOrder.ItemCount : 1;
+                    mailRewards.Add(new MailReward(ccItem, ccCount));
+                    break;
+
+                case CombinationMail combinationMail:
+                    var cItem = combinationMail?.attachment?.itemUsable;
+                    if (cItem is not null)
+                    {
+                        mailRewards.Add(new MailReward(cItem, 1));
+                        LocalLayerModifier.AddItem(
+                            avatarAddress,
+                            cItem.TradableId,
+                            cItem.RequiredBlockIndex,
+                            1,
+                            false);
+                    }
+                    break;
+
+                case ItemEnhanceMail itemEnhanceMail:
+                    var eItem = itemEnhanceMail?.attachment?.itemUsable;
+                    if (eItem is not null)
+                    {
+                        mailRewards.Add(new MailReward(eItem, 1));
+                        LocalLayerModifier.AddItem(
+                            avatarAddress,
+                            eItem.TradableId,
+                            eItem.RequiredBlockIndex,
+                            1,
+                            false);
+                    }
+                    break;
+            }
         }
 
         public override void Initialize()
@@ -102,6 +225,7 @@ namespace Nekoyume.UI
             MailBox = States.Instance.CurrentAvatarState.mailBox;
             _toggleGroup.SetToggledOffAll();
             allButton.SetToggledOn();
+            loading.SetActive(false);
             ChangeState(0);
             UpdateTabs();
             base.Show(ignoreShowAnimation);
@@ -165,9 +289,10 @@ namespace Nekoyume.UI
         {
             blockIndex ??= Game.Game.instance.Agent.BlockIndex;
 
-            // 전체 탭
-            allButton.HasNotification.Value = MailBox
-                .Any(mail => mail.New && mail.requiredBlockIndex <= blockIndex);
+            var isNew = MailBox.Any(mail => mail.New && mail.requiredBlockIndex <= blockIndex);
+            allButton.HasNotification.Value = isNew;
+            receiveAllContainer.SetActive(isNew);
+            Find<HeaderMenuStatic>().UpdateMailNotification(isNew);
 
             var list = GetAvailableMailList(blockIndex.Value, MailTabState.Workshop);
             var recent = list?.FirstOrDefault();

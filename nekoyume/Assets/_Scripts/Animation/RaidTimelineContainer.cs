@@ -22,6 +22,9 @@ namespace Nekoyume
         }
 
         [SerializeField]
+        private List<Transform> vfxList = null;
+
+        [SerializeField]
         private Button skipButton = null;
 
         [SerializeField]
@@ -119,6 +122,7 @@ namespace Nekoyume
                 .FirstOrDefault();
             if (!track)
             {
+                OnAttackPoint = null;
                 yield break;
             }
 
@@ -143,6 +147,7 @@ namespace Nekoyume
             director.RebuildGraph();
             director.Play();
             yield return new WaitWhile(() => director.state == PlayState.Playing);
+            OnAttackPoint = null;
             director.Stop();
             IsCutscenePlaying = false;
             skipButton.gameObject.SetActive(false);
@@ -154,12 +159,19 @@ namespace Nekoyume
                 -transform.localScale.x,
                 transform.localScale.y,
                 transform.localScale.z);
+
+            foreach (var vfx in vfxList)
+            {
+                vfx.localScale = new Vector3(
+                    -vfx.localScale.x,
+                    vfx.localScale.y,
+                    vfx.localScale.z);
+            }
         }
 
         public void AttackPoint()
         {
-            OnAttackPoint?.Invoke();
-            OnAttackPoint = null;
+            OnAttackPoint.Invoke();
         }
 
         public void KillPlayer()

@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using Nekoyume.Model;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using UnityEngine;
 
@@ -44,7 +46,11 @@ namespace Nekoyume.Game.Factory
             return player.gameObject;
         }
 
-        public static GameObject CreateBySettingLayer(AvatarState avatarState, int layerId, int sortingOrder)
+        public static GameObject Create(
+            AvatarState avatarState,
+            IEnumerable<Costume> costumes,
+            Armor armor,
+            Weapon weapon)
         {
             if (avatarState is null)
             {
@@ -52,28 +58,19 @@ namespace Nekoyume.Game.Factory
             }
 
             var tableSheets = Game.instance.TableSheets;
-            var player = new Player(avatarState, tableSheets.CharacterSheet,
-                tableSheets.CharacterLevelSheet, tableSheets.EquipmentItemSetEffectSheet);
-            return CreateBySettingLayer(layerId, sortingOrder, player);
-        }
-
-        private static GameObject CreateBySettingLayer(int layerId, int sortingOrder, Player model = null)
-        {
-            if (model is null)
-            {
-                var tableSheets = Game.instance.TableSheets;
-                model = new Player(1, tableSheets.CharacterSheet, tableSheets.CharacterLevelSheet, tableSheets.EquipmentItemSetEffectSheet);
-            }
-
+            var model = new Player(avatarState,
+                tableSheets.CharacterSheet,
+                tableSheets.CharacterLevelSheet,
+                tableSheets.EquipmentItemSetEffectSheet);
             var objectPool = Game.instance.Stage.objectPool;
+
             var player = objectPool.Get<Character.Player>();
             if (!player)
             {
                 throw new NotFoundComponentException<Character.Player>();
             }
 
-            player.SetSortingLayer(layerId, sortingOrder);
-            player.Set(model, true);
+            player.Set(model, costumes, armor, weapon, true);
             return player.gameObject;
         }
     }

@@ -146,9 +146,7 @@ namespace Nekoyume.BlockChain
             PrivateKey privateKey,
             string path,
             IEnumerable<BoundPeer> peers,
-            IEnumerable<IceServer> iceServers,
-            string host,
-            int? port,
+            HostOptions hostOptions,
             bool consoleSink,
             bool development,
             AppProtocolVersion appProtocolVersion,
@@ -209,15 +207,20 @@ namespace Nekoyume.BlockChain
 
             // FIXME: this should be changed to reflect libplanet API change after it is reworked.
             // for context, refer to https://github.com/planetarium/libplanet/discussions/2303.
+            var appProtocolVersionOptions = new AppProtocolVersionOptions();
+            appProtocolVersionOptions.AppProtocolVersion =
+                appProtocolVersion;
+            appProtocolVersionOptions.TrustedAppProtocolVersionSigners =
+                trustedAppProtocolVersionSigners.ToImmutableHashSet();
+            appProtocolVersionOptions.DifferentAppProtocolVersionEncountered =
+                DifferentAppProtocolVersionEncountered;
+            var swarmOptions = new SwarmOptions();
             var initSwarmTask = Task.Run(() => new Swarm<NCAction>(
-                blocks,
-                privateKey,
-                appProtocolVersion: appProtocolVersion,
-                host: host,
-                listenPort: port,
-                iceServers: iceServers,
-                differentAppProtocolVersionEncountered: DifferentAppProtocolVersionEncountered,
-                trustedAppProtocolVersionSigners: trustedAppProtocolVersionSigners));
+                blockChain: blocks,
+                privateKey: privateKey,
+                appProtocolVersionOptions: appProtocolVersionOptions,
+                hostOptions: hostOptions,
+                options: swarmOptions));
 
             initSwarmTask.Wait();
             _swarm = initSwarmTask.Result;
@@ -430,13 +433,12 @@ namespace Nekoyume.BlockChain
             AppProtocolVersion = appProtocolVersion.Version;
             var trustedAppProtocolVersionSigners = options.TrustedAppProtocolVersionSigners
                 .Select(s => new PublicKey(ByteUtil.ParseHex(s)));
+            var hostOptions = new HostOptions(host, iceServers, port ?? default);
             Init(
                 privateKey,
                 storagePath,
                 peers,
-                iceServers,
-                host,
-                port,
+                hostOptions,
                 consoleSink,
                 development,
                 appProtocolVersion,
@@ -494,37 +496,6 @@ namespace Nekoyume.BlockChain
                     States.Instance.SetStakeState(stakingState,
                         new GoldBalanceState(stakingState.address, balance),
                         level);
-                }
-                else
-                {
-                    var monsterCollectionAddress = MonsterCollectionState.DeriveAddress(
-                        Address,
-                        States.Instance.AgentState.MonsterCollectionRound
-                    );
-                    if (await GetStateAsync(monsterCollectionAddress) is Dictionary mcDict)
-                    {
-                        var monsterCollectionState = new MonsterCollectionState(mcDict);
-                        var balance = new FungibleAssetValue(goldCurrency);
-                        var level = 0;
-                        try
-                        {
-                            balance = await GetBalanceAsync(monsterCollectionAddress,
-                                goldCurrency);
-                            level =
-                                Game.TableSheets.Instance.StakeRegularRewardSheet
-                                    .FindLevelByStakedAmount(
-                                        Address,
-                                        balance);
-                        }
-                        catch
-                        {
-                            // ignored
-                        }
-
-                        States.Instance.SetMonsterCollectionState(monsterCollectionState,
-                            new GoldBalanceState(monsterCollectionAddress, balance),
-                            level);
-                    }
                 }
 
                 ActionRenderHandler.Instance.GoldCurrency = goldCurrency;

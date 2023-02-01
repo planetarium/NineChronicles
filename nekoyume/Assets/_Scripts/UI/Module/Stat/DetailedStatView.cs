@@ -71,10 +71,8 @@ namespace Nekoyume.UI.Module
                         ? value.ToString("+0.##\\%;-0.##\\%")
                         : $"{value:0.#\\%}";
                 case StatType.SPD:
-                    return isSigned
-                        ? (value / 100f).ToString("+0.##;-0.##", CultureInfo.InvariantCulture)
-                        : (value / 100f).ToString(CultureInfo.InvariantCulture);
                 case StatType.DRR:
+                case StatType.CDMG:
                     return isSigned
                         ? (value / 100f).ToString("+0.##;-0.##", CultureInfo.InvariantCulture)
                         : (value / 100f).ToString(CultureInfo.InvariantCulture);

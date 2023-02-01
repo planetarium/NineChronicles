@@ -282,6 +282,27 @@ namespace Nekoyume.BlockChain
                 case SlotNotFoundException _:
                     code = "59";
                     break;
+                case NotEnoughMedalException _:
+                    code = "60";
+                    break;
+                case ExceedTicketPurchaseLimitDuringIntervalException _:
+                    code = "61";
+                    break;
+                case DuplicatedRuneIdException _:
+                    code = "62";
+                    break;
+                case DuplicatedRuneSlotIndexException _:
+                    code = "63";
+                    break;
+                case RuneInfosIsEmptyException _:
+                    code = "64";
+                    break;
+                case PlayCountIsZeroException _:
+                    code = "65";
+                    break;
+                case TicketPurchaseLimitExceedException _:
+                    code = "66";
+                    break;
             }
 
             Analyzer.Instance.Track(

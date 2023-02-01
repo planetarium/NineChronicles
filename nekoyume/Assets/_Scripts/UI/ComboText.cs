@@ -1,10 +1,8 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UniRx;
 using DG.Tweening;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -98,6 +96,7 @@ namespace Nekoyume.UI
 
         public void Close()
         {
+            _combo = 0;
             gameObject.SetActive(false);
         }
     }

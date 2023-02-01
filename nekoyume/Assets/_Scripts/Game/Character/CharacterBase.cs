@@ -558,6 +558,7 @@ namespace Nekoyume.Game.Character
                 if (effect.IsPersisting)
                 {
                     target.AttachPersistingVFX(buff.BuffInfo.GroupId, effect);
+                    StartCoroutine(BuffController.CoChaseTarget(effect, target.transform));
                 }
 
                 target.UpdateHpBar();
@@ -569,7 +570,7 @@ namespace Nekoyume.Game.Character
         {
             if (_persistingVFXMap.TryGetValue(groupId, out var prevVFX))
             {
-                prevVFX.LazyStop();
+                prevVFX.Stop();
                 _persistingVFXMap.Remove(groupId);
             }
 

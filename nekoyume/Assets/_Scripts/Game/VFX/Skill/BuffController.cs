@@ -1,6 +1,9 @@
+using JetBrains.Annotations;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Util;
+using Nekoyume.Helper;
 using Nekoyume.Model.Buff;
+using System.Collections;
 using UnityEngine;
 
 namespace Nekoyume.Game.VFX.Skill
@@ -33,49 +36,25 @@ namespace Nekoyume.Game.VFX.Skill
             var position = target.transform.position;
             position.y += 0.55f;
 
-            string resourceName = string.Empty;
-            if (buff is StatBuff statBuff)
+            var resourceName = BuffHelper.GetBuffVFXPrefab(buff).name;
+            var go = _pool.Get(resourceName, false, position);
+            if (go == null)
             {
-                var resource = statBuff.RowData.IconResource;
-                resourceName = resource.Replace("icon_", "");
+                go = _pool.Get(resourceName, true, position);
             }
-            else if (buff is ActionBuff actionBuff)
-            {
-                resourceName = $"actionBuff_{actionBuff.RowData.ActionBuffType}";
-            }
-
-            var go = _pool.Get(resourceName, false, position) ??
-                     _pool.Get(resourceName, true, position);
 
             return GetEffect<V>(go);
         }
 
         public BuffCastingVFX Get(Vector3 position, Buff buff)
         {
-            string buffName = string.Empty;
-            if (buff is HPBuff)
-            {
-                buffName = "buff_hp_casting";
-            }
-            else if (buff is DamageReductionBuff)
-            {
-                // TODO : Will be removed when damage reduction buff is attached on equipments
-                buffName = "buff_staking_casting";
-            }
-            else if (buff is StatBuff statBuff)
-            {
-                buffName = statBuff.RowData.StatModifier.Value >= 0
-                    ? "buff_plus_casting"
-                    : "buff_minus_casting";
-            }
-            else if (buff is ActionBuff actionBuff)
-            {
-                buffName = $"{actionBuff.RowData.ActionBuffType}_casting";
-            }
-
+            var resourceName = BuffHelper.GetCastingVFXPrefab(buff).name;
             position.y += 0.55f;
-            var go = _pool.Get(buffName, false, position) ??
-                     _pool.Get(buffName, true, position);
+            var go = _pool.Get(resourceName, false, position);
+            if (go == null)
+            {
+                go = _pool.Get(resourceName, true, position);
+            }
 
             return GetEffect<BuffCastingVFX>(go);
         }
@@ -98,20 +77,27 @@ namespace Nekoyume.Game.VFX.Skill
             var position = target.transform.position;
             position.y += 0.55f;
 
-            var resourceName = string.Empty;
-            if (buff is StatBuff statBuff)
+
+            var resourceName = BuffHelper.GetBuffVFXPrefab(buff).name;
+            var go = _pool.Get(resourceName, false, position);
+            if (go == null)
             {
-                var resource = statBuff.RowData.IconResource;
-                resourceName = resource.Replace("icon_", "");
+                go = _pool.Get(resourceName, true, position);
             }
-            else if (buff is ActionBuff actionBuff)
-            {
-                resourceName = $"actionBuff_{actionBuff.RowData.ActionBuffType}";
-            }
-            var go = _pool.Get(resourceName, false, position) ??
-                     _pool.Get(resourceName, true, position);
 
             return GetEffect<T>(go);
+        }
+
+        public static IEnumerator CoChaseTarget(Component vfx, Transform target)
+        {
+            var g = vfx.gameObject;
+            var t = vfx.transform;
+            while (g.activeSelf &&
+                   target)
+            {
+                t.position = target.position + new Vector3(0f, 0.55f, 0f);
+                yield return null;
+            }
         }
     }
 }

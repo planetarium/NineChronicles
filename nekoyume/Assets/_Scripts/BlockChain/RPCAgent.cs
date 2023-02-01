@@ -399,36 +399,6 @@ namespace Nekoyume.BlockChain
                         new GoldBalanceState(stakingState.address, balance),
                         level);
                 }
-                else
-                {
-                    var monsterCollectionAddress = MonsterCollectionState.DeriveAddress(
-                        Address,
-                        States.Instance.AgentState.MonsterCollectionRound
-                    );
-                    if (await GetStateAsync(monsterCollectionAddress) is Dictionary mcDict)
-                    {
-                        var monsterCollectionState = new MonsterCollectionState(mcDict);
-                        var balance = new FungibleAssetValue(goldCurrency);
-                        var level = 0;
-                        try
-                        {
-                            balance = await GetBalanceAsync(monsterCollectionAddress,
-                                goldCurrency);
-                            level = TableSheets.Instance.StakeRegularRewardSheet
-                                .FindLevelByStakedAmount(
-                                    Address,
-                                    balance);
-                        }
-                        catch
-                        {
-                            // ignored
-                        }
-
-                        States.Instance.SetMonsterCollectionState(monsterCollectionState,
-                            new GoldBalanceState(monsterCollectionAddress, balance),
-                            level);
-                    }
-                }
 
                 if (await GetStateAsync(GameConfigState.Address) is Dictionary configDict)
                 {

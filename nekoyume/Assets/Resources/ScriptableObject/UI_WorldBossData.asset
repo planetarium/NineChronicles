@@ -22,8 +22,12 @@ MonoBehaviour:
       type: 3}
     spinePrefab: {fileID: 7353096591528320530, guid: ba316703c4bf8134f8a8ebea259de773,
       type: 3}
+    backgroundPrefab: {fileID: 8526523070135228836, guid: 2c485e315a298bd48a0cc22798bae5d4,
+      type: 3}
+    entranceMusicName: bgm_worldboss_title
+    battleMusicName: bgm_worldboss_battle_01
   - id: 900002
-    name: serimnir of the abyss
+    name: saehrimnir of the abyss
     illustration: {fileID: 21300000, guid: 1242f629318f1db4bac418b773e128c9, type: 3}
     namePrefab: {fileID: 8173047061470112773, guid: 02d0bdb57bfdd1d45b1d67f46ca666ea,
       type: 3}
@@ -31,6 +35,10 @@ MonoBehaviour:
       type: 3}
     spinePrefab: {fileID: 9063561474706172066, guid: e1c34daccc27ab84b8fb301d0fc87d41,
       type: 3}
+    backgroundPrefab: {fileID: 8526523070135228836, guid: 496ce6f44f68943bc990461494373be7,
+      type: 3}
+    entranceMusicName: bgm_worldboss_title
+    battleMusicName: bgm_worldboss_battle_02
   Grades:
   - grade: 0
     prefab: {fileID: 2544424707153549116, guid: 4c9186057d81d974c9fbafe8e56645d5,
@@ -61,19 +69,6 @@ MonoBehaviour:
       type: 3}
     smallPrefab: {fileID: 6047984770994580154, guid: faaf6eb0d01628040ba60b57ad07d02f,
       type: 3}
-  Runes:
-  - ticker: RUNESTONE_FENRIR1
-    icon: {fileID: 21300000, guid: d6667769127c0ce46bbc124fcaa6252c, type: 3}
-  - ticker: RUNESTONE_FENRIR2
-    icon: {fileID: 21300000, guid: 88c80e541a31e0b4ba550de7e7f5cf5d, type: 3}
-  - ticker: RUNESTONE_FENRIR3
-    icon: {fileID: 21300000, guid: 000b7b5b45f709f4782b1ec62f9f9f56, type: 3}
-  - ticker: RUNESTONE_SERIMNIR1
-    icon: {fileID: 21300000, guid: 08c5c16491d019c4b9855c73648f4054, type: 3}
-  - ticker: RUNESTONE_SERIMNIR2
-    icon: {fileID: 21300000, guid: 3d08304794b882b4887cac13c56bd287, type: 3}
-  - ticker: RUNESTONE_SERIMNIR3
-    icon: {fileID: 21300000, guid: d81052ddf736a394f83b9155f2004a1d, type: 3}
   Rank:
   - {fileID: 4434525153944058049, guid: 2a046eeb2a3ef45fd819efbd79359c86, type: 3}
   - {fileID: 4006865679272897052, guid: b3cd73df47091476db6e000cfb2b3a4f, type: 3}

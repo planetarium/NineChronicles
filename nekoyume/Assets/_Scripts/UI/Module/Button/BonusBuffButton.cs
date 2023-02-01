@@ -85,7 +85,10 @@ namespace Nekoyume.UI.Module
         {
             var skillState = States.Instance.CrystalRandomSkillState;
             var isBuffAvailable = skillState != null && _hasEnoughStars;
-            var selectedId = PlayerPrefs.GetInt("HackAndSlash.SelectedBonusSkillId", 0);
+
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var key = string.Format("HackAndSlash.SelectedBonusSkillId.{0}", avatarAddress);
+            var selectedId = PlayerPrefs.GetInt(key, 0);
 
             var tableSheets = Game.Game.instance.TableSheets;
             if (selectedId != 0 ||
