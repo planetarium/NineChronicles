@@ -48,6 +48,7 @@ namespace Nekoyume.Model.Stat
         public int BaseSPD => BaseStats.SPD;
         public int BaseDRV => BaseStats.DRV;
         public int BaseDRR => BaseStats.DRR;
+        public int BaseCDMG => BaseStats.CDMG;
 
         public bool HasBaseHP => BaseStats.HasHP;
         public bool HasBaseATK => BaseStats.HasATK;
@@ -57,6 +58,7 @@ namespace Nekoyume.Model.Stat
         public bool HasBaseSPD => BaseStats.HasSPD;
         public bool HasBaseDRV => BaseStats.HasDRV;
         public bool HasBaseDRR => BaseStats.HasDRR;
+        public bool HasBaseCDMG => BaseStats.HasCDMG;
 
         public int AdditionalHP => HP - _baseStats.HP;
         public int AdditionalATK => ATK - _baseStats.ATK;
@@ -66,6 +68,7 @@ namespace Nekoyume.Model.Stat
         public int AdditionalSPD => SPD - _baseStats.SPD;
         public int AdditionalDRV => DRV - _baseStats.DRV;
         public int AdditionalDRR => DRR - _baseStats.DRR;
+        public int AdditionalCDMG => CDMG - _baseStats.CDMG;
 
         public bool HasAdditionalHP => AdditionalHP > 0;
         public bool HasAdditionalATK => AdditionalATK > 0;
@@ -75,9 +78,11 @@ namespace Nekoyume.Model.Stat
         public bool HasAdditionalSPD => AdditionalSPD > 0;
         public bool HasAdditionalDRV => AdditionalDRV > 0;
         public bool HasAdditionalDRR => AdditionalDRR > 0;
+        public bool HasAdditionalCDMG => AdditionalCDMG > 0;
 
         public bool HasAdditionalStats => HasAdditionalHP || HasAdditionalATK || HasAdditionalDEF || HasAdditionalCRI ||
-                                          HasAdditionalHIT || HasAdditionalSPD || HasAdditionalDRV || HasAdditionalDRR;
+                                          HasAdditionalHIT || HasAdditionalSPD || HasAdditionalDRV || HasAdditionalDRR ||
+                                          HasAdditionalCDMG;
 
         public CharacterStats(
             CharacterSheet.Row row,
@@ -219,6 +224,12 @@ namespace Nekoyume.Model.Stat
                         _equipmentStatModifiers.Add(new StatModifier(StatType.DRR, StatModifier.OperationType.Add,
                             statMap.DRR));
                     }
+
+                    if (statMap.HasCDMG)
+                    {
+                        _equipmentStatModifiers.Add(new StatModifier(StatType.CDMG, StatModifier.OperationType.Add,
+                            statMap.CDMG));
+                    }
                 }
 
                 // set effects.
@@ -297,6 +308,12 @@ namespace Nekoyume.Model.Stat
                     {
                         _consumableStatModifiers.Add(new StatModifier(StatType.DRR, StatModifier.OperationType.Add,
                             statMap.DRR));
+                    }
+
+                    if (statMap.HasCDMG)
+                    {
+                        _consumableStatModifiers.Add(new StatModifier(StatType.CDMG, StatModifier.OperationType.Add,
+                            statMap.CDMG));
                     }
                 }
             }
@@ -433,6 +450,9 @@ namespace Nekoyume.Model.Stat
             cri.SetValue(Math.Max(0, cri.Value));
             hit.SetValue(Math.Max(0, hit.Value));
             spd.SetValue(Math.Max(0, spd.Value));
+            drv.SetValue(Math.Max(0, drv.Value));
+            drr.SetValue(Math.Max(0, drr.Value));
+            cdmg.SetValue(Math.Max(0, cdmg.Value));
         }
 
         public override object Clone()
@@ -456,6 +476,12 @@ namespace Nekoyume.Model.Stat
                     yield return (StatType.HIT, BaseHIT);
                 if (HasBaseSPD)
                     yield return (StatType.SPD, BaseSPD);
+                if (HasBaseDRV)
+                    yield return (StatType.DRV, BaseDRV);
+                if (HasBaseDRR)
+                    yield return (StatType.DRR, BaseDRR);
+                if (HasBaseCDMG)
+                    yield return (StatType.CDMG, BaseCDMG);
             }
             else
             {
@@ -465,6 +491,9 @@ namespace Nekoyume.Model.Stat
                 yield return (StatType.CRI, BaseCRI);
                 yield return (StatType.HIT, BaseHIT);
                 yield return (StatType.SPD, BaseSPD);
+                yield return (StatType.DRV, BaseDRV);
+                yield return (StatType.DRR, BaseDRR);
+                yield return (StatType.CDMG, BaseCDMG);
             }
         }
 
@@ -484,6 +513,12 @@ namespace Nekoyume.Model.Stat
                     yield return (StatType.HIT, AdditionalHIT);
                 if (HasAdditionalSPD)
                     yield return (StatType.SPD, AdditionalSPD);
+                if (HasAdditionalDRV)
+                    yield return (StatType.DRV, AdditionalDRV);
+                if (HasAdditionalDRR)
+                    yield return (StatType.DRR, AdditionalDRR);
+                if (HasAdditionalCDMG)
+                    yield return (StatType.CDMG, AdditionalCDMG);
             }
             else
             {
@@ -493,6 +528,9 @@ namespace Nekoyume.Model.Stat
                 yield return (StatType.CRI, AdditionalCRI);
                 yield return (StatType.HIT, AdditionalHIT);
                 yield return (StatType.SPD, AdditionalSPD);
+                yield return (StatType.DRV, AdditionalDRV);
+                yield return (StatType.DRR, AdditionalDRR);
+                yield return (StatType.CDMG, AdditionalCDMG);
             }
         }
 
@@ -513,6 +551,12 @@ namespace Nekoyume.Model.Stat
                     yield return (StatType.HIT, BaseHIT, AdditionalHIT);
                 if (HasBaseSPD || HasAdditionalSPD)
                     yield return (StatType.SPD, BaseSPD, AdditionalSPD);
+                if (HasBaseDRV || HasAdditionalDRV)
+                    yield return (StatType.DRV, BaseDRV, AdditionalDRV);
+                if (HasBaseDRR || HasAdditionalDRR)
+                    yield return (StatType.DRR, BaseDRR, AdditionalDRR);
+                if (HasBaseCDMG || HasAdditionalCDMG)
+                    yield return (StatType.CDMG, BaseCDMG, AdditionalCDMG);
             }
             else
             {
@@ -522,6 +566,9 @@ namespace Nekoyume.Model.Stat
                 yield return (StatType.CRI, BaseCRI, AdditionalCRI);
                 yield return (StatType.HIT, BaseHIT, AdditionalHIT);
                 yield return (StatType.SPD, BaseSPD, AdditionalSPD);
+                yield return (StatType.DRV, BaseDRV, AdditionalDRV);
+                yield return (StatType.DRR, BaseDRR, AdditionalDRR);
+                yield return (StatType.CDMG, BaseCDMG, AdditionalCDMG);
             }
         }
     }

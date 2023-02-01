@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Text;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
@@ -15,7 +14,6 @@ using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.Rune;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
@@ -24,10 +22,12 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1495
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1663
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1649
+    /// Updated at https://github.com/planetarium/lib9c/pull/1679
     /// </summary>
     [Serializable]
-    [ActionType("battle_arena7")]
+    [ActionType("battle_arena8")]
     public class BattleArena : GameAction
     {
         public const string PurchasedCountKey = "purchased_count_during_interval";
@@ -207,7 +207,9 @@ namespace Nekoyume.Action
             }
 
             var gameConfigState = states.GetGameConfigState();
-            var battleArenaInterval = gameConfigState.BattleArenaInterval;
+            var battleArenaInterval = roundData.ArenaType == ArenaType.OffSeason
+                ? 0
+                : gameConfigState.BattleArenaInterval;
             if (context.BlockIndex - myArenaAvatarState.LastBattleBlockIndex < battleArenaInterval)
             {
                 throw new CoolDownBlockException(
@@ -298,26 +300,29 @@ namespace Nekoyume.Action
             {
                 arenaInformation.UseTicket(ticket);
             }
+            else if (ticket > 1)
+            {
+                throw new TicketPurchaseLimitExceedException(
+                    $"[{nameof(ArenaInformation)}] tickets to buy : {ticket}");
+            }
             else
             {
                 var arenaAdr =
                     ArenaHelper.DeriveArenaAddress(roundData.ChampionshipId, roundData.Round);
                 var goldCurrency = states.GetGoldCurrency();
-                for (var i = 0; i < ticket; i++)
+                var ticketBalance =
+                    ArenaHelper.GetTicketPrice(roundData, arenaInformation, goldCurrency);
+                arenaInformation.BuyTicket(roundData.MaxPurchaseCount);
+                if (purchasedCountDuringInterval >= roundData.MaxPurchaseCountWithInterval)
                 {
-                    var ticketBalance =
-                        ArenaHelper.GetTicketPrice(roundData, arenaInformation, goldCurrency);
-                    arenaInformation.BuyTicket(roundData.MaxPurchaseCount);
-                    if (purchasedCountDuringInterval >= roundData.MaxPurchaseCountWithInterval)
-                    {
-                        throw new ExceedTicketPurchaseLimitDuringIntervalException(
-                            $"[{nameof(ArenaInformation)}] PurchasedTicketCount({purchasedCountDuringInterval}) >= MAX({{max}})");
-                    }
-
-                    states = states
-                        .TransferAsset(context.Signer, arenaAdr, ticketBalance)
-                        .SetState(purchasedCountAddr, ++purchasedCountDuringInterval);
+                    throw new ExceedTicketPurchaseLimitDuringIntervalException(
+                        $"[{nameof(ArenaInformation)}] PurchasedTicketCount({purchasedCountDuringInterval}) >= MAX({{max}})");
                 }
+
+                purchasedCountDuringInterval++;
+                states = states
+                    .TransferAsset(context.Signer, arenaAdr, ticketBalance)
+                    .SetState(purchasedCountAddr, purchasedCountDuringInterval);
             }
 
             // update arena avatar state

@@ -1,4 +1,4 @@
-﻿namespace Lib9c.Tests.Action
+namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;

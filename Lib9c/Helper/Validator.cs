@@ -13,6 +13,7 @@ namespace Nekoyume.Helper
 {
     public static class Validator
     {
+        [Obsolete("Not use since \"hack_and_slash20\".")]
         public static void ValidateForHackAndSlash(
             AvatarState avatarState,
             Dictionary<Type, (Address address, ISheet sheet)> sheets,
@@ -70,12 +71,20 @@ namespace Nekoyume.Helper
                 worldInformation.UpdateWorld(worldRow);
             }
 
-            if (world.IsStageCleared && stageId > world.StageClearedId + 1 ||
-                !world.IsStageCleared && stageId != world.StageBegin)
+            if (!world.IsStageCleared && stageId != world.StageBegin)
             {
                 throw new InvalidStageException(
-                    $"{addressesHex}Aborted as the stage ({worldId}/{stageId}) is not cleared; " +
-                    $"cleared stage: {world.StageClearedId}"
+                    $"{addressesHex}Aborted as the stage ({worldId}/{stageId - 1}) is not cleared; " +
+                    $"clear the stage ({world.Id}/{world.StageBegin}) first"
+                );
+            }
+
+            if (world.IsStageCleared && stageId - 1 > world.StageClearedId)
+            {
+                throw new InvalidStageException(
+                    $"{addressesHex}Aborted as the stage ({worldId}/{stageId - 1}) is not cleared; " +
+                    $"cleared stage is ({world.Id}/{world.StageClearedId}), so you can play stage " +
+                    $"({world.Id}/{world.StageClearedId + 1})"
                 );
             }
 

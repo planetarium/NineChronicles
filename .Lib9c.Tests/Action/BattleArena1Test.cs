@@ -195,7 +195,7 @@ namespace Lib9c.Tests.Action
             var preCurrency = 1000 * _crystal;
             _state = _state.MintAsset(signer, preCurrency);
 
-            var action = new JoinArena0()
+            var action = new JoinArena1()
             {
                 championshipId = championshipId,
                 round = round,

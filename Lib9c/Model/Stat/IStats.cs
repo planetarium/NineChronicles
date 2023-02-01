@@ -12,6 +12,7 @@ namespace Nekoyume.Model.Stat
         int SPD { get; }
         int DRV { get; }
         int DRR { get; }
+        int CDMG { get; }
 
         bool HasHP { get; }
         bool HasATK { get; }
@@ -21,6 +22,7 @@ namespace Nekoyume.Model.Stat
         bool HasSPD { get; }
         bool HasDRV { get; }
         bool HasDRR { get; }
+        bool HasCDMG { get; }
 
         IEnumerable<(StatType statType, int value)> GetStats(bool ignoreZero = false);
     }

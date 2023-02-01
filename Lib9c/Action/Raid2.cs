@@ -12,15 +12,19 @@ using Nekoyume.Helper;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Serilog;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
+    /// <summary>
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1419
+    /// </summary>
     [Serializable]
-    [ActionType("raid")]
-    public class Raid0 : GameAction
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100340ObsoleteIndex)]
+    [ActionType("raid2")]
+    public class Raid2 : GameAction
     {
-        public const long RequiredInterval = 5L;
         public Address AvatarAddress;
         public List<Guid> EquipmentIds;
         public List<Guid> CostumeIds;
@@ -35,6 +39,11 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100340ObsoleteIndex, context);
+
+            var addressHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
+            var started = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressHex}Raid exec started", addressHex);
             if (!states.TryGetAvatarStateV2(context.Signer, AvatarAddress,
                     out AvatarState avatarState,
                     out var migrationRequired))
@@ -76,10 +85,6 @@ namespace Nekoyume.Action
             var worldBossListSheet = sheets.GetSheet<WorldBossListSheet>();
             var row = worldBossListSheet.FindRowByBlockIndex(context.BlockIndex);
             int raidId = row.Id;
-            if (raidId > 1)
-            {
-                throw new ActionObsoletedException("raid action is obsoleted. please use new action.");
-            }
             Address worldBossAddress = Addresses.GetWorldBossAddress(raidId);
             Address raiderAddress = Addresses.GetRaiderAddress(AvatarAddress, raidId);
             // Check challenge count.
@@ -93,9 +98,17 @@ namespace Nekoyume.Action
                 raiderState = new RaiderState();
                 FungibleAssetValue crystalCost = CrystalCalculator.CalculateEntranceFee(avatarState.level, row.EntranceFee);
                 states = states.TransferAsset(context.Signer, worldBossAddress, crystalCost);
+                Address raiderListAddress = Addresses.GetRaiderListAddress(raidId);
+                List<Address> raiderList =
+                    states.TryGetState(raiderListAddress, out List rawRaiderList)
+                        ? rawRaiderList.ToList(StateExtensions.ToAddress)
+                        : new List<Address>();
+                raiderList.Add(raiderAddress);
+                states = states.SetState(raiderListAddress,
+                    new List(raiderList.Select(a => a.Serialize())));
             }
 
-            if (context.BlockIndex - raiderState.UpdatedBlockIndex < RequiredInterval)
+            if (context.BlockIndex - raiderState.UpdatedBlockIndex < Raid.RequiredInterval)
             {
                 throw new RequiredBlockIntervalException($"wait for interval. {context.BlockIndex - raiderState.UpdatedBlockIndex}");
             }
@@ -248,6 +261,8 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, avatarState.questList.Serialize());
             }
 
+            var ended = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressHex}Raid Total Executed Time: {Elapsed}", addressHex, ended - started);
             return states
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
                 .SetState(worldBossAddress, bossState.Serialize())

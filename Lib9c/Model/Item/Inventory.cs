@@ -297,6 +297,11 @@ namespace Nekoyume.Model.Item
             bool onlyTradableItem = default
         )
         {
+            if (count <= 0)
+            {
+                return false;
+            }
+
             List<Item> targetItems = new List<Item>();
             if (onlyTradableItem)
             {

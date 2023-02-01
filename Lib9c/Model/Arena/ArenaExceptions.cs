@@ -125,6 +125,19 @@ namespace Nekoyume.Model.Arena
         }
     }
 
+    public class TicketPurchaseLimitExceedException : Exception
+    {
+        public TicketPurchaseLimitExceedException(string message) : base(message)
+        {
+        }
+
+        protected TicketPurchaseLimitExceedException(SerializationInfo info,
+            StreamingContext context) :
+            base(info, context)
+        {
+        }
+    }
+
     [Serializable]
     public class ValidateScoreDifferenceException : Exception
     {
@@ -203,6 +216,19 @@ namespace Nekoyume.Model.Arena
         }
 
         protected CoolDownBlockException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+    }
+
+    [Serializable]
+    public class InvalidSeasonException : Exception
+    {
+        public InvalidSeasonException(string message) : base(message)
+        {
+        }
+
+        protected InvalidSeasonException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
         }

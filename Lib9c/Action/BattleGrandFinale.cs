@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
@@ -23,13 +23,13 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Introduced at ...
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1679
     /// </summary>
     [Serializable]
     [ActionType(ActionTypeName)]
     public class BattleGrandFinale : GameAction
     {
-        private const string ActionTypeName = "battle_grand_finale";
+        private const string ActionTypeName = "battle_grand_finale2";
         public const int WinScore = 20;
         public const int LoseScore = 1;
         public const int DefaultScore = 1000;

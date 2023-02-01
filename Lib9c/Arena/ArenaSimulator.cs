@@ -9,7 +9,7 @@ using Priority_Queue;
 namespace Nekoyume.Arena
 {
     /// <summary>
-    /// Introduced at https://github.com/planetarium/lib9c/pull/1501
+    /// Introduced at https://github.com/planetarium/lib9c/pull/1679
     /// </summary>
     public class ArenaSimulator : IArenaSimulator
     {
@@ -103,7 +103,22 @@ namespace Nekoyume.Arena
             ArenaLog log)
         {
             var challenger = new ArenaCharacter(simulator, challengerDigest, simulatorSheets);
+            if (challengerDigest.Runes != null)
+            {
+                challenger.SetRune(
+                    challengerDigest.Runes,
+                    simulatorSheets.RuneOptionSheet,
+                    simulatorSheets.SkillSheet);
+            }
+
             var enemy = new ArenaCharacter(simulator, enemyDigest, simulatorSheets, true);
+            if (enemyDigest.Runes != null)
+            {
+                enemy.SetRune(
+                    enemyDigest.Runes,
+                    simulatorSheets.RuneOptionSheet,
+                    simulatorSheets.SkillSheet);
+            }
 
             challenger.Spawn(enemy);
             enemy.Spawn(challenger);

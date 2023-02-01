@@ -18,10 +18,10 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1495
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1663
     /// </summary>
     [Serializable]
-    [ActionType("hack_and_slash_sweep8")]
+    [ActionType("hack_and_slash_sweep9")]
     public class HackAndSlashSweep : GameAction
     {
         public const int UsableApStoneCount = 10;

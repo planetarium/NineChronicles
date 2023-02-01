@@ -24,10 +24,10 @@ using Nekoyume.Model.Rune;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1495
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1663
     /// </summary>
     [Serializable]
-    [ActionType("mimisbrunnr_battle11")]
+    [ActionType("mimisbrunnr_battle12")]
     public class MimisbrunnrBattle : GameAction
     {
         public List<Guid> Costumes;

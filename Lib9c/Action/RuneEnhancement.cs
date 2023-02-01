@@ -7,7 +7,6 @@ using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
-using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Rune;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -15,7 +14,7 @@ using Nekoyume.TableData;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("runeEnhancement")]
+    [ActionType("runeEnhancement2")]
     public class RuneEnhancement : GameAction
     {
         public Address AvatarAddress;
@@ -44,6 +43,12 @@ namespace Nekoyume.Action
             if (context.Rehearsal)
             {
                 return states;
+            }
+
+            if (!states.TryGetAvatarStateV2(context.Signer, AvatarAddress, out _, out _))
+            {
+                throw new FailedLoadStateException(
+                    $"Aborted as the avatar state of the signer was failed to load.");
             }
 
             var sheets = states.GetSheets(

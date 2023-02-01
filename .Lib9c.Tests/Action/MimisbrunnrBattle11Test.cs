@@ -144,7 +144,7 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress, previousAvatarState.SerializeV2());
             }
 
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle11
             {
                 Costumes = new List<Guid> { ((Costume)costume).ItemId },
                 Equipments = equipments.Select(e => e.NonFungibleId).ToList(),
@@ -217,7 +217,7 @@ namespace Lib9c.Tests.Action
                 }
             }
 
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle11
             {
                 Costumes = new List<Guid> { costume.ItemId },
                 Equipments = new List<Guid> { equipment.ItemId },
@@ -244,7 +244,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowFailedLoadStateException()
         {
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle11
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -269,7 +269,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowSheetRowNotFound()
         {
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle11
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -294,7 +294,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowSheetRowColumn()
         {
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle11
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -334,7 +334,7 @@ namespace Lib9c.Tests.Action
                 _tableSheets.WorldSheet,
                 _tableSheets.WorldUnlockSheet);
 
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle11
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -421,7 +421,7 @@ namespace Lib9c.Tests.Action
 
             var state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
 
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle11
             {
                 Costumes = new List<Guid> { ((Costume)costume).ItemId },
                 Equipments = new List<Guid> { equipment.ItemId },
@@ -461,7 +461,7 @@ namespace Lib9c.Tests.Action
             avatarState.worldInformation = new WorldInformation(0, worldSheet, alreadyClearedStageId);
             var nextState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle11
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -506,7 +506,7 @@ namespace Lib9c.Tests.Action
             avatarState.inventory.AddItem(equipment);
             var nextState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle11
             {
                 Costumes = new List<Guid> { ((Costume)costume).ItemId },
                 Equipments = new List<Guid> { equipment.ItemId },
@@ -597,7 +597,7 @@ namespace Lib9c.Tests.Action
                         avatarState.address.Derive(LegacyInventoryKey),
                         avatarState.inventory.Serialize());
 
-                var action = new MimisbrunnrBattle
+                var action = new MimisbrunnrBattle11
                 {
                     Costumes = costumes,
                     Equipments = equipments,
@@ -703,7 +703,7 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress.Derive(LegacyQuestListKey), previousAvatarState.questList.Serialize());
             }
 
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle11
             {
                 Costumes = costumes,
                 Equipments = equipments.Select(e => e.NonFungibleId).ToList(),

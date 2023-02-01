@@ -27,6 +27,8 @@ namespace Nekoyume.Model.Buff
                 case StatType.DRR:
                 case StatType.DRV:
                     return new DamageReductionBuff(row);
+                case StatType.CDMG:
+                    return new CriticalDamageBuff(row);
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -51,6 +53,8 @@ namespace Nekoyume.Model.Buff
                 case StatType.DRR:
                 case StatType.DRV:
                     return new DamageReductionBuff(customField, row);
+                case StatType.CDMG:
+                    return new CriticalDamageBuff(customField, row);
                 default:
                     throw new ArgumentOutOfRangeException();
             }

@@ -204,7 +204,7 @@ namespace Lib9c.Tests.Action
 
             var state = _state.MintAsset(_signer, FungibleAssetValue.Parse(_currency, balance));
 
-            var action = new JoinArena()
+            var action = new JoinArena2()
             {
                 championshipId = championshipId,
                 round = round,
@@ -268,7 +268,7 @@ namespace Lib9c.Tests.Action
 
             if (!row.TryGetRound(round, out var roundData))
             {
-                throw new RoundNotFoundException($"{nameof(JoinArena0)} : {row.ChampionshipId} / {round}");
+                throw new RoundNotFoundException($"{nameof(JoinArena1)} : {row.ChampionshipId} / {round}");
             }
 
             Assert.Equal(0 * _currency, state.GetBalance(_signer, _currency));
@@ -282,7 +282,7 @@ namespace Lib9c.Tests.Action
             avatarState = GetAvatarState(avatarState, out var equipments, out var costumes);
             var state = _state.SetState(_avatarAddress, avatarState.SerializeV2());
 
-            var action = new JoinArena()
+            var action = new JoinArena2()
             {
                 championshipId = championshipId,
                 round = 1,
@@ -308,7 +308,7 @@ namespace Lib9c.Tests.Action
             avatarState = GetAvatarState(avatarState, out var equipments, out var costumes);
             var state = _state.SetState(_avatarAddress, avatarState.SerializeV2());
 
-            var action = new JoinArena()
+            var action = new JoinArena2()
             {
                 championshipId = 1,
                 round = round,
@@ -336,7 +336,7 @@ namespace Lib9c.Tests.Action
             var preCurrency = 99800100000 * _currency;
             var state = _state.MintAsset(_signer, preCurrency);
 
-            var action = new JoinArena()
+            var action = new JoinArena2()
             {
                 championshipId = 1,
                 round = round,
@@ -364,7 +364,7 @@ namespace Lib9c.Tests.Action
             GetAvatarState(avatarState, out var equipments, out var costumes);
             var state = _state.SetState(_avatarAddress, avatarState.SerializeV2());
 
-            var action = new JoinArena()
+            var action = new JoinArena2()
             {
                 championshipId = 1,
                 round = round,
@@ -390,7 +390,7 @@ namespace Lib9c.Tests.Action
             avatarState = GetAvatarState(avatarState, out var equipments, out var costumes);
             var state = _state.SetState(_avatarAddress, avatarState.SerializeV2());
 
-            var action = new JoinArena()
+            var action = new JoinArena2()
             {
                 championshipId = 1,
                 round = 1,
@@ -432,7 +432,7 @@ namespace Lib9c.Tests.Action
             var arenaScore = new ArenaScore(_avatarAddress, championshipId, round);
             state = state.SetState(arenaScoreAdr, arenaScore.Serialize());
 
-            var action = new JoinArena()
+            var action = new JoinArena2()
             {
                 championshipId = championshipId,
                 round = round,
@@ -465,7 +465,7 @@ namespace Lib9c.Tests.Action
             var arenaInformation = new ArenaInformation(_avatarAddress, championshipId, round);
             state = state.SetState(arenaInformationAdr, arenaInformation.Serialize());
 
-            var action = new JoinArena()
+            var action = new JoinArena2()
             {
                 championshipId = championshipId,
                 round = round,
@@ -487,7 +487,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_NotEnoughClearedStageLevelException()
         {
-            var action = new JoinArena()
+            var action = new JoinArena2()
             {
                 championshipId = 1,
                 round = 1,
