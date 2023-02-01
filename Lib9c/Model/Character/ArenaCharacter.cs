@@ -108,7 +108,7 @@ namespace Nekoyume.Model
         }
 
         public ArenaCharacter(
-            ArenaSimulator simulator,
+            IArenaSimulator simulator,
             ArenaPlayerDigest digest,
             ArenaSimulatorSheets sheets,
             bool isEnemy = false)
@@ -134,10 +134,6 @@ namespace Nekoyume.Model
                 row,
                 sheets.EquipmentItemSetEffectSheet,
                 sheets.CostumeStatSheet);
-            if (digest.Runes != null)
-            {
-                SetRune(digest.Runes, sheets.RuneOptionSheet, sheets.SkillSheet);
-            }
             _skills = GetSkills(digest.Equipments, sheets.SkillSheet);
             _attackCountMax = AttackCountHelper.GetCountMax(digest.Level);
         }
@@ -239,7 +235,8 @@ namespace Nekoyume.Model
             return statModifiers.Any();
         }
 
-        public void SetRune(
+        [Obsolete("Use SetRune")]
+        public void SetRuneV1(
             List<RuneState> runes,
             RuneOptionSheet runeOptionSheet,
             SkillSheet skillSheet)
@@ -295,6 +292,71 @@ namespace Nekoyume.Model
                     }
                 }
                 var skill = SkillFactory.GetForArena(skillRow, power, optionInfo.SkillChance);
+                _runeSkills.Add(skill);
+                RuneSkillCooldownMap[optionInfo.SkillId] = optionInfo.SkillCooldown;
+            }
+        }
+
+        public void SetRune(
+            List<RuneState> runes,
+            RuneOptionSheet runeOptionSheet,
+            SkillSheet skillSheet)
+        {
+            foreach (var rune in runes)
+            {
+                if (!runeOptionSheet.TryGetValue(rune.RuneId, out var optionRow) ||
+                    !optionRow.LevelOptionMap.TryGetValue(rune.Level, out var optionInfo))
+                {
+                    continue;
+                }
+
+                var statModifiers = new List<StatModifier>();
+                statModifiers.AddRange(
+                    optionInfo.Stats.Select(x =>
+                        new StatModifier(
+                            x.statMap.StatType,
+                            x.operationType,
+                            x.statMap.ValueAsInt)));
+                _stats.AddOption(statModifiers);
+                _stats.IncreaseHpForArena();
+                _stats.EqualizeCurrentHPWithHP();
+
+                if (optionInfo.SkillId == default ||
+                    !skillSheet.TryGetValue(optionInfo.SkillId, out var skillRow))
+                {
+                    continue;
+                }
+
+                var power = 0;
+
+                if (optionInfo.SkillValueType == StatModifier.OperationType.Add)
+                {
+                    power = (int)optionInfo.SkillValue;
+                }
+                else if (optionInfo.StatReferenceType == EnumType.StatReferenceType.Caster)
+                {
+                    switch (optionInfo.SkillStatType)
+                    {
+                        case StatType.HP:
+                            power = HP;
+                            break;
+                        case StatType.ATK:
+                            power = ATK;
+                            break;
+                        case StatType.DEF:
+                            power = DEF;
+                            break;
+                    }
+
+                    power = (int)Math.Round(power * optionInfo.SkillValue);
+                }
+                var skill = SkillFactory.GetForArena(skillRow, power, optionInfo.SkillChance);
+                var customField = new SkillCustomField
+                {
+                    BuffDuration = optionInfo.BuffDuration,
+                    BuffValue = power,
+                };
+                skill.CustomField = customField;
                 _runeSkills.Add(skill);
                 RuneSkillCooldownMap[optionInfo.SkillId] = optionInfo.SkillCooldown;
             }

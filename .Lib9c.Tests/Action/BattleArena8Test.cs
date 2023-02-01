@@ -881,6 +881,23 @@ namespace Lib9c.Tests.Action
                 throw new ArenaInformationNotFoundException($"arenaInfoAdr : {arenaInfoAdr}");
             }
 
+            var ncgCurrency = previousStates.GetGoldCurrency();
+            previousStates = previousStates.MintAsset(_agent1Address, 99999 * ncgCurrency);
+
+            var unlockRuneSlot = new UnlockRuneSlot()
+            {
+                AvatarAddress = _avatar1Address,
+                SlotIndex = 1,
+            };
+
+            previousStates = unlockRuneSlot.Execute(new ActionContext
+            {
+                BlockIndex = 1,
+                PreviousStates = previousStates,
+                Signer = _agent1Address,
+                Random = new TestRandom(),
+            });
+
             var action = new BattleArena
             {
                 myAvatarAddress = _avatar1Address,

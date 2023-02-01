@@ -376,7 +376,7 @@ namespace Nekoyume.Action
             var rewards = new List<ItemBase>();
             for (var i = 0; i < ticket; i++)
             {
-                var simulator = new ArenaSimulator(context.Random);
+                var simulator = new ArenaSimulatorV2(context.Random);
                 var log = simulator.Simulate(
                     ExtraMyArenaPlayerDigest,
                     ExtraEnemyArenaPlayerDigest,
