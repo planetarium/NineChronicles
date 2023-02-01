@@ -19,7 +19,7 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("item_enhancement")]
-    public class ItemEnhancement0 : GameAction
+    public class ItemEnhancement0 : GameAction, IItemEnhancementV1
     {
         public const int RequiredBlockCount = 1;
 
@@ -29,6 +29,11 @@ namespace Nekoyume.Action
         public IEnumerable<Guid> materialIds;
         public Address avatarAddress;
         public int slotIndex;
+
+        public Guid ItemId => itemId;
+        public IEnumerable<Guid> MaterialIds => materialIds;
+        public Address AvatarAddress => avatarAddress;
+        public int SlotIndex => slotIndex;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
