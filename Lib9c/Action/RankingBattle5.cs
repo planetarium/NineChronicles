@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using Bencodex.Types;
+using Lib9c.Action;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
@@ -19,7 +20,7 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("ranking_battle5")]
-    public class RankingBattle5 : GameAction
+    public class RankingBattle5 : GameAction, IRankingBattleV2
     {
         public const int StageId = 999999;
         public static readonly BigInteger EntranceFee = 100;
@@ -31,6 +32,13 @@ namespace Nekoyume.Action
         public List<Guid> equipmentIds;
         public List<Guid> consumableIds;
         public BattleLog Result { get; private set; }
+
+        Address IRankingBattleV2.AvatarAddress => AvatarAddress;
+        Address IRankingBattleV2.EnemyAddress => EnemyAddress;
+        Address IRankingBattleV2.WeeklyArenaAddress => WeeklyArenaAddress;
+        IEnumerable<Guid> IRankingBattleV2.CostumeIds => costumeIds;
+        IEnumerable<Guid> IRankingBattleV2.EquipmentIds => equipmentIds;
+        IEnumerable<Guid> IRankingBattleV2.ConsumableIds => consumableIds;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
