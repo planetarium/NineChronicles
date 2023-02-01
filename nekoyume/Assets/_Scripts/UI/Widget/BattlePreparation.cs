@@ -550,7 +550,9 @@ namespace Nekoyume.UI
                 case StageType.HackAndSlash:
                 {
                     var skillState = States.Instance.CrystalRandomSkillState;
-                    var skillId = PlayerPrefs.GetInt("HackAndSlash.SelectedBonusSkillId", 0);
+                    var avatarAddress = States.Instance.CurrentAvatarState.address;
+                    var key = string.Format("HackAndSlash.SelectedBonusSkillId.{0}", avatarAddress);
+                    var skillId = PlayerPrefs.GetInt(key, 0);
                     if (skillId == 0)
                     {
                         if (skillState == null ||
@@ -595,7 +597,7 @@ namespace Nekoyume.UI
                         apStoneCount,
                         _trackGuideQuest
                     ).Subscribe();
-                    PlayerPrefs.SetInt("HackAndSlash.SelectedBonusSkillId", 0);
+                    PlayerPrefs.SetInt(key, 0);
                     break;
                 }
                 case StageType.Mimisbrunnr:
