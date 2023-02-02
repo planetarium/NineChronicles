@@ -16,10 +16,14 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("claim_monster_collection_reward")]
-    public class ClaimMonsterCollectionReward0 : GameAction
+    public class ClaimMonsterCollectionReward0 : GameAction, IClaimMonsterCollectionRewardV1
     {
         public Address avatarAddress;
         public int collectionRound;
+
+        Address IClaimMonsterCollectionRewardV1.AvatarAddress => avatarAddress;
+        int IClaimMonsterCollectionRewardV1.CollectionRound => collectionRound;
+
         public override IAccountStateDelta Execute(IActionContext context)
         {
             IAccountStateDelta states = context.PreviousStates;
