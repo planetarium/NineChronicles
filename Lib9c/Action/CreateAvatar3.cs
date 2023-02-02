@@ -16,7 +16,7 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("create_avatar3")]
-    public class CreateAvatar3 : GameAction
+    public class CreateAvatar3 : GameAction, ICreateAvatarV2
     {
         public const string DeriveFormat = "avatar-state-{0}";
 
@@ -26,6 +26,13 @@ namespace Nekoyume.Action
         public int ear;
         public int tail;
         public string name;
+
+        int ICreateAvatarV2.Index => index;
+        int ICreateAvatarV2.Hair => hair;
+        int ICreateAvatarV2.Lens => lens;
+        int ICreateAvatarV2.Ear => ear;
+        int ICreateAvatarV2.Tail => tail;
+        string ICreateAvatarV2.Name => name;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>()
         {
