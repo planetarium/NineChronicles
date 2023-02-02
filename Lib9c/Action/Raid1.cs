@@ -20,13 +20,19 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockPolicySource.V100360ObsoleteIndex)]
     [ActionType("raid")]
-    public class Raid1 : GameAction
+    public class Raid1 : GameAction, IRaidV1
     {
         public Address AvatarAddress;
         public List<Guid> EquipmentIds;
         public List<Guid> CostumeIds;
         public List<Guid> FoodIds;
         public bool PayNcg;
+
+        Address IRaidV1.AvatarAddress => AvatarAddress;
+        IEnumerable<Guid> IRaidV1.EquipmentIds => EquipmentIds;
+        IEnumerable<Guid> IRaidV1.CostumeIds => CostumeIds;
+        IEnumerable<Guid> IRaidV1.FoodIds => FoodIds;
+        bool IRaidV1.PayNcg => PayNcg;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
