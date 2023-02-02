@@ -20,7 +20,7 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("combination_consumable5")]
-    public class CombinationConsumable5 : GameAction
+    public class CombinationConsumable5 : GameAction, ICombinationConsumableV1
     {
         [Serializable]
         public class ResultModel : AttachmentActionResult
@@ -67,6 +67,10 @@ namespace Nekoyume.Action
         public Address AvatarAddress;
         public int recipeId;
         public int slotIndex;
+
+        Address ICombinationConsumableV1.AvatarAddress => AvatarAddress;
+        int ICombinationConsumableV1.RecipeId => recipeId;
+        int ICombinationConsumableV1.SlotIndex => slotIndex;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal
         {
