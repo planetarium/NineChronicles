@@ -14,9 +14,12 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("monster_collect2")]
-    public class MonsterCollect2 : GameAction
+    public class MonsterCollect2 : GameAction, IMonsterCollectV2
     {
         public int level;
+
+        int IMonsterCollectV2.Level => level;
+
         public override IAccountStateDelta Execute(IActionContext context)
         {
             IAccountStateDelta states = context.PreviousStates;
