@@ -14,9 +14,12 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("claim_world_boss_kill_reward")]
-    public class ClaimWordBossKillReward : GameAction
+    public class ClaimWordBossKillReward : GameAction, IClaimWordBossKillRewardV1
     {
         public Address AvatarAddress;
+
+        Address IClaimWordBossKillRewardV1.AvatarAddress => AvatarAddress;
+
         public override IAccountStateDelta Execute(IActionContext context)
         {
             IAccountStateDelta states = context.PreviousStates;
