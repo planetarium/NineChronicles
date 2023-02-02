@@ -27,7 +27,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("initialize_states")]
-    public class InitializeStates : GameAction
+    public class InitializeStates : GameAction, IInitializeStatesV1
     {
         public Dictionary Ranking { get; set; } = Dictionary.Empty;
         public Dictionary Shop { get; set; } = Dictionary.Empty;
