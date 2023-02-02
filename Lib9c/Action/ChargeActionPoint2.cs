@@ -14,9 +14,11 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("charge_action_point2")]
-    public class ChargeActionPoint2 : GameAction
+    public class ChargeActionPoint2 : GameAction, IChargeActionPointV1
     {
         public Address avatarAddress;
+
+        Address IChargeActionPointV1.AvatarAddress => avatarAddress;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
