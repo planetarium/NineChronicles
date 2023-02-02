@@ -18,7 +18,7 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100200ObsoleteIndex)]
     [ActionType("hack_and_slash_sweep2")]
-    public class HackAndSlashSweep2 : GameAction
+    public class HackAndSlashSweep2 : GameAction, IHackAndSlashSweepV1
     {
         public const int UsableApStoneCount = 10;
 
@@ -26,6 +26,11 @@ namespace Nekoyume.Action
         public int apStoneCount = 0;
         public int worldId;
         public int stageId;
+
+        Address IHackAndSlashSweepV1.AvatarAddress => avatarAddress;
+        int IHackAndSlashSweepV1.ApStoneCount => apStoneCount;
+        int IHackAndSlashSweepV1.WorldId => worldId;
+        int IHackAndSlashSweepV1.StageId => stageId;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>()
