@@ -15,9 +15,11 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [ActionType("stake2")]
-    public class Stake : GameAction
+    public class Stake : GameAction, IStakeV1
     {
         internal BigInteger Amount { get; set; }
+
+        BigInteger IStakeV1.Amount => Amount;
 
         public Stake(BigInteger amount)
         {
