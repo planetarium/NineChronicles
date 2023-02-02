@@ -26,7 +26,7 @@ using UnityEngine;
 using Material = Nekoyume.Model.Item.Material;
 using RedeemCode = Nekoyume.Action.RedeemCode;
 
-#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
+#if LIB9C_DEV_EXTENSIONS
 using Lib9c.DevExtensions.Action;
 #endif
 
@@ -1371,7 +1371,7 @@ namespace Nekoyume.BlockChain
                 });
         }
 
-#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
+#if LIB9C_DEV_EXTENSIONS
         public IObservable<ActionBase.ActionEvaluation<CreateTestbed>> CreateTestbed()
         {
             var action = new CreateTestbed

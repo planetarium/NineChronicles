@@ -356,7 +356,7 @@ namespace Nekoyume.BlockChain
                 if(Libplanet.Crypto.CryptoConfig.CryptoBackend is not Secp256K1CryptoBackend<SHA256>)
                 {
                     Libplanet.Crypto.CryptoConfig.CryptoBackend = new Secp256K1CryptoBackend<SHA256>();
-                }                
+                }
             }
             catch (Exception e)
             {
@@ -433,7 +433,7 @@ namespace Nekoyume.BlockChain
             AppProtocolVersion = appProtocolVersion.Version;
             var trustedAppProtocolVersionSigners = options.TrustedAppProtocolVersionSigners
                 .Select(s => new PublicKey(ByteUtil.ParseHex(s)));
-            var hostOptions = new HostOptions(host, iceServers, port ?? default);
+            var hostOptions = new HostOptions(host, iceServers, port ?? default(int));
             Init(
                 privateKey,
                 storagePath,
@@ -694,7 +694,7 @@ namespace Nekoyume.BlockChain
             Widget.Create<BattleSimulator>(true);
             Widget.Create<CombinationSimulator>(true);
             Widget.Create<Cheat>(true);
-#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
+#if LIB9C_DEV_EXTENSIONS
             Widget.Create<TestbedEditor>(true);
 #endif
             while (true)

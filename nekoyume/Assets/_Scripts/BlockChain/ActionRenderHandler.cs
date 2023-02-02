@@ -36,7 +36,7 @@ using Nekoyume.Model.EnumType;
 using Nekoyume.UI.Module.WorldBoss;
 using Skill = Nekoyume.Model.Skill.Skill;
 
-#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
+#if LIB9C_DEV_EXTENSIONS
 using Lib9c.DevExtensions.Action;
 #endif
 
@@ -143,7 +143,7 @@ namespace Nekoyume.BlockChain
             // Crystal Unlocks
             UnlockEquipmentRecipe();
             UnlockWorld();
-#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
+#if LIB9C_DEV_EXTENSIONS
             Testbed();
 #endif
 
@@ -1896,7 +1896,7 @@ namespace Nekoyume.BlockChain
         }
 
 
-#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
+#if LIB9C_DEV_EXTENSIONS
         private void Testbed()
         {
             _actionRenderer.EveryRender<CreateTestbed>()

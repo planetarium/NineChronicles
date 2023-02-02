@@ -1,6 +1,5 @@
 using System.IO;
 using System.Linq;
-using Lib9c.DevExtensions;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
@@ -189,8 +188,6 @@ namespace Editor
         public static void BuildWindowsForQA()
         {
             Debug.Log("Build Windows For QA");
-            CopyJsonDataFile("TestbedSell");
-            CopyJsonDataFile("TestbedCreateAvatar");
             Build(BuildTarget.StandaloneWindows64, BuildOptions.Development | BuildOptions.AllowDebugging, "Windows", true);
         }
 
@@ -198,9 +195,6 @@ namespace Editor
         public static void BuildIOSForQA()
         {
             Debug.Log("Build iOS for QA");
-            CopyJsonDataFile("TestbedSell");
-            CopyJsonDataFile("TestbedCreateAvatar");
-
             PreProcessBuildForIOS();
 
             PlayerSettings.iOS.sdkVersion = iOSSdkVersion.DeviceSDK;
@@ -293,14 +287,6 @@ namespace Editor
             PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup,
                 string.Join(";", newDefines.ToArray()));
             EditorApplication.ExecuteMenuItem("File/Save Project");
-        }
-
-        private static void CopyJsonDataFile(string fileName)
-        {
-            var sourcePath = TestbedHelper.GetDataPath(fileName);
-            var destPath = Path.Combine(Application.streamingAssetsPath, $"{fileName}.json");
-            File.Copy(sourcePath, destPath, true);
-            Debug.Log($"Copy json data file : {fileName}");
         }
 
         [PostProcessBuild(0)]

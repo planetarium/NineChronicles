@@ -228,7 +228,7 @@ namespace Nekoyume
             CloseWidget = null;
         }
 
-#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
+#if LIB9C_DEV_EXTENSIONS
         protected override void Update()
         {
             UpdateInput();

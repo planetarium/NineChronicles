@@ -137,13 +137,13 @@ namespace Nekoyume.Game
             bool HasStoragePermission() =>
                 Permission.HasUserAuthorizedPermission(Permission.ExternalStorageWrite)
                 && Permission.HasUserAuthorizedPermission(Permission.ExternalStorageRead);
-        
+
             String[] permission = new String[]
             {
                 Permission.ExternalStorageRead,
                 Permission.ExternalStorageWrite
             };
-        
+
             while (!HasStoragePermission())
             {
                 Permission.RequestUserPermissions(permission);
@@ -203,8 +203,10 @@ namespace Nekoyume.Game
                 Path_RocksDB = Path.Combine(Application.dataPath, "Plugins");
                 Path_RocksDB = Path.Combine(Path_RocksDB, "x86_64", "rocksdb.dll");
             }
-            // Load native library for rocksdb 
-            RocksDbSharp.Native.LoadLibrary(Path_RocksDB);    
+            // Load native library for rocksdb
+#if  ENABLE_IL2CPP
+            RocksDbSharp.Native.LoadLibrary(Path_RocksDB);
+#endif
         }
 
         private IEnumerator Start()
@@ -981,7 +983,9 @@ namespace Nekoyume.Game
                 loadPath = Path.Combine(loadPath, "x86_64", "rocksdb.dll");
             }
 
+#if  ENABLE_IL2CPP
             RocksDbSharp.Native.LoadLibrary(loadPath);
+#endif
         }
 
     }
