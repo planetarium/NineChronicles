@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Numerics;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -79,10 +80,11 @@ namespace Nekoyume.State
             FungibleAssetValue price,
             int count)
         {
+            var currency = States.Instance.GoldBalanceState.Gold.Currency;
             return SellProducts.Value.FirstOrDefault(x =>
                 x.TradableId.Equals(tradableId) &&
                 (x.RegisteredBlockIndex + Order.ExpirationInterval).Equals(requiredBlockIndex) &&
-                x.Price.Equals(price) &&
+                ((BigInteger)x.Price * currency).Equals(price) &&
                 x.Quantity.Equals(count));
         }
 

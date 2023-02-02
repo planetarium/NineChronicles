@@ -12,6 +12,7 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
+using Nekoyume.Model.Market;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using UnityEngine;
@@ -263,7 +264,10 @@ namespace Nekoyume.UI
             view.SetLoading(orderDigests);
 
             var updateSellInfos = new List<UpdateSellInfo>();
+            var reRegisterInfos = new List<(ProductInfo, IRegisterInfo)>();
             var oneLineSystemInfos = new List<(string name, int count)>();
+            var agentAddress = States.Instance.AgentState.address;
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
             foreach (var orderDigest in orderDigests)
             {
                 if (!ReactiveShopState.TryGetShopItem(orderDigest, out var itemBase))
@@ -271,20 +275,32 @@ namespace Nekoyume.UI
                     return;
                 }
 
-                var updateSellInfo = new UpdateSellInfo(
-                    orderDigest.ProductId,
-                    Guid.NewGuid(),
-                    orderDigest.TradableId,
-                    itemBase.ItemSubType,
-                    (BigInteger)orderDigest.Price * States.Instance.GoldBalanceState.Gold.Currency,
-                    (int) orderDigest.Quantity
-                );
-
-                updateSellInfos.Add(updateSellInfo);
+                var productType = itemBase is TradableMaterial
+                    ? ProductType.Fungible
+                    : ProductType.NonFungible;
+                var productInfo = new ProductInfo
+                {
+                    ProductId = orderDigest.ProductId,
+                    Price = (BigInteger) orderDigest.Price *
+                            States.Instance.GoldBalanceState.Gold.Currency,
+                    AgentAddress = agentAddress,
+                    AvatarAddress = avatarAddress,
+                    Type = productType,
+                    Legacy = orderDigest.Legacy
+                };
+                var registerInfo = new RegisterInfo
+                {
+                    AvatarAddress = avatarAddress,
+                    Price = 100 * States.Instance.GoldBalanceState.Gold.Currency,
+                    Type = productType,
+                    TradableId = orderDigest.TradableId,
+                    ItemCount = orderDigest.Quantity,
+                };
+                reRegisterInfos.Add((productInfo, registerInfo));
                 oneLineSystemInfos.Add((itemBase.GetLocalizedName(), (int) orderDigest.Quantity));
             }
 
-            Game.Game.instance.ActionManager.UpdateSell(updateSellInfos).Subscribe();
+            Game.Game.instance.ActionManager.ReRegisterProduct(reRegisterInfos).Subscribe();
             Analyzer.Instance.Track("Unity/UpdateSellAll", new Dictionary<string, Value>()
             {
                 ["Quantity"] = updateSellInfos.Count,
@@ -371,8 +387,19 @@ namespace Nekoyume.UI
             var totalPrice = data.Price.Value;
             var count = data.Count.Value;
             var itemSubType = data.Item.Value.ItemBase.Value.ItemSubType;
-            Game.Game.instance.ActionManager.Sell(tradableItem, count, totalPrice, itemSubType)
-                .Subscribe();
+            var registerInfo = new RegisterInfo
+            {
+                AvatarAddress = States.Instance.CurrentAvatarState.address,
+                Price = totalPrice,
+                ItemCount = count,
+                TradableId = tradableItem.TradableId,
+                Type = tradableItem is TradableMaterial
+                    ? ProductType.Fungible
+                    : ProductType.NonFungible,
+            };
+            Game.Game.instance.ActionManager.RegisterProduct(new []{registerInfo}).Subscribe();
+            // Game.Game.instance.ActionManager.Sell(tradableItem, count, totalPrice, itemSubType)
+            //     .Subscribe();
             ResponseSell();
         }
 
@@ -410,16 +437,31 @@ namespace Nekoyume.UI
             }
 
             var itemSubType = data.Item.Value.ItemBase.Value.ItemSubType;
-            var updateSellInfo = new UpdateSellInfo(
-                digest.ProductId,
-                Guid.NewGuid(),
-                tradableItem.TradableId,
-                itemSubType,
-                totalPrice,
-                count
-            );
+            var agentAddress = States.Instance.AgentState.address;
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var productType = data.Item.Value.ItemBase.Value is TradableMaterial
+                ? ProductType.Fungible
+                : ProductType.NonFungible;
+            var productInfo = new ProductInfo
+            {
+                ProductId = digest.ProductId,
+                Price = (BigInteger) digest.Price *
+                        States.Instance.GoldBalanceState.Gold.Currency,
+                AgentAddress = agentAddress,
+                AvatarAddress = avatarAddress,
+                Type = productType,
+                Legacy = digest.Legacy
+            };
+            var registerInfo = new RegisterInfo
+            {
+                AvatarAddress = avatarAddress,
+                Price = 90 * States.Instance.GoldBalanceState.Gold.Currency,
+                Type = productType,
+                TradableId = digest.TradableId,
+                ItemCount = digest.Quantity,
+            };
 
-            Game.Game.instance.ActionManager.UpdateSell(new List<UpdateSellInfo> {updateSellInfo}).Subscribe();
+            Game.Game.instance.ActionManager.ReRegisterProduct(new List<(ProductInfo, IRegisterInfo)> {(productInfo, registerInfo)}).Subscribe();
             ResponseSell();
         }
 
@@ -517,11 +559,21 @@ namespace Nekoyume.UI
                 ReactiveShopState.GetSellProduct(tradableId, requiredBlockIndex, price, count);
             if (digest != null)
             {
-                Game.Game.instance.ActionManager.SellCancellation(
-                    avatarAddress,
-                    digest.ProductId,
-                    digest.TradableId,
-                    subType).Subscribe();
+                var productInfo = new ProductInfo
+                {
+                    AvatarAddress = States.Instance.CurrentAvatarState.address,
+                    AgentAddress = States.Instance.AgentState.address,
+                    Price = price,
+                    ProductId = digest.ProductId,
+                    Legacy = digest.Legacy,
+                    Type = tradableItem is TradableMaterial
+                        ? ProductType.Fungible
+                        : ProductType.NonFungible
+                };
+                Game.Game.instance.ActionManager.CancelProductRegistration(new List<ProductInfo>
+                {
+                    productInfo
+                });
                 ResponseSellCancellation(digest.ProductId, digest.TradableId);
             }
         }

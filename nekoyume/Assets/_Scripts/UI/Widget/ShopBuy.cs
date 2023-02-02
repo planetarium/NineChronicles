@@ -12,6 +12,7 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
+using Nekoyume.Model.Market;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
@@ -208,13 +209,30 @@ namespace Nekoyume.UI
         private async void Buy(List<ShopItem> models)
         {
             var purchaseInfos = new ConcurrentBag<PurchaseInfo>();
+            var productInfos = new List<ProductInfo>();
             await foreach (var item in models.ToAsyncEnumerable())
             {
-                var purchaseInfo = await GetPurchaseInfo(item.OrderDigest.ProductId);
-                purchaseInfos.Add(purchaseInfo);
+                if (item.OrderDigest.Legacy)
+                {
+                    var purchaseInfo = await GetPurchaseInfo(item.OrderDigest.ProductId);
+                    purchaseInfos.Add(purchaseInfo);
+                }
+                else
+                {
+                    var productInfo = GetProductInfo(item);
+                    productInfos.Add(productInfo);
+                }
             }
 
-            Game.Game.instance.ActionManager.Buy(purchaseInfos.ToList()).Subscribe();
+            if (purchaseInfos.Any())
+            {
+                Game.Game.instance.ActionManager.Buy(purchaseInfos.ToList()).Subscribe();
+            }
+
+            if (productInfos.Any())
+            {
+                Game.Game.instance.ActionManager.BuyProduct(productInfos).Subscribe();
+            }
 
             if (models.Count > 0)
             {
@@ -266,6 +284,22 @@ namespace Nekoyume.UI
             var order = await Util.GetOrder(orderId);
             return new PurchaseInfo(orderId, order.TradableId, order.SellerAgentAddress,
                 order.SellerAvatarAddress, order.ItemSubType, order.Price);
+        }
+
+        private static ProductInfo GetProductInfo(ShopItem shopItem)
+        {
+            return new ProductInfo
+            {
+                AvatarAddress = shopItem.OrderDigest.SellerAvatarAddress,
+                AgentAddress = shopItem.OrderDigest.SellerAgentAddress,
+                ProductId = shopItem.OrderDigest.ProductId,
+                Price = (BigInteger) shopItem.OrderDigest.Price *
+                        States.Instance.GoldBalanceState.Gold.Currency,
+                Type = shopItem.ItemBase is TradableMaterial
+                    ? ProductType.Fungible
+                    : ProductType.NonFungible,
+                Legacy = shopItem.OrderDigest.Legacy,
+            };
         }
     }
 }

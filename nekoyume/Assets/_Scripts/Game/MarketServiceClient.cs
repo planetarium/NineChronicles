@@ -32,19 +32,19 @@ namespace Nekoyume.Game
                 PropertyNameCaseInsensitive = true
             };
             var response = JsonSerializer.Deserialize<ProductResponse>(json, options);
-            return response.ItemProducts.ToList();
+            return response.ItemProducts.Where(p => p.Exist).ToList();
         }
 
         public async Task<List<ItemProductModel>> GetProducts(Address address)
         {
-            var url = $"{_url}/Market/products/2B26B4bD5c3A169a2B03177bb3755F273749b302";
+            var url = $"{_url}/Market/products/{address}";
             var json = await _client.GetStringAsync(url);
             var options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             };
             var response = JsonSerializer.Deserialize<ProductResponse>(json, options);
-            return response.ItemProducts.ToList();
+            return response.ItemProducts.Where(p => p.Exist).ToList();
         }
     }
 }

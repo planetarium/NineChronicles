@@ -36,6 +36,8 @@ namespace Nekoyume.UI.Model
         public List<SkillModel> Skills { get; set; }
         public List<StatModel> Stats { get; set; } = new();
         public long RegisteredBlockIndex { get; set; }
+        public bool Exist { get; set; }
+        public bool Legacy { get; set; }
     }
 
     [Serializable]
