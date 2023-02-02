@@ -14,10 +14,14 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [ActionType("unlock_world")]
-    public class UnlockWorld1: GameAction
+    public class UnlockWorld1: GameAction, IUnlockWorldV1
     {
         public List<int> WorldIds;
         public Address AvatarAddress;
+
+        IEnumerable<int> IUnlockWorldV1.WorldIds => WorldIds;
+        Address IUnlockWorldV1.AvatarAddress => AvatarAddress;
+
         public override IAccountStateDelta Execute(IActionContext context)
         {
             var states = context.PreviousStates;
