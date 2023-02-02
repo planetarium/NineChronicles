@@ -16,7 +16,7 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("redeem_code2")]
-    public class RedeemCode2 : GameAction
+    public class RedeemCode2 : GameAction, IRedeemCodeV1
     {
         public string Code { get; internal set; }
 
