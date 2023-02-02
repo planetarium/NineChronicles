@@ -25,10 +25,14 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100320ObsoleteIndex)]
     [ActionType("update_sell3")]
-    public class UpdateSell3 : GameAction
+    public class UpdateSell3 : GameAction, IUpdateSellV2
     {
         public Address sellerAvatarAddress;
         public IEnumerable<UpdateSellInfo> updateSellInfos;
+
+        Address IUpdateSellV2.SellerAvatarAddress => sellerAvatarAddress;
+        IEnumerable<IValue> IUpdateSellV2.UpdateSellInfos =>
+            updateSellInfos.Select(x => x.Serialize());
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
