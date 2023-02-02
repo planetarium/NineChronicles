@@ -23,7 +23,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("item_enhancement10")]
-    public class ItemEnhancement10 : GameAction
+    public class ItemEnhancement10 : GameAction, IItemEnhancementV2
     {
         public static Address GetFeeStoreAddress() => Addresses.Blacksmith.Derive("_0_0");
 
@@ -38,6 +38,11 @@ namespace Nekoyume.Action
         public Guid materialId;
         public Address avatarAddress;
         public int slotIndex;
+
+        public Guid ItemId => itemId;
+        public Guid MaterialId => materialId;
+        public Address AvatarAddress => avatarAddress;
+        public int SlotIndex => slotIndex;
 
         // NOTE: This is equals to [`ItemEnhancement9.ResultModel`].
         [Serializable]

@@ -22,6 +22,8 @@ using Nekoyume.TableData;
 using Serilog;
 using static Lib9c.SerializeKeys;
 
+using BencodexList = Bencodex.Types.List;
+
 namespace Nekoyume.Action
 {
     /// <summary>
@@ -30,7 +32,7 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockPolicySource.V100360ObsoleteIndex)]
     [ActionType("battle_arena7")]
-    public class BattleArena7 : GameAction
+    public class BattleArena7 : GameAction, IBattleArenaV1
     {
         public const string PurchasedCountKey = "purchased_count_during_interval";
         public Address myAvatarAddress;
@@ -46,6 +48,23 @@ namespace Nekoyume.Action
         public ArenaPlayerDigest ExtraMyArenaPlayerDigest;
         public ArenaPlayerDigest ExtraEnemyArenaPlayerDigest;
         public int ExtraPreviousMyScore;
+
+        public Address MyAvatarAddress => myAvatarAddress;
+
+        public Address EnemyAvatarAddress => enemyAvatarAddress;
+
+        public int ChampionshipId => championshipId;
+
+        public int Round => round;
+
+        public int Ticket => ticket;
+
+        public IEnumerable<Guid> Costumes => costumes;
+
+        public IEnumerable<Guid> Equipments => equipments;
+
+        public IEnumerable<BencodexList> RuneSlotInfos => runeInfos
+            .Select(x => (BencodexList)x.Serialize());
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>()

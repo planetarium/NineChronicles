@@ -14,6 +14,7 @@ using Nekoyume.Model.Rune;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
+using BencodexList = Bencodex.Types.List;
 
 namespace Nekoyume.Action
 {
@@ -22,7 +23,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("join_arena3")]
-    public class JoinArena : GameAction
+    public class JoinArena : GameAction, IJoinArenaV1
     {
         public Address avatarAddress;
         public int championshipId;
@@ -30,6 +31,14 @@ namespace Nekoyume.Action
         public List<Guid> costumes;
         public List<Guid> equipments;
         public List<RuneSlotInfo> runeInfos;
+
+        public Address AvatarAddress => avatarAddress;
+        public int ChampionshipId => championshipId;
+        public int Round => round;
+        public IEnumerable<Guid> Costumes => costumes;
+        public IEnumerable<Guid> Equipments => equipments;
+        public IEnumerable<BencodexList> RuneSlotInfos => runeInfos
+            .Select(x => (BencodexList)x.Serialize());
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>()

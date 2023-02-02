@@ -18,13 +18,18 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("sell4")]
-    public class Sell4 : GameAction
+    public class Sell4 : GameAction, ISellV1
     {
         public const long ExpiredBlockIndex = 16000;
         public Address sellerAvatarAddress;
         public Guid itemId;
         public ItemSubType itemSubType;
         public FungibleAssetValue price;
+
+        public Address SellerAvatarAddress => sellerAvatarAddress;
+        public Guid ItemId => itemId;
+        public FungibleAssetValue Price => price;
+        public string ItemSubType => itemSubType.ToString();
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {

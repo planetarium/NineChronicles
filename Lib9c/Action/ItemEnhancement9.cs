@@ -21,7 +21,7 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100220ObsoleteIndex)]
     [ActionType("item_enhancement9")]
-    public class ItemEnhancement9 : GameAction
+    public class ItemEnhancement9 : GameAction, IItemEnhancementV2
     {
         public static readonly Address BlacksmithAddress = Addresses.Blacksmith;
 
@@ -36,6 +36,11 @@ namespace Nekoyume.Action
         public Guid materialId;
         public Address avatarAddress;
         public int slotIndex;
+
+        public Guid ItemId => itemId;
+        public Guid MaterialId => materialId;
+        public Address AvatarAddress => avatarAddress;
+        public int SlotIndex => slotIndex;
 
         [Serializable]
         public class ResultModel : AttachmentActionResult

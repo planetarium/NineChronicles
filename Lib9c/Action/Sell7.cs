@@ -19,7 +19,7 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("sell7")]
-    public class Sell7 : GameAction
+    public class Sell7 : GameAction, ISellV2
     {
         public Address sellerAvatarAddress;
         public Guid tradableId;
@@ -27,6 +27,13 @@ namespace Nekoyume.Action
         public FungibleAssetValue price;
         public ItemSubType itemSubType;
         public Guid orderId;
+
+        public Address SellerAvatarAddress => sellerAvatarAddress;
+        public Guid TradableId => tradableId;
+        public int Count => count;
+        public FungibleAssetValue Price => price;
+        public string ItemSubType => itemSubType.ToString();
+        public Guid OrderId => orderId;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>

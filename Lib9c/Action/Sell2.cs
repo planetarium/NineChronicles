@@ -16,11 +16,15 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("sell2")]
-    public class Sell2 : GameAction
+    public class Sell2 : GameAction, ISellV1
     {
         public Address sellerAvatarAddress;
         public Guid itemId;
         public FungibleAssetValue price;
+
+        public Address SellerAvatarAddress => sellerAvatarAddress;
+        public Guid ItemId => itemId;
+        public FungibleAssetValue Price => price;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {

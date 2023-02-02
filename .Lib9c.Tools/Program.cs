@@ -1,10 +1,11 @@
 using System;
 using Cocona;
 using Lib9c.Tools.SubCommand;
-using Action = Lib9c.Tools.SubCommand.Action;
 
 namespace Lib9c.Tools
 {
+    using Action = Lib9c.Tools.SubCommand.Action;
+
     [HasSubCommands(typeof(Account), Description = "Query about accounts.")]
     [HasSubCommands(typeof(Market), Description = "Query about market.")]
     [HasSubCommands(typeof(State), Description = "Manage states.")]
