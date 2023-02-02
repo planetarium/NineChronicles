@@ -18,7 +18,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("migration_legacy_shop2")]
-    public class MigrationLegacyShop : GameAction
+    public class MigrationLegacyShop : GameAction, IMigrationLegacyShopV1
     {
         public override IAccountStateDelta Execute(IActionContext context)
         {

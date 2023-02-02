@@ -12,7 +12,7 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("migration_legacy_shop")]
-    public class MigrationLegacyShop0 : GameAction
+    public class MigrationLegacyShop0 : GameAction, IMigrationLegacyShopV1
     {
         public override IAccountStateDelta Execute(IActionContext context)
         {
