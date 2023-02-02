@@ -18,7 +18,7 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100083ObsoleteIndex)]
     [ActionType("mimisbrunnr_battle5")]
-    public class MimisbrunnrBattle5 : GameAction
+    public class MimisbrunnrBattle5 : GameAction, IMimisbrunnrBattleV2
     {
         public List<Guid> costumes;
         public List<Guid> equipments;
@@ -27,6 +27,14 @@ namespace Nekoyume.Action
         public int stageId;
         public Address avatarAddress;
         public Address rankingMapAddress;
+
+        IEnumerable<Guid> IMimisbrunnrBattleV2.Costumes => costumes;
+        IEnumerable<Guid> IMimisbrunnrBattleV2.Equipments => equipments;
+        IEnumerable<Guid> IMimisbrunnrBattleV2.Foods => foods;
+        int IMimisbrunnrBattleV2.WorldId => worldId;
+        int IMimisbrunnrBattleV2.StageId => stageId;
+        Address IMimisbrunnrBattleV2.AvatarAddress => avatarAddress;
+        Address IMimisbrunnrBattleV2.RankingMapAddress => rankingMapAddress;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
