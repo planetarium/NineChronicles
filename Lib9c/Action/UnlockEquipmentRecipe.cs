@@ -18,10 +18,13 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [ActionType("unlock_equipment_recipe")]
-    public class UnlockEquipmentRecipe: GameAction
+    public class UnlockEquipmentRecipe: GameAction, IUnlockEquipmentRecipeV1
     {
         public List<int> RecipeIds = new List<int>();
         public Address AvatarAddress;
+
+        IEnumerable<int> IUnlockEquipmentRecipeV1.RecipeIds => RecipeIds;
+        Address IUnlockEquipmentRecipeV1.AvatarAddress => AvatarAddress;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
