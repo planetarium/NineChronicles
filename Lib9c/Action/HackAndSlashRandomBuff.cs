@@ -19,13 +19,16 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("hack_and_slash_random_buff")]
-    public class HackAndSlashRandomBuff : GameAction
+    public class HackAndSlashRandomBuff : GameAction, IHackAndSlashRandomBuffV1
     {
         public const int NormalGachaCount = 5;
         public const int AdvancedGachaCount = 10;
 
         public Address AvatarAddress;
         public bool AdvancedGacha;
+
+        Address IHackAndSlashRandomBuffV1.AvatarAddress => AvatarAddress;
+        bool IHackAndSlashRandomBuffV1.AdvancedGacha => AdvancedGacha;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal
             => new Dictionary<string, IValue>
