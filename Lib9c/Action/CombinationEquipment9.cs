@@ -17,7 +17,7 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("combination_equipment9")]
-    public class CombinationEquipment9 : GameAction
+    public class CombinationEquipment9 : GameAction, ICombinationEquipmentV1
     {
         public static readonly Address BlacksmithAddress = ItemEnhancement9.BlacksmithAddress;
 
@@ -32,6 +32,11 @@ namespace Nekoyume.Action
 
         public const string SubRecipeIdKey = "i";
         public int? subRecipeId;
+
+        Address ICombinationEquipmentV1.AvatarAddress => avatarAddress;
+        int ICombinationEquipmentV1.RecipeId => recipeId;
+        int ICombinationEquipmentV1.SlotIndex => slotIndex;
+        int? ICombinationEquipmentV1.SubRecipeId => subRecipeId;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
