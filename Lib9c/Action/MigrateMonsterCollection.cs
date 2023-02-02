@@ -14,7 +14,7 @@ namespace Nekoyume.Action
     /// keep its staked period.
     /// </summary>
     [ActionType("migrate_monster_collection")]
-    public class MigrateMonsterCollection : ActionBase
+    public class MigrateMonsterCollection : ActionBase, IMigrateMonsterCollectionV1
     {
         public Address AvatarAddress { get; private set; }
 
