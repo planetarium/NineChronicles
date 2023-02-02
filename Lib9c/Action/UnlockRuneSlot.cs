@@ -15,10 +15,13 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("unlock_rune_slot")]
-    public class UnlockRuneSlot : GameAction
+    public class UnlockRuneSlot : GameAction, IUnlockRuneSlotV1
     {
         public Address AvatarAddress;
         public int SlotIndex;
+
+        Address IUnlockRuneSlotV1.AvatarAddress => AvatarAddress;
+        int IUnlockRuneSlotV1.SlotIndex => SlotIndex;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
