@@ -1,14 +1,18 @@
 namespace Lib9c.Tests
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
+    using Lib9c.Tests.Action;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Model.Item;
     using Nekoyume.Model.State;
+    using Nekoyume.TableData;
     using static SerializeKeys;
     using State = Lib9c.Tests.Action.State;
 
@@ -71,6 +75,95 @@ namespace Lib9c.Tests
                 avatarAddr,
                 initialStatesWithAvatarStateV1,
                 initialStatesWithAvatarStateV2);
+        }
+
+        public static Dictionary<ItemBase, int> GetMaterialsFromRecipeId(
+            TableSheets tableSheets,
+            IEnumerable<(int, int?, int)> targetRecipeIdList,
+            IRandom random = null
+        )
+        {
+            random ??= new TestRandom();
+            var materialDict = new Dictionary<ItemBase, int>();
+
+            foreach (var (recipeId, subRecipeId, _) in targetRecipeIdList)
+            {
+                var itemRecipeRow = tableSheets.EquipmentItemRecipeSheet.OrderedList.First(e =>
+                    e.Id == recipeId);
+                var materialRow = tableSheets.MaterialItemSheet[itemRecipeRow.MaterialId];
+                var material = ItemFactory.CreateItem(materialRow, random);
+                if (materialDict.ContainsKey(material))
+                {
+                    materialDict[material] += itemRecipeRow.MaterialCount;
+                }
+                else
+                {
+                    materialDict[material] = itemRecipeRow.MaterialCount;
+                }
+
+                if (!(subRecipeId is null))
+                {
+                    var subRow =
+                        tableSheets.EquipmentItemSubRecipeSheetV2.OrderedList.First(e =>
+                            e.Id == (int)subRecipeId!);
+                    foreach (var materialInfo in subRow.Materials)
+                    {
+                        var subMaterial = ItemFactory.CreateItem(
+                            tableSheets.MaterialItemSheet[materialInfo.Id], random);
+
+                        if (materialDict.ContainsKey(material))
+                        {
+                            materialDict[subMaterial] += materialInfo.Count;
+                        }
+                        else
+                        {
+                            materialDict[subMaterial] = materialInfo.Count;
+                        }
+                    }
+                }
+            }
+
+            return materialDict;
+        }
+
+        public static List<(int, int?, int)> GetRecipeIdFromItemId(
+            TableSheets tableSheets,
+            int targetItemId,
+            IRandom random = null)
+        {
+            return GetRecipeIdFromItemId(tableSheets, new[] { targetItemId }, random);
+        }
+
+        public static List<(int, int?, int)> GetRecipeIdFromItemId(
+            TableSheets tableSheets,
+            IEnumerable<int> targetItemIdList,
+            IRandom random = null
+        )
+        {
+            random ??= new TestRandom();
+            var equipmentItemSheet = tableSheets.EquipmentItemSheet;
+            var consumableItemSheet = tableSheets.ConsumableItemSheet;
+
+            var recipeIdList = new List<(int, int?, int)>();
+            foreach (var itemId in targetItemIdList)
+            {
+                ItemSheet.Row itemRow;
+                try
+                {
+                    itemRow = equipmentItemSheet.First(e => e.Value.Id == itemId).Value;
+                }
+                catch (InvalidOperationException)
+                {
+                    itemRow = consumableItemSheet.First(e => e.Value.Id == itemId).Value;
+                }
+
+                var itemRecipeRow = tableSheets.EquipmentItemRecipeSheet.First(e =>
+                    e.Value.ResultEquipmentId == itemRow.Id).Value;
+                recipeIdList.Add((itemRecipeRow.Id, itemRecipeRow.SubRecipeIds?[0],
+                    itemRecipeRow.UnlockStage));
+            }
+
+            return recipeIdList;
         }
 
         public static string CsvLinqWhere(string csv, Func<string, bool> where)
