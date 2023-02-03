@@ -480,6 +480,42 @@ namespace Nekoyume.BlockChain
                 .AddTo(_disposables);
         }
 
+        private void RegisterProduct()
+        {
+            _actionRenderer.EveryRender<RegisterProduct>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseRegisterProduct)
+                .AddTo(_disposables);
+        }
+
+        private void ReRegisterProduct()
+        {
+            _actionRenderer.EveryRender<ReRegisterProduct>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseReRegisterProduct)
+                .AddTo(_disposables);
+        }
+
+        private void CancelProductRegistration()
+        {
+            _actionRenderer.EveryRender<CancelProductRegistration>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseCancelProductRegistration)
+                .AddTo(_disposables);
+        }
+
+        private void BuyProduct()
+        {
+            _actionRenderer.EveryRender<BuyProduct>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseBuyProduct)
+                .AddTo(_disposables);
+        }
+
         private async UniTaskVoid ResponseCreateAvatar(ActionBase.ActionEvaluation<CreateAvatar> eval)
         {
             if (eval.Exception != null)
@@ -1177,6 +1213,25 @@ namespace Nekoyume.BlockChain
             UpdateAgentStateAsync(eval).Forget();
             UpdateCurrentAvatarStateAsync(eval).Forget();
             RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
+        }
+
+        private async void ResponseRegisterProduct(
+            ActionBase.ActionEvaluation<RegisterProduct> eval)
+        {
+        }
+
+        private async void ResponseReRegisterProduct(
+            ActionBase.ActionEvaluation<ReRegisterProduct> eval)
+        {
+        }
+
+        private async void ResponseCancelProductRegistration(
+            ActionBase.ActionEvaluation<CancelProductRegistration> eval)
+        {
+        }
+
+        private async void ResponseBuyProduct(ActionBase.ActionEvaluation<BuyProduct> eval)
+        {
         }
 
         private async void ResponseDailyRewardAsync(ActionBase.ActionEvaluation<DailyReward> eval)
