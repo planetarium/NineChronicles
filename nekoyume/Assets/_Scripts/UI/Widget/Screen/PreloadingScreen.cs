@@ -49,23 +49,21 @@ namespace Nekoyume.UI
             if (!GameConfig.IsEditor)
             {
                 if (States.Instance.AgentState.avatarAddresses.Any() &&
-                    States.Instance.AvatarStates.Any(x => x.Value.level > 49))
+                    States.Instance.AvatarStates.Any(x => x.Value.level > 49) &&
+                    Util.TryGetStoredAvatarSlotIndex(out var si))
                 {
-                    if (Util.TryGetStoredAvatarSlotIndex(out var si))
-                    {
-                        var loadingScreen = Find<DataLoadingScreen>();
-                        loadingScreen.Message = L10nManager.Localize("UI_LOADING_BOOTSTRAP_START");
-                        loadingScreen.Show();
-                        await RxProps.SelectAvatarAsync(si);
-                        await WorldBossStates.Set(States.Instance.CurrentAvatarState.address);
-                        await States.Instance.InitRuneStoneBalance();
-                        await States.Instance.InitRuneStates();
-                        await States.Instance.InitRuneSlotStates();
-                        await States.Instance.InitItemSlotStates();
-                        loadingScreen.Close();
-                        Game.Event.OnRoomEnter.Invoke(false);
-                        Game.Event.OnUpdateAddresses.Invoke();
-                    }
+                    var loadingScreen = Find<DataLoadingScreen>();
+                    loadingScreen.Message = L10nManager.Localize("UI_LOADING_BOOTSTRAP_START");
+                    loadingScreen.Show();
+                    await RxProps.SelectAvatarAsync(si);
+                    await WorldBossStates.Set(States.Instance.CurrentAvatarState.address);
+                    await States.Instance.InitRuneStoneBalance();
+                    await States.Instance.InitRuneStates();
+                    await States.Instance.InitRuneSlotStates();
+                    await States.Instance.InitItemSlotStates();
+                    loadingScreen.Close();
+                    Game.Event.OnRoomEnter.Invoke(false);
+                    Game.Event.OnUpdateAddresses.Invoke();
                 }
                 else
                 {
