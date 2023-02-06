@@ -57,7 +57,7 @@ namespace Lib9c.Tests
                 .SetState(agentAddr, agentState.Serialize())
                 .SetState(avatarAddr, avatarState.Serialize());
             var initialStatesWithAvatarStateV2 = states
-                .SetState(agentAddr, agentState.SerializeV2())
+                .SetState(agentAddr, agentState.Serialize())
                 .SetState(avatarAddr, avatarState.SerializeV2())
                 .SetState(
                     avatarAddr.Derive(LegacyInventoryKey),
