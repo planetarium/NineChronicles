@@ -732,6 +732,19 @@
         <member name="M:Libplanet.Net.Messages.NetMQMessageCodec.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,Libplanet.Net.BoundPeer,System.DateTimeOffset)">
             <inheritdoc/>
         </member>
+        <member name="M:Libplanet.Net.Messages.NetMQMessageCodec.ParseMessageType(NetMQ.NetMQMessage,System.Boolean)">
+            <summary>
+            Parses a <see cref="T:Libplanet.Net.Messages.Message.MessageType"/> from given <see cref="T:NetMQ.NetMQMessage"/>.
+            </summary>
+            <param name="encoded">A encoded <see cref="T:NetMQ.NetMQMessage"/>.</param>
+            <param name="reply">A flag to express whether the target is a reply of other message.
+            </param>
+            <exception cref="T:System.IndexOutOfRangeException">Thrown if given <see cref="T:NetMQ.NetMQMessage"/>
+            has not enough <see cref="T:NetMQ.NetMQFrame"/> for parsing a message type.</exception>
+            <returns>Returns a <see cref="T:Libplanet.Net.Messages.Message.MessageType"/> of given <paramref name="encoded">
+            </paramref>. If given value cannot be interpreted in <see cref="T:Libplanet.Net.Messages.Message.MessageType"/>,
+            this would return a integer number.</returns>
+        </member>
         <member name="M:Libplanet.Net.Messages.NetMQMessageCodec.Decode(NetMQ.NetMQMessage,System.Boolean)">
             <inheritdoc/>
         </member>
