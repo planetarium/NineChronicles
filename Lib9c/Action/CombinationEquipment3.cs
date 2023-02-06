@@ -21,7 +21,7 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("combination_equipment3")]
-    public class CombinationEquipment3 : GameAction
+    public class CombinationEquipment3 : GameAction, ICombinationEquipmentV1
     {
         public static readonly Address BlacksmithAddress = ItemEnhancement9.BlacksmithAddress;
 
@@ -29,6 +29,11 @@ namespace Nekoyume.Action
         public int RecipeId;
         public int SlotIndex;
         public int? SubRecipeId;
+
+        Address ICombinationEquipmentV1.AvatarAddress => AvatarAddress;
+        int ICombinationEquipmentV1.RecipeId => RecipeId;
+        int ICombinationEquipmentV1.SlotIndex => SlotIndex;
+        int? ICombinationEquipmentV1.SubRecipeId => SubRecipeId;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {

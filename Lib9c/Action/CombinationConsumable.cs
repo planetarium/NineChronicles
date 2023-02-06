@@ -25,7 +25,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("combination_consumable8")]
-    public class CombinationConsumable : GameAction
+    public class CombinationConsumable : GameAction, ICombinationConsumableV1
     {
         public const string AvatarAddressKey = "a";
         public Address avatarAddress;
@@ -35,6 +35,10 @@ namespace Nekoyume.Action
 
         public const string RecipeIdKey = "r";
         public int recipeId;
+
+        Address ICombinationConsumableV1.AvatarAddress => avatarAddress;
+        int ICombinationConsumableV1.RecipeId => recipeId;
+        int ICombinationConsumableV1.SlotIndex => slotIndex;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>

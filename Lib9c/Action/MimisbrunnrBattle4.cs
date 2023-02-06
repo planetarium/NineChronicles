@@ -18,7 +18,7 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("mimisbrunnr_battle4")]
-    public class MimisbrunnrBattle4 : GameAction
+    public class MimisbrunnrBattle4 : GameAction, IMimisbrunnrBattleV1
     {
         public List<Guid> costumes;
         public List<Guid> equipments;
@@ -28,6 +28,15 @@ namespace Nekoyume.Action
         public Address avatarAddress;
         public Address WeeklyArenaAddress;
         public Address RankingMapAddress;
+
+        IEnumerable<Guid> IMimisbrunnrBattleV1.Costumes => costumes;
+        IEnumerable<Guid> IMimisbrunnrBattleV1.Equipments => equipments;
+        IEnumerable<Guid> IMimisbrunnrBattleV1.Foods => foods;
+        int IMimisbrunnrBattleV1.WorldId => worldId;
+        int IMimisbrunnrBattleV1.StageId => stageId;
+        Address IMimisbrunnrBattleV1.AvatarAddress => avatarAddress;
+        Address IMimisbrunnrBattleV1.WeeklyArenaAddress => WeeklyArenaAddress;
+        Address IMimisbrunnrBattleV1.RankingMapAddress => RankingMapAddress;
 
         private const int AlfheimId = 2;
 

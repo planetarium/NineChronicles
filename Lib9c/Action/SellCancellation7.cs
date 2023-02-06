@@ -20,12 +20,17 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("sell_cancellation7")]
-    public class SellCancellation7 : GameAction
+    public class SellCancellation7 : GameAction, ISellCancellationV3
     {
         public Guid orderId;
         public Guid tradableId;
         public Address sellerAvatarAddress;
         public ItemSubType itemSubType;
+
+        Guid ISellCancellationV3.OrderId => orderId;
+        Guid ISellCancellationV3.TradableId => tradableId;
+        Address ISellCancellationV3.SellerAvatarAddress => sellerAvatarAddress;
+        string ISellCancellationV3.ItemSubType => itemSubType.ToString();
 
         [Serializable]
         public class Result : AttachmentActionResult

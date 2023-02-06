@@ -9,10 +9,13 @@ using Nekoyume.Model.State;
 namespace Nekoyume.Action
 {
     [ActionType("prepare_reward_assets")]
-    public class PrepareRewardAssets : ActionBase
+    public class PrepareRewardAssets : ActionBase, IPrepareRewardAssetsV1
     {
         public Address RewardPoolAddress;
         public List<FungibleAssetValue> Assets;
+
+        Address IPrepareRewardAssetsV1.RewardPoolAddress => RewardPoolAddress;
+        IEnumerable<FungibleAssetValue> IPrepareRewardAssetsV1.Assets => Assets;
 
         public PrepareRewardAssets(Address rewardPoolAddress, List<FungibleAssetValue> assets)
         {

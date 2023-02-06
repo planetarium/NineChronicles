@@ -20,7 +20,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("redeem_code3")]
-    public class RedeemCode : GameAction
+    public class RedeemCode : GameAction, IRedeemCodeV1
     {
         public string Code { get; internal set; }
 

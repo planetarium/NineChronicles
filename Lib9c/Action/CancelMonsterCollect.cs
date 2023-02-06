@@ -22,10 +22,14 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("cancel_monster_collect")]
-    public class CancelMonsterCollect : GameAction
+    public class CancelMonsterCollect : GameAction, ICancelMonsterCollectV1
     {
         public int collectRound;
         public int level;
+
+        int ICancelMonsterCollectV1.CollectRound => collectRound;
+        int ICancelMonsterCollectV1.Level => level;
+
         public override IAccountStateDelta Execute(IActionContext context)
         {
             IAccountStateDelta states = context.PreviousStates;

@@ -18,7 +18,7 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100260ObsoleteIndex)]
     [ActionType("hack_and_slash12")]
-    public class HackAndSlash12 : GameAction
+    public class HackAndSlash12 : GameAction, IHackAndSlashV5
     {
         public List<Guid> costumes;
         public List<Guid> equipments;
@@ -27,6 +27,14 @@ namespace Nekoyume.Action
         public int stageId;
         public int playCount = 1;
         public Address avatarAddress;
+
+        IEnumerable<Guid> IHackAndSlashV5.Costumes => costumes;
+        IEnumerable<Guid> IHackAndSlashV5.Equipments => equipments;
+        IEnumerable<Guid> IHackAndSlashV5.Foods => foods;
+        int IHackAndSlashV5.WorldId => worldId;
+        int IHackAndSlashV5.StageId => stageId;
+        int IHackAndSlashV5.PlayCount => playCount;
+        Address IHackAndSlashV5.AvatarAddress => avatarAddress;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>

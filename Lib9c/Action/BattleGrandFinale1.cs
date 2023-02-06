@@ -27,7 +27,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType(ActionTypeName)]
-    public class BattleGrandFinale1 : GameAction
+    public class BattleGrandFinale1 : GameAction, IBattleGrandFinaleV1
     {
         private const string ActionTypeName = "battle_grand_finale";
         public const int WinScore = 20;
@@ -44,6 +44,12 @@ namespace Nekoyume.Action
 
         public ArenaPlayerDigest ExtraMyArenaPlayerDigest;
         public ArenaPlayerDigest ExtraEnemyArenaPlayerDigest;
+
+        Address IBattleGrandFinaleV1.MyAvatarAddress => myAvatarAddress;
+        Address IBattleGrandFinaleV1.EnemyAvatarAddress => enemyAvatarAddress;
+        int IBattleGrandFinaleV1.GrandFinaleId => grandFinaleId;
+        IEnumerable<Guid> IBattleGrandFinaleV1.Costumes => costumes;
+        IEnumerable<Guid> IBattleGrandFinaleV1.Equipments => equipments;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>()

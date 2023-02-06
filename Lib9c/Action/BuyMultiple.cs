@@ -26,12 +26,15 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("buy_multiple")]
-    public class BuyMultiple : GameAction
+    public class BuyMultiple : GameAction, IBuyMultipleV1
     {
         public Address buyerAvatarAddress;
         public IEnumerable<PurchaseInfo> purchaseInfos;
         public BuyerResult buyerResult;
         public SellerResult sellerResult;
+
+        Address IBuyMultipleV1.BuyerAvatarAddress => buyerAvatarAddress;
+        IEnumerable<IValue> IBuyMultipleV1.PurchaseInfos => purchaseInfos.Select(x => x.Serialize());
 
         public const int ERROR_CODE_FAILED_LOADING_STATE = 1;
         public const int ERROR_CODE_ITEM_DOES_NOT_EXIST = 2;

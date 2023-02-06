@@ -15,12 +15,14 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("daily_reward2")]
-    public class DailyReward2 : GameAction
+    public class DailyReward2 : GameAction, IDailyRewardV1
     {
         public Address avatarAddress;
         public DailyRewardResult dailyRewardResult;
         private const int rewardItemId = 400000;
         private const int rewardItemCount = 10;
+
+        Address IDailyRewardV1.AvatarAddress => avatarAddress;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
@@ -62,10 +64,10 @@ namespace Nekoyume.Action
             {
                 materials = materials,
             };
-            
+
             // create mail
-            var mail = new DailyRewardMail(result, 
-                                           ctx.BlockIndex, 
+            var mail = new DailyRewardMail(result,
+                                           ctx.BlockIndex,
                                            ctx.Random.GenerateRandomGuid(),
                                            ctx.BlockIndex);
 
@@ -85,8 +87,8 @@ namespace Nekoyume.Action
         {
             avatarAddress = plainValue["avatarAddress"].ToAddress();
         }
-        
-        
+
+
         [Serializable]
         public class DailyRewardResult : AttachmentActionResult
         {

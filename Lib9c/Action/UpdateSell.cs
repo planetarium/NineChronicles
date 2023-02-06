@@ -23,11 +23,15 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("update_sell5")]
-    public class UpdateSell : GameAction
+    public class UpdateSell : GameAction, IUpdateSellV2
     {
         private const int UpdateCapacity = 100;
         public Address sellerAvatarAddress;
         public IEnumerable<UpdateSellInfo> updateSellInfos;
+
+        Address IUpdateSellV2.SellerAvatarAddress => sellerAvatarAddress;
+        IEnumerable<IValue> IUpdateSellV2.UpdateSellInfos =>
+            updateSellInfos.Select(x => x.Serialize());
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>

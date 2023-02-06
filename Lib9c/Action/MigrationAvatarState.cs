@@ -14,9 +14,12 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("migration_avatar_state")]
-    public class MigrationAvatarState : GameAction
+    public class MigrationAvatarState : GameAction, IMigrationAvatarStateV1
     {
         public List<Dictionary> avatarStates;
+
+        IEnumerable<IValue> IMigrationAvatarStateV1.AvatarStates => avatarStates;
+
         public override IAccountStateDelta Execute(IActionContext context)
         {
             var states = context.PreviousStates;

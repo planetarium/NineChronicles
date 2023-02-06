@@ -26,7 +26,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("hack_and_slash20")]
-    public class HackAndSlash : GameAction
+    public class HackAndSlash : GameAction, IHackAndSlashV10
     {
         public const int UsableApStoneCount = 10;
 
@@ -40,6 +40,17 @@ namespace Nekoyume.Action
         public Address AvatarAddress;
         public int TotalPlayCount = 1;
         public int ApStoneCount = 0;
+
+        IEnumerable<Guid> IHackAndSlashV10.Costumes => Costumes;
+        IEnumerable<Guid> IHackAndSlashV10.Equipments => Equipments;
+        IEnumerable<Guid> IHackAndSlashV10.Foods => Foods;
+        IEnumerable<IValue> IHackAndSlashV10.RuneSlotInfos => RuneInfos.Select(x => x.Serialize());
+        int IHackAndSlashV10.WorldId => WorldId;
+        int IHackAndSlashV10.StageId => StageId;
+        int IHackAndSlashV10.TotalPlayCount => TotalPlayCount;
+        int IHackAndSlashV10.ApStoneCount => ApStoneCount;
+        int? IHackAndSlashV10.StageBuffId => StageBuffId;
+        Address IHackAndSlashV10.AvatarAddress => AvatarAddress;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal
         {

@@ -19,10 +19,14 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1309
     /// </summary>
     [ActionType("unlock_world2")]
-    public class UnlockWorld: GameAction
+    public class UnlockWorld: GameAction, IUnlockWorldV1
     {
         public List<int> WorldIds;
         public Address AvatarAddress;
+
+        IEnumerable<int> IUnlockWorldV1.WorldIds => WorldIds;
+        Address IUnlockWorldV1.AvatarAddress => AvatarAddress;
+
         public override IAccountStateDelta Execute(IActionContext context)
         {
             var states = context.PreviousStates;

@@ -19,7 +19,7 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("buy2")]
-    public class Buy2 : GameAction, IBuy0
+    public class Buy2 : GameAction, IBuy0, IBuyV1
     {
         public const int TaxRate = 8;
 
@@ -29,6 +29,11 @@ namespace Nekoyume.Action
         public Guid productId { get; set; }
         public Buy7.BuyerResult buyerResult;
         public Buy7.SellerResult sellerResult;
+
+        Address IBuyV1.BuyerAvatarAddress => buyerAvatarAddress;
+        Address IBuyV1.SellerAgentAddress => sellerAgentAddress;
+        Address IBuyV1.SellerAvatarAddress => sellerAvatarAddress;
+        Guid IBuyV1.ProductId => productId;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {

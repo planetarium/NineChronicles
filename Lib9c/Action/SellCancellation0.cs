@@ -15,11 +15,14 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("sell_cancellation")]
-    public class SellCancellation0 : GameAction
+    public class SellCancellation0 : GameAction, ISellCancellationV1
     {
         public Guid productId;
         public Address sellerAvatarAddress;
         public SellCancellation.Result result;
+
+        Guid ISellCancellationV1.ProductId => productId;
+        Address ISellCancellationV1.SellerAvatarAddress => sellerAvatarAddress;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {

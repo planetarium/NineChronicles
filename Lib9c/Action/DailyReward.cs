@@ -18,10 +18,12 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("daily_reward6")]
-    public class DailyReward : GameAction
+    public class DailyReward : GameAction, IDailyRewardV1
     {
         public Address avatarAddress;
         public const string AvatarAddressKey = "a";
+
+        Address IDailyRewardV1.AvatarAddress => avatarAddress;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {

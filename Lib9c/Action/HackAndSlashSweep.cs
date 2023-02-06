@@ -22,7 +22,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("hack_and_slash_sweep9")]
-    public class HackAndSlashSweep : GameAction
+    public class HackAndSlashSweep : GameAction, IHackAndSlashSweepV3
     {
         public const int UsableApStoneCount = 10;
 
@@ -34,6 +34,16 @@ namespace Nekoyume.Action
         public int actionPoint;
         public int worldId;
         public int stageId;
+
+        IEnumerable<Guid> IHackAndSlashSweepV3.Costumes => costumes;
+        IEnumerable<Guid> IHackAndSlashSweepV3.Equipments => equipments;
+        IEnumerable<IValue> IHackAndSlashSweepV3.RuneSlotInfos =>
+            runeInfos.Select(x => x.Serialize());
+        Address IHackAndSlashSweepV3.AvatarAddress => avatarAddress;
+        int IHackAndSlashSweepV3.ApStoneCount => apStoneCount;
+        int IHackAndSlashSweepV3.ActionPoint => actionPoint;
+        int IHackAndSlashSweepV3.WorldId => worldId;
+        int IHackAndSlashSweepV3.StageId => stageId;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>()

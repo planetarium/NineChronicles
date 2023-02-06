@@ -19,7 +19,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("transfer_asset2")]
-    public class TransferAsset2 : ActionBase, ISerializable, ITransferAsset
+    public class TransferAsset2 : ActionBase, ISerializable, ITransferAsset, ITransferAssetV1
     {
         private const int MemoMaxLength = 80;
 

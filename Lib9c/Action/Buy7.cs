@@ -20,7 +20,7 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("buy7")]
-    public class Buy7 : GameAction, IBuy5
+    public class Buy7 : GameAction, IBuy5, IBuyV2
     {
         public const int TaxRate = 8;
         public const int ErrorCodeFailedLoadingState = 1;
@@ -35,6 +35,9 @@ namespace Nekoyume.Action
         IEnumerable<IPurchaseInfo> IBuy5.purchaseInfos => purchaseInfos.Cast<IPurchaseInfo>();
         public BuyerMultipleResult buyerMultipleResult;
         public SellerMultipleResult sellerMultipleResult;
+
+        Address IBuyV2.BuyerAvatarAddress => buyerAvatarAddress;
+        IEnumerable<IValue> IBuyV2.PurchaseInfos => purchaseInfos.Select(x => x.Serialize());
 
         [Serializable]
         public class BuyerResult : AttachmentActionResult

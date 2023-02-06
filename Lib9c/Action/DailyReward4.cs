@@ -15,12 +15,14 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("daily_reward4")]
-    public class DailyReward4 : GameAction
+    public class DailyReward4 : GameAction, IDailyRewardV1
     {
         public Address avatarAddress;
         public DailyReward2.DailyRewardResult dailyRewardResult;
         private const int rewardItemId = 400000;
         private const int rewardItemCount = 10;
+
+        Address IDailyRewardV1.AvatarAddress => avatarAddress;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {

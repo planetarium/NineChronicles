@@ -15,9 +15,13 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("create_pending_activations")]
-    public class CreatePendingActivations : ActionBase
+    public class CreatePendingActivations : ActionBase, ICreatePendingActivationsV1
     {
         public IList<(byte[] Address, byte[] Nonce, byte[] PublicKey)> PendingActivations { get; internal set; }
+
+        IEnumerable<Bencodex.Types.List> ICreatePendingActivationsV1.PendingActivations =>
+            PendingActivations.Select(t =>
+                new List(new Binary[] { t.Address, t.Nonce, t.PublicKey }.Cast<IValue>()));
 
         public override IValue PlainValue
             => PendingActivations.Select(t => new List(new Binary[] { t.Address, t.Nonce, t.PublicKey }.Cast<IValue>()))

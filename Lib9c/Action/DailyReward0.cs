@@ -11,9 +11,11 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("daily_reward")]
-    public class DailyReward0 : GameAction
+    public class DailyReward0 : GameAction, IDailyRewardV1
     {
         public Address avatarAddress;
+
+        Address IDailyRewardV1.AvatarAddress => avatarAddress;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
