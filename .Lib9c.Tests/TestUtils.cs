@@ -11,6 +11,7 @@ namespace Lib9c.Tests
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model.Item;
+    using Nekoyume.Model.Quest;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using static SerializeKeys;
@@ -77,16 +78,39 @@ namespace Lib9c.Tests
                 initialStatesWithAvatarStateV2);
         }
 
-        public static Dictionary<ItemBase, int> GetMaterialsFromRecipeId(
+        public static (IAccountStateDelta, IAccountStateDelta) DisableQuestList(
+            IAccountStateDelta stateV1,
+            IAccountStateDelta stateV2,
+            Address avatarAddress
+        )
+        {
+            var emptyQuestList = new QuestList(
+                new QuestSheet(),
+                new QuestRewardSheet(),
+                new QuestItemRewardSheet(),
+                new EquipmentItemRecipeSheet(),
+                new EquipmentItemSubRecipeSheet()
+            );
+            var avatarState = stateV1.GetAvatarState(avatarAddress);
+            avatarState.questList = emptyQuestList;
+            var newStateV1 = stateV1.SetState(avatarAddress, avatarState.Serialize());
+            var newStateV2 = stateV2.SetState(
+                avatarAddress.Derive(LegacyQuestListKey),
+                emptyQuestList.Serialize()
+            );
+            return (newStateV1, newStateV2);
+        }
+
+        public static Dictionary<ItemBase, int> GetMaterialsFromCraftInfo(
             TableSheets tableSheets,
-            IEnumerable<(int, int?, int)> targetRecipeIdList,
+            IEnumerable<(int, int?, int, long)> targetRecipeIdList,
             IRandom random = null
         )
         {
             random ??= new TestRandom();
             var materialDict = new Dictionary<ItemBase, int>();
 
-            foreach (var (recipeId, subRecipeId, _) in targetRecipeIdList)
+            foreach (var (recipeId, subRecipeId, _, _) in targetRecipeIdList)
             {
                 var itemRecipeRow = tableSheets.EquipmentItemRecipeSheet.OrderedList.First(e =>
                     e.Id == recipeId);
@@ -111,7 +135,7 @@ namespace Lib9c.Tests
                         var subMaterial = ItemFactory.CreateItem(
                             tableSheets.MaterialItemSheet[materialInfo.Id], random);
 
-                        if (materialDict.ContainsKey(material))
+                        if (materialDict.ContainsKey(subMaterial))
                         {
                             materialDict[subMaterial] += materialInfo.Count;
                         }
@@ -126,15 +150,15 @@ namespace Lib9c.Tests
             return materialDict;
         }
 
-        public static List<(int, int?, int)> GetRecipeIdFromItemId(
+        public static List<(int, int?, int, long)> GetCraftInfoFromItemId(
             TableSheets tableSheets,
             int targetItemId,
             IRandom random = null)
         {
-            return GetRecipeIdFromItemId(tableSheets, new[] { targetItemId }, random);
+            return GetCraftInfoFromItemId(tableSheets, new[] { targetItemId }, random);
         }
 
-        public static List<(int, int?, int)> GetRecipeIdFromItemId(
+        public static List<(int, int?, int, long)> GetCraftInfoFromItemId(
             TableSheets tableSheets,
             IEnumerable<int> targetItemIdList,
             IRandom random = null
@@ -144,7 +168,7 @@ namespace Lib9c.Tests
             var equipmentItemSheet = tableSheets.EquipmentItemSheet;
             var consumableItemSheet = tableSheets.ConsumableItemSheet;
 
-            var recipeIdList = new List<(int, int?, int)>();
+            var recipeIdList = new List<(int, int?, int, long)>();
             foreach (var itemId in targetItemIdList)
             {
                 ItemSheet.Row itemRow;
@@ -160,7 +184,7 @@ namespace Lib9c.Tests
                 var itemRecipeRow = tableSheets.EquipmentItemRecipeSheet.First(e =>
                     e.Value.ResultEquipmentId == itemRow.Id).Value;
                 recipeIdList.Add((itemRecipeRow.Id, itemRecipeRow.SubRecipeIds?[0],
-                    itemRecipeRow.UnlockStage));
+                    itemRecipeRow.UnlockStage, itemRecipeRow.RequiredBlockIndex));
             }
 
             return recipeIdList;
