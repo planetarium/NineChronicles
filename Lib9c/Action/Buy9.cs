@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Action;

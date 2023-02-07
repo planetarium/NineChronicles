@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet.Action;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
