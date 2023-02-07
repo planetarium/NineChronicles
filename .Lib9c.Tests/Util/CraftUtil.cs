@@ -1,10 +1,15 @@
 namespace Lib9c.Tests.Util
 {
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using Lib9c.Tests.Action;
+    using Libplanet;
     using Libplanet.Action;
+    using Nekoyume;
+    using Nekoyume.Action;
     using Nekoyume.Model.Item;
+    using Nekoyume.Model.State;
     using Nekoyume.TableData;
 
     public static class CraftUtil
@@ -87,6 +92,24 @@ namespace Lib9c.Tests.Util
             }
 
             return recipeIdList;
+        }
+
+        public static IAccountStateDelta PrepareCombinationSlot(
+            IAccountStateDelta state,
+            Address avatarAddress,
+            int slotIndex
+        )
+        {
+            var slotAddress = avatarAddress.Derive(string.Format(
+                CultureInfo.InvariantCulture,
+                CombinationSlotState.DeriveFormat,
+                slotIndex));
+            var slotState = new CombinationSlotState(
+                slotAddress,
+                GameConfig.RequireClearedStageLevel.CombinationEquipmentAction
+            );
+            state = state.SetState(slotAddress, slotState.Serialize());
+            return state;
         }
     }
 }

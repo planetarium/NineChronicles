@@ -1,33 +1,28 @@
 namespace Lib9c.Tests.Action.Scenario
 {
     using System;
-    using System.Globalization;
     using System.Linq;
     using Bencodex.Types;
     using Lib9c.Tests.Util;
     using Libplanet;
     using Libplanet.Action;
-    using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.State;
     using Xunit;
-    using Xunit.Abstractions;
     using static Lib9c.SerializeKeys;
 
     public class ItemCraftTest
     {
-        private readonly ITestOutputHelper _testOutputHelper;
         private readonly Address _agentAddr;
         private readonly Address _avatarAddr;
         private readonly IAccountStateDelta _initialStatesWithAvatarStateV1;
         private readonly IAccountStateDelta _initialStatesWithAvatarStateV2;
         private readonly TableSheets _tableSheets;
 
-        public ItemCraftTest(ITestOutputHelper testOutputHelper)
+        public ItemCraftTest()
         {
-            _testOutputHelper = testOutputHelper;
             (
                 _tableSheets,
                 _agentAddr,
@@ -41,7 +36,7 @@ namespace Lib9c.Tests.Action.Scenario
         [InlineData(1, new[] { 10110000 })] // 검
         [InlineData(1, new[] { 10110000, 10111000 })] // 검, 롱 소드(불)
         [InlineData(1, new[] { 10110000, 10111000, 10114000 })] // 검, 롱 소드(불), 롱 소드(바람)
-        public void CraftTest(int randomSeed, int[] targetItemIdList)
+        public void CraftEquipmentTest(int randomSeed, int[] targetItemIdList)
         {
             // NOTE: Do we have to test on both stateV1 and stateV2?
 
@@ -54,7 +49,8 @@ namespace Lib9c.Tests.Action.Scenario
 
             // Setup requirements
             var random = new TestRandom(randomSeed);
-            var craftInfoList = CraftUtil.GetEquipmentCraftInfoFromItemId(_tableSheets, targetItemIdList);
+            var craftInfoList =
+                CraftUtil.GetEquipmentCraftInfoFromItemId(_tableSheets, targetItemIdList);
             var materialDict = CraftUtil.GetMaterialsFromCraftInfo(_tableSheets, craftInfoList);
             var avatarState = stateV2.GetAvatarStateV2(_avatarAddr);
 
@@ -72,18 +68,10 @@ namespace Lib9c.Tests.Action.Scenario
             // Prepare combination slot
             for (var i = 0; i < targetItemIdList.Length; i++)
             {
-                var slotAddress = _avatarAddr.Derive(string.Format(
-                    CultureInfo.InvariantCulture,
-                    CombinationSlotState.DeriveFormat,
-                    i));
-                var slotState = new CombinationSlotState(
-                    slotAddress,
-                    GameConfig.RequireClearedStageLevel.CombinationEquipmentAction
-                );
-                stateV2 = stateV2.SetState(slotAddress, slotState.Serialize());
+                stateV2 = CraftUtil.PrepareCombinationSlot(stateV2, _avatarAddr, i);
             }
 
-            // Initial inventory must be clear
+            // Initial inventory must be empty
             var inventoryAddress = _avatarAddr.Derive(LegacyInventoryKey);
             var inventoryState = new Inventory((List)stateV2.GetState(inventoryAddress));
             Assert.Equal(0, inventoryState.Items.Count);
@@ -95,7 +83,6 @@ namespace Lib9c.Tests.Action.Scenario
                 stateV2 = stateV2.SetState(inventoryAddress, avatarState.inventory.Serialize());
             }
 
-            // Give material items to combine item
             for (var i = 0; i < craftInfoList.Count; i++)
             {
                 // Unlock stage
@@ -131,7 +118,7 @@ namespace Lib9c.Tests.Action.Scenario
             }
 
             inventoryState = new Inventory((List)stateV2.GetState(inventoryAddress));
-            // TEST: Only created equipments should remain
+            // TEST: Only created equipments should remain in inventory
             Assert.Equal(craftInfoList.Count, inventoryState.Items.Count);
             foreach (var itemId in targetItemIdList)
             {
