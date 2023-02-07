@@ -7,6 +7,7 @@ using System.Linq;
 using System.Numerics;
 using System.Security.Cryptography;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.Item;
