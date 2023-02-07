@@ -4,6 +4,7 @@ namespace Lib9c.Tests.Action.Scenario
     using System.Globalization;
     using System.Linq;
     using Bencodex.Types;
+    using Lib9c.Tests.Util;
     using Libplanet;
     using Libplanet.Action;
     using Nekoyume;
@@ -33,7 +34,7 @@ namespace Lib9c.Tests.Action.Scenario
                 _avatarAddr,
                 _initialStatesWithAvatarStateV1,
                 _initialStatesWithAvatarStateV2
-            ) = TestUtils.InitializeStates();
+            ) = InitializeUtil.InitializeStates();
         }
 
         [Theory]
@@ -45,7 +46,7 @@ namespace Lib9c.Tests.Action.Scenario
             // NOTE: Do we have to test on both stateV1 and stateV2?
 
             // Disable all quests to prevent contamination by quest reward
-            var (stateV1, stateV2) = TestUtils.DisableQuestList(
+            var (stateV1, stateV2) = QuestUtil.DisableQuestList(
                 _initialStatesWithAvatarStateV1,
                 _initialStatesWithAvatarStateV2,
                 _avatarAddr
@@ -53,8 +54,8 @@ namespace Lib9c.Tests.Action.Scenario
 
             // Setup requirements
             var random = new TestRandom(randomSeed);
-            var craftInfoList = TestUtils.GetCraftInfoFromItemId(_tableSheets, targetItemIdList);
-            var materialDict = TestUtils.GetMaterialsFromCraftInfo(_tableSheets, craftInfoList);
+            var craftInfoList = CraftUtil.GetEquipmentCraftInfoFromItemId(_tableSheets, targetItemIdList);
+            var materialDict = CraftUtil.GetMaterialsFromCraftInfo(_tableSheets, craftInfoList);
             var avatarState = stateV2.GetAvatarStateV2(_avatarAddr);
 
             // Unlock recipe
