@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Arena;
@@ -27,7 +28,7 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100320ObsoleteIndex)]
     [ActionType("battle_arena5")]
-    public class BattleArena5 : GameAction
+    public class BattleArena5 : GameAction, IBattleArenaV1
     {
         public Address myAvatarAddress;
         public Address enemyAvatarAddress;
