@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using DG.Tweening;
-using NUnit.Framework.Internal;
 using Spine;
 using Spine.Unity;
 using Spine.Unity.AttachmentTools;
@@ -22,7 +21,7 @@ namespace Nekoyume.Game.Character
         private const string DefaultPMAShader = "Spine/Skeleton";
         private const string DefaultStraightAlphaShader = "Sprites/Default";
 
-        public List<StateNameToAnimationReference> statesAndAnimations = new List<StateNameToAnimationReference>();
+        public List<StateNameToAnimationReference> statesAndAnimations = new();
 
         public SkeletonAnimation SkeletonAnimation { get; private set; }
         public BoxCollider BoxCollider { get; private set; }

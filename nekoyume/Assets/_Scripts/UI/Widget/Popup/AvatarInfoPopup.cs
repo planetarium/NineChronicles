@@ -36,6 +36,15 @@ namespace Nekoyume.UI
         private Button closeButton;
 
         [SerializeField]
+        private Button dccSlotButton;
+
+        [SerializeField]
+        private Button activeDccButton;
+
+        [SerializeField]
+        private Button activeCostumeButton;
+
+        [SerializeField]
         private Toggle grindModeToggle;
 
         [SerializeField]
@@ -61,6 +70,9 @@ namespace Nekoyume.UI
             { BattleType.Arena , null},
             { BattleType.Raid , null},
         };
+
+        private int dccId = 0;
+        private int isActiveDcc = 0;
 
         protected override void Awake()
         {
@@ -91,6 +103,11 @@ namespace Nekoyume.UI
             {
                 Close();
                 AudioController.PlayClick();
+            });
+
+            dccSlotButton.onClick.AddListener(() =>
+            {
+                Find<DccSettingPopup>().Show();
             });
 
             base.Awake();

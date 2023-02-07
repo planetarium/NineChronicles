@@ -14,6 +14,45 @@ namespace Nekoyume.Game.Character
         {
         }
 
+        public override void InitTarget(
+            GameObject target,
+            MeshRenderer meshRenderer,
+            SkeletonAnimation skeletonAnimation,
+            Animator animator)
+        {
+            base.InitTarget(target, meshRenderer, skeletonAnimation, animator);
+
+            if (Skeleton?.AnimationState != null)
+            {
+                Skeleton.AnimationState.Event -= RaiseEvent;
+            }
+
+            MeshRenderer = meshRenderer;
+            if (MeshRenderer is null)
+            {
+                throw new NotFoundComponentException<MeshRenderer>();
+            }
+
+            Skeleton = skeletonAnimation;
+            if (Skeleton is null)
+            {
+                throw new NotFoundComponentException<SkeletonAnimation>();
+            }
+
+            var skeletons = target.GetComponentsInChildren<SkeletonAnimation>();
+            foreach (var skeleton in skeletons)
+            {
+                skeleton.timeScale = TimeScale;
+            }
+
+            if (Skeleton.AnimationState is null)
+            {
+                throw new NullReferenceException(nameof(Skeleton.AnimationState));
+            }
+
+            Skeleton.AnimationState.Event += RaiseEvent;
+        }
+
         public override void ResetTarget(GameObject value)
         {
             base.ResetTarget(value);
