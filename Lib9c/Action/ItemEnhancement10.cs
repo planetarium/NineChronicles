@@ -40,10 +40,10 @@ namespace Nekoyume.Action
         public Address avatarAddress;
         public int slotIndex;
 
-        public Guid ItemId => itemId;
-        public Guid MaterialId => materialId;
-        public Address AvatarAddress => avatarAddress;
-        public int SlotIndex => slotIndex;
+        Guid IItemEnhancementV2.ItemId => itemId;
+        Guid IItemEnhancementV2.MaterialId => materialId;
+        Address IItemEnhancementV2.AvatarAddress => avatarAddress;
+        int IItemEnhancementV2.SlotIndex => slotIndex;
 
         // NOTE: This is equals to [`ItemEnhancement9.ResultModel`].
         [Serializable]

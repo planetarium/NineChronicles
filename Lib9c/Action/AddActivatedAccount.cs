@@ -24,6 +24,8 @@ namespace Nekoyume.Action
 
         public Address Address { get; private set; }
 
+        Address IAddActivatedAccountV1.Address => Address;
+
         public override IValue PlainValue =>
             new Dictionary(
                 new[]

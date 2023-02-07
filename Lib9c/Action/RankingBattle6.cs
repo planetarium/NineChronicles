@@ -33,12 +33,11 @@ namespace Nekoyume.Action
         public List<Guid> consumableIds;
         public BattleLog Result { get; private set; }
 
-        public Address AvatarAddress => avatarAddress;
-        public Address EnemyAddress => enemyAddress;
-        public Address WeeklyArenaAddress => weeklyArenaAddress;
-        public IEnumerable<Guid> CostumeIds => costumeIds;
-        public IEnumerable<Guid> EquipmentIds => equipmentIds;
-        public IEnumerable<Guid> ConsumableIds => consumableIds;
+        Address IRankingBattleV2.AvatarAddress => avatarAddress;
+        Address IRankingBattleV2.EnemyAddress => enemyAddress;
+        Address IRankingBattleV2.WeeklyArenaAddress => weeklyArenaAddress;
+        IEnumerable<Guid> IRankingBattleV2.CostumeIds => costumeIds;
+        IEnumerable<Guid> IRankingBattleV2.EquipmentIds => equipmentIds;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {

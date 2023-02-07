@@ -20,6 +20,8 @@ namespace Nekoyume.Action
         private const string NewValidUntilKey = "new_valid_until";
         public long NewValidUntil {get; internal set; }
 
+        long IRenewAdminStateV1.NewValidUntil => NewValidUntil;
+
         public RenewAdminState()
         {
         }

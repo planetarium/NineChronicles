@@ -52,6 +52,19 @@ namespace Nekoyume.Action
         // This property can contain null:
         public Dictionary Credits { get; set; }
 
+        Dictionary IInitializeStatesV1.Ranking => Ranking;
+        Dictionary IInitializeStatesV1.Shop => Shop;
+        Dictionary<string, string> IInitializeStatesV1.TableSheets => TableSheets;
+        Dictionary IInitializeStatesV1.GameConfig => GameConfig;
+        Dictionary IInitializeStatesV1.RedeemCode => RedeemCode;
+        Dictionary IInitializeStatesV1.AdminAddressState => AdminAddressState;
+        Dictionary IInitializeStatesV1.ActivatedAccounts => ActivatedAccounts;
+        Dictionary IInitializeStatesV1.GoldCurrency => GoldCurrency;
+        List IInitializeStatesV1.GoldDistributions => GoldDistributions;
+        List IInitializeStatesV1.PendingActivations => PendingActivations;
+        Dictionary IInitializeStatesV1.AuthorizedMiners => AuthorizedMiners;
+        Dictionary IInitializeStatesV1.Credits => Credits;
+
         public InitializeStates()
         {
         }

@@ -46,8 +46,8 @@ namespace Nekoyume.Action
         public Address avatarAddress;
         public int slotIndex;
 
-        public Address AvatarAddress => avatarAddress;
-        public int SlotIndex => slotIndex;
+        Address IRapidCombinationV1.AvatarAddress => avatarAddress;
+        int IRapidCombinationV1.SlotIndex => slotIndex;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {

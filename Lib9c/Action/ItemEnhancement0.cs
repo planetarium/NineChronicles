@@ -31,10 +31,10 @@ namespace Nekoyume.Action
         public Address avatarAddress;
         public int slotIndex;
 
-        public Guid ItemId => itemId;
-        public IEnumerable<Guid> MaterialIds => materialIds;
-        public Address AvatarAddress => avatarAddress;
-        public int SlotIndex => slotIndex;
+        Guid IItemEnhancementV1.ItemId => itemId;
+        IEnumerable<Guid> IItemEnhancementV1.MaterialIds => materialIds;
+        Address IItemEnhancementV1.AvatarAddress => avatarAddress;
+        int IItemEnhancementV1.SlotIndex => slotIndex;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {

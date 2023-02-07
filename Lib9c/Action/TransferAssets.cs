@@ -50,6 +50,12 @@ namespace Nekoyume.Action
         public List<(Address recipient, FungibleAssetValue amount)> Recipients { get; private set; }
         public string Memo { get; private set; }
 
+        Address ITransferAssetsV1.Sender => Sender;
+
+        List<(Address recipient, FungibleAssetValue amount)> ITransferAssetsV1.Recipients =>
+            Recipients;
+        string ITransferAssetsV1.Memo => Memo;
+
         public override IValue PlainValue
         {
             get
