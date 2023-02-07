@@ -2,8 +2,8 @@
 
 using System;
 using System.Collections.Generic;
+using Bencodex.Types;
 using Libplanet;
-using BencodexList = Bencodex.Types.List;
 
 namespace Lib9c.Abstractions
 {
@@ -14,6 +14,6 @@ namespace Lib9c.Abstractions
         int Round { get; }
         IEnumerable<Guid> Costumes { get; }
         IEnumerable<Guid> Equipments { get; }
-        IEnumerable<BencodexList>? RuneSlotInfos => null;
+        IEnumerable<IValue>? RuneSlotInfos => null;
     }
 }

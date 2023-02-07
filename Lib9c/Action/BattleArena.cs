@@ -20,8 +20,6 @@ using Nekoyume.TableData;
 using Serilog;
 using static Lib9c.SerializeKeys;
 
-using BencodexList = Bencodex.Types.List;
-
 namespace Nekoyume.Action
 {
     /// <summary>
@@ -62,8 +60,8 @@ namespace Nekoyume.Action
 
         IEnumerable<Guid> IBattleArenaV1.Equipments => equipments;
 
-        IEnumerable<BencodexList> IBattleArenaV1.RuneSlotInfos => runeInfos
-            .Select(x => (BencodexList)x.Serialize());
+        IEnumerable<IValue> IBattleArenaV1.RuneSlotInfos => runeInfos
+            .Select(x => x.Serialize());
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>()
