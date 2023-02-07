@@ -1,3 +1,7 @@
+/* DISCLAIMER
+ This test only tests AvatarStateV2.
+ AvatarStateV1 is old version and not tested.
+ */
 namespace Lib9c.Tests.Action.Scenario
 {
     using System;
