@@ -26,6 +26,7 @@ namespace Lib9c.Tests.Action.Scenario
         private readonly Address _agentAddr;
         private readonly Address _avatarAddr;
         private readonly Address _inventoryAddr;
+        private readonly Address _worldInformationAddr;
         private readonly IAccountStateDelta _initialStatesWithAvatarStateV1;
         private readonly IAccountStateDelta _initialStatesWithAvatarStateV2;
         private readonly TableSheets _tableSheets;
@@ -40,6 +41,7 @@ namespace Lib9c.Tests.Action.Scenario
                 _initialStatesWithAvatarStateV2
             ) = InitializeUtil.InitializeStates();
             _inventoryAddr = _avatarAddr.Derive(LegacyInventoryKey);
+            _worldInformationAddr = _avatarAddr.Derive(LegacyWorldInformationKey);
         }
 
         [Theory]
@@ -111,11 +113,10 @@ namespace Lib9c.Tests.Action.Scenario
                 avatarState.worldInformation =
                     new WorldInformation(0, _tableSheets.WorldSheet, equipmentRecipe.UnlockStage);
 
-                stateV2 = stateV2
-                    .SetState(
-                        _avatarAddr.Derive(LegacyWorldInformationKey),
-                        avatarState.worldInformation.Serialize()
-                    );
+                stateV2 = stateV2.SetState(
+                    _worldInformationAddr,
+                    avatarState.worldInformation.Serialize()
+                );
 
                 // Do Combination Action
                 var action = new CombinationEquipment
