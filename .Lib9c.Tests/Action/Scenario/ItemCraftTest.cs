@@ -39,7 +39,7 @@ namespace Lib9c.Tests.Action.Scenario
                 _initialStatesWithAvatarStateV1,
                 _initialStatesWithAvatarStateV2
             ) = InitializeUtil.InitializeStates();
-            _inventoryAddr = _agentAddr.Derive(LegacyInventoryKey);
+            _inventoryAddr = _avatarAddr.Derive(LegacyInventoryKey);
         }
 
         [Theory]
