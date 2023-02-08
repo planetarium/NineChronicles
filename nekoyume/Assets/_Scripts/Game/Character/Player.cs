@@ -135,6 +135,9 @@ namespace Nekoyume.Game.Character
             Set(model, model.Costumes, model.armor, model.weapon, updateCurrentHP);
         }
 
+        private List<Costume> _costumes = new();
+        private Armor _armor;
+        private Weapon _weapon;
         public void Set(
             Model.Player model,
             IEnumerable<Costume> costumes,
@@ -147,10 +150,24 @@ namespace Nekoyume.Game.Character
 
             _disposablesForModel.DisposeAllAndClear();
             CharacterModel = model;
-            EquipCostumes(costumes);
-            EquipEquipmentsAndUpdateCustomize(armor, weapon);
-            UpdateAvatarParts(costumes);
+
+            if (costumes.Any(x => !_costumes.Exists(y => y.ItemId == x.ItemId)))
+            {
+                EquipCostumes(costumes);
+                UpdateAvatarParts(costumes);
+            }
+
+            if (!Equals(_weapon, weapon) || !Equals(_armor, armor))
+            {
+                EquipEquipmentsAndUpdateCustomize(armor, weapon);
+            }
+
             UpdateTarget();
+
+            _costumes.Clear();
+            _costumes.AddRange(costumes);
+            _armor = armor;
+            _weapon = weapon;
 
             if (!SpeechBubble)
             {
@@ -494,40 +511,6 @@ namespace Nekoyume.Game.Character
         }
 
         #endregion
-
-        // private void ChangeSpineObject(string spineResourcePath, bool isFullCostume, bool updateHitPoint = true)
-        // {
-        //     if (!(Animator.Target is null))
-        //     {
-        //         var animatorTargetName = spineResourcePath.Split('/').Last();
-        //         if (Animator.Target.name.Contains(animatorTargetName))
-        //         {
-        //             return;
-        //         }
-        //
-        //         Animator.DestroyTarget();
-        //     }
-        //
-        //     var origin = Resources.Load<GameObject>(spineResourcePath);
-        //     if (!origin)
-        //     {
-        //         throw new FailedToLoadResourceException<GameObject>(spineResourcePath);
-        //     }
-        //
-        //     var go = Instantiate(origin, gameObject.transform);
-        //     SpineController = go.GetComponent<PlayerSpineController>();
-        //     if (!isFullCostume)
-        //     {
-        //         SpineController.AttachTail();
-        //     }
-        //
-        //     Animator.ResetTarget(go);
-        //
-        //     if (updateHitPoint)
-        //     {
-        //         UpdateHitPoint();
-        //     }
-        // }
 
         public void ChangeSpineResource(string id, bool isFullCostume, bool updateHitPoint = true)
         {

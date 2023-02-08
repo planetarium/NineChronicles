@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using Nekoyume.Game.Character;
+using Nekoyume.Game.ScriptableObject;
 using Nekoyume.TestScene;
 using Spine.Unity;
 using Spine.Unity.Editor;
@@ -83,6 +85,15 @@ namespace Planetarium.Nekoyume.Editor
         public static void CreateSpinePrefabAllOfPlayer()
         {
             CreateSpinePrefabAllOfPath(PlayerSpineRootPath);
+        }
+
+        [MenuItem("Tools/9C/Populate Avatar List", false, 0)]
+        public static void PopulateAvatarList()
+        {
+            var avatar = Resources.Load<AvatarScriptableObject>("ScriptableObject/Avatar");
+            PopulateList(PlayerSpineRootPath, avatar.Body);
+            PopulateList(FullCostumeSpineRootPath, avatar.FullCostume);
+            EditorUtility.SetDirty(avatar);
         }
 
         private static string GetPrefabPath(string prefabName)
@@ -583,6 +594,41 @@ namespace Planetarium.Nekoyume.Editor
                     return new Vector3(.64f, .64f, 1f);
                 case "300005":
                     return new Vector3(.8f, .8f, 1f);
+            }
+        }
+
+        private static void PopulateList(string path, List<SkeletonDataAsset> list)
+        {
+            if (!AssetDatabase.IsValidFolder(path))
+            {
+                Debug.LogWarning($"Not Found Folder! {path}");
+                return;
+            }
+
+            list.Clear();
+            var subFolderPaths = AssetDatabase.GetSubFolders(path);
+            foreach (var subFolderPath in subFolderPaths)
+            {
+                var id = Path.GetFileName(subFolderPath);
+                var skeletonDataAssetPath = Path.Combine(subFolderPath, $"{id}_SkeletonData.asset");
+                Debug.Log($"Try to create spine prefab with {skeletonDataAssetPath}");
+                var skeletonDataAsset =
+                    AssetDatabase.LoadAssetAtPath<SkeletonDataAsset>(skeletonDataAssetPath);
+                if (ReferenceEquals(skeletonDataAsset, null) || skeletonDataAsset == null)
+                {
+                    Debug.LogError($"Not Found SkeletonData from {skeletonDataAssetPath}");
+                    continue;
+                }
+
+                try
+                {
+                    list.Add(skeletonDataAsset);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                    return;
+                }
             }
         }
     }

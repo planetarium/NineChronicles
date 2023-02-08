@@ -1,5 +1,6 @@
 ﻿using Spine.Unity;
 using UnityEngine;
+using UnityEngine.Animations;
 
 namespace Nekoyume.Game.Avatar
 {
@@ -9,7 +10,6 @@ namespace Nekoyume.Game.Avatar
         public int layer;
         public string animationClip;
         public AnimationReferenceAsset animationAsset;
-        public float timeScale = 1f;
         public bool loop;
 
         private AvatarSpineController _controller;
@@ -25,26 +25,24 @@ namespace Nekoyume.Game.Avatar
                 _controller = animator.GetComponent<AvatarSpineController>();
             }
 
-            if (animationAsset)
-            {
-                _controller.PlayAnimationForState(animationAsset.Animation.Name, layer, timeScale,
-                    () => OnEnd(animator));
-            }
-            else
-            {
-                _controller.PlayAnimationForState(animationClip, layer, timeScale,
-                    () => OnEnd(animator));
-            }
+            var animationName = animationAsset ? animationAsset.Animation.Name : animationClip;
+            _controller.PlayAnimationForState(animationName, layer);
         }
 
-        private void OnEnd(Animator animator)
+        public override void OnStateExit(
+            Animator animator,
+            AnimatorStateInfo stateInfo,
+            int layerIndex,
+            AnimatorControllerPlayable controller)
         {
+            Debug.Log($"[### Begin] {animationClip} : {stateInfo.length}");
             if (loop)
             {
                 return;
             }
 
             animator.SetTrigger(TransitionHash);
+            Debug.Log($"[### END] {animationClip}");
         }
     }
 }

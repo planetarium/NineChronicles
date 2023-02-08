@@ -41,7 +41,7 @@ AnimatorStateTransition:
   serializedVersion: 3
   m_TransitionDuration: 0
   m_TransitionOffset: 0
-  m_ExitTime: 0
+  m_ExitTime: 1
   m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -62,7 +62,6 @@ MonoBehaviour:
   layer: 0
   animationClip: Idle
   animationAsset: {fileID: 0}
-  timeScale: 1
   loop: 1
 --- !u!114 &-7596140330569186772
 MonoBehaviour:
@@ -79,7 +78,6 @@ MonoBehaviour:
   layer: 0
   animationClip: Die
   animationAsset: {fileID: 0}
-  timeScale: 1
   loop: 0
 --- !u!114 &-7455128288342135584
 MonoBehaviour:
@@ -96,7 +94,6 @@ MonoBehaviour:
   layer: 0
   animationClip: StandingToIdle
   animationAsset: {fileID: 0}
-  timeScale: 1
   loop: 0
 --- !u!1102 &-7170498472798424732
 AnimatorState:
@@ -352,7 +349,6 @@ MonoBehaviour:
   layer: 0
   animationClip: Hit
   animationAsset: {fileID: 0}
-  timeScale: 1
   loop: 0
 --- !u!1101 &-4286370156769542794
 AnimatorStateTransition:
@@ -458,7 +454,6 @@ MonoBehaviour:
   layer: 0
   animationClip: Run
   animationAsset: {fileID: 0}
-  timeScale: 1
   loop: 1
 --- !u!114 &-898772553202398257
 MonoBehaviour:
@@ -536,7 +531,6 @@ MonoBehaviour:
   layer: 0
   animationClip: Greeting
   animationAsset: {fileID: 0}
-  timeScale: 1
   loop: 0
 --- !u!114 &-445228168050894423
 MonoBehaviour:
@@ -553,7 +547,6 @@ MonoBehaviour:
   layer: 0
   animationClip: Emotion
   animationAsset: {fileID: 0}
-  timeScale: 1
   loop: 0
 --- !u!114 &-230865155943531968
 MonoBehaviour:
@@ -570,7 +563,6 @@ MonoBehaviour:
   layer: 0
   animationClip: Win
   animationAsset: {fileID: 0}
-  timeScale: 1
   loop: 0
 --- !u!114 &-169412770549558965
 MonoBehaviour:
@@ -701,7 +693,7 @@ AnimatorStateTransition:
   serializedVersion: 3
   m_TransitionDuration: 0
   m_TransitionOffset: 0
-  m_ExitTime: 0
+  m_ExitTime: 1
   m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -722,7 +714,6 @@ MonoBehaviour:
   layer: 0
   animationClip: Casting
   animationAsset: {fileID: 0}
-  timeScale: 1
   loop: 0
 --- !u!1101 &621950924681911630
 AnimatorStateTransition:
@@ -743,7 +734,7 @@ AnimatorStateTransition:
   serializedVersion: 3
   m_TransitionDuration: 0
   m_TransitionOffset: 0
-  m_ExitTime: 0
+  m_ExitTime: 1
   m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -768,7 +759,7 @@ AnimatorStateTransition:
   serializedVersion: 3
   m_TransitionDuration: 0
   m_TransitionOffset: 0
-  m_ExitTime: 0
+  m_ExitTime: 1
   m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -789,7 +780,6 @@ MonoBehaviour:
   layer: 0
   animationClip: Appear
   animationAsset: {fileID: 0}
-  timeScale: 1
   loop: 0
 --- !u!1102 &944539195833456580
 AnimatorState:
@@ -885,7 +875,7 @@ AnimatorStateTransition:
   serializedVersion: 3
   m_TransitionDuration: 0
   m_TransitionOffset: 0
-  m_ExitTime: 0
+  m_ExitTime: 1
   m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -932,7 +922,7 @@ AnimatorStateTransition:
   serializedVersion: 3
   m_TransitionDuration: 0
   m_TransitionOffset: 0
-  m_ExitTime: 0
+  m_ExitTime: 1
   m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -957,7 +947,7 @@ AnimatorStateTransition:
   serializedVersion: 3
   m_TransitionDuration: 0
   m_TransitionOffset: 0
-  m_ExitTime: 0
+  m_ExitTime: 1
   m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -1091,7 +1081,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 54f7cd99871c445f3b30f9cde852e2f6, type: 2}
+  m_Motion: {fileID: 0}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -1175,7 +1165,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 64234b5555418406ea2c6908885490ad, type: 2}
+  m_Motion: {fileID: 0}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -1201,10 +1191,10 @@ AnimatorStateMachine:
     m_Position: {x: 380, y: -160, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1102496054402538246}
-    m_Position: {x: -70, y: 140, z: 0}
+    m_Position: {x: -310, y: 280, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1102375943767285746}
-    m_Position: {x: 140, y: 160, z: 0}
+    m_Position: {x: 140, y: 170, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1102371260301684146}
     m_Position: {x: -70, y: 70, z: 0}
@@ -1213,7 +1203,7 @@ AnimatorStateMachine:
     m_Position: {x: -70, y: 220, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 4680115626077011175}
-    m_Position: {x: 180, y: 220, z: 0}
+    m_Position: {x: 150, y: 240, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 34337754599055047}
     m_Position: {x: 490, y: -10, z: 0}
@@ -1228,7 +1218,7 @@ AnimatorStateMachine:
     m_Position: {x: 150, y: -160, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -7170498472798424732}
-    m_Position: {x: 160, y: -70, z: 0}
+    m_Position: {x: 150, y: -60, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 4344912761779924467}
     m_Position: {x: -70, y: -70, z: 0}
@@ -1237,7 +1227,7 @@ AnimatorStateMachine:
     m_Position: {x: 360, y: 400, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -6019464610825843976}
-    m_Position: {x: 180, y: 300, z: 0}
+    m_Position: {x: 190, y: 320, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 2964865932848163398}
     m_Position: {x: 430, y: 300, z: 0}
@@ -1285,7 +1275,7 @@ AnimatorStateTransition:
   serializedVersion: 3
   m_TransitionDuration: 0
   m_TransitionOffset: 0
-  m_ExitTime: 0
+  m_ExitTime: 1
   m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -1353,7 +1343,7 @@ AnimatorStateTransition:
   serializedVersion: 3
   m_TransitionDuration: 0
   m_TransitionOffset: 0
-  m_ExitTime: 0
+  m_ExitTime: 1
   m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -1396,7 +1386,7 @@ AnimatorStateTransition:
   serializedVersion: 3
   m_TransitionDuration: 0
   m_TransitionOffset: 0
-  m_ExitTime: 0
+  m_ExitTime: 1
   m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -1421,7 +1411,7 @@ AnimatorStateTransition:
   serializedVersion: 3
   m_TransitionDuration: 0
   m_TransitionOffset: 0
-  m_ExitTime: 0
+  m_ExitTime: 1
   m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -1471,7 +1461,7 @@ AnimatorStateTransition:
   serializedVersion: 3
   m_TransitionDuration: 0
   m_TransitionOffset: 0
-  m_ExitTime: 0
+  m_ExitTime: 1
   m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -1520,7 +1510,6 @@ MonoBehaviour:
   layer: 0
   animationClip: TurnOver_01
   animationAsset: {fileID: 0}
-  timeScale: 1
   loop: 0
 --- !u!1101 &3031179796090245245
 AnimatorStateTransition:
@@ -1612,7 +1601,7 @@ AnimatorStateTransition:
   serializedVersion: 3
   m_TransitionDuration: 0
   m_TransitionOffset: 0
-  m_ExitTime: 0
+  m_ExitTime: 1
   m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -1633,7 +1622,6 @@ MonoBehaviour:
   layer: 0
   animationClip: Win_02
   animationAsset: {fileID: 0}
-  timeScale: 1
   loop: 0
 --- !u!1102 &4344912761779924467
 AnimatorState:
@@ -1769,7 +1757,6 @@ MonoBehaviour:
   layer: 0
   animationClip: TurnOver_02
   animationAsset: {fileID: 0}
-  timeScale: 1
   loop: 0
 --- !u!1102 &5504522240290646762
 AnimatorState:
@@ -1896,7 +1883,6 @@ MonoBehaviour:
   layer: 0
   animationClip: CastingAttack
   animationAsset: {fileID: 0}
-  timeScale: 1
   loop: 0
 --- !u!114 &6489518764400532894
 MonoBehaviour:
@@ -1913,7 +1899,6 @@ MonoBehaviour:
   layer: 0
   animationClip: Attack
   animationAsset: {fileID: 0}
-  timeScale: 1
   loop: 0
 --- !u!1101 &6635799362549248878
 AnimatorStateTransition:
@@ -1934,7 +1919,7 @@ AnimatorStateTransition:
   serializedVersion: 3
   m_TransitionDuration: 0
   m_TransitionOffset: 0
-  m_ExitTime: 0
+  m_ExitTime: 1
   m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -1955,7 +1940,6 @@ MonoBehaviour:
   layer: 0
   animationClip: CriticalAttack
   animationAsset: {fileID: 0}
-  timeScale: 1
   loop: 0
 --- !u!114 &6949227194607521125
 MonoBehaviour:
@@ -1972,7 +1956,6 @@ MonoBehaviour:
   layer: 0
   animationClip: Win_03
   animationAsset: {fileID: 0}
-  timeScale: 1
   loop: 0
 --- !u!114 &7386697587263366489
 MonoBehaviour:
@@ -1989,7 +1972,6 @@ MonoBehaviour:
   layer: 0
   animationClip: Skill_01
   animationAsset: {fileID: 0}
-  timeScale: 1
   loop: 0
 --- !u!114 &7504522509741319608
 MonoBehaviour:
@@ -2073,7 +2055,7 @@ AnimatorStateTransition:
   serializedVersion: 3
   m_TransitionDuration: 0
   m_TransitionOffset: 0
-  m_ExitTime: 0
+  m_ExitTime: 1
   m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -2094,7 +2076,6 @@ MonoBehaviour:
   layer: 0
   animationClip: Touch
   animationAsset: {fileID: 0}
-  timeScale: 1
   loop: 0
 --- !u!114 &8536996746810372143
 MonoBehaviour:
@@ -2111,7 +2092,6 @@ MonoBehaviour:
   layer: 0
   animationClip: Standing
   animationAsset: {fileID: 0}
-  timeScale: 1
   loop: 1
 --- !u!1101 &8639869616550235901
 AnimatorStateTransition:
@@ -2132,7 +2112,7 @@ AnimatorStateTransition:
   serializedVersion: 3
   m_TransitionDuration: 0
   m_TransitionOffset: 0
-  m_ExitTime: 0
+  m_ExitTime: 1
   m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -2153,7 +2133,6 @@ MonoBehaviour:
   layer: 0
   animationClip: 
   animationAsset: {fileID: 0}
-  timeScale: 1
   loop: 0
 --- !u!114 &8927109747397275665
 MonoBehaviour:
@@ -2170,7 +2149,6 @@ MonoBehaviour:
   layer: 0
   animationClip: Skill_02
   animationAsset: {fileID: 0}
-  timeScale: 1
   loop: 0
 --- !u!114 &9034102860878195949
 MonoBehaviour:
@@ -2187,7 +2165,6 @@ MonoBehaviour:
   layer: 0
   animationClip: Disappear
   animationAsset: {fileID: 0}
-  timeScale: 1
   loop: 0
 --- !u!1101 &9175105469496725385
 AnimatorStateTransition:

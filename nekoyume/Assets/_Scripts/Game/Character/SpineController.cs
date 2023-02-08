@@ -229,24 +229,16 @@ namespace Nekoyume.Game.Character
                         animationName = "Attack";
                         break;
                     default:
-                        Debug.Log($"#### CHECK 1 !! : {animationName}");
                         var splits = animationName.Split('_');
                         animationName = splits[0];
                         if (!animations.Exists(x => x.Name == animationName))
                         {
-                            Debug.Log($"#### CHECK 2 !! : {animationName}");
                             animationName = "Idle";
                         }
                         break;
                 }
-
             }
-            // foreach (var dataAnimation in )
-            // {
-            //     Debug.Log($"dataAnimation.Name : {dataAnimation.Name}");
-            // }
 
-            Debug.Log($"dataAnimation.Name : {animationName}");
             var body = SkeletonAnimation.AnimationState.SetAnimation(layerIndex, animationName, isLoop);
 
             TrackEntry tail = null;

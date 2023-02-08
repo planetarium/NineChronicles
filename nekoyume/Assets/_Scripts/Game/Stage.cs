@@ -638,6 +638,7 @@ namespace Nekoyume.Game
 #endif
             var playerCharacter = RunPlayer(false);
             playerCharacter.Set(character, true);
+            playerCharacter.Run();
             playerCharacter.ShowSpeech("PLAYER_INIT");
             var player = playerCharacter.gameObject;
             player.SetActive(true);

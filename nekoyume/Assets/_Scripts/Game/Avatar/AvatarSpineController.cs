@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.Game.Character;
 using UnityEngine;
 using DG.Tweening;
 using Nekoyume.EnumType;
+using Nekoyume.Game.ScriptableObject;
 using Nekoyume.Helper;
 using Spine;
 using Spine.Unity;
@@ -15,8 +17,6 @@ namespace Nekoyume.Game.Avatar
     {
         private const string DefaultPmaShader = "Spine/Skeleton";
         private const string WeaponSlot = "weapon";
-        private const string BodyPath = "Spine/FullCostume";
-        private const string FullCostumePath = "Spine/Player";
 
         [Serializable]
         public class StateNameToAnimationReference
@@ -35,31 +35,27 @@ namespace Nekoyume.Game.Avatar
         private BoxCollider fullCostumeCollider;
 
         [SerializeField]
-        private SkeletonDataAsset testBody;
+        private AvatarScriptableObject avatarScriptableObject;
 
         [SerializeField]
-        private SkeletonDataAsset testCostume;
+        private SkeletonDataAsset testBody;
 
         private Shader _shader;
         private Material _material;
         private Spine.Animation _targetAnimation;
         private Sequence _doFadeSequence;
-        private System.Action _callback;
         private GameObject _cachedWeaponVFX;
         private readonly List<Tweener> _fadeTweener = new();
         private bool isActiveFullCostume;
 
-        private Dictionary<AvatarPartsType, SkeletonAnimation> _parts = new();
+        private readonly Dictionary<AvatarPartsType, SkeletonAnimation> _parts = new();
 
-        public List<MeshRenderer> MeshRenderers { get; } = new();
         public BoxCollider Collider => isActiveFullCostume ? fullCostumeCollider : bodyCollider;
 
         private void Awake()
         {
             foreach (var p in parts)
             {
-                p.SkeletonAnimation.AnimationState.End += delegate { _callback?.Invoke(); };
-                MeshRenderers.Add(p.SkeletonAnimation.transform.GetComponent<MeshRenderer>());
                 _parts.Add(p.Type, p.SkeletonAnimation);
             }
 
@@ -163,7 +159,8 @@ namespace Nekoyume.Game.Avatar
             {
                 var tweener = DOTween
                     .To(() => _parts[AvatarPartsType.full_costume].skeleton.A,
-                        value => _parts[AvatarPartsType.full_costume].skeleton.A = value, toValue, duration)
+                        value => _parts[AvatarPartsType.full_costume].skeleton.A = value, toValue,
+                        duration)
                     .OnComplete(() => onComplete?.Invoke())
                     .Play();
                 _fadeTweener.Add(tweener);
@@ -192,46 +189,38 @@ namespace Nekoyume.Game.Avatar
             _fadeTweener.Clear();
         }
 
-        public void PlayAnimationForState(
-            string stateName,
-            int layerIndex,
-            float timeScale,
-            System.Action callback)
+        public void PlayAnimationForState(string stateName, int layerIndex)
         {
-            PlayNewAnimation(stateName, layerIndex, timeScale, callback);
+            PlayNewAnimation(stateName, layerIndex);
         }
 
-        private void PlayNewAnimation(
-            string animationName,
-            int layerIndex,
-            float timeScale,
-            System.Action callback)
+        private void PlayNewAnimation(string animationName, int layerIndex)
         {
             var isLoop = IsLoopAnimation(animationName);
             if (isActiveFullCostume)
             {
                 var skeletonAnimation = _parts[AvatarPartsType.full_costume];
                 var name = SanitizeAnimationName(skeletonAnimation, animationName);
-                if (name != "Hit")
-                {
-                    var entry = skeletonAnimation.AnimationState.SetAnimation(layerIndex, name, isLoop);
-                    entry.TimeScale = timeScale;
-                }
+                var entry = skeletonAnimation.AnimationState.SetAnimation(layerIndex, name, isLoop);
+                var duration = skeletonAnimation.Skeleton.Data.FindAnimation(name).Duration;
+                entry.TimeScale = duration;
             }
             else
             {
                 foreach (var skeletonAnimation in _parts.Values)
                 {
                     var name = SanitizeAnimationName(skeletonAnimation, animationName);
-                    var entry = skeletonAnimation.AnimationState.SetAnimation(layerIndex, name, isLoop);
-                    entry.TimeScale = timeScale;
+                    var entry =
+                        skeletonAnimation.AnimationState.SetAnimation(layerIndex, name, isLoop);
+                    var duration = skeletonAnimation.Skeleton.Data.FindAnimation(name).Duration;
+                    entry.TimeScale = duration;
+                    skeletonAnimation.AnimationState.Update(0);
                 }
             }
-
-            _callback = callback;
         }
 
-        private string SanitizeAnimationName(SkeletonAnimation skeletonAnimation, string animationName)
+        private string SanitizeAnimationName(SkeletonAnimation skeletonAnimation,
+            string animationName)
         {
             var animations = skeletonAnimation.skeleton.Data.Animations;
             if (animations.Exists(x => x.Name == animationName))
@@ -250,11 +239,6 @@ namespace Nekoyume.Game.Avatar
                     var split = splits[0];
                     return animations.Exists(x => x.Name == split) ? split : "Idle";
             }
-        }
-
-        private Attachment RemapAttachment(Slot slot, Sprite sprite)
-        {
-            return slot.Attachment.GetRemappedClone(sprite, _material);
         }
 
         private RegionAttachment MakeAttachment(Sprite sprite)
@@ -309,13 +293,10 @@ namespace Nekoyume.Game.Avatar
             }
 
             var skin = skeletonAnimation.Skeleton.Data.FindSkin(skinName);
-            if (skin is null)
+            if (skin is not null)
             {
-                Debug.Log($"[UpdateSkin] Skin is null : {skinName}");
-                return;
+                skeletonAnimation.Skeleton.SetSkin(skinName);
             }
-
-            skeletonAnimation.Skeleton.SetSkin(skinName);
 
             UpdateParts();
         }
@@ -325,6 +306,7 @@ namespace Nekoyume.Game.Avatar
             foreach (var skeletonAnimation in _parts.Values)
             {
                 skeletonAnimation.Skeleton.SetSlotsToSetupPose();
+                skeletonAnimation.Update(0);
             }
         }
 
@@ -436,43 +418,34 @@ namespace Nekoyume.Game.Avatar
 
         public void UpdateBody(int index, int skinTone)
         {
-            // UpdateSkeletonDataAsset(index, false);
+            _parts[AvatarPartsType.body].ClearState();
+            // _parts[AvatarPartsType.body].Skeleton.SetSkin("default");
+            // _parts[AvatarPartsType.body].Skeleton.SetSlotsToSetupPose();
+
+            UpdateSkeletonDataAsset(index, false);
             var preIndex = (int)(index * 0.0001) * 10000;
             var skinName = $"body_{preIndex}/{index}-{skinTone}";
-            UpdateSkin(true, AvatarPartsType.body, skinName);
+            // UpdateSkin(true, AvatarPartsType.body, skinName);
             UpdateActive();
         }
 
         private void UpdateSkeletonDataAsset(int index, bool isFullCostume)
         {
-            // var path = isFullCostume
-            //     ? $"{FullCostumePath}/{index}/{index}_SkeletonData"
-            //     : $"{BodyPath}/{index}/{index}_SkeletonData";
-            // var asset = Resources.Load<SkeletonDataAsset>(path);
-            var asset = isFullCostume ? testCostume : testBody;
+            var name = $"{index}_SkeletonData";
+            var asset = isFullCostume
+                ? avatarScriptableObject.FullCostume.FirstOrDefault(x => x.name == name)
+                : avatarScriptableObject.Body.FirstOrDefault(x => x.name == name);
+
+            if (!isFullCostume)
+            {
+                asset = testBody;
+            }
+
             var type = isFullCostume ? AvatarPartsType.full_costume : AvatarPartsType.body;
             var skeletonAnimation = _parts[type];
-
+            skeletonAnimation.ClearState();
             skeletonAnimation.skeletonDataAsset = asset;
             skeletonAnimation.Initialize(true);
-
-            if (skeletonAnimation.skeleton == null)
-            {
-                Debug.Log("skeleton null");
-            }
-            else
-            {
-                Debug.Log("skeleton not null");
-            }
-
-            if (skeletonAnimation.Skeleton == null)
-            {
-                Debug.Log("null");
-            }
-            else
-            {
-                Debug.Log("not null");
-            }
         }
 
         public void UpdateFace(int index, bool isDcc)
