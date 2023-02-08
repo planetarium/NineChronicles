@@ -54,7 +54,7 @@ namespace Nekoyume.State
 
         public FungibleAssetValue CrystalBalance { get; private set; }
 
-        public Dictionary<int, FungibleAssetValue> RuneStoneBalance { get; } = new();
+        public Dictionary<string, FungibleAssetValue> AvatarBalance { get; } = new();
 
         public List<RuneState> RuneStates { get; } = new();
 
@@ -65,7 +65,7 @@ namespace Nekoyume.State
 
         public int StakingLevel { get; private set; }
 
-        public GrandFinaleStates GrandFinaleStates { get; } = new GrandFinaleStates();
+        public GrandFinaleStates GrandFinaleStates { get; } = new();
         private class Workshop
         {
             public Dictionary<int, CombinationSlotState> States { get; }= new();
@@ -148,15 +148,15 @@ namespace Nekoyume.State
 
         public async Task InitRuneStoneBalance()
         {
-            RuneStoneBalance.Clear();
             var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
             var avatarAddress = CurrentAvatarState.address;
             var runes = new List<FungibleAssetValue>();
             await foreach (var row in runeSheet.Values)
             {
+                AvatarBalance.Remove(row.Ticker);
                 var rune = RuneHelper.ToCurrency(row, 0, null);
                 var fungibleAsset = await Game.Game.instance.Agent.GetBalanceAsync(avatarAddress, rune);
-                RuneStoneBalance.Add(row.Id, fungibleAsset);
+                AvatarBalance.Add(row.Ticker, fungibleAsset);
             }
         }
 
@@ -373,7 +373,7 @@ namespace Nekoyume.State
             var runeRow = runeSheet.Values.First(x => x.Id == runeId);
             var rune = RuneHelper.ToCurrency(runeRow, 0, null);
             var fungibleAsset = await Game.Game.instance.Agent.GetBalanceAsync(avatarAddress, rune);
-            RuneStoneBalance[runeRow.Id] = fungibleAsset;
+            AvatarBalance[runeRow.Ticker] = fungibleAsset;
             return fungibleAsset;
         }
 

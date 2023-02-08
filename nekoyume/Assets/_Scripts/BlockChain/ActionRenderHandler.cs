@@ -160,6 +160,8 @@ namespace Nekoyume.BlockChain
             // Rune
             RuneEnhancement();
             UnlockRuneSlot();
+
+            PetEnhancement();
         }
 
         public void Stop()
@@ -477,6 +479,15 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseUnlockRuneSlot)
+                .AddTo(_disposables);
+        }
+
+        private void PetEnhancement()
+        {
+            _actionRenderer.EveryRender<PetEnhancement>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponsePetEnhancement)
                 .AddTo(_disposables);
         }
 
@@ -2448,6 +2459,33 @@ namespace Nekoyume.BlockChain
                 MailType.Workshop,
                 L10nManager.Localize("UI_MESSAGE_RUNE_SLOT_OPEN"),
                 NotificationCell.NotificationType.Notification);
+        }
+
+        private void ResponsePetEnhancement(ActionBase.ActionEvaluation<PetEnhancement> eval)
+        {
+            var action = eval.Action;
+            if (eval.Exception is not null ||
+                action.AvatarAddress != States.Instance.CurrentAvatarState.address)
+            {
+                return;
+            }
+
+            UpdateAgentStateAsync(eval).Forget();
+            var soulStoneTicker = TableSheets.Instance.PetSheet[action.PetId].SoulStoneTicker;
+            States.Instance.AvatarBalance[soulStoneTicker] = eval.OutputStates.GetBalance(
+                action.AvatarAddress,
+                Currency.Legacy(soulStoneTicker, 0, null)
+            );
+            var rawPetState = eval.OutputStates.GetState(
+                PetState.DeriveAddress(action.AvatarAddress, action.PetId)
+            );
+            States.Instance.PetStates.UpdatePetState(
+                action.PetId,
+                new PetState((List) rawPetState)
+            );
+
+            Debug.LogError(
+                $"PetEnhancement rendered.\nPetId: {action.PetId}, Level: {action.TargetLevel}");
         }
     }
 }
