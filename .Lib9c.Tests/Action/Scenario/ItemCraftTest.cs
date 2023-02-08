@@ -96,14 +96,13 @@ namespace Lib9c.Tests.Action.Scenario
             Assert.Equal(0, inventoryState.Items.Count);
 
             // Add materials to inventory
-            foreach (var material in allMaterialList)
-            {
-                var materialRow = _tableSheets.MaterialItemSheet[material.Id];
-                var materialItem = ItemFactory.CreateItem(materialRow, random);
-                avatarState.inventory.AddItem(materialItem, material.Count);
-            }
-
-            stateV2 = stateV2.SetState(_inventoryAddr, avatarState.inventory.Serialize());
+            stateV2 = CraftUtil.AddMaterialsToInventory(
+                stateV2,
+                _tableSheets,
+                _avatarAddr,
+                allMaterialList,
+                random
+            );
 
             for (var i = 0; i < recipeList.Count; i++)
             {
@@ -166,10 +165,10 @@ namespace Lib9c.Tests.Action.Scenario
             var recipeList = _tableSheets.ConsumableItemRecipeSheet.OrderedList.Where(
                 recipe => targetItemIdList.Contains(recipe.ResultConsumableItemId)
             ).ToList();
-            var allMateriallist = new List<EquipmentItemSubRecipeSheet.MaterialInfo>();
+            var allMaterialList = new List<EquipmentItemSubRecipeSheet.MaterialInfo>();
             foreach (var recipe in recipeList)
             {
-                allMateriallist = allMateriallist.Concat(recipe.GetAllMaterials()).ToList();
+                allMaterialList = allMaterialList.Concat(recipe.GetAllMaterials()).ToList();
             }
 
             // Prepare combination slot
@@ -183,15 +182,13 @@ namespace Lib9c.Tests.Action.Scenario
             Assert.Equal(0, inventoryState.Items.Count);
 
             // Add materials to inventory
-            var avatarState = stateV2.GetAvatarStateV2(_avatarAddr);
-            foreach (var material in allMateriallist)
-            {
-                var materialRow = _tableSheets.MaterialItemSheet[material.Id];
-                var materialItem = ItemFactory.CreateItem(materialRow, random);
-                avatarState.inventory.AddItem(materialItem, material.Count);
-            }
-
-            stateV2 = stateV2.SetState(_inventoryAddr, avatarState.inventory.Serialize());
+            stateV2 = CraftUtil.AddMaterialsToInventory(
+                stateV2,
+                _tableSheets,
+                _avatarAddr,
+                allMaterialList,
+                random
+            );
 
             for (var i = 0; i < recipeList.Count; i++)
             {
