@@ -5,6 +5,12 @@
 #pragma warning disable 219
 #pragma warning disable 168
 
+// NOTE: Disable warnings for nullable reference types.
+// `#nullable disable` causes compile error on old C# compilers (-7.3)
+#pragma warning disable 8603 // Possible null reference return.
+#pragma warning disable 8618 // Non-nullable variable must contain a non-null value when exiting constructor. Consider declaring it as nullable.
+#pragma warning disable 8625 // Cannot convert null literal to non-nullable reference type.
+
 namespace MagicOnion
 {
     using global::System;
@@ -17,17 +23,74 @@ namespace MagicOnion
     {
         static bool isRegistered = false;
 
+#if UNITY_2019_4_OR_NEWER
         [UnityEngine.RuntimeInitializeOnLoadMethod(UnityEngine.RuntimeInitializeLoadType.BeforeSceneLoad)]
+#elif NET5_0_OR_GREATER
+        [System.Runtime.CompilerServices.ModuleInitializer]
+#endif
         public static void Register()
         {
-            if(isRegistered) return;
+            if (isRegistered) return;
             isRegistered = true;
 
-            MagicOnionClientRegistry<Nekoyume.Shared.Services.IBlockChainService>.Register((x, y, z) => new Nekoyume.Shared.Services.BlockChainServiceClient(x, y, z));
+            global::MagicOnion.Client.MagicOnionClientFactoryProvider.Default =
+                (global::MagicOnion.Client.MagicOnionClientFactoryProvider.Default is global::MagicOnion.Client.ImmutableMagicOnionClientFactoryProvider immutableMagicOnionClientFactoryProvider)
+                    ? immutableMagicOnionClientFactoryProvider.Add(MagicOnionGeneratedClientFactoryProvider.Instance)
+                    : new global::MagicOnion.Client.ImmutableMagicOnionClientFactoryProvider(MagicOnionGeneratedClientFactoryProvider.Instance);
 
-            StreamingHubClientRegistry<Nekoyume.Shared.Hubs.IActionEvaluationHub, Nekoyume.Shared.Hubs.IActionEvaluationHubReceiver>.Register((a, _, b, c, d, e) => new Nekoyume.Shared.Hubs.ActionEvaluationHubClient(a, b, c, d, e));
+            global::MagicOnion.Client.StreamingHubClientFactoryProvider.Default =
+                (global::MagicOnion.Client.StreamingHubClientFactoryProvider.Default is global::MagicOnion.Client.ImmutableStreamingHubClientFactoryProvider immutableStreamingHubClientFactoryProvider)
+                    ? immutableStreamingHubClientFactoryProvider.Add(MagicOnionGeneratedClientFactoryProvider.Instance)
+                    : new global::MagicOnion.Client.ImmutableStreamingHubClientFactoryProvider(MagicOnionGeneratedClientFactoryProvider.Instance);
         }
     }
+
+    public partial class MagicOnionGeneratedClientFactoryProvider : global::MagicOnion.Client.IMagicOnionClientFactoryProvider, global::MagicOnion.Client.IStreamingHubClientFactoryProvider
+    {
+        public static MagicOnionGeneratedClientFactoryProvider Instance { get; } = new MagicOnionGeneratedClientFactoryProvider();
+
+        MagicOnionGeneratedClientFactoryProvider() {}
+
+        bool global::MagicOnion.Client.IMagicOnionClientFactoryProvider.TryGetFactory<T>(out global::MagicOnion.Client.MagicOnionClientFactoryDelegate<T> factory)
+            => (factory = MagicOnionClientFactoryCache<T>.Factory) != null;
+
+        bool global::MagicOnion.Client.IStreamingHubClientFactoryProvider.TryGetFactory<TStreamingHub, TReceiver>(out global::MagicOnion.Client.StreamingHubClientFactoryDelegate<TStreamingHub, TReceiver> factory)
+            => (factory = StreamingHubClientFactoryCache<TStreamingHub, TReceiver>.Factory) != null;
+
+        static class MagicOnionClientFactoryCache<T> where T : global::MagicOnion.IService<T>
+        {
+            public readonly static global::MagicOnion.Client.MagicOnionClientFactoryDelegate<T> Factory;
+
+            static MagicOnionClientFactoryCache()
+            {
+                object factory = default(global::MagicOnion.Client.MagicOnionClientFactoryDelegate<T>);
+
+                if (typeof(T) == typeof(global::Nekoyume.Shared.Services.IBlockChainService))
+                {
+                    factory = ((global::MagicOnion.Client.MagicOnionClientFactoryDelegate<global::Nekoyume.Shared.Services.IBlockChainService>)((x, y) => new Nekoyume.Shared.Services.BlockChainServiceClient(x, y)));
+                }
+                Factory = (global::MagicOnion.Client.MagicOnionClientFactoryDelegate<T>)factory;
+            }
+        }
+        
+        static class StreamingHubClientFactoryCache<TStreamingHub, TReceiver> where TStreamingHub : global::MagicOnion.IStreamingHub<TStreamingHub, TReceiver>
+        {
+            public readonly static global::MagicOnion.Client.StreamingHubClientFactoryDelegate<TStreamingHub, TReceiver> Factory;
+
+            static StreamingHubClientFactoryCache()
+            {
+                object factory = default(global::MagicOnion.Client.StreamingHubClientFactoryDelegate<TStreamingHub, TReceiver>);
+
+                if (typeof(TStreamingHub) == typeof(global::Nekoyume.Shared.Hubs.IActionEvaluationHub) && typeof(TReceiver) == typeof(global::Nekoyume.Shared.Hubs.IActionEvaluationHubReceiver))
+                {
+                    factory = ((global::MagicOnion.Client.StreamingHubClientFactoryDelegate<global::Nekoyume.Shared.Hubs.IActionEvaluationHub, global::Nekoyume.Shared.Hubs.IActionEvaluationHubReceiver>)((a, _, b, c, d, e) => new Nekoyume.Shared.Hubs.ActionEvaluationHubClient(a, b, c, d, e)));
+                }
+
+                Factory = (global::MagicOnion.Client.StreamingHubClientFactoryDelegate<TStreamingHub, TReceiver>)factory;
+            }
+        }
+    }
+
 }
 
 #pragma warning restore 168
@@ -35,35 +98,35 @@ namespace MagicOnion
 #pragma warning restore 414
 #pragma warning restore 612
 #pragma warning restore 618
+
 #pragma warning disable 618
 #pragma warning disable 612
 #pragma warning disable 414
 #pragma warning disable 219
 #pragma warning disable 168
 
+// NOTE: Disable warnings for nullable reference types.
+// `#nullable disable` causes compile error on old C# compilers (-7.3)
+#pragma warning disable 8603 // Possible null reference return.
+#pragma warning disable 8618 // Non-nullable variable must contain a non-null value when exiting constructor. Consider declaring it as nullable.
+#pragma warning disable 8625 // Cannot convert null literal to non-nullable reference type.
 namespace MagicOnion.Resolvers
 {
-    using System;
-    using MessagePack;
-
+    using global::System;
+    using global::MessagePack;
     public class MagicOnionResolver : global::MessagePack.IFormatterResolver
     {
         public static readonly global::MessagePack.IFormatterResolver Instance = new MagicOnionResolver();
-
-        MagicOnionResolver()
-        {
-
-        }
-
+    
+        MagicOnionResolver() {}
+    
         public global::MessagePack.Formatters.IMessagePackFormatter<T> GetFormatter<T>()
-        {
-            return FormatterCache<T>.formatter;
-        }
-
+            => FormatterCache<T>.formatter;
+    
         static class FormatterCache<T>
         {
             public static readonly global::MessagePack.Formatters.IMessagePackFormatter<T> formatter;
-
+    
             static FormatterCache()
             {
                 var f = MagicOnionResolverGetFormatterHelper.GetFormatter(typeof(T));
@@ -74,26 +137,24 @@ namespace MagicOnion.Resolvers
             }
         }
     }
-
     internal static class MagicOnionResolverGetFormatterHelper
     {
-        static readonly global::System.Collections.Generic.Dictionary<Type, int> lookup;
-
+        static readonly global::System.Collections.Generic.Dictionary<global::System.Type, int> lookup;
+    
         static MagicOnionResolverGetFormatterHelper()
         {
-            lookup = new global::System.Collections.Generic.Dictionary<Type, int>(8)
+            lookup = new global::System.Collections.Generic.Dictionary<global::System.Type, int>(8)
             {
-                {typeof(global::MagicOnion.DynamicArgumentTuple<byte[], byte[], byte[]>), 0 },
-                {typeof(global::MagicOnion.DynamicArgumentTuple<byte[], byte[]>), 1 },
-                {typeof(global::MagicOnion.DynamicArgumentTuple<byte[], global::System.Collections.Generic.IEnumerable<byte[]>>), 2 },
-                {typeof(global::MagicOnion.DynamicArgumentTuple<global::System.Collections.Generic.IEnumerable<byte[]>, byte[]>), 3 },
-                {typeof(global::MagicOnion.DynamicArgumentTuple<int, string>), 4 },
-                {typeof(global::MagicOnion.DynamicArgumentTuple<string, string>), 5 },
-                {typeof(global::System.Collections.Generic.Dictionary<byte[], byte[]>), 6 },
-                {typeof(global::System.Collections.Generic.IEnumerable<byte[]>), 7 },
+                {typeof(global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Byte[]>), 0 },
+                {typeof(global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[]>), 1 },
+                {typeof(global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Collections.Generic.IEnumerable<global::System.Byte[]>>), 2 },
+                {typeof(global::MagicOnion.DynamicArgumentTuple<global::System.Collections.Generic.IEnumerable<global::System.Byte[]>, global::System.Byte[]>), 3 },
+                {typeof(global::MagicOnion.DynamicArgumentTuple<global::System.Int32, global::System.String>), 4 },
+                {typeof(global::MagicOnion.DynamicArgumentTuple<global::System.String, global::System.String>), 5 },
+                {typeof(global::System.Collections.Generic.Dictionary<global::System.Byte[], global::System.Byte[]>), 6 },
+                {typeof(global::System.Collections.Generic.IEnumerable<global::System.Byte[]>), 7 },
             };
         }
-
         internal static object GetFormatter(Type t)
         {
             int key;
@@ -101,542 +162,309 @@ namespace MagicOnion.Resolvers
             {
                 return null;
             }
-
+        
             switch (key)
             {
-                case 0: return new global::MagicOnion.DynamicArgumentTupleFormatter<byte[], byte[], byte[]>(default(byte[]), default(byte[]), default(byte[]));
-                case 1: return new global::MagicOnion.DynamicArgumentTupleFormatter<byte[], byte[]>(default(byte[]), default(byte[]));
-                case 2: return new global::MagicOnion.DynamicArgumentTupleFormatter<byte[], global::System.Collections.Generic.IEnumerable<byte[]>>(default(byte[]), default(global::System.Collections.Generic.IEnumerable<byte[]>));
-                case 3: return new global::MagicOnion.DynamicArgumentTupleFormatter<global::System.Collections.Generic.IEnumerable<byte[]>, byte[]>(default(global::System.Collections.Generic.IEnumerable<byte[]>), default(byte[]));
-                case 4: return new global::MagicOnion.DynamicArgumentTupleFormatter<int, string>(default(int), default(string));
-                case 5: return new global::MagicOnion.DynamicArgumentTupleFormatter<string, string>(default(string), default(string));
-                case 6: return new global::MessagePack.Formatters.DictionaryFormatter<byte[], byte[]>();
-                case 7: return new global::MessagePack.Formatters.InterfaceEnumerableFormatter<byte[]>();
+                case 0: return new global::MagicOnion.DynamicArgumentTupleFormatter<global::System.Byte[], global::System.Byte[], global::System.Byte[]>(default(global::System.Byte[]), default(global::System.Byte[]), default(global::System.Byte[]));
+                case 1: return new global::MagicOnion.DynamicArgumentTupleFormatter<global::System.Byte[], global::System.Byte[]>(default(global::System.Byte[]), default(global::System.Byte[]));
+                case 2: return new global::MagicOnion.DynamicArgumentTupleFormatter<global::System.Byte[], global::System.Collections.Generic.IEnumerable<global::System.Byte[]>>(default(global::System.Byte[]), default(global::System.Collections.Generic.IEnumerable<global::System.Byte[]>));
+                case 3: return new global::MagicOnion.DynamicArgumentTupleFormatter<global::System.Collections.Generic.IEnumerable<global::System.Byte[]>, global::System.Byte[]>(default(global::System.Collections.Generic.IEnumerable<global::System.Byte[]>), default(global::System.Byte[]));
+                case 4: return new global::MagicOnion.DynamicArgumentTupleFormatter<global::System.Int32, global::System.String>(default(global::System.Int32), default(global::System.String));
+                case 5: return new global::MagicOnion.DynamicArgumentTupleFormatter<global::System.String, global::System.String>(default(global::System.String), default(global::System.String));
+                case 6: return new global::MessagePack.Formatters.DictionaryFormatter<global::System.Byte[], global::System.Byte[]>();
+                case 7: return new global::MessagePack.Formatters.InterfaceEnumerableFormatter<global::System.Byte[]>();
                 default: return null;
             }
         }
     }
 }
-
 #pragma warning restore 168
 #pragma warning restore 219
 #pragma warning restore 414
 #pragma warning restore 612
 #pragma warning restore 618
+
 #pragma warning disable 618
 #pragma warning disable 612
 #pragma warning disable 414
 #pragma warning disable 219
 #pragma warning disable 168
 
-namespace Nekoyume.Shared.Services {
-    using System;
-    using MagicOnion;
-    using MagicOnion.Client;
-    using Grpc.Core;
-    using MessagePack;
+// NOTE: Disable warnings for nullable reference types.
+// `#nullable disable` causes compile error on old C# compilers (-7.3)
+#pragma warning disable 8603 // Possible null reference return.
+#pragma warning disable 8618 // Non-nullable variable must contain a non-null value when exiting constructor. Consider declaring it as nullable.
+#pragma warning disable 8625 // Cannot convert null literal to non-nullable reference type.
 
-    [Ignore]
-    public class BlockChainServiceClient : MagicOnionClientBase<global::Nekoyume.Shared.Services.IBlockChainService>, global::Nekoyume.Shared.Services.IBlockChainService
+namespace Nekoyume.Shared.Services
+{
+    using global::System;
+    using global::Grpc.Core;
+    using global::MagicOnion;
+    using global::MagicOnion.Client;
+    using global::MessagePack;
+    
+    [global::MagicOnion.Ignore]
+    public class BlockChainServiceClient : global::MagicOnion.Client.MagicOnionClientBase<global::Nekoyume.Shared.Services.IBlockChainService>, global::Nekoyume.Shared.Services.IBlockChainService
     {
-        static readonly Method<byte[], byte[]> PutTransactionMethod;
-        static readonly Func<RequestContext, ResponseContext> PutTransactionDelegate;
-        static readonly Method<byte[], byte[]> GetNextTxNonceMethod;
-        static readonly Func<RequestContext, ResponseContext> GetNextTxNonceDelegate;
-        static readonly Method<byte[], byte[]> GetStateMethod;
-        static readonly Func<RequestContext, ResponseContext> GetStateDelegate;
-        static readonly Method<byte[], byte[]> GetBalanceMethod;
-        static readonly Func<RequestContext, ResponseContext> GetBalanceDelegate;
-        static readonly Method<byte[], byte[]> GetTipMethod;
-        static readonly Func<RequestContext, ResponseContext> GetTipDelegate;
-        static readonly Method<byte[], byte[]> SetAddressesToSubscribeMethod;
-        static readonly Func<RequestContext, ResponseContext> SetAddressesToSubscribeDelegate;
-        static readonly Method<byte[], byte[]> IsTransactionStagedMethod;
-        static readonly Func<RequestContext, ResponseContext> IsTransactionStagedDelegate;
-        static readonly Method<byte[], byte[]> ReportExceptionMethod;
-        static readonly Func<RequestContext, ResponseContext> ReportExceptionDelegate;
-        static readonly Method<byte[], byte[]> AddClientMethod;
-        static readonly Func<RequestContext, ResponseContext> AddClientDelegate;
-        static readonly Method<byte[], byte[]> RemoveClientMethod;
-        static readonly Func<RequestContext, ResponseContext> RemoveClientDelegate;
-        static readonly Method<byte[], byte[]> GetAvatarStatesMethod;
-        static readonly Func<RequestContext, ResponseContext> GetAvatarStatesDelegate;
-        static readonly Method<byte[], byte[]> GetStateBulkMethod;
-        static readonly Func<RequestContext, ResponseContext> GetStateBulkDelegate;
-
-        static BlockChainServiceClient()
+        class ClientCore
         {
-            PutTransactionMethod = new Method<byte[], byte[]>(MethodType.Unary, "IBlockChainService", "PutTransaction", MagicOnionMarshallers.ThroughMarshaller, MagicOnionMarshallers.ThroughMarshaller);
-            PutTransactionDelegate = _PutTransaction;
-            GetNextTxNonceMethod = new Method<byte[], byte[]>(MethodType.Unary, "IBlockChainService", "GetNextTxNonce", MagicOnionMarshallers.ThroughMarshaller, MagicOnionMarshallers.ThroughMarshaller);
-            GetNextTxNonceDelegate = _GetNextTxNonce;
-            GetStateMethod = new Method<byte[], byte[]>(MethodType.Unary, "IBlockChainService", "GetState", MagicOnionMarshallers.ThroughMarshaller, MagicOnionMarshallers.ThroughMarshaller);
-            GetStateDelegate = _GetState;
-            GetBalanceMethod = new Method<byte[], byte[]>(MethodType.Unary, "IBlockChainService", "GetBalance", MagicOnionMarshallers.ThroughMarshaller, MagicOnionMarshallers.ThroughMarshaller);
-            GetBalanceDelegate = _GetBalance;
-            GetTipMethod = new Method<byte[], byte[]>(MethodType.Unary, "IBlockChainService", "GetTip", MagicOnionMarshallers.ThroughMarshaller, MagicOnionMarshallers.ThroughMarshaller);
-            GetTipDelegate = _GetTip;
-            SetAddressesToSubscribeMethod = new Method<byte[], byte[]>(MethodType.Unary, "IBlockChainService", "SetAddressesToSubscribe", MagicOnionMarshallers.ThroughMarshaller, MagicOnionMarshallers.ThroughMarshaller);
-            SetAddressesToSubscribeDelegate = _SetAddressesToSubscribe;
-            IsTransactionStagedMethod = new Method<byte[], byte[]>(MethodType.Unary, "IBlockChainService", "IsTransactionStaged", MagicOnionMarshallers.ThroughMarshaller, MagicOnionMarshallers.ThroughMarshaller);
-            IsTransactionStagedDelegate = _IsTransactionStaged;
-            ReportExceptionMethod = new Method<byte[], byte[]>(MethodType.Unary, "IBlockChainService", "ReportException", MagicOnionMarshallers.ThroughMarshaller, MagicOnionMarshallers.ThroughMarshaller);
-            ReportExceptionDelegate = _ReportException;
-            AddClientMethod = new Method<byte[], byte[]>(MethodType.Unary, "IBlockChainService", "AddClient", MagicOnionMarshallers.ThroughMarshaller, MagicOnionMarshallers.ThroughMarshaller);
-            AddClientDelegate = _AddClient;
-            RemoveClientMethod = new Method<byte[], byte[]>(MethodType.Unary, "IBlockChainService", "RemoveClient", MagicOnionMarshallers.ThroughMarshaller, MagicOnionMarshallers.ThroughMarshaller);
-            RemoveClientDelegate = _RemoveClient;
-            GetAvatarStatesMethod = new Method<byte[], byte[]>(MethodType.Unary, "IBlockChainService", "GetAvatarStates", MagicOnionMarshallers.ThroughMarshaller, MagicOnionMarshallers.ThroughMarshaller);
-            GetAvatarStatesDelegate = _GetAvatarStates;
-            GetStateBulkMethod = new Method<byte[], byte[]>(MethodType.Unary, "IBlockChainService", "GetStateBulk", MagicOnionMarshallers.ThroughMarshaller, MagicOnionMarshallers.ThroughMarshaller);
-            GetStateBulkDelegate = _GetStateBulk;
-        }
-
-        BlockChainServiceClient()
-        {
-        }
-
-        public BlockChainServiceClient(CallInvoker callInvoker, MessagePackSerializerOptions serializerOptions, IClientFilter[] filters)
-            : base(callInvoker, serializerOptions, filters)
-        {
-        }
-
-        protected override MagicOnionClientBase<IBlockChainService> Clone()
-        {
-            var clone = new BlockChainServiceClient();
-            clone.host = this.host;
-            clone.option = this.option;
-            clone.callInvoker = this.callInvoker;
-            clone.serializerOptions = this.serializerOptions;
-            clone.filters = filters;
-            return clone;
-        }
-
-        public new IBlockChainService WithHeaders(Metadata headers)
-        {
-            return base.WithHeaders(headers);
-        }
-
-        public new IBlockChainService WithCancellationToken(System.Threading.CancellationToken cancellationToken)
-        {
-            return base.WithCancellationToken(cancellationToken);
-        }
-
-        public new IBlockChainService WithDeadline(System.DateTime deadline)
-        {
-            return base.WithDeadline(deadline);
-        }
-
-        public new IBlockChainService WithHost(string host)
-        {
-            return base.WithHost(host);
-        }
-
-        public new IBlockChainService WithOptions(CallOptions option)
-        {
-            return base.WithOptions(option);
-        }
-   
-        static ResponseContext _PutTransaction(RequestContext __context)
-        {
-            return CreateResponseContext<byte[], bool>(__context, PutTransactionMethod);
-        }
-
-        public global::MagicOnion.UnaryResult<bool> PutTransaction(byte[] txBytes)
-        {
-            return InvokeAsync<byte[], bool>("IBlockChainService/PutTransaction", txBytes, PutTransactionDelegate);
-        }
-        static ResponseContext _GetNextTxNonce(RequestContext __context)
-        {
-            return CreateResponseContext<byte[], long>(__context, GetNextTxNonceMethod);
-        }
-
-        public global::MagicOnion.UnaryResult<long> GetNextTxNonce(byte[] addressBytes)
-        {
-            return InvokeAsync<byte[], long>("IBlockChainService/GetNextTxNonce", addressBytes, GetNextTxNonceDelegate);
-        }
-        static ResponseContext _GetState(RequestContext __context)
-        {
-            return CreateResponseContext<DynamicArgumentTuple<byte[], byte[]>, byte[]>(__context, GetStateMethod);
-        }
-
-        public global::MagicOnion.UnaryResult<byte[]> GetState(byte[] addressBytes, byte[] blockHashBytes)
-        {
-            return InvokeAsync<DynamicArgumentTuple<byte[], byte[]>, byte[]>("IBlockChainService/GetState", new DynamicArgumentTuple<byte[], byte[]>(addressBytes, blockHashBytes), GetStateDelegate);
-        }
-        static ResponseContext _GetBalance(RequestContext __context)
-        {
-            return CreateResponseContext<DynamicArgumentTuple<byte[], byte[], byte[]>, byte[]>(__context, GetBalanceMethod);
-        }
-
-        public global::MagicOnion.UnaryResult<byte[]> GetBalance(byte[] addressBytes, byte[] currencyBytes, byte[] blockHashBytes)
-        {
-            return InvokeAsync<DynamicArgumentTuple<byte[], byte[], byte[]>, byte[]>("IBlockChainService/GetBalance", new DynamicArgumentTuple<byte[], byte[], byte[]>(addressBytes, currencyBytes, blockHashBytes), GetBalanceDelegate);
-        }
-        static ResponseContext _GetTip(RequestContext __context)
-        {
-            return CreateResponseContext<byte[]>(__context, GetTipMethod);
-        }
-
-        public global::MagicOnion.UnaryResult<byte[]> GetTip()
-        {
-            return InvokeAsync<Nil, byte[]>("IBlockChainService/GetTip", Nil.Default, GetTipDelegate);
-        }
-        static ResponseContext _SetAddressesToSubscribe(RequestContext __context)
-        {
-            return CreateResponseContext<DynamicArgumentTuple<byte[], global::System.Collections.Generic.IEnumerable<byte[]>>, bool>(__context, SetAddressesToSubscribeMethod);
-        }
-
-        public global::MagicOnion.UnaryResult<bool> SetAddressesToSubscribe(byte[] toByteArray, global::System.Collections.Generic.IEnumerable<byte[]> addressesBytes)
-        {
-            return InvokeAsync<DynamicArgumentTuple<byte[], global::System.Collections.Generic.IEnumerable<byte[]>>, bool>("IBlockChainService/SetAddressesToSubscribe", new DynamicArgumentTuple<byte[], global::System.Collections.Generic.IEnumerable<byte[]>>(toByteArray, addressesBytes), SetAddressesToSubscribeDelegate);
-        }
-        static ResponseContext _IsTransactionStaged(RequestContext __context)
-        {
-            return CreateResponseContext<byte[], bool>(__context, IsTransactionStagedMethod);
-        }
-
-        public global::MagicOnion.UnaryResult<bool> IsTransactionStaged(byte[] txidBytes)
-        {
-            return InvokeAsync<byte[], bool>("IBlockChainService/IsTransactionStaged", txidBytes, IsTransactionStagedDelegate);
-        }
-        static ResponseContext _ReportException(RequestContext __context)
-        {
-            return CreateResponseContext<DynamicArgumentTuple<string, string>, bool>(__context, ReportExceptionMethod);
-        }
-
-        public global::MagicOnion.UnaryResult<bool> ReportException(string code, string message)
-        {
-            return InvokeAsync<DynamicArgumentTuple<string, string>, bool>("IBlockChainService/ReportException", new DynamicArgumentTuple<string, string>(code, message), ReportExceptionDelegate);
-        }
-        static ResponseContext _AddClient(RequestContext __context)
-        {
-            return CreateResponseContext<byte[], bool>(__context, AddClientMethod);
-        }
-
-        public global::MagicOnion.UnaryResult<bool> AddClient(byte[] addressByte)
-        {
-            return InvokeAsync<byte[], bool>("IBlockChainService/AddClient", addressByte, AddClientDelegate);
-        }
-        static ResponseContext _RemoveClient(RequestContext __context)
-        {
-            return CreateResponseContext<byte[], bool>(__context, RemoveClientMethod);
-        }
-
-        public global::MagicOnion.UnaryResult<bool> RemoveClient(byte[] addressByte)
-        {
-            return InvokeAsync<byte[], bool>("IBlockChainService/RemoveClient", addressByte, RemoveClientDelegate);
-        }
-        static ResponseContext _GetAvatarStates(RequestContext __context)
-        {
-            return CreateResponseContext<DynamicArgumentTuple<global::System.Collections.Generic.IEnumerable<byte[]>, byte[]>, global::System.Collections.Generic.Dictionary<byte[], byte[]>>(__context, GetAvatarStatesMethod);
-        }
-
-        public global::MagicOnion.UnaryResult<global::System.Collections.Generic.Dictionary<byte[], byte[]>> GetAvatarStates(global::System.Collections.Generic.IEnumerable<byte[]> addressBytesList, byte[] blockHashBytes)
-        {
-            return InvokeAsync<DynamicArgumentTuple<global::System.Collections.Generic.IEnumerable<byte[]>, byte[]>, global::System.Collections.Generic.Dictionary<byte[], byte[]>>("IBlockChainService/GetAvatarStates", new DynamicArgumentTuple<global::System.Collections.Generic.IEnumerable<byte[]>, byte[]>(addressBytesList, blockHashBytes), GetAvatarStatesDelegate);
-        }
-        static ResponseContext _GetStateBulk(RequestContext __context)
-        {
-            return CreateResponseContext<DynamicArgumentTuple<global::System.Collections.Generic.IEnumerable<byte[]>, byte[]>, global::System.Collections.Generic.Dictionary<byte[], byte[]>>(__context, GetStateBulkMethod);
-        }
-
-        public global::MagicOnion.UnaryResult<global::System.Collections.Generic.Dictionary<byte[], byte[]>> GetStateBulk(global::System.Collections.Generic.IEnumerable<byte[]> addressBytesList, byte[] blockHashBytes)
-        {
-            return InvokeAsync<DynamicArgumentTuple<global::System.Collections.Generic.IEnumerable<byte[]>, byte[]>, global::System.Collections.Generic.Dictionary<byte[], byte[]>>("IBlockChainService/GetStateBulk", new DynamicArgumentTuple<global::System.Collections.Generic.IEnumerable<byte[]>, byte[]>(addressBytesList, blockHashBytes), GetStateBulkDelegate);
-        }
-    }
-}
-
-#pragma warning restore 168
-#pragma warning restore 219
-#pragma warning restore 414
-#pragma warning restore 612
-#pragma warning restore 618
-#pragma warning disable 618
-#pragma warning disable 612
-#pragma warning disable 414
-#pragma warning disable 219
-#pragma warning disable 168
-
-namespace Nekoyume.Shared.Hubs {
-    using Grpc.Core;
-    using MagicOnion;
-    using MagicOnion.Client;
-    using MessagePack;
-    using System;
-    using System.Threading.Tasks;
-
-    [Ignore]
-    public class ActionEvaluationHubClient : StreamingHubClientBase<global::Nekoyume.Shared.Hubs.IActionEvaluationHub, global::Nekoyume.Shared.Hubs.IActionEvaluationHubReceiver>, global::Nekoyume.Shared.Hubs.IActionEvaluationHub
-    {
-        static readonly Method<byte[], byte[]> method = new Method<byte[], byte[]>(MethodType.DuplexStreaming, "IActionEvaluationHub", "Connect", MagicOnionMarshallers.ThroughMarshaller, MagicOnionMarshallers.ThroughMarshaller);
-
-        protected override Method<byte[], byte[]> DuplexStreamingAsyncMethod { get { return method; } }
-
-        readonly global::Nekoyume.Shared.Hubs.IActionEvaluationHub __fireAndForgetClient;
-
-        public ActionEvaluationHubClient(CallInvoker callInvoker, string host, CallOptions option, MessagePackSerializerOptions serializerOptions, IMagicOnionClientLogger logger)
-            : base(callInvoker, host, option, serializerOptions, logger)
-        {
-            this.__fireAndForgetClient = new FireAndForgetClient(this);
+            public global::MagicOnion.Client.Internal.RawMethodInvoker<global::System.Byte[], global::System.Boolean> PutTransaction;
+            public global::MagicOnion.Client.Internal.RawMethodInvoker<global::System.Byte[], global::System.Int64> GetNextTxNonce;
+            public global::MagicOnion.Client.Internal.RawMethodInvoker<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[]>, global::System.Byte[]> GetState;
+            public global::MagicOnion.Client.Internal.RawMethodInvoker<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Byte[]>, global::System.Byte[]> GetBalance;
+            public global::MagicOnion.Client.Internal.RawMethodInvoker<global::MessagePack.Nil, global::System.Byte[]> GetTip;
+            public global::MagicOnion.Client.Internal.RawMethodInvoker<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Collections.Generic.IEnumerable<global::System.Byte[]>>, global::System.Boolean> SetAddressesToSubscribe;
+            public global::MagicOnion.Client.Internal.RawMethodInvoker<global::System.Byte[], global::System.Boolean> IsTransactionStaged;
+            public global::MagicOnion.Client.Internal.RawMethodInvoker<global::MagicOnion.DynamicArgumentTuple<global::System.String, global::System.String>, global::System.Boolean> ReportException;
+            public global::MagicOnion.Client.Internal.RawMethodInvoker<global::System.Byte[], global::System.Boolean> AddClient;
+            public global::MagicOnion.Client.Internal.RawMethodInvoker<global::System.Byte[], global::System.Boolean> RemoveClient;
+            public global::MagicOnion.Client.Internal.RawMethodInvoker<global::MagicOnion.DynamicArgumentTuple<global::System.Collections.Generic.IEnumerable<global::System.Byte[]>, global::System.Byte[]>, global::System.Collections.Generic.Dictionary<global::System.Byte[], global::System.Byte[]>> GetAvatarStates;
+            public global::MagicOnion.Client.Internal.RawMethodInvoker<global::MagicOnion.DynamicArgumentTuple<global::System.Collections.Generic.IEnumerable<global::System.Byte[]>, global::System.Byte[]>, global::System.Collections.Generic.Dictionary<global::System.Byte[], global::System.Byte[]>> GetStateBulk;
+            public ClientCore(global::MagicOnion.Serialization.IMagicOnionSerializerProvider serializerProvider)
+            {
+                this.PutTransaction = global::MagicOnion.Client.Internal.RawMethodInvoker.Create_RefType_ValueType<global::System.Byte[], global::System.Boolean>(global::Grpc.Core.MethodType.Unary, "IBlockChainService", "PutTransaction", serializerProvider);
+                this.GetNextTxNonce = global::MagicOnion.Client.Internal.RawMethodInvoker.Create_RefType_ValueType<global::System.Byte[], global::System.Int64>(global::Grpc.Core.MethodType.Unary, "IBlockChainService", "GetNextTxNonce", serializerProvider);
+                this.GetState = global::MagicOnion.Client.Internal.RawMethodInvoker.Create_ValueType_RefType<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[]>, global::System.Byte[]>(global::Grpc.Core.MethodType.Unary, "IBlockChainService", "GetState", serializerProvider);
+                this.GetBalance = global::MagicOnion.Client.Internal.RawMethodInvoker.Create_ValueType_RefType<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Byte[]>, global::System.Byte[]>(global::Grpc.Core.MethodType.Unary, "IBlockChainService", "GetBalance", serializerProvider);
+                this.GetTip = global::MagicOnion.Client.Internal.RawMethodInvoker.Create_ValueType_RefType<global::MessagePack.Nil, global::System.Byte[]>(global::Grpc.Core.MethodType.Unary, "IBlockChainService", "GetTip", serializerProvider);
+                this.SetAddressesToSubscribe = global::MagicOnion.Client.Internal.RawMethodInvoker.Create_ValueType_ValueType<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Collections.Generic.IEnumerable<global::System.Byte[]>>, global::System.Boolean>(global::Grpc.Core.MethodType.Unary, "IBlockChainService", "SetAddressesToSubscribe", serializerProvider);
+                this.IsTransactionStaged = global::MagicOnion.Client.Internal.RawMethodInvoker.Create_RefType_ValueType<global::System.Byte[], global::System.Boolean>(global::Grpc.Core.MethodType.Unary, "IBlockChainService", "IsTransactionStaged", serializerProvider);
+                this.ReportException = global::MagicOnion.Client.Internal.RawMethodInvoker.Create_ValueType_ValueType<global::MagicOnion.DynamicArgumentTuple<global::System.String, global::System.String>, global::System.Boolean>(global::Grpc.Core.MethodType.Unary, "IBlockChainService", "ReportException", serializerProvider);
+                this.AddClient = global::MagicOnion.Client.Internal.RawMethodInvoker.Create_RefType_ValueType<global::System.Byte[], global::System.Boolean>(global::Grpc.Core.MethodType.Unary, "IBlockChainService", "AddClient", serializerProvider);
+                this.RemoveClient = global::MagicOnion.Client.Internal.RawMethodInvoker.Create_RefType_ValueType<global::System.Byte[], global::System.Boolean>(global::Grpc.Core.MethodType.Unary, "IBlockChainService", "RemoveClient", serializerProvider);
+                this.GetAvatarStates = global::MagicOnion.Client.Internal.RawMethodInvoker.Create_ValueType_RefType<global::MagicOnion.DynamicArgumentTuple<global::System.Collections.Generic.IEnumerable<global::System.Byte[]>, global::System.Byte[]>, global::System.Collections.Generic.Dictionary<global::System.Byte[], global::System.Byte[]>>(global::Grpc.Core.MethodType.Unary, "IBlockChainService", "GetAvatarStates", serializerProvider);
+                this.GetStateBulk = global::MagicOnion.Client.Internal.RawMethodInvoker.Create_ValueType_RefType<global::MagicOnion.DynamicArgumentTuple<global::System.Collections.Generic.IEnumerable<global::System.Byte[]>, global::System.Byte[]>, global::System.Collections.Generic.Dictionary<global::System.Byte[], global::System.Byte[]>>(global::Grpc.Core.MethodType.Unary, "IBlockChainService", "GetStateBulk", serializerProvider);
+            }
         }
         
-        public global::Nekoyume.Shared.Hubs.IActionEvaluationHub FireAndForget()
+        readonly ClientCore core;
+        
+        public BlockChainServiceClient(global::MagicOnion.Client.MagicOnionClientOptions options, global::MagicOnion.Serialization.IMagicOnionSerializerProvider serializerProvider) : base(options)
         {
-            return __fireAndForgetClient;
+            this.core = new ClientCore(serializerProvider);
         }
-
-        protected override void OnBroadcastEvent(int methodId, ArraySegment<byte> data)
+        
+        private BlockChainServiceClient(MagicOnionClientOptions options, ClientCore core) : base(options)
         {
-            switch (methodId)
-            {
-                case 1092973952: // OnRender
-                {
-                    UnityEngine.Debug.Log("MagicOnion OnRender");
-                    var result = MessagePackSerializer.Deserialize<byte[]>(data, serializerOptions);
-                    receiver.OnRender(result); break;
-                }
-                case -1668462809: // OnUnrender
-                {
-                    var result = MessagePackSerializer.Deserialize<byte[]>(data, serializerOptions);
-                    receiver.OnUnrender(result); break;
-                }
-                case -1243684591: // OnRenderBlock
-                {
-                    var result = MessagePackSerializer.Deserialize<DynamicArgumentTuple<byte[], byte[]>>(data, serializerOptions);
-                    receiver.OnRenderBlock(result.Item1, result.Item2); break;
-                }
-                case 1940953564: // OnReorged
-                {
-                    var result = MessagePackSerializer.Deserialize<DynamicArgumentTuple<byte[], byte[], byte[]>>(data, serializerOptions);
-                    receiver.OnReorged(result.Item1, result.Item2, result.Item3); break;
-                }
-                case 1034302074: // OnReorgEnd
-                {
-                    var result = MessagePackSerializer.Deserialize<DynamicArgumentTuple<byte[], byte[], byte[]>>(data, serializerOptions);
-                    receiver.OnReorgEnd(result.Item1, result.Item2, result.Item3); break;
-                }
-                case 1163840065: // OnException
-                {
-                    var result = MessagePackSerializer.Deserialize<DynamicArgumentTuple<int, string>>(data, serializerOptions);
-                    receiver.OnException(result.Item1, result.Item2); break;
-                }
-                case -1340987425: // OnPreloadStart
-                {
-                    var result = MessagePackSerializer.Deserialize<Nil>(data, serializerOptions);
-                    receiver.OnPreloadStart(); break;
-                }
-                case 1916412074: // OnPreloadEnd
-                {
-                    var result = MessagePackSerializer.Deserialize<Nil>(data, serializerOptions);
-                    receiver.OnPreloadEnd(); break;
-                }
-                default:
-                    break;
-            }
+            this.core = core;
         }
-
-        protected override void OnResponseEvent(int methodId, object taskCompletionSource, ArraySegment<byte> data)
-        {
-            switch (methodId)
-            {
-                case -733403293: // JoinAsync
-                {
-                    var result = MessagePackSerializer.Deserialize<Nil>(data, serializerOptions);
-                    ((TaskCompletionSource<Nil>)taskCompletionSource).TrySetResult(result);
-                    break;
-                }
-                case 1368362116: // LeaveAsync
-                {
-                    var result = MessagePackSerializer.Deserialize<Nil>(data, serializerOptions);
-                    ((TaskCompletionSource<Nil>)taskCompletionSource).TrySetResult(result);
-                    break;
-                }
-                case -291080696: // BroadcastRenderAsync
-                {
-                    var result = MessagePackSerializer.Deserialize<Nil>(data, serializerOptions);
-                    ((TaskCompletionSource<Nil>)taskCompletionSource).TrySetResult(result);
-                    break;
-                }
-                case -1141315011: // BroadcastUnrenderAsync
-                {
-                    var result = MessagePackSerializer.Deserialize<Nil>(data, serializerOptions);
-                    ((TaskCompletionSource<Nil>)taskCompletionSource).TrySetResult(result);
-                    break;
-                }
-                case -493480153: // BroadcastRenderBlockAsync
-                {
-                    var result = MessagePackSerializer.Deserialize<Nil>(data, serializerOptions);
-                    ((TaskCompletionSource<Nil>)taskCompletionSource).TrySetResult(result);
-                    break;
-                }
-                case 1187694116: // ReportReorgAsync
-                {
-                    var result = MessagePackSerializer.Deserialize<Nil>(data, serializerOptions);
-                    ((TaskCompletionSource<Nil>)taskCompletionSource).TrySetResult(result);
-                    break;
-                }
-                case 697389103: // ReportReorgEndAsync
-                {
-                    var result = MessagePackSerializer.Deserialize<Nil>(data, serializerOptions);
-                    ((TaskCompletionSource<Nil>)taskCompletionSource).TrySetResult(result);
-                    break;
-                }
-                case 1773826856: // ReportExceptionAsync
-                {
-                    var result = MessagePackSerializer.Deserialize<Nil>(data, serializerOptions);
-                    ((TaskCompletionSource<Nil>)taskCompletionSource).TrySetResult(result);
-                    break;
-                }
-                case -662856294: // PreloadStartAsync
-                {
-                    var result = MessagePackSerializer.Deserialize<Nil>(data, serializerOptions);
-                    ((TaskCompletionSource<Nil>)taskCompletionSource).TrySetResult(result);
-                    break;
-                }
-                case -486331643: // PreloadEndAsync
-                {
-                    var result = MessagePackSerializer.Deserialize<Nil>(data, serializerOptions);
-                    ((TaskCompletionSource<Nil>)taskCompletionSource).TrySetResult(result);
-                    break;
-                }
-                default:
-                    break;
-            }
-        }
-   
-        public global::System.Threading.Tasks.Task JoinAsync(string addressHex)
-        {
-            return WriteMessageWithResponseAsync<string, Nil>(-733403293, addressHex);
-        }
-
-        public global::System.Threading.Tasks.Task LeaveAsync()
-        {
-            return WriteMessageWithResponseAsync<Nil, Nil>(1368362116, Nil.Default);
-        }
-
-        public global::System.Threading.Tasks.Task BroadcastRenderAsync(byte[] encoded)
-        {
-            return WriteMessageWithResponseAsync<byte[], Nil>(-291080696, encoded);
-        }
-
-        public global::System.Threading.Tasks.Task BroadcastUnrenderAsync(byte[] encoded)
-        {
-            return WriteMessageWithResponseAsync<byte[], Nil>(-1141315011, encoded);
-        }
-
-        public global::System.Threading.Tasks.Task BroadcastRenderBlockAsync(byte[] oldTip, byte[] newTip)
-        {
-            return WriteMessageWithResponseAsync<DynamicArgumentTuple<byte[], byte[]>, Nil>(-493480153, new DynamicArgumentTuple<byte[], byte[]>(oldTip, newTip));
-        }
-
-        public global::System.Threading.Tasks.Task ReportReorgAsync(byte[] oldTip, byte[] newTip, byte[] branchpoint)
-        {
-            return WriteMessageWithResponseAsync<DynamicArgumentTuple<byte[], byte[], byte[]>, Nil>(1187694116, new DynamicArgumentTuple<byte[], byte[], byte[]>(oldTip, newTip, branchpoint));
-        }
-
-        public global::System.Threading.Tasks.Task ReportReorgEndAsync(byte[] oldTip, byte[] newTip, byte[] branchpoint)
-        {
-            return WriteMessageWithResponseAsync<DynamicArgumentTuple<byte[], byte[], byte[]>, Nil>(697389103, new DynamicArgumentTuple<byte[], byte[], byte[]>(oldTip, newTip, branchpoint));
-        }
-
-        public global::System.Threading.Tasks.Task ReportExceptionAsync(int code, string message)
-        {
-            return WriteMessageWithResponseAsync<DynamicArgumentTuple<int, string>, Nil>(1773826856, new DynamicArgumentTuple<int, string>(code, message));
-        }
-
-        public global::System.Threading.Tasks.Task PreloadStartAsync()
-        {
-            return WriteMessageWithResponseAsync<Nil, Nil>(-662856294, Nil.Default);
-        }
-
-        public global::System.Threading.Tasks.Task PreloadEndAsync()
-        {
-            return WriteMessageWithResponseAsync<Nil, Nil>(-486331643, Nil.Default);
-        }
-
-        [Ignore]
-        class FireAndForgetClient : global::Nekoyume.Shared.Hubs.IActionEvaluationHub
-        {
-            readonly ActionEvaluationHubClient __parent;
-
-            public FireAndForgetClient(ActionEvaluationHubClient parentClient)
-            {
-                this.__parent = parentClient;
-            }
-
-            public global::Nekoyume.Shared.Hubs.IActionEvaluationHub FireAndForget()
-            {
-                throw new NotSupportedException();
-            }
-
-            public Task DisposeAsync()
-            {
-                throw new NotSupportedException();
-            }
-
-            public Task WaitForDisconnect()
-            {
-                throw new NotSupportedException();
-            }
-
-            public global::System.Threading.Tasks.Task JoinAsync(string addressHex)
-            {
-                return __parent.WriteMessageAsync<string>(-733403293, addressHex);
-            }
-
-            public global::System.Threading.Tasks.Task LeaveAsync()
-            {
-                return __parent.WriteMessageAsync<Nil>(1368362116, Nil.Default);
-            }
-
-            public global::System.Threading.Tasks.Task BroadcastRenderAsync(byte[] encoded)
-            {
-                return __parent.WriteMessageAsync<byte[]>(-291080696, encoded);
-            }
-
-            public global::System.Threading.Tasks.Task BroadcastUnrenderAsync(byte[] encoded)
-            {
-                return __parent.WriteMessageAsync<byte[]>(-1141315011, encoded);
-            }
-
-            public global::System.Threading.Tasks.Task BroadcastRenderBlockAsync(byte[] oldTip, byte[] newTip)
-            {
-                return __parent.WriteMessageAsync<DynamicArgumentTuple<byte[], byte[]>>(-493480153, new DynamicArgumentTuple<byte[], byte[]>(oldTip, newTip));
-            }
-
-            public global::System.Threading.Tasks.Task ReportReorgAsync(byte[] oldTip, byte[] newTip, byte[] branchpoint)
-            {
-                return __parent.WriteMessageAsync<DynamicArgumentTuple<byte[], byte[], byte[]>>(1187694116, new DynamicArgumentTuple<byte[], byte[], byte[]>(oldTip, newTip, branchpoint));
-            }
-
-            public global::System.Threading.Tasks.Task ReportReorgEndAsync(byte[] oldTip, byte[] newTip, byte[] branchpoint)
-            {
-                return __parent.WriteMessageAsync<DynamicArgumentTuple<byte[], byte[], byte[]>>(697389103, new DynamicArgumentTuple<byte[], byte[], byte[]>(oldTip, newTip, branchpoint));
-            }
-
-            public global::System.Threading.Tasks.Task ReportExceptionAsync(int code, string message)
-            {
-                return __parent.WriteMessageAsync<DynamicArgumentTuple<int, string>>(1773826856, new DynamicArgumentTuple<int, string>(code, message));
-            }
-
-            public global::System.Threading.Tasks.Task PreloadStartAsync()
-            {
-                return __parent.WriteMessageAsync<Nil>(-662856294, Nil.Default);
-            }
-
-            public global::System.Threading.Tasks.Task PreloadEndAsync()
-            {
-                return __parent.WriteMessageAsync<Nil>(-486331643, Nil.Default);
-            }
-
-        }
+        
+        protected override global::MagicOnion.Client.MagicOnionClientBase<IBlockChainService> Clone(global::MagicOnion.Client.MagicOnionClientOptions options)
+            => new BlockChainServiceClient(options, core);
+        
+        public global::MagicOnion.UnaryResult<global::System.Boolean> PutTransaction(global::System.Byte[] txBytes)
+            => this.core.PutTransaction.InvokeUnary(this, "IBlockChainService/PutTransaction", txBytes);
+        public global::MagicOnion.UnaryResult<global::System.Int64> GetNextTxNonce(global::System.Byte[] addressBytes)
+            => this.core.GetNextTxNonce.InvokeUnary(this, "IBlockChainService/GetNextTxNonce", addressBytes);
+        public global::MagicOnion.UnaryResult<global::System.Byte[]> GetState(global::System.Byte[] addressBytes, global::System.Byte[] blockHashBytes)
+            => this.core.GetState.InvokeUnary(this, "IBlockChainService/GetState", new global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[]>(addressBytes, blockHashBytes));
+        public global::MagicOnion.UnaryResult<global::System.Byte[]> GetBalance(global::System.Byte[] addressBytes, global::System.Byte[] currencyBytes, global::System.Byte[] blockHashBytes)
+            => this.core.GetBalance.InvokeUnary(this, "IBlockChainService/GetBalance", new global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Byte[]>(addressBytes, currencyBytes, blockHashBytes));
+        public global::MagicOnion.UnaryResult<global::System.Byte[]> GetTip()
+            => this.core.GetTip.InvokeUnary(this, "IBlockChainService/GetTip", global::MessagePack.Nil.Default);
+        public global::MagicOnion.UnaryResult<global::System.Boolean> SetAddressesToSubscribe(global::System.Byte[] toByteArray, global::System.Collections.Generic.IEnumerable<global::System.Byte[]> addressesBytes)
+            => this.core.SetAddressesToSubscribe.InvokeUnary(this, "IBlockChainService/SetAddressesToSubscribe", new global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Collections.Generic.IEnumerable<global::System.Byte[]>>(toByteArray, addressesBytes));
+        public global::MagicOnion.UnaryResult<global::System.Boolean> IsTransactionStaged(global::System.Byte[] txidBytes)
+            => this.core.IsTransactionStaged.InvokeUnary(this, "IBlockChainService/IsTransactionStaged", txidBytes);
+        public global::MagicOnion.UnaryResult<global::System.Boolean> ReportException(global::System.String code, global::System.String message)
+            => this.core.ReportException.InvokeUnary(this, "IBlockChainService/ReportException", new global::MagicOnion.DynamicArgumentTuple<global::System.String, global::System.String>(code, message));
+        public global::MagicOnion.UnaryResult<global::System.Boolean> AddClient(global::System.Byte[] addressByte)
+            => this.core.AddClient.InvokeUnary(this, "IBlockChainService/AddClient", addressByte);
+        public global::MagicOnion.UnaryResult<global::System.Boolean> RemoveClient(global::System.Byte[] addressByte)
+            => this.core.RemoveClient.InvokeUnary(this, "IBlockChainService/RemoveClient", addressByte);
+        public global::MagicOnion.UnaryResult<global::System.Collections.Generic.Dictionary<global::System.Byte[], global::System.Byte[]>> GetAvatarStates(global::System.Collections.Generic.IEnumerable<global::System.Byte[]> addressBytesList, global::System.Byte[] blockHashBytes)
+            => this.core.GetAvatarStates.InvokeUnary(this, "IBlockChainService/GetAvatarStates", new global::MagicOnion.DynamicArgumentTuple<global::System.Collections.Generic.IEnumerable<global::System.Byte[]>, global::System.Byte[]>(addressBytesList, blockHashBytes));
+        public global::MagicOnion.UnaryResult<global::System.Collections.Generic.Dictionary<global::System.Byte[], global::System.Byte[]>> GetStateBulk(global::System.Collections.Generic.IEnumerable<global::System.Byte[]> addressBytesList, global::System.Byte[] blockHashBytes)
+            => this.core.GetStateBulk.InvokeUnary(this, "IBlockChainService/GetStateBulk", new global::MagicOnion.DynamicArgumentTuple<global::System.Collections.Generic.IEnumerable<global::System.Byte[]>, global::System.Byte[]>(addressBytesList, blockHashBytes));
     }
 }
 
-#pragma warning restore 168
-#pragma warning restore 219
-#pragma warning restore 414
-#pragma warning restore 618
-#pragma warning restore 612
+
+#pragma warning disable 618
+#pragma warning disable 612
+#pragma warning disable 414
+#pragma warning disable 219
+#pragma warning disable 168
+
+// NOTE: Disable warnings for nullable reference types.
+// `#nullable disable` causes compile error on old C# compilers (-7.3)
+#pragma warning disable 8603 // Possible null reference return.
+#pragma warning disable 8618 // Non-nullable variable must contain a non-null value when exiting constructor. Consider declaring it as nullable.
+#pragma warning disable 8625 // Cannot convert null literal to non-nullable reference type.
+
+namespace Nekoyume.Shared.Hubs
+{
+    using global::System;
+    using global::Grpc.Core;
+    using global::MagicOnion;
+    using global::MagicOnion.Client;
+    using global::MessagePack;
+    
+    [global::MagicOnion.Ignore]
+    public class ActionEvaluationHubClient : global::MagicOnion.Client.StreamingHubClientBase<global::Nekoyume.Shared.Hubs.IActionEvaluationHub, global::Nekoyume.Shared.Hubs.IActionEvaluationHubReceiver>, global::Nekoyume.Shared.Hubs.IActionEvaluationHub
+    {
+        protected override global::Grpc.Core.Method<global::System.Byte[], global::System.Byte[]> DuplexStreamingAsyncMethod { get; }
+        
+        public ActionEvaluationHubClient(global::Grpc.Core.CallInvoker callInvoker, global::System.String host, global::Grpc.Core.CallOptions options, global::MagicOnion.Serialization.IMagicOnionSerializerProvider serializerProvider, global::MagicOnion.Client.IMagicOnionClientLogger logger)
+            : base(callInvoker, host, options, serializerProvider, logger)
+        {
+            var marshaller = global::MagicOnion.MagicOnionMarshallers.ThroughMarshaller;
+            DuplexStreamingAsyncMethod = new global::Grpc.Core.Method<global::System.Byte[], global::System.Byte[]>(global::Grpc.Core.MethodType.DuplexStreaming, "IActionEvaluationHub", "Connect", marshaller, marshaller);
+        }
+        
+        public global::System.Threading.Tasks.Task JoinAsync(global::System.String addressHex)
+            => base.WriteMessageWithResponseAsync<global::System.String, global::MessagePack.Nil>(-733403293, addressHex);
+        public global::System.Threading.Tasks.Task LeaveAsync()
+            => base.WriteMessageWithResponseAsync<global::MessagePack.Nil, global::MessagePack.Nil>(1368362116, global::MessagePack.Nil.Default);
+        public global::System.Threading.Tasks.Task BroadcastRenderAsync(global::System.Byte[] encoded)
+            => base.WriteMessageWithResponseAsync<global::System.Byte[], global::MessagePack.Nil>(-291080696, encoded);
+        public global::System.Threading.Tasks.Task BroadcastUnrenderAsync(global::System.Byte[] encoded)
+            => base.WriteMessageWithResponseAsync<global::System.Byte[], global::MessagePack.Nil>(-1141315011, encoded);
+        public global::System.Threading.Tasks.Task BroadcastRenderBlockAsync(global::System.Byte[] oldTip, global::System.Byte[] newTip)
+            => base.WriteMessageWithResponseAsync<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[]>, global::MessagePack.Nil>(-493480153, new global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[]>(oldTip, newTip));
+        public global::System.Threading.Tasks.Task ReportReorgAsync(global::System.Byte[] oldTip, global::System.Byte[] newTip, global::System.Byte[] branchpoint)
+            => base.WriteMessageWithResponseAsync<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Byte[]>, global::MessagePack.Nil>(1187694116, new global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Byte[]>(oldTip, newTip, branchpoint));
+        public global::System.Threading.Tasks.Task ReportReorgEndAsync(global::System.Byte[] oldTip, global::System.Byte[] newTip, global::System.Byte[] branchpoint)
+            => base.WriteMessageWithResponseAsync<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Byte[]>, global::MessagePack.Nil>(697389103, new global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Byte[]>(oldTip, newTip, branchpoint));
+        public global::System.Threading.Tasks.Task ReportExceptionAsync(global::System.Int32 code, global::System.String message)
+            => base.WriteMessageWithResponseAsync<global::MagicOnion.DynamicArgumentTuple<global::System.Int32, global::System.String>, global::MessagePack.Nil>(1773826856, new global::MagicOnion.DynamicArgumentTuple<global::System.Int32, global::System.String>(code, message));
+        public global::System.Threading.Tasks.Task PreloadStartAsync()
+            => base.WriteMessageWithResponseAsync<global::MessagePack.Nil, global::MessagePack.Nil>(-662856294, global::MessagePack.Nil.Default);
+        public global::System.Threading.Tasks.Task PreloadEndAsync()
+            => base.WriteMessageWithResponseAsync<global::MessagePack.Nil, global::MessagePack.Nil>(-486331643, global::MessagePack.Nil.Default);
+        
+        public global::Nekoyume.Shared.Hubs.IActionEvaluationHub FireAndForget()
+            => new FireAndForgetClient(this);
+        
+        [global::MagicOnion.Ignore]
+        class FireAndForgetClient : global::Nekoyume.Shared.Hubs.IActionEvaluationHub
+        {
+            readonly ActionEvaluationHubClient parent;
+        
+            public FireAndForgetClient(ActionEvaluationHubClient parent)
+                => this.parent = parent;
+        
+            public global::Nekoyume.Shared.Hubs.IActionEvaluationHub FireAndForget() => this;
+            public global::System.Threading.Tasks.Task DisposeAsync() => throw new global::System.NotSupportedException();
+            public global::System.Threading.Tasks.Task WaitForDisconnect() => throw new global::System.NotSupportedException();
+        
+            public global::System.Threading.Tasks.Task JoinAsync(global::System.String addressHex)
+                => parent.WriteMessageFireAndForgetAsync<global::System.String, global::MessagePack.Nil>(-733403293, addressHex);
+            public global::System.Threading.Tasks.Task LeaveAsync()
+                => parent.WriteMessageFireAndForgetAsync<global::MessagePack.Nil, global::MessagePack.Nil>(1368362116, global::MessagePack.Nil.Default);
+            public global::System.Threading.Tasks.Task BroadcastRenderAsync(global::System.Byte[] encoded)
+                => parent.WriteMessageFireAndForgetAsync<global::System.Byte[], global::MessagePack.Nil>(-291080696, encoded);
+            public global::System.Threading.Tasks.Task BroadcastUnrenderAsync(global::System.Byte[] encoded)
+                => parent.WriteMessageFireAndForgetAsync<global::System.Byte[], global::MessagePack.Nil>(-1141315011, encoded);
+            public global::System.Threading.Tasks.Task BroadcastRenderBlockAsync(global::System.Byte[] oldTip, global::System.Byte[] newTip)
+                => parent.WriteMessageFireAndForgetAsync<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[]>, global::MessagePack.Nil>(-493480153, new global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[]>(oldTip, newTip));
+            public global::System.Threading.Tasks.Task ReportReorgAsync(global::System.Byte[] oldTip, global::System.Byte[] newTip, global::System.Byte[] branchpoint)
+                => parent.WriteMessageFireAndForgetAsync<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Byte[]>, global::MessagePack.Nil>(1187694116, new global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Byte[]>(oldTip, newTip, branchpoint));
+            public global::System.Threading.Tasks.Task ReportReorgEndAsync(global::System.Byte[] oldTip, global::System.Byte[] newTip, global::System.Byte[] branchpoint)
+                => parent.WriteMessageFireAndForgetAsync<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Byte[]>, global::MessagePack.Nil>(697389103, new global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Byte[]>(oldTip, newTip, branchpoint));
+            public global::System.Threading.Tasks.Task ReportExceptionAsync(global::System.Int32 code, global::System.String message)
+                => parent.WriteMessageFireAndForgetAsync<global::MagicOnion.DynamicArgumentTuple<global::System.Int32, global::System.String>, global::MessagePack.Nil>(1773826856, new global::MagicOnion.DynamicArgumentTuple<global::System.Int32, global::System.String>(code, message));
+            public global::System.Threading.Tasks.Task PreloadStartAsync()
+                => parent.WriteMessageFireAndForgetAsync<global::MessagePack.Nil, global::MessagePack.Nil>(-662856294, global::MessagePack.Nil.Default);
+            public global::System.Threading.Tasks.Task PreloadEndAsync()
+                => parent.WriteMessageFireAndForgetAsync<global::MessagePack.Nil, global::MessagePack.Nil>(-486331643, global::MessagePack.Nil.Default);
+            
+        }
+        
+        protected override void OnBroadcastEvent(global::System.Int32 methodId, global::System.ArraySegment<global::System.Byte> data)
+        {
+            switch (methodId)
+            {
+                case 1092973952: // Void OnRender(global::System.Byte[] evaluation)
+                    {
+                        var value = base.Deserialize<global::System.Byte[]>(data);
+                        receiver.OnRender(value);
+                    }
+                    break;
+                case -1668462809: // Void OnUnrender(global::System.Byte[] evaluation)
+                    {
+                        var value = base.Deserialize<global::System.Byte[]>(data);
+                        receiver.OnUnrender(value);
+                    }
+                    break;
+                case -1243684591: // Void OnRenderBlock(global::System.Byte[] oldTip, global::System.Byte[] newTip)
+                    {
+                        var value = base.Deserialize<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[]>>(data);
+                        receiver.OnRenderBlock(value.Item1, value.Item2);
+                    }
+                    break;
+                case 1940953564: // Void OnReorged(global::System.Byte[] oldTip, global::System.Byte[] newTip, global::System.Byte[] branchpoint)
+                    {
+                        var value = base.Deserialize<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Byte[]>>(data);
+                        receiver.OnReorged(value.Item1, value.Item2, value.Item3);
+                    }
+                    break;
+                case 1034302074: // Void OnReorgEnd(global::System.Byte[] oldTip, global::System.Byte[] newTip, global::System.Byte[] branchpoint)
+                    {
+                        var value = base.Deserialize<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Byte[]>>(data);
+                        receiver.OnReorgEnd(value.Item1, value.Item2, value.Item3);
+                    }
+                    break;
+                case 1163840065: // Void OnException(global::System.Int32 code, global::System.String message)
+                    {
+                        var value = base.Deserialize<global::MagicOnion.DynamicArgumentTuple<global::System.Int32, global::System.String>>(data);
+                        receiver.OnException(value.Item1, value.Item2);
+                    }
+                    break;
+                case -1340987425: // Void OnPreloadStart()
+                    {
+                        var value = base.Deserialize<global::MessagePack.Nil>(data);
+                        receiver.OnPreloadStart();
+                    }
+                    break;
+                case 1916412074: // Void OnPreloadEnd()
+                    {
+                        var value = base.Deserialize<global::MessagePack.Nil>(data);
+                        receiver.OnPreloadEnd();
+                    }
+                    break;
+            }
+        }
+        
+        protected override void OnResponseEvent(global::System.Int32 methodId, global::System.Object taskCompletionSource, global::System.ArraySegment<global::System.Byte> data)
+        {
+            switch (methodId)
+            {
+                case -733403293: // Task JoinAsync(global::System.String addressHex)
+                    base.SetResultForResponse<global::MessagePack.Nil>(taskCompletionSource, data);
+                    break;
+                case 1368362116: // Task LeaveAsync()
+                    base.SetResultForResponse<global::MessagePack.Nil>(taskCompletionSource, data);
+                    break;
+                case -291080696: // Task BroadcastRenderAsync(global::System.Byte[] encoded)
+                    base.SetResultForResponse<global::MessagePack.Nil>(taskCompletionSource, data);
+                    break;
+                case -1141315011: // Task BroadcastUnrenderAsync(global::System.Byte[] encoded)
+                    base.SetResultForResponse<global::MessagePack.Nil>(taskCompletionSource, data);
+                    break;
+                case -493480153: // Task BroadcastRenderBlockAsync(global::System.Byte[] oldTip, global::System.Byte[] newTip)
+                    base.SetResultForResponse<global::MessagePack.Nil>(taskCompletionSource, data);
+                    break;
+                case 1187694116: // Task ReportReorgAsync(global::System.Byte[] oldTip, global::System.Byte[] newTip, global::System.Byte[] branchpoint)
+                    base.SetResultForResponse<global::MessagePack.Nil>(taskCompletionSource, data);
+                    break;
+                case 697389103: // Task ReportReorgEndAsync(global::System.Byte[] oldTip, global::System.Byte[] newTip, global::System.Byte[] branchpoint)
+                    base.SetResultForResponse<global::MessagePack.Nil>(taskCompletionSource, data);
+                    break;
+                case 1773826856: // Task ReportExceptionAsync(global::System.Int32 code, global::System.String message)
+                    base.SetResultForResponse<global::MessagePack.Nil>(taskCompletionSource, data);
+                    break;
+                case -662856294: // Task PreloadStartAsync()
+                    base.SetResultForResponse<global::MessagePack.Nil>(taskCompletionSource, data);
+                    break;
+                case -486331643: // Task PreloadEndAsync()
+                    base.SetResultForResponse<global::MessagePack.Nil>(taskCompletionSource, data);
+                    break;
+            }
+        }
+        
+    }
+}
+
+

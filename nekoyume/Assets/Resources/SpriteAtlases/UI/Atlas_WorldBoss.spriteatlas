@@ -404,6 +404,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: c350a7fef0fe5400aae666922ecd5884, type: 3}
   - {fileID: 21300000, guid: 6482c70f1ef2f074091a90d3a212c032, type: 3}
   - {fileID: 21300000, guid: ff13861f5e1014a41a7527b13b42fa1f, type: 3}
+  - {fileID: 21300000, guid: b44fbf2f977377243a3464d01aee3a0d, type: 3}
   - {fileID: 21300000, guid: a9da9b4f2320643459e53f573df4169a, type: 3}
   - {fileID: 21300000, guid: 2cd20c5fa80f24807917d8fd90849131, type: 3}
   - {fileID: 21300000, guid: b141dd5feb72502429c863c370d8690a, type: 3}
@@ -515,7 +516,7 @@ SpriteAtlas:
   - UI_Popup_bg_02
   - Icon_Rune_Fenrir_2
   - UI_settingsbar_bg2
-  - Icon_Rune_Saehrimnir
+  - Icon_Rune_Serimnir_1
   - UI_bar_quest
   - Icon_Rune_Staking_1
   - UI_bg_frame_16_deco
@@ -576,7 +577,7 @@ SpriteAtlas:
   - UI_arrow_04
   - UI_scroll_bar
   - UI_icon_select_01
-  - Icon_Rune_Saehrimnir_2
+  - Icon_Rune_Serimnir_2
   - UI_bg_frame_02
   - UI_main_icon_star
   - WB_BattleRankReward_Gauge_Bg
@@ -624,7 +625,7 @@ SpriteAtlas:
   - button_brown_minus
   - button_page_02_reverse
   - UI_Btn_bg_04
-  - Illust_Paper_Saehrimnir
+  - Illust_Paper_Serimnir
   - UI_box_Inventory_01
   - Bg_Text
   - Common_bg_7R
@@ -733,7 +734,7 @@ SpriteAtlas:
   - icon_Material_01_black
   - WB_Grade_4
   - Common_bg_2R
-  - Icon_Rune_Saehrimnir_3
+  - Icon_Rune_Serimnir_3
   - UI_Popup_bg_02_tooltip
   - UI_icon_login_lock
   - WorldbossSkill_02
@@ -766,6 +767,7 @@ SpriteAtlas:
   - Ch_LevelBg
   - Loading_Light_2
   - UI_box_gold_01_head
+  - UI_icon_item_bg_16
   - UI_Mask_Slot_Line
   - UI_line_02
   - icon_notice_02_black
