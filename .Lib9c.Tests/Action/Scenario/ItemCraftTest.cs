@@ -2,9 +2,11 @@
  This test only tests AvatarStateV2.
  AvatarStateV1 is old version and not tested.
  */
+
 namespace Lib9c.Tests.Action.Scenario
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using Bencodex.Types;
     using Lib9c.Tests.Util;
@@ -12,8 +14,10 @@ namespace Lib9c.Tests.Action.Scenario
     using Libplanet.Action;
     using Nekoyume.Action;
     using Nekoyume.Model;
+    using Nekoyume.Model.EnumType;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.State;
+    using Nekoyume.TableData;
     using Xunit;
     using static Lib9c.SerializeKeys;
 
@@ -42,8 +46,6 @@ namespace Lib9c.Tests.Action.Scenario
         [InlineData(1, new[] { 10110000, 10111000, 10114000 })] // 검, 롱 소드(불), 롱 소드(바람)
         public void CraftEquipmentTest(int randomSeed, int[] targetItemIdList)
         {
-            // NOTE: Do we have to test on both stateV1 and stateV2?
-
             // Disable all quests to prevent contamination by quest reward
             var (stateV1, stateV2) = QuestUtil.DisableQuestList(
                 _initialStatesWithAvatarStateV1,
@@ -53,13 +55,25 @@ namespace Lib9c.Tests.Action.Scenario
 
             // Setup requirements
             var random = new TestRandom(randomSeed);
-            var craftInfoList =
-                CraftUtil.GetEquipmentCraftInfoFromItemId(_tableSheets, targetItemIdList);
-            var materialDict = CraftUtil.GetMaterialsFromCraftInfo(_tableSheets, craftInfoList);
+            var recipeList = _tableSheets.EquipmentItemRecipeSheet.OrderedList.Where(
+                recipe => targetItemIdList.Contains(recipe.ResultEquipmentId)
+            ).ToList();
+            List<EquipmentItemSubRecipeSheet.MaterialInfo> allMaterialList =
+                new List<EquipmentItemSubRecipeSheet.MaterialInfo>();
+            foreach (var recipe in recipeList)
+            {
+                allMaterialList = allMaterialList
+                    .Concat(recipe.GetAllMaterials(
+                        _tableSheets.EquipmentItemSubRecipeSheetV2,
+                        CraftType.Normal
+                    ))
+                    .ToList();
+            }
+
             var avatarState = stateV2.GetAvatarStateV2(_avatarAddr);
 
             // Unlock recipe
-            var maxUnlockStage = craftInfoList.Aggregate(0, (e, c) => Math.Max(e, c.Item3));
+            var maxUnlockStage = recipeList.Aggregate(0, (e, c) => Math.Max(e, c.UnlockStage));
             var unlockRecipeIdsAddress = _avatarAddr.Derive("recipe_ids");
             var recipeIds = List.Empty;
             for (int i = 1; i < maxUnlockStage + 1; i++)
@@ -81,18 +95,21 @@ namespace Lib9c.Tests.Action.Scenario
             Assert.Equal(0, inventoryState.Items.Count);
 
             // Add materials to inventory
-            foreach (var material in materialDict)
+            foreach (var material in allMaterialList)
             {
-                avatarState.inventory.AddItem(material.Key, material.Value);
-                stateV2 = stateV2.SetState(inventoryAddress, avatarState.inventory.Serialize());
+                var materialRow = _tableSheets.MaterialItemSheet[material.Id];
+                var materialItem = ItemFactory.CreateItem(materialRow, random);
+                avatarState.inventory.AddItem(materialItem, material.Count);
             }
 
-            for (var i = 0; i < craftInfoList.Count; i++)
+            stateV2 = stateV2.SetState(inventoryAddress, avatarState.inventory.Serialize());
+
+            for (var i = 0; i < recipeList.Count; i++)
             {
                 // Unlock stage
-                var (recipeId, subRecipeId, unlockStage, requiredBlockIndex) = craftInfoList[i];
+                var equipmentRecipe = recipeList[i];
                 avatarState.worldInformation =
-                    new WorldInformation(0, _tableSheets.WorldSheet, unlockStage);
+                    new WorldInformation(0, _tableSheets.WorldSheet, equipmentRecipe.UnlockStage);
 
                 stateV2 = stateV2
                     .SetState(
@@ -105,8 +122,8 @@ namespace Lib9c.Tests.Action.Scenario
                 {
                     avatarAddress = _avatarAddr,
                     slotIndex = i,
-                    recipeId = recipeId,
-                    subRecipeId = subRecipeId,
+                    recipeId = equipmentRecipe.Id,
+                    subRecipeId = equipmentRecipe.SubRecipeIds?[0],
                 };
 
                 stateV2 = action.Execute(new ActionContext
@@ -118,12 +135,12 @@ namespace Lib9c.Tests.Action.Scenario
                 });
                 var slotState = stateV2.GetCombinationSlotState(_avatarAddr, i);
                 // TEST: requiredBlock
-                Assert.Equal(requiredBlockIndex, slotState.RequiredBlockIndex);
+                Assert.Equal(equipmentRecipe.RequiredBlockIndex, slotState.RequiredBlockIndex);
             }
 
             inventoryState = new Inventory((List)stateV2.GetState(inventoryAddress));
             // TEST: Only created equipments should remain in inventory
-            Assert.Equal(craftInfoList.Count, inventoryState.Items.Count);
+            Assert.Equal(recipeList.Count, inventoryState.Items.Count);
             foreach (var itemId in targetItemIdList)
             {
                 // TEST: Created equipment should match with targetItemList
