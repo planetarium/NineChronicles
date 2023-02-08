@@ -152,7 +152,7 @@ namespace Editor
             Build(BuildTarget.StandaloneWindows64, BuildOptions.EnableHeadlessMode, "WindowsHeadless");
         }
 
-        [MenuItem("Build/QA")]
+        [MenuItem("Build/QA/Windows")]
         public static void BuildWindowsForQA()
         {
             Debug.Log("Build Windows For QA");
@@ -160,6 +160,26 @@ namespace Editor
             CopyJsonDataFile("TestbedCreateAvatar");
             Build(BuildTarget.StandaloneWindows64, BuildOptions.Development | BuildOptions.AllowDebugging, "Windows", true);
         }
+
+#if UNITY_STANDALONE_OSX
+        [MenuItem("Build/QA/MacOS (intel)")]
+        public static void BuildMacOSForQA()
+        {
+            Debug.Log("Build MacOS(Intel) For QA");
+            CopyJsonDataFile("TestbedSell");
+            CopyJsonDataFile("TestbedCreateAvatar");
+            var originalArchitecture = UserBuildSettings.architecture;
+            try
+            {
+                UserBuildSettings.architecture = MacOSArchitecture.x64;
+                Build(BuildTarget.StandaloneOSX, BuildOptions.Development | BuildOptions.AllowDebugging, "macOS", true);
+            }
+            finally
+            {
+                UserBuildSettings.architecture = originalArchitecture;
+            }
+        }
+#endif
 
         private static void Build(
             BuildTarget buildTarget,

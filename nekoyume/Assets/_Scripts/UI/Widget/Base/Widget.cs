@@ -299,10 +299,10 @@ namespace Nekoyume.UI
             Animator.Play("Show", 0, 0);
         }
 
-        public void ForceClose()
+        public void ForceClose(bool ignoreCloseAnimation = false)
         {
             _isClosed = false;
-            Close();
+            Close(ignoreCloseAnimation);
         }
         public virtual void Close(bool ignoreCloseAnimation = false)
         {

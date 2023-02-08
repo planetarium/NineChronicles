@@ -62,6 +62,18 @@ namespace Nekoyume.Game
             var time = Time.time;
             yield return new WaitUntil(() => Time.time - time > 5f || _turnNumber == turn);
 
+            foreach (var info in infos)
+            {
+                if (info.Target.Id.Equals(me.Id))
+                {
+                    me.CharacterModel = info.Target;
+                }
+                else
+                {
+                    enemy.CharacterModel = info.Target;
+                }
+            }
+
             yield return StartCoroutine(param.func(infos));
 
             me.UpdateStatusUI();
