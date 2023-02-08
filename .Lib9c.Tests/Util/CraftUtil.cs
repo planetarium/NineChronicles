@@ -6,6 +6,7 @@ namespace Lib9c.Tests.Util
     using Libplanet.Action;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Model;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
@@ -50,6 +51,17 @@ namespace Lib9c.Tests.Util
                 avatarAddress.Derive(LegacyInventoryKey),
                 avatarState.inventory.Serialize()
             );
+        }
+
+        public static IAccountStateDelta UnlockStage(
+            IAccountStateDelta state,
+            TableSheets tableSheets,
+            Address worldInformationAddress,
+            int stage
+        )
+        {
+            var worldInformation = new WorldInformation(0, tableSheets.WorldSheet, stage);
+            return state.SetState(worldInformationAddress, worldInformation.Serialize());
         }
     }
 }

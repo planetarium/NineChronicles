@@ -13,7 +13,6 @@ namespace Lib9c.Tests.Action.Scenario
     using Libplanet;
     using Libplanet.Action;
     using Nekoyume.Action;
-    using Nekoyume.Model;
     using Nekoyume.Model.EnumType;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.State;
@@ -110,12 +109,11 @@ namespace Lib9c.Tests.Action.Scenario
             {
                 // Unlock stage
                 var equipmentRecipe = recipeList[i];
-                avatarState.worldInformation =
-                    new WorldInformation(0, _tableSheets.WorldSheet, equipmentRecipe.UnlockStage);
-
-                stateV2 = stateV2.SetState(
+                stateV2 = CraftUtil.UnlockStage(
+                    stateV2,
+                    _tableSheets,
                     _worldInformationAddr,
-                    avatarState.worldInformation.Serialize()
+                    equipmentRecipe.UnlockStage
                 );
 
                 // Do Combination Action
