@@ -20,8 +20,6 @@ using Nekoyume.TableData;
 using Serilog;
 using static Lib9c.SerializeKeys;
 
-using BencodexList = Bencodex.Types.List;
-
 namespace Nekoyume.Action
 {
     /// <summary>
@@ -48,22 +46,22 @@ namespace Nekoyume.Action
         public ArenaPlayerDigest ExtraEnemyArenaPlayerDigest;
         public int ExtraPreviousMyScore;
 
-        public Address MyAvatarAddress => myAvatarAddress;
+        Address IBattleArenaV1.MyAvatarAddress => myAvatarAddress;
 
-        public Address EnemyAvatarAddress => enemyAvatarAddress;
+        Address IBattleArenaV1.EnemyAvatarAddress => enemyAvatarAddress;
 
-        public int ChampionshipId => championshipId;
+        int IBattleArenaV1.ChampionshipId => championshipId;
 
-        public int Round => round;
+        int IBattleArenaV1.Round => round;
 
-        public int Ticket => ticket;
+        int IBattleArenaV1.Ticket => ticket;
 
-        public IEnumerable<Guid> Costumes => costumes;
+        IEnumerable<Guid> IBattleArenaV1.Costumes => costumes;
 
-        public IEnumerable<Guid> Equipments => equipments;
+        IEnumerable<Guid> IBattleArenaV1.Equipments => equipments;
 
-        public IEnumerable<BencodexList> RuneSlotInfos => runeInfos
-            .Select(x => (BencodexList)x.Serialize());
+        IEnumerable<IValue> IBattleArenaV1.RuneSlotInfos => runeInfos
+            .Select(x => x.Serialize());
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>()

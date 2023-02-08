@@ -18,6 +18,9 @@ namespace Nekoyume.Action
 
         public byte[] Signature { get; private set; }
 
+        Address IActivateAccount.PendingAddress => PendingAddress;
+        byte[] IActivateAccount.Signature => Signature;
+
         public override IValue PlainValue =>
             new Dictionary(
                 new[]
