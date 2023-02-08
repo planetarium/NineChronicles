@@ -169,7 +169,7 @@ namespace Nekoyume.UI.Module
 
         private void UpdateRuneView()
         {
-            var states = States.Instance.RuneSlotStates[_battleType].GetRuneSlot();
+            var states = States.Instance.CurrentRuneSlotStates[_battleType].GetRuneSlot();
             var equippedRuneState = States.Instance.GetEquippedRuneStates(_battleType);
             var sheet = Game.Game.instance.TableSheets.RuneListSheet;
             inventory.UpdateRunes(equippedRuneState, _battleType, sheet);
@@ -191,7 +191,7 @@ namespace Nekoyume.UI.Module
                 consumeSlots.SetPlayerConsumables(level, consumables,OnClickSlot, OnDoubleClickSlot);
             }
 
-            var itemSlotState = States.Instance.ItemSlotStates[_battleType];
+            var itemSlotState = States.Instance.CurrentItemSlotStates[_battleType];
             inventory.UpdateCostumes(itemSlotState.Costumes);
             inventory.UpdateEquipments(itemSlotState.Equipments);
             inventory.UpdateConsumables(_consumables);
@@ -383,7 +383,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            var states = States.Instance.ItemSlotStates[_battleType];
+            var states = States.Instance.CurrentItemSlotStates[_battleType];
             switch (inventoryItem.ItemBase.ItemType)
             {
               case ItemType.Equipment:
@@ -535,7 +535,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            var states = States.Instance.ItemSlotStates[_battleType];
+            var states = States.Instance.CurrentItemSlotStates[_battleType];
             switch (inventoryItem.ItemBase.ItemType)
             {
                 case ItemType.Equipment:
@@ -568,7 +568,7 @@ namespace Nekoyume.UI.Module
 
         private void EquipRune(InventoryItem inventoryItem)
         {
-            var states = States.Instance.RuneSlotStates[_battleType].GetRuneSlot();
+            var states = States.Instance.CurrentRuneSlotStates[_battleType].GetRuneSlot();
             var sheet = Game.Game.instance.TableSheets.RuneListSheet;
             if (!sheet.TryGetValue(inventoryItem.RuneState.RuneId, out var row))
             {
@@ -643,7 +643,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            var states = States.Instance.RuneSlotStates[_battleType].GetRuneSlot();
+            var states = States.Instance.CurrentRuneSlotStates[_battleType].GetRuneSlot();
             foreach (var slot in states)
             {
                 if (slot.RuneId.HasValue)
@@ -975,15 +975,10 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            if (inventoryItem.ItemBase is Consumable consumable)
+            if (_previousCp == _currentCp)
             {
-                var consumables = GetEquippedConsumables();
-                if (!consumables.Exists(x => x.ItemId == consumable.ItemId))
-                {
-                    return;
-                }
+                return;
             }
-
             var cpScreen = Widget.Find<CPScreen>();
             cpScreen.Show(_previousCp, _currentCp);
         }

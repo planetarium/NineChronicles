@@ -774,10 +774,10 @@ namespace Nekoyume.UI
 
         private IEnumerator SendBattleActionAsync(int stageIdOffset, bool buyTicketIfNeeded = false)
         {
-            var itemSlotState = States.Instance.ItemSlotStates[BattleType.Adventure];
+            var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Adventure];
             var costumes = itemSlotState.Costumes;
             var equipments = itemSlotState.Equipments;
-            var runeSlotInfos = States.Instance.RuneSlotStates[BattleType.Adventure].GetEquippedRuneSlotInfos();
+            var runeSlotInfos = States.Instance.CurrentRuneSlotStates[BattleType.Adventure].GetEquippedRuneSlotInfos();
             yield return SharedModel.StageType switch
             {
                 StageType.HackAndSlash => Game.Game.instance.ActionManager

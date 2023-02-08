@@ -62,6 +62,18 @@ namespace Nekoyume.Game
             var time = Time.time;
             yield return new WaitUntil(() => Time.time - time > 5f || _turnNumber == turn);
 
+            foreach (var info in infos)
+            {
+                if (info.Target.Id.Equals(me.Id))
+                {
+                    me.CharacterModel = info.Target;
+                }
+                else
+                {
+                    enemy.CharacterModel = info.Target;
+                }
+            }
+
             yield return StartCoroutine(param.func(infos));
 
             me.UpdateStatusUI();
@@ -74,7 +86,8 @@ namespace Nekoyume.Game
             ArenaLog log,
             List<ItemBase> rewards,
             ArenaPlayerDigest myDigest,
-            ArenaPlayerDigest enemyDigest)
+            ArenaPlayerDigest enemyDigest,
+            (int, int)? winDefeatCount = null)
         {
             if (!_isPlaying)
             {
@@ -89,7 +102,8 @@ namespace Nekoyume.Game
 
                 if (log?.Events.Count > 0)
                 {
-                    _battleCoroutine = StartCoroutine(CoEnter(log, rewards, myDigest, enemyDigest));
+                    _battleCoroutine =
+                        StartCoroutine(CoEnter(log, rewards, myDigest, enemyDigest, winDefeatCount));
                 }
             }
             else
@@ -102,7 +116,8 @@ namespace Nekoyume.Game
             ArenaLog log,
             IReadOnlyList<ItemBase> rewards,
             ArenaPlayerDigest myDigest,
-            ArenaPlayerDigest enemyDigest)
+            ArenaPlayerDigest enemyDigest,
+            (int, int)? winDefeatCount = null)
         {
             yield return StartCoroutine(CoStart(myDigest, enemyDigest));
 
@@ -111,7 +126,7 @@ namespace Nekoyume.Game
                 yield return StartCoroutine(e.CoExecute(this));
             }
 
-            yield return StartCoroutine(CoEnd(log, rewards));
+            yield return StartCoroutine(CoEnd(log, rewards, winDefeatCount));
         }
 
         private IEnumerator CoStart(ArenaPlayerDigest myDigest, ArenaPlayerDigest enemyDigest)
@@ -130,7 +145,10 @@ namespace Nekoyume.Game
             Game.instance.IsInWorld = true;
         }
 
-        private IEnumerator CoEnd(ArenaLog log, IReadOnlyList<ItemBase> rewards)
+        private IEnumerator CoEnd(
+            ArenaLog log,
+            IReadOnlyList<ItemBase> rewards,
+            (int, int)? winDefeatCount = null)
         {
             IsAvatarStateUpdatedAfterBattle = false;
             ActionRenderHandler.Instance.Pending = false;
@@ -145,7 +163,7 @@ namespace Nekoyume.Game
             arenaCharacter.Animator.Win();
             arenaCharacter.ShowSpeech("PLAYER_WIN");
             Widget.Find<ArenaBattle>().Close();
-            Widget.Find<RankingBattleResultPopup>().Show(log, rewards, OnEnd);
+            Widget.Find<RankingBattleResultPopup>().Show(log, rewards, OnEnd, winDefeatCount);
             yield return null;
         }
 

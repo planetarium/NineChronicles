@@ -135,8 +135,8 @@ namespace Nekoyume.UI.Module.Arena.Join
                 return;
             }
 
-            var itemSlotState = States.Instance.ItemSlotStates[BattleType.Arena];
-            var runeInfos = States.Instance.RuneSlotStates[BattleType.Arena]
+            var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Arena];
+            var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.Arena]
                 .GetEquippedRuneSlotInfos();
             ActionManager.Instance
                 .JoinArena(

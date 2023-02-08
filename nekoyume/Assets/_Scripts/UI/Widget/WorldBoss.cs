@@ -21,6 +21,7 @@ using WorldBossState = Nekoyume.Model.State.WorldBossState;
 
 namespace Nekoyume.UI
 {
+    using TMPro;
     using UniRx;
 
     public class WorldBoss : Widget
@@ -56,6 +57,9 @@ namespace Nekoyume.UI
         private ConditionalButton enterButton;
 
         [SerializeField]
+        private TextMeshProUGUI titleText;
+
+        [SerializeField]
         private GameObject offSeasonContainer;
 
         [SerializeField]
@@ -66,6 +70,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private Transform bossSpineContainer;
+
+        [SerializeField]
+        private Transform backgroundContainer;
 
         [SerializeField]
         private ShaderPropertySlider timerSlider;
@@ -84,8 +91,10 @@ namespace Nekoyume.UI
 
         private GameObject _bossNamePrefab;
         private GameObject _bossSpinePrefab;
+        private GameObject _backgroundPrefab;
         private int _bossId;
         private (long, long) _period;
+        private string _bgmName;
 
         private WorldBossStatus _status = WorldBossStatus.None;
         private HeaderMenuStatic _headerMenu;
@@ -97,13 +106,13 @@ namespace Nekoyume.UI
 
             CloseWidget = () =>
             {
-                Close(true);
+                ForceClose(true);
                 Game.Event.OnRoomEnter.Invoke(true);
             };
 
             backButton.OnClickAsObservable().Subscribe(_ =>
             {
-                Close(true);
+                ForceClose(true);
                 Game.Event.OnRoomEnter.Invoke(true);
             }).AddTo(gameObject);
 
@@ -148,11 +157,11 @@ namespace Nekoyume.UI
 
         public async UniTaskVoid ShowAsync(bool ignoreShowAnimation = false)
         {
-            AudioController.instance.PlayMusic(AudioController.MusicCode.WorldBossTitle);
             var loading = Find<DataLoadingScreen>();
             loading.Show();
             await UpdateViewAsync(Game.Game.instance.Agent.BlockIndex, forceUpdate: true);
             loading.Close();
+            AudioController.instance.PlayMusic(_bgmName);
             base.Show(ignoreShowAnimation);
         }
 
@@ -245,7 +254,7 @@ namespace Nekoyume.UI
                     ? previousRow.EndedBlockIndex
                     : 0;
             _period = (begin, nextRow.StartedBlockIndex);
-
+            UpdateBossName(nextRow);
             UpdateBossPrefab(nextRow, true);
         }
 
@@ -261,10 +270,19 @@ namespace Nekoyume.UI
             rankButton.gameObject.SetActive(true);
             enterButton.Text = L10nManager.Localize("UI_WORLD_MAP_ENTER");
             _period = (row.StartedBlockIndex, row.EndedBlockIndex);
+            UpdateBossName(row);
             UpdateBossPrefab(row);
             UpdateBossInformationAsync(worldBoss);
             season.UpdateMyInformation(row.BossId, myRecord, blockIndex);
             season.UpdateUserCount(userCount);
+        }
+
+        private void UpdateBossName(WorldBossListSheet.Row nextRow)
+        {
+            var bossName = WorldBossFrontHelper.TryGetBossData(nextRow.BossId, out var data)
+                ? data.name
+                : string.Empty;
+            titleText.text = bossName;
         }
 
         private void UpdateBossPrefab(WorldBossListSheet.Row row, bool isOffSeason = false)
@@ -286,13 +304,24 @@ namespace Nekoyume.UI
                     Destroy(_bossSpinePrefab);
                 }
 
+                if (_backgroundPrefab != null)
+                {
+                    Destroy(_backgroundPrefab);
+                }
+
                 if (isOffSeason)
                 {
                     _bossNamePrefab = Instantiate(data.namePrefab, bossNameContainer);
                 }
 
                 _bossSpinePrefab = Instantiate(data.spinePrefab, bossSpineContainer);
+                _backgroundPrefab = Instantiate(data.backgroundPrefab, backgroundContainer);
                 _bossId = row.BossId;
+
+                if (string.IsNullOrWhiteSpace(_bgmName))
+                {
+                    _bgmName = data.entranceMusicName;
+                }
             }
         }
 
@@ -379,11 +408,7 @@ namespace Nekoyume.UI
             var curHp = state?.CurrentHp ?? baseHp;
             var maxHp = hpSheet.Values.FirstOrDefault(x => x.Level == level)!.Hp;
             var bossId = state?.Id ?? bossSheet.Values.First().BossId;
-            var bossName = WorldBossFrontHelper.TryGetBossData(bossId, out var data)
-                ? data.name
-                : string.Empty;
-
-            season.UpdateBossInformation(bossId, bossName, level, curHp, maxHp);
+            season.UpdateBossInformation(bossId, level, curHp, maxHp);
         }
 
         private async void RefreshMyInformationAsync()

@@ -5,7 +5,6 @@ using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.Arena;
 using Nekoyume.BlockChain;
-using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Item;
@@ -15,6 +14,7 @@ using Nekoyume.UI.Module;
 using UnityEngine;
 using UnityEngine.UI;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
 using Nekoyume.State.Subjects;
 using Nekoyume.TableData;
@@ -36,6 +36,9 @@ namespace Nekoyume.UI
         private ConditionalCostButton startButton;
 
         [SerializeField]
+        private Button repeatPopupButton;
+
+        [SerializeField]
         private Button closeButton;
 
         [SerializeField]
@@ -55,7 +58,7 @@ namespace Nekoyume.UI
         private GameObject coverToBlockClick;
 
         [SerializeField]
-        private GameObject blockStartingTextObject;
+        private TextMeshProUGUI blockStartingText;
 
         [SerializeField]
         private TextMeshProUGUI enemyCp;
@@ -87,7 +90,7 @@ namespace Nekoyume.UI
                     TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(blockIndex);
                 var ticketCount = RxProps.PlayersArenaParticipant.HasValue
                     ? RxProps.PlayersArenaParticipant.Value.CurrentArenaInfo.GetTicketCount(
-                        Game.Game.instance.Agent.BlockIndex,
+                        blockIndex,
                         currentRound.StartBlockIndex,
                         States.Instance.GameConfigState.DailyArenaInterval)
                     : 0;
@@ -121,6 +124,10 @@ namespace Nekoyume.UI
                 .Subscribe(_ => OnClickBattle())
                 .AddTo(gameObject);
 
+            repeatPopupButton.OnClickAsObservable()
+                .Subscribe(_ => ShowArenaTicketPopup())
+                .AddTo(gameObject);
+
             grandFinaleStartButton.OnSubmitSubject
                 .Where(_ => !Game.Game.instance.IsInWorld)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
@@ -146,14 +153,10 @@ namespace Nekoyume.UI
             _chooseAvatarCostumes.Clear();
             _chooseAvatarCostumes.AddRange(chooseAvatarCostumes);
             enemyCp.text = chooseAvatarCp.ToString();
-            UpdateStartButton();
+            UpdateStartButton(false);
             information.UpdateInventory(BattleType.Arena, chooseAvatarCp);
-            grandFinaleStartButton.gameObject.SetActive(false);
-            grandFinaleStartButton.Interactable = false;
             coverToBlockClick.SetActive(false);
-            AgentStateSubject.Crystal
-                .Subscribe(_ => ReadyToBattle())
-                .AddTo(_disposables);
+            AgentStateSubject.Crystal.Subscribe(_ => ReadyToBattle()).AddTo(_disposables);
         }
 
         public void Show(
@@ -171,10 +174,8 @@ namespace Nekoyume.UI
             _chooseAvatarCostumes.Clear();
             _chooseAvatarCostumes.AddRange(chooseAvatarCostumes);
             enemyCp.text = chooseAvatarCp.ToString();
-            UpdateStartButton();
+            UpdateStartButton(true);
             information.UpdateInventory(BattleType.Arena, chooseAvatarCp);
-            grandFinaleStartButton.gameObject.SetActive(true);
-            grandFinaleStartButton.Interactable = true;
             coverToBlockClick.SetActive(false);
             base.Show(ignoreShowAnimation);
         }
@@ -192,55 +193,6 @@ namespace Nekoyume.UI
 
         #endregion
 
-        private void UpdateArenaAvatarState()
-        {
-            var avatarState = Game.Game.instance.States.CurrentAvatarState;
-            var arenaAvatarState = RxProps.PlayersArenaParticipant.Value.AvatarState;
-            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
-
-            for (int i = arenaAvatarState.inventory.Items.Count - 1; i > 0; i--)
-            {
-                Nekoyume.Model.Item.Inventory.Item existItem;
-                switch (arenaAvatarState.inventory.Items[i].item)
-                {
-                    case Equipment arenaEquipment:
-                    {
-                        existItem = avatarState.inventory.Items.FirstOrDefault(item =>
-                            item.item is Equipment equipment
-                            && equipment.ItemId == arenaEquipment.ItemId);
-                        break;
-                    }
-                    case Costume arenaCostume:
-                    {
-                        existItem = avatarState.inventory.Items.FirstOrDefault(item =>
-                            item.item is Costume costume
-                            && costume.ItemId == arenaCostume.ItemId);
-                        break;
-                    }
-                    default:
-                        continue;
-                }
-
-                if (existItem is null)
-                {
-                    // It cause modifying arenaAvatarState.inventory collection in a loop
-                    arenaAvatarState.inventory.RemoveItem(arenaAvatarState.inventory.Items[i]);
-                }
-                else
-                {
-                    var isValid = existItem is { Locked: false, item: ITradableItem tradableItem }
-                                  && tradableItem.RequiredBlockIndex <= currentBlockIndex;
-
-                    if (arenaAvatarState.inventory.Items[i] is
-                            { item: IEquippableItem { Equipped: true } equippedItem }
-                        && !isValid)
-                    {
-                        equippedItem.Unequip();
-                    }
-                }
-            }
-        }
-
         private void ReadyToBattle()
         {
             startButton.UpdateObjects();
@@ -255,6 +207,11 @@ namespace Nekoyume.UI
                     particle.Stop();
                 }
             }
+        }
+
+        private void ShowArenaTicketPopup()
+        {
+            Find<ArenaTicketPopup>().Show(SendBattleArenaAction);
         }
 
         private void OnClickBattle()
@@ -330,9 +287,8 @@ namespace Nekoyume.UI
             AudioController.PlayClick();
         }
 
-        private void SendBattleArenaAction()
+        private void SendBattleArenaAction(int ticket = TicketCountToUse)
         {
-
             startButton.gameObject.SetActive(false);
             var playerAvatar = RxProps.PlayersArenaParticipant.Value.AvatarState;
             Find<ArenaBattleLoadingScreen>().Show(
@@ -343,9 +299,9 @@ namespace Nekoyume.UI
                 _chooseAvatarState.level,
                 Util.GetPortraitId(_chooseAvatarEquipments, _chooseAvatarCostumes));
 
-            var costumes = States.Instance.ItemSlotStates[BattleType.Arena].Costumes;
-            var equipments = States.Instance.ItemSlotStates[BattleType.Arena].Equipments;
-            var runeInfos = States.Instance.RuneSlotStates[BattleType.Arena]
+            var costumes = States.Instance.CurrentItemSlotStates[BattleType.Arena].Costumes;
+            var equipments = States.Instance.CurrentItemSlotStates[BattleType.Arena].Equipments;
+            var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.Arena]
                 .GetEquippedRuneSlotInfos();
             ActionRenderHandler.Instance.Pending = true;
             ActionManager.Instance.BattleArena(
@@ -355,7 +311,7 @@ namespace Nekoyume.UI
                     runeInfos,
                     _roundData.ChampionshipId,
                     _roundData.Round,
-                    TicketCountToUse)
+                    ticket)
                 .Subscribe();
         }
 
@@ -371,9 +327,9 @@ namespace Nekoyume.UI
                 _chooseAvatarState.level,
                 Util.GetPortraitId(_chooseAvatarEquipments, _chooseAvatarCostumes));
 
-            var costumes = States.Instance.ItemSlotStates[BattleType.Arena].Costumes;
-            var equipments = States.Instance.ItemSlotStates[BattleType.Arena].Equipments;
-            var runeInfos = States.Instance.RuneSlotStates[BattleType.Arena]
+            var costumes = States.Instance.CurrentItemSlotStates[BattleType.Arena].Costumes;
+            var equipments = States.Instance.CurrentItemSlotStates[BattleType.Arena].Equipments;
+            var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.Arena]
                 .GetEquippedRuneSlotInfos();
 
             ActionRenderHandler.Instance.Pending = true;
@@ -424,17 +380,54 @@ namespace Nekoyume.UI
             Find<ArenaBattleLoadingScreen>().Close();
         }
 
-        private void UpdateStartButton()
+        // This method subscribe BlockIndexSubject. Be careful of duplicate subscription.
+        private void UpdateStartButton(bool isGrandFinale)
         {
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Arena);
             var runes = States.Instance.GetEquippedRuneStates(BattleType.Arena)
                 .Select(x => x.RuneId).ToList();
             var consumables = information.GetEquippedConsumables().Select(x => x.Id).ToList();
-            var canBattle = Util.CanBattle(equipments, costumes, consumables);
-            startButton.gameObject.SetActive(canBattle);
-            grandFinaleStartButton.gameObject.SetActive(canBattle);
-            startButton.Interactable = true;
-            blockStartingTextObject.SetActive(!canBattle);
+
+            var isEquipmentValid = Util.CanBattle(equipments, costumes, consumables);
+            var isIntervalValid = IsIntervalValid(Game.Game.instance.Agent.BlockIndex);
+
+            SetStartButton(isGrandFinale, isEquipmentValid && isIntervalValid, isEquipmentValid);
+            if (isEquipmentValid && !isIntervalValid)
+            {
+                Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
+                    .Subscribe(blockIndex =>
+                    {
+                        SetStartButton(isGrandFinale, IsIntervalValid(blockIndex), true);
+                    }).AddTo(_disposables);
+            }
+
+            grandFinaleStartButton.Interactable = isGrandFinale;
+            startButton.Interactable = !isGrandFinale;
+        }
+
+        private static bool IsIntervalValid(long blockIndex)
+        {
+            var lastBattleBlockIndex = RxProps.PlayersArenaParticipant.Value.LastBattleBlockIndex;
+            var battleArenaInterval = States.Instance.GameConfigState.BattleArenaInterval;
+
+            return blockIndex - lastBattleBlockIndex >= battleArenaInterval;
+        }
+
+        private void SetStartButton(bool isGrandFinale, bool canBattle, bool isEquipValid)
+        {
+            startButton.gameObject.SetActive(!isGrandFinale && canBattle);
+            grandFinaleStartButton.gameObject.SetActive(isGrandFinale && canBattle);
+            blockStartingText.gameObject.SetActive(!canBattle);
+            repeatPopupButton.gameObject.SetActive(!isGrandFinale && canBattle &&
+                                                   _roundData.ArenaType == ArenaType.OffSeason);
+
+            if (!canBattle)
+            {
+                var battleArenaInterval = States.Instance.GameConfigState.BattleArenaInterval;
+                blockStartingText.text = isEquipValid
+                    ? L10nManager.Localize("UI_BATTLE_INTERVAL", battleArenaInterval)
+                    : L10nManager.Localize("UI_EQUIP_FAILED");
+            }
         }
 
         private void GoToMarket()

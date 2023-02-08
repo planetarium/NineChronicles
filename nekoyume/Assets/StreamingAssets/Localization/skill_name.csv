@@ -113,7 +113,7 @@ SKILL_NAME_400052,B DEF HIT SPD,B 방어 명중 속도,B DEF HIT SPD,,B DEF HIT 
 SKILL_NAME_400053,B DEF HIT CRI,B 방어명중 치명,B DEF HIT CRI,,B DEF HIT CRI,B DEF HIT CRI,B DEF HIT CRI,B DEF HIT CRI,B DEF HIT CRI,B DEF HIT CRI,B DEF HIT CRI,B DEF HIT CRI,B DEF HIT CRI,B DEF HIT CRI,B DEF HIT CRI,B DEF HIT CRI,B DEF HIT CRI,B DEF HIT CRI
 SKILL_NAME_400054,B DEF SPD CRI,B 방어 속도 치명,B DEF SPD CRI,,B DEF SPD CRI,B DEF SPD CRI,B DEF SPD CRI,B DEF SPD CRI,B DEF SPD CRI,B DEF SPD CRI,B DEF SPD CRI,B DEF SPD CRI,B DEF SPD CRI,B DEF SPD CRI,B DEF SPD CRI,B DEF SPD CRI,B DEF SPD CRI,B DEF SPD CRI
 SKILL_NAME_400055,B HIT SPD CRI,B 명중 속도 치명,B HIT SPD CRI,,B HIT SPD CRI,B HIT SPD CRI,B HIT SPD CRI,B HIT SPD CRI,B HIT SPD CRI,B HIT SPD CRI,B HIT SPD CRI,B HIT SPD CRI,B HIT SPD CRI,B HIT SPD CRI,B HIT SPD CRI,B HIT SPD CRI,B HIT SPD CRI,B HIT SPD CRI
-SKILL_NAME_500001,Rage,분노,Fúria,,怒り,Wut,Rabia,ความโกรธ,Wściekłość,Įniršis,Woede,Kemarahan,Rage,Ярость,កមហឹង,,愤怒,Düh
+SKILL_NAME_500001,Rage,분노,Raiva,,怒り,Wut,Rabia,ความโกรธ,Wściekłość,Įniršis,Woede,Kemarahan,Rage,Ярость,កមហឹង,,愤怒,Düh
 SKILL_NAME_500002,Bite,물어뜯기,Mordida,,噛む,Beissen,Morder,กัด,Ugryzienie,Įkandimas,Beet,Menggigit,Morsure,Кусать,ការខាម,,咬伤,Harapás
 SKILL_NAME_500003,Scratching,할퀴기,Arranhando,,スクラッチ,Kratzen,Rayado,การเกา,Drapanie,Įbrėžimas,Krabben,Goresan,Scratch,Царапание,កោស,,刮擦,Karcolás
 SKILL_NAME_500004,Scratching,할퀴기,Arranhando,,スクラッチ,Kratzen,Rayado,การเกา,Drapanie,Įbrėžimas,Krabben,Goresan,Scratch,Царапание,កោស,,刮擦,Karcolás
@@ -125,3 +125,10 @@ SKILL_NAME_510004,Berserk,광폭화,Berserk,,バーセルク,Berserk,Enloquecido
 SKILL_NAME_510005,Berserk,광폭화,Berserk,,バーセルク,Berserk,Enloquecido,บ้าคลั่ง,wściekły,Berserkas,Berserk,Pengamuk,Fou furieux,Берсерк,ឆ្កួត,,狂战士,dühödt
 SKILL_NAME_600001,Bleeding,출혈,Sangramento,,出血,Blutung,Sangrado,เลือดออก,Krwawienie,Kraujavimas,Bloeden,Berdarah,Saignement,Кровотечение,ដេលចេញឈាម,,流血的,Vérzés
 SKILL_NAME_700002,Damage reduction,피해 감소,Redução de danos,,被害軽減,Schadensreduzierung,Reducción del daño,การลดความเสียหาย,Redukcja zniszczeń,Žalos sumažinimas,Schadebeperking,Pengurangan kerusakan,Réduction de dégats,Снижение урона,ការកាត់បន្ថយការខូចខាត,,减少伤害,Károk csökkentése
+SKILL_NAME_700003,Crit Damage Increase,치명 데미지 증가,,,,,,,,,,,,,,,,
+SKILL_NAME_500011,Rage,분노,Raiva,,怒り,Wut,Rabia,ความโกรธ,Wściekłość,Įniršis,Woede,Kemarahan,Rage,Ярость,កមហឹង,,愤怒,Düh
+SKILL_NAME_500012,Corrosion,부식,Corrosão,,腐食,Korrosion,Corrosión,การกัดกร่อน,Korozja,Korozija,Corrosie,Korosi,Corrosion,Коррозия,ការច្រេះ,,腐蚀,Korrózió
+SKILL_NAME_500013,Multi Attack,연타,Multi ataque,,マルチ攻撃,Multi -Angriff,Múltiple ataque,การโจมตีหลายครั้ง,Multi Attack,Kelių ataka,Multi -aanval,Serangan multi,Attaque multiple,Многотация,ការវាយប្រហារច្រើន,,多攻击,Több támadás
+SKILL_NAME_500014,Wrath,진노,Fúria,,憤怒,Zorn,Ira,ความโกรธแค้น,Gniew,Rūstybė,Toorn,Murka,Colère,Гнев,ផាបខឹង,,怒火,Harag
+SKILL_NAME_500015,Wrath,진노,Fúria,,憤怒,Zorn,Ira,ความโกรธแค้น,Gniew,Rūstybė,Toorn,Murka,Colère,Гнев,ផាបខឹង,,怒火,Harag
+SKILL_NAME_500016,Wrath,진노,Fúria,,憤怒,Zorn,Ira,ความโกรธแค้น,Gniew,Rūstybė,Toorn,Murka,Colère,Гнев,ផាបខឹង,,怒火,Harag

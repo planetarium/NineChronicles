@@ -48,6 +48,7 @@ namespace Nekoyume.Game.Controller
             public const string PVPWin = "bgm_pvp_win";
             public const string PVPLose = "bgm_pvp_lose";
             public const string WorldBossBattle01 = "bgm_worldboss_battle_01";
+            public const string WorldBossBattle02 = "bgm_worldboss_battle_02";
             public const string WorldBossBattleResult = "bgm_worldboss_battle_result";
             public const string WorldBossTitle = "bgm_worldboss_title";
         }

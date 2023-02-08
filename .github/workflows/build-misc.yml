@@ -27,7 +27,7 @@ jobs:
 
               git config core.hooksPath hooks
       if: failure() && github.event_name == 'pull_request'
-    - run: sudo apt-get install -y exiftool
+    - run: sudo apt install libimage-exiftool-perl
     - id: clv
       run: .github/bin/check-libplanet-version.sh
     - uses: unsplash/comment-on-pr@master
@@ -83,7 +83,7 @@ jobs:
         lfs: true
     - run: . scripts/update-libplanet-dlls.ps1
       shell: pwsh
-    - run: sudo apt-get install -y exiftool
+    - run: sudo apt install libimage-exiftool-perl
     - run: |
         set -evxou pipefail
         version="$(.github/bin/check-libplanet-version.sh | head -n1)"

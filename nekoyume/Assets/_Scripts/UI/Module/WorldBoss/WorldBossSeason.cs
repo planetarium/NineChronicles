@@ -17,9 +17,6 @@ namespace Nekoyume.UI.Module.WorldBoss
         private TextMeshProUGUI bossLevelText;
 
         [SerializeField]
-        private TextMeshProUGUI bossNameText;
-
-        [SerializeField]
         private TextMeshProUGUI bossHpText;
 
         [SerializeField]
@@ -104,12 +101,10 @@ namespace Nekoyume.UI.Module.WorldBoss
         }
         public void UpdateBossInformation(
             int bossId,
-            string bossName,
             int level,
             BigInteger curHp,
             BigInteger maxHp)
         {
-            bossNameText.text = bossName;
             bossLevelText.text = $"<size=18>LV.</size>{level}";
             bossHpText.text = $"{curHp:#,0}/{maxHp:#,0}";
 
