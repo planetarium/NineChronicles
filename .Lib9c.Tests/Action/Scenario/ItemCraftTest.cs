@@ -25,6 +25,7 @@ namespace Lib9c.Tests.Action.Scenario
     {
         private readonly Address _agentAddr;
         private readonly Address _avatarAddr;
+        private readonly Address _inventoryAddr;
         private readonly IAccountStateDelta _initialStatesWithAvatarStateV1;
         private readonly IAccountStateDelta _initialStatesWithAvatarStateV2;
         private readonly TableSheets _tableSheets;
@@ -38,6 +39,7 @@ namespace Lib9c.Tests.Action.Scenario
                 _initialStatesWithAvatarStateV1,
                 _initialStatesWithAvatarStateV2
             ) = InitializeUtil.InitializeStates();
+            _inventoryAddr = _agentAddr.Derive(LegacyInventoryKey);
         }
 
         [Theory]
@@ -90,8 +92,7 @@ namespace Lib9c.Tests.Action.Scenario
             }
 
             // Initial inventory must be empty
-            var inventoryAddress = _avatarAddr.Derive(LegacyInventoryKey);
-            var inventoryState = new Inventory((List)stateV2.GetState(inventoryAddress));
+            var inventoryState = new Inventory((List)stateV2.GetState(_inventoryAddr));
             Assert.Equal(0, inventoryState.Items.Count);
 
             // Add materials to inventory
@@ -102,7 +103,7 @@ namespace Lib9c.Tests.Action.Scenario
                 avatarState.inventory.AddItem(materialItem, material.Count);
             }
 
-            stateV2 = stateV2.SetState(inventoryAddress, avatarState.inventory.Serialize());
+            stateV2 = stateV2.SetState(_inventoryAddr, avatarState.inventory.Serialize());
 
             for (var i = 0; i < recipeList.Count; i++)
             {
@@ -139,7 +140,7 @@ namespace Lib9c.Tests.Action.Scenario
                 Assert.Equal(equipmentRecipe.RequiredBlockIndex, slotState.RequiredBlockIndex);
             }
 
-            inventoryState = new Inventory((List)stateV2.GetState(inventoryAddress));
+            inventoryState = new Inventory((List)stateV2.GetState(_inventoryAddr));
             // TEST: Only created equipments should remain in inventory
             Assert.Equal(recipeList.Count, inventoryState.Items.Count);
             foreach (var itemId in targetItemIdList)
@@ -178,8 +179,7 @@ namespace Lib9c.Tests.Action.Scenario
             }
 
             // Initial inventory must be empty
-            var inventoryAddress = _avatarAddr.Derive(LegacyInventoryKey);
-            var inventoryState = new Inventory((List)stateV2.GetState(inventoryAddress));
+            var inventoryState = new Inventory((List)stateV2.GetState(_inventoryAddr));
             Assert.Equal(0, inventoryState.Items.Count);
 
             // Add materials to inventory
@@ -191,7 +191,7 @@ namespace Lib9c.Tests.Action.Scenario
                 avatarState.inventory.AddItem(materialItem, material.Count);
             }
 
-            stateV2 = stateV2.SetState(inventoryAddress, avatarState.inventory.Serialize());
+            stateV2 = stateV2.SetState(_inventoryAddr, avatarState.inventory.Serialize());
 
             for (var i = 0; i < recipeList.Count; i++)
             {
@@ -217,7 +217,7 @@ namespace Lib9c.Tests.Action.Scenario
                 Assert.Equal(recipe.RequiredBlockIndex, slotState.RequiredBlockIndex);
             }
 
-            inventoryState = new Inventory((List)stateV2.GetState(inventoryAddress));
+            inventoryState = new Inventory((List)stateV2.GetState(_inventoryAddr));
             // TEST: Only created items should remain in inventory
             Assert.Equal(recipeList.Count, inventoryState.Items.Count);
             foreach (var itemId in targetItemIdList)
