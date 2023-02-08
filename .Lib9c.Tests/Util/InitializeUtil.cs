@@ -7,6 +7,7 @@ namespace Lib9c.Tests.Util
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model.State;
+    using Nekoyume.TableData;
     using State = Lib9c.Tests.Action.State;
     using StateExtensions = Nekoyume.Model.State.StateExtensions;
 
@@ -34,6 +35,9 @@ namespace Lib9c.Tests.Util
             states = states.SetState(
                 goldCurrencyState.address,
                 goldCurrencyState.Serialize());
+
+            var gameConfigState = new GameConfigState(sheets[nameof(GameConfigSheet)]);
+            states = states.SetState(gameConfigState.address, gameConfigState.Serialize());
 
             var agentAddr = new PrivateKey().ToAddress();
             var avatarAddr = Addresses.GetAvatarAddress(agentAddr, 0);
