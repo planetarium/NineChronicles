@@ -8,7 +8,7 @@ name: Build
 jobs:
   build-unity:
     name: Build for ${{ matrix.targetPlatform }} on version ${{ matrix.unityVersion }}
-    runs-on: 
+    runs-on:
       labels: ["linux", "8cores"]
     strategy:
       fail-fast: false
@@ -113,10 +113,6 @@ jobs:
         with:
           python-version: 3.11.0
 
-      - uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: "6.0.x"
-
       - name: Pack
         run: |
           set -evx
@@ -124,9 +120,6 @@ jobs:
           npm config set prefix $HOME/.local/bin
           export PATH="$HOME/.local/bin:$PATH"
           npm install --global strip-json-comments-cli
-          dotnet tool install \
-            --global \
-            Libplanet.Tools
 
           # macOS 내장 date는 ISO 8601 서식 옵션이 따로 없음
           timestamp="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
@@ -136,7 +129,6 @@ jobs:
           /tmp/package \
           "${{ matrix.targetPlatform }}" \
           "${{ steps.download_player.outputs.download-path }}" \
-          "${{ secrets.APV_SIGNING_PRIVATE_KEY }}" \
           "$timestamp"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}

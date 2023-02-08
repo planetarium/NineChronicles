@@ -37,7 +37,6 @@ namespace Nekoyume.UI.Module
             hideCartButton.OnSubmitSubject.Subscribe(_ =>
             {
                 _onClickHideCart?.Invoke();
-                gameObject.SetActive(false);
             }).AddTo(gameObject);
 
             buyButton.Text = L10nManager.Localize("UI_BUY");
