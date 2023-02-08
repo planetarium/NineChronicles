@@ -305,5 +305,103 @@ namespace Lib9c.Tests.Action.Scenario
                 Assert.NotNull(inventoryState.Items.Where(e => e.item.Id == itemId));
             }
         }
+
+        [Theory]
+        [InlineData(1, 1002, new[] { 10020001 })] // Grand Finale, AP Stone
+        public void EventMaterialItemCraftsTest(
+            int randomSeed,
+            int eventScheduleId,
+            int[] targetItemIdList
+        )
+        {
+            // Disable all quests to prevent contamination by quest reward
+            var (stateV1, stateV2) = QuestUtil.DisableQuestList(
+                _initialStatesWithAvatarStateV1,
+                _initialStatesWithAvatarStateV2,
+                _avatarAddr
+            );
+
+            // Setup requirements
+            var random = new TestRandom(randomSeed);
+            var recipeList = _tableSheets.EventConsumableItemRecipeSheet.OrderedList.Where(
+                recipe => targetItemIdList.Contains(recipe.ResultConsumableItemId)
+            ).ToList();
+            var allMaterialList = new List<EquipmentItemSubRecipeSheet.MaterialInfo>();
+            foreach (var recipe in recipeList)
+            {
+                allMaterialList = allMaterialList.Concat(recipe.GetAllMaterials()).ToList();
+            }
+
+            // Unlock stage to create consumables
+            stateV2 = CraftUtil.UnlockStage(stateV2, _tableSheets, _worldInformationAddr, 6);
+
+            // Prepare combination slot
+            for (var i = 0; i < targetItemIdList.Length; i++)
+            {
+                stateV2 = CraftUtil.PrepareCombinationSlot(stateV2, _avatarAddr, i);
+            }
+
+            // Initial inventory must be empty
+            var inventoryState = new Inventory((List)stateV2.GetState(_inventoryAddr));
+            Assert.Equal(0, inventoryState.Items.Count);
+
+            // Add materials to inventory
+            stateV2 = CraftUtil.AddMaterialsToInventory(
+                stateV2,
+                _tableSheets,
+                _avatarAddr,
+                allMaterialList,
+                random
+            );
+
+            for (var i = 0; i < recipeList.Count; i++)
+            {
+                var eventRow = _tableSheets.EventScheduleSheet[eventScheduleId];
+                // Do combination action
+                var recipe = recipeList[i];
+
+                // FIXME: This should be fixed if you test multiple items
+                var materialsToUse = new Dictionary<int, int>();
+                foreach (var material in allMaterialList)
+                {
+                    if (materialsToUse.ContainsKey(material.Id))
+                    {
+                        materialsToUse[material.Id] += material.Count;
+                    }
+                    else
+                    {
+                        materialsToUse[material.Id] = material.Count;
+                    }
+                }
+
+                var action = new EventMaterialItemCrafts
+                {
+                    AvatarAddress = _avatarAddr,
+                    EventScheduleId = eventScheduleId,
+                    EventMaterialItemRecipeId = recipe.Id,
+                    MaterialsToUse = materialsToUse,
+                };
+
+                stateV2 = action.Execute(new ActionContext
+                {
+                    PreviousStates = stateV2,
+                    Signer = _agentAddr,
+                    BlockIndex = eventRow.StartBlockIndex,
+                    Random = random,
+                });
+                var slotState = stateV2.GetCombinationSlotState(_avatarAddr, i);
+                // TEST: requiredBlockIndex
+                Assert.Equal(recipe.RequiredBlockIndex, slotState.RequiredBlockIndex);
+            }
+
+            inventoryState = new Inventory((List)stateV2.GetState(_inventoryAddr));
+            // TEST: Only created items should remain in inventory
+            Assert.Equal(recipeList.Count, inventoryState.Items.Count);
+            foreach (var itemId in targetItemIdList)
+            {
+                // TEST: Created comsumables should be match with targetItemList
+                Assert.NotNull(inventoryState.Items.Where(e => e.item.Id == itemId));
+            }
+        }
     }
 }
