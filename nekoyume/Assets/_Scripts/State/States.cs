@@ -71,6 +71,8 @@ namespace Nekoyume.State
             public Dictionary<int, CombinationSlotState> States { get; }= new();
         }
 
+        public PetStates PetStates { get; } = new();
+
         private readonly Dictionary<Address, Workshop> _slotStates = new();
 
         private Dictionary<int, HammerPointState> _hammerPointStates;
@@ -599,6 +601,7 @@ namespace Nekoyume.State
 
                     await SetCombinationSlotStatesAsync(curAvatarState);
                     await AddOrReplaceAvatarStateAsync(curAvatarState, CurrentAvatarKey);
+                    await SetPetStates(avatarState.address);
                 });
             }
 
@@ -802,6 +805,21 @@ namespace Nekoyume.State
         {
             runeState = RuneStates.FirstOrDefault(x => x.RuneId == runeId);
             return runeState != null;
+        }
+
+        private async UniTask SetPetStates(Address avatarAddress)
+        {
+            var petIds = TableSheets.Instance.PetSheet.Values.Select(row => row.Id).ToList();
+            var petRawStates = await Game.Game.instance.Agent.GetStateBulk(
+                petIds.Select(id => PetState.DeriveAddress(avatarAddress, id))
+            );
+            foreach (var petId in petIds)
+            {
+                var petAddress = PetState.DeriveAddress(avatarAddress, petId);
+                PetStates.UpdatePetState(
+                    petId,
+                    petRawStates[petAddress] is List rawState ? new PetState(rawState) : null);
+            }
         }
     }
 }
