@@ -4,6 +4,6 @@ namespace Nekoyume.Model.EnumType
     {
         Normal = 0,
         Premium = 1,
-        Mimisbrunner = 2
+        Mimisbrunnr = 2
     }
 }

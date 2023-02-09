@@ -78,7 +78,7 @@ namespace Nekoyume.TableData
                 {
                     CraftType.Normal => allMaterials.Concat(subRecipeList[0].Materials).ToList(),
                     CraftType.Premium => allMaterials.Concat(subRecipeList[1].Materials).ToList(),
-                    CraftType.Mimisbrunner => allMaterials.Concat(subRecipeList[2].Materials)
+                    CraftType.Mimisbrunnr => allMaterials.Concat(subRecipeList[2].Materials)
                         .ToList(),
                     _ => allMaterials
                 };
