@@ -344,8 +344,7 @@ namespace Nekoyume.Action
                     states,
                     context,
                     hammerPointRow,
-                    hammerPointState,
-                    petState);
+                    hammerPointState);
             }
             else
             {
@@ -498,8 +497,7 @@ namespace Nekoyume.Action
             IAccountStateDelta states,
             IActionContext context,
             CrystalHammerPointSheet.Row row,
-            HammerPointState hammerPointState,
-            PetState petState)
+            HammerPointState hammerPointState)
         {
             var crystalBalance = states.GetBalance(context.Signer, CrystalCalculator.CRYSTAL);
             var hammerPointCost = CrystalCalculator.CRYSTAL * row.CRYSTAL;

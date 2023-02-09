@@ -12,8 +12,8 @@ namespace Lib9c.Tests.TableData.Pet
             const string content = @"pet_id,_pet_name,pet_level,option_type,option_value
 1,D:CC 블랙캣,1,ReduceRequiredBlockByPercent,0
 1,D:CC 블랙캣,2,ReduceRequiredBlockByValue,0.5
-1,D:CC 블랙캣,3,IncreaseGreatSuccessRateByPercent,1
-1,D:CC 블랙캣,4,IncreaseGreatSuccessRateByValue,1.5
+1,D:CC 블랙캣,3,AdditionalOptionRateByPercent,1
+1,D:CC 블랙캣,4,AdditionalOptionRateByValue,1.5
 1,D:CC 블랙캣,5,IncreaseBlockPerHourglassByValue,2.0
 1,D:CC 블랙캣,6,DiscountMaterialCostCrystalByRate,2.5";
 
@@ -40,13 +40,13 @@ namespace Lib9c.Tests.TableData.Pet
             Assert.NotNull(row.LevelOptionMap[3]);
             levelOption = row.LevelOptionMap[3];
             Assert.Equal(
-                PetOptionType.IncreaseGreatSuccessRateByPercent,
+                PetOptionType.AdditionalOptionRateByPercent,
                 levelOption.OptionType);
             Assert.Equal(1M, levelOption.OptionValue);
             Assert.NotNull(row.LevelOptionMap[4]);
             levelOption = row.LevelOptionMap[4];
             Assert.Equal(
-                PetOptionType.IncreaseGreatSuccessRateByValue,
+                PetOptionType.AdditionalOptionRateByValue,
                 levelOption.OptionType);
             Assert.Equal(1.5M, levelOption.OptionValue);
             Assert.NotNull(row.LevelOptionMap[5]);

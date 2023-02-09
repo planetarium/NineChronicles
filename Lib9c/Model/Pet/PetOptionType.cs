@@ -4,8 +4,8 @@ namespace Nekoyume.Model.Pet
     {
         ReduceRequiredBlockByPercent,
         ReduceRequiredBlockByValue,
-        IncreaseGreatSuccessRateByPercent,
-        IncreaseGreatSuccessRateByValue,
+        AdditionalOptionRateByPercent,
+        AdditionalOptionRateByValue,
         IncreaseBlockPerHourglassByValue,
         DiscountMaterialCostCrystalByRate
     }
