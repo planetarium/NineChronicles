@@ -95,7 +95,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8524b9e2f2b073e488b509e3d08b7fc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cpText: {fileID: 5664198580810256883}
   cpTextValueTweener: {fileID: 42270265297408756}
   increaseCpArea: {fileID: 2477810622422735575}
   decreaseCpArea: {fileID: 4235447620062417815}
@@ -35732,7 +35731,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 130}
+  m_AnchoredPosition: {x: 0, y: 200}
   m_SizeDelta: {x: 420, y: 90}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &1988771054135270418

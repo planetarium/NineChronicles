@@ -2,14 +2,16 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!21 &2100000
 Material:
-  serializedVersion: 6
+  serializedVersion: 8
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Thai SDF Material - Speech Bubble
   m_Shader: {fileID: 4800000, guid: 68e6db2ebdc24f95958faec2be5558d6, type: 3}
-  m_ShaderKeywords: UNDERLAY_ON
+  m_ValidKeywords:
+  - UNDERLAY_ON
+  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -40,6 +42,7 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 20.1, y: 4}
         m_Offset: {x: 20, y: 20}
+    m_Ints: []
     m_Floats:
     - _Ambient: 0.05
     - _Bevel: 0
@@ -58,7 +61,7 @@ Material:
     - _GlowOffset: 1
     - _GlowOuter: 1
     - _GlowPower: 1
-    - _GradientScale: 8
+    - _GradientScale: 6
     - _LightAngle: 6.28
     - _MaskSoftnessX: 0
     - _MaskSoftnessY: 0
@@ -68,9 +71,9 @@ Material:
     - _OutlineWidth: 0.025
     - _PerspectiveFilter: 0.875
     - _Reflectivity: 10
-    - _ScaleRatioA: 0.875
-    - _ScaleRatioB: 0.25484374
-    - _ScaleRatioC: 0.3948005
+    - _ScaleRatioA: 0.8333333
+    - _ScaleRatioB: 0.24270833
+    - _ScaleRatioC: 0.3760005
     - _ScaleX: 1
     - _ScaleY: 1
     - _ShaderFlags: 0
@@ -81,8 +84,8 @@ Material:
     - _StencilOp: 0
     - _StencilReadMask: 255
     - _StencilWriteMask: 255
-    - _TextureHeight: 1024
-    - _TextureWidth: 1024
+    - _TextureHeight: 512
+    - _TextureWidth: 512
     - _UnderlayDilate: 1
     - _UnderlayOffsetX: 0
     - _UnderlayOffsetY: -0.291

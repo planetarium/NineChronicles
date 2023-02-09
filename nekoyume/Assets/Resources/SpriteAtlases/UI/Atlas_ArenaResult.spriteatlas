@@ -59,6 +59,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 1da7810c87905014f9fbdb32107e7405, type: 3}
   - {fileID: 21300000, guid: 07c139ec8d49cf84e96d63653bd823c5, type: 3}
   - {fileID: 21300000, guid: eaf5f99de2cecfd4586e57ead99d756c, type: 3}
+  - {fileID: 21300000, guid: e409bddf93a7d4ca8abd6e05742b76a9, type: 3}
   m_PackedSpriteNamesToIndex:
   - bg_pvp_vs
   - UI_pvp_wing
@@ -69,6 +70,7 @@ SpriteAtlas:
   - bg_pvp_back
   - bg_pvp_03
   - bg_pvp_vs_effect
+  - bg_pvp_vs_2
   m_RenderDataMap: {}
   m_Tag: Atlas_ArenaResult
   m_IsVariant: 0

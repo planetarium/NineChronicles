@@ -94,8 +94,8 @@ MonoBehaviour:
   - type: 38
     material: {fileID: 2100000, guid: e22461e7aefa54e80b907628f605eb1e, type: 2}
   setFontStyleBoldToDisabledAsForced: 0
-  fontSizeOffset: 0
+  fontSizeOffset: -2
   characterSpacingOffset: 0
   wordSpacingOffset: 0
-  lineSpacingOffset: 0
+  lineSpacingOffset: 10
   marginBottom: 0
