@@ -529,7 +529,8 @@ namespace Nekoyume.UI
                         out var info,
                         out var canObtain);
                     name = L10nManager.Localize($"ITEM_NAME_{runeStoneId}");
-                    count = States.Instance.RuneStoneBalance[runeStoneId].GetQuantityString();
+                    var ticker = Game.Game.instance.TableSheets.RuneSheet[runeStoneId].Ticker;
+                    count = States.Instance.AvatarBalance[ticker].GetQuantityString();
                     content = L10nManager.Localize($"ITEM_DESCRIPTION_{runeStoneId}");
                     buttonText = canObtain
                         ? L10nManager.Localize("UI_MAIN_MENU_WORLDBOSS")
