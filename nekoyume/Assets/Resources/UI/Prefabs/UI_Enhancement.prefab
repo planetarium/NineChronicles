@@ -12853,7 +12853,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 16.85
+  m_fontSize: 18
   m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -16726,7 +16726,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 16.85
+  m_fontSize: 18
   m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -17474,8 +17474,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281886362
-  m_fontColor: {r: 0.6037736, g: 0.40175712, b: 0.21929511, a: 1}
+    rgba: 4284375462
+  m_fontColor: {r: 0.6509804, g: 0.38039216, b: 0.36862746, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -47041,7 +47041,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 16.85
+  m_fontSize: 18
   m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -49717,7 +49717,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 16.85
+  m_fontSize: 18
   m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -50839,7 +50839,7 @@ PrefabInstance:
     - target: {fileID: 8136804997809114372, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 57
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8136804997809114372, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
@@ -50849,7 +50849,7 @@ PrefabInstance:
     - target: {fileID: 8136804997809114372, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 97
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8136804997809114372, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
@@ -50859,7 +50859,7 @@ PrefabInstance:
     - target: {fileID: 9093920311051570104, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_fontSize
-      value: 18
+      value: 19.5
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 1444397434721364587, guid: 9067b4811aa0241b7a96a2cc09536ced, type: 3}
