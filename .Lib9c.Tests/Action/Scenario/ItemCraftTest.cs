@@ -73,8 +73,6 @@ namespace Lib9c.Tests.Action.Scenario
                     .ToList();
             }
 
-            var avatarState = stateV2.GetAvatarStateV2(_avatarAddr);
-
             // Unlock recipe
             var maxUnlockStage = recipeList.Aggregate(0, (e, c) => Math.Max(e, c.UnlockStage));
             var unlockRecipeIdsAddress = _avatarAddr.Derive("recipe_ids");
