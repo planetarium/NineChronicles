@@ -187,9 +187,8 @@ namespace Nekoyume.Game
 
         private IEnumerator Start()
         {
-            // fix android can't use www in sub thread
-#if LIB9C_DEV_EXTENSIONS
-            Lib9c.DevExtensions.TestbedHelper.LoadTestbedCreateAvatarForQA();
+#if LIB9C_DEV_EXTENSIONS && UNITY_ANDROID
+            Lib9c.DevExtensions.TestbedHelper.LoadTestbedCreateAvatar();
 #endif
             Debug.Log("[Game] Start() invoked");
 
