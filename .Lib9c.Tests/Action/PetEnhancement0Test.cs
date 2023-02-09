@@ -2,6 +2,7 @@
 {
     using System.Linq;
     using Bencodex.Types;
+    using Lib9c.Tests.Util;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
@@ -34,7 +35,7 @@
                 _avatarAddr,
                 _initialStatesWithAvatarStateV1,
                 _initialStatesWithAvatarStateV2
-            ) = TestUtils.InitializeStates();
+            ) = InitializeUtil.InitializeStates();
             _targetPetId = tableSheets.PetSheet.First!.Id;
             var firstRound = tableSheets.ArenaSheet.OrderedList!
                 .SelectMany(row => row.Round)
@@ -318,7 +319,7 @@
             if (removePetRow)
             {
                 var petSheetCsv = prevStates.GetSheetCsv<PetSheet>();
-                var insolventPetSheetCsv = TestUtils.CsvLinqWhere(
+                var insolventPetSheetCsv = CsvUtil.CsvLinqWhere(
                     petSheetCsv,
                     line => !line.StartsWith($"{petId},"));
                 prevStates = prevStates.SetState(
@@ -333,13 +334,13 @@
                 string insolventPetCostSheetCsv;
                 if (removePetCostRow)
                 {
-                    insolventPetCostSheetCsv = TestUtils.CsvLinqWhere(
+                    insolventPetCostSheetCsv = CsvUtil.CsvLinqWhere(
                         petCostSheetCsv,
                         line => !line.StartsWith($"{petId},"));
                 }
                 else
                 {
-                    insolventPetCostSheetCsv = TestUtils.CsvLinqWhere(
+                    insolventPetCostSheetCsv = CsvUtil.CsvLinqWhere(
                         petCostSheetCsv,
                         line =>
                         {
