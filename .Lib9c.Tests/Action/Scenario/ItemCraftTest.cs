@@ -61,6 +61,8 @@ namespace Lib9c.Tests.Action.Scenario
             var recipeList = _tableSheets.EquipmentItemRecipeSheet.OrderedList.Where(
                 recipe => targetItemIdList.Contains(recipe.ResultEquipmentId)
             ).ToList();
+            Assert.Equal(targetItemIdList.Length, recipeList.Count);
+
             List<EquipmentItemSubRecipeSheet.MaterialInfo> allMaterialList =
                 new List<EquipmentItemSubRecipeSheet.MaterialInfo>();
             foreach (var recipe in recipeList)
@@ -162,6 +164,8 @@ namespace Lib9c.Tests.Action.Scenario
             var recipeList = _tableSheets.ConsumableItemRecipeSheet.OrderedList.Where(
                 recipe => targetItemIdList.Contains(recipe.ResultConsumableItemId)
             ).ToList();
+            Assert.Equal(targetItemIdList.Length, recipeList.Count);
+
             var allMaterialList = new List<EquipmentItemSubRecipeSheet.MaterialInfo>();
             foreach (var recipe in recipeList)
             {
