@@ -2484,7 +2484,7 @@ namespace Nekoyume.BlockChain
                 new PetState((List) rawPetState)
             );
 
-            Debug.LogError(
+            Debug.Log(
                 $"PetEnhancement rendered.\nPetId: {action.PetId}, Level: {action.TargetLevel}");
         }
     }
