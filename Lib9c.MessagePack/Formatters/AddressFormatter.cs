@@ -8,8 +8,7 @@ namespace Lib9c.Formatters
 {
     public class AddressFormatter : IMessagePackFormatter<Address>
     {
-        public void Serialize(ref MessagePackWriter writer, Address value,
-            MessagePackSerializerOptions options)
+        public void Serialize(ref MessagePackWriter writer, Address value, MessagePackSerializerOptions options)
         {
             if (value.Equals(default(Address)))
             {
@@ -20,8 +19,7 @@ namespace Lib9c.Formatters
             writer.Write(value.ToByteArray());
         }
 
-        Address IMessagePackFormatter<Address>.Deserialize(ref MessagePackReader reader,
-            MessagePackSerializerOptions options)
+        public Address Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {
