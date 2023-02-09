@@ -43,16 +43,13 @@ namespace Nekoyume.Action
             {
                 // wait for data load
             }
-            StreamReader streamReader = new StreamReader(new MemoryStream(www.bytes), System.Text.Encoding.Default);
-            CsvReader csvReader = new CsvReader((TextReader)streamReader, CultureInfo.InvariantCulture);
-            records = csvReader.GetRecords<GoldDistribution>().ToArray(); 
+            using var stream = new MemoryStream(www.bytes);
+            using var streamReader = new StreamReader(stream, System.Text.Encoding.Default);
 #else
-            using (var reader = new StreamReader(csvPath))
-            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
-            {
-                records = csv.GetRecords<GoldDistribution>().ToArray();
-            }
+            using var streamReader = new StreamReader(csvPath);
 #endif
+            using var csvReader = new CsvReader(streamReader, CultureInfo.InvariantCulture);
+            records = csvReader.GetRecords<GoldDistribution>().ToArray();
             Array.Sort<GoldDistribution>(records, new DescendingEndBlockComparer());
             return records;
         }
