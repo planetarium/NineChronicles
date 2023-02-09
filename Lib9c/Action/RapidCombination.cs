@@ -11,16 +11,17 @@ using Nekoyume.Extensions;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Nekoyume.TableData.Pet;
 using Serilog;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1378
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/
     /// </summary>
     [Serializable]
-    [ActionType("rapid_combination8")]
+    [ActionType("rapid_combination9")]
     public class RapidCombination : GameAction, IRapidCombinationV1
     {
         public Address avatarAddress;
@@ -99,14 +100,51 @@ namespace Nekoyume.Action
                     $"context block index: {context.BlockIndex}, actionable block index : {actionableBlockIndex}");
             }
 
-            var count = RapidCombination0.CalculateHourglassCount(gameConfigState, diff);
+            int costHourglassCount = 0;
+
+            
+            if (slotState.PetId > 0)
+            {
+                var petStateAddress = PetState.DeriveAddress(avatarAddress, slotState.PetId);
+                if (!states.TryGetState(petStateAddress, out List rawState))
+                {
+                    throw new FailedLoadStateException($"{addressesHex}Aborted as the {nameof(PetState)} was failed to load.");
+                }
+
+                var petState = new PetState(rawState);
+                var petOptionSheet = states.GetSheet<PetOptionSheet>();
+                if (!petOptionSheet.TryGetValue(petState.PetId, out var optionRow) ||
+                    !optionRow.LevelOptionMap.TryGetValue(petState.Level, out var optionInfo))
+                {
+                    Log.Debug("{AddressesHex} Pet option not found. (Id : {petId}, Level : {petLevel}). Skip applying pet option.",
+                        addressesHex, petState.PetId, petState.Level);
+                }
+                else
+                {
+                    if (optionInfo.OptionType == Model.Pet.PetOptionType.IncreaseBlockPerHourglassByValue)
+                    {
+                        var hgPerBlock = gameConfigState.HourglassPerBlock
+                            + (int)optionInfo.OptionValue;
+                        costHourglassCount = RapidCombination0.CalculateHourglassCount(hgPerBlock, diff);
+                    }
+                    else
+                    {
+                        costHourglassCount = RapidCombination0.CalculateHourglassCount(gameConfigState, diff);
+                    }
+                }
+            }
+            else
+            {
+                costHourglassCount = RapidCombination0.CalculateHourglassCount(gameConfigState, diff);
+            }
+
             var materialItemSheet = states.GetSheet<MaterialItemSheet>();
             var row = materialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Hourglass);
             var hourGlass = ItemFactory.CreateMaterial(row);
-            if (!avatarState.inventory.RemoveFungibleItem(hourGlass, context.BlockIndex, count))
+            if (!avatarState.inventory.RemoveFungibleItem(hourGlass, context.BlockIndex, costHourglassCount))
             {
                 throw new NotEnoughMaterialException(
-                    $"{addressesHex}Aborted as the player has no enough material ({row.Id} * {count})");
+                    $"{addressesHex}Aborted as the player has no enough material ({row.Id} * {costHourglassCount})");
             }
 
             if (slotState.TryGetResultId(out var resultId) &&
@@ -127,7 +165,7 @@ namespace Nekoyume.Action
                 }
             }
 
-            slotState.UpdateV2(context.BlockIndex, hourGlass, count);
+            slotState.UpdateV2(context.BlockIndex, hourGlass, costHourglassCount);
             avatarState.UpdateFromRapidCombinationV2(
                 (RapidCombination5.ResultModel)slotState.Result,
                 context.BlockIndex);

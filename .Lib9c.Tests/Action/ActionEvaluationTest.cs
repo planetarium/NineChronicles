@@ -67,7 +67,7 @@ namespace Lib9c.Tests.Action
         [InlineData(typeof(MonsterCollect))]
         [InlineData(typeof(PatchTableSheet))]
         [InlineData(typeof(RankingBattle))]
-        [InlineData(typeof(RapidCombination))]
+        [InlineData(typeof(RapidCombination8))]
         [InlineData(typeof(RedeemCode))]
         [InlineData(typeof(RewardGold))]
         [InlineData(typeof(Sell))]
@@ -216,7 +216,7 @@ namespace Lib9c.Tests.Action
                     costumeIds = new List<Guid>(),
                     equipmentIds = new List<Guid>(),
                 },
-                RapidCombination _ => new RapidCombination(),
+                RapidCombination8 _ => new RapidCombination8(),
                 RedeemCode _ => new RedeemCode
                 {
                     Code = "code",

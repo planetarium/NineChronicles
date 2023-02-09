@@ -52,13 +52,13 @@
             Assert.NotNull(row.LevelOptionMap[5]);
             levelOption = row.LevelOptionMap[5];
             Assert.Equal(
-                PetOptionType.ReduceHourglassBlockByValue,
+                PetOptionType.IncreaseBlockPerHourglassByValue,
                 levelOption.OptionType);
             Assert.Equal(2.0M, levelOption.OptionValue);
             Assert.NotNull(row.LevelOptionMap[6]);
             levelOption = row.LevelOptionMap[6];
             Assert.Equal(
-                PetOptionType.ReduceMaterialPurchaseCrystalCostByRate,
+                PetOptionType.DiscountMaterialCostCrystalByRate,
                 levelOption.OptionType);
             Assert.Equal(2.5M, levelOption.OptionValue);
         }
