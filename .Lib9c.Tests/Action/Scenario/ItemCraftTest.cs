@@ -149,7 +149,9 @@ namespace Lib9c.Tests.Action.Scenario
         }
 
         [Theory]
-        [InlineData(1, new[] { 200000 })] // 맛없는 요리
+        [InlineData(1, new[] { 201000 })] // 참치캔
+        [InlineData(1, new[] { 201000, 201002 })] // 참치캔, 계란후라이
+        [InlineData(1, new[] { 201011, 201012, 201013 })] // 스테이크, 모둠스테이크, 전설의 스테이크
         public void CraftConsumableTest(int randomSeed, int[] targetItemIdList)
         {
             // Disable all quests to prevent contamination by quest reward
