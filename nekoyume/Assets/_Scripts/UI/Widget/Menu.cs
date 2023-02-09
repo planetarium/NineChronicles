@@ -93,6 +93,9 @@ namespace Nekoyume.UI
         private Button playerButton;
 
         [SerializeField]
+        private Button petButton;
+
+        [SerializeField]
         private StakeIconDataScriptableObject stakeIconData;
 
         [SerializeField]
@@ -121,6 +124,10 @@ namespace Nekoyume.UI
             playerButton.onClick.AddListener(() =>
             {
                 Game.Game.instance.Lobby.Character.Touch();
+            });
+            petButton.onClick.AddListener(() =>
+            {
+                Game.Game.instance.Lobby.Character.TouchPet();
             });
             guidedQuest.OnClickWorldQuestCell
                 .Subscribe(tuple => HackAndSlash(tuple.quest.Goal))

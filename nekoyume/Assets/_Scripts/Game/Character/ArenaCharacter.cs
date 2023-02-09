@@ -46,6 +46,7 @@ namespace Nekoyume.Game.Character
         private readonly Dictionary<int, VFX.VFX> _persistingVFXMap = new();
 
         public List<ArenaActionParams> Actions { get; } = new List<ArenaActionParams>();
+        public Pet Pet => appearance.Pet;
 
         private bool IsDead => _currentHp <= 0;
 

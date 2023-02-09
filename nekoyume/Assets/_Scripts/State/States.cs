@@ -17,9 +17,7 @@ using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.Rune;
 using Nekoyume.UI;
-using UnityEngine;
 using Event = Nekoyume.Game.Event;
 
 namespace Nekoyume.State

@@ -7,6 +7,7 @@ using Nekoyume.Model.Arena;
 using Nekoyume.Model.Item;
 using Nekoyume.TableData;
 using Nekoyume.UI;
+using Spine.Unity;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character
@@ -15,6 +16,8 @@ namespace Nekoyume.Game.Character
     {
         [SerializeField]
         private BoxCollider boxCollider;
+        [SerializeField]
+        private Pet pet;
 
         private CharacterAnimator _animator;
         private HudContainer _hudContainer;
@@ -22,6 +25,7 @@ namespace Nekoyume.Game.Character
 
         public PlayerSpineController SpineController { get; private set; }
         public BoxCollider BoxCollider => boxCollider;
+        public Pet Pet => pet;
 
         public void Set(
             ArenaPlayerDigest digest,
@@ -225,6 +229,12 @@ namespace Nekoyume.Game.Character
             if (!isFullCostume)
             {
                 SpineController.AttachTail();
+            }
+
+            var skeletonAnimation = go.GetComponent<SkeletonAnimation>();
+            if (skeletonAnimation)
+            {
+                pet.SetPosition(skeletonAnimation, isFullCostume);
             }
 
             _animator.ResetTarget(go);
