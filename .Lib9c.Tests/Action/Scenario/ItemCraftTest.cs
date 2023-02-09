@@ -193,6 +193,14 @@ namespace Lib9c.Tests.Action.Scenario
                 random
             );
 
+            // Unlock stage
+            stateV2 = CraftUtil.UnlockStage(
+                stateV2,
+                _tableSheets,
+                _worldInformationAddr,
+                6 // Stage to open craft consumables
+            );
+
             for (var i = 0; i < recipeList.Count; i++)
             {
                 // Do combination action
