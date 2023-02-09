@@ -18,7 +18,8 @@ namespace Planetarium.Nekoyume.Editor
     // TODO: 사용자가 알기 쉽게 예외 상황 전부 알림 띄워주기.
     public static class SpineEditor
     {
-        private const string FindAssetFilter = "CharacterAnimator t:AnimatorController";
+        private const string CharacterAnimatorFindAssetFilter = "CharacterAnimator t:AnimatorController";
+        private const string PetAnimatorFindAssetFilter = "PetAnimator t:AnimatorController";
 
         private const string FullCostumePrefabPath = "Assets/Resources/Character/FullCostume";
 
@@ -33,6 +34,9 @@ namespace Planetarium.Nekoyume.Editor
 
         private const string PlayerPrefabPath = "Assets/Resources/Character/Player";
         private const string PlayerSpineRootPath = "Assets/AddressableAssets/Character/Player";
+
+        private const string PetPrefabPath = "Assets/Resources/Character/Pet";
+        private const string PetSpineRootPath = "Assets/AddressableAssets/Character/Pet";
 
         private static readonly Vector3 Position = Vector3.zero;
 
@@ -85,6 +89,12 @@ namespace Planetarium.Nekoyume.Editor
             CreateSpinePrefabAllOfPath(PlayerSpineRootPath);
         }
 
+        [MenuItem("Tools/9C/Create Spine Prefab(All Pet)", false, 0)]
+        public static void CreateSpinePrefabAllOfPet()
+        {
+            CreateSpinePrefabAllOfPath(PetSpineRootPath);
+        }
+
         private static string GetPrefabPath(string prefabName)
         {
             string pathFormat = null;
@@ -106,6 +116,11 @@ namespace Planetarium.Nekoyume.Editor
             if (SpineCharacterViewer.IsPlayer(prefabName))
             {
                 pathFormat = PlayerPrefabPath;
+            }
+
+            if (SpineCharacterViewer.IsPet(prefabName))
+            {
+                pathFormat = PetPrefabPath;
             }
 
             return string.IsNullOrEmpty(pathFormat)
@@ -152,12 +167,23 @@ namespace Planetarium.Nekoyume.Editor
             meshRenderer.receiveShadows = false;
             meshRenderer.sortingLayerName = "Character";
 
-            var animatorControllerGuidArray = AssetDatabase.FindAssets(FindAssetFilter);
+            string findAssetFilter;
+            if (SpineCharacterViewer.IsPet(prefabName))
+            {
+                meshRenderer.sortingOrder = 1;
+                findAssetFilter = PetAnimatorFindAssetFilter;
+            }
+            else
+            {
+                findAssetFilter = CharacterAnimatorFindAssetFilter;
+            }
+
+            var animatorControllerGuidArray = AssetDatabase.FindAssets(findAssetFilter);
             if (animatorControllerGuidArray.Length == 0)
             {
                 Object.DestroyImmediate(gameObject);
                 throw new AssetNotFoundException(
-                    $"AssetDatabase.FindAssets(\"{FindAssetFilter}\")");
+                    $"AssetDatabase.FindAssets(\"{findAssetFilter}\")");
             }
 
             var animatorControllerPath =
@@ -368,6 +394,26 @@ namespace Planetarium.Nekoyume.Editor
                             });
                     }
                     break;
+                case PetSpineController petSpineController:
+                    foreach (var animationType in PetAnimation.List)
+                    {
+                        var assetPath = Path.Combine(animationAssetsPath, $"{animationType}.asset");
+                        var asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
+                        if (asset is null)
+                        {
+                            Object.DestroyImmediate(gameObject);
+                            throw new AssetNotFoundException(assetPath);
+                        }
+
+                        controller.statesAndAnimations.Add(
+                            new SpineController.StateNameToAnimationReference
+                            {
+                                stateName = animationType.ToString(),
+                                animation = asset
+                            });
+                    }
+
+                    break;
             }
 
             return controller;
@@ -397,6 +443,11 @@ namespace Planetarium.Nekoyume.Editor
             if (SpineCharacterViewer.IsPlayer(prefabName))
             {
                 return ValidateForPlayer(skeletonDataAsset);
+            }
+
+            if (SpineCharacterViewer.IsPet(prefabName))
+            {
+                return ValidateForPet(skeletonDataAsset);
             }
 
             return false;
@@ -446,6 +497,8 @@ namespace Planetarium.Nekoyume.Editor
 
             return result;
         }
+
+        private static bool ValidateForPet(SkeletonDataAsset skeletonDataAsset) => true;
 
         #endregion
 
@@ -516,6 +569,11 @@ namespace Planetarium.Nekoyume.Editor
             if (SpineCharacterViewer.IsNPC(prefabName))
             {
                 return target.AddComponent<NPCSpineController>();
+            }
+
+            if (SpineCharacterViewer.IsPet(prefabName))
+            {
+                return target.AddComponent<PetSpineController>();
             }
 
             return target.AddComponent<CharacterSpineController>();
