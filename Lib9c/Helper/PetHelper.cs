@@ -1,6 +1,9 @@
-﻿using System;
+using System;
+using Libplanet.Assets;
+using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Pet;
+using Serilog;
 
 namespace Nekoyume.Helper
 {
@@ -59,6 +62,37 @@ namespace Nekoyume.Helper
                 soulStoneCost += cost.SoulStoneQuantity;
             });
             return (ncgCost, soulStoneCost);
+        }
+
+        public static FungibleAssetValue CalculateDiscountedMaterialCost(
+            FungibleAssetValue originalCost,
+            PetState petState,
+            PetOptionSheet petOptionSheet)
+        {
+            if (!petOptionSheet.TryGetValue(petState.PetId, out var optionRow) ||
+                !optionRow.LevelOptionMap.TryGetValue(petState.Level, out var optionInfo))
+            {
+                return originalCost;
+            }
+            else
+            {
+                if (optionInfo.OptionType == Model.Pet.PetOptionType.DiscountMaterialCostCrystalByRate)
+                {
+                    // Calculated as permyriad
+                    var multiplier = (int)(10000 - optionInfo.OptionValue);
+                    var cost = originalCost.DivRem(10000, out _) * multiplier;
+
+                    // Keep cost more than 1.
+                    if (cost.MajorUnit <= 0)
+                    {
+                        cost = 1 * CrystalCalculator.CRYSTAL;
+                    }
+
+                    return cost;
+                }
+            }
+
+            return originalCost;
         }
     }
 }

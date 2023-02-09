@@ -584,27 +584,10 @@ namespace Nekoyume.Action
                 if (!(petState is null))
                 {
                     var petOptionSheet = states.GetSheet<PetOptionSheet>();
-                    if (!petOptionSheet.TryGetValue(petState.PetId, out var optionRow) ||
-                        !optionRow.LevelOptionMap.TryGetValue(petState.Level, out var optionInfo))
-                    {
-                        Log.Debug("{AddressesHex} Pet option not found. (Id : {petId}, Level : {petLevel}). Skip applying pet option.",
-                            addressesHex, petState.PetId, petState.Level);
-                    }
-                    else
-                    {
-                        if (optionInfo.OptionType == Model.Pet.PetOptionType.DiscountMaterialCostCrystalByRate)
-                        {
-                            // Calculated as permyriad
-                            var multiplier = (int)(10000 - optionInfo.OptionValue);
-                            costCrystal = costCrystal.DivRem(10000, out _) * multiplier;
-
-                            // Keep cost more than 1.
-                            if (costCrystal.MajorUnit <= 0)
-                            {
-                                costCrystal = 1 * CrystalCalculator.CRYSTAL;
-                            }
-                        }
-                    }
+                    costCrystal = PetHelper.CalculateDiscountedMaterialCost(
+                        costCrystal,
+                        petState,
+                        petOptionSheet);
                 }
 
                 // Update Daily Formula.
