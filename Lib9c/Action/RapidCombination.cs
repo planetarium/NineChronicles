@@ -18,7 +18,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1711
     /// </summary>
     [Serializable]
     [ActionType("rapid_combination9")]
@@ -103,9 +103,9 @@ namespace Nekoyume.Action
             int costHourglassCount = 0;
 
             
-            if (slotState.PetId > 0)
+            if (slotState.PetId.HasValue)
             {
-                var petStateAddress = PetState.DeriveAddress(avatarAddress, slotState.PetId);
+                var petStateAddress = PetState.DeriveAddress(avatarAddress, slotState.PetId.Value);
                 if (!states.TryGetState(petStateAddress, out List rawState))
                 {
                     throw new FailedLoadStateException($"{addressesHex}Aborted as the {nameof(PetState)} was failed to load.");

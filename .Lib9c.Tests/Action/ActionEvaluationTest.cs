@@ -55,7 +55,7 @@ namespace Lib9c.Tests.Action
         [InlineData(typeof(ChargeActionPoint))]
         [InlineData(typeof(ClaimMonsterCollectionReward))]
         [InlineData(typeof(CombinationConsumable))]
-        [InlineData(typeof(CombinationEquipment))]
+        [InlineData(typeof(CombinationEquipment14))]
         [InlineData(typeof(CreatePendingActivation))]
         [InlineData(typeof(DailyReward))]
         [InlineData(typeof(InitializeStates))]
@@ -173,7 +173,7 @@ namespace Lib9c.Tests.Action
                 ChargeActionPoint _ => new ChargeActionPoint(),
                 ClaimMonsterCollectionReward _ => new ClaimMonsterCollectionReward(),
                 CombinationConsumable _ => new CombinationConsumable(),
-                CombinationEquipment _ => new CombinationEquipment(),
+                CombinationEquipment14 _ => new CombinationEquipment14(),
                 CreatePendingActivation _ => new CreatePendingActivation(
                     new PendingActivationState(new byte[] { 0x0 }, new PrivateKey().PublicKey)
                 ),
