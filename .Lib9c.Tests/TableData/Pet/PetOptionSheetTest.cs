@@ -1,4 +1,4 @@
-﻿namespace Lib9c.Tests.TableData.Pet
+namespace Lib9c.Tests.TableData.Pet
 {
     using Nekoyume.Model.Pet;
     using Nekoyume.TableData.Pet;
@@ -14,8 +14,8 @@
 1,D:CC 블랙캣,2,ReduceRequiredBlockByValue,0.5
 1,D:CC 블랙캣,3,IncreaseGreatSuccessRateByPercent,1
 1,D:CC 블랙캣,4,IncreaseGreatSuccessRateByValue,1.5
-1,D:CC 블랙캣,5,ReduceHourglassBlockByValue,2.0
-1,D:CC 블랙캣,6,ReduceMaterialPurchaseCrystalCostByRate,2.5";
+1,D:CC 블랙캣,5,IncreaseBlockPerHourglassByValue,2.0
+1,D:CC 블랙캣,6,DiscountMaterialCostCrystalByRate,2.5";
 
             var sheet = new PetOptionSheet();
             sheet.Set(content);
