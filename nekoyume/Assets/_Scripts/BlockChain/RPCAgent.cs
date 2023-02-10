@@ -560,10 +560,18 @@ namespace Nekoyume.BlockChain
                     Debug.LogWarning($"TimeoutException occurred. Retrying... {retryCount}\n{toe}");
                     retryCount--;
                 }
-                catch (RpcException re)
+                catch (AggregateException ae)
                 {
-                    Debug.LogWarning($"RpcException occurred. Retrying... {retryCount}\n{re}");
-                    retryCount--;
+                    if (ae.InnerException is RpcException re)
+                    {
+                        Debug.LogWarning($"RpcException occurred. Retrying... {retryCount}\n{re}");
+                        retryCount--;
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Unexpected error occurred during rpc connection. {ae}");
+                        break;
+                    }
                 }
                 catch (ObjectDisposedException ode)
                 {
