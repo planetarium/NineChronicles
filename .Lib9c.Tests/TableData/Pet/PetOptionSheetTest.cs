@@ -10,12 +10,12 @@ namespace Lib9c.Tests.TableData.Pet
         public void Set()
         {
             const string content = @"pet_id,_pet_name,pet_level,option_type,option_value
-1,D:CC 블랙캣,1,ReduceRequiredBlockByPercent,0
-1,D:CC 블랙캣,2,ReduceRequiredBlockByValue,0.5
-1,D:CC 블랙캣,3,AdditionalOptionRateByPercent,1
-1,D:CC 블랙캣,4,AdditionalOptionRateByValue,1.5
-1,D:CC 블랙캣,5,IncreaseBlockPerHourglassByValue,2.0
-1,D:CC 블랙캣,6,DiscountMaterialCostCrystalByRate,2.5";
+1,D:CC 블랙캣,1,ReduceRequiredBlock,0
+1,D:CC 블랙캣,2,ReduceRequiredBlockByFixedValue,0.5
+1,D:CC 블랙캣,3,AdditionalOptionRate,1
+1,D:CC 블랙캣,4,AdditionalOptionRateByFixedValue,1.5
+1,D:CC 블랙캣,5,IncreaseBlockPerHourglass,2.0
+1,D:CC 블랙캣,6,DiscountMaterialCostCrystal,2.5";
 
             var sheet = new PetOptionSheet();
             sheet.Set(content);
@@ -28,37 +28,37 @@ namespace Lib9c.Tests.TableData.Pet
             Assert.NotNull(row.LevelOptionMap[1]);
             var levelOption = row.LevelOptionMap[1];
             Assert.Equal(
-                PetOptionType.ReduceRequiredBlockByPercent,
+                PetOptionType.ReduceRequiredBlock,
                 levelOption.OptionType);
             Assert.Equal(0M, levelOption.OptionValue);
             Assert.NotNull(row.LevelOptionMap[2]);
             levelOption = row.LevelOptionMap[2];
             Assert.Equal(
-                PetOptionType.ReduceRequiredBlockByValue,
+                PetOptionType.ReduceRequiredBlockByFixedValue,
                 levelOption.OptionType);
             Assert.Equal(0.5M, levelOption.OptionValue);
             Assert.NotNull(row.LevelOptionMap[3]);
             levelOption = row.LevelOptionMap[3];
             Assert.Equal(
-                PetOptionType.AdditionalOptionRateByPercent,
+                PetOptionType.AdditionalOptionRate,
                 levelOption.OptionType);
             Assert.Equal(1M, levelOption.OptionValue);
             Assert.NotNull(row.LevelOptionMap[4]);
             levelOption = row.LevelOptionMap[4];
             Assert.Equal(
-                PetOptionType.AdditionalOptionRateByValue,
+                PetOptionType.AdditionalOptionRateByFixedValue,
                 levelOption.OptionType);
             Assert.Equal(1.5M, levelOption.OptionValue);
             Assert.NotNull(row.LevelOptionMap[5]);
             levelOption = row.LevelOptionMap[5];
             Assert.Equal(
-                PetOptionType.IncreaseBlockPerHourglassByValue,
+                PetOptionType.IncreaseBlockPerHourglass,
                 levelOption.OptionType);
             Assert.Equal(2.0M, levelOption.OptionValue);
             Assert.NotNull(row.LevelOptionMap[6]);
             levelOption = row.LevelOptionMap[6];
             Assert.Equal(
-                PetOptionType.DiscountMaterialCostCrystalByRate,
+                PetOptionType.DiscountMaterialCostCrystal,
                 levelOption.OptionType);
             Assert.Equal(2.5M, levelOption.OptionValue);
         }

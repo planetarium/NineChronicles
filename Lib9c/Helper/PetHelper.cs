@@ -1,5 +1,6 @@
 using System;
 using Libplanet.Assets;
+using Nekoyume.Model.Pet;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Pet;
@@ -74,25 +75,69 @@ namespace Nekoyume.Helper
             {
                 return originalCost;
             }
-            else
+            else if (optionInfo.OptionType == PetOptionType.DiscountMaterialCostCrystal)
             {
-                if (optionInfo.OptionType == Model.Pet.PetOptionType.DiscountMaterialCostCrystalByRate)
+                // Convert as permyriad
+                var multiplier = (int)(10000 - optionInfo.OptionValue * 100);
+                var cost = originalCost.DivRem(10000, out _) * multiplier;
+
+                // Keep cost more than 1.
+                if (cost.MajorUnit <= 0)
                 {
-                    // Calculated as permyriad
-                    var multiplier = (int)(10000 - optionInfo.OptionValue);
-                    var cost = originalCost.DivRem(10000, out _) * multiplier;
-
-                    // Keep cost more than 1.
-                    if (cost.MajorUnit <= 0)
-                    {
-                        cost = 1 * CrystalCalculator.CRYSTAL;
-                    }
-
-                    return cost;
+                    cost = 1 * CrystalCalculator.CRYSTAL;
                 }
+
+                return cost;
             }
 
             return originalCost;
+        }
+
+        public static long CalculateReducedBlockOnCraft(
+            long originalBlock,
+            long minimumBlock,
+            PetState petState,
+            PetOptionSheet petOptionSheet)
+        {
+            if (!petOptionSheet.TryGetValue(petState.PetId, out var optionRow) ||
+                !optionRow.LevelOptionMap.TryGetValue(petState.Level, out var optionInfo))
+            {
+                return originalBlock;
+            }
+            else if (optionInfo.OptionType == PetOptionType.ReduceRequiredBlock)
+            {
+                var multiplier = (100 - optionInfo.OptionValue) / 100;
+                var result = (long)Math.Round(originalBlock * multiplier);
+                return Math.Max(minimumBlock, result);
+            }
+            else if (optionInfo.OptionType == PetOptionType.ReduceRequiredBlockByFixedValue)
+            {
+                return Math.Max(minimumBlock, originalBlock - (long)optionInfo.OptionValue);
+            }
+
+            return originalBlock;
+        }
+
+        public static int GetBonusOptionProbability(
+            int originalRatio,
+            PetState petState,
+            PetOptionSheet petOptionSheet)
+        {
+            if (!petOptionSheet.TryGetValue(petState.PetId, out var optionRow) ||
+                !optionRow.LevelOptionMap.TryGetValue(petState.Level, out var optionInfo))
+            {
+                return originalRatio;
+            }
+            else if (optionInfo.OptionType == PetOptionType.AdditionalOptionRate)
+            {
+                var multiplier = (100 + optionInfo.OptionValue) / 100;
+                var result = (int)Math.Round(originalRatio * multiplier);
+                return result;
+            }
+            else if (optionInfo.OptionType == PetOptionType.AdditionalOptionRateByFixedValue)
+            {
+                return originalRatio + (int)(optionInfo.OptionValue * 100);
+            }
         }
     }
 }

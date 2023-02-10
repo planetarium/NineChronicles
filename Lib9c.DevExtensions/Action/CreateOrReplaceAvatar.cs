@@ -310,10 +310,12 @@ namespace Lib9c.DevExtensions.Action
                 var subRecipe = subRecipeSheetV2[recipe.SubRecipeIds[1]];
                 CombinationEquipment.AddAndUnlockOption(
                     agent,
+                    null,
                     equipment,
                     context.Random,
                     subRecipe,
                     optionSheet,
+                    null,
                     skillSheet);
                 var additionalOptionStats = equipment.StatsMap.GetAdditionalStats().ToArray();
                 foreach (var statMapEx in additionalOptionStats)

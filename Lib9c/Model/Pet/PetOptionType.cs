@@ -2,11 +2,11 @@ namespace Nekoyume.Model.Pet
 {
     public enum PetOptionType
     {
-        ReduceRequiredBlockByPercent,
-        ReduceRequiredBlockByValue,
-        AdditionalOptionRateByPercent,
-        AdditionalOptionRateByValue,
-        IncreaseBlockPerHourglassByValue,
-        DiscountMaterialCostCrystalByRate
+        ReduceRequiredBlock,
+        ReduceRequiredBlockByFixedValue,
+        AdditionalOptionRate,
+        AdditionalOptionRateByFixedValue,
+        IncreaseBlockPerHourglass,
+        DiscountMaterialCostCrystal
     }
 }

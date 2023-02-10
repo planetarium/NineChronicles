@@ -321,6 +321,7 @@ namespace Nekoyume.Action
                 }
             }
 
+            var petOptionSheet = states.GetSheet<PetOptionSheet>();
             if (useHammerPoint)
             {
                 if (!existHammerPointSheet)
@@ -357,6 +358,7 @@ namespace Nekoyume.Action
                     sheets,
                     materialItemSheet,
                     hammerPointSheet,
+                    petOptionSheet,
                     recipeRow,
                     requiredFungibleItems,
                     addressesHex);
@@ -402,10 +404,12 @@ namespace Nekoyume.Action
             {
                 AddAndUnlockOption(
                     agentState,
+                    petState,
                     equipment,
                     context.Random,
                     subRecipeRow,
                     sheets.GetSheet<EquipmentItemOptionSheet>(),
+                    petOptionSheet,
                     sheets.GetSheet<SkillSheet>()
                 );
                 endBlockIndex = equipment.RequiredBlockIndex;
@@ -437,6 +441,20 @@ namespace Nekoyume.Action
                 }
             }
             // ~Create Equipment
+
+            // Apply block time discount
+            if (!(petState is null))
+            {
+                var requiredBlockIndex = endBlockIndex - context.BlockIndex;
+                var gameConfigState = states.GetGameConfigState();
+                requiredBlockIndex = PetHelper.CalculateReducedBlockOnCraft(
+                    requiredBlockIndex,
+                    gameConfigState.RequiredAppraiseBlock,
+                    petState,
+                    petOptionSheet);
+                endBlockIndex = context.BlockIndex + requiredBlockIndex;
+                equipment.Update(endBlockIndex);
+            }
 
             // Add or Update Equipment
             avatarState.blockIndex = context.BlockIndex;
@@ -522,6 +540,7 @@ namespace Nekoyume.Action
             Dictionary<Type, (Address, ISheet)> sheets,
             MaterialItemSheet materialItemSheet,
             CrystalHammerPointSheet hammerPointSheet,
+            PetOptionSheet petOptionSheet,
             EquipmentItemRecipeSheet.Row recipeRow,
             Dictionary<int, int> requiredFungibleItems,
             string addressesHex)
@@ -581,7 +600,6 @@ namespace Nekoyume.Action
                 // Apply pet discount if possible.
                 if (!(petState is null))
                 {
-                    var petOptionSheet = states.GetSheet<PetOptionSheet>();
                     costCrystal = PetHelper.CalculateDiscountedMaterialCost(
                         costCrystal,
                         petState,
@@ -620,10 +638,12 @@ namespace Nekoyume.Action
 
         public static void AddAndUnlockOption(
             AgentState agentState,
+            PetState petState,
             Equipment equipment,
             IRandom random,
             EquipmentItemSubRecipeSheetV2.Row subRecipe,
             EquipmentItemOptionSheet optionSheet,
+            PetOptionSheet petOptionSheet,
             SkillSheet skillSheet
         )
         {
@@ -638,7 +658,18 @@ namespace Nekoyume.Action
                 }
 
                 var value = random.Next(1, GameConfig.MaximumProbability + 1);
-                if (value > optionInfo.Ratio)
+                var ratio = optionInfo.Ratio;
+
+                // Apply pet bonus if possible
+                if (!(petState is null))
+                {
+                    ratio = PetHelper.GetBonusOptionProbability(
+                        ratio,
+                        petState,
+                        petOptionSheet);
+                }
+
+                if (value > ratio)
                 {
                     continue;
                 }

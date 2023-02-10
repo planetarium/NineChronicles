@@ -121,9 +121,9 @@ namespace Nekoyume.Action
                 }
                 else
                 {
-                    if (optionInfo.OptionType == Model.Pet.PetOptionType.IncreaseBlockPerHourglassByValue)
+                    if (optionInfo.OptionType == Model.Pet.PetOptionType.IncreaseBlockPerHourglass)
                     {
-                        var hgPerBlock = (decimal)gameConfigState.HourglassPerBlock
+                        var hgPerBlock = gameConfigState.HourglassPerBlock
                             + optionInfo.OptionValue;
                         costHourglassCount = RapidCombination0.CalculateHourglassCount(hgPerBlock, diff);
                     }
