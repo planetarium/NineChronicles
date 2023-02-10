@@ -138,6 +138,8 @@ namespace Nekoyume.Helper
             {
                 return originalRatio + (int)(optionInfo.OptionValue * 100);
             }
+
+            return originalRatio;
         }
     }
 }

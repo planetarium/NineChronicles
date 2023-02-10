@@ -46,11 +46,11 @@ namespace Nekoyume.Action
         public int slotIndex;
         public int? petId;
 
-        public Guid ItemId => itemId;
-        public Guid MaterialId => materialId;
-        public Address AvatarAddress => avatarAddress;
-        public int SlotIndex => slotIndex;
-        public int? PetId => petId;
+        Guid IItemEnhancementV3.ItemId => itemId;
+        Guid IItemEnhancementV3.MaterialId => materialId;
+        Address IItemEnhancementV3.AvatarAddress => avatarAddress;
+        int IItemEnhancementV3.SlotIndex => slotIndex;
+        int? IItemEnhancementV3.PetId => petId;
 
         [Serializable]
         public class ResultModel : AttachmentActionResult
