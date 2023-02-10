@@ -129,7 +129,7 @@ namespace Nekoyume
             var appearance = player.GetComponent<CharacterAppearance>();
             if (appearance)
             {
-                director.SetGenericBinding(track, appearance.SpineController.SkeletonAnimation);
+                director.SetGenericBinding(track, appearance.SpineController.GetSkeletonAnimation());
             }
 
             if (asset.markerTrack)

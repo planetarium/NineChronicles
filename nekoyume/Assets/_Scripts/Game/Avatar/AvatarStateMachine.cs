@@ -26,7 +26,7 @@ namespace Nekoyume.Game.Avatar
             }
 
             var animationName = animationAsset ? animationAsset.Animation.Name : animationClip;
-            _controller.PlayAnimationForState(animationName, layer);
+            _controller.PlayAnimation(animationName, layer);
         }
 
         public override void OnStateExit(
@@ -35,14 +35,12 @@ namespace Nekoyume.Game.Avatar
             int layerIndex,
             AnimatorControllerPlayable controller)
         {
-            Debug.Log($"[### Begin] {animationClip} : {stateInfo.length}");
             if (loop)
             {
                 return;
             }
 
             animator.SetTrigger(TransitionHash);
-            Debug.Log($"[### END] {animationClip}");
         }
     }
 }

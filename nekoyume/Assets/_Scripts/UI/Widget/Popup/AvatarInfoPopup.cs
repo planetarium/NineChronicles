@@ -105,10 +105,10 @@ namespace Nekoyume.UI
                 AudioController.PlayClick();
             });
 
-            dccSlotButton.onClick.AddListener(() =>
-            {
-                Find<DccSettingPopup>().Show();
-            });
+            // dccSlotButton.onClick.AddListener(() =>
+            // {
+            //     Find<DccSettingPopup>().Show();
+            // });
 
             base.Awake();
         }

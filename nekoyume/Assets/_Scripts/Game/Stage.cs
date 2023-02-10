@@ -29,6 +29,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Model.EnumType;
 using UnityEngine;
 using UnityEngine.Rendering;
 using CharacterBase = Nekoyume.Model.CharacterBase;
@@ -200,8 +201,7 @@ namespace Nekoyume.Game
                     if (!ReferenceEquals(anim, null) && !anim.Target.activeSelf)
                     {
                         anim.Target.SetActive(true);
-                        var skeleton =
-                            anim.Target.GetComponentInChildren<SkeletonAnimation>().skeleton;
+                        var skeleton = player.SpineController.GetSkeletonAnimation().Skeleton;
                         skeleton.A = 0.0f;
                         DOTween.To(() => skeleton.A, x => skeleton.A = x, 1.0f, 1.0f);
                         player.SpineController.Appear();

@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using mixpanel;
-using Nekoyume.EnumType;
 using Nekoyume.Game.Avatar;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
@@ -38,14 +37,13 @@ namespace Nekoyume.Game.Character
         protected override Vector3 DamageTextForce => new Vector3(-0.1f, 0.5f);
         protected override Vector3 HudTextPosition => transform.TransformPoint(0f, 1.7f, 0f);
 
-        // public PlayerSpineController SpineController { get; private set; }
         public AvatarSpineController SpineController => avatarSpineController;
 
         public Model.Player Model => (Model.Player)CharacterModel;
 
         public bool AttackEnd => AttackEndCalled;
 
-        private Costume fullCostume;
+        private Costume _fullCostume;
 
         public override string TargetTag => Tag.Enemy;
 
@@ -135,9 +133,6 @@ namespace Nekoyume.Game.Character
             Set(model, model.Costumes, model.armor, model.weapon, updateCurrentHP);
         }
 
-        private List<Costume> _costumes = new();
-        private Armor _armor;
-        private Weapon _weapon;
         public void Set(
             Model.Player model,
             IEnumerable<Costume> costumes,
@@ -150,24 +145,12 @@ namespace Nekoyume.Game.Character
 
             _disposablesForModel.DisposeAllAndClear();
             CharacterModel = model;
-
-            if (costumes.Any(x => !_costumes.Exists(y => y.ItemId == x.ItemId)))
-            {
-                EquipCostumes(costumes);
-                UpdateAvatarParts(costumes);
-            }
-
-            if (!Equals(_weapon, weapon) || !Equals(_armor, armor))
-            {
-                EquipEquipmentsAndUpdateCustomize(armor, weapon);
-            }
-
+            EquipCostumes(costumes);
+            UpdateAvatarParts(costumes);
+            EquipArmor(armor);
+            EquipWeapon(weapon);
+            SpineController.Refresh();
             UpdateTarget();
-
-            _costumes.Clear();
-            _costumes.AddRange(costumes);
-            _armor = armor;
-            _weapon = weapon;
 
             if (!SpeechBubble)
             {
@@ -264,7 +247,7 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            fullCostume = null;
+            _fullCostume = null;
             foreach (var costume in costumes)
             {
                 EquipCostume(costume);
@@ -284,11 +267,11 @@ namespace Nekoyume.Game.Character
                     UpdateEarById(costume.Id);
                     break;
                 case ItemSubType.EyeCostume:
-                    UpdateEyeById(costume.Id);
+                    UpdateFaceById(costume.Id);
                     break;
                 case ItemSubType.FullCostume:
-                    fullCostume = costume;
-                    SpineController.UpdateFullCostume(costume.Id, true);
+                    _fullCostume = costume;
+                    SpineController.UpdateFullCostume(costume.Id);
                     UpdateHitPoint();
                     break;
                 case ItemSubType.HairCostume:
@@ -309,7 +292,6 @@ namespace Nekoyume.Game.Character
 
         private void UpdateTarget()
         {
-            Debug.Log("[UpdateTarget]");
             var target = avatarSpineController.gameObject;
             var animator = avatarSpineController.GetComponent<Animator>();
             var sk = avatarSpineController.GetSkeletonAnimation();
@@ -317,20 +299,9 @@ namespace Nekoyume.Game.Character
             Animator.InitTarget(target, mr, sk, animator);
         }
 
-        private void EquipEquipmentsAndUpdateCustomize(Armor armor, Weapon weapon = null)
-        {
-            if (fullCostume is not null)
-            {
-                return;
-            }
-
-            EquipArmor(armor);
-            EquipWeapon(weapon);
-        }
-
         private void EquipArmor(Armor armor)
         {
-            if (fullCostume is not null)
+            if (_fullCostume is not null)
             {
                 return;
             }
@@ -341,12 +312,12 @@ namespace Nekoyume.Game.Character
 
         private void EquipWeapon(Weapon weapon)
         {
-            if (fullCostume is not null || !SpineController)
+            if (_fullCostume is not null || !SpineController)
             {
                 return;
             }
 
-            var id = weapon?.Id ?? 0;
+            var id = weapon?.Id ?? GameConfig.DefaultAvatarWeaponId;
             var level = weapon?.level ?? 0;
             var levelVFXPrefab = ResourcesHelper.GetAuraWeaponPrefab(id, level);
             SpineController.UpdateWeapon(id, levelVFXPrefab);
@@ -370,7 +341,7 @@ namespace Nekoyume.Game.Character
 
         private void UpdateAvatarParts(IEnumerable<Costume> costumes)
         {
-            if (fullCostume is not null)
+            if (_fullCostume is not null)
             {
                 return;
             }
@@ -407,7 +378,7 @@ namespace Nekoyume.Game.Character
         /// <param name="customizeIndex">origin : 0 ~ 9,999 / partnership 10,000 ~ 19,999 </param>
         public void UpdateEarByCustomizeIndex(int customizeIndex)
         {
-            if (fullCostume is not null || !SpineController)
+            if (_fullCostume is not null || !SpineController)
             {
                 return;
             }
@@ -442,10 +413,10 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            UpdateEyeById(firstEyeRow.Id + customizeIndex);
+            UpdateFaceById(firstEyeRow.Id + customizeIndex);
         }
 
-        private void UpdateEyeById(int eyeCostumeId)
+        private void UpdateFaceById(int eyeCostumeId)
         {
             SpineController.UpdateFace(eyeCostumeId, false);
         }
@@ -456,7 +427,7 @@ namespace Nekoyume.Game.Character
         /// <param name="customizeIndex">0~5</param>
         public void UpdateHairByCustomizeIndex(int customizeIndex)
         {
-            if (fullCostume is not null || !SpineController)
+            if (_fullCostume is not null || !SpineController)
             {
                 return;
             }
@@ -483,7 +454,7 @@ namespace Nekoyume.Game.Character
         /// <param name="customizeIndex">0~9</param>
         public void UpdateTailByCustomizeIndex(int customizeIndex)
         {
-            if (fullCostume is not null || !SpineController)
+            if (_fullCostume is not null || !SpineController)
             {
                 return;
             }
@@ -501,6 +472,7 @@ namespace Nekoyume.Game.Character
 
         private void UpdateTailById(int tailCostumeId)
         {
+            Debug.Log("Update tail by player");
             SpineController.UpdateTail(tailCostumeId, false);
         }
 

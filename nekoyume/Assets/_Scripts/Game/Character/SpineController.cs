@@ -122,17 +122,6 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        /// <summary>Plays an  animation based on the hash of the state name.</summary>
-        // public (TrackEntry, TrackEntry) PlayAnimationForState(int shortNameHash, int layerIndex, System.Action callback)
-        // {
-        //     var foundAnimation = GetAnimationForState(shortNameHash);
-        //     if (foundAnimation is null)
-        //         throw new KeyNotFoundException(nameof(shortNameHash));
-        //
-        //     return PlayNewAnimation(foundAnimation, layerIndex, callback);
-        //     // return PlayNewAnimation(foundAnimation, layerIndex, callback);
-        // }
-
         public (TrackEntry, TrackEntry) PlayAnimationForState(string stateName, int layerIndex, System.Action callback)
         {
             var foundAnimation = GetAnimationForState(stateName);
@@ -193,23 +182,6 @@ namespace Nekoyume.Game.Character
             var foundState = statesAndAnimations.Find(entry => entry.stateName == stateName);
             return foundState?.animation;
         }
-        /// <summary>Play an animation. If a transition animation is defined, the transition is played before the target animation being passed.</summary>
-        // private (TrackEntry, TrackEntry) PlayNewAnimation(Spine.Animation target, int layerIndex, System.Action callback)
-        // {
-        //     _callback = callback;
-        //     TargetAnimation = target;
-        //     var isLoop = IsLoopAnimation(TargetAnimation.Name);
-        //
-        //     var body = SkeletonAnimation.AnimationState.SetAnimation(layerIndex, target.Name, isLoop);
-        //
-        //     TrackEntry tail = null;
-        //     if (TailAnimation != null && TailAnimation.AnimationState != null)
-        //     {
-        //         tail = TailAnimation.AnimationState.SetAnimation(layerIndex, target.Name, isLoop);
-        //     }
-        //
-        //     return (body, tail);
-        // }
 
         private (TrackEntry, TrackEntry) PlayNewAnimation(String name, int layerIndex, System.Action callback)
         {

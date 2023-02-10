@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Linq;
 using Nekoyume.BlockChain;
 using Nekoyume.Model.EnumType;
 using Nekoyume.State;
@@ -39,6 +38,7 @@ namespace Nekoyume.Game.Entrance
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Adventure);
             Game.instance.Lobby.Character.Set(avatarState, equipments, costumes);
             Game.instance.Lobby.Character.EnterRoom();
+
             Widget.Find<Menu>().EnterRoom();
             ActionCamera.instance.SetPosition(0f, 0f);
             ActionCamera.instance.Idle();

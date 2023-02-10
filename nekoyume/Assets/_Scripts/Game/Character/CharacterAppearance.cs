@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Game.Avatar;
 using Nekoyume.Helper;
 using Nekoyume.Model;
-using Nekoyume.Model.Arena;
 using Nekoyume.Model.Item;
 using Nekoyume.TableData;
 using Nekoyume.UI;
@@ -14,13 +14,17 @@ namespace Nekoyume.Game.Character
     public class CharacterAppearance : MonoBehaviour
     {
         [SerializeField]
+        private AvatarSpineController avatarSpineController;
+
+        [SerializeField]
         private BoxCollider boxCollider;
 
         private CharacterAnimator _animator;
         private HudContainer _hudContainer;
         private GameObject _cachedCharacterTitle;
+        private Costume _fullCostume;
 
-        public PlayerSpineController SpineController { get; private set; }
+        public AvatarSpineController SpineController => avatarSpineController;
         public BoxCollider BoxCollider => boxCollider;
 
         public void Set(
@@ -28,19 +32,8 @@ namespace Nekoyume.Game.Character
             CharacterAnimator animator,
             HudContainer hudContainer)
         {
-            _animator = animator;
-            _hudContainer = hudContainer;
-            Destroy(_cachedCharacterTitle);
-
-            UpdateArmor(digest.Equipments);
-            UpdateWeapon(digest.Equipments);
-
-            UpdateEarById(digest.EarIndex);
-            UpdateEyeById(digest.LensIndex);
-            UpdateHairById(digest.HairIndex);
-            UpdateTailById(digest.TailIndex);
-
-            UpdateCostumes(digest.Costumes);
+            UpdateAvatar(animator, hudContainer, digest.Costumes, digest.Equipments,
+                digest.EarIndex, digest.LensIndex, digest.HairIndex, digest.TailIndex);
         }
 
         public void Set(
@@ -53,88 +46,130 @@ namespace Nekoyume.Game.Character
             int hairIndex,
             int tailIndex)
         {
+            UpdateAvatar(animator, hudContainer, costumes, equipments, earIndex, lensIndex,
+                hairIndex, tailIndex);
+        }
+
+        private void UpdateAvatar(
+            CharacterAnimator animator,
+            HudContainer hudContainer,
+            List<Costume> costumes,
+            List<Equipment> equipments,
+            int earIndex,
+            int lensIndex,
+            int hairIndex,
+            int tailIndex)
+        {
             _animator = animator;
             _hudContainer = hudContainer;
-            UpdateArmor(equipments);
-            UpdateWeapon(equipments);
-            UpdateEarById(earIndex);
-            UpdateEyeById(lensIndex);
-            UpdateHairById(hairIndex);
-            UpdateTailById(tailIndex);
+            Destroy(_cachedCharacterTitle);
+
+            var fullCostume =
+                costumes.FirstOrDefault(x => x.ItemSubType == ItemSubType.FullCostume);
+            if (fullCostume is not null)
+            {
+                UpdateFullCostume(fullCostume);
+            }
+            else
+            {
+                SpineController.UnequipFullCostume();
+                UpdateEar(earIndex);
+                UpdateFace(lensIndex);
+                UpdateHair(hairIndex);
+                UpdateTail(tailIndex);
+                UpdateAcFace(1, true);
+                UpdateAcEye(1, true);
+                UpdateAcHead(1, true);
+                UpdateArmor(equipments);
+                UpdateWeapon(equipments);
+            }
+
             UpdateCostumes(costumes);
+        }
+
+        private void UpdateFullCostume(Costume fullCostume)
+        {
+            SpineController.UpdateFullCostume(fullCostume.Id);
+            UpdateTarget();
+            UpdateHitPoint();
+        }
+
+        private void UpdateAcFace(int index, bool isDcc)
+        {
+            SpineController.UpdateAcFace(index, isDcc);
+        }
+
+        private void UpdateAcEye(int index, bool isDcc)
+        {
+            SpineController.UpdateAcEye(index, isDcc);
+        }
+
+        private void UpdateAcHead(int index, bool isDcc)
+        {
+            SpineController.UpdateAcHead(index, isDcc);
         }
 
         private void UpdateArmor(IEnumerable<Equipment> equipments)
         {
-            if (equipments is null)
+            var armorId = GameConfig.DefaultAvatarArmorId;
+            if (equipments is not null)
             {
-                ChangeSpineObject($"Character/Player/{GameConfig.DefaultAvatarArmorId}", false);
-                return;
+                var armor = equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
+                armorId = armor?.Id ?? GameConfig.DefaultAvatarArmorId;
             }
 
-            var armor = equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
-            var armorId = armor?.Id ?? GameConfig.DefaultAvatarArmorId;
-            var spineResourcePath = armor?.SpineResourcePath ?? $"Character/Player/{armorId}";
-            ChangeSpineObject(spineResourcePath, false);
+            SpineController.UpdateBody(armorId, 0);
+            UpdateTarget();
+            UpdateHitPoint();
         }
 
         private void UpdateWeapon(IEnumerable<Equipment> equipments)
         {
-            if (equipments is null)
+            var weaponId = GameConfig.DefaultAvatarWeaponId;
+            GameObject vfx = null;
+            if (equipments is not null)
             {
-                var defaultId = GameConfig.DefaultAvatarWeaponId;
-                var defaultSprite = SpriteHelper.GetPlayerSpineTextureWeapon(defaultId);
-                SpineController.UpdateWeapon(defaultId, defaultSprite);
-                return;
+                var weapon =
+                    (Weapon)equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Weapon);
+                weaponId = weapon?.Id ?? GameConfig.DefaultAvatarWeaponId;
+                var level = weapon?.level ?? 0;
+                vfx = ResourcesHelper.GetAuraWeaponPrefab(weaponId, level);
             }
 
-            var weapon = (Weapon)equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Weapon);
-            var id = weapon?.Id ?? 0;
-            var level = weapon?.level ?? 0;
-            var levelVFXPrefab = ResourcesHelper.GetAuraWeaponPrefab(id, level);
-            var sprite = weapon.GetPlayerSpineTexture();
-            SpineController.UpdateWeapon(id, sprite, levelVFXPrefab);
+            SpineController.UpdateWeapon(weaponId, vfx);
         }
 
-        private void UpdateEarById(int earCostumeId)
-        {
-            const string prefix = "Character/PlayerSpineTexture/EarCostume";
-            var leftSprite = Resources.Load<Sprite>($"{prefix}/{earCostumeId}_left");
-            var rightSprite = Resources.Load<Sprite>($"{prefix}/{earCostumeId}_right");
-            SpineController.UpdateEar(leftSprite, rightSprite);
-        }
-
-        private void UpdateEyeById(int eyeCostumeId)
-        {
-            var prefix = "Character/PlayerSpineTexture/EyeCostume";
-            var halfSprite = Resources.Load<Sprite>($"{prefix}/{eyeCostumeId}_half");
-            var openSprite = Resources.Load<Sprite>($"{prefix}/{eyeCostumeId}_open");
-            SpineController.UpdateEye(halfSprite, openSprite);
-        }
-
-        private void UpdateHairById(int hairCostumeId)
-        {
-            if (!TryGetCostumeRow(hairCostumeId, out var row))
-            {
-                return;
-            }
-
-            var sprites = Enumerable.Range(0, SpineController.HairSlotCount)
-                .Select(index =>
-                    $"{row.SpineResourcePath}_{SpineController.hairTypeIndex:00}_{index + 1:00}")
-                .Select(Resources.Load<Sprite>).ToList();
-            SpineController.UpdateHair(sprites);
-        }
-
-        private bool TryGetCostumeRow(int costumeId, out CostumeItemSheet.Row row)
+        private void UpdateEar(int index)
         {
             var sheet = Game.instance.TableSheets.CostumeItemSheet;
-            return sheet.TryGetValue(costumeId, out row, false);
+            var row = sheet.OrderedList.FirstOrDefault(row => row.ItemSubType == ItemSubType.EarCostume);
+            var id = row.Id + index;
+            SpineController.UpdateEar(id, false);
         }
 
-        private void UpdateTailById(int tailCostumeId)
+        private void UpdateFace(int index)
         {
-            SpineController.UpdateTail(tailCostumeId);
+            var sheet = Game.instance.TableSheets.CostumeItemSheet;
+            var row = sheet.OrderedList.FirstOrDefault(row => row.ItemSubType == ItemSubType.EyeCostume);
+            var id = row.Id + index;
+            SpineController.UpdateFace(id, false);
+        }
+
+        private void UpdateHair(int index)
+        {
+            var sheet = Game.instance.TableSheets.CostumeItemSheet;
+            var row = sheet.OrderedList.FirstOrDefault(row => row.ItemSubType == ItemSubType.HairCostume);
+            var id = row.Id + index;
+            SpineController.UpdateHair(id, false);
+        }
+
+        private void UpdateTail(int index)
+        {
+            var sheet = Game.instance.TableSheets.CostumeItemSheet;
+            var row = sheet.OrderedList.FirstOrDefault(row => row.ItemSubType == ItemSubType.TailCostume);
+            var id = row.Id + index;
+            Debug.Log("Update tail by lobby");
+            SpineController.UpdateTail(id, false);
         }
 
         private void UpdateTitle(ItemBase costume)
@@ -163,12 +198,6 @@ namespace Nekoyume.Game.Character
             {
                 EquipCostume(costume);
             }
-
-            var fullCostume = costumes.FirstOrDefault(x => x.ItemSubType == ItemSubType.FullCostume);
-            if (fullCostume != null)
-            {
-                ChangeSpineObject(fullCostume.SpineResourcePath, true);
-            }
         }
 
         private void EquipCostume(Costume costume)
@@ -181,16 +210,16 @@ namespace Nekoyume.Game.Character
             switch (costume.ItemSubType)
             {
                 case ItemSubType.EarCostume:
-                    UpdateEarById(costume.Id);
+                    UpdateEar(costume.Id);
                     break;
                 case ItemSubType.EyeCostume:
-                    UpdateEyeById(costume.Id);
+                    UpdateFace(costume.Id);
                     break;
                 case ItemSubType.HairCostume:
-                    UpdateHairById(costume.Id);
+                    UpdateHair(costume.Id);
                     break;
                 case ItemSubType.TailCostume:
-                    UpdateTailById(costume.Id);
+                    UpdateTail(costume.Id);
                     break;
                 case ItemSubType.Title:
                     UpdateTitle(costume);
@@ -198,52 +227,21 @@ namespace Nekoyume.Game.Character
                 case ItemSubType.FullCostume:
                     // FullCostume is handled elsewhere
                     break;
-           }
+            }
         }
 
-        private void ChangeSpineObject(string spineResourcePath, bool isFullCostume, bool updateHitPoint = true)
+        private void UpdateTarget()
         {
-            if (!(_animator.Target is null))
-            {
-                var animatorTargetName = spineResourcePath.Split('/').Last();
-                if (_animator.Target.name.Contains(animatorTargetName))
-                {
-                    return;
-                }
-
-                _animator.DestroyTarget();
-            }
-
-            var origin = Resources.Load<GameObject>(spineResourcePath);
-            if (!origin)
-            {
-                throw new FailedToLoadResourceException<GameObject>(spineResourcePath);
-            }
-
-            var go = Instantiate(origin, gameObject.transform);
-            SpineController = go.GetComponent<PlayerSpineController>();
-            if (!isFullCostume)
-            {
-                SpineController.AttachTail();
-            }
-
-            _animator.ResetTarget(go);
-
-            if (updateHitPoint)
-            {
-                UpdateHitPoint();
-            }
+            var target = SpineController.gameObject;
+            var animator = SpineController.GetComponent<Animator>();
+            var sk = SpineController.GetSkeletonAnimation();
+            var mr = sk.GetComponent<MeshRenderer>();
+            _animator.InitTarget(target, mr, sk, animator);
         }
 
         private void UpdateHitPoint()
         {
-            var source = GetAnimatorHitPointBoxCollider();
-            if (!source)
-            {
-                throw new NullReferenceException(
-                    $"{nameof(GetAnimatorHitPointBoxCollider)}() returns null.");
-            }
-
+            var source = SpineController.Collider;
             var scale = _animator.Target.transform.localScale;
             var center = source.center;
             var size = source.size;
@@ -251,11 +249,6 @@ namespace Nekoyume.Game.Character
                 new Vector3(center.x * scale.x, center.y * scale.y, center.z * scale.z);
             boxCollider.size =
                 new Vector3(size.x * scale.x, size.y * scale.y, size.z * scale.z);
-        }
-
-        protected BoxCollider GetAnimatorHitPointBoxCollider()
-        {
-            return SpineController.BoxCollider;
         }
     }
 }
