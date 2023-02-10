@@ -43,7 +43,7 @@ namespace Nekoyume.BlockChain
 
     public class RPCAgent : MonoBehaviour, IAgent, IActionEvaluationHubReceiver
     {
-        private const int RpcConnectionRetryCount = 10;
+        private const int RpcConnectionRetryCount = 20;
         private const float TxProcessInterval = 1.0f;
         private readonly ConcurrentQueue<NCAction> _queuedActions = new ConcurrentQueue<NCAction>();
 
