@@ -30,7 +30,7 @@ namespace Lib9c.Formatters
             }
         }
 
-        T? IMessagePackFormatter<T?>.Deserialize(ref MessagePackReader reader,
+        public T? Deserialize(ref MessagePackReader reader,
             MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())

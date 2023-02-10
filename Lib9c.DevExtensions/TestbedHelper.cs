@@ -176,9 +176,26 @@ namespace Lib9c.DevExtensions
             }
         }
 
+#if UNITY_ANDROID
+        private static TestbedCreateAvatar buffer = null;
+        public static TestbedCreateAvatar LoadTestbedCreateAvatarForQA()
+        {           
+            if (buffer is not null)
+            {
+                return buffer;
+            }
+            buffer = LoadData<TestbedCreateAvatar>("TestbedCreateAvatar");
+            return buffer;
+        }
+#endif
+
         public static T LoadData<T>(string fileName)
         {
             var path = GetDataPath(fileName);
+#if UNITY_ANDROID
+            path = Path.Combine(UnityEngine.Application.streamingAssetsPath, fileName);
+            path += ".json";
+#endif
             var data = LoadJsonFile<T>(path);
             return data;
         }
@@ -206,6 +223,15 @@ namespace Lib9c.DevExtensions
 
         private static T LoadJsonFile<T>(string path)
         {
+#if UNITY_ANDROID
+            UnityEngine.WWW www = new UnityEngine.WWW(path);
+            while (!www.isDone)
+            {
+                // wait for data load
+            }
+            var output = JsonConvert.DeserializeObject<T>(www.text);
+            return output;
+#else
             var fileStream = new FileStream(path, FileMode.Open);
             var data = new byte[fileStream.Length];
             fileStream.Read(data, 0, data.Length);
@@ -213,6 +239,7 @@ namespace Lib9c.DevExtensions
             var jsonData = Encoding.UTF8.GetString(data);
             var result = JsonConvert.DeserializeObject<T>(jsonData);
             return result;
+#endif
         }
 
 
