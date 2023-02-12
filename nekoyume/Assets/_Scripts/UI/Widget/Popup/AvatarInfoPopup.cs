@@ -59,6 +59,14 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject equipmentSlotObject;
 
+        [SerializeField]
+        private Sprite activeSprite;
+
+        [SerializeField]
+        private Sprite disableSprite;
+
+        private Image _activeDcc;
+        private Image _activeCostume;
         private BattlePreparation _battlePreparation;
         private ArenaBattlePreparation _arenaPreparation;
         private RaidPreparation _raidPreparation;
@@ -74,11 +82,15 @@ namespace Nekoyume.UI
         private int dccId = 0;
         private int isActiveDcc = 0;
 
+        private ReactiveProperty<bool> _isActiveDcc = new();
+
         protected override void Awake()
         {
             _toggleGroup.RegisterToggleable(adventureButton);
             _toggleGroup.RegisterToggleable(arenaButton);
             _toggleGroup.RegisterToggleable(raidButton);
+            _activeDcc = activeDccButton.GetComponent<Image>();
+            _activeCostume = activeCostumeButton.GetComponent<Image>();
 
             adventureButton.OnClick
                 .Subscribe(b =>
@@ -105,10 +117,26 @@ namespace Nekoyume.UI
                 AudioController.PlayClick();
             });
 
-            // dccSlotButton.onClick.AddListener(() =>
-            // {
-            //     Find<DccSettingPopup>().Show();
-            // });
+            dccSlotButton.onClick.AddListener(() =>
+            {
+                Find<DccSettingPopup>().Show();
+            });
+
+            activeDccButton.onClick.AddListener(() =>
+            {
+                _isActiveDcc.SetValueAndForceNotify(!_isActiveDcc.Value);
+            });
+
+            activeCostumeButton.onClick.AddListener(() =>
+            {
+                _isActiveDcc.SetValueAndForceNotify(!_isActiveDcc.Value);
+            });
+
+            _isActiveDcc.Subscribe(x =>
+            {
+                _activeDcc.sprite = x ? activeSprite : disableSprite;
+                _activeCostume.sprite = x ? disableSprite : activeSprite;
+            }).AddTo(gameObject);
 
             base.Awake();
         }

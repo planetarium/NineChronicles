@@ -63,10 +63,10 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: baae2d4dddb595e4b80bbd90ecdea66c, type: 2}
-  - {fileID: 2100000, guid: 63b61697569b00f4f8d32f13d3089d62, type: 2}
-  - {fileID: 2100000, guid: baae2d4dddb595e4b80bbd90ecdea66c, type: 2}
-  - {fileID: 2100000, guid: 63b61697569b00f4f8d32f13d3089d62, type: 2}
+  - {fileID: 2100000, guid: 80c13756c7a8e24449b2306f6da51e72, type: 2}
+  - {fileID: 2100000, guid: 674655135a1b4544ca66b2fcce0db646, type: 2}
+  - {fileID: 2100000, guid: 80c13756c7a8e24449b2306f6da51e72, type: 2}
+  - {fileID: 2100000, guid: 674655135a1b4544ca66b2fcce0db646, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -100,8 +100,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skeletonDataAsset: {fileID: 11400000, guid: 58a94f42364ec384585ae2cae539838c, type: 2}
-  initialSkinName: 10230000-0
+  skeletonDataAsset: {fileID: 11400000, guid: 897abd5c19890ee4aa4e543b52c3284c, type: 2}
+  initialSkinName: 10221000-0
   initialFlipX: 0
   initialFlipY: 0
   updateWhenInvisible: 3
@@ -944,7 +944,7 @@ MonoBehaviour:
   fullCostumeCollider: {fileID: 6409176533594281649}
   avatarScriptableObject: {fileID: 11400000, guid: 10e7ddf6d9a7480409852da377274e52,
     type: 2}
-  testBody: {fileID: 11400000, guid: 58a94f42364ec384585ae2cae539838c, type: 2}
+  testBody: {fileID: 11400000, guid: 897abd5c19890ee4aa4e543b52c3284c, type: 2}
 --- !u!95 &879758914734038294
 Animator:
   serializedVersion: 4
@@ -977,6 +977,7 @@ GameObject:
   - component: {fileID: 2453831654188472808}
   - component: {fileID: 2453831654188472809}
   - component: {fileID: 2453831654188472598}
+  - component: {fileID: 2056590897612317663}
   m_Layer: 0
   m_Name: Spine GameObject (10220000_ear_skintest)
   m_TagString: Untagged
@@ -991,8 +992,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2453831654188472596}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0.0000000217594, w: 1}
+  m_LocalPosition: {x: 0.37231445, y: 2.0217896, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1026,7 +1027,8 @@ MeshRenderer:
   m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
-  m_Materials: []
+  m_Materials:
+  - {fileID: 2100000, guid: 9443d5d8494bd0a428b983df9846a6b9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1055,13 +1057,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2453831654188472596}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   skeletonDataAsset: {fileID: 11400000, guid: 317c5265b8eeab340907002c311fa067, type: 2}
-  initialSkinName: DCC_01
+  initialSkinName: 40300001
   initialFlipX: 0
   initialFlipY: 0
   updateWhenInvisible: 3
@@ -1085,6 +1087,27 @@ MonoBehaviour:
   _animationName: Idle
   loop: 1
   timeScale: 1
+--- !u!114 &2056590897612317663
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2453831654188472596}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1fd8daaed7b64148a34acb96ba14ce1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skeletonRenderer: {fileID: 2453831652237097421}
+  boneName: ear_bornfollow
+  followXYPosition: 1
+  followZPosition: 0
+  followBoneRotation: 1
+  followSkeletonFlip: 1
+  followLocalScale: 0
+  maintainedAxisOrientation: 1
+  initializeOnAwake: 1
 --- !u!1 &2453831654330395791
 GameObject:
   m_ObjectHideFlags: 0
@@ -1225,7 +1248,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3682082936581954672
 Transform:
   m_ObjectHideFlags: 0
