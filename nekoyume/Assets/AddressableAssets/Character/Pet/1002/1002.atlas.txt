@@ -1,0 +1,90 @@
+
+1002.png
+size: 128,128
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+body
+  rotate: false
+  xy: 61, 18
+  size: 56, 50
+  orig: 58, 52
+  offset: 1, 1
+  index: -1
+eye_1
+  rotate: false
+  xy: 61, 5
+  size: 29, 11
+  orig: 31, 13
+  offset: 1, 1
+  index: -1
+eye_2
+  rotate: false
+  xy: 33, 17
+  size: 26, 10
+  orig: 28, 12
+  offset: 1, 1
+  index: -1
+eye_3
+  rotate: false
+  xy: 33, 5
+  size: 26, 10
+  orig: 28, 12
+  offset: 1, 1
+  index: -1
+eye_4
+  rotate: false
+  xy: 2, 2
+  size: 29, 11
+  orig: 31, 13
+  offset: 1, 1
+  index: -1
+hand_L
+  rotate: false
+  xy: 119, 43
+  size: 7, 8
+  orig: 9, 10
+  offset: 1, 1
+  index: -1
+hand_R
+  rotate: false
+  xy: 119, 26
+  size: 7, 6
+  orig: 9, 8
+  offset: 1, 1
+  index: -1
+hand_back
+  rotate: false
+  xy: 119, 34
+  size: 7, 7
+  orig: 9, 9
+  offset: 1, 1
+  index: -1
+leaf
+  rotate: false
+  xy: 2, 29
+  size: 57, 39
+  orig: 57, 39
+  offset: 0, 0
+  index: -1
+leaf_shadow
+  rotate: false
+  xy: 2, 15
+  size: 29, 12
+  orig: 31, 14
+  offset: 1, 1
+  index: -1
+lip_1
+  rotate: true
+  xy: 119, 53
+  size: 15, 7
+  orig: 17, 9
+  offset: 1, 1
+  index: -1
+lip_2
+  rotate: false
+  xy: 92, 6
+  size: 15, 10
+  orig: 17, 12
+  offset: 1, 1
+  index: -1
