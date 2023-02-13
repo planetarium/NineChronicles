@@ -24,7 +24,7 @@ namespace Nekoyume.Model.State
         {
             PetId = serialized[0].ToInteger();
             Level = serialized[1].ToInteger();
-            UnlockedBlockIndex = serialized[3].ToLong();
+            UnlockedBlockIndex = serialized[2].ToLong();
         }
 
         public IValue Serialize()

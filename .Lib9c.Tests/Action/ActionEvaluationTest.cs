@@ -55,7 +55,7 @@ namespace Lib9c.Tests.Action
         [InlineData(typeof(ChargeActionPoint))]
         [InlineData(typeof(ClaimMonsterCollectionReward))]
         [InlineData(typeof(CombinationConsumable))]
-        [InlineData(typeof(CombinationEquipment14))]
+        [InlineData(typeof(CombinationEquipment))]
         [InlineData(typeof(CreatePendingActivation))]
         [InlineData(typeof(DailyReward))]
         [InlineData(typeof(InitializeStates))]
@@ -67,7 +67,7 @@ namespace Lib9c.Tests.Action
         [InlineData(typeof(MonsterCollect))]
         [InlineData(typeof(PatchTableSheet))]
         [InlineData(typeof(RankingBattle))]
-        [InlineData(typeof(RapidCombination8))]
+        [InlineData(typeof(RapidCombination))]
         [InlineData(typeof(RedeemCode))]
         [InlineData(typeof(RewardGold))]
         [InlineData(typeof(Sell))]
@@ -173,7 +173,7 @@ namespace Lib9c.Tests.Action
                 ChargeActionPoint _ => new ChargeActionPoint(),
                 ClaimMonsterCollectionReward _ => new ClaimMonsterCollectionReward(),
                 CombinationConsumable _ => new CombinationConsumable(),
-                CombinationEquipment14 _ => new CombinationEquipment14(),
+                CombinationEquipment _ => new CombinationEquipment(),
                 CreatePendingActivation _ => new CreatePendingActivation(
                     new PendingActivationState(new byte[] { 0x0 }, new PrivateKey().PublicKey)
                 ),
@@ -216,7 +216,7 @@ namespace Lib9c.Tests.Action
                     costumeIds = new List<Guid>(),
                     equipmentIds = new List<Guid>(),
                 },
-                RapidCombination8 _ => new RapidCombination8(),
+                RapidCombination _ => new RapidCombination(),
                 RedeemCode _ => new RedeemCode
                 {
                     Code = "code",

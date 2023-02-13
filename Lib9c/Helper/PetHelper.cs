@@ -1,5 +1,6 @@
 using System;
 using Libplanet.Assets;
+using Nekoyume.Action;
 using Nekoyume.Model.Pet;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -140,6 +141,32 @@ namespace Nekoyume.Helper
             }
 
             return originalRatio;
+        }
+
+        public static int CalculateDiscountedHourglass(
+            long diff,
+            int hourglassPerBlock,
+            PetState petState,
+            PetOptionSheet petOptionSheet)
+        {
+            if (!petOptionSheet.TryGetValue(petState.PetId, out var optionRow) ||
+                !optionRow.LevelOptionMap.TryGetValue(petState.Level, out var optionInfo))
+            {
+                return RapidCombination0.CalculateHourglassCount(hourglassPerBlock, diff);
+            }
+            else
+            {
+                if (optionInfo.OptionType == PetOptionType.IncreaseBlockPerHourglass)
+                {
+                    var increasedHourglassPerBlock = hourglassPerBlock
+                        + optionInfo.OptionValue;
+                    return RapidCombination0.CalculateHourglassCount(
+                        increasedHourglassPerBlock,
+                        diff);
+                }
+            }
+
+            return RapidCombination0.CalculateHourglassCount(hourglassPerBlock, diff);
         }
     }
 }

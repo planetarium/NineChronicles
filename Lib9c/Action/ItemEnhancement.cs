@@ -413,6 +413,14 @@ namespace Nekoyume.Action
             // Update slot state
             slotState.Update(result, ctx.BlockIndex, requiredBlockIndex);
 
+            // Update Pet
+            if (!(petState is null))
+            {
+                petState.Update(requiredBlockIndex);
+                var petStateAddress = PetState.DeriveAddress(avatarAddress, petState.PetId);
+                states = states.SetState(petStateAddress, petState.Serialize());
+            }
+
             // Set state
             sw.Restart();
             states = states

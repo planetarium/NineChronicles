@@ -8,6 +8,7 @@ using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Extensions;
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -102,7 +103,7 @@ namespace Nekoyume.Action
 
             int costHourglassCount = 0;
 
-            
+            PetState petState = null;
             if (slotState.PetId.HasValue)
             {
                 var petStateAddress = PetState.DeriveAddress(avatarAddress, slotState.PetId.Value);
@@ -111,27 +112,13 @@ namespace Nekoyume.Action
                     throw new FailedLoadStateException($"{addressesHex}Aborted as the {nameof(PetState)} was failed to load.");
                 }
 
-                var petState = new PetState(rawState);
+                petState = new PetState(rawState);
                 var petOptionSheet = states.GetSheet<PetOptionSheet>();
-                if (!petOptionSheet.TryGetValue(petState.PetId, out var optionRow) ||
-                    !optionRow.LevelOptionMap.TryGetValue(petState.Level, out var optionInfo))
-                {
-                    Log.Debug("{AddressesHex} Pet option not found. (Id : {petId}, Level : {petLevel}). Skip applying pet option.",
-                        addressesHex, petState.PetId, petState.Level);
-                }
-                else
-                {
-                    if (optionInfo.OptionType == Model.Pet.PetOptionType.IncreaseBlockPerHourglass)
-                    {
-                        var hgPerBlock = gameConfigState.HourglassPerBlock
-                            + optionInfo.OptionValue;
-                        costHourglassCount = RapidCombination0.CalculateHourglassCount(hgPerBlock, diff);
-                    }
-                    else
-                    {
-                        costHourglassCount = RapidCombination0.CalculateHourglassCount(gameConfigState, diff);
-                    }
-                }
+                costHourglassCount = PetHelper.CalculateDiscountedHourglass(
+                    diff,
+                    gameConfigState.HourglassPerBlock,
+                    petState,
+                    petOptionSheet);
             }
             else
             {
@@ -169,6 +156,14 @@ namespace Nekoyume.Action
             avatarState.UpdateFromRapidCombinationV2(
                 (RapidCombination5.ResultModel)slotState.Result,
                 context.BlockIndex);
+
+            // Update Pet
+            if (!(petState is null))
+            {
+                petState.Update(context.BlockIndex);
+                var petStateAddress = PetState.DeriveAddress(avatarAddress, petState.PetId);
+                states = states.SetState(petStateAddress, petState.Serialize());
+            }
 
             var ended = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}RapidCombination Total Executed Time: {Elapsed}", addressesHex, ended - started);

@@ -1,4 +1,4 @@
-﻿namespace Lib9c.Tests.Action
+namespace Lib9c.Tests.Action
 {
     using System.Linq;
     using Bencodex.Types;
@@ -291,7 +291,10 @@
             {
                 prevStates = prevStates.SetState(
                     petAddress,
-                    new List(petId.Serialize(), currentPetLevel.Serialize()));
+                    new List(
+                        petId.Serialize(),
+                        currentPetLevel.Serialize(),
+                        blockIndex.Serialize()));
             }
 
             var ncgCurrency = prevStates.GetGoldCurrency();
