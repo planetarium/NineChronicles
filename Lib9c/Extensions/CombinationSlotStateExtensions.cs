@@ -108,7 +108,7 @@ namespace Nekoyume.Extensions
                 case DailyReward2.DailyRewardResult r:
                     resultId = r.id;
                     break;
-                case ItemEnhancement.ResultModel r:
+                case ItemEnhancement11.ResultModel r:
                     resultId = r.id;
                     break;
                 case ItemEnhancement7.ResultModel r:
@@ -222,7 +222,7 @@ namespace Nekoyume.Extensions
 
             switch (state.Result)
             {
-                case ItemEnhancement.ResultModel r:
+                case ItemEnhancement11.ResultModel r:
                     itemEnhanceMail = new ItemEnhanceMail(
                         r,
                         blockIndex,

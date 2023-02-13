@@ -78,23 +78,23 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(0, 1000, true, 0, 1, ItemEnhancement.EnhancementResult.Success, 0, 0, false)]
-        [InlineData(6, 980, true, 0, 7, ItemEnhancement.EnhancementResult.Success, 0, 0, false)]
-        [InlineData(0, 1000, false, 1, 1, ItemEnhancement.EnhancementResult.GreatSuccess, 0, 0, false)]
-        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 0, 320, false)]
-        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 2, 480, false)]
-        [InlineData(0, 1000, true, 0, 1, ItemEnhancement.EnhancementResult.Success, 0, 0, true)]
-        [InlineData(6, 980, true, 0, 7, ItemEnhancement.EnhancementResult.Success, 0, 0, true)]
-        [InlineData(0, 1000, false, 1, 1, ItemEnhancement.EnhancementResult.GreatSuccess, 0, 0, true)]
-        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 0, 320, true)]
-        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 2, 480, true)]
+        [InlineData(0, 1000, true, 0, 1, ItemEnhancement11.EnhancementResult.Success, 0, 0, false)]
+        [InlineData(6, 980, true, 0, 7, ItemEnhancement11.EnhancementResult.Success, 0, 0, false)]
+        [InlineData(0, 1000, false, 1, 1, ItemEnhancement11.EnhancementResult.GreatSuccess, 0, 0, false)]
+        [InlineData(6, 980, false, 10, 6, ItemEnhancement11.EnhancementResult.Fail, 0, 320, false)]
+        [InlineData(6, 980, false, 10, 6, ItemEnhancement11.EnhancementResult.Fail, 2, 480, false)]
+        [InlineData(0, 1000, true, 0, 1, ItemEnhancement11.EnhancementResult.Success, 0, 0, true)]
+        [InlineData(6, 980, true, 0, 7, ItemEnhancement11.EnhancementResult.Success, 0, 0, true)]
+        [InlineData(0, 1000, false, 1, 1, ItemEnhancement11.EnhancementResult.GreatSuccess, 0, 0, true)]
+        [InlineData(6, 980, false, 10, 6, ItemEnhancement11.EnhancementResult.Fail, 0, 320, true)]
+        [InlineData(6, 980, false, 10, 6, ItemEnhancement11.EnhancementResult.Fail, 2, 480, true)]
         public void Execute(
             int level,
             int expectedGold,
             bool backward,
             int randomSeed,
             int expectedLevel,
-            ItemEnhancement.EnhancementResult expected,
+            ItemEnhancement11.EnhancementResult expected,
             int monsterCollectLevel,
             int expectedCrystal,
             bool stake
@@ -206,10 +206,10 @@ namespace Lib9c.Tests.Action
                 .First(x => x.Grade == 1 && x.Level == level + 1);
             var stateDict = (Dictionary)nextState.GetState(slotAddress);
             var slot = new CombinationSlotState(stateDict);
-            var slotResult = (ItemEnhancement.ResultModel)slot.Result;
+            var slotResult = (ItemEnhancement11.ResultModel)slot.Result;
             Assert.Equal(expected, slotResult.enhancementResult);
 
-            switch (slotResult.enhancementResult)
+            switch ((ItemEnhancement.EnhancementResult)slotResult.enhancementResult)
             {
                 case ItemEnhancement.EnhancementResult.GreatSuccess:
                     var baseAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMax.NormalizeFromTenThousandths() + 1);
