@@ -26,7 +26,10 @@ namespace Lib9c.Tests.Util
                 slotIndex));
             var slotState = new CombinationSlotState(
                 slotAddress,
-                GameConfig.RequireClearedStageLevel.CombinationEquipmentAction
+                // CombinationEquipment: 3
+                // CombinationConsumable: 6
+                // ItemEnhancement: 9
+                GameConfig.RequireClearedStageLevel.ItemEnhancementAction
             );
             return state.SetState(slotAddress, slotState.Serialize());
         }
