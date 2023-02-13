@@ -43,7 +43,7 @@ namespace Nekoyume.BlockChain
 
     public class RPCAgent : MonoBehaviour, IAgent, IActionEvaluationHubReceiver
     {
-        private const int RpcConnectionRetryCount = 10;
+        private const int RpcConnectionRetryCount = 20;
         private const float TxProcessInterval = 1.0f;
         private readonly ConcurrentQueue<NCAction> _queuedActions = new ConcurrentQueue<NCAction>();
 
@@ -587,10 +587,18 @@ namespace Nekoyume.BlockChain
                     Debug.LogWarning($"TimeoutException occurred. Retrying... {retryCount}\n{toe}");
                     retryCount--;
                 }
-                catch (RpcException re)
+                catch (AggregateException ae)
                 {
-                    Debug.LogWarning($"RpcException occurred. Retrying... {retryCount}\n{re}");
-                    retryCount--;
+                    if (ae.InnerException is RpcException re)
+                    {
+                        Debug.LogWarning($"RpcException occurred. Retrying... {retryCount}\n{re}");
+                        retryCount--;
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Unexpected error occurred during rpc connection. {ae}");
+                        break;
+                    }
                 }
                 catch (ObjectDisposedException ode)
                 {
