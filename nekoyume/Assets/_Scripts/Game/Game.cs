@@ -28,6 +28,7 @@ using Nekoyume.Model.State;
 using Nekoyume.Pattern;
 using Nekoyume.State;
 using Nekoyume.UI;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module.WorldBoss;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
@@ -66,6 +67,8 @@ namespace Nekoyume.Game
 
         public Analyzer Analyzer { get; private set; }
 
+        public Dcc Dcc { get; private set; }
+
         public Stage Stage => stage;
         public Arena Arena => arena;
         public RaidStage RaidStage => raidStage;
@@ -86,6 +89,8 @@ namespace Nekoyume.Game
 
         public NineChroniclesAPIClient ApiClient => _apiClient;
         public NineChroniclesAPIClient RpcClient => _rpcClient;
+
+        public Url URL { get; private set; }
 
         public readonly LruCache<Address, IValue> CachedStates = new LruCache<Address, IValue>();
 
@@ -109,6 +114,9 @@ namespace Nekoyume.Game
         private static readonly string CommandLineOptionsJsonPath =
             Path.Combine(Application.streamingAssetsPath, "clo.json");
 
+        private static readonly string UrlJsonPath =
+            Path.Combine(Application.streamingAssetsPath, "url.json");
+
         #region Mono & Initialization
 
         protected override void Awake()
@@ -122,6 +130,7 @@ namespace Nekoyume.Game
             _options = CommandLineOptions.Load(
                 CommandLineOptionsJsonPath
             );
+            URL = Url.Load(UrlJsonPath);
 
             Debug.Log("[Game] Awake() CommandLineOptions loaded");
             Debug.Log($"APV: {_options.AppProtocolVersion}");
@@ -223,6 +232,11 @@ namespace Nekoyume.Game
             Stage.Initialize();
             Arena.Initialize();
             RaidStage.Initialize();
+            StartCoroutine(RequestManager.instance.GetJson(URL.DccAvatars, (json) =>
+            {
+                var responseData = DccAvatars.FromJson(json);
+                Dcc = new Dcc(responseData.Avatars);
+            }));
 
 
             Widget.Find<VersionSystem>().SetVersion(Agent.AppProtocolVersion);
