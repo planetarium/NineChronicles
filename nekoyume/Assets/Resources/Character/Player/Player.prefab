@@ -271,11 +271,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4044330104460166}
     m_Modifications:
-    - target: {fileID: 2453831652237097421, guid: 2dc2c18bbee806c45aad7b2d0adf2065,
-        type: 3}
-      propertyPath: initialSkinName
-      value: 10220000-0
-      objectReference: {fileID: 0}
     - target: {fileID: 2453831652237097423, guid: 2dc2c18bbee806c45aad7b2d0adf2065,
         type: 3}
       propertyPath: m_Mesh
@@ -371,16 +366,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Avatar
       objectReference: {fileID: 0}
-    - target: {fileID: 2453831654188472599, guid: 2dc2c18bbee806c45aad7b2d0adf2065,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.38743
-      objectReference: {fileID: 0}
-    - target: {fileID: 2453831654188472599, guid: 2dc2c18bbee806c45aad7b2d0adf2065,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 2.1668613
-      objectReference: {fileID: 0}
     - target: {fileID: 2453831654188472808, guid: 2dc2c18bbee806c45aad7b2d0adf2065,
         type: 3}
       propertyPath: m_Mesh
@@ -391,17 +376,6 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 6941836840959976917, guid: 2dc2c18bbee806c45aad7b2d0adf2065,
-        type: 3}
-      propertyPath: m_Mesh
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 8475462605558417563, guid: 2dc2c18bbee806c45aad7b2d0adf2065,
-        type: 3}
-      propertyPath: testBody
-      value: 
-      objectReference: {fileID: 11400000, guid: 897abd5c19890ee4aa4e543b52c3284c,
-        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2dc2c18bbee806c45aad7b2d0adf2065, type: 3}
 --- !u!114 &1516351556497876939 stripped

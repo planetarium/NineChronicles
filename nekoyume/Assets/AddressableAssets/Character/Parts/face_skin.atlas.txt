@@ -1,0 +1,118 @@
+
+face_skin.png
+size: 128,128
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+eye/eye_03
+  rotate: false
+  xy: 2, 77
+  size: 31, 10
+  orig: 31, 10
+  offset: 0, 0
+  index: -1
+eye/eye_04
+  rotate: false
+  xy: 38, 81
+  size: 32, 9
+  orig: 32, 9
+  offset: 0, 0
+  index: -1
+eye/eye_blue_01
+  rotate: false
+  xy: 81, 108
+  size: 35, 18
+  orig: 35, 18
+  offset: 0, 0
+  index: -1
+eye/eye_blue_02
+  rotate: false
+  xy: 78, 93
+  size: 33, 13
+  orig: 33, 13
+  offset: 0, 0
+  index: -1
+eye/eye_green_01
+  rotate: false
+  xy: 41, 92
+  size: 35, 18
+  orig: 35, 18
+  offset: 0, 0
+  index: -1
+eye/eye_green_02
+  rotate: true
+  xy: 113, 71
+  size: 33, 13
+  orig: 33, 13
+  offset: 0, 0
+  index: -1
+eye/eye_red_01
+  rotate: false
+  xy: 2, 89
+  size: 34, 18
+  orig: 35, 18
+  offset: 0, 0
+  index: -1
+eye/eye_red_02
+  rotate: false
+  xy: 78, 78
+  size: 33, 13
+  orig: 33, 13
+  offset: 0, 0
+  index: -1
+eyebrow_01
+  rotate: false
+  xy: 2, 109
+  size: 37, 7
+  orig: 37, 7
+  offset: 0, 0
+  index: -1
+eyebrow_02
+  rotate: false
+  xy: 42, 112
+  size: 37, 14
+  orig: 37, 14
+  offset: 0, 0
+  index: -1
+eyebrow_03
+  rotate: false
+  xy: 2, 118
+  size: 38, 8
+  orig: 38, 8
+  offset: 0, 0
+  index: -1
+mouth_01
+  rotate: false
+  xy: 35, 77
+  size: 10, 2
+  orig: 19, 5
+  offset: 8, 2
+  index: -1
+mouth_02
+  rotate: false
+  xy: 118, 123
+  size: 8, 3
+  orig: 19, 5
+  offset: 9, 1
+  index: -1
+mouth_03
+  rotate: true
+  xy: 118, 111
+  size: 10, 6
+  orig: 10, 6
+  offset: 0, 0
+  index: -1
+mouth_04
+  rotate: true
+  xy: 72, 80
+  size: 10, 4
+  orig: 10, 4
+  offset: 0, 0
+  index: -1
+mouth_05
+  rotate: false
+  xy: 118, 106
+  size: 5, 3
+  orig: 5, 3
+  offset: 0, 0
+  index: -1

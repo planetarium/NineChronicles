@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.EnumType;
 using Nekoyume.State;
@@ -65,8 +66,12 @@ namespace Nekoyume.UI
         [SerializeField]
         private Sprite disableSprite;
 
+        [SerializeField]
+        private Sprite dccSlotDefaultSprite;
+
         private Image _activeDcc;
         private Image _activeCostume;
+        private Image _dccSlot;
         private BattlePreparation _battlePreparation;
         private ArenaBattlePreparation _arenaPreparation;
         private RaidPreparation _raidPreparation;
@@ -82,7 +87,7 @@ namespace Nekoyume.UI
         private int dccId = 0;
         private int isActiveDcc = 0;
 
-        private ReactiveProperty<bool> _isActiveDcc = new();
+        private readonly ReactiveProperty<bool> _isVisibleDcc = new();
 
         protected override void Awake()
         {
@@ -91,6 +96,7 @@ namespace Nekoyume.UI
             _toggleGroup.RegisterToggleable(raidButton);
             _activeDcc = activeDccButton.GetComponent<Image>();
             _activeCostume = activeCostumeButton.GetComponent<Image>();
+            _dccSlot = dccSlotButton.GetComponent<Image>();
 
             adventureButton.OnClick
                 .Subscribe(b =>
@@ -124,19 +130,13 @@ namespace Nekoyume.UI
 
             activeDccButton.onClick.AddListener(() =>
             {
-                _isActiveDcc.SetValueAndForceNotify(!_isActiveDcc.Value);
+                _isVisibleDcc.SetValueAndForceNotify(!_isVisibleDcc.Value);
             });
 
             activeCostumeButton.onClick.AddListener(() =>
             {
-                _isActiveDcc.SetValueAndForceNotify(!_isActiveDcc.Value);
+                _isVisibleDcc.SetValueAndForceNotify(!_isVisibleDcc.Value);
             });
-
-            _isActiveDcc.Subscribe(x =>
-            {
-                _activeDcc.sprite = x ? activeSprite : disableSprite;
-                _activeCostume.sprite = x ? disableSprite : activeSprite;
-            }).AddTo(gameObject);
 
             base.Awake();
         }
@@ -175,6 +175,22 @@ namespace Nekoyume.UI
             information.UpdateInventory(BattleType.Adventure);
             OnClickPresetTab(adventureButton, BattleType.Adventure, _onToggleCallback[BattleType.Adventure]);
             HelpTooltip.HelpMe(100013, true);
+
+            _isVisibleDcc.Subscribe(x =>
+            {
+                Game.Game.instance.Dcc.SetVisible(x ? 1 : 0);
+                _activeDcc.sprite = x ? activeSprite : disableSprite;
+                _activeCostume.sprite = x ? disableSprite : activeSprite;
+            }).AddTo(gameObject);
+
+            var isActiveDcc = Game.Game.instance.Dcc.IsActive(out var isVisible);
+            activeDccButton.gameObject.SetActive(isActiveDcc);
+            activeCostumeButton.gameObject.SetActive(isActiveDcc);
+            _dccSlot.sprite = isActiveDcc ? null : dccSlotDefaultSprite;
+            if (isActiveDcc)
+            {
+                _isVisibleDcc.SetValueAndForceNotify(isVisible);
+            }
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

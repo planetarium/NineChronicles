@@ -1,12 +1,12 @@
 
 acface_skin.png
-size: 64,32
+size: 64,64
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
 ac_face/04_acc_05
   rotate: false
-  xy: 2, 2
+  xy: 2, 20
   size: 42, 24
   orig: 44, 26
   offset: 1, 1

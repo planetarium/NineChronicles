@@ -1,173 +1,201 @@
 
 ear_skin.png
-size: 512,128
+size: 512,512
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
-ear/40310001_L
+ear/05_ear_34_front
   rotate: false
-  xy: 313, 42
+  xy: 2, 68
+  size: 71, 86
+  orig: 73, 88
+  offset: 1, 1
+  index: -1
+ear/05_ear_39_front
+  rotate: false
+  xy: 2, 255
+  size: 93, 120
+  orig: 95, 122
+  offset: 1, 1
+  index: -1
+ear/10_ear_34_back
+  rotate: false
+  xy: 75, 80
+  size: 48, 74
+  orig: 50, 76
+  offset: 1, 1
+  index: -1
+ear/10_ear_39_back
+  rotate: false
+  xy: 2, 377
+  size: 63, 132
+  orig: 65, 134
+  offset: 1, 1
+  index: -1
+ear/40310001_L
+  rotate: true
+  xy: 155, 238
   size: 36, 32
   orig: 36, 32
   offset: 0, 0
   index: -1
 ear/40310001_R
-  rotate: false
-  xy: 2, 2
+  rotate: true
+  xy: 91, 2
   size: 24, 21
   orig: 24, 21
   offset: 0, 0
   index: -1
 ear/40310002_L
   rotate: false
-  xy: 177, 63
+  xy: 2, 3
   size: 47, 63
   orig: 47, 63
   offset: 0, 0
   index: -1
 ear/40310002_R
   rotate: false
-  xy: 226, 70
+  xy: 51, 10
   size: 38, 56
   orig: 38, 56
   offset: 0, 0
   index: -1
 ear/40500001_L
   rotate: false
-  xy: 266, 76
+  xy: 91, 28
   size: 32, 50
   orig: 32, 50
   offset: 0, 0
   index: -1
 ear/40500001_R
   rotate: true
-  xy: 266, 46
+  xy: 67, 378
   size: 28, 45
   orig: 28, 45
   offset: 0, 0
   index: -1
 ear/40500002_L
   rotate: false
-  xy: 334, 77
+  xy: 97, 327
   size: 32, 49
   orig: 32, 49
   offset: 0, 0
   index: -1
 ear/40500002_R
-  rotate: true
-  xy: 309, 12
+  rotate: false
+  xy: 147, 179
   size: 28, 44
   orig: 28, 44
   offset: 0, 0
   index: -1
 ear/40500003_L
   rotate: false
-  xy: 368, 77
+  xy: 97, 276
   size: 32, 49
   orig: 32, 49
   offset: 0, 0
   index: -1
 ear/40500003_R
-  rotate: true
-  xy: 262, 16
+  rotate: false
+  xy: 87, 156
   size: 28, 45
   orig: 28, 45
   offset: 0, 0
   index: -1
 ear/40500004_L
   rotate: false
-  xy: 402, 77
+  xy: 121, 225
   size: 32, 49
   orig: 32, 49
   offset: 0, 0
   index: -1
 ear/40500004_R
-  rotate: true
-  xy: 351, 47
+  rotate: false
+  xy: 117, 156
   size: 28, 45
   orig: 28, 45
   offset: 0, 0
   index: -1
 ear/40500005_L
   rotate: false
-  xy: 300, 76
+  xy: 87, 203
   size: 32, 50
   orig: 32, 50
   offset: 0, 0
   index: -1
 ear/40500005_R
   rotate: true
-  xy: 398, 47
+  xy: 114, 378
   size: 28, 45
   orig: 28, 45
   offset: 0, 0
   index: -1
 ear/40500006_L
   rotate: false
-  xy: 436, 77
+  xy: 131, 327
   size: 32, 49
   orig: 32, 49
   offset: 0, 0
   index: -1
 ear/40500006_R
   rotate: true
-  xy: 445, 47
+  xy: 161, 379
   size: 28, 45
   orig: 28, 45
   offset: 0, 0
   index: -1
 ear/40500007_L
   rotate: false
-  xy: 470, 77
+  xy: 131, 276
   size: 32, 49
   orig: 32, 49
   offset: 0, 0
   index: -1
 ear/40500007_R
-  rotate: true
-  xy: 355, 17
+  rotate: false
+  xy: 191, 464
   size: 28, 45
   orig: 28, 45
   offset: 0, 0
   index: -1
 ear/40500008_L
-  rotate: true
-  xy: 177, 29
+  rotate: false
+  xy: 157, 460
   size: 32, 49
   orig: 32, 49
   offset: 0, 0
   index: -1
 ear/40500008_R
-  rotate: true
-  xy: 402, 17
+  rotate: false
+  xy: 191, 417
   size: 28, 45
   orig: 28, 45
   offset: 0, 0
   index: -1
 ear/40500009_L
   rotate: false
-  xy: 228, 19
+  xy: 157, 409
   size: 32, 49
   orig: 32, 49
   offset: 0, 0
   index: -1
 ear/40500009_R
-  rotate: true
-  xy: 449, 17
+  rotate: false
+  xy: 125, 109
   size: 28, 45
   orig: 28, 45
   offset: 0, 0
   index: -1
 ear/40500010_L
   rotate: false
-  xy: 2, 25
+  xy: 67, 408
   size: 88, 101
   orig: 88, 101
   offset: 0, 0
   index: -1
 ear/40500010_R
   rotate: false
-  xy: 92, 29
+  xy: 2, 156
   size: 83, 97
   orig: 83, 97
   offset: 0, 0

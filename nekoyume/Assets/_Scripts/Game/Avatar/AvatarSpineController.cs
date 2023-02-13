@@ -249,9 +249,10 @@ namespace Nekoyume.Game.Avatar
         public void UpdateBody(int index, int skinTone)
         {
             UpdateSkeletonDataAsset(index, false);
-            var preIndex = (int)(index * 0.0001) * 10000;
-            var skinName = $"body_{preIndex}/{index}-{skinTone}";
-            // UpdateSkin(true, AvatarPartsType.body, skinName);
+            index = 10230000;
+            // var preIndex = (int)(index * 0.0001) * 10000;
+            var skinName = $"{index}-{skinTone}";
+            UpdateSkin(true, index, AvatarPartsType.body, skinName);
         }
 
         public void UpdateHair(int index, bool isDcc)

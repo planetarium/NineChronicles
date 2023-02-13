@@ -63,10 +63,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 80c13756c7a8e24449b2306f6da51e72, type: 2}
-  - {fileID: 2100000, guid: 674655135a1b4544ca66b2fcce0db646, type: 2}
-  - {fileID: 2100000, guid: 80c13756c7a8e24449b2306f6da51e72, type: 2}
-  - {fileID: 2100000, guid: 674655135a1b4544ca66b2fcce0db646, type: 2}
+  - {fileID: 2100000, guid: 6dd7d054dd91d944db65a796e2351e24, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -100,8 +97,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skeletonDataAsset: {fileID: 11400000, guid: 897abd5c19890ee4aa4e543b52c3284c, type: 2}
-  initialSkinName: 10221000-0
+  skeletonDataAsset: {fileID: 11400000, guid: 12a0ae22a01eca64e81cbe1ec99bf663, type: 2}
+  initialSkinName: 
   initialFlipX: 0
   initialFlipY: 0
   updateWhenInvisible: 3
@@ -150,6 +147,7 @@ GameObject:
   - component: {fileID: 2453831652824800180}
   - component: {fileID: 2453831652824800181}
   - component: {fileID: 2453831652824800178}
+  - component: {fileID: 1457136956380943738}
   m_Layer: 0
   m_Name: Spine GameObject (10220000_acface_skintest)
   m_TagString: Untagged
@@ -164,8 +162,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2453831652824800176}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0.0000000217594, w: 1}
+  m_LocalPosition: {x: 0.22583008, y: 1.4785767, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -259,6 +257,27 @@ MonoBehaviour:
   _animationName: Idle
   loop: 1
   timeScale: 1
+--- !u!114 &1457136956380943738
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2453831652824800176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1fd8daaed7b64148a34acb96ba14ce1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skeletonRenderer: {fileID: 2453831652237097421}
+  boneName: acface_Bornfollow
+  followXYPosition: 1
+  followZPosition: 1
+  followBoneRotation: 1
+  followSkeletonFlip: 1
+  followLocalScale: 0
+  maintainedAxisOrientation: 1
+  initializeOnAwake: 1
 --- !u!1 &2453831652976915081
 GameObject:
   m_ObjectHideFlags: 0
@@ -271,6 +290,7 @@ GameObject:
   - component: {fileID: 2453831652976915085}
   - component: {fileID: 2453831652976915082}
   - component: {fileID: 2453831652976915083}
+  - component: {fileID: 2300556663291376024}
   m_Layer: 0
   m_Name: Spine GameObject (10220000_aceye_skintest)
   m_TagString: Untagged
@@ -285,8 +305,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2453831652976915081}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0.0000000217594, w: 1}
+  m_LocalPosition: {x: 0.22583008, y: 1.4785767, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -380,6 +400,27 @@ MonoBehaviour:
   _animationName: Idle
   loop: 1
   timeScale: 1
+--- !u!114 &2300556663291376024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2453831652976915081}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1fd8daaed7b64148a34acb96ba14ce1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skeletonRenderer: {fileID: 2453831652237097421}
+  boneName: aceye_Bornfollow
+  followXYPosition: 1
+  followZPosition: 1
+  followBoneRotation: 1
+  followSkeletonFlip: 1
+  followLocalScale: 0
+  maintainedAxisOrientation: 1
+  initializeOnAwake: 1
 --- !u!1 &2453831653147030751
 GameObject:
   m_ObjectHideFlags: 0
@@ -392,6 +433,7 @@ GameObject:
   - component: {fileID: 2453831653147030739}
   - component: {fileID: 2453831653147030736}
   - component: {fileID: 2453831653147030737}
+  - component: {fileID: 3483594582292740843}
   m_Layer: 0
   m_Name: Spine GameObject (10220000_hairback_skintest)
   m_TagString: Untagged
@@ -406,8 +448,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2453831653147030751}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0.0000000217594, w: 1}
+  m_LocalPosition: {x: 0.22583008, y: 1.4785767, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -501,6 +543,27 @@ MonoBehaviour:
   _animationName: Idle
   loop: 1
   timeScale: 1
+--- !u!114 &3483594582292740843
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2453831653147030751}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1fd8daaed7b64148a34acb96ba14ce1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skeletonRenderer: {fileID: 2453831652237097421}
+  boneName: hairback_Bornfollow
+  followXYPosition: 1
+  followZPosition: 1
+  followBoneRotation: 1
+  followSkeletonFlip: 1
+  followLocalScale: 0
+  maintainedAxisOrientation: 1
+  initializeOnAwake: 1
 --- !u!1 &2453831653186862765
 GameObject:
   m_ObjectHideFlags: 0
@@ -513,6 +576,7 @@ GameObject:
   - component: {fileID: 2453831653186862753}
   - component: {fileID: 2453831653186862766}
   - component: {fileID: 2453831653186862767}
+  - component: {fileID: 848762598963472071}
   m_Layer: 0
   m_Name: Spine GameObject (10220000_achead_skintest)
   m_TagString: Untagged
@@ -527,8 +591,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2453831653186862765}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0.0000000217594, w: 1}
+  m_LocalPosition: {x: 0.22583008, y: 1.4785767, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -622,6 +686,27 @@ MonoBehaviour:
   _animationName: Idle
   loop: 1
   timeScale: 1
+--- !u!114 &848762598963472071
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2453831653186862765}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1fd8daaed7b64148a34acb96ba14ce1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skeletonRenderer: {fileID: 2453831652237097421}
+  boneName: achead_Bornfollow
+  followXYPosition: 1
+  followZPosition: 1
+  followBoneRotation: 1
+  followSkeletonFlip: 1
+  followLocalScale: 0
+  maintainedAxisOrientation: 1
+  initializeOnAwake: 1
 --- !u!1 &2453831653253612932
 GameObject:
   m_ObjectHideFlags: 0
@@ -634,6 +719,7 @@ GameObject:
   - component: {fileID: 2453831653253612952}
   - component: {fileID: 2453831653253612953}
   - component: {fileID: 2453831653253612934}
+  - component: {fileID: 4258517686723315095}
   m_Layer: 0
   m_Name: Spine GameObject (10220000_tail_skintest)
   m_TagString: Untagged
@@ -649,7 +735,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2453831653253612932}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.2319336, y: 0.8529663, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -743,6 +829,27 @@ MonoBehaviour:
   _animationName: Idle
   loop: 1
   timeScale: 1
+--- !u!114 &4258517686723315095
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2453831653253612932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1fd8daaed7b64148a34acb96ba14ce1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skeletonRenderer: {fileID: 2453831652237097421}
+  boneName: tail_Bornfollow
+  followXYPosition: 1
+  followZPosition: 1
+  followBoneRotation: 1
+  followSkeletonFlip: 1
+  followLocalScale: 0
+  maintainedAxisOrientation: 1
+  initializeOnAwake: 1
 --- !u!1 &2453831653708135036
 GameObject:
   m_ObjectHideFlags: 0
@@ -755,6 +862,7 @@ GameObject:
   - component: {fileID: 2453831653708135024}
   - component: {fileID: 2453831653708135025}
   - component: {fileID: 2453831653708135038}
+  - component: {fileID: 8305725863858204363}
   m_Layer: 0
   m_Name: Spine GameObject (10220000_face_skintest)
   m_TagString: Untagged
@@ -769,8 +877,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2453831653708135036}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0.0000000217594, w: 1}
+  m_LocalPosition: {x: 0.22583008, y: 1.4785767, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -864,6 +972,27 @@ MonoBehaviour:
   _animationName: Idle
   loop: 1
   timeScale: 1
+--- !u!114 &8305725863858204363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2453831653708135036}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1fd8daaed7b64148a34acb96ba14ce1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skeletonRenderer: {fileID: 2453831652237097421}
+  boneName: face_Bornfollow
+  followXYPosition: 1
+  followZPosition: 1
+  followBoneRotation: 1
+  followSkeletonFlip: 1
+  followLocalScale: 0
+  maintainedAxisOrientation: 1
+  initializeOnAwake: 1
 --- !u!1 &2453831653966912631
 GameObject:
   m_ObjectHideFlags: 0
@@ -944,7 +1073,7 @@ MonoBehaviour:
   fullCostumeCollider: {fileID: 6409176533594281649}
   avatarScriptableObject: {fileID: 11400000, guid: 10e7ddf6d9a7480409852da377274e52,
     type: 2}
-  testBody: {fileID: 11400000, guid: 897abd5c19890ee4aa4e543b52c3284c, type: 2}
+  testBody: {fileID: 11400000, guid: f8358daac023fd34db9620fc7320aa9d, type: 2}
 --- !u!95 &879758914734038294
 Animator:
   serializedVersion: 4
@@ -993,7 +1122,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2453831654188472596}
   m_LocalRotation: {x: -0, y: -0, z: -0.0000000217594, w: 1}
-  m_LocalPosition: {x: 0.37231445, y: 2.0217896, z: 0}
+  m_LocalPosition: {x: 0.22583008, y: 1.4785767, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1100,7 +1229,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skeletonRenderer: {fileID: 2453831652237097421}
-  boneName: ear_bornfollow
+  boneName: ear_Bornfollow
   followXYPosition: 1
   followZPosition: 0
   followBoneRotation: 1
@@ -1120,6 +1249,7 @@ GameObject:
   - component: {fileID: 2453831654330395779}
   - component: {fileID: 2453831654330395776}
   - component: {fileID: 2453831654330395777}
+  - component: {fileID: 9159191455747318597}
   m_Layer: 0
   m_Name: Spine GameObject (10220000_hairFront_skintest)
   m_TagString: Untagged
@@ -1134,8 +1264,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2453831654330395791}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0.0000000217594, w: 1}
+  m_LocalPosition: {x: 0.22583008, y: 1.4785767, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1229,6 +1359,27 @@ MonoBehaviour:
   _animationName: Idle
   loop: 1
   timeScale: 1
+--- !u!114 &9159191455747318597
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2453831654330395791}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1fd8daaed7b64148a34acb96ba14ce1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skeletonRenderer: {fileID: 2453831652237097421}
+  boneName: hairfront_Bornfollow
+  followXYPosition: 1
+  followZPosition: 1
+  followBoneRotation: 1
+  followSkeletonFlip: 1
+  followLocalScale: 0
+  maintainedAxisOrientation: 1
+  initializeOnAwake: 1
 --- !u!1 &6004969820354440617
 GameObject:
   m_ObjectHideFlags: 0
