@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 using Libplanet.Assets;
 using mixpanel;
@@ -11,6 +12,7 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
+using Nekoyume.Model.Market;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using UnityEngine;
@@ -155,14 +157,14 @@ namespace Nekoyume.UI
 
             var task = Task.Run(async () =>
             {
-                await ReactiveShopState.UpdateSellDigestsAsync();
+                await ReactiveShopState.UpdateSellProductsAsync();
                 return true;
             });
 
             var result = await task;
             if (result)
             {
-                view.Show(ReactiveShopState.SellDigest, ShowSellTooltip);
+                view.Show(ReactiveShopState.SellProducts, ShowSellTooltip);
             }
         }
 
@@ -220,21 +222,17 @@ namespace Nekoyume.UI
         private void ShowUpdateSellPopup(ShopItem model)
         {
             var data = SharedModel.ItemCountableAndPricePopup.Value;
+            var price = model.Product.Price;
+            var unitPrice = price / model.Product.Quantity;
+            var majorUnit = (int)unitPrice;
+            var minorUnit = (int)((unitPrice - majorUnit) * 100);
+            var currency = States.Instance.GoldBalanceState.Gold.Currency;
+            data.UnitPrice.Value = new FungibleAssetValue(currency, majorUnit, minorUnit);
 
-            if (decimal.TryParse(model.OrderDigest.Price.GetQuantityString(),
-                    NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture,
-                    out var price))
-            {
-                var unitPrice = price / model.OrderDigest.ItemCount;
-                var majorUnit = (int)unitPrice;
-                var minorUnit = (int)((unitPrice - majorUnit) * 100);
-                var currency = States.Instance.GoldBalanceState.Gold.Currency;
-                data.UnitPrice.Value = new FungibleAssetValue(currency, majorUnit, minorUnit);
-            }
-
-            data.PrePrice.Value = model.OrderDigest.Price;
-            data.Price.Value = model.OrderDigest.Price;
-            data.Count.Value = model.OrderDigest.ItemCount;
+            data.PrePrice.Value = (BigInteger)model.Product.Price * currency;
+            data.Price.Value = (BigInteger)model.Product.Price * currency;
+            var itemCount = (int)model.Product.Quantity;
+            data.Count.Value = itemCount;
             data.IsSell.Value = false;
 
             data.TitleText.Value = model.ItemBase.GetLocalizedName();
@@ -242,19 +240,19 @@ namespace Nekoyume.UI
             data.CountEnabled.Value = true;
             data.Submittable.Value = !DimmedFuncForSell(model.ItemBase);
             data.Item.Value = new CountEditableItem(model.ItemBase,
-                model.OrderDigest.ItemCount,
-                model.OrderDigest.ItemCount,
-                model.OrderDigest.ItemCount);
+                itemCount,
+                itemCount,
+                itemCount);
             data.Item.Value.CountEnabled.Value = false;
         }
 
         private void SubscribeUpdateSellPopupSubmit()
         {
-            var digests = ReactiveShopState.SellDigest.Value;
+            var products = ReactiveShopState.SellProducts.Value;
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            var orderDigests = digests.Where(d => d.ExpiredBlockIndex - blockIndex <= 0).ToList();
+            var itemProducts = products.ToList();
 
-            if (!orderDigests.Any())
+            if (!itemProducts.Any())
             {
                 OneLineSystem.Push(
                     MailType.System,
@@ -263,28 +261,28 @@ namespace Nekoyume.UI
 
                 return;
             }
-            view.SetLoading(orderDigests);
+            view.SetLoading(itemProducts);
 
             var updateSellInfos = new List<UpdateSellInfo>();
             var oneLineSystemInfos = new List<(string name, int count)>();
-            foreach (var orderDigest in orderDigests)
+            foreach (var product in itemProducts)
             {
-                if (!ReactiveShopState.TryGetShopItem(orderDigest, out var itemBase))
+                if (!ReactiveShopState.TryGetShopItem(product, out var itemBase))
                 {
                     return;
                 }
 
                 var updateSellInfo = new UpdateSellInfo(
-                    orderDigest.OrderId,
+                    product.ProductId,
                     Guid.NewGuid(),
-                    orderDigest.TradableId,
+                    product.TradableId,
                     itemBase.ItemSubType,
-                    orderDigest.Price,
-                    orderDigest.ItemCount
+                    (BigInteger)product.Price * States.Instance.GoldBalanceState.Gold.Currency,
+                    product.Quantity
                 );
 
                 updateSellInfos.Add(updateSellInfo);
-                oneLineSystemInfos.Add((itemBase.GetLocalizedName(), orderDigest.ItemCount));
+                oneLineSystemInfos.Add((itemBase.GetLocalizedName(), product.Quantity));
             }
 
             Game.Game.instance.ActionManager.UpdateSell(updateSellInfos).Subscribe();
@@ -326,13 +324,14 @@ namespace Nekoyume.UI
             SharedModel.ItemCountAndPricePopup.Value.InfoText.Value =
                 L10nManager.Localize("UI_RETRIEVE_INFO");
             SharedModel.ItemCountAndPricePopup.Value.CountEnabled.Value = true;
-            SharedModel.ItemCountAndPricePopup.Value.Price.Value = model.OrderDigest.Price;
+            SharedModel.ItemCountAndPricePopup.Value.Price.Value = (BigInteger)model.Product.Price * States.Instance.GoldBalanceState.Gold.Currency;
             SharedModel.ItemCountAndPricePopup.Value.PriceInteractable.Value = false;
+            var itemCount = (int)model.Product.Quantity;
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = new CountEditableItem(
                 model.ItemBase,
-                model.OrderDigest.ItemCount,
-                model.OrderDigest.ItemCount,
-                model.OrderDigest.ItemCount);
+                itemCount,
+                itemCount,
+                itemCount);
         }
 
         // sell
@@ -403,17 +402,17 @@ namespace Nekoyume.UI
             var totalPrice = data.Price.Value;
             var preTotalPrice = data.PrePrice.Value;
             var count = data.Count.Value;
-            var digest =
-                ReactiveShopState.GetSellDigest(tradableItem.TradableId, requiredBlockIndex,
+            var product =
+                ReactiveShopState.GetSellProduct(tradableItem.TradableId, requiredBlockIndex,
                     preTotalPrice, count);
-            if (digest == null)
+            if (product == null)
             {
                 return;
             }
 
             var itemSubType = data.Item.Value.ItemBase.Value.ItemSubType;
             var updateSellInfo = new UpdateSellInfo(
-                digest.OrderId,
+                product.ProductId,
                 Guid.NewGuid(),
                 tradableItem.TradableId,
                 itemSubType,
@@ -515,16 +514,16 @@ namespace Nekoyume.UI
             var count = model.Item.Value.Count.Value;
             var subType = tradableItem.ItemSubType;
 
-            var digest =
-                ReactiveShopState.GetSellDigest(tradableId, requiredBlockIndex, price, count);
-            if (digest != null)
+            var product =
+                ReactiveShopState.GetSellProduct(tradableId, requiredBlockIndex, price, count);
+            if (product != null)
             {
                 Game.Game.instance.ActionManager.SellCancellation(
                     avatarAddress,
-                    digest.OrderId,
-                    digest.TradableId,
+                    product.ProductId,
+                    product.TradableId,
                     subType).Subscribe();
-                ResponseSellCancellation(digest.OrderId, digest.TradableId);
+                ResponseSellCancellation(product.ProductId, product.TradableId);
             }
         }
 
@@ -574,7 +573,7 @@ namespace Nekoyume.UI
             var count = SharedModel.ItemCountAndPricePopup.Value.Item.Value.Count.Value;
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
             var itemName = await Util.GetItemNameByOrderId(orderId);
-            ReactiveShopState.RemoveSellDigest(orderId);
+            ReactiveShopState.RemoveSellProduct(orderId);
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
 
             string message;

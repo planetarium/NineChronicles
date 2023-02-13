@@ -6,8 +6,10 @@ using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Market;
 using Nekoyume.State;
 using Nekoyume.TableData;
+using Nekoyume.UI.Model;
 using TMPro;
 using Unity.Mathematics;
 using UnityEngine;
@@ -78,14 +80,13 @@ namespace Nekoyume.UI.Module
             UpdateExpired(Game.Game.instance.Agent.BlockIndex);
         }
 
-        public void Show(
-            ReactiveProperty<List<OrderDigest>> digests,
+        public void Show(ReactiveProperty<List<ItemProductModel>> products,
             Action<ShopItem> clickItem)
         {
             Reset();
             InstantiateItemView();
             SetAction(clickItem);
-            Set(digests);
+            Set(products);
             UpdateView();
         }
 
@@ -191,25 +192,25 @@ namespace Nekoyume.UI.Module
             ClickItemAction = clickItem;
         }
 
-        private void Set(IObservable<List<OrderDigest>> orderDigests)
+        private void Set(ReactiveProperty<List<ItemProductModel>> itemProducts)
         {
             _disposables.DisposeAllAndClear();
-            orderDigests.ObserveOnMainThread().Subscribe(digests =>
+            itemProducts.ObserveOnMainThread().Subscribe(products =>
             {
                 foreach (var item in _items)
                 {
                     item.Value.Clear();
                 }
 
-                if (digests is null)
+                if (products is null)
                 {
                     return;
                 }
 
                 var itemSheet = TableSheets.Instance.ItemSheet;
-                foreach (var digest in digests)
+                foreach (var product in products)
                 {
-                    AddItem(digest, itemSheet);
+                    AddItem(product, itemSheet);
                 }
 
                 UpdateView(page: _page.Value);
@@ -219,15 +220,15 @@ namespace Nekoyume.UI.Module
                 .AddTo(_disposables);
         }
 
-        private void AddItem(OrderDigest digest, ItemSheet sheet)
+        private void AddItem(ItemProductModel product, ItemSheet sheet)
         {
-            if (!ReactiveShopState.TryGetShopItem(digest, out var itemBase))
+            if (!ReactiveShopState.TryGetShopItem(product, out var itemBase))
             {
                 return;
             }
 
-            var model = CreateItem(itemBase, digest, sheet);
-            var filters = ItemSubTypeFilterExtension.GetItemSubTypeFilter(digest.ItemId);
+            var model = CreateItem(itemBase, product, sheet);
+            var filters = ItemSubTypeFilterExtension.GetItemSubTypeFilter(product.ItemId);
             foreach (var filter in filters)
             {
                 if (!_items.ContainsKey(filter))
@@ -256,30 +257,30 @@ namespace Nekoyume.UI.Module
 
         private static ShopItem CreateItem(
             ItemBase item,
-            OrderDigest digest,
+            ItemProductModel product,
             ItemSheet sheet)
         {
-            var grade = sheet[digest.ItemId].Grade;
+            var grade = sheet[product.ItemId].Grade;
             var limit = item.ItemType != ItemType.Material &&
                         !Util.IsUsableItem(item);
-            return new ShopItem(item, digest, grade, limit);
+            return new ShopItem(item, product, grade, limit);
         }
 
         private void UpdateExpired(long blockIndex)
         {
             foreach (var model in _selectedModels)
             {
-                var isExpired = model.OrderDigest.ExpiredBlockIndex - blockIndex <= 0;
+                var isExpired = model.Product.RegisteredBlockIndex + Order.ExpirationInterval - blockIndex <= 0;
                 model.Expired.Value = isExpired;
             }
         }
 
-        public void SetLoading(List<OrderDigest> digests, bool isLoading = true)
+        public void SetLoading(List<ItemProductModel> products, bool isLoading = true)
         {
             var items = _items[ItemSubTypeFilter.All];
-            foreach (var digest in digests)
+            foreach (var product in products)
             {
-                var item = items.Find(x => x.OrderDigest.OrderId == digest.OrderId);
+                var item = items.Find(x => x.Product.ProductId == product.ProductId);
                 if (item is null)
                 {
                     continue;

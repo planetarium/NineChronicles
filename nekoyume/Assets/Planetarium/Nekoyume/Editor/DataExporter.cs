@@ -42,21 +42,21 @@ namespace Planetarium.Nekoyume.Editor
                 "item_id,price",
                 "_my_items,"
             };
-            strings.AddRange(GetItemBaseArray(ReactiveShopState.SellDigest.Value));
+            // strings.AddRange(GetItemBaseArray(ReactiveShopState.SellDigest.Value));
             strings.AddRange(new[]
             {
                 "_other_items,"
             });
-            strings.AddRange(GetItemBaseArray(ReactiveShopState.BuyDigest.Value));
+            // strings.AddRange(GetItemBaseArray(ReactiveShopState.BuyDigest.Value));
             File.WriteAllLines(path, strings, Encoding.UTF8);
             Debug.Log("Export store data finished");
         }
 
-        private static IEnumerable<string> GetItemBaseArray(List<OrderDigest> source) => source?
-                .Select(orderDigest => ReactiveShopState.TryGetShopItem(orderDigest, out var itemBase)
-                    ? $"{itemBase.Id},{orderDigest.Price.GetQuantityString()}"
-                    : string.Empty)
-                .Where(stringData => !string.IsNullOrEmpty(stringData))
-            ?? Array.Empty<string>();
+        // private static IEnumerable<string> GetItemBaseArray(List<OrderDigest> source) => source?
+        //         .Select(orderDigest => ReactiveShopState.TryGetShopItem(orderDigest, out var itemBase)
+        //             ? $"{itemBase.Id},{orderDigest.Price.GetQuantityString()}"
+        //             : string.Empty)
+        //         .Where(stringData => !string.IsNullOrEmpty(stringData))
+        //     ?? Array.Empty<string>();
     }
 }

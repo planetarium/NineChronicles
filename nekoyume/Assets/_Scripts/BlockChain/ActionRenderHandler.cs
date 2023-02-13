@@ -970,7 +970,7 @@ namespace Nekoyume.BlockChain
                     NotificationCell.NotificationType.Information);
 
                 UpdateCurrentAvatarStateAsync(eval).Forget();
-                ReactiveShopState.UpdateSellDigestsAsync().Forget();
+                ReactiveShopState.UpdateSellProductsAsync().Forget();
 
                 var slotIndex = States.Instance.AvatarStates
                     .FirstOrDefault(x => x.Value.address == eval.Action.sellerAvatarAddress).Key;
@@ -1018,7 +1018,7 @@ namespace Nekoyume.BlockChain
             OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
 
             UpdateCurrentAvatarStateAsync(eval).Forget();
-            ReactiveShopState.UpdateSellDigestsAsync().Forget();
+            ReactiveShopState.UpdateSellProductsAsync().Forget();
         }
 
         private async void ResponseUpdateSell(ActionBase.ActionEvaluation<UpdateSell> eval)
@@ -1054,7 +1054,7 @@ namespace Nekoyume.BlockChain
             OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
 
             UpdateCurrentAvatarStateAsync(eval).Forget();
-            ReactiveShopState.UpdateSellDigestsAsync().Forget();
+            ReactiveShopState.UpdateSellProductsAsync().Forget();
         }
 
         private async void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)

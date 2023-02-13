@@ -336,7 +336,7 @@ namespace Nekoyume
                     if (_selectedItems.Any())
                     {
                         if (_selectedItems.Exists(x =>
-                                x.OrderDigest.OrderId.Equals(item.OrderDigest.OrderId)))
+                                x.Product.ProductId.Equals(item.Product.ProductId)))
                         {
                             ClearSelectedItems();
                         }
@@ -360,7 +360,7 @@ namespace Nekoyume
                 case BuyMode.Multiple:
                     cartView.gameObject.SetActive(true);
                     var selectedItem = _selectedItems.FirstOrDefault(x =>
-                        x.OrderDigest.OrderId.Equals(item.OrderDigest.OrderId));
+                        x.Product.ProductId.Equals(item.Product.ProductId));
                     if (selectedItem == null)
                     {
                         if (item.Expired.Value)
@@ -439,13 +439,14 @@ namespace Nekoyume
 
             BigInteger GetCrystalPerPrice(ShopItem item)
             {
+                var price = (BigInteger) item.Product.Price;
                 return item.ItemBase.ItemType == ItemType.Equipment
                     ? CrystalCalculator.CalculateCrystal(
                             new[] {(Equipment) item.ItemBase},
                             false,
                             TableSheets.Instance.CrystalEquipmentGrindingSheet,
                             TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet,
-                            States.Instance.StakingLevel).DivRem(item.OrderDigest.Price.MajorUnit)
+                            States.Instance.StakingLevel).DivRem(price)
                         .Quotient
                         .MajorUnit
                     : 0;
@@ -454,11 +455,11 @@ namespace Nekoyume
             return _selectedSortFilter.Value switch
             {
                 ShopSortFilter.CP => _isAscending.Value
-                    ? models.OrderBy(x => x.OrderDigest.CombatPoint).ToList()
-                    : models.OrderByDescending(x => x.OrderDigest.CombatPoint).ToList(),
+                    ? models.OrderBy(x => x.Product.CombatPoint).ToList()
+                    : models.OrderByDescending(x => x.Product.CombatPoint).ToList(),
                 ShopSortFilter.Price => _isAscending.Value
-                    ? models.OrderBy(x => x.OrderDigest.Price).ToList()
-                    : models.OrderByDescending(x => x.OrderDigest.Price).ToList(),
+                    ? models.OrderBy(x => x.Product.Price).ToList()
+                    : models.OrderByDescending(x => x.Product.Price).ToList(),
                 ShopSortFilter.Class => _isAscending.Value
                     ? models.OrderBy(x => x.Grade)
                         .ThenByDescending(x => x.ItemBase.ItemType)

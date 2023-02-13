@@ -451,7 +451,7 @@ namespace Nekoyume.UI
                     LocalLayerModifier.AddItem(avatarAddress, order.TradableId,
                         order.ExpiredBlockIndex, 1);
                     LocalLayerModifier.RemoveNewMail(avatarAddress, cancelOrderMail.id);
-                    ReactiveShopState.UpdateSellDigestsAsync().Forget();
+                    ReactiveShopState.UpdateSellProductsAsync().Forget();
                 });
         }
 

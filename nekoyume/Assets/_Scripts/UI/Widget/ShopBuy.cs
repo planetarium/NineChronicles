@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using Libplanet.Assets;
@@ -11,6 +12,7 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
+using Nekoyume.Model.Market;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
@@ -90,7 +92,7 @@ namespace Nekoyume.UI
             var initWeaponTask = Task.Run(async () =>
             {
                 var list = new List<ItemSubType> { ItemSubType.Weapon, };
-                await ReactiveShopState.SetBuyDigestsAsync(list);
+                await ReactiveShopState.SetBuyProductsAsync(list);
                 return true;
             });
 
@@ -98,7 +100,7 @@ namespace Nekoyume.UI
             if (initWeaponResult)
             {
                 base.Show(ignoreShowAnimation);
-                view.Show(ReactiveShopState.BuyDigest, ShowItemTooltip);
+                view.Show(ReactiveShopState.BuyProducts, ShowItemTooltip);
                 Find<DataLoadingScreen>().Close();
                 HelpTooltip.HelpMe(100018, true);
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
@@ -123,7 +125,7 @@ namespace Nekoyume.UI
                     ItemSubType.Hourglass,
                     ItemSubType.ApStone,
                 };
-                await ReactiveShopState.SetBuyDigestsAsync(list);
+                await ReactiveShopState.SetBuyProductsAsync(list);
                 return true;
             }, _cancellationTokenSource.Token);
 
@@ -144,7 +146,7 @@ namespace Nekoyume.UI
         public void Open()
         {
             base.Show(true);
-            view.Show(ReactiveShopState.BuyDigest, ShowItemTooltip);
+            view.Show(ReactiveShopState.BuyProducts, ShowItemTooltip);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -200,7 +202,7 @@ namespace Nekoyume.UI
                 new FungibleAssetValue(States.Instance.GoldBalanceState.Gold.Currency, 0, 0);
             foreach (var model in models)
             {
-                sumPrice += model.OrderDigest.Price;
+                sumPrice += (BigInteger)model.Product.Price * States.Instance.GoldBalanceState.Gold.Currency;
             }
 
             if (States.Instance.GoldBalanceState.Gold < sumPrice)
@@ -225,7 +227,7 @@ namespace Nekoyume.UI
             var purchaseInfos = new ConcurrentBag<PurchaseInfo>();
             await foreach (var item in models.ToAsyncEnumerable())
             {
-                var purchaseInfo = await GetPurchaseInfo(item.OrderDigest.OrderId);
+                var purchaseInfo = await GetPurchaseInfo(item.Product.ProductId);
                 purchaseInfos.Add(purchaseInfo);
             }
 
@@ -246,15 +248,15 @@ namespace Nekoyume.UI
             {
                 var props = new Dictionary<string, Value>()
                 {
-                    ["Price"] = model.OrderDigest.Price.GetQuantityString(),
+                    ["Price"] = model.Product.Price,
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                     ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                 };
                 Analyzer.Instance.Track("Unity/Buy", props);
 
-                var count = model.OrderDigest.ItemCount;
+                var count = model.Product.Quantity;
                 model.Selected.Value = false;
-                ReactiveShopState.RemoveBuyDigest(model.OrderDigest.OrderId);
+                ReactiveShopState.RemoveBuyProduct(model.Product.ProductId);
 
                 string message;
                 if (count > 1)
@@ -281,6 +283,22 @@ namespace Nekoyume.UI
             var order = await Util.GetOrder(orderId);
             return new PurchaseInfo(orderId, order.TradableId, order.SellerAgentAddress,
                 order.SellerAvatarAddress, order.ItemSubType, order.Price);
+        }
+
+        private static ProductInfo GetProductInfo(ShopItem shopItem)
+        {
+            return new ProductInfo
+            {
+                AvatarAddress = shopItem.Product.SellerAvatarAddress,
+                AgentAddress = shopItem.Product.SellerAgentAddress,
+                ProductId = shopItem.Product.ProductId,
+                Price = (BigInteger) shopItem.Product.Price *
+                        States.Instance.GoldBalanceState.Gold.Currency,
+                Type = shopItem.ItemBase is TradableMaterial
+                    ? ProductType.Fungible
+                    : ProductType.NonFungible,
+                Legacy = shopItem.Product.Legacy,
+            };
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Helper;
@@ -122,9 +123,9 @@ namespace Nekoyume
             var models = items[_selectedSubTypeFilter.Value].Distinct();
             return _selectedSortFilter.Value switch
             {
-                ShopSortFilter.CP => models.OrderByDescending(x => x.OrderDigest.CombatPoint)
+                ShopSortFilter.CP => models.OrderByDescending(x => x.Product.CombatPoint)
                     .ToList(),
-                ShopSortFilter.Price => models.OrderByDescending(x => x.OrderDigest.Price).ToList(),
+                ShopSortFilter.Price => models.OrderByDescending(x => x.Product.Price).ToList(),
                 ShopSortFilter.Class => models.OrderByDescending(x => x.Grade)
                     .ThenByDescending(x => x.ItemBase.ItemType).ToList(),
                 ShopSortFilter.Crystal => models.OrderByDescending(x => x.ItemBase.ItemType == ItemType.Equipment
@@ -133,7 +134,7 @@ namespace Nekoyume
                             false,
                             TableSheets.Instance.CrystalEquipmentGrindingSheet,
                             TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet,
-                            States.Instance.StakingLevel).DivRem(x.OrderDigest.Price.MajorUnit)
+                            States.Instance.StakingLevel).DivRem((BigInteger) x.Product.Price)
                         .Quotient
                         .MajorUnit
                     : 0),
