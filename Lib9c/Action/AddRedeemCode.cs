@@ -14,7 +14,7 @@ namespace Nekoyume.Action
     {
         public string redeemCsv;
 
-        public string RedeemCsv => redeemCsv;
+        string IAddRedeemCodeV1.RedeemCsv => redeemCsv;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {

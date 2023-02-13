@@ -23,9 +23,9 @@ namespace Nekoyume.Action
         public Guid itemId;
         public FungibleAssetValue price;
 
-        public Address SellerAvatarAddress => sellerAvatarAddress;
-        public Guid ItemId => itemId;
-        public FungibleAssetValue Price => price;
+        Address ISellV1.SellerAvatarAddress => sellerAvatarAddress;
+        Guid ISellV1.ItemId => itemId;
+        FungibleAssetValue ISellV1.Price => price;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {

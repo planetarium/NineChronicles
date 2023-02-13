@@ -20,7 +20,7 @@ namespace Nekoyume.Action
     {
         public IList<(byte[] Address, byte[] Nonce, byte[] PublicKey)> PendingActivations { get; internal set; }
 
-        IEnumerable<Bencodex.Types.List> ICreatePendingActivationsV1.PendingActivations =>
+        IEnumerable<IValue> ICreatePendingActivationsV1.PendingActivations =>
             PendingActivations.Select(t =>
                 new List(new Binary[] { t.Address, t.Nonce, t.PublicKey }.Cast<IValue>()));
 

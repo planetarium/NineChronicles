@@ -31,11 +31,11 @@ namespace Nekoyume.Action
         public List<Guid> costumes;
         public List<Guid> equipments;
 
-        public Address AvatarAddress => avatarAddress;
-        public int ChampionshipId => championshipId;
-        public int Round => round;
-        public IEnumerable<Guid> Costumes => costumes;
-        public IEnumerable<Guid> Equipments => equipments;
+        Address IJoinArenaV1.AvatarAddress => avatarAddress;
+        int IJoinArenaV1.ChampionshipId => championshipId;
+        int IJoinArenaV1.Round => round;
+        IEnumerable<Guid> IJoinArenaV1.Costumes => costumes;
+        IEnumerable<Guid> IJoinArenaV1.Equipments => equipments;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>()

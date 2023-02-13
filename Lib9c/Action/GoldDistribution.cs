@@ -37,12 +37,19 @@ namespace Nekoyume.Action
         public static GoldDistribution[] LoadInDescendingEndBlockOrder(string csvPath)
         {
             GoldDistribution[] records;
-            using (var reader = new StreamReader(csvPath))
-            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+#if UNITY_ANDROID
+            UnityEngine.WWW www = new UnityEngine.WWW(csvPath);
+            while (!www.isDone)
             {
-                records = csv.GetRecords<GoldDistribution>().ToArray();
+                // wait for data load
             }
-
+            using var stream = new MemoryStream(www.bytes);
+            using var streamReader = new StreamReader(stream, System.Text.Encoding.Default);
+#else
+            using var streamReader = new StreamReader(csvPath);
+#endif
+            using var csvReader = new CsvReader(streamReader, CultureInfo.InvariantCulture);
+            records = csvReader.GetRecords<GoldDistribution>().ToArray();
             Array.Sort<GoldDistribution>(records, new DescendingEndBlockComparer());
             return records;
         }

@@ -19,6 +19,8 @@ namespace Nekoyume.Action
     {
         public Address AvatarAddress { get; private set; }
 
+        Address IMigrateMonsterCollectionV1.AvatarAddress => AvatarAddress;
+
         public MigrateMonsterCollection(Address avatarAddress)
         {
             AvatarAddress = avatarAddress;

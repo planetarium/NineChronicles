@@ -23,6 +23,9 @@ namespace Nekoyume.Action
 
         public Address AvatarAddress {get; internal set; }
 
+        string IRedeemCodeV1.Code => Code;
+        Address IRedeemCodeV1.AvatarAddress => AvatarAddress;
+
         public RedeemCode2()
         {
         }

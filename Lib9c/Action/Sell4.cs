@@ -27,10 +27,10 @@ namespace Nekoyume.Action
         public ItemSubType itemSubType;
         public FungibleAssetValue price;
 
-        public Address SellerAvatarAddress => sellerAvatarAddress;
-        public Guid ItemId => itemId;
-        public FungibleAssetValue Price => price;
-        public string ItemSubType => itemSubType.ToString();
+        Address ISellV1.SellerAvatarAddress => sellerAvatarAddress;
+        Guid ISellV1.ItemId => itemId;
+        FungibleAssetValue ISellV1.Price => price;
+        string ISellV1.ItemSubType => itemSubType.ToString();
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {

@@ -32,12 +32,12 @@ namespace Nekoyume.Action
         public ItemSubType itemSubType;
         public Guid orderId;
 
-        public Address SellerAvatarAddress => sellerAvatarAddress;
-        public Guid TradableId => tradableId;
-        public int Count => count;
-        public FungibleAssetValue Price => price;
-        public string ItemSubType => itemSubType.ToString();
-        public Guid OrderId => orderId;
+        Address ISellV2.SellerAvatarAddress => sellerAvatarAddress;
+        Guid ISellV2.TradableId => tradableId;
+        int ISellV2.Count => count;
+        FungibleAssetValue ISellV2.Price => price;
+        string ISellV2.ItemSubType => itemSubType.ToString();
+        Guid? ISellV2.OrderId => orderId;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
