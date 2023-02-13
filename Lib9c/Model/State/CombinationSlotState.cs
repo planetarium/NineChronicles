@@ -15,6 +15,7 @@ namespace Nekoyume.Model.State
         public int UnlockStage { get; private set; }
         public long StartBlockIndex { get; private set; }
         public AttachmentActionResult Result { get; private set; }
+        public int? PetId { get; private set; }
         public long RequiredBlockIndex => UnlockBlockIndex - StartBlockIndex;
 
         public static Address DeriveAddress(Address address, int slotIndex) =>
@@ -41,6 +42,11 @@ namespace Nekoyume.Model.State
             {
                 StartBlockIndex = value.ToLong();
             }
+
+            if (serialized.TryGetValue((Text) "petId", out var petId))
+            {
+                PetId = petId.ToNullableInteger();
+            }
         }
 
         public bool Validate(AvatarState avatarState, long blockIndex)
@@ -55,11 +61,12 @@ namespace Nekoyume.Model.State
                    blockIndex >= UnlockBlockIndex;
         }
 
-        public void Update(AttachmentActionResult result, long blockIndex, long unlockBlockIndex)
+        public void Update(AttachmentActionResult result, long blockIndex, long unlockBlockIndex, int? petId = null)
         {
             Result = result;
             StartBlockIndex = blockIndex;
             UnlockBlockIndex = unlockBlockIndex;
+            PetId = petId;
         }
 
         public void Update(long blockIndex)
@@ -96,9 +103,15 @@ namespace Nekoyume.Model.State
                 [(Text) "unlockStage"] = UnlockStage.Serialize(),
                 [(Text) "startBlockIndex"] = StartBlockIndex.Serialize(),
             };
+
             if (!(Result is null))
             {
-                values.Add((Text) "result", Result.Serialize());
+                values.Add((Text)"result", Result.Serialize());
+            }
+
+            if (!(PetId is null))
+            {
+                values.Add((Text)"petId", PetId.Serialize());
             }
 #pragma warning disable LAA1002
             return new Dictionary(values.Union((Dictionary) base.Serialize()));

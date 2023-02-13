@@ -8,19 +8,21 @@ using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Extensions;
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Nekoyume.TableData.Pet;
 using Serilog;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1378
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1711
     /// </summary>
     [Serializable]
-    [ActionType("rapid_combination8")]
+    [ActionType("rapid_combination9")]
     public class RapidCombination : GameAction, IRapidCombinationV1
     {
         public Address avatarAddress;
@@ -99,14 +101,37 @@ namespace Nekoyume.Action
                     $"context block index: {context.BlockIndex}, actionable block index : {actionableBlockIndex}");
             }
 
-            var count = RapidCombination0.CalculateHourglassCount(gameConfigState, diff);
+            int costHourglassCount = 0;
+
+            PetState petState = null;
+            if (slotState.PetId.HasValue)
+            {
+                var petStateAddress = PetState.DeriveAddress(avatarAddress, slotState.PetId.Value);
+                if (!states.TryGetState(petStateAddress, out List rawState))
+                {
+                    throw new FailedLoadStateException($"{addressesHex}Aborted as the {nameof(PetState)} was failed to load.");
+                }
+
+                petState = new PetState(rawState);
+                var petOptionSheet = states.GetSheet<PetOptionSheet>();
+                costHourglassCount = PetHelper.CalculateDiscountedHourglass(
+                    diff,
+                    gameConfigState.HourglassPerBlock,
+                    petState,
+                    petOptionSheet);
+            }
+            else
+            {
+                costHourglassCount = RapidCombination0.CalculateHourglassCount(gameConfigState, diff);
+            }
+
             var materialItemSheet = states.GetSheet<MaterialItemSheet>();
             var row = materialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Hourglass);
             var hourGlass = ItemFactory.CreateMaterial(row);
-            if (!avatarState.inventory.RemoveFungibleItem(hourGlass, context.BlockIndex, count))
+            if (!avatarState.inventory.RemoveFungibleItem(hourGlass, context.BlockIndex, costHourglassCount))
             {
                 throw new NotEnoughMaterialException(
-                    $"{addressesHex}Aborted as the player has no enough material ({row.Id} * {count})");
+                    $"{addressesHex}Aborted as the player has no enough material ({row.Id} * {costHourglassCount})");
             }
 
             if (slotState.TryGetResultId(out var resultId) &&
@@ -127,10 +152,18 @@ namespace Nekoyume.Action
                 }
             }
 
-            slotState.UpdateV2(context.BlockIndex, hourGlass, count);
+            slotState.UpdateV2(context.BlockIndex, hourGlass, costHourglassCount);
             avatarState.UpdateFromRapidCombinationV2(
                 (RapidCombination5.ResultModel)slotState.Result,
                 context.BlockIndex);
+
+            // Update Pet
+            if (!(petState is null))
+            {
+                petState.Update(context.BlockIndex);
+                var petStateAddress = PetState.DeriveAddress(avatarAddress, petState.PetId);
+                states = states.SetState(petStateAddress, petState.Serialize());
+            }
 
             var ended = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}RapidCombination Total Executed Time: {Elapsed}", addressesHex, ended - started);

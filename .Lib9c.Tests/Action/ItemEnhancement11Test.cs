@@ -24,7 +24,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static Lib9c.SerializeKeys;
 
-    public class ItemEnhancementTest
+    public class ItemEnhancement11Test
     {
         private readonly TableSheets _tableSheets;
         private readonly Address _agentAddress;
@@ -33,7 +33,7 @@ namespace Lib9c.Tests.Action
         private readonly Currency _currency;
         private IAccountStateDelta _initialState;
 
-        public ItemEnhancementTest()
+        public ItemEnhancement11Test()
         {
             var sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(sheets);
@@ -169,7 +169,7 @@ namespace Lib9c.Tests.Action
                 }
             }
 
-            var action = new ItemEnhancement()
+            var action = new ItemEnhancement11()
             {
                 itemId = default,
                 materialId = materialId,
@@ -209,21 +209,21 @@ namespace Lib9c.Tests.Action
             var slotResult = (ItemEnhancement11.ResultModel)slot.Result;
             Assert.Equal(expected, slotResult.enhancementResult);
 
-            switch ((ItemEnhancement.EnhancementResult)slotResult.enhancementResult)
+            switch (slotResult.enhancementResult)
             {
-                case ItemEnhancement.EnhancementResult.GreatSuccess:
+                case ItemEnhancement11.EnhancementResult.GreatSuccess:
                     var baseAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMax.NormalizeFromTenThousandths() + 1);
                     var extraAtk = preItemUsable.StatsMap.AdditionalATK * (costRow.ExtraStatGrowthMax.NormalizeFromTenThousandths() + 1);
                     Assert.Equal((int)(baseAtk + extraAtk), resultEquipment.StatsMap.ATK);
                     break;
-                case ItemEnhancement.EnhancementResult.Success:
+                case ItemEnhancement11.EnhancementResult.Success:
                     var baseMinAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMin.NormalizeFromTenThousandths() + 1);
                     var baseMaxAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMax.NormalizeFromTenThousandths() + 1);
                     var extraMinAtk = preItemUsable.StatsMap.AdditionalATK * (costRow.ExtraStatGrowthMin.NormalizeFromTenThousandths() + 1);
                     var extraMaxAtk = preItemUsable.StatsMap.AdditionalATK * (costRow.ExtraStatGrowthMax.NormalizeFromTenThousandths() + 1);
                     Assert.InRange(resultEquipment.StatsMap.ATK, (int)(baseMinAtk + extraMinAtk), (int)(baseMaxAtk + extraMaxAtk) + 1);
                     break;
-                case ItemEnhancement.EnhancementResult.Fail:
+                case ItemEnhancement11.EnhancementResult.Fail:
                     Assert.Equal(preItemUsable.StatsMap.ATK, resultEquipment.StatsMap.ATK);
                     break;
             }
