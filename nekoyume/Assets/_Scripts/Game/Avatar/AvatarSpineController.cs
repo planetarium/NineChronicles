@@ -30,9 +30,6 @@ namespace Nekoyume.Game.Avatar
         [SerializeField]
         private AvatarScriptableObject avatarScriptableObject;
 
-        [SerializeField]
-        private SkeletonDataAsset testBody;
-
         private Shader _shader;
         private Spine.Animation _targetAnimation;
         private Sequence _doFadeSequence;
@@ -248,8 +245,9 @@ namespace Nekoyume.Game.Avatar
 
         public void UpdateBody(int index, int skinTone)
         {
+            index = index == 10230000 ? 10220000 : 10230000;
+            Debug.Log($"index : {index}");
             UpdateSkeletonDataAsset(index, false);
-            index = 10230000;
             // var preIndex = (int)(index * 0.0001) * 10000;
             var skinName = $"{index}-{skinTone}";
             UpdateSkin(true, index, AvatarPartsType.body, skinName);
@@ -412,16 +410,11 @@ namespace Nekoyume.Game.Avatar
 
             _partsIndex[type] = index;
 
-            var name = $"{index}_SkeletonData";
+
+            var name = $"body_skin_{index}_SkeletonData";
             var asset = isFullCostume
                 ? avatarScriptableObject.FullCostume.FirstOrDefault(x => x.name == name)
                 : avatarScriptableObject.Body.FirstOrDefault(x => x.name == name);
-
-            if (!isFullCostume)
-            {
-                Debug.Log("TEST BODY");
-                asset = testBody;
-            }
 
             var skeletonAnimation = _parts[type];
             skeletonAnimation.ClearState();

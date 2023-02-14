@@ -183,7 +183,8 @@ namespace Nekoyume.UI
                 _activeCostume.sprite = x ? disableSprite : activeSprite;
             }).AddTo(gameObject);
 
-            var isActiveDcc = Game.Game.instance.Dcc.IsActive(out var isVisible);
+            var avatarState = Game.Game.instance.States.CurrentAvatarState;
+            var isActiveDcc = Game.Game.instance.Dcc.IsActive(avatarState.address, out var id, out var isVisible);
             activeDccButton.gameObject.SetActive(isActiveDcc);
             activeCostumeButton.gameObject.SetActive(isActiveDcc);
             _dccSlot.sprite = isActiveDcc ? null : dccSlotDefaultSprite;

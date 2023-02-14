@@ -13,6 +13,7 @@ namespace Nekoyume.Helper
     public class Url
     {
         private  string dccAvatars;
+        private  string dccMetadata;
         public  bool Empty { get; private set; } = true;
 
         [Option("dcc-avatars", Required = false, HelpText = "dcc avatar list")]
@@ -22,6 +23,17 @@ namespace Nekoyume.Helper
             set
             {
                 dccAvatars = value;
+                Empty = false;
+            }
+        }
+
+        [Option("dcc-metadata", Required = false, HelpText = "dcc metadata")]
+        public  string DccMetadata
+        {
+            get => dccMetadata;
+            set
+            {
+                dccMetadata = value;
                 Empty = false;
             }
         }

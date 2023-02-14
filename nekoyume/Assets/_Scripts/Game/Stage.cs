@@ -636,6 +636,7 @@ namespace Nekoyume.Game
 #if TEST_LOG
             Debug.Log($"[{nameof(Stage)}] {nameof(CoSpawnPlayer)}() enter");
 #endif
+            var avatarState = States.Instance.CurrentAvatarState;
             var playerCharacter = RunPlayer(false);
             playerCharacter.Set(character, true);
             playerCharacter.Run();
@@ -650,7 +651,7 @@ namespace Nekoyume.Game
 
             var battle = Widget.Find<UI.Battle>();
             var isTutorial = false;
-            if (States.Instance.CurrentAvatarState.worldInformation
+            if (avatarState.worldInformation
                 .TryGetUnlockedWorldByStageClearedBlockIndex(out var worldInfo))
             {
                 if (worldInfo.StageClearedId < UI.Battle.RequiredStageForExitButton)

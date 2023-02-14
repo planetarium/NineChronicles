@@ -1,12 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using Libplanet;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Avatar;
 using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.Model.Item;
+using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI;
+using Nekoyume.UI.Model;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character
@@ -29,14 +34,20 @@ namespace Nekoyume.Game.Character
 
         public void Set(
             ArenaPlayerDigest digest,
+            Address avatarAddress,
             CharacterAnimator animator,
             HudContainer hudContainer)
         {
-            UpdateAvatar(animator, hudContainer, digest.Costumes, digest.Equipments,
+            var armor = (Armor)digest.Equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
+            var weapon = (Weapon)digest.Equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Weapon);
+
+            UpdateAvatar(avatarAddress, animator, hudContainer,
+                digest.Costumes, armor, weapon,
                 digest.EarIndex, digest.LensIndex, digest.HairIndex, digest.TailIndex);
         }
 
         public void Set(
+            Address avatarAddress,
             CharacterAnimator animator,
             HudContainer hudContainer,
             List<Costume> costumes,
@@ -46,15 +57,63 @@ namespace Nekoyume.Game.Character
             int hairIndex,
             int tailIndex)
         {
-            UpdateAvatar(animator, hudContainer, costumes, equipments, earIndex, lensIndex,
-                hairIndex, tailIndex);
+            var armor = (Armor)equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
+            var weapon = (Weapon)equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Weapon);
+
+            UpdateAvatar(avatarAddress, animator, hudContainer,
+                costumes, armor, weapon,
+                earIndex, lensIndex, hairIndex, tailIndex);
         }
 
-        private void UpdateAvatar(
+        public void Set(
+            Address avatarAddress,
             CharacterAnimator animator,
             HudContainer hudContainer,
             List<Costume> costumes,
-            List<Equipment> equipments,
+            Armor armor,
+            Weapon weapon,
+            int earIndex,
+            int lensIndex,
+            int hairIndex,
+            int tailIndex)
+        {
+            UpdateAvatar(avatarAddress, animator, hudContainer,
+                costumes, armor, weapon,
+                earIndex, lensIndex, hairIndex, tailIndex);
+        }
+
+        public void SetForPrologue(
+            Address avatarAddress,
+            CharacterAnimator animator,
+            HudContainer hudContainer,
+            int armorId,
+            int weaponId,
+            int earIndex,
+            int lensIndex,
+            int hairIndex,
+            int tailIndex)
+        {
+            SpineController.UnequipFullCostume();
+            UpdateEar(earIndex, false);
+            UpdateFace(lensIndex, false);
+            UpdateHair(hairIndex, false);
+            UpdateTail(tailIndex, false);
+            UpdateAcFace(0, false);
+            UpdateAcEye(0, false);
+            UpdateAcHead(0, false);
+            SpineController.UpdateBody(armorId, 0);
+            SpineController.UpdateWeapon(weaponId, null);
+            UpdateTarget();
+            UpdateHitPoint();
+        }
+
+        private void UpdateAvatar(
+            Address avatarAddress,
+            CharacterAnimator animator,
+            HudContainer hudContainer,
+            List<Costume> costumes,
+            Armor armor,
+            Weapon weapon,
             int earIndex,
             int lensIndex,
             int hairIndex,
@@ -64,27 +123,75 @@ namespace Nekoyume.Game.Character
             _hudContainer = hudContainer;
             Destroy(_cachedCharacterTitle);
 
-            var fullCostume =
-                costumes.FirstOrDefault(x => x.ItemSubType == ItemSubType.FullCostume);
-            if (fullCostume is not null)
+            var isDcc = Game.instance.Dcc.IsActive(avatarAddress, out var id, out var isVisible);
+            if (avatarAddress == States.Instance.CurrentAvatarState.address)
             {
-                UpdateFullCostume(fullCostume);
+                isDcc = isVisible;
+            }
+
+            if (isDcc)
+            {
+                var parts = GetDccParts(id);
+                // ignore full costume
+                SpineController.UnequipFullCostume();
+                UpdateEar(parts[DccPartsType.ear_tail], true);
+                UpdateFace(parts[DccPartsType.face], true);
+                UpdateHair(parts[DccPartsType.hair], true);
+                UpdateTail(parts[DccPartsType.ear_tail], true);
+                UpdateAcFace(parts[DccPartsType.ac_face], true);
+                UpdateAcEye(parts[DccPartsType.ac_eye], true);
+                UpdateAcHead(parts[DccPartsType.ac_head], true);
+                UpdateArmor(armor);
+                UpdateWeapon(weapon);
             }
             else
             {
-                SpineController.UnequipFullCostume();
-                UpdateEar(earIndex);
-                UpdateFace(lensIndex);
-                UpdateHair(hairIndex);
-                UpdateTail(tailIndex);
-                UpdateAcFace(1, true);
-                UpdateAcEye(1, true);
-                UpdateAcHead(1, true);
-                UpdateArmor(equipments);
-                UpdateWeapon(equipments);
+                var fullCostume =
+                    costumes.FirstOrDefault(x => x.ItemSubType == ItemSubType.FullCostume);
+                if (fullCostume is not null)
+                {
+                    UpdateFullCostume(fullCostume);
+                }
+                else
+                {
+                    SpineController.UnequipFullCostume();
+                    UpdateEar(earIndex, false);
+                    UpdateFace(lensIndex, false);
+                    UpdateHair(hairIndex, false);
+                    UpdateTail(tailIndex, false);
+                    UpdateAcFace(0, false);
+                    UpdateAcEye(0, false);
+                    UpdateAcHead(0, false);
+                    UpdateArmor(armor);
+                    UpdateWeapon(weapon);
+                }
             }
 
-            UpdateCostumes(costumes);
+            var title = costumes.FirstOrDefault(x => x.ItemSubType == ItemSubType.Title);
+            if (title is not null)
+            {
+                UpdateTitle(title);
+            }
+        }
+
+        private Dictionary<DccPartsType, int> GetDccParts(int id)
+        {
+            var dccParts = new Dictionary<DccPartsType, int>();
+            var url = $"{Game.instance.URL.DccMetadata}{id}.json";
+            StartCoroutine(RequestManager.instance.GetJson(url, (json) =>
+            {
+                var result = JsonSerializer.Deserialize<DccMetadata>(json);
+                dccParts.Add(DccPartsType.background, result.traits[0]);
+                dccParts.Add(DccPartsType.skin, result.traits[1]);
+                dccParts.Add(DccPartsType.face, result.traits[2]);
+                dccParts.Add(DccPartsType.ear_tail, result.traits[3]);
+                dccParts.Add(DccPartsType.ac_face, result.traits[4]);
+                dccParts.Add(DccPartsType.hair, result.traits[5]);
+                dccParts.Add(DccPartsType.ac_eye, result.traits[6]);
+                dccParts.Add(DccPartsType.ac_head, result.traits[7]);
+            }));
+
+            return dccParts;
         }
 
         private void UpdateFullCostume(Costume fullCostume)
@@ -109,67 +216,52 @@ namespace Nekoyume.Game.Character
             SpineController.UpdateAcHead(index, isDcc);
         }
 
-        private void UpdateArmor(IEnumerable<Equipment> equipments)
+        private void UpdateArmor(Armor armor)
         {
-            var armorId = GameConfig.DefaultAvatarArmorId;
-            if (equipments is not null)
-            {
-                var armor = equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
-                armorId = armor?.Id ?? GameConfig.DefaultAvatarArmorId;
-            }
-
+            var armorId = armor?.Id ?? GameConfig.DefaultAvatarArmorId;
             SpineController.UpdateBody(armorId, 0);
             UpdateTarget();
             UpdateHitPoint();
         }
 
-        private void UpdateWeapon(IEnumerable<Equipment> equipments)
+        private void UpdateWeapon(Weapon weapon)
         {
-            var weaponId = GameConfig.DefaultAvatarWeaponId;
-            GameObject vfx = null;
-            if (equipments is not null)
-            {
-                var weapon =
-                    (Weapon)equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Weapon);
-                weaponId = weapon?.Id ?? GameConfig.DefaultAvatarWeaponId;
-                var level = weapon?.level ?? 0;
-                vfx = ResourcesHelper.GetAuraWeaponPrefab(weaponId, level);
-            }
-
+            var weaponId = weapon?.Id ?? GameConfig.DefaultAvatarWeaponId;
+            var level = weapon?.level ?? 0;
+            var vfx = ResourcesHelper.GetAuraWeaponPrefab(weaponId, level);
             SpineController.UpdateWeapon(weaponId, vfx);
         }
 
-        private void UpdateEar(int index)
+        private void UpdateEar(int index, bool isDcc)
         {
             var sheet = Game.instance.TableSheets.CostumeItemSheet;
             var row = sheet.OrderedList.FirstOrDefault(row => row.ItemSubType == ItemSubType.EarCostume);
             var id = row.Id + index;
-            SpineController.UpdateEar(id, false);
+            SpineController.UpdateEar(id, isDcc);
         }
 
-        private void UpdateFace(int index)
+        private void UpdateFace(int index, bool isDcc)
         {
             var sheet = Game.instance.TableSheets.CostumeItemSheet;
             var row = sheet.OrderedList.FirstOrDefault(row => row.ItemSubType == ItemSubType.EyeCostume);
             var id = row.Id + index;
-            SpineController.UpdateFace(id, false);
+            SpineController.UpdateFace(id, isDcc);
         }
 
-        private void UpdateHair(int index)
+        private void UpdateHair(int index, bool isDcc)
         {
             var sheet = Game.instance.TableSheets.CostumeItemSheet;
             var row = sheet.OrderedList.FirstOrDefault(row => row.ItemSubType == ItemSubType.HairCostume);
             var id = row.Id + index;
-            SpineController.UpdateHair(id, false);
+            SpineController.UpdateHair(id, isDcc);
         }
 
-        private void UpdateTail(int index)
+        private void UpdateTail(int index, bool isDcc)
         {
             var sheet = Game.instance.TableSheets.CostumeItemSheet;
             var row = sheet.OrderedList.FirstOrDefault(row => row.ItemSubType == ItemSubType.TailCostume);
             var id = row.Id + index;
-            Debug.Log("Update tail by lobby");
-            SpineController.UpdateTail(id, false);
+            SpineController.UpdateTail(id, isDcc);
         }
 
         private void UpdateTitle(ItemBase costume)
@@ -185,49 +277,6 @@ namespace Nekoyume.Game.Character
             _cachedCharacterTitle = Instantiate(clone, _hudContainer.transform);
             _cachedCharacterTitle.name = costume.Id.ToString();
             _cachedCharacterTitle.transform.SetAsFirstSibling();
-        }
-
-        private void UpdateCostumes(List<Costume> costumes)
-        {
-            if (costumes == null)
-            {
-                return;
-            }
-
-            foreach (var costume in costumes)
-            {
-                EquipCostume(costume);
-            }
-        }
-
-        private void EquipCostume(Costume costume)
-        {
-            if (costume is null)
-            {
-                return;
-            }
-
-            switch (costume.ItemSubType)
-            {
-                case ItemSubType.EarCostume:
-                    UpdateEar(costume.Id);
-                    break;
-                case ItemSubType.EyeCostume:
-                    UpdateFace(costume.Id);
-                    break;
-                case ItemSubType.HairCostume:
-                    UpdateHair(costume.Id);
-                    break;
-                case ItemSubType.TailCostume:
-                    UpdateTail(costume.Id);
-                    break;
-                case ItemSubType.Title:
-                    UpdateTitle(costume);
-                    break;
-                case ItemSubType.FullCostume:
-                    // FullCostume is handled elsewhere
-                    break;
-            }
         }
 
         private void UpdateTarget()

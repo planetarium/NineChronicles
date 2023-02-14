@@ -1,5 +1,9 @@
 ﻿using System.Collections.Generic;
 using Nekoyume.UI;
+using Nekoyume.UI.Model;
+using System.Text.Json;
+using Libplanet;
+using Nekoyume.EnumType;
 using UnityEngine;
 
 namespace Nekoyume.Game
@@ -8,18 +12,19 @@ namespace Nekoyume.Game
     {
         public static string IsVisible = "dcc_visible";
 
-        public Dictionary<string, long> Avatars { get; }
+        public Dictionary<string, int> Avatars { get; }
 
-        public Dcc(Dictionary<string, long> avatars)
+        public Dcc(Dictionary<string, int> avatars)
         {
             Avatars = avatars;
         }
 
-        public bool IsActive(out bool isVisible)
+        public bool IsActive(Address address, out int id, out bool isVisible)
         {
-            var avatarState = Game.instance.States.CurrentAvatarState;
-            var isActive = Avatars.ContainsKey(avatarState.address.ToHex());
-            isVisible = PlayerPrefs.GetInt($"{Dcc.IsVisible}_{avatarState.address}", 0) > 0;
+            var hexAddress = address.ToHex();
+            var isActive = Avatars.ContainsKey(hexAddress);
+            id = Avatars.ContainsKey(hexAddress) ? Avatars[hexAddress] : 0;
+            isVisible = PlayerPrefs.GetInt($"{Dcc.IsVisible}_{hexAddress}", 0) > 0;
             return isActive;
         }
 

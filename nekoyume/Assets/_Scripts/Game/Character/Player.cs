@@ -22,7 +22,10 @@ namespace Nekoyume.Game.Character
     public class Player : CharacterBase
     {
         [SerializeField]
-        private AvatarSpineController avatarSpineController;
+        private CharacterAppearance appearance;
+
+        // [SerializeField]
+        // private AvatarSpineController avatarSpineController;
 
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
         private GameObject _cachedCharacterTitle;
@@ -37,7 +40,7 @@ namespace Nekoyume.Game.Character
         protected override Vector3 DamageTextForce => new Vector3(-0.1f, 0.5f);
         protected override Vector3 HudTextPosition => transform.TransformPoint(0f, 1.7f, 0f);
 
-        public AvatarSpineController SpineController => avatarSpineController;
+        public AvatarSpineController SpineController => appearance.SpineController;
 
         public Model.Player Model => (Model.Player)CharacterModel;
 
@@ -145,12 +148,32 @@ namespace Nekoyume.Game.Character
 
             _disposablesForModel.DisposeAllAndClear();
             CharacterModel = model;
-            EquipCostumes(costumes);
-            UpdateAvatarParts(costumes);
-            EquipArmor(armor);
-            EquipWeapon(weapon);
-            SpineController.Refresh();
-            UpdateTarget();
+
+
+            var avatarState = Game.instance.States.CurrentAvatarState;
+            if (avatarState is null)
+            {
+                return;
+            }
+
+            appearance.Set(
+                avatarState.address,
+                Animator,
+                HudContainer,
+                costumes.ToList(),
+                armor,
+                weapon,
+                avatarState.ear,
+                avatarState.lens,
+                avatarState.hair,
+                avatarState.tail);
+
+            // EquipCostumes(costumes);
+            // UpdateAvatarParts(costumes);
+            // EquipArmor(armor);
+            // EquipWeapon(weapon);
+            // SpineController.Refresh();
+            // UpdateTarget();
 
             if (!SpeechBubble)
             {
@@ -184,34 +207,34 @@ namespace Nekoyume.Game.Character
 
         protected override BoxCollider GetAnimatorHitPointBoxCollider()
         {
-            return SpineController.Collider;
+            return appearance.BoxCollider;
         }
 
-        private void UpdateTitle(Costume costume = null)
-        {
-            Destroy(_cachedCharacterTitle);
-
-            if (costume == null)
-            {
-                return;
-            }
-
-            if (sortingGroup != null &&
-                sortingGroup.sortingLayerID == SortingLayer.NameToID("UI"))
-            {
-                return;
-            }
-
-            if (HudContainer != null)
-            {
-                HudContainer.gameObject.SetActive(true);
-                var clone = ResourcesHelper.GetCharacterTitle(costume.Grade,
-                    costume.GetLocalizedNonColoredName(false));
-                _cachedCharacterTitle = Instantiate(clone, HudContainer.transform);
-                _cachedCharacterTitle.name = costume.Id.ToString();
-                _cachedCharacterTitle.transform.SetAsFirstSibling();
-            }
-        }
+        // private void UpdateTitle(Costume costume = null)
+        // {
+        //     Destroy(_cachedCharacterTitle);
+        //
+        //     if (costume == null)
+        //     {
+        //         return;
+        //     }
+        //
+        //     if (sortingGroup != null &&
+        //         sortingGroup.sortingLayerID == SortingLayer.NameToID("UI"))
+        //     {
+        //         return;
+        //     }
+        //
+        //     if (HudContainer != null)
+        //     {
+        //         HudContainer.gameObject.SetActive(true);
+        //         var clone = ResourcesHelper.GetCharacterTitle(costume.Grade,
+        //             costume.GetLocalizedNonColoredName(false));
+        //         _cachedCharacterTitle = Instantiate(clone, HudContainer.transform);
+        //         _cachedCharacterTitle.name = costume.Id.ToString();
+        //         _cachedCharacterTitle.transform.SetAsFirstSibling();
+        //     }
+        // }
 
         #region AttackPoint & HitPoint
 
@@ -240,142 +263,152 @@ namespace Nekoyume.Game.Character
 
         #region Costumes
 
-        private void EquipCostumes(IEnumerable<Costume> costumes)
-        {
-            if (costumes is null)
-            {
-                return;
-            }
-
-            _fullCostume = null;
-            foreach (var costume in costumes)
-            {
-                EquipCostume(costume);
-            }
-        }
-
-        private void EquipCostume(Costume costume)
-        {
-            if (costume is null)
-            {
-                return;
-            }
-
-            switch (costume.ItemSubType)
-            {
-                case ItemSubType.EarCostume:
-                    UpdateEarById(costume.Id);
-                    break;
-                case ItemSubType.EyeCostume:
-                    UpdateFaceById(costume.Id);
-                    break;
-                case ItemSubType.FullCostume:
-                    _fullCostume = costume;
-                    SpineController.UpdateFullCostume(costume.Id);
-                    UpdateHitPoint();
-                    break;
-                case ItemSubType.HairCostume:
-                    UpdateHairById(costume.Id);
-                    break;
-                case ItemSubType.TailCostume:
-                    UpdateTailById(costume.Id);
-                    break;
-                case ItemSubType.Title:
-                    UpdateTitle(costume);
-                    break;
-            }
-        }
+        // private void EquipCostumes(IEnumerable<Costume> costumes)
+        // {
+        //     if (costumes is null)
+        //     {
+        //         return;
+        //     }
+        //
+        //     _fullCostume = null;
+        //     foreach (var costume in costumes)
+        //     {
+        //         EquipCostume(costume);
+        //     }
+        // }
+        //
+        // private void EquipCostume(Costume costume)
+        // {
+        //     if (costume is null)
+        //     {
+        //         return;
+        //     }
+        //
+        //     switch (costume.ItemSubType)
+        //     {
+        //         case ItemSubType.EarCostume:
+        //             UpdateEarById(costume.Id);
+        //             break;
+        //         case ItemSubType.EyeCostume:
+        //             UpdateFaceById(costume.Id);
+        //             break;
+        //         case ItemSubType.FullCostume:
+        //             _fullCostume = costume;
+        //             SpineController.UpdateFullCostume(costume.Id);
+        //             UpdateHitPoint();
+        //             break;
+        //         case ItemSubType.HairCostume:
+        //             UpdateHairById(costume.Id);
+        //             break;
+        //         case ItemSubType.TailCostume:
+        //             UpdateTailById(costume.Id);
+        //             break;
+        //         case ItemSubType.Title:
+        //             UpdateTitle(costume);
+        //             break;
+        //     }
+        // }
 
         #endregion
 
-        #region Equipments
+        // #region Equipments
 
-        private void UpdateTarget()
+        // private void UpdateTarget()
+        // {
+        //     var target = avatarSpineController.gameObject;
+        //     var animator = avatarSpineController.GetComponent<Animator>();
+        //     var sk = avatarSpineController.GetSkeletonAnimation();
+        //     var mr = sk.GetComponent<MeshRenderer>();
+        //     Animator.InitTarget(target, mr, sk, animator);
+        // }
+
+        // private void EquipArmor(Armor armor)
+        // {
+        //     if (_fullCostume is not null)
+        //     {
+        //         return;
+        //     }
+        //
+        //     var armorId = armor?.Id ?? GameConfig.DefaultAvatarArmorId;
+        //     UpdateBody(armorId, 0);
+        // }
+        //
+        // private void EquipWeapon(Weapon weapon)
+        // {
+        //     if (_fullCostume is not null || !SpineController)
+        //     {
+        //         return;
+        //     }
+        //
+        //     var id = weapon?.Id ?? GameConfig.DefaultAvatarWeaponId;
+        //     var level = weapon?.level ?? 0;
+        //     var levelVFXPrefab = ResourcesHelper.GetAuraWeaponPrefab(id, level);
+        //     SpineController.UpdateWeapon(id, levelVFXPrefab);
+        // }
+        //
+        // private void UpdateBody(int index, int skinTone)
+        // {
+        //     SpineController.UpdateBody(index, skinTone);
+        //     UpdateHitPoint();
+        // }
+
+        public void EquipForPrologue(int armorId, int weaponId)
         {
-            var target = avatarSpineController.gameObject;
-            var animator = avatarSpineController.GetComponent<Animator>();
-            var sk = avatarSpineController.GetSkeletonAnimation();
-            var mr = sk.GetComponent<MeshRenderer>();
-            Animator.InitTarget(target, mr, sk, animator);
-        }
-
-        private void EquipArmor(Armor armor)
-        {
-            if (_fullCostume is not null)
-            {
-                return;
-            }
-
-            var armorId = armor?.Id ?? GameConfig.DefaultAvatarArmorId;
-            UpdateBody(armorId, 0);
-        }
-
-        private void EquipWeapon(Weapon weapon)
-        {
-            if (_fullCostume is not null || !SpineController)
-            {
-                return;
-            }
-
-            var id = weapon?.Id ?? GameConfig.DefaultAvatarWeaponId;
-            var level = weapon?.level ?? 0;
-            var levelVFXPrefab = ResourcesHelper.GetAuraWeaponPrefab(id, level);
-            SpineController.UpdateWeapon(id, levelVFXPrefab);
-        }
-
-        public void Equip(int armorId, int weaponId)
-        {
-            UpdateBody(armorId, 0);
+            var avatarState = Game.instance.States.CurrentAvatarState;
+            appearance.SetForPrologue(
+                avatarState.address,
+                Animator,
+                HudContainer,
+                armorId,
+                weaponId,
+                avatarState.ear,
+                avatarState.lens,
+                avatarState.hair,
+                avatarState.tail);
             SpineController.UpdateWeapon(weaponId);
         }
 
-        private void UpdateBody(int index, int skinTone)
-        {
-            SpineController.UpdateBody(index, skinTone);
-            UpdateHitPoint();
-        }
+        // #endregion
 
-        #endregion
+        // #region Customize
 
-        #region Customize
-
-        private void UpdateAvatarParts(IEnumerable<Costume> costumes)
-        {
-            if (_fullCostume is not null)
-            {
-                return;
-            }
-
-            var subTypes = costumes.Select(x => x.ItemSubType).ToList();
-            if (!subTypes.Exists(x => x == ItemSubType.EarCostume))
-            {
-                UpdateEarByCustomizeIndex(Model.earIndex);
-            }
-
-            if (!subTypes.Exists(x => x == ItemSubType.EyeCostume))
-            {
-                UpdateEyeByCustomizeIndex(Model.lensIndex);
-            }
-
-            if (!subTypes.Exists(x => x == ItemSubType.HairCostume))
-            {
-                UpdateHairByCustomizeIndex(Model.hairIndex);
-            }
-
-            if (!subTypes.Exists(x => x == ItemSubType.TailCostume))
-            {
-                UpdateTailByCustomizeIndex(Model.tailIndex);
-            }
-
-            SpineController.UpdateAcFace(1, true);
-            SpineController.UpdateAcEye(1, true);
-            SpineController.UpdateAcHead(1, true);
-        }
-
-        /// <summary>
-        /// 기존에 커스텀 가능한 귀 디자인들은 EarCostume 중에서 첫 번째 부터 10번째 까지를 대상으로 합니다.
-        /// </summary>
-        /// <param name="customizeIndex">origin : 0 ~ 9,999 / partnership 10,000 ~ 19,999 </param>
+        // private void UpdateAvatarParts(IEnumerable<Costume> costumes)
+        // {
+        //     if (_fullCostume is not null)
+        //     {
+        //         return;
+        //     }
+        //
+        //     var subTypes = costumes.Select(x => x.ItemSubType).ToList();
+        //     if (!subTypes.Exists(x => x == ItemSubType.EarCostume))
+        //     {
+        //         UpdateEarByCustomizeIndex(Model.earIndex);
+        //     }
+        //
+        //     if (!subTypes.Exists(x => x == ItemSubType.EyeCostume))
+        //     {
+        //         UpdateEyeByCustomizeIndex(Model.lensIndex);
+        //     }
+        //
+        //     if (!subTypes.Exists(x => x == ItemSubType.HairCostume))
+        //     {
+        //         UpdateHairByCustomizeIndex(Model.hairIndex);
+        //     }
+        //
+        //     if (!subTypes.Exists(x => x == ItemSubType.TailCostume))
+        //     {
+        //         UpdateTailByCustomizeIndex(Model.tailIndex);
+        //     }
+        //
+        //     SpineController.UpdateAcFace(1, true);
+        //     SpineController.UpdateAcEye(1, true);
+        //     SpineController.UpdateAcHead(1, true);
+        // }
+        //
+        // /// <summary>
+        // /// 기존에 커스텀 가능한 귀 디자인들은 EarCostume 중에서 첫 번째 부터 10번째 까지를 대상으로 합니다.
+        // /// </summary>
+        // /// <param name="customizeIndex">origin : 0 ~ 9,999 / partnership 10,000 ~ 19,999 </param>
         public void UpdateEarByCustomizeIndex(int customizeIndex)
         {
             if (_fullCostume is not null || !SpineController)
@@ -391,12 +424,7 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            UpdateEarById(firstEarRow.Id + customizeIndex);
-        }
-
-        private void UpdateEarById(int earCostumeId)
-        {
-            SpineController.UpdateEar(earCostumeId, false);
+            SpineController.UpdateEar(firstEarRow.Id + customizeIndex, false);
         }
 
         /// <summary>
@@ -413,18 +441,14 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            UpdateFaceById(firstEyeRow.Id + customizeIndex);
+            SpineController.UpdateFace(firstEyeRow.Id + customizeIndex, false);
         }
 
-        private void UpdateFaceById(int eyeCostumeId)
-        {
-            SpineController.UpdateFace(eyeCostumeId, false);
-        }
-
-        /// <summary>
-        /// 기존에 커스텀 가능한 머리카 디자인들은 HairCostume 중에서 첫 번째 부터 6번째 까지를 대상으로 합니다.
-        /// </summary>
-        /// <param name="customizeIndex">0~5</param>
+        //
+        // /// <summary>
+        // /// 기존에 커스텀 가능한 머리카 디자인들은 HairCostume 중에서 첫 번째 부터 6번째 까지를 대상으로 합니다.
+        // /// </summary>
+        // /// <param name="customizeIndex">0~5</param>
         public void UpdateHairByCustomizeIndex(int customizeIndex)
         {
             if (_fullCostume is not null || !SpineController)
@@ -440,18 +464,14 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            UpdateHairById(firstHairRow.Id + customizeIndex);
+            SpineController.UpdateHair(firstHairRow.Id + customizeIndex, false);
         }
 
-        private void UpdateHairById(int hairCostumeId)
-        {
-            SpineController.UpdateHair(hairCostumeId, false);
-        }
-
-        /// <summary>
-        /// 기존에 커스텀 가능한 꼬리 디자인들은 TailCostume 중에서 첫 번째 부터 10번째 까지를 대상으로 합니다.
-        /// </summary>
-        /// <param name="customizeIndex">0~9</param>
+        //
+        // /// <summary>
+        // /// 기존에 커스텀 가능한 꼬리 디자인들은 TailCostume 중에서 첫 번째 부터 10번째 까지를 대상으로 합니다.
+        // /// </summary>
+        // /// <param name="customizeIndex">0~9</param>
         public void UpdateTailByCustomizeIndex(int customizeIndex)
         {
             if (_fullCostume is not null || !SpineController)
@@ -467,29 +487,16 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            UpdateTailById(firstTailRow.Id + customizeIndex);
+            SpineController.UpdateTail(firstTailRow.Id + customizeIndex, false);
         }
 
-        private void UpdateTailById(int tailCostumeId)
-        {
-            Debug.Log("Update tail by player");
-            SpineController.UpdateTail(tailCostumeId, false);
-        }
-
-        private bool TryGetCostumeRow(int costumeId, out CostumeItemSheet.Row row)
-        {
-            var sheet = Game.instance.TableSheets.CostumeItemSheet;
-            return sheet.TryGetValue(costumeId, out row, false);
-        }
-
-        #endregion
-
-        public void ChangeSpineResource(string id, bool isFullCostume, bool updateHitPoint = true)
-        {
-            var spineResourcePath =
-                isFullCostume ? $"Character/FullCostume/{id}" : $"Character/Player/{id}";
-            UpdateBody(Convert.ToInt32(id), 0);
-        }
+        // private bool TryGetCostumeRow(int costumeId, out CostumeItemSheet.Row row)
+        // {
+        //     var sheet = Game.instance.TableSheets.CostumeItemSheet;
+        //     return sheet.TryGetValue(costumeId, out row, false);
+        // }
+        //
+        // #endregion
 
         public IEnumerator CoGetExp(long exp)
         {
@@ -544,5 +551,17 @@ namespace Nekoyume.Game.Character
         {
             AreaAttackCutscene.Show(Helper.Util.GetArmorId());
         }
+
+        #region for viewer
+
+        public void ChangeSpineResource(string id, bool isFullCostume, bool updateHitPoint = true)
+        {
+            var spineResourcePath =
+                isFullCostume ? $"Character/FullCostume/{id}" : $"Character/Player/{id}";
+            // UpdateBody(Convert.ToInt32(id), 0);
+        }
+
+        #endregion
+
     }
 }

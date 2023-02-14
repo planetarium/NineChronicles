@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Text;
+using System.Text.Json;
 using Libplanet;
 using Libplanet.Crypto;
 using Nekoyume.Game.Character;
 using Nekoyume.UI;
+using Nekoyume.UI.Model;
 using Org.BouncyCastle.Asn1.Sec;
 using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Parameters;
@@ -35,9 +37,12 @@ namespace Nekoyume.Game
         {
             if (Input.GetKeyDown(KeyCode.Z))
             {
-                StartCoroutine(RequestManager.instance.GetJson(
-                    "https://m8g3g296a5.execute-api.us-east-2.amazonaws.com/Prod/v1/9c/avatars/all",
-                    (s) => { Debug.Log($"{s}"); }));
+                var url = $"{Game.instance.URL.DccMetadata}{111}.json";
+                StartCoroutine(RequestManager.instance.GetJson(url, (json) =>
+                {
+                    var test = JsonSerializer.Deserialize<DccMetadata>(json);
+                    Debug.Log("done");
+                }));
             }
             else if (Input.GetKeyDown(KeyCode.X))
             {

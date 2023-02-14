@@ -46,7 +46,7 @@ namespace Nekoyume.Game
             Game.instance.Stage.LoadBackground("Chapter_Prologue");
             var go = PlayerFactory.Create();
             _player = go.GetComponent<Player>();
-            _player.Equip(_armorId, _weaponId);
+            _player.EquipForPrologue(_armorId, _weaponId);
             var position = _player.transform.position;
             position.y = Stage.StageStartPosition;
             _player.transform.position = position;

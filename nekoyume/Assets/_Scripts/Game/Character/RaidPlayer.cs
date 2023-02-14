@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Libplanet;
 using UnityEngine;
 using Nekoyume.Model;
 using Nekoyume.Model.Item;
@@ -26,11 +27,11 @@ namespace Nekoyume.Game.Character
             base.Awake();
         }
 
-        public void Init(ArenaPlayerDigest digest, RaidCharacter target)
+        public void Init(Address avatarAddress, ArenaPlayerDigest digest, RaidCharacter target)
         {
             Init(target);
 
-            appearance.Set(digest, Animator, _hudContainer);
+            appearance.Set(digest, avatarAddress, Animator, _hudContainer);
             _attackTime = SpineAnimationHelper.GetAnimationDuration(appearance, "Attack");
             _criticalAttackTime = SpineAnimationHelper.GetAnimationDuration(appearance, "CriticalAttack");
             _target = target;

@@ -95,8 +95,8 @@ namespace Planetarium.Nekoyume.Editor
         public static void PopulateAvatarList()
         {
             var avatar = Resources.Load<AvatarScriptableObject>("ScriptableObject/Avatar");
-            PopulateList(PlayerSpineRootPath, avatar.Body);
-            PopulateList(FullCostumeSpineRootPath, avatar.FullCostume);
+            PopulateList(PlayerSpineRootPath, avatar.Body, false);
+            PopulateList(FullCostumeSpineRootPath, avatar.FullCostume, true);
             EditorUtility.SetDirty(avatar);
         }
 
@@ -655,7 +655,7 @@ namespace Planetarium.Nekoyume.Editor
             }
         }
 
-        private static void PopulateList(string path, List<SkeletonDataAsset> list)
+        private static void PopulateList(string path, List<SkeletonDataAsset> list, bool isFullCostume)
         {
             if (!AssetDatabase.IsValidFolder(path))
             {
@@ -668,13 +668,14 @@ namespace Planetarium.Nekoyume.Editor
             foreach (var subFolderPath in subFolderPaths)
             {
                 var id = Path.GetFileName(subFolderPath);
-                var skeletonDataAssetPath = Path.Combine(subFolderPath, $"{id}_SkeletonData.asset");
+                var name = isFullCostume ? $"{id}_SkeletonData.asset": $"body_skin_{id}_SkeletonData.asset";
+                var skeletonDataAssetPath = Path.Combine(subFolderPath, name);
                 Debug.Log($"Try to create spine prefab with {skeletonDataAssetPath}");
                 var skeletonDataAsset =
                     AssetDatabase.LoadAssetAtPath<SkeletonDataAsset>(skeletonDataAssetPath);
                 if (ReferenceEquals(skeletonDataAsset, null) || skeletonDataAsset == null)
                 {
-                    Debug.LogError($"Not Found SkeletonData from {skeletonDataAssetPath}");
+                    // Debug.LogError($"Not Found SkeletonData from {skeletonDataAssetPath}");
                     continue;
                 }
 
