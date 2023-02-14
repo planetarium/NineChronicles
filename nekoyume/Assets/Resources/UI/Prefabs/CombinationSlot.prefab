@@ -406,8 +406,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4230991444931104955}
+  - component: {fileID: 4676538049449707538}
   m_Layer: 5
-  m_Name: EquipPet
+  m_Name: Pet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -420,7 +421,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1424763748829152959}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -432,11 +433,27 @@ RectTransform:
   m_Father: {fileID: 7778286864631315859}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
+  m_AnchoredPosition: {x: 19, y: 4}
+  m_SizeDelta: {x: 74, y: 97}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &4676538049449707538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1424763748829152959}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c1982fdf862603418085414b325e006, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  emptyObject: {fileID: 2940771528550140598}
+  equippedObject: {fileID: 2669477159035065691}
+  selectedObject: {fileID: 6828892441235944251}
+  notificationObject: {fileID: 2281299636957322397}
 --- !u!1 &1447600885755888465
 GameObject:
   m_ObjectHideFlags: 0
@@ -790,7 +807,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 43.000046, y: 3}
+  m_AnchoredPosition: {x: 61, y: -2}
   m_SizeDelta: {x: 30, y: 30}
   m_Pivot: {x: 1, y: 1}
 --- !u!222 &2113872667503978942
@@ -1055,7 +1072,7 @@ GameObject:
   - component: {fileID: 6101982889931554985}
   - component: {fileID: 2957317716562374588}
   m_Layer: 5
-  m_Name: Equip
+  m_Name: Equipped
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1086,7 +1103,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 19, y: 4}
+  m_AnchoredPosition: {x: 37, y: 0}
   m_SizeDelta: {x: 74, y: 97}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2957317716562374588
@@ -1340,7 +1357,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 19, y: 4}
+  m_AnchoredPosition: {x: 37.00003, y: 0}
   m_SizeDelta: {x: 74, y: 97}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8697279318144946479
@@ -3799,7 +3816,7 @@ GameObject:
   - component: {fileID: 5626768907698094160}
   - component: {fileID: 6008476067262729662}
   m_Layer: 5
-  m_Name: Select
+  m_Name: Selected
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3812,7 +3829,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6828892441235944251}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -3822,7 +3839,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 16, y: 0}
+  m_AnchoredPosition: {x: 34, y: -4}
   m_SizeDelta: {x: 72, y: 84}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5626768907698094160
@@ -5011,6 +5028,7 @@ MonoBehaviour:
   preparingContainer: {fileID: 5608372893450762639}
   workingContainer: {fileID: 5994851212524165853}
   waitReceiveContainer: {fileID: 592734672684037806}
+  petSelectButton: {fileID: 4676538049449707538}
 --- !u!114 &4775150537336452424
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -92,10 +92,13 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private GameObject waitReceiveContainer;
 
+        [SerializeField]
+        private PetSelectButton petSelectButton;
 
         private CombinationSlotState _state;
         private CacheType _cachedType;
         private int _slotIndex;
+        private int? petId;
 
         private readonly List<IDisposable> _disposablesOfOnEnable = new();
         private readonly Dictionary<Address, bool> cached = new();
@@ -198,6 +201,8 @@ namespace Nekoyume.UI.Module
             CombinationSlotState state,
             bool isCached)
         {
+            petSelectButton.SetData(state?.PetId ?? petId);
+
             switch (type)
             {
                 case SlotType.Lock:
