@@ -13,6 +13,7 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Helper;
     using Nekoyume.Model;
     using Nekoyume.Model.State;
     using Xunit;
@@ -357,6 +358,33 @@ namespace Lib9c.Tests.Action
             Assert.Equal(_recipient, action.Recipient);
             Assert.Equal(_currency * 100, action.Amount);
             Assert.Equal(memo, action.Memo);
+        }
+
+        [Fact]
+        public void Execute_Throw_InvalidTransferCurrencyException()
+        {
+            var crystal = CrystalCalculator.CRYSTAL;
+            var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
+                .Add((_sender, crystal), crystal * 1000);
+            var state = ImmutableDictionary<Address, IValue>.Empty
+                .Add(_recipient.Derive(ActivationKey.DeriveKey), true.Serialize());
+
+            var prevState = new State(
+                state: state,
+                balance: balance
+            );
+            var action = new TransferAsset(
+                sender: _sender,
+                recipient: _recipient,
+                amount: 1000 * crystal
+            );
+            Assert.Throws<InvalidTransferCurrencyException>(() => action.Execute(new ActionContext()
+            {
+                PreviousStates = prevState,
+                Signer = _sender,
+                Rehearsal = false,
+                BlockIndex = TransferAsset.WhiteListAvailableIndex + 1L,
+            }));
         }
 
         [Fact]

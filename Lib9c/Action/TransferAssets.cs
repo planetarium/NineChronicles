@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using Lib9c.Abstractions;
+using Nekoyume.Helper;
 using Nekoyume.Model;
 using Serilog;
 
@@ -95,7 +96,7 @@ namespace Nekoyume.Action
                 ? new ActivatedAccountsState(asDict)
                 : new ActivatedAccountsState();
 
-            state = Recipients.Aggregate(state, (current, t) => Transfer(current, context.Signer, t.recipient, t.amount, activatedAccountsState));
+            state = Recipients.Aggregate(state, (current, t) => Transfer(current, context.Signer, t.recipient, t.amount, activatedAccountsState, context.BlockIndex));
             var ended = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}transfer_assets Total Executed Time: {Elapsed}", addressesHex, ended - started);
 
@@ -134,7 +135,7 @@ namespace Nekoyume.Action
             }
         }
 
-        private IAccountStateDelta Transfer(IAccountStateDelta state, Address signer, Address recipient, FungibleAssetValue amount, ActivatedAccountsState activatedAccountsState)
+        private IAccountStateDelta Transfer(IAccountStateDelta state, Address signer, Address recipient, FungibleAssetValue amount, ActivatedAccountsState activatedAccountsState, long blockIndex)
         {
             if (Sender != signer)
             {
@@ -176,6 +177,11 @@ namespace Nekoyume.Action
                 );
             }
 
+            if (currency.Equals(CrystalCalculator.CRYSTAL) &&
+                blockIndex > TransferAsset.WhiteListAvailableIndex && !TransferAsset.WhiteList.Contains(Sender))
+            {
+                throw new InvalidTransferCurrencyException($"transfer crystal not allowed {Sender}");
+            }
             return state.TransferAsset(Sender, recipient, amount);
         }
     }

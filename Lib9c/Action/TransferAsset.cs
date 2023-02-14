@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using Lib9c.Abstractions;
+using Nekoyume.Helper;
 using Nekoyume.Model;
 using Serilog;
 
@@ -16,13 +17,23 @@ namespace Nekoyume.Action
 {
     /// <summary>
     /// Hard forked at https://github.com/planetarium/lib9c/pull/636
-    /// Updated at https://github.com/planetarium/lib9c/pull/957
+    /// Updated at https://github.com/planetarium/lib9c/pull/1718
     /// </summary>
     [Serializable]
     [ActionType("transfer_asset3")]
     public class TransferAsset : ActionBase, ISerializable, ITransferAsset, ITransferAssetV1
     {
         private const int MemoMaxLength = 80;
+
+        public const long WhiteListAvailableIndex = 6_200_000L;
+
+        public static readonly IReadOnlyList<Address> WhiteList = new List<Address>
+        {
+            // world boss service
+            new Address("CFCd6565287314FF70e4C4CF309dB701C43eA5bD"),
+            // world boss ops
+            new Address("3ac40802D359a6B51acB0AC0710cc90de19C9B81"),
+        };
 
         public TransferAsset()
         {
@@ -127,6 +138,12 @@ namespace Nekoyume.Action
                     Sender,
                     Recipient
                );
+            }
+
+            if (currency.Equals(CrystalCalculator.CRYSTAL) &&
+                context.BlockIndex >= WhiteListAvailableIndex && !WhiteList.Contains(Sender))
+            {
+                throw new InvalidTransferCurrencyException($"transfer crystal not allowed {Sender}");
             }
 
             var ended = DateTimeOffset.UtcNow;
