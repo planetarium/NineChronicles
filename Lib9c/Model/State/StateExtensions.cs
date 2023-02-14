@@ -66,13 +66,13 @@ namespace Nekoyume.Model.State
         #region Address
 
         public static IValue Serialize(this Address address) =>
-            new Binary(address.ByteArray);
+            address.Bencoded;
 
         public static IValue Serialize(this Address? address) =>
             Serialize(Serialize, address);
 
         public static Address ToAddress(this IValue serialized) =>
-            new Address(((Binary)serialized).ByteArray);
+            new Address(serialized);
 
         public static Address? ToNullableAddress(this IValue serialized) =>
             Deserialize(ToAddress, serialized);
