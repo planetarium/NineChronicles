@@ -72,7 +72,7 @@ namespace Nekoyume.Action
             {
                 // This assumes `states` consists of only Binary keys:
                 _states = states.ToImmutableDictionary(
-                    kv => new Address((Binary)kv.Key),
+                    kv => new Address(kv.Key),
                     kv => kv.Value
                 );
 
