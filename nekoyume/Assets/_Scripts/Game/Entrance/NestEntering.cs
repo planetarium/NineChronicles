@@ -64,7 +64,7 @@ namespace Nekoyume.Game.Entrance
                 else
                 {
                     player = PlayerFactory.Create().GetComponent<Player>();
-                    player.SpineController.Hide();
+                    // player.SpineController.Hide();
                     active = false;
                 }
 

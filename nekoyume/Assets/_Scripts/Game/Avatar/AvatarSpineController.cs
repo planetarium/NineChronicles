@@ -85,7 +85,7 @@ namespace Nekoyume.Game.Avatar
 
         public void Appear(float duration = 1f, System.Action onComplete = null)
         {
-            Refresh();
+            // Refresh();
             if (_isActiveFullCostume)
             {
                 _parts[AvatarPartsType.full_costume].Skeleton.A = 0;
@@ -108,7 +108,7 @@ namespace Nekoyume.Game.Avatar
 
         public void Disappear(float duration = 1f, System.Action onComplete = null)
         {
-            Refresh();
+            // Refresh();
             if (_isActiveFullCostume)
             {
                 _parts[AvatarPartsType.full_costume].Skeleton.A = 1;
@@ -129,7 +129,7 @@ namespace Nekoyume.Game.Avatar
             StartFade(0f, duration, onComplete);
         }
 
-        public void Refresh(bool isReset = false)
+        private void Refresh(bool isReset = false)
         {
             if (_isActiveFullCostume)
             {
@@ -154,7 +154,6 @@ namespace Nekoyume.Game.Avatar
                 }
             }
 
-            Debug.Log($"[Refresh] :{isReset}");
             if (isReset)
             {
                 foreach (var sa in _parts.Values.Where(x => x.isActiveAndEnabled))
@@ -232,14 +231,13 @@ namespace Nekoyume.Game.Avatar
             }
 
             _isActiveFullCostume = false;
-            Debug.Log("[UnequipFullCostume]");
             Refresh(true);
         }
 
         public void UpdateBody(int index, int skinTone)
         {
+            // todo : 바디 적용할때 바꿔줘야함.
             index = index == 10230000 ? 10230000 : 10220000;
-            Debug.Log($"index : {index}");
             UpdateSkeletonDataAsset(index, false);
             // var preIndex = (int)(index * 0.0001) * 10000;
             var skinName = $"{index}-{skinTone}";
@@ -386,8 +384,6 @@ namespace Nekoyume.Game.Avatar
                 return;
             }
 
-            Debug.Log($"[UpdateSkin] {type} : {skinName}");
-            // var p = parts.FirstOrDefault(x => x.Type == type);
             skeletonAnimation.Skeleton.SetSkin(skinName);
             skeletonAnimation.Skeleton.SetSlotsToSetupPose();
             skeletonAnimation.Skeleton.Update(0);

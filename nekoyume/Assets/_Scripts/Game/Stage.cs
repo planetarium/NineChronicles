@@ -638,7 +638,7 @@ namespace Nekoyume.Game
 #endif
             var avatarState = States.Instance.CurrentAvatarState;
             var playerCharacter = RunPlayer(false);
-            playerCharacter.Set(character, true);
+            playerCharacter.Set(avatarState.address, character, true);
             playerCharacter.Run();
             playerCharacter.ShowSpeech("PLAYER_INIT");
             var player = playerCharacter.gameObject;

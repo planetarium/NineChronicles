@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2453831652237097421}
   - component: {fileID: 3032038697969686567}
   m_Layer: 0
-  m_Name: Spine GameObject (10220000_body_skintest)
+  m_Name: body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -63,6 +63,8 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
+  - {fileID: 2100000, guid: 6dd7d054dd91d944db65a796e2351e24, type: 2}
+  - {fileID: 0}
   - {fileID: 2100000, guid: 6dd7d054dd91d944db65a796e2351e24, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -149,7 +151,7 @@ GameObject:
   - component: {fileID: 2453831652824800178}
   - component: {fileID: 1457136956380943738}
   m_Layer: 0
-  m_Name: Spine GameObject (10220000_acface_skintest)
+  m_Name: acface
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -163,7 +165,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2453831652824800176}
   m_LocalRotation: {x: -0, y: -0, z: -0.0000000217594, w: 1}
-  m_LocalPosition: {x: 0.22598024, y: 1.4791586, z: 0}
+  m_LocalPosition: {x: 0.22583008, y: 1.4785767, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -292,7 +294,7 @@ GameObject:
   - component: {fileID: 2453831652976915083}
   - component: {fileID: 2300556663291376024}
   m_Layer: 0
-  m_Name: Spine GameObject (10220000_aceye_skintest)
+  m_Name: aceye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -306,7 +308,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2453831652976915081}
   m_LocalRotation: {x: -0, y: -0, z: -0.0000000217594, w: 1}
-  m_LocalPosition: {x: 0.22598024, y: 1.4791586, z: 0}
+  m_LocalPosition: {x: 0.22583008, y: 1.4785767, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -435,7 +437,7 @@ GameObject:
   - component: {fileID: 2453831653147030737}
   - component: {fileID: 3483594582292740843}
   m_Layer: 0
-  m_Name: Spine GameObject (10220000_hairback_skintest)
+  m_Name: hairback
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -449,7 +451,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2453831653147030751}
   m_LocalRotation: {x: -0, y: -0, z: -0.0000000217594, w: 1}
-  m_LocalPosition: {x: 0.22598024, y: 1.4791586, z: 0}
+  m_LocalPosition: {x: 0.22583008, y: 1.4785767, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -578,7 +580,7 @@ GameObject:
   - component: {fileID: 2453831653186862767}
   - component: {fileID: 848762598963472071}
   m_Layer: 0
-  m_Name: Spine GameObject (10220000_achead_skintest)
+  m_Name: achead
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -592,7 +594,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2453831653186862765}
   m_LocalRotation: {x: -0, y: -0, z: -0.0000000217594, w: 1}
-  m_LocalPosition: {x: 0.22598024, y: 1.4791586, z: 0}
+  m_LocalPosition: {x: 0.22583008, y: 1.4785767, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -721,7 +723,7 @@ GameObject:
   - component: {fileID: 2453831653253612934}
   - component: {fileID: 4258517686723315095}
   m_Layer: 0
-  m_Name: Spine GameObject (10220000_tail_skintest)
+  m_Name: tail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -735,7 +737,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2453831653253612932}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.23219998, y: 0.8525, z: 0}
+  m_LocalPosition: {x: -0.2319336, y: 0.8529663, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -864,7 +866,7 @@ GameObject:
   - component: {fileID: 2453831653708135038}
   - component: {fileID: 8305725863858204363}
   m_Layer: 0
-  m_Name: Spine GameObject (10220000_face_skintest)
+  m_Name: face
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -878,7 +880,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2453831653708135036}
   m_LocalRotation: {x: -0, y: -0, z: -0.0000000217594, w: 1}
-  m_LocalPosition: {x: 0.22598024, y: 1.4791586, z: 0}
+  m_LocalPosition: {x: 0.22583008, y: 1.4785767, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1106,7 +1108,7 @@ GameObject:
   - component: {fileID: 2453831654188472598}
   - component: {fileID: 2056590897612317663}
   m_Layer: 0
-  m_Name: Spine GameObject (10220000_ear_skintest)
+  m_Name: ear
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1120,7 +1122,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2453831654188472596}
   m_LocalRotation: {x: -0, y: -0, z: -0.0000000217594, w: 1}
-  m_LocalPosition: {x: 0.22598024, y: 1.4791586, z: 0}
+  m_LocalPosition: {x: 0.22583008, y: 1.4785767, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1249,7 +1251,7 @@ GameObject:
   - component: {fileID: 2453831654330395777}
   - component: {fileID: 9159191455747318597}
   m_Layer: 0
-  m_Name: Spine GameObject (10220000_hairFront_skintest)
+  m_Name: hairFront
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1263,7 +1265,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2453831654330395791}
   m_LocalRotation: {x: -0, y: -0, z: -0.0000000217594, w: 1}
-  m_LocalPosition: {x: 0.22598024, y: 1.4791586, z: 0}
+  m_LocalPosition: {x: 0.22583008, y: 1.4785767, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1392,7 +1394,7 @@ GameObject:
   - component: {fileID: 1223400259526878922}
   - component: {fileID: 6409176533594281649}
   m_Layer: 0
-  m_Name: Spine GameObject (40100000)
+  m_Name: fullCostume
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

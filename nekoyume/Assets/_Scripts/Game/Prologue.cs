@@ -167,7 +167,6 @@ namespace Nekoyume.Game
             }
             _battle.ShowComboText(true);
             PopupDmg(damage, enemy.gameObject, true, critical, ElementalType.Normal, isFenrir);
-            yield return new WaitUntil(() => _player.Animator.IsIdle());
         }
 
         private IEnumerator PlayerFinisher()

@@ -32,6 +32,11 @@ namespace Nekoyume.Game.Character
         public AvatarSpineController SpineController => avatarSpineController;
         public BoxCollider BoxCollider => boxCollider;
 
+        private void OnDisable()
+        {
+            Destroy(_cachedCharacterTitle);
+        }
+
         public void Set(
             ArenaPlayerDigest digest,
             Address avatarAddress,
@@ -83,7 +88,6 @@ namespace Nekoyume.Game.Character
         }
 
         public void SetForPrologue(
-            Address avatarAddress,
             CharacterAnimator animator,
             HudContainer hudContainer,
             int armorId,
@@ -93,6 +97,9 @@ namespace Nekoyume.Game.Character
             int hairIndex,
             int tailIndex)
         {
+            _animator = animator;
+            _hudContainer = hudContainer;
+
             SpineController.UnequipFullCostume();
             UpdateEar(earIndex, false);
             UpdateFace(lensIndex, false);
@@ -124,7 +131,8 @@ namespace Nekoyume.Game.Character
             Destroy(_cachedCharacterTitle);
 
             var isDcc = Game.instance.Dcc.IsActive(avatarAddress, out var id, out var isVisible);
-            if (avatarAddress == States.Instance.CurrentAvatarState.address)
+            if (isDcc && States.Instance.CurrentAvatarState is not null &&
+                avatarAddress == States.Instance.CurrentAvatarState.address)
             {
                 isDcc = isVisible;
             }
