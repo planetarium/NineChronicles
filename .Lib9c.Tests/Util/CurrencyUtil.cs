@@ -10,10 +10,10 @@ namespace Lib9c.Tests.Util
             IAccountStateDelta state,
             Address agentAddress,
             Currency currency,
-            long amount
+            FungibleAssetValue amount
         )
         {
-            return state.MintAsset(agentAddress, currency * amount);
+            return state.MintAsset(agentAddress, amount);
         }
     }
 }

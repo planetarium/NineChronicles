@@ -1,4 +1,4 @@
-// BlackCat reduces required blocks to craft item by ratio.
+// Reduces required blocks to craft item by ratio.
 // ReducedBlock = Round(RequiredBlock * (100 - {ratio})) (ref. PetHelper.CalculateReducedBlockOnCraft)
 
 namespace Lib9c.Tests.Action.Scenario.Pet
@@ -13,16 +13,18 @@ namespace Lib9c.Tests.Action.Scenario.Pet
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model.Item;
+    using Nekoyume.Model.Pet;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
     using Xunit.Abstractions;
     using static Lib9c.SerializeKeys;
 
-    public class BlackCatTest
+    public class ReduceRequiredBlockTest
     {
-        private const int PetId = 1; // BlackCat
-        private readonly ITestOutputHelper _testOutputHelper;
+        private const PetOptionType PetOptionType =
+            Nekoyume.Model.Pet.PetOptionType.ReduceRequiredBlock;
+
         private readonly TableSheets _tableSheets;
         private readonly Address _agentAddr;
         private readonly Address _avatarAddr;
@@ -31,10 +33,10 @@ namespace Lib9c.Tests.Action.Scenario.Pet
         private readonly Address _inventoryAddr;
         private readonly Address _worldInfoAddr;
         private readonly Address _recipeAddr;
+        private int? _petId;
 
-        public BlackCatTest(ITestOutputHelper testOutputHelper)
+        public ReduceRequiredBlockTest()
         {
-            _testOutputHelper = testOutputHelper;
             (_tableSheets, _agentAddr, _avatarAddr, _initialStateV1, _initialStateV2)
                 = InitializeUtil.InitializeStates();
             _inventoryAddr = _avatarAddr.Derive(LegacyInventoryKey);
@@ -43,14 +45,12 @@ namespace Lib9c.Tests.Action.Scenario.Pet
         }
 
         [Theory]
-        [InlineData(10114000, null, 477)] // No Pet
-        [InlineData(10114000, 0, 477)] // Pet lv.0 means no pet
-        [InlineData(10114000, 1, 451)] // Black cat lv.1 reduces 5.5%: 477 -> 450.765
-        [InlineData(10114000, 30, 382)] // Black cat lv.30 reduces 20%: 477 -> 381.6
-        public void CombinationEquipment_WithBlackCat(
+        [InlineData(10114000, null)] // No Pet
+        [InlineData(10114000, 1)] // Lv.1 reduces 5.5%
+        [InlineData(10114000, 30)] // Lv.30 reduces 20%
+        public void CombinationEquipmentTest(
             int targetItemId,
-            int? petLevel,
-            long expectedBlock
+            int? petLevel
         )
         {
             var random = new TestRandom();
@@ -59,6 +59,7 @@ namespace Lib9c.Tests.Action.Scenario.Pet
             var recipe = _tableSheets.EquipmentItemRecipeSheet.OrderedList.First(
                 recipe => recipe.ResultEquipmentId == targetItemId);
             Assert.NotNull(recipe);
+            var expectedBlock = recipe.RequiredBlockIndex;
 
             // Get Materials and stages
             List<EquipmentItemSubRecipeSheet.MaterialInfo> materialList =
@@ -74,9 +75,18 @@ namespace Lib9c.Tests.Action.Scenario.Pet
             // Get pet
             if (!(petLevel is null))
             {
+                var petRow = _tableSheets.PetOptionSheet.Values.First(
+                    pet => pet.LevelOptionMap[(int)petLevel!].OptionType == PetOptionType
+                );
+
+                _petId = petRow.PetId;
                 stateV2 = stateV2.SetState(
-                    PetState.DeriveAddress(_avatarAddr, PetId),
-                    new List(PetId.Serialize(), petLevel.Serialize(), 0L.Serialize()));
+                    PetState.DeriveAddress(_avatarAddr, (int)_petId),
+                    new List(_petId!.Serialize(), petLevel.Serialize(), 0L.Serialize())
+                );
+                expectedBlock = (long)Math.Round(
+                    expectedBlock * (1 - petRow.LevelOptionMap[(int)petLevel].OptionValue / 100)
+                );
             }
 
             // Prepare
@@ -102,7 +112,7 @@ namespace Lib9c.Tests.Action.Scenario.Pet
                 slotIndex = 0,
                 recipeId = recipe.Id,
                 subRecipeId = recipe.SubRecipeIds?[0],
-                petId = petLevel is null ? (int?)null : PetId,
+                petId = _petId,
             };
 
             stateV2 = action.Execute(new ActionContext
@@ -119,29 +129,50 @@ namespace Lib9c.Tests.Action.Scenario.Pet
         }
 
         [Theory]
-        [InlineData(0, 10114000, null, 25)]
-        [InlineData(0, 10114000, 0, 25)]
-        [InlineData(0, 10114000, 1, 24)] // Black cat lv.1 reduces 5.5%: 25 -> 23.625
-        [InlineData(0, 10114000, 30, 20)] // Black cat lv.30 reduces 20%: 25 -> 20
-        [InlineData(1, 10114000, 0, 31)]
-        [InlineData(1, 10114000, 1, 29)] // Black cat lv.1 reduces 5.5%: 31 -> 29.295
-        [InlineData(1, 10114000, 30, 25)] // Black cat lv.30 reduces 20%: 31 -> 24.8
-        public void ItemEnhancement_WithBlackCat(
+        [InlineData(0, 10114000, null, "success")]
+        [InlineData(0, 10114000, 1, "success")] // Lv.1 reduces 5.5%
+        [InlineData(0, 10114000, 30, "success")] // Lv.30 reduces 20%
+        [InlineData(14, 10114000, null, "greatSuccess")]
+        [InlineData(14, 10114000, 1, "greatSuccess")] // Lv.1 reduces 5.5%
+        [InlineData(14, 10114000, 30, "greatSuccess")] // Lv.30 reduces 20%
+        [InlineData(10, 10114000, null, "fail")]
+        [InlineData(10, 10114000, 1, "fail")] // Lv.1 reduces 5.5%
+        [InlineData(10, 10114000, 30, "fail")] // Lv.30 reduces 20%
+        public void ItemEnhancementTest(
             int randomSeed,
             int targetItemId,
             int? petLevel,
-            long expectedBlock
+            string resultType
         )
         {
+            const int itemLevel = 4;
             var avatarState = _initialStateV2.GetAvatarStateV2(_avatarAddr);
             var random = new TestRandom(randomSeed);
             var equipmentRow =
                 _tableSheets.EquipmentItemSheet.Values.First(e => e.Id == targetItemId);
-            var equipment = (Equipment)ItemFactory.CreateItemUsable(equipmentRow, default, 0);
+            var equipment = (Equipment)ItemFactory.CreateItemUsable(
+                equipmentRow,
+                default,
+                0,
+                itemLevel
+            );
             var material = (Equipment)ItemFactory.CreateItemUsable(
                 equipmentRow,
                 Guid.NewGuid(),
-                0);
+                0,
+                itemLevel
+            );
+            var enhancementRow = _tableSheets.EnhancementCostSheetV2.Values.First(
+                cost => cost.ItemSubType == ItemSubType.Weapon
+                        && cost.Grade == equipment.Grade
+                        && cost.Level == equipment.level + 1
+            );
+            var expectedBlock = resultType switch
+            {
+                "success" => enhancementRow.SuccessRequiredBlockIndex,
+                "greatSuccess" => enhancementRow.GreatSuccessRequiredBlockIndex,
+                _ => enhancementRow.FailRequiredBlockIndex
+            };
 
             // Give equipments
             avatarState.inventory.AddItem(equipment);
@@ -152,9 +183,17 @@ namespace Lib9c.Tests.Action.Scenario.Pet
             // Get pet
             if (!(petLevel is null))
             {
+                var petRow = _tableSheets.PetOptionSheet.Values.First(
+                    pet => pet.LevelOptionMap[(int)petLevel].OptionType == PetOptionType
+                );
+                _petId = petRow.PetId;
                 stateV2 = stateV2.SetState(
-                    PetState.DeriveAddress(_avatarAddr, PetId),
-                    new List(PetId.Serialize(), petLevel.Serialize(), 0L.Serialize()));
+                    PetState.DeriveAddress(_avatarAddr, (int)_petId),
+                    new List(_petId!.Serialize(), petLevel.Serialize(), 0L.Serialize())
+                );
+                expectedBlock = (int)Math.Round(
+                    expectedBlock * (1 - petRow.LevelOptionMap[(int)petLevel].OptionValue / 100)
+                );
             }
 
             // Prepare
@@ -173,7 +212,7 @@ namespace Lib9c.Tests.Action.Scenario.Pet
                 itemId = equipment.ItemId,
                 materialId = material.ItemId,
                 slotIndex = 0,
-                petId = petLevel is null ? (int?)null : PetId,
+                petId = _petId,
             };
 
             stateV2 = action.Execute(new ActionContext

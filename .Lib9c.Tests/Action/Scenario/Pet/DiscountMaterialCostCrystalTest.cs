@@ -1,31 +1,36 @@
-// RedDongle reduces required crystal to craft item by ratio.
+// Reduces required crystal to craft item by ratio.
 
 namespace Lib9c.Tests.Action.Scenario.Pet
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Numerics;
     using Bencodex.Types;
     using Lib9c.Tests.Util;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
     using Nekoyume.Action;
+    using Nekoyume.Model.Pet;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
     using static Lib9c.SerializeKeys;
 
-    public class RedDonguriTest
+    public class DiscountMaterialCostCrystalTest
     {
-        private const int PetId = 2; // RedDonguri
+        private const PetOptionType PetOptionType =
+            Nekoyume.Model.Pet.PetOptionType.DiscountMaterialCostCrystal;
+
         private readonly Address _agentAddr;
         private readonly Address _avatarAddr;
         private readonly Address _inventoryAddr;
         private readonly Address _worldInformationAddr;
         private readonly IAccountStateDelta _initialStateV2;
         private readonly TableSheets _tableSheets;
+        private int? _petId;
 
-        public RedDonguriTest()
+        public DiscountMaterialCostCrystalTest()
         {
             (
                 _tableSheets,
@@ -39,15 +44,13 @@ namespace Lib9c.Tests.Action.Scenario.Pet
         }
 
         [Theory]
-        [InlineData(0, 10114000, null, 9540)]
-        [InlineData(0, 10114000, 0, 9540)]
-        [InlineData(0, 10114000, 1, 9302)] // RedDonguri lv.1 reduces 2.5% of crystal: 9540 -> 9301.5
-        [InlineData(0, 10114000, 30, 7918)] // RedDonguri lv.30 reduces 17& of crystal: 9540 -> 7918.2
-        public void CraftEquipment_WithRedDonguri(
+        [InlineData(0, 10114000, null)]
+        [InlineData(0, 10114000, 1)] // Lv.1 reduces 2.5% of crystal
+        [InlineData(0, 10114000, 30)] // Lv.30 reduces 17& of crystal
+        public void CraftEquipmentTest(
             int randomSeed,
             int targetItemId,
-            int? petLevel,
-            int expectedCrystal
+            int? petLevel
         )
         {
             var crystal = Currency.Legacy("CRYSTAL", 18, null);
@@ -73,13 +76,30 @@ namespace Lib9c.Tests.Action.Scenario.Pet
                 _avatarAddr.Derive("recipe_ids"),
                 stageList
             );
+            var expectedCrystal = 0 * crystal;
+            foreach (var material in materialList)
+            {
+                var materialCost = _tableSheets.CrystalMaterialCostSheet.Values.First(
+                    m => m.ItemId == material.Id
+                );
+                expectedCrystal += material.Count * materialCost.CRYSTAL * crystal;
+            }
 
             // Get pet
             if (!(petLevel is null))
             {
+                var petRow = _tableSheets.PetOptionSheet.Values.First(
+                    pet => pet.LevelOptionMap[(int)petLevel].OptionType == PetOptionType
+                );
+
+                _petId = petRow.PetId;
                 stateV2 = stateV2.SetState(
-                    PetState.DeriveAddress(_avatarAddr, PetId),
-                    new List(PetId.Serialize(), petLevel.Serialize(), 0L.Serialize()));
+                    PetState.DeriveAddress(_avatarAddr, (int)_petId),
+                    new List(_petId.Serialize(), petLevel.Serialize(), 0L.Serialize()));
+                expectedCrystal *= (BigInteger)(
+                    10000 - petRow.LevelOptionMap[(int)petLevel].OptionValue * 100
+                );
+                expectedCrystal = expectedCrystal.DivRem(10000, out _);
             }
 
             // Prepare
@@ -99,7 +119,7 @@ namespace Lib9c.Tests.Action.Scenario.Pet
                 slotIndex = 0,
                 recipeId = recipe.Id,
                 subRecipeId = recipe.SubRecipeIds?[0],
-                petId = petLevel is null ? (int?)null : PetId,
+                petId = _petId,
                 payByCrystal = true,
             };
 
