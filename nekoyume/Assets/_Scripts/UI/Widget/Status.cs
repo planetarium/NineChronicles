@@ -1,11 +1,7 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using Nekoyume.Game.Character;
 using Nekoyume.Helper;
-using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
@@ -13,8 +9,6 @@ using Nekoyume.UI.Module.Timer;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using UniRx;
-using ObservableExtensions = UniRx.ObservableExtensions;
 
 namespace Nekoyume.UI
 {
@@ -61,6 +55,10 @@ namespace Nekoyume.UI
             Game.Event.OnUpdatePlayerEquip.Subscribe(characterView.SetByPlayer)
                 .AddTo(gameObject);
             Game.Event.OnUpdatePlayerStatus.Subscribe(SubscribeOnUpdatePlayerStatus)
+                .AddTo(gameObject);
+
+            characterView.OnClickCharacterIcon
+                .Subscribe(_ => Find<ProfileSelectPopup>().Show())
                 .AddTo(gameObject);
 
             CloseWidget = null;

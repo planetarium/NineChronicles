@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 224898616830980190}
   - component: {fileID: 222668420831161334}
   - component: {fileID: 95256010546860014}
-  - component: {fileID: 6355941756749141964}
+  - component: {fileID: 47543256348989850}
   m_Layer: 5
-  m_Name: UI_AvatarSelectPopup
+  m_Name: UI_ProfileSelectPopup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -69,7 +69,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &6355941756749141964
+--- !u!114 &47543256348989850
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -78,31 +78,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 1907849136098932}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 82b3d5870cad7044289220c2c78c9a2e, type: 3}
+  m_Script: {fileID: 11500000, guid: 210a8fd495f74094b7fb906f2f36912e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
-  addressTitleText: {fileID: 0}
-  addressContentInputField: {fileID: 0}
-  addressCopyButton: {fileID: 0}
-  privateKeyTitleText: {fileID: 0}
-  privateKeyContentInputField: {fileID: 0}
-  privateKeyCopyButton: {fileID: 0}
-  closeButton: {fileID: 0}
-  warningText: {fileID: 0}
-  volumeMasterText: {fileID: 0}
-  volumeMasterSlider: {fileID: 0}
-  volumeMasterToggle: {fileID: 0}
-  muteTexts:
-  - {fileID: 0}
-  resetKeyStoreText: {fileID: 0}
-  resetStoreText: {fileID: 0}
-  confirmText: {fileID: 0}
-  redeemCodeText: {fileID: 5261396801801733739}
-  redeemCode: {fileID: 0}
-  resolutionDropdown: {fileID: 0}
-  windowedToggle: {fileID: 0}
+  closeButton: {fileID: 8264480560433436629}
+  dccShortCutButton: {fileID: 8238202582350511520}
+  onDccLocked: []
+  onDccUnlocked: []
+  lockedButton: {fileID: 0}
 --- !u!1 &432678005806932435
 GameObject:
   m_ObjectHideFlags: 0
@@ -933,7 +918,7 @@ GameObject:
   - component: {fileID: 2857933874298186918}
   - component: {fileID: 5798790182444962034}
   m_Layer: 5
-  m_Name: 9C_Selected
+  m_Name: PFP_Selected
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2607,7 +2592,7 @@ GameObject:
   - component: {fileID: 4217044054508771264}
   - component: {fileID: 5770159455385195395}
   m_Layer: 5
-  m_Name: 9C_Select
+  m_Name: PFP_Select
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3014,7 +2999,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6355941756749141964}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: 
         m_MethodName: RedeemCode
         m_Mode: 1
@@ -3072,7 +3057,7 @@ GameObject:
   - component: {fileID: 19358794894714627}
   - component: {fileID: 4860487328819028958}
   m_Layer: 5
-  m_Name: 9C_Locked
+  m_Name: PFP_Locked
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
