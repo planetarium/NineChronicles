@@ -488,6 +488,7 @@ GameObject:
   - component: {fileID: 761237181760334282}
   - component: {fileID: 3004119243135861154}
   - component: {fileID: 4697231663201868669}
+  - component: {fileID: 8746604714732099169}
   m_Layer: 5
   m_Name: UI_WorldMap
   m_TagString: Untagged
@@ -569,6 +570,18 @@ MonoBehaviour:
     remainingTimeObject: {fileID: 2181221572979721501}
     remainingTimeText: {fileID: 3921520138423152270}
   eventDungeonLockButton: {fileID: 7998614961290197777}
+--- !u!225 &8746604714732099169
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 761237181760334281}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &779673188497243818
 GameObject:
   m_ObjectHideFlags: 0
