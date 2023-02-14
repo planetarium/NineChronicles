@@ -9,6 +9,7 @@ namespace Nekoyume.Helper
     {
         private const string CharacterIconDefaultPath = "UI/Icons/Character/100000";
         private const string CharacterIconPathFormat = "UI/Icons/Character/{0}";
+        private const string PfpIconPathFormat = "PFP/{0}";
 
         private const string ItemIconDefaultPath = "UI/Icons/Item/100000";
         private const string ItemIconPathFormat = "UI/Icons/Item/{0}";
@@ -38,6 +39,12 @@ namespace Nekoyume.Helper
         public static Sprite GetCharacterIcon(int characterId)
         {
             return Resources.Load<Sprite>(string.Format(CharacterIconPathFormat, characterId)) ??
+                   Resources.Load<Sprite>(CharacterIconDefaultPath);
+        }
+
+        public static Sprite GetPfpProfileIcon(int pfpId)
+        {
+            return Resources.Load<Sprite>(string.Format(PfpIconPathFormat, pfpId)) ??
                    Resources.Load<Sprite>(CharacterIconDefaultPath);
         }
 
