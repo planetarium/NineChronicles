@@ -37,19 +37,6 @@ namespace Nekoyume.Game.Avatar
         private readonly List<Tweener> _fadeTweener = new();
         private bool _isActiveFullCostume;
         private readonly Dictionary<AvatarPartsType, SkeletonAnimation> _parts = new();
-        private readonly Dictionary<AvatarPartsType, int> _partsIndex = new()
-        {
-            { AvatarPartsType.hair_back, -1 },
-            { AvatarPartsType.tail, -1 },
-            { AvatarPartsType.body, -1 },
-            { AvatarPartsType.face, -1 },
-            { AvatarPartsType.ear, -1 },
-            { AvatarPartsType.ac_face, -1 },
-            { AvatarPartsType.ac_eye, -1 },
-            { AvatarPartsType.hair_front, -1 },
-            { AvatarPartsType.ac_head, -1 },
-            { AvatarPartsType.full_costume, -1 },
-        };
 
         public BoxCollider Collider => _isActiveFullCostume ? fullCostumeCollider : bodyCollider;
 
@@ -239,13 +226,19 @@ namespace Nekoyume.Game.Avatar
 
         public void UnequipFullCostume()
         {
+            if (!_isActiveFullCostume)
+            {
+                return;
+            }
+
             _isActiveFullCostume = false;
+            Debug.Log("[UnequipFullCostume]");
             Refresh(true);
         }
 
         public void UpdateBody(int index, int skinTone)
         {
-            index = index == 10230000 ? 10220000 : 10230000;
+            index = index == 10230000 ? 10230000 : 10220000;
             Debug.Log($"index : {index}");
             UpdateSkeletonDataAsset(index, false);
             // var preIndex = (int)(index * 0.0001) * 10000;
@@ -368,13 +361,6 @@ namespace Nekoyume.Game.Avatar
 
         private void UpdateSkin(bool active, int index, AvatarPartsType type, string skinName)
         {
-            if (_partsIndex[type] == index)
-            {
-                return;
-            }
-
-            _partsIndex[type] = index;
-
             if (!_parts.ContainsKey(type))
             {
                 return;
@@ -387,6 +373,13 @@ namespace Nekoyume.Game.Avatar
                 return;
             }
 
+            if (skeletonAnimation.Skeleton.Skin is not null &&
+                skeletonAnimation.Skeleton.Skin.Name != string.Empty &&
+                skeletonAnimation.Skeleton.Skin.Name == skinName)
+            {
+                return;
+            }
+
             var skin = skeletonAnimation.Skeleton.Data.FindSkin(skinName);
             if (skin is null)
             {
@@ -394,32 +387,30 @@ namespace Nekoyume.Game.Avatar
             }
 
             Debug.Log($"[UpdateSkin] {type} : {skinName}");
-            var p = parts.FirstOrDefault(x => x.Type == type);
-            p.SkeletonAnimation.Skeleton.SetSkin(skinName);
-            p.SkeletonAnimation.Skeleton.SetSlotsToSetupPose();
-            p.SkeletonAnimation.Skeleton.Update(0);
+            // var p = parts.FirstOrDefault(x => x.Type == type);
+            skeletonAnimation.Skeleton.SetSkin(skinName);
+            skeletonAnimation.Skeleton.SetSlotsToSetupPose();
+            skeletonAnimation.Skeleton.Update(0);
         }
 
         private void UpdateSkeletonDataAsset(int index, bool isFullCostume)
         {
             var type = isFullCostume ? AvatarPartsType.full_costume : AvatarPartsType.body;
-            if (_partsIndex[type] == index)
+            var skeletonAnimation = _parts[type];
+            var name = isFullCostume ? $"{index}_SkeletonData" : $"body_skin_{index}_SkeletonData";
+            if (skeletonAnimation.skeletonDataAsset.name == name)
             {
                 return;
             }
 
-            _partsIndex[type] = index;
-
-
-            var name = $"body_skin_{index}_SkeletonData";
             var asset = isFullCostume
                 ? avatarScriptableObject.FullCostume.FirstOrDefault(x => x.name == name)
                 : avatarScriptableObject.Body.FirstOrDefault(x => x.name == name);
 
-            var skeletonAnimation = _parts[type];
             skeletonAnimation.ClearState();
             skeletonAnimation.skeletonDataAsset = asset;
             skeletonAnimation.Initialize(true);
+
             Refresh(true);
         }
 
