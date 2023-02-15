@@ -257,7 +257,7 @@ namespace Lib9c.Tests.Action
                     _firstRoundStartBlockIndex,
                     _agentAddr,
                     _avatarAddr,
-                    1,
+                    _targetPetId,
                     currentPetLevel,
                     targetPetLevel,
                     mintAssets: false));
@@ -267,7 +267,7 @@ namespace Lib9c.Tests.Action
                     _firstRoundStartBlockIndex,
                     _agentAddr,
                     _avatarAddr,
-                    1,
+                    _targetPetId,
                     currentPetLevel,
                     targetPetLevel,
                     mintAssets: false));
