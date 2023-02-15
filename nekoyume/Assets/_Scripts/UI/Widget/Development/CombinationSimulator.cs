@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -196,11 +196,14 @@ namespace Nekoyume.UI
             var equipment =
                 (Equipment)ItemFactory.CreateItemUsable(row, random.GenerateRandomGuid(), 0);
             var agentState = States.Instance.AgentState;
-            Action.CombinationEquipment.AddAndUnlockOption(agentState,
+            Action.CombinationEquipment.AddAndUnlockOption(
+                agentState,
+                null,
                 equipment,
                 random,
                 subRecipeRow,
                 itemOptionSheet,
+                null,
                 skillSheet);
             return equipment;
         }

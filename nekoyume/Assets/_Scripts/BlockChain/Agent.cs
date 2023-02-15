@@ -47,6 +47,7 @@ using NCTx = Libplanet.Tx.Transaction<Libplanet.Action.PolymorphicAction<Nekoyum
 
 namespace Nekoyume.BlockChain
 {
+    using Libplanet.Net.Transports;
     using UniRx;
 
     /// <summary>
@@ -150,10 +151,10 @@ namespace Nekoyume.BlockChain
                 yield break;
             }
 
-            InitAgent(callback, privateKey, options);
+            InitAgentAsync(callback, privateKey, options);
         }
 
-        private void Init(
+        private async Task InitAsync(
             PrivateKey privateKey,
             string path,
             IEnumerable<BoundPeer> peers,
@@ -224,11 +225,16 @@ namespace Nekoyume.BlockChain
             appProtocolVersionOptions.DifferentAppProtocolVersionEncountered =
                 DifferentAppProtocolVersionEncountered;
             var swarmOptions = new SwarmOptions();
+            var transport = await NetMQTransport.Create(
+                privateKey,
+                appProtocolVersionOptions,
+                hostOptions,
+                swarmOptions.MessageTimestampBuffer);
+
             var initSwarmTask = Task.Run(() => new Swarm<NCAction>(
                 blockChain: blocks,
                 privateKey: privateKey,
-                appProtocolVersionOptions: appProtocolVersionOptions,
-                hostOptions: hostOptions,
+                transport: transport,
                 options: swarmOptions));
 
             initSwarmTask.Wait();
@@ -379,7 +385,7 @@ namespace Nekoyume.BlockChain
 
         #endregion
 
-        private void InitAgent(Action<bool> callback, PrivateKey privateKey, CommandLineOptions options)
+        private async void InitAgentAsync(Action<bool> callback, PrivateKey privateKey, CommandLineOptions options)
         {
             var peers = options.Peers.Select(LoadPeer);
             var iceServerList = options.IceServers.Select(LoadIceServer).ToImmutableList();
@@ -405,7 +411,7 @@ namespace Nekoyume.BlockChain
             var trustedAppProtocolVersionSigners = options.TrustedAppProtocolVersionSigners
                 .Select(s => new PublicKey(ByteUtil.ParseHex(s)));
             var hostOptions = new HostOptions(host, iceServers, port ?? default);
-            Init(
+            await InitAsync(
                 privateKey,
                 storagePath,
                 peers,
