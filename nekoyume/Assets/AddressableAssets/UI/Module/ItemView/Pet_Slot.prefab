@@ -352,6 +352,7 @@ GameObject:
   - component: {fileID: 181007622222205576}
   - component: {fileID: 2619100818144521577}
   - component: {fileID: 432228157416290920}
+  - component: {fileID: 376064458489931527}
   m_Layer: 5
   m_Name: Pet_Slot
   m_TagString: Untagged
@@ -438,6 +439,18 @@ MonoBehaviour:
   m_Hue: 0.5
   m_Saturation: 0
   m_Value: 0
+--- !u!114 &376064458489931527
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4552389311115988333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b91d144a8f6f08c438f25cfff90da1d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4763869756551035432
 GameObject:
   m_ObjectHideFlags: 0
