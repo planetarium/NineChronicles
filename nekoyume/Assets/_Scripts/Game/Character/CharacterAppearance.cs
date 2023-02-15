@@ -23,6 +23,11 @@ namespace Nekoyume.Game.Character
         public PlayerSpineController SpineController { get; private set; }
         public BoxCollider BoxCollider => boxCollider;
 
+        private void OnDisable()
+        {
+            Destroy(_cachedCharacterTitle);
+        }
+
         public void Set(
             ArenaPlayerDigest digest,
             CharacterAnimator animator,
