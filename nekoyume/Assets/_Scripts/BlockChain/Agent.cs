@@ -151,10 +151,10 @@ namespace Nekoyume.BlockChain
                 yield break;
             }
 
-            InitAgent(callback, privateKey, options);
+            InitAgentAsync(callback, privateKey, options);
         }
 
-        private async void Init(
+        private async Task InitAsync(
             PrivateKey privateKey,
             string path,
             IEnumerable<BoundPeer> peers,
@@ -228,7 +228,8 @@ namespace Nekoyume.BlockChain
             var transport = await NetMQTransport.Create(
                 privateKey,
                 appProtocolVersionOptions,
-                hostOptions);
+                hostOptions,
+                swarmOptions.MessageTimestampBuffer);
 
             var initSwarmTask = Task.Run(() => new Swarm<NCAction>(
                 blockChain: blocks,
@@ -384,7 +385,7 @@ namespace Nekoyume.BlockChain
 
         #endregion
 
-        private void InitAgent(Action<bool> callback, PrivateKey privateKey, CommandLineOptions options)
+        private async void InitAgentAsync(Action<bool> callback, PrivateKey privateKey, CommandLineOptions options)
         {
             var peers = options.Peers.Select(LoadPeer);
             var iceServerList = options.IceServers.Select(LoadIceServer).ToImmutableList();
@@ -410,7 +411,7 @@ namespace Nekoyume.BlockChain
             var trustedAppProtocolVersionSigners = options.TrustedAppProtocolVersionSigners
                 .Select(s => new PublicKey(ByteUtil.ParseHex(s)));
             var hostOptions = new HostOptions(host, iceServers, port ?? default);
-            Init(
+            await InitAsync(
                 privateKey,
                 storagePath,
                 peers,
