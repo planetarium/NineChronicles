@@ -1,4 +1,5 @@
 ﻿using Lib9c.Model.Order;
+using MarketService.Response;
 using Nekoyume.Model.Item;
 using UniRx;
 using UnityEngine;
@@ -8,7 +9,7 @@ namespace Nekoyume.UI.Model
     public class ShopItem
     {
         public ItemBase ItemBase { get; }
-        public ItemProductModel Product { get; }
+        public ItemProductResponseModel Product { get; }
         public int Grade { get; }
         public bool LevelLimited { get; }
 
@@ -16,7 +17,7 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<bool> Expired;
         public readonly ReactiveProperty<bool> Loading;
 
-        public ShopItem(ItemBase itemBase, ItemProductModel product,
+        public ShopItem(ItemBase itemBase, ItemProductResponseModel product,
             int grade, bool limited)
         {
             ItemBase = itemBase;

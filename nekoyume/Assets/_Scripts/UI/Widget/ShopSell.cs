@@ -278,11 +278,11 @@ namespace Nekoyume.UI
                     product.TradableId,
                     itemBase.ItemSubType,
                     (BigInteger)product.Price * States.Instance.GoldBalanceState.Gold.Currency,
-                    product.Quantity
+                    (int)product.Quantity
                 );
 
                 updateSellInfos.Add(updateSellInfo);
-                oneLineSystemInfos.Add((itemBase.GetLocalizedName(), product.Quantity));
+                oneLineSystemInfos.Add((itemBase.GetLocalizedName(), (int)product.Quantity));
             }
 
             Game.Game.instance.ActionManager.UpdateSell(updateSellInfos).Subscribe();

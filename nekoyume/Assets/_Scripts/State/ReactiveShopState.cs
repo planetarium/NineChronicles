@@ -7,10 +7,10 @@ using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Assets;
+using MarketService.Response;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
 using Nekoyume.TableData;
-using Nekoyume.UI.Model;
 using UniRx;
 using UnityEngine;
 
@@ -51,18 +51,18 @@ namespace Nekoyume.State
             ItemSubType.ApStone,
         };
 
-        public static ReactiveProperty<List<ItemProductModel>> BuyProducts { get; } = new();
+        public static ReactiveProperty<List<ItemProductResponseModel>> BuyProducts { get; } = new();
 
-        public static ReactiveProperty<List<ItemProductModel>> SellProducts { get; } = new();
+        public static ReactiveProperty<List<ItemProductResponseModel>> SellProducts { get; } = new();
 
         // key: orderId
         private static ConcurrentDictionary<Guid, ItemBase> CachedShopItems { get; } = new();
 
-        private static ConcurrentBag<ItemProductModel> CachedShopProducts { get; } = new();
-        private static readonly Dictionary<ItemSubType, List<ItemProductModel>> _buyProduct = new();
+        private static ConcurrentBag<ItemProductResponseModel> CachedShopProducts { get; } = new();
+        private static readonly Dictionary<ItemSubType, List<ItemProductResponseModel>> _buyProduct = new();
         private static List<Guid> _removedProductIds { get; } = new();
 
-        public static ItemProductModel GetSellProduct(
+        public static ItemProductResponseModel GetSellProduct(
             Guid tradableId,
             long requiredBlockIndex,
             FungibleAssetValue price,
@@ -76,7 +76,7 @@ namespace Nekoyume.State
                 x.Quantity.Equals(count));
         }
 
-        public static bool TryGetShopItem(ItemProductModel product, out ItemBase itemBase)
+        public static bool TryGetShopItem(ItemProductResponseModel product, out ItemBase itemBase)
         {
             if (!CachedShopItems.ContainsKey(product.ProductId))
             {
@@ -116,7 +116,7 @@ namespace Nekoyume.State
             });
         }
 
-        private static void AddBuyProduct(List<ItemProductModel> products, ItemSubType itemSubType)
+        private static void AddBuyProduct(List<ItemProductResponseModel> products, ItemSubType itemSubType)
         {
             var agentAddress = States.Instance.AgentState.address;
             var p = products
@@ -124,12 +124,12 @@ namespace Nekoyume.State
                 .ToList();
             if (!_buyProduct.ContainsKey(itemSubType))
             {
-                _buyProduct.Add(itemSubType, new List<ItemProductModel>());
+                _buyProduct.Add(itemSubType, new List<ItemProductResponseModel>());
             }
 
             _buyProduct[itemSubType] = p;
 
-            var buyProducts = new List<ItemProductModel>();
+            var buyProducts = new List<ItemProductResponseModel>();
             foreach (var pair in _buyProduct)
             {
                 buyProducts.AddRange(pair.Value);
@@ -183,11 +183,11 @@ namespace Nekoyume.State
             }
         }
 
-        private static List<ItemProductModel> GetBuyProducts(ItemSubType itemSubType)
+        private static List<ItemProductResponseModel> GetBuyProducts(ItemSubType itemSubType)
         {
-            var productsDictionary = new Dictionary<Address, List<ItemProductModel>>();
+            var productsDictionary = new Dictionary<Address, List<ItemProductResponseModel>>();
             AddProducts(productsDictionary, itemSubType);
-            var products = new List<ItemProductModel>();
+            var products = new List<ItemProductResponseModel>();
             foreach (var items in productsDictionary.Values)
             {
                 products.AddRange(items);
@@ -196,7 +196,7 @@ namespace Nekoyume.State
             return products;
         }
 
-        private static void AddProducts(IDictionary<Address, List<ItemProductModel>> products, ItemSubType itemSubType)
+        private static void AddProducts(IDictionary<Address, List<ItemProductResponseModel>> products, ItemSubType itemSubType)
         {
             var cachedProducts = CachedShopProducts.Where(i => i.ItemSubType.Equals(itemSubType)).Select(s => s).ToList();
             foreach (var product in cachedProducts)
@@ -205,7 +205,7 @@ namespace Nekoyume.State
                 {
                     if (!products.ContainsKey(product.SellerAgentAddress))
                     {
-                        products[product.SellerAgentAddress] = new List<ItemProductModel>();
+                        products[product.SellerAgentAddress] = new List<ItemProductResponseModel>();
                     }
 
                     products[product.SellerAgentAddress].Add(product);
@@ -213,10 +213,10 @@ namespace Nekoyume.State
             }
         }
 
-        private static async UniTask<List<ItemProductModel>> GetSellProductsAsync()
+        private static async UniTask<List<ItemProductResponseModel>> GetSellProductsAsync()
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var receipts = new List<ItemProductModel>();
+            var receipts = new List<ItemProductResponseModel>();
             var products = await Game.Game.instance.MarketServiceClient.GetProducts(avatarAddress);
             var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
             var validProducts = products
@@ -231,7 +231,7 @@ namespace Nekoyume.State
         }
 
         private static bool UpdateCachedShopItemsAsync(
-            IEnumerable<ItemProductModel> products)
+            IEnumerable<ItemProductResponseModel> products)
         {
             var selectedProducts = products
                 .Where(product => !CachedShopItems.ContainsKey(product.ProductId))
@@ -282,14 +282,14 @@ namespace Nekoyume.State
 
                 if (tradableItem is ItemUsable itemUsable)
                 {
-                    foreach (var skillModel in product.Skills)
+                    foreach (var skillModel in product.SkillModels)
                     {
                         var skillRow = Game.Game.instance.TableSheets.SkillSheet[skillModel.SkillId];
                         var skill = SkillFactory.Get(skillRow, skillModel.Power, skillModel.Chance);
                         itemUsable.Skills.Add(skill);
                     }
 
-                    foreach (var statModel in product.Stats)
+                    foreach (var statModel in product.StatModels)
                     {
                         if (statModel.Additional)
                         {

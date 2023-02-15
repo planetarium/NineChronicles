@@ -224,7 +224,7 @@ namespace Nekoyume.UI
 
             detail.Set(
                 item.ItemBase,
-                item.Product.Quantity,
+                (int)item.Product.Quantity,
                 !Util.IsUsableItem(item.ItemBase) &&
                 (item.ItemBase.ItemType == ItemType.Equipment ||
                  item.ItemBase.ItemType == ItemType.Costume));

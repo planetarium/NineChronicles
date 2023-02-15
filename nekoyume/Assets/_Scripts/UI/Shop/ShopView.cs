@@ -2,14 +2,13 @@
 using System.Linq;
 using System.Collections.Generic;
 using Lib9c.Model.Order;
+using MarketService.Response;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.Market;
 using Nekoyume.State;
 using Nekoyume.TableData;
-using Nekoyume.UI.Model;
 using TMPro;
 using Unity.Mathematics;
 using UnityEngine;
@@ -80,7 +79,7 @@ namespace Nekoyume.UI.Module
             UpdateExpired(Game.Game.instance.Agent.BlockIndex);
         }
 
-        public void Show(ReactiveProperty<List<ItemProductModel>> products,
+        public void Show(ReactiveProperty<List<ItemProductResponseModel>> products,
             Action<ShopItem> clickItem)
         {
             Reset();
@@ -192,7 +191,7 @@ namespace Nekoyume.UI.Module
             ClickItemAction = clickItem;
         }
 
-        private void Set(ReactiveProperty<List<ItemProductModel>> itemProducts)
+        private void Set(ReactiveProperty<List<ItemProductResponseModel>> itemProducts)
         {
             _disposables.DisposeAllAndClear();
             itemProducts.ObserveOnMainThread().Subscribe(products =>
@@ -220,7 +219,7 @@ namespace Nekoyume.UI.Module
                 .AddTo(_disposables);
         }
 
-        private void AddItem(ItemProductModel product, ItemSheet sheet)
+        private void AddItem(ItemProductResponseModel product, ItemSheet sheet)
         {
             if (!ReactiveShopState.TryGetShopItem(product, out var itemBase))
             {
@@ -257,7 +256,7 @@ namespace Nekoyume.UI.Module
 
         private static ShopItem CreateItem(
             ItemBase item,
-            ItemProductModel product,
+            ItemProductResponseModel product,
             ItemSheet sheet)
         {
             var grade = sheet[product.ItemId].Grade;
@@ -275,7 +274,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void SetLoading(List<ItemProductModel> products, bool isLoading = true)
+        public void SetLoading(List<ItemProductResponseModel> products, bool isLoading = true)
         {
             var items = _items[ItemSubTypeFilter.All];
             foreach (var product in products)

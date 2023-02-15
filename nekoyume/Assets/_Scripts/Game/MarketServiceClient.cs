@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Libplanet;
+using MarketService.Response;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
 using UnityEngine.Networking;
@@ -23,7 +24,7 @@ namespace Nekoyume.Game
             _client = new HttpClient();
         }
 
-        public async Task<List<ItemProductModel>> GetProducts(ItemSubType itemSubType)
+        public async Task<List<ItemProductResponseModel>> GetProducts(ItemSubType itemSubType)
         {
             var url = $"{_url}/Market/products/items/{(int)itemSubType}";
             var json = await _client.GetStringAsync(url);
@@ -31,11 +32,11 @@ namespace Nekoyume.Game
             {
                 PropertyNameCaseInsensitive = true
             };
-            var response = JsonSerializer.Deserialize<ProductResponse>(json, options);
+            var response = JsonSerializer.Deserialize<MarketProductResponse>(json, options);
             return response.ItemProducts.Where(p => p.Exist).ToList();
         }
 
-        public async Task<List<ItemProductModel>> GetProducts(Address address)
+        public async Task<List<ItemProductResponseModel>> GetProducts(Address address)
         {
             var url = $"{_url}/Market/products/{address}";
             var json = await _client.GetStringAsync(url);
@@ -43,7 +44,7 @@ namespace Nekoyume.Game
             {
                 PropertyNameCaseInsensitive = true
             };
-            var response = JsonSerializer.Deserialize<ProductResponse>(json, options);
+            var response = JsonSerializer.Deserialize<MarketProductResponse>(json, options);
             return response.ItemProducts.Where(p => p.Exist).ToList();
         }
     }

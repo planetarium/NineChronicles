@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using Lib9c.Model.Order;
-using Nekoyume.Model.Market;
+using MarketService.Response;
 using Nekoyume.UI.Model;
 using UniRx;
-using UnityEngine;
 
 namespace Nekoyume.UI.Module
 {
     public interface IShopView
     {
-        public void Show(ReactiveProperty<List<ItemProductModel>> products,
+        public void Show(ReactiveProperty<List<ItemProductResponseModel>> products,
             Action<ShopItem> clickItem);
     }
 }
