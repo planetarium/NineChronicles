@@ -261,7 +261,7 @@ namespace Nekoyume.BlockChain
                     value["AgentAddress"] = States.Instance.AgentState.address.ToString();
                 }
 
-                if (States.Instance.AgentState is not null)
+                if (States.Instance.CurrentAvatarState is not null)
                 {
                     value["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString();
                 }
