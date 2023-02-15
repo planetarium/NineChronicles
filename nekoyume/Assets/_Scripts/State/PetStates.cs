@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Model.State;
 
@@ -8,9 +8,9 @@ namespace Nekoyume.State
     {
         private readonly Dictionary<int, PetState> _petDict = new();
 
-        public void GetPetState(int id, out PetState pet)
+        public bool TryGetPetState(int id, out PetState pet)
         {
-            _petDict.TryGetValue(id, out pet);
+            return _petDict.TryGetValue(id, out pet);
         }
 
         public List<PetState> GetPetStatesAll()

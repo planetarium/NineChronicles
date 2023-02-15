@@ -1,5 +1,6 @@
 using Nekoyume.Game;
 using Nekoyume.UI.Tween;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,7 +20,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private PetDescriptionView descriptionViewPrefab;
 
-        private int _currentIndex;
+        private readonly List<PetDescriptionView> _viewes = new();
 
         private void Awake()
         {
@@ -28,28 +29,24 @@ namespace Nekoyume.UI.Module
 
         public void Initialize()
         {
-            var optionSheet = TableSheets.Instance.PetOptionSheet;
-            foreach (var row in optionSheet)
+            var petSheet = TableSheets.Instance.PetSheet;
+            foreach (var row in petSheet)
             {
                 var view = Instantiate(descriptionViewPrefab, descriptionViewParent);
-                view.SetData(row);
+                view.Initialize(row);
+                _viewes.Add(view);
             }
         }
 
         public void Toggle(int slotIndex)
         {
-            if (gameObject.activeSelf &&
-                _currentIndex == slotIndex)
+            if (gameObject.activeSelf)
             {
                 Hide();
-                return;
             }
-
-            _currentIndex = slotIndex;
-            UpdateView(_currentIndex);
-
-            if (!gameObject.activeSelf)
+            else
             {
+                UpdateView(slotIndex);
                 Show();
             }
         }
