@@ -248,6 +248,10 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<RaidPreparation>());
             yield return null;
+            secondWidgets.Add(Widget.Create<DccMain>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<DccCollection>());
+            yield return null;
             secondWidgets.Add(Widget.Create<Status>());
             yield return null;
             secondWidgets.Add(Widget.Create<ArenaJoin>());

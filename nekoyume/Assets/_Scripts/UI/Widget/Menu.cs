@@ -60,10 +60,13 @@ namespace Nekoyume.UI
         private MainMenu btnStaking;
 
         [SerializeField]
-        private MainMenu btnWorldBoss = null;
+        private MainMenu btnWorldBoss;
 
         [SerializeField]
-        private SpeechBubble[] speechBubbles = null;
+        private MainMenu btnDcc;
+
+        [SerializeField]
+        private SpeechBubble[] speechBubbles;
 
         [SerializeField]
         private GameObject shopExclamationMark;
@@ -152,6 +155,7 @@ namespace Nekoyume.UI
                     btnShop.GetComponent<Button>(),
                     btnStaking.GetComponent<Button>(),
                     btnWorldBoss.GetComponent<Button>(),
+                    btnDcc.GetComponent<Button>(),
                 };
                 buttonList.ForEach(button => button.interactable = stateType == AnimationStateType.Shown);
             }).AddTo(gameObject);
@@ -274,6 +278,7 @@ namespace Nekoyume.UI
             btnMimisbrunnr.Update();
             btnStaking.Update();
             btnWorldBoss.Update();
+            btnDcc.Update();
 
             var addressHex = States.Instance.CurrentAvatarState.address.ToHex();
             var firstOpenCombinationKey
@@ -285,22 +290,22 @@ namespace Nekoyume.UI
             var firstOpenMimisbrunnrKey
                 = string.Format(FirstOpenMimisbrunnrKeyFormat, addressHex);
 
-            combinationExclamationMark.gameObject.SetActive(
+            combinationExclamationMark.SetActive(
                 btnCombination.IsUnlocked
                 && (PlayerPrefs.GetInt(firstOpenCombinationKey, 0) == 0 ||
                     Craft.SharedModel.HasNotification));
-            shopExclamationMark.gameObject.SetActive(
+            shopExclamationMark.SetActive(
                 btnShop.IsUnlocked
                 && PlayerPrefs.GetInt(firstOpenShopKey, 0) == 0);
 
             var worldMap = Find<WorldMap>();
             worldMap.UpdateNotificationInfo();
             var hasNotificationInWorldMap = worldMap.HasNotification;
-            questExclamationMark.gameObject.SetActive(
+            questExclamationMark.SetActive(
                 (btnQuest.IsUnlocked
                  && PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0)
                 || hasNotificationInWorldMap);
-            mimisbrunnrExclamationMark.gameObject.SetActive(
+            mimisbrunnrExclamationMark.SetActive(
                 btnMimisbrunnr.IsUnlocked
                 && PlayerPrefs.GetInt(firstOpenMimisbrunnrKey, 0) == 0);
         }
@@ -467,7 +472,7 @@ namespace Nekoyume.UI
 
             SharedViewModel.SelectedWorldId.SetValueAndForceNotify(world.Id);
             SharedViewModel.SelectedStageId.SetValueAndForceNotify(world.GetNextStageId());
-            var stageInfo = Find<UI.StageInformation>();
+            var stageInfo = Find<StageInformation>();
             stageInfo.Show(SharedViewModel, worldRow, StageType.Mimisbrunnr);
             var status = Find<Status>();
             status.Close(true);
@@ -514,6 +519,13 @@ namespace Nekoyume.UI
             Close(true);
             Find<WorldBoss>().ShowAsync().Forget();
             Analyzer.Instance.Track("Unity/Enter world boss page");
+        }
+
+        public void DccClick()
+        {
+            AudioController.PlayClick();
+            Close(true);
+            Find<DccMain>().Show();
         }
 
         public void UpdateGuideQuest(AvatarState avatarState)

@@ -16,8 +16,7 @@ namespace Nekoyume.State
 
         public bool TryGetPetState(int id, out PetState pet)
         {
-            pet = GetPetState(id);
-            return pet != null;
+            return _petDict.TryGetValue(id, out pet) && pet is not null;
         }
 
         public PetState GetPetState(int id)
