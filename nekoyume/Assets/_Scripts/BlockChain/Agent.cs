@@ -47,6 +47,7 @@ using NCTx = Libplanet.Tx.Transaction<Libplanet.Action.PolymorphicAction<Nekoyum
 
 namespace Nekoyume.BlockChain
 {
+    using Libplanet.Net.Transports;
     using UniRx;
 
     /// <summary>
@@ -153,7 +154,7 @@ namespace Nekoyume.BlockChain
             InitAgent(callback, privateKey, options);
         }
 
-        private void Init(
+        private async void Init(
             PrivateKey privateKey,
             string path,
             IEnumerable<BoundPeer> peers,
@@ -224,11 +225,15 @@ namespace Nekoyume.BlockChain
             appProtocolVersionOptions.DifferentAppProtocolVersionEncountered =
                 DifferentAppProtocolVersionEncountered;
             var swarmOptions = new SwarmOptions();
+            var transport = await NetMQTransport.Create(
+                privateKey,
+                appProtocolVersionOptions,
+                hostOptions);
+
             var initSwarmTask = Task.Run(() => new Swarm<NCAction>(
                 blockChain: blocks,
                 privateKey: privateKey,
-                appProtocolVersionOptions: appProtocolVersionOptions,
-                hostOptions: hostOptions,
+                transport: transport,
                 options: swarmOptions));
 
             initSwarmTask.Wait();
