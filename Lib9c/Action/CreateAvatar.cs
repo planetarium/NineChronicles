@@ -163,13 +163,15 @@ namespace Nekoyume.Action
             states = CreateAvatar0.AddRunesForTest(avatarAddress, states);
 
             // Add pets for test
-            var petSheet = states.GetSheet<PetSheet>();
-            foreach (var row in petSheet)
+            if (states.TryGetSheet(out PetSheet petSheet))
             {
-                var petState = new PetState(row.Id);
-                petState.LevelUp();
-                var petStateAddress = PetState.DeriveAddress(avatarAddress, row.Id);
-                states = states.SetState(petStateAddress, petState.Serialize());
+                foreach (var row in petSheet)
+                {
+                    var petState = new PetState(row.Id);
+                    petState.LevelUp();
+                    var petStateAddress = PetState.DeriveAddress(avatarAddress, row.Id);
+                    states = states.SetState(petStateAddress, petState.Serialize());
+                }
             }
 #endif
 
