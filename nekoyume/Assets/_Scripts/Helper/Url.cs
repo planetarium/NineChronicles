@@ -14,9 +14,10 @@ namespace Nekoyume.Helper
     {
         private  string dccAvatars;
         private  string dccMetadata;
+        private  string dccConnect;
         public  bool Empty { get; private set; } = true;
 
-        [Option("dcc-avatars", Required = false, HelpText = "dcc avatar list")]
+        [Option("dcc-avatars", Required = true, HelpText = "dcc avatar list")]
         public  string DccAvatars
         {
             get => dccAvatars;
@@ -27,13 +28,24 @@ namespace Nekoyume.Helper
             }
         }
 
-        [Option("dcc-metadata", Required = false, HelpText = "dcc metadata")]
+        [Option("dcc-metadata", Required = true, HelpText = "dcc metadata")]
         public  string DccMetadata
         {
             get => dccMetadata;
             set
             {
                 dccMetadata = value;
+                Empty = false;
+            }
+        }
+
+        [Option("dcc-metadata", Required = true, HelpText = "dcc connect")]
+        public  string DccConnect
+        {
+            get => dccConnect;
+            set
+            {
+                dccConnect = value;
                 Empty = false;
             }
         }
