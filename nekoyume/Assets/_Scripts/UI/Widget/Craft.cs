@@ -486,6 +486,9 @@ namespace Nekoyume.UI
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             if (insufficientMaterials.Any())
             {
+                var petState = States.Instance.PetStates
+                    .GetPetState(petId.HasValue ? petId.Value : default);
+
                 Find<ReplaceMaterialPopup>().Show(insufficientMaterials,
                     () =>
                     {
@@ -518,7 +521,8 @@ namespace Nekoyume.UI
                                 petId)
                             .Subscribe();
                         StartCoroutine(CoCombineNPCAnimation(equipment, requiredBlockIndex));
-                    });
+                    },
+                    petState);
             }
             else
             {

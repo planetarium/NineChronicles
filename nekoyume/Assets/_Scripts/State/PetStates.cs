@@ -13,6 +13,12 @@ namespace Nekoyume.State
             return _petDict.TryGetValue(id, out pet);
         }
 
+        public PetState GetPetState(int id)
+        {
+            return _petDict.TryGetValue(id, out var petState) ? petState : null;
+        }
+
+
         public List<PetState> GetPetStatesAll()
         {
             return _petDict.Values.ToList();
