@@ -45,14 +45,15 @@ namespace Nekoyume.UI.Module
         private readonly Dictionary<ItemSubTypeFilter, List<ShopItem>> _items = new();
         private readonly List<ShopItem> _selectedModels = new();
         private readonly List<ShopItemView> _itemViews = new();
-        private readonly ReactiveProperty<int> _page = new();
+        protected readonly ReactiveProperty<int> _page = new();
         private readonly List<IDisposable> _disposables = new();
 
         private Image _nextPageImage;
         private Image _previousPageImage;
-        private int _column;
-        private int _row;
+        protected int _column;
+        protected  int _row;
         private int _pageCount = 1;
+        protected bool _isActive;
 
         protected Action<ShopItem> ClickItemAction;
         protected abstract void OnAwake();
@@ -116,7 +117,18 @@ namespace Nekoyume.UI.Module
             _page.ObserveOnMainThread().Subscribe(UpdatePage).AddTo(gameObject);
         }
 
-        private void UpdatePage(int page)
+        private void OnEnable()
+        {
+            _isActive = true;
+        }
+
+        private void OnDisable()
+        {
+            _isActive = false;
+            Reset();
+        }
+
+        protected virtual void UpdatePage(int page)
         {
             var index = page * _itemViews.Count;
             foreach (var view in _itemViews)

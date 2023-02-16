@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Libplanet.Assets;
 using mixpanel;
 using Nekoyume.Action;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -88,59 +89,12 @@ namespace Nekoyume.UI
         {
             Find<DataLoadingScreen>().Show();
             Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
-
-            var initWeaponTask = Task.Run(async () =>
-            {
-                var list = new List<ItemSubType> { ItemSubType.Weapon, };
-                await ReactiveShopState.SetBuyProductsAsync(list);
-                return true;
-            });
-
-            var initWeaponResult = await initWeaponTask;
-            if (initWeaponResult)
-            {
-                base.Show(ignoreShowAnimation);
-                view.Show(ReactiveShopState.BuyProducts, ShowItemTooltip);
-                Find<DataLoadingScreen>().Close();
-                HelpTooltip.HelpMe(100018, true);
-                AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
-            }
-
-            _cancellationTokenSource = new CancellationTokenSource();
-            var initOthersTask = Task.Run(async () =>
-            {
-                var list = new List<ItemSubType>
-                {
-                    ItemSubType.Armor,
-                    ItemSubType.Belt,
-                    ItemSubType.Necklace,
-                    ItemSubType.Ring,
-                    ItemSubType.Food,
-                    ItemSubType.FullCostume,
-                    ItemSubType.HairCostume,
-                    ItemSubType.EarCostume,
-                    ItemSubType.EyeCostume,
-                    ItemSubType.TailCostume,
-                    ItemSubType.Title,
-                    ItemSubType.Hourglass,
-                    ItemSubType.ApStone,
-                };
-                await ReactiveShopState.SetBuyProductsAsync(list);
-                return true;
-            }, _cancellationTokenSource.Token);
-
-            if (initOthersTask.IsCanceled)
-            {
-                return;
-            }
-
-            var initOthersResult = await initOthersTask;
-            if (!initOthersResult)
-            {
-                return;
-            }
-
-            view.IsDoneLoadItem = true;
+            await ReactiveShopState.RequestBuyProductsAsync(ItemSubType.Weapon, MarketOrderType.cp_desc, 0, 60);
+            base.Show(ignoreShowAnimation);
+            view.Show(ReactiveShopState.BuyProducts, ShowItemTooltip);
+            Find<DataLoadingScreen>().Close();
+            HelpTooltip.HelpMe(100018, true);
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
         }
 
         public void Open()
@@ -151,6 +105,7 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            ReactiveShopState.ClearCache();
             if (view.IsCartEmpty)
             {
                 OnClose();

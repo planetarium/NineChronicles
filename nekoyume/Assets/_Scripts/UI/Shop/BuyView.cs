@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
@@ -38,7 +39,7 @@ namespace Nekoyume
         private CartView cartView;
 
         [SerializeField]
-        private List<ToggleDropdown> toggleDropdowns = new List<ToggleDropdown>();
+        private List<ToggleDropdown> toggleDropdowns = new();
 
         [SerializeField]
         private Button sortButton;
@@ -73,7 +74,7 @@ namespace Nekoyume
         [SerializeField]
         private GameObject loading;
 
-        private readonly List<ItemSubTypeFilter> _toggleTypes = new List<ItemSubTypeFilter>()
+        private readonly List<ItemSubTypeFilter> _toggleTypes = new()
         {
             ItemSubTypeFilter.Equipment,
             ItemSubTypeFilter.Food,
@@ -106,6 +107,10 @@ namespace Nekoyume
                 },
                 {
                     ItemSubTypeFilter.Materials, new List<ItemSubTypeFilter>()
+                    {
+                        ItemSubTypeFilter.Hourglass,
+                        ItemSubTypeFilter.ApStone,
+                    }
                 },
                 {
                     ItemSubTypeFilter.Costume, new List<ItemSubTypeFilter>()
@@ -148,7 +153,6 @@ namespace Nekoyume
         private TextMeshProUGUI _sortText;
 
         public bool IsFocused => inputField.isFocused;
-        public bool IsDoneLoadItem { get; set; }
         public bool IsCartEmpty => !_selectedItems.Any();
 
         public void ClearSelectedItems()
@@ -240,16 +244,8 @@ namespace Nekoyume
                         return;
                     }
 
-                    if (_toggleSubTypes[toggleType].Count > 0)
-                    {
-                        _selectedSubTypeFilter.Value = _toggleSubTypes[toggleType].First();
-                        toggleDropdown.items.First().isOn = true;
-                    }
-                    else
-                    {
-                        _selectedSubTypeFilter.Value = ItemSubTypeFilter.Materials;
-                    }
-
+                    _selectedSubTypeFilter.Value = _toggleSubTypes[toggleType].First();
+                    toggleDropdown.items.First().isOn = true;
                     UpdateView();
                 });
                 toggleDropdown.onClickToggle.AddListener(AudioController.PlayClick);
@@ -297,20 +293,59 @@ namespace Nekoyume
             levelLimitToggle.onValueChanged.AddListener(value => _levelLimit.Value = value);
         }
 
+        private async void OnUpdateSubTypeFilter(ItemSubTypeFilter filter)
+        {
+            await CheckItem(filter);
+        }
+
+        private async void OnUpdateAscending(bool isAscending)
+        {
+            sortOrderIcon.localScale = new Vector3(1, isAscending ? 1 : -1, 1);
+            await CheckItem(_selectedSubTypeFilter.Value);
+        }
+
+        protected override async void UpdatePage(int page)
+        {
+            await CheckItem(_selectedSubTypeFilter.Value, true);
+            base.UpdatePage(page);
+        }
+
+        private async Task CheckItem(ItemSubTypeFilter filter, bool isUpdatePage = false)
+        {
+            if (!_isActive)
+            {
+                return;
+            }
+
+            var orderType = _selectedSortFilter.Value.ToMarketOrderType(_isAscending.Value);
+            var itemSubType = filter.ToItemSubType();
+            var count = ReactiveShopState.GetCachedBuyItemCount(orderType, itemSubType);
+            var limit = _column * _row;
+            if (count < (_page.Value + 1) * limit)
+            {
+                loading.SetActive(true);
+                await ReactiveShopState.RequestBuyProductsAsync(itemSubType, orderType, count, limit * 5);
+                loading.SetActive(false);
+            }
+            else
+            {
+                if (!isUpdatePage)
+                {
+                    ReactiveShopState.SetBuyProducts(orderType);
+                }
+            }
+        }
+
         protected override void SubscribeToSearchConditions()
         {
-            _selectedSubTypeFilter.Subscribe(_ => UpdateView()).AddTo(gameObject);
+            _selectedSubTypeFilter.Subscribe(OnUpdateSubTypeFilter).AddTo(gameObject);
             _selectedSortFilter.Subscribe(filter =>
             {
                 _sortText.text = L10nManager.Localize($"UI_{filter.ToString().ToUpper()}");
                 UpdateView();
             }).AddTo(gameObject);
             _selectedItemIds.Subscribe(_ => UpdateView()).AddTo(gameObject);
-            _isAscending.Subscribe(v =>
-            {
-                sortOrderIcon.localScale = new Vector3(1, v ? 1 : -1, 1);
-                UpdateView();
-            }).AddTo(gameObject);
+            _isAscending.Subscribe(OnUpdateAscending).AddTo(gameObject);
             _levelLimit.Subscribe(_ => UpdateView()).AddTo(gameObject);
 
             _mode.Subscribe(x =>
@@ -403,7 +438,10 @@ namespace Nekoyume
             toggleDropdowns.First().items.First().isOn = true;
             inputField.text = string.Empty;
             resetButton.interactable = false;
-            _resetAnimator.Play(_hashDisabled);
+            if (_resetAnimator.isActiveAndEnabled)
+            {
+                _resetAnimator.Play(_hashDisabled);
+            }
 
             _selectedSubTypeFilter.SetValueAndForceNotify(ItemSubTypeFilter.Weapon);
             _selectedSortFilter.SetValueAndForceNotify(ShopSortFilter.CP);
@@ -421,9 +459,20 @@ namespace Nekoyume
             var models = items[_selectedSubTypeFilter.Value];
             models = models.Where(x => !x.Expired.Value).ToList();
 
-            if (IsLoading(models))
+            loading.SetActive(false);
+            inputField.interactable = true;
+            levelLimitToggle.interactable = true;
+            if (_sortAnimator.isActiveAndEnabled)
             {
-                return new List<ShopItem>();
+                _sortAnimator.Play(_hashNormal);
+            }
+            if (_sortOrderAnimator.isActiveAndEnabled)
+            {
+                _sortOrderAnimator.Play(_hashNormal);
+            }
+            if (_levelLimitAnimator.isActiveAndEnabled)
+            {
+                _levelLimitAnimator.Play(_hashNormal);
             }
 
             if (_selectedItemIds.Value.Any()) // _selectedItemIds
@@ -472,31 +521,6 @@ namespace Nekoyume
                     : models.OrderByDescending(GetCrystalPerPrice).ToList(),
                 _ => throw new ArgumentOutOfRangeException()
             };
-        }
-
-        private bool IsLoading(ICollection models)
-        {
-            if (IsDoneLoadItem)
-            {
-                loading.SetActive(false);
-                inputField.interactable = true;
-                levelLimitToggle.interactable = true;
-                _sortAnimator.Play(_hashNormal);
-                _sortOrderAnimator.Play(_hashNormal);
-                _levelLimitAnimator.Play(_hashNormal);
-            }
-            else
-            {
-                loading.SetActive(models.Count == 0);
-                inputField.interactable = models.Count > 0;
-                levelLimitToggle.interactable = models.Count > 0;
-                var hash = models.Count > 0 ? _hashNormal : _hashDisabled;
-                _sortAnimator.Play(hash);
-                _sortOrderAnimator.Play(hash);
-                _levelLimitAnimator.Play(hash);
-            }
-
-            return loading.activeSelf;
         }
 
         protected override void UpdateView(bool resetPage = true, int page = 0)
