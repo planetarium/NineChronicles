@@ -120,7 +120,13 @@ namespace Nekoyume.BlockChain
                 }
             );
             _lastTipChangedAt = DateTimeOffset.UtcNow;
-            _hub = StreamingHubClient.Connect<IActionEvaluationHub, IActionEvaluationHubReceiver>(_channel, this);
+            var connect = StreamingHubClient
+                .ConnectAsync<IActionEvaluationHub, IActionEvaluationHubReceiver>(
+                    _channel,
+                    this)
+                .AsCoroutine();
+            yield return connect;
+            _hub = connect.Result;
             _service = MagicOnionClient.Create<IBlockChainService>(_channel, new IClientFilter[]
             {
                 new ClientFilter()
