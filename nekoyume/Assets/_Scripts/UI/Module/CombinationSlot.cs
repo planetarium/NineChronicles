@@ -18,6 +18,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    using Nekoyume.Game;
     using Nekoyume.UI.Scroller;
     using UniRx;
 
@@ -121,7 +122,7 @@ namespace Nekoyume.UI.Module
                 cached.Add(avatarAddress, value);
             }
 
-            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+            var currentBlockIndex = Game.instance.Agent.BlockIndex;
             switch (slotType)
             {
                 case SlotType.Appraise:
@@ -155,18 +156,18 @@ namespace Nekoyume.UI.Module
             touchHandler.OnClick.Subscribe(_ =>
             {
                 AudioController.PlayClick();
-                OnClickSlot(Type, _state, _slotIndex, Game.Game.instance.Agent.BlockIndex);
+                OnClickSlot(Type, _state, _slotIndex, Game.instance.Agent.BlockIndex);
             }).AddTo(gameObject);
         }
 
         private void OnEnable()
         {
-            Game.Game.instance.Agent.BlockIndexSubject
+            Game.instance.Agent.BlockIndexSubject
                 .ObserveOnMainThread()
                 .Subscribe(SubscribeOnBlockIndex)
                 .AddTo(_disposablesOfOnEnable);
             ReactiveAvatarState.Inventory
-                .Select(_ => Game.Game.instance.Agent.BlockIndex)
+                .Select(_ => Game.instance.Agent.BlockIndex)
                 .Subscribe(SubscribeOnBlockIndex)
                 .AddTo(_disposablesOfOnEnable);
         }
@@ -201,7 +202,7 @@ namespace Nekoyume.UI.Module
             CombinationSlotState state,
             bool isCached)
         {
-            petSelectButton.SetData(state?.PetId ?? petId);
+            petSelectButton.SetData(state?.PetId ?? null);
 
             switch (type)
             {
@@ -322,10 +323,23 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            var gameConfigState = Game.Game.instance.States.GameConfigState;
+            var gameConfigState = Game.instance.States.GameConfigState;
             var diff = state.RequiredBlockIndex - currentBlockIndex;
-            var cost = RapidCombination0.CalculateHourglassCount(gameConfigState, diff);
-            var row = Game.Game.instance.TableSheets.MaterialItemSheet
+            int cost;
+            if (state.PetId.HasValue &&
+                States.Instance.PetStates.TryGetPetState(state.PetId.Value, out var petState))
+            {
+                cost = PetHelper.CalculateDiscountedHourglass(
+                    diff,
+                    States.Instance.GameConfigState.HourglassPerBlock,
+                    petState,
+                    TableSheets.Instance.PetOptionSheet);
+            }
+            else
+            {
+                cost = RapidCombination0.CalculateHourglassCount(gameConfigState, diff);
+            }
+            var row = Game.instance.TableSheets.MaterialItemSheet
                 .OrderedList
                 .First(r => r.ItemSubType == ItemSubType.Hourglass);
             var isEnough = States.Instance.CurrentAvatarState.inventory
@@ -336,8 +350,21 @@ namespace Nekoyume.UI.Module
         private void UpdateHourglass(CombinationSlotState state, long currentBlockIndex)
         {
             var diff = state.UnlockBlockIndex - currentBlockIndex;
-            var cost =
-                RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
+            int cost;
+            if (state.PetId.HasValue &&
+                States.Instance.PetStates.TryGetPetState(state.PetId.Value, out var petState))
+            {
+                cost = PetHelper.CalculateDiscountedHourglass(
+                    diff,
+                    States.Instance.GameConfigState.HourglassPerBlock,
+                    petState,
+                    TableSheets.Instance.PetOptionSheet);
+            }
+            else
+            {
+                cost = RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
+            }
+
             var inventory = States.Instance.CurrentAvatarState.inventory;
             var count = Util.GetHourglassCount(inventory, currentBlockIndex);
             hourglassCountText.text = cost.ToString();
@@ -373,7 +400,7 @@ namespace Nekoyume.UI.Module
             switch (type)
             {
                 case SlotType.Empty:
-                    if (Game.Game.instance.IsInWorld)
+                    if (Game.instance.IsInWorld)
                     {
                         UI.NotificationSystem.Push(
                             Nekoyume.Model.Mail.MailType.System,

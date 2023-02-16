@@ -18,6 +18,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.Game;
     using UniRx;
 
     public class CombinationSlotPopup : PopupWidget
@@ -78,7 +79,7 @@ namespace Nekoyume.UI
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-                    Game.Game.instance.ActionManager.RapidCombination(_slotState, _slotIndex).Subscribe();
+                    Game.instance.ActionManager.RapidCombination(_slotState, _slotIndex).Subscribe();
                     var avatarAddress = States.Instance.CurrentAvatarState.address;
                     Find<CombinationSlotsPopup>().SetCaching(
                         avatarAddress,
@@ -100,7 +101,7 @@ namespace Nekoyume.UI
         {
             base.OnEnable();
 
-            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
+            Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
                 .Subscribe(SubscribeOnBlockIndex)
                 .AddTo(_disposablesOfOnEnable);
         }
@@ -230,7 +231,7 @@ namespace Nekoyume.UI
             }
 
             information.ItemLevel.text = $"+{equipment.level}";
-            var sheet = Game.Game.instance.TableSheets.EnhancementCostSheetV2;
+            var sheet = Game.instance.TableSheets.EnhancementCostSheetV2;
             var grade = equipment.Grade;
             var level = equipment.level;
             var row = sheet.OrderedList.FirstOrDefault(x => x.Grade == grade && x.Level == level);
@@ -398,8 +399,20 @@ namespace Nekoyume.UI
         private void UpdateButtonInformation(CombinationSlotState state, long currentBlockIndex)
         {
             var diff = state.UnlockBlockIndex - currentBlockIndex;
-            var cost =
-                RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
+            int cost;
+            if (state.PetId.HasValue &&
+                States.Instance.PetStates.TryGetPetState(state.PetId.Value, out var petState))
+            {
+                cost = PetHelper.CalculateDiscountedHourglass(
+                    diff,
+                    States.Instance.GameConfigState.HourglassPerBlock,
+                    petState,
+                    TableSheets.Instance.PetOptionSheet);
+            }
+            else
+            {
+                cost = RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
+            }
             rapidCombinationButton.SetCost(CostType.Hourglass, cost);
         }
 

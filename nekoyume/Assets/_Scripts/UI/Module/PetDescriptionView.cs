@@ -18,6 +18,15 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private PetScriptableObject petDataObject;
 
+        [SerializeField]
+        private Button button;
+
+        [SerializeField]
+        private GameObject equipObject;
+
+        [SerializeField]
+        private GameObject emptyObject;
+
         #region Initialized First
         [SerializeField]
         private TextMeshProUGUI titleText;
@@ -40,10 +49,21 @@ namespace Nekoyume.UI.Module
         private TextMeshProUGUI descriptionText;
         #endregion
 
-        private int _petId;
+        private int? _petId;
 
-        public void Initialize(PetSheet.Row petRow)
+        private System.Action<int?> _onClick;
+
+        private void Awake()
         {
+            if (button)
+            {
+                button.onClick.AddListener(() => _onClick?.Invoke(_petId));
+            }
+        }
+
+        public void Initialize(PetSheet.Row petRow, System.Action<int?> onClick)
+        {
+            _onClick = onClick;
             _petId = petRow.Id;
             titleText.text = L10nManager.Localize($"PET_NAME_{petRow.Id}");
             gradeBg.overrideSprite = itemViewDataObject
@@ -54,6 +74,17 @@ namespace Nekoyume.UI.Module
             petIconImage.overrideSprite = petData.icon;
 
             equippedObject.SetActive(false);
+            gameObject.SetActive(true);
+            equipObject.SetActive(false);
+            emptyObject.SetActive(true);
+        }
+
+        public void InitializeEmpty(System.Action<int?> onClick)
+        {
+            _onClick = onClick;
+            _petId = null;
+            equipObject.SetActive(false);
+            emptyObject.SetActive(true);
             gameObject.SetActive(true);
         }
 
@@ -73,6 +104,8 @@ namespace Nekoyume.UI.Module
                 $"PET_DESCRIPTION_{optionInfo.OptionType}",
                 optionInfo.OptionValue);
             equippedObject.SetActive(equipped);
+            equipObject.SetActive(true);
+            emptyObject.SetActive(false);
             gameObject.SetActive(true);
         }
 

@@ -1,9 +1,19 @@
+using Mono.Cecil;
+using Nekoyume.Game;
+using Nekoyume.Model.State;
+using Nekoyume.State;
+using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
     public class PetSelectButton : MonoBehaviour
     {
+        [SerializeField]
+        private PetScriptableObject petDataObject;
+
         [SerializeField]
         private GameObject emptyObject;
 
@@ -16,21 +26,40 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private GameObject notificationObject;
 
+        [SerializeField]
+        private TextMeshProUGUI levelText;
+
+        [SerializeField]
+        private Image iconImage;
+
+        [SerializeField]
+        private List<GameObject> slotImages;
+
         public void SetData(int? petId)
         {
             selectedObject.SetActive(false);
+            notificationObject.SetActive(false);
 
-            if (!petId.HasValue)
+            if (!petId.HasValue ||
+                !States.Instance.PetStates.TryGetPetState(petId.Value, out var petState))
             {
                 emptyObject.SetActive(true);
                 equippedObject.SetActive(false);
-                notificationObject.SetActive(true);
                 return;
             }
 
             emptyObject.SetActive(false);
             equippedObject.SetActive(true);
-            notificationObject.SetActive(false);
+
+            var petData = petDataObject.GetPetData(petState.PetId);
+            iconImage.overrideSprite = petData.icon;
+            levelText.text = $"Lv.{petState.Level}";
+
+            var petGrade = TableSheets.Instance.PetSheet[petState.PetId].Grade;
+            for (int i = 0; i < slotImages.Count; i++)
+            {
+                slotImages[i].SetActive(i == petGrade);
+            }
         }
     }
 }

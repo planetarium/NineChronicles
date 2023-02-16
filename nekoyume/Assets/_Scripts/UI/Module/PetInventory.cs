@@ -3,6 +3,7 @@ using Nekoyume.State;
 using Nekoyume.UI.Tween;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Reactive.Subjects;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,12 +12,6 @@ namespace Nekoyume.UI.Module
     public class PetInventory : MonoBehaviour
     {
         [SerializeField]
-        private Button closeButton;
-
-        [SerializeField]
-        private DOTweenBase tweener;
-
-        [SerializeField]
         private Transform descriptionViewParent;
 
         [SerializeField]
@@ -24,19 +19,22 @@ namespace Nekoyume.UI.Module
 
         private readonly Dictionary<int, PetDescriptionView> _views = new();
 
-        private void Awake()
-        {
-            closeButton.onClick.AddListener(Hide);
-        }
+        public readonly Subject<int?> OnSelectedSubject = new();
 
-        public void Initialize()
+        public void Initialize(bool addEmptyObject = false)
         {
             var petSheet = TableSheets.Instance.PetSheet;
             foreach (var row in petSheet)
             {
                 var view = Instantiate(descriptionViewPrefab, descriptionViewParent);
-                view.Initialize(row);
+                view.Initialize(row, OnSelectedSubject.OnNext);
                 _views[row.Id] = view;
+            }
+
+            if (addEmptyObject)
+            {
+                var view = Instantiate(descriptionViewPrefab, descriptionViewParent);
+                view.InitializeEmpty(OnSelectedSubject.OnNext);
             }
         }
 
@@ -56,7 +54,6 @@ namespace Nekoyume.UI.Module
         public void Show()
         {
             gameObject.SetActive(true);
-            tweener.Play();
 
             foreach (var (id, view) in _views)
             {

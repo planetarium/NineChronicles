@@ -942,13 +942,15 @@ namespace Nekoyume.BlockChain
             SubRecipeView.RecipeInfo recipeInfo,
             int slotIndex,
             bool payByCrystal,
-            bool useHammerPoint)
+            bool useHammerPoint,
+            int? petId)
         {
             var sentryTx = Analyzer.Instance.Track(
                 "Unity/Create CombinationEquipment",
                 new Dictionary<string, Value>()
             {
                 ["RecipeId"] = recipeInfo.RecipeId,
+                ["PetId"] = petId.HasValue ? petId : default,
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             }, true);
@@ -997,6 +999,7 @@ namespace Nekoyume.BlockChain
                 subRecipeId = recipeInfo.SubRecipeId,
                 payByCrystal = payByCrystal,
                 useHammerPoint = useHammerPoint,
+                petId = petId,
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
@@ -1019,7 +1022,20 @@ namespace Nekoyume.BlockChain
             var materialRow = Game.Game.instance.TableSheets.MaterialItemSheet.Values
                 .First(r => r.ItemSubType == ItemSubType.Hourglass);
             var diff = state.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
-            var cost = RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
+            int cost;
+            if (state.PetId.HasValue &&
+                States.Instance.PetStates.TryGetPetState(state.PetId.Value, out var petState))
+            {
+                cost = PetHelper.CalculateDiscountedHourglass(
+                    diff,
+                    States.Instance.GameConfigState.HourglassPerBlock,
+                    petState,
+                    TableSheets.Instance.PetOptionSheet);
+            }
+            else
+            {
+                cost = RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
+            }
             LocalLayerModifier.RemoveItem(avatarAddress, materialRow.ItemId, cost);
             var sentryTrace = Analyzer.Instance.Track(
                 "Unity/Rapid Combination",
