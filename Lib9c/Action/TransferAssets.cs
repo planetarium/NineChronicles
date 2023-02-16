@@ -177,11 +177,7 @@ namespace Nekoyume.Action
                 );
             }
 
-            if (currency.Equals(CrystalCalculator.CRYSTAL) &&
-                blockIndex > TransferAsset.WhiteListAvailableIndex && !TransferAsset.WhiteList.Contains(Sender))
-            {
-                throw new InvalidTransferCurrencyException($"transfer crystal not allowed {Sender}");
-            }
+            TransferAsset.CheckCrystalSender(currency, blockIndex, Sender);
             return state.TransferAsset(Sender, recipient, amount);
         }
     }

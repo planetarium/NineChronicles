@@ -25,9 +25,11 @@ namespace Nekoyume.Action
     {
         private const int MemoMaxLength = 80;
 
-        public const long WhiteListAvailableIndex = 6_200_000L;
+        // FIXME justify this policy.
+        public const long CrystalTransferringRestrictionStartIndex = 6_220_000L;
 
-        public static readonly IReadOnlyList<Address> WhiteList = new List<Address>
+        // FIXME justify this policy.
+        public static readonly IReadOnlyList<Address> AllowedCrystalTransferList = new List<Address>
         {
             // world boss service
             new Address("CFCd6565287314FF70e4C4CF309dB701C43eA5bD"),
@@ -140,12 +142,7 @@ namespace Nekoyume.Action
                );
             }
 
-            if (currency.Equals(CrystalCalculator.CRYSTAL) &&
-                context.BlockIndex >= WhiteListAvailableIndex && !WhiteList.Contains(Sender))
-            {
-                throw new InvalidTransferCurrencyException($"transfer crystal not allowed {Sender}");
-            }
-
+            CheckCrystalSender(currency, context.BlockIndex, Sender);
             var ended = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}TransferAsset3 Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return state.TransferAsset(Sender, Recipient, Amount);
@@ -166,6 +163,15 @@ namespace Nekoyume.Action
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue("serialized", new Codec().Encode(PlainValue));
+        }
+
+        public static void CheckCrystalSender(Currency currency, long blockIndex, Address sender)
+        {
+            if (currency.Equals(CrystalCalculator.CRYSTAL) &&
+                blockIndex >= CrystalTransferringRestrictionStartIndex && !AllowedCrystalTransferList.Contains(sender))
+            {
+                throw new InvalidTransferCurrencyException($"transfer crystal not allowed {sender}");
+            }
         }
 
         private void CheckMemoLength(string memo)
