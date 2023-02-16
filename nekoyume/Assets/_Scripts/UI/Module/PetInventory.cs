@@ -1,6 +1,8 @@
 using Nekoyume.Game;
+using Nekoyume.State;
 using Nekoyume.UI.Tween;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,7 +22,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private PetDescriptionView descriptionViewPrefab;
 
-        private readonly List<PetDescriptionView> _viewes = new();
+        private readonly Dictionary<int, PetDescriptionView> _views = new();
 
         private void Awake()
         {
@@ -34,7 +36,7 @@ namespace Nekoyume.UI.Module
             {
                 var view = Instantiate(descriptionViewPrefab, descriptionViewParent);
                 view.Initialize(row);
-                _viewes.Add(view);
+                _views[row.Id] = view;
             }
         }
 
@@ -55,6 +57,17 @@ namespace Nekoyume.UI.Module
         {
             gameObject.SetActive(true);
             tweener.Play();
+
+            foreach (var (id, view) in _views)
+            {
+                if (!States.Instance.PetStates.TryGetPetState(id, out var state))
+                {
+                    view.Hide();
+                    continue;
+                }
+
+                view.SetData(state, false);
+            }
         }
 
         public void Hide()

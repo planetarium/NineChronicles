@@ -1,5 +1,6 @@
 using Nekoyume.Game;
 using Nekoyume.L10n;
+using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData.Pet;
 using System.Security.Policy;
@@ -39,8 +40,11 @@ namespace Nekoyume.UI.Module
         private TextMeshProUGUI descriptionText;
         #endregion
 
+        private int _petId;
+
         public void Initialize(PetSheet.Row petRow)
         {
+            _petId = petRow.Id;
             titleText.text = L10nManager.Localize($"PET_NAME_{petRow.Id}");
             gradeBg.overrideSprite = itemViewDataObject
                 .GetItemViewData(petRow.Grade)
@@ -53,9 +57,28 @@ namespace Nekoyume.UI.Module
             gameObject.SetActive(true);
         }
 
-        public void SetData()
+        public void SetData(PetState petState, bool equipped)
         {
+            var tableSheets = TableSheets.Instance;
+            if (petState is null ||
+                !tableSheets.PetOptionSheet.TryGetValue(petState.PetId, out var optionRow) ||
+                !optionRow.LevelOptionMap.TryGetValue(petState.Level, out var optionInfo))
+            {
+                equippedObject.SetActive(false);
+                gameObject.SetActive(false);
+                return;
+            }
 
+            descriptionText.text = L10nManager.Localize(
+                $"PET_DESCRIPTION_{optionInfo.OptionType}",
+                optionInfo.OptionValue);
+            equippedObject.SetActive(equipped);
+            gameObject.SetActive(true);
+        }
+
+        public void Hide()
+        {
+            gameObject.SetActive(false);
         }
     }
 }
