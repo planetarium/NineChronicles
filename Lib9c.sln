@@ -41,7 +41,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.MessagePack", "Lib9c.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.Abstractions", "Lib9c.Abstractions\Lib9c.Abstractions.csproj", "{2D8BB275-57B6-4707-A20F-6836F4EB0EE2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.Miner.Tests", "Lib9c.Miner.Tests\Lib9c.Miner.Tests.csproj", "{3DE5BBE5-5F81-4518-B828-C36DAC07F492}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.Miner.Tests", ".Lib9c.Miner.Tests\Lib9c.Miner.Tests.csproj", "{3DE5BBE5-5F81-4518-B828-C36DAC07F492}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
