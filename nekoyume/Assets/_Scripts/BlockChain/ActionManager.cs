@@ -742,7 +742,8 @@ namespace Nekoyume.BlockChain
             Equipment baseEquipment,
             Equipment materialEquipment,
             int slotIndex,
-            BigInteger costNCG)
+            BigInteger costNCG,
+            int? petId)
         {
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
@@ -757,6 +758,10 @@ namespace Nekoyume.BlockChain
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
             LocalLayerModifier.SetItemEquip(avatarAddress, baseEquipment.NonFungibleId, false);
             LocalLayerModifier.SetItemEquip(avatarAddress, materialEquipment.NonFungibleId, false);
+            if (petId.HasValue)
+            {
+                States.Instance.PetStates.LockPetTemporarily(petId.Value);
+            }
 
             var sentryTrace = Analyzer.Instance.Track(
                 "Unity/Item Enhancement",
@@ -764,6 +769,7 @@ namespace Nekoyume.BlockChain
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                ["PetId"] = petId.HasValue ? petId : default,
             }, true);
 
             var action = new ItemEnhancement
@@ -772,6 +778,7 @@ namespace Nekoyume.BlockChain
                 materialId = materialEquipment.NonFungibleId,
                 avatarAddress = avatarAddress,
                 slotIndex = slotIndex,
+                petId = petId,
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
@@ -942,13 +949,15 @@ namespace Nekoyume.BlockChain
             SubRecipeView.RecipeInfo recipeInfo,
             int slotIndex,
             bool payByCrystal,
-            bool useHammerPoint)
+            bool useHammerPoint,
+            int? petId)
         {
             var sentryTx = Analyzer.Instance.Track(
                 "Unity/Create CombinationEquipment",
                 new Dictionary<string, Value>()
             {
                 ["RecipeId"] = recipeInfo.RecipeId,
+                ["PetId"] = petId.HasValue ? petId : default,
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             }, true);
@@ -959,6 +968,10 @@ namespace Nekoyume.BlockChain
 
             LocalLayerModifier.ModifyAgentGold(agentAddress, -recipeInfo.CostNCG);
             LocalLayerModifier.ModifyAvatarActionPoint(agentAddress, -recipeInfo.CostAP);
+            if (petId.HasValue)
+            {
+                States.Instance.PetStates.LockPetTemporarily(petId.Value);
+            }
             if (useHammerPoint)
             {
                 var recipeId = recipeInfo.RecipeId;
@@ -997,6 +1010,7 @@ namespace Nekoyume.BlockChain
                 subRecipeId = recipeInfo.SubRecipeId,
                 payByCrystal = payByCrystal,
                 useHammerPoint = useHammerPoint,
+                petId = petId,
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
@@ -1019,7 +1033,20 @@ namespace Nekoyume.BlockChain
             var materialRow = Game.Game.instance.TableSheets.MaterialItemSheet.Values
                 .First(r => r.ItemSubType == ItemSubType.Hourglass);
             var diff = state.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
-            var cost = RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
+            int cost;
+            if (state.PetId.HasValue &&
+                States.Instance.PetStates.TryGetPetState(state.PetId.Value, out var petState))
+            {
+                cost = PetHelper.CalculateDiscountedHourglass(
+                    diff,
+                    States.Instance.GameConfigState.HourglassPerBlock,
+                    petState,
+                    TableSheets.Instance.PetOptionSheet);
+            }
+            else
+            {
+                cost = RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
+            }
             LocalLayerModifier.RemoveItem(avatarAddress, materialRow.ItemId, cost);
             var sentryTrace = Analyzer.Instance.Track(
                 "Unity/Rapid Combination",
