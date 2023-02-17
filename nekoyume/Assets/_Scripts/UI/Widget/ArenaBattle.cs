@@ -100,8 +100,8 @@ namespace Nekoyume.UI
         private void SetStatus(ArenaPlayerDigest digest, ArenaStatus status)
         {
             var armor = digest.Equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
-            var sprite = SpriteHelper.GetItemIcon(armor?.Id ?? GameConfig.DefaultAvatarArmorId);
-            status.Set(sprite, digest.NameWithHash, digest.Level);
+            var armorId = armor?.Id ?? GameConfig.DefaultAvatarArmorId;
+            status.Set(armorId, digest.NameWithHash, digest.Level);
             status.gameObject.SetActive(false);
         }
     }

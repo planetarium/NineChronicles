@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,6 +9,9 @@ namespace Nekoyume.UI.Module
     public class ArenaStatus : MonoBehaviour
     {
         [SerializeField]
+        private DetailedCharacterView characterView = null;
+
+        [SerializeField]
         private Image hpBar;
 
         [SerializeField]
@@ -17,9 +19,6 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private TextMeshProUGUI infoText;
-
-        [SerializeField]
-        private Image portrait;
 
         [SerializeField]
         private BuffLayout buffLayout;
@@ -32,9 +31,9 @@ namespace Nekoyume.UI.Module
             gameObject.SetActive(false);
         }
 
-        public void Set(Sprite sprite, string avatarName, int level)
+        public void Set(int portraitId, string avatarName, int level)
         {
-            SetProfile(sprite, avatarName, level);
+            SetProfile(portraitId, avatarName, level);
             SetBuff();
         }
 
@@ -49,10 +48,10 @@ namespace Nekoyume.UI.Module
             animator.Play("Close");
         }
 
-        private void SetProfile(Sprite sprite, string avatarName, int level)
+        private void SetProfile(int portraitId, string avatarName, int level)
         {
-            infoText.text = $"<color=#B38271>Lv.{level}</color> {avatarName}";
-            portrait.overrideSprite = sprite;
+            characterView.SetByFullCostumeOrArmorId(portraitId, level);
+            infoText.text = avatarName;
         }
 
         public void SetHp(int current, int max)

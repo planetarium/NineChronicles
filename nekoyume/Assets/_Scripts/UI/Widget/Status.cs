@@ -3,7 +3,6 @@ using Nekoyume.Game.Character;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
-using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Timer;
 using UnityEngine;
@@ -20,7 +19,10 @@ namespace Nekoyume.UI
         private FramedCharacterView characterView = null;
 
         [SerializeField]
-        private TextMeshProUGUI textLvName = null;
+        private TextMeshProUGUI textName = null;
+
+        [SerializeField]
+        private TextMeshProUGUI textLevel = null;
 
         [SerializeField]
         private TextMeshProUGUI textHp = null;
@@ -148,9 +150,7 @@ namespace Nekoyume.UI
             }
 
             var level = _player.Level;
-
-            var avatarName = States.Instance.CurrentAvatarState.NameWithHash;
-            textLvName.text = $"<color=#B38271>LV. {level}</color> {avatarName}";
+            textLevel.text = level.ToString();
             var displayHp = _player.CurrentHP;
             textHp.text = $"{displayHp} / {_player.HP}";
             textExp.text =
@@ -180,7 +180,8 @@ namespace Nekoyume.UI
             characterView.SetByFullCostumeOrArmorId(portraitId);
 
             // level& name
-            textLvName.text = $"<color=#B38271>LV. {avatarState.level}</color> {avatarState.NameWithHash}";
+            textLevel.text = avatarState.level.ToString();
+            textName.text = avatarState.NameWithHash;
 
             // exp
             var levelSheet = Game.Game.instance.TableSheets.CharacterLevelSheet;
