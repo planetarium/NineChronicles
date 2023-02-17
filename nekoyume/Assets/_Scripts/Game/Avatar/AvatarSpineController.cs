@@ -249,6 +249,10 @@ namespace Nekoyume.Game.Avatar
                 return;
             }
 
+            var fullCostume = _parts[AvatarPartsType.full_costume];
+            fullCostume.ClearState();
+            fullCostume.skeletonDataAsset = null;
+            fullCostume.Initialize(true);
             _isActiveFullCostume = false;
             Refresh(true, isDcc);
         }
@@ -432,7 +436,8 @@ namespace Nekoyume.Game.Avatar
             var type = isFullCostume ? AvatarPartsType.full_costume : AvatarPartsType.body;
             var skeletonAnimation = _parts[type];
             var name = isFullCostume ? $"{index}_SkeletonData" : $"body_skin_{index}_SkeletonData";
-            if (skeletonAnimation.skeletonDataAsset.name == name)
+            if (skeletonAnimation.skeletonDataAsset is not null &&
+                skeletonAnimation.skeletonDataAsset.name == name)
             {
                 return;
             }
