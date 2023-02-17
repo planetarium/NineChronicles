@@ -8,6 +8,10 @@ namespace Nekoyume.Game.Character
         {
         }
 
+        public PetAnimator(Pet root) : base(root.gameObject)
+        {
+        }
+
         public void Play(PetAnimation.Type type, float normalizedTime = 0f)
         {
             if (!ValidateAnimator())

@@ -1,10 +1,8 @@
 using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
 using Bencodex.Types;
@@ -15,10 +13,8 @@ using Libplanet.Assets;
 using LruCacheNet;
 using MessagePack;
 using MessagePack.Resolvers;
-using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
-using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Notice;
 using Nekoyume.Game.VFX;
@@ -34,10 +30,11 @@ using Nekoyume.UI.Scroller;
 using UnityEngine;
 using UnityEngine.Playables;
 using Menu = Nekoyume.UI.Menu;
+using Random = UnityEngine.Random;
 
 namespace Nekoyume.Game
 {
-    using Nekoyume.GraphQL;
+    using GraphQL;
     using UniRx;
 
     [RequireComponent(typeof(Agent), typeof(RPCAgent))]
@@ -82,6 +79,8 @@ namespace Nekoyume.Game
 
         public bool IsInitialized { get; private set; }
         public bool IsInWorld { get; set; }
+
+        public int? SavedPetId { get; set; }
 
         public Prologue Prologue => prologue;
 
@@ -238,6 +237,14 @@ namespace Nekoyume.Game
                 Dcc = new Dcc(responseData.Avatars);
             }));
 
+            Event.OnUpdateAddresses.AsObservable().Subscribe(_ =>
+            {
+                var petList = States.Instance.PetStates.GetPetStatesAll()
+                    .Where(petState => petState != null)
+                    .Select(petState => petState.PetId)
+                    .ToList();
+                SavedPetId = !petList.Any() ? null : petList[Random.Range(0, petList.Count)];
+            }).AddTo(gameObject);
 
             Widget.Find<VersionSystem>().SetVersion(Agent.AppProtocolVersion);
 

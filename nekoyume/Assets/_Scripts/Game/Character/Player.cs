@@ -9,6 +9,7 @@ using Nekoyume.UI;
 using UnityEngine;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Spine.Unity;
 
 namespace Nekoyume.Game.Character
 {
@@ -27,6 +28,8 @@ namespace Nekoyume.Game.Character
         public long EXPMax { get; private set; }
 
         public TouchHandler touchHandler;
+
+        public Pet pet;
 
         protected override float RunSpeedDefault => CharacterModel.RunSpeed;
 
@@ -507,6 +510,12 @@ namespace Nekoyume.Game.Character
             if (!isFullCostume)
             {
                 SpineController.AttachTail();
+            }
+
+            var skeletonAnimation = go.GetComponent<SkeletonAnimation>();
+            if (skeletonAnimation)
+            {
+                pet.SetPosition(skeletonAnimation, isFullCostume);
             }
 
             Animator.ResetTarget(go);
