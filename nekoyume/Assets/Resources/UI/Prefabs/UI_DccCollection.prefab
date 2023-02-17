@@ -1549,9 +1549,8 @@ MonoBehaviour:
   tutorialTargets: []
   tutorialActions: 
   backButton: {fileID: 4465445792812148215}
-  petSlotViewParent: {fileID: 9012740247046585225}
-  originPetSlotView: {fileID: 2413303596658568307, guid: 842c632f5ca56e3408834c2009f40abe,
-    type: 3}
+  scroll: {fileID: 2567904878328409846}
+  petSkeletonGraphic: {fileID: 2257138408582950614}
 --- !u!1 &3381642724743488225
 GameObject:
   m_ObjectHideFlags: 0
@@ -2660,7 +2659,7 @@ GameObject:
   m_Component:
   - component: {fileID: 424718547001412529}
   - component: {fileID: 4084996933319324310}
-  - component: {fileID: 9219972497824842309}
+  - component: {fileID: 2567904878328409846}
   m_Layer: 5
   m_Name: Scroll
   m_TagString: Untagged
@@ -2705,7 +2704,7 @@ MonoBehaviour:
   viewport: {fileID: 5832336029852334477}
   scrollDirection: 0
   movementType: 1
-  elasticity: 0.1
+  elasticity: 0.2
   scrollSensitivity: 20
   inertia: 1
   decelerationRate: 0.03
@@ -2716,7 +2715,7 @@ MonoBehaviour:
     Easing: 24
   draggable: 1
   scrollbar: {fileID: 8862435313437101187}
---- !u!114 &9219972497824842309
+--- !u!114 &2567904878328409846
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2725,11 +2724,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 4750673021848488153}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55039fc6de8a40cdb18cd5223468e252, type: 3}
+  m_Script: {fileID: 11500000, guid: b0b527e1d9c849bf80f4c1de003b22f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellInterval: -0.4567901
-  scrollOffset: -0.4567901
+  cellInterval: -8.076919
+  scrollOffset: -8.076919
   loop: 0
   cellContainer: {fileID: 9012740247046585225}
   reuseCellMarginCount: 0
@@ -2737,11 +2736,11 @@ MonoBehaviour:
   paddingTail: 0
   spacing: 0
   startAxisSpacing: 0
-  startAxisCellCount: 5
-  cellSize: {x: 74, y: 74}
+  startAxisCellCount: 4
+  cellSize: {x: 170, y: 210}
   forcedScrollSensitivity: 20
   fillWithNullToEmptyViewport: 1
-  cellTemplate: {fileID: 4930640821104476852, guid: 81eec6b736480054f9d2829f204507d8,
+  cellTemplate: {fileID: 3938103667069412403, guid: 53bf639214776f543ae20d713253e3c1,
     type: 3}
 --- !u!1 &4759487331714025718
 GameObject:
@@ -5784,6 +5783,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2239108142594206111}
     m_Modifications:
+    - target: {fileID: 2785377843829604703, guid: 29c5c99555c2b5f40a6f757cea5554b3,
+        type: 3}
+      propertyPath: l10nKey
+      value: UI_DCC_COLLECTION
+      objectReference: {fileID: 0}
+    - target: {fileID: 6679572050248287148, guid: 29c5c99555c2b5f40a6f757cea5554b3,
+        type: 3}
+      propertyPath: helpId
+      value: 100027
+      objectReference: {fileID: 0}
+    - target: {fileID: 6950815306001856415, guid: 29c5c99555c2b5f40a6f757cea5554b3,
+        type: 3}
+      propertyPath: m_text
+      value: UI_DCC_COLLECTION
+      objectReference: {fileID: 0}
     - target: {fileID: 7126975939112497894, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_Name
@@ -5807,7 +5821,7 @@ PrefabInstance:
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 88
       objectReference: {fileID: 0}
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}

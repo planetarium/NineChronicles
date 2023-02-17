@@ -10,7 +10,6 @@ namespace Nekoyume.UI.Module.Pet
         public PetSheet.Row PetRow { get; }
         public readonly ReactiveProperty<bool> Empty;
         public readonly ReactiveProperty<bool> EquippedIcon;
-        public readonly ReactiveProperty<int> Level;
         public readonly ReactiveProperty<bool> HasNotification;
         public readonly ReactiveProperty<bool> Loading;
 
@@ -19,7 +18,6 @@ namespace Nekoyume.UI.Module.Pet
             PetRow = petRow;
             Empty = new ReactiveProperty<bool>(petRow is null);
             EquippedIcon = new ReactiveProperty<bool>(false);
-            Level = new ReactiveProperty<int>(0);
             HasNotification = new ReactiveProperty<bool>(false);
             Loading = new ReactiveProperty<bool>(false);
         }
