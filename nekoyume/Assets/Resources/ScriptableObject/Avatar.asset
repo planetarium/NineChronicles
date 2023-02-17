@@ -13,8 +13,15 @@ MonoBehaviour:
   m_Name: Avatar
   m_EditorClassIdentifier: Nekoyume:Nekoyume.Game.ScriptableObject:AvatarScriptableObject
   Body:
+  - {fileID: 11400000, guid: d8cf6348e9aafc2469a9e56668efbd08, type: 2}
+  - {fileID: 11400000, guid: e5a1bccf257798d42bae6dd5eecd6478, type: 2}
   - {fileID: 11400000, guid: 12a0ae22a01eca64e81cbe1ec99bf663, type: 2}
   - {fileID: 11400000, guid: f8358daac023fd34db9620fc7320aa9d, type: 2}
+  - {fileID: 11400000, guid: 7134486a07361f7408d87b9f68aa6876, type: 2}
+  - {fileID: 11400000, guid: a5fc778e749e9ba409c878fc775cee61, type: 2}
+  - {fileID: 11400000, guid: a2311b3948ce1844a9845db1adc51674, type: 2}
+  - {fileID: 11400000, guid: d523c6d98e3fc93418de7d4fd617987f, type: 2}
+  - {fileID: 11400000, guid: d6e0fc3a0b0db36428e8545b35b6aef5, type: 2}
   FullCostume:
   - {fileID: 11400000, guid: f5e6e535b664b40d59211f0b32ccb48e, type: 2}
   - {fileID: 11400000, guid: e2951d4e1dfc440bf8a984036eacbba2, type: 2}

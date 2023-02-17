@@ -100,7 +100,7 @@ namespace Nekoyume.Game.Character
             _animator = animator;
             _hudContainer = hudContainer;
 
-            SpineController.UnequipFullCostume();
+            SpineController.UnequipFullCostume(false);
             UpdateEar(earIndex, false);
             UpdateFace(lensIndex, false);
             UpdateHair(hairIndex, false);
@@ -108,7 +108,7 @@ namespace Nekoyume.Game.Character
             UpdateAcFace(0, false);
             UpdateAcEye(0, false);
             UpdateAcHead(0, false);
-            SpineController.UpdateBody(armorId, 0);
+            SpineController.UpdateBody(armorId, 0, false);
             SpineController.UpdateWeapon(weaponId, null);
             UpdateTarget();
             UpdateHitPoint();
@@ -141,7 +141,7 @@ namespace Nekoyume.Game.Character
             {
                 var parts = GetDccParts(id);
                 // ignore full costume
-                SpineController.UnequipFullCostume();
+                SpineController.UnequipFullCostume(false);
                 UpdateEar(parts[DccPartsType.ear_tail], true);
                 UpdateFace(parts[DccPartsType.face], true);
                 UpdateHair(parts[DccPartsType.hair], true);
@@ -149,7 +149,7 @@ namespace Nekoyume.Game.Character
                 UpdateAcFace(parts[DccPartsType.ac_face], true);
                 UpdateAcEye(parts[DccPartsType.ac_eye], true);
                 UpdateAcHead(parts[DccPartsType.ac_head], true);
-                UpdateArmor(armor);
+                UpdateArmor(armor, true);
                 UpdateWeapon(weapon);
             }
             else
@@ -162,7 +162,7 @@ namespace Nekoyume.Game.Character
                 }
                 else
                 {
-                    SpineController.UnequipFullCostume();
+                    SpineController.UnequipFullCostume(false);
                     UpdateEar(earIndex, false);
                     UpdateFace(lensIndex, false);
                     UpdateHair(hairIndex, false);
@@ -170,7 +170,7 @@ namespace Nekoyume.Game.Character
                     UpdateAcFace(0, false);
                     UpdateAcEye(0, false);
                     UpdateAcHead(0, false);
-                    UpdateArmor(armor);
+                    UpdateArmor(armor, false);
                     UpdateWeapon(weapon);
                 }
             }
@@ -204,7 +204,7 @@ namespace Nekoyume.Game.Character
 
         private void UpdateFullCostume(Costume fullCostume)
         {
-            SpineController.UpdateFullCostume(fullCostume.Id);
+            SpineController.UpdateFullCostume(fullCostume.Id, false);
             UpdateTarget();
             UpdateHitPoint();
         }
@@ -224,10 +224,10 @@ namespace Nekoyume.Game.Character
             SpineController.UpdateAcHead(index, isDcc);
         }
 
-        private void UpdateArmor(Armor armor)
+        private void UpdateArmor(Armor armor, bool isDcc)
         {
             var armorId = armor?.Id ?? GameConfig.DefaultAvatarArmorId;
-            SpineController.UpdateBody(armorId, 0);
+            SpineController.UpdateBody(armorId, 0, isDcc);
             UpdateTarget();
             UpdateHitPoint();
         }

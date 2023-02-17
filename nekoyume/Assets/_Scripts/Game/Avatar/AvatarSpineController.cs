@@ -129,20 +129,9 @@ namespace Nekoyume.Game.Avatar
             StartFade(0f, duration, onComplete);
         }
 
-        private void Refresh(bool isReset = false)
+        private void Refresh(bool isReset, bool isDcc)
         {
-            if (_isActiveFullCostume)
-            {
-                foreach (var (type, skeletonAnimation) in _parts)
-                {
-                    var value = type == AvatarPartsType.full_costume;
-                    if (skeletonAnimation.gameObject.activeSelf != value)
-                    {
-                        skeletonAnimation.gameObject.SetActive(value);
-                    }
-                }
-            }
-            else
+            if (isDcc)
             {
                 foreach (var (type, skeletonAnimation) in _parts)
                 {
@@ -153,6 +142,36 @@ namespace Nekoyume.Game.Avatar
                     }
                 }
             }
+            else
+            {
+                if (_isActiveFullCostume)
+                {
+                    foreach (var (type, skeletonAnimation) in _parts)
+                    {
+                        var value = type == AvatarPartsType.full_costume;
+                        if (skeletonAnimation.gameObject.activeSelf != value)
+                        {
+                            skeletonAnimation.gameObject.SetActive(value);
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var (type, skeletonAnimation) in _parts)
+                    {
+                        var value = type is not (AvatarPartsType.ac_eye
+                            or AvatarPartsType.ac_face
+                            or AvatarPartsType.ac_head
+                            or AvatarPartsType.full_costume);
+
+                        if (skeletonAnimation.gameObject.activeSelf != value)
+                        {
+                            skeletonAnimation.gameObject.SetActive(value);
+                        }
+                    }
+                }
+            }
+
 
             if (isReset)
             {
@@ -217,13 +236,13 @@ namespace Nekoyume.Game.Avatar
             _cachedWeaponVFX = parent;
         }
 
-        public void UpdateFullCostume(int index)
+        public void UpdateFullCostume(int index, bool isDcc)
         {
             _isActiveFullCostume = true;
-            UpdateSkeletonDataAsset(index, true);
+            UpdateSkeletonDataAsset(index, true, isDcc);
         }
 
-        public void UnequipFullCostume()
+        public void UnequipFullCostume(bool isDcc)
         {
             if (!_isActiveFullCostume)
             {
@@ -231,17 +250,36 @@ namespace Nekoyume.Game.Avatar
             }
 
             _isActiveFullCostume = false;
-            Refresh(true);
+            Refresh(true, isDcc);
         }
 
-        public void UpdateBody(int index, int skinTone)
+        public void UpdateBody(int index, int skinTone, bool isDcc)
         {
-            // todo : 바디 적용할때 바꿔줘야함.
-            index = index == 10230000 ? 10230000 : 10220000;
-            UpdateSkeletonDataAsset(index, false);
-            // var preIndex = (int)(index * 0.0001) * 10000;
+            if (index == 10255000)
+            {
+                index = 10235000;
+            }
+            var s = SplitIndex(index);
+            var preIndex = s[0] + s[4] + s[5] + s[6] + s[7];
             var skinName = $"{index}-{skinTone}";
+            // Debug.Log($"[UpdateBody] : {preIndex} / {skinName}");
+            UpdateSkeletonDataAsset(preIndex, false, isDcc);
             UpdateSkin(true, index, AvatarPartsType.body, skinName);
+        }
+
+        private List<int> SplitIndex(int index)
+        {
+            var result = new List<int>();
+            var x = 1;
+            while (index != 0)
+            {
+                var n = index % 10;
+                result.Add(n * x);
+                index /= 10;
+                x *= 10;
+            }
+
+            return result;
         }
 
         public void UpdateHair(int index, bool isDcc)
@@ -389,7 +427,7 @@ namespace Nekoyume.Game.Avatar
             skeletonAnimation.Skeleton.Update(0);
         }
 
-        private void UpdateSkeletonDataAsset(int index, bool isFullCostume)
+        private void UpdateSkeletonDataAsset(int index, bool isFullCostume, bool isDcc)
         {
             var type = isFullCostume ? AvatarPartsType.full_costume : AvatarPartsType.body;
             var skeletonAnimation = _parts[type];
@@ -407,7 +445,7 @@ namespace Nekoyume.Game.Avatar
             skeletonAnimation.skeletonDataAsset = asset;
             skeletonAnimation.Initialize(true);
 
-            Refresh(true);
+            Refresh(true, isDcc);
         }
 
         private void StartFade(float toValue, float duration, System.Action onComplete = null)

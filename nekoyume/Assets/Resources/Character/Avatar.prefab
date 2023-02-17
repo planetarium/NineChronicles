@@ -63,9 +63,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 6dd7d054dd91d944db65a796e2351e24, type: 2}
-  - {fileID: 0}
-  - {fileID: 2100000, guid: 6dd7d054dd91d944db65a796e2351e24, type: 2}
+  - {fileID: 2100000, guid: 645b7be6f5e99704ba1d633d8b79910a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -99,7 +97,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skeletonDataAsset: {fileID: 11400000, guid: 12a0ae22a01eca64e81cbe1ec99bf663, type: 2}
+  skeletonDataAsset: {fileID: 11400000, guid: d8cf6348e9aafc2469a9e56668efbd08, type: 2}
   initialSkinName: 
   initialFlipX: 0
   initialFlipY: 0
@@ -165,7 +163,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2453831652824800176}
   m_LocalRotation: {x: -0, y: -0, z: -0.0000000217594, w: 1}
-  m_LocalPosition: {x: 0.22583008, y: 1.4785767, z: 0}
+  m_LocalPosition: {x: 0.25615835, y: 1.4390372, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -272,7 +270,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skeletonRenderer: {fileID: 2453831652237097421}
-  boneName: acface_Bornfollow
+  boneName: acface_BoneFollower
   followXYPosition: 1
   followZPosition: 1
   followBoneRotation: 1
@@ -308,7 +306,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2453831652976915081}
   m_LocalRotation: {x: -0, y: -0, z: -0.0000000217594, w: 1}
-  m_LocalPosition: {x: 0.22583008, y: 1.4785767, z: 0}
+  m_LocalPosition: {x: 0.25615835, y: 1.4390372, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -415,7 +413,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skeletonRenderer: {fileID: 2453831652237097421}
-  boneName: aceye_Bornfollow
+  boneName: aceye_BoneFollower
   followXYPosition: 1
   followZPosition: 1
   followBoneRotation: 1
@@ -451,7 +449,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2453831653147030751}
   m_LocalRotation: {x: -0, y: -0, z: -0.0000000217594, w: 1}
-  m_LocalPosition: {x: 0.22583008, y: 1.4785767, z: 0}
+  m_LocalPosition: {x: 0.25615835, y: 1.4390372, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -521,7 +519,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skeletonDataAsset: {fileID: 11400000, guid: 03852e5519a9bff41afa9985112bb6f3, type: 2}
-  initialSkinName: 40200002
+  initialSkinName: 40200001
   initialFlipX: 0
   initialFlipY: 0
   updateWhenInvisible: 3
@@ -558,7 +556,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skeletonRenderer: {fileID: 2453831652237097421}
-  boneName: hairback_Bornfollow
+  boneName: hairback_BoneFollower
   followXYPosition: 1
   followZPosition: 1
   followBoneRotation: 1
@@ -594,7 +592,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2453831653186862765}
   m_LocalRotation: {x: -0, y: -0, z: -0.0000000217594, w: 1}
-  m_LocalPosition: {x: 0.22583008, y: 1.4785767, z: 0}
+  m_LocalPosition: {x: 0.25615835, y: 1.4390372, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -701,7 +699,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skeletonRenderer: {fileID: 2453831652237097421}
-  boneName: achead_Bornfollow
+  boneName: achead_BoneFollower
   followXYPosition: 1
   followZPosition: 1
   followBoneRotation: 1
@@ -737,7 +735,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2453831653253612932}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.2319336, y: 0.8529663, z: 0}
+  m_LocalPosition: {x: -0.12279993, y: 0.92679995, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -844,7 +842,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skeletonRenderer: {fileID: 2453831652237097421}
-  boneName: tail_Bornfollow
+  boneName: tail_BoneFollower
   followXYPosition: 1
   followZPosition: 1
   followBoneRotation: 1
@@ -880,7 +878,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2453831653708135036}
   m_LocalRotation: {x: -0, y: -0, z: -0.0000000217594, w: 1}
-  m_LocalPosition: {x: 0.22583008, y: 1.4785767, z: 0}
+  m_LocalPosition: {x: 0.25615835, y: 1.4390372, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -914,7 +912,8 @@ MeshRenderer:
   m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
-  m_Materials: []
+  m_Materials:
+  - {fileID: 2100000, guid: 8114541730e2d9941968539ee453d1fa, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -949,7 +948,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skeletonDataAsset: {fileID: 11400000, guid: 6fd9fa9c8bb73ae48af64a9329d28497, type: 2}
-  initialSkinName: 
+  initialSkinName: 40400001
   initialFlipX: 0
   initialFlipY: 0
   updateWhenInvisible: 3
@@ -986,7 +985,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skeletonRenderer: {fileID: 2453831652237097421}
-  boneName: face_Bornfollow
+  boneName: face_BoneFollower
   followXYPosition: 1
   followZPosition: 1
   followBoneRotation: 1
@@ -1122,7 +1121,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2453831654188472596}
   m_LocalRotation: {x: -0, y: -0, z: -0.0000000217594, w: 1}
-  m_LocalPosition: {x: 0.22583008, y: 1.4785767, z: 0}
+  m_LocalPosition: {x: 0.25615835, y: 1.4390372, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1229,7 +1228,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skeletonRenderer: {fileID: 2453831652237097421}
-  boneName: ear_Bornfollow
+  boneName: ear_BoneFollower
   followXYPosition: 1
   followZPosition: 0
   followBoneRotation: 1
@@ -1265,7 +1264,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2453831654330395791}
   m_LocalRotation: {x: -0, y: -0, z: -0.0000000217594, w: 1}
-  m_LocalPosition: {x: 0.22583008, y: 1.4785767, z: 0}
+  m_LocalPosition: {x: 0.25615835, y: 1.4390372, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1335,7 +1334,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skeletonDataAsset: {fileID: 11400000, guid: ea24649fe87ad534daa39f600417928c, type: 2}
-  initialSkinName: 40200007
+  initialSkinName: 40200001
   initialFlipX: 0
   initialFlipY: 0
   updateWhenInvisible: 3
@@ -1372,7 +1371,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skeletonRenderer: {fileID: 2453831652237097421}
-  boneName: hairfront_Bornfollow
+  boneName: hairfront_BoneFollower
   followXYPosition: 1
   followZPosition: 1
   followBoneRotation: 1
