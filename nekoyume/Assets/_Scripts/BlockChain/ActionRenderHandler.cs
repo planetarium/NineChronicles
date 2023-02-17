@@ -2494,6 +2494,10 @@ namespace Nekoyume.BlockChain
             {
                 Widget.Find<PetLevelUpResultScreen>().Show(eval.Action);
             }
+            else
+            {
+                Widget.Find<PetSummonResultScreen>().Show(eval.Action.PetId);
+            }
 
             UpdateAgentStateAsync(eval).Forget();
             var soulStoneTicker = TableSheets.Instance.PetSheet[action.PetId].SoulStoneTicker;

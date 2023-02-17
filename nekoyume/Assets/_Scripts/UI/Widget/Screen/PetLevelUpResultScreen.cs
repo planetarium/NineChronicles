@@ -12,9 +12,6 @@ namespace Nekoyume.UI
     public class PetLevelUpResultScreen : ScreenWidget
     {
         [SerializeField]
-        private TextMeshProUGUI titleText;
-
-        [SerializeField]
         private TextMeshProUGUI petNameText;
 
         [SerializeField]
@@ -37,7 +34,6 @@ namespace Nekoyume.UI
             base.Show();
             var petRow = TableSheets.Instance.PetSheet[action.PetId];
             States.Instance.PetStates.TryGetPetState(petRow.Id, out var prevPetState);
-            titleText.text = "levelup" + L10nManager.Localize("UI_COMPLETED");
             petNameText.text = $"nameof({petRow.Id})";
             petGradeText.text = L10nManager.Localize($"UI_ITEM_GRADE_{petRow.Grade}");
             contentText.text = $"contentOf({petRow.Id})";

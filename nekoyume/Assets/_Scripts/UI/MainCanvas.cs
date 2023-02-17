@@ -179,6 +179,7 @@ namespace Nekoyume.UI
                 Widget.Create<MailRewardScreen>(),
                 Widget.Create<CPScreen>(),
                 Widget.Create<PetLevelUpResultScreen>(),
+                Widget.Create<PetSummonResultScreen>(),
 
                 // 팝업 영역.
                 Widget.Create<SettingPopup>(),
