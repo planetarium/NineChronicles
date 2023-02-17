@@ -86,7 +86,7 @@ namespace Nekoyume.UI
             var currencyText = L10nManager.Localize("UI_CRYSTAL");
             var usageText = L10nManager.Localize("UI_CRYSTAL_REPLACE_MATERIAL");
             var content = L10nManager.Localize("UI_CONFIRM_PAYMENT_CURRENCY_FORMAT",
-                cost, currencyText, usageText);
+                cost.MajorUnit, currencyText, usageText);
             var yes = L10nManager.Localize("UI_YES");
             var no = L10nManager.Localize("UI_NO");
 

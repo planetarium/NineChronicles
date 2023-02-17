@@ -869,7 +869,7 @@ namespace Nekoyume.BlockChain
                 var avatarAddress = eval.Action.avatarAddress;
                 var slotIndex = eval.Action.slotIndex;
                 var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, slotIndex);
-                var result = (ItemEnhancement.ResultModel)slot.Result;
+                var result = (ItemEnhancement11.ResultModel)slot.Result;
                 var itemUsable = result.itemUsable;
                 if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState, out _))
                 {
@@ -900,13 +900,13 @@ namespace Nekoyume.BlockChain
                 string formatKey;
                 switch (result.enhancementResult)
                 {
-                    case Action.ItemEnhancement.EnhancementResult.GreatSuccess:
+                    case Action.ItemEnhancement11.EnhancementResult.GreatSuccess:
                         formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_GREATER";
                         break;
-                    case Action.ItemEnhancement.EnhancementResult.Success:
+                    case Action.ItemEnhancement11.EnhancementResult.Success:
                         formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
                         break;
-                    case Action.ItemEnhancement.EnhancementResult.Fail:
+                    case Action.ItemEnhancement11.EnhancementResult.Fail:
                         Analyzer.Instance.Track("Unity/ItemEnhancement Failed", new Dictionary<string, Value>()
                         {
                             ["GainedCrystal"] = (long)result.CRYSTAL.MajorUnit,
