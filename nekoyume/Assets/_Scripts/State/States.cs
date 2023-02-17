@@ -285,6 +285,19 @@ namespace Nekoyume.State
             }
         }
 
+        public async Task InitSoulStoneBalance()
+        {
+            var petSheet = Game.Game.instance.TableSheets.PetSheet;
+            var avatarAddress = CurrentAvatarState.address;
+            await foreach (var row in petSheet.Values)
+            {
+                AvatarBalance.Remove(row.SoulStoneTicker);
+                var soulStone = Currency.Legacy(row.SoulStoneTicker, 0, null);
+                var fungibleAsset = await Game.Game.instance.Agent.GetBalanceAsync(avatarAddress, soulStone);
+                AvatarBalance.Add(soulStone.Ticker, fungibleAsset);
+            }
+        }
+
         private async UniTask InitItemSlotState(int slotIndex, AvatarState avatarState)
         {
             if (ItemSlotStates.ContainsKey(slotIndex))

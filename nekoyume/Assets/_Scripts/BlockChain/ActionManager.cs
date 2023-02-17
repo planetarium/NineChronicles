@@ -1363,7 +1363,6 @@ namespace Nekoyume.BlockChain
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
-            _lastBattleActionId = action.Id;
             return _agent.ActionRenderer.EveryRender<RuneEnhancement>()
                 .Timeout(ActionTimeout)
                 .Where(eval => eval.Action.Id.Equals(action.Id))
@@ -1386,8 +1385,31 @@ namespace Nekoyume.BlockChain
 
             LoadingHelper.UnlockRuneSlot.Add(slotIndex);
             ProcessAction(action);
-            _lastBattleActionId = action.Id;
             return _agent.ActionRenderer.EveryRender<UnlockRuneSlot>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e =>
+                {
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
+                });
+        }
+
+        public IObservable<ActionBase.ActionEvaluation<PetEnhancement>> PetEnhancement(
+            int petId,
+            int targetLevel)
+        {
+            // TODO: add Analyzer tracking
+            var action = new PetEnhancement
+            {
+                AvatarAddress = States.Instance.CurrentAvatarState.address,
+                PetId = petId,
+                TargetLevel = targetLevel
+            };
+
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<PetEnhancement>()
                 .Timeout(ActionTimeout)
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()

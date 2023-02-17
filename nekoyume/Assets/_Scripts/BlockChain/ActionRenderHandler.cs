@@ -502,6 +502,7 @@ namespace Nekoyume.BlockChain
             await UpdateAvatarState(eval, eval.Action.index);
             var avatarState = await States.Instance.SelectAvatarAsync(eval.Action.index);
             await States.Instance.InitRuneStoneBalance();
+            await States.Instance.InitSoulStoneBalance();
             await States.Instance.InitRuneStates();
             await States.Instance.InitItemSlotStates();
             await States.Instance.InitRuneSlotStates();

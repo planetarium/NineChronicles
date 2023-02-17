@@ -376,6 +376,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<ArenaTicketPopup>());
             yield return null;
+            secondWidgets.Add(Widget.Create<PetEnhancementPopup>());
+            yield return null;
             secondWidgets.Add(Widget.Create<DccSettingPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<PetSelectionPopup>());
