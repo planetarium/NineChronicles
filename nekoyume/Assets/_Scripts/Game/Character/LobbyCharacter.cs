@@ -63,10 +63,16 @@ namespace Nekoyume.Game.Character
             Animator.Touch();
         }
 
+        public void TouchPet()
+        {
+            appearance.Pet.Animator.Play(PetAnimation.Type.Interaction);
+        }
+
         public void EnterRoom()
         {
             var status = Widget.Find<Status>();
             status.Close(true);
+            appearance.Pet.SetSpineObject();
             StartCoroutine(CoPlayAnimation());
         }
 

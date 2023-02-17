@@ -424,6 +424,7 @@ namespace Nekoyume.Game
 
             yield return StartCoroutine(title.CoClose());
 
+            _stageRunningPlayer.Pet.Animator.Play(PetAnimation.Type.BattleStart);
             AudioController.instance.PlayMusic(bgmName);
             IsShowHud = true;
         }
@@ -485,6 +486,7 @@ namespace Nekoyume.Game
                 _stageRunningPlayer.DisableHUD();
                 _stageRunningPlayer.Animator.Win(log.clearedWaveNumber);
                 _stageRunningPlayer.ShowSpeech("PLAYER_WIN");
+                _stageRunningPlayer.Pet.Animator.Play(PetAnimation.Type.BattleEnd);
                 yield return new WaitForSeconds(2.2f);
                 objectPool.ReleaseExcept(ReleaseWhiteList);
                 if (isClear)

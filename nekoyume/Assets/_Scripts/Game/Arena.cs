@@ -148,9 +148,11 @@ namespace Nekoyume.Game
             _turnNumber = 1;
 
             Widget.Find<ArenaBattle>().Show(myDigest, enemyDigest);
+            enemy.Pet.Animator.DestroyTarget();
             yield return new WaitForSeconds(2.0f);
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.PVPBattle);
+            me.Pet.Animator.Play(PetAnimation.Type.BattleStart);
             Widget.Find<ArenaBattleLoadingScreen>().Close();
             Game.instance.IsInWorld = true;
         }
@@ -172,6 +174,7 @@ namespace Nekoyume.Game
             var arenaCharacter = log.Result == ArenaLog.ArenaResult.Win ? me : enemy;
             arenaCharacter.Animator.Win();
             arenaCharacter.ShowSpeech("PLAYER_WIN");
+            arenaCharacter.Pet.Animator.Play(PetAnimation.Type.BattleEnd);
             Widget.Find<ArenaBattle>().Close();
             Widget.Find<RankingBattleResultPopup>().Show(log, rewards, OnEnd, winDefeatCount);
             yield return null;

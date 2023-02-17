@@ -26,6 +26,7 @@ namespace Nekoyume.Game.Entrance
             Widget.Find<Login>().ready = false;
             yield return null;
 
+            Game.instance.SavedPetId = null;
             var factory = GetComponent<PlayerFactory>();
             if (ReferenceEquals(factory, null))
             {

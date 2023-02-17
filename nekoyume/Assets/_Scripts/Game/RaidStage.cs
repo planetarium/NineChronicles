@@ -211,6 +211,7 @@ namespace Nekoyume.Game
             _currentScore = 0;
 
             yield return StartCoroutine(container.CoPlayAppearCutscene());
+            _player.Pet.Animator.Play(Character.PetAnimation.Type.BattleStart);
             _boss.Animator.Idle();
         }
 

@@ -19,8 +19,10 @@ MonoBehaviour:
   isUpgradingBlendModeMaterials: 0
   blendModeMaterials:
     requiresBlendModeMaterials: 1
-    applyAdditiveMaterial: 0
-    additiveMaterials: []
+    applyAdditiveMaterial: 1
+    additiveMaterials:
+    - pageName: 40100007.png
+      material: {fileID: 2100000, guid: 0621d59a5d878b640a58b30ae4b90874, type: 2}
     multiplyMaterials:
     - pageName: 40100007.png
       material: {fileID: 2100000, guid: 45d1b82c988538c4ba9e71b7e7b998ef, type: 2}

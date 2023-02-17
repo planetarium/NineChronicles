@@ -17,6 +17,8 @@ namespace Nekoyume.Game.Character
         private readonly List<Costume> _costumes = new List<Costume>();
         private readonly List<Equipment> _equipments = new List<Equipment>();
 
+        public Pet Pet => appearance.Pet;
+
         protected override void Awake()
         {
             Animator = new PlayerAnimator(this)

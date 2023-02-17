@@ -12,6 +12,7 @@ using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
+using Spine.Unity;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character
@@ -24,6 +25,9 @@ namespace Nekoyume.Game.Character
         [SerializeField]
         private BoxCollider boxCollider;
 
+        [SerializeField]
+        private Pet pet;
+
         private CharacterAnimator _animator;
         private HudContainer _hudContainer;
         private GameObject _cachedCharacterTitle;
@@ -31,6 +35,7 @@ namespace Nekoyume.Game.Character
 
         public AvatarSpineController SpineController => avatarSpineController;
         public BoxCollider BoxCollider => boxCollider;
+        public Pet Pet => pet;
 
         private void OnDisable()
         {
@@ -151,6 +156,8 @@ namespace Nekoyume.Game.Character
                 UpdateAcHead(parts[DccPartsType.ac_head], true);
                 UpdateArmor(armor, true);
                 UpdateWeapon(weapon);
+
+                pet.SetPosition(SpineController.GetSkeletonAnimation(), false);
             }
             else
             {
@@ -173,6 +180,7 @@ namespace Nekoyume.Game.Character
                     UpdateArmor(armor, false);
                     UpdateWeapon(weapon);
                 }
+                pet.SetPosition(SpineController.GetSkeletonAnimation(), fullCostume is not null);
             }
 
             var title = costumes.FirstOrDefault(x => x.ItemSubType == ItemSubType.Title);

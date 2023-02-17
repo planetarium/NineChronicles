@@ -9,6 +9,8 @@ using Nekoyume.Model.Item;
 using Nekoyume.UI;
 using UnityEngine;
 using Nekoyume.Model.State;
+using Nekoyume.TableData;
+using Spine.Unity;
 
 namespace Nekoyume.Game.Character
 {
@@ -30,6 +32,8 @@ namespace Nekoyume.Game.Character
         public long EXPMax { get; private set; }
 
         public TouchHandler touchHandler;
+
+        public Pet Pet => appearance.Pet;
 
         protected override float RunSpeedDefault => CharacterModel.RunSpeed;
 
