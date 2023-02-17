@@ -1,5 +1,6 @@
 namespace Lib9c.Tests.Util
 {
+    using System;
     using System.Collections.Generic;
     using System.Globalization;
     using Libplanet;
@@ -63,7 +64,11 @@ namespace Lib9c.Tests.Util
             int stage
         )
         {
-            var worldInformation = new WorldInformation(0, tableSheets.WorldSheet, stage);
+            var worldInformation = new WorldInformation(
+                0,
+                tableSheets.WorldSheet,
+                Math.Max(stage, GameConfig.RequireClearedStageLevel.ItemEnhancementAction)
+            );
             return state.SetState(worldInformationAddress, worldInformation.Serialize());
         }
     }
