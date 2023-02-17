@@ -2490,6 +2490,11 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
+            if (States.Instance.PetStates.TryGetPetState(eval.Action.PetId, out _))
+            {
+                Widget.Find<PetLevelUpResultScreen>().Show(eval.Action);
+            }
+
             UpdateAgentStateAsync(eval).Forget();
             var soulStoneTicker = TableSheets.Instance.PetSheet[action.PetId].SoulStoneTicker;
             States.Instance.AvatarBalance[soulStoneTicker] = eval.OutputStates.GetBalance(
