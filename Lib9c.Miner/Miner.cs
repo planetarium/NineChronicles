@@ -76,7 +76,7 @@ namespace Nekoyume.BlockChain
                     {
                         if (!validator(tx))
                         {
-                            _chain.UnstageTransaction(tx);
+                            _chain.StagePolicy.Ignore(_chain, tx.Id);
                             break;
                         }
                     }
