@@ -9,6 +9,7 @@ namespace Lib9c.Tests.Action.Scenario.Pet
     using Lib9c.Tests.Util;
     using Libplanet;
     using Libplanet.Action;
+    using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Pet;
@@ -191,6 +192,147 @@ namespace Lib9c.Tests.Action.Scenario.Pet
             Assert.Equal(1, inventoryState.Items.Count);
             Assert.Throws<InvalidOperationException>(() =>
                 inventoryState.Items.First(item => item.item.Id == _hourglassItemId));
+        }
+
+        [Theory]
+        [InlineData(0, 10114000, 1, "success")] // Lv.1 reduces 5.5%
+        [InlineData(0, 10114000, 30, "success")] // Lv.30 reduces 20%
+        [InlineData(14, 10114000, 1, "greatSuccess")] // Lv.1 reduces 5.5%
+        [InlineData(14, 10114000, 30, "greatSuccess")] // Lv.30 reduces 20%
+        [InlineData(10, 10114000, 1, "fail")] // Lv.1 reduces 5.5%
+        [InlineData(10, 10114000, 30, "fail")] // Lv.30 reduces 20%
+        public void RapidCombinationTest_ItemEnhancement(
+            int randomSeed,
+            int targetItemId,
+            int petLevel,
+            string resultType
+        )
+        {
+            const int itemLevel = 4;
+            var random = new TestRandom(randomSeed);
+            var avatarState = _initialStateV2.GetAvatarStateV2(_avatarAddr);
+
+            // Prepare equipments to enhance
+            var equipmentRow = _tableSheets.EquipmentItemSheet.Values.First(
+                item => item.Id == targetItemId
+            );
+            var equipment = (Equipment)ItemFactory.CreateItemUsable(
+                equipmentRow,
+                default,
+                0,
+                itemLevel
+            );
+            var material = (Equipment)ItemFactory.CreateItemUsable(
+                equipmentRow,
+                Guid.NewGuid(),
+                0,
+                itemLevel
+            );
+            avatarState.inventory.AddItem(equipment);
+            avatarState.inventory.AddItem(material);
+            var stateV2 =
+                _initialStateV2.SetState(_inventoryAddr, avatarState.inventory.Serialize());
+
+            // Get pet
+            var petRow = _tableSheets.PetOptionSheet.Values.First(
+                pet => pet.LevelOptionMap[petLevel].OptionType == PetOptionType
+            );
+            _petId = petRow.PetId;
+            stateV2 = stateV2.SetState(
+                PetState.DeriveAddress(_avatarAddr, (int)_petId),
+                new List(_petId.Serialize(), petLevel.Serialize(), 0L.Serialize())
+            );
+
+            // Prepare enhancement
+            var enhancementRow = _tableSheets.EnhancementCostSheetV2.Values.First(
+                cost => cost.ItemSubType == ItemSubType.Weapon
+                        && cost.Grade == equipment.Grade
+                        && cost.Level == equipment.level + 1
+            );
+            var requiredBlock = resultType switch
+            {
+                "success" => enhancementRow.SuccessRequiredBlockIndex,
+                "greatSuccess" => enhancementRow.GreatSuccessRequiredBlockIndex,
+                _ => enhancementRow.FailRequiredBlockIndex
+            };
+            var expectedHourglass = (int)Math.Max(1, Math.Ceiling(
+                (requiredBlock
+                 - stateV2.GetGameConfigState().RequiredAppraiseBlock)
+                /
+                (stateV2.GetGameConfigState().HourglassPerBlock
+                 + petRow.LevelOptionMap[petLevel].OptionValue)
+            ));
+
+            // Prepare combination slot
+            stateV2 = CraftUtil.PrepareCombinationSlot(stateV2, _avatarAddr, 0);
+
+            // Give hourglasses
+            stateV2 = CraftUtil.AddMaterialsToInventory(
+                stateV2,
+                _tableSheets,
+                _avatarAddr,
+                new List<EquipmentItemSubRecipeSheet.MaterialInfo>
+                {
+                    new EquipmentItemSubRecipeSheet.MaterialInfo(
+                        _hourglassItemId,
+                        expectedHourglass
+                    ),
+                },
+                random
+            );
+
+            // Unlock stage
+            stateV2 = CraftUtil.UnlockStage(
+                stateV2,
+                _tableSheets,
+                _worldInfoAddr,
+                GameConfig.RequireClearedStageLevel.ItemEnhancementAction
+            );
+
+            // Do Enhancement
+            var action = new ItemEnhancement
+            {
+                avatarAddress = _avatarAddr,
+                itemId = equipment.ItemId,
+                materialId = material.ItemId,
+                slotIndex = 0,
+                petId = _petId,
+            };
+
+            stateV2 = action.Execute(new ActionContext
+            {
+                PreviousStates = stateV2,
+                Signer = _agentAddr,
+                BlockIndex = 0L,
+                Random = random,
+            });
+
+            // RapidCombintaion
+            var rapidAction = new RapidCombination
+            {
+                avatarAddress = _avatarAddr,
+                slotIndex = 0,
+            };
+
+            stateV2 = rapidAction.Execute(new ActionContext
+            {
+                PreviousStates = stateV2,
+                Signer = _agentAddr,
+                BlockIndex = stateV2.GetGameConfigState().RequiredAppraiseBlock,
+                Random = random,
+            });
+
+            var slotState = stateV2.GetCombinationSlotState(_avatarAddr, 0);
+            // TEST: Item is completed
+            Assert.Equal(
+                stateV2.GetGameConfigState().RequiredAppraiseBlock,
+                slotState.RequiredBlockIndex
+            );
+            // TEST: ALl Hourglasses are used
+            var inventoryState = new Inventory((List)stateV2.GetState(_inventoryAddr));
+            Assert.Throws<InvalidOperationException>(
+                () => inventoryState.Items.First(item => item.item.Id == _hourglassItemId)
+            );
         }
     }
 }
