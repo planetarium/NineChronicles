@@ -17,6 +17,7 @@ using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module;
+using Org.BouncyCastle.Crypto.Digests;
 using UnityEngine;
 using Inventory = Nekoyume.Model.Item.Inventory;
 
@@ -370,6 +371,22 @@ namespace Nekoyume.Helper
             }
 
             return id;
+        }
+
+        public static string ComputeHash(string rawTransaction)
+        {
+            var offset = rawTransaction.StartsWith("0x") ? 2 : 0;
+            var txByte = Enumerable.Range(offset, rawTransaction.Length - offset)
+                .Where(x => x % 2 == 0)
+                .Select(x => Convert.ToByte(rawTransaction.Substring(x, 2), 16))
+                .ToArray();
+
+            var digest = new KeccakDigest(256);
+            digest.BlockUpdate(txByte, 0, txByte.Length);
+            var calculatedHash = new byte[digest.GetByteLength()];
+            digest.DoFinal(calculatedHash, 0);
+            var transactionHash = BitConverter.ToString(calculatedHash, 0, 32).Replace("-", "").ToLower();
+            return transactionHash;
         }
     }
 }

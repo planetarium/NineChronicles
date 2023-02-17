@@ -8,7 +8,7 @@ namespace Nekoyume.UI.Model
     public class DccAvatars
     {
         [JsonProperty("avatars")]
-        public Dictionary<string, long> Avatars { get; set; }
+        public Dictionary<string, int> Avatars { get; set; }
 
         public static DccAvatars FromJson(string json) =>
             JsonConvert.DeserializeObject<DccAvatars>(json, Converter.Settings);

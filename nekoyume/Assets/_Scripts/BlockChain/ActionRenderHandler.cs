@@ -2164,6 +2164,8 @@ namespace Nekoyume.BlockChain
                     rewards,
                     myDigest.Value,
                     enemyDigest.Value,
+                    eval.Action.myAvatarAddress,
+                    eval.Action.enemyAvatarAddress,
                     winCount + defeatCount > 1 ? (winCount, defeatCount) : null);
             }
         }
@@ -2289,7 +2291,9 @@ namespace Nekoyume.BlockChain
                     log,
                     new List<ItemBase>(),
                     myDigest.Value,
-                    enemyDigest.Value);
+                    enemyDigest.Value,
+                    eval.Action.myAvatarAddress,
+                    eval.Action.enemyAvatarAddress);
             }
         }
 
@@ -2418,6 +2422,7 @@ namespace Nekoyume.BlockChain
 
             Widget.Find<LoadingScreen>().Close();
             Game.Game.instance.RaidStage.Play(
+                eval.Action.AvatarAddress,
                 simulator.BossId,
                 log,
                 playerDigest,

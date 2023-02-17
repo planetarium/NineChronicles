@@ -8,7 +8,6 @@ using UnityEngine;
 
 namespace Nekoyume.Game.Character
 {
-    [RequireComponent(typeof(BoxCollider))]
     [RequireComponent(typeof(SkeletonAnimation))]
     public class SpineController : MonoBehaviour
     {
@@ -22,7 +21,7 @@ namespace Nekoyume.Game.Character
         private const string DefaultPMAShader = "Spine/Skeleton";
         private const string DefaultStraightAlphaShader = "Sprites/Default";
 
-        public List<StateNameToAnimationReference> statesAndAnimations = new List<StateNameToAnimationReference>();
+        public List<StateNameToAnimationReference> statesAndAnimations = new();
 
         public SkeletonAnimation SkeletonAnimation { get; private set; }
         public BoxCollider BoxCollider { get; private set; }
@@ -38,6 +37,7 @@ namespace Nekoyume.Game.Character
 
         private Sequence _doFadeSequence;
         private Tweener _fadeTweener;
+        private System.Action _callback;
 
         #region Mono
 
@@ -51,6 +51,7 @@ namespace Nekoyume.Game.Character
             BoxCollider = GetComponent<BoxCollider>();
             BoxCollider.enabled = false;
             SkeletonAnimation = GetComponent<SkeletonAnimation>();
+            SkeletonAnimation.AnimationState.Complete += delegate { _callback?.Invoke(); };
 
             _applyPMA = SkeletonAnimation.pmaVertexColors;
             _shader = _applyPMA ? Shader.Find(DefaultPMAShader) : Shader.Find(DefaultStraightAlphaShader);
@@ -121,28 +122,20 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        /// <summary>Plays an  animation based on the hash of the state name.</summary>
-        public (TrackEntry, TrackEntry) PlayAnimationForState(int shortNameHash, int layerIndex)
-        {
-            var foundAnimation = GetAnimationForState(shortNameHash);
-            if (foundAnimation is null)
-                throw new KeyNotFoundException(nameof(shortNameHash));
-
-            return PlayNewAnimation(foundAnimation, layerIndex);
-        }
-
-        public (TrackEntry, TrackEntry) PlayAnimationForState(string stateName, int layerIndex)
+        public (TrackEntry, TrackEntry) PlayAnimationForState(string stateName, int layerIndex, System.Action callback)
         {
             var foundAnimation = GetAnimationForState(stateName);
             if (foundAnimation is null)
                 throw new KeyNotFoundException(nameof(stateName));
 
-            return PlayNewAnimation(foundAnimation, layerIndex);
+            return PlayNewAnimation(stateName, layerIndex, callback);
+            // return PlayNewAnimation(foundAnimation, layerIndex, callback);
         }
 
-        public (TrackEntry, TrackEntry) PlayAnimationForState(AnimationReferenceAsset stateAsset, int layerIndex)
+        public (TrackEntry, TrackEntry) PlayAnimationForState(AnimationReferenceAsset stateAsset, int layerIndex, System.Action callback)
         {
-            return PlayNewAnimation(stateAsset, layerIndex);
+            return PlayNewAnimation(stateAsset.Animation.Name, layerIndex, callback);
+            // return PlayNewAnimation(stateAsset, layerIndex, callback);
         }
 
         /// <summary>Play a non-looping animation once then continue playing the state animation.</summary>
@@ -189,17 +182,41 @@ namespace Nekoyume.Game.Character
             var foundState = statesAndAnimations.Find(entry => entry.stateName == stateName);
             return foundState?.animation;
         }
-        /// <summary>Play an animation. If a transition animation is defined, the transition is played before the target animation being passed.</summary>
-        private (TrackEntry, TrackEntry) PlayNewAnimation(Spine.Animation target, int layerIndex)
-        {
-            TargetAnimation = target;
-            var isLoop = IsLoopAnimation(TargetAnimation.Name);
 
-            var body = SkeletonAnimation.AnimationState.SetAnimation(layerIndex, target, isLoop);
+        private (TrackEntry, TrackEntry) PlayNewAnimation(String name, int layerIndex, System.Action callback)
+        {
+            _callback = callback;
+            var isLoop = IsLoopAnimation(name);
+
+            var animationName = name;
+            var animations = SkeletonAnimation.skeleton.Data.Animations;
+
+            if (!animations.Exists(x => x.Name == animationName))
+            {
+                switch (animationName)
+                {
+                    case "CastingAttack":
+                    case "CriticalAttack":
+                    case "Touch":
+                        animationName = "Attack";
+                        break;
+                    default:
+                        var splits = animationName.Split('_');
+                        animationName = splits[0];
+                        if (!animations.Exists(x => x.Name == animationName))
+                        {
+                            animationName = "Idle";
+                        }
+                        break;
+                }
+            }
+
+            var body = SkeletonAnimation.AnimationState.SetAnimation(layerIndex, animationName, isLoop);
+
             TrackEntry tail = null;
             if (TailAnimation != null && TailAnimation.AnimationState != null)
             {
-                tail = TailAnimation.AnimationState.SetAnimation(layerIndex, target.Name, isLoop);
+                tail = TailAnimation.AnimationState.SetAnimation(layerIndex, animationName, isLoop);
             }
 
             return (body, tail);

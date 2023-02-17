@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Libplanet;
 using Nekoyume.Model;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
@@ -42,7 +43,8 @@ namespace Nekoyume.Game.Factory
                 throw new NotFoundComponentException<Character.Player>();
             }
 
-            player.Set(model, true);
+            Address address = new Address();
+            player.Set(address, model, true);
             return player.gameObject;
         }
 
@@ -70,7 +72,7 @@ namespace Nekoyume.Game.Factory
                 throw new NotFoundComponentException<Character.Player>();
             }
 
-            player.Set(model, costumes, armor, weapon, true);
+            player.Set(avatarState.address, model, costumes, armor, weapon, true);
             return player.gameObject;
         }
     }

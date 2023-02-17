@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Libplanet;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
@@ -87,6 +88,8 @@ namespace Nekoyume.Game
             List<ItemBase> rewards,
             ArenaPlayerDigest myDigest,
             ArenaPlayerDigest enemyDigest,
+            Address myAvatarAddress,
+            Address enemyAvatarAddress,
             (int, int)? winDefeatCount = null)
         {
             if (!_isPlaying)
@@ -103,7 +106,8 @@ namespace Nekoyume.Game
                 if (log?.Events.Count > 0)
                 {
                     _battleCoroutine =
-                        StartCoroutine(CoEnter(log, rewards, myDigest, enemyDigest, winDefeatCount));
+                        StartCoroutine(CoEnter(log, rewards, myDigest, enemyDigest,
+                            myAvatarAddress, enemyAvatarAddress, winDefeatCount));
                 }
             }
             else
@@ -117,9 +121,11 @@ namespace Nekoyume.Game
             IReadOnlyList<ItemBase> rewards,
             ArenaPlayerDigest myDigest,
             ArenaPlayerDigest enemyDigest,
+            Address myAvatarAddress,
+            Address enemyAvatarAddress,
             (int, int)? winDefeatCount = null)
         {
-            yield return StartCoroutine(CoStart(myDigest, enemyDigest));
+            yield return StartCoroutine(CoStart(myDigest, enemyDigest, myAvatarAddress, enemyAvatarAddress));
 
             foreach (var e in log)
             {
@@ -129,11 +135,15 @@ namespace Nekoyume.Game
             yield return StartCoroutine(CoEnd(log, rewards, winDefeatCount));
         }
 
-        private IEnumerator CoStart(ArenaPlayerDigest myDigest, ArenaPlayerDigest enemyDigest)
+        private IEnumerator CoStart(
+            ArenaPlayerDigest myDigest,
+            ArenaPlayerDigest enemyDigest,
+            Address myAvatarAddress,
+            Address enemyAvatarAddress)
         {
             container.SetActive(true);
-            me.Init(myDigest, enemy, false);
-            enemy.Init(enemyDigest, me, true);
+            me.Init(myDigest, myAvatarAddress, enemy, false);
+            enemy.Init(enemyDigest, enemyAvatarAddress, me, true);
 
             _turnNumber = 1;
 

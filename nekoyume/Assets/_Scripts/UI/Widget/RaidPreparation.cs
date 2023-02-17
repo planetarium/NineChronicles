@@ -289,6 +289,7 @@ namespace Nekoyume.UI
                 runeStates);
             var raidStage = Game.Game.instance.RaidStage;
             raidStage.Play(
+                avatarState.address,
                 simulator.BossId,
                 log,
                 digest,

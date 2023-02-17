@@ -29,6 +29,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Model.EnumType;
 using UnityEngine;
 using UnityEngine.Rendering;
 using CharacterBase = Nekoyume.Model.CharacterBase;
@@ -200,8 +201,7 @@ namespace Nekoyume.Game
                     if (!ReferenceEquals(anim, null) && !anim.Target.activeSelf)
                     {
                         anim.Target.SetActive(true);
-                        var skeleton =
-                            anim.Target.GetComponentInChildren<SkeletonAnimation>().skeleton;
+                        var skeleton = player.SpineController.GetSkeletonAnimation().Skeleton;
                         skeleton.A = 0.0f;
                         DOTween.To(() => skeleton.A, x => skeleton.A = x, 1.0f, 1.0f);
                         player.SpineController.Appear();
@@ -424,7 +424,7 @@ namespace Nekoyume.Game
 
             yield return StartCoroutine(title.CoClose());
 
-            _stageRunningPlayer.pet.Animator.Play(PetAnimation.Type.BattleStart);
+            _stageRunningPlayer.Pet.Animator.Play(PetAnimation.Type.BattleStart);
             AudioController.instance.PlayMusic(bgmName);
             IsShowHud = true;
         }
@@ -486,7 +486,7 @@ namespace Nekoyume.Game
                 _stageRunningPlayer.DisableHUD();
                 _stageRunningPlayer.Animator.Win(log.clearedWaveNumber);
                 _stageRunningPlayer.ShowSpeech("PLAYER_WIN");
-                _stageRunningPlayer.pet.Animator.Play(PetAnimation.Type.BattleEnd);
+                _stageRunningPlayer.Pet.Animator.Play(PetAnimation.Type.BattleEnd);
                 yield return new WaitForSeconds(2.2f);
                 objectPool.ReleaseExcept(ReleaseWhiteList);
                 if (isClear)
@@ -638,8 +638,10 @@ namespace Nekoyume.Game
 #if TEST_LOG
             Debug.Log($"[{nameof(Stage)}] {nameof(CoSpawnPlayer)}() enter");
 #endif
+            var avatarState = States.Instance.CurrentAvatarState;
             var playerCharacter = RunPlayer(false);
-            playerCharacter.Set(character, true);
+            playerCharacter.Set(avatarState.address, character, true);
+            playerCharacter.Run();
             playerCharacter.ShowSpeech("PLAYER_INIT");
             var player = playerCharacter.gameObject;
             player.SetActive(true);
@@ -651,7 +653,7 @@ namespace Nekoyume.Game
 
             var battle = Widget.Find<UI.Battle>();
             var isTutorial = false;
-            if (States.Instance.CurrentAvatarState.worldInformation
+            if (avatarState.worldInformation
                 .TryGetUnlockedWorldByStageClearedBlockIndex(out var worldInfo))
             {
                 if (worldInfo.StageClearedId < UI.Battle.RequiredStageForExitButton)

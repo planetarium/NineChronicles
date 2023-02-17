@@ -3,8 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
+using Nekoyume.State;
 using Nekoyume.UI;
 using UnityEngine;
 
@@ -34,6 +36,7 @@ namespace Nekoyume.Game.Character
             _hudContainer ??= Widget.Create<HudContainer>(true);
             _hudContainer.transform.localPosition = Vector3.left * 200000;
             appearance.Set(
+                avatarState.address,
                 Animator,
                 _hudContainer,
                 costumes,

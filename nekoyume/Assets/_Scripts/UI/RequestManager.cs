@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using Nekoyume.Pattern;
-using Nekoyume.UI.Model;
 using UnityEngine.Networking;
 
 namespace Nekoyume.UI
