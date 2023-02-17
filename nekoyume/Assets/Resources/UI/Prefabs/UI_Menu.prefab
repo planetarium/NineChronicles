@@ -6360,11 +6360,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 21887679660293354, guid: 16913dec42abae948a9298f9e887d339,
-        type: 3}
-      propertyPath: m_RaycastTarget
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 21887679660293355, guid: 16913dec42abae948a9298f9e887d339,
         type: 3}
       propertyPath: m_Pivot.y
@@ -6549,16 +6544,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 21887680680723082, guid: 16913dec42abae948a9298f9e887d339,
-        type: 3}
-      propertyPath: m_Color.a
-      value: 0.003921569
-      objectReference: {fileID: 0}
-    - target: {fileID: 21887680680723082, guid: 16913dec42abae948a9298f9e887d339,
-        type: 3}
-      propertyPath: m_RaycastTarget
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 21887680680723083, guid: 16913dec42abae948a9298f9e887d339,
         type: 3}
