@@ -63,6 +63,19 @@ namespace Nekoyume.BlockChain
 
                 if (_actionTypeLoader is { } actionTypeLoader)
                 {
+                    bool DoesNotThrowsAnyException(System.Action action)
+                    {
+                        try
+                        {
+                            action();
+                            return true;
+                        }
+                        catch (Exception)
+                        {
+                            return false;
+                        }
+                    }
+
                     txValidators.Add(tx =>
                     {
                         var nextBlockIndex = _chain.Tip.Header.Index + 1;
@@ -70,9 +83,12 @@ namespace Nekoyume.BlockChain
 
                         return tx.CustomActions?.All(ca =>
                             ca is Dictionary dictionary &&
-                            dictionary.TryGetValue((Text)"type_id", out IValue value) &&
-                            value is Text typeId &&
-                            types.ContainsKey(typeId)) == true;
+                            dictionary.TryGetValue((Text)"type_id", out IValue typeIdValue) &&
+                            typeIdValue is Text typeId &&
+                            types.ContainsKey(typeId) &&
+                            dictionary.TryGetValue((Text)"values", out IValue values) &&
+                            Activator.CreateInstance(types[typeId]) is IAction action &&
+                            DoesNotThrowsAnyException(() => action.LoadPlainValue(values))) == true;
                     });
                 }
 
