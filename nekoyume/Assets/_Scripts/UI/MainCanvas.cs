@@ -374,6 +374,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<DccSettingPopup>());
             yield return null;
+            secondWidgets.Add(Widget.Create<PetSelectionPopup>());
+            yield return null;
 
             // tooltip
             secondWidgets.Add(Widget.Create<EquipmentTooltip>());

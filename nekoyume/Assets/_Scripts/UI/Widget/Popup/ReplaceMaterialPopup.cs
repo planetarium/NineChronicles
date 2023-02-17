@@ -9,6 +9,9 @@ using TMPro;
 using UnityEngine;
 using System.Collections.Immutable;
 using System;
+using Nekoyume.Model.State;
+using Libplanet.Assets;
+using Nekoyume.Game;
 
 namespace Nekoyume.UI
 {
@@ -19,7 +22,8 @@ namespace Nekoyume.UI
         [SerializeField] private TextMeshProUGUI costText = null;
 
         public void Show(Dictionary<int, int> materials,
-            System.Action confirmCallback)
+            System.Action confirmCallback,
+            PetState petState = null)
         {
             foreach (var view in itemViews)
             {
@@ -53,14 +57,14 @@ namespace Nekoyume.UI
                 itemView.gameObject.SetActive(true);
             }
 
-            BigInteger cost = 0;
+            FungibleAssetValue cost = 0 * CrystalCalculator.CRYSTAL;
             var hasUnreplaceableMaterial = false;
             foreach (var pair in materials)
             {
                 try
                 {
                     cost += CrystalCalculator.CalculateMaterialCost(
-                        pair.Key, pair.Value, Game.Game.instance.TableSheets.CrystalMaterialCostSheet).MajorUnit;
+                        pair.Key, pair.Value, Game.Game.instance.TableSheets.CrystalMaterialCostSheet);
                 }
                 catch (ArgumentException)
                 {
@@ -69,24 +73,32 @@ namespace Nekoyume.UI
                 }
             }
 
+            if (petState != null)
+            {
+                cost = PetHelper.CalculateDiscountedMaterialCost(
+                    cost,
+                    petState,
+                    TableSheets.Instance.PetOptionSheet);
+            }
+
             costText.text = cost.ToString();
 
             var currencyText = L10nManager.Localize("UI_CRYSTAL");
             var usageText = L10nManager.Localize("UI_CRYSTAL_REPLACE_MATERIAL");
             var content = L10nManager.Localize("UI_CONFIRM_PAYMENT_CURRENCY_FORMAT",
-                cost, currencyText, usageText);
+                cost.MajorUnit, currencyText, usageText);
             var yes = L10nManager.Localize("UI_YES");
             var no = L10nManager.Localize("UI_NO");
 
             if (hasUnreplaceableMaterial)
             {
-                confirmCallback = () => OnInsufficientCost(cost);
+                confirmCallback = () => OnInsufficientCost(cost.MajorUnit);
             }
             else
             {
-                confirmCallback = cost <= States.Instance.CrystalBalance.MajorUnit
+                confirmCallback = cost.MajorUnit <= States.Instance.CrystalBalance.MajorUnit
                     ? confirmCallback
-                    : () => OnInsufficientCost(cost);
+                    : () => OnInsufficientCost(cost.MajorUnit);
             }
 
             Show(content, yes, no, confirmCallback);
