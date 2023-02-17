@@ -4,6 +4,7 @@ using Nekoyume.UI.Tween;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Reactive.Subjects;
 using UnityEngine;
 using UnityEngine.UI;
@@ -46,6 +47,7 @@ namespace Nekoyume.UI.Module
             {
                 var view = Instantiate(descriptionViewPrefab, descriptionViewParent);
                 view.InitializeEmpty(OnSelectedSubject.OnNext);
+                _views[default] = view;
             }
         }
 
@@ -85,13 +87,18 @@ namespace Nekoyume.UI.Module
         {
             foreach (var (id, view) in _views)
             {
-                if (!petStates.TryGetPetState(id, out var petState))
+                if (id == default)
                 {
-                    view.Hide();
                     continue;
                 }
 
-                view.SetData(petState);
+                view.SetData(id);
+            }
+
+            if (_views.ContainsKey(default))
+            {
+                var petCount = _views.Values.Count(x => x.IsAvailable);
+                _views[default].transform.SetSiblingIndex(petCount - 1);
             }
         }
     }

@@ -298,8 +298,6 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<BuffBonusPopup>());
             yield return null;
-            secondWidgets.Add(Widget.Create<PetSelectionPopup>());
-            yield return null;
 
             // Over than HeaderMenu
             secondWidgets.Add(Widget.Create<RankingBattleResultPopup>());
@@ -373,6 +371,8 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<ItemMaterialSelectPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<ArenaTicketPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<PetSelectionPopup>());
             yield return null;
 
             // tooltip

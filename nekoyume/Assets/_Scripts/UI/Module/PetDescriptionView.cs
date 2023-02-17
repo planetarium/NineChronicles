@@ -1,9 +1,9 @@
+using Mono.Cecil;
 using Nekoyume.Game;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData.Pet;
-using System.Security.Policy;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -47,11 +47,16 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private TextMeshProUGUI descriptionText;
+
+        [SerializeField]
+        private Image dimmedImage;
         #endregion
 
         private int? _petId;
 
         private System.Action<int?> _onClick;
+
+        public bool IsAvailable { get; private set; }
 
         private void Awake()
         {
@@ -77,6 +82,7 @@ namespace Nekoyume.UI.Module
             gameObject.SetActive(true);
             equipObject.SetActive(false);
             emptyObject.SetActive(true);
+            IsAvailable = false;
         }
 
         public void InitializeEmpty(System.Action<int?> onClick)
@@ -86,16 +92,29 @@ namespace Nekoyume.UI.Module
             equipObject.SetActive(false);
             emptyObject.SetActive(true);
             gameObject.SetActive(true);
+            dimmedImage.enabled = false;
+            IsAvailable = false;
         }
 
-        public void SetData(PetState petState)
+        public void SetData(int petId)
         {
+            IsAvailable = false;
             var tableSheets = TableSheets.Instance;
-            if (petState is null ||
-                !tableSheets.PetOptionSheet.TryGetValue(petState.PetId, out var optionRow) ||
-                !optionRow.LevelOptionMap.TryGetValue(petState.Level, out var optionInfo))
+            var petLevel = 1;
+
+            PetState petState;
+            if (!tableSheets.PetOptionSheet.TryGetValue(petId, out var optionRow))
             {
-                equippedObject.SetActive(false);
+                gameObject.SetActive(false);
+                return;
+            }
+            else if (States.Instance.PetStates.TryGetPetState(petId, out petState))
+            {
+                petLevel = petState.Level;
+            }
+
+            if (!optionRow.LevelOptionMap.TryGetValue(petLevel, out var optionInfo))
+            {
                 gameObject.SetActive(false);
                 return;
             }
@@ -104,7 +123,12 @@ namespace Nekoyume.UI.Module
                 $"PET_DESCRIPTION_{optionInfo.OptionType}",
                 optionInfo.OptionValue);
 
-            var equipped = petState.UnlockedBlockIndex > Game.Game.instance.Agent.BlockIndex;
+            var hasPetState = petState != null;
+            var equipped = hasPetState &&
+                (States.Instance.PetStates.IsLocked(petId) ||
+                petState.UnlockedBlockIndex > Game.Game.instance.Agent.BlockIndex);
+
+            dimmedImage.enabled = !hasPetState;
             equippedObject.SetActive(equipped);
             if (button)
             {
@@ -113,6 +137,7 @@ namespace Nekoyume.UI.Module
             equipObject.SetActive(true);
             emptyObject.SetActive(false);
             gameObject.SetActive(true);
+            IsAvailable = !hasPetState;
         }
 
         public void Hide()

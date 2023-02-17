@@ -630,6 +630,10 @@ namespace Nekoyume.BlockChain
                 UpdateCombinationSlotState(avatarAddress, slotIndex, slotState);
                 UpdateAgentStateAsync(eval).Forget();
                 UpdateCurrentAvatarStateAsync(eval).Forget();
+                if (slotState.PetId.HasValue)
+                {
+                    UpdatePetState(avatarAddress, eval.OutputStates, slotState.PetId.Value);
+                }
 
                 Widget.Find<CombinationSlotsPopup>().SetCaching(
                     avatarAddress,
