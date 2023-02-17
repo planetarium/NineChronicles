@@ -93,12 +93,12 @@ namespace Lib9c.Tests.Action.Scenario.Pet
                 PetState.DeriveAddress(_avatarAddr, (int)_petId),
                 new List(_petId!.Serialize(), petLevel.Serialize(), 0L.Serialize())
             );
-            var multiplier = (100 + petRow.LevelOptionMap[(int)petLevel].OptionValue) / 100;
+            var increment = (int)petRow.LevelOptionMap[petLevel].OptionValue * 100;
             (expectedOption2Ratio, expectedOption3Ratio, expectedOption4Ratio) =
             (
-                (int)Math.Round(originalOption2Ratio * multiplier),
-                (int)Math.Round(originalOption3Ratio * multiplier),
-                (int)Math.Round(originalOption4Ratio * multiplier)
+                originalOption2Ratio + increment,
+                originalOption3Ratio + increment,
+                originalOption4Ratio + increment
             );
 
             // Prepare
