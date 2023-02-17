@@ -4,9 +4,13 @@ using Nekoyume.Model.State;
 
 namespace Nekoyume.State
 {
+    using UniRx;
+
     public class PetStates
     {
         private readonly Dictionary<int, PetState> _petDict = new();
+
+        public readonly Subject<PetStates> PetStatesSubject = new();
 
         public bool TryGetPetState(int id, out PetState pet)
         {
@@ -18,7 +22,6 @@ namespace Nekoyume.State
             return _petDict.TryGetValue(id, out var petState) ? petState : null;
         }
 
-
         public List<PetState> GetPetStatesAll()
         {
             return _petDict.Values.ToList();
@@ -27,6 +30,7 @@ namespace Nekoyume.State
         public void UpdatePetState(int id, PetState petState)
         {
             _petDict[id] = petState;
+            PetStatesSubject.OnNext(this);
         }
     }
 }

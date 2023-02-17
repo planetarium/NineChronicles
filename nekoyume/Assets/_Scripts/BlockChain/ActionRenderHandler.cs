@@ -686,6 +686,11 @@ namespace Nekoyume.BlockChain
                 UpdateCurrentAvatarStateAsync(eval).Forget();
                 RenderQuest(avatarAddress, avatarState.questList?.completedQuestIds);
                 States.Instance.UpdateHammerPointStates(result.recipeId, hammerPointState);
+                var action = eval.Action;
+                if (action.petId.HasValue)
+                {
+                    UpdatePetState(avatarAddress, eval.OutputStates, action.petId.Value);
+                }
 
                 if (!(nextQuest is null))
                 {
@@ -895,6 +900,11 @@ namespace Nekoyume.BlockChain
                 UpdateAgentStateAsync(eval).Forget();
                 UpdateCurrentAvatarStateAsync(eval).Forget();
                 RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
+                var action = eval.Action;
+                if (action.petId.HasValue)
+                {
+                    UpdatePetState(avatarAddress, eval.OutputStates, action.petId.Value);
+                }
 
                 // Notify
                 string formatKey;
@@ -2476,16 +2486,22 @@ namespace Nekoyume.BlockChain
                 action.AvatarAddress,
                 Currency.Legacy(soulStoneTicker, 0, null)
             );
-            var rawPetState = eval.OutputStates.GetState(
-                PetState.DeriveAddress(action.AvatarAddress, action.PetId)
-            );
-            States.Instance.PetStates.UpdatePetState(
-                action.PetId,
-                new PetState((List) rawPetState)
-            );
+
+            UpdatePetState(action.AvatarAddress, eval.OutputStates, action.PetId);
 
             Debug.Log(
                 $"PetEnhancement rendered.\nPetId: {action.PetId}, Level: {action.TargetLevel}");
+        }
+
+        private void UpdatePetState(Address avatarAddress, IAccountStateDelta states, int petId)
+        {
+            var rawPetState = states.GetState(
+                PetState.DeriveAddress(avatarAddress, petId)
+            );
+            States.Instance.PetStates.UpdatePetState(
+                petId,
+                new PetState((List)rawPetState)
+            );
         }
     }
 }

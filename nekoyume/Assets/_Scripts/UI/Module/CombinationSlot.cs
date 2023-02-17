@@ -99,7 +99,6 @@ namespace Nekoyume.UI.Module
         private CombinationSlotState _state;
         private CacheType _cachedType;
         private int _slotIndex;
-        private int? petId;
 
         private readonly List<IDisposable> _disposablesOfOnEnable = new();
         private readonly Dictionary<Address, bool> cached = new();

@@ -88,7 +88,7 @@ namespace Nekoyume.UI.Module
             gameObject.SetActive(true);
         }
 
-        public void SetData(PetState petState, bool equipped)
+        public void SetData(PetState petState)
         {
             var tableSheets = TableSheets.Instance;
             if (petState is null ||
@@ -103,7 +103,13 @@ namespace Nekoyume.UI.Module
             descriptionText.text = L10nManager.Localize(
                 $"PET_DESCRIPTION_{optionInfo.OptionType}",
                 optionInfo.OptionValue);
+
+            var equipped = petState.UnlockedBlockIndex > Game.Game.instance.Agent.BlockIndex;
             equippedObject.SetActive(equipped);
+            if (button)
+            {
+                button.gameObject.SetActive(!equipped);
+            }
             equipObject.SetActive(true);
             emptyObject.SetActive(false);
             gameObject.SetActive(true);

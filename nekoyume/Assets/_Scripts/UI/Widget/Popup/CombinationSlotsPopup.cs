@@ -78,9 +78,9 @@ namespace Nekoyume.UI
             return false;
         }
 
-        public void TogglePetPopup(int index)
+        public void TogglePetPopup(int slotIndex)
         {
-            petInventory.Toggle(index);
+            petInventory.Toggle(slotIndex);
         }
 
         private void UpdateSlots(long blockIndex)

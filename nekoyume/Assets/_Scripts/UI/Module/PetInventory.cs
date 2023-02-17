@@ -1,6 +1,7 @@
 using Nekoyume.Game;
 using Nekoyume.State;
 using Nekoyume.UI.Tween;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Reactive.Subjects;
@@ -20,6 +21,16 @@ namespace Nekoyume.UI.Module
         private readonly Dictionary<int, PetDescriptionView> _views = new();
 
         public readonly Subject<int?> OnSelectedSubject = new();
+
+        private IDisposable _disposableOnDisabled;
+
+        private int _slotIndex;
+
+        private void OnDisable()
+        {
+            _disposableOnDisabled?.Dispose();
+            _disposableOnDisabled = null;
+        }
 
         public void Initialize(bool addEmptyObject = false)
         {
@@ -46,7 +57,7 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                UpdateView(slotIndex);
+                _slotIndex = slotIndex;
                 Show();
             }
         }
@@ -54,17 +65,15 @@ namespace Nekoyume.UI.Module
         public void Show()
         {
             gameObject.SetActive(true);
+            UpdateView(States.Instance.PetStates);
 
-            foreach (var (id, view) in _views)
+            if (_disposableOnDisabled != null)
             {
-                if (!States.Instance.PetStates.TryGetPetState(id, out var state))
-                {
-                    view.Hide();
-                    continue;
-                }
-
-                view.SetData(state, false);
+                _disposableOnDisabled?.Dispose();
+                _disposableOnDisabled = null;
             }
+            _disposableOnDisabled = States.Instance.PetStates.PetStatesSubject
+                .Subscribe(UpdateView);
         }
 
         public void Hide()
@@ -72,9 +81,18 @@ namespace Nekoyume.UI.Module
             gameObject.SetActive(false);
         }
 
-        private void UpdateView(int slotIndex)
+        private void UpdateView(PetStates petStates)
         {
+            foreach (var (id, view) in _views)
+            {
+                if (!petStates.TryGetPetState(id, out var petState))
+                {
+                    view.Hide();
+                    continue;
+                }
 
+                view.SetData(petState);
+            }
         }
     }
 }
