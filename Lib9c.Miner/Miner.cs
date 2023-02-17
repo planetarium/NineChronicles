@@ -63,33 +63,10 @@ namespace Nekoyume.BlockChain
 
                 if (_actionTypeLoader is { } actionTypeLoader)
                 {
-                    bool DoesNotThrowsAnyException(System.Action action)
-                    {
-                        try
-                        {
-                            action();
-                            return true;
-                        }
-                        catch (Exception)
-                        {
-                            return false;
-                        }
-                    }
-
-                    txValidators.Add(tx =>
-                    {
-                        var nextBlockIndex = _chain.Tip.Header.Index + 1;
-                        var types = actionTypeLoader.Load(new ActionTypeLoaderContext(nextBlockIndex));
-
-                        return tx.CustomActions?.All(ca =>
-                            ca is Dictionary dictionary &&
-                            dictionary.TryGetValue((Text)"type_id", out IValue typeIdValue) &&
-                            typeIdValue is Text typeId &&
-                            types.ContainsKey(typeId) &&
-                            dictionary.TryGetValue((Text)"values", out IValue values) &&
-                            Activator.CreateInstance(types[typeId]) is IAction action &&
-                            DoesNotThrowsAnyException(() => action.LoadPlainValue(values))) == true;
-                    });
+                    txValidators.Add(
+                        new CustomActionsDeserializableValidator(
+                            actionTypeLoader,
+                            _chain.Tip.Header.Index + 1).Validate);
                 }
 
                 foreach (Transaction<NCAction> tx in _chain.GetStagedTransactionIds()
@@ -165,17 +142,6 @@ namespace Nekoyume.BlockChain
             _swarm = swarm;
             _privateKey = privateKey;
             _actionTypeLoader = actionTypeLoader;
-        }
-
-
-        private class ActionTypeLoaderContext : IActionTypeLoaderContext
-        {
-            public ActionTypeLoaderContext(long index)
-            {
-                Index = index;
-            }
-
-            public long Index { get; }
         }
     }
 }
