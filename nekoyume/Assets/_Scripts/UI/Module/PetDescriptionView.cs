@@ -137,7 +137,7 @@ namespace Nekoyume.UI.Module
             equipObject.SetActive(true);
             emptyObject.SetActive(false);
             gameObject.SetActive(true);
-            IsAvailable = !hasPetState;
+            IsAvailable = hasPetState;
         }
 
         public void Hide()

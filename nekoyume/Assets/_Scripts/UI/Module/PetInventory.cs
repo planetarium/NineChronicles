@@ -98,7 +98,7 @@ namespace Nekoyume.UI.Module
             if (_views.ContainsKey(default))
             {
                 var petCount = _views.Values.Count(x => x.IsAvailable);
-                _views[default].transform.SetSiblingIndex(petCount - 1);
+                _views[default].transform.SetSiblingIndex(petCount + 1);
             }
         }
     }
