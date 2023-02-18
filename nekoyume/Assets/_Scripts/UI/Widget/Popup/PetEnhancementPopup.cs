@@ -107,35 +107,41 @@ namespace Nekoyume.UI
             requiredSoulStoneImage.overrideSprite =
                 PetRenderingHelper.GetSoulStoneSprite(petState.PetId);
             currentLevelText.text = $"<size=30>Lv.</size>{petState.Level}";
-            _targetLevel = petState.Level + 1;
-            targetLevelText.text = _targetLevel.ToString();
             var maxLevel = TableSheets.Instance.PetCostSheet[petState.PetId]
                 .OrderedCostList
                 .Last().Level;
-            slider.Set(
-                1,
-                maxLevel - petState.Level,
-                1,
-                maxLevel - petState.Level,
-                1,
-                value =>
-                {
-                    _targetLevel = value + petState.Level;
-                    targetLevelText.text = _targetLevel.ToString();
-                    var (ncg, soulStone) = PetHelper.CalculateEnhancementCost(
-                        TableSheets.Instance.PetCostSheet,
-                        petState.PetId,
-                        petState.Level,
-                        _targetLevel);
-                    ncgCostText.text = ncg.ToString();
-                    soulStoneCostText.text = soulStone.ToString();
-
-                });
-            submitButton.OnSubmitSubject.Subscribe(_ =>
+            if (petState.Level < maxLevel)
             {
-                ActionManager.Instance.PetEnhancement(petState.PetId, _targetLevel).Subscribe();
-                Close();
-            }).AddTo(_disposables);
+                _targetLevel = petState.Level + 1;
+                targetLevelText.text = _targetLevel.ToString();
+                slider.Set(
+                    1,
+                    maxLevel - petState.Level,
+                    1,
+                    maxLevel - petState.Level,
+                    1,
+                    value =>
+                    {
+                        _targetLevel = value + petState.Level;
+                        targetLevelText.text = _targetLevel.ToString();
+                        var (ncg, soulStone) = PetHelper.CalculateEnhancementCost(
+                            TableSheets.Instance.PetCostSheet,
+                            petState.PetId,
+                            petState.Level,
+                            _targetLevel);
+                        ncgCostText.text = ncg.ToString();
+                        soulStoneCostText.text = soulStone.ToString();
+                    });
+                submitButton.OnSubmitSubject.Subscribe(_ =>
+                {
+                    ActionManager.Instance.PetEnhancement(petState.PetId, _targetLevel).Subscribe();
+                    Close();
+                }).AddTo(_disposables);
+            }
+            else
+            {
+                levelUpUIList.ForEach(obj => obj.SetActive(false));
+            }
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

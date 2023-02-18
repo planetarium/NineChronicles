@@ -2508,8 +2508,7 @@ namespace Nekoyume.BlockChain
 
             UpdatePetState(action.AvatarAddress, eval.OutputStates, action.PetId);
 
-            Debug.Log(
-                $"PetEnhancement rendered.\nPetId: {action.PetId}, Level: {action.TargetLevel}");
+            Widget.Find<DccCollection>().Show(true);
         }
 
         private void UpdatePetState(Address avatarAddress, IAccountStateDelta states, int petId)
