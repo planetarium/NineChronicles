@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Nekoyume.Game;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Scroller;
@@ -84,9 +87,13 @@ namespace Nekoyume.UI.Module.Pet
                 ? Color.white
                 : PetRenderingHelper.GetUIColor(PetRenderingHelper.NotOwnSlot);
             petInfoText.text = $"{model.PetRow.Id}.Localize";
+            var maxLevel = TableSheets.Instance.PetCostSheet[model.PetRow.Id]
+                .OrderedCostList
+                .Last()
+                .Level;
             levelText.text = isOwn
-                ? $"<size=14>Lv.</size>{_petState.Level}/Max"
-                : "not own";
+                ? $"<size=14>Lv.</size>{_petState.Level}/{maxLevel}"
+                : L10nManager.Localize("UI_NOT_POSSESSED");
             levelText.color = isOwn
                 ? Color.white
                 : PetRenderingHelper.GetUIColor(PetRenderingHelper.NotOwnText);

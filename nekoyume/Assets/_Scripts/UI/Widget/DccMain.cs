@@ -17,7 +17,7 @@ namespace Nekoyume.UI
             base.Awake();
             collectionButton.onClick.AddListener(() =>
             {
-                Find<DccCollection>().Show();
+                Find<DccCollection>().Show(true);
             });
             backButton.onClick.AddListener(() =>
             {

@@ -1743,7 +1743,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
-  titleText: {fileID: 2327057619243971813}
   petNameText: {fileID: 5379816817523686369}
   petGradeText: {fileID: 905448852502384607}
   prevLevelText: {fileID: 7240342082639119067}
@@ -2298,11 +2297,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3564035599970916896}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: [{m_Target: {fileID: -5113680130682643523}, m_TargetAssemblyTypeName: 'Nekoyume.UI.Widget,
-            Nekoyume', m_MethodName: Close, m_Mode: 6, m_Arguments: {m_ObjectArgument: {
-              fileID: 0}, m_ObjectArgumentAssemblyTypeName: 'UnityEngine.Object, UnityEngine',
-            m_IntArgument: 0, m_FloatArgument: 0, m_StringArgument: '', m_BoolArgument: 0},
-          m_CallState: 2}]
+      m_Calls:
+      - m_Target: {fileID: -5113680130682643523}
+        m_TargetAssemblyTypeName: Nekoyume.UI.Widget, Nekoyume
+        m_MethodName: Close
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!1 &5399699333487673581
 GameObject:
   m_ObjectHideFlags: 0

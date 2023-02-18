@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Helper;
@@ -51,6 +52,15 @@ namespace Nekoyume.UI
         [SerializeField]
         private SweepSlider slider;
 
+        [SerializeField]
+        private Image requiredSoulStoneImage;
+
+        [SerializeField]
+        private TextMeshProUGUI soulStoneCostText;
+
+        [SerializeField]
+        private TextMeshProUGUI ncgCostText;
+
         private readonly List<IDisposable> _disposables = new();
 
         private const string LevelUpText = "LEVEL UP";
@@ -91,21 +101,35 @@ namespace Nekoyume.UI
                 L10nManager.Localize(
                     $"UI_ITEM_GRADE_{TableSheets.Instance.PetSheet[petState.PetId].Grade}");
             contentText.text = $"contentOf({petState.PetId})";
-            petSkeletonGraphic.skeletonDataAsset = PetRenderingHelper.GetPetSkeletonData(petState.PetId);
+            petSkeletonGraphic.skeletonDataAsset =
+                PetRenderingHelper.GetPetSkeletonData(petState.PetId);
             petSkeletonGraphic.Initialize(true);
+            requiredSoulStoneImage.overrideSprite =
+                PetRenderingHelper.GetSoulStoneSprite(petState.PetId);
             currentLevelText.text = $"<size=30>Lv.</size>{petState.Level}";
             _targetLevel = petState.Level + 1;
             targetLevelText.text = _targetLevel.ToString();
+            var maxLevel = TableSheets.Instance.PetCostSheet[petState.PetId]
+                .OrderedCostList
+                .Last().Level;
             slider.Set(
                 1,
-                30,
+                maxLevel - petState.Level,
                 1,
-                30,
+                maxLevel - petState.Level,
                 1,
                 value =>
                 {
                     _targetLevel = value + petState.Level;
                     targetLevelText.text = _targetLevel.ToString();
+                    var (ncg, soulStone) = PetHelper.CalculateEnhancementCost(
+                        TableSheets.Instance.PetCostSheet,
+                        petState.PetId,
+                        petState.Level,
+                        _targetLevel);
+                    ncgCostText.text = ncg.ToString();
+                    soulStoneCostText.text = soulStone.ToString();
+
                 });
             submitButton.OnSubmitSubject.Subscribe(_ =>
             {
