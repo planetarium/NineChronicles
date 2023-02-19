@@ -86,8 +86,7 @@ namespace Nekoyume.UI
             petSkeletonGraphic.Initialize(true);
             submitButton.OnSubmitSubject.Subscribe(_ =>
             {
-                ActionManager.Instance.PetEnhancement(petRow.Id, 1).Subscribe();
-                Close();
+                Action(petRow.Id, 1);
             }).AddTo(_disposables);
         }
 
@@ -134,8 +133,7 @@ namespace Nekoyume.UI
                     });
                 submitButton.OnSubmitSubject.Subscribe(_ =>
                 {
-                    ActionManager.Instance.PetEnhancement(petState.PetId, _targetLevel).Subscribe();
-                    Close();
+                    Action(petState.PetId, _targetLevel);
                 }).AddTo(_disposables);
             }
             else
@@ -148,6 +146,13 @@ namespace Nekoyume.UI
         {
             _disposables.DisposeAllAndClear();
             base.Close(ignoreCloseAnimation);
+        }
+
+        private void Action(int petId, int targetLevel)
+        {
+            ActionManager.Instance.PetEnhancement(petId, targetLevel).Subscribe();
+            LoadingHelper.PetEnhancement.Value = petId;
+            Close();
         }
     }
 }

@@ -104,7 +104,9 @@ namespace Nekoyume.UI.Module.Pet
                 levelUpNotification.SetActive(b && _petState is not null);
                 summonableNotification.SetActive(b && _petState is null);
             }).AddTo(_disposables);
-            model.Loading.SubscribeTo(loading).AddTo(_disposables);
+            LoadingHelper.PetEnhancement
+                .Subscribe(id => loading.SetActive(id == model.PetRow.Id))
+                .AddTo(_disposables);
         }
 
         private void OnDisable()

@@ -2483,6 +2483,7 @@ namespace Nekoyume.BlockChain
 
         private void ResponsePetEnhancement(ActionBase.ActionEvaluation<PetEnhancement> eval)
         {
+            LoadingHelper.PetEnhancement.Value = 0;
             var action = eval.Action;
             if (eval.Exception is not null ||
                 action.AvatarAddress != States.Instance.CurrentAvatarState.address)
