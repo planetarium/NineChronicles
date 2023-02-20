@@ -82,24 +82,21 @@ namespace Nekoyume.Model.Quest
         )
         {
             _quests = new List<Quest>();
-            if (questSheet.Count > 0)
+            foreach (var questData in questSheet.OrderedList)
             {
-                foreach (var questData in questSheet.OrderedList)
+                var reward = GetQuestReward(
+                    questData.QuestRewardId,
+                    questRewardSheet,
+                    questItemRewardSheet
+                );
+
+                var quest = CreateQuest(questData, reward, equipmentItemRecipeSheet);
+                if (quest is null)
                 {
-                    var reward = GetQuestReward(
-                        questData.QuestRewardId,
-                        questRewardSheet,
-                        questItemRewardSheet
-                    );
-
-                    var quest = CreateQuest(questData, reward, equipmentItemRecipeSheet);
-                    if (quest is null)
-                    {
-                        continue;
-                    }
-
-                    _quests.Add(quest);
+                    continue;
                 }
+
+                _quests.Add(quest);
             }
         }
 
