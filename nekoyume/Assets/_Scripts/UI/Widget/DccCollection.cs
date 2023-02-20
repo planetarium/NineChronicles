@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Nekoyume.Game;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Module.Pet;
@@ -39,7 +40,7 @@ namespace Nekoyume.UI
                     {
                         OneLineSystem.Push(
                             MailType.System,
-                            "no",
+                            L10nManager.Localize("UI_CAN_NOT_ENTER_PET_MENU"),
                             NotificationCell.NotificationType.Information);
                         return;
                     }
