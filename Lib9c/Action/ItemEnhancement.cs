@@ -411,7 +411,7 @@ namespace Nekoyume.Action
             avatarState.UpdateQuestRewards(materialSheet);
 
             // Update slot state
-            slotState.Update(result, ctx.BlockIndex, requiredBlockIndex, petId);
+            slotState.Update(result, ctx.BlockIndex, requiredBlockIndex);
 
             // Update Pet
             if (!(petState is null))
