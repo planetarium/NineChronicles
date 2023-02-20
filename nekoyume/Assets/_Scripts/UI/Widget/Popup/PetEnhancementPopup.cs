@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Libplanet.Assets;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;
+using Nekoyume.State;
 using Nekoyume.TableData.Pet;
 using Nekoyume.UI.Module;
 using Spine.Unity;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -38,7 +39,10 @@ namespace Nekoyume.UI
         private TextMeshProUGUI gradeText;
 
         [SerializeField]
-        private ConditionalButton submitButton;
+        private Button submitButton;
+
+        [SerializeField]
+        private GameObject buttonDisableObject;
 
         [SerializeField]
         private List<GameObject> levelUpUIList;
@@ -93,7 +97,7 @@ namespace Nekoyume.UI
             petSkeletonGraphic.Initialize(true);
             requiredSoulStoneImage.overrideSprite =
                 PetRenderingHelper.GetSoulStoneSprite(petRow.Id);
-            submitButton.OnSubmitSubject.Subscribe(_ =>
+            submitButton.OnClickAsObservable().Subscribe(_ =>
             {
                 Action(petRow.Id, 1);
             }).AddTo(_disposables);
@@ -134,7 +138,7 @@ namespace Nekoyume.UI
                     {
                         SetObjectByTargetLevel(petState.PetId, petState.Level, value + petState.Level);
                     });
-                submitButton.OnSubmitSubject.Subscribe(_ =>
+                submitButton.OnClickAsObservable().Subscribe(_ =>
                 {
                     Action(petState.PetId, _targetLevel);
                 }).AddTo(_disposables);
@@ -143,7 +147,7 @@ namespace Nekoyume.UI
             {
                 levelUpUIList.ForEach(obj => obj.SetActive(false));
                 costObject.SetActive(false);
-                submitButton.OnSubmitSubject.Subscribe(_ =>
+                submitButton.OnClickAsObservable().Subscribe(_ =>
                 {
                     Close();
                 }).AddTo(_disposables);
@@ -172,6 +176,14 @@ namespace Nekoyume.UI
             ncgCostText.text = ncg.ToString();
             soulStoneCostText.text = soulStone.ToString();
             ncgCostObject.SetActive(ncg > 0);
+            var ncgCost = States.Instance.GoldBalanceState.Gold.Currency * ncg;
+            var soulStoneCost =
+                Currency.Legacy(TableSheets.Instance.PetSheet[petId].SoulStoneTicker, 0, null) *
+                soulStone;
+            submitButton.interactable =
+                States.Instance.GoldBalanceState.Gold >= ncgCost &&
+                States.Instance.AvatarBalance[soulStoneCost.Currency.Ticker] >= soulStoneCost;
+            buttonDisableObject.SetActive(!submitButton.interactable);
         }
 
         private void Action(int petId, int targetLevel)
