@@ -32,7 +32,7 @@ namespace Lib9c.Tests.Model.State
         [InlineData(int.MaxValue, true)]
         public void LevelUp(int initialLevel, bool shouldThrow)
         {
-            const int petId = 1001;
+            const int petId = 1;
             const long blockIndex = 0;
             var serialized = new List(
                 petId.Serialize(),
