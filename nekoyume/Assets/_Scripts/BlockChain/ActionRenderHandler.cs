@@ -2506,10 +2506,8 @@ namespace Nekoyume.BlockChain
                 action.AvatarAddress,
                 Currency.Legacy(soulStoneTicker, 0, null)
             );
-
             UpdatePetState(action.AvatarAddress, eval.OutputStates, action.PetId);
-
-            Widget.Find<DccCollection>().Show(true);
+            Widget.Find<DccCollection>().UpdateView();
         }
 
         private void UpdatePetState(Address avatarAddress, IAccountStateDelta states, int petId)

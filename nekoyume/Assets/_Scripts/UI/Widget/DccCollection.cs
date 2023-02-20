@@ -54,6 +54,11 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
+            UpdateView();
+        }
+
+        public void UpdateView()
+        {
             scroll.UpdateData(TableSheets.Instance.PetSheet.Values
                 .Select(row => new PetSlotViewModel(row)).Append(new PetSlotViewModel()));
         }
