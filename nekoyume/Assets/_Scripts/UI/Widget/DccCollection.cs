@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Nekoyume.Game;
 using Nekoyume.Helper;
+using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Module.Pet;
 using Nekoyume.UI.Scroller;
@@ -32,8 +33,17 @@ namespace Nekoyume.UI
             scroll.OnClick.Subscribe(viewModel =>
             {
                 var row = viewModel.PetRow;
-                if (row is not null && LoadingHelper.PetEnhancement.Value == 0)
+                if (row is not null)
                 {
+                    if (LoadingHelper.PetEnhancement.Value != 0)
+                    {
+                        OneLineSystem.Push(
+                            MailType.System,
+                            "no",
+                            NotificationCell.NotificationType.Information);
+                        return;
+                    }
+
                     petSkeletonGraphic.skeletonDataAsset =
                         PetRenderingHelper.GetPetSkeletonData(row.Id);
                     petSkeletonGraphic.Initialize(true);
