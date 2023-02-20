@@ -22,15 +22,7 @@ namespace Editor
         {
             Debug.Log("Build Android");
             BuildOptions options = BuildOptions.None;
-            PlayerSettings.SetAdditionalIl2CppArgs("--maximum-recursive-generic-depth=20");
-            Build(BuildTarget.Android, options, "Android", true);
-        }
-
-        [MenuItem("IL2CPP/SetIl2CppArgs")]
-        public static void SetIl2CppArgs()
-        {
-            PlayerSettings.SetAdditionalIl2CppArgs("--maximum-recursive-generic-depth=20 --emit-source-mapping");
-            Debug.LogWarning($"I2CAddArgs={PlayerSettings.GetAdditionalIl2CppArgs()}");
+            Build(BuildTarget.Android, options, "Android", false);
         }
 
         [MenuItem("Build/Standalone/Windows + macOS + Linux")]
@@ -122,14 +114,14 @@ namespace Editor
             Debug.Log("Build iOS");
             PreProcessBuildForIOS();
             PlayerSettings.iOS.sdkVersion = iOSSdkVersion.DeviceSDK;
-            Build(BuildTarget.iOS, BuildOptions.Development | BuildOptions.EnableDeepProfilingSupport | BuildOptions.ConnectWithProfiler | BuildOptions.AllowDebugging | BuildOptions.WaitForPlayerConnection, targetDirName: "iOS", isDevelopment: false);
+            Build(BuildTarget.iOS, BuildOptions.Development | BuildOptions.EnableDeepProfilingSupport | BuildOptions.ConnectWithProfiler | BuildOptions.AllowDebugging | BuildOptions.WaitForPlayerConnection, targetDirName: "iOS", useDevExtension: false);
         }
 
         [MenuItem("Build/Development/Android")]
         public static void BuildAndroidDevelopment()
         {
             Debug.Log("Build Android Development");
-            Build(BuildTarget.Android, BuildOptions.Development | BuildOptions.AllowDebugging, "Android");
+            Build(BuildTarget.Android, BuildOptions.Development, "Android", true);
         }
 
         [MenuItem("Build/Development/Windows + macOS + Linux")]
@@ -232,15 +224,21 @@ namespace Editor
             BuildTarget buildTarget,
             BuildOptions options = BuildOptions.None,
             string targetDirName = null,
-            bool isDevelopment = false)
+            bool useDevExtension = false)
         {
             string[] scenes = { "Assets/_Scenes/Game.unity" };
 
             targetDirName ??= buildTarget.ToString();
-            var locationPathName = Path.Combine(
+            string locationPathName = Path.Combine(
                 BuildBasePath,
                 targetDirName,
-                buildTarget.HasFlag(BuildTarget.StandaloneWindows64) ? $"{PlayerName}.exe" : PlayerName);
+                buildTarget switch
+                {
+                    BuildTarget.StandaloneWindows or BuildTarget.StandaloneWindows64 => $"{PlayerName}.exe",
+                    BuildTarget.Android => $"{PlayerName}.apk",
+                    _ => PlayerName,
+                }
+            );
 
             var buildPlayerOptions = new BuildPlayerOptions
             {
@@ -252,7 +250,14 @@ namespace Editor
                     : options,
             };
 
-            UpdateDefines(isDevelopment);
+            if (buildTarget == BuildTarget.Android)
+            {
+                // Due to executable size issue, we can't use script debugging for Android at least 2021.3.5f1.
+                buildPlayerOptions.options &= ~BuildOptions.AllowDebugging;
+                buildPlayerOptions.options |= BuildOptions.CompressWithLz4HC;
+            }
+
+            UpdateDefines(useDevExtension);
 
             var report = BuildPipeline.BuildPlayer(buildPlayerOptions);
             var summary = report.summary;
