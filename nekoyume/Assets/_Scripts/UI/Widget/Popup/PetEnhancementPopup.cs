@@ -61,6 +61,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI ncgCostText;
 
+        [SerializeField]
+        private GameObject ncgCostObject;
+
         private readonly List<IDisposable> _disposables = new();
 
         private const string LevelUpText = "LEVEL UP";
@@ -84,10 +87,14 @@ namespace Nekoyume.UI
             contentText.text = $"contentOf({petRow.Id})";
             petSkeletonGraphic.skeletonDataAsset = PetRenderingHelper.GetPetSkeletonData(petRow.Id);
             petSkeletonGraphic.Initialize(true);
+            requiredSoulStoneImage.overrideSprite =
+                PetRenderingHelper.GetSoulStoneSprite(petRow.Id);
             submitButton.OnSubmitSubject.Subscribe(_ =>
             {
                 Action(petRow.Id, 1);
             }).AddTo(_disposables);
+            TableSheets.Instance.PetCostSheet[petRow.Id].TryGetCost(1, out var cost);
+            SetCost(cost.NcgQuantity, cost.SoulStoneQuantity);
         }
 
         public void ShowForLevelUp(PetState petState)
@@ -129,8 +136,7 @@ namespace Nekoyume.UI
                             petState.PetId,
                             petState.Level,
                             _targetLevel);
-                        ncgCostText.text = ncg.ToString();
-                        soulStoneCostText.text = soulStone.ToString();
+                        SetCost(ncg, soulStone);
                     });
                 submitButton.OnSubmitSubject.Subscribe(_ =>
                 {
@@ -149,6 +155,12 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
+        private void SetCost(int ncg, int soulStone)
+        {
+            ncgCostText.text = ncg.ToString();
+            soulStoneCostText.text = soulStone.ToString();
+            ncgCostObject.SetActive(ncg > 0);
+        }
         private void Action(int petId, int targetLevel)
         {
             ActionManager.Instance.PetEnhancement(petId, targetLevel).Subscribe();

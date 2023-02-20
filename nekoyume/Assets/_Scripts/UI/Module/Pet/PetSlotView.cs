@@ -106,7 +106,14 @@ namespace Nekoyume.UI.Module.Pet
                 summonableNotification.SetActive(b && _petState is null);
             }).AddTo(_disposables);
             LoadingHelper.PetEnhancement
-                .Subscribe(id => loading.SetActive(id == model.PetRow.Id))
+                .Subscribe(id =>
+                {
+                    var isLoading = id == model.PetRow.Id;
+                    loading.SetActive(isLoading);
+                    petInfoText.color = isLoading
+                        ? PetRenderingHelper.GetUIColor(PetRenderingHelper.LevelUpText)
+                        : Color.white;
+                })
                 .AddTo(_disposables);
         }
 
