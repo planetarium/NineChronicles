@@ -88,7 +88,8 @@ namespace Nekoyume.UI.Module.Pet
                 : PetRenderingHelper.GetUIColor(PetRenderingHelper.NotOwnSlot);
             petInfoText.text = $"{model.PetRow.Id}.Localize";
             var maxLevel = TableSheets.Instance.PetCostSheet[model.PetRow.Id]
-                .OrderedCostList
+                .Cost
+                .OrderBy(data => data.Level)
                 .Last()
                 .Level;
             levelText.text = isOwn

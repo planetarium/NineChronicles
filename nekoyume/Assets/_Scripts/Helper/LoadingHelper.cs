@@ -5,6 +5,6 @@
     {
         public static readonly ReactiveCollection<int> UnlockRuneSlot = new();
         public static readonly ReactiveProperty<bool> RuneEnhancement = new();
-        public static readonly ReactiveProperty<int> PetEnhancement = new();
+        public static readonly ReactiveProperty<int> PetEnhancement = new(0);
     }
 }

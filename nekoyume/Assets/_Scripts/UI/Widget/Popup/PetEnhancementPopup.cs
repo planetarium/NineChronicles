@@ -106,9 +106,10 @@ namespace Nekoyume.UI
             requiredSoulStoneImage.overrideSprite =
                 PetRenderingHelper.GetSoulStoneSprite(petState.PetId);
             currentLevelText.text = $"<size=30>Lv.</size>{petState.Level}";
-            var maxLevel = TableSheets.Instance.PetCostSheet[petState.PetId]
-                .OrderedCostList
-                .Last().Level;
+            var maxLevel = TableSheets.Instance.PetCostSheet[petState.PetId].Cost
+                .OrderBy(data => data.Level)
+                .Last()
+                .Level;
             if (petState.Level < maxLevel)
             {
                 _targetLevel = petState.Level + 1;

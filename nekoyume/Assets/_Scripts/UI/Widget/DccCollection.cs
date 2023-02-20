@@ -32,7 +32,7 @@ namespace Nekoyume.UI
             scroll.OnClick.Subscribe(viewModel =>
             {
                 var row = viewModel.PetRow;
-                if (row is not null)
+                if (row is not null && LoadingHelper.PetEnhancement.Value == 0)
                 {
                     petSkeletonGraphic.skeletonDataAsset =
                         PetRenderingHelper.GetPetSkeletonData(row.Id);
