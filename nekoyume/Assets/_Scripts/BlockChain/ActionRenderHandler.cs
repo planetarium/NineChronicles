@@ -502,6 +502,7 @@ namespace Nekoyume.BlockChain
             await UpdateAvatarState(eval, eval.Action.index);
             var avatarState = await States.Instance.SelectAvatarAsync(eval.Action.index);
             await States.Instance.InitRuneStoneBalance();
+            await States.Instance.InitSoulStoneBalance();
             await States.Instance.InitRuneStates();
             await States.Instance.InitItemSlotStates();
             await States.Instance.InitRuneSlotStates();
@@ -2482,11 +2483,21 @@ namespace Nekoyume.BlockChain
 
         private void ResponsePetEnhancement(ActionBase.ActionEvaluation<PetEnhancement> eval)
         {
+            LoadingHelper.PetEnhancement.Value = 0;
             var action = eval.Action;
             if (eval.Exception is not null ||
                 action.AvatarAddress != States.Instance.CurrentAvatarState.address)
             {
                 return;
+            }
+
+            if (States.Instance.PetStates.TryGetPetState(eval.Action.PetId, out _))
+            {
+                Widget.Find<PetLevelUpResultScreen>().Show(eval.Action);
+            }
+            else
+            {
+                Widget.Find<PetSummonResultScreen>().Show(eval.Action.PetId);
             }
 
             UpdateAgentStateAsync(eval).Forget();
@@ -2495,11 +2506,8 @@ namespace Nekoyume.BlockChain
                 action.AvatarAddress,
                 Currency.Legacy(soulStoneTicker, 0, null)
             );
-
             UpdatePetState(action.AvatarAddress, eval.OutputStates, action.PetId);
-
-            Debug.Log(
-                $"PetEnhancement rendered.\nPetId: {action.PetId}, Level: {action.TargetLevel}");
+            Widget.Find<DccCollection>().UpdateView();
         }
 
         private void UpdatePetState(Address avatarAddress, IAccountStateDelta states, int petId)

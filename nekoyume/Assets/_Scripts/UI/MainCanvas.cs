@@ -178,6 +178,8 @@ namespace Nekoyume.UI
                 Widget.Create<RuneEnhancementResultScreen>(),
                 Widget.Create<MailRewardScreen>(),
                 Widget.Create<CPScreen>(),
+                Widget.Create<PetLevelUpResultScreen>(),
+                Widget.Create<PetSummonResultScreen>(),
 
                 // 팝업 영역.
                 Widget.Create<SettingPopup>(),
@@ -247,6 +249,10 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<ArenaBattlePreparation>());
             yield return null;
             secondWidgets.Add(Widget.Create<RaidPreparation>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<DccMain>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<DccCollection>());
             yield return null;
             secondWidgets.Add(Widget.Create<Status>());
             yield return null;
@@ -371,6 +377,8 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<ItemMaterialSelectPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<ArenaTicketPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<PetEnhancementPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<DccSettingPopup>());
             yield return null;

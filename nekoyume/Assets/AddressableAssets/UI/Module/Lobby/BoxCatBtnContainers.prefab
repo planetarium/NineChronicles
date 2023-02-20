@@ -1248,7 +1248,7 @@ GameObject:
   - component: {fileID: 8173154817636408505}
   - component: {fileID: 4352891072988331660}
   - component: {fileID: 5837425443902944590}
-  - component: {fileID: 994134202114366447}
+  - component: {fileID: 4413401244271292270}
   m_Layer: 5
   m_Name: BoxCatBtn
   m_TagString: Untagged
@@ -1390,7 +1390,7 @@ MonoBehaviour:
   target: {fileID: 4828494976580914264}
   tweenDuration: 0.3
   targetScale: 1.05
---- !u!114 &994134202114366447
+--- !u!114 &4413401244271292270
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1399,10 +1399,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 1649261856001541830}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 12066c21e7a128745913799faa1146e1, type: 3}
+  m_Script: {fileID: 11500000, guid: 0252058048a642b4bcfcd2a9bb1872f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  websiteLink: https://ninechronicles-banner.com/05
+  localizationKey: 
+  type: 7
+  speechBubble: {fileID: 0}
+  lockObjects: []
+  unlockObjects: []
+  hoverScaleTweener: {fileID: 5837425443902944590}
+  notification: {fileID: 5847495248642894485}
 --- !u!1 &1712908678502304044
 GameObject:
   m_ObjectHideFlags: 0
@@ -6944,6 +6950,12 @@ PrefabInstance:
 --- !u!224 &3069580314173953723 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2092428802851178608, guid: bc9d58051629344ec8ea666a833999b0,
+    type: 3}
+  m_PrefabInstance: {fileID: 4003871458267979467}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &5847495248642894485 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7401351605595386974, guid: bc9d58051629344ec8ea666a833999b0,
     type: 3}
   m_PrefabInstance: {fileID: 4003871458267979467}
   m_PrefabAsset: {fileID: 0}
