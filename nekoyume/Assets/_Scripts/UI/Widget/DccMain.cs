@@ -30,11 +30,6 @@ namespace Nekoyume.UI
             };
         }
 
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            base.Close(ignoreCloseAnimation);
-        }
-
         public override void Show(bool ignoreShowAnimation = false)
         {
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.CurrencyOnly);
