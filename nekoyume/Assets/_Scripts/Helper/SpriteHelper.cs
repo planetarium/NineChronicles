@@ -13,6 +13,9 @@ namespace Nekoyume.Helper
         private const string ItemIconDefaultPath = "UI/Icons/Item/100000";
         private const string ItemIconPathFormat = "UI/Icons/Item/{0}";
 
+        private const string DccIconPathFormat = "PFP/{0}";
+        private const string ProfileFrameDefaultPath = "UI/Icons/Item/{character_frame}";
+
         private const string ItemBackgroundDefaultPath = "UI/Textures/item_bg_1";
         private const string ItemBackgroundPathFormat = "UI/Textures/item_bg_{0}";
 
@@ -45,6 +48,18 @@ namespace Nekoyume.Helper
         {
             return Resources.Load<Sprite>(string.Format(ItemIconPathFormat, itemId)) ??
                    Resources.Load<Sprite>(ItemIconDefaultPath);
+        }
+
+        public static Sprite GetDccProfileIcon(int dccId)
+        {
+            return Resources.Load<Sprite>(string.Format(DccIconPathFormat, dccId)) ??
+                   Resources.Load<Sprite>(CharacterIconDefaultPath);
+        }
+
+        public static Sprite GetProfileFrameIcon(string frameName)
+        {
+            return Resources.Load<Sprite>(string.Format(ItemIconPathFormat, frameName)) ??
+                   Resources.Load<Sprite>(ProfileFrameDefaultPath);
         }
 
         public static Sprite GetItemBackground(int grade)

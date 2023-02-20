@@ -376,6 +376,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<PetSelectionPopup>());
             yield return null;
+            secondWidgets.Add(Widget.Create<ProfileSelectPopup>());
+            yield return null;
 
             // tooltip
             secondWidgets.Add(Widget.Create<EquipmentTooltip>());
