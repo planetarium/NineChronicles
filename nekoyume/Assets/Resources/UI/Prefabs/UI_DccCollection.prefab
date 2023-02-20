@@ -1279,7 +1279,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 2
-  l10nKey: UI_EQUIPMENTS
+  l10nKey: UI_ALL
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -1359,7 +1359,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Go to purchase
+  m_text: UI_GO_TO_PURCHASE
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 7a651b26cd62dc0479659cbcab053405, type: 2}
@@ -1446,7 +1446,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 1
-  l10nKey: UI_EQUIPMENTS
+  l10nKey: UI_GO_TO_PURCHASE
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -2501,8 +2501,8 @@ GameObject:
   - component: {fileID: 2482615395364220298}
   - component: {fileID: 757047687016645928}
   - component: {fileID: 4355753882294984941}
-  - component: {fileID: 408074003946836348}
   - component: {fileID: 6264818918041908838}
+  - component: {fileID: 967891058326237959}
   m_Layer: 5
   m_Name: DccButton
   m_TagString: Untagged
@@ -2603,22 +2603,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &408074003946836348
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4633818581609994585}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 00bc22f6438480d4b8924c1425578f53, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  button: {fileID: 757047687016645928}
-  normalObject: {fileID: 0}
-  selectedObject: {fileID: 0}
-  hasNotificationImage: {fileID: 0}
 --- !u!114 &6264818918041908838
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2649,6 +2633,19 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &967891058326237959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4633818581609994585}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12066c21e7a128745913799faa1146e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  websiteLink: 
 --- !u!1 &4750673021848488153
 GameObject:
   m_ObjectHideFlags: 0
@@ -3767,7 +3764,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4888436703975241237
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3786,10 +3783,10 @@ RectTransform:
   m_Father: {fileID: 7014161575546198107}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 301, y: -27}
+  m_SizeDelta: {x: 200.66667, y: 54}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6917584500456911112
 CanvasRenderer:

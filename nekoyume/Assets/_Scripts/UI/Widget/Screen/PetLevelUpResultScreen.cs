@@ -33,10 +33,11 @@ namespace Nekoyume.UI
         {
             base.Show();
             var petRow = TableSheets.Instance.PetSheet[action.PetId];
+            var option = TableSheets.Instance.PetOptionSheet[action.PetId].LevelOptionMap[action.TargetLevel];
             States.Instance.PetStates.TryGetPetState(petRow.Id, out var prevPetState);
-            petNameText.text = $"nameof({petRow.Id})";
+            petNameText.text = L10nManager.Localize($"PET_NAME_{petRow.Id}");
             petGradeText.text = L10nManager.Localize($"UI_ITEM_GRADE_{petRow.Grade}");
-            contentText.text = $"contentOf({petRow.Id})";
+            contentText.text = L10nManager.Localize($"PET_DESCRIPTION_{option.OptionType}",option.OptionValue);
             prevLevelText.text = $"<size=30>Lv.</size>{prevPetState.Level}";
             newLevelText.text = $"{action.TargetLevel}";
             petSkeletonGraphic.skeletonDataAsset = PetRenderingHelper.GetPetSkeletonData(petRow.Id);

@@ -86,7 +86,7 @@ namespace Nekoyume.UI.Module.Pet
             petImage.color = isOwn
                 ? Color.white
                 : PetRenderingHelper.GetUIColor(PetRenderingHelper.NotOwnSlot);
-            petInfoText.text = $"{model.PetRow.Id}.Localize";
+            petInfoText.text = L10nManager.Localize($"PET_NAME_{model.PetRow.Id}");
             var maxLevel = TableSheets.Instance.PetCostSheet[model.PetRow.Id]
                 .Cost
                 .OrderBy(data => data.Level)

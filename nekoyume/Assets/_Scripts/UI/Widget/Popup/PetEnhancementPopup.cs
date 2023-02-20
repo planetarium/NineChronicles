@@ -82,9 +82,10 @@ namespace Nekoyume.UI
             base.Show();
             levelUpUIList.ForEach(obj => obj.SetActive(false));
             titleText.text = SummonText;
-            petNameText.text = $"nameof({petRow.Id})";
+            petNameText.text = L10nManager.Localize($"PET_NAME_{petRow.Id}");
             gradeText.text = L10nManager.Localize($"UI_ITEM_GRADE_{petRow.Grade}");
-            contentText.text = $"contentOf({petRow.Id})";
+            var option = TableSheets.Instance.PetOptionSheet[petRow.Id].LevelOptionMap[1];
+            contentText.text = L10nManager.Localize($"PET_DESCRIPTION_{option.OptionType}",option.OptionValue);
             petSkeletonGraphic.skeletonDataAsset = PetRenderingHelper.GetPetSkeletonData(petRow.Id);
             petSkeletonGraphic.Initialize(true);
             requiredSoulStoneImage.overrideSprite =
@@ -102,11 +103,12 @@ namespace Nekoyume.UI
             base.Show();
             levelUpUIList.ForEach(obj => obj.SetActive(true));
             titleText.text = LevelUpText;
-            petNameText.text = $"nameof({petState.PetId})";
+            petNameText.text = L10nManager.Localize($"PET_NAME_{petState.PetId}");
             gradeText.text =
                 L10nManager.Localize(
                     $"UI_ITEM_GRADE_{TableSheets.Instance.PetSheet[petState.PetId].Grade}");
-            contentText.text = $"contentOf({petState.PetId})";
+            var option = TableSheets.Instance.PetOptionSheet[petState.PetId].LevelOptionMap[petState.Level];
+            contentText.text = L10nManager.Localize($"PET_DESCRIPTION_{option.OptionType}",option.OptionValue);
             petSkeletonGraphic.skeletonDataAsset =
                 PetRenderingHelper.GetPetSkeletonData(petState.PetId);
             petSkeletonGraphic.Initialize(true);
@@ -121,6 +123,8 @@ namespace Nekoyume.UI
             {
                 _targetLevel = petState.Level + 1;
                 targetLevelText.text = _targetLevel.ToString();
+                option = TableSheets.Instance.PetOptionSheet[petState.PetId].LevelOptionMap[_targetLevel];
+                contentText.text = L10nManager.Localize($"PET_DESCRIPTION_{option.OptionType}",option.OptionValue);
                 slider.Set(
                     1,
                     maxLevel - petState.Level,
@@ -137,6 +141,10 @@ namespace Nekoyume.UI
                             petState.Level,
                             _targetLevel);
                         SetCost(ncg, soulStone);
+                        option = TableSheets.Instance.PetOptionSheet[petState.PetId].LevelOptionMap[_targetLevel];
+                        contentText.text =
+                            L10nManager.Localize($"PET_DESCRIPTION_{option.OptionType}",
+                                option.OptionValue);
                     });
                 submitButton.OnSubmitSubject.Subscribe(_ =>
                 {
