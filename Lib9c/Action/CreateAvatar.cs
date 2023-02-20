@@ -10,6 +10,7 @@ using Libplanet.Action;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Nekoyume.TableData.Pet;
 using Serilog;
 using static Lib9c.SerializeKeys;
 
@@ -160,6 +161,18 @@ namespace Nekoyume.Action
             // Add Runes when executing on editor mode.
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
             states = CreateAvatar0.AddRunesForTest(avatarAddress, states);
+
+            // Add pets for test
+            if (states.TryGetSheet(out PetSheet petSheet))
+            {
+                foreach (var row in petSheet)
+                {
+                    var petState = new PetState(row.Id);
+                    petState.LevelUp();
+                    var petStateAddress = PetState.DeriveAddress(avatarAddress, row.Id);
+                    states = states.SetState(petStateAddress, petState.Serialize());
+                }
+            }
 #endif
 
             sw.Stop();

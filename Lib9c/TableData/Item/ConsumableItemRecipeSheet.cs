@@ -38,6 +38,11 @@ namespace Nekoyume.TableData
 
                 ResultConsumableItemId = ParseInt(fields[12]);
             }
+
+            public IEnumerable<EquipmentItemSubRecipeSheet.MaterialInfo> GetAllMaterials()
+            {
+                return Materials;
+            }
         }
 
         public ConsumableItemRecipeSheet() : base(nameof(ConsumableItemRecipeSheet))
