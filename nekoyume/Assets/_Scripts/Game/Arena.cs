@@ -9,11 +9,8 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Game.Util;
 using Nekoyume.Game.VFX.Skill;
 using Nekoyume.Model;
-using Nekoyume.Model.Arena;
-using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.Item;
-using Nekoyume.State;
 using Nekoyume.UI;
 using UnityEngine;
 using ArenaCharacter = Nekoyume.Model.ArenaCharacter;
@@ -147,7 +144,7 @@ namespace Nekoyume.Game
 
             _turnNumber = 1;
 
-            Widget.Find<ArenaBattle>().Show(myDigest, enemyDigest);
+            Widget.Find<ArenaBattle>().Show(myDigest, enemyDigest, myAvatarAddress, enemyAvatarAddress);
             enemy.Pet.Animator.DestroyTarget();
             yield return new WaitForSeconds(2.0f);
 

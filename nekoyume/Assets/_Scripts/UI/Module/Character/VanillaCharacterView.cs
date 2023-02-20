@@ -1,7 +1,5 @@
-using System.Linq;
 using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
-using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using UnityEngine;
 using UnityEngine.UI;
@@ -37,7 +35,7 @@ namespace Nekoyume.UI.Module
             SetByCharacterId(player.Model.RowData.Id);
         }
 
-        public void SetByCharacterId(int characterId)
+        public virtual void SetByCharacterId(int characterId)
         {
             var image = SpriteHelper.GetCharacterIcon(characterId);
             if (image is null)
@@ -48,7 +46,7 @@ namespace Nekoyume.UI.Module
             SetIcon(image);
         }
 
-        public void SetByFullCostumeOrArmorId(int armorOrFullCostumeId)
+        public virtual void SetByFullCostumeOrArmorId(int armorOrFullCostumeId)
         {
             var image = SpriteHelper.GetItemIcon(armorOrFullCostumeId);
             if (image is null)
@@ -70,7 +68,7 @@ namespace Nekoyume.UI.Module
             return new Color(color.r, color.g, color.b, alpha);
         }
 
-        private void SetIcon(Sprite image)
+        protected void SetIcon(Sprite image)
         {
             iconImage.sprite = image;
             iconImage.enabled = true;
