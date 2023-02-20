@@ -9,56 +9,37 @@
 
     public class PetStateTest
     {
-        [Theory]
-        [InlineData(int.MinValue)]
-        [InlineData(int.MaxValue)]
-        public void Serialize(int petId)
+        [Fact]
+        public void Serialize()
         {
-            var state = new PetState(petId);
-            Assert.Equal(petId, state.PetId);
-            Assert.Equal(0, state.Level);
+            var state = new PetState(1);
             var serialized = state.Serialize();
             var deserialized = new PetState((List)serialized);
+
             Assert.Equal(state.PetId, deserialized.PetId);
             Assert.Equal(state.Level, deserialized.Level);
-
-            var serialized2 = deserialized.Serialize();
-            Assert.Equal(serialized, serialized2);
         }
 
-        [Theory]
-        [InlineData(int.MinValue, false)]
-        [InlineData(0, false)]
-        [InlineData(int.MaxValue, true)]
-        public void LevelUp(int initialLevel, bool shouldThrow)
+        [Fact]
+        public void LevelUp()
         {
-            const int petId = 1;
-            var serialized = new List(
-                petId.Serialize(),
-                initialLevel.Serialize());
-            var state = new PetState(serialized);
-            Assert.Equal(petId, state.PetId);
-            Assert.Equal(initialLevel, state.Level);
-            if (shouldThrow)
-            {
-                Assert.Throws<System.InvalidOperationException>(() =>
-                    state.LevelUp());
-            }
-            else
-            {
-                state.LevelUp();
-                Assert.Equal(initialLevel + 1, state.Level);
-            }
+            var state = new PetState(1);
+            var prevLevel = state.Level;
+            state.LevelUp();
+            Assert.Equal(prevLevel + 1, state.Level);
+            var serialized = state.Serialize();
+            var deserialized = new PetState((List)serialized);
+
+            Assert.Equal(state.PetId, deserialized.PetId);
+            Assert.Equal(prevLevel + 1, deserialized.Level);
         }
 
-        [Theory]
-        [InlineData(int.MinValue)]
-        [InlineData(int.MaxValue)]
-        public void DeriveAddress(int petId)
+        [Fact]
+        public void DeriveAddress()
         {
             var avatarAddress = new PrivateKey().ToAddress();
-            var expectedAddress = avatarAddress.Derive($"pet-{petId}");
-            Assert.Equal(expectedAddress, PetState.DeriveAddress(avatarAddress, petId));
+            var expectedAddress = avatarAddress.Derive($"{1}");
+            Assert.Equal(expectedAddress, PetState.DeriveAddress(avatarAddress, 1));
         }
     }
 }

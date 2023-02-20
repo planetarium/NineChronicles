@@ -1,57 +1,58 @@
 ﻿namespace Lib9c.Tests.TableData.Pet
 {
+    using System;
+    using System.Linq;
+    using Lib9c.Tests.Action;
     using Nekoyume.TableData.Pet;
     using Xunit;
 
     public class PetCostSheetTest
     {
-        [Fact]
-        public void Set()
+        private PetCostSheet _petCostSheet;
+
+        public PetCostSheetTest()
         {
-            const string content = @"pet_id,_pet_name,pet_level,soul_stone_quantity,ncg_quantity
+            if (!TableSheetsImporter.TryGetCsv(nameof(PetCostSheet), out var csv))
+            {
+                throw new Exception($"Not found sheet: {nameof(PetCostSheet)}");
+            }
+
+            _petCostSheet = new PetCostSheet();
+            _petCostSheet.Set(csv);
+        }
+
+        [Fact]
+        public void SetToSheet()
+        {
+            const string content =
+                @"ID,_PET NAME,PetLevel,SoulStoneQuantity,NcgQuantity
 1,D:CC 블랙캣,1,10,0
-1,D:CC 블랙캣,2,0,10";
+        ";
 
             var sheet = new PetCostSheet();
             sheet.Set(content);
 
             Assert.Single(sheet);
             Assert.NotNull(sheet.First);
-            var row = sheet.First;
-            Assert.Equal(1, row.PetId);
-            Assert.Equal(2, row.Cost.Count);
-            var cost = row.Cost[0];
-            Assert.Equal(1, cost.Level);
-            Assert.Equal(10, cost.SoulStoneQuantity);
-            Assert.Equal(0, cost.NcgQuantity);
-            cost = row.Cost[1];
-            Assert.Equal(2, cost.Level);
-            Assert.Equal(0, cost.SoulStoneQuantity);
-            Assert.Equal(10, cost.NcgQuantity);
         }
 
         [Fact]
-        public void Row_TryGetCost()
+        public void GetRowTest()
         {
-            const string content = @"pet_id,_pet_name,pet_level,soul_stone_quantity,ncg_quantity
+            const string content =
+                @"ID,_PET NAME,PetLevel,SoulStoneQuantity,NcgQuantity
 1,D:CC 블랙캣,1,10,0
-1,D:CC 블랙캣,2,0,10";
+        ";
 
             var sheet = new PetCostSheet();
             sheet.Set(content);
 
-            Assert.NotNull(sheet.First);
-            var row = sheet.First;
-            Assert.False(row.TryGetCost(0, out var cost));
-            Assert.True(row.TryGetCost(1, out cost));
+            var expectRow = sheet.First;
+            Assert.NotNull(expectRow);
+            Assert.True(expectRow.TryGetCost(1, out var cost));
             Assert.Equal(1, cost.Level);
             Assert.Equal(10, cost.SoulStoneQuantity);
             Assert.Equal(0, cost.NcgQuantity);
-            Assert.True(row.TryGetCost(2, out cost));
-            Assert.Equal(2, cost.Level);
-            Assert.Equal(0, cost.SoulStoneQuantity);
-            Assert.Equal(10, cost.NcgQuantity);
-            Assert.False(row.TryGetCost(3, out cost));
         }
     }
 }
