@@ -1,8 +1,5 @@
-﻿using Nekoyume.Helper;
-using Nekoyume.Model.EnumType;
-using Nekoyume.State;
+﻿using Nekoyume.State;
 using Nekoyume.UI.Module;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,16 +20,16 @@ namespace Nekoyume.UI
         private GameObject[] onDccUnlocked;
 
         [SerializeField]
+        private FramedCharacterView avatarCharacterView;
+
+        [SerializeField]
+        private FramedCharacterView dccCharacterView;
+
+        [SerializeField]
         private ConditionalButton avatarButton;
 
         [SerializeField]
         private ConditionalButton dccButton;
-
-        [SerializeField]
-        private Image avatarImage;
-
-        [SerializeField]
-        private Image pfpImage;
 
         private const string DccShortCutUrl = "https://dcc.nine-chronicles.com/staking";
 
@@ -46,17 +43,14 @@ namespace Nekoyume.UI
 
         public void Show()
         {
-            var id = Util.GetPortraitId(BattleType.Adventure);
-            // var image = SpriteHelper.GetItemIcon(id);
-            // var image = SpriteHelper.GetCharacterIcon(player.Model.RowData.Id);
-            avatarImage.sprite = SpriteHelper.GetItemIcon(id);
+            var avatarState = States.Instance.CurrentAvatarState;
+            var isDccActive = Game.Game.instance.Dcc.Avatars
+                .TryGetValue(avatarState.address.ToHex(), out var dccId);
 
-            var dcc = Game.Game.instance.Dcc;
-            var address = States.Instance.CurrentAvatarState.address.ToString();
-            var isProfileExist = dcc.Avatars.TryGetValue(address, out var pfpId);
-            if (isProfileExist)
+            avatarCharacterView.SetByAvatarState(avatarState);
+            if (isDccActive)
             {
-                pfpImage.sprite = SpriteHelper.GetPfpProfileIcon((int)pfpId);
+                dccCharacterView.SetByDccId(dccId);
             }
 
             // is DCC locked?
@@ -64,20 +58,21 @@ namespace Nekoyume.UI
             // N -> show DCC profile -> enable DCC selected / Avatar select
             foreach (var obj in onDccLocked)
             {
-                obj.SetActive(!isProfileExist);
+                obj.SetActive(!isDccActive);
             }
+
             foreach (var obj in onDccUnlocked)
             {
-                obj.SetActive(isProfileExist);
+                obj.SetActive(isDccActive);
             }
 
             // button - state : Normal - Select, Conditional - Locked, Disabled - Selected
-            avatarButton.Interactable = isProfileExist;
-            avatarButton.SetState(!isProfileExist
+            avatarButton.Interactable = isDccActive;
+            avatarButton.SetState(!isDccActive
                 ? ConditionalButton.State.Disabled
                 : ConditionalButton.State.Normal);
-            dccButton.Interactable = !isProfileExist;
-            dccButton.SetState(isProfileExist
+            dccButton.Interactable = !isDccActive;
+            dccButton.SetState(isDccActive
                 ? ConditionalButton.State.Disabled
                 : ConditionalButton.State.Conditional);
 

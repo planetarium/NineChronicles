@@ -24,6 +24,7 @@ namespace Nekoyume.UI.Module.Arena.Board
         public bool interactableChoiceButton;
         public bool canFight;
         public bool? winAtGrandFinale;
+        public string address;
     }
 
     public class ArenaBoardPlayerScrollContext : FancyScrollRectContext
@@ -95,19 +96,24 @@ namespace Nekoyume.UI.Module.Arena.Board
         public override void UpdateContent(ArenaBoardPlayerItemData itemData)
         {
             _currentData = itemData;
-            _characterView.SetByFullCostumeOrArmorId(
-                _currentData.fullCostumeOrArmorId,
-                _currentData.level.ToString("N0", CultureInfo.CurrentCulture));
+
+            if (Game.Game.instance.Dcc.Avatars.TryGetValue(itemData.address, out var dccId))
+            {
+                _characterView.SetByDccId(dccId, _currentData.level);
+            }
+            else
+            {
+                _characterView.SetByFullCostumeOrArmorId(
+                    _currentData.fullCostumeOrArmorId,
+                    _currentData.level.ToString("N0", CultureInfo.CurrentCulture));
+            }
+
             _nameText.text = _currentData.name;
-            _cpText.text =
-                _currentData.cp.ToString("N0", CultureInfo.CurrentCulture);
-            _ratingText.text =
-                _currentData.score.ToString("N0", CultureInfo.CurrentCulture);
+            _cpText.text = _currentData.cp.ToString("N0", CultureInfo.CurrentCulture);
+            _ratingText.text = _currentData.score.ToString("N0", CultureInfo.CurrentCulture);
             _plusRatingText.gameObject.SetActive(_currentData.canFight && !_currentData.winAtGrandFinale.HasValue);
-            _plusRatingText.text =
-                _currentData.expectWinDeltaScore.ToString(
-                    "N0",
-                    CultureInfo.CurrentCulture);
+            _plusRatingText.text = _currentData.expectWinDeltaScore.ToString("N0", CultureInfo.CurrentCulture);
+
             if (_currentData.winAtGrandFinale.HasValue)
             {
                 var win = _currentData.winAtGrandFinale.Value;

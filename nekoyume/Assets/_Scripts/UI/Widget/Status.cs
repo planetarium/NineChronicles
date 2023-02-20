@@ -47,6 +47,7 @@ namespace Nekoyume.UI
 
         private Player _player;
 
+        private int? _activatedDccId;
         #region Mono
 
         protected override void Awake()
@@ -54,8 +55,8 @@ namespace Nekoyume.UI
             base.Awake();
 
             Game.Event.OnRoomEnter.AddListener(b => Show());
-            Game.Event.OnUpdatePlayerEquip.Subscribe(characterView.SetByPlayer)
-                .AddTo(gameObject);
+            Game.Event.OnUpdatePlayerEquip.Where(_ => _activatedDccId != null)
+                .Subscribe(characterView.SetByPlayer).AddTo(gameObject);
             Game.Event.OnUpdatePlayerStatus.Subscribe(SubscribeOnUpdatePlayerStatus)
                 .AddTo(gameObject);
 
@@ -106,7 +107,10 @@ namespace Nekoyume.UI
 
         public void UpdateOnlyPlayer(Player player)
         {
-            characterView.SetByPlayer(player);
+            if (_activatedDccId == null)
+            {
+                characterView.SetByPlayer(player);
+            }
 
             if (player)
             {
@@ -118,7 +122,11 @@ namespace Nekoyume.UI
 
         public void UpdatePlayer(Player player)
         {
-            characterView.SetByPlayer(player);
+            if (_activatedDccId == null)
+            {
+                characterView.SetByPlayer(player);
+            }
+
             Show();
 
             if (player)
@@ -131,9 +139,7 @@ namespace Nekoyume.UI
 
         private void SubscribeOnUpdatePlayerStatus(Player player)
         {
-            if (player is null ||
-                player is EnemyPlayer ||
-                player.Model is null)
+            if (player is null || player is EnemyPlayer || player.Model is null)
             {
                 return;
             }
@@ -176,8 +182,17 @@ namespace Nekoyume.UI
         )
         {
             // portrait
-            var portraitId = Util.GetPortraitId(equipments, costumes);
-            characterView.SetByFullCostumeOrArmorId(portraitId);
+            if (Game.Game.instance.Dcc.Avatars.TryGetValue(avatarState.address.ToHex(), out var dccId))
+            {
+                _activatedDccId = dccId;
+                characterView.SetByDccId(dccId);
+            }
+            else
+            {
+                _activatedDccId = null;
+                var portraitId = Util.GetPortraitId(equipments, costumes);
+                characterView.SetByFullCostumeOrArmorId(portraitId);
+            }
 
             // level& name
             textLevel.text = avatarState.level.ToString();

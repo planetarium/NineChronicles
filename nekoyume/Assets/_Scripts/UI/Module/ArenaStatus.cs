@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Libplanet;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -31,9 +32,9 @@ namespace Nekoyume.UI.Module
             gameObject.SetActive(false);
         }
 
-        public void Set(int portraitId, string avatarName, int level)
+        public void Set(int portraitId, string avatarName, int level, Address address)
         {
-            SetProfile(portraitId, avatarName, level);
+            SetProfile(portraitId, avatarName, level, address);
             SetBuff();
         }
 
@@ -48,9 +49,17 @@ namespace Nekoyume.UI.Module
             animator.Play("Close");
         }
 
-        private void SetProfile(int portraitId, string avatarName, int level)
+        private void SetProfile(int portraitId, string avatarName, int level, Address address)
         {
-            characterView.SetByFullCostumeOrArmorId(portraitId, level);
+            if (Game.Game.instance.Dcc.Avatars.TryGetValue(address.ToHex(), out var dccId))
+            {
+                characterView.SetByDccId(dccId, level);
+            }
+            else
+            {
+                characterView.SetByFullCostumeOrArmorId(portraitId, level);
+            }
+
             infoText.text = avatarName;
         }
 

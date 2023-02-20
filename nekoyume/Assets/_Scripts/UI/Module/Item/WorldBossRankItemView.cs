@@ -79,7 +79,15 @@ namespace Nekoyume.UI
                 _gradeObject = Instantiate(prefab, gradeContainer);
             }
 
-            characterView.SetByFullCostumeOrArmorId(model.Portrait, model.Level);
+            if (Game.Game.instance.Dcc.Avatars.TryGetValue(model.Address, out var dccId))
+            {
+                characterView.SetByDccId(dccId, model.Level);
+            }
+            else
+            {
+                characterView.SetByFullCostumeOrArmorId(model.Portrait, model.Level);
+            }
+
             avatarName.text = model.AvatarName;
             address.text = $"#{model.Address[..4]}";
             cp.text = $"{model.Cp:#,0}";
