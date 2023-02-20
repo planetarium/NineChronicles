@@ -1,4 +1,4 @@
-namespace Lib9c.Tests.Model.State
+﻿namespace Lib9c.Tests.Model.State
 {
     using Bencodex.Types;
     using Libplanet;
@@ -33,11 +33,9 @@ namespace Lib9c.Tests.Model.State
         public void LevelUp(int initialLevel, bool shouldThrow)
         {
             const int petId = 1;
-            const long blockIndex = 0;
             var serialized = new List(
                 petId.Serialize(),
-                initialLevel.Serialize(),
-                blockIndex.Serialize());
+                initialLevel.Serialize());
             var state = new PetState(serialized);
             Assert.Equal(petId, state.PetId);
             Assert.Equal(initialLevel, state.Level);

@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using static Nekoyume.TableData.TableExtensions;
 
@@ -59,31 +57,6 @@ namespace Nekoyume.TableData
             public bool IsMimisBrunnrSubRecipe(int? subRecipeId)
             {
                 return subRecipeId.HasValue && SubRecipeIds[2] == subRecipeId.Value;
-            }
-
-            public IEnumerable<EquipmentItemSubRecipeSheet.MaterialInfo> GetAllMaterials(
-                EquipmentItemSubRecipeSheetV2 sheet,
-                CraftType subRecipeType = CraftType.Normal
-            )
-            {
-                var allMaterials =
-                    new List<EquipmentItemSubRecipeSheet.MaterialInfo>
-                    {
-                        new EquipmentItemSubRecipeSheet.MaterialInfo(MaterialId, MaterialCount)
-                    };
-
-                var subRecipeList =
-                    sheet.OrderedList.Where(e => SubRecipeIds.Contains(e.Id)).ToList();
-                allMaterials = subRecipeType switch
-                {
-                    CraftType.Normal => allMaterials.Concat(subRecipeList[0].Materials).ToList(),
-                    CraftType.Premium => allMaterials.Concat(subRecipeList[1].Materials).ToList(),
-                    CraftType.Mimisbrunnr => allMaterials.Concat(subRecipeList[2].Materials)
-                        .ToList(),
-                    _ => allMaterials
-                };
-
-                return allMaterials;
             }
         }
 

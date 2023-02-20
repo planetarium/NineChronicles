@@ -1,5 +1,7 @@
-namespace Lib9c.Tests.Util
+namespace Lib9c.Tests
 {
+    using System;
+    using System.Linq;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
@@ -7,11 +9,10 @@ namespace Lib9c.Tests.Util
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model.State;
-    using Nekoyume.TableData;
+    using static SerializeKeys;
     using State = Lib9c.Tests.Action.State;
-    using StateExtensions = Nekoyume.Model.State.StateExtensions;
 
-    public static class InitializeUtil
+    public static class TestUtils
     {
         public static (
             TableSheets tableSheets,
@@ -26,7 +27,7 @@ namespace Lib9c.Tests.Util
             {
                 states = states.SetState(
                     Addresses.TableSheet.Derive(key),
-                    StateExtensions.Serialize(value));
+                    value.Serialize());
             }
 
             var tableSheets = new TableSheets(sheets);
@@ -35,9 +36,6 @@ namespace Lib9c.Tests.Util
             states = states.SetState(
                 goldCurrencyState.address,
                 goldCurrencyState.Serialize());
-
-            var gameConfigState = new GameConfigState(sheets[nameof(GameConfigSheet)]);
-            states = states.SetState(gameConfigState.address, gameConfigState.Serialize());
 
             var agentAddr = new PrivateKey().ToAddress();
             var avatarAddr = Addresses.GetAvatarAddress(agentAddr, 0);
@@ -55,16 +53,16 @@ namespace Lib9c.Tests.Util
                 .SetState(agentAddr, agentState.Serialize())
                 .SetState(avatarAddr, avatarState.Serialize());
             var initialStatesWithAvatarStateV2 = states
-                .SetState(agentAddr, agentState.Serialize())
+                .SetState(agentAddr, agentState.SerializeV2())
                 .SetState(avatarAddr, avatarState.SerializeV2())
                 .SetState(
-                    avatarAddr.Derive(SerializeKeys.LegacyInventoryKey),
+                    avatarAddr.Derive(LegacyInventoryKey),
                     avatarState.inventory.Serialize())
                 .SetState(
-                    avatarAddr.Derive(SerializeKeys.LegacyWorldInformationKey),
+                    avatarAddr.Derive(LegacyWorldInformationKey),
                     avatarState.worldInformation.Serialize())
                 .SetState(
-                    avatarAddr.Derive(SerializeKeys.LegacyQuestListKey),
+                    avatarAddr.Derive(LegacyQuestListKey),
                     avatarState.questList.Serialize());
 
             return (
@@ -73,6 +71,22 @@ namespace Lib9c.Tests.Util
                 avatarAddr,
                 initialStatesWithAvatarStateV1,
                 initialStatesWithAvatarStateV2);
+        }
+
+        public static string CsvLinqWhere(string csv, Func<string, bool> where)
+        {
+            var after = csv
+                .Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries)
+                .Where(where);
+            return string.Join('\n', after);
+        }
+
+        public static string CsvLinqSelect(string csv, Func<string, string> select)
+        {
+            var after = csv
+                .Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(select);
+            return string.Join('\n', after);
         }
     }
 }

@@ -1,8 +1,7 @@
-namespace Lib9c.Tests.Action
+﻿namespace Lib9c.Tests.Action
 {
     using System.Linq;
     using Bencodex.Types;
-    using Lib9c.Tests.Util;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
@@ -35,7 +34,7 @@ namespace Lib9c.Tests.Action
                 _avatarAddr,
                 _initialStatesWithAvatarStateV1,
                 _initialStatesWithAvatarStateV2
-            ) = InitializeUtil.InitializeStates();
+            ) = TestUtils.InitializeStates();
             _targetPetId = tableSheets.PetSheet.First!.Id;
             var firstRound = tableSheets.ArenaSheet.OrderedList!
                 .SelectMany(row => row.Round)
@@ -291,10 +290,7 @@ namespace Lib9c.Tests.Action
             {
                 prevStates = prevStates.SetState(
                     petAddress,
-                    new List(
-                        petId.Serialize(),
-                        currentPetLevel.Serialize(),
-                        blockIndex.Serialize()));
+                    new List(petId.Serialize(), currentPetLevel.Serialize()));
             }
 
             var ncgCurrency = prevStates.GetGoldCurrency();
@@ -322,7 +318,7 @@ namespace Lib9c.Tests.Action
             if (removePetRow)
             {
                 var petSheetCsv = prevStates.GetSheetCsv<PetSheet>();
-                var insolventPetSheetCsv = CsvUtil.CsvLinqWhere(
+                var insolventPetSheetCsv = TestUtils.CsvLinqWhere(
                     petSheetCsv,
                     line => !line.StartsWith($"{petId},"));
                 prevStates = prevStates.SetState(
@@ -337,13 +333,13 @@ namespace Lib9c.Tests.Action
                 string insolventPetCostSheetCsv;
                 if (removePetCostRow)
                 {
-                    insolventPetCostSheetCsv = CsvUtil.CsvLinqWhere(
+                    insolventPetCostSheetCsv = TestUtils.CsvLinqWhere(
                         petCostSheetCsv,
                         line => !line.StartsWith($"{petId},"));
                 }
                 else
                 {
-                    insolventPetCostSheetCsv = CsvUtil.CsvLinqWhere(
+                    insolventPetCostSheetCsv = TestUtils.CsvLinqWhere(
                         petCostSheetCsv,
                         line =>
                         {

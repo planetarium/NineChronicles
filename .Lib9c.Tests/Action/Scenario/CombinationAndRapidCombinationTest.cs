@@ -276,7 +276,7 @@
             Assert.Equal(hourglassCount, hourglasses.Sum(e => e.count));
             nextState = nextState.SetState(_inventoryAddress, inventoryState.Serialize());
 
-            var rapidCombinationAction = new RapidCombination8
+            var rapidCombinationAction = new RapidCombination
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = 0,
