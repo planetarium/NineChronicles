@@ -1135,7 +1135,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4627213893691055829}
   - component: {fileID: 3025523476351130647}
-  - component: {fileID: 1574905787264409124}
   - component: {fileID: 2407371756781893143}
   m_Layer: 5
   m_Name: SubmitButton
@@ -1174,28 +1173,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1574905787264409125}
   m_CullTransparentMesh: 0
---- !u!114 &1574905787264409124
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1574905787264409125}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dd36e9ecf7775ae45bc40a208c43fc92, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  button: {fileID: 2407371756781893143}
-  disabledButton: {fileID: 0}
-  normalObject: {fileID: 3017503366710397521}
-  normalText: {fileID: 1800761839918670481}
-  conditionalObject: {fileID: 0}
-  conditionalText: {fileID: 0}
-  disabledObject: {fileID: 6804386601801325241}
-  disabledText: {fileID: 7210881350466375461}
-  effectOverlay: {fileID: 0}
-  conditionInfoKey: 
 --- !u!114 &2407371756781893143
 MonoBehaviour:
   m_ObjectHideFlags: 0
