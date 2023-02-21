@@ -1555,8 +1555,8 @@ GameObject:
   m_Component:
   - component: {fileID: 3338016348186742454}
   - component: {fileID: 1938380871693389806}
-  - component: {fileID: 6301571627926572881}
   - component: {fileID: 2361997114367875546}
+  - component: {fileID: 3953915385808420717}
   m_Layer: 5
   m_Name: UI_PetSummonResultScreen
   m_TagString: Untagged
@@ -1604,52 +1604,6 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &6301571627926572881
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3338016348186742455}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a28e3b7d9b0c4570ba57f53b2a47ec1f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tutorialTargets: []
-  tutorialActions: 
-  runeImage: {fileID: 0}
-  runeText: {fileID: 0}
-  successText: {fileID: 0}
-  failText: {fileID: 0}
-  currentLevelText: {fileID: 0}
-  nextLevelText: {fileID: 0}
-  skillNameText: {fileID: 0}
-  skillDescText: {fileID: 0}
-  statTextList:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  addStatTextList:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  skill: {fileID: 0}
-  stats:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  cpText: {fileID: 0}
-  animator: {fileID: 0}
-  optionTagBg: {fileID: 0}
-  optionTagImages:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  optionTagData: {fileID: 11400000, guid: 14bb93de0da9b0540b01c055544f1320, type: 2}
-  closeButton: {fileID: 8027277538586212062}
-  speechBubble: {fileID: 0}
 --- !u!95 &2361997114367875546
 Animator:
   serializedVersion: 4
@@ -1670,6 +1624,24 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &3953915385808420717
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3338016348186742455}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51e1ae05fbe34f2ba1e45aa18f6fad84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tutorialTargets: []
+  tutorialActions: 
+  petNameText: {fileID: 5379816817523686369}
+  petGradeText: {fileID: 905448852502384607}
+  contentText: {fileID: 1496631687657452784}
+  petSkeletonGraphic: {fileID: 8457953949223492571}
 --- !u!1 &3454400752708770917
 GameObject:
   m_ObjectHideFlags: 0
@@ -2421,8 +2393,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
-  m_RaycastTarget: 1
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
