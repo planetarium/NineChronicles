@@ -13,7 +13,9 @@ namespace Lib9c.Tests.Action
     using MessagePack;
     using MessagePack.Resolvers;
     using Nekoyume.Action;
+    using Nekoyume.Helper;
     using Nekoyume.Model.Item;
+    using Nekoyume.Model.Market;
     using Nekoyume.Model.State;
     using Xunit;
 
@@ -83,6 +85,7 @@ namespace Lib9c.Tests.Action
         [InlineData(typeof(ClaimRaidReward))]
         [InlineData(typeof(ClaimWordBossKillReward))]
         [InlineData(typeof(PrepareRewardAssets))]
+        [InlineData(typeof(RegisterProduct))]
         public void Serialize_With_MessagePack(Type actionType)
         {
             var action = GetAction(actionType);
@@ -311,6 +314,27 @@ namespace Lib9c.Tests.Action
                     Assets = new List<FungibleAssetValue>
                     {
                         _currency * 100,
+                    },
+                },
+                RegisterProduct _ => new RegisterProduct
+                {
+                    RegisterInfos = new List<IRegisterInfo>
+                    {
+                        new RegisterInfo
+                        {
+                            AvatarAddress = new PrivateKey().ToAddress(),
+                            ItemCount = 1,
+                            Price = 1 * _currency,
+                            TradableId = Guid.NewGuid(),
+                            Type = ProductType.Fungible,
+                        },
+                        new AssetInfo
+                        {
+                            AvatarAddress = new PrivateKey().ToAddress(),
+                            Price = 1 * _currency,
+                            Asset = 1 * RuneHelper.StakeRune,
+                            Type = ProductType.FungibleAssetValue,
+                        },
                     },
                 },
                 _ => throw new InvalidCastException(),

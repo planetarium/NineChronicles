@@ -65,6 +65,8 @@ namespace Lib9c.Tests.Action
         [InlineData(typeof(InvalidClaimException))]
         [InlineData(typeof(RequiredBlockIntervalException))]
         [InlineData(typeof(ActionUnavailableException))]
+        [InlineData(typeof(InvalidCurrencyException))]
+        [InlineData(typeof(InvalidProductTypeException))]
         public void Exception_Serializable(Type excType)
         {
             if (Activator.CreateInstance(excType, "for testing") is Exception exc)
