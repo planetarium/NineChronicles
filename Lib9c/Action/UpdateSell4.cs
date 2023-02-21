@@ -9,7 +9,7 @@ using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
-using Nekoyume.BlockChain.Policy;
+
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -26,7 +26,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("update_sell4")]
-    [ActionObsolete(BlockPolicySource.V100351ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100351ObsoleteIndex)]
     public class UpdateSell4 : GameAction, IUpdateSellV2
     {
         private const int UpdateCapacity = 100;
@@ -64,7 +64,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            CheckObsolete(BlockPolicySource.V100351ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100351ObsoleteIndex, context);
 
             if (updateSellInfos.Count() > UpdateCapacity)
             {

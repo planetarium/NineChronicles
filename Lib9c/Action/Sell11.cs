@@ -8,7 +8,7 @@ using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
-using Nekoyume.BlockChain.Policy;
+
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -22,7 +22,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("sell11")]
-    [ActionObsolete(BlockPolicySource.V100351ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100351ObsoleteIndex)]
     public class Sell11 : GameAction, ISellV2
     {
         public Address sellerAvatarAddress;
@@ -85,7 +85,7 @@ namespace Nekoyume.Action
                     .SetState(sellerAvatarAddress, MarkChanged);
             }
 
-            CheckObsolete(BlockPolicySource.V100351ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100351ObsoleteIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, sellerAvatarAddress);
 
             var sw = new Stopwatch();

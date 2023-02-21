@@ -8,7 +8,7 @@ using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
-using Nekoyume.BlockChain.Policy;
+
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
@@ -25,7 +25,7 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1495
     /// </summary>
     [Serializable]
-    [ActionObsolete(BlockPolicySource.V100360ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100360ObsoleteIndex)]
     [ActionType("hack_and_slash19")]
     public class HackAndSlash19 : GameAction, IHackAndSlashV9
     {
@@ -97,7 +97,7 @@ namespace Nekoyume.Action
                 return context.PreviousStates;
             }
 
-            CheckObsolete(BlockPolicySource.V100360ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100360ObsoleteIndex, context);
 
             return Execute(
                 context.PreviousStates,
@@ -356,7 +356,7 @@ namespace Nekoyume.Action
 
                 // This conditional logic is same as written in the
                 // MimisbrunnrBattle("mimisbrunnr_battle10") action.
-                if (blockIndex < BlockPolicySource.V100310ExecutedBlockIndex)
+                if (blockIndex < ActionObsoleteConfig.V100310ExecutedBlockIndex)
                 {
                     var player = simulator.Player;
                     foreach (var key in player.monsterMapForBeforeV100310.Keys)

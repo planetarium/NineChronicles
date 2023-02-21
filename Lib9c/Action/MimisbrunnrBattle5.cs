@@ -17,7 +17,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100083ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100083ObsoleteIndex)]
     [ActionType("mimisbrunnr_battle5")]
     public class MimisbrunnrBattle5 : GameAction, IMimisbrunnrBattleV2
     {
@@ -78,7 +78,7 @@ namespace Nekoyume.Action
                 return states.SetState(ctx.Signer, MarkChanged);
             }
 
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100083ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100083ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 

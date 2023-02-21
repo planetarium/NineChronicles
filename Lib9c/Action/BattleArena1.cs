@@ -25,7 +25,7 @@ namespace Nekoyume.Action
     /// Introduced at https://github.com/planetarium/lib9c/pull/1156
     /// </summary>
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100290ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100290ObsoleteIndex)]
     [ActionType("battle_arena")]
     public class BattleArena1 : GameAction, IBattleArenaV1
     {
@@ -91,7 +91,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100290ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100290ObsoleteIndex, context);
 
             var addressesHex =
                 GetSignerAndOtherAddressesHex(context, myAvatarAddress, enemyAvatarAddress);

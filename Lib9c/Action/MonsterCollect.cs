@@ -6,7 +6,7 @@ using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
-using Nekoyume.BlockChain.Policy;
+
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
@@ -20,7 +20,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("monster_collect3")]
-    [ActionObsolete(BlockPolicySource.V100220ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100220ObsoleteIndex)]
     public class MonsterCollect : GameAction, IMonsterCollectV2
     {
         public int level;

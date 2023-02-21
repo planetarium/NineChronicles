@@ -25,7 +25,7 @@ namespace Nekoyume.Action
     public class MimisbrunnrBattle8 : GameAction, IMimisbrunnrBattleV4
     {
         private const long ObsoletedBlockIndex =
-            BlockChain.Policy.BlockPolicySource.V100270ObsoleteIndex;
+            ActionObsoleteConfig.V100270ObsoleteIndex;
 
         public List<Guid> costumes;
         public List<Guid> equipments;

@@ -19,7 +19,7 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1194
     /// </summary>
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100310ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100310ObsoleteIndex)]
     [ActionType("rapid_combination7")]
     public class RapidCombination7 : GameAction, IRapidCombinationV1
     {
@@ -51,7 +51,7 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, MarkChanged)
                     .SetState(slotAddress, MarkChanged);
             }
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100310ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100310ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 

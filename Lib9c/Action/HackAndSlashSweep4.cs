@@ -21,7 +21,7 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/1176
     /// </summary>
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100300ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100300ObsoleteIndex)]
     [ActionType("hack_and_slash_sweep4")]
     public class HackAndSlashSweep4 : GameAction, IHackAndSlashSweepV2
     {
@@ -81,7 +81,7 @@ namespace Nekoyume.Action
                     .SetState(context.Signer, MarkChanged);
             }
 
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100300ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100300ObsoleteIndex, context);
 
             var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
             var arenaSheetState = states.GetState(arenaSheetAddress);

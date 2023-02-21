@@ -14,7 +14,7 @@ using Nekoyume.Model.State;
 using Libplanet.Assets;
 using Libplanet.Consensus;
 using Libplanet.Tx;
-using Nekoyume.BlockChain.Policy;
+
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
 #else
@@ -132,7 +132,7 @@ namespace Nekoyume.Action
 
         protected bool UseV100291Sheets(long blockIndex)
         {
-            return blockIndex < BlockPolicySource.V100301ExecutedBlockIndex;
+            return blockIndex < ActionObsoleteConfig.V100301ExecutedBlockIndex;
         }
 
         protected void CheckActionAvailable(long startedIndex, IActionContext ctx)
