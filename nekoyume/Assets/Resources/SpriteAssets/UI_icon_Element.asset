@@ -72,9 +72,21 @@ MonoBehaviour:
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 5
-    m_Scale: 1
+    m_Scale: 2
     m_Name: icon_Goods_9
     m_HashCode: 281887298
+  - m_ElementType: 2
+    m_Unicode: 65534
+    m_GlyphIndex: 6
+    m_Scale: 2
+    m_Name: icon_Goods_10
+    m_HashCode: 712346554
+  - m_ElementType: 2
+    m_Unicode: 65534
+    m_GlyphIndex: 7
+    m_Scale: 2
+    m_Name: icon_Goods_11
+    m_HashCode: 712346555
   m_SpriteGlyphTable:
   - m_Index: 0
     m_Metrics:
@@ -158,17 +170,47 @@ MonoBehaviour:
       type: 3}
   - m_Index: 5
     m_Metrics:
-      m_Width: 35
-      m_Height: 35
+      m_Width: 40
+      m_Height: 45
       m_HorizontalBearingX: 0
-      m_HorizontalBearingY: 22
-      m_HorizontalAdvance: 38.7
+      m_HorizontalBearingY: 30
+      m_HorizontalAdvance: 40
     m_GlyphRect:
       m_X: 80
       m_Y: 38
-      m_Width: 33
-      m_Height: 37
-    m_Scale: 1.4
+      m_Width: 40
+      m_Height: 45
+    m_Scale: 1
+    m_AtlasIndex: 0
+    sprite: {fileID: -404947918, guid: c3d3e750461724962a8f87abbbf1aba0, type: 3}
+  - m_Index: 6
+    m_Metrics:
+      m_Width: 40
+      m_Height: 45
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 30
+      m_HorizontalAdvance: 40
+    m_GlyphRect:
+      m_X: 0
+      m_Y: 0
+      m_Width: 40
+      m_Height: 45
+    m_Scale: 1
+    m_AtlasIndex: 0
+    sprite: {fileID: -404947918, guid: c3d3e750461724962a8f87abbbf1aba0, type: 3}
+  - m_Index: 7
+    m_Metrics:
+      m_Width: 40
+      m_Height: 45
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 30
+      m_HorizontalAdvance: 40
+    m_GlyphRect:
+      m_X: 40
+      m_Y: 0
+      m_Width: 40
+      m_Height: 45
+    m_Scale: 1
     m_AtlasIndex: 0
     sprite: {fileID: -404947918, guid: c3d3e750461724962a8f87abbbf1aba0, type: 3}
   spriteInfoList: []
