@@ -96,7 +96,9 @@ namespace Nekoyume.UI.Module.Pet
                 ? $"<size=14>Lv.</size>{_petState.Level}/{maxLevel}"
                 : L10nManager.Localize("UI_NOT_POSSESSED");
             levelText.color = isOwn
-                ? Color.white
+                ? _petState.Level == maxLevel
+                    ? PetRenderingHelper.GetUIColor(PetRenderingHelper.MaxLevelText)
+                    : Color.white
                 : PetRenderingHelper.GetUIColor(PetRenderingHelper.NotOwnText);
             model.EquippedIcon.SubscribeTo(equippedIcon).AddTo(_disposables);
             model.HasNotification.Subscribe(b =>
