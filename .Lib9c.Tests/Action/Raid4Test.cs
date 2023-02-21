@@ -95,7 +95,15 @@ namespace Lib9c.Tests.Action
         {
             var blockIndex = _tableSheets.WorldBossListSheet.Values
                 .OrderBy(x => x.StartedBlockIndex)
-                .First()
+                .First(x =>
+                {
+                    if (exc == typeof(InsufficientBalanceException))
+                    {
+                        return ncgExist ? x.TicketPrice > 0 : x.EntranceFee > 0;
+                    }
+
+                    return true;
+                })
                 .StartedBlockIndex;
 
             var action = new Raid
@@ -559,6 +567,72 @@ namespace Lib9c.Tests.Action
             Assert.True(nextState.TryGetState(worldBossKillRewardRecordAddress, out List rawRewardInfo));
             var nextRewardInfo = new WorldBossKillRewardRecord(rawRewardInfo);
             Assert.True(nextRewardInfo[1]);
+        }
+
+        [Fact]
+        public void Execute_With_Free_Crystal_Fee()
+        {
+            var action = new Raid
+            {
+                AvatarAddress = _avatarAddress,
+                EquipmentIds = new List<Guid>(),
+                CostumeIds = new List<Guid>(),
+                FoodIds = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>(),
+                PayNcg = false,
+            };
+            Currency crystal = CrystalCalculator.CRYSTAL;
+
+            _sheets[nameof(WorldBossListSheet)] =
+                "id,boss_id,started_block_index,ended_block_index,fee,ticket_price,additional_ticket_price,max_purchase_count\r\n" +
+                "1,900002,0,100,0,1,1,40";
+
+            var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
+            IAccountStateDelta state = new State()
+                .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
+                .SetState(_agentAddress, new AgentState(_agentAddress).Serialize());
+
+            foreach (var (key, value) in _sheets)
+            {
+                state = state.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
+            }
+
+            var gameConfigState = new GameConfigState(_sheets[nameof(GameConfigSheet)]);
+            var avatarState = new AvatarState(
+                _avatarAddress,
+                _agentAddress,
+                0,
+                _tableSheets.GetAvatarSheets(),
+                gameConfigState,
+                default
+            );
+
+            for (int i = 0; i < 50; i++)
+            {
+                avatarState.worldInformation.ClearStage(1, i + 1, 0, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
+            }
+
+            state = state
+                .SetState(_avatarAddress, avatarState.SerializeV2())
+                .SetState(_avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
+                .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), avatarState.worldInformation.Serialize())
+                .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
+                .SetState(gameConfigState.address, gameConfigState.Serialize());
+
+            var blockIndex = Raid.RequiredInterval;
+            var randomSeed = 0;
+            var ctx = new ActionContext
+            {
+                BlockIndex = blockIndex,
+                PreviousStates = state,
+                Random = new TestRandom(randomSeed),
+                Rehearsal = false,
+                Signer = _agentAddress,
+            };
+
+            IAccountStateDelta nextState;
+            var exception = Record.Exception(() => nextState = action.Execute(ctx));
+            Assert.Null(exception);
         }
     }
 }
