@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Linq;
 using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
@@ -67,5 +68,28 @@ namespace Nekoyume
 
         public static Address GetRaiderListAddress(int raidId) =>
             Raid.Derive($"raider_list_{raidId}");
+
+        public static Address GetAvatarAddress(Address agentAddr, int index)
+        {
+            if (index < 0 ||
+                index >= Nekoyume.GameConfig.SlotCount)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(index),
+                    $"Index must be between 0 and {Nekoyume.GameConfig.SlotCount - 1}.");
+            }
+
+            return agentAddr.Derive(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    CreateAvatar.DeriveFormat,
+                    index
+                ));
+        }
+
+        public static bool IsContainedInAgent(Address agentAddr, Address avatarAddr) =>
+            Enumerable.Range(0, Nekoyume.GameConfig.SlotCount)
+                .Select(index => GetAvatarAddress(agentAddr, index))
+                .Contains(avatarAddr);
     }
 }
