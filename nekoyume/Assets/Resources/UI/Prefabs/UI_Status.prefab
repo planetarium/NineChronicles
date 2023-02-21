@@ -191,8 +191,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 40, y: 0}
-  m_SizeDelta: {x: 100, y: 0}
+  m_AnchoredPosition: {x: 43, y: 0.75}
+  m_SizeDelta: {x: 100, y: 1.5}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &222139448121323300
 CanvasRenderer:
@@ -257,7 +257,7 @@ MonoBehaviour:
   m_fontSizeMin: 10
   m_fontSizeMax: 14
   m_fontStyle: 1
-  m_HorizontalAlignment: 4
+  m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -1190,8 +1190,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 40, y: 0}
-  m_SizeDelta: {x: 100, y: 0}
+  m_AnchoredPosition: {x: 43, y: 0.74999964}
+  m_SizeDelta: {x: 100, y: 1.4999993}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &3735975942087747864
 CanvasRenderer:
@@ -1256,7 +1256,7 @@ MonoBehaviour:
   m_fontSizeMin: 10
   m_fontSizeMax: 14
   m_fontStyle: 1
-  m_HorizontalAlignment: 4
+  m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -1617,8 +1617,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 14, y: 0}
-  m_SizeDelta: {x: 28, y: 0}
+  m_AnchoredPosition: {x: 14, y: 0.75}
+  m_SizeDelta: {x: 28, y: 1.5}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &7693236626155618917
 CanvasRenderer:
@@ -1788,8 +1788,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 20, y: 0}
+  m_SizeDelta: {x: -20, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &7861919807460005189
 GameObject:
@@ -1827,8 +1827,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 14, y: 0}
-  m_SizeDelta: {x: 28, y: 0}
+  m_AnchoredPosition: {x: 14, y: 0.7499998}
+  m_SizeDelta: {x: 28, y: 1.5000004}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &3071338026593523010
 CanvasRenderer:
@@ -2191,12 +2191,12 @@ PrefabInstance:
     - target: {fileID: 1211269136293566309, guid: bfcfded41fec54118a92f2b1664737fb,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 3
+      value: 3.7
       objectReference: {fileID: 0}
     - target: {fileID: 1211269136293566309, guid: bfcfded41fec54118a92f2b1664737fb,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -67
+      value: -69
       objectReference: {fileID: 0}
     - target: {fileID: 1211269136293566309, guid: bfcfded41fec54118a92f2b1664737fb,
         type: 3}
@@ -2487,12 +2487,12 @@ PrefabInstance:
     - target: {fileID: 1220910429853348130, guid: 3f592bbdd28ed9047860b8c5f43ab585,
         type: 3}
       propertyPath: m_CellSize.x
-      value: 25
+      value: 22
       objectReference: {fileID: 0}
     - target: {fileID: 1220910429853348130, guid: 3f592bbdd28ed9047860b8c5f43ab585,
         type: 3}
       propertyPath: m_CellSize.y
-      value: 25
+      value: 22
       objectReference: {fileID: 0}
     - target: {fileID: 1350201987709004758, guid: 3f592bbdd28ed9047860b8c5f43ab585,
         type: 3}
@@ -3167,7 +3167,7 @@ PrefabInstance:
     - target: {fileID: 5467385540938619002, guid: 3f592bbdd28ed9047860b8c5f43ab585,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 150
+      value: 139.7
       objectReference: {fileID: 0}
     - target: {fileID: 5467385540938619002, guid: 3f592bbdd28ed9047860b8c5f43ab585,
         type: 3}
@@ -3212,7 +3212,7 @@ PrefabInstance:
     - target: {fileID: 5467385540938619002, guid: 3f592bbdd28ed9047860b8c5f43ab585,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 80
+      value: 79
       objectReference: {fileID: 0}
     - target: {fileID: 5467385540938619002, guid: 3f592bbdd28ed9047860b8c5f43ab585,
         type: 3}

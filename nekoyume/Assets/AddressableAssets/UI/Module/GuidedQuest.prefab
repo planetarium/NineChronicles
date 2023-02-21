@@ -137,7 +137,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playAtStart: 1
   startDelay: 0
-  duration: 0.5
+  duration: 0.35
   tweenType: 0
   ease: 27
   completeMethod: 
@@ -402,6 +402,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7750695606491973167, guid: b7da2e478063a4ce983620ce161c9005,
+        type: 3}
+      propertyPath: duration
+      value: 0.35
       objectReference: {fileID: 0}
     - target: {fileID: 8854218329090599353, guid: b7da2e478063a4ce983620ce161c9005,
         type: 3}
@@ -688,6 +693,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7750695606491973167, guid: b7da2e478063a4ce983620ce161c9005,
+        type: 3}
+      propertyPath: duration
+      value: 0.35
       objectReference: {fileID: 0}
     - target: {fileID: 8242972884046114005, guid: b7da2e478063a4ce983620ce161c9005,
         type: 3}
@@ -1013,6 +1023,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7750695606491973167, guid: b7da2e478063a4ce983620ce161c9005,
+        type: 3}
+      propertyPath: duration
+      value: 0.35
+      objectReference: {fileID: 0}
     - target: {fileID: 8242972884046114005, guid: b7da2e478063a4ce983620ce161c9005,
         type: 3}
       propertyPath: m_IsActive
@@ -1303,6 +1318,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7750695606491973167, guid: b7da2e478063a4ce983620ce161c9005,
+        type: 3}
+      propertyPath: duration
+      value: 0.35
       objectReference: {fileID: 0}
     - target: {fileID: 8242972884046114005, guid: b7da2e478063a4ce983620ce161c9005,
         type: 3}
