@@ -6,7 +6,7 @@ using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
-using Nekoyume.BlockChain.Policy;
+
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
@@ -22,7 +22,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("claim_monster_collection_reward3")]
-    [ActionObsolete(BlockPolicySource.V100220ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100220ObsoleteIndex)]
     public class ClaimMonsterCollectionReward : GameAction, IClaimMonsterCollectionRewardV2
     {
         public const long MonsterCollectionRewardEndBlockIndex = 4_481_909;

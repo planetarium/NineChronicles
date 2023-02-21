@@ -384,7 +384,7 @@
 
             Assert.Throws<ActionObsoletedException>(() => action.Execute(new ActionContext
             {
-                BlockIndex = BlockPolicySource.V100320ObsoleteIndex + 1,
+                BlockIndex = ActionObsoleteConfig.V100320ObsoleteIndex + 1,
                 PreviousStates = _initialState,
                 Signer = _agentAddress,
             }));

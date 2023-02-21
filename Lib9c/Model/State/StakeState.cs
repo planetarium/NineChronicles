@@ -6,7 +6,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Action;
-using Nekoyume.BlockChain.Policy;
+
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Model.State
@@ -109,7 +109,7 @@ namespace Nekoyume.Model.State
 
         public bool IsClaimable(long blockIndex)
         {
-            if (blockIndex >= BlockPolicySource.V100290ObsoleteIndex)
+            if (blockIndex >= ActionObsoleteConfig.V100290ObsoleteIndex)
             {
                 return CalculateAccumulatedRewards(blockIndex) > 0;
             }

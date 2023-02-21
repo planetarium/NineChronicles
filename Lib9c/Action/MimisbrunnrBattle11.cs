@@ -8,7 +8,7 @@ using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
-using Nekoyume.BlockChain.Policy;
+
 using Nekoyume.Extensions;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
@@ -28,7 +28,7 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1495
     /// </summary>
     [Serializable]
-    [ActionObsolete(BlockPolicySource.V100360ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100360ObsoleteIndex)]
     [ActionType("mimisbrunnr_battle11")]
     public class MimisbrunnrBattle11 : GameAction, IMimisbrunnrBattleV5
     {
@@ -88,7 +88,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            CheckObsolete(BlockPolicySource.V100360ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100360ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             var sw = new Stopwatch();
@@ -398,7 +398,7 @@ namespace Nekoyume.Action
 
             // This conditional logic is same as written in the
             // HackAndSlash("hack_and_slash18") action.
-            if (context.BlockIndex < BlockPolicySource.V100310ExecutedBlockIndex)
+            if (context.BlockIndex < ActionObsoleteConfig.V100310ExecutedBlockIndex)
             {
                 var player = simulator.Player;
                 foreach (var key in player.monsterMapForBeforeV100310.Keys)

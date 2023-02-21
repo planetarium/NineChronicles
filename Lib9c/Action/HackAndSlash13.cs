@@ -27,7 +27,7 @@ namespace Nekoyume.Action
     public class HackAndSlash13 : GameAction, IHackAndSlashV6
     {
         private const long ObsoletedBlockIndex =
-            BlockChain.Policy.BlockPolicySource.V100270ObsoleteIndex;
+            ActionObsoleteConfig.V100270ObsoleteIndex;
 
         public List<Guid> costumes;
         public List<Guid> equipments;

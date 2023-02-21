@@ -7,7 +7,7 @@ using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
-using Nekoyume.BlockChain.Policy;
+
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Stat;
@@ -18,7 +18,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockPolicySource.V100086ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100086ObsoleteIndex)]
     [ActionType("combination_equipment8")]
     public class CombinationEquipment8 : GameAction, ICombinationEquipmentV1
     {
@@ -84,7 +84,7 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, context.Signer, BlacksmithAddress);
             }
 
-            CheckObsolete(BlockPolicySource.V100086ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100086ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 

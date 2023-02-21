@@ -25,7 +25,7 @@ using Lib9c.DevExtensions.Model;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
     [ActionType("create_avatar")]
     public class CreateAvatar0 : GameAction, ICreateAvatarV1
     {
@@ -92,7 +92,7 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, GoldCurrencyState.Address, context.Signer);
             }
 
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 

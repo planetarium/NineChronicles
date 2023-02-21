@@ -7,7 +7,7 @@ using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
-using Nekoyume.BlockChain.Policy;
+
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -16,7 +16,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockPolicySource.V100083ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100083ObsoleteIndex)]
     [ActionType("rapid_combination5")]
     public class RapidCombination5 : GameAction, IRapidCombinationV1
     {
@@ -76,7 +76,7 @@ namespace Nekoyume.Action
                     .SetState(slotAddress, MarkChanged);
             }
 
-            CheckObsolete(BlockPolicySource.V100083ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100083ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
