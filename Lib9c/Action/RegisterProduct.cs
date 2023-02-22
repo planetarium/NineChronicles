@@ -45,7 +45,7 @@ namespace Nekoyume.Action
             if (!states.TryGetAvatarStateV2(context.Signer, avatarAddress, out var avatarState,
                     out var migrationRequired))
             {
-                throw new FailedLoadStateException("");
+                throw new FailedLoadStateException("failed to load avatar state.");
             }
 
             if (!avatarState.worldInformation.IsStageCleared(
