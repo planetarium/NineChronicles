@@ -276,9 +276,7 @@ namespace Nekoyume.BlockChain.Policy
             ImmutableHashSet<Address> allAuthorizedMiners)
         {
             // Avoid NRE when genesis block appended
-            // Here, index is the index of a prospective block that transaction
-            // will be included.
-            long index = blockChain.Count > 0 ? blockChain.Tip.Index : 0;
+            long index = blockChain.Count > 0 ? blockChain.Tip.Index + 1: 0;
 
             if (((ITransaction)transaction).CustomActions?.Count > 1)
             {

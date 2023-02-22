@@ -18,6 +18,25 @@ namespace Nekoyume.BlockChain.Policy
     // Collection of helper methods not directly used as a pluggable component.
     public partial class BlockPolicySource
     {
+        /// <summary>
+        /// <para>
+        /// Checks if <paramref name="transaction"/> includes any <see cref="IAction"/> that is
+        /// obsolete according to <see cref="ActionObsoleteAttribute"/> attached.
+        /// </para>
+        /// <para>
+        /// Due to a bug, an <see cref="IAction"/> is considered obsolete starting from
+        /// <see cref="ActionObsoleteAttribute.ObsoleteIndex"/> + 2.
+        /// </para>
+        /// </summary>
+        /// <param name="transaction">The <see cref="Transaction{T}"/> to consider.</param>
+        /// <param name="actionTypeLoader">The loader to use <see cref="IAction"/>s included
+        /// in <paramref name="transaction"/>.</param>
+        /// <param name="blockIndex">Either the index of a prospective block to include
+        /// <paramref name="transaction"/> or the index of a <see cref="Block{T}"/> containing
+        /// <paramref name="transaction"/>.</param>
+        /// <returns><see langword="true"/> if <paramref name="transaction"/> includes any
+        /// <see cref="IAction"/> that is obsolete, <see langword="false"/> otherwise.</returns>
+        /// <seealso cref="ActionObsoleteAttribute"/>
         internal static bool IsObsolete(
             ITransaction transaction,
             IActionTypeLoader actionTypeLoader,
@@ -30,6 +49,9 @@ namespace Nekoyume.BlockChain.Policy
             }
 
             var types = actionTypeLoader.Load(new ActionTypeLoaderContext(blockIndex));
+
+            // Comparison with ObsoleteIndex + 2 is intended to have backward
+            // compatibility with a bugged original implementation.
             return customActions.Any(
                 ca => ca is Dictionary dictionary
                     && dictionary.TryGetValue((Text)"type_id", out IValue typeIdValue)
@@ -38,7 +60,7 @@ namespace Nekoyume.BlockChain.Policy
                     && actionType.IsDefined(typeof(ActionObsoleteAttribute), false)
                     && actionType.GetCustomAttributes()
                         .OfType<ActionObsoleteAttribute>()
-                        .FirstOrDefault()?.ObsoleteIndex < blockIndex
+                        .FirstOrDefault()?.ObsoleteIndex + 2 <= blockIndex
             );
         }
 
