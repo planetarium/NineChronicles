@@ -113,7 +113,7 @@ namespace Nekoyume.UI
                 L10nManager.Localize(
                     $"UI_ITEM_GRADE_{TableSheets.Instance.PetSheet[petState.PetId].Grade}");
             var option = TableSheets.Instance.PetOptionSheet[petState.PetId].LevelOptionMap[petState.Level];
-            contentText.text = L10nManager.Localize($"PET_DESCRIPTION_{option.OptionType}",option.OptionValue);
+            contentText.text = L10nManager.Localize($"PET_DESCRIPTION_{option.OptionType}", option.OptionValue);
             petSkeletonGraphic.skeletonDataAsset =
                 PetRenderingHelper.GetPetSkeletonData(petState.PetId);
             petSkeletonGraphic.Initialize(true);
