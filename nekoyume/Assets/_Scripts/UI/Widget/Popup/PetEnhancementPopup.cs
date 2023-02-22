@@ -60,10 +60,16 @@ namespace Nekoyume.UI
         private TextMeshProUGUI soulStoneCostText;
 
         [SerializeField]
+        private GameObject soulStoneNotEnoughObject;
+
+        [SerializeField]
         private TextMeshProUGUI ncgCostText;
 
         [SerializeField]
         private GameObject ncgCostObject;
+
+        [SerializeField]
+        private GameObject ncgNotEnoughObject;
 
         [SerializeField]
         private GameObject costObject;
@@ -194,6 +200,8 @@ namespace Nekoyume.UI
             submitButton.interactable =
                 States.Instance.GoldBalanceState.Gold >= ncgCost &&
                 States.Instance.AvatarBalance[soulStoneCost.Currency.Ticker] >= soulStoneCost;
+            soulStoneNotEnoughObject.SetActive(!submitButton.interactable);
+            ncgNotEnoughObject.SetActive(!submitButton.interactable);
             buttonDisableObject.SetActive(!submitButton.interactable);
         }
 

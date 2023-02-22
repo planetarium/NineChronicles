@@ -1680,8 +1680,10 @@ MonoBehaviour:
   slider: {fileID: 3111707522993641168}
   requiredSoulStoneImage: {fileID: 7248405833727839877}
   soulStoneCostText: {fileID: 5796532869638494239}
+  soulStoneNotEnoughObject: {fileID: 1701440025300543949}
   ncgCostText: {fileID: 1560145615393105806}
   ncgCostObject: {fileID: 1456253940721451544}
+  ncgNotEnoughObject: {fileID: 5929852528947992156}
   costObject: {fileID: 6628876996333222102}
 --- !u!1 &1897490599634850096
 GameObject:
