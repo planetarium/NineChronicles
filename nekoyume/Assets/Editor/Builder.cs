@@ -20,6 +20,8 @@ namespace Editor
         [MenuItem("Build/Standalone/Android Arm64")]
         public static void BuildAndroidStandalone()
         {
+            EditorUserBuildSettings.il2CppCodeGeneration = UnityEditor.Build.Il2CppCodeGeneration.OptimizeSize;
+            EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Android, BuildTarget.Android);
             Debug.Log("Build Android");
             BuildOptions options = BuildOptions.None;
             Build(BuildTarget.Android, options, "Android", false);
