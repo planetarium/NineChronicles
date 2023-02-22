@@ -170,6 +170,8 @@ namespace Nekoyume.Game.Avatar
                         }
                     }
                 }
+
+                _cachedWeaponVFX?.SetActive(!_isActiveFullCostume);
             }
 
 
