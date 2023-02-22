@@ -11,6 +11,7 @@ namespace Nekoyume.Helper
         public const string NotOwnSlot = "NotPossesedSlot";
         public const string SummonableText = "SummonableText";
         public const string LevelUpText = "LevelUpText";
+        public const string MaxLevelText = "MaxLevelText";
 
         private const string PetCardSpriteScriptableObjectPath = "ScriptableObject/PetRenderingData";
         private static readonly Dictionary<int, PetRenderingScriptableObject.PetRenderingData> PetRenderingData;

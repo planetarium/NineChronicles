@@ -86,7 +86,6 @@ namespace Nekoyume.UI.Module.Pet
             petImage.color = isOwn
                 ? Color.white
                 : PetRenderingHelper.GetUIColor(PetRenderingHelper.NotOwnSlot);
-            petInfoText.text = L10nManager.Localize($"PET_NAME_{model.PetRow.Id}");
             var maxLevel = TableSheets.Instance.PetCostSheet[model.PetRow.Id]
                 .Cost
                 .OrderBy(data => data.Level)
@@ -96,7 +95,9 @@ namespace Nekoyume.UI.Module.Pet
                 ? $"<size=14>Lv.</size>{_petState.Level}/{maxLevel}"
                 : L10nManager.Localize("UI_NOT_POSSESSED");
             levelText.color = isOwn
-                ? Color.white
+                ? _petState.Level == maxLevel
+                    ? PetRenderingHelper.GetUIColor(PetRenderingHelper.MaxLevelText)
+                    : Color.white
                 : PetRenderingHelper.GetUIColor(PetRenderingHelper.NotOwnText);
             model.EquippedIcon.SubscribeTo(equippedIcon).AddTo(_disposables);
             model.HasNotification.Subscribe(b =>
@@ -113,6 +114,9 @@ namespace Nekoyume.UI.Module.Pet
                     petInfoText.color = isLoading
                         ? PetRenderingHelper.GetUIColor(PetRenderingHelper.LevelUpText)
                         : Color.white;
+                    petInfoText.text = isLoading
+                        ? L10nManager.Localize(isOwn ? "UI_LEVELUP_IN_PROGRESS" : "UI_SUMMONING_IN_PROGRESS")
+                        : L10nManager.Localize($"PET_NAME_{model.PetRow.Id}");
                 })
                 .AddTo(_disposables);
         }
