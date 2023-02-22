@@ -5,6 +5,7 @@ using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
 using Nekoyume.TableData.Event;
 using Nekoyume.TableData.GrandFinale;
+using Nekoyume.TableData.Pet;
 
 namespace Nekoyume.Game
 {
@@ -211,6 +212,9 @@ namespace Nekoyume.Game
         public RuneListSheet RuneListSheet { get; private set; }
         public RuneCostSheet RuneCostSheet { get; private set; }
         public RuneOptionSheet RuneOptionSheet { get; private set; }
+        public PetSheet PetSheet { get; private set; }
+        public PetCostSheet PetCostSheet { get; private set; }
+        public PetOptionSheet PetOptionSheet { get; private set; }
 
         public void ItemSheetInitialize()
         {

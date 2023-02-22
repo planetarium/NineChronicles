@@ -443,45 +443,18 @@ namespace Nekoyume.UI
 
         private void OnClickEquipmentAction(SubRecipeView.RecipeInfo recipeInfo)
         {
-            // NOTE: Is these lines necessary?
-            // var requirementSheet = TableSheets.Instance.ItemRequirementSheet;
-            // var recipeSheet = TableSheets.Instance.EquipmentItemRecipeSheet;
-            // if (!recipeSheet.TryGetValue(recipeInfo.RecipeId, out var recipeRow))
-            // {
-            //     return;
-            // }
-            //
-            // var resultItemRow = recipeRow.GetResultEquipmentItemRow();
-            // if (!requirementSheet.TryGetValue(resultItemRow.Id, out _))
-            // {
-            //     CombinationEquipmentAction(recipeInfo);
-            //     return;
-            // }
-
-            CombinationEquipmentAction(recipeInfo);
+            Find<PetSelectionPopup>().Show(petId =>
+            {
+                CombinationEquipmentAction(recipeInfo, petId);
+            });
         }
 
         private void OnClickConsumableAction(SubRecipeView.RecipeInfo recipeInfo)
         {
-            // NOTE: Is these lines necessary?
-            // var requirementSheet = TableSheets.Instance.ItemRequirementSheet;
-            // var recipeSheet = TableSheets.Instance.ConsumableItemRecipeSheet;
-            // if (!recipeSheet.TryGetValue(recipeInfo.RecipeId, out var recipeRow))
-            // {
-            //     return;
-            // }
-            //
-            // var resultItemRow = recipeRow.GetResultConsumableItemRow();
-            // if (!requirementSheet.TryGetValue(resultItemRow.Id, out _))
-            // {
-            //     CombinationConsumableAction(recipeInfo);
-            //     return;
-            // }
-
             CombinationConsumableAction(recipeInfo);
         }
 
-        private void CombinationEquipmentAction(SubRecipeView.RecipeInfo recipeInfo)
+        private void CombinationEquipmentAction(SubRecipeView.RecipeInfo recipeInfo, int? petId)
         {
             if (!equipmentSubRecipeView.CheckSubmittable(
                     out var errorMessage,
@@ -513,6 +486,9 @@ namespace Nekoyume.UI
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             if (insufficientMaterials.Any())
             {
+                var petState = States.Instance.PetStates
+                    .GetPetState(petId.HasValue ? petId.Value : default);
+
                 Find<ReplaceMaterialPopup>().Show(insufficientMaterials,
                     () =>
                     {
@@ -541,10 +517,12 @@ namespace Nekoyume.UI
                                 recipeInfo,
                                 slotIndex,
                                 true,
-                                false)
+                                false,
+                                petId)
                             .Subscribe();
                         StartCoroutine(CoCombineNPCAnimation(equipment, requiredBlockIndex));
-                    });
+                    },
+                    petState);
             }
             else
             {
@@ -560,7 +538,8 @@ namespace Nekoyume.UI
                         recipeInfo,
                         slotIndex,
                         false,
-                        false)
+                        false,
+                        petId)
                     .Subscribe();
                 StartCoroutine(CoCombineNPCAnimation(equipment, requiredBlockIndex));
             }

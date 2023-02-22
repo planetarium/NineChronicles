@@ -375,7 +375,7 @@ namespace Nekoyume.Helper
 
         public static CommandLineOptions Load(string localPath)
         {
-            var options = CommandLineParser.GetCommandLineOptions();
+            var options = CommandLineParser.GetCommandLineOptions<CommandLineOptions>();
             if (options != null && !options.Empty)
             {
                 Debug.Log($"Get options from commandline.");
@@ -405,7 +405,7 @@ namespace Nekoyume.Helper
             return new CommandLineOptions();
         }
 
-        private class StringEnumerableConverter : JsonConverter<IEnumerable<string>>
+        public class StringEnumerableConverter : JsonConverter<IEnumerable<string>>
         {
             public override IEnumerable<string> Read(
                 ref Utf8JsonReader reader,
@@ -457,17 +457,17 @@ namespace Nekoyume.Helper
 
     public static class CommandLineParser
     {
-        public static CommandLineOptions GetCommandLineOptions()
+        public static T GetCommandLineOptions<T>() where T : class
         {
             string[] args = Environment.GetCommandLineArgs();
 
             var parser = new Parser(with => with.IgnoreUnknownArguments = true);
 
-            ParserResult<CommandLineOptions> result = parser.ParseArguments<CommandLineOptions>(args);
+            ParserResult<T> result = parser.ParseArguments<T>(args);
 
             if (result.Tag == ParserResultType.Parsed)
             {
-                return ((Parsed<CommandLineOptions>)result).Value;
+                return ((Parsed<T>)result).Value;
             }
 
             result.WithNotParsed(

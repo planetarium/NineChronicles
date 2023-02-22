@@ -1,10 +1,8 @@
 using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
 using Bencodex.Types;
@@ -15,10 +13,8 @@ using Libplanet.Assets;
 using LruCacheNet;
 using MessagePack;
 using MessagePack.Resolvers;
-using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
-using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Notice;
 using Nekoyume.Game.VFX;
@@ -28,15 +24,17 @@ using Nekoyume.Model.State;
 using Nekoyume.Pattern;
 using Nekoyume.State;
 using Nekoyume.UI;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module.WorldBoss;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
 using UnityEngine.Playables;
 using Menu = Nekoyume.UI.Menu;
+using Random = UnityEngine.Random;
 
 namespace Nekoyume.Game
 {
-    using Nekoyume.GraphQL;
+    using GraphQL;
     using UniRx;
 
     [RequireComponent(typeof(Agent), typeof(RPCAgent))]
@@ -66,6 +64,8 @@ namespace Nekoyume.Game
 
         public Analyzer Analyzer { get; private set; }
 
+        public Dcc Dcc { get; private set; }
+
         public Stage Stage => stage;
         public Arena Arena => arena;
         public RaidStage RaidStage => raidStage;
@@ -80,6 +80,8 @@ namespace Nekoyume.Game
         public bool IsInitialized { get; private set; }
         public bool IsInWorld { get; set; }
 
+        public int? SavedPetId { get; set; }
+
         public Prologue Prologue => prologue;
 
         public const string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
@@ -88,6 +90,7 @@ namespace Nekoyume.Game
         public NineChroniclesAPIClient RpcClient => _rpcClient;
 
         public MarketServiceClient MarketServiceClient;
+        public Url URL { get; private set; }
 
         public readonly LruCache<Address, IValue> CachedStates = new LruCache<Address, IValue>();
 
@@ -111,6 +114,9 @@ namespace Nekoyume.Game
         private static readonly string CommandLineOptionsJsonPath =
             Path.Combine(Application.streamingAssetsPath, "clo.json");
 
+        private static readonly string UrlJsonPath =
+            Path.Combine(Application.streamingAssetsPath, "url.json");
+
         #region Mono & Initialization
 
         protected override void Awake()
@@ -124,6 +130,7 @@ namespace Nekoyume.Game
             _options = CommandLineOptions.Load(
                 CommandLineOptionsJsonPath
             );
+            URL = Url.Load(UrlJsonPath);
 
             Debug.Log("[Game] Awake() CommandLineOptions loaded");
             Debug.Log($"APV: {_options.AppProtocolVersion}");
@@ -225,7 +232,20 @@ namespace Nekoyume.Game
             Stage.Initialize();
             Arena.Initialize();
             RaidStage.Initialize();
+            StartCoroutine(RequestManager.instance.GetJson(URL.DccAvatars, (json) =>
+            {
+                var responseData = DccAvatars.FromJson(json);
+                Dcc = new Dcc(responseData.Avatars);
+            }));
 
+            Event.OnUpdateAddresses.AsObservable().Subscribe(_ =>
+            {
+                var petList = States.Instance.PetStates.GetPetStatesAll()
+                    .Where(petState => petState != null)
+                    .Select(petState => petState.PetId)
+                    .ToList();
+                SavedPetId = !petList.Any() ? null : petList[Random.Range(0, petList.Count)];
+            }).AddTo(gameObject);
 
             Widget.Find<VersionSystem>().SetVersion(Agent.AppProtocolVersion);
 

@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
+using Libplanet;
 using Nekoyume.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
-using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Module;
@@ -43,11 +43,13 @@ namespace Nekoyume.UI
         public void Show(
             ArenaPlayerDigest myDigest,
             ArenaPlayerDigest enemyDigest,
+            Address myAvatarAddress,
+            Address enemyAvatarAddress,
             bool ignoreShowAnimation = false)
         {
             Find<HeaderMenuStatic>().Close(true);
-            SetStatus(myDigest, myStatus);
-            SetStatus(enemyDigest, enemyStatus);
+            SetStatus(myDigest, myStatus, myAvatarAddress);
+            SetStatus(enemyDigest, enemyStatus, enemyAvatarAddress);
             comboText.comboMax = AttackCountHelper.GetCountMax(myDigest.Level);
             comboText.Close();
             base.Show(ignoreShowAnimation);
@@ -97,11 +99,11 @@ namespace Nekoyume.UI
             comboText.Show(attacked);
         }
 
-        private void SetStatus(ArenaPlayerDigest digest, ArenaStatus status)
+        private void SetStatus(ArenaPlayerDigest digest, ArenaStatus status, Address address)
         {
             var armor = digest.Equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
-            var sprite = SpriteHelper.GetItemIcon(armor?.Id ?? GameConfig.DefaultAvatarArmorId);
-            status.Set(sprite, digest.NameWithHash, digest.Level);
+            var armorId = armor?.Id ?? GameConfig.DefaultAvatarArmorId;
+            status.Set(armorId, digest.NameWithHash, digest.Level, address);
             status.gameObject.SetActive(false);
         }
     }

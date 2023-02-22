@@ -27,6 +27,33 @@ namespace Nekoyume.Game.Character
         {
         }
 
+        public override void InitTarget(
+            GameObject target,
+            MeshRenderer meshRenderer,
+            SkeletonAnimation skeletonAnimation,
+            Animator animator)
+        {
+            base.InitTarget(target, meshRenderer, skeletonAnimation, animator);
+
+            var hud = Skeleton.skeleton.FindBone(StringHUD);
+            if (hud is null)
+            {
+                throw new SpineBoneNotFoundException(StringHUD);
+            }
+
+            HUDPosition = hud.GetWorldPosition(Target.transform) - Root.transform.position;
+
+            var heal = Skeleton.skeleton.FindBone(StringHealBorn);
+            if (heal != null)
+            {
+                HealPosition = heal.GetWorldPosition(Target.transform) - Root.transform.position;
+            }
+            else
+            {
+                HealPosition = hud.GetWorldPosition(Target.transform) - Root.transform.position;
+            }
+        }
+
         public override void ResetTarget(GameObject value)
         {
             base.ResetTarget(value);

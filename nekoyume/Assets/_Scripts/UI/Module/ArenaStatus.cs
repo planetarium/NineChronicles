@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using Libplanet;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -10,6 +10,9 @@ namespace Nekoyume.UI.Module
     public class ArenaStatus : MonoBehaviour
     {
         [SerializeField]
+        private DetailedCharacterView characterView = null;
+
+        [SerializeField]
         private Image hpBar;
 
         [SerializeField]
@@ -17,9 +20,6 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private TextMeshProUGUI infoText;
-
-        [SerializeField]
-        private Image portrait;
 
         [SerializeField]
         private BuffLayout buffLayout;
@@ -32,9 +32,9 @@ namespace Nekoyume.UI.Module
             gameObject.SetActive(false);
         }
 
-        public void Set(Sprite sprite, string avatarName, int level)
+        public void Set(int portraitId, string avatarName, int level, Address address)
         {
-            SetProfile(sprite, avatarName, level);
+            SetProfile(portraitId, avatarName, level, address);
             SetBuff();
         }
 
@@ -49,10 +49,18 @@ namespace Nekoyume.UI.Module
             animator.Play("Close");
         }
 
-        private void SetProfile(Sprite sprite, string avatarName, int level)
+        private void SetProfile(int portraitId, string avatarName, int level, Address address)
         {
-            infoText.text = $"<color=#B38271>Lv.{level}</color> {avatarName}";
-            portrait.overrideSprite = sprite;
+            if (Game.Game.instance.Dcc.Avatars.TryGetValue(address.ToHex(), out var dccId))
+            {
+                characterView.SetByDccId(dccId, level);
+            }
+            else
+            {
+                characterView.SetByFullCostumeOrArmorId(portraitId, level);
+            }
+
+            infoText.text = avatarName;
         }
 
         public void SetHp(int current, int max)

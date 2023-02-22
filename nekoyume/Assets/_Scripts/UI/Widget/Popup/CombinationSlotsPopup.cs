@@ -15,7 +15,15 @@ namespace Nekoyume.UI
         [SerializeField]
         private List<CombinationSlot> slots;
 
+        [SerializeField]
+        private PetInventory petInventory;
+
         private readonly List<IDisposable> _disposablesOfOnEnable = new();
+
+        public override void Initialize()
+        {
+            petInventory.Initialize();
+        }
 
         protected override void OnEnable()
         {
@@ -24,6 +32,7 @@ namespace Nekoyume.UI
                 .ObserveOnMainThread()
                 .Subscribe(UpdateSlots)
                 .AddTo(_disposablesOfOnEnable);
+            petInventory.Hide();
         }
 
         protected override void OnDisable()
@@ -67,6 +76,11 @@ namespace Nekoyume.UI
 
             slotIndex = -1;
             return false;
+        }
+
+        public void TogglePetPopup(int slotIndex)
+        {
+            petInventory.Toggle(slotIndex);
         }
 
         private void UpdateSlots(long blockIndex)

@@ -55,12 +55,13 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
-            if (!States.Instance.RuneStoneBalance.ContainsKey(row.Id))
+            var runeRow = Game.Game.instance.TableSheets.RuneSheet[row.Id];
+            if (!States.Instance.AvatarBalance.ContainsKey(runeRow.Ticker))
             {
                 return;
             }
 
-            RuneStone = States.Instance.RuneStoneBalance[row.Id];
+            RuneStone = States.Instance.AvatarBalance[runeRow.Ticker];
             EnoughRuneStone = RuneStone.MajorUnit >= Cost.RuneStoneQuantity;
             EnoughCrystal = States.Instance.CrystalBalance.MajorUnit >= Cost.CrystalQuantity;
             EnoughNcg = States.Instance.GoldBalanceState.Gold.MajorUnit >= Cost.NcgQuantity;

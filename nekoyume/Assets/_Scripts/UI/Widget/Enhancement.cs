@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.L10n;
@@ -111,7 +111,7 @@ namespace Nekoyume.UI
             base.Initialize();
 
             upgradeButton.OnSubmitSubject
-                .Subscribe(_ => Action())
+                .Subscribe(_ => Find<PetSelectionPopup>().Show(Action))
                 .AddTo(gameObject);
 
             _costSheet = Game.Game.instance.TableSheets.EnhancementCostSheetV2;
@@ -160,7 +160,7 @@ namespace Nekoyume.UI
                     NotificationCell.NotificationType.Alert));
         }
 
-        private void Action()
+        private void Action(int? petId)
         {
             var (baseItem, materialItem) = enhancementInventory.GetSelectedModels();
             if (!IsInteractableButton(baseItem, materialItem))
@@ -197,7 +197,7 @@ namespace Nekoyume.UI
                 NotificationCell.NotificationType.Information);
 
             Game.Game.instance.ActionManager
-                .ItemEnhancement(baseItem, materialItem, slotIndex, _costNcg).Subscribe();
+                .ItemEnhancement(baseItem, materialItem, slotIndex, _costNcg, petId).Subscribe();
 
             enhancementInventory.DeselectItem(true);
 

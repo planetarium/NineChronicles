@@ -15,7 +15,8 @@ namespace Nekoyume.UI.Module.Lobby
         Quest,
         Mimisbrunnr,
         Staking,
-        Worldboss,
+        WorldBoss,
+        Dcc,
     }
 
     public class MainMenu : MonoBehaviour
@@ -67,13 +68,14 @@ namespace Nekoyume.UI.Module.Lobby
                 case MenuType.Mimisbrunnr:
                     _requireStage = GameConfig.RequireClearedStageLevel.UIBottomMenuMimisbrunnr;
                     break;
-                case MenuType.Staking:
-                    _requireStage = 1;  // always allow
-                    break;
-                case MenuType.Worldboss:
+                case MenuType.WorldBoss:
                     _requireStage = GameConfig.RequireClearedStageLevel.ActionsInRaid;
                     break;
-                    ;
+                // always allow
+                case MenuType.Staking:
+                case MenuType.Dcc:
+                    _requireStage = 1;
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }

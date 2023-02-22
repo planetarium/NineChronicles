@@ -29,9 +29,9 @@ namespace Nekoyume.UI.Module.WorldBoss
                 var runeStones = new List<FungibleAssetValue>();
                 foreach (var row in runeRows)
                 {
-                    if (States.Instance.RuneStoneBalance.ContainsKey(row.Id))
+                    if (States.Instance.AvatarBalance.ContainsKey(row.Ticker))
                     {
-                        runeStones.Add(States.Instance.RuneStoneBalance[row.Id]);
+                        runeStones.Add(States.Instance.AvatarBalance[row.Ticker]);
                     }
                 }
 

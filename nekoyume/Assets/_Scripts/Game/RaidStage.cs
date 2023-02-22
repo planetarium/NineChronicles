@@ -12,6 +12,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Libplanet;
 using UnityEngine;
 
 namespace Nekoyume.Game
@@ -64,6 +65,7 @@ namespace Nekoyume.Game
         }
 
         public void Play(
+            Address avatarAddress,
             int bossId,
             BattleLog log,
             ArenaPlayerDigest player,
@@ -87,7 +89,8 @@ namespace Nekoyume.Game
                 if (log?.Count > 0)
                 {
                     _battleCoroutine = StartCoroutine(
-                        CoPlay(bossId, log, player, damageDealt, isNewRecord, isPractice, battleRewards, killRewards));
+                        CoPlay(avatarAddress, bossId, log, player,
+                            damageDealt, isNewRecord, isPractice, battleRewards, killRewards));
                 }
             }
             else
@@ -97,6 +100,7 @@ namespace Nekoyume.Game
         }
 
         private IEnumerator CoPlay(
+            Address avatarAddress,
             int bossId,
             BattleLog log,
             ArenaPlayerDigest player,
@@ -106,7 +110,7 @@ namespace Nekoyume.Game
             List<FungibleAssetValue> rewards,
             List<FungibleAssetValue> killRewards)
         {
-            yield return StartCoroutine(CoEnter(bossId, player));
+            yield return StartCoroutine(CoEnter(avatarAddress, bossId, player));
 
             var actionDelay = new WaitForSeconds(StageConfig.instance.actionDelay);
             var skillDelay = new WaitForSeconds(this.skillDelay);
@@ -177,7 +181,7 @@ namespace Nekoyume.Game
             yield return StartCoroutine(CoFinish(damageDealt, isNewRecord, isPractice, rewards, killRewards));
         }
 
-        private IEnumerator CoEnter(int bossId, ArenaPlayerDigest playerDigest)
+        private IEnumerator CoEnter(Address avatarAddress, int bossId, ArenaPlayerDigest playerDigest)
         {
             _currentBossId = bossId;
             _nextWaveCoroutine = null;
@@ -192,7 +196,7 @@ namespace Nekoyume.Game
             _player = container.Player;
             _boss = container.Boss;
 
-            _player.Init(playerDigest, _boss);
+            _player.Init(avatarAddress, playerDigest, _boss);
             _boss.Init(_player);
 
             if (WorldBossFrontHelper.TryGetBossData(bossId, out var data))
@@ -207,6 +211,7 @@ namespace Nekoyume.Game
             _currentScore = 0;
 
             yield return StartCoroutine(container.CoPlayAppearCutscene());
+            _player.Pet.Animator.Play(Character.PetAnimation.Type.BattleStart);
             _boss.Animator.Idle();
         }
 

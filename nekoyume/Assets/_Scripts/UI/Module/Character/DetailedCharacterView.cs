@@ -1,5 +1,4 @@
 using Nekoyume.Game.Character;
-using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using TMPro;
 using UnityEngine;
@@ -30,6 +29,12 @@ namespace Nekoyume.UI.Module
         {
             SetByFullCostumeOrArmorId(armorId);
             levelText.text = level;
+        }
+
+        public void SetByDccId(int dccId, int level)
+        {
+            SetByDccId(dccId);
+            levelText.text = level.ToString();
         }
 
         public void SetByArenaInfo(ArenaInfo arenaInfo)

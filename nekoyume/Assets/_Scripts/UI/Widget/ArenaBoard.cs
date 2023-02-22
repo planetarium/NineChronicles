@@ -326,6 +326,7 @@ namespace Nekoyume.UI
                         expectWinDeltaScore = e.ExpectDeltaScore.win,
                         interactableChoiceButton = !e.AvatarAddr.Equals(currentAvatarAddr),
                         canFight = true,
+                        address = e.AvatarAddr.ToHex(),
                     };
                 }).ToList();
             for (var i = 0; i < _boundedData.Length; i++)
@@ -515,6 +516,7 @@ namespace Nekoyume.UI
                         interactableChoiceButton = !e.AvatarAddr.Equals(currentAvatarAddr),
                         canFight = isParticipant,
                         winAtGrandFinale = hasBattleRecord ? win : null,
+                        address = e.AvatarAddr.ToHex()
                     };
                 }).ToList();
 

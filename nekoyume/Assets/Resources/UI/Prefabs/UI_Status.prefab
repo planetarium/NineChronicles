@@ -412,7 +412,7 @@ GameObject:
   - component: {fileID: 3413846133670983757}
   - component: {fileID: 9201213458657925635}
   m_Layer: 5
-  m_Name: LevelAndNameText
+  m_Name: NameText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -466,7 +466,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: <color=#B38271>LV.100</color> GNDRM
+  m_text: GNDRM <size=80%><color=#A68F7E>#ab12</color></size>
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
@@ -741,7 +741,8 @@ MonoBehaviour:
   tutorialTargets: []
   tutorialActions: 
   characterView: {fileID: 7282003313583875838}
-  textLvName: {fileID: 3413846133670983757}
+  textName: {fileID: 3413846133670983757}
+  textLevel: {fileID: 1366907725581027585}
   textHp: {fileID: 4101279887219691454}
   textExp: {fileID: 7487242386573199036}
   hpBar: {fileID: 5236660742032096162}
@@ -1966,6 +1967,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1125226414223366619}
     m_Modifications:
+    - target: {fileID: 2078660112695645840, guid: a9f817ccaf6b243fdb7a1975b76b842a,
+        type: 3}
+      propertyPath: l10nKey
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2078660112695645840, guid: a9f817ccaf6b243fdb7a1975b76b842a,
+        type: 3}
+      propertyPath: fontMaterialType
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2106852222037365949, guid: a9f817ccaf6b243fdb7a1975b76b842a,
         type: 3}
       propertyPath: m_Pivot.x
@@ -2071,6 +2082,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2155379939065105759, guid: a9f817ccaf6b243fdb7a1975b76b842a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3434827073648422375, guid: a9f817ccaf6b243fdb7a1975b76b842a,
         type: 3}
       propertyPath: m_Name
@@ -2081,8 +2097,25 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7732738409589247022, guid: a9f817ccaf6b243fdb7a1975b76b842a,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a9f817ccaf6b243fdb7a1975b76b842a, type: 3}
+--- !u!114 &1366907725581027585 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1237351599929170045, guid: a9f817ccaf6b243fdb7a1975b76b842a,
+    type: 3}
+  m_PrefabInstance: {fileID: 275792619013181820}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &2228935478230582721 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2106852222037365949, guid: a9f817ccaf6b243fdb7a1975b76b842a,

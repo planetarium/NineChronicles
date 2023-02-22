@@ -160,6 +160,8 @@ namespace Nekoyume.BlockChain
             // Rune
             RuneEnhancement();
             UnlockRuneSlot();
+
+            PetEnhancement();
         }
 
         public void Stop()
@@ -480,6 +482,15 @@ namespace Nekoyume.BlockChain
                 .AddTo(_disposables);
         }
 
+        private void PetEnhancement()
+        {
+            _actionRenderer.EveryRender<PetEnhancement>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponsePetEnhancement)
+                .AddTo(_disposables);
+        }
+
         private async UniTaskVoid ResponseCreateAvatar(ActionBase.ActionEvaluation<CreateAvatar> eval)
         {
             if (eval.Exception != null)
@@ -491,6 +502,7 @@ namespace Nekoyume.BlockChain
             await UpdateAvatarState(eval, eval.Action.index);
             var avatarState = await States.Instance.SelectAvatarAsync(eval.Action.index);
             await States.Instance.InitRuneStoneBalance();
+            await States.Instance.InitSoulStoneBalance();
             await States.Instance.InitRuneStates();
             await States.Instance.InitItemSlotStates();
             await States.Instance.InitRuneSlotStates();
@@ -619,6 +631,10 @@ namespace Nekoyume.BlockChain
                 UpdateCombinationSlotState(avatarAddress, slotIndex, slotState);
                 UpdateAgentStateAsync(eval).Forget();
                 UpdateCurrentAvatarStateAsync(eval).Forget();
+                if (slotState.PetId.HasValue)
+                {
+                    UpdatePetState(avatarAddress, eval.OutputStates, slotState.PetId.Value);
+                }
 
                 Widget.Find<CombinationSlotsPopup>().SetCaching(
                     avatarAddress,
@@ -675,6 +691,11 @@ namespace Nekoyume.BlockChain
                 UpdateCurrentAvatarStateAsync(eval).Forget();
                 RenderQuest(avatarAddress, avatarState.questList?.completedQuestIds);
                 States.Instance.UpdateHammerPointStates(result.recipeId, hammerPointState);
+                var action = eval.Action;
+                if (action.petId.HasValue)
+                {
+                    UpdatePetState(avatarAddress, eval.OutputStates, action.petId.Value);
+                }
 
                 if (!(nextQuest is null))
                 {
@@ -858,7 +879,7 @@ namespace Nekoyume.BlockChain
                 var avatarAddress = eval.Action.avatarAddress;
                 var slotIndex = eval.Action.slotIndex;
                 var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, slotIndex);
-                var result = (ItemEnhancement.ResultModel)slot.Result;
+                var result = (ItemEnhancement11.ResultModel)slot.Result;
                 var itemUsable = result.itemUsable;
                 if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState, out _))
                 {
@@ -884,18 +905,23 @@ namespace Nekoyume.BlockChain
                 UpdateAgentStateAsync(eval).Forget();
                 UpdateCurrentAvatarStateAsync(eval).Forget();
                 RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
+                var action = eval.Action;
+                if (action.petId.HasValue)
+                {
+                    UpdatePetState(avatarAddress, eval.OutputStates, action.petId.Value);
+                }
 
                 // Notify
                 string formatKey;
                 switch (result.enhancementResult)
                 {
-                    case Action.ItemEnhancement.EnhancementResult.GreatSuccess:
+                    case Action.ItemEnhancement11.EnhancementResult.GreatSuccess:
                         formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_GREATER";
                         break;
-                    case Action.ItemEnhancement.EnhancementResult.Success:
+                    case Action.ItemEnhancement11.EnhancementResult.Success:
                         formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
                         break;
-                    case Action.ItemEnhancement.EnhancementResult.Fail:
+                    case Action.ItemEnhancement11.EnhancementResult.Fail:
                         Analyzer.Instance.Track("Unity/ItemEnhancement Failed", new Dictionary<string, Value>()
                         {
                             ["GainedCrystal"] = (long)result.CRYSTAL.MajorUnit,
@@ -2139,6 +2165,8 @@ namespace Nekoyume.BlockChain
                     rewards,
                     myDigest.Value,
                     enemyDigest.Value,
+                    eval.Action.myAvatarAddress,
+                    eval.Action.enemyAvatarAddress,
                     winCount + defeatCount > 1 ? (winCount, defeatCount) : null);
             }
         }
@@ -2264,7 +2292,9 @@ namespace Nekoyume.BlockChain
                     log,
                     new List<ItemBase>(),
                     myDigest.Value,
-                    enemyDigest.Value);
+                    enemyDigest.Value,
+                    eval.Action.myAvatarAddress,
+                    eval.Action.enemyAvatarAddress);
             }
         }
 
@@ -2393,6 +2423,7 @@ namespace Nekoyume.BlockChain
 
             Widget.Find<LoadingScreen>().Close();
             Game.Game.instance.RaidStage.Play(
+                eval.Action.AvatarAddress,
                 simulator.BossId,
                 log,
                 playerDigest,
@@ -2448,6 +2479,46 @@ namespace Nekoyume.BlockChain
                 MailType.Workshop,
                 L10nManager.Localize("UI_MESSAGE_RUNE_SLOT_OPEN"),
                 NotificationCell.NotificationType.Notification);
+        }
+
+        private void ResponsePetEnhancement(ActionBase.ActionEvaluation<PetEnhancement> eval)
+        {
+            LoadingHelper.PetEnhancement.Value = 0;
+            var action = eval.Action;
+            if (eval.Exception is not null ||
+                action.AvatarAddress != States.Instance.CurrentAvatarState.address)
+            {
+                return;
+            }
+
+            if (States.Instance.PetStates.TryGetPetState(eval.Action.PetId, out _))
+            {
+                Widget.Find<PetLevelUpResultScreen>().Show(eval.Action);
+            }
+            else
+            {
+                Widget.Find<PetSummonResultScreen>().Show(eval.Action.PetId);
+            }
+
+            UpdateAgentStateAsync(eval).Forget();
+            var soulStoneTicker = TableSheets.Instance.PetSheet[action.PetId].SoulStoneTicker;
+            States.Instance.AvatarBalance[soulStoneTicker] = eval.OutputStates.GetBalance(
+                action.AvatarAddress,
+                Currency.Legacy(soulStoneTicker, 0, null)
+            );
+            UpdatePetState(action.AvatarAddress, eval.OutputStates, action.PetId);
+            Widget.Find<DccCollection>().UpdateView();
+        }
+
+        private void UpdatePetState(Address avatarAddress, IAccountStateDelta states, int petId)
+        {
+            var rawPetState = states.GetState(
+                PetState.DeriveAddress(avatarAddress, petId)
+            );
+            States.Instance.PetStates.UpdatePetState(
+                petId,
+                new PetState((List)rawPetState)
+            );
         }
     }
 }
