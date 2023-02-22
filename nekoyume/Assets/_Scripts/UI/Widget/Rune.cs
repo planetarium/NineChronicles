@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
@@ -225,7 +225,7 @@ namespace Nekoyume.UI
                     random);
             }
 
-            await States.Instance.InitRuneStates();
+            await States.Instance.InitRuneStatesAsync();
             States.Instance.UpdateRuneSlotState();
 
             var fav = await States.Instance.SetRuneStoneBalance(_selectedRuneItem.Row.Id);
