@@ -20,6 +20,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module.WorldBoss;
+using Lib9c.Renderers;
 
 namespace Nekoyume.UI
 {
@@ -165,7 +166,7 @@ namespace Nekoyume.UI
                 .Subscribe();
         }
 
-        public void OnRenderCreateAvatar(ActionBase.ActionEvaluation<CreateAvatar> eval)
+        public void OnRenderCreateAvatar(ActionEvaluation<CreateAvatar> eval)
         {
             if (eval.Exception is { })
             {
