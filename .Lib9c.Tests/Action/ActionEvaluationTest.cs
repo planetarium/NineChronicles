@@ -86,6 +86,7 @@ namespace Lib9c.Tests.Action
         [InlineData(typeof(ClaimWordBossKillReward))]
         [InlineData(typeof(PrepareRewardAssets))]
         [InlineData(typeof(RegisterProduct))]
+        [InlineData(typeof(CancelProductRegistration))]
         [InlineData(typeof(BuyProduct))]
         public void Serialize_With_MessagePack(Type actionType)
         {
@@ -334,6 +335,21 @@ namespace Lib9c.Tests.Action
                             AvatarAddress = new PrivateKey().ToAddress(),
                             Price = 1 * _currency,
                             Asset = 1 * RuneHelper.StakeRune,
+                            Type = ProductType.FungibleAssetValue,
+                        },
+                    },
+                },
+                CancelProductRegistration _ => new CancelProductRegistration
+                {
+                    AvatarAddress = new PrivateKey().ToAddress(),
+                    ProductInfos = new List<ProductInfo>
+                    {
+                        new ProductInfo
+                        {
+                            AvatarAddress = new PrivateKey().ToAddress(),
+                            AgentAddress = new PrivateKey().ToAddress(),
+                            Price = 1 * _currency,
+                            ProductId = Guid.NewGuid(),
                             Type = ProductType.FungibleAssetValue,
                         },
                     },
