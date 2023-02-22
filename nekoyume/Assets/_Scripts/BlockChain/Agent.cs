@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 using AsyncIO;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
-using Lib9c.Renderer;
+using Lib9c.Renderers;
 using Libplanet;
 using Libplanet.Assets;
 using Libplanet.Blockchain;

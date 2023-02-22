@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Lib9c.Renderers;
 using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.BlockChain;
@@ -14,7 +15,7 @@ namespace Nekoyume
     public static class ActionEvalToViewModelExtensions
     {
         public static BattleResultPopup.Model GetHackAndSlashReward(
-            this ActionBase.ActionEvaluation<HackAndSlash> eval,
+            this ActionEvaluation<HackAndSlash> eval,
             AvatarState avatarState,
             List<RuneState> runeStates,
             List<Model.Skill.Skill> skillsOnWaveStart,

@@ -198,12 +198,10 @@ namespace Nekoyume.UI
             var agentState = States.Instance.AgentState;
             Action.CombinationEquipment.AddAndUnlockOption(
                 agentState,
-                null,
                 equipment,
                 random,
                 subRecipeRow,
                 itemOptionSheet,
-                null,
                 skillSheet);
             return equipment;
         }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
+using Lib9c.Renderers;
 using Nekoyume.Action;
 using Nekoyume.Arena;
 using Nekoyume.BlockChain;
@@ -142,7 +143,7 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        public void OnRenderJoinArena(ActionBase.ActionEvaluation<JoinArena> eval)
+        public void OnRenderJoinArena(ActionEvaluation<JoinArena> eval)
         {
             if (eval.Exception is { })
             {
