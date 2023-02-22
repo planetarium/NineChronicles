@@ -17,5 +17,6 @@ namespace Nekoyume.Model.Mail
         void Read(MaterialCraftMail materialCraftMail);
         void Read(ProductBuyerMail productBuyerMail);
         void Read(ProductSellerMail productSellerMail);
+        void Read(ProductCancelMail productCancelMail);
     }
 }
