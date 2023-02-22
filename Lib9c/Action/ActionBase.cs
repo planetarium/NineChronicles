@@ -12,7 +12,6 @@ using Libplanet.Action;
 using Serilog;
 using Nekoyume.Model.State;
 using Libplanet.Assets;
-using Libplanet.Consensus;
 using Libplanet.Tx;
 
 #if UNITY_EDITOR || UNITY_STANDALONE
