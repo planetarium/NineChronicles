@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
-using Lib9c.Renderer;
+using Lib9c.Renderers;
 using Libplanet.Action;
 using Libplanet.Assets;
 using Libplanet.Blocks;
