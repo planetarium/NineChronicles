@@ -3,6 +3,7 @@ using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.State;
+using Nekoyume.UI.Module.Pet;
 using Spine.Unity;
 using TMPro;
 using UnityEngine;
@@ -12,10 +13,7 @@ namespace Nekoyume.UI
     public class PetLevelUpResultScreen : ScreenWidget
     {
         [SerializeField]
-        private TextMeshProUGUI petNameText;
-
-        [SerializeField]
-        private TextMeshProUGUI petGradeText;
+        private PetInfoView petInfoView;
 
         [SerializeField]
         private TextMeshProUGUI prevLevelText;
@@ -36,8 +34,7 @@ namespace Nekoyume.UI
             States.Instance.PetStates.TryGetPetState(petRow.Id, out var prevPetState);
             var currentOption = TableSheets.Instance.PetOptionSheet[action.PetId].LevelOptionMap[prevPetState.Level];
             var targetOption = TableSheets.Instance.PetOptionSheet[action.PetId].LevelOptionMap[action.TargetLevel];
-            petNameText.text = L10nManager.Localize($"PET_NAME_{petRow.Id}");
-            petGradeText.text = L10nManager.Localize($"UI_ITEM_GRADE_{petRow.Grade}");
+            petInfoView.Set(L10nManager.Localize($"PET_NAME_{petRow.Id}"), petRow.Grade);
             contentText.text = L10nManager.Localize(
                 $"PET_DESCRIPTION_TWO_OPTION_{targetOption.OptionType}",
                 currentOption.OptionValue,

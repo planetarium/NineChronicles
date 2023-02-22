@@ -9,6 +9,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData.Pet;
+using Nekoyume.UI.Module.Pet;
 using Spine.Unity;
 using TMPro;
 using UnityEngine;
@@ -29,13 +30,10 @@ namespace Nekoyume.UI
         private TextMeshProUGUI titleText;
 
         [SerializeField]
-        private TextMeshProUGUI petNameText;
+        private PetInfoView petInfoView;
 
         [SerializeField]
         private TextMeshProUGUI contentText;
-
-        [SerializeField]
-        private TextMeshProUGUI gradeText;
 
         [SerializeField]
         private Button submitButton;
@@ -89,8 +87,10 @@ namespace Nekoyume.UI
             levelUpUIList.ForEach(obj => obj.SetActive(false));
             costObject.SetActive(true);
             titleText.text = SummonText;
-            petNameText.text = L10nManager.Localize($"PET_NAME_{petRow.Id}");
-            gradeText.text = L10nManager.Localize($"UI_ITEM_GRADE_{petRow.Grade}");
+            petInfoView.Set(
+                L10nManager.Localize($"PET_NAME_{petRow.Id}"),
+                petRow.Grade
+            );
             SetObjectByTargetLevel(petRow.Id, 0, 1);
             petSkeletonGraphic.skeletonDataAsset = PetRenderingHelper.GetPetSkeletonData(petRow.Id);
             petSkeletonGraphic.Initialize(true);
@@ -108,12 +108,12 @@ namespace Nekoyume.UI
             levelUpUIList.ForEach(obj => obj.SetActive(true));
             costObject.SetActive(true);
             titleText.text = LevelUpText;
-            petNameText.text = L10nManager.Localize($"PET_NAME_{petState.PetId}");
-            gradeText.text =
-                L10nManager.Localize(
-                    $"UI_ITEM_GRADE_{TableSheets.Instance.PetSheet[petState.PetId].Grade}");
             var option = TableSheets.Instance.PetOptionSheet[petState.PetId].LevelOptionMap[petState.Level];
-            contentText.text = L10nManager.Localize($"PET_DESCRIPTION_{option.OptionType}", option.OptionValue);
+            contentText.text = L10nManager.Localize($"PET_DESCRIPTION_{option.OptionType}",
+                option.OptionValue);
+            petInfoView.Set(L10nManager.Localize($"PET_NAME_{petState.PetId}"),
+                TableSheets.Instance.PetSheet[petState.PetId].Grade
+            );
             petSkeletonGraphic.skeletonDataAsset =
                 PetRenderingHelper.GetPetSkeletonData(petState.PetId);
             petSkeletonGraphic.Initialize(true);
