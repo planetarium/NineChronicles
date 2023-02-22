@@ -36,15 +36,6 @@ namespace Nekoyume.UI
                 var row = viewModel.PetRow;
                 if (row is not null)
                 {
-                    if (LoadingHelper.PetEnhancement.Value != 0)
-                    {
-                        OneLineSystem.Push(
-                            MailType.System,
-                            L10nManager.Localize("UI_CAN_NOT_ENTER_PET_MENU"),
-                            NotificationCell.NotificationType.Information);
-                        return;
-                    }
-
                     petSkeletonGraphic.skeletonDataAsset =
                         PetRenderingHelper.GetPetSkeletonData(row.Id);
                     petSkeletonGraphic.Initialize(true);
