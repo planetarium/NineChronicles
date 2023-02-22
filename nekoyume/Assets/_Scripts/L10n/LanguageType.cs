@@ -11,26 +11,27 @@ namespace Nekoyume.L10n
     public enum LanguageType
     {
         /// <summary>
-        /// font file: Assets/Font/TTF/PoorStory-Regular.ttf
+        /// font file: Assets/Font/TTF/NotoSansCJKsc-Regular.ttf
         /// font asset file: Assets/Resources/Font/SDF/English SDF.asset
-        ///     - Sampling Font Size: 80
-        ///     - Padding: 9
+        ///     - Sampling Font Size: 40
+        ///     - Padding: 5
         ///     - Packing Method: Fast
-        ///     - Atlas Resolution: 1024x1024
+        ///     - Atlas Resolution: 512x512
         ///     - Character Set: Unicode Range (Hex)
         ///     - Character File: Assets/Font/CharacterFiles/English-unicode-hex-range-01.txt
         ///     - Render Mode: SDFAA
         ///     - Get Kerning Pairs: true
+	///	- Size: 0.9
         /// </summary>
         English,
 
         /// <summary>
-        /// font file: Assets/Font/TTF/PoorStory-Regular.ttf
+        /// font file: Assets/Font/TTF/goyang.ttf
         /// font asset file: Assets/Resources/Font/SDF/Korean SDF.asset
-        ///     - Sampling Font Size: 80
-        ///     - Padding: 9
+        ///     - Sampling Font Size: 40
+        ///     - Padding: 5
         ///     - Packing Method: Fast
-        ///     - Atlas Resolution: 4096x4096
+        ///     - Atlas Resolution: 2048x2048
         ///     - Character Set: Unicode Range (Hex)
         ///     - Character File: Assets/Font/CharacterFiles/Korean-unicode-hex-range-01.txt
         ///     - Render Mode: SDFAA
@@ -39,12 +40,12 @@ namespace Nekoyume.L10n
         Korean,
 
         /// <summary>
-        /// font file: Assets/Font/TTF/PoorStory-Latin.otf
+        /// font file: Assets/Font/TTF/NotoSans-Regular.ttf
         /// font asset file: Assets/Resources/Font/SDF/PortugueseBrazil SDF.asset
-        ///     - Sampling Font Size: 80
-        ///     - Padding: 9
+        ///     - Sampling Font Size: 40
+        ///     - Padding: 5
         ///     - Packing Method: Fast
-        ///     - Atlas Resolution: 1024x1024
+        ///     - Atlas Resolution: 512x512
         ///     - Character Set: Unicode Range (Hex)
         ///     - Character File: Assets/Font/CharacterFiles/PortugueseBrazil-unicode-hex-range-01.txt
         ///     - Render Mode: SDFAA
@@ -60,10 +61,10 @@ namespace Nekoyume.L10n
         /// <summary>
         /// font file: Assets/Font/TTF/NotoSansCJKjp-Regular.otf
         /// font asset file 1: Assets/Resources/Font/SDF/Japanese SDF.asset
-        ///     - Sampling Font Size: 80
-        ///     - Padding: 7
+        ///     - Sampling Font Size: 40
+        ///     - Padding: 5
         ///     - Packing Method: Fast
-        ///     - Atlas Resolution: 4096x4096
+        ///     - Atlas Resolution: 2048x2048
         ///     - Character Set: Unicode Range (Hex)
         ///     - Character File: Assets/Font/CharacterFiles/Japanese-unicode-hex-range-01.txt
         ///     - Render Mode: SDFAA
@@ -74,10 +75,10 @@ namespace Nekoyume.L10n
         /// <summary>
         /// font file: Assets/Font/TTF/NotoSansCJKsc-Regular.otf
         /// font asset file: Assets/Resources/Font/SDF/ChineseSimplified SDF.asset
-        ///     - Sampling Font Size: 80
-        ///     - Padding: 7
+        ///     - Sampling Font Size: 40
+        ///     - Padding: 5
         ///     - Packing Method: Fast
-        ///     - Atlas Resolution: 4096x4096
+        ///     - Atlas Resolution: 2048x2048
         ///     - Character Set: Unicode Range (Hex)
         ///     - Character File: Assets/Font/CharacterFiles/ChineseSimplified-unicode-hex-range-01.txt
         ///     - Render Mode: SDFAA
@@ -86,12 +87,12 @@ namespace Nekoyume.L10n
         ChineseSimplified,
 
         /// <summary>
-        /// font file: Assets/Font/TTF/kanit-light.otf
+        /// font file: Assets/Font/TTF/NotoSansThai_Regular.orf
         /// font asset file: Assets/Resources/Font/SDF/Thai SDF.asset
         ///     - Sampling Font Size: 80
         ///     - Padding: 7
         ///     - Packing Method: Fast
-        ///     - Atlas Resolution: 1024x1024
+        ///     - Atlas Resolution: 512x512
         ///     - Character Set: Unicode Range (Hex)
         ///     - Character File: Assets/Font/CharacterFiles/Thai-unicode-hex-range-01.txt
         ///     - Render Mode: SDFAA
