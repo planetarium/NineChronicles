@@ -13,7 +13,7 @@ using System.Reactive.Subjects;
 using System.Reactive.Linq;
 #endif
 
-namespace Lib9c.Renderer
+namespace Lib9c.Renderers
 {
     using NCAction = PolymorphicAction<ActionBase>;
     using NCBlock = Block<PolymorphicAction<ActionBase>>;

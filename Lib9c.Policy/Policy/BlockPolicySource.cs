@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
-using Lib9c.Renderer;
+using Lib9c.Renderers;
 using Libplanet.Blocks;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
@@ -61,12 +61,16 @@ namespace Nekoyume.BlockChain.Policy
 
         private readonly IActionTypeLoader _actionTypeLoader;
 
+        // FIXME: Why does BlockPolicySource have renderers?
         public readonly ActionRenderer ActionRenderer = new ActionRenderer();
 
+        // FIXME: Why does BlockPolicySource have renderers?
         public readonly BlockRenderer BlockRenderer = new BlockRenderer();
 
+        // FIXME: Why does BlockPolicySource have renderers?
         public readonly LoggedActionRenderer<NCAction> LoggedActionRenderer;
 
+        // FIXME: Why does BlockPolicySource have renderers?
         public readonly LoggedRenderer<NCAction> LoggedBlockRenderer;
 
         public BlockPolicySource(
