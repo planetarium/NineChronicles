@@ -220,7 +220,7 @@ namespace Nekoyume.Action
             var challengerScoreDelta = arenaInfo.Update(
                 enemyArenaInfo,
                 simulator.Result,
-                ArenaScoreHelper.GetScore);
+                ArenaScoreHelper.GetScoreV4);
             var rewards = RewardSelector.Select(
                 ctx.Random,
                 sheets.GetSheet<WeeklyArenaRewardSheet>(),

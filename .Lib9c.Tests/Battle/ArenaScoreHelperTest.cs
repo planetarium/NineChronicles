@@ -100,6 +100,29 @@ namespace Lib9c.Tests
         [InlineData(1000, int.MinValue, 0, 0, 0)]
         [InlineData(int.MinValue, 1000, 0, 0, 0)]
         [InlineData(int.MinValue, int.MinValue, 0, 0, 0)]
+        public void GetScoreV4(int challengerScore, int defenderScore, int winPoint, int losePoint, int defenderLosePoint)
+        {
+            var (challengerScoreDelta, defenderScoreDelta) =
+                ArenaScoreHelper.GetScoreV4(challengerScore, defenderScore, Result.Win);
+            Assert.Equal(winPoint, challengerScoreDelta);
+            Assert.Equal(defenderLosePoint, defenderScoreDelta);
+            (challengerScoreDelta, _) = ArenaScoreHelper.GetScoreV4(challengerScore, defenderScore, Result.Lose);
+            Assert.Equal(losePoint, challengerScoreDelta);
+        }
+
+        [Theory]
+        [InlineData(1000, int.MaxValue, 24, -3, -1)]
+        [InlineData(1000, 1201, 24, -3, -1)]
+        [InlineData(1000, 1101, 22, -2, -1)]
+        [InlineData(1000, 1001, 20, -1, -1)]
+        [InlineData(1000, 1000, 18, -1, -1)]
+        [InlineData(1000, 901, 18, -1, -1)]
+        [InlineData(1000, 801, 16, -1, -1)]
+        [InlineData(1000, 800, 1, -1, 0)]
+        [InlineData(int.MaxValue, 0, 1, -1, 0)]
+        [InlineData(1000, int.MinValue, 0, 0, 0)]
+        [InlineData(int.MinValue, 1000, 0, 0, 0)]
+        [InlineData(int.MinValue, int.MinValue, 0, 0, 0)]
         public void GetScore(int challengerScore, int defenderScore, int winPoint, int losePoint, int defenderLosePoint)
         {
             var (challengerScoreDelta, defenderScoreDelta) =

@@ -159,10 +159,10 @@ namespace Nekoyume.Arena
 
         public static (int, int, int) GetScores(int myScore, int enemyScore)
         {
-            var (myWinScore, enemyWinScore) = ArenaScoreHelper.GetScore(
+            var (myWinScore, enemyWinScore) = ArenaScoreHelper.GetScoreV4(
                 myScore, enemyScore, BattleLog.Result.Win);
 
-            var (myDefeatScore, _) = ArenaScoreHelper.GetScore(
+            var (myDefeatScore, _) = ArenaScoreHelper.GetScoreV4(
                 myScore, enemyScore, BattleLog.Result.Lose);
 
             return (myWinScore, myDefeatScore, enemyWinScore);

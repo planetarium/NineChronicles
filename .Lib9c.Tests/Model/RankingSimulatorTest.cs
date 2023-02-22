@@ -69,7 +69,7 @@ namespace Lib9c.Tests.Model
             var challengerScoreDelta = arenaInfo.Update(
                 enemyInfo,
                 simulator.Result,
-                ArenaScoreHelper.GetScore);
+                ArenaScoreHelper.GetScoreV4);
             var rewards = RewardSelector.Select(
                 new TestRandom(),
                 _tableSheets.WeeklyArenaRewardSheet,
@@ -121,7 +121,7 @@ namespace Lib9c.Tests.Model
             var challengerScoreDelta = arenaInfo.Update(
                 enemyInfo,
                 simulator.Result,
-                ArenaScoreHelper.GetScore);
+                ArenaScoreHelper.GetScoreV4);
             var rewards = RewardSelector.Select(
                 new TestRandom(),
                 _tableSheets.WeeklyArenaRewardSheet,
@@ -226,7 +226,7 @@ namespace Lib9c.Tests.Model
                 var challengerScoreDelta = arenaInfo.Update(
                     enemyInfo,
                     simulator.Result,
-                    ArenaScoreHelper.GetScore);
+                    ArenaScoreHelper.GetScoreV4);
                 var rewards = RewardSelector.Select(
                     _random,
                     _tableSheets.WeeklyArenaRewardSheet,
