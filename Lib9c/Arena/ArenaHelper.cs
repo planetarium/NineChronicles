@@ -159,6 +159,17 @@ namespace Nekoyume.Arena
 
         public static (int, int, int) GetScores(int myScore, int enemyScore)
         {
+            var (myWinScore, enemyWinScore) = ArenaScoreHelper.GetScore(
+                myScore, enemyScore, BattleLog.Result.Win);
+
+            var (myDefeatScore, _) = ArenaScoreHelper.GetScore(
+                myScore, enemyScore, BattleLog.Result.Lose);
+
+            return (myWinScore, myDefeatScore, enemyWinScore);
+        }
+
+        public static (int, int, int) GetScoresV1(int myScore, int enemyScore)
+        {
             var (myWinScore, enemyWinScore) = ArenaScoreHelper.GetScoreV4(
                 myScore, enemyScore, BattleLog.Result.Win);
 

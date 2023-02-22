@@ -317,7 +317,7 @@ namespace Nekoyume.Action
 
             // update record
             var (myWinScore, myDefeatScore, enemyWinScore) =
-                ArenaHelper.GetScores(ExtraPreviousMyScore, enemyArenaScore.Score);
+                ArenaHelper.GetScoresV1(ExtraPreviousMyScore, enemyArenaScore.Score);
             var myScore = (myWinScore * winCount) + (myDefeatScore * defeatCount);
             myArenaScore.AddScore(myScore);
             enemyArenaScore.AddScore(enemyWinScore * winCount);
