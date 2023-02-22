@@ -76,12 +76,21 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject costObject;
 
+        [SerializeField]
+        private Button plusButton;
+
+        [SerializeField]
+        private Button minusButton;
+
         private readonly List<IDisposable> _disposables = new();
+        private readonly ReactiveProperty<int> _enhancementCount = new();
 
         private const string LevelUpText = "LEVEL UP";
         private const string SummonText = "Summon";
 
         private int _targetLevel;
+        private int _sliderMax;
+        private int _sliderCurrentValue;
         private bool _notEnoughBalance;
 
         protected override void Awake()
@@ -92,6 +101,18 @@ namespace Nekoyume.UI
             {
                 buttonDisableObject.SetActive(_notEnoughBalance || id != 0);
             }).AddTo(gameObject);
+            _enhancementCount.Subscribe(value =>
+            {
+                slider.ForceMove(value);
+            }).AddTo(gameObject);
+            plusButton.onClick.AddListener(() =>
+            {
+                _enhancementCount.Value = Math.Min(_sliderCurrentValue + 1, _sliderMax);
+            });
+            minusButton.onClick.AddListener(() =>
+            {
+                _enhancementCount.Value = Math.Max(_sliderCurrentValue - 1, 1);
+            });
         }
 
         public void ShowForSummon(PetSheet.Row petRow)
@@ -150,19 +171,21 @@ namespace Nekoyume.UI
             if (petState.Level < maxLevel)
             {
                 SetObjectByTargetLevel(petState.PetId, petState.Level, petState.Level + 1);
+                _sliderMax = maxLevel - petState.Level;
                 slider.Set(
                     1,
-                    maxLevel - petState.Level,
+                    _sliderMax,
                     1,
-                    maxLevel - petState.Level,
+                    _sliderMax,
                     1,
                     value =>
                     {
+                        _sliderCurrentValue = value;
                         SetObjectByTargetLevel(petState.PetId, petState.Level, value + petState.Level);
                     });
                 submitButton.OnClickAsObservable().Subscribe(_ =>
                 {
-                    if (LoadingHelper.PetEnhancement.Value == 0)
+                    if (LoadingHelper.PetEnhancement.Value == 0 && !_notEnoughBalance)
                     {
                         Action(petState.PetId, _targetLevel);
                     }
@@ -224,11 +247,13 @@ namespace Nekoyume.UI
             var soulStoneCost =
                 Currency.Legacy(TableSheets.Instance.PetSheet[petId].SoulStoneTicker, 0, null) *
                 soulStone;
-            _notEnoughBalance =
-                States.Instance.GoldBalanceState.Gold < ncgCost ||
-                States.Instance.AvatarBalance[soulStoneCost.Currency.Ticker] < soulStoneCost;
-            soulStoneNotEnoughObject.SetActive(_notEnoughBalance);
-            ncgNotEnoughObject.SetActive(_notEnoughBalance);
+            var notEnoughNcg
+                = States.Instance.GoldBalanceState.Gold < ncgCost;
+            var notEnoughSoulStone
+                = States.Instance.AvatarBalance[soulStoneCost.Currency.Ticker] < soulStoneCost;
+            _notEnoughBalance = notEnoughNcg || notEnoughSoulStone;
+            soulStoneNotEnoughObject.SetActive(notEnoughSoulStone);
+            ncgNotEnoughObject.SetActive(notEnoughNcg);
             buttonDisableObject.SetActive(_notEnoughBalance || LoadingHelper.PetEnhancement.Value != 0);
         }
 
