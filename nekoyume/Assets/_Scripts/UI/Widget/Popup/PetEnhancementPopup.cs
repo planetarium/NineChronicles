@@ -9,7 +9,6 @@ using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData.Pet;
-using Nekoyume.UI.Module;
 using Spine.Unity;
 using TMPro;
 using UnityEngine;
@@ -169,10 +168,22 @@ namespace Nekoyume.UI
                 petId,
                 currentLevel,
                 _targetLevel);
-            var option = TableSheets.Instance.PetOptionSheet[petId].LevelOptionMap[_targetLevel];
-            contentText.text =
-                L10nManager.Localize($"PET_DESCRIPTION_{option.OptionType}",
-                    option.OptionValue);
+            var targetOption = TableSheets.Instance.PetOptionSheet[petId].LevelOptionMap[_targetLevel];
+            if (targetLevel == 1)
+            {
+                contentText.text =
+                    L10nManager.Localize($"PET_DESCRIPTION_{targetOption.OptionType}",
+                        targetOption.OptionValue);
+            }
+            else
+            {
+                var currentOption = TableSheets.Instance.PetOptionSheet[petId].LevelOptionMap[currentLevel];
+                contentText.text =
+                    L10nManager.Localize($"PET_DESCRIPTION_TWO_OPTION_{targetOption.OptionType}",
+                        currentOption.OptionValue,
+                        targetOption.OptionValue);
+            }
+
             ncgCostText.text = ncg.ToString();
             soulStoneCostText.text = soulStone.ToString();
             ncgCostObject.SetActive(ncg > 0);
