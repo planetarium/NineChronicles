@@ -279,7 +279,7 @@ namespace Nekoyume.Action
             }
 
             if (!ArenaHelper.ValidateScoreDifference(
-                    ArenaHelper.ScoreLimits,
+                    ArenaHelper.ScoreLimitsV3,
                     roundData.ArenaType,
                     myArenaScore.Score,
                     enemyArenaScore.Score))

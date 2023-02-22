@@ -39,11 +39,19 @@ namespace Nekoyume.Arena
                 { ArenaType.Championship, (100, -100) }
             };
 
-        public static readonly IReadOnlyDictionary<ArenaType, (int upper, int lower)> ScoreLimits =
+        [Obsolete("Use `ScoreLimits` instead.")]
+        public static readonly IReadOnlyDictionary<ArenaType, (int upper, int lower)> ScoreLimitsV3 =
             new Dictionary<ArenaType, (int, int)>
             {
                 { ArenaType.Season, (100, -100) },
                 { ArenaType.Championship, (100, -100) }
+            };
+
+        public static readonly IReadOnlyDictionary<ArenaType, (int upper, int lower)> ScoreLimits =
+            new Dictionary<ArenaType, (int, int)>
+            {
+                { ArenaType.Season, (200, -100) },
+                { ArenaType.Championship, (200, -100) }
             };
 
         public static int GetMedalItemId(int championshipId, int round) =>
