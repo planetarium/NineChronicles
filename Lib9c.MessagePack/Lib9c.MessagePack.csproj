@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Lib9c\Lib9c.csproj" />
+    <ProjectReference Include="..\Lib9c.Renderers\Lib9c.Renderers.csproj" />
   </ItemGroup>
 
 </Project>

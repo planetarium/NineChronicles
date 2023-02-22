@@ -5,7 +5,7 @@
     using System.Collections.Immutable;
     using System.Linq;
     using Lib9c.DevExtensions.Action;
-    using Lib9c.Renderer;
+    using Lib9c.Renderers;
     using Lib9c.Tests.Action;
     using Libplanet;
     using Libplanet.Assets;

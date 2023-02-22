@@ -12,7 +12,6 @@ using Libplanet.Action;
 using Serilog;
 using Nekoyume.Model.State;
 using Libplanet.Assets;
-using Libplanet.Tx;
 
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
@@ -34,28 +33,6 @@ namespace Nekoyume.Action
         public abstract IValue PlainValue { get; }
         public abstract void LoadPlainValue(IValue plainValue);
         public abstract IAccountStateDelta Execute(IActionContext context);
-
-        public struct ActionEvaluation<T>
-            where T : ActionBase
-        {
-            public T Action { get; set; }
-
-            public Address Signer { get; set; }
-
-            public long BlockIndex { get; set; }
-
-            public TxId? TxId { get; set; }
-
-            public IAccountStateDelta OutputStates { get; set; }
-
-            public Exception Exception { get; set; }
-
-            public IAccountStateDelta PreviousStates { get; set; }
-
-            public int RandomSeed { get; set; }
-
-            public Dictionary<string, IValue> Extra { get; set; }
-        }
 
         /// <summary>
         /// returns "[Signer Address, AvatarState Address, ...]"
