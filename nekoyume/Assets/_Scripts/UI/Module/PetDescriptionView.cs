@@ -73,9 +73,14 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void Initialize(PetSheet.Row petRow, System.Action<int?> onClick)
+        public void Initialize(PetSheet.Row petRow, System.Action<int?> onClick, bool lockPetOnSelected)
         {
             _onClick = onClick;
+            if (lockPetOnSelected)
+            {
+                _onClick += States.Instance.PetStates.LockPetTemporarily;
+            }
+
             _petId = petRow.Id;
             Grade = petRow.Grade;
             titleText.text = L10nManager.Localize($"PET_NAME_{petRow.Id}");

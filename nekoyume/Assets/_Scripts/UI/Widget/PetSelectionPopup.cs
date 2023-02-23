@@ -26,7 +26,7 @@ namespace Nekoyume.UI
 
         public override void Initialize()
         {
-            petInventory.Initialize(true);
+            petInventory.Initialize(true, true);
         }
 
         public void Show(Action<int?> onSelected, bool ignoreShowAnimation = false)
