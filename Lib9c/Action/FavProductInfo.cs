@@ -7,27 +7,25 @@ using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
 {
-    public class ProductInfo
+    public class FavProductInfo : IProductInfo
     {
-        public Guid ProductId;
-        public FungibleAssetValue Price;
-        public Address AgentAddress;
-        public Address AvatarAddress;
-        public ProductType Type;
-        public bool Legacy;
+        public Guid ProductId { get; set; }
+        public FungibleAssetValue Price { get; set; }
+        public Address AgentAddress { get; set; }
+        public Address AvatarAddress { get; set; }
+        public ProductType Type { get; set; }
 
-        public ProductInfo()
+        public FavProductInfo()
         {
         }
 
-        public ProductInfo(List serialized)
+        public FavProductInfo(List serialized)
         {
             ProductId = serialized[0].ToGuid();
             Price = serialized[1].ToFungibleAssetValue();
             AgentAddress = serialized[2].ToAddress();
             AvatarAddress = serialized[3].ToAddress();
             Type = serialized[4].ToEnum<ProductType>();
-            Legacy = serialized[5].ToBoolean();
         }
 
         public IValue Serialize()
@@ -37,8 +35,15 @@ namespace Nekoyume.Action
                 .Add(Price.Serialize())
                 .Add(AgentAddress.Serialize())
                 .Add(AvatarAddress.Serialize())
-                .Add(Type.Serialize())
-                .Add(Legacy.Serialize());
+                .Add(Type.Serialize());
+        }
+
+        public void ValidateType()
+        {
+            if (Type != ProductType.FungibleAssetValue)
+            {
+                throw new InvalidProductTypeException($"{nameof(FavProductInfo)} does not support {Type}");
+            }
         }
     }
 }

@@ -343,10 +343,10 @@ namespace Lib9c.Tests.Action
                 ReRegisterProduct _ => new ReRegisterProduct
                 {
                     AvatarAddress = new PrivateKey().ToAddress(),
-                    ReRegisterInfos = new List<(ProductInfo, IRegisterInfo)>
+                    ReRegisterInfos = new List<(IProductInfo, IRegisterInfo)>
                     {
                         (
-                            new ProductInfo
+                            new ItemProductInfo
                             {
                                 AvatarAddress = new PrivateKey().ToAddress(),
                                 AgentAddress = new PrivateKey().ToAddress(),
@@ -364,7 +364,7 @@ namespace Lib9c.Tests.Action
                             }
                         ),
                         (
-                            new ProductInfo
+                            new ItemProductInfo
                             {
                                 AvatarAddress = new PrivateKey().ToAddress(),
                                 AgentAddress = new PrivateKey().ToAddress(),
@@ -382,7 +382,7 @@ namespace Lib9c.Tests.Action
                             }
                         ),
                         (
-                            new ProductInfo
+                            new FavProductInfo
                             {
                                 AvatarAddress = new PrivateKey().ToAddress(),
                                 AgentAddress = new PrivateKey().ToAddress(),
@@ -403,9 +403,9 @@ namespace Lib9c.Tests.Action
                 CancelProductRegistration _ => new CancelProductRegistration
                 {
                     AvatarAddress = new PrivateKey().ToAddress(),
-                    ProductInfos = new List<ProductInfo>
+                    ProductInfos = new List<IProductInfo>
                     {
-                        new ProductInfo
+                        new FavProductInfo
                         {
                             AvatarAddress = new PrivateKey().ToAddress(),
                             AgentAddress = new PrivateKey().ToAddress(),
@@ -418,15 +418,17 @@ namespace Lib9c.Tests.Action
                 BuyProduct _ => new BuyProduct
                 {
                     AvatarAddress = new PrivateKey().ToAddress(),
-                    ProductInfos = new List<ProductInfo>
+                    ProductInfos = new List<IProductInfo>
                     {
-                        new ProductInfo
+                        new ItemProductInfo
                         {
                             AvatarAddress = new PrivateKey().ToAddress(),
                             AgentAddress = new PrivateKey().ToAddress(),
                             Price = 1 * _currency,
                             ProductId = Guid.NewGuid(),
                             Type = ProductType.Fungible,
+                            ItemSubType = ItemSubType.Armor,
+                            TradableId = Guid.NewGuid(),
                         },
                     },
                 },
