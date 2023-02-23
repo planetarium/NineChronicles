@@ -8,7 +8,6 @@ on:
 env:
   UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
   UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
   UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
 
 jobs:
