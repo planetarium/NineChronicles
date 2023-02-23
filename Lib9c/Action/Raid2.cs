@@ -22,7 +22,7 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1419
     /// </summary>
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100340ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100340ObsoleteIndex)]
     [ActionType("raid2")]
     public class Raid2 : GameAction, IRaidV1
     {
@@ -46,7 +46,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100340ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100340ObsoleteIndex, context);
 
             var addressHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             var started = DateTimeOffset.UtcNow;

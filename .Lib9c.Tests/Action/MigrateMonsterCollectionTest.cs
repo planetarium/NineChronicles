@@ -92,7 +92,7 @@ namespace Lib9c.Tests.Action
         {
             Address monsterCollectionAddress = MonsterCollectionState.DeriveAddress(_signer, 0);
             var monsterCollectionState = new MonsterCollectionState(
-                monsterCollectionAddress, 1, BlockPolicySource.V100220ObsoleteIndex - MonsterCollectionState.RewardInterval);
+                monsterCollectionAddress, 1, ActionObsoleteConfig.V100220ObsoleteIndex - MonsterCollectionState.RewardInterval);
             var currency = _state.GetGoldCurrency();
             var states = _state
                 .SetState(monsterCollectionAddress, monsterCollectionState.Serialize())
@@ -102,7 +102,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousStates = states,
                 Signer = _signer,
-                BlockIndex = BlockPolicySource.V100220ObsoleteIndex + 1,
+                BlockIndex = ActionObsoleteConfig.V100220ObsoleteIndex + 1,
                 Random = new TestRandom(),
             });
 

@@ -7,7 +7,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
-using Nekoyume.BlockChain.Policy;
+
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
@@ -485,7 +485,7 @@ namespace Nekoyume.Action
 
                 // This conditional logic is same as written in the
                 // MimisbrunnrBattle("mimisbrunnr_battle10") action.
-                if (blockIndex < BlockPolicySource.V100310ExecutedBlockIndex)
+                if (blockIndex < ActionObsoleteConfig.V100310ExecutedBlockIndex)
                 {
                     var player = simulator.Player;
                     foreach (var key in player.monsterMapForBeforeV100310.Keys)

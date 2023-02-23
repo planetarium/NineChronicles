@@ -301,7 +301,7 @@ namespace Lib9c.Tests.Action
 
             var blockIndex = roundData.StartBlockIndex + nextBlockIndex;
 
-            Assert.True(blockIndex > BlockPolicySource.V100301ExecutedBlockIndex);
+            Assert.True(blockIndex > ActionObsoleteConfig.V100301ExecutedBlockIndex);
 
             _state = action.Execute(new ActionContext
             {

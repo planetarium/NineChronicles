@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using Bencodex.Types;
 using Lib9c.Formatters;
+using Lib9c.Renderers;
 using Libplanet;
 using Libplanet.Action;
 using MessagePack;
@@ -69,9 +70,9 @@ namespace Nekoyume.Action
             Extra = extra;
         }
 
-        public ActionBase.ActionEvaluation<ActionBase> ToActionEvaluation()
+        public ActionEvaluation<ActionBase> ToActionEvaluation()
         {
-            return new ActionBase.ActionEvaluation<ActionBase>
+            return new ActionEvaluation<ActionBase>
             {
                 Action =  Action is null ? new RewardGold() : Action.InnerAction,
                 Signer = Signer,

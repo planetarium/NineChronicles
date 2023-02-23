@@ -1,5 +1,6 @@
 namespace Lib9c.Tests.Util
 {
+    using System;
     using System.Collections.Generic;
     using System.Globalization;
     using Libplanet;
@@ -26,7 +27,10 @@ namespace Lib9c.Tests.Util
                 slotIndex));
             var slotState = new CombinationSlotState(
                 slotAddress,
-                GameConfig.RequireClearedStageLevel.CombinationEquipmentAction
+                // CombinationEquipment: 3
+                // CombinationConsumable: 6
+                // ItemEnhancement: 9
+                GameConfig.RequireClearedStageLevel.ItemEnhancementAction
             );
             return state.SetState(slotAddress, slotState.Serialize());
         }
@@ -60,7 +64,11 @@ namespace Lib9c.Tests.Util
             int stage
         )
         {
-            var worldInformation = new WorldInformation(0, tableSheets.WorldSheet, stage);
+            var worldInformation = new WorldInformation(
+                0,
+                tableSheets.WorldSheet,
+                Math.Max(stage, GameConfig.RequireClearedStageLevel.ItemEnhancementAction)
+            );
             return state.SetState(worldInformationAddress, worldInformation.Serialize());
         }
     }

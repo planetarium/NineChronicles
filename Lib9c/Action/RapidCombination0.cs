@@ -15,7 +15,7 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
     [ActionType("rapid_combination")]
     public class RapidCombination0 : GameAction, IRapidCombinationV1
     {
@@ -66,7 +66,7 @@ namespace Nekoyume.Action
                     .SetState(slotAddress, MarkChanged);
             }
 
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
@@ -139,18 +139,13 @@ namespace Nekoyume.Action
 
         public static int CalculateHourglassCount(GameConfigState state, long diff)
         {
-            return CalculateHourglassCount(state.HourglassPerBlock, diff);
-        }
-
-        public static int CalculateHourglassCount(decimal hourglassPerBlock, long diff)
-        {
             if (diff <= 0)
             {
                 return 0;
             }
 
-            var cost = Math.Ceiling(diff / hourglassPerBlock);
-            return Math.Max(1, (int)cost);
+            var cost = Math.Ceiling((decimal) diff / state.HourglassPerBlock);
+            return Math.Max(1, (int) cost);
         }
     }
 }

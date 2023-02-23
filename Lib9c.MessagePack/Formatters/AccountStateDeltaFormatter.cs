@@ -8,8 +8,6 @@ using Libplanet.Action;
 using Libplanet.Assets;
 using MessagePack;
 using MessagePack.Formatters;
-using Nekoyume;
-using Nekoyume.Action;
 
 namespace Lib9c.Formatters
 {
@@ -33,8 +31,8 @@ namespace Lib9c.Formatters
                             FungibleAssetValue b = value.GetBalance(ua.Key, c);
                             return new Bencodex.Types.Dictionary(new[]
                             {
-                                new KeyValuePair<IKey, IValue>((Text) "address", (Binary) ua.Key.ToByteArray()),
-                                new KeyValuePair<IKey, IValue>((Text) "currency", CurrencyExtensions.Serialize(c)),
+                                new KeyValuePair<IKey, IValue>((Text) "address", (Binary) ua.Key.ByteArray),
+                                new KeyValuePair<IKey, IValue>((Text) "currency", c.Serialize()),
                                 new KeyValuePair<IKey, IValue>((Text) "amount", (Integer) b.RawValue),
                             });
                         }
@@ -44,7 +42,7 @@ namespace Lib9c.Formatters
             var totalSupply = new Dictionary(
                 value.TotalSupplyUpdatedCurrencies.Select(currency =>
                     new KeyValuePair<IKey, IValue>(
-                        (Binary)(IValue)CurrencyExtensions.Serialize(currency),
+                        (Binary)new Codec().Encode(currency.Serialize()),
                         (Integer)value.GetTotalSupply(currency).RawValue)));
 
             var bdict = new Dictionary(new[]
@@ -67,7 +65,7 @@ namespace Lib9c.Formatters
                 throw new NullReferenceException($"ReadBytes from serialized {nameof(IAccountStateDelta)} is null.");
             }
 
-            return new ActionBase.AccountStateDelta(new Codec().Decode(bytes.Value.ToArray()));
+            return new AccountStateDelta(new Codec().Decode(bytes.Value.ToArray()));
         }
     }
 }

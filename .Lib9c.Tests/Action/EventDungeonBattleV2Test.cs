@@ -353,7 +353,7 @@ namespace Lib9c.Tests.Action
             int eventDungeonId = 10010001;
             int eventDungeonStageId = 10010001;
             var csv = $@"id,_name,start_block_index,dungeon_end_block_index,dungeon_tickets_max,dungeon_tickets_reset_interval_block_range,dungeon_ticket_price,dungeon_ticket_additional_price,dungeon_exp_seed_value,recipe_end_block_index
-            1001,2022 Summer Event,{BlockPolicySource.V100301ExecutedBlockIndex},{BlockPolicySource.V100301ExecutedBlockIndex + 100},5,7200,5,2,1,5018000";
+            1001,2022 Summer Event,{ActionObsoleteConfig.V100301ExecutedBlockIndex},{ActionObsoleteConfig.V100301ExecutedBlockIndex + 100},5,7200,5,2,1,5018000";
             _initialStates =
                 _initialStates.SetState(
                     Addresses.GetSheetAddress<EventScheduleSheet>(),
