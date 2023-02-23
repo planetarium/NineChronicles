@@ -990,7 +990,7 @@ GameObject:
   - component: {fileID: 376064458489931527}
   - component: {fileID: 52658038739289736}
   m_Layer: 5
-  m_Name: Pet_Slot
+  m_Name: PetDescriptionView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1095,6 +1095,7 @@ MonoBehaviour:
   emptyObject: {fileID: 6313938632139445230}
   titleText: {fileID: 3833489486950959359}
   gradeBg: {fileID: 4955925824375108384}
+  gradeBgHsv: {fileID: 3263585227156027690}
   petIconImage: {fileID: 5349964592310785668}
   levelText: {fileID: 9140069938340298782}
   equippedObject: {fileID: 1559769652950443755}

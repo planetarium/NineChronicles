@@ -1,3 +1,4 @@
+using Coffee.UIEffects;
 using Mono.Cecil;
 using Nekoyume.Game;
 using Nekoyume.L10n;
@@ -33,6 +34,9 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private Image gradeBg;
+
+        [SerializeField]
+        private UIHsvModifier gradeBgHsv;
 
         [SerializeField]
         private Image petIconImage;
@@ -71,9 +75,13 @@ namespace Nekoyume.UI.Module
             _onClick = onClick;
             _petId = petRow.Id;
             titleText.text = L10nManager.Localize($"PET_NAME_{petRow.Id}");
-            gradeBg.overrideSprite = itemViewDataObject
-                .GetItemViewData(petRow.Grade)
-                .GradeBackground;
+
+            var itemViewData = itemViewDataObject.GetItemViewData(petRow.Grade);
+            gradeBg.overrideSprite = itemViewData.GradeBackground;
+            gradeBgHsv.range = itemViewData.GradeHsvRange;
+            gradeBgHsv.hue = itemViewData.GradeHsvHue;
+            gradeBgHsv.value = itemViewData.GradeHsvValue;
+            gradeBgHsv.saturation = itemViewData.GradeHsvSaturation;
 
             var petData = petDataObject.GetPetData(petRow.Id);
             petIconImage.overrideSprite = petData.icon;
@@ -119,6 +127,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
+            levelText.text = $"Lv.{petLevel}";
             descriptionText.text = L10nManager.Localize(
                 $"PET_DESCRIPTION_{optionInfo.OptionType}",
                 optionInfo.OptionValue);
