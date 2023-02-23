@@ -1,4 +1,4 @@
-﻿namespace Lib9c.Tests.Action
+namespace Lib9c.Tests.Action
 {
     using System;
     using System.Globalization;
@@ -512,10 +512,12 @@
             Assert.Equal(0, equipment.optionCountFromCombination);
             CombinationEquipment.AddAndUnlockOption(
                 _agentState,
+                null,
                 equipment,
                 _random,
                 subRecipe,
                 _tableSheets.EquipmentItemOptionSheet,
+                _tableSheets.PetOptionSheet,
                 _tableSheets.SkillSheet
             );
             Assert.True(equipment.optionCountFromCombination > 0);

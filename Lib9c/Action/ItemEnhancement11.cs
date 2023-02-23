@@ -19,7 +19,6 @@ using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
-using Nekoyume.TableData.Pet;
 using Serilog;
 
 using static Lib9c.SerializeKeys;
@@ -27,11 +26,11 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Updated at https://github.com/planetarium/lib9c/pull/1711
+    /// Updated at https://github.com/planetarium/lib9c/pull/1164
     /// </summary>
     [Serializable]
-    [ActionType("item_enhancement12")]
-    public class ItemEnhancement : GameAction, IItemEnhancementV3
+    [ActionType("item_enhancement11")]
+    public class ItemEnhancement11 : GameAction, IItemEnhancementV2
     {
         public enum EnhancementResult
         {
@@ -44,13 +43,11 @@ namespace Nekoyume.Action
         public Guid materialId;
         public Address avatarAddress;
         public int slotIndex;
-        public int? petId;
 
-        Guid IItemEnhancementV3.ItemId => itemId;
-        Guid IItemEnhancementV3.MaterialId => materialId;
-        Address IItemEnhancementV3.AvatarAddress => avatarAddress;
-        int IItemEnhancementV3.SlotIndex => slotIndex;
-        int? IItemEnhancementV3.PetId => petId;
+        public Guid ItemId => itemId;
+        public Guid MaterialId => materialId;
+        public Address AvatarAddress => avatarAddress;
+        public int SlotIndex => slotIndex;
 
         [Serializable]
         public class ResultModel : AttachmentActionResult
@@ -108,7 +105,6 @@ namespace Nekoyume.Action
                     ["materialId"] = materialId.Serialize(),
                     ["avatarAddress"] = avatarAddress.Serialize(),
                     ["slotIndex"] = slotIndex.Serialize(),
-                    ["petId"] = petId.Serialize(),
                 };
 
                 return dict.ToImmutableDictionary();
@@ -120,13 +116,9 @@ namespace Nekoyume.Action
             itemId = plainValue["itemId"].ToGuid();
             materialId = plainValue["materialId"].ToGuid();
             avatarAddress = plainValue["avatarAddress"].ToAddress();
-            if (plainValue.TryGetValue((Text) "slotIndex", out var slotIndexValue))
+            if (plainValue.TryGetValue((Text) "slotIndex", out var value))
             {
-                slotIndex = slotIndexValue.ToInteger();
-            }
-            if (plainValue.TryGetValue((Text) "petId", out var petIdValue))
-            {
-                petId = petIdValue.ToNullableInteger();
+                slotIndex = value.ToInteger();
             }
         }
 
@@ -194,25 +186,6 @@ namespace Nekoyume.Action
             {
                 throw new CombinationSlotUnlockException($"{addressesHex}Aborted as the slot state was failed to invalid. #{slotIndex}");
             }
-
-            // Validate PetState
-            PetState petState = null;
-            if (petId.HasValue)
-            {
-                var petStateAddress = PetState.DeriveAddress(avatarAddress, petId.Value);
-                if (!states.TryGetState(petStateAddress, out List rawState))
-                {
-                    throw new FailedLoadStateException($"{addressesHex}Aborted as the {nameof(PetState)} was failed to load.");
-                }
-                petState = new PetState(rawState);
-
-                if (!petState.Validate(context.BlockIndex))
-                {
-                    throw new PetIsLockedException($"{addressesHex}Aborted as the pet is already in use.");
-                }
-            }
-            // ~Validate PetState
-
             sw.Stop();
             Log.Verbose("{AddressesHex}ItemEnhancement Get Equipment: {Elapsed}", addressesHex, sw.Elapsed);
 
@@ -367,19 +340,7 @@ namespace Nekoyume.Action
                 }
             }
 
-            var requiredBlockCount = (long)GetRequiredBlockCount(row, equipmentResult);
-
-            // Apply block time reduction of pet option if possible
-            if (!(petState is null))
-            {
-                var gameConfigState = states.GetGameConfigState();
-                requiredBlockCount = PetHelper.CalculateReducedBlockOnCraft(
-                    requiredBlockCount,
-                    gameConfigState.RequiredAppraiseBlock,
-                    petState,
-                    states.GetSheet<PetOptionSheet>());
-            }
-
+            var requiredBlockCount = GetRequiredBlockCount(row, equipmentResult);
             var requiredBlockIndex = ctx.BlockIndex + requiredBlockCount;
             enhancementEquipment.Update(requiredBlockIndex);
 
@@ -411,15 +372,7 @@ namespace Nekoyume.Action
             avatarState.UpdateQuestRewards(materialSheet);
 
             // Update slot state
-            slotState.Update(result, ctx.BlockIndex, requiredBlockIndex, petId);
-
-            // Update Pet
-            if (!(petState is null))
-            {
-                petState.Update(requiredBlockIndex);
-                var petStateAddress = PetState.DeriveAddress(avatarAddress, petState.PetId);
-                states = states.SetState(petStateAddress, petState.Serialize());
-            }
+            slotState.Update(result, ctx.BlockIndex, requiredBlockIndex);
 
             // Set state
             sw.Restart();

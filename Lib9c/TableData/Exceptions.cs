@@ -57,6 +57,16 @@ namespace Nekoyume.TableData
         {
         }
 
+        public SheetRowNotFoundException(
+            string actionType,
+            string addressesHex,
+            string sheetName,
+            int intKey)
+            : base($"[{actionType}][{addressesHex}]{sheetName}:" +
+                   $" Key - {intKey.ToString(CultureInfo.InvariantCulture)}")
+        {
+        }
+
         protected SheetRowNotFoundException(
             SerializationInfo info,
             StreamingContext context)
