@@ -15,7 +15,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100096ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100096ObsoleteIndex)]
     [ActionType("create_avatar5")]
     public class CreateAvatar5 : GameAction, ICreateAvatarV2
     {

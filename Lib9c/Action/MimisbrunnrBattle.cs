@@ -8,7 +8,7 @@ using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
-using Nekoyume.BlockChain.Policy;
+
 using Nekoyume.Extensions;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
@@ -395,7 +395,7 @@ namespace Nekoyume.Action
 
             // This conditional logic is same as written in the
             // HackAndSlash("hack_and_slash18") action.
-            if (context.BlockIndex < BlockPolicySource.V100310ExecutedBlockIndex)
+            if (context.BlockIndex < ActionObsoleteConfig.V100310ExecutedBlockIndex)
             {
                 var player = simulator.Player;
                 foreach (var key in player.monsterMapForBeforeV100310.Keys)

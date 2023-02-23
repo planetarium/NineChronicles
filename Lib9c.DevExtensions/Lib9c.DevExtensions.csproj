@@ -20,6 +20,7 @@
     <ProjectReference Include="..\.Libplanet\Libplanet.Stun\Libplanet.Stun.csproj" />
     <ProjectReference Include="..\.Libplanet\Libplanet\Libplanet.csproj" />
     <ProjectReference Include="..\Lib9c\Lib9c.csproj" />
+    <ProjectReference Include="..\Lib9c.Policy\Lib9c.Policy.csproj" />
   </ItemGroup>
 
   <ItemGroup>

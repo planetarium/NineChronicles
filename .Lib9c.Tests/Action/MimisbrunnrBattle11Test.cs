@@ -162,7 +162,7 @@ namespace Lib9c.Tests.Action
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,
-                BlockIndex = BlockPolicySource.V100301ExecutedBlockIndex,
+                BlockIndex = ActionObsoleteConfig.V100301ExecutedBlockIndex,
             });
 
             var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);

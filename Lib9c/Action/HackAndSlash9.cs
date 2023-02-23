@@ -17,7 +17,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100086ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100086ObsoleteIndex)]
     [ActionType("hack_and_slash9")]
     public class HackAndSlash9 : GameAction, IHackAndSlashV4
     {
@@ -84,7 +84,7 @@ namespace Nekoyume.Action
                 return states.SetState(ctx.Signer, MarkChanged);
             }
 
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100086ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100086ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
