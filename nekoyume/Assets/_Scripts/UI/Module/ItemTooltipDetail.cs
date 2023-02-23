@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.EnumType;
+using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
+using Nekoyume.State;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,6 +38,8 @@ namespace Nekoyume.UI.Module
         {
             public GameObject itemDescriptionGameObject;
             public TextMeshProUGUI itemDescriptionText;
+            public GameObject crystalGameObject;
+            public TextMeshProUGUI crystalText;
             public GameObject levelLimitGameObject;
             public TextMeshProUGUI levelLimitText;
         }
@@ -145,6 +149,7 @@ namespace Nekoyume.UI.Module
             descriptionArea.levelLimitText.color = isUsable ?
                 Palette.GetColor(ColorType.ButtonEnabled) : Palette.GetColor(ColorType.TextDenial);
             descriptionArea.levelLimitGameObject.SetActive(level > 0);
+            descriptionArea.crystalGameObject.SetActive(itemBase.ItemType == ItemType.Equipment);
 
             switch (itemBase)
             {
@@ -156,7 +161,7 @@ namespace Nekoyume.UI.Module
 
                     var optionInfo = new ItemOptionInfo(equipment);
                     var (mainStatType, _, mainStatTotalValue) = optionInfo.MainStat;
-                    for(var i = 0; i < statViewList.Count; i++)
+                    for (var i = 0; i < statViewList.Count; i++)
                     {
                         var statView = statViewList[i];
                         if (i == 0)
@@ -173,6 +178,14 @@ namespace Nekoyume.UI.Module
                         AddStat(type, value, count);
                         statCount += count;
                     }
+
+                    var crystal = CrystalCalculator.CalculateCrystal(
+                        new[] { equipment },
+                        false,
+                        TableSheets.Instance.CrystalEquipmentGrindingSheet,
+                        TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet,
+                        States.Instance.StakingLevel).MajorUnit;
+                    descriptionArea.crystalText.text = L10nManager.Localize("UI_CRYSTAL_VALUE", crystal);
 
                     break;
                 }

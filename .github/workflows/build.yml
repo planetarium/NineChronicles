@@ -19,7 +19,6 @@ jobs:
           - 2021.3.5f1
         targetPlatform:
           - Windows
-          - macOS
           - Linux
     steps:
       - name: Set environment variables
@@ -95,7 +94,6 @@ jobs:
       matrix:
         targetPlatform:
           - Windows
-          - macOS
           - Linux
     needs: build-unity
     if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/rc-') || github.ref == 'refs/heads/previewnet' || github.ref == 'refs/heads/2022q2' }}
