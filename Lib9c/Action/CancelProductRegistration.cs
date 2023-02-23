@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Linq;
 using Bencodex.Types;
 using Lib9c.Model.Order;
@@ -20,7 +19,7 @@ namespace Nekoyume.Action
     public class CancelProductRegistration : GameAction
     {
         public Address AvatarAddress;
-        public List<ProductInfo> ProductInfos;
+        public List<IProductInfo> ProductInfos;
         public override IAccountStateDelta Execute(IActionContext context)
         {
             IAccountStateDelta states = context.PreviousStates;
@@ -34,11 +33,14 @@ namespace Nekoyume.Action
                 throw new ListEmptyException("ProductInfos was empty.");
             }
 
-            // 주소 검증
-            if (ProductInfos.Any(p => p.AvatarAddress != AvatarAddress) ||
-                ProductInfos.Any(p => p.AgentAddress != context.Signer))
+            foreach (var productInfo in ProductInfos)
             {
-                throw new InvalidAddressException();
+                productInfo.ValidateType();
+                if (productInfo.AvatarAddress != AvatarAddress ||
+                    productInfo.AgentAddress != context.Signer)
+                {
+                    throw new InvalidAddressException();
+                }
             }
 
             if (!states.TryGetAvatarStateV2(context.Signer, AvatarAddress, out var avatarState,
@@ -62,6 +64,7 @@ namespace Nekoyume.Action
             }
             else
             {
+                // cancel order before product registered case.
                 var marketState = states.TryGetState(Addresses.Market, out List rawMarketList)
                     ? new MarketState(rawMarketList)
                     : new MarketState();
@@ -72,15 +75,9 @@ namespace Nekoyume.Action
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             foreach (var productInfo in ProductInfos)
             {
-                if (productInfo.Legacy)
+                if (productInfo is ItemProductInfo {Legacy: true})
                 {
                     var productType = productInfo.Type;
-                    var avatarAddress = avatarState.address;
-                    if (productType == ProductType.FungibleAssetValue)
-                    {
-                        // 잘못된 타입
-                        throw new InvalidProductTypeException($"Order not support {productType}");
-                    }
                     var orderAddress = Order.DeriveAddress(productInfo.ProductId);
                     if (!states.TryGetState(orderAddress, out Dictionary rawOrder))
                     {
@@ -109,12 +106,6 @@ namespace Nekoyume.Action
                             throw new ArgumentOutOfRangeException(nameof(order));
                     }
 
-                    if (order.SellerAvatarAddress != avatarAddress ||
-                        order.SellerAgentAddress != context.Signer)
-                    {
-                        throw new InvalidAddressException();
-                    }
-
                     states = SellCancellation.Cancel(context, states, avatarState, addressesHex,
                         order);
                 }
@@ -141,7 +132,7 @@ namespace Nekoyume.Action
             return states;
         }
 
-        public static IAccountStateDelta Cancel(ProductsState productsState, ProductInfo productInfo, IAccountStateDelta states,
+        public static IAccountStateDelta Cancel(ProductsState productsState, IProductInfo productInfo, IAccountStateDelta states,
             AvatarState avatarState, IActionContext context)
         {
             var productId = productInfo.ProductId;
@@ -153,11 +144,8 @@ namespace Nekoyume.Action
             productsState.ProductIds.Remove(productId);
 
             var productAddress = Product.DeriveAddress(productId);
-            var product = ProductFactory.Deserialize((List) states.GetState(productAddress));
-            if (product.SellerAgentAddress != avatarState.agentAddress || product.SellerAvatarAddress != avatarState.address)
-            {
-                throw new InvalidAddressException();
-            }
+            var product = ProductFactory.DeserializeProduct((List) states.GetState(productAddress));
+            product.Validate(productInfo);
 
             switch (product)
             {
@@ -203,7 +191,7 @@ namespace Nekoyume.Action
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
             AvatarAddress = plainValue["a"].ToAddress();
-            ProductInfos = plainValue["p"].ToList(s => new ProductInfo((List) s));
+            ProductInfos = plainValue["p"].ToList(s => ProductFactory.DeserializeProductInfo((List) s));
         }
     }
 }

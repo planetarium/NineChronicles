@@ -1,4 +1,6 @@
+using System;
 using Bencodex.Types;
+using Nekoyume.Action;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 
@@ -25,6 +27,25 @@ namespace Nekoyume.Model.Market
             return serialized
                 .Add(TradableItem.Serialize())
                 .Add(ItemCount.Serialize());
+        }
+
+        public override void Validate(IProductInfo productInfo)
+        {
+            base.Validate(productInfo);
+            var itemProductInfo = (ItemProductInfo) productInfo;
+            if (itemProductInfo.Legacy)
+            {
+                throw new NotSupportedException();
+            }
+            if (itemProductInfo.TradableId != TradableItem.TradableId)
+            {
+                throw new InvalidTradableIdException("");
+            }
+
+            if (itemProductInfo.ItemSubType != TradableItem.ItemSubType)
+            {
+                throw new InvalidItemTypeException("");
+            }
         }
     }
 }

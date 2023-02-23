@@ -12,5 +12,8 @@ namespace Nekoyume.Action
         public ProductType Type { get; set; }
 
         public IValue Serialize();
+        public void ValidatePrice(Currency ncg);
+        public void ValidateAddress(Address avatarAddress);
+        public void Validate();
     }
 }

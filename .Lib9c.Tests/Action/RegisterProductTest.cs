@@ -10,6 +10,7 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Battle;
     using Nekoyume.Helper;
     using Nekoyume.Model;
     using Nekoyume.Model.Item;
@@ -19,22 +20,24 @@ namespace Lib9c.Tests.Action
 
     public class RegisterProductTest
     {
+        private static readonly Address AvatarAddress =
+            new Address("47d082a115c63e7b58b1532d20e631538eafadde");
+
+        private static readonly Currency Gold = Currency.Legacy("NCG", 2, minters: null);
+
         private readonly Address _agentAddress;
-        private readonly Address _avatarAddress;
         private readonly AvatarState _avatarState;
         private readonly TableSheets _tableSheets;
-        private readonly Currency _currency;
         private IAccountStateDelta _initialState;
 
         public RegisterProductTest()
         {
             _agentAddress = new PrivateKey().ToAddress();
             var agentState = new AgentState(_agentAddress);
-            _avatarAddress = new PrivateKey().ToAddress();
             var rankingMapAddress = new PrivateKey().ToAddress();
             _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
             _avatarState = new AvatarState(
-                _avatarAddress,
+                AvatarAddress,
                 _agentAddress,
                 0,
                 _tableSheets.GetAvatarSheets(),
@@ -46,13 +49,143 @@ namespace Lib9c.Tests.Action
                     _tableSheets.WorldSheet,
                     GameConfig.RequireClearedStageLevel.ActionsInShop),
             };
-            agentState.avatarAddresses[0] = _avatarAddress;
+            agentState.avatarAddresses[0] = AvatarAddress;
 
-            _currency = Currency.Legacy("NCG", 2, minters: null);
             _initialState = new State()
-                .SetState(GoldCurrencyState.Address, new GoldCurrencyState(_currency).Serialize())
+                .SetState(GoldCurrencyState.Address, new GoldCurrencyState(Gold).Serialize())
                 .SetState(_agentAddress, agentState.Serialize())
-                .SetState(_avatarAddress, _avatarState.Serialize());
+                .SetState(AvatarAddress, _avatarState.Serialize());
+        }
+
+        public static IEnumerable<object[]> Execute_Validate_MemberData()
+        {
+            yield return new object[]
+            {
+                new ValidateMember
+                {
+                    RegisterInfos = new List<IRegisterInfo>(),
+                    Exc = typeof(ListEmptyException),
+                },
+                new ValidateMember
+                {
+                    RegisterInfos = new IRegisterInfo[]
+                    {
+                        new RegisterInfo
+                        {
+                            AvatarAddress = new PrivateKey().ToAddress(),
+                        },
+                        new AssetInfo
+                        {
+                            AvatarAddress = new PrivateKey().ToAddress(),
+                        },
+                    },
+                    Exc = typeof(InvalidAddressException),
+                },
+                new ValidateMember
+                {
+                    RegisterInfos = new IRegisterInfo[]
+                    {
+                        new RegisterInfo
+                        {
+                            AvatarAddress = AvatarAddress,
+                            Price = 0 * Gold,
+                        },
+                        new RegisterInfo
+                        {
+                            AvatarAddress = AvatarAddress,
+                            Price = 0 * CrystalCalculator.CRYSTAL,
+                        },
+                        new RegisterInfo
+                        {
+                            AvatarAddress = AvatarAddress,
+                            Price = (10 * Gold).DivRem(3, out _),
+                        },
+                        new AssetInfo
+                        {
+                            AvatarAddress = AvatarAddress,
+                            Price = 0 * Gold,
+                        },
+                        new AssetInfo
+                        {
+                            AvatarAddress = AvatarAddress,
+                            Price = 1 * CrystalCalculator.CRYSTAL,
+                        },
+                        new AssetInfo
+                        {
+                            AvatarAddress = AvatarAddress,
+                            Price = (10 * Gold).DivRem(3, out _),
+                        },
+                        new AssetInfo
+                        {
+                            AvatarAddress = AvatarAddress,
+                            Type = ProductType.FungibleAssetValue,
+                            Price = 1 * Gold,
+                            Asset = 0 * RuneHelper.StakeRune,
+                        },
+                    },
+                    Exc = typeof(InvalidPriceException),
+                },
+                new ValidateMember
+                {
+                    RegisterInfos = new IRegisterInfo[]
+                    {
+                        new RegisterInfo
+                        {
+                            AvatarAddress = AvatarAddress,
+                            Price = 1 * Gold,
+                            Type = ProductType.FungibleAssetValue,
+                        },
+                        new AssetInfo
+                        {
+                            AvatarAddress = AvatarAddress,
+                            Price = 1 * Gold,
+                            Type = ProductType.Fungible,
+                        },
+                        new AssetInfo
+                        {
+                            AvatarAddress = AvatarAddress,
+                            Price = 1 * Gold,
+                            Type = ProductType.NonFungible,
+                        },
+                    },
+                    Exc = typeof(InvalidProductTypeException),
+                },
+                new ValidateMember
+                {
+                    RegisterInfos = new IRegisterInfo[]
+                    {
+                        new RegisterInfo
+                        {
+                            AvatarAddress = AvatarAddress,
+                            Price = 1 * Gold,
+                            Type = ProductType.NonFungible,
+                            ItemCount = 2,
+                        },
+                        new RegisterInfo
+                        {
+                            AvatarAddress = AvatarAddress,
+                            Price = 1 * Gold,
+                            Type = ProductType.Fungible,
+                            ItemCount = 0,
+                        },
+                    },
+                    Exc = typeof(InvalidItemCountException),
+                },
+                new ValidateMember
+                {
+                    RegisterInfos = new IRegisterInfo[]
+                    {
+                        new AssetInfo
+                        {
+                            AvatarAddress = AvatarAddress,
+                            Price = 1 * Gold,
+                            Type = ProductType.FungibleAssetValue,
+                            Asset = 1 * CrystalCalculator.CRYSTAL,
+                        },
+                    },
+                    Exc = typeof(InvalidCurrencyException),
+                },
+            };
         }
 
         [Fact]
@@ -68,33 +201,34 @@ namespace Lib9c.Tests.Action
             Assert.Equal(2, _avatarState.inventory.Items.Count);
             var asset = 3 * RuneHelper.DailyRewardRune;
             _initialState = _initialState
-                .SetState(_avatarAddress, _avatarState.Serialize())
-                .MintAsset(_avatarAddress, asset);
+                .SetState(AvatarAddress, _avatarState.Serialize())
+                .MintAsset(AvatarAddress, asset);
             var action = new RegisterProduct
             {
+                AvatarAddress = AvatarAddress,
                 RegisterInfos = new List<IRegisterInfo>
                 {
                     new RegisterInfo
                     {
-                        AvatarAddress = _avatarAddress,
+                        AvatarAddress = AvatarAddress,
                         ItemCount = 1,
-                        Price = 1 * _currency,
+                        Price = 1 * Gold,
                         TradableId = tradableMaterial.TradableId,
                         Type = ProductType.Fungible,
                     },
                     new RegisterInfo
                     {
-                        AvatarAddress = _avatarAddress,
+                        AvatarAddress = AvatarAddress,
                         ItemCount = 1,
-                        Price = 1 * _currency,
+                        Price = 1 * Gold,
                         TradableId = equipment.TradableId,
                         Type = ProductType.NonFungible,
                     },
                     new AssetInfo
                     {
-                        AvatarAddress = _avatarAddress,
+                        AvatarAddress = AvatarAddress,
                         Asset = asset,
-                        Price = 1 * _currency,
+                        Price = 1 * Gold,
                         Type = ProductType.FungibleAssetValue,
                     },
                 },
@@ -107,23 +241,23 @@ namespace Lib9c.Tests.Action
                 Signer = _agentAddress,
             });
 
-            var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
+            var nextAvatarState = nextState.GetAvatarStateV2(AvatarAddress);
             Assert.Empty(nextAvatarState.inventory.Items);
 
             var marketState = new MarketState(nextState.GetState(Addresses.Market));
-            Assert.Contains(_avatarAddress, marketState.AvatarAddresses);
+            Assert.Contains(AvatarAddress, marketState.AvatarAddresses);
 
             var productsState =
-                new ProductsState((List)nextState.GetState(ProductsState.DeriveAddress(_avatarAddress)));
+                new ProductsState((List)nextState.GetState(ProductsState.DeriveAddress(AvatarAddress)));
             var random = new TestRandom();
             for (int i = 0; i < 3; i++)
             {
                 var guid = random.GenerateRandomGuid();
                 Assert.Contains(guid, productsState.ProductIds);
                 var productAddress = Product.DeriveAddress(guid);
-                var product = ProductFactory.Deserialize((List)nextState.GetState(productAddress));
+                var product = ProductFactory.DeserializeProduct((List)nextState.GetState(productAddress));
                 Assert.Equal(product.ProductId, guid);
-                Assert.Equal(1 * _currency, product.Price);
+                Assert.Equal(1 * Gold, product.Price);
                 if (product is ItemProduct itemProduct)
                 {
                     Assert.Equal(1, itemProduct.ItemCount);
@@ -136,141 +270,30 @@ namespace Lib9c.Tests.Action
                 }
             }
 
-            Assert.Equal(0 * asset.Currency, nextState.GetBalance(_avatarAddress, asset.Currency));
+            Assert.Equal(0 * asset.Currency, nextState.GetBalance(AvatarAddress, asset.Currency));
         }
 
         [Theory]
-        [InlineData(true, false, typeof(InvalidAddressException))]
-        [InlineData(false, true, typeof(FailedLoadStateException))]
-        public void Execute_Throw_Invalid_Avatar_Addresses(bool multipleAvatarAddress, bool invalidAvatarAddress, Type exc)
+        [MemberData(nameof(Execute_Validate_MemberData))]
+        public void Execute_Validate_RegisterInfos(params ValidateMember[] validateMembers)
         {
-            var registerInfoList = new List<IRegisterInfo>();
-            if (multipleAvatarAddress)
+            foreach (var validateMember in validateMembers)
             {
-                for (int i = 0; i < 2; i++)
+                foreach (var registerInfo in validateMember.RegisterInfos)
                 {
-                    var avatarAddress = _avatarAddress;
-                    if (i == 0)
+                    var action = new RegisterProduct
                     {
-                        avatarAddress = new PrivateKey().ToAddress();
-                    }
-
-                    registerInfoList.Add(new AssetInfo
+                        AvatarAddress = AvatarAddress,
+                        RegisterInfos = new[] { registerInfo },
+                    };
+                    Assert.Throws(validateMember.Exc, () => action.Execute(new ActionContext
                     {
-                        AvatarAddress = avatarAddress,
-                        Asset = CrystalCalculator.CRYSTAL * 100,
-                        Price = 1 * _currency,
-                        Type = ProductType.FungibleAssetValue,
-                    });
+                        PreviousStates = _initialState,
+                        Random = new TestRandom(),
+                        Signer = _agentAddress,
+                    }));
                 }
             }
-
-            if (invalidAvatarAddress)
-            {
-                registerInfoList.Add(new AssetInfo
-                {
-                    AvatarAddress = new PrivateKey().ToAddress(),
-                    Asset = CrystalCalculator.CRYSTAL * 100,
-                    Price = 1 * _currency,
-                    Type = ProductType.FungibleAssetValue,
-                });
-            }
-
-            var action = new RegisterProduct
-            {
-                RegisterInfos = registerInfoList,
-            };
-
-            Assert.Throws(exc, () => action.Execute(new ActionContext
-            {
-                PreviousStates = _initialState,
-                Random = new TestRandom(),
-                Signer = _agentAddress,
-            }));
-        }
-
-        [Theory]
-        // ticker is not ncg
-        [InlineData(true, false, false, ProductType.NonFungible)]
-        [InlineData(true, false, false, ProductType.FungibleAssetValue)]
-        // 0.1 ncg
-        [InlineData(false, false, true, ProductType.NonFungible)]
-        // 0 ncg
-        [InlineData(false, true, false, ProductType.Fungible)]
-        [InlineData(false, true, false, ProductType.FungibleAssetValue)]
-        public void Execute_Throw_InvalidPriceException(
-            bool invalidTicker,
-            bool invalidQuantity,
-            bool isDouble,
-            ProductType type
-        )
-        {
-            var currency = invalidTicker ? CrystalCalculator.CRYSTAL : _currency;
-            var quantity = invalidQuantity ? 0 : 2;
-            var price = quantity * currency;
-            if (isDouble)
-            {
-                price = price.DivRem(10, out _);
-            }
-
-            var registerInfos = new List<IRegisterInfo>
-            {
-                new RegisterInfo
-                {
-                    AvatarAddress = _avatarAddress,
-                    ItemCount = 1,
-                    Price = 1 * _currency,
-                    TradableId = Guid.NewGuid(),
-                    Type = ProductType.Fungible,
-                },
-                new RegisterInfo
-                {
-                    AvatarAddress = _avatarAddress,
-                    ItemCount = 1,
-                    Price = 1 * _currency,
-                    TradableId = Guid.NewGuid(),
-                    Type = ProductType.NonFungible,
-                },
-                new AssetInfo
-                {
-                    AvatarAddress = _avatarAddress,
-                    Asset = 1 * RuneHelper.StakeRune,
-                    Price = 1 * _currency,
-                    Type = ProductType.FungibleAssetValue,
-                },
-            };
-
-            if (type == ProductType.FungibleAssetValue)
-            {
-                registerInfos.Add(new AssetInfo
-                {
-                    AvatarAddress = _avatarAddress,
-                    Asset = 1 * RuneHelper.DailyRewardRune,
-                    Price = price,
-                    Type = type,
-                });
-            }
-            else
-            {
-                registerInfos.Add(new RegisterInfo
-                {
-                    AvatarAddress = _avatarAddress,
-                    ItemCount = 1,
-                    Price = price,
-                    TradableId = Guid.NewGuid(),
-                    Type = type,
-                });
-            }
-
-            var action = new RegisterProduct
-            {
-                RegisterInfos = registerInfos,
-            };
-
-            Assert.Throws<InvalidPriceException>(() => action.Execute(new ActionContext
-            {
-                PreviousStates = _initialState,
-            }));
         }
 
         [Theory]
@@ -316,16 +339,17 @@ namespace Lib9c.Tests.Action
                 _avatarState.inventory.AddItem((ItemBase)tradableItem);
             }
 
-            _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
+            _initialState = _initialState.SetState(AvatarAddress, _avatarState.Serialize());
             var action = new RegisterProduct
             {
+                AvatarAddress = AvatarAddress,
                 RegisterInfos = new List<IRegisterInfo>
                 {
                     new RegisterInfo
                     {
-                        AvatarAddress = _avatarAddress,
+                        AvatarAddress = AvatarAddress,
                         ItemCount = itemCount,
-                        Price = 1 * _currency,
+                        Price = 1 * Gold,
                         TradableId = tradableItem.TradableId,
                         Type = type,
                     },
@@ -341,81 +365,11 @@ namespace Lib9c.Tests.Action
             }));
         }
 
-        [Theory]
-        [InlineData(ProductType.Fungible)]
-        [InlineData(ProductType.NonFungible)]
-        [InlineData(ProductType.FungibleAssetValue)]
-        public void Execute_Throw_InvalidProductTypeException(ProductType type)
+        public class ValidateMember
         {
-            var registerInfoList = new List<IRegisterInfo>();
-            switch (type)
-            {
-                case ProductType.Fungible:
-                case ProductType.NonFungible:
-                    registerInfoList.Add(new AssetInfo
-                    {
-                        AvatarAddress = _avatarAddress,
-                        Type = type,
-                        Price = 1 * _currency,
-                    });
-                    break;
-                case ProductType.FungibleAssetValue:
-                    registerInfoList.Add(new RegisterInfo
-                    {
-                        AvatarAddress = _avatarAddress,
-                        Type = type,
-                        Price = 1 * _currency,
-                    });
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
-            }
+            public IEnumerable<IRegisterInfo> RegisterInfos { get; set; }
 
-            var action = new RegisterProduct
-            {
-                RegisterInfos = registerInfoList,
-            };
-
-            Assert.Throws<InvalidProductTypeException>(() => action.Execute(new ActionContext
-            {
-                Signer = _agentAddress,
-                PreviousStates = _initialState,
-                Random = new TestRandom(),
-                BlockIndex = 1L,
-            }));
-        }
-
-        [Fact]
-        public void Execute_Throw_InvalidCurrencyException()
-        {
-            _initialState = _initialState.MintAsset(_avatarAddress, RuneHelper.StakeRune * 1);
-            var action = new RegisterProduct
-            {
-                RegisterInfos = new List<IRegisterInfo>
-                {
-                    new AssetInfo
-                    {
-                        AvatarAddress = _avatarAddress,
-                        Asset = 1 * RuneHelper.StakeRune,
-                        Price = 1 * _currency,
-                        Type = ProductType.FungibleAssetValue,
-                    },
-                    new AssetInfo
-                    {
-                        AvatarAddress = _avatarAddress,
-                        Asset = 1 * CrystalCalculator.CRYSTAL,
-                        Price = 1 * _currency,
-                        Type = ProductType.FungibleAssetValue,
-                    },
-                },
-            };
-
-            Assert.Throws<InvalidCurrencyException>(() => action.Execute(new ActionContext
-            {
-                Signer = _agentAddress,
-                PreviousStates = _initialState,
-                Random = new TestRandom(),
-            }));
+            public Type Exc { get; set; }
         }
     }
 }

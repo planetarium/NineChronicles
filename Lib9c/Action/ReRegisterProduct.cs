@@ -17,7 +17,7 @@ namespace Nekoyume.Action
     public class ReRegisterProduct : GameAction
     {
         public Address AvatarAddress;
-        public List<(ProductInfo, IRegisterInfo)> ReRegisterInfos;
+        public List<(IProductInfo, IRegisterInfo)> ReRegisterInfos;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
@@ -31,11 +31,19 @@ namespace Nekoyume.Action
             {
                 throw new ListEmptyException($"ReRegisterInfos was empty.");
             }
-            if (ReRegisterInfos.Any(tuple =>
-                    tuple.Item1.AvatarAddress != AvatarAddress ||
-                    tuple.Item2.AvatarAddress != AvatarAddress))
+
+            var ncg = states.GetGoldCurrency();
+            foreach (var (productInfo, registerInfo) in ReRegisterInfos)
             {
-                throw new InvalidAddressException();
+                registerInfo.ValidateAddress(AvatarAddress);
+                registerInfo.ValidatePrice(ncg);
+                registerInfo.Validate();
+                productInfo.ValidateType();
+                if (productInfo.AvatarAddress != AvatarAddress ||
+                    productInfo.AgentAddress != context.Signer)
+                {
+                    throw new InvalidAddressException();
+                }
             }
 
             if (!states.TryGetAvatarStateV2(context.Signer, AvatarAddress, out var avatarState,
@@ -62,7 +70,7 @@ namespace Nekoyume.Action
             foreach (var (productInfo, info) in ReRegisterInfos.OrderBy(tuple => tuple.Item2.Type).ThenBy(tuple => tuple.Item2.Price))
             {
                 var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
-                if (productInfo.Legacy)
+                if (productInfo is ItemProductInfo {Legacy: true})
                 {
                     // if product is order. it move to products state from sharded shop state.
                     var productType = productInfo.Type;
@@ -168,17 +176,16 @@ namespace Nekoyume.Action
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
             AvatarAddress = plainValue["a"].ToAddress();
-            ReRegisterInfos = new List<(ProductInfo, IRegisterInfo)>();
+            ReRegisterInfos = new List<(IProductInfo, IRegisterInfo)>();
             var serialized = (List) plainValue["r"];
             foreach (var value in serialized)
             {
                 var innerList = (List) value;
+                var productList = (List) innerList[0];
                 var registerList = (List) innerList[1];
-                IRegisterInfo info =
-                    registerList[2].ToEnum<ProductType>() == ProductType.FungibleAssetValue
-                        ? (IRegisterInfo) new AssetInfo(registerList)
-                        : new RegisterInfo(registerList);
-                ReRegisterInfos.Add((new ProductInfo((List)innerList[0]), info));
+                IRegisterInfo info = ProductFactory.DeserializeRegisterInfo(registerList);
+                IProductInfo productInfo = ProductFactory.DeserializeProductInfo(productList);
+                ReRegisterInfos.Add((productInfo, info));
             }
         }
     }
