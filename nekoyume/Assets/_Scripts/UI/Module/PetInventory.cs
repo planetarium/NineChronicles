@@ -20,6 +20,7 @@ namespace Nekoyume.UI.Module
     {
         public class PetDescriptionData
         {
+            public bool Empty;
             public int PetId;
             public int Level;
             public int CombinationSlotIndex;
@@ -103,6 +104,7 @@ namespace Nekoyume.UI.Module
             var viewDatas = _views.Select(x => (view: x.Value, viewData: GetViewData(x.Key)));
             var views = viewDatas
                 .OrderByDescending(x => x.viewData.HasState)
+                .ThenByDescending(x => x.viewData.Empty)
                 .ThenByDescending(x => x.viewData.Equipped)
                 .ThenBy(x => x.viewData.CombinationSlotIndex)
                 .ThenByDescending(x => x.view.Grade)
@@ -140,12 +142,14 @@ namespace Nekoyume.UI.Module
             if (!tableSheets.PetOptionSheet.TryGetValue(petId, out var optionRow))
             {
                 viewData.HasState = false;
+                viewData.Empty = true;
                 return viewData;
             }
 
             if (!optionRow.LevelOptionMap.TryGetValue(petLevel, out var optionInfo))
             {
                 viewData.HasState = false;
+                viewData.Empty = true;
                 return viewData;
             }
             viewData.OptionInfo = optionInfo;
