@@ -63,5 +63,8 @@ namespace Nekoyume.Helper
             _localMailDictionary[address].Clear();
             _disposables.DisposeAllAndClear();
         }
+
+        public bool TryGetAllLocalMail(Address address, out List<Mail> localMails) =>
+            _localMailDictionary.TryGetValue(address, out localMails);
     }
 }
