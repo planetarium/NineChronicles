@@ -12,8 +12,10 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
+using Nekoyume.Model.Market;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using UnityEngine;
 using UnityEngine.UI;
 using Inventory = Nekoyume.UI.Module.Inventory;
@@ -121,7 +123,7 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
         }
 
-        private void ShowItemTooltip(InventoryItem model)
+        private void ShowFavTooltip(InventoryItem model)
         {
             var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
             tooltip.Show(
@@ -133,13 +135,44 @@ namespace Nekoyume.UI
                 () => L10nManager.Localize("UI_UNTRADABLE"));
         }
 
+        private void ShowItemTooltip(InventoryItem model)
+        {
+            if (model.ItemBase is not null)
+            {
+                var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
+                tooltip.Show(
+                    model,
+                    L10nManager.Localize("UI_SELL"),
+                    model.ItemBase is ITradableItem,
+                    () => ShowSell(model),
+                    inventory.ClearSelectedItem,
+                    () => L10nManager.Localize("UI_UNTRADABLE"));
+            }
+            else
+            {
+                Find<FungibleAssetTooltip>().Show(model,
+                    () => ShowSell(model),
+                    view.ClearSelectedItem);
+            }
+        }
+
         private void ShowSellTooltip(ShopItem model)
         {
-            var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
-            tooltip.Show(model,
-                () => ShowUpdateSellPopup(model),
-                () => ShowRetrievePopup(model),
-                view.ClearSelectedItem);
+            if (model.ItemBase is not null)
+            {
+                var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
+                tooltip.Show(model,
+                    () => ShowUpdateSellPopup(model),
+                    () => ShowRetrievePopup(model),
+                    view.ClearSelectedItem);
+            }
+            else
+            {
+                Find<FungibleAssetTooltip>().Show(model,
+                    () => ShowUpdateSellPopup(model),
+                    () => ShowRetrievePopup(model),
+                    view.ClearSelectedItem);
+            }
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -153,18 +186,8 @@ namespace Nekoyume.UI
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
             UpdateSpeechBubble();
             inventory.SetShop(ShowItemTooltip);
-
-            var task = Task.Run(async () =>
-            {
-                await ReactiveShopState.UpdateSellProductsAsync();
-                return true;
-            });
-
-            var result = await task;
-            if (result)
-            {
-                view.Show(ReactiveShopState.SellProducts, ShowSellTooltip);
-            }
+            await ReactiveShopState.RequestSellProductsAsync();
+            view.Show(ReactiveShopState.SellProducts, ShowSellTooltip);
         }
 
         private void UpdateSpeechBubble()
@@ -206,15 +229,28 @@ namespace Nekoyume.UI
             data.UnitPrice.Value = new FungibleAssetValue(currency, Shop.MinimumPrice, 0);
             data.Count.Value = 1;
             data.IsSell.Value = true;
-
-            data.TitleText.Value = model.ItemBase.GetLocalizedName();
             data.InfoText.Value = string.Empty;
             data.CountEnabled.Value = true;
-            data.Submittable.Value = !DimmedFuncForSell(model.ItemBase);
-            data.Item.Value = new CountEditableItem(model.ItemBase,
-                1,
-                1,
-                model.Count.Value);
+
+            if (model.ItemBase is not null)
+            {
+                data.TitleText.Value = model.ItemBase.GetLocalizedName();
+                data.Submittable.Value = !DimmedFuncForSell(model.ItemBase);
+                data.Item.Value = new CountEditableItem(model.ItemBase,
+                    1,
+                    1,
+                    model.Count.Value);
+            }
+            else
+            {
+                data.TitleText.Value = model.FungibleAssetValue.GetLocalizedName();
+                data.Submittable.Value = true;
+                data.Item.Value = new CountEditableItem(model.FungibleAssetValue,
+                    1,
+                    1,
+                    model.Count.Value);
+            }
+
             data.Item.Value.CountEnabled.Value = false;
         }
 
@@ -266,7 +302,7 @@ namespace Nekoyume.UI
             var oneLineSystemInfos = new List<(string name, int count)>();
             foreach (var product in itemProducts)
             {
-                if (!ReactiveShopState.TryGetShopItem(product, out var itemBase))
+                if (!ReactiveShopState.TryGetSellShopItem(product, out var itemBase))
                 {
                     return;
                 }
@@ -348,11 +384,6 @@ namespace Nekoyume.UI
 
         private void SubscribeSellPopupSubmit(Model.ItemCountableAndPricePopup data)
         {
-            if (!(data.Item.Value.ItemBase.Value is ITradableItem tradableItem))
-            {
-                return;
-            }
-
             if (data.Price.Value.MinorUnit > 0)
             {
                 OneLineSystem.Push(
@@ -362,18 +393,65 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (data.Price.Value.Sign * data.Price.Value.MajorUnit <
-                Model.Shop.MinimumPrice)
+            if (data.Price.Value.Sign * data.Price.Value.MajorUnit < Shop.MinimumPrice)
             {
                 throw new InvalidSellingPriceException(data);
             }
 
-            var totalPrice = data.Price.Value;
-            var count = data.Count.Value;
-            var itemSubType = data.Item.Value.ItemBase.Value.ItemSubType;
-            Game.Game.instance.ActionManager.Sell(tradableItem, count, totalPrice, itemSubType)
-                .Subscribe();
-            ResponseSell();
+
+            if (data.Item.Value.ItemBase.Value is not null)
+            {
+                var itemBase = data.Item.Value.ItemBase.Value;
+                if (itemBase is not ITradableItem tradableItem)
+                {
+                    return;
+                }
+
+                var count = data.Count.Value;
+                var itemSubType = itemBase.ItemSubType;
+                var avatarAddress = States.Instance.CurrentAvatarState.address;
+
+                var info = new RegisterInfo
+                {
+                    AvatarAddress = avatarAddress,
+                    Price = data.Price.Value,
+                    TradableId = tradableItem.TradableId,
+                    ItemCount = count,
+                    Type = itemSubType is ItemSubType.Hourglass or ItemSubType.ApStone
+                        ? ProductType.Fungible
+                        : ProductType.NonFungible
+                };
+
+                Game.Game.instance.ActionManager.RegisterProduct(info).Subscribe();
+                if (tradableItem is not TradableMaterial)
+                {
+                    LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex,
+                        count);
+                }
+
+                LocalLayerModifier.SetItemEquip(avatarAddress, tradableItem.TradableId, false);
+                PostRegisterProduct(itemBase.GetLocalizedName());
+            }
+            else
+            {
+                var count = data.Count.Value;
+                var avatarAddress = States.Instance.CurrentAvatarState.address;
+                var currency = data.Item.Value.FungibleAssetValue.Value.Currency;
+                var fungibleAsset = new FungibleAssetValue(currency, count, 0);
+                var info = new AssetInfo
+                {
+                    AvatarAddress = avatarAddress,
+                    Price = data.Price.Value,
+                    Asset = fungibleAsset,
+                    Type = ProductType.FungibleAssetValue
+                };
+
+                // todo : 여기서 줄여주던지 액션에서 줄여줘야함
+                Game.Game.instance.ActionManager.RegisterProduct(info).Subscribe();
+                States.Instance.SetBalance(fungibleAsset);
+                inventory.UpdateFungibleAssets();
+                PostRegisterProduct(fungibleAsset.GetLocalizedName());
+            }
         }
 
         private void SubscribeSellPopupUpdateSell(Model.ItemCountableAndPricePopup data)
@@ -420,7 +498,7 @@ namespace Nekoyume.UI
             );
 
             Game.Game.instance.ActionManager.UpdateSell(new List<UpdateSellInfo> {updateSellInfo}).Subscribe();
-            ResponseSell();
+            PostRegisterProduct(data.Item.Value.ItemBase.Value.GetLocalizedName());
         }
 
         private void SubscribeSellPopupCancel(Model.ItemCountableAndPricePopup data)
@@ -515,6 +593,7 @@ namespace Nekoyume.UI
 
             var product =
                 ReactiveShopState.GetSellProduct(tradableId, requiredBlockIndex, price, count);
+
             if (product != null)
             {
                 Game.Game.instance.ActionManager.SellCancellation(
@@ -522,6 +601,19 @@ namespace Nekoyume.UI
                     product.ProductId,
                     product.TradableId,
                     subType).Subscribe();
+
+                var productInfo = new ProductInfo()
+                {
+                    ProductId = product.ProductId,
+                    Price = price,
+                    AgentAddress = product.SellerAgentAddress,
+                    AvatarAddress = product.SellerAvatarAddress,
+                    // Type = product.
+                };
+
+                Game.Game.instance.ActionManager.CancelProductRegistration(
+                    avatarAddress,
+                    productInfo).Subscribe();
                 ResponseSellCancellation(product.ProductId, product.TradableId);
             }
         }
@@ -542,7 +634,7 @@ namespace Nekoyume.UI
             return false;
         }
 
-        private void ResponseSell()
+        private void PostRegisterProduct(string itemName)
         {
             var item = SharedModel.ItemCountableAndPricePopup.Value.Item.Value;
             var count = SharedModel.ItemCountableAndPricePopup.Value.Count.Value;
@@ -550,11 +642,11 @@ namespace Nekoyume.UI
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
 
-            string message = string.Empty;
+            var message = string.Empty;
             if (count > 1)
             {
                 message = string.Format(L10nManager.Localize("NOTIFICATION_MULTIPLE_SELL_START"),
-                    item.ItemBase.Value.GetLocalizedName(),
+                    itemName,
                     count);
             }
             else

@@ -851,7 +851,7 @@ PrefabInstance:
     - target: {fileID: 488617205127339955, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 250
       objectReference: {fileID: 0}
     - target: {fileID: 488617205127339955, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
         type: 3}
@@ -1163,6 +1163,11 @@ PrefabInstance:
       propertyPath: tooltipSocket
       value: 
       objectReference: {fileID: 8343143451553611894}
+    - target: {fileID: 3008345251284922848, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
+        type: 3}
+      propertyPath: fungibleAssetButton
+      value: 
+      objectReference: {fileID: 6377501930788792596}
     - target: {fileID: 3015735976986688887, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
         type: 3}
       propertyPath: m_Alpha
@@ -1916,7 +1921,7 @@ PrefabInstance:
     - target: {fileID: 6559148448053938252, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
         type: 3}
       propertyPath: m_fontColor32.rgba
-      value: 14675967
+      value: 4292866047
       objectReference: {fileID: 0}
     - target: {fileID: 6583244857314269587, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
         type: 3}

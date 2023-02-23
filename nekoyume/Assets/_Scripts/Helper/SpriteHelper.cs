@@ -28,7 +28,6 @@ namespace Nekoyume.Helper
         private const string RankIconPath = "UI/Textures/UI_icon_ranking_{0}";
 
         private const string MailIconPathFormat = "UI/Icons/Mail/{0}";
-
         private static readonly string MailIconDefaultPath =
             string.Format(MailIconPathFormat, "icon_mail_system");
 
@@ -37,6 +36,9 @@ namespace Nekoyume.Helper
 
         private const string DialogNPCPortaitPathFormat = "Images/npc/NPC_{0}";
         private const string DialogCharacterPortaitPathFormat = "Images/character_{0}";
+
+        private const string FavIconPathFormat = "UI/Icons/FungibleAssetValue/{0}";
+        private const string DefaultFavIconPathFormat = "UI/Icons/FungibleAssetValue/RUNE_ADVENTURER";
 
         public static Sprite GetCharacterIcon(int characterId)
         {
@@ -158,6 +160,12 @@ namespace Nekoyume.Helper
             var path = string.Format(isNPC ?
                 DialogNPCPortaitPathFormat : DialogCharacterPortaitPathFormat, key);
             return Resources.Load<Sprite>(path);
+        }
+
+        public static Sprite GetFavIcon(string ticker)
+        {
+            return Resources.Load<Sprite>(string.Format(FavIconPathFormat, ticker)) ??
+                   Resources.Load<Sprite>(DefaultFavIconPathFormat);
         }
     }
 }

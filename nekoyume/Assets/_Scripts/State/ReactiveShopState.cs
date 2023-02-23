@@ -20,10 +20,7 @@ namespace Nekoyume.State
     public static class ReactiveShopState
     {
         public static ReactiveProperty<List<ItemProductResponseModel>> BuyProducts { get; } = new();
-
-        public static ReactiveProperty<List<ItemProductResponseModel>> SellProducts { get; } =
-            new();
-
+        public static ReactiveProperty<List<ItemProductResponseModel>> SellProducts { get; } = new();
         private static Dictionary<Guid, ItemBase> CachedBuyItems { get; set; } = new();
         private static Dictionary<Guid, ItemBase> CachedSellItems { get; set; } = new();
 
@@ -48,19 +45,35 @@ namespace Nekoyume.State
                 { MarketOrderType.grade_desc, new Dictionary<ItemSubType, bool>() },
             };
 
+        private static readonly List<ItemProductResponseModel> CachedSellProducts = new();
+
         private static List<Guid> RemovedProductIds => new();
 
-        public static bool TryGetShopItem(ItemProductResponseModel product, out ItemBase itemBase)
+        public static bool TryGetBuyShopItem(ItemProductResponseModel product, out ItemBase itemBase)
         {
             if (!CachedBuyItems.ContainsKey(product.ProductId))
             {
-                Debug.LogWarning($"[{nameof(TryGetShopItem)}] Not found address:" +
+                Debug.LogWarning($"[{nameof(TryGetBuyShopItem)}] Not found address:" +
                                  $" {product.ProductId}");
                 itemBase = null;
                 return false;
             }
 
             itemBase = CachedBuyItems[product.ProductId];
+            return true;
+        }
+
+        public static bool TryGetSellShopItem(ItemProductResponseModel product, out ItemBase itemBase)
+        {
+            if (!CachedSellItems.ContainsKey(product.ProductId))
+            {
+                Debug.LogWarning($"[{nameof(TryGetSellShopItem)}] Not found address:" +
+                                 $" {product.ProductId}");
+                itemBase = null;
+                return false;
+            }
+
+            itemBase = CachedSellItems[product.ProductId];
             return true;
         }
 
@@ -133,6 +146,13 @@ namespace Nekoyume.State
             SetBuyProducts(orderType);
         }
 
+        public static async Task RequestSellProductsAsync()
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var products = await Game.Game.instance.MarketServiceClient.GetProducts(avatarAddress);
+            CachedSellProducts.AddRange(products);
+        }
+
         public static void SetBuyProducts(MarketOrderType marketOrderType)
         {
             var products = new List<ItemProductResponseModel>();
@@ -143,6 +163,12 @@ namespace Nekoyume.State
 
             BuyProducts.Value = SortedProducts(products);
             CachedBuyItems = GetItems(BuyProducts.Value);
+        }
+
+        public static void SetSellProducts()
+        {
+            SellProducts.Value = CachedSellProducts;
+            CachedSellItems = GetItems(SellProducts.Value);
         }
 
         private static List<ItemProductResponseModel> SortedProducts(
@@ -192,13 +218,6 @@ namespace Nekoyume.State
             }
         }
 
-        public static async UniTask UpdateSellProductsAsync()
-        {
-            var products = await GetSellProductsAsync();
-            SellProducts.Value = products;
-            CachedSellItems = GetItems(SellProducts.Value);
-        }
-
         public static ItemProductResponseModel GetSellProduct(
             Guid tradableId,
             long requiredBlockIndex,
@@ -211,23 +230,6 @@ namespace Nekoyume.State
                 (x.RegisteredBlockIndex + Order.ExpirationInterval).Equals(requiredBlockIndex) &&
                 ((BigInteger)x.Price * currency).Equals(price) &&
                 x.Quantity.Equals(count));
-        }
-
-        private static async UniTask<List<ItemProductResponseModel>> GetSellProductsAsync()
-        {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var receipts = new List<ItemProductResponseModel>();
-            var products = await Game.Game.instance.MarketServiceClient.GetProducts(avatarAddress);
-            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
-            var validProducts = products
-                .Where(x => x.RegisteredBlockIndex + Order.ExpirationInterval > currentBlockIndex);
-            receipts.AddRange(validProducts);
-
-            var expiredProducts = products
-                .Where(x => x.RegisteredBlockIndex + Order.ExpirationInterval <= currentBlockIndex);
-            receipts.AddRange(expiredProducts);
-
-            return receipts;
         }
 
         private static Dictionary<Guid, ItemBase> GetItems(

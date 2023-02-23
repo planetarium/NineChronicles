@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Libplanet.Assets;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using UniRx;
@@ -8,14 +9,15 @@ namespace Nekoyume.UI.Model
 {
     public class Item : IDisposable
     {
-        public readonly ReactiveProperty<ItemBase> ItemBase = new ReactiveProperty<ItemBase>();
-        public readonly ReactiveProperty<bool> GradeEnabled = new ReactiveProperty<bool>(true);
-        public readonly ReactiveProperty<string> Enhancement = new ReactiveProperty<string>();
-        public readonly ReactiveProperty<bool> EnhancementEnabled = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<bool> EnhancementEffectEnabled = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<bool> Dimmed = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<bool> Selected = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<bool> ActiveSelf = new ReactiveProperty<bool>(true);
+        public readonly ReactiveProperty<ItemBase> ItemBase = new();
+        public readonly ReactiveProperty<FungibleAssetValue> FungibleAssetValue = new();
+        public readonly ReactiveProperty<bool> GradeEnabled = new(true);
+        public readonly ReactiveProperty<string> Enhancement = new();
+        public readonly ReactiveProperty<bool> EnhancementEnabled = new(false);
+        public readonly ReactiveProperty<bool> EnhancementEffectEnabled = new(false);
+        public readonly ReactiveProperty<bool> Dimmed = new(false);
+        public readonly ReactiveProperty<bool> Selected = new(false);
+        public readonly ReactiveProperty<bool> ActiveSelf = new(true);
 
         public readonly Subject<Item> OnClick = new Subject<Item>();
         public readonly Subject<Item> OnDoubleClick = new Subject<Item>();
@@ -37,6 +39,13 @@ namespace Nekoyume.UI.Model
                 EnhancementEnabled.Value = false;
                 EnhancementEffectEnabled.Value = false;
             }
+        }
+
+        public Item(FungibleAssetValue value)
+        {
+            FungibleAssetValue.Value = value;
+            EnhancementEnabled.Value = false;
+            EnhancementEffectEnabled.Value = false;
         }
 
         public virtual void Dispose()

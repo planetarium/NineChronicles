@@ -388,6 +388,25 @@ namespace Nekoyume.State
             return fungibleAsset;
         }
 
+        public async Task SetBalanceAsync(string ticker)
+        {
+            var avatarAddress = CurrentAvatarState.address;
+            var currency = Currency.Legacy(ticker, 0, null);
+            var fungibleAsset = await Game.Game.instance.Agent.GetBalanceAsync(avatarAddress, currency);
+            AvatarBalance[ticker] = fungibleAsset;
+        }
+
+        /// <summary>
+        /// For caching
+        /// </summary>
+        public void SetBalance(FungibleAssetValue fav)
+        {
+            var preFav = AvatarBalance[fav.Currency.Ticker];
+            var major = preFav.MajorUnit - fav.MajorUnit;
+            var miner = preFav.MinorUnit - fav.MinorUnit;
+            AvatarBalance[fav.Currency.Ticker] = new FungibleAssetValue(fav.Currency, major, miner);
+        }
+
         public void SetStakeState(StakeState stakeState, GoldBalanceState stakedBalanceState, int stakingLevel)
         {
             if (stakeState is null)

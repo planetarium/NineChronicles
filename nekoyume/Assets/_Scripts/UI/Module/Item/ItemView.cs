@@ -121,10 +121,17 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            base.SetData(model.ItemBase.Value, onClick);
-
-            var viewData = GetItemViewData(model.ItemBase.Value);
-            enhancementImage.GetComponent<Image>().material = viewData.EnhancementMaterial;
+            if (model.ItemBase.Value is not null)
+            {
+                base.SetData(model.ItemBase.Value, onClick);
+                var viewData = GetItemViewData(model.ItemBase.Value);
+                enhancementImage.GetComponent<Image>().material = viewData.EnhancementMaterial;
+                SetOptionTag(model.ItemBase.Value);
+            }
+            else
+            {
+                base.SetData(model.FungibleAssetValue.Value, onClick);
+            }
 
             _disposablesAtSetData.DisposeAllAndClear();
             Model = model;
@@ -137,7 +144,6 @@ namespace Nekoyume.UI.Module
             Model.Dimmed.SubscribeTo(disable).AddTo(_disposablesAtSetData);
             Model.Selected.SubscribeTo(selection).AddTo(_disposablesAtSetData);
             UpdateView();
-            SetOptionTag(Model.ItemBase.Value);
         }
 
         public void SetData(TViewModel model, bool isConsumable)

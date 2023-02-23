@@ -83,8 +83,9 @@ namespace Nekoyume.UI.Module.Lobby
             var unlockConditionString = string.Format(
                 L10nManager.Localize("UI_STAGE_LOCK_FORMAT"),
                 _requireStage);
-            _messageForCat =
-                $"{L10nManager.Localize(localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
+            // _messageForCat =
+            //     $"{L10nManager.Localize(localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
+            _messageForCat = string.Empty;
 
             hoverScaleTweener.AddCondition(PointEnterTrigger, PointExitTrigger);
         }

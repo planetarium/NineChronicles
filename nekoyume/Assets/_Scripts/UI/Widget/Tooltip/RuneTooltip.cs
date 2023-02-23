@@ -89,7 +89,7 @@ namespace Nekoyume.UI
         private System.Action _onEnhancement;
         private System.Action _onClose;
 
-        protected bool _isPointerOnScrollArea;
+        private bool _isPointerOnScrollArea;
         private bool _isClickedButtonArea;
 
         protected override PivotPresetType TargetPivotPresetType => PivotPresetType.TopRight;

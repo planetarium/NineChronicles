@@ -1,3 +1,4 @@
+using Libplanet.Assets;
 using Nekoyume.Model.Item;
 using UniRx;
 
@@ -12,7 +13,7 @@ namespace Nekoyume.UI.Model
         {
             MinCount.Value = minCount;
             MaxCount.Value = maxCount;
-            
+
             MinCount.Subscribe(min =>
             {
                 if (Count.Value < min)
@@ -29,7 +30,29 @@ namespace Nekoyume.UI.Model
                 }
             });
         }
-        
+
+        public CountEditableItem(FungibleAssetValue fav, int count, int minCount, int maxCount) : base(fav, count)
+        {
+            MinCount.Value = minCount;
+            MaxCount.Value = maxCount;
+
+            MinCount.Subscribe(min =>
+            {
+                if (Count.Value < min)
+                {
+                    Count.Value = min;
+                }
+            });
+
+            MaxCount.Subscribe(max =>
+            {
+                if (Count.Value > max)
+                {
+                    Count.Value = max;
+                }
+            });
+        }
+
         public override void Dispose()
         {
             MinCount.Dispose();

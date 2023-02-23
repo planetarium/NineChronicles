@@ -417,6 +417,31 @@ namespace Nekoyume
             }
         }
 
+        public static string GetLocalizedName(this FungibleAssetValue fav)
+        {
+            var isRune = false;
+            var id = 0;
+            var ticker = fav.Currency.Ticker;
+            if (RuneFrontHelper.TryGetRuneData(ticker, out var runeData))
+            {
+                var sheet = Game.Game.instance.TableSheets.RuneListSheet;
+                if (sheet.TryGetValue(runeData.id, out var row))
+                {
+                    isRune = true;
+                    id = runeData.id;
+                }
+            }
+
+            var petSheet = Game.Game.instance.TableSheets.PetSheet;
+            var petRow = petSheet.Values.FirstOrDefault(x => x.SoulStoneTicker == ticker);
+            if (petRow is not null)
+            {
+                isRune = false;
+                id = petRow.Id;
+            }
+            return L10nManager.Localize(isRune ? $"RUNE_NAME_{id}" : $"PET_NAME_{id}");
+        }
+
         public static string GetLocalizedNonColoredName(this ItemBase item, bool useElementalIcon = true)
         {
             return GetLocalizedNonColoredName(item.ElementalType, item.Id,

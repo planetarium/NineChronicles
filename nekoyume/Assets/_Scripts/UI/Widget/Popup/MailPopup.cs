@@ -424,6 +424,21 @@ namespace Nekoyume.UI
             Debug.Log($"[{nameof(MaterialCraftMail)}] ItemCount: {materialCraftMail.ItemCount}, ItemId: {materialCraftMail.ItemId}");
         }
 
+        public void Read(ProductBuyerMail productBuyerMail)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Read(ProductSellerMail productSellerMail)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Read(ProductCancelMail productCancelMail)
+        {
+            throw new NotImplementedException();
+        }
+
         public async void Read(OrderExpirationMail orderExpirationMail)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
@@ -451,7 +466,7 @@ namespace Nekoyume.UI
                     LocalLayerModifier.AddItem(avatarAddress, order.TradableId,
                         order.ExpiredBlockIndex, 1);
                     LocalLayerModifier.RemoveNewMail(avatarAddress, cancelOrderMail.id);
-                    ReactiveShopState.UpdateSellProductsAsync().Forget();
+                    ReactiveShopState.SetSellProducts();
                 });
         }
 

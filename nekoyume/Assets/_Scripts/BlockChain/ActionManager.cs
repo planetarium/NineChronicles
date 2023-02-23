@@ -580,47 +580,51 @@ namespace Nekoyume.BlockChain
                 }).Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<Sell>> Sell(
-            ITradableItem tradableItem,
-            int count,
-            FungibleAssetValue price,
-            ItemSubType itemSubType)
+        public IObservable<ActionBase.ActionEvaluation<RegisterProduct>> RegisterProduct(
+            IRegisterInfo registerInfo)
         {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var sentryTrace = Analyzer.Instance.Track("Unity/Sell", new Dictionary<string, Value>()
+            var sentryTrace = Analyzer.Instance.Track("Unity/RegisterProduct", new Dictionary<string, Value>()
             {
-                ["TradableItemId"] = tradableItem.TradableId.ToString(),
-                ["Count"] = count.ToString(),
-                ["Price"] = price.ToString(),
+                ["ProductType"] = registerInfo.Type.ToString(),
+                ["Price"] = registerInfo.Price.ToString(),
+                ["AvatarAddress"] = registerInfo.AvatarAddress.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+            }, true);
+
+            var action = new RegisterProduct
+            {
+                RegisterInfos = new List<IRegisterInfo> { registerInfo }
+            };
+
+            ProcessAction(action);
+
+            return _agent.ActionRenderer.EveryRender<RegisterProduct>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e => throw HandleException(action.Id, e))
+                .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
+        }
+
+        public IObservable<ActionBase.ActionEvaluation<CancelProductRegistration>> CancelProductRegistration(
+            Address avatarAddress,
+            ProductInfo productInfo)
+        {
+            var sentryTrace = Analyzer.Instance.Track("Unity/CancelProductRegistration", new Dictionary<string, Value>()
+            {
                 ["AvatarAddress"] = avatarAddress.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             }, true);
 
-            if (!(tradableItem is TradableMaterial))
+            var action = new CancelProductRegistration
             {
-                LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex,
-                    count);
-            }
-
-            // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
-            LocalLayerModifier.SetItemEquip(avatarAddress, tradableItem.TradableId, false);
-
-            var action = new Sell
-            {
-                sellerAvatarAddress = avatarAddress,
-                tradableId = tradableItem.TradableId,
-                count = count,
-                price = price,
-                itemSubType = itemSubType,
-                orderId = Guid.NewGuid(),
+                ProductInfos = new List<ProductInfo> { productInfo }
             };
 
-            Debug.Log($"action: {action.orderId}");
-            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
-            LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
 
-            return _agent.ActionRenderer.EveryRender<Sell>()
+            return _agent.ActionRenderer.EveryRender<CancelProductRegistration>()
                 .Timeout(ActionTimeout)
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()

@@ -233,7 +233,7 @@ namespace Nekoyume.UI.Module
 
         private void AddItem(ItemProductResponseModel product, ItemSheet sheet)
         {
-            if (!ReactiveShopState.TryGetShopItem(product, out var itemBase))
+            if (!ReactiveShopState.TryGetBuyShopItem(product, out var itemBase))
             {
                 return;
             }
