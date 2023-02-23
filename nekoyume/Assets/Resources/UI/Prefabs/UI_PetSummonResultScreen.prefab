@@ -445,6 +445,7 @@ GameObject:
   - component: {fileID: 5783977782249163051}
   - component: {fileID: 9212660242190554835}
   - component: {fileID: 2147709688803318570}
+  - component: {fileID: 34752335314828096}
   m_Layer: 5
   m_Name: Name
   m_TagString: Untagged
@@ -538,6 +539,22 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &34752335314828096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1417716572655486798}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9d1a8e4f3b74c64b89ac2572ae1d6d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  petNameText: {fileID: 5379816817523686369}
+  gradeText: {fileID: 905448852502384607}
+  subTypeText: {fileID: 238632087521670439}
+  spacerImage: {fileID: 4839632036766206957}
 --- !u!1 &1588442637302629323
 GameObject:
   m_ObjectHideFlags: 0
@@ -1639,8 +1656,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
-  petNameText: {fileID: 5379816817523686369}
-  petGradeText: {fileID: 905448852502384607}
+  petInfoView: {fileID: 34752335314828096}
   contentText: {fileID: 1496631687657452784}
   petSkeletonGraphic: {fileID: 8457953949223492571}
 --- !u!114 &8028236618090819426

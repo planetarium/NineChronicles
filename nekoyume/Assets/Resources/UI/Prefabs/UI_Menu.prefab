@@ -7627,6 +7627,11 @@ PrefabInstance:
       propertyPath: speechBubble
       value: 
       objectReference: {fileID: 5726702647442793415}
+    - target: {fileID: 4413401244271292270, guid: 09b93ce70a9aa954abba7ecf30fa3cbf,
+        type: 3}
+      propertyPath: localizationKey
+      value: UI_DCC
+      objectReference: {fileID: 0}
     - target: {fileID: 4604881601719986741, guid: 09b93ce70a9aa954abba7ecf30fa3cbf,
         type: 3}
       propertyPath: m_AnchoredPosition.y
