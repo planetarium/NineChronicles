@@ -86,6 +86,7 @@ namespace Lib9c.Tests.Action
         [InlineData(typeof(ClaimWordBossKillReward))]
         [InlineData(typeof(PrepareRewardAssets))]
         [InlineData(typeof(RegisterProduct))]
+        [InlineData(typeof(ReRegisterProduct))]
         [InlineData(typeof(CancelProductRegistration))]
         [InlineData(typeof(BuyProduct))]
         public void Serialize_With_MessagePack(Type actionType)
@@ -337,6 +338,66 @@ namespace Lib9c.Tests.Action
                             Asset = 1 * RuneHelper.StakeRune,
                             Type = ProductType.FungibleAssetValue,
                         },
+                    },
+                },
+                ReRegisterProduct _ => new ReRegisterProduct
+                {
+                    AvatarAddress = new PrivateKey().ToAddress(),
+                    ReRegisterInfos = new List<(ProductInfo, IRegisterInfo)>
+                    {
+                        (
+                            new ProductInfo
+                            {
+                                AvatarAddress = new PrivateKey().ToAddress(),
+                                AgentAddress = new PrivateKey().ToAddress(),
+                                Price = 1 * _currency,
+                                ProductId = Guid.NewGuid(),
+                                Type = ProductType.Fungible,
+                            },
+                            new RegisterInfo
+                            {
+                                AvatarAddress = new PrivateKey().ToAddress(),
+                                ItemCount = 1,
+                                Price = 1 * _currency,
+                                TradableId = Guid.NewGuid(),
+                                Type = ProductType.Fungible,
+                            }
+                        ),
+                        (
+                            new ProductInfo
+                            {
+                                AvatarAddress = new PrivateKey().ToAddress(),
+                                AgentAddress = new PrivateKey().ToAddress(),
+                                Price = 1 * _currency,
+                                ProductId = Guid.NewGuid(),
+                                Type = ProductType.NonFungible,
+                            },
+                            new RegisterInfo
+                            {
+                                AvatarAddress = new PrivateKey().ToAddress(),
+                                ItemCount = 1,
+                                Price = 1 * _currency,
+                                TradableId = Guid.NewGuid(),
+                                Type = ProductType.NonFungible,
+                            }
+                        ),
+                        (
+                            new ProductInfo
+                            {
+                                AvatarAddress = new PrivateKey().ToAddress(),
+                                AgentAddress = new PrivateKey().ToAddress(),
+                                Price = 1 * _currency,
+                                ProductId = Guid.NewGuid(),
+                                Type = ProductType.FungibleAssetValue,
+                            },
+                            new AssetInfo
+                            {
+                                AvatarAddress = new PrivateKey().ToAddress(),
+                                Price = 1 * _currency,
+                                Asset = 1 * RuneHelper.StakeRune,
+                                Type = ProductType.FungibleAssetValue,
+                            }
+                        ),
                     },
                 },
                 CancelProductRegistration _ => new CancelProductRegistration

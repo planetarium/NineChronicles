@@ -109,56 +109,11 @@ namespace Nekoyume.Action
 
             foreach (var updateSellInfo in updateSellInfos)
             {
-                if (updateSellInfo.price.Sign < 0)
-                {
-                    throw new InvalidPriceException($"{addressesHex} Aborted as the price is less than zero: {updateSellInfo.price}.");
-                }
-
-                var shopAddress = ShardedShopStateV2.DeriveAddress(updateSellInfo.itemSubType, updateSellInfo.orderId);
                 var updateSellShopAddress = ShardedShopStateV2.DeriveAddress(updateSellInfo.itemSubType, updateSellInfo.updateSellOrderId);
                 var updateSellOrderAddress = Order.DeriveAddress(updateSellInfo.updateSellOrderId);
                 var itemAddress = Addresses.GetItemAddress(updateSellInfo.tradableId);
-
-                // migration method
-                avatarState.inventory.UnlockInvalidSlot(digestList, context.Signer, sellerAvatarAddress);
-                avatarState.inventory.ReconfigureFungibleItem(digestList, updateSellInfo.tradableId);
-                avatarState.inventory.LockByReferringToDigestList(digestList, updateSellInfo.tradableId,
-                    context.BlockIndex);
-
-                // for sell cancel
-                sw.Restart();
-                if (!states.TryGetState(shopAddress, out BxDictionary shopStateDict))
-                {
-                    throw new FailedLoadStateException($"{addressesHex}failed to load {nameof(ShardedShopStateV2)}({shopAddress}).");
-                }
-
-                sw.Stop();
-                Log.Verbose("{AddressesHex} UpdateSell Sell Cancel Get ShopState: {Elapsed}", addressesHex, sw.Elapsed);
-                sw.Restart();
-                if (!states.TryGetState(Order.DeriveAddress(updateSellInfo.orderId), out Dictionary orderDict))
-                {
-                    throw new FailedLoadStateException($"{addressesHex} failed to load {nameof(Order)}({Order.DeriveAddress(updateSellInfo.orderId)}).");
-                }
-
-                var orderOnSale = OrderFactory.Deserialize(orderDict);
-                orderOnSale.ValidateCancelOrder(avatarState, updateSellInfo.tradableId);
-                orderOnSale.Cancel(avatarState, context.BlockIndex);
-                if (context.BlockIndex < orderOnSale.ExpiredBlockIndex)
-                {
-                    var shardedShopState = new ShardedShopStateV2(shopStateDict);
-                    shardedShopState.Remove(orderOnSale, context.BlockIndex);
-                    states = states.SetState(shopAddress, shardedShopState.Serialize());
-                }
-
-                digestList.Remove(orderOnSale.OrderId);
-                sw.Stop();
-
-                var expirationMail = avatarState.mailBox.OfType<OrderExpirationMail>()
-                    .FirstOrDefault(m => m.OrderId.Equals(updateSellInfo.orderId));
-                if (!(expirationMail is null))
-                {
-                    avatarState.mailBox.Remove(expirationMail);
-                }
+                states = Cancel(states, updateSellInfo, addressesHex, avatarState, digestList,
+                    context, sellerAvatarAddress);
 
                 // for updateSell
                 var updateSellShopState =
@@ -208,6 +163,63 @@ namespace Nekoyume.Action
             Log.Debug("{AddressesHex} UpdateSell Total Executed Time: {Elapsed}", addressesHex, ended - started);
 
             return states;
+        }
+
+        public static IAccountStateDelta Cancel(IAccountStateDelta states,
+            UpdateSellInfo updateSellInfo, string addressesHex, AvatarState avatarState,
+            OrderDigestListState digestList, IActionContext context, Address sellerAvatarAddress)
+        {
+            if (updateSellInfo.price.Sign < 0)
+            {
+                throw new InvalidPriceException($"{addressesHex} Aborted as the price is less than zero: {updateSellInfo.price}.");
+            }
+
+            var sw = new Stopwatch();
+            var orderId = updateSellInfo.orderId;
+            var tradableId = updateSellInfo.tradableId;
+            var shopAddress = ShardedShopStateV2.DeriveAddress(updateSellInfo.itemSubType, orderId);
+
+            // migration method
+            avatarState.inventory.UnlockInvalidSlot(digestList, context.Signer, sellerAvatarAddress);
+            avatarState.inventory.ReconfigureFungibleItem(digestList, tradableId);
+            avatarState.inventory.LockByReferringToDigestList(digestList, tradableId, context.BlockIndex);
+
+            // for sell cancel
+            sw.Start();
+            if (!states.TryGetState(shopAddress, out BxDictionary shopStateDict))
+            {
+                throw new FailedLoadStateException($"{addressesHex}failed to load {nameof(ShardedShopStateV2)}({shopAddress}).");
+            }
+
+            sw.Stop();
+            Log.Verbose("{AddressesHex} UpdateSell Sell Cancel Get ShopState: {Elapsed}", addressesHex, sw.Elapsed);
+            sw.Restart();
+            if (!states.TryGetState(Order.DeriveAddress(orderId), out Dictionary orderDict))
+            {
+                throw new FailedLoadStateException($"{addressesHex} failed to load {nameof(Order)}({Order.DeriveAddress(updateSellInfo.orderId)}).");
+            }
+
+            var orderOnSale = OrderFactory.Deserialize(orderDict);
+            orderOnSale.ValidateCancelOrder(avatarState, tradableId);
+            orderOnSale.Cancel(avatarState, context.BlockIndex);
+            if (context.BlockIndex < orderOnSale.ExpiredBlockIndex)
+            {
+                var shardedShopState = new ShardedShopStateV2(shopStateDict);
+                shardedShopState.Remove(orderOnSale, context.BlockIndex);
+                states = states.SetState(shopAddress, shardedShopState.Serialize());
+            }
+
+            digestList.Remove(orderOnSale.OrderId);
+            sw.Stop();
+
+            var expirationMail = avatarState.mailBox.OfType<OrderExpirationMail>()
+                .FirstOrDefault(m => m.OrderId.Equals(orderId));
+            if (!(expirationMail is null))
+            {
+                avatarState.mailBox.Remove(expirationMail);
+            }
+
+            return states.SetState(digestList.Address, digestList.Serialize());
         }
     }
 }
