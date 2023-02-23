@@ -244,7 +244,7 @@ namespace Editor
 
             if (buildTarget == BuildTarget.Android)
             {
-                string locationPathName = Path.Combine(
+                locationPathName = Path.Combine(
                     "../",
                     locationPathName
                 );
