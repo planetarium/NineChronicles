@@ -29,7 +29,7 @@ namespace Nekoyume.Action
         public const long CrystalTransferringRestrictionStartIndex = 6_220_000L;
 
         // FIXME justify this policy.
-        public static readonly IReadOnlyList<Address> AllowedCrystalTransferList = new List<Address>
+        public static readonly IReadOnlySet<Address> AllowedCrystalTransfers = new HashSet<Address>
         {
             // world boss service
             new Address("CFCd6565287314FF70e4C4CF309dB701C43eA5bD"),
@@ -168,7 +168,7 @@ namespace Nekoyume.Action
         public static void CheckCrystalSender(Currency currency, long blockIndex, Address sender)
         {
             if (currency.Equals(CrystalCalculator.CRYSTAL) &&
-                blockIndex >= CrystalTransferringRestrictionStartIndex && !AllowedCrystalTransferList.Contains(sender))
+                blockIndex >= CrystalTransferringRestrictionStartIndex && !AllowedCrystalTransfers.Contains(sender))
             {
                 throw new InvalidTransferCurrencyException($"transfer crystal not allowed {sender}");
             }
