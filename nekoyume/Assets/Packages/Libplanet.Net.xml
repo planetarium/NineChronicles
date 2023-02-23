@@ -147,8 +147,9 @@
             The set of <see cref="T:Libplanet.Crypto.PublicKey"/>s to trust when a node encounters
             a <see cref="T:Libplanet.Net.Messages.Message"/> with an <see cref="T:Libplanet.Net.AppProtocolVersion"/> that is different
             from <see cref="P:Libplanet.Net.AppProtocolVersionOptions.AppProtocolVersion"/>.  Any <see cref="T:Libplanet.Net.Messages.Message"/> with an untrusted
-            <see cref="T:Libplanet.Net.AppProtocolVersion"/> is ignored by the node.  To trust any party,
-            set this to <see langword="null"/>.  Set to <see langword="null"/> by default.
+            <see cref="T:Libplanet.Net.AppProtocolVersion"/> is ignored by the node.  Set to an
+            empty set of <see cref="T:Libplanet.Crypto.PublicKey"/>s by default, i.e. not to trust any
+            <see cref="T:Libplanet.Net.Messages.Message"/> with a different <see cref="T:Libplanet.Net.AppProtocolVersion"/>.
             </summary>
         </member>
         <member name="P:Libplanet.Net.AppProtocolVersionOptions.DifferentAppProtocolVersionEncountered">
@@ -162,27 +163,43 @@
         </member>
         <member name="T:Libplanet.Net.BlockCandidateTable`1">
             <summary>
-            A class which table data structure that stores <see cref="T:Libplanet.Blocks.Block`1"/>s
-            received from <see cref="T:Libplanet.Net.BoundPeer"/>.
+            <para>
+            A class for storing downloaded <see cref="T:Libplanet.Blocks.Block`1"/>s as <see cref="T:System.Collections.Generic.Dictionary`2"/>.
+            A <see cref="T:Libplanet.Blocks.BlockHeader"/> is used as a key for storing downloading context.
+            </para>
+            <para>
+            This is designed to be exception free.
+            </para>
             </summary>
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
             to <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
         </member>
-        <member name="M:Libplanet.Net.BlockCandidateTable`1.Add(Libplanet.Blocks.BlockHeader,System.Collections.Generic.IEnumerable{Libplanet.Blocks.Block{`0}})">
+        <member name="M:Libplanet.Net.BlockCandidateTable`1.Add(Libplanet.Blocks.BlockHeader,Libplanet.Blockchain.Branch{`0})">
             <summary>
-            Adds a <see cref="T:Libplanet.Blocks.Block`1"/>s to the table.
+            <para>
+            Adds given <paramref name="branch"/> to the table.
+            </para>
+            <para>
+            The internal table is only updated if it does not already contain
+            <paramref name="blockHeader"/> as its key.
+            </para>
             </summary>
             <param name="blockHeader">This is the header of the <see cref="T:Libplanet.Blockchain.BlockChain`1"/>
             tip at the time of downloading the blocks.</param>
-            <param name="blocks">List of downloaded <see cref="T:Libplanet.Blocks.Block`1"/>.</param>
+            <param name="branch">The list of downloaded <see cref="T:Libplanet.Blocks.Block`1"/>s.</param>
         </member>
         <member name="M:Libplanet.Net.BlockCandidateTable`1.GetCurrentRoundCandidate(Libplanet.Blocks.BlockHeader)">
             <summary>
-            Get the <see cref="T:Libplanet.Blocks.Block`1"/>s which are in the table.
+            Get the <see cref="T:Libplanet.Blocks.Block`1"/>s which are in the table by <see cref="T:Libplanet.Blocks.BlockHeader"/>.
             </summary>
             <param name="thisRoundTip">Canonical <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s
             tip of this round.</param>
-            <returns><see cref="T:Libplanet.Blocks.Block`1"/>s by <paramref name="thisRoundTip"/>.</returns>
+            <returns>A <see cref="T:System.Collections.Generic.List`1"/> of <see cref="T:Libplanet.Blocks.Block`1"/>s associated with
+            <paramref name="thisRoundTip"/> if found, otherwise <see langword="null"/>.
+            The result is guaranteed to be non-empty and consecutive sorted by
+            <see cref="P:Libplanet.Blocks.Block`1.Index"/>.
+            </returns>
+            <seealso cref="M:Libplanet.Net.BlockCandidateTable`1.Add(Libplanet.Blocks.BlockHeader,Libplanet.Blockchain.Branch{`0})"/>
         </member>
         <member name="M:Libplanet.Net.BlockCompletion`2.Complete(System.Collections.Generic.IReadOnlyList{`0},Libplanet.Net.BlockCompletion{`0,`1}.BlockFetcher,System.Threading.CancellationToken)">
             <summary>
@@ -338,6 +355,9 @@
             The corresponding <see cref="T:System.Net.DnsEndPoint"/> of this peer.
             </summary>
         </member>
+        <member name="P:Libplanet.Net.BoundPeer.Bencoded">
+            <inheritdoc/>
+        </member>
         <member name="M:Libplanet.Net.BoundPeer.ParsePeer(System.String)">
             <summary>
             Initializes a new instance of the <see cref="T:Libplanet.Net.BoundPeer"/> class from
@@ -347,6 +367,9 @@
             <returns>A <see cref="T:Libplanet.Net.BoundPeer"/> from given data.</returns>
             <exception cref="T:System.ArgumentException">Thrown when the given peerInfo is invalid.
             </exception>
+        </member>
+        <member name="M:Libplanet.Net.BoundPeer.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
         </member>
         <member name="M:Libplanet.Net.BoundPeer.ToString">
             <inheritdoc/>
@@ -643,18 +666,9 @@
             <para>
             Whether to trust an unknown <see cref="T:Libplanet.Net.AppProtocolVersion"/>, i.e.
             an <see cref="T:Libplanet.Net.AppProtocolVersion"/> that is different
-            from <see cref="P:Libplanet.Net.Messages.MessageValidator.Apv"/>, depends on this value:
-            <list type="bullet">
-                <item><description>
-                    If <see langword="null"/>, the <see cref="T:Libplanet.Net.AppProtocolVersion"/> in question
-                    is trusted regardless of its signer.
-                </description></item>
-                <item><description>
-                    If not <see langword="null"/>, an <see cref="T:Libplanet.Net.AppProtocolVersion"/> is trusted
-                    if it is signed by one of the signers in the set.  In particular, if the set
-                    is empty, no <see cref="T:Libplanet.Net.AppProtocolVersion"/> is trusted.
-                </description></item>
-            </list>
+            from <see cref="P:Libplanet.Net.Messages.MessageValidator.Apv"/>.  An <see cref="T:Libplanet.Net.AppProtocolVersion"/> is trusted if it is signed
+            by one of the signers in the set.  In particular, if the set is empty,
+            no <see cref="T:Libplanet.Net.AppProtocolVersion"/> is trusted.
             </para>
             </summary>
         </member>
@@ -1463,7 +1477,7 @@
             operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
         </member>
-        <member name="M:Libplanet.Net.Swarm`1.#ctor(Libplanet.Blockchain.BlockChain{`0},Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersionOptions,Libplanet.Net.HostOptions,Libplanet.Net.SwarmOptions)">
+        <member name="M:Libplanet.Net.Swarm`1.#ctor(Libplanet.Blockchain.BlockChain{`0},Libplanet.Crypto.PrivateKey,Libplanet.Net.Transports.ITransport,Libplanet.Net.SwarmOptions)">
             <summary>
             Creates a <see cref="T:Libplanet.Net.Swarm`1"/>.  This constructor in only itself does not start
             any communication with the network.
@@ -1471,11 +1485,8 @@
             <param name="blockChain">A blockchain to publicize on the network.</param>
             <param name="privateKey">A private key to sign messages.  The public part of
             this key become a part of its end address for being pointed by peers.</param>
-            <param name="appProtocolVersionOptions">The <see cref="T:Libplanet.Net.AppProtocolVersionOptions"/>
-            to use when handling an <see cref="P:Libplanet.Net.Swarm`1.AppProtocolVersion"/> attached to
-            a <see cref="T:Libplanet.Net.Messages.Message"/>.</param>
-            <param name="hostOptions">The <see cref="T:Libplanet.Net.HostOptions"/> to use when binding
-            to the network.</param>
+            <param name="transport">The <see cref="T:Libplanet.Net.Transports.ITransport"/> to use for
+            network communication.</param>
             <param name="options">Options for <see cref="T:Libplanet.Net.Swarm`1"/>.</param>
         </member>
         <member name="P:Libplanet.Net.Swarm`1.LastMessageTimestamp">
@@ -1491,15 +1502,10 @@
             </summary>
         </member>
         <member name="P:Libplanet.Net.Swarm`1.TrustedAppProtocolVersionSigners">
-            <summary>
-            <see cref="T:Libplanet.Crypto.PublicKey"/>s of parties who signed <see cref="P:Libplanet.Net.Swarm`1.AppProtocolVersion"/>s to
-            trust.  In case of <see langword="null"/>, any parties are trusted.
-            </summary>
+            <inheritdoc cref="P:Libplanet.Net.AppProtocolVersionOptions.TrustedAppProtocolVersionSigners"/>
         </member>
         <member name="P:Libplanet.Net.Swarm`1.AppProtocolVersion">
-            <summary>
-            The application protocol version to comply.
-            </summary>
+            <inheritdoc cref="P:Libplanet.Net.AppProtocolVersionOptions.AppProtocolVersion"/>
         </member>
         <member name="M:Libplanet.Net.Swarm`1.WaitForRunningAsync">
             <summary>
@@ -2043,6 +2049,15 @@
             </summary>
             <value>The value indicating whether the instance is running.</value>
         </member>
+        <member name="P:Libplanet.Net.Transports.ITransport.AppProtocolVersion">
+            <inheritdoc cref="P:Libplanet.Net.AppProtocolVersionOptions.AppProtocolVersion"/>
+        </member>
+        <member name="P:Libplanet.Net.Transports.ITransport.TrustedAppProtocolVersionSigners">
+            <inheritdoc cref="P:Libplanet.Net.AppProtocolVersionOptions.TrustedAppProtocolVersionSigners"/>
+        </member>
+        <member name="P:Libplanet.Net.Transports.ITransport.DifferentAppProtocolVersionEncountered">
+            <inheritdoc cref="P:Libplanet.Net.AppProtocolVersionOptions.DifferentAppProtocolVersionEncountered"/>
+        </member>
         <member name="M:Libplanet.Net.Transports.ITransport.StartAsync(System.Threading.CancellationToken)">
             <summary>
             Starts running a transport layer as to put it in a <see cref="P:Libplanet.Net.Transports.ITransport.Running"/> state.
@@ -2149,7 +2164,7 @@
             </summary>
             <param name="privateKey"><see cref="T:Libplanet.Crypto.PrivateKey"/> of the transport layer.</param>
             <param name="appProtocolVersionOptions">The <see cref="T:Libplanet.Net.AppProtocolVersionOptions"/>
-            to use when handling an <see cref="T:Libplanet.Net.AppProtocolVersion"/> attached to
+            to use when handling an <see cref="P:Libplanet.Net.Transports.NetMQTransport.AppProtocolVersion"/> attached to
             a <see cref="T:Libplanet.Net.Messages.Message"/>.</param>
             <param name="hostOptions">The <see cref="T:Libplanet.Net.HostOptions"/> to use when binding
             to the network.</param>
@@ -2171,13 +2186,22 @@
         <member name="P:Libplanet.Net.Transports.NetMQTransport.Running">
             <inheritdoc/>
         </member>
+        <member name="P:Libplanet.Net.Transports.NetMQTransport.AppProtocolVersion">
+            <inheritdoc/>
+        </member>
+        <member name="P:Libplanet.Net.Transports.NetMQTransport.TrustedAppProtocolVersionSigners">
+            <inheritdoc/>
+        </member>
+        <member name="P:Libplanet.Net.Transports.NetMQTransport.DifferentAppProtocolVersionEncountered">
+            <inheritdoc/>
+        </member>
         <member name="M:Libplanet.Net.Transports.NetMQTransport.Create(Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersionOptions,Libplanet.Net.HostOptions,System.Nullable{System.TimeSpan})">
             <summary>
             Creates an initialized <see cref="T:Libplanet.Net.Transports.NetMQTransport"/> instance.
             </summary>
             <param name="privateKey"><see cref="T:Libplanet.Crypto.PrivateKey"/> of the transport layer.</param>
             <param name="appProtocolVersionOptions">The <see cref="T:Libplanet.Net.AppProtocolVersionOptions"/>
-            to use when handling an <see cref="T:Libplanet.Net.AppProtocolVersion"/> attached to
+            to use when handling an <see cref="P:Libplanet.Net.Transports.NetMQTransport.AppProtocolVersion"/> attached to
             a <see cref="T:Libplanet.Net.Messages.Message"/>.</param>
             <param name="hostOptions">The <see cref="T:Libplanet.Net.HostOptions"/> to use when binding
             to the network.</param>

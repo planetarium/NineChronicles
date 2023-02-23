@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Lib9c.Renderers;
 using Nekoyume.Action;
 using Nekoyume.Arena;
 using Nekoyume.BlockChain;
@@ -356,7 +357,7 @@ namespace Nekoyume.UI
             SendBattleGrandFinaleAction();
         }
 
-        public void OnRenderBattleArena(ActionBase.ActionEvaluation<BattleArena> eval)
+        public void OnRenderBattleArena(ActionEvaluation<BattleArena> eval)
         {
             if (eval.Exception is { })
             {
@@ -368,7 +369,7 @@ namespace Nekoyume.UI
             Find<ArenaBattleLoadingScreen>().Close();
         }
 
-        public void OnRenderBattleArena(ActionBase.ActionEvaluation<BattleGrandFinale> eval)
+        public void OnRenderBattleArena(ActionEvaluation<BattleGrandFinale> eval)
         {
             if (eval.Exception is { })
             {

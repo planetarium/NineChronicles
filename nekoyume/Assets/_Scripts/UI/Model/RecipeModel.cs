@@ -76,7 +76,9 @@ namespace Nekoyume.UI.Model
 
             foreach (var recipe in recipes)
             {
-                var key = GetEquipmentGroup(recipe.ResultEquipmentId);
+                var key = Util.IsEventEquipmentRecipe(recipe.Id)
+                    ? "crystal_equipment"
+                    : GetEquipmentGroup(recipe.ResultEquipmentId);
 
                 if (!EquipmentRecipeMap.TryGetValue(key, out var recipeViewModel))
                 {
@@ -216,7 +218,8 @@ namespace Nekoyume.UI.Model
                     x.GetResultEquipmentItemRow().ItemSubType == DisplayingItemSubtype &&
                     x.UnlockStage <= lastClearedStageId &&
                     !UnlockedRecipes.Value.Contains(x.Id) &&
-                    !UnlockingRecipes.Contains(x.Id))
+                    !UnlockingRecipes.Contains(x.Id) &&
+                    x.CRYSTAL != 0)
                 .OrderBy(x => x.UnlockStage);
 
             var unlockableRecipes = new List<int>();

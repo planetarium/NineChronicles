@@ -43,64 +43,13 @@ SpriteAtlas:
       enableAlphaDilation: 0
     secondaryTextureSettings: {}
     variantMultiplier: 1
-    packables:
-    - {fileID: 102900000, guid: 98646da04be5c4d40ba41cb7c0b897bd, type: 3}
+    packables: []
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
-  m_PackedSprites:
-  - {fileID: 21300000, guid: 615078c05ab12604cab45f52a82e7184, type: 3}
-  - {fileID: 21300000, guid: 8a725ab1907944b43bf4e3c8140b831c, type: 3}
-  - {fileID: 21300000, guid: 1979b122ea31fae4ca96d365600cd4bc, type: 3}
-  - {fileID: 21300000, guid: 0df143c2691175747a12ae6d718d041a, type: 3}
-  - {fileID: 21300000, guid: c6b04b53b869fa1468fe519801f1e0c3, type: 3}
-  - {fileID: 21300000, guid: 123be983a9c0b2c468789a641882040c, type: 3}
-  - {fileID: 21300000, guid: 1ced80c4eda2fa6408731ea4dca8463d, type: 3}
-  - {fileID: 21300000, guid: 23a760f457893134e94ad17cec929e4c, type: 3}
-  - {fileID: 21300000, guid: ad9305453668df64390297cfc5d491c6, type: 3}
-  - {fileID: 21300000, guid: 2e1f4d77f04a2934786fd508957c1145, type: 3}
-  - {fileID: 21300000, guid: 5374bcc7b6bfa214b9d6427ee3247e13, type: 3}
-  - {fileID: 21300000, guid: 52be5778aee422c479ffe3695f075cac, type: 3}
-  - {fileID: 21300000, guid: 94cae38860985314cb3012d397124d87, type: 3}
-  - {fileID: 21300000, guid: ffc87a88c05c3024f97cdf590367e509, type: 3}
-  - {fileID: 21300000, guid: f61f03a83ee4bf54f96f80f8ed9eed9c, type: 3}
-  - {fileID: 21300000, guid: 3844b199c613ff44b8243e1a9dc67779, type: 3}
-  - {fileID: 21300000, guid: 915ae7993f3137147971dab25062ffc4, type: 3}
-  - {fileID: 21300000, guid: 27f9053bd9ecbe342a7c4ed1ed897876, type: 3}
-  - {fileID: 21300000, guid: c4dd9d4b29638f7419384ea5235a9c64, type: 3}
-  - {fileID: 21300000, guid: 9b5ead9c94d552a4ea3c391ca744b371, type: 3}
-  - {fileID: 21300000, guid: 5e52bcbcb452a224f990131fcfa6b289, type: 3}
-  - {fileID: 21300000, guid: 2195074dea1dcd6489fce70444ec111b, type: 3}
-  - {fileID: 21300000, guid: 90826f2e3d7aad846bf801671b04b75a, type: 3}
-  - {fileID: 21300000, guid: f643b8ced72ab274bbf09c71b277a315, type: 3}
-  - {fileID: 21300000, guid: 7f159dfef549e414ea64f46419acf901, type: 3}
-  m_PackedSpriteNamesToIndex:
-  - main_pfp-Idle_08
-  - main_pfp-Idle_09
-  - main_pfp-Idle_13
-  - main_pfp-Idle_18
-  - main_pfp-Idle_15
-  - main_pfp-Idle_22
-  - main_pfp-Idle_21
-  - main_pfp-Idle_05
-  - main_pfp-Idle_16
-  - main_pfp-Idle_12
-  - main_pfp-Idle_14
-  - main_pfp-Idle_02
-  - main_pfp-Idle_01
-  - main_pfp-Idle_04
-  - main_pfp-Idle_03
-  - main_pfp-Idle_19
-  - main_pfp-Idle_11
-  - main_pfp-Idle_23
-  - main_pfp-Idle_06
-  - main_pfp-Idle_20
-  - main_pfp-Idle_07
-  - main_pfp-Idle_24
-  - main_pfp-Idle_00
-  - main_pfp-Idle_17
-  - main_pfp-Idle_10
+  m_PackedSprites: []
+  m_PackedSpriteNamesToIndex: []
   m_RenderDataMap: {}
   m_Tag: Atlas_Lobby_pfp
   m_IsVariant: 0

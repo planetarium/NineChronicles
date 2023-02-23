@@ -10,7 +10,7 @@ using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Grpc.Core;
 using Ionic.Zlib;
-using Lib9c.Renderer;
+using Lib9c.Renderers;
 using Libplanet;
 using Libplanet.Assets;
 using Libplanet.Blocks;
@@ -43,7 +43,7 @@ namespace Nekoyume.BlockChain
 
     public class RPCAgent : MonoBehaviour, IAgent, IActionEvaluationHubReceiver
     {
-        private const int RpcConnectionRetryCount = 10;
+        private const int RpcConnectionRetryCount = 20;
         private const float TxProcessInterval = 1.0f;
         private readonly ConcurrentQueue<NCAction> _queuedActions = new ConcurrentQueue<NCAction>();
 
@@ -120,7 +120,13 @@ namespace Nekoyume.BlockChain
                 }
             );
             _lastTipChangedAt = DateTimeOffset.UtcNow;
-            _hub = StreamingHubClient.Connect<IActionEvaluationHub, IActionEvaluationHubReceiver>(_channel, this);
+            var connect = StreamingHubClient
+                .ConnectAsync<IActionEvaluationHub, IActionEvaluationHubReceiver>(
+                    _channel,
+                    this)
+                .AsCoroutine();
+            yield return connect;
+            _hub = connect.Result;
             _service = MagicOnionClient.Create<IBlockChainService>(_channel, new IClientFilter[]
             {
                 new ClientFilter()
@@ -261,7 +267,7 @@ namespace Nekoyume.BlockChain
                     value["AgentAddress"] = States.Instance.AgentState.address.ToString();
                 }
 
-                if (States.Instance.AgentState is not null)
+                if (States.Instance.CurrentAvatarState is not null)
                 {
                     value["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString();
                 }
@@ -271,23 +277,23 @@ namespace Nekoyume.BlockChain
 
             OnDisconnected
                 .ObserveOnMainThread()
-                .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Disconnected", GetPlayerAddressForLogging()))
+                .Subscribe(_ => Analyzer.Instance?.Track("Unity/RPC Disconnected", GetPlayerAddressForLogging()))
                 .AddTo(_disposables);
             OnRetryStarted
                 .ObserveOnMainThread()
-                .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Retry Connect Started",GetPlayerAddressForLogging()))
+                .Subscribe(_ => Analyzer.Instance?.Track("Unity/RPC Retry Connect Started",GetPlayerAddressForLogging()))
                 .AddTo(_disposables);
             OnRetryEnded
                 .ObserveOnMainThread()
-                .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Retry Connect Ended", GetPlayerAddressForLogging()))
+                .Subscribe(_ => Analyzer.Instance?.Track("Unity/RPC Retry Connect Ended", GetPlayerAddressForLogging()))
                 .AddTo(_disposables);
             OnPreloadStarted
                 .ObserveOnMainThread()
-                .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Preload Started", GetPlayerAddressForLogging()))
+                .Subscribe(_ => Analyzer.Instance?.Track("Unity/RPC Preload Started", GetPlayerAddressForLogging()))
                 .AddTo(_disposables);
             OnPreloadEnded
                 .ObserveOnMainThread()
-                .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Preload Ended", GetPlayerAddressForLogging()))
+                .Subscribe(_ => Analyzer.Instance?.Track("Unity/RPC Preload Ended", GetPlayerAddressForLogging()))
                 .AddTo(_disposables);
             OnRetryAttempt
                 .ObserveOnMainThread()
@@ -560,10 +566,18 @@ namespace Nekoyume.BlockChain
                     Debug.LogWarning($"TimeoutException occurred. Retrying... {retryCount}\n{toe}");
                     retryCount--;
                 }
-                catch (RpcException re)
+                catch (AggregateException ae)
                 {
-                    Debug.LogWarning($"RpcException occurred. Retrying... {retryCount}\n{re}");
-                    retryCount--;
+                    if (ae.InnerException is RpcException re)
+                    {
+                        Debug.LogWarning($"RpcException occurred. Retrying... {retryCount}\n{re}");
+                        retryCount--;
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Unexpected error occurred during rpc connection. {ae}");
+                        break;
+                    }
                 }
                 catch (ObjectDisposedException ode)
                 {
