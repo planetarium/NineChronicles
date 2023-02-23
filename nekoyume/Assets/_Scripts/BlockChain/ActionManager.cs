@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using Cysharp.Threading.Tasks;
+using Lib9c.Renderers;
 using Libplanet;
 using Libplanet.Assets;
 using Libplanet.Tx;
@@ -124,7 +125,7 @@ namespace Nekoyume.BlockChain
 
         #region Actions
 
-        public IObservable<ActionBase.ActionEvaluation<CreateAvatar>> CreateAvatar(
+        public IObservable<ActionEvaluation<CreateAvatar>> CreateAvatar(
             int index,
             string nickName,
             int hair = 0,
@@ -161,7 +162,7 @@ namespace Nekoyume.BlockChain
                 });
         }
 
-        public IObservable<ActionBase.ActionEvaluation<MimisbrunnrBattle>> MimisbrunnrBattle(
+        public IObservable<ActionEvaluation<MimisbrunnrBattle>> MimisbrunnrBattle(
             List<Guid> costumes,
             List<Guid> equipments,
             List<Consumable> foods,
@@ -208,7 +209,7 @@ namespace Nekoyume.BlockChain
                 });
         }
 
-        public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
+        public IObservable<ActionEvaluation<HackAndSlash>> HackAndSlash(
             List<Guid> costumes,
             List<Guid> equipments,
             List<Consumable> foods,
@@ -278,7 +279,7 @@ namespace Nekoyume.BlockChain
                 .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<EventDungeonBattle>> EventDungeonBattle(
+        public IObservable<ActionEvaluation<EventDungeonBattle>> EventDungeonBattle(
             int eventScheduleId,
             int eventDungeonId,
             int eventDungeonStageId,
@@ -363,7 +364,7 @@ namespace Nekoyume.BlockChain
                 .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<CombinationConsumable>> CombinationConsumable(
+        public IObservable<ActionEvaluation<CombinationConsumable>> CombinationConsumable(
             SubRecipeView.RecipeInfo recipeInfo,
             int slotIndex)
         {
@@ -422,7 +423,7 @@ namespace Nekoyume.BlockChain
                 .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<EventConsumableItemCrafts>>
+        public IObservable<ActionEvaluation<EventConsumableItemCrafts>>
             EventConsumableItemCrafts(
                 int eventScheduleId,
                 SubRecipeView.RecipeInfo recipeInfo,
@@ -493,7 +494,7 @@ namespace Nekoyume.BlockChain
                 .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<EventMaterialItemCrafts>>
+        public IObservable<ActionEvaluation<EventMaterialItemCrafts>>
             EventMaterialItemCrafts(
                 int eventScheduleId,
                 int recipeId,
@@ -531,7 +532,7 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => throw HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<HackAndSlashSweep>> HackAndSlashSweep(
+        public IObservable<ActionEvaluation<HackAndSlashSweep>> HackAndSlashSweep(
             List<Guid> costumes,
             List<Guid> equipments,
             List<RuneSlotInfo> runeInfos,
@@ -580,7 +581,7 @@ namespace Nekoyume.BlockChain
                 }).Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<RegisterProduct>> RegisterProduct(
+        public IObservable<ActionEvaluation<RegisterProduct>> RegisterProduct(
             IRegisterInfo registerInfo)
         {
             var sentryTrace = Analyzer.Instance.Track("Unity/RegisterProduct", new Dictionary<string, Value>()
@@ -607,7 +608,7 @@ namespace Nekoyume.BlockChain
                 .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<CancelProductRegistration>> CancelProductRegistration(
+        public IObservable<ActionEvaluation<CancelProductRegistration>> CancelProductRegistration(
             Address avatarAddress,
             ProductInfo productInfo)
         {
@@ -633,7 +634,7 @@ namespace Nekoyume.BlockChain
                 .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<SellCancellation>> SellCancellation(
+        public IObservable<ActionEvaluation<SellCancellation>> SellCancellation(
             Address sellerAvatarAddress,
             Guid orderId,
             Guid tradableId,
@@ -664,7 +665,7 @@ namespace Nekoyume.BlockChain
                 .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<UpdateSell>> UpdateSell(List<UpdateSellInfo> updateSellInfos)
+        public IObservable<ActionEvaluation<UpdateSell>> UpdateSell(List<UpdateSellInfo> updateSellInfos)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var sentryTrace = Analyzer.Instance.Track("Unity/UpdateSell", new Dictionary<string, Value>()
@@ -692,7 +693,7 @@ namespace Nekoyume.BlockChain
                 .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<Buy>> Buy(List<PurchaseInfo> purchaseInfos)
+        public IObservable<ActionEvaluation<Buy>> Buy(List<PurchaseInfo> purchaseInfos)
         {
             var buyerAgentAddress = States.Instance.AgentState.address;
             foreach (var purchaseInfo in purchaseInfos)
@@ -718,7 +719,7 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => throw HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<DailyReward>> DailyReward()
+        public IObservable<ActionEvaluation<DailyReward>> DailyReward()
         {
             var blockCount = Game.Game.instance.Agent.BlockIndex -
                 States.Instance.CurrentAvatarState.dailyRewardReceivedIndex + 1;
@@ -742,7 +743,7 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => throw HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<ItemEnhancement>> ItemEnhancement(
+        public IObservable<ActionEvaluation<ItemEnhancement>> ItemEnhancement(
             Equipment baseEquipment,
             Equipment materialEquipment,
             int slotIndex,
@@ -799,7 +800,7 @@ namespace Nekoyume.BlockChain
                 }).Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<RankingBattle>> RankingBattle(
+        public IObservable<ActionEvaluation<RankingBattle>> RankingBattle(
             Address enemyAddress,
             List<Guid> costumeIds,
             List<Guid> equipmentIds
@@ -846,7 +847,7 @@ namespace Nekoyume.BlockChain
                 .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<JoinArena>> JoinArena(
+        public IObservable<ActionEvaluation<JoinArena>> JoinArena(
             List<Guid> costumes,
             List<Guid> equipments,
             List<RuneSlotInfo> runeInfos,
@@ -878,7 +879,7 @@ namespace Nekoyume.BlockChain
                 });
         }
 
-        public IObservable<ActionBase.ActionEvaluation<BattleArena>> BattleArena(
+        public IObservable<ActionEvaluation<BattleArena>> BattleArena(
             Address enemyAvatarAddress,
             List<Guid> costumes,
             List<Guid> equipments,
@@ -929,7 +930,7 @@ namespace Nekoyume.BlockChain
                 }).Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<PatchTableSheet>> PatchTableSheet(
+        public IObservable<ActionEvaluation<PatchTableSheet>> PatchTableSheet(
             string tableName,
             string tableCsv)
         {
@@ -949,7 +950,7 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<CombinationEquipment>> CombinationEquipment(
+        public IObservable<ActionEvaluation<CombinationEquipment>> CombinationEquipment(
             SubRecipeView.RecipeInfo recipeInfo,
             int slotIndex,
             bool payByCrystal,
@@ -1029,7 +1030,7 @@ namespace Nekoyume.BlockChain
                 .Finally(() => Analyzer.Instance.FinishTrace(sentryTx));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<RapidCombination>> RapidCombination(
+        public IObservable<ActionEvaluation<RapidCombination>> RapidCombination(
             CombinationSlotState state,
             int slotIndex)
         {
@@ -1079,7 +1080,7 @@ namespace Nekoyume.BlockChain
                 .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<RedeemCode>> RedeemCode(string code)
+        public IObservable<ActionEvaluation<RedeemCode>> RedeemCode(string code)
         {
             var action = new RedeemCode(
                 code,
@@ -1097,7 +1098,7 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<ChargeActionPoint>> ChargeActionPoint(Material material)
+        public IObservable<ActionEvaluation<ChargeActionPoint>> ChargeActionPoint(Material material)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             LocalLayerModifier.RemoveItem(avatarAddress, material.ItemId);
@@ -1130,7 +1131,7 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<Grinding>> Grinding(
+        public IObservable<ActionEvaluation<Grinding>> Grinding(
             List<Equipment> equipmentList,
             bool chargeAp,
             int gainedCrystal)
@@ -1184,7 +1185,7 @@ namespace Nekoyume.BlockChain
                 .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<UnlockEquipmentRecipe>> UnlockEquipmentRecipe(
+        public IObservable<ActionEvaluation<UnlockEquipmentRecipe>> UnlockEquipmentRecipe(
             List<int> recipeIdList,
             BigInteger openCost)
         {
@@ -1218,7 +1219,7 @@ namespace Nekoyume.BlockChain
         }
 
 
-        public IObservable<ActionBase.ActionEvaluation<UnlockWorld>> UnlockWorld(List<int> worldIdList, int cost)
+        public IObservable<ActionEvaluation<UnlockWorld>> UnlockWorld(List<int> worldIdList, int cost)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var sentryTrace = Analyzer.Instance.Track("Unity/UnlockWorld", new Dictionary<string, Value>()
@@ -1244,7 +1245,7 @@ namespace Nekoyume.BlockChain
                 .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<HackAndSlashRandomBuff>> HackAndSlashRandomBuff(bool advanced, long burntCrystal)
+        public IObservable<ActionEvaluation<HackAndSlashRandomBuff>> HackAndSlashRandomBuff(bool advanced, long burntCrystal)
         {
             var sentryTrace = Analyzer.Instance.Track("Unity/Purchase Crystal Bonus Skill", new Dictionary<string, Value>()
             {
@@ -1271,7 +1272,7 @@ namespace Nekoyume.BlockChain
                 .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<Raid>> Raid(
+        public IObservable<ActionEvaluation<Raid>> Raid(
             List<Guid> costumes,
             List<Guid> equipments,
             List<Guid> foods,
@@ -1302,7 +1303,7 @@ namespace Nekoyume.BlockChain
                 });
         }
 
-        public IObservable<ActionBase.ActionEvaluation<ClaimRaidReward>> ClaimRaidReward()
+        public IObservable<ActionEvaluation<ClaimRaidReward>> ClaimRaidReward()
         {
             var action = new ClaimRaidReward(States.Instance.CurrentAvatarState.address);
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
@@ -1320,7 +1321,7 @@ namespace Nekoyume.BlockChain
                 });
         }
 
-        public IObservable<ActionBase.ActionEvaluation<BattleGrandFinale>> BattleGrandFinale(
+        public IObservable<ActionEvaluation<BattleGrandFinale>> BattleGrandFinale(
             Address enemyAvatarAddress,
             List<Guid> costumes,
             List<Guid> equipments,
@@ -1353,7 +1354,7 @@ namespace Nekoyume.BlockChain
                 });
         }
 
-        public IObservable<ActionBase.ActionEvaluation<RuneEnhancement>> RuneEnhancement(
+        public IObservable<ActionEvaluation<RuneEnhancement>> RuneEnhancement(
             int runeId,
             int tryCount)
         {
@@ -1378,7 +1379,7 @@ namespace Nekoyume.BlockChain
                 });
         }
 
-        public IObservable<ActionBase.ActionEvaluation<UnlockRuneSlot>> UnlockRuneSlot(
+        public IObservable<ActionEvaluation<UnlockRuneSlot>> UnlockRuneSlot(
             int slotIndex)
         {
             var action = new UnlockRuneSlot
@@ -1400,7 +1401,7 @@ namespace Nekoyume.BlockChain
                 });
         }
 
-        public IObservable<ActionBase.ActionEvaluation<PetEnhancement>> PetEnhancement(
+        public IObservable<ActionEvaluation<PetEnhancement>> PetEnhancement(
             int petId,
             int targetLevel)
         {
@@ -1425,7 +1426,7 @@ namespace Nekoyume.BlockChain
         }
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
-        public IObservable<ActionBase.ActionEvaluation<CreateTestbed>> CreateTestbed()
+        public IObservable<ActionEvaluation<CreateTestbed>> CreateTestbed()
         {
             var action = new CreateTestbed
             {
@@ -1444,7 +1445,7 @@ namespace Nekoyume.BlockChain
                 });
         }
 
-        public IObservable<ActionBase.ActionEvaluation<CreateArenaDummy>> CreateArenaDummy(
+        public IObservable<ActionEvaluation<CreateArenaDummy>> CreateArenaDummy(
             List<Guid> costumes,
             List<Guid> equipments,
             int championshipId,

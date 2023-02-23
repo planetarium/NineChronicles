@@ -53,6 +53,7 @@ SpriteAtlas:
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
+  - {fileID: 21300000, guid: 6d76650021450c44c854ba1ce7235527, type: 3}
   - {fileID: 21300000, guid: 05a67b00d3cda4f439b7eed00fd9676f, type: 3}
   - {fileID: 21300000, guid: 211666107e50d43909fe24e487662bac, type: 3}
   - {fileID: 21300000, guid: c3a719101f2b6401587db8857b0e43ba, type: 3}
@@ -143,6 +144,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: b0f0d13a905e14ae2b9d05c821ebb219, type: 3}
   - {fileID: 21300000, guid: 1402b85ae950dd64f911cea59c53d8f9, type: 3}
   - {fileID: 21300000, guid: b235196af13ed7a4e9f665e072233413, type: 3}
+  - {fileID: 21300000, guid: 271a7e7a0874443ce8d9261bf4f84b10, type: 3}
   - {fileID: 21300000, guid: bb54f98a20a734874b2ebd4c0cb247f1, type: 3}
   - {fileID: 21300000, guid: c9b052ba45d9f479ab3362cb153c6d4f, type: 3}
   - {fileID: 21300000, guid: c6f878caf3260430083d07b425095017, type: 3}
@@ -183,6 +185,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 20a16defdc4cd4e9e9ba758c05f2d5e6, type: 3}
   - {fileID: 21300000, guid: 0a338fffed88d774e8269dc38d226163, type: 3}
   m_PackedSpriteNamesToIndex:
+  - worldboss_03_Support_Back
   - Staking_02
   - UI_icon_Speech_05
   - bg_valentine_bg_04
@@ -273,6 +276,7 @@ SpriteAtlas:
   - Main_rock_03
   - bg_xmas_tree_02_light_03
   - Staking_05
+  - worldboss_03_Base
   - Main_Cloud_05
   - Main_Cloud_03
   - Main_tower_00

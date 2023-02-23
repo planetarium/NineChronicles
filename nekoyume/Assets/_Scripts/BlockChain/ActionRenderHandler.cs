@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Bencodex.Types;
 using Lib9c.Model.Order;
-using Lib9c.Renderer;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Action;
@@ -24,6 +23,7 @@ using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
+using Lib9c.Renderers;
 using Libplanet.Assets;
 using mixpanel;
 using Nekoyume.Arena;
@@ -496,7 +496,7 @@ namespace Nekoyume.BlockChain
         }
 
         private async UniTaskVoid ResponseCreateAvatar(
-            ActionBase.ActionEvaluation<CreateAvatar> eval)
+            ActionEvaluation<CreateAvatar> eval)
         {
             if (eval.Exception != null)
             {
@@ -533,7 +533,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseRapidCombination(ActionBase.ActionEvaluation<RapidCombination> eval)
+        private void ResponseRapidCombination(ActionEvaluation<RapidCombination> eval)
         {
             if (eval.Exception is null)
             {
@@ -658,7 +658,7 @@ namespace Nekoyume.BlockChain
         }
 
         private void ResponseCombinationEquipment(
-            ActionBase.ActionEvaluation<CombinationEquipment> eval)
+            ActionEvaluation<CombinationEquipment> eval)
         {
             if (eval.Action.payByCrystal)
             {
@@ -774,7 +774,7 @@ namespace Nekoyume.BlockChain
         }
 
         private void ResponseCombinationConsumable(
-            ActionBase.ActionEvaluation<CombinationConsumable> eval)
+            ActionEvaluation<CombinationConsumable> eval)
         {
             if (eval.Exception is null)
             {
@@ -821,7 +821,7 @@ namespace Nekoyume.BlockChain
         }
 
         private void ResponseEventConsumableItemCrafts(
-            ActionBase.ActionEvaluation<EventConsumableItemCrafts> eval)
+            ActionEvaluation<EventConsumableItemCrafts> eval)
         {
             if (eval.Exception is not null)
             {
@@ -867,7 +867,7 @@ namespace Nekoyume.BlockChain
         }
 
         private void ResponseEventMaterialItemCrafts(
-            ActionBase.ActionEvaluation<EventMaterialItemCrafts> eval)
+            ActionEvaluation<EventMaterialItemCrafts> eval)
         {
             if (eval.Exception is not null)
             {
@@ -898,7 +898,7 @@ namespace Nekoyume.BlockChain
             // ~Notify
         }
 
-        private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)
+        private void ResponseItemEnhancement(ActionEvaluation<ItemEnhancement> eval)
         {
             Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
             if (eval.Exception is null)
@@ -1002,7 +1002,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private async void ResponseRegisterProductAsync(ActionBase.ActionEvaluation<RegisterProduct> eval)
+        private async void ResponseRegisterProductAsync(ActionEvaluation<RegisterProduct> eval)
         {
             if (eval.Exception is null)
             {
@@ -1083,7 +1083,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        // private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
+        // private void ResponseSell(ActionEvaluation<Sell> eval)
         // {
         //     if (eval.Exception is null)
         //     {
@@ -1135,7 +1135,7 @@ namespace Nekoyume.BlockChain
         // }
 
         private async void ResponseSellCancellation(
-            ActionBase.ActionEvaluation<SellCancellation> eval)
+            ActionEvaluation<SellCancellation> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -1170,7 +1170,7 @@ namespace Nekoyume.BlockChain
             ReactiveShopState.SetSellProducts();
         }
 
-        private async void ResponseUpdateSell(ActionBase.ActionEvaluation<UpdateSell> eval)
+        private async void ResponseUpdateSell(ActionEvaluation<UpdateSell> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -1211,7 +1211,7 @@ namespace Nekoyume.BlockChain
             ReactiveShopState.SetSellProducts();
         }
 
-        private async void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)
+        private async void ResponseBuy(ActionEvaluation<Buy> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -1344,7 +1344,7 @@ namespace Nekoyume.BlockChain
             RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
-        private async void ResponseDailyRewardAsync(ActionBase.ActionEvaluation<DailyReward> eval)
+        private async void ResponseDailyRewardAsync(ActionEvaluation<DailyReward> eval)
         {
             if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.avatarAddress))
             {
@@ -1378,7 +1378,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private async void ResponseHackAndSlashAsync(ActionBase.ActionEvaluation<HackAndSlash> eval)
+        private async void ResponseHackAndSlashAsync(ActionEvaluation<HackAndSlash> eval)
         {
             if (eval.Exception is null)
             {
@@ -1488,7 +1488,7 @@ namespace Nekoyume.BlockChain
         }
 
         private async void ResponseHackAndSlashSweepAsync(
-            ActionBase.ActionEvaluation<HackAndSlashSweep> eval)
+            ActionEvaluation<HackAndSlashSweep> eval)
         {
             if (eval.Exception is null)
             {
@@ -1517,7 +1517,7 @@ namespace Nekoyume.BlockChain
         }
 
         private async void ResponseMimisbrunnrAsync(
-            ActionBase.ActionEvaluation<MimisbrunnrBattle> eval)
+            ActionEvaluation<MimisbrunnrBattle> eval)
         {
             if (eval.Exception is null)
             {
@@ -1619,7 +1619,7 @@ namespace Nekoyume.BlockChain
         }
 
         private async void ResponseEventDungeonBattleAsync(
-            ActionBase.ActionEvaluation<EventDungeonBattle> eval)
+            ActionEvaluation<EventDungeonBattle> eval)
         {
             if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
             {
@@ -1723,7 +1723,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseRedeemCode(ActionBase.ActionEvaluation<Action.RedeemCode> eval)
+        private void ResponseRedeemCode(ActionEvaluation<Action.RedeemCode> eval)
         {
             var key = "UI_REDEEM_CODE_INVALID_CODE";
             if (eval.Exception is null)
@@ -1749,7 +1749,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseChargeActionPoint(ActionBase.ActionEvaluation<ChargeActionPoint> eval)
+        private void ResponseChargeActionPoint(ActionEvaluation<ChargeActionPoint> eval)
         {
             if (eval.Exception is null)
             {
@@ -1770,7 +1770,7 @@ namespace Nekoyume.BlockChain
         }
 
         private void ResponseClaimMonsterCollectionReward(
-            ActionBase.ActionEvaluation<ClaimMonsterCollectionReward> eval)
+            ActionEvaluation<ClaimMonsterCollectionReward> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -1838,7 +1838,7 @@ namespace Nekoyume.BlockChain
             RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
-        private void ResponseTransferAsset(ActionBase.ActionEvaluation<TransferAsset> eval)
+        private void ResponseTransferAsset(ActionEvaluation<TransferAsset> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -1880,7 +1880,7 @@ namespace Nekoyume.BlockChain
             UpdateAgentStateAsync(eval).Forget();
         }
 
-        private void ResponseGrinding(ActionBase.ActionEvaluation<Grinding> eval)
+        private void ResponseGrinding(ActionEvaluation<Grinding> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -1916,7 +1916,7 @@ namespace Nekoyume.BlockChain
         }
 
         private async UniTaskVoid ResponseUnlockEquipmentRecipeAsync(
-            ActionBase.ActionEvaluation<UnlockEquipmentRecipe> eval)
+            ActionEvaluation<UnlockEquipmentRecipe> eval)
         {
             Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
             var sharedModel = Craft.SharedModel;
@@ -1956,7 +1956,7 @@ namespace Nekoyume.BlockChain
             sharedModel.UpdateUnlockableRecipes();
         }
 
-        private void ResponseUnlockWorld(ActionBase.ActionEvaluation<UnlockWorld> eval)
+        private void ResponseUnlockWorld(ActionEvaluation<UnlockWorld> eval)
         {
             Widget.Find<UnlockWorldLoadingScreen>().Close();
 
@@ -1976,7 +1976,7 @@ namespace Nekoyume.BlockChain
         }
 
         private void ResponseHackAndSlashRandomBuff(
-            ActionBase.ActionEvaluation<HackAndSlashRandomBuff> eval)
+            ActionEvaluation<HackAndSlashRandomBuff> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -1994,7 +1994,7 @@ namespace Nekoyume.BlockChain
             Widget.Find<BuffBonusResultPopup>().Show(skillState.StageId, skillState);
         }
 
-        private void ResponseStake(ActionBase.ActionEvaluation<Stake> eval)
+        private void ResponseStake(ActionEvaluation<Stake> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -2015,7 +2015,7 @@ namespace Nekoyume.BlockChain
             UpdateAgentStateAsync(eval).Forget();
         }
 
-        private void ResponseClaimStakeReward(ActionBase.ActionEvaluation<ActionBase> eval)
+        private void ResponseClaimStakeReward(ActionEvaluation<ActionBase> eval)
         {
             if (eval.Exception is not null)
             {
@@ -2098,17 +2098,17 @@ namespace Nekoyume.BlockChain
                 .AddTo(_disposables);
         }
 
-        private void ResponseTestbed(ActionBase.ActionEvaluation<CreateTestbed> eval)
+        private void ResponseTestbed(ActionEvaluation<CreateTestbed> eval)
         {
         }
 
-        private void ResponseCreateArenaDummy(ActionBase.ActionEvaluation<CreateArenaDummy> eval)
+        private void ResponseCreateArenaDummy(ActionEvaluation<CreateArenaDummy> eval)
         {
         }
 #endif
 
         private static async UniTaskVoid ResponseJoinArenaAsync(
-            ActionBase.ActionEvaluation<JoinArena> eval)
+            ActionEvaluation<JoinArena> eval)
         {
             if (eval.Action.avatarAddress != States.Instance.CurrentAvatarState.address)
             {
@@ -2149,7 +2149,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private async void ResponseBattleArenaAsync(ActionBase.ActionEvaluation<BattleArena> eval)
+        private async void ResponseBattleArenaAsync(ActionEvaluation<BattleArena> eval)
         {
             if (!ActionManager.IsLastBattleActionId(eval.Action.Id) ||
                 eval.Action.myAvatarAddress != States.Instance.CurrentAvatarState.address)
@@ -2335,7 +2335,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseBattleGrandFinale(ActionBase.ActionEvaluation<BattleGrandFinale> eval)
+        private void ResponseBattleGrandFinale(ActionEvaluation<BattleGrandFinale> eval)
         {
             if (!ActionManager.IsLastBattleActionId(eval.Action.Id) ||
                 eval.Action.myAvatarAddress != States.Instance.CurrentAvatarState.address)
@@ -2462,7 +2462,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private async void ResponseRaidAsync(ActionBase.ActionEvaluation<Raid> eval)
+        private async void ResponseRaidAsync(ActionEvaluation<Raid> eval)
         {
             if (eval.Exception is not null)
             {
@@ -2602,7 +2602,7 @@ namespace Nekoyume.BlockChain
         }
 
         private async void ResponseClaimRaidRewardAsync(
-            ActionBase.ActionEvaluation<ClaimRaidReward> eval)
+            ActionEvaluation<ClaimRaidReward> eval)
         {
             if (eval.Exception is not null)
             {
@@ -2616,7 +2616,7 @@ namespace Nekoyume.BlockChain
             Widget.Find<WorldBossRewardScreen>().Show(new LocalRandom(eval.RandomSeed));
         }
 
-        private void ResponseRuneEnhancement(ActionBase.ActionEvaluation<RuneEnhancement> eval)
+        private void ResponseRuneEnhancement(ActionEvaluation<RuneEnhancement> eval)
         {
             Widget.Find<Rune>().OnActionRender(new LocalRandom(eval.RandomSeed)).Forget();
 
@@ -2629,7 +2629,7 @@ namespace Nekoyume.BlockChain
             UpdateAgentStateAsync(eval).Forget();
         }
 
-        private void ResponseUnlockRuneSlot(ActionBase.ActionEvaluation<UnlockRuneSlot> eval)
+        private void ResponseUnlockRuneSlot(ActionEvaluation<UnlockRuneSlot> eval)
         {
             if (eval.Exception is not null)
             {
@@ -2649,7 +2649,7 @@ namespace Nekoyume.BlockChain
                 NotificationCell.NotificationType.Notification);
         }
 
-        private void ResponsePetEnhancement(ActionBase.ActionEvaluation<PetEnhancement> eval)
+        private void ResponsePetEnhancement(ActionEvaluation<PetEnhancement> eval)
         {
             LoadingHelper.PetEnhancement.Value = 0;
             var action = eval.Action;

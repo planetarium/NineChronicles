@@ -12,6 +12,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
+using Lib9c.Renderers;
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.Game;
@@ -165,7 +166,7 @@ namespace Nekoyume.UI
                 .Subscribe();
         }
 
-        public void OnRenderCreateAvatar(ActionBase.ActionEvaluation<CreateAvatar> eval)
+        public void OnRenderCreateAvatar(ActionEvaluation<CreateAvatar> eval)
         {
             if (eval.Exception is { })
             {
