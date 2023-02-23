@@ -111,9 +111,9 @@ namespace Lib9c.Tests
         }
 
         [Theory]
-        [InlineData(1000, int.MaxValue, 24, -3, -1)]
-        [InlineData(1000, 1201, 24, -3, -1)]
-        [InlineData(1000, 1101, 22, -2, -1)]
+        [InlineData(1000, int.MaxValue, 20, -1, -1)]
+        [InlineData(1000, 1201, 20, -1, -1)]
+        [InlineData(1000, 1101, 20, -1, -1)]
         [InlineData(1000, 1001, 20, -1, -1)]
         [InlineData(1000, 1000, 18, -1, -1)]
         [InlineData(1000, 901, 18, -1, -1)]
