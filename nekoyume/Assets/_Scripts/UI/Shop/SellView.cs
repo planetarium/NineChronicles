@@ -121,25 +121,45 @@ namespace Nekoyume
             Dictionary<ItemSubTypeFilter, List<ShopItem>> items)
         {
             var models = items[_selectedSubTypeFilter.Value].Distinct();
-            return _selectedSortFilter.Value switch
+            var fungibleAssetProducts = models.Where(x => x.Product is null);
+            var itemProducts = models.Where(x => x.Product is not null).ToList();
+
+            var result = new List<ShopItem>();
+            switch (_selectedSortFilter.Value)
             {
-                ShopSortFilter.CP => models.OrderByDescending(x => x.Product.CombatPoint)
-                    .ToList(),
-                ShopSortFilter.Price => models.OrderByDescending(x => x.Product.Price).ToList(),
-                ShopSortFilter.Class => models.OrderByDescending(x => x.Grade)
-                    .ThenByDescending(x => x.ItemBase.ItemType).ToList(),
-                ShopSortFilter.Crystal => models.OrderByDescending(x => x.ItemBase.ItemType == ItemType.Equipment
-                    ? CrystalCalculator.CalculateCrystal(
-                            new[] {(Equipment) x.ItemBase},
-                            false,
-                            TableSheets.Instance.CrystalEquipmentGrindingSheet,
-                            TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet,
-                            States.Instance.StakingLevel).DivRem((BigInteger) x.Product.Price)
-                        .Quotient
-                        .MajorUnit
-                    : 0),
-                _ => throw new ArgumentOutOfRangeException()
-            };
+                case ShopSortFilter.CP:
+                    result = itemProducts
+                        .OrderByDescending(x => x.Product.CombatPoint)
+                        .ToList();
+                    break;
+                case ShopSortFilter.Price:
+                    result = itemProducts
+                        .OrderByDescending(x => x.Product.Price)
+                        .ToList();
+                    break;
+                case ShopSortFilter.Class:
+                    result = itemProducts
+                        .OrderByDescending(x => x.Grade)
+                        .ThenByDescending(x => x.ItemBase.ItemType)
+                        .ToList();
+                    break;
+                case ShopSortFilter.Crystal:
+                    result = itemProducts
+                        .OrderByDescending(x => x.ItemBase.ItemType == ItemType.Equipment
+                            ? CrystalCalculator.CalculateCrystal(
+                                    new[] { (Equipment)x.ItemBase },
+                                    false,
+                                    TableSheets.Instance.CrystalEquipmentGrindingSheet,
+                                    TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet,
+                                    States.Instance.StakingLevel).DivRem((BigInteger)x.Product.Price)
+                                .Quotient
+                                .MajorUnit
+                            : 0).ToList();
+                    break;
+            }
+
+            result.AddRange(fungibleAssetProducts);
+            return result;
         }
     }
 }

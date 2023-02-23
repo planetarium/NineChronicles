@@ -91,7 +91,10 @@ namespace Nekoyume.UI
             Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
             await ReactiveShopState.RequestBuyProductsAsync(ItemSubType.Weapon, MarketOrderType.cp_desc, 0, 60);
             base.Show(ignoreShowAnimation);
-            view.Show(ReactiveShopState.BuyProducts, ShowItemTooltip);
+            view.Show(
+                ReactiveShopState.BuyItemProducts,
+                ReactiveShopState.BuyFungibleAssetProducts,
+                ShowItemTooltip, true);
             Find<DataLoadingScreen>().Close();
             HelpTooltip.HelpMe(100018, true);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
@@ -100,7 +103,10 @@ namespace Nekoyume.UI
         public void Open()
         {
             base.Show(true);
-            view.Show(ReactiveShopState.BuyProducts, ShowItemTooltip);
+            view.Show(
+                ReactiveShopState.BuyItemProducts,
+                ReactiveShopState.BuyFungibleAssetProducts,
+                ShowItemTooltip, true);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

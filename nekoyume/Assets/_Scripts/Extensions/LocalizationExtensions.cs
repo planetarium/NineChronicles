@@ -5,6 +5,7 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Libplanet.Assets;
 using Nekoyume.Action;
+using Nekoyume.EnumType;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
@@ -440,6 +441,22 @@ namespace Nekoyume
                 id = petRow.Id;
             }
             return L10nManager.Localize(isRune ? $"RUNE_NAME_{id}" : $"PET_NAME_{id}");
+        }
+
+        public static ItemSubTypeFilter GetItemSubTypeFilter(this FungibleAssetValue fav)
+        {
+            if (RuneFrontHelper.TryGetRuneData(fav.Currency.Ticker, out _))
+            {
+                return ItemSubTypeFilter.RuneStone;
+            }
+
+            var petSheet = Game.Game.instance.TableSheets.PetSheet;
+            if (petSheet.Values.Any(x => x.SoulStoneTicker == fav.Currency.Ticker))
+            {
+                return ItemSubTypeFilter.PetSoulStone;
+            }
+
+            return ItemSubTypeFilter.Stones;
         }
 
         public static string GetLocalizedNonColoredName(this ItemBase item, bool useElementalIcon = true)

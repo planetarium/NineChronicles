@@ -189,6 +189,7 @@ namespace Nekoyume.UI
 
             priceInputField.text = data.Count.Value.ToString();
             countInputField.text = data.Count.Value.ToString();
+            _data.ProductId.Value = data.ProductId.Value;
             _data.Price.Value = data.Price.Value;
             _data.UnitPrice.Value = data.UnitPrice.Value;
 

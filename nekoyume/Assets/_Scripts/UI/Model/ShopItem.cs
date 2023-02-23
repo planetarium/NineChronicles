@@ -12,6 +12,7 @@ namespace Nekoyume.UI.Model
         public ItemBase ItemBase { get; }
         public FungibleAssetValue FungibleAssetValue { get; }
         public ItemProductResponseModel Product { get; }
+        public FungibleAssetValueProductResponseModel FungibleAssetProduct { get; }
         public int Grade { get; }
         public bool LevelLimited { get; }
 
@@ -19,8 +20,11 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<bool> Expired;
         public readonly ReactiveProperty<bool> Loading;
 
-        public ShopItem(ItemBase itemBase, ItemProductResponseModel product,
-            int grade, bool limited)
+        public ShopItem(
+            ItemBase itemBase,
+            ItemProductResponseModel product,
+            int grade,
+            bool limited)
         {
             ItemBase = itemBase;
             Product = product;
@@ -31,13 +35,15 @@ namespace Nekoyume.UI.Model
             Loading = new ReactiveProperty<bool>(false);
         }
 
-        public ShopItem(FungibleAssetValue fungibleAssetValue, ItemProductResponseModel product,
-            int grade, bool limited)
+        public ShopItem(
+            FungibleAssetValue fungibleAssetValue,
+            FungibleAssetValueProductResponseModel product,
+            int grade)
         {
             FungibleAssetValue = fungibleAssetValue;
-            Product = product;
+            FungibleAssetProduct = product;
             Grade = grade;
-            LevelLimited = limited;
+            LevelLimited = false;
             Selected = new ReactiveProperty<bool>(false);
             Expired = new ReactiveProperty<bool>(false);
             Loading = new ReactiveProperty<bool>(false);

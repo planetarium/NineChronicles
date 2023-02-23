@@ -8,7 +8,10 @@ namespace Nekoyume.UI.Module
 {
     public interface IShopView
     {
-        public void Show(ReactiveProperty<List<ItemProductResponseModel>> products,
-            Action<ShopItem> clickItem);
+        public void Show(
+            ReactiveProperty<List<ItemProductResponseModel>> itemProducts,
+            ReactiveProperty<List<FungibleAssetValueProductResponseModel>> fungibleAssetProducts,
+            Action<ShopItem> clickItem,
+            bool isBuy);
     }
 }

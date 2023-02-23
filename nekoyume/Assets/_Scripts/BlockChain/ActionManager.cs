@@ -620,6 +620,7 @@ namespace Nekoyume.BlockChain
 
             var action = new CancelProductRegistration
             {
+                AvatarAddress = avatarAddress,
                 ProductInfos = new List<ProductInfo> { productInfo }
             };
 

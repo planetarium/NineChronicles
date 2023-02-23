@@ -31,13 +31,19 @@ namespace Nekoyume.EnumType
         TailCostume,
         Title,
 
-        Materials,
         Hourglass,
         ApStone,
 
+        RuneStone,
+        PetSoulStone,
+
+        Materials,
         Equipment,
         Food,
         Costume,
+        Stones,
+
+
     }
 
     public static class ItemSubTypeFilterExtension
@@ -67,6 +73,8 @@ namespace Nekoyume.EnumType
                     ItemSubTypeFilter.Title,
                     ItemSubTypeFilter.Hourglass,
                     ItemSubTypeFilter.ApStone,
+                    ItemSubTypeFilter.RuneStone,
+                    ItemSubTypeFilter.PetSoulStone,
                 };
             }
         }
@@ -102,6 +110,15 @@ namespace Nekoyume.EnumType
                         : StatType.HIT.ToString();
                 case ItemSubTypeFilter.Materials:
                     return L10nManager.Localize("UI_MATERIALS");
+
+                case ItemSubTypeFilter.Stones:
+                    return "Stones";
+
+                case ItemSubTypeFilter.RuneStone:
+                    return "RuneStone";
+
+                case ItemSubTypeFilter.PetSoulStone:
+                    return "PetSoulStone";
 
                 default:
                     return ((ItemSubType) Enum.Parse(typeof(ItemSubType), type.ToString()))

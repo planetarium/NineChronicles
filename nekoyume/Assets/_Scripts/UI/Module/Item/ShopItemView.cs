@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using UnityEngine;
@@ -40,55 +41,95 @@ namespace Nekoyume.UI.Module
             baseItemView.EquippedObject.SetActive(false);
             baseItemView.LoadingObject.SetActive(false);
 
-            baseItemView.ItemImage.overrideSprite = BaseItemView.GetItemIcon(model.ItemBase);
-
-            var data = baseItemView.GetItemViewData(model.ItemBase);
-            baseItemView.GradeImage.overrideSprite = data.GradeBackground;
-            baseItemView.GradeHsv.range = data.GradeHsvRange;
-            baseItemView.GradeHsv.hue = data.GradeHsvHue;
-            baseItemView.GradeHsv.saturation = data.GradeHsvSaturation;
-            baseItemView.GradeHsv.value = data.GradeHsvValue;
-
-            if (model.ItemBase is Equipment equipment && equipment.level > 0)
+            if (model.ItemBase is not null)
             {
-                baseItemView.EnhancementText.gameObject.SetActive(true);
-                baseItemView.EnhancementText.text = $"+{equipment.level}";
-                if (equipment.level >= Util.VisibleEnhancementEffectLevel)
+                baseItemView.ItemImage.overrideSprite = BaseItemView.GetItemIcon(model.ItemBase);
+
+                var data = baseItemView.GetItemViewData(model.ItemBase);
+                baseItemView.GradeImage.overrideSprite = data.GradeBackground;
+                baseItemView.GradeHsv.range = data.GradeHsvRange;
+                baseItemView.GradeHsv.hue = data.GradeHsvHue;
+                baseItemView.GradeHsv.saturation = data.GradeHsvSaturation;
+                baseItemView.GradeHsv.value = data.GradeHsvValue;
+
+                if (model.ItemBase is Equipment equipment && equipment.level > 0)
                 {
-                    baseItemView.EnhancementImage.material = data.EnhancementMaterial;
-                    baseItemView.EnhancementImage.gameObject.SetActive(true);
+                    baseItemView.EnhancementText.gameObject.SetActive(true);
+                    baseItemView.EnhancementText.text = $"+{equipment.level}";
+                    if (equipment.level >= Util.VisibleEnhancementEffectLevel)
+                    {
+                        baseItemView.EnhancementImage.material = data.EnhancementMaterial;
+                        baseItemView.EnhancementImage.gameObject.SetActive(true);
+                    }
+                    else
+                    {
+                        baseItemView.EnhancementImage.gameObject.SetActive(false);
+                    }
                 }
                 else
                 {
+                    baseItemView.EnhancementText.gameObject.SetActive(false);
                     baseItemView.EnhancementImage.gameObject.SetActive(false);
+                }
+
+                baseItemView.LevelLimitObject.SetActive(model.LevelLimited);
+
+                baseItemView.OptionTag.Set(model.ItemBase);
+
+                baseItemView.CountText.gameObject.SetActive(model.ItemBase.ItemType == ItemType.Material);
+
+                var product = model.Product;
+                baseItemView.CountText.text = product.Quantity.ToString(CultureInfo.InvariantCulture);
+
+                if (product.Quantity > 1)
+                {
+                    var priceText = decimal.Round(product.Price / product.Quantity, 3);
+                    baseItemView.PriceText.text = $"{product.Price}({priceText})";
+                }
+                else
+                {
+                    baseItemView.PriceText.text = product.Price.ToString(CultureInfo.InvariantCulture);
                 }
             }
             else
             {
+                var fav = model.FungibleAssetValue;
+                var grade = Util.GetTickerGrade(fav.Currency.Ticker);
+                baseItemView.ItemImage.overrideSprite = fav.GetIconSprite();
+
+                var data = baseItemView.GetItemViewData(grade);
+                baseItemView.GradeImage.overrideSprite = data.GradeBackground;
+                baseItemView.GradeHsv.range = data.GradeHsvRange;
+                baseItemView.GradeHsv.hue = data.GradeHsvHue;
+                baseItemView.GradeHsv.saturation = data.GradeHsvSaturation;
+                baseItemView.GradeHsv.value = data.GradeHsvValue;
+
                 baseItemView.EnhancementText.gameObject.SetActive(false);
                 baseItemView.EnhancementImage.gameObject.SetActive(false);
+                baseItemView.LevelLimitObject.SetActive(model.LevelLimited);
+                baseItemView.OptionTag.gameObject.SetActive(false);
+                baseItemView.CountText.gameObject.SetActive(true);
+
+                var fungibleAssetProduct = model.FungibleAssetProduct;
+                baseItemView.CountText.text = fungibleAssetProduct.Quantity.ToString(CultureInfo.InvariantCulture);
+
+                if (fungibleAssetProduct.Quantity > 1)
+                {
+                    var priceText = decimal.Round(fungibleAssetProduct.Price / fungibleAssetProduct.Quantity, 3);
+                    baseItemView.PriceText.text = $"{fungibleAssetProduct.Price}({priceText})";
+                }
+                else
+                {
+                    baseItemView.PriceText.text = fungibleAssetProduct.Price.ToString(CultureInfo.InvariantCulture);
+                }
             }
 
-            baseItemView.LevelLimitObject.SetActive(model.LevelLimited);
-
-            baseItemView.OptionTag.Set(model.ItemBase);
-
-            baseItemView.CountText.gameObject.SetActive(model.ItemBase.ItemType == ItemType.Material);
-            baseItemView.CountText.text = model.Product.Quantity.ToString();
-
-            if (model.Product.Quantity > 1)
-            {
-                var priceText = decimal.Round(model.Product.Price / model.Product.Quantity, 3);
-                baseItemView.PriceText.text = $"{model.Product.Price}({priceText})";
-            }
-            else
-            {
-                baseItemView.PriceText.text = model.Product.Price.ToString();
-            }
-
-            model.Selected.Subscribe(b => baseItemView.SelectObject.SetActive(b)).AddTo(_disposables);
-            model.Expired.Subscribe(b => baseItemView.ExpiredObject.SetActive(b)).AddTo(_disposables);
-            model.Loading.Subscribe(b => baseItemView.LoadingObject.SetActive(b)).AddTo(_disposables);
+            model.Selected.Subscribe(b => baseItemView.SelectObject.SetActive(b))
+                .AddTo(_disposables);
+            model.Expired.Subscribe(b => baseItemView.ExpiredObject.SetActive(b))
+                .AddTo(_disposables);
+            model.Loading.Subscribe(b => baseItemView.LoadingObject.SetActive(b))
+                .AddTo(_disposables);
 
             baseItemView.TouchHandler.OnClick.Select(_ => model)
                 .Subscribe(onClick).AddTo(_disposables);

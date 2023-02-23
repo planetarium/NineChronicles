@@ -126,7 +126,7 @@ namespace Nekoyume.UI
             registerButton.gameObject.SetActive(false);
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(true);
-            sell.Set(item.Product.RegisteredBlockIndex + Order.ExpirationInterval,
+            sell.Set(item.FungibleAssetProduct.RegisteredBlockIndex + Order.ExpirationInterval,
                 () =>
                 {
                     onSellCancellation?.Invoke();

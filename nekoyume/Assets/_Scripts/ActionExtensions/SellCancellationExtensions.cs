@@ -38,7 +38,6 @@ namespace Nekoyume.ActionExtensions
                 return;
             }
 
-            ReactiveShopState.RemoveSellProduct(action.orderId);
         }
     }
 }

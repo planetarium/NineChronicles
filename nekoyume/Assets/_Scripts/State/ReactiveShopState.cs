@@ -19,8 +19,11 @@ namespace Nekoyume.State
 {
     public static class ReactiveShopState
     {
-        public static ReactiveProperty<List<ItemProductResponseModel>> BuyProducts { get; } = new();
-        public static ReactiveProperty<List<ItemProductResponseModel>> SellProducts { get; } = new();
+        public static ReactiveProperty<List<ItemProductResponseModel>> BuyItemProducts { get; } = new();
+        public static ReactiveProperty<List<ItemProductResponseModel>> SellItemProducts { get; } = new();
+
+        public static ReactiveProperty<List<FungibleAssetValueProductResponseModel>> BuyFungibleAssetProducts { get; } = new();
+        public static ReactiveProperty<List<FungibleAssetValueProductResponseModel>> SellFungibleAssetProducts { get; } = new();
         private static Dictionary<Guid, ItemBase> CachedBuyItems { get; set; } = new();
         private static Dictionary<Guid, ItemBase> CachedSellItems { get; set; } = new();
 
@@ -45,42 +48,45 @@ namespace Nekoyume.State
                 { MarketOrderType.grade_desc, new Dictionary<ItemSubType, bool>() },
             };
 
-        private static readonly List<ItemProductResponseModel> CachedSellProducts = new();
+        private static readonly List<ItemProductResponseModel> CachedSellItemProducts = new();
+        private static readonly List<FungibleAssetValueProductResponseModel> CachedSellFungibleAssetProducts = new();
 
         private static List<Guid> RemovedProductIds => new();
 
-        public static bool TryGetBuyShopItem(ItemProductResponseModel product, out ItemBase itemBase)
+        public static bool TryGetBuyShopItem(Guid productId, out ItemBase itemBase)
         {
-            if (!CachedBuyItems.ContainsKey(product.ProductId))
+            if (!CachedBuyItems.ContainsKey(productId))
             {
                 Debug.LogWarning($"[{nameof(TryGetBuyShopItem)}] Not found address:" +
-                                 $" {product.ProductId}");
+                                 $" {productId}");
                 itemBase = null;
                 return false;
             }
 
-            itemBase = CachedBuyItems[product.ProductId];
+            itemBase = CachedBuyItems[productId];
             return true;
         }
 
-        public static bool TryGetSellShopItem(ItemProductResponseModel product, out ItemBase itemBase)
+        public static bool TryGetSellShopItem(Guid productId, out ItemBase itemBase)
         {
-            if (!CachedSellItems.ContainsKey(product.ProductId))
+            if (!CachedSellItems.ContainsKey(productId))
             {
                 Debug.LogWarning($"[{nameof(TryGetSellShopItem)}] Not found address:" +
-                                 $" {product.ProductId}");
+                                 $" {productId}");
                 itemBase = null;
                 return false;
             }
 
-            itemBase = CachedSellItems[product.ProductId];
+            itemBase = CachedSellItems[productId];
             return true;
         }
 
         public static void ClearCache()
         {
-            BuyProducts.Value = new List<ItemProductResponseModel>();
-            SellProducts.Value = new List<ItemProductResponseModel>();
+            BuyItemProducts.Value = new List<ItemProductResponseModel>();
+            SellItemProducts.Value = new List<ItemProductResponseModel>();
+            BuyFungibleAssetProducts.Value = new List<FungibleAssetValueProductResponseModel>();
+            SellFungibleAssetProducts.Value = new List<FungibleAssetValueProductResponseModel>();
             CachedBuyItems?.Clear();
             CachedSellItems?.Clear();
             RemovedProductIds?.Clear();
@@ -149,8 +155,12 @@ namespace Nekoyume.State
         public static async Task RequestSellProductsAsync()
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var products = await Game.Game.instance.MarketServiceClient.GetProducts(avatarAddress);
-            CachedSellProducts.AddRange(products);
+            var (fungibleAssets, items) = await Game.Game.instance.MarketServiceClient.GetProducts(avatarAddress);
+            CachedSellItemProducts.Clear();
+            CachedSellItemProducts.AddRange(items);
+            CachedSellFungibleAssetProducts.Clear();
+            CachedSellFungibleAssetProducts.AddRange(fungibleAssets);
+            SetSellProducts();
         }
 
         public static void SetBuyProducts(MarketOrderType marketOrderType)
@@ -161,14 +171,16 @@ namespace Nekoyume.State
                 products.AddRange(models.Where(model => model.RegisteredBlockIndex > 0));
             }
 
-            BuyProducts.Value = SortedProducts(products);
-            CachedBuyItems = GetItems(BuyProducts.Value);
+            BuyItemProducts.Value = SortedProducts(products);
+            BuyFungibleAssetProducts.Value = new List<FungibleAssetValueProductResponseModel>(); // todo
+            CachedBuyItems = GetItems(BuyItemProducts.Value);
         }
 
         public static void SetSellProducts()
         {
-            SellProducts.Value = CachedSellProducts;
-            CachedSellItems = GetItems(SellProducts.Value);
+            SellItemProducts.Value = CachedSellItemProducts;
+            SellFungibleAssetProducts.Value = CachedSellFungibleAssetProducts;
+            CachedSellItems = GetItems(SellItemProducts.Value);
         }
 
         private static List<ItemProductResponseModel> SortedProducts(
@@ -193,7 +205,7 @@ namespace Nekoyume.State
 
         public static void RemoveBuyProduct(Guid productId)
         {
-            var item = BuyProducts.Value.FirstOrDefault(x =>
+            var item = BuyItemProducts.Value.FirstOrDefault(x =>
                 x.ProductId.Equals(productId));
             if (item != null)
             {
@@ -202,34 +214,52 @@ namespace Nekoyume.State
                     RemovedProductIds.Add(productId);
                 }
 
-                BuyProducts.Value.Remove(item);
-                BuyProducts.SetValueAndForceNotify(BuyProducts.Value);
+                BuyItemProducts.Value.Remove(item);
+                BuyItemProducts.SetValueAndForceNotify(BuyItemProducts.Value);
             }
         }
 
         public static void RemoveSellProduct(Guid productId)
         {
-            var item = SellProducts.Value.FirstOrDefault(x =>
+            var itemProduct = SellItemProducts.Value.FirstOrDefault(x =>
                 x.ProductId.Equals(productId));
-            if (item != null)
+            if (itemProduct is not null)
             {
-                SellProducts.Value.Remove(item);
-                SellProducts.SetValueAndForceNotify(SellProducts.Value);
+                SellItemProducts.Value.Remove(itemProduct);
+                SellItemProducts.SetValueAndForceNotify(SellItemProducts.Value);
+            }
+
+            var fungibleAssetProduct = SellFungibleAssetProducts.Value.FirstOrDefault(x =>
+                x.ProductId.Equals(productId));
+            if (fungibleAssetProduct is not null)
+            {
+                SellFungibleAssetProducts.Value.Remove(fungibleAssetProduct);
+                SellFungibleAssetProducts.SetValueAndForceNotify(SellFungibleAssetProducts.Value);
             }
         }
 
-        public static ItemProductResponseModel GetSellProduct(
+        public static ItemProductResponseModel GetSellItemProduct(
             Guid tradableId,
             long requiredBlockIndex,
             FungibleAssetValue price,
             int count)
         {
             var currency = States.Instance.GoldBalanceState.Gold.Currency;
-            return SellProducts.Value.FirstOrDefault(x =>
+            return SellItemProducts.Value.FirstOrDefault(x =>
                 x.TradableId.Equals(tradableId) &&
                 (x.RegisteredBlockIndex + Order.ExpirationInterval).Equals(requiredBlockIndex) &&
                 ((BigInteger)x.Price * currency).Equals(price) &&
                 x.Quantity.Equals(count));
+        }
+
+        public static ItemProductResponseModel GetSellItemProduct(Guid productId)
+        {
+            return SellItemProducts.Value.FirstOrDefault(x => x.ProductId == productId);
+        }
+
+        public static FungibleAssetValueProductResponseModel GetSellFungibleAssetProduct(Guid productId)
+        {
+            return SellFungibleAssetProducts.Value.FirstOrDefault(x => x.ProductId == productId);
         }
 
         private static Dictionary<Guid, ItemBase> GetItems(
