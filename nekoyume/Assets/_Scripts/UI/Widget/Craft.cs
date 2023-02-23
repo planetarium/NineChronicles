@@ -66,6 +66,9 @@ namespace Nekoyume.UI
         private SubRecipeView eventMaterialSubRecipeView;
 
         [SerializeField]
+        private SubRecipeView eventEquipmentSubRecipeView;
+
+        [SerializeField]
         private CanvasGroup canvasGroup;
 
         public static RecipeModel SharedModel { get; set; }
@@ -120,6 +123,10 @@ namespace Nekoyume.UI
 
             eventMaterialSubRecipeView.CombinationActionSubject
                 .Subscribe(EventMaterialItemCraftsAction)
+                .AddTo(gameObject);
+
+            eventEquipmentSubRecipeView.CombinationActionSubject
+                .Subscribe(OnClickEquipmentAction)
                 .AddTo(gameObject);
         }
 
@@ -181,6 +188,10 @@ namespace Nekoyume.UI
                     else if (eventMaterialSubRecipeView.gameObject.activeSelf)
                     {
                         eventMaterialSubRecipeView.UpdateView();
+                    }
+                    else if (eventEquipmentSubRecipeView.gameObject.activeSelf)
+                    {
+                        eventEquipmentSubRecipeView.UpdateView();
                     }
                 })
                 .AddTo(gameObject);
@@ -294,6 +305,7 @@ namespace Nekoyume.UI
         {
             Assert.True(equipmentToggle.isOn);
             equipmentSubRecipeView.ResetSelectedIndex();
+            eventEquipmentSubRecipeView.ResetSelectedIndex();
             recipeScroll.ShowAsEquipment(ItemSubType.Weapon, true);
             SharedModel.SelectedRow.Value = null;
         }
@@ -322,11 +334,17 @@ namespace Nekoyume.UI
             switch (row)
             {
                 case EquipmentItemRecipeSheet.Row equipmentRow:
-                    equipmentSubRecipeView.gameObject.SetActive(true);
+                    equipmentSubRecipeView.gameObject.SetActive(false);
                     consumableSubRecipeView.gameObject.SetActive(false);
                     eventConsumableSubRecipeView.gameObject.SetActive(false);
                     eventMaterialSubRecipeView.gameObject.SetActive(false);
-                    equipmentSubRecipeView.SetData(equipmentRow, equipmentRow.SubRecipeIds);
+                    eventEquipmentSubRecipeView.gameObject.SetActive(false);
+
+                    var subRecipeView = Util.IsEventEquipmentRecipe(equipmentRow.Id)
+                        ? eventEquipmentSubRecipeView
+                        : equipmentSubRecipeView;
+                    subRecipeView.gameObject.SetActive(true);
+                    subRecipeView.SetData(equipmentRow, equipmentRow.SubRecipeIds);
                     break;
                 // NOTE: We must check the `row` is type of `EventConsumableItemRecipeSheet.Row`
                 //       because the `EventConsumableItemRecipeSheet.Row` is the inherited class of
@@ -336,6 +354,7 @@ namespace Nekoyume.UI
                     consumableSubRecipeView.gameObject.SetActive(false);
                     eventConsumableSubRecipeView.gameObject.SetActive(true);
                     eventMaterialSubRecipeView.gameObject.SetActive(false);
+                    eventEquipmentSubRecipeView.gameObject.SetActive(false);
                     eventConsumableSubRecipeView.SetData(eventConsumableRow, null);
                     break;
                 case ConsumableItemRecipeSheet.Row consumableRow:
@@ -343,6 +362,7 @@ namespace Nekoyume.UI
                     consumableSubRecipeView.gameObject.SetActive(true);
                     eventConsumableSubRecipeView.gameObject.SetActive(false);
                     eventMaterialSubRecipeView.gameObject.SetActive(false);
+                    eventEquipmentSubRecipeView.gameObject.SetActive(false);
                     consumableSubRecipeView.SetData(consumableRow, null);
                     break;
 
@@ -351,6 +371,7 @@ namespace Nekoyume.UI
                     consumableSubRecipeView.gameObject.SetActive(false);
                     eventConsumableSubRecipeView.gameObject.SetActive(false);
                     eventMaterialSubRecipeView.gameObject.SetActive(true);
+                    eventEquipmentSubRecipeView.gameObject.SetActive(false);
                     eventMaterialSubRecipeView.SetData(eventMaterialRow, null);
                     break;
                 default:
@@ -358,6 +379,7 @@ namespace Nekoyume.UI
                     consumableSubRecipeView.gameObject.SetActive(false);
                     eventConsumableSubRecipeView.gameObject.SetActive(false);
                     eventMaterialSubRecipeView.gameObject.SetActive(false);
+                    eventEquipmentSubRecipeView.gameObject.SetActive(false);
                     break;
             }
         }
@@ -483,9 +505,10 @@ namespace Nekoyume.UI
 
         private void CombinationEquipmentAction(SubRecipeView.RecipeInfo recipeInfo)
         {
-            if (!equipmentSubRecipeView.CheckSubmittable(
-                    out var errorMessage,
-                    out var slotIndex))
+            var subRecipeView = Util.IsEventEquipmentRecipe(recipeInfo.RecipeId)
+                ? eventEquipmentSubRecipeView
+                : equipmentSubRecipeView;
+            if (!subRecipeView.CheckSubmittable(out var errorMessage, out var slotIndex))
             {
                 OneLineSystem.Push(
                     MailType.System,
@@ -508,7 +531,7 @@ namespace Nekoyume.UI
                 requiredBlockIndex += subRecipeRow.RequiredBlockIndex;
             }
 
-            equipmentSubRecipeView.UpdateView();
+            subRecipeView.UpdateView();
             var insufficientMaterials = recipeInfo.ReplacedMaterials;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             if (insufficientMaterials.Any())

@@ -179,8 +179,15 @@ namespace Nekoyume.UI.Module
             var unlockStage = equipmentRow.UnlockStage;
             var clearedStage = worldInformation.TryGetLastClearedStageId(out var stageId) ? stageId : 0;
             var diff = unlockStage - clearedStage;
-
             var sharedModel = Craft.SharedModel;
+
+            if (equipmentRow.CRYSTAL == 0)
+            {
+                SetEquipmentView(equipmentRow);
+                IsLocked = false;
+                return;
+            }
+
             if (diff > 0)
             {
                 unlockConditionText.text = unlockStage != 999

@@ -92,7 +92,7 @@ namespace Nekoyume.UI.Scroller
 
         private BigInteger _openCost;
 
-        private List<int> _unlockableRecipeIds = new List<int>();
+        private List<int> _unlockableRecipeIds = new ();
 
         private List<IDisposable> _disposablesAtShow = new List<IDisposable>();
 
@@ -206,9 +206,22 @@ namespace Nekoyume.UI.Scroller
             }
 
             viewport.SetActive(true);
-            var items = Craft.SharedModel.EquipmentRecipeMap.Values
-                .Where(x => x.ItemSubType == type)
-                .ToList();
+            List<RecipeRow.Model> items;
+            if (type is not ItemSubType.EquipmentMaterial)
+            {
+                items = Craft.SharedModel.EquipmentRecipeMap.Values
+                    .Where(x => x.ItemSubType == type &&
+                                !Util.IsEventEquipmentRecipe(x.Rows.First().Key))
+                    .ToList();
+            }
+            else
+            {
+                items = new List<RecipeRow.Model>
+                {
+                    Craft.SharedModel.EquipmentRecipeMap["crystal_equipment"]
+                };
+            }
+
             emptyObjectText.text = L10nManager.Localize("UI_WORKSHOP_EMPTY_CATEGORY");
             emptyObject.SetActive(!items.Any());
             Show(items);
@@ -248,6 +261,10 @@ namespace Nekoyume.UI.Scroller
                 : 0;
             var sharedModel = Craft.SharedModel;
 
+            if (equipmentRow.CRYSTAL == 0)
+            {
+                return false;
+            }
             if (equipmentRow.UnlockStage - clearedStage > 0)
             {
                 return true;
