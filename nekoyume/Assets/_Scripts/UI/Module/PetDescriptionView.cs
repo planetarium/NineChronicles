@@ -60,7 +60,7 @@ namespace Nekoyume.UI.Module
 
         private System.Action<int?> _onClick;
 
-        public bool IsAvailable { get; private set; }
+        public int Grade { get; private set; }
 
         private void Awake()
         {
@@ -74,6 +74,7 @@ namespace Nekoyume.UI.Module
         {
             _onClick = onClick;
             _petId = petRow.Id;
+            Grade = petRow.Grade;
             titleText.text = L10nManager.Localize($"PET_NAME_{petRow.Id}");
 
             var itemViewData = itemViewDataObject.GetItemViewData(petRow.Grade);
@@ -90,7 +91,6 @@ namespace Nekoyume.UI.Module
             gameObject.SetActive(true);
             equipObject.SetActive(false);
             emptyObject.SetActive(true);
-            IsAvailable = false;
         }
 
         public void InitializeEmpty(System.Action<int?> onClick)
@@ -101,52 +101,29 @@ namespace Nekoyume.UI.Module
             emptyObject.SetActive(true);
             gameObject.SetActive(true);
             dimmedImage.enabled = false;
-            IsAvailable = false;
         }
 
-        public void SetData(int petId)
+        public void SetData(PetInventory.PetDescriptionData data)
         {
-            IsAvailable = false;
-            var tableSheets = TableSheets.Instance;
-            var petLevel = 1;
-
-            PetState petState;
-            if (!tableSheets.PetOptionSheet.TryGetValue(petId, out var optionRow))
+            if (data.PetId == default)
             {
-                gameObject.SetActive(false);
-                return;
-            }
-            else if (States.Instance.PetStates.TryGetPetState(petId, out petState))
-            {
-                petLevel = petState.Level;
-            }
-
-            if (!optionRow.LevelOptionMap.TryGetValue(petLevel, out var optionInfo))
-            {
-                gameObject.SetActive(false);
                 return;
             }
 
-            levelText.text = $"Lv.{petLevel}";
+            levelText.text = $"Lv.{data.Level}";
             descriptionText.text = L10nManager.Localize(
-                $"PET_DESCRIPTION_{optionInfo.OptionType}",
-                optionInfo.OptionValue);
+                $"PET_DESCRIPTION_{data.OptionInfo.OptionType}",
+                data.OptionInfo.OptionValue);
 
-            var hasPetState = petState != null;
-            var equipped = hasPetState &&
-                (States.Instance.PetStates.IsLocked(petId) ||
-                petState.UnlockedBlockIndex > Game.Game.instance.Agent.BlockIndex);
-
-            dimmedImage.enabled = !hasPetState;
-            equippedObject.SetActive(equipped);
+            dimmedImage.enabled = !data.HasState;
+            equippedObject.SetActive(data.Equipped);
             if (button)
             {
-                button.gameObject.SetActive(!equipped);
+                button.gameObject.SetActive(!data.Equipped);
             }
             equipObject.SetActive(true);
             emptyObject.SetActive(false);
             gameObject.SetActive(true);
-            IsAvailable = hasPetState;
         }
 
         public void Hide()

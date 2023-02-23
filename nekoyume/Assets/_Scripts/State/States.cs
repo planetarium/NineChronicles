@@ -674,6 +674,14 @@ namespace Nekoyume.State
             }
         }
 
+        public Dictionary<int, CombinationSlotState> GetCombinationSlotState()
+        {
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            var states = _slotStates[CurrentAvatarState.address].States;
+            return states.Where(x => !x.Value.Validate(CurrentAvatarState, blockIndex))
+                         .ToDictionary(pair => pair.Key, pair => pair.Value);
+        }
+
         public Dictionary<int, CombinationSlotState> GetCombinationSlotState(
             AvatarState avatarState,
             long currentBlockIndex)
