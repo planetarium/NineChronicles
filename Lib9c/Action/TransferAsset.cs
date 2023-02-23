@@ -29,7 +29,7 @@ namespace Nekoyume.Action
         public const long CrystalTransferringRestrictionStartIndex = 6_220_000L;
 
         // FIXME justify this policy.
-        public static readonly IReadOnlySet<Address> AllowedCrystalTransfers = new HashSet<Address>
+        public static readonly IReadOnlyList<Address> AllowedCrystalTransfers = new Address[]
         {
             // world boss service
             new Address("CFCd6565287314FF70e4C4CF309dB701C43eA5bD"),
