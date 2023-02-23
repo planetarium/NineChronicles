@@ -402,18 +402,6 @@ namespace Lib9c.Tests.Action.Scenario
             for (int i = 0; i < 3; i++)
             {
                 var guid = random.GenerateRandomGuid();
-                switch (i)
-                {
-                    case 0:
-                        fungibleProductId = guid;
-                        break;
-                    case 1:
-                        nonFungibleProductId = guid;
-                        break;
-                    case 2:
-                        assetProductId = guid;
-                        break;
-                }
 
                 Assert.Contains(guid, productsState.ProductIds);
                 var productAddress = Product.DeriveAddress(guid);
@@ -423,15 +411,26 @@ namespace Lib9c.Tests.Action.Scenario
                 switch (product)
                 {
                     case FavProduct favProduct:
+                        assetProductId = favProduct.ProductId;
                         Assert.Equal(1 * RuneHelper.StakeRune, favProduct.Asset);
                         break;
                     case ItemProduct itemProduct:
+                        if (itemProduct.Type == ProductType.Fungible)
+                        {
+                            fungibleProductId = itemProduct.ProductId;
+                        }
+                        else
+                        {
+                            nonFungibleProductId = itemProduct.ProductId;
+                        }
+
                         Assert.Equal(1, itemProduct.ItemCount);
                         Assert.NotNull(itemProduct.TradableItem);
                         break;
                 }
             }
 
+            Assert.All(new[] { nonFungibleProductId, fungibleProductId, assetProductId }, productId => Assert.NotEqual(default, productId));
             var action2 = new CancelProductRegistration
             {
                 AvatarAddress = _sellerAvatarAddress,
@@ -444,6 +443,8 @@ namespace Lib9c.Tests.Action.Scenario
                         Price = 1 * _currency,
                         ProductId = fungibleProductId,
                         Type = ProductType.Fungible,
+                        ItemSubType = tradableMaterial.ItemSubType,
+                        TradableId = tradableMaterial.TradableId,
                     },
                     new ItemProductInfo
                     {
@@ -452,6 +453,8 @@ namespace Lib9c.Tests.Action.Scenario
                         Price = 1 * _currency,
                         ProductId = nonFungibleProductId,
                         Type = ProductType.NonFungible,
+                        ItemSubType = equipment.ItemSubType,
+                        TradableId = equipment.TradableId,
                     },
                     new FavProductInfo
                     {
