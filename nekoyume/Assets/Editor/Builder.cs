@@ -15,10 +15,10 @@ namespace Editor
     public class Builder
     {
         private static readonly string PlayerName = PlayerSettings.productName;
-        private const string BuildBasePath = "Build";
+        private const string BuildBasePath = "build";
 
         [MenuItem("Build/Standalone/Android Arm64")]
-        public static void BuildAndroidStandalone()
+        public static void BuildAndroid()
         {
             EditorUserBuildSettings.il2CppCodeGeneration = UnityEditor.Build.Il2CppCodeGeneration.OptimizeSize;
             EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Android, BuildTarget.Android);
@@ -241,6 +241,14 @@ namespace Editor
                     _ => PlayerName,
                 }
             );
+
+            if (buildTarget == BuildTarget.Android)
+            {
+                string locationPathName = Path.Combine(
+                    "../",
+                    locationPathName
+                );
+            }
 
             var buildPlayerOptions = new BuildPlayerOptions
             {

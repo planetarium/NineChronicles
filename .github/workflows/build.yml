@@ -84,7 +84,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: 9c-${{ matrix.targetPlatform }}
-          path: nekoyume/Build/${{ matrix.targetPlatform }}
+          path: nekoyume/build/${{ matrix.targetPlatform }}
           retention-days: 1
           if-no-files-found: error
   publish:
