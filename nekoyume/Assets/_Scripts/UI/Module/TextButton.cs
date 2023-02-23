@@ -20,6 +20,12 @@ namespace Nekoyume.UI.Module
             set => text.text = value;
         }
 
+        public bool Interactable
+        {
+            get => _button.interactable;
+            set => _button.interactable = value;
+        }
+
         #region Mono
 
         protected void Awake()

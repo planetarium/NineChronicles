@@ -23,7 +23,10 @@ namespace Nekoyume.UI.Module
         private Button button;
 
         [SerializeField]
-        private GameObject equipObject;
+        private GameObject inUseObject;
+
+        [SerializeField]
+        private GameObject descriptionObject;
 
         [SerializeField]
         private GameObject emptyObject;
@@ -89,7 +92,7 @@ namespace Nekoyume.UI.Module
 
             equippedObject.SetActive(false);
             gameObject.SetActive(true);
-            equipObject.SetActive(false);
+            descriptionObject.SetActive(false);
             emptyObject.SetActive(true);
         }
 
@@ -97,7 +100,7 @@ namespace Nekoyume.UI.Module
         {
             _onClick = onClick;
             _petId = null;
-            equipObject.SetActive(false);
+            descriptionObject.SetActive(false);
             emptyObject.SetActive(true);
             gameObject.SetActive(true);
             dimmedImage.enabled = false;
@@ -120,8 +123,9 @@ namespace Nekoyume.UI.Module
             if (button)
             {
                 button.gameObject.SetActive(!data.Equipped);
+                inUseObject.SetActive(data.Equipped);
             }
-            equipObject.SetActive(true);
+            descriptionObject.SetActive(true);
             emptyObject.SetActive(false);
             gameObject.SetActive(true);
         }

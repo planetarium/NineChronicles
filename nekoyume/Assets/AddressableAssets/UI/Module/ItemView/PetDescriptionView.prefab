@@ -398,7 +398,7 @@ GameObject:
   - component: {fileID: 5822449946739841941}
   - component: {fileID: 6272804605966600486}
   m_Layer: 5
-  m_Name: Equip
+  m_Name: Description
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -962,7 +962,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 1
-  l10nKey: 
+  l10nKey: UI_SELECT
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -1091,7 +1091,8 @@ MonoBehaviour:
   itemViewDataObject: {fileID: 11400000, guid: 7bbcb13078addb548a8707df8e95df63, type: 2}
   petDataObject: {fileID: 11400000, guid: 9e3374abb873db745848149c76df6336, type: 2}
   button: {fileID: 2999579546606929411}
-  equipObject: {fileID: 1881944304798049623}
+  inUseObject: {fileID: 377160604527489469}
+  descriptionObject: {fileID: 1881944304798049623}
   emptyObject: {fileID: 6313938632139445230}
   titleText: {fileID: 3833489486950959359}
   gradeBg: {fileID: 4955925824375108384}
