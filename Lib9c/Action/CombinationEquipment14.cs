@@ -25,8 +25,8 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1334
     /// </summary>
     [Serializable]
-    [ActionType("combination_equipment15")]
-    public class CombinationEquipment : GameAction, ICombinationEquipmentV3
+    [ActionType("combination_equipment14")]
+    public class CombinationEquipment14 : GameAction, ICombinationEquipmentV3
     {
         public const string AvatarAddressKey = "a";
         public Address avatarAddress;
@@ -96,6 +96,20 @@ namespace Nekoyume.Action
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             var started = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}CombinationEquipment exec started", addressesHex);
+            if (recipeId != 1)
+            {
+                var unlockedRecipeIdsAddress = avatarAddress.Derive("recipe_ids");
+                if (!states.TryGetState(unlockedRecipeIdsAddress, out List rawIds))
+                {
+                    throw new FailedLoadStateException("can't find UnlockedRecipeList.");
+                }
+
+                List<int> unlockedIds = rawIds.ToList(StateExtensions.ToInteger);
+                if (!unlockedIds.Contains(recipeId))
+                {
+                    throw new InvalidRecipeIdException($"unlock {recipeId} first.");
+                }
+            }
 
             if (!states.TryGetAgentAvatarStatesV2(context.Signer, avatarAddress, out var agentState,
                     out var avatarState, out _))
@@ -162,6 +176,17 @@ namespace Nekoyume.Action
             }
             // ~Validate RecipeId
 
+            // Validate Recipe Unlocked.
+            if (!avatarState.worldInformation.IsStageCleared(recipeRow.UnlockStage))
+            {
+                avatarState.worldInformation.TryGetLastClearedStageId(out var current);
+                throw new NotEnoughClearedStageLevelException(
+                    addressesHex,
+                    recipeRow.UnlockStage,
+                    current);
+            }
+            // ~Validate Recipe Unlocked
+
             // Validate Recipe ResultEquipmentId
             var equipmentItemSheet = sheets.GetSheet<EquipmentItemSheet>();
             if (!equipmentItemSheet.TryGetValue(recipeRow.ResultEquipmentId, out var equipmentRow))
@@ -192,32 +217,6 @@ namespace Nekoyume.Action
                 requiredFungibleItems[materialRow.Id] = recipeRow.MaterialCount;
             }
             // ~Validate Recipe Material
-
-            // Validate Recipe Unlocked.
-            if (equipmentItemRecipeSheet[recipeId].CRYSTAL != 0)
-            {
-                var unlockedRecipeIdsAddress = avatarAddress.Derive("recipe_ids");
-                if (!states.TryGetState(unlockedRecipeIdsAddress, out List rawIds))
-                {
-                    throw new FailedLoadStateException("can't find UnlockedRecipeList.");
-                }
-
-                var unlockedIds = rawIds.ToList(StateExtensions.ToInteger);
-                if (!unlockedIds.Contains(recipeId))
-                {
-                    throw new InvalidRecipeIdException($"unlock {recipeId} first.");
-                }
-
-                if (!avatarState.worldInformation.IsStageCleared(recipeRow.UnlockStage))
-                {
-                    avatarState.worldInformation.TryGetLastClearedStageId(out var current);
-                    throw new NotEnoughClearedStageLevelException(
-                        addressesHex,
-                        recipeRow.UnlockStage,
-                        current);
-                }
-            }
-            // ~Validate Recipe Unlocked
 
             // Validate SubRecipeId
             EquipmentItemSubRecipeSheetV2.Row subRecipeRow = null;

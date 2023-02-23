@@ -16,7 +16,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static Lib9c.SerializeKeys;
 
-    public class UnlockEquipmentRecipeTest
+    public class UnlockEquipmentRecipe1Test
     {
         private readonly IRandom _random;
         private readonly TableSheets _tableSheets;
@@ -26,7 +26,7 @@ namespace Lib9c.Tests.Action
         private readonly Currency _currency;
         private readonly IAccountStateDelta _initialState;
 
-        public UnlockEquipmentRecipeTest()
+        public UnlockEquipmentRecipe1Test()
         {
             _random = new TestRandom();
             var sheets = TableSheetsImporter.ImportSheets();
@@ -131,7 +131,7 @@ namespace Lib9c.Tests.Action
                 }
             }
 
-            var action = new UnlockEquipmentRecipe
+            var action = new UnlockEquipmentRecipe1
             {
                 RecipeIds = recipeIds.ToList(),
                 AvatarAddress = _avatarAddress,
@@ -177,7 +177,7 @@ namespace Lib9c.Tests.Action
         {
             var worldInformation = _avatarState.worldInformation;
             var rows = _tableSheets.EquipmentItemRecipeSheet.Values
-                .Where(i => i.ItemSubType == itemSubType && i.Id != 1 && i.UnlockStage != 999 && i.CRYSTAL != 0);
+                .Where(i => i.ItemSubType == itemSubType && i.Id != 1 && i.UnlockStage != 999);
 
             // Clear Stage
             for (int i = 1; i <= 6; i++)
@@ -190,7 +190,7 @@ namespace Lib9c.Tests.Action
             }
 
             // Unlock All recipe by ItemSubType
-            UnlockEquipmentRecipe.UnlockedIds(_initialState, new PrivateKey().ToAddress(), _tableSheets.EquipmentItemRecipeSheet, worldInformation, rows.Select(i => i.Id).ToList());
+            UnlockEquipmentRecipe1.UnlockedIds(_initialState, new PrivateKey().ToAddress(), _tableSheets.EquipmentItemRecipeSheet, worldInformation, rows.Select(i => i.Id).ToList());
         }
     }
 }

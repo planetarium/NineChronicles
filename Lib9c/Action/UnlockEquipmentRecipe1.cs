@@ -18,8 +18,8 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
-    [ActionType("unlock_equipment_recipe2")]
-    public class UnlockEquipmentRecipe : GameAction, IUnlockEquipmentRecipeV1
+    [ActionType("unlock_equipment_recipe")]
+    public class UnlockEquipmentRecipe1: GameAction, IUnlockEquipmentRecipeV1
     {
         public List<int> RecipeIds = new List<int>();
         public Address AvatarAddress;
@@ -112,9 +112,12 @@ namespace Nekoyume.Action
             List<int> recipeIds
         )
         {
-            var unlockedIds = states.TryGetState(unlockedRecipeIdsAddress, out List rawIds)
+            List<int> unlockedIds = states.TryGetState(unlockedRecipeIdsAddress, out List rawIds)
                 ? rawIds.ToList(StateExtensions.ToInteger)
-                : equipmentRecipeSheet.Values.Where(r => r.CRYSTAL == 0).Select(r => r.Id).ToList();
+                : new List<int>
+                {
+                    1
+                };
 
             // Sort recipe by ItemSubType & UnlockStage.
             // 999 is not opened recipe.
