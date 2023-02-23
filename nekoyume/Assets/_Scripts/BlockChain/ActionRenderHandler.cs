@@ -1258,8 +1258,17 @@ namespace Nekoyume.BlockChain
                     skillsOnWaveStart.Add(skill);
                 }
 
+                var tempPlayer = (AvatarState)States.Instance.CurrentAvatarState.Clone();
+                if (LocalMailHelper.Instance.TryGetAllLocalMail(tempPlayer.address, out var mails))
+                {
+                    foreach (var mail in mails)
+                    {
+                        tempPlayer.mailBox.Remove(mail);
+                    }
+                }
+
                 var resultModel = eval.GetHackAndSlashReward(
-                    new AvatarState((Dictionary)States.Instance.CurrentAvatarState.Serialize()),
+                    new AvatarState((Dictionary)tempPlayer.Serialize()),
                     States.Instance.GetEquippedRuneStates(BattleType.Adventure),
                     skillsOnWaveStart,
                     tableSheets,
