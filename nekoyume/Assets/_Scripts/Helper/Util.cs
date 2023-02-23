@@ -27,6 +27,7 @@ namespace Nekoyume.Helper
     {
         public const int VisibleEnhancementEffectLevel = 10;
         private const string StoredSlotIndex = "AutoSelectedSlotIndex_";
+        private static readonly List<int> CrystalEquipmentRecipes = new() { 158, 159, 160 };
 
         public static string GetBlockToTime(long block)
         {
@@ -385,8 +386,14 @@ namespace Nekoyume.Helper
             digest.BlockUpdate(txByte, 0, txByte.Length);
             var calculatedHash = new byte[digest.GetByteLength()];
             digest.DoFinal(calculatedHash, 0);
-            var transactionHash = BitConverter.ToString(calculatedHash, 0, 32).Replace("-", "").ToLower();
+            var transactionHash =
+                BitConverter.ToString(calculatedHash, 0, 32).Replace("-", "").ToLower();
             return transactionHash;
+        }
+
+        public static bool IsEventEquipmentRecipe(int recipeId)
+        {
+            return CrystalEquipmentRecipes.Contains(recipeId);
         }
     }
 }

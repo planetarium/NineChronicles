@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
-using Lib9c.Renderer;
+using Lib9c.Renderers;
 using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Helper;
@@ -168,7 +168,7 @@ namespace Nekoyume.BlockChain
                 .AddTo(_disposables);
         }
 
-        private async UniTaskVoid ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)
+        private async UniTaskVoid ResponseBuy(ActionEvaluation<Buy> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -225,7 +225,7 @@ namespace Nekoyume.BlockChain
             UnrenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
-        private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
+        private void ResponseSell(ActionEvaluation<Sell> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -241,7 +241,7 @@ namespace Nekoyume.BlockChain
             ReactiveShopState.SetSellProducts();
         }
 
-        private async void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
+        private async void ResponseSellCancellation(ActionEvaluation<SellCancellation> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -256,7 +256,7 @@ namespace Nekoyume.BlockChain
             ReactiveShopState.SetSellProducts();
         }
 
-        private void ResponseUpdateSell(ActionBase.ActionEvaluation<UpdateSell> eval)
+        private void ResponseUpdateSell(ActionEvaluation<UpdateSell> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -267,7 +267,7 @@ namespace Nekoyume.BlockChain
             ReactiveShopState.SetSellProducts();
         }
 
-        private void ResponseDailyReward(ActionBase.ActionEvaluation<DailyReward> eval)
+        private void ResponseDailyReward(ActionEvaluation<DailyReward> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -297,7 +297,7 @@ namespace Nekoyume.BlockChain
             UpdateCurrentAvatarStateAsync(avatarState).Forget();
         }
 
-        private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)
+        private void ResponseItemEnhancement(ActionEvaluation<ItemEnhancement> eval)
         {
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.avatarAddress;
@@ -325,7 +325,7 @@ namespace Nekoyume.BlockChain
             UnrenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
-        private void ResponseClaimMonsterCollectionReward(ActionBase.ActionEvaluation<ClaimMonsterCollectionReward> eval)
+        private void ResponseClaimMonsterCollectionReward(ActionEvaluation<ClaimMonsterCollectionReward> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -381,7 +381,7 @@ namespace Nekoyume.BlockChain
             UnrenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
-        private void ResponseTransferAsset(ActionBase.ActionEvaluation<TransferAsset> eval)
+        private void ResponseTransferAsset(ActionEvaluation<TransferAsset> eval)
         {
             if (!(eval.Exception is null))
             {
