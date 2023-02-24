@@ -74,7 +74,10 @@ namespace Nekoyume.Helper
                 Currency.Legacy(TableSheets.Instance.PetSheet[id].SoulStoneTicker, 0, null) *
                 needCost.SoulStoneQuantity;
             return States.Instance.GoldBalanceState.Gold >= ncgCost &&
-                   States.Instance.AvatarBalance[soulStoneCost.Currency.Ticker] >= soulStoneCost;
+                   States.Instance.AvatarBalance.TryGetValue(
+                       soulStoneCost.Currency.Ticker,
+                       out var soulStone) &&
+                   soulStone >= soulStoneCost;
         }
     }
 }

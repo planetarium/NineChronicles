@@ -100,24 +100,37 @@ namespace Nekoyume.UI.Module.Pet
                     ? PetRenderingHelper.GetUIColor(PetRenderingHelper.MaxLevelText)
                     : Color.white
                 : PetRenderingHelper.GetUIColor(PetRenderingHelper.NotOwnText);
+            petInfoText.color = Color.white;
+            petInfoText.text = L10nManager.Localize($"PET_NAME_{model.PetRow.Id}");
             model.EquippedIcon.SubscribeTo(equippedIcon).AddTo(_disposables);
             model.HasNotification.Subscribe(b =>
             {
+                var levelUpAble = b && _petState is not null;
+                var summonAble = b && _petState is null;
                 hasNotification.SetActive(b);
-                levelUpNotification.SetActive(b && _petState is not null);
-                summonableNotification.SetActive(b && _petState is null);
+                levelUpNotification.SetActive(levelUpAble);
+                summonableNotification.SetActive(summonAble);
+                if (summonAble)
+                {
+                    petInfoText.color =
+                        PetRenderingHelper.GetUIColor(PetRenderingHelper.SummonableText);
+                    petInfoText.text = L10nManager.Localize("UI_SUMMONABLE");
+                }
             }).AddTo(_disposables);
             LoadingHelper.PetEnhancement
                 .Subscribe(id =>
                 {
                     var isLoading = id == model.PetRow.Id;
                     loading.SetActive(isLoading);
-                    petInfoText.color = isLoading
-                        ? PetRenderingHelper.GetUIColor(PetRenderingHelper.LevelUpText)
-                        : Color.white;
-                    petInfoText.text = isLoading
-                        ? L10nManager.Localize(isOwn ? "UI_LEVELUP_IN_PROGRESS" : "UI_SUMMONING_IN_PROGRESS")
-                        : L10nManager.Localize($"PET_NAME_{model.PetRow.Id}");
+                    if (isLoading)
+                    {
+                        petInfoText.color =
+                            PetRenderingHelper.GetUIColor(PetRenderingHelper.LevelUpText);
+                        petInfoText.text =
+                            L10nManager.Localize(isOwn
+                                ? "UI_LEVELUP_IN_PROGRESS"
+                                : "UI_SUMMONING_IN_PROGRESS");
+                    }
                 })
                 .AddTo(_disposables);
         }

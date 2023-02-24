@@ -62,7 +62,8 @@ namespace Nekoyume.UI
         public void UpdateView()
         {
             scroll.UpdateData(TableSheets.Instance.PetSheet.Values
-                .Select(row => new PetSlotViewModel(row)));
+                .Select(row =>
+                    new PetSlotViewModel(row, PetRenderingHelper.HasNotification(row.Id))));
         }
     }
 }
