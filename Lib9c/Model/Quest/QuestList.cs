@@ -82,7 +82,7 @@ namespace Nekoyume.Model.Quest
         )
         {
             _quests = new List<Quest>();
-            foreach (var questData in questSheet.OrderedList)
+            foreach (var questData in questSheet.OrderedList ?? new List<QuestSheet.Row>())
             {
                 var reward = GetQuestReward(
                     questData.QuestRewardId,
