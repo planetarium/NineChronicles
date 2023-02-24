@@ -6,6 +6,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Nekoyume.Battle;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Market;
@@ -17,6 +18,7 @@ namespace Nekoyume.Action
     [ActionType("register_product")]
     public class RegisterProduct : GameAction
     {
+        public Address AvatarAddress;
         public IEnumerable<IRegisterInfo> RegisterInfos;
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -27,22 +29,20 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            if (RegisterInfos.Select(r => r.AvatarAddress).Distinct().Count() != 1)
+            if (!RegisterInfos.Any())
             {
-                throw new InvalidAddressException();
+                throw new ListEmptyException("RegisterInfos was empty");
             }
 
             var ncg = states.GetGoldCurrency();
-            if (RegisterInfos.Any(r => !r.Price.Currency.Equals(ncg) ||
-                !r.Price.MinorUnit.IsZero ||
-                r.Price < 1 * ncg))
+            foreach (var registerInfo in RegisterInfos)
             {
-                throw new InvalidPriceException(
-                    $"product price must be greater than zero.");
+                registerInfo.ValidateAddress(AvatarAddress);
+                registerInfo.ValidatePrice(ncg);
+                registerInfo.Validate();
             }
 
-            var avatarAddress = RegisterInfos.First().AvatarAddress;
-            if (!states.TryGetAvatarStateV2(context.Signer, avatarAddress, out var avatarState,
+            if (!states.TryGetAvatarStateV2(context.Signer, AvatarAddress, out var avatarState,
                     out var migrationRequired))
             {
                 throw new FailedLoadStateException("failed to load avatar state.");
@@ -53,12 +53,12 @@ namespace Nekoyume.Action
             {
                 avatarState.worldInformation.TryGetLastClearedStageId(out var current);
                 throw new NotEnoughClearedStageLevelException(
-                    avatarAddress.ToHex(),
+                    AvatarAddress.ToHex(),
                     GameConfig.RequireClearedStageLevel.ActionsInShop,
                     current);
             }
 
-            var productsStateAddress = ProductsState.DeriveAddress(avatarAddress);
+            var productsStateAddress = ProductsState.DeriveAddress(AvatarAddress);
             ProductsState productsState;
             if (states.TryGetState(productsStateAddress, out List rawProducts))
             {
@@ -70,7 +70,7 @@ namespace Nekoyume.Action
                 var marketState = states.TryGetState(Addresses.Market, out List rawMarketList)
                     ? new MarketState(rawMarketList)
                     : new MarketState();
-                marketState.AvatarAddresses.Add(avatarAddress);
+                marketState.AvatarAddresses.Add(AvatarAddress);
                 states = states.SetState(Addresses.Market, marketState.Serialize());
             }
             foreach (var info in RegisterInfos.OrderBy(r => r.Type).ThenBy(r => r.Price))
@@ -79,14 +79,14 @@ namespace Nekoyume.Action
             }
 
             states = states
-                .SetState(avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
+                .SetState(AvatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
                 .SetState(productsStateAddress, productsState.Serialize());
             if (migrationRequired)
             {
                 states = states
-                    .SetState(avatarAddress, avatarState.SerializeV2())
-                    .SetState(avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
-                    .SetState(avatarAddress.Derive(LegacyWorldInformationKey), avatarState.worldInformation.Serialize());
+                    .SetState(AvatarAddress, avatarState.SerializeV2())
+                    .SetState(AvatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
+                    .SetState(AvatarAddress.Derive(LegacyWorldInformationKey), avatarState.worldInformation.Serialize());
             }
 
             return states;
@@ -181,41 +181,29 @@ namespace Nekoyume.Action
                                 product.Serialize());
                             break;
                         }
-                        case ProductType.FungibleAssetValue:
-                        default:
-                            throw new InvalidProductTypeException($"register item does not support {ProductType.FungibleAssetValue}");
                     }
 
                     break;
                 case AssetInfo assetInfo:
                 {
-                    if (assetInfo.Type == ProductType.FungibleAssetValue)
+                    Guid productId = context.Random.GenerateRandomGuid();
+                    Address productAddress = Product.DeriveAddress(productId);
+                    FungibleAssetValue asset = assetInfo.Asset;
+                    var product = new FavProduct
                     {
-                        if (assetInfo.Asset.Currency.Equals(CrystalCalculator.CRYSTAL))
-                        {
-                            throw new InvalidCurrencyException($"{CrystalCalculator.CRYSTAL} does not allow register.");
-                        }
-
-                        Guid productId = context.Random.GenerateRandomGuid();
-                        Address productAddress = Product.DeriveAddress(productId);
-                        FungibleAssetValue asset = assetInfo.Asset;
-                        var product = new FavProduct
-                        {
-                            ProductId = productId,
-                            Price = assetInfo.Price,
-                            Asset = asset,
-                            RegisteredBlockIndex = context.BlockIndex,
-                            Type = assetInfo.Type,
-                            SellerAgentAddress = context.Signer,
-                            SellerAvatarAddress = assetInfo.AvatarAddress,
-                        };
-                        states = states
-                            .TransferAsset(avatarState.address, productAddress, asset)
-                            .SetState(productAddress, product.Serialize());
-                        productsState.ProductIds.Add(productId);
-                        break;
-                    }
-                    throw new InvalidProductTypeException($"register asset does not support {assetInfo.Type}");
+                        ProductId = productId,
+                        Price = assetInfo.Price,
+                        Asset = asset,
+                        RegisteredBlockIndex = context.BlockIndex,
+                        Type = assetInfo.Type,
+                        SellerAgentAddress = context.Signer,
+                        SellerAvatarAddress = assetInfo.AvatarAddress,
+                    };
+                    states = states
+                        .TransferAsset(avatarState.address, productAddress, asset)
+                        .SetState(productAddress, product.Serialize());
+                    productsState.ProductIds.Add(productId);
+                    break;
                 }
             }
 
@@ -226,16 +214,15 @@ namespace Nekoyume.Action
             new Dictionary<string, IValue>
             {
                 ["r"] = new List(RegisterInfos.Select(r => r.Serialize())),
+                ["a"] = AvatarAddress.Serialize(),
             }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
             var serialized = (List) plainValue["r"];
             RegisterInfos = serialized.Cast<List>()
-                .Select(registerList =>
-                    registerList[2].ToEnum<ProductType>() == ProductType.FungibleAssetValue
-                        ? (IRegisterInfo) new AssetInfo(registerList)
-                        : new RegisterInfo(registerList)).ToList();
+                .Select(ProductFactory.DeserializeRegisterInfo).ToList();
+            AvatarAddress = plainValue["a"].ToAddress();
         }
     }
 }

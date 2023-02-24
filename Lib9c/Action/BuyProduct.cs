@@ -24,7 +24,7 @@ namespace Nekoyume.Action
     public class BuyProduct : GameAction
     {
         public Address AvatarAddress;
-        public IEnumerable<ProductInfo> ProductInfos;
+        public IEnumerable<IProductInfo> ProductInfos;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
@@ -43,6 +43,18 @@ namespace Nekoyume.Action
             {
                 throw new ListEmptyException("ProductInfos was empty.");
             }
+
+            if (ProductInfos.Any(p => p.AgentAddress == context.Signer ||
+                                      p.AvatarAddress == AvatarAddress))
+            {
+                throw new InvalidAddressException();
+            }
+
+            foreach (var productInfo in ProductInfos)
+            {
+                productInfo.ValidateType();
+            }
+
             if (!states.TryGetAvatarStateV2(context.Signer, AvatarAddress, out var buyerAvatarState, out var migrationRequired))
             {
                 throw new FailedLoadStateException("failed load to buyer avatar state.");
@@ -65,28 +77,15 @@ namespace Nekoyume.Action
                 if (!states.TryGetAvatarStateV2(sellerAgentAddress, sellerAvatarAddress,
                         out var sellerAvatarState, out var sellerMigrationRequired))
                 {
-                    throw new InvalidAddressException();
+                    throw new FailedLoadStateException($"failed load to seller avatar state.");
                 }
 
-                if (productInfo.Legacy)
+                if (productInfo is ItemProductInfo {Legacy: true} itemProductInfo)
                 {
-                    var orderAddress = Order.DeriveAddress(productInfo.ProductId);
-                    if (!states.TryGetState(orderAddress, out Dictionary rawOrder))
-                    {
-                        throw new FailedLoadStateException(
-                            $"{addressesHex} failed to load {nameof(Order)}({orderAddress}).");
-                    }
-
-                    var order = OrderFactory.Deserialize(rawOrder);
-                    if (!productInfo.Price.Equals(order.Price))
-                    {
-                        throw new InvalidPriceException($"order price does not match information. expected: {order.Price} actual: {productInfo.Price}");
-                    }
-                    var purchaseInfo = new PurchaseInfo(productInfo.ProductId, order.TradableId,
-                        sellerAgentAddress, sellerAvatarAddress, order.ItemSubType,
+                    var purchaseInfo = new PurchaseInfo(itemProductInfo.ProductId, itemProductInfo.TradableId,
+                        sellerAgentAddress, sellerAvatarAddress, itemProductInfo.ItemSubType,
                         productInfo.Price);
-                    states = Buy_Order(purchaseInfo, context, states, buyerAvatarState, addressesHex,
-                        materialSheet);
+                    states = Buy_Order(purchaseInfo, context, states, buyerAvatarState, materialSheet, sellerAvatarState);
                 }
                 else
                 {
@@ -110,7 +109,7 @@ namespace Nekoyume.Action
             return states;
         }
 
-        private IAccountStateDelta Buy(IActionContext context, ProductInfo productInfo, Address sellerAvatarAddress,
+        private IAccountStateDelta Buy(IActionContext context, IProductInfo productInfo, Address sellerAvatarAddress,
             IAccountStateDelta states, Address sellerAgentAddress, AvatarState buyerAvatarState, AvatarState sellerAvatarState,
             MaterialItemSheet materialSheet, bool sellerMigrationRequired)
         {
@@ -126,12 +125,8 @@ namespace Nekoyume.Action
             productsState.ProductIds.Remove(productId);
 
             var productAddress = Product.DeriveAddress(productId);
-            var product = ProductFactory.Deserialize((List) states.GetState(productAddress));
-            if (product.SellerAgentAddress != sellerAgentAddress ||
-                product.SellerAvatarAddress != sellerAvatarAddress)
-            {
-                throw new InvalidAddressException();
-            }
+            var product = ProductFactory.DeserializeProduct((List) states.GetState(productAddress));
+            product.Validate(productInfo);
 
             switch (product)
             {
@@ -206,7 +201,7 @@ namespace Nekoyume.Action
 
         // backward compatibility for order - shared shop state.
         // TODO DELETE THIS METHOD AFTER PRODUCT MIGRATION END.
-        private IAccountStateDelta Buy_Order(PurchaseInfo purchaseInfo, IActionContext context, IAccountStateDelta states, AvatarState buyerAvatarState, string addressesHex, MaterialItemSheet materialSheet)
+        private static IAccountStateDelta Buy_Order(PurchaseInfo purchaseInfo, IActionContext context, IAccountStateDelta states, AvatarState buyerAvatarState, MaterialItemSheet materialSheet, AvatarState sellerAvatarState)
         {
             Address shardedShopAddress =
                 ShardedShopStateV2.DeriveAddress(purchaseInfo.ItemSubType, purchaseInfo.OrderId);
@@ -218,13 +213,6 @@ namespace Nekoyume.Action
             Guid orderId = purchaseInfo.OrderId;
             Address orderAddress = Order.DeriveAddress(orderId);
             Address digestListAddress = OrderDigestListState.DeriveAddress(sellerAvatarAddress);
-            var sw = new Stopwatch();
-            sw.Start();
-
-            if (purchaseInfo.SellerAgentAddress == context.Signer)
-            {
-                throw new InvalidAddressException();
-            }
 
             if (!states.TryGetState(shardedShopAddress, out Bencodex.Types.Dictionary shopStateDict))
             {
@@ -240,26 +228,6 @@ namespace Nekoyume.Action
 
             var shardedShopState = new ShardedShopStateV2(shopStateDict);
             shardedShopState.Remove(order, context.BlockIndex);
-
-            sw.Stop();
-            Log.Verbose("{AddressesHex}Buy Get ShopState: {Elapsed}", addressesHex, sw.Elapsed);
-            sw.Restart();
-
-            Log.Verbose(
-                "{AddressesHex}Execute Buy; buyer: {Buyer} seller: {Seller}",
-                addressesHex,
-                buyerAvatarState.address,
-                sellerAvatarAddress);
-
-
-            if (!states.TryGetAvatarStateV2(sellerAgentAddress, sellerAvatarAddress, out var sellerAvatarState, out _))
-            {
-                throw new FailedLoadStateException($"{orderId}");
-            }
-
-            sw.Stop();
-            Log.Verbose("{AddressesHex}Buy Get Seller AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
-            sw.Restart();
 
             if (!states.TryGetState(digestListAddress, out Dictionary rawDigestList))
             {
@@ -285,11 +253,11 @@ namespace Nekoyume.Action
                     throw new InvalidPriceException($"{orderId}");
                 case Action.Buy.ErrorCodeShopItemExpired:
                     throw new ShopItemExpiredException($"{orderId}");
+                case Action.Buy.ErrorCodeItemDoesNotExist:
+                    throw new ItemDoesNotExistException($"{orderId}");
+                case Action.Buy.ErrorCodeInvalidItemType:
+                    throw new InvalidItemTypeException($"{orderId}");
             }
-
-            sw.Stop();
-            Log.Verbose("{AddressesHex}Buy Get Item: {Elapsed}", addressesHex, sw.Elapsed);
-            sw.Restart();
 
             // Check Balance.
             FungibleAssetValue buyerBalance = states.GetBalance(context.Signer, states.GetGoldCurrency());
@@ -366,12 +334,7 @@ namespace Nekoyume.Action
                 .SetState(sellerWorldInformationAddress, sellerAvatarState.worldInformation.Serialize())
                 .SetState(sellerQuestListAddress, sellerAvatarState.questList.Serialize())
                 .SetState(sellerAvatarAddress, sellerAvatarState.SerializeV2());
-            sw.Stop();
-            Log.Verbose("{AddressesHex}Buy Set Seller AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
-            sw.Restart();
             states = states.SetState(shardedShopAddress, shardedShopState.Serialize());
-            sw.Stop();
-            Log.Verbose("{AddressesHex}Buy Set ShopState: {Elapsed}", addressesHex, sw.Elapsed);
             return states;
         }
 
@@ -384,7 +347,8 @@ namespace Nekoyume.Action
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
             AvatarAddress = plainValue["a"].ToAddress();
-            ProductInfos = plainValue["p"].ToList(s => new ProductInfo((List) s));
+            var serialized = (List) plainValue["p"];
+            ProductInfos = serialized.Cast<List>().Select(ProductFactory.DeserializeProductInfo).ToList();
         }
     }
 }
