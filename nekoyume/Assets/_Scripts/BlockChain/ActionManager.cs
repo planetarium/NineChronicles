@@ -582,6 +582,7 @@ namespace Nekoyume.BlockChain
         }
 
         public IObservable<ActionEvaluation<RegisterProduct>> RegisterProduct(
+            Address avatarAddress,
             IRegisterInfo registerInfo)
         {
             var sentryTrace = Analyzer.Instance.Track("Unity/RegisterProduct", new Dictionary<string, Value>()
@@ -594,6 +595,7 @@ namespace Nekoyume.BlockChain
 
             var action = new RegisterProduct
             {
+                AvatarAddress = avatarAddress,
                 RegisterInfos = new List<IRegisterInfo> { registerInfo }
             };
 
@@ -610,7 +612,7 @@ namespace Nekoyume.BlockChain
 
         public IObservable<ActionEvaluation<CancelProductRegistration>> CancelProductRegistration(
             Address avatarAddress,
-            ProductInfo productInfo)
+            IProductInfo productInfo)
         {
             var sentryTrace = Analyzer.Instance.Track("Unity/CancelProductRegistration", new Dictionary<string, Value>()
             {
@@ -621,7 +623,7 @@ namespace Nekoyume.BlockChain
             var action = new CancelProductRegistration
             {
                 AvatarAddress = avatarAddress,
-                ProductInfos = new List<ProductInfo> { productInfo }
+                ProductInfos = new List<IProductInfo> { productInfo }
             };
 
             ProcessAction(action);
@@ -635,63 +637,25 @@ namespace Nekoyume.BlockChain
                 .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
-        public IObservable<ActionEvaluation<SellCancellation>> SellCancellation(
-            Address sellerAvatarAddress,
-            Guid orderId,
-            Guid tradableId,
-            ItemSubType itemSubType)
+        public IObservable<ActionEvaluation<ReRegisterProduct>> ReRegisterProduct(
+            Address avatarAddress,
+            List<(IProductInfo, IRegisterInfo)> reRegisterInfos)
         {
-            var sentryTrace = Analyzer.Instance.Track("Unity/Sell Cancellation", new Dictionary<string, Value>()
+            var action = new ReRegisterProduct
             {
-                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
-            }, true);
-            var action = new SellCancellation
-            {
-                orderId = orderId,
-                tradableId = tradableId,
-                sellerAvatarAddress = sellerAvatarAddress,
-                itemSubType = itemSubType,
+                AvatarAddress = avatarAddress,
+                ReRegisterInfos = reRegisterInfos
             };
-            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
-            LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
+
             ProcessAction(action);
 
-            return _agent.ActionRenderer.EveryRender<SellCancellation>()
+            return _agent.ActionRenderer.EveryRender<ReRegisterProduct>()
                 .Timeout(ActionTimeout)
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
                 .DoOnError(e => throw HandleException(action.Id, e))
-                .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
-        }
-
-        public IObservable<ActionEvaluation<UpdateSell>> UpdateSell(List<UpdateSellInfo> updateSellInfos)
-        {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var sentryTrace = Analyzer.Instance.Track("Unity/UpdateSell", new Dictionary<string, Value>()
-            {
-                ["AvatarAddress"] = avatarAddress.ToString(),
-                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
-            }, true);
-
-            var action = new UpdateSell
-            {
-                sellerAvatarAddress = avatarAddress,
-                updateSellInfos = updateSellInfos
-            };
-
-            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
-            LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
-            ProcessAction(action);
-
-            return _agent.ActionRenderer.EveryRender<UpdateSell>()
-                .Timeout(ActionTimeout)
-                .Where(eval => eval.Action.Id.Equals(action.Id))
-                .First()
-                .ObserveOnMainThread()
-                .DoOnError(e => throw HandleException(action.Id, e))
-                .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
+                .Finally(() => { });
         }
 
         public IObservable<ActionEvaluation<Buy>> Buy(List<PurchaseInfo> purchaseInfos)

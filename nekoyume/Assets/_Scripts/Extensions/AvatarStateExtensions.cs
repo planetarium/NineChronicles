@@ -6,7 +6,10 @@ using Cysharp.Threading.Tasks;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Action;
+using Nekoyume.Model;
 using Nekoyume.Model.EnumType;
+using Nekoyume.Model.Item;
+using Nekoyume.Model.Quest;
 using Nekoyume.Model.State;
 using UnityEngine;
 using static Lib9c.SerializeKeys;
@@ -32,30 +35,48 @@ namespace Nekoyume
             };
             addresses.AddRange(keys.Select(key => address.Derive(key)));
             var serializedValues = states.GetStates(addresses);
-            if (!(serializedValues[0] is Dictionary serializedAvatar))
+            if (serializedValues.Count == 0)
             {
-                Debug.LogWarning($"No avatar state ({address.ToHex()})");
-                return null;
+                return avatarState;
             }
 
-            for (var i = 0; i < keys.Length; i++)
-            {
-                var key = keys[i];
-                var serializedValue = serializedValues[i + 1];
-                if (serializedValue is null)
-                {
-                    Debug.Log($"\"{key}\" is empty in \"{address.ToHex()}\"");
-                    continue;
-                }
+            var preInventory = avatarState.inventory;
+            var preWorldInformation = avatarState.worldInformation;
+            var preQuestList = avatarState.questList;
 
-                serializedAvatar = serializedAvatar.SetItem(key, serializedValue);
+            if (serializedValues[0] is Dictionary serializedAvatar)
+            {
+                avatarState = new AvatarState(serializedAvatar);
             }
 
-            var newAvatarState = new AvatarState(serializedAvatar);
-            newAvatarState.questList ??= avatarState.questList;
-            newAvatarState.inventory ??= avatarState.inventory;
-            newAvatarState.worldInformation ??= avatarState.worldInformation;
-            return newAvatarState;
+            if (serializedValues[1] is List serializedInventory)
+            {
+                avatarState.inventory = new Inventory(serializedInventory);
+            }
+            else
+            {
+                avatarState.inventory = preInventory;
+            }
+
+            if (serializedValues[1] is Dictionary serializedWorldInformation)
+            {
+                avatarState.worldInformation = new WorldInformation(serializedWorldInformation);
+            }
+            else
+            {
+                avatarState.worldInformation = preWorldInformation;
+            }
+
+            if (serializedValues[2] is Dictionary serializedQuestList)
+            {
+                avatarState.questList = new QuestList(serializedQuestList);
+            }
+            else
+            {
+                avatarState.questList = preQuestList;
+            }
+
+            return avatarState;
         }
 
         public static async Task<(List<ItemSlotState>, List<RuneSlotState>)> GetSlotStatesAsync(

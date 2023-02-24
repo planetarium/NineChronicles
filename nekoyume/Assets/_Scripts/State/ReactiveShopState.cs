@@ -157,7 +157,7 @@ namespace Nekoyume.State
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var (fungibleAssets, items) = await Game.Game.instance.MarketServiceClient.GetProducts(avatarAddress);
             CachedSellItemProducts.Clear();
-            CachedSellItemProducts.AddRange(items);
+             CachedSellItemProducts.AddRange(items);
             CachedSellFungibleAssetProducts.Clear();
             CachedSellFungibleAssetProducts.AddRange(fungibleAssets);
             SetSellProducts();
@@ -236,20 +236,6 @@ namespace Nekoyume.State
                 SellFungibleAssetProducts.Value.Remove(fungibleAssetProduct);
                 SellFungibleAssetProducts.SetValueAndForceNotify(SellFungibleAssetProducts.Value);
             }
-        }
-
-        public static ItemProductResponseModel GetSellItemProduct(
-            Guid tradableId,
-            long requiredBlockIndex,
-            FungibleAssetValue price,
-            int count)
-        {
-            var currency = States.Instance.GoldBalanceState.Gold.Currency;
-            return SellItemProducts.Value.FirstOrDefault(x =>
-                x.TradableId.Equals(tradableId) &&
-                (x.RegisteredBlockIndex + Order.ExpirationInterval).Equals(requiredBlockIndex) &&
-                ((BigInteger)x.Price * currency).Equals(price) &&
-                x.Quantity.Equals(count));
         }
 
         public static ItemProductResponseModel GetSellItemProduct(Guid productId)

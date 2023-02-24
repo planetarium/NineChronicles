@@ -7,6 +7,7 @@ using Lib9c.Model.Order;
 using Libplanet.Action;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
+using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -424,9 +425,8 @@ namespace Nekoyume.UI
             Debug.Log($"[{nameof(MaterialCraftMail)}] ItemCount: {materialCraftMail.ItemCount}, ItemId: {materialCraftMail.ItemId}");
         }
 
-        public void Read(ProductBuyerMail productBuyerMail)
+        public async void Read(ProductBuyerMail productBuyerMail)
         {
-            throw new NotImplementedException();
         }
 
         public void Read(ProductSellerMail productSellerMail)
@@ -436,7 +436,14 @@ namespace Nekoyume.UI
 
         public void Read(ProductCancelMail productCancelMail)
         {
-            throw new NotImplementedException();
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            Find<OneButtonSystem>().Show(L10nManager.Localize("UI_SELL_CANCEL_INFO"),
+                L10nManager.Localize("UI_YES"),
+                () =>
+                {
+                    LocalLayerModifier.RemoveNewMail(avatarAddress, productCancelMail.id);
+                    ReactiveShopState.SetSellProducts();
+                });
         }
 
         public async void Read(OrderExpirationMail orderExpirationMail)

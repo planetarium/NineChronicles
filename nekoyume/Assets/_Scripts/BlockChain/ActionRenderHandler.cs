@@ -133,8 +133,9 @@ namespace Nekoyume.BlockChain
 
             // Market
             RegisterProduct();
-            SellCancellation();
-            UpdateSell();
+            CancelProductRegistration();
+            ReRegisterProduct();
+
             Buy();
 
             // Consume
@@ -238,21 +239,21 @@ namespace Nekoyume.BlockChain
                 .AddTo(_disposables);
         }
 
-        private void SellCancellation()
+        private void CancelProductRegistration()
         {
-            _actionRenderer.EveryRender<SellCancellation>()
+            _actionRenderer.EveryRender<CancelProductRegistration>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseSellCancellation)
+                .Subscribe(ResponseCancelProductRegistrationAsync)
                 .AddTo(_disposables);
         }
 
-        private void UpdateSell()
+        private void ReRegisterProduct()
         {
-            _actionRenderer.EveryRender<UpdateSell>()
+            _actionRenderer.EveryRender<ReRegisterProduct>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseUpdateSell)
+                .Subscribe(ResponseReRegisterProduct)
                 .AddTo(_disposables);
         }
 
@@ -1022,7 +1023,7 @@ namespace Nekoyume.BlockChain
                         var productId = rand.GenerateRandomGuid();
                         var deriveAddress = Product.DeriveAddress(productId);
                         eval.OutputStates.TryGetState(deriveAddress, out List rawState);
-                        var product = ProductFactory.Deserialize(rawState);
+                        var product = ProductFactory.DeserializeProduct(rawState);
                         if (product is not ItemProduct itemProduct)
                         {
                             return;
@@ -1034,9 +1035,6 @@ namespace Nekoyume.BlockChain
                         }
 
                         itemName = item.GetLocalizedName();
-                        UpdateCurrentAvatarStateAsync(eval).Forget();
-                        ReactiveShopState.SetSellProducts();
-
                         var slotIndex = States.Instance.AvatarStates
                             .FirstOrDefault(x => x.Value.address == registerInfo.AvatarAddress).Key;
                         var itemSlotStates = States.Instance.ItemSlotStates[slotIndex];
@@ -1062,6 +1060,8 @@ namespace Nekoyume.BlockChain
                         break;
                 }
 
+                UpdateCurrentAvatarStateAsync(eval).Forget();
+
                 var message = string.Empty;
                 if (count > 1)
                 {
@@ -1083,73 +1083,33 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        // private void ResponseSell(ActionEvaluation<Sell> eval)
-        // {
-        //     if (eval.Exception is null)
-        //     {
-        //         var count = eval.Action.count;
-        //         var outputStates = eval.OutputStates;
-        //         var item = GetItem(outputStates, eval.Action.tradableId);
-        //         if (item is null)
-        //         {
-        //             return;
-        //         }
-        //
-        //         string message = string.Empty;
-        //         if (count > 1)
-        //         {
-        //             message = string.Format(L10nManager.Localize("NOTIFICATION_MULTIPLE_SELL_COMPLETE"),
-        //                 item.GetLocalizedName(),
-        //                 count);
-        //         }
-        //         else
-        //         {
-        //             message = string.Format(L10nManager.Localize("NOTIFICATION_SELL_COMPLETE"),
-        //                 item.GetLocalizedName());
-        //         }
-        //
-        //         OneLineSystem.Push(
-        //             MailType.Auction,
-        //             message,
-        //             NotificationCell.NotificationType.Information);
-        //
-        //         UpdateCurrentAvatarStateAsync(eval).Forget();
-        //         ReactiveShopState.UpdateSellProductsAsync().Forget();
-        //
-        //         var slotIndex = States.Instance.AvatarStates
-        //             .FirstOrDefault(x => x.Value.address == eval.Action.sellerAvatarAddress).Key;
-        //         var itemSlotStates = States.Instance.ItemSlotStates[slotIndex];
-        //
-        //         for (var i = 1; i < (int)BattleType.End; i++)
-        //         {
-        //             var battleType = (BattleType)i;
-        //             var currentItemSlotState = States.Instance.CurrentItemSlotStates[battleType];
-        //             currentItemSlotState.Costumes.Remove(eval.Action.tradableId);
-        //             currentItemSlotState.Equipments.Remove(eval.Action.tradableId);
-        //
-        //             var itemSlotState = itemSlotStates[battleType];
-        //             itemSlotState.Costumes.Remove(eval.Action.tradableId);
-        //             itemSlotState.Equipments.Remove(eval.Action.tradableId);
-        //         }
-        //     }
-        // }
-
-        private async void ResponseSellCancellation(
-            ActionEvaluation<SellCancellation> eval)
+        private async void ResponseCancelProductRegistrationAsync(ActionEvaluation<CancelProductRegistration> eval)
         {
-            if (!(eval.Exception is null))
+            if (eval.Exception is not null)
             {
                 return;
             }
 
-            var avatarAddress = eval.Action.sellerAvatarAddress;
-            var order = await Util.GetOrder(eval.Action.orderId);
-            var itemName = await Util.GetItemNameByOrderId(order.OrderId);
-            var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
-            LocalLayerModifier.RemoveItem(avatarAddress, order.TradableId, order.ExpiredBlockIndex,
-                count);
-            LocalLayerModifier.AddNewMail(avatarAddress, eval.Action.orderId);
+            var info = eval.Action.ProductInfos.FirstOrDefault();
+            if (info is null)
+            {
+                return;
+            }
 
+            var (itemName, itemProduct, favProduct) = await Game.Game.instance.MarketServiceClient.GetProductInfo(info.ProductId);
+            var count = 0;
+            if (itemProduct is not null)
+            {
+                count = (int)itemProduct.Quantity;
+            }
+
+            if (favProduct is not null)
+            {
+                count = (int)favProduct.Quantity;
+                await States.Instance.SetBalanceAsync(favProduct.Ticker);
+            }
+
+            LocalLayerModifier.AddNewMail(eval.Action.AvatarAddress, info.ProductId);
             string message;
             if (count > 1)
             {
@@ -1165,31 +1125,35 @@ namespace Nekoyume.BlockChain
 
             OneLineSystem.Push(MailType.Auction, message,
                 NotificationCell.NotificationType.Information);
-
             UpdateCurrentAvatarStateAsync(eval).Forget();
-            ReactiveShopState.SetSellProducts();
         }
 
-        private async void ResponseUpdateSell(ActionEvaluation<UpdateSell> eval)
+        private async void ResponseReRegisterProduct(ActionEvaluation<ReRegisterProduct> eval)
         {
-            if (!(eval.Exception is null))
+            if (eval.Exception is not null)
             {
                 return;
             }
 
-            var updateSellInfos = eval.Action.updateSellInfos;
-
             string message;
-            if (updateSellInfos.Count() > 1)
+            if (eval.Action.ReRegisterInfos.Count() > 1)
             {
                 message = L10nManager.Localize("NOTIFICATION_REREGISTER_ALL_COMPLETE");
             }
             else
             {
-                var updateSellInfo = updateSellInfos.FirstOrDefault();
-                var itemName = await Util.GetItemNameByOrderId(updateSellInfo.orderId);
-                var order = await Util.GetOrder(updateSellInfo.orderId);
-                var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
+                var (productInfo, _) = eval.Action.ReRegisterInfos.FirstOrDefault();
+                var (itemName, itemProduct, favProduct) = await Game.Game.instance.MarketServiceClient.GetProductInfo(productInfo.ProductId);
+                var count = 0;
+                if (itemProduct is not null)
+                {
+                    count = (int)itemProduct.Quantity;
+                }
+
+                if (favProduct is not null)
+                {
+                    count = (int)favProduct.Quantity;
+                }
 
                 if (count > 1)
                 {
@@ -1206,9 +1170,7 @@ namespace Nekoyume.BlockChain
 
             OneLineSystem.Push(MailType.Auction, message,
                 NotificationCell.NotificationType.Information);
-
             UpdateCurrentAvatarStateAsync(eval).Forget();
-            ReactiveShopState.SetSellProducts();
         }
 
         private async void ResponseBuy(ActionEvaluation<Buy> eval)

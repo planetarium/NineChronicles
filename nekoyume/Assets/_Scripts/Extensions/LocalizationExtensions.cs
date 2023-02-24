@@ -193,6 +193,12 @@ namespace Nekoyume
                 case RaidRewardMail rewardMail:
                     return L10nManager.Localize("UI_RAID_SEASON_REWARD_MAIL_FORMAT",
                         rewardMail.RaidId, rewardMail.CurrencyName, rewardMail.Amount);
+
+                case ProductCancelMail productCancelMail :
+                    var (productName, _,  _) = await Game.Game.instance.MarketServiceClient.GetProductInfo(productCancelMail
+                        .ProductId);
+                    return L10nManager.Localize("UI_SELL_CANCEL_MAIL_FORMAT", productName);
+
                 default:
                     throw new NotSupportedException(
                         $"Given mail[{mail}] doesn't support {nameof(ToInfo)}() method.");

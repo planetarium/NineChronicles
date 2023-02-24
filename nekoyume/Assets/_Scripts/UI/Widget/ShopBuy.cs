@@ -246,20 +246,20 @@ namespace Nekoyume.UI
                 order.SellerAvatarAddress, order.ItemSubType, order.Price);
         }
 
-        private static ProductInfo GetProductInfo(ShopItem shopItem)
-        {
-            return new ProductInfo
-            {
-                AvatarAddress = shopItem.Product.SellerAvatarAddress,
-                AgentAddress = shopItem.Product.SellerAgentAddress,
-                ProductId = shopItem.Product.ProductId,
-                Price = (BigInteger) shopItem.Product.Price *
-                        States.Instance.GoldBalanceState.Gold.Currency,
-                Type = shopItem.ItemBase is TradableMaterial
-                    ? ProductType.Fungible
-                    : ProductType.NonFungible,
-                Legacy = shopItem.Product.Legacy,
-            };
-        }
+        // private static IProductInfo GetProductInfo(ShopItem shopItem)
+        // {
+        //     return new IProductInfo
+        //     {
+        //         AvatarAddress = shopItem.Product.SellerAvatarAddress,
+        //         AgentAddress = shopItem.Product.SellerAgentAddress,
+        //         ProductId = shopItem.Product.ProductId,
+        //         Price = (BigInteger) shopItem.Product.Price *
+        //                 States.Instance.GoldBalanceState.Gold.Currency,
+        //         Type = shopItem.ItemBase is TradableMaterial
+        //             ? ProductType.Fungible
+        //             : ProductType.NonFungible,
+        //         Legacy = shopItem.Product.Legacy,
+        //     };
+        // }
     }
 }
