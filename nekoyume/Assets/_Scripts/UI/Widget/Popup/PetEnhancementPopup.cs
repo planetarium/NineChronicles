@@ -10,6 +10,7 @@ using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData.Pet;
+using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Pet;
 using Nekoyume.UI.Scroller;
 using Spine.Unity;
@@ -82,6 +83,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button minusButton;
 
+        [SerializeField]
+        private Button soulStoneIconButton;
+
         private readonly List<IDisposable> _disposables = new();
         private readonly ReactiveProperty<int> _enhancementCount = new();
 
@@ -92,6 +96,7 @@ namespace Nekoyume.UI
         private int _sliderMax;
         private int _sliderCurrentValue;
         private bool _notEnoughBalance;
+        private PetSheet.Row _petRow;
 
         protected override void Awake()
         {
@@ -113,28 +118,33 @@ namespace Nekoyume.UI
             {
                 _enhancementCount.Value = Math.Max(_sliderCurrentValue - 1, 1);
             });
+            soulStoneIconButton.onClick.AddListener(() =>
+            {
+                OnClickSoulStone(_petRow);
+            });
         }
 
         public void ShowForSummon(PetSheet.Row petRow)
         {
             base.Show();
+            _petRow = petRow;
             levelUpUIList.ForEach(obj => obj.SetActive(false));
             costObject.SetActive(true);
             titleText.text = SummonText;
             petInfoView.Set(
-                L10nManager.Localize($"PET_NAME_{petRow.Id}"),
-                petRow.Grade
+                L10nManager.Localize($"PET_NAME_{_petRow.Id}"),
+                _petRow.Grade
             );
-            SetObjectByTargetLevel(petRow.Id, 0, 1);
-            petSkeletonGraphic.skeletonDataAsset = PetRenderingHelper.GetPetSkeletonData(petRow.Id);
+            SetObjectByTargetLevel(_petRow.Id, 0, 1);
+            petSkeletonGraphic.skeletonDataAsset = PetRenderingHelper.GetPetSkeletonData(_petRow.Id);
             petSkeletonGraphic.Initialize(true);
             requiredSoulStoneImage.overrideSprite =
-                PetRenderingHelper.GetSoulStoneSprite(petRow.Id);
+                PetRenderingHelper.GetSoulStoneSprite(_petRow.Id);
             submitButton.OnClickAsObservable().Subscribe(_ =>
             {
                 if (LoadingHelper.PetEnhancement.Value == 0 && !_notEnoughBalance)
                 {
-                    Action(petRow.Id, 1);
+                    Action(_petRow.Id, 1);
                 }
                 else
                 {
@@ -149,6 +159,7 @@ namespace Nekoyume.UI
         public void ShowForLevelUp(PetState petState)
         {
             base.Show();
+            _petRow = TableSheets.Instance.PetSheet[petState.PetId];
             levelUpUIList.ForEach(obj => obj.SetActive(true));
             costObject.SetActive(true);
             titleText.text = LevelUpText;
@@ -156,7 +167,7 @@ namespace Nekoyume.UI
             contentText.text = L10nManager.Localize($"PET_DESCRIPTION_{option.OptionType}",
                 option.OptionValue);
             petInfoView.Set(L10nManager.Localize($"PET_NAME_{petState.PetId}"),
-                TableSheets.Instance.PetSheet[petState.PetId].Grade
+                _petRow.Grade
             );
             petSkeletonGraphic.skeletonDataAsset =
                 PetRenderingHelper.GetPetSkeletonData(petState.PetId);
@@ -245,7 +256,7 @@ namespace Nekoyume.UI
             ncgCostObject.SetActive(ncg > 0);
             var ncgCost = States.Instance.GoldBalanceState.Gold.Currency * ncg;
             var soulStoneCost =
-                Currency.Legacy(TableSheets.Instance.PetSheet[petId].SoulStoneTicker, 0, null) *
+                Currency.Legacy(_petRow.SoulStoneTicker, 0, null) *
                 soulStone;
             var notEnoughNcg
                 = States.Instance.GoldBalanceState.Gold < ncgCost;
@@ -262,6 +273,33 @@ namespace Nekoyume.UI
             ActionManager.Instance.PetEnhancement(petId, targetLevel).Subscribe();
             LoadingHelper.PetEnhancement.Value = petId;
             Close();
+        }
+
+        private void OnClickSoulStone(PetSheet.Row row)
+        {
+            var popup = Find<MaterialNavigationPopup>();
+            var soulStoneName = L10nManager.Localize($"ITEM_NAME_{row.Id}");
+            var count = States.Instance.AvatarBalance[row.SoulStoneTicker].GetQuantityString();
+            var content = L10nManager.Localize($"ITEM_DESCRIPTION_{row.Id}");
+            var buttonText = L10nManager.Localize("UI_GO_TO_MARKET");
+
+            void Callback()
+            {
+                Find<DccCollection>().Close(true);
+                Find<DccMain>().Close(true);
+                base.Close(true);
+                Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+                var shop = Find<ShopBuy>();
+                shop.Show();
+            }
+
+            popup.Show(
+                Callback,
+                PetRenderingHelper.GetSoulStoneSprite(row.Id),
+                soulStoneName,
+                count,
+                content,
+                buttonText);
         }
     }
 }
