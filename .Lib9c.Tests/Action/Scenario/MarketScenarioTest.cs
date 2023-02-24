@@ -130,9 +130,10 @@ namespace Lib9c.Tests.Action.Scenario
                 .MintAsset(_sellerAvatarAddress2, 1 * RuneHelper.DailyRewardRune);
 
             var random = new TestRandom();
-            var productInfoList = new List<ProductInfo>();
+            var productInfoList = new List<IProductInfo>();
             var action = new RegisterProduct
             {
+                AvatarAddress = _sellerAvatarAddress,
                 RegisterInfos = new List<IRegisterInfo>
                 {
                     new RegisterInfo
@@ -167,34 +168,44 @@ namespace Lib9c.Tests.Action.Scenario
             foreach (var productId in productsState.ProductIds)
             {
                 var product =
-                    ProductFactory.Deserialize((List)nextState.GetState(Product.DeriveAddress(productId)));
+                    ProductFactory.DeserializeProduct((List)nextState.GetState(Product.DeriveAddress(productId)));
                 ProductType productType;
                 switch (product)
                 {
                     case FavProduct favProduct:
                         productType = ProductType.FungibleAssetValue;
+                        productInfoList.Add(new FavProductInfo
+                        {
+                            AgentAddress = _sellerAgentAddress,
+                            AvatarAddress = _sellerAvatarAddress,
+                            Price = product.Price,
+                            ProductId = productId,
+                            Type = productType,
+                        });
                         break;
                     case ItemProduct itemProduct:
                         productType = itemProduct.TradableItem is TradableMaterial
                             ? ProductType.Fungible
                             : ProductType.NonFungible;
+                        productInfoList.Add(new ItemProductInfo
+                        {
+                            AgentAddress = _sellerAgentAddress,
+                            AvatarAddress = _sellerAvatarAddress,
+                            Price = product.Price,
+                            ProductId = productId,
+                            Type = productType,
+                            ItemSubType = itemProduct.TradableItem.ItemSubType,
+                            TradableId = itemProduct.TradableItem.TradableId,
+                        });
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(product));
                 }
-
-                productInfoList.Add(new ProductInfo
-                {
-                    AgentAddress = _sellerAgentAddress,
-                    AvatarAddress = _sellerAvatarAddress,
-                    Price = product.Price,
-                    ProductId = productId,
-                    Type = productType,
-                });
             }
 
             var action2 = new RegisterProduct
             {
+                AvatarAddress = _sellerAvatarAddress2,
                 RegisterInfos = new List<IRegisterInfo>
                 {
                     new RegisterInfo
@@ -229,30 +240,39 @@ namespace Lib9c.Tests.Action.Scenario
             foreach (var productId in productList2.ProductIds)
             {
                 var product =
-                    ProductFactory.Deserialize((List)nextState2.GetState(Product.DeriveAddress(productId)));
+                    ProductFactory.DeserializeProduct((List)nextState2.GetState(Product.DeriveAddress(productId)));
                 ProductType productType;
                 switch (product)
                 {
                     case FavProduct favProduct:
                         productType = ProductType.FungibleAssetValue;
+                        productInfoList.Add(new FavProductInfo
+                        {
+                            AgentAddress = _sellerAgentAddress2,
+                            AvatarAddress = _sellerAvatarAddress2,
+                            Price = product.Price,
+                            ProductId = productId,
+                            Type = productType,
+                        });
                         break;
                     case ItemProduct itemProduct:
                         productType = itemProduct.TradableItem is TradableMaterial
                             ? ProductType.Fungible
                             : ProductType.NonFungible;
+                        productInfoList.Add(new ItemProductInfo
+                        {
+                            AgentAddress = _sellerAgentAddress2,
+                            AvatarAddress = _sellerAvatarAddress2,
+                            Price = product.Price,
+                            ProductId = productId,
+                            Type = productType,
+                            ItemSubType = itemProduct.TradableItem.ItemSubType,
+                            TradableId = itemProduct.TradableItem.TradableId,
+                        });
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(product));
                 }
-
-                productInfoList.Add(new ProductInfo
-                {
-                    AgentAddress = _sellerAgentAddress2,
-                    AvatarAddress = _sellerAvatarAddress2,
-                    Price = product.Price,
-                    ProductId = productId,
-                    Type = productType,
-                });
             }
 
             var action3 = new BuyProduct
@@ -288,7 +308,7 @@ namespace Lib9c.Tests.Action.Scenario
                     var productId = productInfo.ProductId;
                     Assert.Empty(sellProductList.ProductIds);
                     Assert.Equal(Null.Value, latestState.GetState(Product.DeriveAddress(productId)));
-                    var product = ProductFactory.Deserialize((List)nextState2.GetState(Product.DeriveAddress(productId)));
+                    var product = ProductFactory.DeserializeProduct((List)nextState2.GetState(Product.DeriveAddress(productId)));
                     switch (product)
                     {
                         case FavProduct favProduct:
@@ -331,6 +351,7 @@ namespace Lib9c.Tests.Action.Scenario
                     .MintAsset(_sellerAvatarAddress, 1 * RuneHelper.StakeRune);
             var action = new RegisterProduct
             {
+                AvatarAddress = _sellerAvatarAddress,
                 RegisterInfos = new List<IRegisterInfo>
                 {
                     new RegisterInfo
@@ -381,58 +402,61 @@ namespace Lib9c.Tests.Action.Scenario
             for (int i = 0; i < 3; i++)
             {
                 var guid = random.GenerateRandomGuid();
-                switch (i)
-                {
-                    case 0:
-                        fungibleProductId = guid;
-                        break;
-                    case 1:
-                        nonFungibleProductId = guid;
-                        break;
-                    case 2:
-                        assetProductId = guid;
-                        break;
-                }
 
                 Assert.Contains(guid, productsState.ProductIds);
                 var productAddress = Product.DeriveAddress(guid);
-                var product = ProductFactory.Deserialize((List)nextState.GetState(productAddress));
+                var product = ProductFactory.DeserializeProduct((List)nextState.GetState(productAddress));
                 Assert.Equal(product.ProductId, guid);
                 Assert.Equal(1 * _currency, product.Price);
                 switch (product)
                 {
                     case FavProduct favProduct:
+                        assetProductId = favProduct.ProductId;
                         Assert.Equal(1 * RuneHelper.StakeRune, favProduct.Asset);
                         break;
                     case ItemProduct itemProduct:
+                        if (itemProduct.Type == ProductType.Fungible)
+                        {
+                            fungibleProductId = itemProduct.ProductId;
+                        }
+                        else
+                        {
+                            nonFungibleProductId = itemProduct.ProductId;
+                        }
+
                         Assert.Equal(1, itemProduct.ItemCount);
                         Assert.NotNull(itemProduct.TradableItem);
                         break;
                 }
             }
 
+            Assert.All(new[] { nonFungibleProductId, fungibleProductId, assetProductId }, productId => Assert.NotEqual(default, productId));
             var action2 = new CancelProductRegistration
             {
                 AvatarAddress = _sellerAvatarAddress,
-                ProductInfos = new List<ProductInfo>
+                ProductInfos = new List<IProductInfo>
                 {
-                    new ProductInfo
+                    new ItemProductInfo
                     {
                         AvatarAddress = _sellerAvatarAddress,
                         AgentAddress = _sellerAgentAddress,
                         Price = 1 * _currency,
                         ProductId = fungibleProductId,
                         Type = ProductType.Fungible,
+                        ItemSubType = tradableMaterial.ItemSubType,
+                        TradableId = tradableMaterial.TradableId,
                     },
-                    new ProductInfo
+                    new ItemProductInfo
                     {
                         AvatarAddress = _sellerAvatarAddress,
                         AgentAddress = _sellerAgentAddress,
                         Price = 1 * _currency,
                         ProductId = nonFungibleProductId,
                         Type = ProductType.NonFungible,
+                        ItemSubType = equipment.ItemSubType,
+                        TradableId = equipment.TradableId,
                     },
-                    new ProductInfo
+                    new FavProductInfo
                     {
                         AvatarAddress = _sellerAvatarAddress,
                         AgentAddress = _sellerAgentAddress,
@@ -465,7 +489,7 @@ namespace Lib9c.Tests.Action.Scenario
             foreach (var productAddress in action2.ProductInfos.Select(productInfo => Product.DeriveAddress(productInfo.ProductId)))
             {
                 Assert.Equal(Null.Value, latestState.GetState(productAddress));
-                var product = ProductFactory.Deserialize((List)nextState.GetState(productAddress));
+                var product = ProductFactory.DeserializeProduct((List)nextState.GetState(productAddress));
                 switch (product)
                 {
                     case FavProduct favProduct:
@@ -495,6 +519,7 @@ namespace Lib9c.Tests.Action.Scenario
                 .SetState(_sellerAvatarAddress, _sellerAvatarState.Serialize());
             var action = new RegisterProduct
             {
+                AvatarAddress = _sellerAvatarAddress,
                 RegisterInfos = new List<IRegisterInfo>
                 {
                     new RegisterInfo
@@ -560,7 +585,7 @@ namespace Lib9c.Tests.Action.Scenario
 
                 Assert.Contains(guid, productsState.ProductIds);
                 var productAddress = Product.DeriveAddress(guid);
-                var product = ProductFactory.Deserialize((List)nextState.GetState(productAddress));
+                var product = ProductFactory.DeserializeProduct((List)nextState.GetState(productAddress));
                 switch (product)
                 {
                     case FavProduct favProduct:
@@ -584,16 +609,18 @@ namespace Lib9c.Tests.Action.Scenario
             var action2 = new ReRegisterProduct
             {
                 AvatarAddress = _sellerAvatarAddress,
-                ReRegisterInfos = new List<(ProductInfo, IRegisterInfo)>
+                ReRegisterInfos = new List<(IProductInfo, IRegisterInfo)>
                 {
                     (
-                        new ProductInfo
+                        new ItemProductInfo
                         {
                             AvatarAddress = _sellerAvatarAddress,
                             AgentAddress = _sellerAgentAddress,
                             Price = 1 * _currency,
                             ProductId = fungibleProductId,
                             Type = ProductType.Fungible,
+                            ItemSubType = tradableMaterial.ItemSubType,
+                            TradableId = tradableMaterial.TradableId,
                         },
                         new RegisterInfo
                         {
@@ -605,13 +632,15 @@ namespace Lib9c.Tests.Action.Scenario
                         }
                     ),
                     (
-                        new ProductInfo
+                        new ItemProductInfo
                         {
                             AvatarAddress = _sellerAvatarAddress,
                             AgentAddress = _sellerAgentAddress,
                             Price = 1 * _currency,
                             ProductId = nonFungibleProductId,
                             Type = ProductType.NonFungible,
+                            ItemSubType = equipment.ItemSubType,
+                            TradableId = equipment.TradableId,
                         },
                         new RegisterInfo
                         {
@@ -623,7 +652,7 @@ namespace Lib9c.Tests.Action.Scenario
                         }
                     ),
                     (
-                        new ProductInfo
+                        new FavProductInfo
                         {
                             AvatarAddress = _sellerAvatarAddress,
                             AgentAddress = _sellerAgentAddress,
@@ -663,7 +692,7 @@ namespace Lib9c.Tests.Action.Scenario
             foreach (var newProductId in sellProductList.ProductIds)
             {
                 var productAddress = Product.DeriveAddress(newProductId);
-                var product = ProductFactory.Deserialize((List)latestState.GetState(productAddress));
+                var product = ProductFactory.DeserializeProduct((List)latestState.GetState(productAddress));
                 switch (product)
                 {
                     case FavProduct favProduct:
@@ -701,7 +730,7 @@ namespace Lib9c.Tests.Action.Scenario
 
             var digestListAddress = OrderDigestListState.DeriveAddress(_sellerAvatarAddress);
             var orderDigestList = new OrderDigestListState(digestListAddress);
-            var reRegisterInfoList = new List<(ProductInfo, IRegisterInfo)>();
+            var reRegisterInfoList = new List<(IProductInfo, IRegisterInfo)>();
             var shopAddressList = new List<Address>();
             foreach (var inventoryItem in _sellerAvatarState.inventory.Items.ToList())
             {
@@ -734,7 +763,7 @@ namespace Lib9c.Tests.Action.Scenario
                 var productType = tradableItem is TradableMaterial
                     ? ProductType.Fungible
                     : ProductType.NonFungible;
-                var productInfo = new ProductInfo
+                var productInfo = new ItemProductInfo
                 {
                     AgentAddress = _sellerAgentAddress,
                     AvatarAddress = _sellerAvatarAddress,
@@ -781,7 +810,7 @@ namespace Lib9c.Tests.Action.Scenario
             foreach (var productId in productsState.ProductIds)
             {
                 var productAddress = Product.DeriveAddress(productId);
-                var product = ProductFactory.Deserialize((List)nextState.GetState(productAddress));
+                var product = ProductFactory.DeserializeProduct((List)nextState.GetState(productAddress));
                 Assert.Equal(100 * _currency, product.Price);
             }
 

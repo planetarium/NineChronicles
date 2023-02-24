@@ -252,10 +252,10 @@
             var reRegister = new ReRegisterProduct
             {
                 AvatarAddress = _avatarAddress,
-                ReRegisterInfos = new List<(ProductInfo, IRegisterInfo)>
+                ReRegisterInfos = new List<(IProductInfo, IRegisterInfo)>
                 {
                     (
-                        new ProductInfo
+                        new ItemProductInfo
                         {
                             AgentAddress = _agentAddress,
                             AvatarAddress = _avatarAddress,
@@ -294,7 +294,7 @@
                     (List)actualState.GetState(ProductsState.DeriveAddress(_avatarAddress)));
             var productId = Assert.Single(productsState.ProductIds);
             var product =
-                ProductFactory.Deserialize((List)actualState.GetState(Product.DeriveAddress(productId)));
+                ProductFactory.DeserializeProduct((List)actualState.GetState(Product.DeriveAddress(productId)));
             Assert.Equal(productId, product.ProductId);
             Assert.Equal(productType, product.Type);
             Assert.Equal(order.Price, product.Price);
@@ -306,7 +306,7 @@
             var action = new ReRegisterProduct
             {
                 AvatarAddress = _avatarAddress,
-                ReRegisterInfos = new List<(ProductInfo, IRegisterInfo)>(),
+                ReRegisterInfos = new List<(IProductInfo, IRegisterInfo)>(),
             };
 
             Assert.Throws<ListEmptyException>(() => action.Execute(new ActionContext()));

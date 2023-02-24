@@ -47,5 +47,19 @@ namespace Nekoyume.Model.Market
                 .Add(SellerAgentAddress.Serialize())
                 .Add(SellerAvatarAddress.Serialize());
         }
+
+        public virtual void Validate(IProductInfo productInfo)
+        {
+            if (SellerAgentAddress != productInfo.AgentAddress ||
+                SellerAvatarAddress != productInfo.AvatarAddress)
+            {
+                throw new InvalidAddressException();
+            }
+
+            if (Price != productInfo.Price)
+            {
+                throw new InvalidPriceException("");
+            }
+        }
     }
 }

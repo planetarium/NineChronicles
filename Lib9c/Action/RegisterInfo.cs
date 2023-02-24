@@ -37,5 +37,40 @@ namespace Nekoyume.Action
                 .Add(TradableId.Serialize())
                 .Add(ItemCount.Serialize());
         }
+
+        public void ValidatePrice(Currency ncg)
+        {
+            if (!Price.Currency.Equals(ncg) || !Price.MinorUnit.IsZero || Price < 1 * ncg)
+            {
+                throw new InvalidPriceException(
+                    $"product price must be greater than zero.");
+            }
+        }
+
+        public void ValidateAddress(Address avatarAddress)
+        {
+            if (AvatarAddress != avatarAddress)
+            {
+                throw new InvalidAddressException();
+            }
+        }
+
+        public void Validate()
+        {
+            if (Type == ProductType.FungibleAssetValue)
+            {
+                throw new InvalidProductTypeException($"register item does not support {ProductType.FungibleAssetValue}");
+            }
+
+            if (ItemCount < 1)
+            {
+                throw new InvalidItemCountException();
+            }
+
+            if (Type == ProductType.NonFungible && ItemCount != 1)
+            {
+                throw new InvalidItemCountException();
+            }
+        }
     }
 }
