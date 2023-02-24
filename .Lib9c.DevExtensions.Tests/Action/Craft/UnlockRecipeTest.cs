@@ -38,8 +38,11 @@ namespace Lib9c.DevExtensions.Tests.Action.Craft
         public void UnlockRecipeTest_Equipment(ItemSubType targetType)
         {
             var random = new Random();
+            var recipeResultList = _tableSheets.EquipmentItemRecipeSheet.Values.Select(
+                recipe => recipe.ResultEquipmentId
+            );
             var equipmentList = _tableSheets.EquipmentItemSheet.Values.Where(
-                eq => eq.ItemSubType == targetType
+                eq => eq.ItemSubType == targetType && recipeResultList.Contains(eq.Id)
             ).ToList();
             var equipment = equipmentList[random.Next(equipmentList.Count)];
 
@@ -70,11 +73,14 @@ namespace Lib9c.DevExtensions.Tests.Action.Craft
         {
             const int targetStage = 6;
             var random = new Random();
+            var recipeResultList = _tableSheets.ConsumableItemRecipeSheet.Values.Select(
+                recipe => recipe.ResultConsumableItemId
+            );
             var foodList = _tableSheets.ConsumableItemSheet.Values.Where(
-                con => con.ItemSubType == targetType
+                con => con.ItemSubType == targetType && recipeResultList.Contains(con.Id)
             ).ToList();
             var targetConsumable = foodList[random.Next(foodList.Count)];
-            var recipeRow = _tableSheets.ConsumableItemRecipeSheet.Values.First(
+            var _ = _tableSheets.ConsumableItemRecipeSheet.Values.First(
                 recipe => recipe.ResultConsumableItemId == targetConsumable.Id
             );
             var action = new UnlockRecipe
@@ -90,7 +96,9 @@ namespace Lib9c.DevExtensions.Tests.Action.Craft
                 BlockIndex = 0L,
             });
 
-            Assert.True(stateV2.TryGetState(_recipeAddress, out List _));
+            Assert.True(stateV2.TryGetState(_recipeAddress, out List rawIds));
+            var unlockedRecipeIds = rawIds.ToList(StateExtensions.ToInteger);
+            Assert.Contains(targetStage, unlockedRecipeIds);
         }
     }
 }
