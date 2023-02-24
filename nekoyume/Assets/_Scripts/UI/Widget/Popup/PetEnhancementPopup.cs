@@ -102,14 +102,6 @@ namespace Nekoyume.UI
         {
             base.Awake();
             closeButton.onClick.AddListener(() => Close());
-            LoadingHelper.PetEnhancement.Subscribe(id =>
-            {
-                buttonDisableObject.SetActive(_notEnoughBalance || id != 0);
-            }).AddTo(gameObject);
-            _enhancementCount.Subscribe(value =>
-            {
-                slider.ForceMove(value);
-            }).AddTo(gameObject);
             plusButton.onClick.AddListener(() =>
             {
                 _enhancementCount.Value = Math.Min(_sliderCurrentValue + 1, _sliderMax);
@@ -126,7 +118,7 @@ namespace Nekoyume.UI
 
         public void ShowForSummon(PetSheet.Row petRow)
         {
-            base.Show();
+            Show();
             _petRow = petRow;
             levelUpUIList.ForEach(obj => obj.SetActive(false));
             costObject.SetActive(true);
@@ -158,7 +150,7 @@ namespace Nekoyume.UI
 
         public void ShowForLevelUp(PetState petState)
         {
-            base.Show();
+            Show();
             _petRow = TableSheets.Instance.PetSheet[petState.PetId];
             levelUpUIList.ForEach(obj => obj.SetActive(true));
             costObject.SetActive(true);
@@ -218,6 +210,19 @@ namespace Nekoyume.UI
                     Close();
                 }).AddTo(_disposables);
             }
+        }
+
+        public override void Show(bool ignoreShowAnimation = false)
+        {
+            base.Show(ignoreShowAnimation);
+            LoadingHelper.PetEnhancement.Subscribe(id =>
+            {
+                buttonDisableObject.SetActive(_notEnoughBalance || id != 0);
+            }).AddTo(_disposables);
+            _enhancementCount.Subscribe(value =>
+            {
+                slider.ForceMove(value);
+            }).AddTo(_disposables);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
