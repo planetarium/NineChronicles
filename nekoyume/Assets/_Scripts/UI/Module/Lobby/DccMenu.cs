@@ -1,16 +1,44 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using Nekoyume.Game;
+using Nekoyume.Helper;
+using Nekoyume.State.Subjects;
+using UnityEngine;
 
 namespace Nekoyume.UI.Module.Lobby
 {
+    using UniRx;
+
     public class DccMenu : MainMenu
     {
         [SerializeField]
         private GameObject notification;
 
-        private void Start()
+        private readonly List<IDisposable> _disposables = new();
+
+        private void OnEnable()
         {
-            // TODO: subscribe cost condition about pet enhancement
-            notification.SetActive(true);
+            void SetNotification()
+            {
+                var hasNotification = false;
+                foreach (var row in TableSheets.Instance.PetSheet)
+                {
+                    hasNotification |= PetRenderingHelper.HasNotification(row.Id);
+                }
+
+                notification.SetActive(hasNotification);
+            }
+
+            SetNotification();
+            AgentStateSubject.Gold.Subscribe(_ =>
+            {
+                SetNotification();
+            }).AddTo(_disposables);
+        }
+
+        private void OnDisable()
+        {
+            _disposables.DisposeAllAndClear();
         }
     }
 }

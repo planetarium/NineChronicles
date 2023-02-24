@@ -370,6 +370,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<TicketPurchasePopup>());
             yield return null;
+            secondWidgets.Add(Widget.Create<PetEnhancementPopup>());
+            yield return null;
             secondWidgets.Add(Widget.Create<MaterialNavigationPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<ArenaTicketPurchasePopup>());
@@ -377,8 +379,6 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<ItemMaterialSelectPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<ArenaTicketPopup>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<PetEnhancementPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<DccSettingPopup>());
             yield return null;

@@ -24,6 +24,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private SkeletonGraphic petSkeletonGraphic;
 
+        [SerializeField]
+        private Button lockedButton;
+
         protected override void Awake()
         {
             base.Awake();
@@ -31,20 +34,18 @@ namespace Nekoyume.UI
             {
                 Close(true);
             });
+            lockedButton.onClick.AddListener(() =>
+            {
+                OneLineSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_INFO_NEW_MERCHANDISE_ADDED_SOON"),
+                    NotificationCell.NotificationType.Information);
+            });
             scroll.OnClick.Subscribe(viewModel =>
             {
                 var row = viewModel.PetRow;
                 if (row is not null)
                 {
-                    if (LoadingHelper.PetEnhancement.Value != 0)
-                    {
-                        OneLineSystem.Push(
-                            MailType.System,
-                            L10nManager.Localize("UI_CAN_NOT_ENTER_PET_MENU"),
-                            NotificationCell.NotificationType.Information);
-                        return;
-                    }
-
                     petSkeletonGraphic.skeletonDataAsset =
                         PetRenderingHelper.GetPetSkeletonData(row.Id);
                     petSkeletonGraphic.Initialize(true);
@@ -71,7 +72,8 @@ namespace Nekoyume.UI
         public void UpdateView()
         {
             scroll.UpdateData(TableSheets.Instance.PetSheet.Values
-                .Select(row => new PetSlotViewModel(row)).Append(new PetSlotViewModel()));
+                .Select(row =>
+                    new PetSlotViewModel(row, PetRenderingHelper.HasNotification(row.Id))));
         }
     }
 }
