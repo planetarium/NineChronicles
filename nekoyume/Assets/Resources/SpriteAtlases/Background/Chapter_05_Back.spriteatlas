@@ -6,7 +6,7 @@ SpriteAtlas:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Chapter_03
+  m_Name: Chapter_05_Back
   m_EditorData:
     serializedVersion: 2
     textureSettings:
@@ -33,18 +33,6 @@ SpriteAtlas:
       m_Overridden: 0
       m_AndroidETC2FallbackOverride: 0
       m_ForceMaximumCompressionQuality_BC6H_BC7: 1
-    - serializedVersion: 3
-      m_BuildTarget: Android
-      m_MaxTextureSize: 2048
-      m_ResizeAlgorithm: 0
-      m_TextureFormat: 4
-      m_TextureCompression: 1
-      m_CompressionQuality: 50
-      m_CrunchedCompression: 0
-      m_AllowsAlphaSplitting: 0
-      m_Overridden: 0
-      m_AndroidETC2FallbackOverride: 0
-      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
     packingSettings:
       serializedVersion: 2
       padding: 4
@@ -56,21 +44,24 @@ SpriteAtlas:
     secondaryTextureSettings: {}
     variantMultiplier: 1
     packables:
-    - {fileID: 2800000, guid: 166e7d88db0a84840804be0e46331574, type: 3}
-    - {fileID: 2800000, guid: 69dfd1540e4230147ad1a61eee79c4b7, type: 3}
-    - {fileID: 2800000, guid: 7f79dd44a4338eb41b72791358c58a51, type: 3}
+    - {fileID: 2800000, guid: e22e61a6f0171d1498ac0e83cb06a0b8, type: 3}
+    - {fileID: 2800000, guid: 2dbe124917614414b8f5b30837de509a, type: 3}
+    - {fileID: 2800000, guid: ac80e7a05187c234cbbad7d74532a8e4, type: 3}
+    - {fileID: 2800000, guid: cf29d35522774544299aec63f892b03e, type: 3}
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
-  - {fileID: 21300000, guid: 7f79dd44a4338eb41b72791358c58a51, type: 3}
-  - {fileID: 21300000, guid: 69dfd1540e4230147ad1a61eee79c4b7, type: 3}
-  - {fileID: 21300000, guid: 166e7d88db0a84840804be0e46331574, type: 3}
+  - {fileID: 21300000, guid: ac80e7a05187c234cbbad7d74532a8e4, type: 3}
+  - {fileID: 21300000, guid: cf29d35522774544299aec63f892b03e, type: 3}
+  - {fileID: 21300000, guid: e22e61a6f0171d1498ac0e83cb06a0b8, type: 3}
+  - {fileID: 21300000, guid: 2dbe124917614414b8f5b30837de509a, type: 3}
   m_PackedSpriteNamesToIndex:
-  - bg_chapter03_03_04
-  - bg_chapter03_02_04
-  - bg_chapter03_01_04
+  - bg_chapter05_03_02
+  - bg_chapter05_03_03
+  - bg_chapter05_01_04
+  - bg_chapter05_02_02
   m_RenderDataMap: {}
-  m_Tag: Chapter_03
+  m_Tag: Chapter_05
   m_IsVariant: 0
