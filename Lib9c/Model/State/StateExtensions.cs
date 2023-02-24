@@ -250,6 +250,42 @@ namespace Nekoyume.Model.State
                 );
         }
 
+        public static IValue Serialize(this List<(Address, IValue)> value)
+        {
+            var result = new Bencodex.Types.List();
+            foreach (var v in value)
+            {
+                result = result.Add(new Bencodex.Types.List
+                    {
+                        v.Item1.Serialize(),
+                        v.Item2 // Already IValue
+                    }
+                );
+            }
+
+            return result;
+        }
+
+        public static List<(Address, IValue)> ToStateList(this IValue serialized)
+        {
+            if (!(serialized is Bencodex.Types.List serializedList))
+            {
+                throw new InvalidCastException();
+            }
+
+            var result = new List<(Address, IValue)>();
+            foreach (var value in serializedList)
+            {
+                var list = (List)value;
+                result.Add((
+                    list.ElementAt(0).ToAddress(),
+                    list.ElementAt(1) // Already IValue
+                ));
+            }
+
+            return result;
+        }
+
         #endregion
 
         #region Bencodex.Types.Dictionary Getter
