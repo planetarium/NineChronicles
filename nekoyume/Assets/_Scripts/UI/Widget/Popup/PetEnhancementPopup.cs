@@ -225,12 +225,6 @@ namespace Nekoyume.UI
             }).AddTo(_disposables);
         }
 
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            _disposables.DisposeAllAndClear();
-            base.Close(ignoreCloseAnimation);
-        }
-
         private void SetObjectByTargetLevel(int petId, int currentLevel, int targetLevel)
         {
             _targetLevel = targetLevel;
@@ -305,6 +299,12 @@ namespace Nekoyume.UI
                 count,
                 content,
                 buttonText);
+        }
+
+        protected override void OnDisable()
+        {
+            _disposables.DisposeAllAndClear();
+            base.OnDisable();
         }
     }
 }
