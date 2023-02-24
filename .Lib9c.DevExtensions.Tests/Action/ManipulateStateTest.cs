@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using Bencodex.Types;
 using Lib9c.DevExtensions.Action;
@@ -50,7 +49,7 @@ namespace Lib9c.DevExtensions.Tests.Action
         public static IEnumerable<object[]> FetchAvatarState()
         {
             var random = new Random();
-            var blockIndex = random.Next(1, 100);
+            var blockIndex = (long)random.Next(1, 100);
 
             /* name, level, exp, actionPoint,
              dailyRewardReceivedIndex, blockIndex,
@@ -66,7 +65,7 @@ namespace Lib9c.DevExtensions.Tests.Action
             // Change level and exp
             yield return new object[]
             {
-                null, random.Next(1, 300), random.Next(0, 100), null,
+                null, random.Next(1, 300), (long)random.Next(0, 100), null,
                 null, null,
                 null, null, null, null
             };
@@ -94,7 +93,7 @@ namespace Lib9c.DevExtensions.Tests.Action
             // Change multiple things
             yield return new object[]
             {
-                "newAvatar", random.Next(1, 300), random.Next(0, 100), null,
+                "newAvatar", random.Next(1, 300), (long)random.Next(0, 100), random.Next(0, 120),
                 blockIndex + 1700, blockIndex,
                 random.Next(0, 4), random.Next(0, 4), random.Next(0, 4), random.Next(0, 4)
             };
@@ -294,41 +293,32 @@ namespace Lib9c.DevExtensions.Tests.Action
         }
         // ~MemberData
 
-        [Theory]
-        [MemberData(nameof(FetchAvatarState))]
-        public void SetAvatarState(
+        // Logics
+        private IAccountStateDelta Manipulate(
+            IAccountStateDelta state,
+            List<(Address, IValue)> targetStateList
+        )
+        {
+            var action = new ManipulateState
+            {
+                StateList = targetStateList
+            };
+
+            return action.Execute(new ActionContext
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                BlockIndex = int.MaxValue / 2
+            });
+        }
+
+        private void TestAvatarState(
+            IAccountStateDelta state,
             string? name, int? level, long? exp, int? actionPoint,
             long? blockIndex, long? dailyRewardReceivedIndex,
             int? hair, int? lens, int? ear, int? tail
         )
         {
-            var newAvatarState = (AvatarState)_avatarState.Clone();
-            newAvatarState.name = name ?? _avatarState.name;
-            newAvatarState.level = level ?? _avatarState.level;
-            newAvatarState.exp = exp ?? _avatarState.exp;
-            newAvatarState.actionPoint = actionPoint ?? _avatarState.actionPoint;
-            newAvatarState.blockIndex = blockIndex ?? _avatarState.blockIndex;
-            newAvatarState.dailyRewardReceivedIndex =
-                dailyRewardReceivedIndex ?? _avatarState.dailyRewardReceivedIndex;
-            newAvatarState.hair = hair ?? _avatarState.hair;
-            newAvatarState.lens = lens ?? _avatarState.lens;
-            newAvatarState.ear = ear ?? _avatarState.ear;
-            newAvatarState.tail = tail ?? _avatarState.tail;
-
-            var action = new ManipulateState
-            {
-                StateList = new List<(Address, IValue)>
-                {
-                    (_avatarAddress, newAvatarState.SerializeV2())
-                }
-            };
-
-            var state = action.Execute(new ActionContext
-            {
-                PreviousStates = _initialStateV2,
-                Signer = _agentAddress,
-                BlockIndex = blockIndex ?? _avatarState.blockIndex
-            });
             var targetAvatarState = state.GetAvatarStateV2(_avatarAddress);
 
             if (name != null)
@@ -382,25 +372,8 @@ namespace Lib9c.DevExtensions.Tests.Action
             }
         }
 
-        [Theory]
-        [MemberData(nameof(FetchInventory))]
-        public void SetInventoryState(Inventory targetInventory)
+        private void TestInventoryState(IAccountStateDelta state, Inventory targetInventory)
         {
-            var action = new ManipulateState
-            {
-                StateList = new List<(Address, IValue)>
-                {
-                    (_inventoryAddress, targetInventory.Serialize()),
-                }
-            };
-
-            var state = action.Execute(new ActionContext
-            {
-                PreviousStates = _initialStateV2,
-                Signer = _agentAddress,
-                BlockIndex = 0L,
-            });
-
             var avatarState = state.GetAvatarStateV2(_avatarAddress);
             var inventoryState = avatarState.inventory;
             Assert.Equal(targetInventory.Items.Count, inventoryState.Items.Count);
@@ -410,25 +383,56 @@ namespace Lib9c.DevExtensions.Tests.Action
             }
         }
 
+        // Tests
         [Theory]
-        [MemberData(nameof(FetchWorldInfo))]
-        public void SetWorldInformation(int lastClearedStage, WorldInformation targetInfo)
+        [MemberData(nameof(FetchAvatarState))]
+        public void SetAvatarState(
+            string? name, int? level, long? exp, int? actionPoint,
+            long? blockIndex, long? dailyRewardReceivedIndex,
+            int? hair, int? lens, int? ear, int? tail
+        )
         {
-            var action = new ManipulateState
-            {
-                StateList = new List<(Address, IValue)>
+            var newAvatarState = (AvatarState)_avatarState.Clone();
+            newAvatarState.name = name ?? _avatarState.name;
+            newAvatarState.level = level ?? _avatarState.level;
+            newAvatarState.exp = exp ?? _avatarState.exp;
+            newAvatarState.actionPoint = actionPoint ?? _avatarState.actionPoint;
+            newAvatarState.blockIndex = blockIndex ?? _avatarState.blockIndex;
+            newAvatarState.dailyRewardReceivedIndex =
+                dailyRewardReceivedIndex ?? _avatarState.dailyRewardReceivedIndex;
+            newAvatarState.hair = hair ?? _avatarState.hair;
+            newAvatarState.lens = lens ?? _avatarState.lens;
+            newAvatarState.ear = ear ?? _avatarState.ear;
+            newAvatarState.tail = tail ?? _avatarState.tail;
+
+            var state = Manipulate(
+                _initialStateV2,
+                new List<(Address, IValue)>
                 {
-                    (_worldInformationAddress, targetInfo.Serialize()),
+                    (_avatarAddress, newAvatarState.SerializeV2())
                 }
-            };
+            );
 
-            var state = action.Execute(new ActionContext
+            TestAvatarState(
+                state,
+                name, level, exp, actionPoint,
+                blockIndex, dailyRewardReceivedIndex,
+                hair, lens, ear, tail
+            );
+        }
+
+        private void TestQuestState(IAccountStateDelta state, List<int> targetQuestIdList)
+        {
+            var avatarState = state.GetAvatarStateV2(_avatarAddress);
+            var questState = avatarState.questList;
+            foreach (var target in targetQuestIdList)
             {
-                PreviousStates = _initialStateV2,
-                Signer = _agentAddress,
-                BlockIndex = 0L,
-            });
+                Assert.Contains(target, questState.completedQuestIds);
+            }
+        }
 
+        private void TestWorldInformation(IAccountStateDelta state, int lastClearedStage)
+        {
             var avatarState = state.GetAvatarStateV2(_avatarAddress);
             var worldInformation = avatarState.worldInformation;
 
@@ -439,30 +443,91 @@ namespace Lib9c.DevExtensions.Tests.Action
         }
 
         [Theory]
-        [MemberData(nameof(FetchQuest))]
-        public void SetQuestState(List<int> targetList, QuestList questList)
+        [MemberData(nameof(FetchInventory))]
+        public void SetInventoryState(Inventory targetInventory)
         {
-            var action = new ManipulateState
-            {
-                StateList = new List<(Address, IValue)>
+            var state = Manipulate(
+                _initialStateV2,
+                new List<(Address, IValue)>
+                {
+                    (_inventoryAddress, targetInventory.Serialize()),
+                }
+            );
+
+            TestInventoryState(state, targetInventory);
+        }
+
+        [Theory]
+        [MemberData(nameof(FetchWorldInfo))]
+        public void SetWorldInformation(int lastClearedStage, WorldInformation targetInfo)
+        {
+            var state = Manipulate(
+                _initialStateV2,
+                new List<(Address, IValue)>
+                {
+                    (_worldInformationAddress, targetInfo.Serialize())
+                }
+            );
+
+            TestWorldInformation(state, lastClearedStage);
+        }
+
+        [Theory]
+        [MemberData(nameof(FetchQuest))]
+        public void SetQuestState(List<int> targetQuestIdList, QuestList questList)
+        {
+            var state = Manipulate(_initialStateV2,
+                new List<(Address, IValue)>
                 {
                     (_questListAddress, questList.Serialize())
                 }
-            };
+            );
 
-            var state = action.Execute(new ActionContext
-            {
-                PreviousStates = _initialStateV2,
-                Signer = _agentAddress,
-                BlockIndex = 0L,
-            });
+            TestQuestState(state, targetQuestIdList);
+        }
 
-            var avatarState = state.GetAvatarStateV2(_avatarAddress);
-            var questState = avatarState.questList;
-            foreach (var target in targetList)
-            {
-                Assert.Contains(target, questState.completedQuestIds);
-            }
+        [Fact]
+        public void SetMultipleStates()
+        {
+            var avatarData = FetchAvatarState().Last();
+            var newAvatarState = (AvatarState)_avatarState.Clone();
+            newAvatarState.name = (string)avatarData[0];
+            newAvatarState.level = (int)avatarData[1];
+            newAvatarState.exp = (long)avatarData[2];
+            newAvatarState.actionPoint = (int)avatarData[3];
+            newAvatarState.blockIndex = (long)avatarData[4];
+            newAvatarState.dailyRewardReceivedIndex = (long)avatarData[5];
+            newAvatarState.hair = (int)avatarData[6];
+            newAvatarState.lens = (int)avatarData[7];
+            newAvatarState.ear = (int)avatarData[8];
+            newAvatarState.tail = (int)avatarData[9];
+
+            var inventory = (Inventory)FetchInventory().Last()[0];
+            var worldInfoData = FetchWorldInfo().Last();
+            var lastClearedStage = (int)worldInfoData[0];
+            var worldState = (WorldInformation)worldInfoData[1];
+            var questData = FetchQuest().Last();
+            var targetQuestIdList = (List<int>)questData[0];
+            var questList = (QuestList)questData[1];
+
+            var state = Manipulate(_initialStateV2, new List<(Address, IValue)>
+                {
+                    (_avatarAddress, newAvatarState.Serialize()),
+                    (_inventoryAddress, inventory.Serialize()),
+                    (_worldInformationAddress, worldState.Serialize()),
+                    (_questListAddress, questList.Serialize()),
+                }
+            );
+
+            TestAvatarState(state,
+                (string?)avatarData[0], (int?)avatarData[1],
+                (long?)avatarData[2], (int?)avatarData[3],
+                (long?)avatarData[4], (long?)avatarData[5],
+                (int?)avatarData[6], (int?)avatarData[7], (int?)avatarData[8], (int?)avatarData[9]
+            );
+            TestInventoryState(state, inventory);
+            TestWorldInformation(state, lastClearedStage);
+            TestQuestState(state, targetQuestIdList);
         }
     }
 }
