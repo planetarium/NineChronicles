@@ -61,6 +61,7 @@ namespace Nekoyume.UI.Module.Pet
         public void Set(PetSlotViewModel model, PetSlotScroll.ContextModel context)
         {
             _disposables.DisposeAllAndClear();
+            model ??= new PetSlotViewModel();
 
             button.OnClickAsObservable()
                 .Select(_ => model)

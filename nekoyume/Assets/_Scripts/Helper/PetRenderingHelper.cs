@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Libplanet.Assets;
+using Nekoyume.Game;
+using Nekoyume.State;
 using Spine.Unity;
 using UnityEngine;
 
@@ -47,6 +50,31 @@ namespace Nekoyume.Helper
         public static Color GetUIColor(string key)
         {
             return PetUIPalette[key];
+        }
+
+        public static bool HasNotification(int id)
+        {
+            var currentLevel = 0;
+            if (States.Instance.PetStates.TryGetPetState(id, out var pet))
+            {
+                currentLevel = pet.Level;
+            }
+
+            var costList = TableSheets.Instance.PetCostSheet[id].Cost
+                .OrderBy(cost => cost.Level)
+                .ToList();
+            if (costList.Last().Level == currentLevel)
+            {
+                return false;
+            }
+
+            var needCost = costList[currentLevel];
+            var ncgCost = States.Instance.GoldBalanceState.Gold.Currency * needCost.NcgQuantity;
+            var soulStoneCost =
+                Currency.Legacy(TableSheets.Instance.PetSheet[id].SoulStoneTicker, 0, null) *
+                needCost.SoulStoneQuantity;
+            return States.Instance.GoldBalanceState.Gold >= ncgCost &&
+                   States.Instance.AvatarBalance[soulStoneCost.Currency.Ticker] >= soulStoneCost;
         }
     }
 }
