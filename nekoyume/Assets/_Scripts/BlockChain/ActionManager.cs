@@ -968,10 +968,6 @@ namespace Nekoyume.BlockChain
 
             LocalLayerModifier.ModifyAgentGold(agentAddress, -recipeInfo.CostNCG);
             LocalLayerModifier.ModifyAvatarActionPoint(agentAddress, -recipeInfo.CostAP);
-            if (petId.HasValue)
-            {
-                States.Instance.PetStates.LockPetTemporarily(petId.Value);
-            }
             if (useHammerPoint)
             {
                 var recipeId = recipeInfo.RecipeId;
