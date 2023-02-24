@@ -24,12 +24,22 @@ namespace Nekoyume.UI
         [SerializeField]
         private SkeletonGraphic petSkeletonGraphic;
 
+        [SerializeField]
+        private Button lockedButton;
+
         protected override void Awake()
         {
             base.Awake();
             backButton.onClick.AddListener(() =>
             {
                 Close(true);
+            });
+            lockedButton.onClick.AddListener(() =>
+            {
+                OneLineSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_INFO_NEW_MERCHANDISE_ADDED_SOON"),
+                    NotificationCell.NotificationType.Information);
             });
             scroll.OnClick.Subscribe(viewModel =>
             {

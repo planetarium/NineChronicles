@@ -1552,6 +1552,7 @@ MonoBehaviour:
   backButton: {fileID: 4465445792812148215}
   scroll: {fileID: 2567904878328409846}
   petSkeletonGraphic: {fileID: 2257138408582950614}
+  lockedButton: {fileID: 8713669136617822440}
 --- !u!1 &3381642724743488225
 GameObject:
   m_ObjectHideFlags: 0
@@ -5797,7 +5798,7 @@ PrefabInstance:
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 88
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
