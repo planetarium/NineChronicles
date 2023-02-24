@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 
@@ -12,7 +10,7 @@ namespace Nekoyume
             get
             {
 #if UNITY_ANDROID
-                return "storage/emulated/0/Documents/NineChroData";
+                return "storage/emulated/0/Documents/NineChronicles";
 #else
                 return Application.persistentDataPath;
 #endif

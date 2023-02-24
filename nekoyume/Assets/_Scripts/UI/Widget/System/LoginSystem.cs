@@ -73,7 +73,7 @@ namespace Nekoyume.UI
             if (Platform.IsMobilePlatform())
             {
                 string dataPath = Platform.PersistentDataPath;
-                KeyStore = new Web3KeyStore(dataPath + "/KeyStore");
+                KeyStore = new Web3KeyStore(dataPath + "/keystore");
             }
             else
             {
@@ -328,7 +328,7 @@ namespace Nekoyume.UI
 
             if (Platform.IsMobilePlatform())
             {
-                string dataPath = Platform.GetPersistentDataPath("KeyStore");
+                string dataPath = Platform.GetPersistentDataPath("keystore");
                 KeyStore = path is null ? new Web3KeyStore(dataPath) : new Web3KeyStore(path);
             }
             else
