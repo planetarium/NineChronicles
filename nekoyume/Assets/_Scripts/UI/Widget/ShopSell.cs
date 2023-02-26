@@ -179,7 +179,7 @@ namespace Nekoyume.UI
             view.Show(
                 ReactiveShopState.SellItemProducts,
                 ReactiveShopState.SellFungibleAssetProducts,
-                ShowSellTooltip, false);
+                ShowSellTooltip);
             base.Show(ignoreShowAnimation);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
             UpdateSpeechBubble();

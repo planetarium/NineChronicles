@@ -11,7 +11,6 @@ namespace Nekoyume.UI.Module
         public void Show(
             ReactiveProperty<List<ItemProductResponseModel>> itemProducts,
             ReactiveProperty<List<FungibleAssetValueProductResponseModel>> fungibleAssetProducts,
-            Action<ShopItem> clickItem,
-            bool isBuy);
+            Action<ShopItem> clickItem);
     }
 }

@@ -90,14 +90,14 @@ namespace Nekoyume.UI
             Find<DataLoadingScreen>().Show();
             Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
             await ReactiveShopState.RequestBuyProductsAsync(ItemSubType.Weapon, MarketOrderType.cp_desc, 0, 60);
-            base.Show(ignoreShowAnimation);
             view.Show(
                 ReactiveShopState.BuyItemProducts,
                 ReactiveShopState.BuyFungibleAssetProducts,
-                ShowItemTooltip, true);
-            Find<DataLoadingScreen>().Close();
+                ShowItemTooltip);
             HelpTooltip.HelpMe(100018, true);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
+            Find<DataLoadingScreen>().Close();
+            base.Show(ignoreShowAnimation);
         }
 
         public void Open()
@@ -106,7 +106,7 @@ namespace Nekoyume.UI
             view.Show(
                 ReactiveShopState.BuyItemProducts,
                 ReactiveShopState.BuyFungibleAssetProducts,
-                ShowItemTooltip, true);
+                ShowItemTooltip);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -146,10 +146,19 @@ namespace Nekoyume.UI
 
         private void ShowItemTooltip(ShopItem model)
         {
-            var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
-            tooltip.Show(model,
-                () => ShowBuyPopup(new List<ShopItem> { model }),
-                view.ClearSelectedItems);
+            if (model.ItemBase is not null)
+            {
+                var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
+                tooltip.Show(model,
+                    () => ShowBuyPopup(new List<ShopItem> { model }),
+                    view.ClearSelectedItems);
+            }
+            else
+            {
+                Find<FungibleAssetTooltip>().Show(model,
+                    () => ShowBuyPopup(new List<ShopItem> { model }),
+                    view.ClearSelectedItems);
+            }
         }
 
         private void ShowBuyPopup(List<ShopItem> models)
@@ -163,7 +172,14 @@ namespace Nekoyume.UI
                 new FungibleAssetValue(States.Instance.GoldBalanceState.Gold.Currency, 0, 0);
             foreach (var model in models)
             {
-                sumPrice += (BigInteger)model.Product.Price * States.Instance.GoldBalanceState.Gold.Currency;
+                if (model.ItemBase is not null)
+                {
+                    sumPrice += (BigInteger)model.Product.Price * States.Instance.GoldBalanceState.Gold.Currency;
+                }
+                else
+                {
+                    sumPrice += (BigInteger)model.FungibleAssetProduct.Price * States.Instance.GoldBalanceState.Gold.Currency;
+                }
             }
 
             if (States.Instance.GoldBalanceState.Gold < sumPrice)
@@ -183,16 +199,49 @@ namespace Nekoyume.UI
                 (() => Buy(models)));
         }
 
-        private async void Buy(List<ShopItem> models)
+        private void Buy(List<ShopItem> models)
         {
-            var purchaseInfos = new ConcurrentBag<PurchaseInfo>();
-            await foreach (var item in models.ToAsyncEnumerable())
+            var productInfos = new List<IProductInfo>();
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var currency = States.Instance.GoldBalanceState.Gold.Currency;
+            foreach (var model in models)
             {
-                var purchaseInfo = await GetPurchaseInfo(item.Product.ProductId);
-                purchaseInfos.Add(purchaseInfo);
+                var itemProduct = model.Product;
+                if (itemProduct is not null)
+                {
+                    var productInfo = new ItemProductInfo()
+                    {
+                        ProductId = itemProduct.ProductId,
+                        Price = new FungibleAssetValue(currency,
+                            (BigInteger)itemProduct.Price, 0),
+                        AgentAddress = itemProduct.SellerAgentAddress,
+                        AvatarAddress = itemProduct.SellerAvatarAddress,
+                        Type = itemProduct.ItemType == ItemType.Material
+                            ? ProductType.Fungible
+                            : ProductType.NonFungible,
+                        Legacy = itemProduct.Legacy,
+                        ItemSubType = itemProduct.ItemSubType,
+                        TradableId = itemProduct.TradableId
+                    };
+                    productInfos.Add(productInfo);
+                }
+                else
+                {
+                    var fungibleAssetProduct = model.FungibleAssetProduct;
+                    var productInfo = new FavProductInfo()
+                    {
+                        ProductId = fungibleAssetProduct.ProductId,
+                        Price = new FungibleAssetValue(currency,
+                            (BigInteger)fungibleAssetProduct.Price, 0),
+                        AgentAddress = fungibleAssetProduct.SellerAgentAddress,
+                        AvatarAddress = fungibleAssetProduct.SellerAvatarAddress,
+                        Type = ProductType.FungibleAssetValue,
+                    };
+                    productInfos.Add(productInfo);
+                }
             }
 
-            Game.Game.instance.ActionManager.Buy(purchaseInfos.ToList()).Subscribe();
+            Game.Game.instance.ActionManager.BuyProduct(avatarAddress, productInfos).Subscribe();
 
             if (models.Count > 0)
             {
@@ -209,26 +258,27 @@ namespace Nekoyume.UI
             {
                 var props = new Dictionary<string, Value>()
                 {
-                    ["Price"] = model.Product.Price,
+                    ["Price"] = model.Product?.Price ?? model.FungibleAssetProduct.Price,
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                     ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                 };
-                Analyzer.Instance.Track("Unity/Buy", props);
+                Analyzer.Instance.Track("Unity/BuyProduct", props);
 
-                var count = model.Product.Quantity;
+                var count = model.Product?.Quantity ?? model.FungibleAssetProduct.Quantity;
+                var itemName = model.ItemBase?.GetLocalizedName() ?? model.FungibleAssetValue.GetLocalizedName();
                 model.Selected.Value = false;
-                ReactiveShopState.RemoveBuyProduct(model.Product.ProductId);
+                // ReactiveShopState.RemoveBuyProduct(model.Product.ProductId);
 
                 string message;
                 if (count > 1)
                 {
                     message = string.Format(L10nManager.Localize("NOTIFICATION_MULTIPLE_BUY_START"),
-                        model.ItemBase.GetLocalizedName(), count);
+                        itemName, count);
                 }
                 else
                 {
                     message = string.Format(L10nManager.Localize("NOTIFICATION_BUY_START"),
-                        model.ItemBase.GetLocalizedName());
+                        itemName);
                 }
 
                 OneLineSystem.Push(MailType.Auction, message,
@@ -245,21 +295,5 @@ namespace Nekoyume.UI
             return new PurchaseInfo(orderId, order.TradableId, order.SellerAgentAddress,
                 order.SellerAvatarAddress, order.ItemSubType, order.Price);
         }
-
-        // private static IProductInfo GetProductInfo(ShopItem shopItem)
-        // {
-        //     return new IProductInfo
-        //     {
-        //         AvatarAddress = shopItem.Product.SellerAvatarAddress,
-        //         AgentAddress = shopItem.Product.SellerAgentAddress,
-        //         ProductId = shopItem.Product.ProductId,
-        //         Price = (BigInteger) shopItem.Product.Price *
-        //                 States.Instance.GoldBalanceState.Gold.Currency,
-        //         Type = shopItem.ItemBase is TradableMaterial
-        //             ? ProductType.Fungible
-        //             : ProductType.NonFungible,
-        //         Legacy = shopItem.Product.Legacy,
-        //     };
-        // }
     }
 }

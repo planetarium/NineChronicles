@@ -29,8 +29,7 @@ namespace Nekoyume.Game
             int limit,
             MarketOrderType order)
         {
-            var url =
-                $"{_url}/Market/products/items/{(int)itemSubType}?limit={limit}&offset={offset}&order={order}";
+            var url = $"{_url}/Market/products/items/{(int)itemSubType}?limit={limit}&offset={offset}&order={order}";
             var json = await _client.GetStringAsync(url);
             var options = new JsonSerializerOptions
             {
@@ -38,6 +37,21 @@ namespace Nekoyume.Game
             };
             var response = JsonSerializer.Deserialize<MarketProductResponse>(json, options);
             return (response.ItemProducts.Where(p => p.Exist).ToList(), response.TotalCount);
+        }
+
+        public async Task<(List<FungibleAssetValueProductResponseModel>, int)> GetBuyFungibleAssetProducts(
+            string ticker,
+            int offset,
+            int limit)
+        {
+            var url = $"{_url}/Market/products/fav/{ticker}?limit={limit}&offset={offset}";
+            var json = await _client.GetStringAsync(url);
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            var response = JsonSerializer.Deserialize<MarketProductResponse>(json, options);
+            return (response.FungibleAssetValueProducts.Where(p => p.Exist).ToList(), response.TotalCount);
         }
 
         public async Task<(List<FungibleAssetValueProductResponseModel>, List<ItemProductResponseModel>)>

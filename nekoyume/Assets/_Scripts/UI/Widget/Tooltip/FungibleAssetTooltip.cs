@@ -36,9 +36,11 @@ namespace Nekoyume.UI
         [SerializeField]
         private ItemTooltipSell sell;
 
-        [FormerlySerializedAs("sellButton")]
         [SerializeField]
         private Button registerButton;
+
+        [SerializeField]
+        private Button confirmButton;
 
         [SerializeField]
         private Scrollbar scrollbar;
@@ -76,6 +78,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private ItemViewDataScriptableObject itemViewDataScriptableObject;
 
+        [SerializeField]
+        private GameObject deco;
+
         private System.Action _onClose;
         private System.Action _onRegister;
         private bool _isPointerOnScrollArea;
@@ -91,6 +96,11 @@ namespace Nekoyume.UI
                 _onRegister?.Invoke();
                 Close(true);
             });
+
+            confirmButton.onClick.AddListener(() =>
+            {
+                Close(true);
+            });
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -102,9 +112,25 @@ namespace Nekoyume.UI
         }
 
         public virtual void Show(
+            FungibleAssetValue fav,
+            System.Action onClose)
+        {
+            deco.gameObject.SetActive(true);
+            confirmButton.gameObject.SetActive(true);
+            registerButton.gameObject.SetActive(false);
+            sell.gameObject.SetActive(false);
+            buy.gameObject.SetActive(false);
+            UpdateInformation(fav, onClose);
+            base.Show();
+            StartCoroutine(CoUpdate(panel.gameObject));
+        }
+
+        public virtual void Show(
             InventoryItem item,
             System.Action onClose)
         {
+            deco.gameObject.SetActive(false);
+            confirmButton.gameObject.SetActive(false);
             registerButton.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
             buy.gameObject.SetActive(false);
@@ -112,6 +138,28 @@ namespace Nekoyume.UI
             UpdateInformation(item.FungibleAssetValue, onClose);
             base.Show();
             StartCoroutine(CoUpdate(panel.gameObject));
+        }
+
+        public void Show(
+            ShopItem item,
+            System.Action onBuy,
+            System.Action onClose)
+        {
+            deco.gameObject.SetActive(false);
+            confirmButton.gameObject.SetActive(false);
+            registerButton.gameObject.SetActive(false);
+            buy.gameObject.SetActive(true);
+            sell.gameObject.SetActive(false);
+            buy.Set(item.FungibleAssetProduct.RegisteredBlockIndex + Order.ExpirationInterval,
+                (BigInteger)item.FungibleAssetProduct.Price * States.Instance.GoldBalanceState.Gold.Currency,
+                ()=>
+                {
+                    onBuy?.Invoke();
+                    Close();
+                });
+            UpdateInformation(item.FungibleAssetValue, onClose);
+            base.Show();
+            StartCoroutine(CoUpdate(buy.gameObject));
         }
 
         /// <summary>
@@ -123,6 +171,8 @@ namespace Nekoyume.UI
             System.Action onSellCancellation,
             System.Action onClose)
         {
+            deco.gameObject.SetActive(false);
+            confirmButton.gameObject.SetActive(false);
             registerButton.gameObject.SetActive(false);
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(true);
@@ -147,6 +197,8 @@ namespace Nekoyume.UI
             System.Action onRegister,
             System.Action onClose)
         {
+            deco.gameObject.SetActive(false);
+            confirmButton.gameObject.SetActive(false);
             registerButton.gameObject.SetActive(true);
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
@@ -187,7 +239,6 @@ namespace Nekoyume.UI
             contentText.text = L10nManager.Localize($"ITEM_DESCRIPTION_{id}");
             var countFormat = L10nManager.Localize("UI_COUNT_FORMAT");
             countText.text = string.Format(countFormat, fav.GetQuantityString());
-            ;
             levelLimitText.text = L10nManager.Localize("UI_REQUIRED_LEVEL", 1);
             UpdateGrade(grade);
 

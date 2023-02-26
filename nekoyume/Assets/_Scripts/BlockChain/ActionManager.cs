@@ -658,6 +658,33 @@ namespace Nekoyume.BlockChain
                 .Finally(() => { });
         }
 
+        public IObservable<ActionEvaluation<BuyProduct>> BuyProduct(
+            Address avatarAddress,
+            List<IProductInfo> productInfos)
+        {
+            var buyerAgentAddress = States.Instance.AgentState.address;
+            foreach (var info in productInfos)
+            {
+                LocalLayerModifier
+                    .ModifyAgentGoldAsync(buyerAgentAddress, -info.Price)
+                    .Forget();
+            }
+
+            var action = new BuyProduct
+            {
+                AvatarAddress = avatarAddress,
+                ProductInfos = productInfos,
+            };
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<BuyProduct>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e => throw HandleException(action.Id, e));
+        }
+
+
         public IObservable<ActionEvaluation<Buy>> Buy(List<PurchaseInfo> purchaseInfos)
         {
             var buyerAgentAddress = States.Instance.AgentState.address;

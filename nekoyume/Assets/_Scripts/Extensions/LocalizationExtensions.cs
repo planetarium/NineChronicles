@@ -195,9 +195,20 @@ namespace Nekoyume
                         rewardMail.RaidId, rewardMail.CurrencyName, rewardMail.Amount);
 
                 case ProductCancelMail productCancelMail :
-                    var (productName, _,  _) = await Game.Game.instance.MarketServiceClient.GetProductInfo(productCancelMail
+                    var (productName, _,  _) =
+                        await Game.Game.instance.MarketServiceClient.GetProductInfo(productCancelMail
                         .ProductId);
                     return L10nManager.Localize("UI_SELL_CANCEL_MAIL_FORMAT", productName);
+                case ProductBuyerMail productBuyerMail:
+                    var (buyProductName, _,  _) =
+                        await Game.Game.instance.MarketServiceClient.GetProductInfo(productBuyerMail
+                        .ProductId);
+                    return L10nManager.Localize("UI_BUYER_MAIL_FORMAT", buyProductName);
+                case ProductSellerMail productSellerMail:
+                    var (sellProductName, item, fav) =
+                        await Game.Game.instance.MarketServiceClient.GetProductInfo(productSellerMail.ProductId);
+                    return L10nManager.Localize("UI_SELLER_MAIL_FORMAT",
+                        item?.Price ?? fav.Price, sellProductName);
 
                 default:
                     throw new NotSupportedException(

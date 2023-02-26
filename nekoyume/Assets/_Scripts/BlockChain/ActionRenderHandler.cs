@@ -135,8 +135,7 @@ namespace Nekoyume.BlockChain
             RegisterProduct();
             CancelProductRegistration();
             ReRegisterProduct();
-
-            Buy();
+            BuyProduct();
 
             // Consume
             DailyReward();
@@ -257,11 +256,11 @@ namespace Nekoyume.BlockChain
                 .AddTo(_disposables);
         }
 
-        private void Buy()
+        private void BuyProduct()
         {
-            _actionRenderer.EveryRender<Buy>()
+            _actionRenderer.EveryRender<BuyProduct>()
                 .ObserveOnMainThread()
-                .Subscribe(ResponseBuy)
+                .Subscribe(ResponseBuyProduct)
                 .AddTo(_disposables);
         }
 
@@ -1173,93 +1172,58 @@ namespace Nekoyume.BlockChain
             UpdateCurrentAvatarStateAsync(eval).Forget();
         }
 
-        private async void ResponseBuy(ActionEvaluation<Buy> eval)
+        private async void ResponseBuyProduct(ActionEvaluation<BuyProduct> eval)
         {
-            if (!(eval.Exception is null))
+            if (eval.Exception is not null)
             {
-                Debug.Log(eval.Exception);
                 return;
             }
 
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress,
-                    out var avatarState, out _))
+            var productInfos = eval.Action.ProductInfos;
+            if (eval.Action.AvatarAddress == avatarAddress) // buyer
             {
-                return;
-            }
-
-            var errorList = eval.Action.errors;
-            List<(Guid orderId, int errorCode)> errors = errorList
-                .Cast<List>()
-                .Select(t => (t[0].ToGuid(), t[1].ToInteger()))
-                .ToList();
-            var purchaseInfos = eval.Action.purchaseInfos;
-            if (eval.Action.buyerAvatarAddress == avatarAddress) // buyer
-            {
-                foreach (var purchaseInfo in purchaseInfos)
+                foreach (var info in productInfos)
                 {
-                    var order = await Util.GetOrder(purchaseInfo.OrderId);
-                    var itemName = await Util.GetItemNameByOrderId(order.OrderId);
-                    var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
-                    var price = purchaseInfo.Price;
-
-                    if (errors.Exists(tuple => tuple.orderId.Equals(purchaseInfo.OrderId)))
+                    var (itemName, itemProduct, favProduct) = await Game.Game.instance.MarketServiceClient.GetProductInfo(info.ProductId);
+                    var count = 0;
+                    if (itemProduct is not null)
                     {
-                        var (orderId, errorCode) =
-                            errors.FirstOrDefault(tuple => tuple.orderId == purchaseInfo.OrderId);
+                        count = (int)itemProduct.Quantity;
+                    }
 
-                        var errorType = ((ShopErrorType)errorCode).ToString();
-                        LocalLayerModifier.ModifyAgentGoldAsync(agentAddress, price).Forget();
+                    if (favProduct is not null)
+                    {
+                        count = (int)favProduct.Quantity;
+                        await States.Instance.SetBalanceAsync(favProduct.Ticker);
+                    }
+                    var price = info.Price;
+                    LocalLayerModifier.ModifyAgentGoldAsync(agentAddress, price).Forget();
+                    LocalLayerModifier.AddNewMail(avatarAddress, info.ProductId);
 
-                        string message;
-                        if (count > 1)
-                        {
-                            message = string.Format(
-                                L10nManager.Localize("NOTIFICATION_MULTIPLE_BUY_FAIL"),
-                                itemName, L10nManager.Localize(errorType), price, count);
-                        }
-                        else
-                        {
-                            message = string.Format(L10nManager.Localize("NOTIFICATION_BUY_FAIL"),
-                                itemName, L10nManager.Localize(errorType), price);
-                        }
-
-                        OneLineSystem.Push(MailType.Auction, message,
-                            NotificationCell.NotificationType.Alert);
+                    string message;
+                    if (count > 1)
+                    {
+                        message = string.Format(
+                            L10nManager.Localize("NOTIFICATION_MULTIPLE_BUY_BUYER_COMPLETE"),
+                            itemName, price, count);
                     }
                     else
                     {
-                        LocalLayerModifier.ModifyAgentGoldAsync(agentAddress, price).Forget();
-                        LocalLayerModifier.RemoveItem(avatarAddress, order.TradableId,
-                            order.ExpiredBlockIndex, count);
-                        LocalLayerModifier.AddNewMail(avatarAddress, purchaseInfo.OrderId);
-
-                        string message;
-                        if (count > 1)
-                        {
-                            message = string.Format(
-                                L10nManager.Localize("NOTIFICATION_MULTIPLE_BUY_BUYER_COMPLETE"),
-                                itemName, price, count);
-                        }
-                        else
-                        {
-                            message = string.Format(
-                                L10nManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE"),
-                                itemName, price);
-                        }
-
-                        OneLineSystem.Push(MailType.Auction, message,
-                            NotificationCell.NotificationType.Notification);
+                        message = string.Format(
+                            L10nManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE"),
+                            itemName, price);
                     }
+
+                    OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Notification);
                 }
             }
             else // seller
             {
-                foreach (var purchaseInfo in purchaseInfos)
+                foreach (var info in productInfos)
                 {
-                    var buyerAvatarStateValue =
-                        eval.OutputStates.GetState(eval.Action.buyerAvatarAddress);
+                    var buyerAvatarStateValue = eval.OutputStates.GetState(eval.Action.AvatarAddress);
                     if (buyerAvatarStateValue is null)
                     {
                         Debug.LogError("buyerAvatarStateValue is null.");
@@ -1271,16 +1235,25 @@ namespace Nekoyume.BlockChain
                     var buyerNameWithHash = string.Format(
                         nameWithHashFormat,
                         ((Text)((Dictionary)buyerAvatarStateValue)["name"]).Value,
-                        eval.Action.buyerAvatarAddress.ToHex().Substring(0, 4)
+                        eval.Action.AvatarAddress.ToHex().Substring(0, 4)
                     );
 
-                    var order = await Util.GetOrder(purchaseInfo.OrderId);
-                    var itemName = await Util.GetItemNameByOrderId(order.OrderId);
-                    var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
-                    var taxedPrice = order.Price - order.GetTax();
+                    var (itemName, itemProduct, favProduct) = await Game.Game.instance.MarketServiceClient.GetProductInfo(info.ProductId);
+                    var count = 0;
+                    if (itemProduct is not null)
+                    {
+                        count = (int)itemProduct.Quantity;
+                    }
 
+                    if (favProduct is not null)
+                    {
+                        count = (int)favProduct.Quantity;
+                        await States.Instance.SetBalanceAsync(favProduct.Ticker);
+                    }
+
+                    var taxedPrice = info.Price.DivRem(100, out _) * Action.Buy.TaxRate;
                     LocalLayerModifier.ModifyAgentGoldAsync(agentAddress, -taxedPrice).Forget();
-                    LocalLayerModifier.AddNewMail(avatarAddress, purchaseInfo.OrderId);
+                    LocalLayerModifier.AddNewMail(avatarAddress, info.ProductId);
 
                     string message;
                     if (count > 1)
@@ -1303,7 +1276,7 @@ namespace Nekoyume.BlockChain
 
             UpdateAgentStateAsync(eval).Forget();
             UpdateCurrentAvatarStateAsync(eval).Forget();
-            RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
+            RenderQuest(avatarAddress, States.Instance.CurrentAvatarState.questList.completedQuestIds);
         }
 
         private async void ResponseDailyRewardAsync(ActionEvaluation<DailyReward> eval)

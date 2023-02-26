@@ -263,7 +263,7 @@ namespace Nekoyume.Game.Avatar
         {
             if (index == 10255000)
             {
-                index = 10235000;
+                index = 10235001;
             }
             var s = SplitIndex(index);
             var preIndex = s[0] + s[4] + s[5] + s[6] + s[7];

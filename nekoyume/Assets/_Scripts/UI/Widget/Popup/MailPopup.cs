@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
 using Libplanet.Action;
+using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
@@ -427,11 +428,54 @@ namespace Nekoyume.UI
 
         public async void Read(ProductBuyerMail productBuyerMail)
         {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var productId = productBuyerMail.ProductId;
+            var (_, itemProduct, favProduct) = await Game.Game.instance.MarketServiceClient.GetProductInfo(productId);
+            if (itemProduct is not null)
+            {
+                var count = (int)itemProduct.Quantity;
+                var item = States.Instance.CurrentAvatarState.inventory.Items
+                    .FirstOrDefault(i => i.item is ITradableItem item &&
+                                         item.TradableId.Equals(itemProduct.TradableId));
+                if (item is null || item.item is null)
+                {
+                    return;
+                }
+
+                var model = new UI.Model.BuyItemInformationPopup(new CountableItem(item.item, count))
+                {
+                    isSuccess = true,
+                    materialItems = new List<CombinationMaterial>()
+                };
+
+                model.OnClickSubmit.Subscribe(_ =>
+                {
+                    LocalLayerModifier.RemoveNewMail(avatarAddress, productBuyerMail.id, true);
+                }).AddTo(gameObject);
+                Find<BuyItemInformationPopup>().Pop(model);
+            }
+
+            if (favProduct is not null)
+            {
+                var currency = Currency.Legacy(favProduct.Ticker, 0, null);
+                var fav = new FungibleAssetValue(currency, (int)favProduct.Quantity, 0);
+                Find<FungibleAssetTooltip>().Show(
+                    fav,
+                    () => LocalLayerModifier.RemoveNewMail(avatarAddress, productBuyerMail.id, true));
+            }
         }
 
-        public void Read(ProductSellerMail productSellerMail)
+        public async void Read(ProductSellerMail productSellerMail)
         {
-            throw new NotImplementedException();
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var agentAddress = States.Instance.AgentState.address;
+            var (_, itemProduct, favProduct) = await Game.Game.instance.MarketServiceClient.GetProductInfo(productSellerMail.ProductId);
+            var currency = States.Instance.GoldBalanceState.Gold.Currency;
+            var price = itemProduct?.Price ?? favProduct.Price;
+            var fav = new FungibleAssetValue(currency, (int)price, 0);
+            var taxedPrice = fav.DivRem(100, out _) * Action.Buy.TaxRate;
+            LocalLayerModifier.ModifyAgentGoldAsync(agentAddress, taxedPrice).Forget();
+            LocalLayerModifier.RemoveNewMail(avatarAddress, productSellerMail.id);
         }
 
         public void Read(ProductCancelMail productCancelMail)

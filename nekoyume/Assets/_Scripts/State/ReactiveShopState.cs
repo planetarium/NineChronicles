@@ -9,6 +9,7 @@ using Lib9c.Model.Order;
 using Libplanet.Assets;
 using MarketService.Response;
 using Nekoyume.EnumType;
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
 using Nekoyume.TableData;
@@ -24,11 +25,9 @@ namespace Nekoyume.State
 
         public static ReactiveProperty<List<FungibleAssetValueProductResponseModel>> BuyFungibleAssetProducts { get; } = new();
         public static ReactiveProperty<List<FungibleAssetValueProductResponseModel>> SellFungibleAssetProducts { get; } = new();
-        private static Dictionary<Guid, ItemBase> CachedBuyItems { get; set; } = new();
-        private static Dictionary<Guid, ItemBase> CachedSellItems { get; set; } = new();
 
         private static readonly Dictionary<MarketOrderType, Dictionary<ItemSubType, List<ItemProductResponseModel>>>
-            CachedBuyProducts = new()
+            CachedBuyItemProducts = new()
             {
                 { MarketOrderType.cp, new Dictionary<ItemSubType, List<ItemProductResponseModel>>() },
                 { MarketOrderType.cp_desc, new Dictionary<ItemSubType, List<ItemProductResponseModel>>() },
@@ -37,6 +36,11 @@ namespace Nekoyume.State
                 { MarketOrderType.grade, new Dictionary<ItemSubType, List<ItemProductResponseModel>>() },
                 { MarketOrderType.grade_desc, new Dictionary<ItemSubType, List<ItemProductResponseModel>>() },
             };
+
+        private static readonly List<ItemProductResponseModel> CachedSellItemProducts = new();
+
+        private static readonly List<FungibleAssetValueProductResponseModel> CachedBuyFungibleAssetProducts = new();
+        private static readonly List<FungibleAssetValueProductResponseModel> CachedSellFungibleAssetProducts = new();
 
         private static readonly Dictionary<MarketOrderType, Dictionary<ItemSubType, bool>> MarketMaxChecker = new()
             {
@@ -48,38 +52,7 @@ namespace Nekoyume.State
                 { MarketOrderType.grade_desc, new Dictionary<ItemSubType, bool>() },
             };
 
-        private static readonly List<ItemProductResponseModel> CachedSellItemProducts = new();
-        private static readonly List<FungibleAssetValueProductResponseModel> CachedSellFungibleAssetProducts = new();
-
         private static List<Guid> RemovedProductIds => new();
-
-        public static bool TryGetBuyShopItem(Guid productId, out ItemBase itemBase)
-        {
-            if (!CachedBuyItems.ContainsKey(productId))
-            {
-                Debug.LogWarning($"[{nameof(TryGetBuyShopItem)}] Not found address:" +
-                                 $" {productId}");
-                itemBase = null;
-                return false;
-            }
-
-            itemBase = CachedBuyItems[productId];
-            return true;
-        }
-
-        public static bool TryGetSellShopItem(Guid productId, out ItemBase itemBase)
-        {
-            if (!CachedSellItems.ContainsKey(productId))
-            {
-                Debug.LogWarning($"[{nameof(TryGetSellShopItem)}] Not found address:" +
-                                 $" {productId}");
-                itemBase = null;
-                return false;
-            }
-
-            itemBase = CachedSellItems[productId];
-            return true;
-        }
 
         public static void ClearCache()
         {
@@ -87,11 +60,12 @@ namespace Nekoyume.State
             SellItemProducts.Value = new List<ItemProductResponseModel>();
             BuyFungibleAssetProducts.Value = new List<FungibleAssetValueProductResponseModel>();
             SellFungibleAssetProducts.Value = new List<FungibleAssetValueProductResponseModel>();
-            CachedBuyItems?.Clear();
-            CachedSellItems?.Clear();
             RemovedProductIds?.Clear();
 
-            foreach (var v in CachedBuyProducts.Values)
+            CachedSellFungibleAssetProducts.Clear();
+            CachedBuyFungibleAssetProducts.Clear();
+
+            foreach (var v in CachedBuyItemProducts.Values)
             {
                 v.Clear();
             }
@@ -120,32 +94,44 @@ namespace Nekoyume.State
 
             if (MarketMaxChecker[orderType][itemSubType])
             {
-                Debug.Log("[RequestBuyProductsAsync] MAX");
                 return;
             }
+
 
             var (products, totalCount) =
                 await Game.Game.instance.MarketServiceClient.GetBuyProducts(
                     itemSubType, offset, limit, orderType);
 
-            Debug.Log(
-                $"[RequestBuyProductsAsync] : {itemSubType} / {orderType} / {offset} / {limit} / MAX:{totalCount}");
+            Debug.Log($"[RequestBuyProductsAsync] : {itemSubType} / {orderType} / {offset} / {limit} / MAX:{totalCount}");
 
             var count = GetCachedBuyItemCount(orderType, itemSubType);
             MarketMaxChecker[orderType][itemSubType] = count == totalCount;
 
             RemovedProductIds.Clear();
-            if (!CachedBuyProducts[orderType].ContainsKey(itemSubType))
+            if (!CachedBuyItemProducts[orderType].ContainsKey(itemSubType))
             {
-                CachedBuyProducts[orderType].Add(itemSubType, new List<ItemProductResponseModel>());
+                CachedBuyItemProducts[orderType].Add(itemSubType, new List<ItemProductResponseModel>());
             }
 
-            var productModels = CachedBuyProducts[orderType][itemSubType];
+            var productModels = CachedBuyItemProducts[orderType][itemSubType];
             foreach (var product in products)
             {
                 if (productModels.All(x => x.ProductId != product.ProductId))
                 {
-                    CachedBuyProducts[orderType][itemSubType].Add(product);
+                    CachedBuyItemProducts[orderType][itemSubType].Add(product);
+                }
+            }
+
+            await foreach (var ticker in Util.GetTickers())
+            {
+                var (fungibleAssets, items) =
+                    await Game.Game.instance.MarketServiceClient.GetBuyFungibleAssetProducts(ticker, offset, limit);
+                await foreach (var model in fungibleAssets)
+                {
+                    if (!CachedBuyFungibleAssetProducts.Exists(x => x.ProductId == model.ProductId))
+                    {
+                        CachedBuyFungibleAssetProducts.Add(model);
+                    }
                 }
             }
 
@@ -157,7 +143,8 @@ namespace Nekoyume.State
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var (fungibleAssets, items) = await Game.Game.instance.MarketServiceClient.GetProducts(avatarAddress);
             CachedSellItemProducts.Clear();
-             CachedSellItemProducts.AddRange(items);
+            CachedSellItemProducts.AddRange(items);
+
             CachedSellFungibleAssetProducts.Clear();
             CachedSellFungibleAssetProducts.AddRange(fungibleAssets);
             SetSellProducts();
@@ -166,26 +153,11 @@ namespace Nekoyume.State
         public static void SetBuyProducts(MarketOrderType marketOrderType)
         {
             var products = new List<ItemProductResponseModel>();
-            foreach (var models in CachedBuyProducts[marketOrderType].Values)
+            foreach (var models in CachedBuyItemProducts[marketOrderType].Values)
             {
                 products.AddRange(models.Where(model => model.RegisteredBlockIndex > 0));
             }
 
-            BuyItemProducts.Value = SortedProducts(products);
-            BuyFungibleAssetProducts.Value = new List<FungibleAssetValueProductResponseModel>(); // todo
-            CachedBuyItems = GetItems(BuyItemProducts.Value);
-        }
-
-        public static void SetSellProducts()
-        {
-            SellItemProducts.Value = CachedSellItemProducts;
-            SellFungibleAssetProducts.Value = CachedSellFungibleAssetProducts;
-            CachedSellItems = GetItems(SellItemProducts.Value);
-        }
-
-        private static List<ItemProductResponseModel> SortedProducts(
-            IReadOnlyCollection<ItemProductResponseModel> products)
-        {
             var agentAddress = States.Instance.AgentState.address;
             var buyProducts = products
                 .Where(product => !product.SellerAgentAddress.Equals(agentAddress))
@@ -200,7 +172,18 @@ namespace Nekoyume.State
                 buyProducts.Remove(model);
             }
 
-            return buyProducts;
+            BuyItemProducts.Value = buyProducts;
+
+            var favProducts = CachedBuyFungibleAssetProducts
+                .Where(product => !product.SellerAgentAddress.Equals(agentAddress))
+                .ToList();
+            BuyFungibleAssetProducts.Value = favProducts;
+        }
+
+        public static void SetSellProducts()
+        {
+            SellItemProducts.Value = CachedSellItemProducts;
+            SellFungibleAssetProducts.Value = CachedSellFungibleAssetProducts;
         }
 
         public static void RemoveBuyProduct(Guid productId)
@@ -248,106 +231,100 @@ namespace Nekoyume.State
             return SellFungibleAssetProducts.Value.FirstOrDefault(x => x.ProductId == productId);
         }
 
-        private static Dictionary<Guid, ItemBase> GetItems(
-            IEnumerable<ItemProductResponseModel> products)
+        public static bool TryGetItemBase(ItemProductResponseModel product, out ItemBase itemBase)
         {
-            var result = new Dictionary<Guid, ItemBase>();
-            foreach (var product in products)
+            var itemRow = Game.Game.instance.TableSheets.ItemSheet[product.ItemId];
+            var id = product.TradableId;
+            var requiredBlockIndex = product.RegisteredBlockIndex + Order.ExpirationInterval;
+            var madeWithMimisbrunnrRecipe = false;
+            ITradableItem tradableItem = null;
+            switch (itemRow.ItemSubType)
             {
-                var itemRow = Game.Game.instance.TableSheets.ItemSheet[product.ItemId];
-                var id = product.TradableId;
-                long requiredBlockIndex = product.RegisteredBlockIndex + Order.ExpirationInterval;
-                bool madeWithMimisbrunnrRecipe = false;
-                ITradableItem tradableItem = null;
-                switch (itemRow.ItemSubType)
-                {
-                    // Consumable
-                    case ItemSubType.Food:
-                        tradableItem = new Consumable((ConsumableItemSheet.Row)itemRow, id,
-                            requiredBlockIndex);
-                        break;
-                    // Equipment
-                    case ItemSubType.Weapon:
-                        tradableItem = new Weapon((EquipmentItemSheet.Row)itemRow, id,
-                            requiredBlockIndex, madeWithMimisbrunnrRecipe);
-                        break;
-                    case ItemSubType.Armor:
-                        tradableItem = new Armor((EquipmentItemSheet.Row)itemRow, id,
-                            requiredBlockIndex, madeWithMimisbrunnrRecipe);
-                        break;
-                    case ItemSubType.Belt:
-                        tradableItem = new Belt((EquipmentItemSheet.Row)itemRow, id,
-                            requiredBlockIndex, madeWithMimisbrunnrRecipe);
-                        break;
-                    case ItemSubType.Necklace:
-                        tradableItem = new Necklace((EquipmentItemSheet.Row)itemRow, id,
-                            requiredBlockIndex, madeWithMimisbrunnrRecipe);
-                        break;
-                    case ItemSubType.Ring:
-                        tradableItem = new Ring((EquipmentItemSheet.Row)itemRow, id,
-                            requiredBlockIndex, madeWithMimisbrunnrRecipe);
-                        break;
-                    case ItemSubType.ApStone:
-                    case ItemSubType.Hourglass:
-                        tradableItem = new TradableMaterial((MaterialItemSheet.Row)itemRow);
-                        break;
-                    case ItemSubType.EarCostume:
-                    case ItemSubType.EyeCostume:
-                    case ItemSubType.FullCostume:
-                    case ItemSubType.HairCostume:
-                    case ItemSubType.TailCostume:
-                    case ItemSubType.Title:
-                        tradableItem = new Costume((CostumeItemSheet.Row)itemRow, id);
-                        break;
-                }
-
-                if (tradableItem is ItemUsable itemUsable)
-                {
-                    foreach (var skillModel in product.SkillModels)
-                    {
-                        var skillRow =
-                            Game.Game.instance.TableSheets.SkillSheet[skillModel.SkillId];
-                        var skill = SkillFactory.Get(skillRow, skillModel.Power, skillModel.Chance);
-                        itemUsable.Skills.Add(skill);
-                    }
-
-                    foreach (var statModel in product.StatModels)
-                    {
-                        if (statModel.Additional)
-                        {
-                            itemUsable.StatsMap.AddStatAdditionalValue(statModel.Type,
-                                statModel.Value);
-                        }
-                        else
-                        {
-                            var current = itemUsable.StatsMap.GetBaseStats(true)
-                                .First(r => r.statType == statModel.Type).baseValue;
-                            itemUsable.StatsMap.AddStatValue(statModel.Type,
-                                statModel.Value - current);
-                        }
-                    }
-                }
-
-                if (tradableItem is Equipment equipment)
-                {
-                    equipment.level = product.Level;
-                }
-
-                result.TryAdd(product.ProductId, (ItemBase)tradableItem);
+                // Consumable
+                case ItemSubType.Food:
+                    tradableItem = new Consumable((ConsumableItemSheet.Row)itemRow, id,
+                        requiredBlockIndex);
+                    break;
+                // Equipment
+                case ItemSubType.Weapon:
+                    tradableItem = new Weapon((EquipmentItemSheet.Row)itemRow, id,
+                        requiredBlockIndex, madeWithMimisbrunnrRecipe);
+                    break;
+                case ItemSubType.Armor:
+                    tradableItem = new Armor((EquipmentItemSheet.Row)itemRow, id,
+                        requiredBlockIndex, madeWithMimisbrunnrRecipe);
+                    break;
+                case ItemSubType.Belt:
+                    tradableItem = new Belt((EquipmentItemSheet.Row)itemRow, id,
+                        requiredBlockIndex, madeWithMimisbrunnrRecipe);
+                    break;
+                case ItemSubType.Necklace:
+                    tradableItem = new Necklace((EquipmentItemSheet.Row)itemRow, id,
+                        requiredBlockIndex, madeWithMimisbrunnrRecipe);
+                    break;
+                case ItemSubType.Ring:
+                    tradableItem = new Ring((EquipmentItemSheet.Row)itemRow, id,
+                        requiredBlockIndex, madeWithMimisbrunnrRecipe);
+                    break;
+                case ItemSubType.ApStone:
+                case ItemSubType.Hourglass:
+                    tradableItem = new TradableMaterial((MaterialItemSheet.Row)itemRow);
+                    break;
+                case ItemSubType.EarCostume:
+                case ItemSubType.EyeCostume:
+                case ItemSubType.FullCostume:
+                case ItemSubType.HairCostume:
+                case ItemSubType.TailCostume:
+                case ItemSubType.Title:
+                    tradableItem = new Costume((CostumeItemSheet.Row)itemRow, id);
+                    break;
             }
 
-            return result;
+            if (tradableItem is ItemUsable itemUsable)
+            {
+                foreach (var skillModel in product.SkillModels)
+                {
+                    var skillRow =
+                        Game.Game.instance.TableSheets.SkillSheet[skillModel.SkillId];
+                    var skill = SkillFactory.Get(skillRow, skillModel.Power, skillModel.Chance);
+                    itemUsable.Skills.Add(skill);
+                }
+
+                foreach (var statModel in product.StatModels)
+                {
+                    if (statModel.Additional)
+                    {
+                        itemUsable.StatsMap.AddStatAdditionalValue(statModel.Type,
+                            statModel.Value);
+                    }
+                    else
+                    {
+                        var current = itemUsable.StatsMap.GetBaseStats(true)
+                            .First(r => r.statType == statModel.Type).baseValue;
+                        itemUsable.StatsMap.AddStatValue(statModel.Type,
+                            statModel.Value - current);
+                    }
+                }
+            }
+
+            if (tradableItem is Equipment equipment)
+            {
+                equipment.level = product.Level;
+            }
+
+            itemBase = (ItemBase)tradableItem;
+            return itemBase is not null;
         }
 
         public static int GetCachedBuyItemCount(MarketOrderType orderType, ItemSubType itemSubType)
         {
-            if (!CachedBuyProducts.ContainsKey(orderType))
+            if (!CachedBuyItemProducts.ContainsKey(orderType))
                 return 0;
 
-            if (!CachedBuyProducts[orderType].ContainsKey(itemSubType))
+            if (!CachedBuyItemProducts[orderType].ContainsKey(itemSubType))
                 return 0;
 
-            return CachedBuyProducts[orderType][itemSubType].Count;
+            return CachedBuyItemProducts[orderType][itemSubType].Count;
         }
     }
 }

@@ -417,5 +417,17 @@ namespace Nekoyume.Helper
 
             return grade;
         }
+
+        public static List<string> GetTickers()
+        {
+            var tickers = new List<string>();
+
+            var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
+            tickers.AddRange(runeSheet.Values.Select(r => r.Ticker).ToList());
+
+            var petSheet = Game.Game.instance.TableSheets.PetSheet;
+            tickers.AddRange(petSheet.Values.Select(r => r.SoulStoneTicker));
+            return tickers;
+        }
     }
 }
