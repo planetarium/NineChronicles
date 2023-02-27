@@ -969,7 +969,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playAtStart: 1
   startDelay: 0
-  duration: 0.5
+  duration: 0.25
   tweenType: 0
   ease: 27
   completeMethod: 
@@ -1891,7 +1891,7 @@ PrefabInstance:
     - target: {fileID: 8832039012577117513, guid: eeeffb220c339d847b17be5d29a0e84d,
         type: 3}
       propertyPath: m_fontSize
-      value: 20
+      value: 19.05
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eeeffb220c339d847b17be5d29a0e84d, type: 3}
@@ -2158,7 +2158,7 @@ PrefabInstance:
     - target: {fileID: 8832039012577117513, guid: eeeffb220c339d847b17be5d29a0e84d,
         type: 3}
       propertyPath: m_fontSize
-      value: 20
+      value: 19.05
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eeeffb220c339d847b17be5d29a0e84d, type: 3}
@@ -2570,7 +2570,7 @@ PrefabInstance:
     - target: {fileID: 8832039012577117513, guid: eeeffb220c339d847b17be5d29a0e84d,
         type: 3}
       propertyPath: m_fontSize
-      value: 20
+      value: 19.05
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eeeffb220c339d847b17be5d29a0e84d, type: 3}
@@ -3199,7 +3199,7 @@ PrefabInstance:
     - target: {fileID: 8832039012577117513, guid: eeeffb220c339d847b17be5d29a0e84d,
         type: 3}
       propertyPath: m_fontSize
-      value: 20
+      value: 19.05
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eeeffb220c339d847b17be5d29a0e84d, type: 3}
