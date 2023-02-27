@@ -22,9 +22,9 @@ jobs:
           - nekoyume
         targetPlatform:
           - Android
-          - Windows
-          - Linux
-          - macOS
+          - StandaloneWindows
+          - StandaloneLinux64
+          - StandaloneOSX
 
     steps:
       - name: Set CRLF

@@ -232,6 +232,7 @@ namespace Editor
 
             targetDirName ??= buildTarget.ToString();
             string locationPathName = Path.Combine(
+                "../",
                 BuildBasePath,
                 targetDirName,
                 buildTarget switch
@@ -241,14 +242,6 @@ namespace Editor
                     _ => PlayerName,
                 }
             );
-
-            if (buildTarget == BuildTarget.Android)
-            {
-                locationPathName = Path.Combine(
-                    "../",
-                    locationPathName
-                );
-            }
 
             var buildPlayerOptions = new BuildPlayerOptions
             {
