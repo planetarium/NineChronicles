@@ -51,6 +51,26 @@ jobs:
     - name: Test
       run: dotnet test --no-restore --verbosity normal --configuration ${{ matrix.configuration }}
 
+  build-for-unity:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.100
+      - name: Enforce netstandard2.1 target with custom patch
+        run: |
+          set -e
+
+          sed -i -E 's|<TargetFramework>.*</TargetFramework>|<TargetFramework>netstandard2.1</TargetFramework>|' Lib9c*/*.csproj Libplanet*/*.csproj
+          sed -i -E 's|<ImplicitUsings>.*</ImplicitUsings>|<ImplicitUsings>disable</ImplicitUsings>|' Lib9c*/*.csproj Libplanet*/*.csproj
+          sed -i -E 's|\[MaybeNullWhen\(false\)] out TValue value|out TValue value|' Lib9c/TableData/Sheet.cs
+          sed -i -E 's|public bool TryGetValue\(TKey key, out TValue value, bool throwException\)|public bool TryGetValue\(TKey key, out TValue? value, bool throwException\)|' Lib9c/TableData/Sheet.cs
+      - name: build
+        run: dotnet build
+
   release:
     if: github.ref_type == 'tag' && startsWith(github.ref_name, 'v')
     runs-on: ubuntu-latest
