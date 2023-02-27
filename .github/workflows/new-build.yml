@@ -35,20 +35,6 @@ jobs:
             git config --global core.autocrlf true
           fi
 
-      - name: Set BuildMethod
-        run: |
-          targetPlatform=${{ matrix.targetPlatform }}
-
-          if [ "$targetPlatform" == "Android" ]; then
-            echo "BUILD_METHOD=BuildAndroid" >> $GITHUB_ENV
-          elif [ "$targetPlatform" == "StandaloneWindows" ]; then
-            echo "BUILD_METHOD=BuildWindows" >> $GITHUB_ENV
-          elif [ "$targetPlatform" == "StandaloneLinux64" ]; then
-            echo "BUILD_METHOD=BuildLinux" >> $GITHUB_ENV
-          elif [ "$targetPlatform" == "StandaloneOSX" ]; then
-            echo "BUILD_METHOD=BuildMacOS" >> $GITHUB_ENV
-          fi
-
       - uses: actions/checkout@v3
         with:
           lfs: true
@@ -66,7 +52,7 @@ jobs:
         with:
           projectPath: ${{ matrix.projectPath }}
           targetPlatform: ${{ matrix.targetPlatform }}
-          buildMethod: 'Editor.Builder.${{ env.BUILD_METHOD }}'
+          buildMethod: 'Editor.Builder.Build${{ matrix.targetPlatform }}'
           androidTargetSdkVersion: AndroidApiLevel28
 
       - uses: actions/upload-artifact@v3

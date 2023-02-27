@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""게임과 론처를 묶어서 새 앱 프로토콜 버전을 서명한 뒤 패키지로 생성한다."""
 import argparse
 import os
 import os.path
@@ -13,7 +12,7 @@ from zipfile import ZIP_DEFLATED
 
 parser = argparse.ArgumentParser(description=__doc__.replace('\n', ' '))
 parser.add_argument('out_dir')
-parser.add_argument('platform', choices={'macOS', 'Windows', 'Linux'})
+parser.add_argument('platform', choices={'StandaloneOSX', 'StandaloneWindows', 'StandaloneLinux64'})
 parser.add_argument('game_dir')
 parser.add_argument('timestamp')
 parser.add_argument(
@@ -44,15 +43,15 @@ def main() -> None:
     if args.platform.lower() == 'macos':
         archive_path = os.path.join(args.out_dir, 'macOS.tar.gz')
         executable_path = os.path.join(
-            temp_dir,
-            '9c.app/Contents/MacOS/9c'
+                temp_dir,
+                '9c.app/Contents/MacOS/9c'
         )
         os.chmod(executable_path, 0o755)
         with tarfile.open(archive_path, 'w:gz') as archive:
-            for arcname in os.listdir(temp_dir):
+                for arcname in os.listdir(temp_dir):
                 name = os.path.join(temp_dir, arcname)
                 archive.add(name, arcname=arcname)
-                logging.info('Added: %s <- %s', arcname, name)
+        logging.info('Added: %s <- %s', arcname, name)
     elif args.platform.lower() == 'linux':
         archive_path = os.path.join(args.out_dir, 'Linux.tar.gz')
         executable_path = os.path.join(
