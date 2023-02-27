@@ -99,10 +99,10 @@ namespace Nekoyume.UI
                 AudioController.PlayClick();
             });
 
-            receiveAllButton.onClick.AddListener(ReadAll);
+            receiveAllButton.onClick.AddListener(ReceiveAll);
         }
 
-        private async void ReadAll()
+        private async void ReceiveAll()
         {
             var mailRewards = new List<MailReward>();
             var avatarAddress = States.Instance.CurrentAvatarState.address;
@@ -130,6 +130,9 @@ namespace Nekoyume.UI
                     case OrderSellerMail:
                     case OrderExpirationMail:
                     case CancelOrderMail:
+                    case ProductBuyerMail:
+                    case ProductSellerMail:
+                    case ProductCancelMail:
                         LocalLayerModifier.RemoveNewMail(avatarAddress, mail.id, true);
                         break;
                     case ItemEnhanceMail:
@@ -148,9 +151,32 @@ namespace Nekoyume.UI
         private static async Task AddRewards(Mail mail, List<MailReward> mailRewards)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-
             switch (mail)
             {
+                case ProductBuyerMail productBuyerMail:
+                    var productId = productBuyerMail.ProductId;
+                    var (_, itemProduct, favProduct) = await Game.Game.instance.MarketServiceClient.GetProductInfo(productId);
+                    if (itemProduct is not null)
+                    {
+                        var item = States.Instance.CurrentAvatarState.inventory.Items
+                            .FirstOrDefault(i => i.item is ITradableItem item &&
+                                                 item.TradableId.Equals(itemProduct.TradableId));
+                        if (item?.item is null)
+                        {
+                            return;
+                        }
+
+                        mailRewards.Add(new MailReward(item.item, (int)itemProduct.Quantity, true));
+                    }
+
+                    if (favProduct is not null)
+                    {
+                        var currency = Currency.Legacy(favProduct.Ticker, 0, null);
+                        var fav = new FungibleAssetValue(currency, (int)favProduct.Quantity, 0);
+                        mailRewards.Add(new MailReward(fav, (int)favProduct.Quantity, true));
+                    }
+                    break;
+
                 case OrderBuyerMail buyerMail:
                     var bOrder = await Util.GetOrder(buyerMail.OrderId);
                     var bItem = await Util.GetItemBaseByTradableId(bOrder.TradableId, bOrder.ExpiredBlockIndex);
