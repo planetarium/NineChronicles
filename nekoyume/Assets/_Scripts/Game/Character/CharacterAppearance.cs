@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -106,6 +107,8 @@ namespace Nekoyume.Game.Character
             _hudContainer = hudContainer;
 
             SpineController.UnequipFullCostume(false);
+            SpineController.UpdateBody(armorId, 0, false);
+            SpineController.UpdateWeapon(weaponId, null);
             UpdateEar(earIndex, false);
             UpdateFace(lensIndex, false);
             UpdateHair(hairIndex, false);
@@ -113,13 +116,11 @@ namespace Nekoyume.Game.Character
             UpdateAcFace(0, false);
             UpdateAcEye(0, false);
             UpdateAcHead(0, false);
-            SpineController.UpdateBody(armorId, 0, false);
-            SpineController.UpdateWeapon(weaponId, null);
             UpdateTarget();
             UpdateHitPoint();
         }
 
-        private void UpdateAvatar(
+        private async void UpdateAvatar(
             Address avatarAddress,
             CharacterAnimator animator,
             HudContainer hudContainer,
@@ -135,7 +136,7 @@ namespace Nekoyume.Game.Character
             _hudContainer = hudContainer;
             Destroy(_cachedCharacterTitle);
 
-            var isDcc = Game.instance.Dcc.IsActive(avatarAddress, out var id, out var isVisible);
+            var isDcc = Dcc.instance.IsVisible(avatarAddress, out var id, out var isVisible);
             if (isDcc && States.Instance.CurrentAvatarState is not null &&
                 avatarAddress == States.Instance.CurrentAvatarState.address)
             {
@@ -144,18 +145,18 @@ namespace Nekoyume.Game.Character
 
             if (isDcc)
             {
-                var parts = GetDccParts(id);
+                var dccParts = await Dcc.instance.GetParts(id);
                 // ignore full costume
                 SpineController.UnequipFullCostume(false);
-                UpdateEar(parts[DccPartsType.ear_tail], true);
-                UpdateFace(parts[DccPartsType.face], true);
-                UpdateHair(parts[DccPartsType.hair], true);
-                UpdateTail(parts[DccPartsType.ear_tail], true);
-                UpdateAcFace(parts[DccPartsType.ac_face], true);
-                UpdateAcEye(parts[DccPartsType.ac_eye], true);
-                UpdateAcHead(parts[DccPartsType.ac_head], true);
-                UpdateArmor(armor, true);
+                UpdateArmor(armor, dccParts[DccPartsType.skin], true);
                 UpdateWeapon(weapon);
+                UpdateEar(dccParts[DccPartsType.ear_tail], true);
+                UpdateFace(dccParts[DccPartsType.face], true);
+                UpdateHair(dccParts[DccPartsType.hair], true);
+                UpdateTail(dccParts[DccPartsType.ear_tail], true);
+                UpdateAcFace(dccParts[DccPartsType.ac_face], true);
+                UpdateAcEye(dccParts[DccPartsType.ac_eye], true);
+                UpdateAcHead(dccParts[DccPartsType.ac_head], true);
 
                 pet.SetPosition(SpineController.GetSkeletonAnimation(), false);
             }
@@ -177,7 +178,7 @@ namespace Nekoyume.Game.Character
                     UpdateAcFace(0, false);
                     UpdateAcEye(0, false);
                     UpdateAcHead(0, false);
-                    UpdateArmor(armor, false);
+                    UpdateArmor(armor, 0, false);
                     UpdateWeapon(weapon);
                 }
                 pet.SetPosition(SpineController.GetSkeletonAnimation(), fullCostume is not null);
@@ -188,26 +189,6 @@ namespace Nekoyume.Game.Character
             {
                 UpdateTitle(title);
             }
-        }
-
-        private Dictionary<DccPartsType, int> GetDccParts(int id)
-        {
-            var dccParts = new Dictionary<DccPartsType, int>();
-            var url = $"{Game.instance.URL.DccMetadata}{id}.json";
-            StartCoroutine(RequestManager.instance.GetJson(url, (json) =>
-            {
-                var result = JsonSerializer.Deserialize<DccMetadata>(json);
-                dccParts.Add(DccPartsType.background, result.traits[0]);
-                dccParts.Add(DccPartsType.skin, result.traits[1]);
-                dccParts.Add(DccPartsType.face, result.traits[2]);
-                dccParts.Add(DccPartsType.ear_tail, result.traits[3]);
-                dccParts.Add(DccPartsType.ac_face, result.traits[4]);
-                dccParts.Add(DccPartsType.hair, result.traits[5]);
-                dccParts.Add(DccPartsType.ac_eye, result.traits[6]);
-                dccParts.Add(DccPartsType.ac_head, result.traits[7]);
-            }));
-
-            return dccParts;
         }
 
         private void UpdateFullCostume(Costume fullCostume)
@@ -232,10 +213,10 @@ namespace Nekoyume.Game.Character
             SpineController.UpdateAcHead(index, isDcc);
         }
 
-        private void UpdateArmor(Armor armor, bool isDcc)
+        private void UpdateArmor(Armor armor, int skinTone, bool isDcc)
         {
             var armorId = armor?.Id ?? GameConfig.DefaultAvatarArmorId;
-            SpineController.UpdateBody(armorId, 0, isDcc);
+            SpineController.UpdateBody(armorId, skinTone, isDcc);
             UpdateTarget();
             UpdateHitPoint();
         }
@@ -252,7 +233,7 @@ namespace Nekoyume.Game.Character
         {
             var sheet = Game.instance.TableSheets.CostumeItemSheet;
             var row = sheet.OrderedList.FirstOrDefault(row => row.ItemSubType == ItemSubType.EarCostume);
-            var id = row.Id + index;
+            var id = isDcc ? index : row.Id + index;
             SpineController.UpdateEar(id, isDcc);
         }
 
@@ -260,7 +241,7 @@ namespace Nekoyume.Game.Character
         {
             var sheet = Game.instance.TableSheets.CostumeItemSheet;
             var row = sheet.OrderedList.FirstOrDefault(row => row.ItemSubType == ItemSubType.EyeCostume);
-            var id = row.Id + index;
+            var id = isDcc ? index : row.Id + index;
             SpineController.UpdateFace(id, isDcc);
         }
 
@@ -268,7 +249,7 @@ namespace Nekoyume.Game.Character
         {
             var sheet = Game.instance.TableSheets.CostumeItemSheet;
             var row = sheet.OrderedList.FirstOrDefault(row => row.ItemSubType == ItemSubType.HairCostume);
-            var id = row.Id + index;
+            var id = isDcc ? index : row.Id + index;
             SpineController.UpdateHair(id, isDcc);
         }
 
@@ -276,7 +257,7 @@ namespace Nekoyume.Game.Character
         {
             var sheet = Game.instance.TableSheets.CostumeItemSheet;
             var row = sheet.OrderedList.FirstOrDefault(row => row.ItemSubType == ItemSubType.TailCostume);
-            var id = row.Id + index;
+            var id = isDcc ? index : row.Id + index;
             SpineController.UpdateTail(id, isDcc);
         }
 

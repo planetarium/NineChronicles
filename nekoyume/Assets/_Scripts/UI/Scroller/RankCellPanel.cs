@@ -1,4 +1,5 @@
 using Libplanet;
+using Nekoyume.Game;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
 using Nekoyume.State;
@@ -83,7 +84,7 @@ namespace Nekoyume.UI.Scroller
                 .Remove(addressStringCount);
 
             UpdateRank(rankingInfo.Rank);
-            if (Game.Game.instance.Dcc.Avatars.TryGetValue(rankingInfo.AvatarAddress, out var dccId))
+            if (Dcc.instance.Avatars.TryGetValue(rankingInfo.AvatarAddress, out var dccId))
             {
                 characterView.SetByDccId(dccId, rankingInfo.AvatarLevel);
             }
@@ -180,7 +181,7 @@ namespace Nekoyume.UI.Scroller
         public void SetEmpty(AvatarState avatarState)
         {
             rankText.text = "-";
-            if (Game.Game.instance.Dcc.Avatars.TryGetValue(avatarState.address.ToHex(), out var dccId))
+            if (Dcc.instance.Avatars.TryGetValue(avatarState.address.ToHex(), out var dccId))
             {
                 characterView.SetByDccId(dccId, avatarState.level);
             }

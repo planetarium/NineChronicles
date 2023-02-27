@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Libplanet;
+using Nekoyume.Game;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -51,7 +52,7 @@ namespace Nekoyume.UI.Module
 
         private void SetProfile(int portraitId, string avatarName, int level, Address address)
         {
-            if (Game.Game.instance.Dcc.Avatars.TryGetValue(address.ToHex(), out var dccId))
+            if (Dcc.instance.Avatars.TryGetValue(address.ToHex(), out var dccId))
             {
                 characterView.SetByDccId(dccId, level);
             }

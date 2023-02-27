@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
@@ -18,7 +19,7 @@ namespace Nekoyume.UI.Module
         public void SetData(List<Equipment> equipments, List<Costume> costumes, int turnLimit)
         {
             var address = States.Instance.CurrentAvatarState.address;
-            if (Game.Game.instance.Dcc.Avatars.TryGetValue(address.ToHex(), out var dccId))
+            if (Dcc.instance.Avatars.TryGetValue(address.ToHex(), out var dccId))
             {
                 characterView.SetByDccId(dccId);
             }

@@ -4,17 +4,59 @@ size: 128,128
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
-ac_eye/03_glasses_05
+aceye/03_glasses_01
   rotate: false
-  xy: 55, 88
-  size: 58, 25
-  orig: 60, 27
-  offset: 1, 1
+  xy: 56, 77
+  size: 53, 20
+  orig: 53, 20
+  offset: 0, 0
   index: -1
-ac_eye/03_glasses_07
+aceye/03_glasses_02
   rotate: false
-  xy: 2, 91
-  size: 51, 22
-  orig: 53, 24
-  offset: 1, 1
+  xy: 2, 60
+  size: 51, 20
+  orig: 51, 20
+  offset: 0, 0
+  index: -1
+aceye/03_glasses_03
+  rotate: false
+  xy: 2, 82
+  size: 52, 15
+  orig: 52, 15
+  offset: 0, 0
+  index: -1
+aceye/03_glasses_04
+  rotate: false
+  xy: 55, 55
+  size: 49, 20
+  orig: 49, 20
+  offset: 0, 0
+  index: -1
+aceye/03_glasses_05
+  rotate: false
+  xy: 2, 33
+  size: 51, 25
+  orig: 51, 25
+  offset: 0, 0
+  index: -1
+aceye/03_glasses_06
+  rotate: false
+  xy: 2, 6
+  size: 52, 24
+  orig: 52, 24
+  offset: 0, 0
+  index: -1
+aceye/03_glasses_07
+  rotate: false
+  xy: 56, 2
+  size: 61, 28
+  orig: 61, 28
+  offset: 0, 0
+  index: -1
+aceye/03_glasses_08
+  rotate: false
+  xy: 55, 32
+  size: 52, 21
+  orig: 52, 21
+  offset: 0, 0
   index: -1

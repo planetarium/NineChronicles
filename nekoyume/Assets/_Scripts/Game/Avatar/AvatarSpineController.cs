@@ -298,6 +298,10 @@ namespace Nekoyume.Game.Avatar
         {
             var isActive = !(isDcc && index == 0);
             var skinName = isDcc ? $"DCC_{index}" : $"{index}";
+            if (index == 1 && isDcc)
+            {
+                skinName = "40200001";
+            }
             UpdateSkin(isActive, index, AvatarPartsType.hair_back, skinName);
         }
 
@@ -305,6 +309,10 @@ namespace Nekoyume.Game.Avatar
         {
             var isActive = !(isDcc && index == 0);
             var skinName = isDcc ? $"DCC_{index}" : $"{index}";
+            if (index == 1 && isDcc)
+            {
+                skinName = "40200001";
+            }
             UpdateSkin(isActive, index, AvatarPartsType.hair_front, skinName);
         }
 
@@ -312,6 +320,10 @@ namespace Nekoyume.Game.Avatar
         {
             var isActive = !(isDcc && index == 0);
             var skinName = isDcc ? $"DCC_{index}" : $"{index}";
+            if (index == 1 && isDcc)
+            {
+                skinName = "40500001";
+            }
             UpdateSkin(isActive, index, AvatarPartsType.tail, skinName);
         }
 
@@ -326,6 +338,10 @@ namespace Nekoyume.Game.Avatar
         {
             var isActive = !(isDcc && index == 0);
             var skinName = isDcc ? $"DCC_{index}" : $"{index}";
+            if (index == 1 && isDcc)
+            {
+                skinName = "40300001";
+            }
             UpdateSkin(isActive, index, AvatarPartsType.ear, skinName);
         }
 

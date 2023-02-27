@@ -64,8 +64,6 @@ namespace Nekoyume.Game
 
         public Analyzer Analyzer { get; private set; }
 
-        public Dcc Dcc { get; private set; }
-
         public Stage Stage => stage;
         public Arena Arena => arena;
         public RaidStage RaidStage => raidStage;
@@ -235,7 +233,7 @@ namespace Nekoyume.Game
             StartCoroutine(RequestManager.instance.GetJson(URL.DccAvatars, (json) =>
             {
                 var responseData = DccAvatars.FromJson(json);
-                Dcc = new Dcc(responseData.Avatars);
+                Dcc.instance.Init(responseData.Avatars);
             }));
 
             Event.OnUpdateAddresses.AsObservable().Subscribe(_ =>

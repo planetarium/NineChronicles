@@ -1,4 +1,5 @@
-﻿using Nekoyume.State;
+﻿using Nekoyume.Game;
+using Nekoyume.State;
 using Nekoyume.UI.Module;
 using UnityEngine;
 using UnityEngine.UI;
@@ -44,7 +45,7 @@ namespace Nekoyume.UI
         public void Show()
         {
             var avatarState = States.Instance.CurrentAvatarState;
-            var isDccActive = Game.Game.instance.Dcc.Avatars
+            var isDccActive = Dcc.instance.Avatars
                 .TryGetValue(avatarState.address.ToHex(), out var dccId);
 
             avatarCharacterView.SetByAvatarState(avatarState);

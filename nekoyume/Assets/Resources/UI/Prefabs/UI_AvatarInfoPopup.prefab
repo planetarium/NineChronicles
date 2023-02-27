@@ -2359,6 +2359,7 @@ MonoBehaviour:
   grindModePanel: {fileID: 2193221098278990777}
   statusObject: {fileID: 9125718473325203290}
   equipmentSlotObject: {fileID: 5738009322488806545}
+  dccImage: {fileID: 1086093165134541130}
   activeSprite: {fileID: 21300000, guid: f3590eae024b8434eb4cbc25d499eef6, type: 3}
   disableSprite: {fileID: 21300000, guid: 42abb5898ce1c954bacb20420fbd0500, type: 3}
   dccSlotDefaultSprite: {fileID: 21300000, guid: b44fbf2f977377243a3464d01aee3a0d,
@@ -8027,6 +8028,36 @@ PrefabInstance:
         type: 3}
       propertyPath: m_PreferredWidth
       value: 80
+      objectReference: {fileID: 0}
+    - target: {fileID: 3373759437270184207, guid: 30ca55af9c4c11f45a533b51c5d72258,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3373759437270184207, guid: 30ca55af9c4c11f45a533b51c5d72258,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3373759437270184207, guid: 30ca55af9c4c11f45a533b51c5d72258,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3373759437270184207, guid: 30ca55af9c4c11f45a533b51c5d72258,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3373759437270184207, guid: 30ca55af9c4c11f45a533b51c5d72258,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3373759437270184207, guid: 30ca55af9c4c11f45a533b51c5d72258,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3638248989160707486, guid: 30ca55af9c4c11f45a533b51c5d72258,
         type: 3}

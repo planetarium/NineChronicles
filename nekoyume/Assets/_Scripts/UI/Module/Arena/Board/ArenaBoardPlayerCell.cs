@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using Nekoyume.Game;
 using Nekoyume.Helper;
 using TMPro;
 using UnityEngine;
@@ -97,7 +98,7 @@ namespace Nekoyume.UI.Module.Arena.Board
         {
             _currentData = itemData;
 
-            if (Game.Game.instance.Dcc.Avatars.TryGetValue(itemData.address, out var dccId))
+            if (Dcc.instance.Avatars.TryGetValue(itemData.address, out var dccId))
             {
                 _characterView.SetByDccId(dccId, _currentData.level);
             }

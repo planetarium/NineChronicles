@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Helper;
 using Nekoyume.UI.Model;
@@ -79,7 +80,7 @@ namespace Nekoyume.UI
                 _gradeObject = Instantiate(prefab, gradeContainer);
             }
 
-            if (Game.Game.instance.Dcc.Avatars.TryGetValue(model.Address, out var dccId))
+            if (Dcc.instance.Avatars.TryGetValue(model.Address, out var dccId))
             {
                 characterView.SetByDccId(dccId, model.Level);
             }

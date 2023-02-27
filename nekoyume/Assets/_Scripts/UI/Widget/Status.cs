@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
@@ -182,7 +183,7 @@ namespace Nekoyume.UI
         )
         {
             // portrait
-            if (Game.Game.instance.Dcc.Avatars.TryGetValue(avatarState.address.ToHex(), out var dccId))
+            if (Dcc.instance.Avatars.TryGetValue(avatarState.address.ToHex(), out var dccId))
             {
                 _activatedDccId = dccId;
                 characterView.SetByDccId(dccId);

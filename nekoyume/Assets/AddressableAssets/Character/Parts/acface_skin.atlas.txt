@@ -1,13 +1,90 @@
 
 acface_skin.png
-size: 64,64
+size: 256,64
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
-ac_face/04_acc_05
+acface/04_acc_01
   rotate: false
-  xy: 2, 20
-  size: 42, 24
-  orig: 44, 26
-  offset: 1, 1
+  xy: 149, 36
+  size: 26, 26
+  orig: 26, 26
+  offset: 0, 0
+  index: -1
+acface/04_acc_02
+  rotate: false
+  xy: 79, 2
+  size: 36, 16
+  orig: 36, 16
+  offset: 0, 0
+  index: -1
+acface/04_acc_03
+  rotate: false
+  xy: 41, 3
+  size: 36, 14
+  orig: 36, 14
+  offset: 0, 0
+  index: -1
+acface/04_acc_04
+  rotate: false
+  xy: 117, 5
+  size: 14, 14
+  orig: 14, 14
+  offset: 0, 0
+  index: -1
+acface/04_acc_05
+  rotate: true
+  xy: 97, 21
+  size: 41, 24
+  orig: 41, 24
+  offset: 0, 0
+  index: -1
+acface/04_acc_06
+  rotate: true
+  xy: 123, 21
+  size: 41, 24
+  orig: 41, 24
+  offset: 0, 0
+  index: -1
+acface/04_acc_07
+  rotate: true
+  xy: 41, 19
+  size: 43, 26
+  orig: 43, 26
+  offset: 0, 0
+  index: -1
+acface/04_acc_08
+  rotate: true
+  xy: 149, 7
+  size: 27, 20
+  orig: 27, 20
+  offset: 0, 0
+  index: -1
+acface/04_acc_09
+  rotate: false
+  xy: 2, 9
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+acface/04_acc_10
+  rotate: false
+  xy: 2, 12
+  size: 1, 2
+  orig: 1, 2
+  offset: 0, 0
+  index: -1
+acface/04_acc_11
+  rotate: true
+  xy: 2, 16
+  size: 46, 37
+  orig: 46, 37
+  offset: 0, 0
+  index: -1
+acface/04_acc_12
+  rotate: false
+  xy: 69, 20
+  size: 26, 42
+  orig: 26, 42
+  offset: 0, 0
   index: -1

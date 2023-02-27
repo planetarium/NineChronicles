@@ -1,13 +1,34 @@
 
 achead_skin.png
-size: 64,64
+size: 128,128
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
-ac_head/01_cat_04
+achead/01_cat_01
   rotate: false
-  xy: 2, 26
-  size: 58, 34
-  orig: 58, 34
+  xy: 44, 70
+  size: 40, 40
+  orig: 41, 40
+  offset: 1, 0
+  index: -1
+achead/01_cat_02
+  rotate: false
+  xy: 2, 2
+  size: 53, 50
+  orig: 53, 50
+  offset: 0, 0
+  index: -1
+achead/01_cat_03
+  rotate: false
+  xy: 2, 54
+  size: 40, 56
+  orig: 40, 56
+  offset: 0, 0
+  index: -1
+achead/01_cat_04
+  rotate: true
+  xy: 57, 13
+  size: 55, 31
+  orig: 55, 31
   offset: 0, 0
   index: -1
