@@ -46,6 +46,8 @@ namespace Nekoyume.UI
             bool ignoreShowAnimation = false)
         {
             Find<HeaderMenuStatic>().Close(true);
+            Find<Status>().Close(true);
+            Find<EventBanner>().Close(true);
             SetStatus(myDigest, myStatus);
             SetStatus(enemyDigest, enemyStatus);
             comboText.comboMax = AttackCountHelper.GetCountMax(myDigest.Level);
