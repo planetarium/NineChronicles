@@ -62,9 +62,17 @@ jobs:
 
       - name: Pack
         run: |
+          targetPlatform=${{ matrix.targetPlatform }}
+
+          if [ "$targetPlatform" == "Android" ]; then
+            tr -d "\r" < .github/bin/pack.sh > .github/bin/pack_trimed.sh
+            rm .github/bin/pack.sh
+            mv .github/bin/pack_trimed.sh .github/bin/pack.sh
+          fi
+
           sudo mv $GITHUB_WORKSPACE/build /tmp/player
           pip3 install wheel
-          sudo .github/bin/pack.sh \
+          sudo bash .github/bin/pack.sh \
           /tmp/packages \
           "${{ matrix.targetPlatform }}" \
           "/tmp/player"
@@ -80,14 +88,6 @@ jobs:
         if: success()
         shell: bash
 
-      - uses: chrnorm/deployment-action@releases/v1
-        if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/rc-') || github.ref == 'refs/heads/previewnet' || github.ref == 'refs/heads/2022q2' }}
-        id: build_artifact
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          description: "Build artifact"
-          environment: build-artifact
-
       - name: Upload Artifacts
         if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/rc-') || github.ref == 'refs/heads/previewnet' || github.ref == 'refs/heads/2022q2' }}
         run: aws s3 cp packages s3://9c-artifacts/${{ github.sha }}/ --recursive
@@ -95,12 +95,3 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
-
-      - if: success()
-        if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/rc-') || github.ref == 'refs/heads/previewnet' || github.ref == 'refs/heads/2022q2' }}
-        uses: chrnorm/deployment-status@releases/v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          target_url: ${{ steps.S3.outputs.object_locations[0] }}
-          state: "success"
-          deployment_id: ${{ steps.build_artifact.outputs.deployment_id }}

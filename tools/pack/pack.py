@@ -9,7 +9,7 @@ from zipfile import ZIP_DEFLATED
 
 parser = argparse.ArgumentParser()
 parser.add_argument('out_dir')
-parser.add_argument('platform', choices={'StandaloneOSX', 'StandaloneWindows', 'StandaloneLinux64'})
+parser.add_argument('platform', choices={'Android', 'StandaloneOSX', 'StandaloneWindows', 'StandaloneLinux64'})
 parser.add_argument('input_dir')
 parser.add_argument(
     '--verbose', '-v',
