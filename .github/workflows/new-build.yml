@@ -21,7 +21,7 @@ jobs:
         projectPath:
           - nekoyume
         targetPlatform:
-          - Android
+        #   - Android
           - StandaloneWindows
           - StandaloneLinux64
           - StandaloneOSX
@@ -66,7 +66,7 @@ jobs:
         with:
           projectPath: ${{ matrix.projectPath }}
           targetPlatform: ${{ matrix.targetPlatform }}
-          buildMethod: 'Editor.Builder.Build${{ matrix.targetPlatform }}'
+          buildMethod: 'Editor.Builder.${{ env.BUILD_METHOD }}'
           androidTargetSdkVersion: AndroidApiLevel28
 
       - uses: actions/upload-artifact@v3
