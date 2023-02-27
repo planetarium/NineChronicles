@@ -1228,9 +1228,9 @@ namespace Nekoyume.BlockChain
                         .First()
                         .Subscribe(_ =>
                         {
-                            var task = UniTask.Run(() =>
+                            var task = UniTask.Run(async () =>
                             {
-                                UpdateCurrentAvatarStateAsync(eval).Forget();
+                                await UpdateCurrentAvatarStateAsync(eval);
                                 UpdateCrystalRandomSkillState(eval);
                                 var avatarState = States.Instance.CurrentAvatarState;
                                 RenderQuest(eval.Action.AvatarAddress,
