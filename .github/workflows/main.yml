@@ -9,6 +9,11 @@ on:
 
 jobs:
   build-and-test:
+    name: "build-and-test (${{ matrix.configuration }})"
+    strategy:
+      matrix:
+        configuration: ["Release", "DevEx"]
+      fail-fast: false
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -42,9 +47,9 @@ jobs:
     - name: Install dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --configuration Release
+      run: dotnet build --no-restore --configuration ${{ matrix.configuration }}
     - name: Test
-      run: dotnet test --no-restore --verbosity normal
+      run: dotnet test --no-restore --verbosity normal --configuration ${{ matrix.configuration }}
 
   release:
     if: github.ref_type == 'tag' && startsWith(github.ref_name, 'v')
