@@ -21,7 +21,7 @@ jobs:
         projectPath:
           - nekoyume
         targetPlatform:
-        #   - Android
+          - Android
           - StandaloneWindows
           - StandaloneLinux64
           - StandaloneOSX
@@ -55,9 +55,52 @@ jobs:
           buildMethod: 'Editor.Builder.Build${{ matrix.targetPlatform }}'
           androidTargetSdkVersion: AndroidApiLevel28
 
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11.0
+
+      - name: Pack
+        run: |
+          sudo mv $GITHUB_WORKSPACE/build /tmp/player
+          pip3 install wheel
+          sudo .github/bin/pack.sh \
+          /tmp/packages \
+          "${{ matrix.targetPlatform }}" \
+          "/tmp/player"
+
       - uses: actions/upload-artifact@v3
         with:
           name: Build-${{ matrix.targetPlatform }}
-          path: build/${{ matrix.targetPlatform }}
+          path: /tmp/packages
           retention-days: 7
           if-no-files-found: error
+
+      - run: sudo mv /tmp/packages ./packages # s3-upload-action이 상대 경로만 지원
+        if: success()
+        shell: bash
+
+      - uses: chrnorm/deployment-action@releases/v1
+        # if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/rc-') || github.ref == 'refs/heads/previewnet' || github.ref == 'refs/heads/2022q2' }}
+        id: build_artifact
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          description: "Build artifact"
+          environment: build-artifact
+
+      - name: Upload Artifacts
+        # if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/rc-') || github.ref == 'refs/heads/previewnet' || github.ref == 'refs/heads/2022q2' }}
+        run: aws s3 cp packages s3://9c-artifacts/${{ github.sha }}/ --recursive
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+
+      - if: success()
+        # if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/rc-') || github.ref == 'refs/heads/previewnet' || github.ref == 'refs/heads/2022q2' }}
+        uses: chrnorm/deployment-status@releases/v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          target_url: ${{ steps.S3.outputs.object_locations[0] }}
+          state: "success"
+          deployment_id: ${{ steps.build_artifact.outputs.deployment_id }}
