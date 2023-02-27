@@ -34,7 +34,7 @@ namespace Nekoyume.EnumType
                 ShopSortFilter.CP => isAscending ? MarketOrderType.cp : MarketOrderType.cp_desc,
                 ShopSortFilter.Price => isAscending ? MarketOrderType.price : MarketOrderType.price_desc,
                 ShopSortFilter.Class => isAscending ? MarketOrderType.grade : MarketOrderType.grade_desc,
-                ShopSortFilter.Crystal => isAscending ? MarketOrderType.cp : MarketOrderType.cp_desc,
+                ShopSortFilter.Crystal => isAscending ? MarketOrderType.crystal_per_price : MarketOrderType.crystal_per_price_desc,
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
             };
         }

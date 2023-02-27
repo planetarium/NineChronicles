@@ -24522,7 +24522,7 @@ PrefabInstance:
     - target: {fileID: 1901653211573564310, guid: 45071a50f74cd1949a4ec57fd8f9d214,
         type: 3}
       propertyPath: l10nKey
-      value: 
+      value: UI_RUNE_STONE
       objectReference: {fileID: 0}
     - target: {fileID: 1901653211573564310, guid: 45071a50f74cd1949a4ec57fd8f9d214,
         type: 3}
@@ -24578,7 +24578,7 @@ PrefabInstance:
     - target: {fileID: 2731226473944183329, guid: 45071a50f74cd1949a4ec57fd8f9d214,
         type: 3}
       propertyPath: m_text
-      value: RuneStone
+      value: UI_RUNE_STONE
       objectReference: {fileID: 0}
     - target: {fileID: 2731226473944183329, guid: 45071a50f74cd1949a4ec57fd8f9d214,
         type: 3}
@@ -24729,12 +24729,12 @@ PrefabInstance:
     - target: {fileID: 4121153352078744567, guid: 45071a50f74cd1949a4ec57fd8f9d214,
         type: 3}
       propertyPath: m_text
-      value: RuneStone
+      value: UI_RUNE_STONE
       objectReference: {fileID: 0}
     - target: {fileID: 4121153352078744567, guid: 45071a50f74cd1949a4ec57fd8f9d214,
         type: 3}
       propertyPath: m_fontSize
-      value: 18
+      value: 16.45
       objectReference: {fileID: 0}
     - target: {fileID: 4121153352078744567, guid: 45071a50f74cd1949a4ec57fd8f9d214,
         type: 3}
@@ -24945,7 +24945,7 @@ PrefabInstance:
     - target: {fileID: 8751284157924376449, guid: 45071a50f74cd1949a4ec57fd8f9d214,
         type: 3}
       propertyPath: l10nKey
-      value: 
+      value: UI_RUNE_STONE
       objectReference: {fileID: 0}
     - target: {fileID: 8751284157924376449, guid: 45071a50f74cd1949a4ec57fd8f9d214,
         type: 3}
@@ -33125,7 +33125,7 @@ PrefabInstance:
     - target: {fileID: 1901653211573564310, guid: 45071a50f74cd1949a4ec57fd8f9d214,
         type: 3}
       propertyPath: l10nKey
-      value: 
+      value: UI_SOUL_STONE
       objectReference: {fileID: 0}
     - target: {fileID: 1901653211573564310, guid: 45071a50f74cd1949a4ec57fd8f9d214,
         type: 3}
@@ -33176,7 +33176,7 @@ PrefabInstance:
     - target: {fileID: 2731226473944183329, guid: 45071a50f74cd1949a4ec57fd8f9d214,
         type: 3}
       propertyPath: m_text
-      value: SoulStone
+      value: UI_SOUL_STONE
       objectReference: {fileID: 0}
     - target: {fileID: 2731226473944183329, guid: 45071a50f74cd1949a4ec57fd8f9d214,
         type: 3}
@@ -33307,12 +33307,12 @@ PrefabInstance:
     - target: {fileID: 4121153352078744567, guid: 45071a50f74cd1949a4ec57fd8f9d214,
         type: 3}
       propertyPath: m_text
-      value: SoulStone
+      value: UI_SOUL_STONE
       objectReference: {fileID: 0}
     - target: {fileID: 4121153352078744567, guid: 45071a50f74cd1949a4ec57fd8f9d214,
         type: 3}
       propertyPath: m_fontSize
-      value: 18
+      value: 16.55
       objectReference: {fileID: 0}
     - target: {fileID: 4121153352078744567, guid: 45071a50f74cd1949a4ec57fd8f9d214,
         type: 3}
@@ -33513,7 +33513,7 @@ PrefabInstance:
     - target: {fileID: 8751284157924376449, guid: 45071a50f74cd1949a4ec57fd8f9d214,
         type: 3}
       propertyPath: l10nKey
-      value: 
+      value: UI_SOUL_STONE
       objectReference: {fileID: 0}
     - target: {fileID: 8751284157924376449, guid: 45071a50f74cd1949a4ec57fd8f9d214,
         type: 3}

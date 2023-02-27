@@ -241,7 +241,9 @@ namespace Nekoyume.UI
                 }
             }
 
+            ReactiveShopState.UpdatePurchaseProductIds(productInfos.Select(x=> x.ProductId).ToList());
             Game.Game.instance.ActionManager.BuyProduct(avatarAddress, productInfos).Subscribe();
+
 
             if (models.Count > 0)
             {
@@ -267,7 +269,6 @@ namespace Nekoyume.UI
                 var count = model.Product?.Quantity ?? model.FungibleAssetProduct.Quantity;
                 var itemName = model.ItemBase?.GetLocalizedName() ?? model.FungibleAssetValue.GetLocalizedName();
                 model.Selected.Value = false;
-                // ReactiveShopState.RemoveBuyProduct(model.Product.ProductId);
 
                 string message;
                 if (count > 1)
@@ -285,7 +286,7 @@ namespace Nekoyume.UI
                     NotificationCell.NotificationType.Information);
             }
 
-            view.ClearSelectedItems();
+            view.OnBuyProductAction();
             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
         }
 

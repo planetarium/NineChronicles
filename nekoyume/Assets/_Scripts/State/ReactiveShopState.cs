@@ -35,6 +35,8 @@ namespace Nekoyume.State
                 { MarketOrderType.price_desc, new Dictionary<ItemSubType, List<ItemProductResponseModel>>() },
                 { MarketOrderType.grade, new Dictionary<ItemSubType, List<ItemProductResponseModel>>() },
                 { MarketOrderType.grade_desc, new Dictionary<ItemSubType, List<ItemProductResponseModel>>() },
+                { MarketOrderType.crystal_per_price, new Dictionary<ItemSubType, List<ItemProductResponseModel>>() },
+                { MarketOrderType.crystal_per_price_desc, new Dictionary<ItemSubType, List<ItemProductResponseModel>>() },
             };
 
         private static readonly List<ItemProductResponseModel> CachedSellItemProducts = new();
@@ -50,9 +52,11 @@ namespace Nekoyume.State
                 { MarketOrderType.price_desc, new Dictionary<ItemSubType, bool>() },
                 { MarketOrderType.grade, new Dictionary<ItemSubType, bool>() },
                 { MarketOrderType.grade_desc, new Dictionary<ItemSubType, bool>() },
+                { MarketOrderType.crystal_per_price, new Dictionary<ItemSubType, bool>() },
+                { MarketOrderType.crystal_per_price_desc, new Dictionary<ItemSubType, bool>() },
             };
 
-        private static List<Guid> RemovedProductIds => new();
+        private static List<Guid> PurchasedProductIds = new();
 
         public static void ClearCache()
         {
@@ -60,7 +64,6 @@ namespace Nekoyume.State
             SellItemProducts.Value = new List<ItemProductResponseModel>();
             BuyFungibleAssetProducts.Value = new List<FungibleAssetValueProductResponseModel>();
             SellFungibleAssetProducts.Value = new List<FungibleAssetValueProductResponseModel>();
-            RemovedProductIds?.Clear();
 
             CachedSellFungibleAssetProducts.Clear();
             CachedBuyFungibleAssetProducts.Clear();
@@ -107,7 +110,6 @@ namespace Nekoyume.State
             var count = GetCachedBuyItemCount(orderType, itemSubType);
             MarketMaxChecker[orderType][itemSubType] = count == totalCount;
 
-            RemovedProductIds.Clear();
             if (!CachedBuyItemProducts[orderType].ContainsKey(itemSubType))
             {
                 CachedBuyItemProducts[orderType].Add(itemSubType, new List<ItemProductResponseModel>());
@@ -160,22 +162,14 @@ namespace Nekoyume.State
 
             var agentAddress = States.Instance.AgentState.address;
             var buyProducts = products
-                .Where(product => !product.SellerAgentAddress.Equals(agentAddress))
+                .Where(x => !x.SellerAgentAddress.Equals(agentAddress))
+                .Where(x => !PurchasedProductIds.Contains(x.ProductId))
                 .ToList();
-
-            var removeList = products
-                .Where(product => RemovedProductIds.Contains(product.ProductId))
-                .ToList();
-
-            foreach (var model in removeList)
-            {
-                buyProducts.Remove(model);
-            }
-
             BuyItemProducts.Value = buyProducts;
 
             var favProducts = CachedBuyFungibleAssetProducts
-                .Where(product => !product.SellerAgentAddress.Equals(agentAddress))
+                .Where(x => !x.SellerAgentAddress.Equals(agentAddress))
+                .Where(x => !PurchasedProductIds.Contains(x.ProductId))
                 .ToList();
             BuyFungibleAssetProducts.Value = favProducts;
         }
@@ -186,19 +180,11 @@ namespace Nekoyume.State
             SellFungibleAssetProducts.Value = CachedSellFungibleAssetProducts;
         }
 
-        public static void RemoveBuyProduct(Guid productId)
+        public static void UpdatePurchaseProductIds(IEnumerable<Guid> ids)
         {
-            var item = BuyItemProducts.Value.FirstOrDefault(x =>
-                x.ProductId.Equals(productId));
-            if (item != null)
+            foreach (var guid in ids.Where(guid => !PurchasedProductIds.Contains(guid)))
             {
-                if (!RemovedProductIds.Contains(productId))
-                {
-                    RemovedProductIds.Add(productId);
-                }
-
-                BuyItemProducts.Value.Remove(item);
-                BuyItemProducts.SetValueAndForceNotify(BuyItemProducts.Value);
+                PurchasedProductIds.Add(guid);
             }
         }
 

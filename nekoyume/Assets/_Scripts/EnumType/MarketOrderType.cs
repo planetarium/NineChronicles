@@ -8,5 +8,7 @@
         price_desc,
         grade,
         grade_desc,
+        crystal_per_price,
+        crystal_per_price_desc,
     }
 }

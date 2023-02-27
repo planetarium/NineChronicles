@@ -296,6 +296,13 @@ namespace Nekoyume
             levelLimitToggle.onValueChanged.AddListener(value => _levelLimit.Value = value);
         }
 
+        public async void OnBuyProductAction()
+        {
+            await CheckItem(_selectedSubTypeFilter.Value);
+            UpdateView();
+            ClearSelectedItems();
+        }
+
         private async void OnUpdateSubTypeFilter(ItemSubTypeFilter filter)
         {
             await CheckItem(filter);
@@ -500,8 +507,7 @@ namespace Nekoyume
         protected override IEnumerable<ShopItem> GetSortedModels(
             Dictionary<ItemSubTypeFilter, List<ShopItem>> items)
         {
-            var models = items[_selectedSubTypeFilter.Value];
-            return models;
+            return items[_selectedSubTypeFilter.Value];
         }
 
         protected override void UpdateView(bool resetPage = true, int page = 0)

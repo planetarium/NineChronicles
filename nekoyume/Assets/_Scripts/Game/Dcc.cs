@@ -44,12 +44,10 @@ namespace Nekoyume.Game
         {
             if (_parts.ContainsKey(dccId))
             {
-                Debug.Log("### [already]");
                 return _parts[dccId];
             }
 
             await StartCoroutine(RequestParts(dccId));
-            Debug.Log("### [new]");
             return _parts[dccId];
         }
 

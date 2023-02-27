@@ -253,6 +253,9 @@ namespace Nekoyume.UI
         private void ShowReRegisterProductPopup(ShopItem model) // 판매 갱신
         {
             var data = SharedModel.ItemCountableAndPricePopup.Value;
+            data.IsSell.Value = false;
+            data.InfoText.Value = string.Empty;
+            data.CountEnabled.Value = true;
 
             if (model.Product is not null)
             {
@@ -302,9 +305,6 @@ namespace Nekoyume.UI
 
             }
 
-            data.IsSell.Value = false;
-            data.InfoText.Value = string.Empty;
-            data.CountEnabled.Value = true;
             data.Item.Value.CountEnabled.Value = false;
         }
 
