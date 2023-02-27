@@ -17,7 +17,9 @@ using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Rune;
 using Nekoyume.UI;
+using UnityEngine;
 using Event = Nekoyume.Game.Event;
 
 namespace Nekoyume.State
@@ -134,7 +136,7 @@ namespace Nekoyume.State
         {
             if (!fav.Currency.Equals(CrystalCalculator.CRYSTAL))
             {
-                Debug.LogWarning($"Currency does not match. {fav.Currency}");
+                Debug.LogWarning($"Currency not matches. {fav.Currency}");
                 return;
             }
 
@@ -142,20 +144,21 @@ namespace Nekoyume.State
             AgentStateSubject.OnNextCrystal(CrystalBalance);
         }
 
-        public async Task InitRuneStoneBalanceAsync()
+        public async Task InitRuneStoneBalance()
         {
             RuneStoneBalance.Clear();
             var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
             var avatarAddress = CurrentAvatarState.address;
+            var runes = new List<FungibleAssetValue>();
             await foreach (var row in runeSheet.Values)
             {
                 var rune = RuneHelper.ToCurrency(row, 0, null);
                 var fungibleAsset = await Game.Game.instance.Agent.GetBalanceAsync(avatarAddress, rune);
-                RuneStoneBalance[row.Id] = fungibleAsset;
+                RuneStoneBalance.Add(row.Id, fungibleAsset);
             }
         }
 
-        public async Task InitRuneStatesAsync()
+        public async Task InitRuneStates()
         {
             var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
             var avatarAddress = CurrentAvatarState.address;
@@ -282,7 +285,7 @@ namespace Nekoyume.State
             }
         }
 
-        private async UniTask InitItemSlotStateAsync(int slotIndex, AvatarState avatarState)
+        private async UniTask InitItemSlotState(int slotIndex, AvatarState avatarState)
         {
             if (ItemSlotStates.ContainsKey(slotIndex))
             {
@@ -508,12 +511,7 @@ namespace Nekoyume.State
                 _avatarStates.Add(index, state);
             }
 
-            if (index == CurrentAvatarKey)
-            {
-                await InitRuneStoneBalanceAsync();
-                await InitRuneStatesAsync();
-            }
-            await InitItemSlotStateAsync(index, state);
+            await InitItemSlotState(index, state);
 
             if (index == CurrentAvatarKey)
             {

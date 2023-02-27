@@ -490,6 +490,8 @@ namespace Nekoyume.BlockChain
             await UpdateAgentStateAsync(eval);
             await UpdateAvatarState(eval, eval.Action.index);
             var avatarState = await States.Instance.SelectAvatarAsync(eval.Action.index);
+            await States.Instance.InitRuneStoneBalance();
+            await States.Instance.InitRuneStates();
             await States.Instance.InitItemSlotStates();
             await States.Instance.InitRuneSlotStates();
 
@@ -1187,6 +1189,7 @@ namespace Nekoyume.BlockChain
             if (eval.Exception is null &&
                 eval.Action.avatarAddress == States.Instance.CurrentAvatarState.address)
             {
+                await States.Instance.InitRuneStoneBalance();
                 LocalLayer.Instance.ClearAvatarModifiers<AvatarDailyRewardReceivedIndexModifier>(
                     eval.Action.avatarAddress);
                 UpdateCurrentAvatarStateAsync(eval).Forget();
@@ -2293,7 +2296,7 @@ namespace Nekoyume.BlockChain
                 Widget.Find<LoadingScreen>().Close();
                 worldBoss.Close();
                 await WorldBossStates.Set(avatarAddress);
-                UpdateCurrentAvatarStateAsync(eval).Forget();
+                await States.Instance.InitRuneStoneBalance();
                 Game.Event.OnRoomEnter.Invoke(true);
                 return;
             }
@@ -2302,10 +2305,7 @@ namespace Nekoyume.BlockChain
             {
                 UpdateAgentStateAsync(eval).Forget();
             }
-            else
-            {
-                UpdateCrystalBalance(eval);
-            }
+            UpdateCrystalBalance(eval);
 
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd =
@@ -2363,6 +2363,8 @@ namespace Nekoyume.BlockChain
                 runeStates);
 
             await WorldBossStates.Set(avatarAddress);
+            await States.Instance.InitRuneStoneBalance();
+            await States.Instance.InitRuneStates();
             var raiderState = WorldBossStates.GetRaiderState(avatarAddress);
             var killRewards = new List<FungibleAssetValue>();
             if (latestBossLevel < raiderState.LatestBossLevel)
@@ -2417,7 +2419,7 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            UpdateCurrentAvatarStateAsync(eval).Forget();
+            await States.Instance.InitRuneStoneBalance();
             UpdateCrystalBalance(eval);
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             WorldBossStates.SetReceivingGradeRewards(avatarAddress, false);
@@ -2433,6 +2435,7 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
+            UpdateCrystalBalance(eval);
             UpdateAgentStateAsync(eval).Forget();
         }
 
