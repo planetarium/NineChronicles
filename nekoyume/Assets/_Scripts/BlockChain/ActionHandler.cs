@@ -36,9 +36,27 @@ namespace Nekoyume.BlockChain
         }
 
         protected static bool ValidateEvaluationForCurrentAvatarState<T>(ActionEvaluation<T> evaluation)
-            where T : ActionBase =>
-            !(States.Instance.CurrentAvatarState is null)
-            && evaluation.OutputStates.UpdatedAddresses.Contains(States.Instance.CurrentAvatarState.address);
+            where T : ActionBase
+        {
+            if (!(States.Instance.CurrentAvatarState is null))
+            {
+                var avatarAddress = States.Instance.CurrentAvatarState.address;
+                var addresses = new List<Address>
+                {
+                    avatarAddress,
+                };
+                string[] keys =
+                {
+                    LegacyInventoryKey,
+                    LegacyWorldInformationKey,
+                    LegacyQuestListKey,
+                };
+                addresses.AddRange(keys.Select(key => avatarAddress.Derive(key)));
+                return addresses.Any(a => evaluation.OutputStates.UpdatedAddresses.Contains(a));
+            }
+
+            return false;
+        }
 
         protected static bool ValidateEvaluationForCurrentAgent<T>(ActionEvaluation<T> evaluation)
             where T : ActionBase
