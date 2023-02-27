@@ -11,15 +11,13 @@ namespace Nekoyume.UI.Module.Pet
         public readonly ReactiveProperty<bool> Empty;
         public readonly ReactiveProperty<bool> EquippedIcon;
         public readonly ReactiveProperty<bool> HasNotification;
-        public readonly ReactiveProperty<bool> Loading;
 
-        public PetSlotViewModel(PetSheet.Row petRow = null)
+        public PetSlotViewModel(PetSheet.Row petRow = null, bool hasNotification = false)
         {
             PetRow = petRow;
             Empty = new ReactiveProperty<bool>(petRow is null);
             EquippedIcon = new ReactiveProperty<bool>(false);
-            HasNotification = new ReactiveProperty<bool>(false);
-            Loading = new ReactiveProperty<bool>(false);
+            HasNotification = new ReactiveProperty<bool>(hasNotification);
         }
     }
 }

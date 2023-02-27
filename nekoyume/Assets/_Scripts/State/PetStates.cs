@@ -36,11 +36,12 @@ namespace Nekoyume.State
             PetStatesSubject.OnNext(this);
         }
 
-        public void LockPetTemporarily(int petID)
+        public void LockPetTemporarily(int? petId)
         {
-            if (!_lockedPets.Contains(petID))
+            if (petId.HasValue &&
+                !_lockedPets.Contains(petId.Value))
             {
-                _lockedPets.Add(petID);
+                _lockedPets.Add(petId.Value);
             }
         }
 

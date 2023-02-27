@@ -1,6 +1,11 @@
 using Nekoyume.Game;
+using Nekoyume.Helper;
+using Nekoyume.L10n;
+using Nekoyume.Model.State;
 using Nekoyume.State;
+using Nekoyume.TableData.Pet;
 using Nekoyume.UI.Tween;
+using RocksDbSharp;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -13,6 +18,17 @@ namespace Nekoyume.UI.Module
 {
     public class PetInventory : MonoBehaviour
     {
+        public class PetDescriptionData
+        {
+            public bool Empty;
+            public int PetId;
+            public int Level;
+            public int CombinationSlotIndex;
+            public bool Equipped;
+            public bool HasState;
+            public PetOptionSheet.Row.PetOptionInfo OptionInfo;
+        }
+
         [SerializeField]
         private Transform descriptionViewParent;
 
@@ -33,13 +49,13 @@ namespace Nekoyume.UI.Module
             _disposableOnDisabled = null;
         }
 
-        public void Initialize(bool addEmptyObject = false)
+        public void Initialize(bool lockPetOnSelected, bool addEmptyObject = false)
         {
             var petSheet = TableSheets.Instance.PetSheet;
             foreach (var row in petSheet)
             {
                 var view = Instantiate(descriptionViewPrefab, descriptionViewParent);
-                view.Initialize(row, OnSelectedSubject.OnNext);
+                view.Initialize(row, OnSelectedSubject.OnNext, lockPetOnSelected);
                 _views[row.Id] = view;
             }
 
@@ -85,21 +101,74 @@ namespace Nekoyume.UI.Module
 
         private void UpdateView(PetStates petStates)
         {
-            foreach (var (id, view) in _views)
-            {
-                if (id == default)
-                {
-                    continue;
-                }
+            var viewDatas = _views.Select(x => (view: x.Value, viewData: GetViewData(x.Key)));
+            var views = viewDatas
+                .OrderByDescending(x => x.viewData.HasState)
+                .ThenByDescending(x => x.viewData.Empty)
+                .ThenByDescending(x => x.viewData.Equipped)
+                .ThenBy(x => x.viewData.CombinationSlotIndex)
+                .ThenByDescending(x => x.view.Grade)
+                .ThenByDescending(x => x.viewData.Level)
+                .ThenBy(x => x.viewData.PetId);
 
-                view.SetData(id);
+            foreach (var (view, viewData) in views)
+            {
+                view.SetData(viewData);
+                view.transform.SetAsLastSibling();
+            }
+        }
+
+        private PetDescriptionData GetViewData(int petId)
+        {
+            var viewData = new PetDescriptionData
+            {
+                PetId = petId,
+                CombinationSlotIndex = int.MaxValue,
+            };
+            var tableSheets = TableSheets.Instance;
+            var petLevel = 1;
+
+            if (States.Instance.PetStates.TryGetPetState(petId, out var petState))
+            {
+                petLevel = petState.Level;
+                viewData.HasState = true;
+            }
+            else
+            {
+                viewData.HasState = false;
+            }
+            viewData.Level = petLevel;
+
+            if (!tableSheets.PetOptionSheet.TryGetValue(petId, out var optionRow))
+            {
+                viewData.HasState = false;
+                viewData.Empty = true;
+                return viewData;
             }
 
-            if (_views.ContainsKey(default))
+            if (!optionRow.LevelOptionMap.TryGetValue(petLevel, out var optionInfo))
             {
-                var petCount = _views.Values.Count(x => x.IsAvailable);
-                _views[default].transform.SetSiblingIndex(petCount + 1);
+                viewData.HasState = false;
+                viewData.Empty = true;
+                return viewData;
             }
+            viewData.OptionInfo = optionInfo;
+
+            var equipped = viewData.HasState &&
+                (States.Instance.PetStates.IsLocked(petId) ||
+                petState.UnlockedBlockIndex > Game.Game.instance.Agent.BlockIndex);
+            viewData.Equipped = equipped;
+
+            if (equipped)
+            {
+                var combinationState = States.Instance.GetCombinationSlotState();
+                var equippedSlot = combinationState.FirstOrDefault(x => x.Value.PetId == petId);
+                viewData.CombinationSlotIndex =
+                    equippedSlot.Equals(default(KeyValuePair<int, CombinationSlotState>)) ?
+                    int.MaxValue : equippedSlot.Key;    
+            }
+
+            return viewData;
         }
     }
 }

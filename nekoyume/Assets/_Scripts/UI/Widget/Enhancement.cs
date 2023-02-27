@@ -111,7 +111,7 @@ namespace Nekoyume.UI
             base.Initialize();
 
             upgradeButton.OnSubmitSubject
-                .Subscribe(_ => Find<PetSelectionPopup>().Show(Action))
+                .Subscribe(_ => OnSubmit())
                 .AddTo(gameObject);
 
             _costSheet = Game.Game.instance.TableSheets.EnhancementCostSheetV2;
@@ -160,7 +160,7 @@ namespace Nekoyume.UI
                     NotificationCell.NotificationType.Alert));
         }
 
-        private void Action(int? petId)
+        private void OnSubmit()
         {
             var (baseItem, materialItem) = enhancementInventory.GetSelectedModels();
             if (!IsInteractableButton(baseItem, materialItem))
@@ -178,6 +178,14 @@ namespace Nekoyume.UI
                 return;
             }
 
+            Find<PetSelectionPopup>().Show(petId => EnhancementAction(
+                baseItem,
+                materialItem,
+                petId));
+        }
+
+        private void EnhancementAction(Equipment baseItem, Equipment materialItem, int? petId)
+        {
             var slots = Find<CombinationSlotsPopup>();
             if (!slots.TryGetEmptyCombinationSlot(out var slotIndex))
             {
