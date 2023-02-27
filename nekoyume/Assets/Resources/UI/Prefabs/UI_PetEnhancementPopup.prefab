@@ -6470,7 +6470,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 300}
+  m_AnchoredPosition: {x: 0, y: 266}
   m_SizeDelta: {x: 80, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5282053994017932014
@@ -6501,7 +6501,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  skeletonDataAsset: {fileID: 11400000, guid: 660dd70a92a95e24584f327199ec7e75, type: 2}
+  skeletonDataAsset: {fileID: 11400000, guid: e7775681158500242a8ca0f59f589f8f, type: 2}
   initialSkinName: 
   initialFlipX: 1
   initialFlipY: 0
