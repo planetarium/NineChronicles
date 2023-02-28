@@ -1223,21 +1223,7 @@ namespace Nekoyume.BlockChain
             {
                 foreach (var info in productInfos)
                 {
-                    var buyerAvatarStateValue = eval.OutputStates.GetState(eval.Action.AvatarAddress);
-                    if (buyerAvatarStateValue is null)
-                    {
-                        Debug.LogError("buyerAvatarStateValue is null.");
-                        return;
-                    }
-
-                    const string nameWithHashFormat =
-                        "{0} <size=80%><color=#A68F7E>#{1}</color></size>";
-                    var buyerNameWithHash = string.Format(
-                        nameWithHashFormat,
-                        ((Text)((Dictionary)buyerAvatarStateValue)["name"]).Value,
-                        eval.Action.AvatarAddress.ToHex().Substring(0, 4)
-                    );
-
+                    var buyerNameWithHash = $"#{eval.Action.AvatarAddress.ToHex()[..4]}";
                     var (itemName, itemProduct, favProduct) = await Game.Game.instance.MarketServiceClient.GetProductInfo(info.ProductId);
                     var count = 0;
                     if (itemProduct is not null)
