@@ -56,6 +56,7 @@ namespace Nekoyume.UI.Module
             if (_request is not null)
             {
                 StopCoroutine(_request);
+                _request = null;
             }
         }
     }
