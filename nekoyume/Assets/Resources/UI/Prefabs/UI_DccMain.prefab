@@ -1024,6 +1024,7 @@ GameObject:
   - component: {fileID: 4867556935589954892}
   - component: {fileID: 2726461851139129850}
   - component: {fileID: 6872615360005768066}
+  - component: {fileID: 3621052370586231043}
   m_Layer: 5
   m_Name: Button_DccCollection
   m_TagString: Untagged
@@ -1136,6 +1137,21 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &3621052370586231043
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4024749242782649160}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95f3211e6d854d21b0f28cbca6567c86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 3506082297947799364}
+  tweenDuration: 0.3
+  targetScale: 1.05
 --- !u!1 &4213458025837331132
 GameObject:
   m_ObjectHideFlags: 0
@@ -1225,6 +1241,7 @@ GameObject:
   - component: {fileID: 2674962434267271633}
   - component: {fileID: 8455284449113610684}
   - component: {fileID: 4645357471669922436}
+  - component: {fileID: 8575888233686408927}
   m_Layer: 5
   m_Name: Button_DccHompage
   m_TagString: Untagged
@@ -1338,6 +1355,21 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &8575888233686408927
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4714524216439060255}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95f3211e6d854d21b0f28cbca6567c86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 200848358277904005}
+  tweenDuration: 0.3
+  targetScale: 1.05
 --- !u!1 &4759487331714025718
 GameObject:
   m_ObjectHideFlags: 0
