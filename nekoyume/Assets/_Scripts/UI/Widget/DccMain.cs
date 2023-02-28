@@ -72,7 +72,7 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.CurrencyOnly);
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Mileage);
             base.Show(ignoreShowAnimation);
         }
     }

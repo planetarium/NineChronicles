@@ -12,13 +12,14 @@ namespace Nekoyume.Helper
 {
     public class Url
     {
-        private  string dccAvatars;
-        private  string dccMetadata;
-        private  string dccConnect;
-        public  bool Empty { get; private set; } = true;
+        private string dccAvatars;
+        private string dccMetadata;
+        private string dccConnect;
+        private string dccMileageAPI;
+        public bool Empty { get; private set; } = true;
 
         [Option("dcc-avatars", Required = true, HelpText = "dcc avatar list")]
-        public  string DccAvatars
+        public string DccAvatars
         {
             get => dccAvatars;
             set
@@ -29,7 +30,7 @@ namespace Nekoyume.Helper
         }
 
         [Option("dcc-metadata", Required = true, HelpText = "dcc metadata")]
-        public  string DccMetadata
+        public string DccMetadata
         {
             get => dccMetadata;
             set
@@ -40,12 +41,23 @@ namespace Nekoyume.Helper
         }
 
         [Option("dcc-metadata", Required = true, HelpText = "dcc connect")]
-        public  string DccConnect
+        public string DccConnect
         {
             get => dccConnect;
             set
             {
                 dccConnect = value;
+                Empty = false;
+            }
+        }
+
+        [Option("dcc-open-api", Required = true, HelpText = "dcc open api")]
+        public string DccMileageAPI
+        {
+            get => dccMileageAPI;
+            set
+            {
+                dccMileageAPI = value;
                 Empty = false;
             }
         }
