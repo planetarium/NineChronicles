@@ -57,6 +57,15 @@ namespace Nekoyume.BlockChain
             where T : ActionBase
         {
             var agentAddress = States.Instance.AgentState.address;
+            if (!evaluation.Signer.Equals(agentAddress) ||
+                !evaluation.OutputStates.UpdatedFungibleAssets.TryGetValue(
+                    evaluation.Signer,
+                    out var currencies) ||
+                !currencies.Contains(GoldCurrency))
+            {
+                return null;
+            }
+
             return evaluation.OutputStates.GetGoldBalanceState(agentAddress, GoldCurrency);
         }
 
