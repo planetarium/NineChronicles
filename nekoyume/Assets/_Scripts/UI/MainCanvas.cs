@@ -334,6 +334,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<BuyItemInformationPopup>());
             yield return null;
+            secondWidgets.Add(Widget.Create<BuyFungibleAssetInformationPopup>());
+            yield return null;
             secondWidgets.Add(Widget.Create<DialogPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<CodeRewardPopup>());

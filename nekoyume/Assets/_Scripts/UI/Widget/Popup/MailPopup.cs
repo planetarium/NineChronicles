@@ -485,7 +485,7 @@ namespace Nekoyume.UI
             {
                 var currency = Currency.Legacy(favProduct.Ticker, 0, null);
                 var fav = new FungibleAssetValue(currency, (int)favProduct.Quantity, 0);
-                Find<FungibleAssetTooltip>().Show(
+                Find<BuyFungibleAssetInformationPopup>().Show(
                     fav,
                     () => LocalLayerModifier.RemoveNewMail(avatarAddress, productBuyerMail.id, true));
             }

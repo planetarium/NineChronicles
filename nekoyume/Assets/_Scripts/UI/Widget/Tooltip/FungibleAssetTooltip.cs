@@ -40,9 +40,6 @@ namespace Nekoyume.UI
         private Button registerButton;
 
         [SerializeField]
-        private Button confirmButton;
-
-        [SerializeField]
         private Scrollbar scrollbar;
 
         [SerializeField]
@@ -78,9 +75,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private ItemViewDataScriptableObject itemViewDataScriptableObject;
 
-        [SerializeField]
-        private GameObject deco;
-
         private System.Action _onClose;
         private System.Action _onRegister;
         private bool _isPointerOnScrollArea;
@@ -96,11 +90,6 @@ namespace Nekoyume.UI
                 _onRegister?.Invoke();
                 Close(true);
             });
-
-            confirmButton.onClick.AddListener(() =>
-            {
-                Close(true);
-            });
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -112,25 +101,9 @@ namespace Nekoyume.UI
         }
 
         public virtual void Show(
-            FungibleAssetValue fav,
-            System.Action onClose)
-        {
-            deco.gameObject.SetActive(true);
-            confirmButton.gameObject.SetActive(true);
-            registerButton.gameObject.SetActive(false);
-            sell.gameObject.SetActive(false);
-            buy.gameObject.SetActive(false);
-            UpdateInformation(fav, onClose);
-            base.Show();
-            StartCoroutine(CoUpdate(panel.gameObject));
-        }
-
-        public virtual void Show(
             InventoryItem item,
             System.Action onClose)
         {
-            deco.gameObject.SetActive(false);
-            confirmButton.gameObject.SetActive(false);
             registerButton.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
             buy.gameObject.SetActive(false);
@@ -145,8 +118,6 @@ namespace Nekoyume.UI
             System.Action onBuy,
             System.Action onClose)
         {
-            deco.gameObject.SetActive(false);
-            confirmButton.gameObject.SetActive(false);
             registerButton.gameObject.SetActive(false);
             buy.gameObject.SetActive(true);
             sell.gameObject.SetActive(false);
@@ -171,8 +142,6 @@ namespace Nekoyume.UI
             System.Action onSellCancellation,
             System.Action onClose)
         {
-            deco.gameObject.SetActive(false);
-            confirmButton.gameObject.SetActive(false);
             registerButton.gameObject.SetActive(false);
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(true);
@@ -197,8 +166,6 @@ namespace Nekoyume.UI
             System.Action onRegister,
             System.Action onClose)
         {
-            deco.gameObject.SetActive(false);
-            confirmButton.gameObject.SetActive(false);
             registerButton.gameObject.SetActive(true);
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
