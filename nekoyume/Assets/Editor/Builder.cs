@@ -270,6 +270,14 @@ namespace Editor
                 case BuildResult.Succeeded:
                     Debug.Log("Build succeeded: " + summary.totalSize + " bytes");
                     UpdateDefines(false);
+
+                    // Copy readme
+                    FileUtil.CopyFileOrDirectory(
+                        Path.Combine("../", "README.md"),
+                        Path.Combine("../", BuildBasePath, targetDirName, "README.md"));
+                    FileUtil.CopyFileOrDirectory(
+                        Path.Combine("../", "OSS Notice.md"),
+                        Path.Combine("../", BuildBasePath, targetDirName, "OSS Notice.md"));
                     break;
                 case BuildResult.Failed:
                     Debug.LogError("Build failed");
