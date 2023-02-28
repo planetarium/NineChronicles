@@ -4091,6 +4091,7 @@ MonoBehaviour:
   btnMimisbrunnr: {fileID: 4293668157290161451}
   btnStaking: {fileID: 8428533037692852144}
   btnWorldBoss: {fileID: 7762838806554388014}
+  btnDcc: {fileID: 3151286348115748959}
   speechBubbles:
   - {fileID: 5726702647442793415}
   - {fileID: 8996571131477431847}
@@ -7954,8 +7955,30 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4413401244271292270, guid: 09b93ce70a9aa954abba7ecf30fa3cbf,
+        type: 3}
+      propertyPath: speechBubble
+      value: 
+      objectReference: {fileID: 5726702647442793415}
+    - target: {fileID: 4413401244271292270, guid: 09b93ce70a9aa954abba7ecf30fa3cbf,
+        type: 3}
+      propertyPath: localizationKey
+      value: UI_DCC
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 09b93ce70a9aa954abba7ecf30fa3cbf, type: 3}
+--- !u!114 &3151286348115748959 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4413401244271292270, guid: 09b93ce70a9aa954abba7ecf30fa3cbf,
+    type: 3}
+  m_PrefabInstance: {fileID: 1622442865541285681}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0252058048a642b4bcfcd2a9bb1872f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &3777769775567828212 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2515619557571949509, guid: 09b93ce70a9aa954abba7ecf30fa3cbf,
