@@ -31,23 +31,23 @@ namespace Editor
         public static void BuildAll()
         {
 #if UNITY_STANDALONE_OSX
-            BuildMacOS();
+            BuildStandaloneOSX();
             // BuildMacOSArm64();
 #endif
-            BuildWindows();
-            BuildLinux();
+            BuildStandaloneWindows();
+            BuildStandaloneLinux64();
         }
 
 #if UNITY_STANDALONE_OSX
         [MenuItem("Build/Standalone/macOS (Intel)")]
-        public static void BuildMacOS()
+        public static void BuildStandaloneOSX()
         {
             Debug.Log("Build macOS (Intel)");
             var originalArchitecture = UserBuildSettings.architecture;
             try
             {
                 UserBuildSettings.architecture = MacOSArchitecture.x64;
-                Build(BuildTarget.StandaloneOSX, targetDirName: "macOS");
+                Build(BuildTarget.StandaloneOSX, targetDirName: "StandaloneOSX");
             }
             finally
             {
@@ -76,17 +76,17 @@ namespace Editor
 #endif
 
         [MenuItem("Build/Standalone/Windows")]
-        public static void BuildWindows()
+        public static void BuildStandaloneWindows()
         {
             Debug.Log("Build Windows");
-            Build(BuildTarget.StandaloneWindows64, targetDirName: "Windows");
+            Build(BuildTarget.StandaloneWindows64, targetDirName: "StandaloneWindows");
         }
 
         [MenuItem("Build/Standalone/Linux")]
-        public static void BuildLinux()
+        public static void BuildStandaloneLinux64()
         {
             Debug.Log("Build Linux");
-            Build(BuildTarget.StandaloneLinux64, targetDirName: "Linux");
+            Build(BuildTarget.StandaloneLinux64, targetDirName: "StandaloneLinux64");
         }
 
         [MenuItem("Build/Standalone/macOS Headless")]
@@ -232,6 +232,7 @@ namespace Editor
 
             targetDirName ??= buildTarget.ToString();
             string locationPathName = Path.Combine(
+                "../",
                 BuildBasePath,
                 targetDirName,
                 buildTarget switch
@@ -241,14 +242,6 @@ namespace Editor
                     _ => PlayerName,
                 }
             );
-
-            if (buildTarget == BuildTarget.Android)
-            {
-                locationPathName = Path.Combine(
-                    "../",
-                    locationPathName
-                );
-            }
 
             var buildPlayerOptions = new BuildPlayerOptions
             {
