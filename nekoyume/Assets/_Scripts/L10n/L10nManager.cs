@@ -174,31 +174,85 @@ namespace Nekoyume.L10n
         }
 
         #endregion
+        /// <summary>
+        /// Get records manually using getField() with names without using Convert CSV rows into class objects that not support in IL2CPP.
+        /// </summary>
+        /// <param name="csvReader"></param>
+        /// <returns></returns>
+        public static List<L10nCsvModel> GetL10nCsvModelRecords(CsvReader csvReader)
+        {
+            var records = new List<L10nCsvModel>();
+            csvReader.Read();
+            csvReader.ReadHeader();
+            while (csvReader.Read())
+            {
+                var record = new L10nCsvModel
+                {
+                    Key = csvReader.GetField<string>("Key"),
+                    English = csvReader.GetField<string>("English"),
+                    Korean = csvReader.GetField<string>("Korean"),
+                    PortugueseBrazil = csvReader.GetField<string>("PortugueseBrazil"),
+                    Portuguese = csvReader.GetField<string>("Portuguese"),
+                    Japanese = csvReader.GetField<string>("Japanese"),
+                    German = csvReader.GetField<string>("German"),
+                    Spanish = csvReader.GetField<string>("Spanish"),
+                    Thai = csvReader.GetField<string>("Thai"),
+                    Polish = csvReader.GetField<string>("Polish"),
+                    Lithuanian = csvReader.GetField<string>("Lithuanian"),
+                    Dutch = csvReader.GetField<string>("Dutch"),
+                    Indonesian = csvReader.GetField<string>("Indonesian"),
+                    French = csvReader.GetField<string>("French"),
+                    Russian = csvReader.GetField<string>("Russian"),
+                    Cambodian = csvReader.GetField<string>("Cambodian"),
+                    Urdu = csvReader.GetField<string>("Urdu"),
+                    ChineseSimplified = csvReader.GetField<string>("ChineseSimplified"),
+                    Hungarian = csvReader.GetField<string>("Hungarian")
+                };
+                records.Add(record);
+            }
+            return records;
+        }
 
         public static IReadOnlyDictionary<string, string> GetDictionary(LanguageType languageType)
         {
-            if (!Directory.Exists(CsvFilesRootDirectoryPath))
+#if UNITY_ANDROID
             {
-                throw new DirectoryNotFoundException(CsvFilesRootDirectoryPath);
-            }
-
-            var dictionary = new Dictionary<string, string>();
-            var csvFileInfos = new DirectoryInfo(CsvFilesRootDirectoryPath).GetFiles("*.csv");
-            foreach (var csvFileInfo in csvFileInfos)
-            {
-                using (var streamReader = new StreamReader(csvFileInfo.FullName))
-                using (var csvReader = new CsvReader(streamReader, CultureInfo.InvariantCulture))
+                WWW directory = new WWW(CsvFilesRootDirectoryPath + "/DirectoryForAndroid.txt");
+                while (!directory.isDone)
                 {
+                    // wait for load
+                }
+
+                String[] fileNames = directory.text.Split("\r\n");
+
+                Dictionary<string, string> dictionary = new Dictionary<string, string>();
+                foreach (String fileName in fileNames)
+                {
+                    String fullName = CsvFilesRootDirectoryPath + "/" + fileName;
+                    WWW csvFile = new WWW(fullName);
+                    while (!csvFile.isDone)
+                    {
+                        // wait for load
+                    }
+
+                    StreamReader streamReader =
+                        new StreamReader(new MemoryStream(csvFile.bytes), System.Text.Encoding.Default);
+                    CsvReader csvReader = new CsvReader((TextReader)streamReader, CultureInfo.InvariantCulture);
+
                     csvReader.Configuration.PrepareHeaderForMatch =
                         (header, index) => header.ToLower();
+#if ENABLE_IL2CPP
+                    var records = GetL10nCsvModelRecords(csvReader);
+#else
                     var records = csvReader.GetRecords<L10nCsvModel>();
+#endif
                     var recordsIndex = 0;
                     try
                     {
                         foreach (var record in records)
                         {
 #if TEST_LOG
-                        Debug.Log($"{csvFileInfo.Name}: {recordsIndex}");
+                        Debug.Log($"{fileName}: {recordsIndex}");
 #endif
                             var key = record.Key;
                             if (string.IsNullOrEmpty(key))
@@ -207,7 +261,7 @@ namespace Nekoyume.L10n
                                 continue;
                             }
 
-                            var value = (string) typeof(L10nCsvModel)
+                            var value = (string)typeof(L10nCsvModel)
                                 .GetProperty(languageType.ToString())?
                                 .GetValue(record);
 
@@ -219,7 +273,7 @@ namespace Nekoyume.L10n
                             if (dictionary.ContainsKey(key))
                             {
                                 throw new L10nAlreadyContainsKeyException(
-                                    $"key: {key}, recordsIndex: {recordsIndex}, csvFileInfo: {csvFileInfo.FullName}");
+                                    $"key: {key}, recordsIndex: {recordsIndex}, csvFileInfo: {fullName}");
                             }
 
                             dictionary.Add(key, value);
@@ -228,15 +282,76 @@ namespace Nekoyume.L10n
                     }
                     catch (CsvHelper.MissingFieldException e)
                     {
-                        Debug.LogWarning($"`{csvFileInfo.Name}` file has empty field.\n{e}");
+                        Debug.LogWarning($"`{fileName}` file has empty field.\n{e}");
                     }
                 }
-            }
 
-            return dictionary;
+                return dictionary;
+            }
+#else
+            {
+                if (!Directory.Exists(CsvFilesRootDirectoryPath))
+                {
+                    throw new DirectoryNotFoundException(CsvFilesRootDirectoryPath);
+                }
+
+                var dictionary = new Dictionary<string, string>();
+                var csvFileInfos = new DirectoryInfo(CsvFilesRootDirectoryPath).GetFiles("*.csv");
+                foreach (var csvFileInfo in csvFileInfos)
+                {
+                    using (var streamReader = new StreamReader(csvFileInfo.FullName))
+                    using (var csvReader = new CsvReader(streamReader, CultureInfo.InvariantCulture))
+                    {
+                        csvReader.Configuration.PrepareHeaderForMatch =
+                            (header, index) => header.ToLower();
+                        var records = csvReader.GetRecords<L10nCsvModel>();
+                        var recordsIndex = 0;
+                        try
+                        {
+                            foreach (var record in records)
+                            {
+#if TEST_LOG
+                        Debug.Log($"{csvFileInfo.Name}: {recordsIndex}");
+#endif
+                                var key = record.Key;
+                                if (string.IsNullOrEmpty(key))
+                                {
+                                    recordsIndex++;
+                                    continue;
+                                }
+
+                                var value = (string)typeof(L10nCsvModel)
+                                    .GetProperty(languageType.ToString())?
+                                    .GetValue(record);
+
+                                if (string.IsNullOrEmpty(value))
+                                {
+                                    value = record.English;
+                                }
+
+                                if (dictionary.ContainsKey(key))
+                                {
+                                    throw new L10nAlreadyContainsKeyException(
+                                        $"key: {key}, recordsIndex: {recordsIndex}, csvFileInfo: {csvFileInfo.FullName}");
+                                }
+
+                                dictionary.Add(key, value);
+                                recordsIndex++;
+                            }
+                        }
+                        catch (CsvHelper.MissingFieldException e)
+                        {
+                            Debug.LogWarning($"`{csvFileInfo.Name}` file has empty field.\n{e}");
+                        }
+                    }
+                }
+
+                return dictionary;
+            }
+#endif
         }
 
-        #region Localize
+#region Localize
 
         public static string Localize(string key)
         {
