@@ -39,11 +39,15 @@ namespace Nekoyume.UI.Module
                 var url = $"{Game.Game.instance.URL.DccMileageAPI}{States.Instance.AgentState.address}";
                 _request = StartCoroutine(RequestManager.instance.GetJson(url, (json) =>
                 {
-                    var mileage = JObject.Parse(json)["mileage"]?.ToObject<int>() ?? 0;
+                    var mileage = (int)(JObject.Parse(json)["mileage"]?.ToObject<decimal>() ?? 0);
                     amountText.text = mileage.ToCurrencyNotation();
                     loadingObject.SetActive(false);
                     amountText.gameObject.SetActive(true);
                 }));
+            }
+            else
+            {
+                gameObject.SetActive(false);
             }
         }
 

@@ -338,6 +338,7 @@ namespace Nekoyume.UI.Module
             bool isMileageActive = false)
         {
             ncg.gameObject.SetActive(isNcgActive);
+            crystal.gameObject.SetActive(isNcgActive && !isMileageActive);
             actionPoint.gameObject.SetActive(isActionPointActive);
             dailyBonus.SetActive(isDailyBonusActive);
             hourglass.gameObject.SetActive(isHourglassActive);
