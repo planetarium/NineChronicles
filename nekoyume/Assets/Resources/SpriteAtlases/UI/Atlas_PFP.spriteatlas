@@ -1,0 +1,102 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Atlas_PFP
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 1
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 1024
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 0
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: 5cf1d0b410d9bb44fb7e1f653abfc839, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: c92fe3d095abff94c91406ab49eb834d, type: 3}
+  - {fileID: 21300000, guid: 1b3f70b266c320e409043ea6db7019ff, type: 3}
+  - {fileID: 21300000, guid: cbe2eae2bd404614c896530c3382bb7b, type: 3}
+  - {fileID: 21300000, guid: bbf2b4f275cd44f4fbd030b54a987e13, type: 3}
+  - {fileID: 21300000, guid: ffbe6a3312190fc4cb7782f7401ed8ea, type: 3}
+  - {fileID: 21300000, guid: f1f836542da5c6d489b671b46fda966e, type: 3}
+  - {fileID: 21300000, guid: 27a301945de5b8647846a0adf2417f08, type: 3}
+  - {fileID: 21300000, guid: c19f601514d61da49a9a7500ee9d2841, type: 3}
+  - {fileID: 21300000, guid: d07a62555a5d5d74a8df03ed9758e539, type: 3}
+  - {fileID: 21300000, guid: 023a89268a58c424198209834ae29b6d, type: 3}
+  - {fileID: 21300000, guid: 20a26ef78a45f0446b05e93a53b3acef, type: 3}
+  - {fileID: 21300000, guid: 90790089270f2d34d8ca0d4d2ac0d75b, type: 3}
+  - {fileID: 21300000, guid: 42abb5898ce1c954bacb20420fbd0500, type: 3}
+  - {fileID: 21300000, guid: f737d8b9a8688ab459791456f0a48b04, type: 3}
+  - {fileID: 21300000, guid: 32624fe9a68530f4b8b15daeca644e17, type: 3}
+  - {fileID: 21300000, guid: d04e181a2ccf16549b48175981781ee0, type: 3}
+  - {fileID: 21300000, guid: 054c37aa5a3ecd446886c495ea0308c3, type: 3}
+  - {fileID: 21300000, guid: 0b3e9c6c744c65347a05569b714c9457, type: 3}
+  - {fileID: 21300000, guid: 2997addc9e775794884925e7615d5d47, type: 3}
+  - {fileID: 21300000, guid: 6906ed1dae15cc744b94ac018a39af2f, type: 3}
+  - {fileID: 21300000, guid: 09fd219e305d25f449bfce0de56e1b8d, type: 3}
+  - {fileID: 21300000, guid: f3590eae024b8434eb4cbc25d499eef6, type: 3}
+  - {fileID: 21300000, guid: 7993c8df5e2eaa34ebd42392d5a55f25, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - UI_PFP_Bg_Inside
+  - EquipPet_bg_Empty
+  - Img_DCC
+  - UI_main_icon_Mileage
+  - Img_DccCollection
+  - UI_popup_title_bg_06
+  - UI_PFP_Bg_Light
+  - Character_Level_Bg
+  - EquipPet_Mask
+  - Icon_DCC
+  - button_brown_change
+  - character_frame_dcc
+  - button_brown_eye_off
+  - UI_PFP_Bg_2
+  - button_BluishGreen_01
+  - EquipPet_Select
+  - EquipPet_bg_1
+  - button_Blue_01
+  - Image_WhatPat
+  - UI_PFP_Bg_1
+  - Icon_OpenSea
+  - button_brown_eye_on
+  - UI_popup_title_bg_05
+  m_RenderDataMap: {}
+  m_Tag: Atlas_PFP
+  m_IsVariant: 0

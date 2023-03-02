@@ -23,7 +23,7 @@ SpriteAtlas:
     platformSettings:
     - serializedVersion: 3
       m_BuildTarget: DefaultTexturePlatform
-      m_MaxTextureSize: 1024
+      m_MaxTextureSize: 2048
       m_ResizeAlgorithm: 0
       m_TextureFormat: -1
       m_TextureCompression: 0
@@ -33,6 +33,54 @@ SpriteAtlas:
       m_Overridden: 0
       m_AndroidETC2FallbackOverride: 0
       m_ForceMaximumCompressionQuality_BC6H_BC7: 1
+    - serializedVersion: 3
+      m_BuildTarget: Server
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: 4
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    - serializedVersion: 3
+      m_BuildTarget: Android
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: 4
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    - serializedVersion: 3
+      m_BuildTarget: iPhone
+      m_MaxTextureSize: 1024
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: 4
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 1
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    - serializedVersion: 3
+      m_BuildTarget: Standalone
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: 4
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
     packingSettings:
       serializedVersion: 2
       padding: 4
@@ -56,6 +104,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 63d40a003394684469bc73122fe6111f, type: 3}
   - {fileID: 21300000, guid: 858b5b10dc3be434f8f68b83ecabb1bb, type: 3}
   - {fileID: 21300000, guid: ac32aa804681c49d5a29473fbc520a21, type: 3}
+  - {fileID: 21300000, guid: ce857d51934d044b29de82e4857f362e, type: 3}
   - {fileID: 21300000, guid: 40ef27b1744b5418e804ae7d87823539, type: 3}
   - {fileID: 21300000, guid: 315b8e12138034a6e83aa0f943fa1ed3, type: 3}
   - {fileID: 21300000, guid: 2d4ae042985ba684f957343ceacc835e, type: 3}
@@ -63,10 +112,13 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 1a225762a424c4e0185fe27ae9b25231, type: 3}
   - {fileID: 21300000, guid: 917cea82e2a094ccea64e4d1baa5655e, type: 3}
   - {fileID: 21300000, guid: faff65925c1b54f3fba70dd1b06fb336, type: 3}
+  - {fileID: 21300000, guid: 32e03cb26551c45329bddf34c88f009e, type: 3}
   - {fileID: 21300000, guid: b78fa9a3b38844bccb5d534205479932, type: 3}
   - {fileID: 21300000, guid: 0966ff344db114553b3ade4a6602a91a, type: 3}
   - {fileID: 21300000, guid: 6d6f3f54b8fdd4560890908ee4d35295, type: 3}
+  - {fileID: 21300000, guid: 801d0cd436605472fb26a53a90b412c7, type: 3}
   - {fileID: 21300000, guid: 602d55353ca9d43949d458db838a5896, type: 3}
+  - {fileID: 21300000, guid: 313998551934a44b2b8e04a4c906dbd4, type: 3}
   - {fileID: 21300000, guid: 3c0e4d959e53744fcb2da76ac7e5f0f8, type: 3}
   - {fileID: 21300000, guid: ac1418c565633422ca661aa129a3f277, type: 3}
   - {fileID: 21300000, guid: 840cc2d5e98f14c72a8c50d75aa15c50, type: 3}
@@ -77,6 +129,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: feee77e617145495a89b3867dbd15293, type: 3}
   - {fileID: 21300000, guid: 4649ac77358d0484cb8918e5b853ac69, type: 3}
   - {fileID: 21300000, guid: f83d5d87983d443f8bb265739347826f, type: 3}
+  - {fileID: 21300000, guid: c372c948ff2424c0baff4bda77d51368, type: 3}
   - {fileID: 21300000, guid: 3595f898485cb4466b74e2e8cfe51185, type: 3}
   - {fileID: 21300000, guid: 23588dc8e4b9a46f5aa5f8532a82514e, type: 3}
   - {fileID: 21300000, guid: 7ed7bbc94e9c14018af966d17f344221, type: 3}
@@ -90,7 +143,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: c7e3508ba831348f78885adaaa1e0065, type: 3}
   - {fileID: 21300000, guid: 11db721c2f333f54f8966f96ea7f650f, type: 3}
   - {fileID: 21300000, guid: 628f92ec71bb44df08091d2ced1cce25, type: 3}
-  - {fileID: 21300000, guid: 84eb597da9adac04ab24c801a6f3719a, type: 3}
   - {fileID: 21300000, guid: 11627b8dedc85451d92bd8a2660da33d, type: 3}
   - {fileID: 21300000, guid: d492db3e1b5b243e2b504cdff757e9b7, type: 3}
   - {fileID: 21300000, guid: 0461f2be2e10940879088d0d7a370923, type: 3}
@@ -99,6 +151,7 @@ SpriteAtlas:
   - Arena_bg_23
   - Arena_bg_gauge_01
   - Arena_bg_02
+  - Arena_bg_31
   - Bg_Arena_Season_add
   - Main_Cloud_02
   - Arena_bg_21
@@ -106,10 +159,13 @@ SpriteAtlas:
   - Bg_Arena_Season
   - Arena_bg_01
   - Arena_bg_08_add
+  - Arena_bg_32
   - Rank_bg_10
   - Arena_bg_05
   - Arena_bg_12
+  - Arena_bg_30
   - Arena_bg_gauge_01_Type3
+  - Arena_bg_33
   - Arena_bg_03
   - Arena_bg_06
   - Rank_bg_13
@@ -120,6 +176,7 @@ SpriteAtlas:
   - Arena_bg_07
   - Arena_bg_10
   - Arena_bg_18
+  - Arena_bg_29
   - Arena_bg_04
   - Bg_Arena_Championship
   - Arena_bg_25
@@ -133,7 +190,6 @@ SpriteAtlas:
   - Arena_bg_11
   - Arena_bg_24
   - Arena_bg_09
-  - Arena_bg_20
   - Arena_bg_08
   - Arena_bg_gauge_01_Type2
   - Arena_bg_16

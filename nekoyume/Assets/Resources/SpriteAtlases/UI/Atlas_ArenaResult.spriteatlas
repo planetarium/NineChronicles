@@ -50,25 +50,35 @@ SpriteAtlas:
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
+  - {fileID: 21300000, guid: 8126d200eca39417b957e99c60bf738f, type: 3}
   - {fileID: 21300000, guid: e6af7801e4afae842aad64f0eb1ea196, type: 3}
   - {fileID: 21300000, guid: c4648932d941ce743990f79103054e17, type: 3}
   - {fileID: 21300000, guid: 4a9e07749f32744a785b72e76d354331, type: 3}
   - {fileID: 21300000, guid: bcf7bc76df2865a4ca89fa5a2b563ba6, type: 3}
   - {fileID: 21300000, guid: b24fc508fd6de3e44873c7bdb2e9188d, type: 3}
+  - {fileID: 21300000, guid: 666cc4d8819bf42d4ad552a574646376, type: 3}
   - {fileID: 21300000, guid: b8782f99c61308e46a40f19eab48eb32, type: 3}
   - {fileID: 21300000, guid: 1da7810c87905014f9fbdb32107e7405, type: 3}
+  - {fileID: 21300000, guid: c60c0c4c20bb2410d8202fe6fe3c0ce8, type: 3}
   - {fileID: 21300000, guid: 07c139ec8d49cf84e96d63653bd823c5, type: 3}
+  - {fileID: 21300000, guid: 56e37aec5632f9d46a0915501d17130f, type: 3}
   - {fileID: 21300000, guid: eaf5f99de2cecfd4586e57ead99d756c, type: 3}
+  - {fileID: 21300000, guid: e409bddf93a7d4ca8abd6e05742b76a9, type: 3}
   m_PackedSpriteNamesToIndex:
+  - battle_UI_bg_99
   - bg_pvp_vs
   - UI_pvp_wing
   - Bg_Season_bg_02
   - bg_pvp_02
   - UI_pvp_emblem
+  - Common_bg_2R
   - bg_pvp_emblem
   - bg_pvp_back
+  - bg_pvp_01
   - bg_pvp_03
+  - UI_box_10
   - bg_pvp_vs_effect
+  - bg_pvp_vs_2
   m_RenderDataMap: {}
   m_Tag: Atlas_ArenaResult
   m_IsVariant: 0

@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using Cysharp.Threading.Tasks;
-using Lib9c.Renderer;
+using Lib9c.Renderers;
 using Libplanet;
 using Libplanet.Assets;
 using Nekoyume.Action;
@@ -24,7 +24,7 @@ namespace Nekoyume.BlockChain
 
         public abstract void Start(ActionRenderer renderer);
 
-        protected static bool HasUpdatedAssetsForCurrentAgent<T>(ActionBase.ActionEvaluation<T> evaluation)
+        protected static bool HasUpdatedAssetsForCurrentAgent<T>(ActionEvaluation<T> evaluation)
             where T : ActionBase
         {
             if (States.Instance.AgentState is null)
@@ -35,33 +35,42 @@ namespace Nekoyume.BlockChain
             return evaluation.OutputStates.UpdatedFungibleAssets.ContainsKey(States.Instance.AgentState.address);
         }
 
-        protected static bool ValidateEvaluationForCurrentAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation)
+        protected static bool ValidateEvaluationForCurrentAvatarState<T>(ActionEvaluation<T> evaluation)
             where T : ActionBase =>
             !(States.Instance.CurrentAvatarState is null)
             && evaluation.OutputStates.UpdatedAddresses.Contains(States.Instance.CurrentAvatarState.address);
 
-        protected static bool ValidateEvaluationForCurrentAgent<T>(ActionBase.ActionEvaluation<T> evaluation)
+        protected static bool ValidateEvaluationForCurrentAgent<T>(ActionEvaluation<T> evaluation)
             where T : ActionBase
         {
             return !(States.Instance.AgentState is null) &&
                    evaluation.Signer.Equals(States.Instance.AgentState.address);
         }
 
-        protected static AgentState GetAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        protected static AgentState GetAgentState<T>(ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var agentAddress = States.Instance.AgentState.address;
             return evaluation.OutputStates.GetAgentState(agentAddress);
         }
 
-        protected GoldBalanceState GetGoldBalanceState<T>(ActionBase.ActionEvaluation<T> evaluation)
+        protected GoldBalanceState GetGoldBalanceState<T>(ActionEvaluation<T> evaluation)
             where T : ActionBase
         {
             var agentAddress = States.Instance.AgentState.address;
+            if (!evaluation.Signer.Equals(agentAddress) ||
+                !evaluation.OutputStates.UpdatedFungibleAssets.TryGetValue(
+                    evaluation.Signer,
+                    out var currencies) ||
+                !currencies.Contains(GoldCurrency))
+            {
+                return null;
+            }
+
             return evaluation.OutputStates.GetGoldBalanceState(agentAddress, GoldCurrency);
         }
 
         protected (MonsterCollectionState, int, FungibleAssetValue) GetMonsterCollectionState<T>(
-            ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+            ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var agentAddress = States.Instance.AgentState.address;
             var monsterCollectionAddress = MonsterCollectionState.DeriveAddress(
@@ -89,7 +98,7 @@ namespace Nekoyume.BlockChain
         }
 
         protected (StakeState, int, FungibleAssetValue) GetStakeState<T>(
-            ActionBase.ActionEvaluation<T> evaluation)
+            ActionEvaluation<T> evaluation)
             where T : ActionBase
         {
             var agentAddress = States.Instance.AgentState.address;
@@ -117,7 +126,7 @@ namespace Nekoyume.BlockChain
         }
 
         protected static CrystalRandomSkillState GetCrystalRandomSkillState<T>(
-            ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+            ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var buffStateAddress = Addresses.GetSkillStateAddressFromAvatarAddress(avatarAddress);
@@ -132,7 +141,7 @@ namespace Nekoyume.BlockChain
         }
 
         protected async UniTask UpdateAgentStateAsync<T>(
-            ActionBase.ActionEvaluation<T> evaluation)
+            ActionEvaluation<T> evaluation)
             where T : ActionBase
         {
             Debug.LogFormat(
@@ -153,7 +162,7 @@ namespace Nekoyume.BlockChain
         }
 
         protected static async UniTask UpdateAvatarState<T>(
-            ActionBase.ActionEvaluation<T> evaluation,
+            ActionEvaluation<T> evaluation,
             int index)
             where T : ActionBase
         {
@@ -180,7 +189,7 @@ namespace Nekoyume.BlockChain
         }
 
         protected async UniTask UpdateCurrentAvatarStateAsync<T>(
-            ActionBase.ActionEvaluation<T> evaluation)
+            ActionEvaluation<T> evaluation)
             where T : ActionBase
         {
             var agentAddress = States.Instance.AgentState.address;
@@ -213,7 +222,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        protected static void UpdateGameConfigState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        protected static void UpdateGameConfigState<T>(ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var state = evaluation.OutputStates.GetGameConfigState();
             States.Instance.SetGameConfigState(state);
@@ -231,7 +240,7 @@ namespace Nekoyume.BlockChain
         }
 
         protected static void UpdateCrystalRandomSkillState<T>(
-            ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+            ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var state = GetCrystalRandomSkillState(evaluation);
 
@@ -258,7 +267,7 @@ namespace Nekoyume.BlockChain
             States.Instance.SetGoldBalanceState(goldBalanceState);
         }
 
-        protected static void UpdateCrystalBalance<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        protected static void UpdateCrystalBalance<T>(ActionEvaluation<T> evaluation) where T : ActionBase
         {
             if (!evaluation.Signer.Equals(States.Instance.AgentState.address) ||
                 !evaluation.OutputStates.UpdatedFungibleAssets.TryGetValue(

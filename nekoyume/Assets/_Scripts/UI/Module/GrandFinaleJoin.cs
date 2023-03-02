@@ -1,18 +1,18 @@
-﻿using Nekoyume.Game;
+﻿using System;
+using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.GrandFinale;
-using Nekoyume.UI.Module.Arena.Join;
-using Nekoyume.ValueControlComponents.Shader;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+
     public class GrandFinaleJoin : MonoBehaviour
     {
         [SerializeField]
@@ -37,7 +37,9 @@ namespace Nekoyume.UI.Module
 
         public void Set(System.Action onClickJoinArena)
         {
-            arenaJoinButton.OnClickSubject.Subscribe(_ => onClickJoinArena.Invoke()).AddTo(gameObject);
+            arenaJoinButton.OnClickSubject
+                .Subscribe(_ => onClickJoinArena.Invoke())
+                .AddTo(gameObject);
             grandFinaleJoinButton.OnClickSubject.Subscribe(_ =>
             {
                 AudioController.PlayClick();
@@ -52,8 +54,18 @@ namespace Nekoyume.UI.Module
         public void UpdateInformation()
         {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            var roundData = TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(blockIndex);
-            if (roundData is null)
+            ArenaSheet.RoundData currentRoundData;
+            try
+            {
+                currentRoundData =
+                    TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(blockIndex);
+            }
+            catch (Exception)
+            {
+                return;
+            }
+
+            if (currentRoundData is null)
             {
                 return;
             }
@@ -70,7 +82,7 @@ namespace Nekoyume.UI.Module
                 grandFinaleProgressFillImage,
                 grandFinaleProgressSliderFillText);
             SetScheduleUI(
-                roundData.GetSeasonProgress(blockIndex),
+                currentRoundData.GetSeasonProgress(blockIndex),
                 arenaProgressFillImage,
                 arenaProgressSliderFillText);
         }

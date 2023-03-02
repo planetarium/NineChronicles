@@ -247,10 +247,10 @@ namespace Nekoyume.UI.Module
 
             if (isValid)
             {
-                if (isEquipped)
+                if (isEquipped && isRegister)
                 {
                     var confirm = Widget.Find<IconAndButtonSystem>();
-                    confirm.ConfirmCallback = () => RegisterToGrindingList(model, isRegister);
+                    confirm.ConfirmCallback = () => RegisterToGrindingList(model, true);
                     confirm.ShowWithTwoButton(
                         "UI_CONFIRM",
                         "UI_CONFIRM_EQUIPPED_GRINDING",
@@ -421,7 +421,6 @@ namespace Nekoyume.UI.Module
                             false, IconAndButtonSystem.SystemType.Information);
                         confirm.ConfirmCallback = () =>
                             PushAction(equipments, true);
-                        confirm.CancelCallback = () => confirm.Close();
                     }
                     else
                     {

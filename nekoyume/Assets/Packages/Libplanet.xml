@@ -61,6 +61,9 @@
         <member name="M:Libplanet.Action.AccountStateDeltaImpl.GetTotalSupply(Libplanet.Assets.Currency)">
             <inheritdoc/>
         </member>
+        <member name="M:Libplanet.Action.AccountStateDeltaImpl.GetValidatorSet">
+            <inheritdoc/>
+        </member>
         <member name="M:Libplanet.Action.AccountStateDeltaImpl.MintAsset(Libplanet.Address,Libplanet.Assets.FungibleAssetValue)">
             <inheritdoc/>
         </member>
@@ -68,6 +71,9 @@
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Action.AccountStateDeltaImpl.BurnAsset(Libplanet.Address,Libplanet.Assets.FungibleAssetValue)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Action.AccountStateDeltaImpl.SetValidator(Libplanet.Consensus.Validator)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Action.AccountStateDeltaImpl.ChooseVersion(System.Int32,Libplanet.Action.AccountStateGetter,Libplanet.Action.AccountBalanceGetter,Libplanet.Action.TotalSupplyGetter,Libplanet.Action.ValidatorSetGetter,Libplanet.Address)">
@@ -603,15 +609,6 @@
             cref="F:Libplanet.Assets.FungibleAssetValue.Currency"/>'s <see cref="F:Libplanet.Assets.Currency.Minters"/>.</exception>
             <exception cref="T:Libplanet.Action.InsufficientBalanceException">Thrown when the <paramref name="owner"/>
             has insufficient balance than <paramref name="value"/> to burn.</exception>
-        </member>
-        <member name="M:Libplanet.Action.IAccountStateDelta.SetValidator(Libplanet.Consensus.Validator)">
-            <summary>
-            Sets <paramref name="validator"/> to the stored <see cref="T:Libplanet.Consensus.ValidatorSet"/>.
-            If 0 is given as its power, removes the validator from the <see cref="T:Libplanet.Consensus.ValidatorSet"/>.
-            </summary>
-            <param name="validator">The <see cref="T:Libplanet.Consensus.Validator"/> instance to write.</param>
-            <returns>A new <see cref="T:Libplanet.Action.IAccountStateDelta"/> instance with
-            <paramref name="validator"/> set.</returns>
         </member>
         <member name="T:Libplanet.Action.IAccountStateView">
             <summary>
@@ -1166,6 +1163,22 @@
             name="buffer"/> is <see langword="null"/>.</exception>
             <seealso cref="M:System.Random.NextBytes(System.Byte[])"/>
         </member>
+        <member name="M:Libplanet.Action.IValidatorSupportStateDelta.GetValidatorSet">
+            <summary>
+            Returns the validator set.
+            </summary>
+            <returns>The validator set of type <see cref="T:Libplanet.Consensus.ValidatorSet"/>.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Action.IValidatorSupportStateDelta.SetValidator(Libplanet.Consensus.Validator)">
+            <summary>
+            Sets <paramref name="validator"/> to the stored <see cref="T:Libplanet.Consensus.ValidatorSet"/>.
+            If 0 is given as its power, removes the validator from the <see cref="T:Libplanet.Consensus.ValidatorSet"/>.
+            </summary>
+            <param name="validator">The <see cref="T:Libplanet.Consensus.Validator"/> instance to write.</param>
+            <returns>A new <see cref="T:Libplanet.Action.IAccountStateDelta"/> instance with
+            <paramref name="validator"/> set.</returns>
+        </member>
         <member name="T:Libplanet.Action.MissingActionTypeException">
             <summary>
             The exception that is thrown when an action class without
@@ -1667,6 +1680,16 @@
             <returns>The instance of <see cref="T:Libplanet.Consensus.ValidatorSet"/>.
             </returns>
         </member>
+        <member name="M:Libplanet.Action.ValidatorStateExtensions.SetValidator(Libplanet.Action.IAccountStateDelta,Libplanet.Consensus.Validator)">
+            <summary>
+            Sets <paramref name="validator"/> to the stored <see cref="T:Libplanet.Consensus.ValidatorSet"/>.
+            If 0 is given as its power, removes the validator from the <see cref="T:Libplanet.Consensus.ValidatorSet"/>.
+            </summary>
+            <param name="delta">The target <see cref="T:Libplanet.Action.IAccountStateDelta"/> instance.</param>
+            <param name="validator">The <see cref="T:Libplanet.Consensus.Validator"/> instance to write.</param>
+            <returns>A new <see cref="T:Libplanet.Action.IAccountStateDelta"/> instance with
+            <paramref name="validator"/> set.</returns>
+        </member>
         <member name="T:Libplanet.Address">
             <summary>
             An identifier of 20 bytes (or 40 letters in hexadecimal, commonly with
@@ -1701,7 +1724,7 @@
             <para>It is 20 <see cref="T:System.Byte"/>s.</para>
             </summary>
         </member>
-        <member name="M:Libplanet.Address.#ctor(System.Collections.Immutable.ImmutableArray{System.Byte})">
+        <member name="M:Libplanet.Address.#ctor(System.Collections.Immutable.ImmutableArray{System.Byte}@)">
             <summary>
             Creates an <see cref="T:Libplanet.Address"/> instance from the given immutable <see
             cref="T:System.Byte"/> array (i.e., <paramref name="address"/>).
@@ -1721,10 +1744,7 @@
             cref="T:System.Byte"/> array (i.e., <paramref name="address"/>).
             </summary>
             <param name="address">An array of 20 <see cref="T:System.Byte"/>s which
-            represents an <see cref="T:Libplanet.Address"/>.  This must not be <see langword="null"/>.
-            </param>
-            <exception cref="T:System.ArgumentNullException">Thrown when <see langword="null"/> was
-            passed to <paramref name="address"/>.</exception>
+            represents an <see cref="T:Libplanet.Address"/>.</param>
             <exception cref="T:System.ArgumentException">Thrown when the given <paramref
             name="address"/> array did not lengthen 20 bytes.</exception>
             <remarks>A valid <see cref="T:System.Byte"/> array which represents an
@@ -1750,30 +1770,28 @@
             Derives the corresponding <see cref="T:Libplanet.Address"/> from a hexadecimal
             address string.
             </summary>
-            <exception cref="T:System.ArgumentNullException">Thrown when <see langword="null"/> was
-            passed to <paramref name="hex"/>.</exception>
-            <exception cref="T:System.ArgumentException">Thrown when the given <paramref
-            name="hex"/> did not lengthen 40 characters except 0x prefix.</exception>
-            <exception cref="T:System.ArgumentException">Thrown when the given <paramref
-            name="hex"/> is mixed-case and the checksum is invalid.</exception>
-            <exception cref="T:System.ArgumentException">Thrown when the given <paramref
-            name="hex"/> does not consist of ASCII characters.</exception>
+            <exception cref="T:System.ArgumentException">Thrown when given <paramref name="hex"/>
+            is neither 40 chars long nor 42 chars long with 0x prefix.</exception>
+            <exception cref="T:System.ArgumentException">Thrown when given <paramref name="hex"/>
+            is mixed-case and the checksum is invalid.</exception>
+            <exception cref="T:System.ArgumentException">Thrown when given <paramref name="hex"/>
+            does not consist of ASCII characters.</exception>
             <param name="hex">A 40 characters or included 0x prefix hexadecimal
             address string to derive the corresponding <see cref="T:Libplanet.Address"/> from.
             The string should be all lower-case or mixed-case which follows <a
             href="https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md"
             >EIP 55</a>.</param>
         </member>
-        <member name="M:Libplanet.Address.#ctor(Bencodex.Types.Binary)">
+        <member name="M:Libplanet.Address.#ctor(Bencodex.Types.IValue)">
             <summary>
-            Creates an <see cref="T:Libplanet.Address"/> instance from the given Bencodex <see cref="T:Bencodex.Types.Binary"/>
-            (i.e., <paramref name="address"/>).
+            Creates an <see cref="T:Libplanet.Address"/> instance from given <paramref name="bencoded"/>.
             </summary>
-            <param name="address">A Bencodex <see cref="T:Bencodex.Types.Binary"/> of 20 <see cref="T:System.Byte"/>s which
+            <param name="bencoded">A Bencodex <see cref="T:Bencodex.Types.Binary"/> of 20 <see cref="T:System.Byte"/>s which
             represents an <see cref="T:Libplanet.Address"/>.
             </param>
-            <exception cref="T:System.ArgumentException">Thrown when the given <paramref name="address"/>
-            did not lengthen 20 bytes.</exception>
+            <exception cref="T:System.ArgumentException">Thrown when given <paramref name="bencoded"/>
+            is not of type <see cref="T:Bencodex.Types.Binary"/>.</exception>
+            <seealso cref="M:Libplanet.Address.#ctor(System.Collections.Immutable.ImmutableArray{System.Byte}@)"/>
         </member>
         <member name="P:Libplanet.Address.ByteArray">
             <summary>
@@ -1783,6 +1801,9 @@
             <remarks>This is immutable.  For a mutable array, call <see
             cref="M:Libplanet.Address.ToByteArray"/> method.</remarks>
             <seealso cref="M:Libplanet.Address.ToByteArray"/>
+        </member>
+        <member name="P:Libplanet.Address.Bencoded">
+            <inheritdoc/>
         </member>
         <member name="M:Libplanet.Address.ToByteArray">
             <summary>
@@ -1833,7 +1854,7 @@
             <seealso cref="M:Libplanet.Address.ToHex"/>
         </member>
         <member name="M:Libplanet.Address.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="M:Libplanet.Address.CompareTo(Libplanet.Address)">
             <inheritdoc cref="M:System.IComparable`1.CompareTo(`0)"/>
@@ -3262,6 +3283,50 @@
             Gets the enumerator.
             </summary>
             <returns>The enumerator.</returns>
+        </member>
+        <member name="T:Libplanet.Blockchain.Branch`1">
+            <summary>
+            A class representing a consecutive list of <see cref="T:Libplanet.Blocks.Block`1"/>s.
+            </summary>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
+            to <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
+        </member>
+        <member name="M:Libplanet.Blockchain.Branch`1.#ctor(System.Collections.Generic.IEnumerable{Libplanet.Blocks.Block{`0}})">
+            <summary>
+            Initializes a new instance of <see cref="T:Libplanet.Blockchain.Branch`1"/> from <paramref name="blocks"/>.
+            </summary>
+            <param name="blocks">An enumerable of <see cref="T:Libplanet.Blocks.Block`1"/>es to convert from.</param>
+            <exception cref="T:System.ArgumentException">Thrown for failing to satisfy any of the following:
+            <list type="bullet">
+                <item><description>
+                    Given <paramref name="blocks"/> is non-empty.
+                </description></item>
+                <item><description>
+                    Given <paramref name="blocks"/> are consecutive in the sense that indices
+                    are unique, consecutive, and every <see cref="P:Libplanet.Blocks.Block`1.PreviousHash"/> match
+                    the <see cref="P:Libplanet.Blocks.Block`1.Hash"/> of the previous <see cref="T:Libplanet.Blocks.Block`1"/>.
+                </description></item>
+            </list>
+            </exception>
+        </member>
+        <member name="P:Libplanet.Blockchain.Branch`1.Blocks">
+            <summary>
+            An <see cref="T:System.Collections.Immutable.ImmutableArray`1"/> of <see cref="T:Libplanet.Blocks.Block`1"/>s guarenteed to satisfy
+            the following properties:
+            <list type="bullet">
+                <item><description>
+                    The collection is non-empty.
+                </description></item>
+                <item><description>
+                    The collection is sorted by index.
+                </description></item>
+                <item><description>
+                    The elements are consecutive in the sense that indices
+                    are unique, consecutive, and every <see cref="P:Libplanet.Blocks.Block`1.PreviousHash"/> match
+                    the <see cref="P:Libplanet.Blocks.Block`1.Hash"/> of the previous <see cref="T:Libplanet.Blocks.Block`1"/>.
+                </description></item>
+            </list>
+            </summary>
         </member>
         <member name="T:Libplanet.Blockchain.FungibleAssetStateCompleter`1">
             <summary>
@@ -5569,7 +5634,7 @@
             The size of bytes that each <see cref="T:Libplanet.Blocks.BlockHash"/> consists of.
             </summary>
         </member>
-        <member name="M:Libplanet.Blocks.BlockHash.#ctor(System.Collections.Immutable.ImmutableArray{System.Byte})">
+        <member name="M:Libplanet.Blocks.BlockHash.#ctor(System.Collections.Immutable.ImmutableArray{System.Byte}@)">
             <summary>
             Converts an immutable <see cref="T:System.Byte"/> array into a <see cref="T:Libplanet.Blocks.BlockHash"/>.
             </summary>
@@ -6819,7 +6884,7 @@
         </member>
         <member name="M:Libplanet.ByteUtil.ParseHex(System.String)">
             <summary>
-            Converts a hexadecimal string to a <see cref="T:System.Byte"/> array.
+            Converts a hexadecimal string to a mutable <see cref="T:System.Byte"/> array.
             </summary>
             <param name="hex">A <see cref="T:System.String"/> which encodes
             <see cref="T:System.Byte"/>s in hexadecimal.  Its length must be zero or
@@ -6828,37 +6893,57 @@
             <paramref name="hex"/> string represented in hexadecimal.
             It lengthens the half of the given <paramref name="hex"/> string.
             </returns>
-            <exception cref="T:System.ArgumentNullException">Thrown when the given
-            <paramref name="hex"/> string is <see langword="null"/>.
-            </exception>
             <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the length
             of the given <paramref name="hex"/> string is an odd number.
             </exception>
             <exception cref="T:System.FormatException">Thrown when the given
             <paramref name="hex"/> string is not a valid hexadecimal string.
             </exception>
+            <seealso cref="M:Libplanet.ByteUtil.ParseHexToImmutable(System.String)"/>
+            <seealso cref="M:Libplanet.ByteUtil.Hex(System.Byte[])"/>
+        </member>
+        <member name="M:Libplanet.ByteUtil.ParseHexToImmutable(System.String)">
+            <summary>
+            Converts a hexadecimal string to an immutable <see cref="T:System.Byte"/> array.
+            </summary>
+            <param name="hex">A <see cref="T:System.String"/> which encodes <see cref="T:System.Byte"/>s in
+            hexadecimal.  Its length must be zero or an even number.  It must not be
+            <see langword="null"/>.</param>
+            <returns>A <see cref="T:System.Byte"/> array that the given <paramref name="hex"/> string
+            represented in hexadecimal.  It lengthens the half of the given <paramref name="hex"/>
+            string.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when the given <paramref name="hex"/>
+            string is <see langword="null"/>.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the length of the given
+            <paramref name="hex"/> string is an odd number.</exception>
+            <exception cref="T:System.FormatException">Thrown when the given <paramref name="hex"/> string
+            is not a valid hexadecimal string.</exception>
+            <seealso cref="M:Libplanet.ByteUtil.ParseHex(System.String)"/>
+            <seealso cref="M:Libplanet.ByteUtil.Hex(System.Collections.Immutable.ImmutableArray{System.Byte}@)"/>
         </member>
         <member name="M:Libplanet.ByteUtil.Hex(System.Byte[])">
             <summary>
             Renders a hexadecimal string from a <see cref="T:System.Byte"/> array.
             </summary>
             <param name="bytes">A <see cref="T:System.Byte"/> array to renders
-            the corresponding hexadecimal string.  It must not be <see langword="null"/>.
+            the corresponding hexadecimal string.
             </param>
             <returns>A hexadecimal string which encodes the given
             <paramref name="bytes"/>.</returns>
-            <exception cref="T:System.ArgumentNullException">Thrown when the given
-            <paramref name="bytes"/> is <see langword="null"/>.</exception>
+            <seealso cref="M:Libplanet.ByteUtil.Hex(System.Collections.Immutable.ImmutableArray{System.Byte}@)"/>
+            <seealso cref="M:Libplanet.ByteUtil.ParseHex(System.String)"/>
         </member>
         <member name="M:Libplanet.ByteUtil.Hex(System.Collections.Immutable.ImmutableArray{System.Byte}@)">
             <summary>
             Renders a hexadecimal string from a <see cref="T:System.Byte"/> array.
             </summary>
             <param name="bytes">A <see cref="T:System.Byte"/> array to renders
-            the corresponding hexadecimal string.  It must not be <see langword="null"/>.
+            the corresponding hexadecimal string.
             </param>
             <returns>A hexadecimal string which encodes the given
             <paramref name="bytes"/>.</returns>
+            <seealso cref="M:Libplanet.ByteUtil.Hex(System.Byte[])"/>
+            <seealso cref="M:Libplanet.ByteUtil.ParseHexToImmutable(System.String)"/>
         </member>
         <member name="M:Libplanet.ByteUtil.CalculateHashCode(System.Byte[])">
             <summary>
@@ -8667,7 +8752,7 @@
             <paramref name="nonce"/> is a <see langword="null"/>.</exception>
             <seealso cref="M:Libplanet.Nonce.ToByteArray"/>
         </member>
-        <member name="M:Libplanet.Nonce.#ctor(System.Collections.Immutable.ImmutableArray{System.Byte})">
+        <member name="M:Libplanet.Nonce.#ctor(System.Collections.Immutable.ImmutableArray{System.Byte}@)">
             <summary>
             Converts an immutable <see cref="T:System.Byte"/> array into a <see cref="T:Libplanet.Nonce"/> instance.
             <para>This constructor is inverse of <see cref="P:Libplanet.Nonce.ByteArray"/> property.</para>
@@ -11009,19 +11094,39 @@
             </para>
             </summary>
         </member>
+        <member name="M:Libplanet.Tx.TxId.#ctor(System.Collections.Immutable.ImmutableArray{System.Byte}@)">
+            <summary>
+            Converts an immutable <see cref="T:System.Byte"/> array into a <see cref="T:Libplanet.Tx.TxId"/>.
+            </summary>
+            <param name="txid">An immutable <see cref="T:System.Byte"/> array that encodes
+            a <see cref="T:Libplanet.Tx.TxId"/>.  It must not be <see langword="null"/>, and its
+            <see cref="P:System.Collections.Immutable.ImmutableArray`1.Length"/> must be the same to <see cref="F:Libplanet.Tx.TxId.Size"/>.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the given
+            <paramref name="txid"/>'s <see cref="P:System.Array.Length"/> is not the same to the required
+            <see cref="F:Libplanet.Tx.TxId.Size"/>.</exception>
+        </member>
         <member name="M:Libplanet.Tx.TxId.#ctor(System.Byte[])">
             <summary>
-            Converts a <see cref="T:System.Byte"/> array into a <see cref="T:Libplanet.Tx.TxId"/>.
+            Converts a mutable <see cref="T:System.Byte"/> array into a <see cref="T:Libplanet.Tx.TxId"/>.
             </summary>
-            <param name="txid">A <see cref="T:System.Byte"/> array that encodes
+            <param name="txid">A mutable <see cref="T:System.Byte"/> array that encodes
             a <see cref="T:Libplanet.Tx.TxId"/>.  It must not be <see langword="null"/>,
             and its <see cref="P:System.Array.Length"/> must be the same to
             <see cref="F:Libplanet.Tx.TxId.Size"/>.</param>
-            <exception cref="T:System.ArgumentNullException">Thrown when the given
-            <paramref name="txid"/> is <see langword="null"/>.</exception>
             <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the given
             <paramref name="txid"/>'s <see cref="P:System.Array.Length"/> is not
             the same to the required <see cref="F:Libplanet.Tx.TxId.Size"/>.</exception>
+        </member>
+        <member name="M:Libplanet.Tx.TxId.#ctor(Bencodex.Types.IValue)">
+            <summary>
+            Creates a <see cref="T:Libplanet.Tx.TxId"/> instance from given <paramref name="bencoded"/>.
+            </summary>
+            <param name="bencoded">A Bencodex <see cref="T:Bencodex.Types.Binary"/> of 32 <see cref="T:System.Byte"/>s which
+            represents an <see cref="T:Libplanet.Tx.TxId"/>.
+            </param>
+            <exception cref="T:System.ArgumentException">Thrown when given <paramref name="bencoded"/>
+            is not of type <see cref="T:Bencodex.Types.Binary"/>.</exception>
+            <seealso cref="M:Libplanet.Tx.TxId.#ctor(System.Collections.Immutable.ImmutableArray{System.Byte}@)"/>
         </member>
         <member name="P:Libplanet.Tx.TxId.ByteArray">
             <summary>
@@ -11032,6 +11137,9 @@
             <see cref="M:Libplanet.Tx.TxId.ToByteArray"/> method instead.</remarks>
             <seealso cref="M:Libplanet.Tx.TxId.ToByteArray"/>
         </member>
+        <member name="P:Libplanet.Tx.TxId.Bencoded">
+            <inheritdoc/>
+        </member>
         <member name="M:Libplanet.Tx.TxId.FromHex(System.String)">
             <summary>
             Creates a <see cref="T:Libplanet.Tx.TxId"/> value from a <paramref name="hex"/> string.
@@ -11040,8 +11148,6 @@
             This has to contain 64 hexadecimal digits and must not be <see langword="null"/>
             This is usually made by <see cref="M:Libplanet.Tx.TxId.ToHex"/> method.</param>
             <returns>A corresponding <see cref="T:Libplanet.Tx.TxId"/> value.</returns>
-            <exception cref="T:System.ArgumentNullException">Thrown when the given <paramref name="hex"/>
-            string is <see langword="null"/>.</exception>
             <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the given
             <paramref name="hex"/> is shorter or longer than 64 characters.</exception>
             <exception cref="T:System.FormatException">Thrown when the given <paramref name="hex"/> string is
