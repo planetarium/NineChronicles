@@ -24,7 +24,7 @@ namespace Planetarium.Nekoyume.Editor
         private string[] _avatarAddrIndexStrings;
         private int _avatarAddrIndex;
 
-        [MenuItem("Tools/Address Tool")]
+        [MenuItem("Tools/Lib9c/Address Tool")]
         private static void Init()
         {
             GetWindow<AddressToolWindow>("Address Tool", true)
