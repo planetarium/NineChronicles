@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Bencodex.Types;
+using Cysharp.Threading.Tasks;
 using Libplanet;
 using Nekoyume.Game;
 using Nekoyume.Model.State;
@@ -15,6 +16,9 @@ namespace StateViewer.Editor
     {
         [SerializeField]
         private bool initialized;
+
+        [SerializeField]
+        private bool drawStateView;
 
         // SerializeField is used to ensure the view state is written to the window
         // layout file. This means that the state survives restarting Unity as long as the window
@@ -70,7 +74,7 @@ namespace StateViewer.Editor
                 headerTextAlignment = TextAlignment.Center,
                 canSort = false,
                 width = 100,
-                minWidth = 50,
+                minWidth = 100,
                 autoResize = true,
                 allowToggleVisibility = false,
             };
@@ -80,7 +84,7 @@ namespace StateViewer.Editor
                 headerTextAlignment = TextAlignment.Center,
                 canSort = false,
                 width = 100,
-                minWidth = 50,
+                minWidth = 70,
                 autoResize = true,
                 allowToggleVisibility = false,
             };
@@ -89,8 +93,8 @@ namespace StateViewer.Editor
                 headerContent = new GUIContent("Value"),
                 headerTextAlignment = TextAlignment.Center,
                 canSort = false,
-                width = 100,
-                minWidth = 50,
+                width = 500,
+                minWidth = 100,
                 autoResize = true,
                 allowToggleVisibility = false,
             };
@@ -118,7 +122,8 @@ namespace StateViewer.Editor
 
             if (Application.isPlaying)
             {
-                if (Game.instance.Agent is null)
+                if (Game.instance.Agent is null ||
+                    Game.instance.States.AgentState is null)
                 {
                     _stateProxy = null;
                     EditorGUILayout.HelpBox(
@@ -147,8 +152,14 @@ namespace StateViewer.Editor
             GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
             DrawSearchField();
             GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
-            _stateView.OnGUI(GetRect(maxHeight: position.height));
-            GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
+            DrawValueInfo();
+
+            drawStateView = EditorGUILayout.Toggle("Show State", drawStateView);
+            if (drawStateView)
+            {
+                GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
+                _stateView.OnGUI(GetRect(maxHeight: position.height));
+            }
         }
 
         private static Rect GetRect(
@@ -176,6 +187,13 @@ namespace StateViewer.Editor
             }
 
             EditorGUILayout.EndHorizontal();
+            var maxChildren = EditorGUILayout.TextField(
+                "Max Children",
+                _stateView.MaxChildren.ToString());
+            if (int.TryParse(maxChildren, out var result))
+            {
+                _stateView.MaxChildren = result;
+            }
         }
 
         private void DrawSearchField()
@@ -190,10 +208,17 @@ namespace StateViewer.Editor
                 return;
             }
 
-            OnConfirm(_searchString);
+            OnConfirm(_searchString).Forget();
         }
 
-        private void OnConfirm(string searchString)
+        private void DrawValueInfo()
+        {
+            EditorGUILayout.LabelField(
+                "Total rows",
+                _stateView.ElementsCount.ToString());
+        }
+
+        private async UniTaskVoid OnConfirm(string searchString)
         {
             if (!Application.isPlaying ||
                 !Game.instance.IsInitialized)
@@ -203,7 +228,7 @@ namespace StateViewer.Editor
 
             try
             {
-                var state = _stateProxy.GetState(searchString);
+                var state = await _stateProxy.GetStateAsync(searchString);
                 _stateView.SetData(state);
             }
             catch (KeyNotFoundException)

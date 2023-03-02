@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
+using Unity.Mathematics;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -18,16 +19,18 @@ namespace StateViewer.Editor
 
         private IValue State;
 
+        public int MaxChildren { get; set; } = 10;
+
+        public int ElementsCount => _treeElements.Length;
+
         private StateTreeElement[] _treeElements;
 
         public StateView(TreeViewState treeViewState, MultiColumnHeader multiColumnHeader)
             : base(treeViewState, multiColumnHeader)
         {
-            // columnIndexForTreeFoldouts = 2;
             rowHeight = EditorGUIUtility.singleLineHeight;
             showAlternatingRowBackgrounds = true;
             showBorder = true;
-            // extraSpaceBeforeIconAndLabel = EditorGUIUtility.singleLineHeight; // kToggleWidth;
             Reload();
         }
 
@@ -35,18 +38,15 @@ namespace StateViewer.Editor
         {
             // 이 부분에서 IValue를 StateTreeElement로 변환하는 작업을 해야 한다.
             // 트리 구조가 만들어지는 부분이다.
-
-            var result = new List<StateTreeElement>();
-            MakeElementsRecursive("", data, result, 0);
-            _treeElements = result.ToArray();
+            var (element, _) = MakeElementsRecursive("", data, 0);
+            _treeElements = new[] { element };
             Reload();
         }
 
-        private static (List<StateTreeElement> elements, int currentId)
+        private (StateTreeElement element, int currentId)
             MakeElementsRecursive(
                 string key,
                 IValue data,
-                List<StateTreeElement> elements,
                 int currentId)
         {
             StateTreeElement e;
@@ -57,11 +57,13 @@ namespace StateViewer.Editor
                 case Boolean:
                 case Integer:
                 case Text:
-                    e = new StateTreeElement(
-                        currentId++,
-                        key,
-                        data.Kind.ToString(),
-                        data.Inspect(false));
+                    return (
+                        new StateTreeElement(
+                            currentId++,
+                            key,
+                            data.Kind.ToString(),
+                            data.Inspect(false)),
+                        currentId);
                     break;
                 case List list:
                 {
@@ -70,19 +72,19 @@ namespace StateViewer.Editor
                         key,
                         data.Kind.ToString(),
                         $"Count: {list.Count}");
-                    for (var i = 0; i < list.Count; i++)
+                    var count = math.min(MaxChildren, list.Count);
+                    for (var i = 0; i < count; i++)
                     {
                         var item = list[i];
-                        var children = new List<StateTreeElement>();
-                        (children, currentId) =
-                            MakeElementsRecursive($"[{i}]", item, children, currentId);
-                        foreach (var child in children)
-                        {
-                            e.AddChild(child);
-                        }
+                        StateTreeElement child;
+                        (child, currentId) = MakeElementsRecursive(
+                            $"[{i}]",
+                            item,
+                            currentId);
+                        e.AddChild(child);
                     }
 
-                    break;
+                    return (e, currentId);
                 }
                 case Dictionary dict:
                 {
@@ -91,29 +93,29 @@ namespace StateViewer.Editor
                         key,
                         data.Kind.ToString(),
                         $"Count: {dict.Count}");
+                    var count = math.min(MaxChildren, dict.Count);
                     foreach (var pair in dict)
                     {
-                        var children = new List<StateTreeElement>();
-                        (children, currentId) = MakeElementsRecursive(
+                        if (count <= 0)
+                        {
+                            break;
+                        }
+
+                        count--;
+                        StateTreeElement child;
+                        (child, currentId) = MakeElementsRecursive(
                             $"[{pair.Key.Inspect(false)}]",
                             pair.Value,
-                            children,
                             currentId);
-                        foreach (var child in children)
-                        {
-                            e.AddChild(child);
-                        }
+                        e.AddChild(child);
                     }
 
-                    break;
+                    return (e, currentId);
                 }
                 default:
                     Debug.LogError($"data type {data.GetType()} is not supported.");
-                    return (elements, currentId);
+                    return (null, currentId);
             }
-
-            elements.Add(e);
-            return (elements, currentId);
         }
 
         protected override TreeViewItem BuildRoot() => new()
@@ -161,28 +163,28 @@ namespace StateViewer.Editor
             var e = item.Data;
             for (var i = 0; i < args.GetNumVisibleColumns(); ++i)
             {
-                var cellRect = args.GetCellRect(i);
-                CenterRectUsingSingleLineHeight(ref cellRect);
                 var columnIndex = args.GetColumn(i);
                 if (columnIndex == 0)
                 {
                     base.RowGUI(args);
+                    continue;
                 }
-                else if (columnIndex == 1)
+
+                var cellRect = args.GetCellRect(i);
+                CenterRectUsingSingleLineHeight(ref cellRect);
+
+                switch (columnIndex)
                 {
-                    GUI.Box(cellRect, e.Type);
-                }
-                else if (columnIndex == 2)
-                {
-                    if (e.Type == ValueKind.List.ToString() ||
-                        e.Type == ValueKind.Dictionary.ToString())
-                    {
-                        GUI.Box(cellRect, e.Value);
-                    }
-                    else
-                    {
+                    case 1:
+                        GUI.Label(cellRect, e.Type);
+                        break;
+                    case 2 when e.Type == ValueKind.List.ToString() ||
+                                e.Type == ValueKind.Dictionary.ToString():
+                        GUI.Label(cellRect, e.Value);
+                        break;
+                    case 2:
                         e.Value = GUI.TextField(cellRect, e.Value);
-                    }
+                        break;
                 }
             }
         }

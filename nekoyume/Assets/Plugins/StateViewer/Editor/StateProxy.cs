@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Bencodex.Types;
+using Cysharp.Threading.Tasks;
 using Libplanet;
 using Nekoyume.BlockChain;
 
@@ -16,7 +17,7 @@ namespace StateViewer.Editor
             Aliases = new Dictionary<string, Address>();
         }
 
-        public IValue GetState(string searchString)
+        public async UniTask<IValue> GetStateAsync(string searchString)
         {
             Address address;
 
@@ -29,7 +30,7 @@ namespace StateViewer.Editor
                 address = Aliases[searchString];
             }
 
-            return Agent.GetState(address);
+            return await Agent.GetStateAsync(address);
         }
 
         public void RegisterAlias(string alias, Address address)
