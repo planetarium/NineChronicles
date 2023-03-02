@@ -380,5 +380,21 @@ namespace Lib9c.Tests.Action
             Assert.Equal(_currency * 100, deserialized.Amount);
             Assert.Equal(memo, deserialized.Memo);
         }
+
+        [Fact]
+        public void CheckObsolete()
+        {
+            var action = new TransferAsset2(_sender, _recipient, _currency * 1);
+            Assert.Throws<ActionObsoletedException>(() =>
+            {
+                action.Execute(new ActionContext()
+                {
+                    PreviousStates = new State(),
+                    Signer = _sender,
+                    Rehearsal = false,
+                    BlockIndex = TransferAsset.CrystalTransferringRestrictionStartIndex,
+                });
+            });
+        }
     }
 }
