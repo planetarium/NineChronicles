@@ -28,6 +28,13 @@ namespace Nekoyume.Game
         public bool IsVisible(Address address, out int id, out bool isVisible)
         {
             var hexAddress = address.ToHex();
+            if (Avatars is null)
+            {
+                id = 0;
+                isVisible = false;
+                return false;
+            }
+
             var isExistDcc = Avatars.ContainsKey(hexAddress);
             id = Avatars.ContainsKey(hexAddress) ? Avatars[hexAddress] : 0;
             isVisible = PlayerPrefs.GetInt($"{DccVisible}_{hexAddress}", 0) > 0;
