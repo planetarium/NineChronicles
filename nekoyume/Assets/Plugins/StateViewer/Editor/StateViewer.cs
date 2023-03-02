@@ -8,6 +8,7 @@ using Nekoyume.Model.State;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Event = UnityEngine.Event;
 
 namespace StateViewer.Editor
@@ -18,15 +19,19 @@ namespace StateViewer.Editor
         private bool initialized;
 
         [SerializeField]
-        private bool drawStateView;
+        private bool drawTestValues;
+
+        [SerializeField]
+        private bool savable;
 
         // SerializeField is used to ensure the view state is written to the window
         // layout file. This means that the state survives restarting Unity as long as the window
         // is not closed. If the attribute is omitted then the state is still serialized/deserialized.
+        [FormerlySerializedAs("stateViewState")]
         [SerializeField]
-        private TreeViewState stateViewState;
+        private TreeViewState stateTreeViewState;
 
-        private StateView _stateView;
+        private StateTreeView _stateTreeView;
 
         private SearchField _searchField;
 
@@ -67,7 +72,7 @@ namespace StateViewer.Editor
         private void OnEnable()
         {
             Debug.Log("OnEnable()");
-            stateViewState ??= new TreeViewState();
+            stateTreeViewState ??= new TreeViewState();
             var keyColumn = new MultiColumnHeaderState.Column
             {
                 headerContent = new GUIContent("Key"),
@@ -104,12 +109,13 @@ namespace StateViewer.Editor
                 typeColumn,
                 valueColumn,
             });
-            _stateView = new StateView(
-                stateViewState,
+            _stateTreeView = new StateTreeView(
+                stateTreeViewState,
                 new MultiColumnHeader(headerState));
-            _stateView.SetData(Null.Value);
+            _stateTreeView.OnDirty += OnStateTreeViewDirty;
+                _stateTreeView.SetData(Null.Value);
             _searchField = new SearchField();
-            _searchField.downOrUpArrowKeyPressed += _stateView.SetFocusAndEnsureSelectedItem;
+            _searchField.downOrUpArrowKeyPressed += _stateTreeView.SetFocusAndEnsureSelectedItem;
             initialized = true;
         }
 
@@ -147,19 +153,24 @@ namespace StateViewer.Editor
 
         private void DrawAll()
         {
-            GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
-            DrawTestValues();
-            GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
-            DrawSearchField();
-            GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
-            DrawValueInfo();
+            if (savable &&
+                GUILayout.Button("Save"))
+            {
+                Debug.Log("Save clicked.");
+            }
 
-            drawStateView = EditorGUILayout.Toggle("Show State", drawStateView);
-            if (drawStateView)
+            drawTestValues = EditorGUILayout.Toggle("Show Test Values", drawTestValues);
+            if (drawTestValues)
             {
                 GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
-                _stateView.OnGUI(GetRect(maxHeight: position.height));
+                DrawTestValues();
             }
+
+            GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
+            DrawSearchField();
+
+            GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
+            _stateTreeView.OnGUI(GetRect(maxHeight: position.height));
         }
 
         private static Rect GetRect(
@@ -182,18 +193,11 @@ namespace StateViewer.Editor
                 var testValue = _testValues[i];
                 if (GUILayout.Button($"{i}: {testValue.Kind}"))
                 {
-                    _stateView.SetData(testValue);
+                    _stateTreeView.SetData(testValue);
                 }
             }
 
             EditorGUILayout.EndHorizontal();
-            var maxChildren = EditorGUILayout.TextField(
-                "Max Children",
-                _stateView.MaxChildren.ToString());
-            if (int.TryParse(maxChildren, out var result))
-            {
-                _stateView.MaxChildren = result;
-            }
         }
 
         private void DrawSearchField()
@@ -211,11 +215,11 @@ namespace StateViewer.Editor
             OnConfirm(_searchString).Forget();
         }
 
-        private void DrawValueInfo()
+        private void OnStateTreeViewDirty(bool dirty)
         {
-            EditorGUILayout.LabelField(
-                "Total rows",
-                _stateView.ElementsCount.ToString());
+            savable = !dirty &&
+                      Application.isPlaying &&
+                      Game.instance.IsInitialized;
         }
 
         private async UniTaskVoid OnConfirm(string searchString)
@@ -229,11 +233,11 @@ namespace StateViewer.Editor
             try
             {
                 var state = await _stateProxy.GetStateAsync(searchString);
-                _stateView.SetData(state);
+                _stateTreeView.SetData(state);
             }
             catch (KeyNotFoundException)
             {
-                _stateView.SetData((Text)"empty");
+                _stateTreeView.SetData((Text)"empty");
             }
         }
 
