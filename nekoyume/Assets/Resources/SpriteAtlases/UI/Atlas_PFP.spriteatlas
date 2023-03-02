@@ -52,11 +52,13 @@ SpriteAtlas:
   m_PackedSprites:
   - {fileID: 21300000, guid: c92fe3d095abff94c91406ab49eb834d, type: 3}
   - {fileID: 21300000, guid: d2d26ae070217b64080b83260e8cd73e, type: 3}
+  - {fileID: 21300000, guid: 17d24e0127b8b9f4eb9ecfaad9e9065e, type: 3}
   - {fileID: 21300000, guid: 1b3f70b266c320e409043ea6db7019ff, type: 3}
   - {fileID: 21300000, guid: 25dd65d27bc687748967353c8b30022b, type: 3}
   - {fileID: 21300000, guid: bbf2b4f275cd44f4fbd030b54a987e13, type: 3}
   - {fileID: 21300000, guid: ffbe6a3312190fc4cb7782f7401ed8ea, type: 3}
   - {fileID: 21300000, guid: 357c6404885b8aa44b7196d55f398f2a, type: 3}
+  - {fileID: 21300000, guid: 4def6b04c11f63849b677e0c0b0bcca2, type: 3}
   - {fileID: 21300000, guid: 27a301945de5b8647846a0adf2417f08, type: 3}
   - {fileID: 21300000, guid: c19f601514d61da49a9a7500ee9d2841, type: 3}
   - {fileID: 21300000, guid: d07a62555a5d5d74a8df03ed9758e539, type: 3}
@@ -75,23 +77,26 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 054c37aa5a3ecd446886c495ea0308c3, type: 3}
   - {fileID: 21300000, guid: 6c6e3d6b53d0cb04ab7d9d8d232e769e, type: 3}
   - {fileID: 21300000, guid: 10651e7b598ce3844806f2ce59bf836b, type: 3}
+  - {fileID: 21300000, guid: 98353bcb506f19549bea799ece20bbce, type: 3}
   - {fileID: 21300000, guid: 0b3e9c6c744c65347a05569b714c9457, type: 3}
   - {fileID: 21300000, guid: 6c13927cbce3cf8468cb9d92ef9ff966, type: 3}
   - {fileID: 21300000, guid: 6906ed1dae15cc744b94ac018a39af2f, type: 3}
-  - {fileID: 21300000, guid: 6e4cfccd25a5a92499068bf5733bc17b, type: 3}
+  - {fileID: 21300000, guid: bd88f33d9e3f1a84d9356bd6c24e350d, type: 3}
+  - {fileID: 21300000, guid: 4df3812e805b2074aac12fa3e1420952, type: 3}
   - {fileID: 21300000, guid: 09fd219e305d25f449bfce0de56e1b8d, type: 3}
   - {fileID: 21300000, guid: f3590eae024b8434eb4cbc25d499eef6, type: 3}
-  - {fileID: 21300000, guid: 908f5b1fdc23b26429be23fc3618d501, type: 3}
   - {fileID: 21300000, guid: a0877e2fc02d0e848b53b6bc8d2148e2, type: 3}
   - {fileID: 21300000, guid: 7993c8df5e2eaa34ebd42392d5a55f25, type: 3}
   m_PackedSpriteNamesToIndex:
   - UI_PFP_Bg_Inside
   - Img_DCC_02
+  - DccCollection_Character_floor_4
   - EquipPet_bg_Empty
   - DccCollection_Character_floor
   - UI_main_icon_Mileage
   - Img_DccCollection
   - Img_DCC_04
+  - DccCollection_Character_floor_3
   - UI_PFP_Bg_Light
   - Character_Level_Bg
   - EquipPet_Mask
@@ -110,13 +115,14 @@ SpriteAtlas:
   - EquipPet_bg_1
   - Icon_DccAll
   - PetCard_Name_Bg
+  - DccHomepage
   - button_Blue_01
   - Img_DCC_01
   - UI_PFP_Bg_1
-  - Img_DCC_05
+  - DccCollection_Character_floor_2
+  - Pattern
   - Icon_OpenSea
   - button_brown_eye_on
-  - Character_Silhouette
   - DccCollection_Popup_Title_Bg
   - UI_popup_title_bg_05
   m_RenderDataMap: {}
