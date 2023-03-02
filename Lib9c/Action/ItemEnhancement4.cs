@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Globalization;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.Item;
@@ -15,9 +16,9 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
     [ActionType("item_enhancement4")]
-    public class ItemEnhancement4 : GameAction
+    public class ItemEnhancement4 : GameAction, IItemEnhancementV2
     {
         public const int RequiredBlockCount = 1;
 
@@ -27,6 +28,12 @@ namespace Nekoyume.Action
         public Guid materialId;
         public Address avatarAddress;
         public int slotIndex;
+
+        Guid IItemEnhancementV2.ItemId => itemId;
+        Guid IItemEnhancementV2.MaterialId => materialId;
+        Address IItemEnhancementV2.AvatarAddress => avatarAddress;
+        int IItemEnhancementV2.SlotIndex => slotIndex;
+
         public override IAccountStateDelta Execute(IActionContext context)
         {
             IActionContext ctx = context;
@@ -46,10 +53,10 @@ namespace Nekoyume.Action
                     .SetState(slotAddress, MarkChanged);
             }
 
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
-            
+
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;

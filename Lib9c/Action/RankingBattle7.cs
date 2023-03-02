@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using Bencodex.Types;
+using Lib9c.Action;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
@@ -17,9 +18,9 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100086ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100086ObsoleteIndex)]
     [ActionType("ranking_battle7")]
-    public class RankingBattle7 : GameAction
+    public class RankingBattle7 : GameAction, IRankingBattleV2
     {
         public const int StageId = 999999;
         public static readonly BigInteger EntranceFee = 100;
@@ -31,6 +32,12 @@ namespace Nekoyume.Action
         public List<Guid> equipmentIds;
         public List<Guid> consumableIds;
         public BattleLog Result { get; private set; }
+
+        Address IRankingBattleV2.AvatarAddress => avatarAddress;
+        Address IRankingBattleV2.EnemyAddress => enemyAddress;
+        Address IRankingBattleV2.WeeklyArenaAddress => weeklyArenaAddress;
+        IEnumerable<Guid> IRankingBattleV2.CostumeIds => costumeIds;
+        IEnumerable<Guid> IRankingBattleV2.EquipmentIds => equipmentIds;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
@@ -49,7 +56,7 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, MarkChanged);
             }
 
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100086ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100086ObsoleteIndex, context);
 
             // Avoid InvalidBlockStateRootHashException
             if (ctx.BlockIndex == 680341 && Id.Equals(new Guid("df37dbd8-5703-4dff-918b-ad22ee4c34c6")))

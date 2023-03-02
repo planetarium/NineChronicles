@@ -10,13 +10,16 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
     [ActionType("activate_account")]
     public class ActivateAccount0 : ActionBase, IActivateAccount
     {
         public Address PendingAddress { get; private set; }
 
         public byte[] Signature { get; private set; }
+
+        Address IActivateAccount.PendingAddress => PendingAddress;
+        byte[] IActivateAccount.Signature => Signature;
 
         public override IValue PlainValue =>
             new Dictionary(
@@ -48,7 +51,7 @@ namespace Nekoyume.Action
                     .SetState(PendingAddress, MarkChanged);
             }
 
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
 
             if (!state.TryGetState(ActivatedAccountsState.Address, out Dictionary accountsAsDict))
             {

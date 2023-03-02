@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Immutable;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Extensions;
@@ -12,9 +13,11 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [ActionType("claim_stake_reward")]
-    public class ClaimStakeReward1 : GameAction, IClaimStakeReward
+    public class ClaimStakeReward1 : GameAction, IClaimStakeReward, IClaimStakeRewardV1
     {
         internal Address AvatarAddress { get; private set; }
+
+        Address IClaimStakeRewardV1.AvatarAddress => AvatarAddress;
 
         public ClaimStakeReward1(Address avatarAddress)
         {

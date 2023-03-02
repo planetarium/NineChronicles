@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet.Action;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -15,7 +16,7 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("create_avatar6")]
-    public class CreateAvatar6 : GameAction
+    public class CreateAvatar6 : GameAction, ICreateAvatarV2
     {
         public const string DeriveFormat = "avatar-state-{0}";
 
@@ -25,6 +26,13 @@ namespace Nekoyume.Action
         public int ear;
         public int tail;
         public string name;
+
+        int ICreateAvatarV2.Index => index;
+        int ICreateAvatarV2.Hair => hair;
+        int ICreateAvatarV2.Lens => lens;
+        int ICreateAvatarV2.Ear => ear;
+        int ICreateAvatarV2.Tail => tail;
+        string ICreateAvatarV2.Name => name;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>()
         {

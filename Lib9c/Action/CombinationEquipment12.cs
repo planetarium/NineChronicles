@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Extensions;
@@ -23,7 +24,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("combination_equipment12")]
-    public class CombinationEquipment12 : GameAction
+    public class CombinationEquipment12 : GameAction, ICombinationEquipmentV2
     {
         public const string AvatarAddressKey = "a";
         public Address avatarAddress;
@@ -38,6 +39,12 @@ namespace Nekoyume.Action
         public int? subRecipeId;
         public const string PayByCrystalKey = "p";
         public bool payByCrystal;
+
+        Address ICombinationEquipmentV2.AvatarAddress => avatarAddress;
+        int ICombinationEquipmentV2.RecipeId => recipeId;
+        int ICombinationEquipmentV2.SlotIndex => slotIndex;
+        int? ICombinationEquipmentV2.SubRecipeId => subRecipeId;
+        bool ICombinationEquipmentV2.PayByCrystal => payByCrystal;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
@@ -16,9 +17,9 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
     [ActionType("buy4")]
-    public class Buy4 : GameAction, IBuy0
+    public class Buy4 : GameAction, IBuy0, IBuyV1
     {
         public Address buyerAvatarAddress { get; set; }
         public Address sellerAgentAddress { get; set; }
@@ -26,6 +27,11 @@ namespace Nekoyume.Action
         public Guid productId { get; set; }
         public Buy7.BuyerResult buyerResult;
         public Buy7.SellerResult sellerResult;
+
+        Address IBuyV1.BuyerAvatarAddress => buyerAvatarAddress;
+        Address IBuyV1.SellerAgentAddress => sellerAgentAddress;
+        Address IBuyV1.SellerAvatarAddress => sellerAvatarAddress;
+        Guid IBuyV1.ProductId => productId;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {
@@ -61,7 +67,7 @@ namespace Nekoyume.Action
                 return states.SetState(ShopState.Address, MarkChanged);
             }
 
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, buyerAvatarAddress, sellerAvatarAddress);
 

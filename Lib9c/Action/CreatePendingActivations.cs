@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.State;
@@ -15,9 +16,13 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("create_pending_activations")]
-    public class CreatePendingActivations : ActionBase
+    public class CreatePendingActivations : ActionBase, ICreatePendingActivationsV1
     {
         public IList<(byte[] Address, byte[] Nonce, byte[] PublicKey)> PendingActivations { get; internal set; }
+
+        IEnumerable<IValue> ICreatePendingActivationsV1.PendingActivations =>
+            PendingActivations.Select(t =>
+                new List(new Binary[] { t.Address, t.Nonce, t.PublicKey }.Cast<IValue>()));
 
         public override IValue PlainValue
             => PendingActivations.Select(t => new List(new Binary[] { t.Address, t.Nonce, t.PublicKey }.Cast<IValue>()))

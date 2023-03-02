@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
@@ -14,13 +15,16 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
     [ActionType("redeem_code")]
-    public class RedeemCode0 : GameAction
+    public class RedeemCode0 : GameAction, IRedeemCodeV1
     {
         public string Code { get; internal set; }
 
         public Address AvatarAddress {get; internal set; }
+
+        string IRedeemCodeV1.Code => Code;
+        Address IRedeemCodeV1.AvatarAddress => AvatarAddress;
 
         public RedeemCode0()
         {
@@ -45,7 +49,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
 

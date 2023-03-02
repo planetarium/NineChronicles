@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Extensions;
@@ -20,12 +21,15 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/1194
     /// </summary>
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100310ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100310ObsoleteIndex)]
     [ActionType("rapid_combination6")]
-    public class RapidCombination6 : GameAction
+    public class RapidCombination6 : GameAction, IRapidCombinationV1
     {
         public Address avatarAddress;
         public int slotIndex;
+
+        Address IRapidCombinationV1.AvatarAddress => avatarAddress;
+        int IRapidCombinationV1.SlotIndex => slotIndex;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
@@ -49,7 +53,7 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, MarkChanged)
                     .SetState(slotAddress, MarkChanged);
             }
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100310ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100310ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Immutable;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.State;
@@ -20,7 +21,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("patch_table_sheet")]
-    public class PatchTableSheet : GameAction
+    public class PatchTableSheet : GameAction, IPatchTableSheetV1
     {
         // FIXME: We should eliminate or justify this concept in another way after v100340.
         // (Until that) please consult Nine Chronicles Dev if you have any questions about this account.
@@ -29,6 +30,9 @@ namespace Nekoyume.Action
 
         public string TableName;
         public string TableCsv;
+
+        string IPatchTableSheetV1.TableName => TableName;
+        string IPatchTableSheetV1.TableCsv => TableCsv;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {

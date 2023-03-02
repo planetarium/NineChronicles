@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
@@ -20,12 +21,16 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/957
     /// </summary>
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
     [ActionType("cancel_monster_collect")]
-    public class CancelMonsterCollect : GameAction
+    public class CancelMonsterCollect : GameAction, ICancelMonsterCollectV1
     {
         public int collectRound;
         public int level;
+
+        int ICancelMonsterCollectV1.CollectRound => collectRound;
+        int ICancelMonsterCollectV1.Level => level;
+
         public override IAccountStateDelta Execute(IActionContext context)
         {
             IAccountStateDelta states = context.PreviousStates;
@@ -37,7 +42,7 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, collectionAddress, context.Signer);
             }
 
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, context.Signer);
             var started = DateTimeOffset.UtcNow;

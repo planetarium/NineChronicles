@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.Item;
@@ -23,7 +24,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("item_enhancement10")]
-    public class ItemEnhancement10 : GameAction
+    public class ItemEnhancement10 : GameAction, IItemEnhancementV2
     {
         public static Address GetFeeStoreAddress() => Addresses.Blacksmith.Derive("_0_0");
 
@@ -38,6 +39,11 @@ namespace Nekoyume.Action
         public Guid materialId;
         public Address avatarAddress;
         public int slotIndex;
+
+        Guid IItemEnhancementV2.ItemId => itemId;
+        Guid IItemEnhancementV2.MaterialId => materialId;
+        Address IItemEnhancementV2.AvatarAddress => avatarAddress;
+        int IItemEnhancementV2.SlotIndex => slotIndex;
 
         // NOTE: This is equals to [`ItemEnhancement9.ResultModel`].
         [Serializable]

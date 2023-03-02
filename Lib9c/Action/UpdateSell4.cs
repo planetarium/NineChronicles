@@ -4,11 +4,12 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
-using Nekoyume.BlockChain.Policy;
+
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -25,12 +26,16 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("update_sell4")]
-    [ActionObsolete(BlockPolicySource.V100351ObsoleteIndex)]
-    public class UpdateSell4 : GameAction
+    [ActionObsolete(ActionObsoleteConfig.V100351ObsoleteIndex)]
+    public class UpdateSell4 : GameAction, IUpdateSellV2
     {
         private const int UpdateCapacity = 100;
         public Address sellerAvatarAddress;
         public IEnumerable<UpdateSellInfo> updateSellInfos;
+
+        Address IUpdateSellV2.SellerAvatarAddress => sellerAvatarAddress;
+        IEnumerable<IValue> IUpdateSellV2.UpdateSellInfos =>
+            updateSellInfos.Select(x => x.Serialize());
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
@@ -59,7 +64,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            CheckObsolete(BlockPolicySource.V100351ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100351ObsoleteIndex, context);
 
             if (updateSellInfos.Count() > UpdateCapacity)
             {

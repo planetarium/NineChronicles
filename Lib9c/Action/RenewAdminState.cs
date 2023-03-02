@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet.Action;
 using Nekoyume.Model.State;
 
@@ -14,10 +15,12 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("renew_admin_state")]
-    public class RenewAdminState : GameAction
+    public class RenewAdminState : GameAction, IRenewAdminStateV1
     {
         private const string NewValidUntilKey = "new_valid_until";
         public long NewValidUntil {get; internal set; }
+
+        long IRenewAdminStateV1.NewValidUntil => NewValidUntil;
 
         public RenewAdminState()
         {

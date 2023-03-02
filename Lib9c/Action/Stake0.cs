@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Extensions;
@@ -13,9 +14,11 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [ActionType("stake")]
-    public class Stake0 : ActionBase
+    public class Stake0 : ActionBase, IStakeV1
     {
         internal BigInteger Amount { get; set; }
+
+        BigInteger IStakeV1.Amount => Amount;
 
         public Stake0(BigInteger amount)
         {

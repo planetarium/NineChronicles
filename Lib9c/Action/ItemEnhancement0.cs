@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.Item;
@@ -17,9 +18,9 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
     [ActionType("item_enhancement")]
-    public class ItemEnhancement0 : GameAction
+    public class ItemEnhancement0 : GameAction, IItemEnhancementV1
     {
         public const int RequiredBlockCount = 1;
 
@@ -29,6 +30,11 @@ namespace Nekoyume.Action
         public IEnumerable<Guid> materialIds;
         public Address avatarAddress;
         public int slotIndex;
+
+        Guid IItemEnhancementV1.ItemId => itemId;
+        IEnumerable<Guid> IItemEnhancementV1.MaterialIds => materialIds;
+        Address IItemEnhancementV1.AvatarAddress => avatarAddress;
+        int IItemEnhancementV1.SlotIndex => slotIndex;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
@@ -49,7 +55,7 @@ namespace Nekoyume.Action
                     .SetState(slotAddress, MarkChanged);
             }
 
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 

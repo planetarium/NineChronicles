@@ -177,7 +177,7 @@ namespace Lib9c.Tests.Action
         {
             var worldInformation = _avatarState.worldInformation;
             var rows = _tableSheets.EquipmentItemRecipeSheet.Values
-                .Where(i => i.ItemSubType == itemSubType && i.Id != 1 && i.UnlockStage != 999);
+                .Where(i => i.ItemSubType == itemSubType && i.Id != 1 && i.UnlockStage != 999 && i.CRYSTAL != 0);
 
             // Clear Stage
             for (int i = 1; i <= 6; i++)

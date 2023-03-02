@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
@@ -16,15 +17,20 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
     [ActionType("sell4")]
-    public class Sell4 : GameAction
+    public class Sell4 : GameAction, ISellV1
     {
         public const long ExpiredBlockIndex = 16000;
         public Address sellerAvatarAddress;
         public Guid itemId;
         public ItemSubType itemSubType;
         public FungibleAssetValue price;
+
+        Address ISellV1.SellerAvatarAddress => sellerAvatarAddress;
+        Guid ISellV1.ItemId => itemId;
+        FungibleAssetValue ISellV1.Price => price;
+        string ISellV1.ItemSubType => itemSubType.ToString();
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {
@@ -56,7 +62,7 @@ namespace Nekoyume.Action
                     .SetState(ctx.Signer, MarkChanged);
             }
 
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, sellerAvatarAddress);
 

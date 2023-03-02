@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
@@ -16,9 +17,9 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
     [ActionType("mimisbrunnr_battle3")]
-    public class MimisbrunnrBattle3 : GameAction
+    public class MimisbrunnrBattle3 : GameAction, IMimisbrunnrBattleV1
     {
         public List<Guid> costumes;
         public List<Guid> equipments;
@@ -28,6 +29,15 @@ namespace Nekoyume.Action
         public Address avatarAddress;
         public Address WeeklyArenaAddress;
         public Address RankingMapAddress;
+
+        IEnumerable<Guid> IMimisbrunnrBattleV1.Costumes => costumes;
+        IEnumerable<Guid> IMimisbrunnrBattleV1.Equipments => equipments;
+        IEnumerable<Guid> IMimisbrunnrBattleV1.Foods => foods;
+        int IMimisbrunnrBattleV1.WorldId => worldId;
+        int IMimisbrunnrBattleV1.StageId => stageId;
+        Address IMimisbrunnrBattleV1.AvatarAddress => avatarAddress;
+        Address IMimisbrunnrBattleV1.WeeklyArenaAddress => WeeklyArenaAddress;
+        Address IMimisbrunnrBattleV1.RankingMapAddress => RankingMapAddress;
 
         private const int AlfheimId = 2;
         public BattleLog Result { get; private set; }
@@ -68,7 +78,7 @@ namespace Nekoyume.Action
                 return states.SetState(WeeklyArenaAddress, MarkChanged);
             }
 
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 

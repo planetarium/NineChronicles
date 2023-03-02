@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
@@ -29,7 +30,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("item_enhancement11")]
-    public class ItemEnhancement : GameAction
+    public class ItemEnhancement : GameAction, IItemEnhancementV2
     {
         public enum EnhancementResult
         {
@@ -42,6 +43,11 @@ namespace Nekoyume.Action
         public Guid materialId;
         public Address avatarAddress;
         public int slotIndex;
+
+        Guid IItemEnhancementV2.ItemId => itemId;
+        Guid IItemEnhancementV2.MaterialId => materialId;
+        Address IItemEnhancementV2.AvatarAddress => avatarAddress;
+        int IItemEnhancementV2.SlotIndex => slotIndex;
 
         [Serializable]
         public class ResultModel : AttachmentActionResult

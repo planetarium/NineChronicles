@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Immutable;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Extensions;
@@ -16,11 +17,13 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1371
     /// </summary>
     [ActionType(ActionTypeText)]
-    public class ClaimStakeReward3 : GameAction, IClaimStakeReward
+    public class ClaimStakeReward3 : GameAction, IClaimStakeReward, IClaimStakeRewardV1
     {
         private const string ActionTypeText = "claim_stake_reward3";
 
         internal Address AvatarAddress { get; private set; }
+
+        Address IClaimStakeRewardV1.AvatarAddress => AvatarAddress;
 
         public ClaimStakeReward3(Address avatarAddress)
         {

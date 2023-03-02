@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
@@ -23,7 +24,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("hack_and_slash15")]
-    public class HackAndSlash15 : GameAction
+    public class HackAndSlash15 : GameAction, IHackAndSlashV7
     {
         public List<Guid> costumes;
         public List<Guid> equipments;
@@ -32,6 +33,14 @@ namespace Nekoyume.Action
         public int stageId;
         public int? stageBuffId;
         public Address avatarAddress;
+
+        IEnumerable<Guid> IHackAndSlashV7.Costumes => costumes;
+        IEnumerable<Guid> IHackAndSlashV7.Equipments => equipments;
+        IEnumerable<Guid> IHackAndSlashV7.Foods => foods;
+        int IHackAndSlashV7.WorldId => worldId;
+        int IHackAndSlashV7.StageId => stageId;
+        int? IHackAndSlashV7.StageBuffId => stageBuffId;
+        Address IHackAndSlashV7.AvatarAddress => avatarAddress;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal
         {

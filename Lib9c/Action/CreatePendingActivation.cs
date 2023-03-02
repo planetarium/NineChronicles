@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet.Action;
 using Nekoyume.Model.State;
 
@@ -12,9 +13,11 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("create_pending_activation")]
-    public class CreatePendingActivation : ActionBase
+    public class CreatePendingActivation : ActionBase, ICreatePendingActivationV1
     {
         public PendingActivationState PendingActivation { get; private set; }
+
+        IValue ICreatePendingActivationV1.PendingActivation => PendingActivation.Serialize();
 
         public override IValue PlainValue
             => new Dictionary(

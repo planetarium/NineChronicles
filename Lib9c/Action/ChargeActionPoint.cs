@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.Item;
@@ -22,9 +23,11 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("charge_action_point3")]
-    public class ChargeActionPoint : GameAction
+    public class ChargeActionPoint : GameAction, IChargeActionPointV1
     {
         public Address avatarAddress;
+
+        Address IChargeActionPointV1.AvatarAddress => avatarAddress;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {

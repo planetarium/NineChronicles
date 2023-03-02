@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
-using Nekoyume.BlockChain.Policy;
+
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
@@ -22,9 +23,9 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1495
     /// </summary>
     [Serializable]
-    [ActionObsolete(BlockPolicySource.V100360ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100360ObsoleteIndex)]
     [ActionType("hack_and_slash_sweep8")]
-    public class HackAndSlashSweep8 : GameAction
+    public class HackAndSlashSweep8 : GameAction, IHackAndSlashSweepV3
     {
         public const int UsableApStoneCount = 10;
 
@@ -36,6 +37,16 @@ namespace Nekoyume.Action
         public int actionPoint;
         public int worldId;
         public int stageId;
+
+        IEnumerable<Guid> IHackAndSlashSweepV3.Costumes => costumes;
+        IEnumerable<Guid> IHackAndSlashSweepV3.Equipments => equipments;
+        IEnumerable<IValue> IHackAndSlashSweepV3.RuneSlotInfos =>
+            runeInfos.Select(x => x.Serialize());
+        Address IHackAndSlashSweepV3.AvatarAddress => avatarAddress;
+        int IHackAndSlashSweepV3.ApStoneCount => apStoneCount;
+        int IHackAndSlashSweepV3.ActionPoint => actionPoint;
+        int IHackAndSlashSweepV3.WorldId => worldId;
+        int IHackAndSlashSweepV3.StageId => stageId;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>()
@@ -71,7 +82,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            CheckObsolete(BlockPolicySource.V100360ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100360ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             var started = DateTimeOffset.UtcNow;

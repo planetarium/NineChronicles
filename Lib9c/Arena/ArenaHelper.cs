@@ -39,11 +39,19 @@ namespace Nekoyume.Arena
                 { ArenaType.Championship, (100, -100) }
             };
 
-        public static readonly IReadOnlyDictionary<ArenaType, (int upper, int lower)> ScoreLimits =
+        [Obsolete("Use `ScoreLimits` instead.")]
+        public static readonly IReadOnlyDictionary<ArenaType, (int upper, int lower)> ScoreLimitsV3 =
             new Dictionary<ArenaType, (int, int)>
             {
                 { ArenaType.Season, (100, -100) },
                 { ArenaType.Championship, (100, -100) }
+            };
+
+        public static readonly IReadOnlyDictionary<ArenaType, (int upper, int lower)> ScoreLimits =
+            new Dictionary<ArenaType, (int, int)>
+            {
+                { ArenaType.Season, (200, -100) },
+                { ArenaType.Championship, (200, -100) }
             };
 
         public static int GetMedalItemId(int championshipId, int round) =>
@@ -155,6 +163,17 @@ namespace Nekoyume.Arena
                 myScore, enemyScore, BattleLog.Result.Win);
 
             var (myDefeatScore, _) = ArenaScoreHelper.GetScore(
+                myScore, enemyScore, BattleLog.Result.Lose);
+
+            return (myWinScore, myDefeatScore, enemyWinScore);
+        }
+
+        public static (int, int, int) GetScoresV1(int myScore, int enemyScore)
+        {
+            var (myWinScore, enemyWinScore) = ArenaScoreHelper.GetScoreV4(
+                myScore, enemyScore, BattleLog.Result.Win);
+
+            var (myDefeatScore, _) = ArenaScoreHelper.GetScoreV4(
                 myScore, enemyScore, BattleLog.Result.Lose);
 
             return (myWinScore, myDefeatScore, enemyWinScore);

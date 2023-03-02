@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Serilog;
@@ -18,7 +19,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("migration_legacy_shop2")]
-    public class MigrationLegacyShop : GameAction
+    public class MigrationLegacyShop : GameAction, IMigrationLegacyShopV1
     {
         public override IAccountStateDelta Execute(IActionContext context)
         {

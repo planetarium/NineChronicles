@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Immutable;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet.Action;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -9,9 +10,11 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("add_redeem_code")]
-    public class AddRedeemCode : GameAction
+    public class AddRedeemCode : GameAction, IAddRedeemCodeV1
     {
         public string redeemCsv;
+
+        string IAddRedeemCodeV1.RedeemCsv => redeemCsv;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {

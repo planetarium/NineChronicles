@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Arena;
@@ -22,7 +23,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("join_arena3")]
-    public class JoinArena : GameAction
+    public class JoinArena : GameAction, IJoinArenaV1
     {
         public Address avatarAddress;
         public int championshipId;
@@ -30,6 +31,14 @@ namespace Nekoyume.Action
         public List<Guid> costumes;
         public List<Guid> equipments;
         public List<RuneSlotInfo> runeInfos;
+
+        Address IJoinArenaV1.AvatarAddress => avatarAddress;
+        int IJoinArenaV1.ChampionshipId => championshipId;
+        int IJoinArenaV1.Round => round;
+        IEnumerable<Guid> IJoinArenaV1.Costumes => costumes;
+        IEnumerable<Guid> IJoinArenaV1.Equipments => equipments;
+        IEnumerable<IValue> IJoinArenaV1.RuneSlotInfos => runeInfos
+            .Select(x => x.Serialize());
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>()

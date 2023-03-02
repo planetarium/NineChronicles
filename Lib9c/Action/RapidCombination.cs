@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Extensions;
@@ -20,10 +21,13 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("rapid_combination8")]
-    public class RapidCombination : GameAction
+    public class RapidCombination : GameAction, IRapidCombinationV1
     {
         public Address avatarAddress;
         public int slotIndex;
+
+        Address IRapidCombinationV1.AvatarAddress => avatarAddress;
+        int IRapidCombinationV1.SlotIndex => slotIndex;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {

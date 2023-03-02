@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
@@ -19,9 +20,9 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
     [ActionType("combination_equipment7")]
-    public class CombinationEquipment7 : GameAction
+    public class CombinationEquipment7 : GameAction, ICombinationEquipmentV1
     {
         public static readonly Address BlacksmithAddress = ItemEnhancement9.BlacksmithAddress;
 
@@ -29,6 +30,11 @@ namespace Nekoyume.Action
         public int RecipeId;
         public int SlotIndex;
         public int? SubRecipeId;
+
+        Address ICombinationEquipmentV1.AvatarAddress => AvatarAddress;
+        int ICombinationEquipmentV1.RecipeId => RecipeId;
+        int ICombinationEquipmentV1.SlotIndex => SlotIndex;
+        int? ICombinationEquipmentV1.SubRecipeId => SubRecipeId;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
@@ -56,7 +62,7 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, BlacksmithAddress);
             }
 
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
 

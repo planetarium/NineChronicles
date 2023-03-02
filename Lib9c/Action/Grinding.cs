@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
@@ -19,13 +20,18 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [ActionType("grinding")]
-    public class Grinding : GameAction
+    public class Grinding : GameAction, IGrindingV1
     {
         public const int CostAp = 5;
         public const int Limit = 10;
         public Address AvatarAddress;
         public List<Guid> EquipmentIds;
         public bool ChargeAp;
+
+        Address IGrindingV1.AvatarAddress => AvatarAddress;
+        List<Guid> IGrindingV1.EquipmentsIds => EquipmentIds;
+        bool IGrindingV1.ChargeAp => ChargeAp;
+
         public override IAccountStateDelta Execute(IActionContext context)
         {
             IActionContext ctx = context;

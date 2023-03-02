@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
@@ -16,9 +17,9 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100170ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100170ObsoleteIndex)]
     [ActionType("mimisbrunnr_battle7")]
-    public class MimisbrunnrBattle7 : GameAction
+    public class MimisbrunnrBattle7 : GameAction, IMimisbrunnrBattleV3
     {
         public List<Guid> costumes;
         public List<Guid> equipments;
@@ -28,6 +29,15 @@ namespace Nekoyume.Action
         public int playCount = 1;
         public Address avatarAddress;
         public Address rankingMapAddress;
+
+        IEnumerable<Guid> IMimisbrunnrBattleV3.Costumes => costumes;
+        IEnumerable<Guid> IMimisbrunnrBattleV3.Equipments => equipments;
+        IEnumerable<Guid> IMimisbrunnrBattleV3.Foods => foods;
+        int IMimisbrunnrBattleV3.WorldId => worldId;
+        int IMimisbrunnrBattleV3.StageId => stageId;
+        int IMimisbrunnrBattleV3.PlayCount => playCount;
+        Address IMimisbrunnrBattleV3.AvatarAddress => avatarAddress;
+        Address IMimisbrunnrBattleV3.RankingMapAddress => rankingMapAddress;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
@@ -72,7 +82,7 @@ namespace Nekoyume.Action
                 return states.SetState(ctx.Signer, MarkChanged);
             }
 
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100170ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100170ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 

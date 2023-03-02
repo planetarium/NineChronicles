@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
@@ -15,11 +16,15 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("runeEnhancement2")]
-    public class RuneEnhancement : GameAction
+    public class RuneEnhancement : GameAction, IRuneEnhancementV1
     {
         public Address AvatarAddress;
         public int RuneId;
         public int TryCount = 1;
+
+        Address IRuneEnhancementV1.AvatarAddress => AvatarAddress;
+        int IRuneEnhancementV1.RuneId => RuneId;
+        int IRuneEnhancementV1.TryCount => TryCount;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Extensions;
@@ -14,9 +15,12 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("claim_world_boss_kill_reward")]
-    public class ClaimWordBossKillReward : GameAction
+    public class ClaimWordBossKillReward : GameAction, IClaimWordBossKillRewardV1
     {
         public Address AvatarAddress;
+
+        Address IClaimWordBossKillRewardV1.AvatarAddress => AvatarAddress;
+
         public override IAccountStateDelta Execute(IActionContext context)
         {
             IAccountStateDelta states = context.PreviousStates;

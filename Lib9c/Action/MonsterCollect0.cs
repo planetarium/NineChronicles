@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
@@ -12,12 +13,16 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
     [ActionType("monster_collect")]
-    public class MonsterCollect0 : GameAction
+    public class MonsterCollect0 : GameAction, IMonsterCollectV1
     {
         public int level;
         public int collectionRound;
+
+        int IMonsterCollectV1.Level => level;
+        int IMonsterCollectV1.CollectionRound => collectionRound;
+
         public override IAccountStateDelta Execute(IActionContext context)
         {
             IAccountStateDelta states = context.PreviousStates;
@@ -30,7 +35,7 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, context.Signer, monsterCollectionAddress);
             }
 
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
 
             MonsterCollectionSheet monsterCollectionSheet = states.GetSheet<MonsterCollectionSheet>();
 

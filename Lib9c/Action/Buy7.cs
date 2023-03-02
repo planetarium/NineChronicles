@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
@@ -18,9 +19,9 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
     [ActionType("buy7")]
-    public class Buy7 : GameAction, IBuy5
+    public class Buy7 : GameAction, IBuy5, IBuyV2
     {
         public const int TaxRate = 8;
         public const int ErrorCodeFailedLoadingState = 1;
@@ -35,6 +36,9 @@ namespace Nekoyume.Action
         IEnumerable<IPurchaseInfo> IBuy5.purchaseInfos => purchaseInfos.Cast<IPurchaseInfo>();
         public BuyerMultipleResult buyerMultipleResult;
         public SellerMultipleResult sellerMultipleResult;
+
+        Address IBuyV2.BuyerAvatarAddress => buyerAvatarAddress;
+        IEnumerable<IValue> IBuyV2.PurchaseInfos => purchaseInfos.Select(x => x.Serialize());
 
         [Serializable]
         public class BuyerResult : AttachmentActionResult
@@ -214,7 +218,7 @@ namespace Nekoyume.Action
                     .SetState(Addresses.Shop, MarkChanged);
             }
 
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, buyerAvatarAddress);
 

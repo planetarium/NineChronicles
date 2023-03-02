@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model;
@@ -13,7 +14,7 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("migration_activated_accounts_state")]
-    public class MigrationActivatedAccountsState : GameAction
+    public class MigrationActivatedAccountsState : GameAction, IMigrationActivatedAccountsStateV1
     {
         public override IAccountStateDelta Execute(IActionContext context)
         {

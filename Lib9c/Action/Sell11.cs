@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
-using Nekoyume.BlockChain.Policy;
+
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -21,8 +22,8 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("sell11")]
-    [ActionObsolete(BlockPolicySource.V100351ObsoleteIndex)]
-    public class Sell11 : GameAction
+    [ActionObsolete(ActionObsoleteConfig.V100351ObsoleteIndex)]
+    public class Sell11 : GameAction, ISellV2
     {
         public Address sellerAvatarAddress;
         public Guid tradableId;
@@ -30,6 +31,13 @@ namespace Nekoyume.Action
         public FungibleAssetValue price;
         public ItemSubType itemSubType;
         public Guid orderId;
+
+        Address ISellV2.SellerAvatarAddress => sellerAvatarAddress;
+        Guid ISellV2.TradableId => tradableId;
+        int ISellV2.Count => count;
+        FungibleAssetValue ISellV2.Price => price;
+        string ISellV2.ItemSubType => itemSubType.ToString();
+        Guid? ISellV2.OrderId => orderId;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
@@ -77,7 +85,7 @@ namespace Nekoyume.Action
                     .SetState(sellerAvatarAddress, MarkChanged);
             }
 
-            CheckObsolete(BlockPolicySource.V100351ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100351ObsoleteIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, sellerAvatarAddress);
 
             var sw = new Stopwatch();

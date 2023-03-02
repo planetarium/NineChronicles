@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Arena;
-using Nekoyume.BlockChain.Policy;
+
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model.Arena;
@@ -22,9 +23,9 @@ namespace Nekoyume.Action
     /// Introduced at https://github.com/planetarium/lib9c/pull/1495
     /// </summary>
     [Serializable]
-    [ActionObsolete(BlockPolicySource.V100360ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100360ObsoleteIndex)]
     [ActionType("join_arena2")]
-    public class JoinArena2 : GameAction
+    public class JoinArena2 : GameAction, IJoinArenaV1
     {
         public Address avatarAddress;
         public int championshipId;
@@ -32,6 +33,14 @@ namespace Nekoyume.Action
         public List<Guid> costumes;
         public List<Guid> equipments;
         public List<RuneSlotInfo> runeInfos;
+
+        Address IJoinArenaV1.AvatarAddress => avatarAddress;
+        int IJoinArenaV1.ChampionshipId => championshipId;
+        int IJoinArenaV1.Round => round;
+        IEnumerable<Guid> IJoinArenaV1.Costumes => costumes;
+        IEnumerable<Guid> IJoinArenaV1.Equipments => equipments;
+        IEnumerable<IValue> IJoinArenaV1.RuneSlotInfos => runeInfos
+            .Select(x => x.Serialize());
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>()
@@ -65,7 +74,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            CheckObsolete(BlockPolicySource.V100360ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100360ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             var started = DateTimeOffset.UtcNow;

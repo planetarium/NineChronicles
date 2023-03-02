@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Action;
@@ -24,7 +25,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("buy12")]
-    public class Buy : GameAction, IBuy5
+    public class Buy : GameAction, IBuy5, IBuyV2
     {
 
 
@@ -44,6 +45,9 @@ namespace Nekoyume.Action
         public List<(Guid orderId, int errorCode)> errors = new List<(Guid orderId, int errorCode)>();
         public IEnumerable<PurchaseInfo> purchaseInfos;
         IEnumerable<IPurchaseInfo> IBuy5.purchaseInfos => purchaseInfos;
+
+        Address IBuyV2.BuyerAvatarAddress => buyerAvatarAddress;
+        IEnumerable<IValue> IBuyV2.PurchaseInfos => purchaseInfos.Select(x => x.Serialize());
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Arena;
@@ -24,9 +25,9 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1330
     /// </summary>
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100320ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100320ObsoleteIndex)]
     [ActionType("battle_arena4")]
-    public class BattleArena4 : GameAction
+    public class BattleArena4 : GameAction, IBattleArenaV1
     {
         public Address myAvatarAddress;
         public Address enemyAvatarAddress;
@@ -40,6 +41,20 @@ namespace Nekoyume.Action
         public ArenaPlayerDigest ExtraMyArenaPlayerDigest;
         public ArenaPlayerDigest ExtraEnemyArenaPlayerDigest;
         public int ExtraPreviousMyScore;
+
+        Address IBattleArenaV1.MyAvatarAddress => myAvatarAddress;
+
+        Address IBattleArenaV1.EnemyAvatarAddress => enemyAvatarAddress;
+
+        int IBattleArenaV1.ChampionshipId => championshipId;
+
+        int IBattleArenaV1.Round => round;
+
+        int IBattleArenaV1.Ticket => ticket;
+
+        IEnumerable<Guid> IBattleArenaV1.Costumes => costumes;
+
+        IEnumerable<Guid> IBattleArenaV1.Equipments => equipments;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>()
@@ -75,7 +90,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100320ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100320ObsoleteIndex, context);
 
             var addressesHex =
                 GetSignerAndOtherAddressesHex(context, myAvatarAddress, enemyAvatarAddress);
@@ -324,7 +339,7 @@ namespace Nekoyume.Action
 
             // update record
             var (myWinScore, myDefeatScore, enemyWinScore) =
-                ArenaHelper.GetScores(ExtraPreviousMyScore, enemyArenaScore.Score);
+                ArenaHelper.GetScoresV1(ExtraPreviousMyScore, enemyArenaScore.Score);
             var myScore = (myWinScore * winCount) + (myDefeatScore * defeatCount);
             myArenaScore.AddScore(myScore);
             enemyArenaScore.AddScore(enemyWinScore * winCount);

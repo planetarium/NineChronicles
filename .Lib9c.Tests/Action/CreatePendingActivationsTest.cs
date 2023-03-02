@@ -64,7 +64,7 @@ namespace Lib9c.Tests.Action
             var pvFromAction = Assert.IsType<List>(action.PlainValue);
             var activationFromAction = Assert.IsType<List>(pvFromAction[0]);
 
-            Assert.Equal(address, new Address((Binary)activationFromAction[0]));
+            Assert.Equal(address, new Address(activationFromAction[0]));
             Assert.Equal(nonce, (Binary)activationFromAction[1]);
             Assert.Equal(pubKey, new PublicKey(((Binary)activationFromAction[2]).ByteArray));
         }

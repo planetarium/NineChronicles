@@ -4,11 +4,12 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Arena;
 using Nekoyume.Battle;
-using Nekoyume.BlockChain.Policy;
+
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model;
@@ -28,9 +29,9 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1495
     /// </summary>
     [Serializable]
-    [ActionObsolete(BlockPolicySource.V100360ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100360ObsoleteIndex)]
     [ActionType("battle_arena7")]
-    public class BattleArena7 : GameAction
+    public class BattleArena7 : GameAction, IBattleArenaV1
     {
         public const string PurchasedCountKey = "purchased_count_during_interval";
         public Address myAvatarAddress;
@@ -46,6 +47,23 @@ namespace Nekoyume.Action
         public ArenaPlayerDigest ExtraMyArenaPlayerDigest;
         public ArenaPlayerDigest ExtraEnemyArenaPlayerDigest;
         public int ExtraPreviousMyScore;
+
+        Address IBattleArenaV1.MyAvatarAddress => myAvatarAddress;
+
+        Address IBattleArenaV1.EnemyAvatarAddress => enemyAvatarAddress;
+
+        int IBattleArenaV1.ChampionshipId => championshipId;
+
+        int IBattleArenaV1.Round => round;
+
+        int IBattleArenaV1.Ticket => ticket;
+
+        IEnumerable<Guid> IBattleArenaV1.Costumes => costumes;
+
+        IEnumerable<Guid> IBattleArenaV1.Equipments => equipments;
+
+        IEnumerable<IValue> IBattleArenaV1.RuneSlotInfos => runeInfos
+            .Select(x => x.Serialize());
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>()
@@ -83,7 +101,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            CheckObsolete(BlockPolicySource.V100360ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100360ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(
                 context,
@@ -419,7 +437,7 @@ namespace Nekoyume.Action
 
             // update record
             var (myWinScore, myDefeatScore, enemyWinScore) =
-                ArenaHelper.GetScores(ExtraPreviousMyScore, enemyArenaScore.Score);
+                ArenaHelper.GetScoresV1(ExtraPreviousMyScore, enemyArenaScore.Score);
             var myScore = (myWinScore * winCount) + (myDefeatScore * defeatCount);
             myArenaScore.AddScore(myScore);
             enemyArenaScore.AddScore(enemyWinScore * winCount);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
@@ -17,11 +18,14 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
-    [ActionType("unlock_equipment_recipe")]
-    public class UnlockEquipmentRecipe: GameAction
+    [ActionType("unlock_equipment_recipe2")]
+    public class UnlockEquipmentRecipe : GameAction, IUnlockEquipmentRecipeV1
     {
         public List<int> RecipeIds = new List<int>();
         public Address AvatarAddress;
+
+        IEnumerable<int> IUnlockEquipmentRecipeV1.RecipeIds => RecipeIds;
+        Address IUnlockEquipmentRecipeV1.AvatarAddress => AvatarAddress;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
@@ -108,12 +112,9 @@ namespace Nekoyume.Action
             List<int> recipeIds
         )
         {
-            List<int> unlockedIds = states.TryGetState(unlockedRecipeIdsAddress, out List rawIds)
+            var unlockedIds = states.TryGetState(unlockedRecipeIdsAddress, out List rawIds)
                 ? rawIds.ToList(StateExtensions.ToInteger)
-                : new List<int>
-                {
-                    1
-                };
+                : equipmentRecipeSheet.Values.Where(r => r.CRYSTAL == 0).Select(r => r.Id).ToList();
 
             // Sort recipe by ItemSubType & UnlockStage.
             // 999 is not opened recipe.

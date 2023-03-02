@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
@@ -25,9 +26,9 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/
     /// </summary>
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100360ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100360ObsoleteIndex)]
     [ActionType(ActionTypeText)]
-    public class EventDungeonBattleV3 : GameAction
+    public class EventDungeonBattleV3 : GameAction, IEventDungeonBattleV2
     {
         private const string ActionTypeText = "event_dungeon_battle3";
         public const int PlayCount = 1;
@@ -41,6 +42,17 @@ namespace Nekoyume.Action
         public List<Guid> Foods;
         public bool BuyTicketIfNeeded;
         public List<RuneSlotInfo> RuneInfos;
+
+        Address IEventDungeonBattleV2.AvatarAddress => AvatarAddress;
+        int IEventDungeonBattleV2.EventScheduleId => EventScheduleId;
+        int IEventDungeonBattleV2.EventDungeonId => EventDungeonId;
+        int IEventDungeonBattleV2.EventDungeonStageId => EventDungeonStageId;
+        IEnumerable<Guid> IEventDungeonBattleV2.Equipments => Equipments;
+        IEnumerable<Guid> IEventDungeonBattleV2.Costumes => Costumes;
+        IEnumerable<Guid> IEventDungeonBattleV2.Foods => Foods;
+        IEnumerable<IValue> IEventDungeonBattleV2.RuneSlotInfos =>
+            RuneInfos.Select(x => x.Serialize());
+        bool IEventDungeonBattleV2.BuyTicketIfNeeded => BuyTicketIfNeeded;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal
         {
@@ -111,7 +123,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100360ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100360ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             var started = DateTimeOffset.UtcNow;

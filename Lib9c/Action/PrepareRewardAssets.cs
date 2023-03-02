@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
@@ -9,10 +10,13 @@ using Nekoyume.Model.State;
 namespace Nekoyume.Action
 {
     [ActionType("prepare_reward_assets")]
-    public class PrepareRewardAssets : ActionBase
+    public class PrepareRewardAssets : ActionBase, IPrepareRewardAssetsV1
     {
         public Address RewardPoolAddress;
         public List<FungibleAssetValue> Assets;
+
+        Address IPrepareRewardAssetsV1.RewardPoolAddress => RewardPoolAddress;
+        IEnumerable<FungibleAssetValue> IPrepareRewardAssetsV1.Assets => Assets;
 
         public PrepareRewardAssets(Address rewardPoolAddress, List<FungibleAssetValue> assets)
         {

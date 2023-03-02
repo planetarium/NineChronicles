@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Action;
@@ -26,12 +27,17 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("sell_cancellation9")]
-    public class SellCancellation : GameAction
+    public class SellCancellation : GameAction, ISellCancellationV3
     {
         public Guid orderId;
         public Guid tradableId;
         public Address sellerAvatarAddress;
         public ItemSubType itemSubType;
+
+        Guid ISellCancellationV3.OrderId => orderId;
+        Guid ISellCancellationV3.TradableId => tradableId;
+        Address ISellCancellationV3.SellerAvatarAddress => sellerAvatarAddress;
+        string ISellCancellationV3.ItemSubType => itemSubType.ToString();
 
         [Serializable]
         public class Result : AttachmentActionResult

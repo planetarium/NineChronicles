@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.State;
@@ -8,9 +9,9 @@ using Nekoyume.Model.State;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
     [ActionType("add_activated_account")]
-    public class AddActivatedAccount0 : ActionBase
+    public class AddActivatedAccount0 : ActionBase, IAddActivatedAccountV1
     {
         public AddActivatedAccount0(Address address)
         {
@@ -22,6 +23,8 @@ namespace Nekoyume.Action
         }
 
         public Address Address { get; private set; }
+
+        Address IAddActivatedAccountV1.Address => Address;
 
         public override IValue PlainValue =>
             new Dictionary(
@@ -46,7 +49,7 @@ namespace Nekoyume.Action
                 throw new ActivatedAccountsDoesNotExistsException();
             }
 
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
             CheckPermission(context);
 
             var accounts = new ActivatedAccountsState(accountsAsDict);

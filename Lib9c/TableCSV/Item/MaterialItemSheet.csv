@@ -139,6 +139,10 @@ id,_name,item_sub_type,grade,elemental_type
 306069,화염의 제림니르 철퇴,MonsterPart,2,Fire
 400000,모래시계,Hourglass,4,Normal
 500000,AP 스톤,ApStone,4,Normal
+600101,Special Crystal Piece,EquipmentMaterial,1,Normal
+600102,Special Crystal Lump,EquipmentMaterial,2,Normal
+600103,Special Crystal Ore,EquipmentMaterial,3,Normal
+600104,Special Crystal Jewel,EquipmentMaterial,4,Normal
 700000,아레나 시즌0 메달,NormalMaterial,5,Normal
 700001,아레나 시즌1 메달,NormalMaterial,5,Normal
 700002,아레나 시즌2 메달,NormalMaterial,5,Normal
@@ -156,5 +160,16 @@ id,_name,item_sub_type,grade,elemental_type
 700108,챔피언 쉽 1 메달,NormalMaterial,5,Normal
 700202,시즌 7 메달,NormalMaterial,5,Normal
 700204,시즌 8 메달,NormalMaterial,5,Normal
-700206,시즌 9 메달,NormalMaterial,5,Normal
-700208,챔피언 쉽 2 메달,NormalMaterial,5,Normal
+700206,챔피언 쉽 2 메달,NormalMaterial,5,Normal
+700302,시즌 9 메달,NormalMaterial,5,Normal
+700304,시즌 10 메달,NormalMaterial,5,Normal
+700306,챔피언 쉽 3 메달,NormalMaterial,5,Normal
+700402,시즌 11 메달,NormalMaterial,5,Normal
+700404,시즌 12 메달,NormalMaterial,5,Normal
+700406,챔피언 쉽 4 메달,NormalMaterial,5,Normal
+700502,시즌 13 메달,NormalMaterial,5,Normal
+700504,시즌 14 메달,NormalMaterial,5,Normal
+700506,챔피언 쉽 5 메달,NormalMaterial,5,Normal
+700602,시즌 15 메달,NormalMaterial,5,Normal
+700604,시즌 16 메달,NormalMaterial,5,Normal
+700606,챔피언 쉽 6 메달,NormalMaterial,5,Normal

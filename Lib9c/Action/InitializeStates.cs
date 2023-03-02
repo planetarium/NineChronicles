@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet.Action;
 using Nekoyume.Model.State;
 
@@ -27,7 +28,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("initialize_states")]
-    public class InitializeStates : GameAction
+    public class InitializeStates : GameAction, IInitializeStatesV1
     {
         public Dictionary Ranking { get; set; } = Dictionary.Empty;
         public Dictionary Shop { get; set; } = Dictionary.Empty;
@@ -50,6 +51,19 @@ namespace Nekoyume.Action
 
         // This property can contain null:
         public Dictionary Credits { get; set; }
+
+        Dictionary IInitializeStatesV1.Ranking => Ranking;
+        Dictionary IInitializeStatesV1.Shop => Shop;
+        Dictionary<string, string> IInitializeStatesV1.TableSheets => TableSheets;
+        Dictionary IInitializeStatesV1.GameConfig => GameConfig;
+        Dictionary IInitializeStatesV1.RedeemCode => RedeemCode;
+        Dictionary IInitializeStatesV1.AdminAddressState => AdminAddressState;
+        Dictionary IInitializeStatesV1.ActivatedAccounts => ActivatedAccounts;
+        Dictionary IInitializeStatesV1.GoldCurrency => GoldCurrency;
+        List IInitializeStatesV1.GoldDistributions => GoldDistributions;
+        List IInitializeStatesV1.PendingActivations => PendingActivations;
+        Dictionary IInitializeStatesV1.AuthorizedMiners => AuthorizedMiners;
+        Dictionary IInitializeStatesV1.Credits => Credits;
 
         public InitializeStates()
         {

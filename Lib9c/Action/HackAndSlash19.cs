@@ -4,10 +4,11 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
-using Nekoyume.BlockChain.Policy;
+
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
@@ -24,9 +25,9 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1495
     /// </summary>
     [Serializable]
-    [ActionObsolete(BlockPolicySource.V100360ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100360ObsoleteIndex)]
     [ActionType("hack_and_slash19")]
-    public class HackAndSlash19 : GameAction
+    public class HackAndSlash19 : GameAction, IHackAndSlashV9
     {
         public List<Guid> Costumes;
         public List<Guid> Equipments;
@@ -37,6 +38,16 @@ namespace Nekoyume.Action
         public int? StageBuffId;
         public Address AvatarAddress;
         public int PlayCount = 1;
+
+        IEnumerable<Guid> IHackAndSlashV9.Costumes => Costumes;
+        IEnumerable<Guid> IHackAndSlashV9.Equipments => Equipments;
+        IEnumerable<Guid> IHackAndSlashV9.Foods => Foods;
+        IEnumerable<IValue> IHackAndSlashV9.RuneSlotInfos => RuneInfos.Select(x => x.Serialize());
+        int IHackAndSlashV9.WorldId => WorldId;
+        int IHackAndSlashV9.StageId => StageId;
+        int IHackAndSlashV9.PlayCount => PlayCount;
+        int? IHackAndSlashV9.StageBuffId => StageBuffId;
+        Address IHackAndSlashV9.AvatarAddress => AvatarAddress;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal
         {
@@ -86,7 +97,7 @@ namespace Nekoyume.Action
                 return context.PreviousStates;
             }
 
-            CheckObsolete(BlockPolicySource.V100360ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100360ObsoleteIndex, context);
 
             return Execute(
                 context.PreviousStates,
@@ -345,7 +356,7 @@ namespace Nekoyume.Action
 
                 // This conditional logic is same as written in the
                 // MimisbrunnrBattle("mimisbrunnr_battle10") action.
-                if (blockIndex < BlockPolicySource.V100310ExecutedBlockIndex)
+                if (blockIndex < ActionObsoleteConfig.V100310ExecutedBlockIndex)
                 {
                     var player = simulator.Player;
                     foreach (var key in player.monsterMapForBeforeV100310.Keys)

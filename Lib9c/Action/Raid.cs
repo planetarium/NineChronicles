@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
@@ -24,7 +25,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("raid4")]
-    public class Raid : GameAction
+    public class Raid : GameAction, IRaidV2
     {
         public const long RequiredInterval = 5L;
         public Address AvatarAddress;
@@ -33,6 +34,13 @@ namespace Nekoyume.Action
         public List<Guid> FoodIds;
         public List<RuneSlotInfo> RuneInfos;
         public bool PayNcg;
+
+        Address IRaidV2.AvatarAddress => AvatarAddress;
+        IEnumerable<Guid> IRaidV2.EquipmentIds => EquipmentIds;
+        IEnumerable<Guid> IRaidV2.CostumeIds => CostumeIds;
+        IEnumerable<Guid> IRaidV2.FoodIds => FoodIds;
+        IEnumerable<IValue> IRaidV2.RuneSlotInfos => RuneInfos.Select(x => x.Serialize());
+        bool IRaidV2.PayNcg => PayNcg;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
@@ -98,8 +106,11 @@ namespace Nekoyume.Action
             else
             {
                 raiderState = new RaiderState();
-                FungibleAssetValue crystalCost = CrystalCalculator.CalculateEntranceFee(avatarState.level, row.EntranceFee);
-                states = states.TransferAsset(context.Signer, worldBossAddress, crystalCost);
+                if (row.EntranceFee > 0)
+                {
+                    FungibleAssetValue crystalCost = CrystalCalculator.CalculateEntranceFee(avatarState.level, row.EntranceFee);
+                    states = states.TransferAsset(context.Signer, worldBossAddress, crystalCost);
+                }
                 Address raiderListAddress = Addresses.GetRaiderListAddress(raidId);
                 List<Address> raiderList =
                     states.TryGetState(raiderListAddress, out List rawRaiderList)

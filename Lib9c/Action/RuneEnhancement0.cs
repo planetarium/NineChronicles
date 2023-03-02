@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
@@ -15,13 +16,17 @@ using Nekoyume.TableData;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100360ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100360ObsoleteIndex)]
     [ActionType("runeEnhancement")]
-    public class RuneEnhancement0 : GameAction
+    public class RuneEnhancement0 : GameAction, IRuneEnhancementV1
     {
         public Address AvatarAddress;
         public int RuneId;
         public int TryCount = 1;
+
+        Address IRuneEnhancementV1.AvatarAddress => AvatarAddress;
+        int IRuneEnhancementV1.RuneId => RuneId;
+        int IRuneEnhancementV1.TryCount => TryCount;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
@@ -47,7 +52,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100360ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100360ObsoleteIndex, context);
 
             var sheets = states.GetSheets(
                 sheetTypes: new[]

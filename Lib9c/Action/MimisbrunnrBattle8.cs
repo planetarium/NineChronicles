@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
@@ -21,10 +22,10 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionType("mimisbrunnr_battle8")]
     [ActionObsolete(ObsoletedBlockIndex)]
-    public class MimisbrunnrBattle8 : GameAction
+    public class MimisbrunnrBattle8 : GameAction, IMimisbrunnrBattleV4
     {
         private const long ObsoletedBlockIndex =
-            BlockChain.Policy.BlockPolicySource.V100270ObsoleteIndex;
+            ActionObsoleteConfig.V100270ObsoleteIndex;
 
         public List<Guid> costumes;
         public List<Guid> equipments;
@@ -33,6 +34,14 @@ namespace Nekoyume.Action
         public int stageId;
         public int playCount = 1;
         public Address avatarAddress;
+
+        IEnumerable<Guid> IMimisbrunnrBattleV4.Costumes => costumes;
+        IEnumerable<Guid> IMimisbrunnrBattleV4.Equipments => equipments;
+        IEnumerable<Guid> IMimisbrunnrBattleV4.Foods => foods;
+        int IMimisbrunnrBattleV4.WorldId => worldId;
+        int IMimisbrunnrBattleV4.StageId => stageId;
+        int IMimisbrunnrBattleV4.PlayCount => playCount;
+        Address IMimisbrunnrBattleV4.AvatarAddress => avatarAddress;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.Item;
@@ -18,13 +19,17 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
     [ActionType("combination_consumable6")]
-    public class CombinationConsumable6 : GameAction
+    public class CombinationConsumable6 : GameAction, ICombinationConsumableV1
     {
         public Address AvatarAddress;
         public int recipeId;
         public int slotIndex;
+
+        Address ICombinationConsumableV1.AvatarAddress => AvatarAddress;
+        int ICombinationConsumableV1.RecipeId => recipeId;
+        int ICombinationConsumableV1.SlotIndex => slotIndex;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal
         {
@@ -81,7 +86,7 @@ namespace Nekoyume.Action
                     .SetState(slotAddress, MarkChanged);
             }
 
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
 

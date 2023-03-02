@@ -100,7 +100,21 @@ namespace Nekoyume.Battle
                 (400, 4, 0, -5),
                 (500, 2, 0, -5),
             }.OrderBy(tuple => tuple.differ);
-        
+
+        /// <summary>
+        /// differ: (challenger rate - defender rate)
+        /// </summary>
+        [Obsolete("Use CachedScore")]
+        private static readonly IOrderedEnumerable<(int scoreDiffer, int winPoint, int losePoint, int defenderLosePoint)>
+            CachedScoreV4 = new List<(int scoreDiffer, int winPoint, int losePoint, int defenderLosePoint)>
+            {
+                (-200, 24, -3, -1),
+                (-100, 22, -2, -1),
+                (0, 20, -1, -1),
+                (100, 18, -1, -1),
+                (200, 16, -1, -1),
+            }.OrderBy(tuple => tuple.scoreDiffer);
+
         #endregion
 
         /// <summary>
@@ -110,8 +124,8 @@ namespace Nekoyume.Battle
             IOrderedEnumerable<(int scoreDiffer, int winPoint, int losePoint, int defenderLosePoint)> CachedScore =
                 new List<(int scoreDiffer, int winPoint, int losePoint, int defenderLosePoint)>
                 {
-                    (-200, 24, -3, -1),
-                    (-100, 22, -2, -1),
+                    (-200, 20, -1, -1),
+                    (-100, 20, -1, -1),
                     (0, 20, -1, -1),
                     (100, 18, -1, -1),
                     (200, 16, -1, -1),
@@ -219,7 +233,7 @@ namespace Nekoyume.Battle
                 ? 1
                 : -30;
         }
-        
+
         [Obsolete("Use GetScore()")]
         public static (int challengerScore, int defenderScore) GetScoreV3(int challengerRating, int defenderRating, BattleLog.Result result)
         {
@@ -249,6 +263,37 @@ namespace Nekoyume.Battle
             return result == BattleLog.Result.Win
                 ? (1, 0)
                 : (-5, 0);
+        }
+
+        [Obsolete("Use GetScore()")]
+        public static (int challengerScoreDelta, int defenderScoreDelta) GetScoreV4(
+            int challengerRating,
+            int defenderRating,
+            BattleLog.Result result)
+        {
+            if (challengerRating < 0 ||
+                defenderRating < 0 ||
+                result == BattleLog.Result.TimeOver)
+            {
+                return (0, 0);
+            }
+
+            var scoreDiffer = challengerRating - defenderRating;
+            foreach (var (cachedScoreDiffer, winPoint, losePoint, defenderLosePoint) in CachedScoreV4)
+            {
+                if (scoreDiffer >= cachedScoreDiffer)
+                {
+                    continue;
+                }
+
+                return result == BattleLog.Result.Win
+                    ? (winPoint, defenderLosePoint)
+                    : (losePoint, 0);
+            }
+
+            return result == BattleLog.Result.Win
+                ? (DEFAULT_WIN_POINT, 0)
+                : (DEFAULT_LOSE_POINT, 0);
         }
     }
 }

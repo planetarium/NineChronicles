@@ -4,10 +4,11 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
-using Nekoyume.BlockChain.Policy;
+
 using Nekoyume.Extensions;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
@@ -28,7 +29,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("mimisbrunnr_battle12")]
-    public class MimisbrunnrBattle : GameAction
+    public class MimisbrunnrBattle : GameAction, IMimisbrunnrBattleV5
     {
         public List<Guid> Costumes;
         public List<Guid> Equipments;
@@ -38,6 +39,16 @@ namespace Nekoyume.Action
         public int StageId;
         public int PlayCount = 1;
         public Address AvatarAddress;
+
+        IEnumerable<Guid> IMimisbrunnrBattleV5.Costumes => Costumes;
+        IEnumerable<Guid> IMimisbrunnrBattleV5.Equipments => Equipments;
+        IEnumerable<Guid> IMimisbrunnrBattleV5.Foods => Foods;
+        IEnumerable<IValue> IMimisbrunnrBattleV5.RuneSlotInfos =>
+            RuneInfos.Select(x => x.Serialize());
+        int IMimisbrunnrBattleV5.WorldId => WorldId;
+        int IMimisbrunnrBattleV5.StageId => StageId;
+        int IMimisbrunnrBattleV5.PlayCount => PlayCount;
+        Address IMimisbrunnrBattleV5.AvatarAddress => AvatarAddress;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
@@ -384,7 +395,7 @@ namespace Nekoyume.Action
 
             // This conditional logic is same as written in the
             // HackAndSlash("hack_and_slash18") action.
-            if (context.BlockIndex < BlockPolicySource.V100310ExecutedBlockIndex)
+            if (context.BlockIndex < ActionObsoleteConfig.V100310ExecutedBlockIndex)
             {
                 var player = simulator.Player;
                 foreach (var key in player.monsterMapForBeforeV100310.Keys)

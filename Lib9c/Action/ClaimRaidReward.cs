@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
@@ -16,9 +17,11 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("claim_raid_reward")]
-    public class ClaimRaidReward: GameAction
+    public class ClaimRaidReward: GameAction, IClaimRaidRewardV1
     {
         public Address AvatarAddress;
+
+        Address IClaimRaidRewardV1.AvatarAddress => AvatarAddress;
 
         public ClaimRaidReward()
         {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model;
@@ -10,7 +11,7 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("add_activated_account2")]
-    public class AddActivatedAccount : ActionBase
+    public class AddActivatedAccount : ActionBase, IAddActivatedAccountV1
     {
         public AddActivatedAccount(Address address)
         {
@@ -22,6 +23,8 @@ namespace Nekoyume.Action
         }
 
         public Address Address { get; private set; }
+
+        Address IAddActivatedAccountV1.Address => Address;
 
         public override IValue PlainValue =>
             new Dictionary(

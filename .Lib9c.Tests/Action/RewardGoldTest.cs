@@ -92,7 +92,7 @@ namespace Lib9c.Tests.Action
             weekly[_avatarState.address].Update(
                 weekly[_avatarState.address],
                 BattleLog.Result.Lose,
-                ArenaScoreHelper.GetScore);
+                ArenaScoreHelper.GetScoreV4);
             var gameConfigState = new GameConfigState();
             gameConfigState.Set(_tableSheets.GameConfigSheet);
             var state = _baseState
@@ -182,7 +182,7 @@ namespace Lib9c.Tests.Action
                 prevWeekly[avatarAddress].Update(
                     prevWeekly[avatarAddress],
                     BattleLog.Result.Lose,
-                    ArenaScoreHelper.GetScore);
+                    ArenaScoreHelper.GetScoreV4);
                 prevWeekly.Set(_avatarState2, _tableSheets.CharacterSheet);
 
                 Assert.Equal(4, prevWeekly[avatarAddress].DailyChallengeCount);
@@ -204,7 +204,7 @@ namespace Lib9c.Tests.Action
                 prevInfo.Update(
                     prevInfo,
                     BattleLog.Result.Lose,
-                    ArenaScoreHelper.GetScore);
+                    ArenaScoreHelper.GetScoreV4);
 
                 Assert.Equal(4, prevInfo.DailyChallengeCount);
 
@@ -291,7 +291,7 @@ namespace Lib9c.Tests.Action
             legacyWeekly[_avatarState.address].Update(
                 legacyWeekly[_avatarState.address],
                 BattleLog.Result.Lose,
-                ArenaScoreHelper.GetScore);
+                ArenaScoreHelper.GetScoreV4);
 
             Assert.Equal(4, legacyWeekly[_avatarState.address].DailyChallengeCount);
 
@@ -330,7 +330,7 @@ namespace Lib9c.Tests.Action
             prevInfo.Update(
                 prevInfo,
                 BattleLog.Result.Lose,
-                ArenaScoreHelper.GetScore);
+                ArenaScoreHelper.GetScoreV4);
 
             Assert.Equal(4, prevInfo.DailyChallengeCount);
 
