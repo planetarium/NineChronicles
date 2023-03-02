@@ -17,6 +17,11 @@ namespace Lib9c.DevExtensions.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            if (context.Rehearsal)
+            {
+                return context.PreviousStates;
+            }
+
             var state = context.PreviousStates;
             foreach (var (address, value) in StateList)
             {
