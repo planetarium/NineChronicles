@@ -1,15 +1,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
+using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 
-namespace Editor
+namespace StateViewer.Editor
 {
     public class StateView : TreeView
     {
         public StateView(TreeViewState treeViewState)
             : base(treeViewState)
         {
+            // columnIndexForTreeFoldouts = 2;
+            rowHeight = EditorGUIUtility.singleLineHeight;
+            showAlternatingRowBackgrounds = true;
+            showBorder = true;
+            // extraSpaceBeforeIconAndLabel = EditorGUIUtility.singleLineHeight; // kToggleWidth;
             Reload();
         }
 
@@ -17,7 +23,7 @@ namespace Editor
 
         private IValue State;
 
-        protected override TreeViewItem BuildRoot ()
+        protected override TreeViewItem BuildRoot()
         {
             var root = new TreeViewItem { displayName = "Root" };
 
@@ -30,6 +36,11 @@ namespace Editor
             SetupDepth(root, -1);
 
             return root;
+        }
+
+        protected override IList<TreeViewItem> BuildRows(TreeViewItem root)
+        {
+            return base.BuildRows(root);
         }
 
         public void SetState(IValue state)
@@ -57,8 +68,9 @@ namespace Editor
             {
                 item.displayName = (value is Bencodex.Types.Boolean boolean
                     ? boolean.Value.ToString()
-                    : value.ToString());;
+                    : value.ToString());
             }
+
             return item;
         }
 
@@ -81,13 +93,13 @@ namespace Editor
             else
             {
                 item.displayName += " = " + (pair.Value is Bencodex.Types.Boolean boolean
-                                        ? boolean.Value.ToString()
-                                        : pair.Value.ToString());
+                    ? boolean.Value.ToString()
+                    : pair.Value.ToString());
             }
 
             return item;
         }
-        
+
         private IEnumerable<TreeViewItem> AsTreeViewItems(Bencodex.Types.List list)
         {
             return list.Select(AsTreeViewItem);
@@ -105,6 +117,5 @@ namespace Editor
                 }
             }
         }
-        
     }
 }
