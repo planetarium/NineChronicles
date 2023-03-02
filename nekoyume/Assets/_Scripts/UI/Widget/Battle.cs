@@ -109,6 +109,7 @@ namespace Nekoyume.UI
             bool isTutorial,
             int boostCost)
         {
+            Find<EventBanner>().Close(true);
             _stageType = stageType;
             if (isTutorial)
             {
