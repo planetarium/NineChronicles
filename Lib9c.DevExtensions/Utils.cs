@@ -155,10 +155,13 @@ namespace Lib9c.DevExtensions
             if (dir is null)
             {
                 dir = Path
-                    .GetFullPath($"..{Path.DirectorySeparatorChar}")
-                    .Replace(
-                        $".Lib9c.DevExtensions.Tests{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}Debug{Path.DirectorySeparatorChar}",
-                        $"Lib9c{Path.DirectorySeparatorChar}TableCSV{Path.DirectorySeparatorChar}");
+                    .GetFullPath(
+                        $"..{Path.DirectorySeparatorChar}" +
+                        $"..{Path.DirectorySeparatorChar}" +
+                        $"..{Path.DirectorySeparatorChar}" +
+                        $"..{Path.DirectorySeparatorChar}" +
+                        $"Lib9c{Path.DirectorySeparatorChar}" +
+                        $"TableCSV{Path.DirectorySeparatorChar}");
             }
             var files = Directory.GetFiles(dir, "*.csv", SearchOption.AllDirectories);
             var sheets = new Dictionary<string, string>();
