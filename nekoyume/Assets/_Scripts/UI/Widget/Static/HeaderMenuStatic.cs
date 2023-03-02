@@ -45,6 +45,7 @@ namespace Nekoyume.UI.Module
             WorldBoss,
             CurrencyOnly,
             RuneStone,
+            Mileage,
         }
 
         [Serializable]
@@ -86,6 +87,9 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private WorldBossTickets worldBossTickets;
+
+        [SerializeField]
+        private GameObject mileage;
 
         [SerializeField]
         private VFX inventoryVFX;
@@ -316,6 +320,9 @@ namespace Nekoyume.UI.Module
                 case AssetVisibleState.RuneStone:
                     SetActiveAssets(isNcgActive:true, isRuneStoneActive:true );
                     break;
+                case AssetVisibleState.Mileage:
+                    SetActiveAssets(isNcgActive:true, isMileageActive:true);
+                    break;
             }
         }
 
@@ -327,9 +334,11 @@ namespace Nekoyume.UI.Module
             bool isArenaTicketsActive = false,
             bool isEventDungeonTicketsActive = false,
             bool isEventWorldBossTicketsActive = false,
-            bool isRuneStoneActive = false)
+            bool isRuneStoneActive = false,
+            bool isMileageActive = false)
         {
             ncg.gameObject.SetActive(isNcgActive);
+            crystal.gameObject.SetActive(isNcgActive && !isMileageActive);
             actionPoint.gameObject.SetActive(isActionPointActive);
             dailyBonus.SetActive(isDailyBonusActive);
             hourglass.gameObject.SetActive(isHourglassActive);
@@ -337,6 +346,7 @@ namespace Nekoyume.UI.Module
             eventDungeonTickets.gameObject.SetActive(isEventDungeonTicketsActive);
             worldBossTickets.gameObject.SetActive(isEventWorldBossTicketsActive);
             runeStone.gameObject.SetActive(isRuneStoneActive);
+            mileage.gameObject.SetActive(isMileageActive);
         }
 
         private void SubscribeBlockIndex(long blockIndex)

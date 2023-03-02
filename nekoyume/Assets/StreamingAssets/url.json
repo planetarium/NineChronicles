@@ -1,5 +1,6 @@
 {
   "DccAvatars":"https://m8g3g296a5.execute-api.us-east-2.amazonaws.com/Prod/v1/9c/avatars/all",
   "DccMetadata":"https://dcc.nine-chronicles.com/nft/dcc/metadata/",
-  "DccConnect": "https://dcc-frontend-git-feat-connect-kimwz.vercel.app/connect"
+  "DccConnect": "https://dcc-frontend-git-feat-connect-kimwz.vercel.app/connect",
+  "DccMileageAPI": "https://api.dccnft.com/v1/9c/ether/balance?agentAddress="
 }
