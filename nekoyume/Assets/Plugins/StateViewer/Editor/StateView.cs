@@ -3,13 +3,25 @@ using System.Linq;
 using Bencodex.Types;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
+using UnityEngine;
 
 namespace StateViewer.Editor
 {
     public class StateView : TreeView
     {
-        public StateView(TreeViewState treeViewState)
-            : base(treeViewState)
+        private class StateViewItem : TreeViewItem
+        {
+            public StateTreeElement Data { get; set; }
+        }
+
+        private int Id { get; set; }
+
+        private IValue State;
+
+        private StateTreeElement[] _treeElements;
+
+        public StateView(TreeViewState treeViewState, MultiColumnHeader multiColumnHeader)
+            : base(treeViewState, multiColumnHeader)
         {
             // columnIndexForTreeFoldouts = 2;
             rowHeight = EditorGUIUtility.singleLineHeight;
@@ -19,34 +31,188 @@ namespace StateViewer.Editor
             Reload();
         }
 
-        private int Id { get; set; }
-
-        private IValue State;
-
-        protected override TreeViewItem BuildRoot()
+        public void SetData(IValue data)
         {
-            var root = new TreeViewItem { displayName = "Root" };
+            // 이 부분에서 IValue를 StateTreeElement로 변환하는 작업을 해야 한다.
+            // 트리 구조가 만들어지는 부분이다.
 
-            root.AddChild(
-                State is null
-                    ? new TreeViewItem { displayName = "empty" }
-                    : AsTreeViewItem(State));
-
-            Id = 0;
-            SetupDepth(root, -1);
-
-            return root;
+            var result = new List<StateTreeElement>();
+            MakeElementsRecursive("", data, result, 0);
+            _treeElements = result.ToArray();
+            Reload();
         }
+
+        private static (List<StateTreeElement> elements, int currentId)
+            MakeElementsRecursive(
+                string key,
+                IValue data,
+                List<StateTreeElement> elements,
+                int currentId)
+        {
+            StateTreeElement e;
+            switch (data)
+            {
+                case Null:
+                case Binary:
+                case Boolean:
+                case Integer:
+                case Text:
+                    e = new StateTreeElement(
+                        currentId++,
+                        key,
+                        data.Kind.ToString(),
+                        data.Inspect(false));
+                    break;
+                case List list:
+                {
+                    e = new StateTreeElement(
+                        currentId++,
+                        key,
+                        data.Kind.ToString(),
+                        $"Count: {list.Count}");
+                    for (var i = 0; i < list.Count; i++)
+                    {
+                        var item = list[i];
+                        var children = new List<StateTreeElement>();
+                        (children, currentId) =
+                            MakeElementsRecursive($"[{i}]", item, children, currentId);
+                        foreach (var child in children)
+                        {
+                            e.AddChild(child);
+                        }
+                    }
+
+                    break;
+                }
+                case Dictionary dict:
+                {
+                    e = new StateTreeElement(
+                        currentId++,
+                        key,
+                        data.Kind.ToString(),
+                        $"Count: {dict.Count}");
+                    foreach (var pair in dict)
+                    {
+                        var children = new List<StateTreeElement>();
+                        (children, currentId) = MakeElementsRecursive(
+                            $"[{pair.Key.Inspect(false)}]",
+                            pair.Value,
+                            children,
+                            currentId);
+                        foreach (var child in children)
+                        {
+                            e.AddChild(child);
+                        }
+                    }
+
+                    break;
+                }
+                default:
+                    Debug.LogError($"data type {data.GetType()} is not supported.");
+                    return (elements, currentId);
+            }
+
+            elements.Add(e);
+            return (elements, currentId);
+        }
+
+        protected override TreeViewItem BuildRoot() => new()
+        {
+            id = 0,
+            depth = -1,
+            displayName = "Root",
+        };
 
         protected override IList<TreeViewItem> BuildRows(TreeViewItem root)
         {
-            return base.BuildRows(root);
+            var rows = GetRows() ?? new List<TreeViewItem>();
+            rows.Clear();
+
+            if (_treeElements is null)
+            {
+                return rows;
+            }
+
+            foreach (var e in _treeElements)
+            {
+                var item = CreateStateViewItem(e);
+                root.AddChild(item);
+                rows.Add(item);
+                if (e.Children.Count >= 1)
+                {
+                    if (IsExpanded(item.id))
+                    {
+                        AddChildrenRecursive(e, item, rows);
+                    }
+                    else
+                    {
+                        item.children = CreateChildListForCollapsedParent();
+                    }
+                }
+            }
+
+            SetupDepthsFromParentsAndChildren(root);
+            return rows;
         }
 
-        public void SetState(IValue state)
+        protected override void RowGUI(RowGUIArgs args)
         {
-            State = state;
-            Reload();
+            var item = (StateViewItem)args.item;
+            var e = item.Data;
+            for (var i = 0; i < args.GetNumVisibleColumns(); ++i)
+            {
+                var cellRect = args.GetCellRect(i);
+                CenterRectUsingSingleLineHeight(ref cellRect);
+                var columnIndex = args.GetColumn(i);
+                if (columnIndex == 0)
+                {
+                    base.RowGUI(args);
+                }
+                else if (columnIndex == 1)
+                {
+                    GUI.Box(cellRect, e.Type);
+                }
+                else if (columnIndex == 2)
+                {
+                    if (e.Type == ValueKind.List.ToString() ||
+                        e.Type == ValueKind.Dictionary.ToString())
+                    {
+                        GUI.Box(cellRect, e.Value);
+                    }
+                    else
+                    {
+                        e.Value = GUI.TextField(cellRect, e.Value);
+                    }
+                }
+            }
+        }
+
+        private static StateViewItem CreateStateViewItem(StateTreeElement element) => new()
+        {
+            id = element.Id,
+            displayName = element.Key,
+            Data = element,
+        };
+
+        private static void AddChildrenRecursive(
+            StateTreeElement element,
+            TreeViewItem item,
+            ICollection<TreeViewItem> rows)
+        {
+            foreach (var e in element.Children)
+            {
+                var childItem = CreateStateViewItem(e);
+                item.AddChild(childItem);
+                rows.Add(childItem);
+                if (e.Children.Count >= 1)
+                {
+                    AddChildrenRecursive(e, childItem, rows);
+                }
+                else
+                {
+                    childItem.children = CreateChildListForCollapsedParent();
+                }
+            }
         }
 
         private TreeViewItem AsTreeViewItem(IValue value)

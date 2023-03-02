@@ -1,8 +1,7 @@
-using System;
 using System.Collections.Generic;
+using System.Text;
 using Bencodex.Types;
 using Libplanet;
-using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Model.State;
 using UnityEditor;
@@ -14,14 +13,14 @@ namespace StateViewer.Editor
 {
     public class StateViewer : EditorWindow
     {
+        [SerializeField]
+        private bool initialized;
+
         // SerializeField is used to ensure the view state is written to the window
         // layout file. This means that the state survives restarting Unity as long as the window
         // is not closed. If the attribute is omitted then the state is still serialized/deserialized.
         [SerializeField]
         private TreeViewState stateViewState;
-
-        [SerializeField]
-        private MultiColumnHeaderState multiColumnHeaderState;
 
         private StateView _stateView;
 
@@ -31,21 +30,92 @@ namespace StateViewer.Editor
 
         private StateProxy _stateProxy;
 
+        private readonly IValue[] _testValues =
+        {
+            Null.Value,
+            new Binary("test", Encoding.UTF8),
+            new Boolean(true),
+            new Integer(100),
+            new Text("test"),
+            new List(
+                (Text)"element at index 0",
+                new List(
+                    (Text)"element at index 0",
+                    (Text)"element at index 1"),
+                Dictionary.Empty
+                    .SetItem("key1", 1)
+                    .SetItem("key2", 2)),
+            Dictionary.Empty
+                .SetItem("key1", 1)
+                .SetItem("key2", new List(
+                    (Text)"element at index 0",
+                    (Text)"element at index 1"))
+                .SetItem("key3", Dictionary.Empty
+                    .SetItem("key1", 1)
+                    .SetItem("key2", 2)),
+            new Address("0x0123456789012345678901234567890123456789").Bencoded,
+        };
+
         [MenuItem("Tools/Lib9c/State Viewer")]
         private static void ShowWindow() =>
             GetWindow<StateViewer>("State Viewer", true).Show();
 
         private void OnEnable()
         {
+            Debug.Log("OnEnable()");
             stateViewState ??= new TreeViewState();
-            multiColumnHeaderState ??= new MultiColumnHeaderState(
-                Array.Empty<MultiColumnHeaderState.Column>());
-            _stateView = new StateView(stateViewState);
+            var keyColumn = new MultiColumnHeaderState.Column
+            {
+                headerContent = new GUIContent("Key"),
+                headerTextAlignment = TextAlignment.Center,
+                canSort = false,
+                width = 100,
+                minWidth = 50,
+                autoResize = true,
+                allowToggleVisibility = false,
+            };
+            var typeColumn = new MultiColumnHeaderState.Column
+            {
+                headerContent = new GUIContent("Type"),
+                headerTextAlignment = TextAlignment.Center,
+                canSort = false,
+                width = 100,
+                minWidth = 50,
+                autoResize = true,
+                allowToggleVisibility = false,
+            };
+            var valueColumn = new MultiColumnHeaderState.Column
+            {
+                headerContent = new GUIContent("Value"),
+                headerTextAlignment = TextAlignment.Center,
+                canSort = false,
+                width = 100,
+                minWidth = 50,
+                autoResize = true,
+                allowToggleVisibility = false,
+            };
+            var headerState = new MultiColumnHeaderState(new[]
+            {
+                keyColumn,
+                typeColumn,
+                valueColumn,
+            });
+            _stateView = new StateView(
+                stateViewState,
+                new MultiColumnHeader(headerState));
+            _stateView.SetData(Null.Value);
             _searchField = new SearchField();
+            _searchField.downOrUpArrowKeyPressed += _stateView.SetFocusAndEnsureSelectedItem;
+            initialized = true;
         }
 
         private void OnGUI()
         {
+            if (!initialized)
+            {
+                return;
+            }
+
             if (Application.isPlaying)
             {
                 if (Game.instance.Agent is null)
@@ -62,7 +132,6 @@ namespace StateViewer.Editor
             }
             else
             {
-                // Draw warning message.
                 EditorGUILayout.HelpBox(
                     "This feature is only available in Play mode.",
                     MessageType.Warning);
@@ -74,10 +143,11 @@ namespace StateViewer.Editor
         private void DrawAll()
         {
             GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
-            DrawSearch();
+            DrawTestValues();
             GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
-            var rect = GetRect(maxHeight: position.height);
-            _stateView.OnGUI(rect);
+            DrawSearchField();
+            GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
+            _stateView.OnGUI(GetRect(maxHeight: position.height));
             GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
         }
 
@@ -93,7 +163,22 @@ namespace StateViewer.Editor
                 GUILayout.ExpandWidth(true));
         }
 
-        private void DrawSearch()
+        private void DrawTestValues()
+        {
+            EditorGUILayout.BeginHorizontal();
+            for (var i = 0; i < _testValues.Length; i++)
+            {
+                var testValue = _testValues[i];
+                if (GUILayout.Button($"{i}: {testValue.Kind}"))
+                {
+                    _stateView.SetData(testValue);
+                }
+            }
+
+            EditorGUILayout.EndHorizontal();
+        }
+
+        private void DrawSearchField()
         {
             var rect = GetRect();
             _searchString = _searchField.OnGUI(rect, _searchString);
@@ -119,11 +204,11 @@ namespace StateViewer.Editor
             try
             {
                 var state = _stateProxy.GetState(searchString);
-                _stateView.SetState(state);
+                _stateView.SetData(state);
             }
             catch (KeyNotFoundException)
             {
-                _stateView.SetState((Text)"empty");
+                _stateView.SetData((Text)"empty");
             }
         }
 
@@ -150,46 +235,6 @@ namespace StateViewer.Editor
             if (!(states.CurrentAvatarState is null))
             {
                 _stateProxy.RegisterAlias("me", states.CurrentAvatarState.address);
-            }
-        }
-    }
-
-    internal class StateProxy
-    {
-        public IAgent Agent { get; }
-        private Dictionary<string, Address> Aliases { get; }
-
-        public StateProxy(IAgent agent)
-        {
-            Agent = agent;
-            Aliases = new Dictionary<string, Address>();
-        }
-
-        public IValue GetState(string searchString)
-        {
-            Address address;
-
-            if (searchString.Length == 40)
-            {
-                address = new Address(searchString);
-            }
-            else
-            {
-                address = Aliases[searchString];
-            }
-
-            return Agent.GetState(address);
-        }
-
-        public void RegisterAlias(string alias, Address address)
-        {
-            if (!Aliases.ContainsKey(alias))
-            {
-                Aliases.Add(alias, address);
-            }
-            else
-            {
-                Aliases[alias] = address;
             }
         }
     }
