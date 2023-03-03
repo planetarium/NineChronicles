@@ -250,17 +250,16 @@ namespace Nekoyume.Model.State
                 );
         }
 
-        public static IValue Serialize(this List<(Address, IValue)> value)
+        public static IValue Serialize(this IEnumerable<(Address, IValue)> value)
         {
-            var result = new Bencodex.Types.List();
-            foreach (var v in value)
+            var result = new List();
+            foreach (var v in value
+                         .OrderBy(tuple => tuple.Item1)
+                         .ThenBy(tuple => tuple.Item2))
             {
-                result = result.Add(new Bencodex.Types.List
-                    {
-                        v.Item1.Serialize(),
-                        v.Item2 // Already IValue
-                    }
-                );
+                result = result.Add(new List(
+                    v.Item1.Serialize(),
+                    v.Item2)); // Already IValue
             }
 
             return result;
@@ -268,7 +267,7 @@ namespace Nekoyume.Model.State
 
         public static List<(Address, IValue)> ToStateList(this IValue serialized)
         {
-            if (!(serialized is Bencodex.Types.List serializedList))
+            if (!(serialized is List serializedList))
             {
                 throw new InvalidCastException();
             }
