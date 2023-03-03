@@ -73,7 +73,10 @@ namespace Nekoyume.Game
                 dccParts.Add(DccPartsType.hair, result.traits[5]);
                 dccParts.Add(DccPartsType.ac_eye, result.traits[6]);
                 dccParts.Add(DccPartsType.ac_head, result.traits[7]);
-                _parts.Add(dccId, dccParts);
+                if (!_parts.ContainsKey(dccId))
+                {
+                    _parts.Add(dccId, dccParts);
+                }
             }));
         }
     }
