@@ -1,8 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
+using System.Text;
+using System.Text.Json;
 using Bencodex.Types;
 using Lib9c;
+using Libplanet;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -15,7 +19,13 @@ namespace StateViewer.Editor
         public event Action<bool> OnDirty;
 
         private StateTreeViewItem.Model[] _itemModels;
+        private Address _addr;
         private readonly Dictionary<string, string> _reversedSerializeKeys = new();
+
+        public (Address addr, IValue value) Serialize()
+        {
+            return (_addr, _itemModels[0].Serialize());
+        }
 
         public StateTreeView(TreeViewState treeViewState, MultiColumnHeader multiColumnHeader)
             : base(treeViewState, multiColumnHeader)
@@ -47,10 +57,11 @@ namespace StateViewer.Editor
             Debug.LogFormat("SerializeKeys are reversed: {0}", _reversedSerializeKeys.Count);
         }
 
-        public void SetData(IValue data)
+        public void SetData(Address addr, IValue data)
         {
             // 이 부분에서 IValue를 StateTreeElement로 변환하는 작업을 해야 한다.
             // 트리 구조가 만들어지는 부분이다.
+            _addr = addr;
             var (model, _) = MakeItemModelRecursive("", data, 1);
             _itemModels = new[] { model };
             Reload();
@@ -59,8 +70,9 @@ namespace StateViewer.Editor
 
         private string GetReversedKey(string key)
         {
-            key = key.Replace("[\"", "").Replace("\"]", "").Trim();
-            return _reversedSerializeKeys.ContainsKey(key) ? _reversedSerializeKeys[key] : key;
+            return _reversedSerializeKeys.ContainsKey(key)
+                ? _reversedSerializeKeys[key]
+                : key;
         }
 
         private (StateTreeViewItem.Model viewModel, int currentId)
@@ -69,8 +81,12 @@ namespace StateViewer.Editor
                 IValue data,
                 int currentId)
         {
+            var serializerOption = new JsonSerializerOptions
+            {
+                WriteIndented = false,
+            };
+            var converter = new Bencodex.Json.BencodexJsonConverter();
             StateTreeViewItem.Model viewModel;
-
             switch (data)
             {
                 case Null:
@@ -78,13 +94,23 @@ namespace StateViewer.Editor
                 case Boolean:
                 case Integer:
                 case Text:
+                {
+                    using var stream = new MemoryStream();
+                    var writerOption = new JsonWriterOptions
+                    {
+                        Indented = false,
+                    };
+                    var writer = new Utf8JsonWriter(stream, writerOption);
+                    converter.Write(writer, data, serializerOption);
                     viewModel = new StateTreeViewItem.Model(
                         currentId++,
                         key,
                         GetReversedKey(key),
                         data.Kind.ToString(),
-                        data.Inspect(false));
+                        Encoding.UTF8.GetString(stream.ToArray()));
+
                     return (viewModel, currentId);
+                }
                 case List list:
                 {
                     viewModel = new StateTreeViewItem.Model(
@@ -98,7 +124,7 @@ namespace StateViewer.Editor
                         var item = list[i];
                         StateTreeViewItem.Model childViewModel;
                         (childViewModel, currentId) = MakeItemModelRecursive(
-                            $"[{i}]",
+                            i.ToString(),
                             item,
                             currentId);
                         viewModel.AddChild(childViewModel);
@@ -116,9 +142,16 @@ namespace StateViewer.Editor
                         $"Count: {dict.Count}");
                     foreach (var pair in dict)
                     {
+                        using var stream = new MemoryStream();
+                        var writerOption = new JsonWriterOptions
+                        {
+                            Indented = false,
+                        };
+                        var writer = new Utf8JsonWriter(stream, writerOption);
+                        converter.Write(writer, pair.Key, serializerOption);
                         StateTreeViewItem.Model childViewModel;
                         (childViewModel, currentId) = MakeItemModelRecursive(
-                            $"[{pair.Key.Inspect(false)}]",
+                            Encoding.UTF8.GetString(stream.ToArray()),
                             pair.Value,
                             currentId);
                         viewModel.AddChild(childViewModel);

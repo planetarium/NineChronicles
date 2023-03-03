@@ -3,6 +3,7 @@ using System.Text;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Libplanet;
+using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Model.State;
 using UnityEditor;
@@ -124,7 +125,7 @@ namespace StateViewer.Editor
                 stateTreeViewState,
                 new MultiColumnHeader(headerState));
             _stateTreeView.OnDirty += OnStateTreeViewDirty;
-                _stateTreeView.SetData(Null.Value);
+            _stateTreeView.SetData(default, Null.Value);
             _searchField = new SearchField();
             _searchField.downOrUpArrowKeyPressed += _stateTreeView.SetFocusAndEnsureSelectedItem;
             initialized = true;
@@ -164,10 +165,14 @@ namespace StateViewer.Editor
 
         private void DrawAll()
         {
-            if (savable &&
+            if (//savable &&
                 GUILayout.Button("Save"))
             {
-                Debug.Log("Save clicked.");
+                var stateList = new List<(Address addr, IValue value)>
+                {
+                    _stateTreeView.Serialize(),
+                };
+                ActionManager.Instance?.ManipulateState(stateList);
             }
 
             drawTestValues = EditorGUILayout.Toggle("Show Test Values", drawTestValues);
@@ -204,7 +209,7 @@ namespace StateViewer.Editor
                 var testValue = _testValues[i];
                 if (GUILayout.Button($"{i}: {testValue.Kind}"))
                 {
-                    _stateTreeView.SetData(testValue);
+                    _stateTreeView.SetData(default, testValue);
                 }
             }
 
@@ -243,12 +248,12 @@ namespace StateViewer.Editor
 
             try
             {
-                var state = await _stateProxy.GetStateAsync(searchString);
-                _stateTreeView.SetData(state);
+                var (addr, value) = await _stateProxy.GetStateAsync(searchString);
+                _stateTreeView.SetData(addr, value);
             }
             catch (KeyNotFoundException)
             {
-                _stateTreeView.SetData((Text)"empty");
+                _stateTreeView.SetData(default, (Text)"empty");
             }
         }
 

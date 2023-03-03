@@ -17,7 +17,7 @@ namespace StateViewer.Editor
             Aliases = new Dictionary<string, Address>();
         }
 
-        public async UniTask<IValue> GetStateAsync(string searchString)
+        public async UniTask<(Address addr, IValue value)> GetStateAsync(string searchString)
         {
             Address address;
 
@@ -30,7 +30,7 @@ namespace StateViewer.Editor
                 address = Aliases[searchString];
             }
 
-            return await Agent.GetStateAsync(address);
+            return (address, await Agent.GetStateAsync(address));
         }
 
         public void RegisterAlias(string alias, Address address)
