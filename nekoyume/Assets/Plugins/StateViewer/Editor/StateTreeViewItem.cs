@@ -13,16 +13,19 @@ namespace StateViewer.Editor
         {
             public int Id { get; }
             public string Key { get; }
+            public string DisplayKey { get; }
             public string Type { get; }
             public string Value { get; private set; }
             public bool Editable { get; }
             public Model Parent { get; private set; }
             public List<Model> Children { get; } = new();
 
-            public Model(int id, string key, string type, string value, bool editable = true)
+            public Model(int id, string key, string displayKey, string type, string value,
+                bool editable = true)
             {
                 Id = id;
                 Key = key;
+                DisplayKey = displayKey;
                 Type = type;
                 Value = value;
                 Editable = editable;

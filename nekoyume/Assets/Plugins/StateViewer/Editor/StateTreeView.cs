@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Bencodex.Types;
+using Lib9c;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -13,6 +15,7 @@ namespace StateViewer.Editor
         public event Action<bool> OnDirty;
 
         private StateTreeViewItem.Model[] _itemModels;
+        private readonly Dictionary<string, string> _reversedSerializeKeys = new();
 
         public StateTreeView(TreeViewState treeViewState, MultiColumnHeader multiColumnHeader)
             : base(treeViewState, multiColumnHeader)
@@ -20,7 +23,28 @@ namespace StateViewer.Editor
             rowHeight = EditorGUIUtility.singleLineHeight;
             showAlternatingRowBackgrounds = true;
             showBorder = true;
+            if (_reversedSerializeKeys.Count == 0)
+            {
+                ReverseSerializedKeys();
+            }
+
             Reload();
+        }
+
+        private void ReverseSerializedKeys()
+        {
+            foreach (var field in typeof(SerializeKeys).GetFields(
+                         BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy
+                     )
+                    )
+            {
+                if (field.IsLiteral && !field.IsInitOnly)
+                {
+                    _reversedSerializeKeys.Add(field.GetRawConstantValue().ToString(), field.Name);
+                }
+            }
+
+            Debug.LogFormat("SerializeKeys are reversed: {0}", _reversedSerializeKeys.Count);
         }
 
         public void SetData(IValue data)
@@ -33,13 +57,20 @@ namespace StateViewer.Editor
             OnDirty?.Invoke(false);
         }
 
-        private static (StateTreeViewItem.Model viewModel, int currentId)
+        private string GetReversedKey(string key)
+        {
+            key = key.Replace("[\"", "").Replace("\"]", "").Trim();
+            return _reversedSerializeKeys.ContainsKey(key) ? _reversedSerializeKeys[key] : key;
+        }
+
+        private (StateTreeViewItem.Model viewModel, int currentId)
             MakeItemsRecursive(
                 string key,
                 IValue data,
                 int currentId)
         {
             StateTreeViewItem.Model viewModel;
+
             switch (data)
             {
                 case Null:
@@ -51,6 +82,7 @@ namespace StateViewer.Editor
                         new StateTreeViewItem.Model(
                             currentId++,
                             key,
+                            GetReversedKey(key),
                             data.Kind.ToString(),
                             data.Inspect(false)),
                         currentId);
@@ -59,6 +91,7 @@ namespace StateViewer.Editor
                     viewModel = new StateTreeViewItem.Model(
                         currentId++,
                         key,
+                        GetReversedKey(key),
                         data.Kind.ToString(),
                         $"Count: {list.Count}");
                     for (var i = 0; i < list.Count; i++)
@@ -79,6 +112,7 @@ namespace StateViewer.Editor
                     viewModel = new StateTreeViewItem.Model(
                         currentId++,
                         key,
+                        GetReversedKey(key),
                         data.Kind.ToString(),
                         $"Count: {dict.Count}");
                     foreach (var pair in dict)
@@ -156,13 +190,16 @@ namespace StateViewer.Editor
                 switch (columnIndex)
                 {
                     case 1:
+                        GUI.Label(cellRect, viewModel.DisplayKey);
+                        break;
+                    case 2:
                         GUI.Label(cellRect, viewModel.Type);
                         break;
-                    case 2 when viewModel.Type == ValueKind.List.ToString() ||
+                    case 3 when viewModel.Type == ValueKind.List.ToString() ||
                                 viewModel.Type == ValueKind.Dictionary.ToString():
                         GUI.Label(cellRect, viewModel.Value);
                         break;
-                    case 2:
+                    case 3:
                         var value = GUI.TextField(cellRect, viewModel.Value);
                         if (value != viewModel.Value)
                         {

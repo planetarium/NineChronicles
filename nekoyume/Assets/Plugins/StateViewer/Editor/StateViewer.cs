@@ -73,13 +73,23 @@ namespace StateViewer.Editor
         {
             Debug.Log("OnEnable()");
             stateTreeViewState ??= new TreeViewState();
+            var serializedKeyColumn = new MultiColumnHeaderState.Column
+            {
+                headerContent = new GUIContent("Serialized Key"),
+                headerTextAlignment = TextAlignment.Center,
+                canSort = false,
+                width = 100,
+                minWidth = 100,
+                autoResize = true,
+                allowToggleVisibility = false,
+            };
             var keyColumn = new MultiColumnHeaderState.Column
             {
                 headerContent = new GUIContent("Key"),
                 headerTextAlignment = TextAlignment.Center,
                 canSort = false,
-                width = 100,
-                minWidth = 100,
+                width = 200,
+                minWidth = 200,
                 autoResize = true,
                 allowToggleVisibility = false,
             };
@@ -105,6 +115,7 @@ namespace StateViewer.Editor
             };
             var headerState = new MultiColumnHeaderState(new[]
             {
+                serializedKeyColumn,
                 keyColumn,
                 typeColumn,
                 valueColumn,
