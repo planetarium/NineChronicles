@@ -1971,7 +1971,12 @@ namespace Nekoyume.BlockChain
             var questList = States.Instance.CurrentAvatarState.questList;
             foreach (var id in ids)
             {
-                var quest = questList.First(q => q.Id == id);
+                var quest = questList.FirstOrDefault(q => q.Id == id);
+                if (quest == null)
+                {
+                    continue;
+                }
+
                 var rewardMap = quest.Reward.ItemMap;
 
                 foreach (var reward in rewardMap)
