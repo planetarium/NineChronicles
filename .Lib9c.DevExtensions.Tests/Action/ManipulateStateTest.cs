@@ -191,13 +191,7 @@ namespace Lib9c.DevExtensions.Tests.Action
             yield return new object[]
             {
                 new List<int>(),
-                new QuestList(
-                    new QuestSheet(),
-                    new QuestRewardSheet(),
-                    new QuestItemRewardSheet(),
-                    new EquipmentItemRecipeSheet(),
-                    new EquipmentItemSubRecipeSheet()
-                )
+                new QuestList(Dictionary.Empty),
             };
 
             // QuestList
