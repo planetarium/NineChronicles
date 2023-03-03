@@ -51,7 +51,7 @@ namespace StateViewer.Editor
         {
             // 이 부분에서 IValue를 StateTreeElement로 변환하는 작업을 해야 한다.
             // 트리 구조가 만들어지는 부분이다.
-            var (model, _) = MakeItemsRecursive("", data, 1);
+            var (model, _) = MakeItemModelRecursive("", data, 1);
             _itemModels = new[] { model };
             Reload();
             OnDirty?.Invoke(false);
@@ -64,7 +64,7 @@ namespace StateViewer.Editor
         }
 
         private (StateTreeViewItem.Model viewModel, int currentId)
-            MakeItemsRecursive(
+            MakeItemModelRecursive(
                 string key,
                 IValue data,
                 int currentId)
@@ -78,14 +78,13 @@ namespace StateViewer.Editor
                 case Boolean:
                 case Integer:
                 case Text:
-                    return (
-                        new StateTreeViewItem.Model(
-                            currentId++,
-                            key,
-                            GetReversedKey(key),
-                            data.Kind.ToString(),
-                            data.Inspect(false)),
-                        currentId);
+                    viewModel = new StateTreeViewItem.Model(
+                        currentId++,
+                        key,
+                        GetReversedKey(key),
+                        data.Kind.ToString(),
+                        data.Inspect(false));
+                    return (viewModel, currentId);
                 case List list:
                 {
                     viewModel = new StateTreeViewItem.Model(
@@ -98,7 +97,7 @@ namespace StateViewer.Editor
                     {
                         var item = list[i];
                         StateTreeViewItem.Model childViewModel;
-                        (childViewModel, currentId) = MakeItemsRecursive(
+                        (childViewModel, currentId) = MakeItemModelRecursive(
                             $"[{i}]",
                             item,
                             currentId);
@@ -118,7 +117,7 @@ namespace StateViewer.Editor
                     foreach (var pair in dict)
                     {
                         StateTreeViewItem.Model childViewModel;
-                        (childViewModel, currentId) = MakeItemsRecursive(
+                        (childViewModel, currentId) = MakeItemModelRecursive(
                             $"[{pair.Key.Inspect(false)}]",
                             pair.Value,
                             currentId);
