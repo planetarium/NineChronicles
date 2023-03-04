@@ -37,6 +37,9 @@ namespace Nekoyume.Action
                 ImmutableHashSet.Create(new Address("0x47D082a115c63E7b58B1532d20E631538eaFADde"))
             );
 
+        public SecureMiningReward()
+        {
+        }
 
         public SecureMiningReward(Address recipient)
         {
