@@ -1,34 +1,195 @@
 
 achead_skin.png
-size: 128,128
+size: 512,64
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
-achead/01_cat_01
-  rotate: false
-  xy: 44, 70
-  size: 40, 40
-  orig: 41, 40
-  offset: 1, 0
-  index: -1
-achead/01_cat_02
-  rotate: false
-  xy: 2, 2
-  size: 53, 50
-  orig: 53, 50
-  offset: 0, 0
-  index: -1
-achead/01_cat_03
-  rotate: false
-  xy: 2, 54
-  size: 40, 56
-  orig: 40, 56
-  offset: 0, 0
-  index: -1
-achead/01_cat_04
+achead/01_cat_01body
   rotate: true
-  xy: 57, 13
-  size: 55, 31
-  orig: 55, 31
+  xy: 112, 25
+  size: 37, 29
+  orig: 39, 31
+  offset: 1, 1
+  index: -1
+achead/01_cat_01fur
+  rotate: true
+  xy: 128, 2
+  size: 4, 3
+  orig: 6, 5
+  offset: 1, 1
+  index: -1
+achead/01_cat_01fur2
+  rotate: false
+  xy: 121, 3
+  size: 5, 3
+  orig: 7, 5
+  offset: 1, 1
+  index: -1
+achead/01_cat_01head
+  rotate: false
+  xy: 204, 35
+  size: 26, 27
+  orig: 26, 27
+  offset: 0, 0
+  index: -1
+achead/01_cat_01shadow
+  rotate: false
+  xy: 36, 5
+  size: 38, 14
+  orig: 40, 16
+  offset: 1, 1
+  index: -1
+achead/01_cat_01tail
+  rotate: false
+  xy: 248, 3
+  size: 21, 10
+  orig: 21, 10
+  offset: 0, 0
+  index: -1
+achead/01_cat_02body
+  rotate: true
+  xy: 74, 23
+  size: 39, 36
+  orig: 41, 38
+  offset: 1, 1
+  index: -1
+achead/01_cat_02fur
+  rotate: true
+  xy: 2, 2
+  size: 4, 5
+  orig: 6, 7
+  offset: 1, 1
+  index: -1
+achead/01_cat_02fur2
+  rotate: false
+  xy: 16, 3
+  size: 6, 3
+  orig: 8, 5
+  offset: 1, 1
+  index: -1
+achead/01_cat_02head
+  rotate: false
+  xy: 143, 31
+  size: 29, 31
+  orig: 29, 31
+  offset: 0, 0
+  index: -1
+achead/01_cat_02shadow
+  rotate: false
+  xy: 187, 9
+  size: 35, 22
+  orig: 37, 24
+  offset: 1, 1
+  index: -1
+achead/01_cat_02tail
+  rotate: true
+  xy: 121, 8
+  size: 15, 28
+  orig: 15, 28
+  offset: 0, 0
+  index: -1
+achead/01_cat_03body
+  rotate: false
+  xy: 36, 21
+  size: 36, 41
+  orig: 38, 43
+  offset: 1, 1
+  index: -1
+achead/01_cat_03eye1
+  rotate: false
+  xy: 2, 8
+  size: 15, 2
+  orig: 17, 4
+  offset: 1, 1
+  index: -1
+achead/01_cat_03eye2
+  rotate: true
+  xy: 262, 29
+  size: 16, 10
+  orig: 18, 12
+  offset: 1, 1
+  index: -1
+achead/01_cat_03fur1
+  rotate: true
+  xy: 31, 4
+  size: 6, 3
+  orig: 8, 5
+  offset: 1, 1
+  index: -1
+achead/01_cat_03fur2
+  rotate: true
+  xy: 133, 2
+  size: 4, 3
+  orig: 6, 5
+  offset: 1, 1
+  index: -1
+achead/01_cat_03head
+  rotate: false
+  xy: 174, 33
+  size: 28, 29
+  orig: 28, 29
+  offset: 0, 0
+  index: -1
+achead/01_cat_03shadow
+  rotate: false
+  xy: 151, 4
+  size: 34, 25
+  orig: 36, 27
+  offset: 1, 1
+  index: -1
+achead/01_cat_03tail
+  rotate: false
+  xy: 248, 15
+  size: 12, 21
+  orig: 12, 21
+  offset: 0, 0
+  index: -1
+achead/01_cat_04body
+  rotate: true
+  xy: 2, 12
+  size: 50, 32
+  orig: 52, 34
+  offset: 1, 1
+  index: -1
+achead/01_cat_04body2
+  rotate: false
+  xy: 232, 38
+  size: 15, 24
+  orig: 17, 26
+  offset: 1, 1
+  index: -1
+achead/01_cat_04ear
+  rotate: true
+  xy: 249, 47
+  size: 15, 12
+  orig: 15, 12
+  offset: 0, 0
+  index: -1
+achead/01_cat_04fur1
+  rotate: false
+  xy: 24, 3
+  size: 5, 7
+  orig: 7, 9
+  offset: 1, 1
+  index: -1
+achead/01_cat_04fur2
+  rotate: false
+  xy: 9, 2
+  size: 5, 4
+  orig: 7, 6
+  offset: 1, 1
+  index: -1
+achead/01_cat_04shadow
+  rotate: false
+  xy: 76, 2
+  size: 43, 19
+  orig: 45, 21
+  offset: 1, 1
+  index: -1
+achead/01_cat_04tail
+  rotate: true
+  xy: 224, 10
+  size: 23, 22
+  orig: 23, 22
   offset: 0, 0
   index: -1
