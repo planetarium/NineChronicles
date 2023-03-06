@@ -1,12 +1,17 @@
+using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
+using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
 using LruCacheNet;
 using Nekoyume.Helper;
+using Nekoyume.Model.Coupons;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
@@ -88,5 +93,25 @@ namespace Nekoyume.Action
 
             return states.SetState(rewardInfoAddress, rewardRecord.Serialize());
         }
+
+#nullable enable
+        public static IAccountStateDelta SetCouponWallet(
+            this IAccountStateDelta states,
+            Address agentAddress,
+            IImmutableDictionary<Guid, Coupon> couponWallet,
+            bool rehearsal = false)
+        {
+            Address walletAddress = agentAddress.Derive(CouponWalletKey);
+            if (rehearsal)
+            {
+                return states.SetState(walletAddress, ActionBase.MarkChanged);
+            }
+
+            IValue serializedWallet = new Bencodex.Types.List(
+                couponWallet.Values.OrderBy(c => c.Id).Select(v => v.Serialize())
+            );
+            return states.SetState(walletAddress, serializedWallet);
+        }
+#nullable disable
     }
 }

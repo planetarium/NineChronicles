@@ -1,13 +1,16 @@
 namespace Lib9c.Tests.Action
 {
     using System;
+    using System.Collections.Immutable;
     using System.Globalization;
+    using System.Linq;
     using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Crypto;
     using Nekoyume.Action;
     using Nekoyume.Helper;
+    using Nekoyume.Model.Coupons;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
@@ -97,6 +100,59 @@ namespace Lib9c.Tests.Action
                         _agentAddress)
                 );
             }
+        }
+
+        [Fact]
+        public void SetCouponWallet()
+        {
+            IAccountStateDelta states = new State();
+            var guid1 = new Guid("6856AE42-A820-4041-92B0-5D7BAA52F2AA");
+            var guid2 = new Guid("701BA698-CCB9-4FC7-B88F-7CB8C707D135");
+            var guid3 = new Guid("910296E7-34E4-45D7-9B4E-778ED61F278B");
+            var coupon1 = new Coupon(guid1, (1, 2));
+            var coupon2 = new Coupon(guid2, (1, 2), (3, 4));
+            var coupon3 = new Coupon(guid3, (3, 4));
+            var agentAddress1 = new Address("0000000000000000000000000000000000000000");
+            var agentAddress2 = new Address("0000000000000000000000000000000000000001");
+
+            states = states.SetCouponWallet(
+                agentAddress1,
+                ImmutableDictionary<Guid, Coupon>.Empty
+                    .Add(guid1, coupon1)
+                    .Add(guid2, coupon2), true);
+
+            states = states.SetCouponWallet(
+                agentAddress2,
+                ImmutableDictionary<Guid, Coupon>.Empty);
+
+            Assert.Equal(
+                ActionBase.MarkChanged,
+                states.GetState(agentAddress1.Derive(SerializeKeys.CouponWalletKey)));
+            Assert.Equal(
+                Bencodex.Types.List.Empty,
+                states.GetState(agentAddress2.Derive(SerializeKeys.CouponWalletKey)));
+
+            states = states.SetCouponWallet(
+                agentAddress1,
+                ImmutableDictionary<Guid, Coupon>.Empty
+                    .Add(guid1, coupon1)
+                    .Add(guid2, coupon2));
+
+            states = states.SetCouponWallet(
+                agentAddress2,
+                ImmutableDictionary<Guid, Coupon>.Empty
+                    .Add(guid3, coupon3));
+
+            Assert.Equal(
+                Bencodex.Types.List.Empty
+                    .Add(coupon1.Serialize())
+                    .Add(coupon2.Serialize()),
+                states.GetState(agentAddress1.Derive(SerializeKeys.CouponWalletKey)));
+
+            Assert.Equal(
+                Bencodex.Types.List.Empty
+                    .Add(coupon3.Serialize()),
+                states.GetState(agentAddress2.Derive(SerializeKeys.CouponWalletKey)));
         }
     }
 }
