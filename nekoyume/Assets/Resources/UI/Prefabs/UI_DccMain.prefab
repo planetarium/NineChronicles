@@ -21125,6 +21125,21 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1928040501365933808, guid: 4ac1ca4489ab14317846b15f66fe283f,
         type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1928040501365933808, guid: 4ac1ca4489ab14317846b15f66fe283f,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1928040501365933808, guid: 4ac1ca4489ab14317846b15f66fe283f,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1928040501365933808, guid: 4ac1ca4489ab14317846b15f66fe283f,
+        type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -21183,10 +21198,20 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7023355287227507711, guid: 4ac1ca4489ab14317846b15f66fe283f,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8672312358784645104, guid: 4ac1ca4489ab14317846b15f66fe283f,
         type: 3}
       propertyPath: m_Name
       value: UI_PFP_smokeVFX
+      objectReference: {fileID: 0}
+    - target: {fileID: 8672312358784645104, guid: 4ac1ca4489ab14317846b15f66fe283f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ac1ca4489ab14317846b15f66fe283f, type: 3}
@@ -21203,6 +21228,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2890936650669535953}
     m_Modifications:
+    - target: {fileID: 830902291195957372, guid: 317e1fae1605241648374edb52fd8231,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3764432785289358233, guid: 317e1fae1605241648374edb52fd8231,
         type: 3}
       propertyPath: m_Pivot.x
@@ -21247,6 +21277,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 540
+      objectReference: {fileID: 0}
+    - target: {fileID: 3764432785289358233, guid: 317e1fae1605241648374edb52fd8231,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3764432785289358233, guid: 317e1fae1605241648374edb52fd8231,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3764432785289358233, guid: 317e1fae1605241648374edb52fd8231,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3764432785289358233, guid: 317e1fae1605241648374edb52fd8231,
         type: 3}
@@ -21312,6 +21357,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: UI_PFP_bg_main_starVFX
+      objectReference: {fileID: 0}
+    - target: {fileID: 7409563115783624315, guid: 317e1fae1605241648374edb52fd8231,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7996716201858997416, guid: 317e1fae1605241648374edb52fd8231,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 317e1fae1605241648374edb52fd8231, type: 3}
@@ -21503,6 +21558,16 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8146006689002485348, guid: c559692d2dae5488394c56b6a6962307,
+        type: 3}
+      propertyPath: lengthInSec
+      value: 1.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8146006689002485348, guid: c559692d2dae5488394c56b6a6962307,
+        type: 3}
+      propertyPath: InitialModule.startLifetime.minScalar
+      value: 0.6
+      objectReference: {fileID: 0}
     - target: {fileID: 9087657753020027309, guid: c559692d2dae5488394c56b6a6962307,
         type: 3}
       propertyPath: m_Pivot.x
@@ -21647,6 +21712,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6371930434455361167, guid: c559692d2dae5488394c56b6a6962307,
+        type: 3}
+      propertyPath: lengthInSec
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 7011389830616308251, guid: c559692d2dae5488394c56b6a6962307,
         type: 3}
