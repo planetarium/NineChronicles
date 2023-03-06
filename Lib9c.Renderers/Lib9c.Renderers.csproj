@@ -4,6 +4,9 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <OutputPath>.bin</OutputPath>
+    <IntermediateOutputPath>.obj</IntermediateOutputPath>
+    <RootNamespace>Lib9c</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
