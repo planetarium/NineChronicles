@@ -2502,6 +2502,7 @@ GameObject:
   - component: {fileID: 7719242862431068716}
   - component: {fileID: 2327057619243971813}
   - component: {fileID: 8242414707587096156}
+  - component: {fileID: 3097328564952335934}
   m_Layer: 5
   m_Name: TitleText
   m_TagString: Untagged
@@ -2657,6 +2658,18 @@ MonoBehaviour:
   defaultWordSpacing: 0
   defaultLineSpacingInitialized: 0
   defaultLineSpacing: 0
+--- !u!225 &3097328564952335934
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4846123187889147907}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &4854595168516906760
 GameObject:
   m_ObjectHideFlags: 0

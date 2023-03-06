@@ -1101,6 +1101,7 @@ GameObject:
   - component: {fileID: 3201750180246866672}
   - component: {fileID: 5625189219629761324}
   - component: {fileID: 8457953949223492571}
+  - component: {fileID: 6306673234820436047}
   m_Layer: 5
   m_Name: Pet
   m_TagString: Untagged
@@ -1182,6 +1183,18 @@ MonoBehaviour:
       calculateTangents: 0
       addNormals: 0
       immutableTriangles: 0
+--- !u!225 &6306673234820436047
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3325120303434249730}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &3338016346958867506
 GameObject:
   m_ObjectHideFlags: 0
