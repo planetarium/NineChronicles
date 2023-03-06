@@ -100,7 +100,6 @@ namespace Nekoyume.Model.Quest
             }
         }
 
-
         public QuestList(Dictionary serialized)
         {
             _listVersion = serialized.TryGetValue((Text) ListVersionKey, out var listVersion)

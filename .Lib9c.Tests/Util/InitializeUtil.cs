@@ -1,5 +1,6 @@
 namespace Lib9c.Tests.Util
 {
+    using System.IO;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
@@ -18,10 +19,19 @@ namespace Lib9c.Tests.Util
             Address agentAddress,
             Address avatarAddress,
             IAccountStateDelta initialStatesWithAvatarStateV1,
-            IAccountStateDelta initialStatesWithAvatarStateV2) InitializeStates()
+            IAccountStateDelta initialStatesWithAvatarStateV2
+            ) InitializeStates(
+                bool isDevEx = false
+            )
         {
             IAccountStateDelta states = new State();
-            var sheets = TableSheetsImporter.ImportSheets();
+            var sheets = TableSheetsImporter.ImportSheets(
+                isDevEx
+                    ? Path.GetFullPath("../../").Replace(
+                        Path.Combine(".Lib9c.DevExtensions.Tests", "bin"),
+                        Path.Combine("Lib9c", "TableCSV"))
+                    : null
+            );
             foreach (var (key, value) in sheets)
             {
                 states = states.SetState(
