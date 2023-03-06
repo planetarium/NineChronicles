@@ -66,14 +66,15 @@ namespace Nekoyume.Game.Character
             int earIndex,
             int lensIndex,
             int hairIndex,
-            int tailIndex)
+            int tailIndex,
+            bool isFriendCharacter = false)
         {
             var armor = (Armor)equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
             var weapon = (Weapon)equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Weapon);
 
             UpdateAvatar(avatarAddress, animator, hudContainer,
                 costumes, armor, weapon,
-                earIndex, lensIndex, hairIndex, tailIndex);
+                earIndex, lensIndex, hairIndex, tailIndex, isFriendCharacter);
         }
 
         public void Set(
@@ -130,7 +131,8 @@ namespace Nekoyume.Game.Character
             int earIndex,
             int lensIndex,
             int hairIndex,
-            int tailIndex)
+            int tailIndex,
+            bool isFriendCharacter = false)
         {
             _animator = animator;
             _hudContainer = hudContainer;
@@ -158,7 +160,10 @@ namespace Nekoyume.Game.Character
                 UpdateAcEye(dccParts[DccPartsType.ac_eye], true);
                 UpdateAcHead(dccParts[DccPartsType.ac_head], true);
 
-                pet.SetPosition(SpineController.GetSkeletonAnimation(), false);
+                if (!isFriendCharacter)
+                {
+                    pet.SetPosition(SpineController.GetSkeletonAnimation(), false);
+                }
             }
             else
             {
@@ -181,7 +186,11 @@ namespace Nekoyume.Game.Character
                     UpdateArmor(armor, 0, false);
                     UpdateWeapon(weapon);
                 }
-                pet.SetPosition(SpineController.GetSkeletonAnimation(), fullCostume is not null);
+
+                if (!isFriendCharacter)
+                {
+                    pet.SetPosition(SpineController.GetSkeletonAnimation(), fullCostume is not null);
+                }
             }
 
             var title = costumes.FirstOrDefault(x => x.ItemSubType == ItemSubType.Title);
