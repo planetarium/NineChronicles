@@ -544,6 +544,7 @@ namespace Nekoyume.UI
                                 petId)
                             .Subscribe();
                         StartCoroutine(CoCombineNPCAnimation(equipment, requiredBlockIndex));
+                        States.Instance.PetStates.LockPetTemporarily(petId);
                     },
                     petState);
             }
@@ -565,6 +566,7 @@ namespace Nekoyume.UI
                         petId)
                     .Subscribe();
                 StartCoroutine(CoCombineNPCAnimation(equipment, requiredBlockIndex));
+                States.Instance.PetStates.LockPetTemporarily(petId);
             }
         }
 

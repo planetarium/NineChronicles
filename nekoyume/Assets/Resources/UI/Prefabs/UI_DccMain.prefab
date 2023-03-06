@@ -82,7 +82,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1996204433392128587}
-  m_Father: {fileID: 200848358277904005}
+  m_Father: {fileID: 3506082297947799364}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
@@ -157,7 +157,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: D:CC Collection
+  m_text: UI_COLLECTION
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 7a651b26cd62dc0479659cbcab053405, type: 2}
@@ -244,7 +244,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 1
-  l10nKey: 
+  l10nKey: UI_COLLECTION
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -424,6 +424,7 @@ MonoBehaviour:
   tutorialActions: 
   collectionButton: {fileID: 2726461851139129850}
   backButton: {fileID: 8853667321893535037}
+  notification: {fileID: 1564436145759176780}
 --- !u!1 &3383851629734827482
 GameObject:
   m_ObjectHideFlags: 0
@@ -714,6 +715,7 @@ RectTransform:
   m_Children:
   - {fileID: 5853172057419761761}
   - {fileID: 2971655297093137755}
+  - {fileID: 700293897318435340}
   m_Father: {fileID: 4256543335630633523}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -915,7 +917,6 @@ RectTransform:
   m_Children:
   - {fileID: 3580950170116226216}
   - {fileID: 2747369442413811835}
-  - {fileID: 700293897318435340}
   m_Father: {fileID: 4256543335630633523}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1132,7 +1133,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: D:CC Homepage
+  m_text: UI_CONNECT_TO_DCC
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 7a651b26cd62dc0479659cbcab053405, type: 2}
@@ -1219,7 +1220,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 1
-  l10nKey: 
+  l10nKey: UI_CONNECT_TO_DCC
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0

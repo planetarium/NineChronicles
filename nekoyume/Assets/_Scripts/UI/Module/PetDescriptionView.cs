@@ -73,13 +73,9 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void Initialize(PetSheet.Row petRow, System.Action<int?> onClick, bool lockPetOnSelected)
+        public void Initialize(PetSheet.Row petRow, System.Action<int?> onClick)
         {
             _onClick = onClick;
-            if (lockPetOnSelected)
-            {
-                _onClick += States.Instance.PetStates.LockPetTemporarily;
-            }
 
             _petId = petRow.Id;
             Grade = petRow.Grade;

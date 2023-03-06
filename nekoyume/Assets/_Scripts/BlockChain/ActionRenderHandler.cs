@@ -1971,7 +1971,12 @@ namespace Nekoyume.BlockChain
             var questList = States.Instance.CurrentAvatarState.questList;
             foreach (var id in ids)
             {
-                var quest = questList.First(q => q.Id == id);
+                var quest = questList.FirstOrDefault(q => q.Id == id);
+                if (quest == null)
+                {
+                    continue;
+                }
+
                 var rewardMap = quest.Reward.ItemMap;
 
                 foreach (var reward in rewardMap)
@@ -2589,13 +2594,13 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            if (States.Instance.PetStates.TryGetPetState(eval.Action.PetId, out _))
+            if (States.Instance.PetStates.TryGetPetState(action.PetId, out _))
             {
-                Widget.Find<PetLevelUpResultScreen>().Show(eval.Action);
+                Widget.Find<PetLevelUpResultScreen>().Show(action);
             }
             else
             {
-                Widget.Find<PetSummonResultScreen>().Show(eval.Action.PetId);
+                Widget.Find<PetSummonResultScreen>().Show(action.PetId);
             }
 
             UpdateAgentStateAsync(eval).Forget();
@@ -2606,6 +2611,7 @@ namespace Nekoyume.BlockChain
             );
             UpdatePetState(action.AvatarAddress, eval.OutputStates, action.PetId);
             Widget.Find<DccCollection>().UpdateView();
+            Game.Game.instance.SavedPetId = action.PetId;
         }
 
         private void UpdatePetState(Address avatarAddress, IAccountStateDelta states, int petId)

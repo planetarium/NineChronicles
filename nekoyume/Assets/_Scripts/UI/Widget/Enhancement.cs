@@ -210,6 +210,7 @@ namespace Nekoyume.UI
             enhancementInventory.DeselectItem(true);
 
             StartCoroutine(CoCombineNPCAnimation(baseItem, row.SuccessRequiredBlockIndex, Clear));
+            States.Instance.PetStates.LockPetTemporarily(petId);
         }
 
         private void Clear()

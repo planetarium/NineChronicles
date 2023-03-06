@@ -90,6 +90,7 @@ namespace Nekoyume.UI
             Find<DataLoadingScreen>().Show();
             Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
             await ReactiveShopState.RequestBuyProductsAsync(ItemSubType.Weapon, MarketOrderType.cp_desc, 0, 60);
+            base.Show(ignoreShowAnimation);
             view.Show(
                 ReactiveShopState.BuyItemProducts,
                 ReactiveShopState.BuyFungibleAssetProducts,
@@ -97,7 +98,6 @@ namespace Nekoyume.UI
             HelpTooltip.HelpMe(100018, true);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
             Find<DataLoadingScreen>().Close();
-            base.Show(ignoreShowAnimation);
         }
 
         public void Open()

@@ -201,9 +201,6 @@ namespace Nekoyume.Game
                     if (!ReferenceEquals(anim, null) && !anim.Target.activeSelf)
                     {
                         anim.Target.SetActive(true);
-                        var skeleton = player.SpineController.GetSkeletonAnimation().Skeleton;
-                        skeleton.A = 0.0f;
-                        DOTween.To(() => skeleton.A, x => skeleton.A = x, 1.0f, 1.0f);
                         player.SpineController.Appear();
                     }
 

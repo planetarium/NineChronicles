@@ -1,9 +1,5 @@
-using Cysharp.Threading.Tasks;
 using Nekoyume.UI.Module;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Reactive.Subjects;
 using UnityEngine;
 
 namespace Nekoyume.UI
@@ -26,7 +22,7 @@ namespace Nekoyume.UI
 
         public override void Initialize()
         {
-            petInventory.Initialize(true, true);
+            petInventory.Initialize(true);
         }
 
         public void Show(Action<int?> onSelected, bool ignoreShowAnimation = false)

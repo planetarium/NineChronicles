@@ -28,6 +28,13 @@ namespace Nekoyume.Game
         public bool IsVisible(Address address, out int id, out bool isVisible)
         {
             var hexAddress = address.ToHex();
+            if (Avatars is null)
+            {
+                id = 0;
+                isVisible = false;
+                return false;
+            }
+
             var isExistDcc = Avatars.ContainsKey(hexAddress);
             id = Avatars.ContainsKey(hexAddress) ? Avatars[hexAddress] : 0;
             isVisible = PlayerPrefs.GetInt($"{DccVisible}_{hexAddress}", 0) > 0;
@@ -66,7 +73,10 @@ namespace Nekoyume.Game
                 dccParts.Add(DccPartsType.hair, result.traits[5]);
                 dccParts.Add(DccPartsType.ac_eye, result.traits[6]);
                 dccParts.Add(DccPartsType.ac_head, result.traits[7]);
-                _parts.Add(dccId, dccParts);
+                if (!_parts.ContainsKey(dccId))
+                {
+                    _parts.Add(dccId, dccParts);
+                }
             }));
         }
     }

@@ -766,7 +766,7 @@ namespace Nekoyume.BlockChain
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
-                ["PetId"] = petId.HasValue ? petId : default,
+                ["PetId"] = petId ?? default,
             }, true);
 
             var action = new ItemEnhancement
@@ -954,7 +954,7 @@ namespace Nekoyume.BlockChain
                 new Dictionary<string, Value>()
             {
                 ["RecipeId"] = recipeInfo.RecipeId,
-                ["PetId"] = petId.HasValue ? petId : default,
+                ["PetId"] = petId ?? default,
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             }, true);

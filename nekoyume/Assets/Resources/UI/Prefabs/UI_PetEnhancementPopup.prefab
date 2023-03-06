@@ -3082,7 +3082,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3616850071645205116
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5716,7 +5716,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 0}
+  m_TargetGraphic: {fileID: 5061690710174708670}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -7474,6 +7474,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4318714242931641215, guid: 7a92664ff93bbe741bd757ab47dd019b,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 18.25
       objectReference: {fileID: 0}
     - target: {fileID: 7127906191826958288, guid: 7a92664ff93bbe741bd757ab47dd019b,
         type: 3}
