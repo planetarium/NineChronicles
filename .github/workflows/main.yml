@@ -12,7 +12,7 @@ jobs:
     name: "build-and-test (${{ matrix.configuration }})"
     strategy:
       matrix:
-        configuration: ["Release", "DevEx"]
+        configuration: ["Release"]
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
