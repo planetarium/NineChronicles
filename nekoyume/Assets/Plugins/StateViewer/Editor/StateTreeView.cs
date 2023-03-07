@@ -33,12 +33,11 @@ namespace StateViewer.Editor
             rowHeight = EditorGUIUtility.singleLineHeight;
             showAlternatingRowBackgrounds = true;
             showBorder = true;
+
             if (_reversedSerializeKeys.Count == 0)
             {
                 ReverseSerializedKeys();
             }
-
-            Reload();
         }
 
         private void ReverseSerializedKeys()
@@ -57,22 +56,20 @@ namespace StateViewer.Editor
             Debug.LogFormat("SerializeKeys are reversed: {0}", _reversedSerializeKeys.Count);
         }
 
-        public void SetData(Address addr, IValue data)
-        {
-            // 이 부분에서 IValue를 StateTreeElement로 변환하는 작업을 해야 한다.
-            // 트리 구조가 만들어지는 부분이다.
-            _addr = addr;
-            var (model, _) = MakeItemModelRecursive("", data, 1);
-            _itemModels = new[] { model };
-            Reload();
-            OnDirty?.Invoke(false);
-        }
-
         private string GetReversedKey(string key)
         {
             return _reversedSerializeKeys.ContainsKey(key)
                 ? _reversedSerializeKeys[key]
                 : key;
+        }
+
+        public void SetData(Address addr, IValue data)
+        {
+            _addr = addr;
+            var (model, _) = MakeItemModelRecursive("", data, 1);
+            _itemModels = new[] { model };
+            Reload();
+            OnDirty?.Invoke(false);
         }
 
         private (StateTreeViewItem.Model viewModel, int currentId)
@@ -96,10 +93,7 @@ namespace StateViewer.Editor
                 case Text:
                 {
                     using var stream = new MemoryStream();
-                    var writerOption = new JsonWriterOptions
-                    {
-                        Indented = false,
-                    };
+                    var writerOption = new JsonWriterOptions();
                     var writer = new Utf8JsonWriter(stream, writerOption);
                     converter.Write(writer, data, serializerOption);
                     viewModel = new StateTreeViewItem.Model(
@@ -143,10 +137,7 @@ namespace StateViewer.Editor
                     foreach (var pair in dict)
                     {
                         using var stream = new MemoryStream();
-                        var writerOption = new JsonWriterOptions
-                        {
-                            Indented = false,
-                        };
+                        var writerOption = new JsonWriterOptions();
                         var writer = new Utf8JsonWriter(stream, writerOption);
                         converter.Write(writer, pair.Key, serializerOption);
                         StateTreeViewItem.Model childViewModel;
@@ -174,33 +165,33 @@ namespace StateViewer.Editor
 
         protected override IList<TreeViewItem> BuildRows(TreeViewItem root)
         {
-            var rows = GetRows() ?? new List<TreeViewItem>();
-            rows.Clear();
+            var totalRows = GetRows() ?? new List<TreeViewItem>();
+            totalRows.Clear();
 
             if (_itemModels is null)
             {
-                return rows;
+                return totalRows;
             }
 
-            foreach (var viewModel in _itemModels)
+            foreach (var model in _itemModels)
             {
-                var itemView = new StateTreeViewItem(viewModel);
-                root.AddChild(itemView);
-                rows.Add(itemView);
-                if (viewModel.Children.Count >= 1)
+                var item = new StateTreeViewItem(model);
+                root.AddChild(item);
+                totalRows.Add(item);
+                if (model.Children.Count >= 1)
                 {
-                    if (IsExpanded(itemView.id))
+                    if (IsExpanded(model.Id))
                     {
-                        AddChildrenRecursive(viewModel, itemView, rows);
+                        AddChildrenRecursive(model, item, totalRows);
                         continue;
                     }
 
-                    itemView.children = CreateChildListForCollapsedParent();
+                    item.children = CreateChildListForCollapsedParent();
                 }
             }
 
             SetupDepthsFromParentsAndChildren(root);
-            return rows;
+            return totalRows;
         }
 
         protected override void RowGUI(RowGUIArgs args)
@@ -244,23 +235,25 @@ namespace StateViewer.Editor
             }
         }
 
-        private static void AddChildrenRecursive(
-            StateTreeViewItem.Model itemModel,
-            TreeViewItem item,
-            ICollection<TreeViewItem> rows)
+        private void AddChildrenRecursive(
+            StateTreeViewItem.Model parentModel,
+            TreeViewItem parentItem,
+            ICollection<TreeViewItem> totalRows)
         {
-            foreach (var data in itemModel.Children)
+            foreach (var childModel in parentModel.Children)
             {
-                var itemView = new StateTreeViewItem(data);
-                item.AddChild(itemView);
-                rows.Add(itemView);
-                if (data.Children.Count >= 1)
+                var childItem = new StateTreeViewItem(childModel);
+                parentItem.AddChild(childItem);
+                totalRows.Add(childItem);
+                if (childModel.Children.Count >= 1)
                 {
-                    AddChildrenRecursive(data, itemView, rows);
-                }
-                else
-                {
-                    itemView.children = CreateChildListForCollapsedParent();
+                    if (IsExpanded(childModel.Id))
+                    {
+                        AddChildrenRecursive(childModel, childItem, totalRows);
+                        continue;
+                    }
+
+                    childItem.children = CreateChildListForCollapsedParent();
                 }
             }
         }

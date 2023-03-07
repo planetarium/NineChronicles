@@ -83,7 +83,7 @@ namespace StateViewer.Editor
                             Encoding.UTF8.GetBytes(Value));
                         return converter.Read(
                             ref reader,
-                            typeof(Binary),
+                            typeof(IValue),
                             serializerOptions);
                     }
                     case ValueKind.List:

@@ -72,7 +72,6 @@ namespace StateViewer.Editor
 
         private void OnEnable()
         {
-            Debug.Log("OnEnable()");
             stateTreeViewState ??= new TreeViewState();
             var serializedKeyColumn = new MultiColumnHeaderState.Column
             {
@@ -92,7 +91,7 @@ namespace StateViewer.Editor
                 width = 200,
                 minWidth = 200,
                 autoResize = true,
-                allowToggleVisibility = false,
+                allowToggleVisibility = true,
             };
             var typeColumn = new MultiColumnHeaderState.Column
             {
