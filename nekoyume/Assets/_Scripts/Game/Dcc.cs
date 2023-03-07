@@ -62,7 +62,13 @@ namespace Nekoyume.Game
         {
             var dccParts = new Dictionary<DccPartsType, int>();
             var url = $"{Game.instance.URL.DccMetadata}{dccId}.json";
-            yield return StartCoroutine(RequestManager.instance.GetJson(url, (json) =>
+            var headerName = Game.instance.URL.DccEthChainHeaderName;
+            var headerValue = Game.instance.URL.DccEthChainHeaderValue;
+            yield return StartCoroutine(RequestManager.instance.GetJson(
+                url,
+                headerName,
+                headerValue,
+                (json) =>
             {
                 var result = JsonSerializer.Deserialize<DccMetadata>(json);
                 dccParts.Add(DccPartsType.background, result.traits[0]);
