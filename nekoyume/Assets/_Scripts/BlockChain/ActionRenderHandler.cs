@@ -145,6 +145,7 @@ namespace Nekoyume.BlockChain
             UnlockWorld();
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
             Testbed();
+            ManipulateState();
 #endif
 
             // Arena
@@ -1918,6 +1919,32 @@ namespace Nekoyume.BlockChain
                 .AddTo(_disposables);
         }
 
+        private void ManipulateState()
+        {
+            _actionRenderer.EveryRender<ManipulateState>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(async eval =>
+                {
+                    // 상태에 반영하기.
+                    // Address 쭉 돌면서 매칭되는 객체에 반영.
+                    // States, ReactiveXxxState, XxxStateSubject, RxProps.Xxx...
+                    foreach (var (addr, _) in eval.Action.StateList)
+                    {
+                        if (addr == States.Instance.CurrentAvatarState.address)
+                        {
+                            await UpdateCurrentAvatarStateAsync();
+                        }
+                    }
+
+                    NotificationSystem.Push(
+                        MailType.System,
+                        "State Manipulated",
+                        NotificationCell.NotificationType.Information);
+                })
+                .AddTo(_disposables);
+        }
+
         private void ResponseTestbed(ActionEvaluation<CreateTestbed> eval)
         {
         }
@@ -1925,6 +1952,8 @@ namespace Nekoyume.BlockChain
         private void ResponseCreateArenaDummy(ActionEvaluation<CreateArenaDummy> eval)
         {
         }
+
+
 #endif
 
         private static async UniTaskVoid ResponseJoinArenaAsync(ActionEvaluation<JoinArena> eval)
