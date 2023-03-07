@@ -230,7 +230,11 @@ namespace Nekoyume.Game
             Stage.Initialize();
             Arena.Initialize();
             RaidStage.Initialize();
-            StartCoroutine(RequestManager.instance.GetJson(URL.DccAvatars, (json) =>
+            StartCoroutine(RequestManager.instance.GetJson(
+                URL.DccAvatars,
+                URL.DccEthChainHeaderName,
+                URL.DccEthChainHeaderValue,
+                (json) =>
             {
                 var responseData = DccAvatars.FromJson(json);
                 Dcc.instance.Init(responseData.Avatars);
