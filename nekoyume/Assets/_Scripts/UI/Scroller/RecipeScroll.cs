@@ -449,6 +449,11 @@ namespace Nekoyume.UI.Scroller
             if (_animationCoroutine != null)
             {
                 StopCoroutine(_animationCoroutine);
+                var rows = GetComponentsInChildren<RecipeRow>(true);
+                foreach (var row in rows)
+                {
+                    row.ShowWithAlpha(true);
+                }
             }
 
             _animationCoroutine = StartCoroutine(CoAnimateScroller());
@@ -470,7 +475,7 @@ namespace Nekoyume.UI.Scroller
 
             foreach (var row in rows)
             {
-                row.ShowAnimation();
+                row.ShowWithAlpha();
                 yield return wait;
             }
 

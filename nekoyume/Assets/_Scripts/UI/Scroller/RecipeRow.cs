@@ -102,14 +102,19 @@ namespace Nekoyume.UI.Scroller
             canvasGroup.alpha = 0f;
         }
 
-        public void ShowAnimation()
+        public void ShowWithAlpha(bool ignoreShowAnimation = false)
         {
-            if (!gameObject.activeSelf)
+            if (!gameObject.activeSelf && !ignoreShowAnimation)
             {
                 return;
             }
 
             canvasGroup.alpha = 1f;
+            if (ignoreShowAnimation)
+            {
+                return;
+            }
+
             animator.SetTrigger(_triggerHash);
         }
     }
