@@ -235,6 +235,38 @@ namespace StateViewer.Editor
                         }
 
                         break;
+                    case 4:
+                        if (viewModel.Type == ValueKind.List.ToString() ||
+                            viewModel.Type == ValueKind.Dictionary.ToString())
+                        {
+                            if (GUI.Button(cellRect, "Add"))
+                            {
+                                viewModel.AddChild(new StateTreeViewItem.Model(
+                                    viewModel.Id + 1,
+                                    "New",
+                                    "New",
+                                    ValueKind.Null.ToString(),
+                                    string.Empty));
+                                Reload();
+                                OnDirty?.Invoke(true);
+                            }
+                        }
+                        else if (viewModel.Parent is null)
+                        {
+                            // Do nothing.
+                        }
+                        else if (viewModel.Parent.Type == ValueKind.List.ToString() ||
+                                 viewModel.Parent.Type == ValueKind.Dictionary.ToString())
+                        {
+                            if (GUI.Button(cellRect, "Remove"))
+                            {
+                                viewModel.Parent.RemoveChild(viewModel);
+                                Reload();
+                                OnDirty?.Invoke(true);
+                            }
+                        }
+
+                        break;
                 }
             }
         }
