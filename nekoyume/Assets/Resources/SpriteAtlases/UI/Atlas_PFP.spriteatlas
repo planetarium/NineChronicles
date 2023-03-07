@@ -53,6 +53,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: c92fe3d095abff94c91406ab49eb834d, type: 3}
   - {fileID: 21300000, guid: d2d26ae070217b64080b83260e8cd73e, type: 3}
   - {fileID: 21300000, guid: 17d24e0127b8b9f4eb9ecfaad9e9065e, type: 3}
+  - {fileID: 21300000, guid: 92b1d562e03127b4b8ae1473bf7c0bcf, type: 3}
   - {fileID: 21300000, guid: 1b3f70b266c320e409043ea6db7019ff, type: 3}
   - {fileID: 21300000, guid: 25dd65d27bc687748967353c8b30022b, type: 3}
   - {fileID: 21300000, guid: bbf2b4f275cd44f4fbd030b54a987e13, type: 3}
@@ -62,6 +63,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: bdab587499a73420a87cd352ba4274f5, type: 3}
   - {fileID: 21300000, guid: 27a301945de5b8647846a0adf2417f08, type: 3}
   - {fileID: 21300000, guid: c19f601514d61da49a9a7500ee9d2841, type: 3}
+  - {fileID: 21300000, guid: c12cc245762eaa84593ccca28a1be7a4, type: 3}
   - {fileID: 21300000, guid: d07a62555a5d5d74a8df03ed9758e539, type: 3}
   - {fileID: 21300000, guid: 043252e51dd88ca46abfd57e65175107, type: 3}
   - {fileID: 21300000, guid: 8bef08067026c49499c7229eea7b3581, type: 3}
@@ -81,8 +83,10 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 6c6e3d6b53d0cb04ab7d9d8d232e769e, type: 3}
   - {fileID: 21300000, guid: 10651e7b598ce3844806f2ce59bf836b, type: 3}
   - {fileID: 21300000, guid: 98353bcb506f19549bea799ece20bbce, type: 3}
+  - {fileID: 21300000, guid: 4eba0adb7c19356438e672d77ea45d22, type: 3}
   - {fileID: 21300000, guid: 0b3e9c6c744c65347a05569b714c9457, type: 3}
   - {fileID: 21300000, guid: 6c13927cbce3cf8468cb9d92ef9ff966, type: 3}
+  - {fileID: 21300000, guid: 4a0afafc05e44f943bded6501be44f8d, type: 3}
   - {fileID: 21300000, guid: 6906ed1dae15cc744b94ac018a39af2f, type: 3}
   - {fileID: 21300000, guid: bd88f33d9e3f1a84d9356bd6c24e350d, type: 3}
   - {fileID: 21300000, guid: 4df3812e805b2074aac12fa3e1420952, type: 3}
@@ -94,6 +98,7 @@ SpriteAtlas:
   - UI_PFP_Bg_Inside
   - Img_DCC_02
   - DccCollection_Character_floor_4
+  - Bg_NotConnected
   - EquipPet_bg_Empty
   - DccCollection_Character_floor
   - UI_main_icon_Mileage
@@ -103,6 +108,7 @@ SpriteAtlas:
   - UI_PFP_Card_Normal
   - UI_PFP_Bg_Light
   - Character_Level_Bg
+  - Icon_Connecting
   - EquipPet_Mask
   - PetCard_Empty
   - Img_DCC_03
@@ -122,8 +128,10 @@ SpriteAtlas:
   - Icon_DccAll
   - PetCard_Name_Bg
   - DccHomepage
+  - Icon_NotConnected
   - button_Blue_01
   - Img_DCC_01
+  - Bg_Connecting
   - UI_PFP_Bg_1
   - DccCollection_Character_floor_2
   - Pattern
