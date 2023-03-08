@@ -4,13 +4,11 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blockchain;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
-using Libplanet.Net;
 using Libplanet.Tx;
 using Serilog;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
@@ -20,7 +18,6 @@ namespace Nekoyume.BlockChain
     public class Miner
     {
         private readonly BlockChain<NCAction> _chain;
-        private readonly Swarm<NCAction> _swarm;
         private readonly PrivateKey _privateKey;
 
         private readonly IActionTypeLoader? _actionTypeLoader;
@@ -87,11 +84,6 @@ namespace Nekoyume.BlockChain
                     DateTimeOffset.UtcNow,
                     cancellationToken: cancellationToken,
                     append: true);
-
-                if (_swarm is Swarm<NCAction> s && s.Running)
-                {
-                    s.BroadcastBlock(block);
-                }
             }
             catch (OperationCanceledException)
             {
@@ -133,13 +125,11 @@ namespace Nekoyume.BlockChain
 
         public Miner(
             BlockChain<NCAction> chain,
-            Swarm<NCAction> swarm,
             PrivateKey privateKey,
             IActionTypeLoader? actionTypeLoader = null
         )
         {
             _chain = chain ?? throw new ArgumentNullException(nameof(chain));
-            _swarm = swarm;
             _privateKey = privateKey;
             _actionTypeLoader = actionTypeLoader;
         }
