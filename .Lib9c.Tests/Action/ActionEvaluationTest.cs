@@ -416,6 +416,7 @@ namespace Lib9c.Tests.Action
                             Type = ProductType.FungibleAssetValue,
                         },
                     },
+                    ChargeAp = true,
                 },
                 BuyProduct _ => new BuyProduct
                 {

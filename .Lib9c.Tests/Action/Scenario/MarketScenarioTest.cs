@@ -491,6 +491,8 @@ namespace Lib9c.Tests.Action.Scenario
                 );
             }
 
+            Assert.Equal(_gameConfigState.ActionPointMax - RegisterProduct.CostAp - CancelProductRegistration.CostAp, latestAvatarState.actionPoint);
+
             var sellProductList = new ProductsState((List)latestState.GetState(productsStateAddress));
             Assert.Empty(sellProductList.ProductIds);
 
