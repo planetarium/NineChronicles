@@ -690,6 +690,7 @@ namespace Lib9c.Tests.Action.Scenario
             });
 
             var latestAvatarState = latestState.GetAvatarStateV2(_sellerAvatarAddress);
+            Assert.Equal(_gameConfigState.ActionPointMax - RegisterProduct.CostAp - ReRegisterProduct.CostAp, latestAvatarState.actionPoint);
             var inventoryItem = Assert.Single(latestAvatarState.inventory.Items);
             Assert.Equal(1, inventoryItem.count);
             Assert.IsType<TradableMaterial>(inventoryItem.item);
@@ -826,6 +827,7 @@ namespace Lib9c.Tests.Action.Scenario
             }
 
             var nextAvatarState = nextState.GetAvatarStateV2(_sellerAvatarAddress);
+            Assert.Equal(_gameConfigState.ActionPointMax - ReRegisterProduct.CostAp, nextAvatarState.actionPoint);
             Assert.Empty(nextAvatarState.inventory.Items);
 
             foreach (var shopAddress in shopAddressList)

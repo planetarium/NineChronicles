@@ -401,6 +401,7 @@ namespace Lib9c.Tests.Action
                             }
                         ),
                     },
+                    ChargeAp = true,
                 },
                 CancelProductRegistration _ => new CancelProductRegistration
                 {
