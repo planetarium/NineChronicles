@@ -455,8 +455,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 20
-    m_Right: 20
+    m_Left: 30
+    m_Right: 30
     m_Top: 10
     m_Bottom: 0
   m_ChildAlignment: 1
@@ -777,7 +777,7 @@ PrefabInstance:
     - target: {fileID: 7660555183555812040, guid: f1cfee54643744dc88e701ed6daeff97,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 52
+      value: 54
       objectReference: {fileID: 0}
     - target: {fileID: 7660555183555812040, guid: f1cfee54643744dc88e701ed6daeff97,
         type: 3}
@@ -1321,7 +1321,7 @@ PrefabInstance:
     - target: {fileID: 2345074757481728818, guid: f1cfee54643744dc88e701ed6daeff97,
         type: 3}
       propertyPath: m_fontSize
-      value: 19.65
+      value: 18.9
       objectReference: {fileID: 0}
     - target: {fileID: 2345074757481728818, guid: f1cfee54643744dc88e701ed6daeff97,
         type: 3}
@@ -1487,7 +1487,7 @@ PrefabInstance:
     - target: {fileID: 7660555183555812040, guid: f1cfee54643744dc88e701ed6daeff97,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 52
+      value: 54
       objectReference: {fileID: 0}
     - target: {fileID: 7660555183555812040, guid: f1cfee54643744dc88e701ed6daeff97,
         type: 3}
