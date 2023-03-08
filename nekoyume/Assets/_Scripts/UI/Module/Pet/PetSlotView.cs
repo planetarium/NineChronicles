@@ -82,14 +82,18 @@ namespace Nekoyume.UI.Module.Pet
 
             var isOwn = States.Instance.PetStates.TryGetPetState(model.PetRow.Id, out _petState);
             petGraphic.skeletonDataAsset = PetRenderingHelper.GetPetSkeletonData(model.PetRow.Id);
+            petGraphic.rectTransform.localPosition =
+                PetRenderingHelper.GetLocalPositionInCard(model.PetRow.Id);
+            petGraphic.rectTransform.localScale =
+                PetRenderingHelper.GetLocalScaleInCard(model.PetRow.Id);
             petGraphic.Initialize(true);
             var hsv = PetRenderingHelper.GetHsv(model.PetRow.Id);
-            // uiHsvModifiers.ForEach(modifier =>
-            // {
-            //     modifier.hue = hsv.x;
-            //     modifier.saturation = hsv.y;
-            //     modifier.value = hsv.z;
-            // });
+            uiHsvModifiers.ForEach(modifier =>
+            {
+                modifier.hue = hsv.x;
+                modifier.saturation = hsv.y;
+                modifier.value = hsv.z;
+            });
             soulStoneImage.overrideSprite = PetRenderingHelper.GetSoulStoneSprite(model.PetRow.Id);
             soulStoneText.text = States.Instance.AvatarBalance[model.PetRow.SoulStoneTicker]
                 .GetQuantityString();

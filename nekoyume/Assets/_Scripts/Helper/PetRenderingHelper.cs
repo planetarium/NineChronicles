@@ -43,6 +43,16 @@ namespace Nekoyume.Helper
             return PetRenderingData[id].spineDataAsset;
         }
 
+        public static Vector3 GetLocalPositionInCard(int id)
+        {
+            return PetRenderingData[id].localPosition;
+        }
+
+        public static Vector3 GetLocalScaleInCard(int id)
+        {
+            return PetRenderingData[id].localScale;
+        }
+
         public static float3 GetHsv(int id)
         {
             return PetRenderingData[id].hsv;
