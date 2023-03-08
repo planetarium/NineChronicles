@@ -390,9 +390,6 @@ namespace Nekoyume.UI
                     loadingScreen.Message = L10nManager.Localize("UI_LOADING_BOOTSTRAP_START");
                     loadingScreen.Show();
                     await RxProps.SelectAvatarAsync(slotIndex);
-                    await WorldBossStates.Set(States.Instance.CurrentAvatarState.address);
-                    await States.Instance.InitRuneSlotStates();
-                    await States.Instance.InitItemSlotStates();
                     loadingScreen.Close();
                     Game.Event.OnRoomEnter.Invoke(false);
                     Game.Event.OnUpdateAddresses.Invoke();

@@ -198,13 +198,9 @@ namespace Nekoyume.UI
             btnLogin.SetActive(false);
             var loadingScreen = Find<GrayLoadingScreen>();
             loadingScreen.Show();
-            var results =
-                await RxProps.SelectAvatarAsync(_selectedIndex);
-            await WorldBossStates.Set(States.Instance.CurrentAvatarState.address);
-            await States.Instance.InitRuneSlotStates();
-            await States.Instance.InitItemSlotStates();
+            await RxProps.SelectAvatarAsync(_selectedIndex);
             loadingScreen.Close();
-            OnDidAvatarStateLoaded(results.selectedAvatarState);
+            OnDidAvatarStateLoaded(States.Instance.CurrentAvatarState);
         }
 
         public void BackToLogin()
