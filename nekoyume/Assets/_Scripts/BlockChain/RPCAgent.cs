@@ -92,8 +92,6 @@ namespace Nekoyume.BlockChain
 
         public readonly Subject<(RPCAgent, int retryCount)> OnRetryAttempt = new Subject<(RPCAgent, int)>();
 
-        public int AppProtocolVersion { get; private set; }
-
         public BlockHash BlockTipHash { get; private set; }
 
         private readonly Subject<(NCTx tx, List<NCAction> actions)> _onMakeTransactionSubject =
@@ -114,7 +112,7 @@ namespace Nekoyume.BlockChain
                 options.RpcServerPort,
                 ChannelCredentials.Insecure,
                 new[]
-                {                    
+                {
                     new ChannelOption("grpc.max_receive_message_length", -1)
                 }
             );
@@ -155,10 +153,6 @@ namespace Nekoyume.BlockChain
                 yield return new WaitUntil(() => task.IsCompleted);
             }
 
-            var appProtocolVersion = options.AppProtocolVersion is null
-                ? default
-                : Libplanet.Net.AppProtocolVersion.FromToken(options.AppProtocolVersion);
-            AppProtocolVersion = appProtocolVersion.Version;
             RegisterDisconnectEvent(_hub);
             StartCoroutine(CoTxProcessor());
             StartCoroutine(CoJoin(callback));
