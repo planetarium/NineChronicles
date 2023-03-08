@@ -63,11 +63,6 @@ namespace Nekoyume.State
             StartEvent();
         }
 
-        public static void SetCurrentAvatarAddress(Address avatarAddress)
-        {
-            _currentAvatarAddr = avatarAddress;
-        }
-
         public static void Stop()
         {
             Debug.Log($"{nameof(RxProps)} stop");
