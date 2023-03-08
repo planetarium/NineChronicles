@@ -43,9 +43,6 @@ namespace Nekoyume.UI.Module.Pet
         private TextMeshProUGUI petInfoText;
 
         [SerializeField]
-        private GameObject equippedIcon;
-
-        [SerializeField]
         private GameObject levelUpNotification;
 
         [SerializeField]
@@ -74,7 +71,6 @@ namespace Nekoyume.UI.Module.Pet
                 .AddTo(_disposables);
             emptyObject.SetActive(model.Empty.Value);
             petInfoObject.SetActive(!model.Empty.Value);
-            equippedIcon.SetActive(false);
             hasNotification.SetActive(false);
             levelUpNotification.SetActive(false);
             loading.SetActive(false);
@@ -88,12 +84,12 @@ namespace Nekoyume.UI.Module.Pet
             petGraphic.skeletonDataAsset = PetRenderingHelper.GetPetSkeletonData(model.PetRow.Id);
             petGraphic.Initialize(true);
             var hsv = PetRenderingHelper.GetHsv(model.PetRow.Id);
-            uiHsvModifiers.ForEach(modifier =>
-            {
-                modifier.hue = hsv.x;
-                modifier.saturation = hsv.y;
-                modifier.value = hsv.z;
-            });
+            // uiHsvModifiers.ForEach(modifier =>
+            // {
+            //     modifier.hue = hsv.x;
+            //     modifier.saturation = hsv.y;
+            //     modifier.value = hsv.z;
+            // });
             soulStoneImage.overrideSprite = PetRenderingHelper.GetSoulStoneSprite(model.PetRow.Id);
             soulStoneText.text = States.Instance.AvatarBalance[model.PetRow.SoulStoneTicker]
                 .GetQuantityString();
@@ -112,7 +108,6 @@ namespace Nekoyume.UI.Module.Pet
                 : PetRenderingHelper.GetUIColor(PetRenderingHelper.NotOwnText);
             petInfoText.color = Color.white;
             petInfoText.text = L10nManager.Localize($"PET_NAME_{model.PetRow.Id}");
-            model.EquippedIcon.SubscribeTo(equippedIcon).AddTo(_disposables);
             model.HasNotification.Subscribe(b =>
             {
                 var levelUpAble = b && _petState is not null;

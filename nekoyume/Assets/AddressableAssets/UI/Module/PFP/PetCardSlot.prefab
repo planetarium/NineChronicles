@@ -609,7 +609,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 16
+  m_fontSize: 8
   m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -712,18 +712,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   button: {fileID: 6996397769613101194}
-  petImage: {fileID: 0}
-  soulStoneImage: {fileID: 0}
+  petGraphic: {fileID: 1485459764886245813}
+  soulStoneImage: {fileID: 1301023677919696542}
   emptyObject: {fileID: 5608618909936560178}
   petInfoObject: {fileID: 8183665222623121126}
-  soulStoneText: {fileID: 0}
-  levelText: {fileID: 0}
+  soulStoneText: {fileID: 73179211294257026}
+  levelText: {fileID: 1198890531772279685}
   petInfoText: {fileID: 1123592539402976611}
-  equippedIcon: {fileID: 0}
   levelUpNotification: {fileID: 6589356487000040698}
   hasNotification: {fileID: 1302393289915582021}
   loading: {fileID: 4240935538933731206}
   summonableNotification: {fileID: 4233289780577852124}
+  uiHsvModifiers: []
 --- !u!1 &3317523229236390243
 GameObject:
   m_ObjectHideFlags: 0
@@ -2312,7 +2312,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 19.5
+  m_fontSize: 20
   m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -2796,6 +2796,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1ca9467c3da664144b1947c70b32bd5b, type: 3}
+--- !u!114 &1485459764886245813 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4024160428972629175, guid: 1ca9467c3da664144b1947c70b32bd5b,
+    type: 3}
+  m_PrefabInstance: {fileID: 2541676570896420098}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d85b887af7e6c3f45a2e2d2920d641bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &2046881399073726665 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4549236602698870219, guid: 1ca9467c3da664144b1947c70b32bd5b,

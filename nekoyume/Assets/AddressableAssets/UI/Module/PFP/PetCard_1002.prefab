@@ -101,7 +101,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4549236602698870219}
   - component: {fileID: 8347441220767112628}
-  - component: {fileID: 3959436205133912149}
   m_Layer: 5
   m_Name: PetCard_1002
   m_TagString: Untagged
@@ -141,19 +140,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2569296610831943072}
   m_CullTransparentMesh: 1
---- !u!114 &3959436205133912149
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2569296610831943072}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97b61607b1454d19a713f8a64f33eede, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  view: {fileID: 0}
 --- !u!1 &3824791331511558588
 GameObject:
   m_ObjectHideFlags: 0
