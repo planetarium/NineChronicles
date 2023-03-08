@@ -59,11 +59,13 @@ SpriteAtlas:
   - {fileID: 21300000, guid: bbf2b4f275cd44f4fbd030b54a987e13, type: 3}
   - {fileID: 21300000, guid: ffbe6a3312190fc4cb7782f7401ed8ea, type: 3}
   - {fileID: 21300000, guid: 357c6404885b8aa44b7196d55f398f2a, type: 3}
-  - {fileID: 21300000, guid: 4def6b04c11f63849b677e0c0b0bcca2, type: 3}
+  - {fileID: 21300000, guid: 8da252443f7938b42a3bab9b927fc1e8, type: 3}
   - {fileID: 21300000, guid: bdab587499a73420a87cd352ba4274f5, type: 3}
   - {fileID: 21300000, guid: 27a301945de5b8647846a0adf2417f08, type: 3}
+  - {fileID: 21300000, guid: dedacea40c944d740a0cfc4ed1c3a00d, type: 3}
   - {fileID: 21300000, guid: c12cc245762eaa84593ccca28a1be7a4, type: 3}
   - {fileID: 21300000, guid: d07a62555a5d5d74a8df03ed9758e539, type: 3}
+  - {fileID: 21300000, guid: fb490585aec34654ea2ce595f7b704b8, type: 3}
   - {fileID: 21300000, guid: 043252e51dd88ca46abfd57e65175107, type: 3}
   - {fileID: 21300000, guid: 8bef08067026c49499c7229eea7b3581, type: 3}
   - {fileID: 21300000, guid: 023a89268a58c424198209834ae29b6d, type: 3}
@@ -78,7 +80,9 @@ SpriteAtlas:
   - {fileID: 21300000, guid: c8ec3cb9ec9dd0643a69f37236872618, type: 3}
   - {fileID: 21300000, guid: 32624fe9a68530f4b8b15daeca644e17, type: 3}
   - {fileID: 21300000, guid: d04e181a2ccf16549b48175981781ee0, type: 3}
+  - {fileID: 21300000, guid: 67c0815ad5d63204baeac21d154daeda, type: 3}
   - {fileID: 21300000, guid: 054c37aa5a3ecd446886c495ea0308c3, type: 3}
+  - {fileID: 21300000, guid: 4ba33e0bb239fc84f8ab51bc4028837a, type: 3}
   - {fileID: 21300000, guid: 6c6e3d6b53d0cb04ab7d9d8d232e769e, type: 3}
   - {fileID: 21300000, guid: 10651e7b598ce3844806f2ce59bf836b, type: 3}
   - {fileID: 21300000, guid: 98353bcb506f19549bea799ece20bbce, type: 3}
@@ -103,11 +107,13 @@ SpriteAtlas:
   - UI_main_icon_Mileage
   - Img_DccCollection
   - Img_DCC_04
-  - DccCollection_Character_floor_3
+  - SoulStone_Gauge
   - UI_PFP_Card_Normal
   - UI_PFP_Bg_Light
+  - PetCard_Pattern
   - Icon_Connecting
   - EquipPet_Mask
+  - PetCard
   - PetCard_Empty
   - Img_DCC_03
   - Icon_DCC
@@ -122,7 +128,9 @@ SpriteAtlas:
   - PetCard_Light
   - button_BluishGreen_01
   - EquipPet_Select
+  - SoulStone_Gauge_Bg
   - EquipPet_bg_1
+  - PetCard_Over
   - Icon_DccAll
   - PetCard_Name_Bg
   - DccHomepage
