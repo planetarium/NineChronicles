@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Spine.Unity;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace Nekoyume
@@ -14,9 +15,11 @@ namespace Nekoyume
         public struct PetRenderingData
         {
             public int id;
-            public Sprite cardSlotSprite;
             public Sprite soulStoneSprite;
             public SkeletonDataAsset spineDataAsset;
+            public Vector3 localPosition;
+            public Vector3 localScale;
+            public float3 hsv;
         }
 
         [Serializable]

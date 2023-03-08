@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Coffee.UIEffects;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Scroller;
+using Spine.Unity;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,7 +22,7 @@ namespace Nekoyume.UI.Module.Pet
         private Button button;
 
         [SerializeField]
-        private Image petImage;
+        private SkeletonGraphic petGraphic;
 
         [SerializeField]
         private Image soulStoneImage;
@@ -55,6 +57,9 @@ namespace Nekoyume.UI.Module.Pet
         [SerializeField]
         private GameObject summonableNotification;
 
+        [SerializeField]
+        private List<UIHsvModifier> uiHsvModifiers;
+
         private PetState _petState;
         private readonly List<IDisposable> _disposables = new();
 
@@ -80,13 +85,18 @@ namespace Nekoyume.UI.Module.Pet
             }
 
             var isOwn = States.Instance.PetStates.TryGetPetState(model.PetRow.Id, out _petState);
-            petImage.overrideSprite = PetRenderingHelper.GetPetCardSprite(model.PetRow.Id);
+            petGraphic.skeletonDataAsset = PetRenderingHelper.GetPetSkeletonData(model.PetRow.Id);
+            petGraphic.Initialize(true);
+            var hsv = PetRenderingHelper.GetHsv(model.PetRow.Id);
+            uiHsvModifiers.ForEach(modifier =>
+            {
+                modifier.hue = hsv.x;
+                modifier.saturation = hsv.y;
+                modifier.value = hsv.z;
+            });
             soulStoneImage.overrideSprite = PetRenderingHelper.GetSoulStoneSprite(model.PetRow.Id);
             soulStoneText.text = States.Instance.AvatarBalance[model.PetRow.SoulStoneTicker]
                 .GetQuantityString();
-            petImage.color = isOwn
-                ? Color.white
-                : PetRenderingHelper.GetUIColor(PetRenderingHelper.NotOwnSlot);
             var maxLevel = TableSheets.Instance.PetCostSheet[model.PetRow.Id]
                 .Cost
                 .OrderBy(data => data.Level)

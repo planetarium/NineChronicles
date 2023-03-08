@@ -4,6 +4,7 @@ using Libplanet.Assets;
 using Nekoyume.Game;
 using Nekoyume.State;
 using Spine.Unity;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace Nekoyume.Helper
@@ -32,11 +33,6 @@ namespace Nekoyume.Helper
                 data => data.color);
         }
 
-        public static Sprite GetPetCardSprite(int id)
-        {
-            return PetRenderingData[id].cardSlotSprite;
-        }
-
         public static Sprite GetSoulStoneSprite(int id)
         {
             return PetRenderingData[id].soulStoneSprite;
@@ -45,6 +41,11 @@ namespace Nekoyume.Helper
         public static SkeletonDataAsset GetPetSkeletonData(int id)
         {
             return PetRenderingData[id].spineDataAsset;
+        }
+
+        public static float3 GetHsv(int id)
+        {
+            return PetRenderingData[id].hsv;
         }
 
         public static Color GetUIColor(string key)

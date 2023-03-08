@@ -5415,7 +5415,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 1
-  l10nKey: UI_EQUIPMENTS
+  l10nKey: 
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -21131,6 +21131,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PetCardSlot
       objectReference: {fileID: 0}
+    - target: {fileID: 2590611624859990470, guid: 842c632f5ca56e3408834c2009f40abe,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_Pivot.x
@@ -21154,7 +21159,7 @@ PrefabInstance:
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
@@ -21164,17 +21169,17 @@ PrefabInstance:
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 170
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 210
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
@@ -21214,12 +21219,12 @@ PrefabInstance:
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 85
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -105
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
@@ -21239,7 +21244,7 @@ PrefabInstance:
     - target: {fileID: 5304387089704188847, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 62.240005
       objectReference: {fileID: 0}
     - target: {fileID: 7142220436776823387, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
@@ -21249,27 +21254,27 @@ PrefabInstance:
     - target: {fileID: 8049402994322727142, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8049402994322727142, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8049402994322727142, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 62.24
       objectReference: {fileID: 0}
     - target: {fileID: 8049402994322727142, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 22.65
       objectReference: {fileID: 0}
     - target: {fileID: 8049402994322727142, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -25.825
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 842c632f5ca56e3408834c2009f40abe, type: 3}
@@ -21296,6 +21301,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PetCardSlot (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 2590611624859990470, guid: 842c632f5ca56e3408834c2009f40abe,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_Pivot.x
@@ -21319,7 +21329,7 @@ PrefabInstance:
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
@@ -21329,17 +21339,17 @@ PrefabInstance:
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 170
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 210
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
@@ -21379,12 +21389,12 @@ PrefabInstance:
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 265
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -105
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
@@ -21404,32 +21414,32 @@ PrefabInstance:
     - target: {fileID: 5304387089704188847, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 62.240005
       objectReference: {fileID: 0}
     - target: {fileID: 8049402994322727142, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8049402994322727142, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8049402994322727142, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 62.24
       objectReference: {fileID: 0}
     - target: {fileID: 8049402994322727142, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 22.65
       objectReference: {fileID: 0}
     - target: {fileID: 8049402994322727142, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -25.825
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 842c632f5ca56e3408834c2009f40abe, type: 3}
@@ -22041,6 +22051,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PetCardSlot (8)
       objectReference: {fileID: 0}
+    - target: {fileID: 2590611624859990470, guid: 842c632f5ca56e3408834c2009f40abe,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_Pivot.x
@@ -22064,7 +22079,7 @@ PrefabInstance:
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
@@ -22074,17 +22089,17 @@ PrefabInstance:
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 170
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 210
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
@@ -22124,12 +22139,12 @@ PrefabInstance:
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 265
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -325
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
@@ -22331,6 +22346,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PetCardSlot (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 2590611624859990470, guid: 842c632f5ca56e3408834c2009f40abe,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_Pivot.x
@@ -22354,7 +22374,7 @@ PrefabInstance:
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
@@ -22364,17 +22384,17 @@ PrefabInstance:
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 170
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 210
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
@@ -22414,12 +22434,12 @@ PrefabInstance:
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 625
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -105
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
@@ -22439,32 +22459,32 @@ PrefabInstance:
     - target: {fileID: 5304387089704188847, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 62.240005
       objectReference: {fileID: 0}
     - target: {fileID: 8049402994322727142, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8049402994322727142, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8049402994322727142, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 62.24
       objectReference: {fileID: 0}
     - target: {fileID: 8049402994322727142, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 22.65
       objectReference: {fileID: 0}
     - target: {fileID: 8049402994322727142, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -25.825
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 842c632f5ca56e3408834c2009f40abe, type: 3}
@@ -22688,6 +22708,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PetCardSlot (10)
       objectReference: {fileID: 0}
+    - target: {fileID: 2590611624859990470, guid: 842c632f5ca56e3408834c2009f40abe,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_Pivot.x
@@ -22711,7 +22736,7 @@ PrefabInstance:
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
@@ -22721,17 +22746,17 @@ PrefabInstance:
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 170
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 210
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
@@ -22771,12 +22796,12 @@ PrefabInstance:
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 625
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -325
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
@@ -22858,6 +22883,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PetCardSlot (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 2590611624859990470, guid: 842c632f5ca56e3408834c2009f40abe,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_Pivot.x
@@ -22881,7 +22911,7 @@ PrefabInstance:
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
@@ -22891,17 +22921,17 @@ PrefabInstance:
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 170
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 210
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
@@ -22941,12 +22971,12 @@ PrefabInstance:
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 445
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -105
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
@@ -22966,32 +22996,32 @@ PrefabInstance:
     - target: {fileID: 5304387089704188847, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 62.240005
       objectReference: {fileID: 0}
     - target: {fileID: 8049402994322727142, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8049402994322727142, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8049402994322727142, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 62.24
       objectReference: {fileID: 0}
     - target: {fileID: 8049402994322727142, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 22.65
       objectReference: {fileID: 0}
     - target: {fileID: 8049402994322727142, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -25.825
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 842c632f5ca56e3408834c2009f40abe, type: 3}
@@ -23018,6 +23048,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PetCardSlot (7)
       objectReference: {fileID: 0}
+    - target: {fileID: 2590611624859990470, guid: 842c632f5ca56e3408834c2009f40abe,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_Pivot.x
@@ -23041,7 +23076,7 @@ PrefabInstance:
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
@@ -23051,17 +23086,17 @@ PrefabInstance:
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 170
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 210
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
@@ -23101,12 +23136,12 @@ PrefabInstance:
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 85
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -325
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
@@ -23958,6 +23993,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PetCardSlot (9)
       objectReference: {fileID: 0}
+    - target: {fileID: 2590611624859990470, guid: 842c632f5ca56e3408834c2009f40abe,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_Pivot.x
@@ -23981,7 +24021,7 @@ PrefabInstance:
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
@@ -23991,17 +24031,17 @@ PrefabInstance:
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 170
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 210
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
@@ -24041,12 +24081,12 @@ PrefabInstance:
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 445
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -325
       objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
