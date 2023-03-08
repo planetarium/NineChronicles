@@ -11,6 +11,7 @@ using Nekoyume.Model.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Event;
 using Nekoyume.Model.State;
+using Nekoyume.UI.Module.WorldBoss;
 using UnityEngine;
 
 namespace Nekoyume.State
@@ -69,14 +70,18 @@ namespace Nekoyume.State
             _disposables.DisposeAllAndClear();
         }
 
-        public static async UniTask<(
-            AvatarState selectedAvatarState,
-            (ArenaInformation current, ArenaInformation next) arenaInfoTuple,
-            EventDungeonInfo eventDungeonInfo)> SelectAvatarAsync(int avatarIndexToSelect) =>
+        public static async UniTask SelectAvatarAsync(
+            int avatarIndexToSelect,
+            bool forceNewSelection = false) =>
             await UniTask.WhenAll(
-                States.Instance.SelectAvatarAsync(avatarIndexToSelect),
+                States.Instance.SelectAvatarAsync(
+                    avatarIndexToSelect,
+                    forceNewSelection: forceNewSelection),
                 ArenaInfoTuple.UpdateAsync(),
-                EventDungeonInfo.UpdateAsync());
+                EventDungeonInfo.UpdateAsync(),
+                WorldBossStates.Set(States.Instance.CurrentAvatarState.address),
+                States.Instance.InitRuneSlotStates(),
+                States.Instance.InitItemSlotStates());
 
         private static void OnBlockIndex(long blockIndex)
         {

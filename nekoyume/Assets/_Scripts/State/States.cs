@@ -282,7 +282,7 @@ namespace Nekoyume.State
             }
         }
 
-        private async UniTask InitItemSlotStateAsync(int slotIndex, AvatarState avatarState)
+        public async UniTask InitItemSlotStateAsync(int slotIndex, AvatarState avatarState)
         {
             if (ItemSlotStates.ContainsKey(slotIndex))
             {
@@ -544,20 +544,18 @@ namespace Nekoyume.State
         /// <summary>
         /// 인자로 받은 인덱스의 아바타 상태를 선택한다.
         /// </summary>
-        /// <param name="index"></param>
-        /// <param name="initializeReactiveState"></param>
-        /// <returns></returns>
         /// <exception cref="KeyNotFoundException"></exception>
         public async UniTask<AvatarState> SelectAvatarAsync(
             int index,
-            bool initializeReactiveState = true)
+            bool initializeReactiveState = true,
+            bool forceNewSelection = false)
         {
             if (!_avatarStates.ContainsKey(index))
             {
                 throw new KeyNotFoundException($"{nameof(index)}({index})");
             }
 
-            var isNewlySelected = CurrentAvatarKey != index;
+            var isNewlySelected = forceNewSelection || CurrentAvatarKey != index;
 
             CurrentAvatarKey = index;
             var avatarState = _avatarStates[CurrentAvatarKey];
