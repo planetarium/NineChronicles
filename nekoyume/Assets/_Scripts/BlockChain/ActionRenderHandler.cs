@@ -1924,19 +1924,12 @@ namespace Nekoyume.BlockChain
             _actionRenderer.EveryRender<ManipulateState>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(async eval =>
+                .Subscribe(async _ =>
                 {
-                    // 상태에 반영하기.
-                    // Address 쭉 돌면서 매칭되는 객체에 반영.
-                    // States, ReactiveXxxState, XxxStateSubject, RxProps.Xxx...
-                    foreach (var (addr, _) in eval.Action.StateList)
-                    {
-                        if (addr == States.Instance.CurrentAvatarState.address)
-                        {
-                            await UpdateCurrentAvatarStateAsync();
-                        }
-                    }
-
+                    await RxProps.SelectAvatarAsync(States.Instance.CurrentAvatarKey);
+                    await WorldBossStates.Set(States.Instance.CurrentAvatarState.address);
+                    await States.Instance.InitRuneSlotStates();
+                    await States.Instance.InitItemSlotStates();
                     NotificationSystem.Push(
                         MailType.System,
                         "State Manipulated",
