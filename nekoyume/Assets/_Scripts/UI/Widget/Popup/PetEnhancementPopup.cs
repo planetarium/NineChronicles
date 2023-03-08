@@ -30,19 +30,13 @@ namespace Nekoyume.UI
         private SkeletonGraphic petSkeletonGraphic;
 
         [SerializeField]
-        private TextMeshProUGUI titleText;
-
-        [SerializeField]
         private PetInfoView petInfoView;
 
         [SerializeField]
         private TextMeshProUGUI contentText;
 
         [SerializeField]
-        private Button submitButton;
-
-        [SerializeField]
-        private GameObject buttonDisableObject;
+        private ConditionalCostButton submitButton;
 
         [SerializeField]
         private List<GameObject> levelUpUIList;
@@ -66,15 +60,6 @@ namespace Nekoyume.UI
         private GameObject soulStoneNotEnoughObject;
 
         [SerializeField]
-        private TextMeshProUGUI ncgCostText;
-
-        [SerializeField]
-        private GameObject ncgCostObject;
-
-        [SerializeField]
-        private GameObject ncgNotEnoughObject;
-
-        [SerializeField]
         private GameObject costObject;
 
         [SerializeField]
@@ -89,7 +74,7 @@ namespace Nekoyume.UI
         private readonly List<IDisposable> _disposables = new();
         private readonly ReactiveProperty<int> _enhancementCount = new();
 
-        private const string LevelUpText = "LEVEL UP";
+        private const string LevelUpText = "Levelup";
         private const string SummonText = "Summon";
 
         private int _targetLevel;
@@ -122,7 +107,8 @@ namespace Nekoyume.UI
             _petRow = petRow;
             levelUpUIList.ForEach(obj => obj.SetActive(false));
             costObject.SetActive(true);
-            titleText.text = SummonText;
+            submitButton.gameObject.SetActive(true);
+            submitButton.Text = SummonText;
             petInfoView.Set(
                 L10nManager.Localize($"PET_NAME_{_petRow.Id}"),
                 _petRow.Grade
@@ -132,7 +118,7 @@ namespace Nekoyume.UI
             petSkeletonGraphic.Initialize(true);
             requiredSoulStoneImage.overrideSprite =
                 PetRenderingHelper.GetSoulStoneSprite(_petRow.Id);
-            submitButton.OnClickAsObservable().Subscribe(_ =>
+            submitButton.OnSubmitSubject.Subscribe(_ =>
             {
                 if (LoadingHelper.PetEnhancement.Value == 0 && !_notEnoughBalance)
                 {
@@ -154,7 +140,8 @@ namespace Nekoyume.UI
             _petRow = TableSheets.Instance.PetSheet[petState.PetId];
             levelUpUIList.ForEach(obj => obj.SetActive(true));
             costObject.SetActive(true);
-            titleText.text = LevelUpText;
+            submitButton.gameObject.SetActive(true);
+            submitButton.Text = LevelUpText;
             var option = TableSheets.Instance.PetOptionSheet[petState.PetId].LevelOptionMap[petState.Level];
             contentText.text = L10nManager.Localize($"PET_DESCRIPTION_{option.OptionType}",
                 option.OptionValue);
@@ -186,11 +173,12 @@ namespace Nekoyume.UI
                         _sliderCurrentValue = value;
                         SetObjectByTargetLevel(petState.PetId, petState.Level, value + petState.Level);
                     });
-                submitButton.OnClickAsObservable().Subscribe(_ =>
+                submitButton.OnSubmitSubject.Subscribe(_ =>
                 {
+                    Action(petState.PetId, _targetLevel);
                     if (LoadingHelper.PetEnhancement.Value == 0 && !_notEnoughBalance)
                     {
-                        Action(petState.PetId, _targetLevel);
+
                     }
                     else
                     {
@@ -205,10 +193,7 @@ namespace Nekoyume.UI
             {
                 levelUpUIList.ForEach(obj => obj.SetActive(false));
                 costObject.SetActive(false);
-                submitButton.OnClickAsObservable().Subscribe(_ =>
-                {
-                    Close();
-                }).AddTo(_disposables);
+                submitButton.gameObject.SetActive(false);
             }
         }
 
@@ -217,7 +202,7 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
             LoadingHelper.PetEnhancement.Subscribe(id =>
             {
-                buttonDisableObject.SetActive(_notEnoughBalance || id != 0);
+                // buttonDisableObject.SetActive(_notEnoughBalance || id != 0);
             }).AddTo(_disposables);
             _enhancementCount.Subscribe(value =>
             {
@@ -250,21 +235,20 @@ namespace Nekoyume.UI
                         targetOption.OptionValue);
             }
 
-            ncgCostText.text = ncg.ToString();
             soulStoneCostText.text = soulStone.ToString();
-            ncgCostObject.SetActive(ncg > 0);
             var ncgCost = States.Instance.GoldBalanceState.Gold.Currency * ncg;
             var soulStoneCost =
                 Currency.Legacy(_petRow.SoulStoneTicker, 0, null) *
                 soulStone;
-            var notEnoughNcg
-                = States.Instance.GoldBalanceState.Gold < ncgCost;
-            var notEnoughSoulStone
-                = States.Instance.AvatarBalance[soulStoneCost.Currency.Ticker] < soulStoneCost;
-            _notEnoughBalance = notEnoughNcg || notEnoughSoulStone;
-            soulStoneNotEnoughObject.SetActive(notEnoughSoulStone);
-            ncgNotEnoughObject.SetActive(notEnoughNcg);
-            buttonDisableObject.SetActive(_notEnoughBalance || LoadingHelper.PetEnhancement.Value != 0);
+            var enoughNcg
+                = States.Instance.GoldBalanceState.Gold >= ncgCost;
+            var enoughSoulStone
+                = States.Instance.AvatarBalance[soulStoneCost.Currency.Ticker] >= soulStoneCost;
+            var enough = enoughNcg && enoughSoulStone;
+            _notEnoughBalance = !enough;
+            soulStoneNotEnoughObject.SetActive(_notEnoughBalance);
+            submitButton.SetCost(new ConditionalCostButton.CostParam(CostType.NCG, ncg));
+            submitButton.Interactable = enough && LoadingHelper.PetEnhancement.Value == 0;
         }
 
         private void Action(int petId, int targetLevel)
