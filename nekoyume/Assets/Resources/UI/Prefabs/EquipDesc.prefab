@@ -7057,11 +7057,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fixedFontAsset: 1
-  fixedFontStyle: 1
-  fixedFontSizeOffset: 1
-  fixedSpacingOption: 1
-  fixedMarginOption: 1
+  fixedFontAsset: 0
+  fixedFontStyle: 0
+  fixedFontSizeOffset: 0
+  fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 1
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -42048,7 +42048,7 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 464112837750706552}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &7196108063173276519
+--- !u!114 &4496718518580253656
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -42079,7 +42079,7 @@ MonoBehaviour:
   defaultWordSpacing: 0
   defaultLineSpacingInitialized: 0
   defaultLineSpacing: 0
---- !u!114 &4496718518580253656
+--- !u!114 &7196108063173276519
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -43441,7 +43441,7 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 3424119067033608860}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &7422759140650076821
+--- !u!114 &2257698731021244289
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -43472,7 +43472,7 @@ MonoBehaviour:
   defaultWordSpacing: 0
   defaultLineSpacingInitialized: 0
   defaultLineSpacing: 0
---- !u!114 &2257698731021244289
+--- !u!114 &7422759140650076821
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -44054,7 +44054,7 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 4841580918530349570}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &7445709669363116178
+--- !u!114 &4898195564773794255
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -44085,7 +44085,7 @@ MonoBehaviour:
   defaultWordSpacing: 0
   defaultLineSpacingInitialized: 0
   defaultLineSpacing: 0
---- !u!114 &4898195564773794255
+--- !u!114 &7445709669363116178
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -44461,7 +44461,7 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 6844605634295498737}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &8405486975749037473
+--- !u!114 &8152933878873618312
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -44492,7 +44492,7 @@ MonoBehaviour:
   defaultWordSpacing: 0
   defaultLineSpacingInitialized: 0
   defaultLineSpacing: 0
---- !u!114 &8152933878873618312
+--- !u!114 &8405486975749037473
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -47727,7 +47727,7 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 7722492274793101089}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &5339735842450194091
+--- !u!114 &1822591024800504862
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -47758,7 +47758,7 @@ MonoBehaviour:
   defaultWordSpacing: 0
   defaultLineSpacingInitialized: 0
   defaultLineSpacing: 0
---- !u!114 &1822591024800504862
+--- !u!114 &5339735842450194091
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -47975,7 +47975,7 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 8241377237287575450}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &3713584162055343939
+--- !u!114 &3227382223910783514
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -48006,7 +48006,7 @@ MonoBehaviour:
   defaultWordSpacing: 0
   defaultLineSpacingInitialized: 0
   defaultLineSpacing: 0
---- !u!114 &3227382223910783514
+--- !u!114 &3713584162055343939
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
