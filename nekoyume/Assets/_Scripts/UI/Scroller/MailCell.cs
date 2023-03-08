@@ -55,7 +55,7 @@ namespace Nekoyume.UI.Scroller
             content.text = await _mail.ToInfo();
             content.color = isNew
                 ? ColorHelper.HexToColorRGB("fff9dd")
-                : ColorHelper.HexToColorRGB("7a7a7a");
+                : ColorHelper.HexToColorRGB("83706C");
         }
 
         private void OnClickButton(Unit unit)
@@ -68,7 +68,7 @@ namespace Nekoyume.UI.Scroller
                 return;
             }
 
-            content.color = ColorHelper.HexToColorRGB("7a7a7a");
+            content.color = ColorHelper.HexToColorRGB("83706C");
 
             var mail = Widget.Find<MailPopup>();
             _mail.Read(mail);
