@@ -445,12 +445,12 @@
             </summary>
             <seealso cref="T:Libplanet.Net.Messages.NeighborsMsg"/>
         </member>
-        <member name="M:Libplanet.Net.Messages.IMessageCodec`1.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,Libplanet.Net.BoundPeer,System.DateTimeOffset)">
+        <member name="M:Libplanet.Net.Messages.IMessageCodec`1.Encode(Libplanet.Net.Messages.MessageContent,Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,Libplanet.Net.BoundPeer,System.DateTimeOffset,System.Byte[])">
             <summary>
             Encodes the message to <see typeref="T"/>-typed instance with given
             <paramref name="privateKey"/> and <paramref name="peer"/>.
             </summary>
-            <param name="message">The message to encode.</param>
+            <param name="content">The message body to encode.</param>
             <param name="privateKey">The <see cref="T:Libplanet.Crypto.PrivateKey"/> to sign the encoded message.
             </param>
             <param name="appProtocolVersion">The <see cref="T:Libplanet.Net.AppProtocolVersion"/> of
@@ -459,9 +459,11 @@
             the transport layer.
             <seealso cref="P:Libplanet.Net.Transports.ITransport.AsPeer"/></param>
             <param name="timestamp">The <see cref="T:System.DateTimeOffset"/> of the time
-            <paramref name="message"/> is encoded.
+            <paramref name="content"/> is encoded.
             </param>
-            <returns>A <see typeref="T"/> containing the signed <see cref="T:Libplanet.Net.Messages.Message"/>.
+            <param name="identity">The byte array identifies the message to match between
+            message and its respond used in <see cref="N:NetMQ"/>.</param>
+            <returns>A <see typeref="T"/> containing the signed <see cref="T:Libplanet.Net.Messages.MessageContent"/>.
             </returns>
             <exception cref="T:Libplanet.Net.Transports.InvalidCredentialException">Thrown when <paramref name="privateKey"/>'s
             <see cref="T:Libplanet.Crypto.PublicKey"/> does not match that of <paramref name="peer"/>.</exception>
@@ -470,7 +472,7 @@
             <summary>
             Decodes given <see typeref="T"/>-typed <paramref name="encoded"/> into
             <see cref="T:Libplanet.Net.Messages.Message"/> and checks its validity.
-            <seealso cref="M:Libplanet.Net.Messages.IMessageCodec`1.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,Libplanet.Net.BoundPeer,System.DateTimeOffset)"/>
+            <seealso cref="M:Libplanet.Net.Messages.IMessageCodec`1.Encode(Libplanet.Net.Messages.MessageContent,Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,Libplanet.Net.BoundPeer,System.DateTimeOffset,System.Byte[])"/>
             </summary>
             <param name="encoded">A <see typeref="T"/>-typed instance to parse.</param>
             <param name="reply">A flag to express whether the target is a reply of other message.
@@ -481,152 +483,126 @@
             <exception cref="T:Libplanet.Net.Transports.InvalidMessageSignatureException">Thrown when the signer of
             <paramref name="encoded"/> is invalid.</exception>
         </member>
-        <member name="T:Libplanet.Net.Messages.Message">
+        <member name="P:Libplanet.Net.Messages.Message.Content">
+            <summary>
+            The body of the message that contains the message type and data.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Messages.Message.Version">
+            <summary>
+            The <see cref="T:Libplanet.Net.AppProtocolVersion"/> of sender of the <see cref="T:Libplanet.Net.Messages.Message"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Messages.Message.Remote">
+            <summary>
+            The <see cref="T:Libplanet.Net.BoundPeer"/> representation of sender of the given <see cref="T:Libplanet.Net.Messages.Message"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Messages.Message.Timestamp">
+            <summary>
+            The <see cref="T:System.DateTimeOffset"/> of the <see cref="T:Libplanet.Net.Messages.Message"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Messages.Message.Identity">
+            <summary>
+            The byte array identifies the message to match between
+            message and its respond used in <see cref="N:NetMQ"/>.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Net.Messages.MessageContent">
             <summary>
             Serves as the base class for messages used in <see cref="T:Libplanet.Net.Transports.ITransport"/>.
             </summary>
         </member>
-        <member name="T:Libplanet.Net.Messages.Message.MessageType">
+        <member name="T:Libplanet.Net.Messages.MessageContent.MessageType">
             <summary>
-            <c>Enum</c> represents the type of the <see cref="T:Libplanet.Net.Messages.Message"/>.
+            <c>Enum</c> represents the type of the <see cref="T:Libplanet.Net.Messages.MessageContent"/>.
             </summary>
         </member>
-        <member name="F:Libplanet.Net.Messages.Message.MessageType.Ping">
+        <member name="F:Libplanet.Net.Messages.MessageContent.MessageType.Ping">
             <summary>
             Check message to determine peer is alive.
             </summary>
         </member>
-        <member name="F:Libplanet.Net.Messages.Message.MessageType.Pong">
+        <member name="F:Libplanet.Net.Messages.MessageContent.MessageType.Pong">
             <summary>
-            A reply to <see cref="F:Libplanet.Net.Messages.Message.MessageType.Ping"/>.
+            A reply to <see cref="F:Libplanet.Net.Messages.MessageContent.MessageType.Ping"/>.
             </summary>
         </member>
-        <member name="F:Libplanet.Net.Messages.Message.MessageType.GetBlockHashes">
+        <member name="F:Libplanet.Net.Messages.MessageContent.MessageType.GetBlockHashes">
             <summary>
             Request to query block hashes.
             </summary>
         </member>
-        <member name="F:Libplanet.Net.Messages.Message.MessageType.TxIds">
+        <member name="F:Libplanet.Net.Messages.MessageContent.MessageType.TxIds">
             <summary>
             Inventory to transfer transactions.
             </summary>
         </member>
-        <member name="F:Libplanet.Net.Messages.Message.MessageType.GetBlocks">
+        <member name="F:Libplanet.Net.Messages.MessageContent.MessageType.GetBlocks">
             <summary>
             Request to query blocks.
             </summary>
         </member>
-        <member name="F:Libplanet.Net.Messages.Message.MessageType.GetTxs">
+        <member name="F:Libplanet.Net.Messages.MessageContent.MessageType.GetTxs">
             <summary>
             Request to query transactions.
             </summary>
         </member>
-        <member name="F:Libplanet.Net.Messages.Message.MessageType.Blocks">
+        <member name="F:Libplanet.Net.Messages.MessageContent.MessageType.Blocks">
             <summary>
             Message containing serialized blocks.
             </summary>
         </member>
-        <member name="F:Libplanet.Net.Messages.Message.MessageType.Tx">
+        <member name="F:Libplanet.Net.Messages.MessageContent.MessageType.Tx">
             <summary>
             Message containing serialized transaction.
             </summary>
         </member>
-        <member name="F:Libplanet.Net.Messages.Message.MessageType.FindNeighbors">
+        <member name="F:Libplanet.Net.Messages.MessageContent.MessageType.FindNeighbors">
             <summary>
             Message containing request for nearby peers.
             </summary>
         </member>
-        <member name="F:Libplanet.Net.Messages.Message.MessageType.Neighbors">
+        <member name="F:Libplanet.Net.Messages.MessageContent.MessageType.Neighbors">
             <summary>
             Message containing nearby peers.
             </summary>
         </member>
-        <member name="F:Libplanet.Net.Messages.Message.MessageType.BlockHeaderMessage">
+        <member name="F:Libplanet.Net.Messages.MessageContent.MessageType.BlockHeaderMessage">
             <summary>
             Message containing a single <see cref="T:Libplanet.Blocks.BlockHeader"/>.
             </summary>
         </member>
-        <member name="F:Libplanet.Net.Messages.Message.MessageType.BlockHashes">
+        <member name="F:Libplanet.Net.Messages.MessageContent.MessageType.BlockHashes">
             <summary>
             Message containing demand block hashes with their index numbers.
             </summary>
         </member>
-        <member name="F:Libplanet.Net.Messages.Message.MessageType.GetChainStatus">
+        <member name="F:Libplanet.Net.Messages.MessageContent.MessageType.GetChainStatus">
             <summary>
             Request current chain status of the peer.
             </summary>
         </member>
-        <member name="F:Libplanet.Net.Messages.Message.MessageType.ChainStatus">
+        <member name="F:Libplanet.Net.Messages.MessageContent.MessageType.ChainStatus">
             <summary>
-            A reply to <see cref="F:Libplanet.Net.Messages.Message.MessageType.GetChainStatus"/>.
+            A reply to <see cref="F:Libplanet.Net.Messages.MessageContent.MessageType.GetChainStatus"/>.
             Contains the chain status of the peer at the moment.
             </summary>
         </member>
-        <member name="F:Libplanet.Net.Messages.Message.MessageType.DifferentVersion">
+        <member name="F:Libplanet.Net.Messages.MessageContent.MessageType.DifferentVersion">
             <summary>
             A reply to any messages with different <see cref="T:Libplanet.Net.AppProtocolVersion"/>.
             Contains the expected and actual <see cref="T:Libplanet.Net.AppProtocolVersion"/>
             value of the message.
             </summary>
         </member>
-        <member name="F:Libplanet.Net.Messages.Message.MessageFrame.Version">
-            <summary>
-            Frame containing <see cref="T:Libplanet.Net.AppProtocolVersion"/>.
-            </summary>
-        </member>
-        <member name="F:Libplanet.Net.Messages.Message.MessageFrame.Type">
-            <summary>
-            Frame containing the type of the message.
-            </summary>
-        </member>
-        <member name="F:Libplanet.Net.Messages.Message.MessageFrame.Peer">
-            <summary>
-            Frame containing the sender <see cref="T:Libplanet.Net.BoundPeer"/> of the <see cref="T:Libplanet.Net.Messages.Message"/>.
-            </summary>
-        </member>
-        <member name="F:Libplanet.Net.Messages.Message.MessageFrame.Timestamp">
-            <summary>
-            Frame containing the datetime when the <see cref="T:Libplanet.Net.Messages.Message"/> is created.
-            </summary>
-        </member>
-        <member name="F:Libplanet.Net.Messages.Message.MessageFrame.Sign">
-            <summary>
-            Frame containing signature of the <see cref="T:Libplanet.Net.Messages.Message"/>.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Net.Messages.Message.Identity">
-            <summary>
-            <c>byte[]</c>-typed identity of the message.
-            If message B is a reply to message A,
-            B's identity must be set to A's identity.
-            </summary>
-            <remarks>
-            The handling of the identity of a <see cref="T:Libplanet.Net.Messages.Message"/> is implementation specific to
-            <see cref="T:Libplanet.Net.Transports.ITransport"/>.
-            </remarks>
-        </member>
-        <member name="P:Libplanet.Net.Messages.Message.Version">
-            <summary>
-            <see cref="T:Libplanet.Net.AppProtocolVersion"/>-typed version of the
-            <see cref="P:Libplanet.Net.Messages.Message.Remote"/>'s transport layer.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Net.Messages.Message.Remote">
-            <summary>
-            The sender <see cref="T:Libplanet.Net.BoundPeer"/> of the message.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Net.Messages.Message.Timestamp">
-            <summary>
-            The timestamp of the message is created.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Net.Messages.Message.Type">
+        <member name="P:Libplanet.Net.Messages.MessageContent.Type">
             <summary>
             The type of the message.
             </summary>
         </member>
-        <member name="P:Libplanet.Net.Messages.Message.DataFrames">
+        <member name="P:Libplanet.Net.Messages.MessageContent.DataFrames">
             <summary>
             The body of the message.
             </summary>
@@ -641,7 +617,7 @@
             <summary>
             <para>
             The local <see cref="T:Libplanet.Net.AppProtocolVersion"/> used for
-            <see cref="M:Libplanet.Net.Messages.IMessageCodec`1.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,Libplanet.Net.BoundPeer,System.DateTimeOffset)"/> and <see cref="M:Libplanet.Net.Messages.IMessageCodec`1.Decode(`0,System.Boolean)"/> methods.
+            <see cref="M:Libplanet.Net.Messages.IMessageCodec`1.Encode(Libplanet.Net.Messages.MessageContent,Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,Libplanet.Net.BoundPeer,System.DateTimeOffset,System.Byte[])"/> and <see cref="M:Libplanet.Net.Messages.IMessageCodec`1.Decode(`0,System.Boolean)"/> methods.
             </para>
             <para>
             In particular, this is used in the following cases:
@@ -743,20 +719,46 @@
             Creates a <see cref="T:Libplanet.Net.Messages.NetMQMessageCodec"/> instance.
             </summary>
         </member>
-        <member name="M:Libplanet.Net.Messages.NetMQMessageCodec.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,Libplanet.Net.BoundPeer,System.DateTimeOffset)">
+        <member name="F:Libplanet.Net.Messages.NetMQMessageCodec.MessageFrame.Version">
+            <summary>
+            Frame containing <see cref="T:Libplanet.Net.AppProtocolVersion"/>.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.NetMQMessageCodec.MessageFrame.Type">
+            <summary>
+            Frame containing the type of the message.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.NetMQMessageCodec.MessageFrame.Peer">
+            <summary>
+            Frame containing the sender <see cref="T:Libplanet.Net.BoundPeer"/> of the<see cref="T:Libplanet.Net.Messages.Message"/>.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.NetMQMessageCodec.MessageFrame.Timestamp">
+            <summary>
+            Frame containing the datetime when the <see cref="T:Libplanet.Net.Messages.Message"/> is created.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.NetMQMessageCodec.MessageFrame.Sign">
+            <summary>
+            Frame containing signature of the <see cref="T:Libplanet.Net.Messages.Message"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Messages.NetMQMessageCodec.Encode(Libplanet.Net.Messages.MessageContent,Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,Libplanet.Net.BoundPeer,System.DateTimeOffset,System.Byte[])">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Net.Messages.NetMQMessageCodec.ParseMessageType(NetMQ.NetMQMessage,System.Boolean)">
             <summary>
-            Parses a <see cref="T:Libplanet.Net.Messages.Message.MessageType"/> from given <see cref="T:NetMQ.NetMQMessage"/>.
+            Parses a <see cref="T:Libplanet.Net.Messages.MessageContent.MessageType"/> from given <see cref="T:NetMQ.NetMQMessage"/>.
             </summary>
             <param name="encoded">A encoded <see cref="T:NetMQ.NetMQMessage"/>.</param>
             <param name="reply">A flag to express whether the target is a reply of other message.
             </param>
             <exception cref="T:System.IndexOutOfRangeException">Thrown if given <see cref="T:NetMQ.NetMQMessage"/>
             has not enough <see cref="T:NetMQ.NetMQFrame"/> for parsing a message type.</exception>
-            <returns>Returns a <see cref="T:Libplanet.Net.Messages.Message.MessageType"/> of given <paramref name="encoded">
-            </paramref>. If given value cannot be interpreted in <see cref="T:Libplanet.Net.Messages.Message.MessageType"/>,
+            <returns>Returns a <see cref="T:Libplanet.Net.Messages.MessageContent.MessageType"/> of given
+            <paramref name="encoded"/>. If given value cannot be
+            interpreted in <see cref="T:Libplanet.Net.Messages.MessageContent.MessageType"/>,
             this would return a integer number.</returns>
         </member>
         <member name="M:Libplanet.Net.Messages.NetMQMessageCodec.Decode(NetMQ.NetMQMessage,System.Boolean)">
@@ -2017,8 +2019,7 @@
         <member name="P:Libplanet.Net.Transports.ITransport.ProcessMessageHandler">
             <summary>
             The list of tasks invoked when a message that is not
-            a reply is received. To handle reply, please use <see cref=
-            "M:Libplanet.Net.Transports.ITransport.SendMessageAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)"/>.
+            a reply is received.
             </summary>
         </member>
         <member name="P:Libplanet.Net.Transports.ITransport.AsPeer">
@@ -2087,31 +2088,31 @@
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> completed when <see cref="P:Libplanet.Net.Transports.ITransport.Running"/>
             property becomes <see langword="true"/>.</returns>
         </member>
-        <member name="M:Libplanet.Net.Transports.ITransport.SendMessageAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Transports.ITransport.SendMessageAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.MessageContent,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
             <summary>
-            Sends a <see cref="T:Libplanet.Net.Messages.Message"/> to a given <see cref="T:Libplanet.Net.BoundPeer"/>
+            Sends a <see cref="T:Libplanet.Net.Messages.MessageContent"/> to a given <see cref="T:Libplanet.Net.BoundPeer"/>
             and waits for its single reply.
             </summary>
             <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to send message to.</param>
-            <param name="message">The <see cref="T:Libplanet.Net.Messages.Message"/> to send.</param>
+            <param name="content">The <see cref="T:Libplanet.Net.Messages.MessageContent"/> to send.</param>
             <param name="timeout">A timeout of waiting for the reply of the message.</param>
             <param name="cancellationToken">
             A cancellation token used to propagate notification that this
             operation should be canceled.</param>
-            <returns>The replies of the <paramref name="message"/>
+            <returns>The replies of the <paramref name="content"/>
             sent by <paramref name="peer"/>.</returns>
             <exception cref="T:Libplanet.Net.Transports.CommunicationFailException">Thrown when fail send or receive
             a <see cref="T:Libplanet.Net.Messages.Message"/>.</exception>
             <exception cref="T:System.ObjectDisposedException">Thrown when <see cref="T:Libplanet.Net.Transports.ITransport"/> instance
             is already disposed.</exception>
         </member>
-        <member name="M:Libplanet.Net.Transports.ITransport.SendMessageAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Int32,System.Boolean,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Transports.ITransport.SendMessageAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.MessageContent,System.Nullable{System.TimeSpan},System.Int32,System.Boolean,System.Threading.CancellationToken)">
             <summary>
-            Sends a <see cref="T:Libplanet.Net.Messages.Message"/> to a given <see cref="T:Libplanet.Net.BoundPeer"/>
+            Sends a <see cref="T:Libplanet.Net.Messages.MessageContent"/> to a given <see cref="T:Libplanet.Net.BoundPeer"/>
             and waits for its multiple replies.
             </summary>
             <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to send message to.</param>
-            <param name="message">The <see cref="T:Libplanet.Net.Messages.Message"/> to send.</param>
+            <param name="content">The <see cref="T:Libplanet.Net.Messages.MessageContent"/> to send.</param>
             <param name="timeout">A timeout of waiting for the reply of the message.</param>
             <param name="expectedResponses">The number of expected replies for the message.</param>
             <param name="returnWhenTimeout">Determines the behavior when failed to receive
@@ -2119,33 +2120,30 @@
             <param name="cancellationToken">
             A cancellation token used to propagate notification that this
             operation should be canceled.</param>
-            <returns>The replies of the <paramref name="message"/>
+            <returns>The replies of the <paramref name="content"/>
             sent by <paramref name="peer"/>.</returns>
             <exception cref="T:Libplanet.Net.Transports.CommunicationFailException">Thrown when fail send or receive
             a <see cref="T:Libplanet.Net.Messages.Message"/>.</exception>
             <exception cref="T:System.ObjectDisposedException">Thrown when <see cref="T:Libplanet.Net.Transports.ITransport"/> instance
             is already disposed.</exception>
         </member>
-        <member name="M:Libplanet.Net.Transports.ITransport.BroadcastMessage(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},Libplanet.Net.Messages.Message)">
+        <member name="M:Libplanet.Net.Transports.ITransport.BroadcastMessage(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},Libplanet.Net.Messages.MessageContent)">
             <summary>
-            Broadcasts a <see cref="T:Libplanet.Net.Messages.Message"/> to peers selected from the routing table.
+            Broadcasts a <see cref="T:Libplanet.Net.Messages.MessageContent"/> to peers selected from the routing table.
             </summary>
             <param name="peers">The <see cref="T:Libplanet.Net.BoundPeer"/>s to broadcast the
-            <paramref name="message"/>.</param>
-            <param name="message">A <see cref="T:Libplanet.Net.Messages.Message"/> to broadcast.</param>
+            <paramref name="content"/>.</param>
+            <param name="content">A <see cref="T:Libplanet.Net.Messages.MessageContent"/> to broadcast.</param>
             <exception cref="T:System.ObjectDisposedException">Thrown when <see cref="T:Libplanet.Net.Transports.ITransport"/> instance
             is already disposed.</exception>
         </member>
-        <member name="M:Libplanet.Net.Transports.ITransport.ReplyMessageAsync(Libplanet.Net.Messages.Message,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Transports.ITransport.ReplyMessageAsync(Libplanet.Net.Messages.MessageContent,System.Byte[],System.Threading.CancellationToken)">
             <summary>
-            Sends a <see cref="T:Libplanet.Net.Messages.Message"/> as a reply.
+            Sends a <see cref="T:Libplanet.Net.Messages.MessageContent"/> as a reply.
             </summary>
-            <remarks>
-            The <see cref="P:Libplanet.Net.Messages.Message.Identity"/> of given <paramref name="message"/> must
-            match the <see cref="P:Libplanet.Net.Messages.Message.Identity"/> of the request <see cref="T:Libplanet.Net.Messages.Message"/>
-            corresponding to <paramref name="message"/>.
-            </remarks>
-            <param name="message">The <see cref="T:Libplanet.Net.Messages.Message"/> to send as a reply.</param>
+            <param name="content">The <see cref="T:Libplanet.Net.Messages.MessageContent"/> to send as a reply.</param>
+            <param name="identity">The byte array that represents identification of the
+            <see cref="T:Libplanet.Net.Messages.MessageContent"/> to respond.</param>
             <param name="cancellationToken">
             A cancellation token used to propagate notification that this
             operation should be canceled.</param>
@@ -2228,22 +2226,22 @@
         <member name="M:Libplanet.Net.Transports.NetMQTransport.WaitForRunningAsync">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Net.Transports.NetMQTransport.SendMessageAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.SendMessageAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.MessageContent,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Net.Transports.NetMQTransport.SendMessageAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Int32,System.Boolean,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.SendMessageAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.MessageContent,System.Nullable{System.TimeSpan},System.Int32,System.Boolean,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Net.Transports.NetMQTransport.BroadcastMessage(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},Libplanet.Net.Messages.Message)">
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.BroadcastMessage(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},Libplanet.Net.Messages.MessageContent)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Net.Transports.NetMQTransport.ReplyMessageAsync(Libplanet.Net.Messages.Message,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.ReplyMessageAsync(Libplanet.Net.Messages.MessageContent,System.Byte[],System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Net.Transports.NetMQTransport.Initialize(System.Threading.CancellationToken)">
             <summary>
             Initializes a <see cref="T:Libplanet.Net.Transports.NetMQTransport"/> as to make it ready to
-            send request <see cref="T:Libplanet.Net.Messages.Message"/>s and recieve reply <see cref="T:Libplanet.Net.Messages.Message"/>s.
+            send request <see cref="T:Libplanet.Net.Messages.MessageContent"/>s and receive reply <see cref="T:Libplanet.Net.Messages.Message"/>s.
             </summary>
             <param name="cancellationToken">The cancellation token to propagate a notification
             that this operation should be canceled.</param>
