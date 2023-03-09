@@ -3,7 +3,6 @@ using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
-using Nekoyume.State;
 using Nekoyume.UI.Module.Pet;
 using Nekoyume.UI.Scroller;
 using Spine.Unity;
@@ -27,6 +26,8 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button lockedButton;
 
+        private PetSlotViewModel _selectedViewModel;
+
         protected override void Awake()
         {
             base.Awake();
@@ -44,21 +45,14 @@ namespace Nekoyume.UI
             scroll.OnClick.Subscribe(viewModel =>
             {
                 var row = viewModel.PetRow;
-                if (row is not null)
+                if (row is not null && !viewModel.Equals(_selectedViewModel))
                 {
+                    _selectedViewModel?.Selected.SetValueAndForceNotify(false);
+                    _selectedViewModel = viewModel;
                     petSkeletonGraphic.skeletonDataAsset =
                         PetRenderingHelper.GetPetSkeletonData(row.Id);
                     petSkeletonGraphic.Initialize(true);
-                    if (States.Instance.PetStates.TryGetPetState(
-                            row.Id,
-                            out var petState))
-                    {
-                        Find<PetEnhancementPopup>().ShowForLevelUp(petState);
-                    }
-                    else
-                    {
-                        Find<PetEnhancementPopup>().ShowForSummon(viewModel.PetRow);
-                    }
+                    _selectedViewModel.Selected.SetValueAndForceNotify(true);
                 }
             }).AddTo(gameObject);
         }
