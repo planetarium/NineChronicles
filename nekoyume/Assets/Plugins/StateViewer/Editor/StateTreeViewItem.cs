@@ -21,14 +21,13 @@ namespace StateViewer.Editor
             public int Id { get; }
             public string Key { get; }
             public string DisplayKey { get; }
-            public string Type { get; }
-            public string Value { get; private set; }
-            public bool Editable { get; }
+            public ValueKind Type { get; set; }
+            public string Value { get; set; }
+            public bool Editable { get; set; }
             public Model Parent { get; private set; }
             public List<Model> Children { get; } = new();
 
-            public Model(int id, string key, string displayKey, string type, string value,
-                bool editable = true)
+            public Model(int id, string key, ValueKind type, string value, bool editable = true)
             {
                 if (_reversedSerializeKeys.Count == 0)
                 {
@@ -109,7 +108,7 @@ namespace StateViewer.Editor
 
             public IValue Serialize()
             {
-                switch (Enum.Parse<ValueKind>(Type))
+                switch (Type)
                 {
                     case ValueKind.Null:
                     case ValueKind.Boolean:

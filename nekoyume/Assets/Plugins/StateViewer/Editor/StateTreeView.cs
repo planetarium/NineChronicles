@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.Json;
+using Bencodex.Json;
 using Bencodex.Types;
 using Libplanet;
 using UnityEditor;
@@ -18,6 +19,7 @@ namespace StateViewer.Editor
 
         private StateTreeViewItem.Model[] _itemModels;
         private Address _addr;
+        private int _elementId;
 
         public (Address addr, IValue value) Serialize()
         {
@@ -35,7 +37,7 @@ namespace StateViewer.Editor
         public void SetData(Address addr, IValue data)
         {
             _addr = addr;
-            var (model, _) = MakeItemModelRecursive("", data, 1);
+            var model = MakeItemModelRecursive("", data);
             _itemModels = new[] { model };
             Reload();
             OnDirty?.Invoke(false);
@@ -43,7 +45,7 @@ namespace StateViewer.Editor
 
         private static string Convert(IValue value)
         {
-            var converter = new Bencodex.Json.BencodexJsonConverter();
+            var converter = new BencodexJsonConverter();
             var serializerOption = new JsonSerializerOptions
             {
                 WriteIndented = false,
@@ -59,11 +61,11 @@ namespace StateViewer.Editor
                 .Replace("\"", "");
         }
 
-        private (StateTreeViewItem.Model viewModel, int currentId)
-            MakeItemModelRecursive(
-                string key,
-                IValue data,
-                int currentId)
+        private StateTreeViewItem.Model MakeItemModelRecursive(
+            string key,
+            IValue data,
+            bool editable = false
+        )
         {
             StateTreeViewItem.Model viewModel;
             switch (data)
@@ -73,67 +75,72 @@ namespace StateViewer.Editor
                 case Boolean:
                 case Integer:
                 case Text:
+                {
                     viewModel = new StateTreeViewItem.Model(
-                        currentId++,
+                        _elementId++,
                         key,
-                        GetReversedKey(key),
-                        data.Kind.ToString(),
-                        Convert(data));
+                        data.Kind,
+                        Convert(data),
+                        editable: editable
+                    );
 
-                    return (viewModel, currentId);
+                    return viewModel;
+                }
                 case List list:
                 {
                     viewModel = new StateTreeViewItem.Model(
-                        currentId++,
+                        _elementId++,
                         key,
-                        GetReversedKey(key),
-                        data.Kind.ToString(),
-                        $"Count: {list.Count}");
+                        data.Kind,
+                        $"Count: {list.Count}"
+                    );
                     for (var i = 0; i < list.Count; i++)
                     {
                         var item = list[i];
-                        StateTreeViewItem.Model childViewModel;
-                        (childViewModel, currentId) = MakeItemModelRecursive(
-                            $"[{i.ToString()}]",
-                            item,
-                            currentId);
+                        var childViewModel = MakeItemModelRecursive(
+                            $"{i.ToString()}",
+                            item
+                        );
                         viewModel.AddChild(childViewModel);
                     }
 
-                    return (viewModel, currentId);
+                    return viewModel;
                 }
                 case Dictionary dict:
                 {
                     viewModel = new StateTreeViewItem.Model(
-                        currentId++,
+                        _elementId++,
                         key,
-                        GetReversedKey(key),
-                        data.Kind.ToString(),
-                        $"Count: {dict.Count}");
+                        data.Kind,
+                        $"Count: {dict.Count}"
+                    );
                     foreach (var pair in dict)
                     {
                         StateTreeViewItem.Model childViewModel;
-                        (childViewModel, currentId) = MakeItemModelRecursive(
-                            $"[{Convert(pair.Key)}]",
-                            pair.Value,
-                            currentId);
+                        childViewModel = MakeItemModelRecursive(
+                            $"{Convert(pair.Key)}",
+                            pair.Value
+                        );
                         viewModel.AddChild(childViewModel);
                     }
 
-                    return (viewModel, currentId);
+                    return viewModel;
                 }
                 default:
                     Debug.LogError($"data type {data.GetType()} is not supported.");
-                    return (null, currentId);
+                    return null;
             }
         }
 
-        protected override TreeViewItem BuildRoot() => new()
+        protected override TreeViewItem BuildRoot()
         {
-            id = 0,
-            depth = -1,
-            displayName = "Root",
-        };
+            return new TreeViewItem
+            {
+                id = _elementId++,
+                depth = -1,
+                displayName = "Root",
+            };
+        }
 
         protected override IList<TreeViewItem> BuildRows(TreeViewItem root)
         {
