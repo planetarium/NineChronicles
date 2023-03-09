@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -67,25 +66,28 @@ namespace StateViewer.Editor
                 }
             }
 
-            public IValue Serialize()
+            private static IValue Convert(string value, bool bom = true)
             {
+                var sanitized = value.Replace("[", "").Replace("]", "");
                 var converter = new Bencodex.Json.BencodexJsonConverter();
                 var serializerOptions = new JsonSerializerOptions();
+                var reader = new Utf8JsonReader(Encoding.UTF8.GetBytes(
+                    bom ? $"\"\\uFEFF{sanitized}\"" : $"\"{sanitized}\""));
+                return converter.Read(ref reader, typeof(Binary), serializerOptions);
+            }
+
+            public IValue Serialize()
+            {
                 switch (Enum.Parse<ValueKind>(Type))
                 {
                     case ValueKind.Null:
-                    case ValueKind.Binary:
                     case ValueKind.Boolean:
+                        return Value.Serialize();
+                    case ValueKind.Binary:
                     case ValueKind.Integer:
+                        return Convert(Value, false);
                     case ValueKind.Text:
-                    {
-                        var reader = new Utf8JsonReader(
-                            Encoding.UTF8.GetBytes(Value));
-                        return converter.Read(
-                            ref reader,
-                            typeof(IValue),
-                            serializerOptions);
-                    }
+                        return Convert(Value);
                     case ValueKind.List:
                         return new List(Children.Select(child =>
                             child.Serialize()));
@@ -93,18 +95,9 @@ namespace StateViewer.Editor
                     {
                         return new Dictionary(Children.Aggregate(
                             ImmutableDictionary<IKey, IValue>.Empty,
-                            (current, child) =>
-                            {
-                                var reader = new Utf8JsonReader(
-                                    Encoding.UTF8.GetBytes(child.Key));
-                                var key = converter.Read(
-                                    ref reader,
-                                    typeof(Text),
-                                    serializerOptions)!;
-                                return current.SetItem(
-                                    (IKey)key,
-                                    child.Serialize());
-                            }));
+                            (current, child) => current.SetItem(
+                                (IKey)Convert(child.Key),
+                                child.Serialize())));
                     }
                     default:
                         throw new ArgumentOutOfRangeException();

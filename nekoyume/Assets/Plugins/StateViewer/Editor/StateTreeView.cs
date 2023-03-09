@@ -63,6 +63,7 @@ namespace StateViewer.Editor
                 : key;
         }
 
+
         public void SetData(Address addr, IValue data)
         {
             _addr = addr;
@@ -72,17 +73,30 @@ namespace StateViewer.Editor
             OnDirty?.Invoke(false);
         }
 
+        private static string Convert(IValue value)
+        {
+            var converter = new Bencodex.Json.BencodexJsonConverter();
+            var serializerOption = new JsonSerializerOptions
+            {
+                WriteIndented = false,
+            };
+            using var stream = new MemoryStream();
+            var writerOption = new JsonWriterOptions
+            {
+                Indented = false,
+            };
+            var writer = new Utf8JsonWriter(stream, writerOption);
+            converter.Write(writer, value, serializerOption);
+            return Encoding.UTF8.GetString(stream.ToArray()).Replace("\\uFEFF", "")
+                .Replace("\"", "");
+        }
+
         private (StateTreeViewItem.Model viewModel, int currentId)
             MakeItemModelRecursive(
                 string key,
                 IValue data,
                 int currentId)
         {
-            var serializerOption = new JsonSerializerOptions
-            {
-                WriteIndented = false,
-            };
-            var converter = new Bencodex.Json.BencodexJsonConverter();
             StateTreeViewItem.Model viewModel;
             switch (data)
             {
@@ -91,20 +105,14 @@ namespace StateViewer.Editor
                 case Boolean:
                 case Integer:
                 case Text:
-                {
-                    using var stream = new MemoryStream();
-                    var writerOption = new JsonWriterOptions();
-                    var writer = new Utf8JsonWriter(stream, writerOption);
-                    converter.Write(writer, data, serializerOption);
                     viewModel = new StateTreeViewItem.Model(
                         currentId++,
                         key,
                         GetReversedKey(key),
                         data.Kind.ToString(),
-                        Encoding.UTF8.GetString(stream.ToArray()));
+                        Convert(data));
 
                     return (viewModel, currentId);
-                }
                 case List list:
                 {
                     viewModel = new StateTreeViewItem.Model(
@@ -118,7 +126,7 @@ namespace StateViewer.Editor
                         var item = list[i];
                         StateTreeViewItem.Model childViewModel;
                         (childViewModel, currentId) = MakeItemModelRecursive(
-                            i.ToString(),
+                            $"[{i.ToString()}]",
                             item,
                             currentId);
                         viewModel.AddChild(childViewModel);
@@ -136,13 +144,9 @@ namespace StateViewer.Editor
                         $"Count: {dict.Count}");
                     foreach (var pair in dict)
                     {
-                        using var stream = new MemoryStream();
-                        var writerOption = new JsonWriterOptions();
-                        var writer = new Utf8JsonWriter(stream, writerOption);
-                        converter.Write(writer, pair.Key, serializerOption);
                         StateTreeViewItem.Model childViewModel;
                         (childViewModel, currentId) = MakeItemModelRecursive(
-                            Encoding.UTF8.GetString(stream.ToArray()),
+                            $"[{Convert(pair.Key)}]",
                             pair.Value,
                             currentId);
                         viewModel.AddChild(childViewModel);
@@ -228,6 +232,38 @@ namespace StateViewer.Editor
                         {
                             viewModel.SetValue(value);
                             OnDirty?.Invoke(true);
+                        }
+
+                        break;
+                    case 4:
+                        if (viewModel.Type == ValueKind.List.ToString() ||
+                            viewModel.Type == ValueKind.Dictionary.ToString())
+                        {
+                            if (GUI.Button(cellRect, "Add"))
+                            {
+                                viewModel.AddChild(new StateTreeViewItem.Model(
+                                    viewModel.Id + 1,
+                                    "New",
+                                    "New",
+                                    ValueKind.Null.ToString(),
+                                    string.Empty));
+                                Reload();
+                                OnDirty?.Invoke(true);
+                            }
+                        }
+                        else if (viewModel.Parent is null)
+                        {
+                            // Do nothing.
+                        }
+                        else if (viewModel.Parent.Type == ValueKind.List.ToString() ||
+                                 viewModel.Parent.Type == ValueKind.Dictionary.ToString())
+                        {
+                            if (GUI.Button(cellRect, "Remove"))
+                            {
+                                viewModel.Parent.RemoveChild(viewModel);
+                                Reload();
+                                OnDirty?.Invoke(true);
+                            }
                         }
 
                         break;

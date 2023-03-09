@@ -113,12 +113,23 @@ namespace StateViewer.Editor
                 autoResize = true,
                 allowToggleVisibility = false,
             };
+            var editColumn = new MultiColumnHeaderState.Column
+            {
+                headerContent = new GUIContent("Edit"),
+                headerTextAlignment = TextAlignment.Center,
+                canSort = false,
+                width = 100,
+                minWidth = 100,
+                autoResize = true,
+                allowToggleVisibility = false,
+            };
             var headerState = new MultiColumnHeaderState(new[]
             {
                 serializedKeyColumn,
                 keyColumn,
                 typeColumn,
                 valueColumn,
+                editColumn,
             });
             _stateTreeView = new StateTreeView(
                 stateTreeViewState,
