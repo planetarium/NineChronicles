@@ -3,6 +3,7 @@ using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
+using Nekoyume.State;
 using Nekoyume.UI.Module.Pet;
 using Nekoyume.UI.Scroller;
 using Spine.Unity;
@@ -26,6 +27,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button lockedButton;
 
+        [SerializeField]
+        private Button levelUpButton;
+
         private PetSlotViewModel _selectedViewModel;
 
         protected override void Awake()
@@ -41,6 +45,18 @@ namespace Nekoyume.UI
                     MailType.System,
                     L10nManager.Localize("UI_INFO_NEW_MERCHANDISE_ADDED_SOON"),
                     NotificationCell.NotificationType.Information);
+            });
+            levelUpButton.onClick.AddListener(() =>
+            {
+                var row = _selectedViewModel.PetRow;
+                if (States.Instance.PetStates.TryGetPetState(row.Id, out var petState))
+                {
+                    Find<PetEnhancementPopup>().ShowForLevelUp(petState);
+                }
+                else
+                {
+                    Find<PetEnhancementPopup>().ShowForSummon(row);
+                }
             });
             scroll.OnClick.Subscribe(OnClickPetSlot).AddTo(gameObject);
         }
