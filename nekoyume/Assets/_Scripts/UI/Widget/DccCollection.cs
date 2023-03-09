@@ -42,25 +42,19 @@ namespace Nekoyume.UI
                     L10nManager.Localize("UI_INFO_NEW_MERCHANDISE_ADDED_SOON"),
                     NotificationCell.NotificationType.Information);
             });
-            scroll.OnClick.Subscribe(viewModel =>
-            {
-                var row = viewModel.PetRow;
-                if (row is not null && !viewModel.Equals(_selectedViewModel))
-                {
-                    _selectedViewModel?.Selected.SetValueAndForceNotify(false);
-                    _selectedViewModel = viewModel;
-                    petSkeletonGraphic.skeletonDataAsset =
-                        PetRenderingHelper.GetPetSkeletonData(row.Id);
-                    petSkeletonGraphic.Initialize(true);
-                    _selectedViewModel.Selected.SetValueAndForceNotify(true);
-                }
-            }).AddTo(gameObject);
+            scroll.OnClick.Subscribe(OnClickPetSlot).AddTo(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
             UpdateView();
+            if (scroll.TryGetFirstItem(out var cell))
+            {
+                cell.Selected.SetValueAndForceNotify(true);
+                OnClickPetSlot(cell);
+                _selectedViewModel = cell;
+            }
         }
 
         public void UpdateView()
@@ -68,6 +62,20 @@ namespace Nekoyume.UI
             scroll.UpdateData(TableSheets.Instance.PetSheet.Values
                 .Select(row =>
                     new PetSlotViewModel(row, PetRenderingHelper.HasNotification(row.Id))));
+        }
+
+        public void OnClickPetSlot(PetSlotViewModel viewModel)
+        {
+            var row = viewModel.PetRow;
+            if (row is not null && !viewModel.Equals(_selectedViewModel))
+            {
+                _selectedViewModel?.Selected.SetValueAndForceNotify(false);
+                _selectedViewModel = viewModel;
+                petSkeletonGraphic.skeletonDataAsset =
+                    PetRenderingHelper.GetPetSkeletonData(row.Id);
+                petSkeletonGraphic.Initialize(true);
+                _selectedViewModel.Selected.SetValueAndForceNotify(true);
+            }
         }
     }
 }
