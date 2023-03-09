@@ -244,7 +244,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7859309226677157255
 RectTransform:
   m_ObjectHideFlags: 0
@@ -667,7 +667,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Quest Rewards!!
+  m_text: Quest Rewards!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: c1d17fbca51a247e5b42de151a79d053, type: 2}
@@ -676,8 +676,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4284860925
-  m_fontColor: {r: 0.99215686, g: 0.7882353, b: 0.39607844, a: 1}
+    rgba: 4292342271
+  m_fontColor: {r: 1, g: 0.9467478, b: 0.8443396, a: 1}
   m_enableVertexGradient: 1
   m_colorMode: 2
   m_fontColorGradient:
@@ -1821,8 +1821,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4284860925
-  m_fontColor: {r: 0.99215686, g: 0.7882353, b: 0.39607844, a: 1}
+    rgba: 4292342271
+  m_fontColor: {r: 1, g: 0.94509804, b: 0.84313726, a: 1}
   m_enableVertexGradient: 1
   m_colorMode: 2
   m_fontColorGradient:
@@ -2082,8 +2082,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4284860925
-  m_fontColor: {r: 0.99215686, g: 0.7882353, b: 0.39607844, a: 1}
+    rgba: 4292342271
+  m_fontColor: {r: 1, g: 0.94509804, b: 0.84313726, a: 1}
   m_enableVertexGradient: 1
   m_colorMode: 2
   m_fontColorGradient:
@@ -3212,7 +3212,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &7139145224851296981
 RectTransform:
   m_ObjectHideFlags: 0

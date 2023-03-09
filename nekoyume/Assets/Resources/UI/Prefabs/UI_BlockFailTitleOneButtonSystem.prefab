@@ -159,7 +159,7 @@ MonoBehaviour:
   title: {fileID: 1355130834389472050}
   content: {fileID: 7557805128358749758}
   labelOK: {fileID: 5721415182012187769}
-  titleBorder: {fileID: 8320478685167020487}
+  titleBorder: {fileID: 0}
 --- !u!1001 &2241263195338151797
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -252,6 +252,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_fontSizeMax
       value: 24
+      objectReference: {fileID: 0}
+    - target: {fileID: 1905121967951065110, guid: 5bcf368b3e0fac54b8a77bc20075a229,
+        type: 3}
+      propertyPath: fontMaterialType
+      value: 35
       objectReference: {fileID: 0}
     - target: {fileID: 1905121967951065110, guid: 5bcf368b3e0fac54b8a77bc20075a229,
         type: 3}
@@ -528,6 +533,11 @@ PrefabInstance:
       propertyPath: m_fontSizeMin
       value: 18
       objectReference: {fileID: 0}
+    - target: {fileID: 8644702060668481867, guid: 5bcf368b3e0fac54b8a77bc20075a229,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 51a71dc26f63448229f1b67b32cd4f7f, type: 2}
     - target: {fileID: 9025400986075387530, guid: 5bcf368b3e0fac54b8a77bc20075a229,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -615,12 +625,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &8320478685167020487 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7810040306809667250, guid: 5bcf368b3e0fac54b8a77bc20075a229,
-    type: 3}
-  m_PrefabInstance: {fileID: 2241263195338151797}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2365680040202632681
 PrefabInstance:
   m_ObjectHideFlags: 0
