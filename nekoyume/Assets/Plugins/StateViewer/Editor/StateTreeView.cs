@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using Bencodex.Types;
-using Lib9c;
 using Libplanet;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
@@ -20,7 +18,6 @@ namespace StateViewer.Editor
 
         private StateTreeViewItem.Model[] _itemModels;
         private Address _addr;
-        private readonly Dictionary<string, string> _reversedSerializeKeys = new();
 
         public (Address addr, IValue value) Serialize()
         {
@@ -33,36 +30,7 @@ namespace StateViewer.Editor
             rowHeight = EditorGUIUtility.singleLineHeight;
             showAlternatingRowBackgrounds = true;
             showBorder = true;
-
-            if (_reversedSerializeKeys.Count == 0)
-            {
-                ReverseSerializedKeys();
-            }
         }
-
-        private void ReverseSerializedKeys()
-        {
-            foreach (var field in typeof(SerializeKeys).GetFields(
-                         BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy
-                     )
-                    )
-            {
-                if (field.IsLiteral && !field.IsInitOnly)
-                {
-                    _reversedSerializeKeys.Add(field.GetRawConstantValue().ToString(), field.Name);
-                }
-            }
-
-            Debug.LogFormat("SerializeKeys are reversed: {0}", _reversedSerializeKeys.Count);
-        }
-
-        private string GetReversedKey(string key)
-        {
-            return _reversedSerializeKeys.ContainsKey(key)
-                ? _reversedSerializeKeys[key]
-                : key;
-        }
-
 
         public void SetData(Address addr, IValue data)
         {

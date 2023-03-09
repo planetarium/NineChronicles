@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using Bencodex.Types;
+using Lib9c;
 using Nekoyume.Model.State;
 using UnityEditor.IMGUI.Controls;
 
@@ -15,6 +17,7 @@ namespace StateViewer.Editor
     {
         public class Model : IState
         {
+            private readonly Dictionary<string, string> _reversedSerializeKeys = new();
             public int Id { get; }
             public string Key { get; }
             public string DisplayKey { get; }
@@ -27,12 +30,40 @@ namespace StateViewer.Editor
             public Model(int id, string key, string displayKey, string type, string value,
                 bool editable = true)
             {
+                if (_reversedSerializeKeys.Count == 0)
+                {
+                    ReverseSerializedKeys();
+                }
+
                 Id = id;
                 Key = key;
-                DisplayKey = displayKey;
+                DisplayKey = $"[{GetReversedKey(key)}]";
                 Type = type;
                 Value = value;
                 Editable = editable;
+            }
+
+            private void ReverseSerializedKeys()
+            {
+                foreach (var field in typeof(SerializeKeys).GetFields(
+                             BindingFlags.Public | BindingFlags.Static |
+                             BindingFlags.FlattenHierarchy
+                         )
+                        )
+                {
+                    if (field.IsLiteral && !field.IsInitOnly)
+                    {
+                        _reversedSerializeKeys.Add(field.GetRawConstantValue().ToString(),
+                            field.Name);
+                    }
+                }
+            }
+
+            private string GetReversedKey(string key)
+            {
+                return _reversedSerializeKeys.ContainsKey(key)
+                    ? _reversedSerializeKeys[key]
+                    : key;
             }
 
             public void SetValue(string value)
