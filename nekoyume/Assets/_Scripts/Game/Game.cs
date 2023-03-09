@@ -143,13 +143,13 @@ namespace Nekoyume.Game
             bool HasStoragePermission() =>
                 Permission.HasUserAuthorizedPermission(Permission.ExternalStorageWrite)
                 && Permission.HasUserAuthorizedPermission(Permission.ExternalStorageRead);
-        
+
             String[] permission = new String[]
             {
                 Permission.ExternalStorageRead,
                 Permission.ExternalStorageWrite
             };
-        
+
             while (!HasStoragePermission())
             {
                 Permission.RequestUserPermissions(permission);
@@ -281,9 +281,6 @@ namespace Nekoyume.Game
             Stage.Initialize();
             Arena.Initialize();
             RaidStage.Initialize();
-
-
-            Widget.Find<VersionSystem>().SetVersion(Agent.AppProtocolVersion);
 
             ShowNext(agentInitializeSucceed);
             StartCoroutine(CoUpdate());

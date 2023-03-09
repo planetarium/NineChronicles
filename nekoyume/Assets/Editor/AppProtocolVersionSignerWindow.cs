@@ -1,5 +1,4 @@
 using Libplanet.Crypto;
-using Libplanet.Net;
 using System;
 using System.Globalization;
 using System.Linq;
@@ -24,8 +23,6 @@ namespace Editor
         private string _versionString = "1";
 
         private DateTimeOffset _timestamp = DateTimeOffset.UtcNow;
-
-        private AppProtocolVersion? _appProtocolVersion;
 
         private bool _showPrivateKey = true;
 
@@ -157,19 +154,9 @@ namespace Editor
                     _privateKeyPassphrase = string.Empty;
                     return;
                 }
-
-                _appProtocolVersion = AppProtocolVersion.Sign(
-                    key,
-                    version,
-                    appProtocolVersionExtra.Serialize());
             }
 
             EditorGUI.EndDisabledGroup();
-
-            if (_appProtocolVersion is AppProtocolVersion v)
-            {
-                GUILayout.TextArea(v.Token);
-            }
         }
 
         void FillAttributes()

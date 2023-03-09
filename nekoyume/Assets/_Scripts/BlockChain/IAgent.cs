@@ -35,8 +35,6 @@ namespace Nekoyume.BlockChain
 
         ActionRenderer ActionRenderer { get; }
 
-        int AppProtocolVersion { get; }
-
         Subject<BlockHash> BlockTipHashSubject { get; }
 
         BlockHash BlockTipHash { get; }
