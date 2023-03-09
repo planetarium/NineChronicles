@@ -179,59 +179,100 @@ namespace StateViewer.Editor
             for (var i = 0; i < args.GetNumVisibleColumns(); ++i)
             {
                 var columnIndex = args.GetColumn(i);
-                if (columnIndex == 0)
-                {
-                    base.RowGUI(args);
-                    continue;
-                }
-
                 var cellRect = args.GetCellRect(i);
                 CenterRectUsingSingleLineHeight(ref cellRect);
 
                 var viewModel = item.ViewModel;
                 switch (columnIndex)
                 {
-                    case 1:
+                    case 0: // Key
+                        base.RowGUI(args);
+                        // if (viewModel.Editable)
+                        // {
+                        //     GUI.TextField(cellRect, viewModel.Key);
+                        // }
+                        // else
+                        // {
+                        //     GUI.Label(cellRect, viewModel.Key);
+                        // }
+
+                        break;
+                    case 1: // DisplayKey
                         GUI.Label(cellRect, viewModel.DisplayKey);
                         break;
-                    case 2:
-                        GUI.Label(cellRect, viewModel.Type);
+                    case 2: // Type
+                        EditorGUI.BeginChangeCheck();
+                        viewModel.Type =
+                            (ValueKind)EditorGUI.EnumPopup(cellRect, "Type", viewModel.Type);
+                        // GUI.Label(cellRect, viewModel.Type);
+                        if (EditorGUI.EndChangeCheck())
+                        {
+                            Debug.LogFormat($"{viewModel.Type} is selected");
+                        }
+
                         break;
-                    case 3 when viewModel.Type == ValueKind.List.ToString() ||
-                                viewModel.Type == ValueKind.Dictionary.ToString():
+                    case 3 when viewModel.Type is ValueKind.List or ValueKind.Dictionary: // Value
                         GUI.Label(cellRect, viewModel.Value);
                         break;
                     case 3:
-                        var value = GUI.TextField(cellRect, viewModel.Value);
-                        if (value != viewModel.Value)
+                        if (viewModel.Editable)
                         {
-                            viewModel.SetValue(value);
-                            OnDirty?.Invoke(true);
+                            var value = GUI.TextField(cellRect, viewModel.Value);
+                            if (value != viewModel.Value)
+                            {
+                                viewModel.SetValue(value);
+                                OnDirty?.Invoke(true);
+                            }
+                        }
+                        else
+                        {
+                            GUI.Label(cellRect, viewModel.Value);
                         }
 
                         break;
                     case 4:
-                        if (viewModel.Type == ValueKind.List.ToString() ||
-                            viewModel.Type == ValueKind.Dictionary.ToString())
+                        if (viewModel.Type is ValueKind.List or ValueKind.Dictionary)
                         {
                             if (GUI.Button(cellRect, "Add"))
                             {
                                 viewModel.AddChild(new StateTreeViewItem.Model(
-                                    viewModel.Id + 1,
-                                    "New",
-                                    "New",
-                                    ValueKind.Null.ToString(),
-                                    string.Empty));
+                                    _elementId++,
+                                    viewModel.Type is ValueKind.List
+                                        ? $"{viewModel.Children.Count}"
+                                        : "New Key",
+                                    viewModel.Children[0].Type,
+                                    string.Empty,
+                                    editable: viewModel.Parent is { Type: ValueKind.Dictionary }));
+                                viewModel.Value = $"Count: {viewModel.Children.Count}";
                                 Reload();
                                 OnDirty?.Invoke(true);
                             }
                         }
-                        else if (viewModel.Parent is null)
+                        else if (viewModel.Editable)
                         {
-                            // Do nothing.
+                            if (GUI.Button(cellRect, "Save"))
+                            {
+                                viewModel.Editable = false;
+                                // Save changed value and update treeview
+                                Reload();
+                                OnDirty?.Invoke(true);
+                            }
                         }
-                        else if (viewModel.Parent.Type == ValueKind.List.ToString() ||
-                                 viewModel.Parent.Type == ValueKind.Dictionary.ToString())
+                        else
+                        {
+                            if (GUI.Button(cellRect, "Edit"))
+                            {
+                                viewModel.Editable = true;
+                                // Make key and type editable
+                                // Update displayKey
+                                Reload();
+                                OnDirty?.Invoke(true);
+                            }
+                        }
+
+                        break;
+                    case 5:
+                        if (!(viewModel.Parent is null))
                         {
                             if (GUI.Button(cellRect, "Remove"))
                             {

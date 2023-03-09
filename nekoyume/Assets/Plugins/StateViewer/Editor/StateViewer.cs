@@ -115,7 +115,17 @@ namespace StateViewer.Editor
             };
             var editColumn = new MultiColumnHeaderState.Column
             {
-                headerContent = new GUIContent("Edit"),
+                headerContent = new GUIContent("Add/Edit"),
+                headerTextAlignment = TextAlignment.Center,
+                canSort = false,
+                width = 100,
+                minWidth = 100,
+                autoResize = true,
+                allowToggleVisibility = false,
+            };
+            var addRemoveColumn = new MultiColumnHeaderState.Column
+            {
+                headerContent = new GUIContent("Remove"),
                 headerTextAlignment = TextAlignment.Center,
                 canSort = false,
                 width = 100,
@@ -130,6 +140,7 @@ namespace StateViewer.Editor
                 typeColumn,
                 valueColumn,
                 editColumn,
+                addRemoveColumn,
             });
             _stateTreeView = new StateTreeView(
                 stateTreeViewState,
