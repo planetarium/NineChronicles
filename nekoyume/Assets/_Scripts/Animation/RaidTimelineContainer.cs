@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.EnumType;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
@@ -116,20 +117,22 @@ namespace Nekoyume
             yield return new WaitWhile(() => boss.IsActing);
 
             director.GetGenericBinding(this);
-            var track = asset.GetRootTracks()
+            var tracks = asset.GetRootTracks()
                 .FirstOrDefault(x => x.name.Equals("Spine_Player"))
                 .GetChildTracks()
-                .FirstOrDefault();
-            if (!track)
-            {
-                OnAttackPoint = null;
-                yield break;
-            }
+                .ToList();
 
             var appearance = player.GetComponent<CharacterAppearance>();
-            if (appearance)
+            for (int i = 0; i < 11; i++)
             {
-                director.SetGenericBinding(track, appearance.SpineController.GetSkeletonAnimation());
+                if (tracks[i] is null)
+                {
+                    OnAttackPoint = null;
+                    continue;
+                }
+
+                var avatarPartsType = ((AvatarPartsType)(i + 1));
+                director.SetGenericBinding(tracks[i], appearance.SpineController.GetSkeletonAnimation(avatarPartsType));
             }
 
             if (asset.markerTrack)

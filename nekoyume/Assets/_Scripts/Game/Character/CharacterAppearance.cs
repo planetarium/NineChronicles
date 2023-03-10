@@ -139,7 +139,8 @@ namespace Nekoyume.Game.Character
             Destroy(_cachedCharacterTitle);
 
             var isDcc = Dcc.instance.IsVisible(avatarAddress, out var id, out var isVisible);
-            if (isDcc && States.Instance.CurrentAvatarState is not null &&
+            if (isDcc && !isFriendCharacter &&
+                States.Instance.CurrentAvatarState is not null &&
                 avatarAddress == States.Instance.CurrentAvatarState.address)
             {
                 isDcc = isVisible;
@@ -162,7 +163,7 @@ namespace Nekoyume.Game.Character
 
                 if (!isFriendCharacter)
                 {
-                    pet.SetPosition(SpineController.GetSkeletonAnimation(), false);
+                    pet.SetPosition(SpineController.GetBodySkeletonAnimation(), false);
                 }
             }
             else
@@ -189,7 +190,7 @@ namespace Nekoyume.Game.Character
 
                 if (!isFriendCharacter)
                 {
-                    pet.SetPosition(SpineController.GetSkeletonAnimation(), fullCostume is not null);
+                    pet.SetPosition(SpineController.GetBodySkeletonAnimation(), fullCostume is not null);
                 }
             }
 
@@ -289,7 +290,7 @@ namespace Nekoyume.Game.Character
         {
             var target = SpineController.gameObject;
             var animator = SpineController.GetComponent<Animator>();
-            var sk = SpineController.GetSkeletonAnimation();
+            var sk = SpineController.GetBodySkeletonAnimation();
             var mr = sk.GetComponent<MeshRenderer>();
             _animator.InitTarget(target, mr, sk, animator);
         }
