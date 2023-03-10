@@ -41,7 +41,7 @@ namespace Nekoyume.UI
                 targetOption.OptionValue);
             prevLevelText.text = $"<size=30>Lv.</size>{prevPetState.Level}";
             newLevelText.text = $"{action.TargetLevel}";
-            petSkeletonGraphic.skeletonDataAsset = PetRenderingHelper.GetPetSkeletonData(petRow.Id);
+            petSkeletonGraphic.skeletonDataAsset = PetFrontHelper.GetPetSkeletonData(petRow.Id);
             petSkeletonGraphic.Initialize(true);
         }
     }

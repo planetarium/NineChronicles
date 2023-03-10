@@ -1,9 +1,9 @@
-﻿using Nekoyume.Model.State;
-using Nekoyume.TableData.Pet;
+using Nekoyume.Model.State;
+using Nekoyume.TableData;
 using UniRx;
 using UnityEngine;
 
-namespace Nekoyume.UI.Module.Pet
+namespace Nekoyume.UI.Module
 {
     public class PetSlotViewModel
     {

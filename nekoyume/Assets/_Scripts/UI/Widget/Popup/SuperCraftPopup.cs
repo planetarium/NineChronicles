@@ -58,7 +58,13 @@ namespace Nekoyume.UI
             });
             superCraftButton.OnSubmitSubject.Subscribe(_ =>
             {
-                Find<PetSelectionPopup>().Show(SendAction);
+                var craftInfo = new Craft.CraftInfo()
+                {
+                    RecipeID = _recipeRow.Id,
+                    SubrecipeId = premiumRecipeToggle.isOn ? PremiumRecipeIndex : BasicRecipeIndex,
+                };
+
+                Find<PetSelectionPopup>().Show(craftInfo, SendAction);
             }).AddTo(gameObject);
         }
 

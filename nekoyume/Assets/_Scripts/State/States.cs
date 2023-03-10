@@ -292,7 +292,7 @@ namespace Nekoyume.State
             await foreach (var row in petSheet.Values)
             {
                 AvatarBalance.Remove(row.SoulStoneTicker);
-                var soulStone = Currency.Legacy(row.SoulStoneTicker, 0, null);
+                var soulStone = PetHelper.GetSoulstoneCurrency(row.SoulStoneTicker);
                 var fungibleAsset = await Game.Game.instance.Agent.GetBalanceAsync(avatarAddress, soulStone);
                 AvatarBalance.Add(soulStone.Ticker, fungibleAsset);
             }

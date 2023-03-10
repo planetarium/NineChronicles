@@ -1,10 +1,8 @@
 using Coffee.UIEffects;
-using Mono.Cecil;
-using Nekoyume.Game;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
-using Nekoyume.Model.State;
 using Nekoyume.State;
-using Nekoyume.TableData.Pet;
+using Nekoyume.TableData;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -114,16 +112,18 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            levelText.text = $"Lv.{data.Level}";
-            descriptionText.text = L10nManager.Localize(
-                $"PET_DESCRIPTION_{data.OptionInfo.OptionType}",
-                data.OptionInfo.OptionValue);
+            UpdateView(data);
+            descriptionText.text = data.Description;
+        }
 
-            dimmedImage.enabled = !data.HasState;
+        private void UpdateView(PetInventory.PetDescriptionData data)
+        {
+            levelText.text = $"Lv.{data.Level}";
+            dimmedImage.enabled = !data.HasState || !data.IsAppliable;
             equippedObject.SetActive(data.Equipped);
             if (button)
             {
-                button.gameObject.SetActive(!data.Equipped);
+                button.gameObject.SetActive(data.IsAppliable && !data.Equipped);
                 inUseObject.SetActive(data.Equipped);
             }
             descriptionObject.SetActive(true);

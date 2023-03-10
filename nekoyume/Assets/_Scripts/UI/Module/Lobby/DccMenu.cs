@@ -23,7 +23,7 @@ namespace Nekoyume.UI.Module.Lobby
                 var hasNotification = false;
                 foreach (var row in TableSheets.Instance.PetSheet)
                 {
-                    hasNotification |= PetRenderingHelper.HasNotification(row.Id);
+                    hasNotification |= PetFrontHelper.HasNotification(row.Id);
                 }
 
                 notification.SetActive(hasNotification);

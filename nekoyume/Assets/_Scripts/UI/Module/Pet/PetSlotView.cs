@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Game;
@@ -11,7 +11,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Nekoyume.UI.Module.Pet
+namespace Nekoyume.UI.Module
 {
     using UniRx;
     public class PetSlotView : MonoBehaviour
@@ -80,13 +80,13 @@ namespace Nekoyume.UI.Module.Pet
             }
 
             var isOwn = States.Instance.PetStates.TryGetPetState(model.PetRow.Id, out _petState);
-            petImage.overrideSprite = PetRenderingHelper.GetPetCardSprite(model.PetRow.Id);
-            soulStoneImage.overrideSprite = PetRenderingHelper.GetSoulStoneSprite(model.PetRow.Id);
+            petImage.overrideSprite = PetFrontHelper.GetPetCardSprite(model.PetRow.Id);
+            soulStoneImage.overrideSprite = PetFrontHelper.GetSoulStoneSprite(model.PetRow.Id);
             soulStoneText.text = States.Instance.AvatarBalance[model.PetRow.SoulStoneTicker]
                 .GetQuantityString();
             petImage.color = isOwn
                 ? Color.white
-                : PetRenderingHelper.GetUIColor(PetRenderingHelper.NotOwnSlot);
+                : PetFrontHelper.GetUIColor(PetFrontHelper.NotOwnSlot);
             var maxLevel = TableSheets.Instance.PetCostSheet[model.PetRow.Id]
                 .Cost
                 .OrderBy(data => data.Level)
@@ -97,9 +97,9 @@ namespace Nekoyume.UI.Module.Pet
                 : L10nManager.Localize("UI_NOT_POSSESSED");
             levelText.color = isOwn
                 ? _petState.Level == maxLevel
-                    ? PetRenderingHelper.GetUIColor(PetRenderingHelper.MaxLevelText)
+                    ? PetFrontHelper.GetUIColor(PetFrontHelper.MaxLevelText)
                     : Color.white
-                : PetRenderingHelper.GetUIColor(PetRenderingHelper.NotOwnText);
+                : PetFrontHelper.GetUIColor(PetFrontHelper.NotOwnText);
             petInfoText.color = Color.white;
             petInfoText.text = L10nManager.Localize($"PET_NAME_{model.PetRow.Id}");
             model.EquippedIcon.SubscribeTo(equippedIcon).AddTo(_disposables);
@@ -113,7 +113,7 @@ namespace Nekoyume.UI.Module.Pet
                 if (summonAble)
                 {
                     petInfoText.color =
-                        PetRenderingHelper.GetUIColor(PetRenderingHelper.SummonableText);
+                        PetFrontHelper.GetUIColor(PetFrontHelper.SummonableText);
                     petInfoText.text = L10nManager.Localize("UI_SUMMONABLE");
                 }
             }).AddTo(_disposables);
@@ -125,7 +125,7 @@ namespace Nekoyume.UI.Module.Pet
                     if (isLoading)
                     {
                         petInfoText.color =
-                            PetRenderingHelper.GetUIColor(PetRenderingHelper.LevelUpText);
+                            PetFrontHelper.GetUIColor(PetFrontHelper.LevelUpText);
                         petInfoText.text =
                             L10nManager.Localize(isOwn
                                 ? "UI_LEVELUP_IN_PROGRESS"

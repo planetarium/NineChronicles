@@ -25,12 +25,23 @@ using NUnit.Framework;
 
 namespace Nekoyume.UI
 {
+    using Libplanet.Assets;
     using mixpanel;
     using UniRx;
     using Toggle = Module.Toggle;
 
     public class Craft : Widget
     {
+        public struct CraftInfo
+        {
+            public int RecipeID;
+            public int SubrecipeId;
+            public FungibleAssetValue CostCrystal;
+            public long RequiredBlockMin;
+            public long RequiredBlockMax;
+        }
+
+
         private static readonly int FirstClicked =
             Animator.StringToHash("FirstClicked");
         private static readonly int EquipmentClick =
@@ -465,7 +476,30 @@ namespace Nekoyume.UI
 
         private void OnClickEquipmentAction(SubRecipeView.RecipeInfo recipeInfo)
         {
-            Find<PetSelectionPopup>().Show(petId =>
+            var equipmentRow = TableSheets.Instance.EquipmentItemRecipeSheet[recipeInfo.RecipeId];
+            var requiredBlock = equipmentRow.RequiredBlockIndex;
+            var additionalBlock = 0L;
+            if (recipeInfo.SubRecipeId.HasValue)
+            {
+                var subRecipeRow =
+                    TableSheets.Instance.EquipmentItemSubRecipeSheetV2[recipeInfo.SubRecipeId.Value];
+                requiredBlock += subRecipeRow.RequiredBlockIndex;
+                foreach (var optionInfo in subRecipeRow.Options)
+                {
+                    additionalBlock += optionInfo.RequiredBlockIndex;
+                }
+            }
+
+            var craftInfo = new CraftInfo()
+            {
+                RecipeID = recipeInfo.RecipeId,
+                SubrecipeId = recipeInfo.SubRecipeId ?? 0,
+                CostCrystal = recipeInfo.CostCrystal,
+                RequiredBlockMin = requiredBlock,
+                RequiredBlockMax = requiredBlock + additionalBlock,
+            };
+
+            Find<PetSelectionPopup>().Show(craftInfo, petId =>
             {
                 CombinationEquipmentAction(recipeInfo, petId);
             });
@@ -530,7 +564,7 @@ namespace Nekoyume.UI
                             {
                                 ["MaterialCount"] = insufficientMaterials
                                     .Sum(x => x.Value),
-                                ["BurntCrystal"] = (long)recipeInfo.CostCrystal,
+                                ["BurntCrystal"] = (long)recipeInfo.CostCrystal.MajorUnit,
                                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                             });
