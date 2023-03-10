@@ -21,7 +21,7 @@ namespace Nekoyume
 
         public static float GetAnimationDuration(AvatarSpineController controller, string stateName)
         {
-            var state = controller.GetSkeletonAnimation().Skeleton.Data.FindAnimation(stateName);
+            var state = controller.GetBodySkeletonAnimation().Skeleton.Data.FindAnimation(stateName);
             return state?.Duration ?? 2f;
         }
 
