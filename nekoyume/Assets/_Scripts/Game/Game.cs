@@ -247,19 +247,6 @@ namespace Nekoyume.Game
             StartCoroutine(CoUpdate());
         }
 
-        public IEnumerator CoInitDccAvatar()
-        {
-            return RequestManager.instance.GetJson(
-                URL.DccAvatars,
-                URL.DccEthChainHeaderName,
-                URL.DccEthChainHeaderValue,
-                (json) =>
-                {
-                    var responseData = DccAvatars.FromJson(json);
-                    Dcc.instance.Init(responseData.Avatars);
-                });
-        }
-
         protected override void OnDestroy()
         {
             ActionManager?.Dispose();
@@ -853,6 +840,19 @@ namespace Nekoyume.Game
             }
 
             return msg;
+        }
+
+        private IEnumerator CoInitDccAvatar()
+        {
+            return RequestManager.instance.GetJson(
+                URL.DccAvatars,
+                URL.DccEthChainHeaderName,
+                URL.DccEthChainHeaderValue,
+                (json) =>
+                {
+                    var responseData = DccAvatars.FromJson(json);
+                    Dcc.instance.Init(responseData.Avatars);
+                });
         }
 
         public void PauseTimeline(PlayableDirector whichOne)

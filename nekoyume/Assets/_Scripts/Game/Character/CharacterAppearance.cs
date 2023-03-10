@@ -67,14 +67,15 @@ namespace Nekoyume.Game.Character
             int lensIndex,
             int hairIndex,
             int tailIndex,
-            bool isFriendCharacter = false)
+            bool isFriendCharacter = false,
+            System.Action onFinish = null)
         {
             var armor = (Armor)equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
             var weapon = (Weapon)equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Weapon);
 
             UpdateAvatar(avatarAddress, animator, hudContainer,
                 costumes, armor, weapon,
-                earIndex, lensIndex, hairIndex, tailIndex, isFriendCharacter);
+                earIndex, lensIndex, hairIndex, tailIndex, isFriendCharacter, onFinish);
         }
 
         public void Set(
@@ -132,7 +133,8 @@ namespace Nekoyume.Game.Character
             int lensIndex,
             int hairIndex,
             int tailIndex,
-            bool isFriendCharacter = false)
+            bool isFriendCharacter = false,
+            System.Action onFinish = null)
         {
             _animator = animator;
             _hudContainer = hudContainer;
@@ -199,6 +201,8 @@ namespace Nekoyume.Game.Character
             {
                 UpdateTitle(title);
             }
+
+            onFinish?.Invoke();
         }
 
         private void UpdateFullCostume(Costume fullCostume)

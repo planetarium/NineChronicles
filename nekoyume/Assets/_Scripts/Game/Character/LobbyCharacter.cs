@@ -31,7 +31,8 @@ namespace Nekoyume.Game.Character
         public void Set(
             AvatarState avatarState,
             List<Equipment> equipments,
-            List<Costume> costumes)
+            List<Costume> costumes,
+            System.Action onFinish = null)
         {
             _hudContainer ??= Widget.Create<HudContainer>(true);
             _hudContainer.transform.localPosition = Vector3.left * 200000;
@@ -44,7 +45,8 @@ namespace Nekoyume.Game.Character
                 avatarState.ear,
                 avatarState.lens,
                 avatarState.hair,
-                avatarState.tail);
+                avatarState.tail,
+                onFinish: onFinish);
 
             var title = costumes.FirstOrDefault(x => x.ItemSubType == ItemSubType.Title);
             Widget.Find<Menu>().UpdateTitle(title);
