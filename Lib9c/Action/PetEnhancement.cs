@@ -120,10 +120,7 @@ namespace Nekoyume.Action
             }
 
             var ncgCurrency = states.GetGoldCurrency();
-            var soulStoneCurrency = Currency.Legacy(
-                petRow.SoulStoneTicker,
-                0,
-                minters: null);
+            var soulStoneCurrency = PetHelper.GetSoulstoneCurrency(petRow.SoulStoneTicker);
             var (ncgQuantity, soulStoneQuantity) = PetHelper.CalculateEnhancementCost(
                 costSheet,
                 PetId,
