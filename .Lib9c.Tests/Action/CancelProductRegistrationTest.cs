@@ -29,6 +29,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _avatarAddress;
         private readonly GoldCurrencyState _goldCurrencyState;
         private readonly TableSheets _tableSheets;
+        private readonly GameConfigState _gameConfigState;
 
         public CancelProductRegistrationTest(ITestOutputHelper outputHelper)
         {
@@ -56,13 +57,14 @@ namespace Lib9c.Tests.Action
             _agentAddress = new PrivateKey().ToAddress();
             var agentState = new AgentState(_agentAddress);
             _avatarAddress = new PrivateKey().ToAddress();
+            _gameConfigState = new GameConfigState((Text)_tableSheets.GameConfigSheet.Serialize());
             var rankingMapAddress = new PrivateKey().ToAddress();
             var avatarState = new AvatarState(
                 _avatarAddress,
                 _agentAddress,
                 0,
                 _tableSheets.GetAvatarSheets(),
-                new GameConfigState(),
+                _gameConfigState,
                 rankingMapAddress)
             {
                 worldInformation = new WorldInformation(

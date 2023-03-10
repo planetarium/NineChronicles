@@ -61,6 +61,12 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            if (!(states.GetState(Addresses.Market) is null))
+            {
+                throw new ActionObsoletedException("UpdateSell action is obsoleted. please use ReRegisterProduct.");
+            }
+
+
             if (updateSellInfos.Count() > UpdateCapacity)
             {
                 throw new ArgumentOutOfRangeException($"{nameof(updateSellInfos)} must be less than or equal 100.");

@@ -30,6 +30,7 @@
         private readonly AvatarState _avatarState;
         private readonly TableSheets _tableSheets;
         private readonly GoldCurrencyState _goldCurrencyState;
+        private readonly GameConfigState _gameConfigState;
         private IAccountStateDelta _initialState;
 
         public ReRegisterProductTest(ITestOutputHelper outputHelper)
@@ -61,12 +62,13 @@
             var agentState = new AgentState(_agentAddress);
             _avatarAddress = new PrivateKey().ToAddress();
             var rankingMapAddress = new PrivateKey().ToAddress();
+            _gameConfigState = new GameConfigState((Text)_tableSheets.GameConfigSheet.Serialize());
             _avatarState = new AvatarState(
                 _avatarAddress,
                 _agentAddress,
                 0,
                 _tableSheets.GetAvatarSheets(),
-                new GameConfigState(),
+                _gameConfigState,
                 rankingMapAddress)
             {
                 worldInformation = new WorldInformation(
@@ -80,6 +82,7 @@
                 .SetState(GoldCurrencyState.Address, _goldCurrencyState.Serialize())
                 .SetState(Addresses.Shop, shopState.Serialize())
                 .SetState(_agentAddress, agentState.Serialize())
+                .SetState(Addresses.GameConfig, _gameConfigState.Serialize())
                 .SetState(_avatarAddress, _avatarState.Serialize());
         }
 
@@ -298,6 +301,9 @@
             Assert.Equal(productId, product.ProductId);
             Assert.Equal(productType, product.Type);
             Assert.Equal(order.Price, product.Price);
+
+            var nextAvatarState = actualState.GetAvatarStateV2(_avatarAddress);
+            Assert.Equal(_gameConfigState.ActionPointMax - ReRegisterProduct.CostAp, nextAvatarState.actionPoint);
         }
 
         [Fact]

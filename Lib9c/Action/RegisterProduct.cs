@@ -11,6 +11,7 @@ using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Market;
 using Nekoyume.Model.State;
+using Nekoyume.TableData;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
@@ -18,8 +19,10 @@ namespace Nekoyume.Action
     [ActionType("register_product")]
     public class RegisterProduct : GameAction
     {
+        public const int CostAp = 5;
         public Address AvatarAddress;
         public IEnumerable<IRegisterInfo> RegisterInfos;
+        public bool ChargeAp;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
@@ -58,6 +61,7 @@ namespace Nekoyume.Action
                     current);
             }
 
+            avatarState.UseAp(CostAp, ChargeAp, states.GetSheet<MaterialItemSheet>(), context.BlockIndex, states.GetGameConfigState());
             var productsStateAddress = ProductsState.DeriveAddress(AvatarAddress);
             ProductsState productsState;
             if (states.TryGetState(productsStateAddress, out List rawProducts))
@@ -80,11 +84,11 @@ namespace Nekoyume.Action
 
             states = states
                 .SetState(AvatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
+                .SetState(AvatarAddress, avatarState.SerializeV2())
                 .SetState(productsStateAddress, productsState.Serialize());
             if (migrationRequired)
             {
                 states = states
-                    .SetState(AvatarAddress, avatarState.SerializeV2())
                     .SetState(AvatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
                     .SetState(AvatarAddress.Derive(LegacyWorldInformationKey), avatarState.worldInformation.Serialize());
             }
@@ -215,6 +219,7 @@ namespace Nekoyume.Action
             {
                 ["r"] = new List(RegisterInfos.Select(r => r.Serialize())),
                 ["a"] = AvatarAddress.Serialize(),
+                ["c"] = ChargeAp.Serialize(),
             }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
@@ -223,6 +228,7 @@ namespace Nekoyume.Action
             RegisterInfos = serialized.Cast<List>()
                 .Select(ProductFactory.DeserializeRegisterInfo).ToList();
             AvatarAddress = plainValue["a"].ToAddress();
+            ChargeAp = plainValue["c"].ToBoolean();
         }
     }
 }

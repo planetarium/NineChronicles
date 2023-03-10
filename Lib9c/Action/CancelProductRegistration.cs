@@ -11,6 +11,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Market;
 using Nekoyume.Model.State;
+using Nekoyume.TableData;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
@@ -18,8 +19,10 @@ namespace Nekoyume.Action
     [ActionType("cancel_product_registration")]
     public class CancelProductRegistration : GameAction
     {
+        public const int CostAp = 5;
         public Address AvatarAddress;
         public List<IProductInfo> ProductInfos;
+        public bool ChargeAp;
         public override IAccountStateDelta Execute(IActionContext context)
         {
             IAccountStateDelta states = context.PreviousStates;
@@ -56,6 +59,7 @@ namespace Nekoyume.Action
                     GameConfig.RequireClearedStageLevel.ActionsInShop, current);
             }
 
+            avatarState.UseAp(CostAp, ChargeAp, states.GetSheet<MaterialItemSheet>(), context.BlockIndex, states.GetGameConfigState());
             var productsStateAddress = ProductsState.DeriveAddress(AvatarAddress);
             ProductsState productsState;
             if (states.TryGetState(productsStateAddress, out List rawProductList))
@@ -186,12 +190,14 @@ namespace Nekoyume.Action
             {
                 ["a"] = AvatarAddress.Serialize(),
                 ["p"] = new List(ProductInfos.Select(p => p.Serialize())),
+                ["c"] = ChargeAp.Serialize(),
             }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
             AvatarAddress = plainValue["a"].ToAddress();
             ProductInfos = plainValue["p"].ToList(s => ProductFactory.DeserializeProductInfo((List) s));
+            ChargeAp = plainValue["c"].ToBoolean();
         }
     }
 }
