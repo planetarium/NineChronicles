@@ -27,24 +27,30 @@ namespace Nekoyume.Game
 
         public bool IsVisible(Address address, out int id, out bool isVisible)
         {
-            var hexAddress = address.ToHex();
-            if (Avatars is null)
+            var addr = address.ToString();
+            if (Avatars is null || addr == "0x0000000000000000000000000000000000000000")
             {
                 id = 0;
                 isVisible = false;
                 return false;
             }
 
-            var isExistDcc = Avatars.ContainsKey(hexAddress);
-            id = Avatars.ContainsKey(hexAddress) ? Avatars[hexAddress] : 0;
-            isVisible = PlayerPrefs.GetInt($"{DccVisible}_{hexAddress}", 0) > 0;
+            var isExistDcc = Avatars.ContainsKey(addr);
+            var key = $"{DccVisible}_{addr}";
+            if (!PlayerPrefs.HasKey(key))
+            {
+                PlayerPrefs.SetInt(key, 1);
+            }
+
+            id = Avatars.ContainsKey(addr) ? Avatars[addr] : 0;
+            isVisible = PlayerPrefs.GetInt(key, 0) > 0;
             return isExistDcc;
         }
 
         public void SetVisible(int value)
         {
             var avatarState = Game.instance.States.CurrentAvatarState;
-            PlayerPrefs.SetInt($"{DccVisible}_{avatarState.address}", value);
+            PlayerPrefs.SetInt($"{DccVisible}_{avatarState.address.ToString()}", value);
         }
 
         public async Task<Dictionary<DccPartsType, int>> GetParts(int dccId)

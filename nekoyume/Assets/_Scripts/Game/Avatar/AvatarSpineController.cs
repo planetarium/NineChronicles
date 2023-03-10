@@ -272,6 +272,10 @@ namespace Nekoyume.Game.Avatar
             }
             var s = SplitIndex(index);
             var preIndex = s[0] + s[4] + s[5] + s[6] + s[7];
+            if (skinTone > 0)
+            {
+                skinTone -= 1;
+            }
             var skinName = $"{index}-{skinTone}";
             // Debug.Log($"[UpdateBody] : {preIndex} / {skinName}");
 
