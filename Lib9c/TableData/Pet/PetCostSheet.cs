@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Nekoyume.TableData.Pet
+namespace Nekoyume.TableData
 {
     using static TableExtensions;
 

@@ -71,7 +71,8 @@ namespace Nekoyume.Helper
             PetState petState,
             PetOptionSheet petOptionSheet)
         {
-            if (!petOptionSheet.TryGetValue(petState.PetId, out var optionRow) ||
+            if (originalCost.MajorUnit <= 0 ||
+                !petOptionSheet.TryGetValue(petState.PetId, out var optionRow) ||
                 !optionRow.LevelOptionMap.TryGetValue(petState.Level, out var optionInfo))
             {
                 return originalCost;
@@ -100,7 +101,8 @@ namespace Nekoyume.Helper
             PetState petState,
             PetOptionSheet petOptionSheet)
         {
-            if (!petOptionSheet.TryGetValue(petState.PetId, out var optionRow) ||
+            if (originalBlock <= minimumBlock ||
+                !petOptionSheet.TryGetValue(petState.PetId, out var optionRow) ||
                 !optionRow.LevelOptionMap.TryGetValue(petState.Level, out var optionInfo))
             {
                 return originalBlock;
