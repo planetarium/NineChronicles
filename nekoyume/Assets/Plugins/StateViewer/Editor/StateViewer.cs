@@ -83,9 +83,9 @@ namespace StateViewer.Editor
                 autoResize = true,
                 allowToggleVisibility = false,
             };
-            var keyColumn = new MultiColumnHeaderState.Column
+            var aliasColumn = new MultiColumnHeaderState.Column
             {
-                headerContent = new GUIContent("Key"),
+                headerContent = new GUIContent("Alias"),
                 headerTextAlignment = TextAlignment.Center,
                 canSort = false,
                 width = 200,
@@ -93,9 +93,9 @@ namespace StateViewer.Editor
                 autoResize = true,
                 allowToggleVisibility = true,
             };
-            var typeColumn = new MultiColumnHeaderState.Column
+            var valueKindColumn = new MultiColumnHeaderState.Column
             {
-                headerContent = new GUIContent("Type"),
+                headerContent = new GUIContent("ValueKind"),
                 headerTextAlignment = TextAlignment.Center,
                 canSort = false,
                 width = 100,
@@ -136,8 +136,8 @@ namespace StateViewer.Editor
             var headerState = new MultiColumnHeaderState(new[]
             {
                 serializedKeyColumn,
-                keyColumn,
-                typeColumn,
+                aliasColumn,
+                valueKindColumn,
                 valueColumn,
                 editColumn,
                 addRemoveColumn,

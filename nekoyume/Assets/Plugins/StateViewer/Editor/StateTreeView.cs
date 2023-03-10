@@ -173,6 +173,8 @@ namespace StateViewer.Editor
             return totalRows;
         }
 
+        private int _index;
+
         protected override void RowGUI(RowGUIArgs args)
         {
             var item = (StateTreeViewItem)args.item;
@@ -186,29 +188,29 @@ namespace StateViewer.Editor
                 switch (columnIndex)
                 {
                     case 0: // Key
-                        base.RowGUI(args);
-                        // if (viewModel.Editable)
-                        // {
-                        //     GUI.TextField(cellRect, viewModel.Key);
-                        // }
-                        // else
-                        // {
-                        //     GUI.Label(cellRect, viewModel.Key);
-                        // }
+                        // base.RowGUI(args);
+                        var offset = GetContentIndent(item) + extraSpaceBeforeIconAndLabel;
+                        cellRect.xMin += offset;
+                        if (viewModel.Editable)
+                        {
+                            GUI.TextField(cellRect, viewModel.Key);
+                        }
+                        else
+                        {
+                            GUI.Label(cellRect, viewModel.Key);
+                        }
 
                         break;
-                    case 1: // DisplayKey
+                    case 1: // Alias
                         GUI.Label(cellRect, viewModel.DisplayKey);
                         break;
-                    case 2: // Type
-                        EditorGUI.BeginChangeCheck();
-                        viewModel.Type =
-                            (ValueKind)EditorGUI.EnumPopup(cellRect, "Type", viewModel.Type);
-                        // GUI.Label(cellRect, viewModel.Type);
-                        if (EditorGUI.EndChangeCheck())
-                        {
-                            Debug.LogFormat($"{viewModel.Type} is selected");
-                        }
+                    case 2: // ValueKind
+                        var names = Enum.GetNames(typeof(ValueKind));
+                        viewModel.Type = Enum.Parse<ValueKind>(
+                            names[EditorGUI.Popup(
+                                cellRect,
+                                Array.IndexOf(names, viewModel.Type.ToString()),
+                                names)]);
 
                         break;
                     case 3 when viewModel.Type is ValueKind.List or ValueKind.Dictionary: // Value
