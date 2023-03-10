@@ -11,6 +11,9 @@ namespace Nekoyume.Helper
 {
     public static class PetHelper
     {
+        public static Currency GetSoulstoneCurrency(string ticker) =>
+            Currency.Legacy(ticker, 0, minters: null);
+
         public static (int ncgQuantity, int soulStoneQuantity) CalculateEnhancementCost(
             PetCostSheet costSheet,
             int petId,
@@ -71,7 +74,8 @@ namespace Nekoyume.Helper
             PetState petState,
             PetOptionSheet petOptionSheet)
         {
-            if (!petOptionSheet.TryGetValue(petState.PetId, out var optionRow) ||
+            if (originalCost.MajorUnit <= 0 ||
+                !petOptionSheet.TryGetValue(petState.PetId, out var optionRow) ||
                 !optionRow.LevelOptionMap.TryGetValue(petState.Level, out var optionInfo))
             {
                 return originalCost;
@@ -100,7 +104,8 @@ namespace Nekoyume.Helper
             PetState petState,
             PetOptionSheet petOptionSheet)
         {
-            if (!petOptionSheet.TryGetValue(petState.PetId, out var optionRow) ||
+            if (originalBlock <= minimumBlock ||
+                !petOptionSheet.TryGetValue(petState.PetId, out var optionRow) ||
                 !optionRow.LevelOptionMap.TryGetValue(petState.Level, out var optionInfo))
             {
                 return originalBlock;

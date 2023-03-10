@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Bencodex.Types;
@@ -10,7 +10,6 @@ using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
-using Nekoyume.TableData.Pet;
 
 namespace Nekoyume.Action
 {
@@ -121,10 +120,7 @@ namespace Nekoyume.Action
             }
 
             var ncgCurrency = states.GetGoldCurrency();
-            var soulStoneCurrency = Currency.Legacy(
-                petRow.SoulStoneTicker,
-                0,
-                minters: null);
+            var soulStoneCurrency = PetHelper.GetSoulstoneCurrency(petRow.SoulStoneTicker);
             var (ncgQuantity, soulStoneQuantity) = PetHelper.CalculateEnhancementCost(
                 costSheet,
                 PetId,
