@@ -1,7 +1,6 @@
-﻿namespace Lib9c.Tests.TableData.Pet
+namespace Lib9c.Tests.TableData
 {
-    using System.Linq;
-    using Nekoyume.TableData.Pet;
+    using Nekoyume.TableData;
     using Xunit;
 
     public class PetSheetTest
