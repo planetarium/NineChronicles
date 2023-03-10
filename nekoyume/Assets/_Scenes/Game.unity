@@ -390,7 +390,7 @@ MonoBehaviour:
   arena: {fileID: 861244096}
   raidStage: {fileID: 530859351}
   lobby: {fileID: 716216230}
-  useSystemLanguage: 1
+  useSystemLanguage: 0
   languageType:
     value: 0
   prologue: {fileID: 76870001}
@@ -1525,6 +1525,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8633774720316280540}
     m_Modifications:
+    - target: {fileID: 890510745014606623, guid: 2dc2c18bbee806c45aad7b2d0adf2065,
+        type: 3}
+      propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 2453831652237097420, guid: 2dc2c18bbee806c45aad7b2d0adf2065,
         type: 3}
       propertyPath: m_Materials.Array.size
@@ -1741,6 +1746,11 @@ PrefabInstance:
       value: 1.4389038
       objectReference: {fileID: 0}
     - target: {fileID: 6941836840959976917, guid: 2dc2c18bbee806c45aad7b2d0adf2065,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7843287966623730394, guid: 2dc2c18bbee806c45aad7b2d0adf2065,
         type: 3}
       propertyPath: m_Mesh
       value: 
@@ -3150,14 +3160,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   actionDelay: 0.1
-  stageEnterDelay: 2
+  stageEnterDelay: 1
   spawnWaveDelay: 0.3
   droopItemOptions:
     fadeInTime: 0.3
     dropTime: 0.3
     endDelay: 0.2
-    scaleUpTime: 1
-    scaleOutTime: 1
+    scaleUpTime: 0.65
+    scaleOutTime: 0.65
 --- !u!114 &1333831690
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3998,6 +4008,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1683363016}
     m_Modifications:
+    - target: {fileID: 890510745014606623, guid: 2dc2c18bbee806c45aad7b2d0adf2065,
+        type: 3}
+      propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 2453831652237097420, guid: 2dc2c18bbee806c45aad7b2d0adf2065,
         type: 3}
       propertyPath: m_Materials.Array.size
@@ -4212,6 +4227,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalPosition.y
       value: 1.4389038
+      objectReference: {fileID: 0}
+    - target: {fileID: 7843287966623730394, guid: 2dc2c18bbee806c45aad7b2d0adf2065,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2dc2c18bbee806c45aad7b2d0adf2065, type: 3}
