@@ -16,6 +16,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Market;
     using Nekoyume.Model.State;
+    using Nekoyume.TableData;
     using Xunit;
 
     public class RegisterProductTest
@@ -28,6 +29,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _agentAddress;
         private readonly AvatarState _avatarState;
         private readonly TableSheets _tableSheets;
+        private readonly GameConfigState _gameConfigState;
         private IAccountStateDelta _initialState;
 
         public RegisterProductTest()
@@ -36,12 +38,13 @@ namespace Lib9c.Tests.Action
             var agentState = new AgentState(_agentAddress);
             var rankingMapAddress = new PrivateKey().ToAddress();
             _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
+            _gameConfigState = new GameConfigState((Text)_tableSheets.GameConfigSheet.Serialize());
             _avatarState = new AvatarState(
                 AvatarAddress,
                 _agentAddress,
                 0,
                 _tableSheets.GetAvatarSheets(),
-                new GameConfigState(),
+                _gameConfigState,
                 rankingMapAddress)
             {
                 worldInformation = new WorldInformation(
@@ -53,6 +56,8 @@ namespace Lib9c.Tests.Action
 
             _initialState = new State()
                 .SetState(GoldCurrencyState.Address, new GoldCurrencyState(Gold).Serialize())
+                .SetState(Addresses.GetSheetAddress<MaterialItemSheet>(), _tableSheets.MaterialItemSheet.Serialize())
+                .SetState(Addresses.GameConfig, _gameConfigState.Serialize())
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(AvatarAddress, _avatarState.Serialize());
         }
@@ -243,6 +248,7 @@ namespace Lib9c.Tests.Action
 
             var nextAvatarState = nextState.GetAvatarStateV2(AvatarAddress);
             Assert.Empty(nextAvatarState.inventory.Items);
+            Assert.Equal(_gameConfigState.ActionPointMax - RegisterProduct.CostAp, nextAvatarState.actionPoint);
 
             var marketState = new MarketState(nextState.GetState(Addresses.Market));
             Assert.Contains(AvatarAddress, marketState.AvatarAddresses);

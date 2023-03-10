@@ -339,6 +339,8 @@ namespace Lib9c.Tests.Action
                             Type = ProductType.FungibleAssetValue,
                         },
                     },
+                    AvatarAddress = _sender,
+                    ChargeAp = true,
                 },
                 ReRegisterProduct _ => new ReRegisterProduct
                 {
@@ -399,6 +401,7 @@ namespace Lib9c.Tests.Action
                             }
                         ),
                     },
+                    ChargeAp = true,
                 },
                 CancelProductRegistration _ => new CancelProductRegistration
                 {
@@ -414,6 +417,7 @@ namespace Lib9c.Tests.Action
                             Type = ProductType.FungibleAssetValue,
                         },
                     },
+                    ChargeAp = true,
                 },
                 BuyProduct _ => new BuyProduct
                 {
