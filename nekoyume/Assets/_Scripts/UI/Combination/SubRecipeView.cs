@@ -25,6 +25,7 @@ using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
 {
+    using Libplanet.Assets;
     using UniRx;
 
     public class SubRecipeView : MonoBehaviour
@@ -34,7 +35,7 @@ namespace Nekoyume.UI
             public int RecipeId;
             public int? SubRecipeId;
             public BigInteger CostNCG;
-            public BigInteger CostCrystal;
+            public FungibleAssetValue CostCrystal;
             public int CostAP;
             public Dictionary<int, int> Materials;
             public Dictionary<int, int> ReplacedMaterials;
@@ -619,7 +620,7 @@ namespace Nekoyume.UI
                     }
                 }
 
-                _selectedRecipeInfo.CostCrystal = crystalCost.MajorUnit;
+                _selectedRecipeInfo.CostCrystal = crystalCost;
                 var costCrystal = new ConditionalCostButton.CostParam(
                     CostType.Crystal,
                     (long)crystalCost.MajorUnit);

@@ -1,10 +1,10 @@
-﻿using System.Linq;
+using System.Linq;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
-using Nekoyume.UI.Module.Pet;
+using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using Spine.Unity;
 using UniRx;
@@ -47,7 +47,7 @@ namespace Nekoyume.UI
                 if (row is not null)
                 {
                     petSkeletonGraphic.skeletonDataAsset =
-                        PetRenderingHelper.GetPetSkeletonData(row.Id);
+                        PetFrontHelper.GetPetSkeletonData(row.Id);
                     petSkeletonGraphic.Initialize(true);
                     if (States.Instance.PetStates.TryGetPetState(
                             row.Id,
@@ -73,7 +73,7 @@ namespace Nekoyume.UI
         {
             scroll.UpdateData(TableSheets.Instance.PetSheet.Values
                 .Select(row =>
-                    new PetSlotViewModel(row, PetRenderingHelper.HasNotification(row.Id))));
+                    new PetSlotViewModel(row, PetFrontHelper.HasNotification(row.Id))));
         }
     }
 }

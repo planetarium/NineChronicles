@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Assets;
@@ -9,7 +9,6 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
-using Nekoyume.TableData.Pet;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Pet;
 using Nekoyume.UI.Scroller;
@@ -20,6 +19,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.TableData;
     using UniRx;
     public class PetEnhancementPopup : PopupWidget
     {
@@ -128,10 +128,10 @@ namespace Nekoyume.UI
                 _petRow.Grade
             );
             SetObjectByTargetLevel(_petRow.Id, 0, 1);
-            petSkeletonGraphic.skeletonDataAsset = PetRenderingHelper.GetPetSkeletonData(_petRow.Id);
+            petSkeletonGraphic.skeletonDataAsset = PetFrontHelper.GetPetSkeletonData(_petRow.Id);
             petSkeletonGraphic.Initialize(true);
             requiredSoulStoneImage.overrideSprite =
-                PetRenderingHelper.GetSoulStoneSprite(_petRow.Id);
+                PetFrontHelper.GetSoulStoneSprite(_petRow.Id);
             submitButton.OnClickAsObservable().Subscribe(_ =>
             {
                 if (LoadingHelper.PetEnhancement.Value == 0 && !_notEnoughBalance)
@@ -162,10 +162,10 @@ namespace Nekoyume.UI
                 _petRow.Grade
             );
             petSkeletonGraphic.skeletonDataAsset =
-                PetRenderingHelper.GetPetSkeletonData(petState.PetId);
+                PetFrontHelper.GetPetSkeletonData(petState.PetId);
             petSkeletonGraphic.Initialize(true);
             requiredSoulStoneImage.overrideSprite =
-                PetRenderingHelper.GetSoulStoneSprite(petState.PetId);
+                PetFrontHelper.GetSoulStoneSprite(petState.PetId);
             currentLevelText.text = $"<size=30>Lv.</size>{petState.Level}";
             var maxLevel = TableSheets.Instance.PetCostSheet[petState.PetId].Cost
                 .OrderBy(data => data.Level)
@@ -255,7 +255,7 @@ namespace Nekoyume.UI
             ncgCostObject.SetActive(ncg > 0);
             var ncgCost = States.Instance.GoldBalanceState.Gold.Currency * ncg;
             var soulStoneCost =
-                Currency.Legacy(_petRow.SoulStoneTicker, 0, null) *
+                PetHelper.GetSoulstoneCurrency(_petRow.SoulStoneTicker) *
                 soulStone;
             var notEnoughNcg
                 = States.Instance.GoldBalanceState.Gold < ncgCost;
@@ -294,7 +294,7 @@ namespace Nekoyume.UI
 
             popup.Show(
                 Callback,
-                PetRenderingHelper.GetSoulStoneSprite(row.Id),
+                PetFrontHelper.GetSoulStoneSprite(row.Id),
                 soulStoneName,
                 count,
                 content,

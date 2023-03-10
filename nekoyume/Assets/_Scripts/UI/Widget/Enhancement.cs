@@ -178,10 +178,20 @@ namespace Nekoyume.UI
                 return;
             }
 
-            Find<PetSelectionPopup>().Show(petId => EnhancementAction(
-                baseItem,
-                materialItem,
-                petId));
+            var sheet = Game.Game.instance.TableSheets.EnhancementCostSheetV2;
+            if (ItemEnhancement.TryGetRow(baseItem, sheet, out var row))
+            {
+                var craftInfo = new Craft.CraftInfo()
+                {
+                    RequiredBlockMin = row.SuccessRequiredBlockIndex,
+                    RequiredBlockMax = row.GreatSuccessRequiredBlockIndex,
+                };
+
+                Find<PetSelectionPopup>().Show(craftInfo, petId => EnhancementAction(
+                    baseItem,
+                    materialItem,
+                    petId));
+            }
         }
 
         private void EnhancementAction(Equipment baseItem, Equipment materialItem, int? petId)

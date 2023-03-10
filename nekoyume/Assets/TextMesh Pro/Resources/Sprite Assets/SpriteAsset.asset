@@ -2,14 +2,16 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!21 &2103686
 Material:
-  serializedVersion: 6
+  serializedVersion: 8
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: TextMeshPro/Sprite
   m_Shader: {fileID: 4800000, guid: cf81c85f95fe47e1a27f6ae460cf182c, type: 3}
-  m_ShaderKeywords: UNITY_UI_CLIP_RECT
+  m_ValidKeywords:
+  - UNITY_UI_CLIP_RECT
+  m_InvalidKeywords: []
   m_LightmapFlags: 5
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -23,6 +25,7 @@ Material:
         m_Texture: {fileID: 2800000, guid: dffef66376be4fa480fb02b19edbe903, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    m_Ints: []
     m_Floats:
     - _ColorMask: 15
     - _Stencil: 0
@@ -45,7 +48,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 84a92b25f83d49b9bc132d206b370281, type: 3}
-  m_Name: EmojiOne
+  m_Name: SpriteAsset
   m_EditorClassIdentifier: 
   hashCode: -1836805472
   material: {fileID: 2103686}
@@ -643,16 +646,18 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 9cc7c440a83662047adc1d1e4574fe2b, type: 2}
   - {fileID: 11400000, guid: 3d4a69fd7a8d56b48b781c46fe64807f, type: 2}
   - {fileID: 11400000, guid: e3bc547497e3448059b23d6b0e504e84, type: 2}
+  - {fileID: 11400000, guid: d96a4592b5226ee44988803d254811c5, type: 2}
 --- !u!21 &1369835458
 Material:
-  serializedVersion: 6
+  serializedVersion: 8
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: TextMeshPro/Sprite
   m_Shader: {fileID: 4800000, guid: cf81c85f95fe47e1a27f6ae460cf182c, type: 3}
-  m_ShaderKeywords: 
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
   m_LightmapFlags: 5
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -662,6 +667,7 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs: []
+    m_Ints: []
     m_Floats: []
     m_Colors: []
   m_BuildTextureStacks: []

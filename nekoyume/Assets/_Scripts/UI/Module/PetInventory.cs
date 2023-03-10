@@ -4,11 +4,8 @@ using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData.Pet;
-using Nekoyume.UI.Tween;
-using RocksDbSharp;
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Reactive.Subjects;
 using UnityEngine;
@@ -27,6 +24,8 @@ namespace Nekoyume.UI.Module
             public bool Equipped;
             public bool HasState;
             public PetOptionSheet.Row.PetOptionInfo OptionInfo;
+            public string Description;
+            public bool IsAppliable;
         }
 
         [SerializeField]
@@ -34,6 +33,9 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private PetDescriptionView descriptionViewPrefab;
+
+        [SerializeField]
+        private ScrollRect scrollRect;
 
         private readonly Dictionary<int, PetDescriptionView> _views = new();
 
@@ -82,7 +84,6 @@ namespace Nekoyume.UI.Module
 
         public void Show()
         {
-            gameObject.SetActive(true);
             UpdateView(States.Instance.PetStates);
 
             if (_disposableOnDisabled != null)
@@ -91,7 +92,36 @@ namespace Nekoyume.UI.Module
                 _disposableOnDisabled = null;
             }
             _disposableOnDisabled = States.Instance.PetStates.PetStatesSubject
-                .Subscribe(UpdateView);
+                .Subscribe(state => UpdateView(state));
+            gameObject.SetActive(true);
+            InitScrollPosition();
+        }
+
+        public void Show(Craft.CraftInfo craftInfo)
+        {
+            if (craftInfo.Equals(default))
+            {
+                Show();
+                return;
+            }
+
+            UpdateView(States.Instance.PetStates, craftInfo);
+
+            if (_disposableOnDisabled != null)
+            {
+                _disposableOnDisabled?.Dispose();
+                _disposableOnDisabled = null;
+            }
+            _disposableOnDisabled = States.Instance.PetStates.PetStatesSubject
+                .Subscribe(state => UpdateView(state, craftInfo));
+            gameObject.SetActive(true);
+            InitScrollPosition();
+        }
+
+        public void InitScrollPosition()
+        {
+            var posX = scrollRect.content.anchoredPosition.x;
+            scrollRect.content.anchoredPosition = new Vector3(posX, 0);
         }
 
         public void Hide()
@@ -99,13 +129,15 @@ namespace Nekoyume.UI.Module
             gameObject.SetActive(false);
         }
 
-        private void UpdateView(PetStates petStates)
+        private void UpdateView(PetStates petStates, Craft.CraftInfo? craftInfo = null)
         {
-            var viewDatas = _views.Select(x => (view: x.Value, viewData: GetViewData(x.Key)));
+            var viewDatas = _views.Select(x =>
+                (view: x.Value, viewData: GetViewData(x.Key, petStates, craftInfo)));
             var views = viewDatas
                 .OrderByDescending(x => x.viewData.HasState)
                 .ThenByDescending(x => x.viewData.Empty)
-                .ThenByDescending(x => x.viewData.Equipped)
+                .ThenByDescending(x => x.viewData.IsAppliable)
+                .ThenBy(x => x.viewData.Equipped)
                 .ThenBy(x => x.viewData.CombinationSlotIndex)
                 .ThenByDescending(x => x.view.Grade)
                 .ThenByDescending(x => x.viewData.Level)
@@ -118,7 +150,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private PetDescriptionData GetViewData(int petId)
+        private PetDescriptionData GetViewData(int petId, PetStates petStates, Craft.CraftInfo? craftInfo)
         {
             var viewData = new PetDescriptionData
             {
@@ -128,7 +160,7 @@ namespace Nekoyume.UI.Module
             var tableSheets = TableSheets.Instance;
             var petLevel = 1;
 
-            if (States.Instance.PetStates.TryGetPetState(petId, out var petState))
+            if (petStates.TryGetPetState(petId, out var petState))
             {
                 petLevel = petState.Level;
                 viewData.HasState = true;
@@ -155,7 +187,7 @@ namespace Nekoyume.UI.Module
             viewData.OptionInfo = optionInfo;
 
             var equipped = viewData.HasState &&
-                (States.Instance.PetStates.IsLocked(petId) ||
+                (petStates.IsLocked(petId) ||
                 petState.UnlockedBlockIndex > Game.Game.instance.Agent.BlockIndex);
             viewData.Equipped = equipped;
 
@@ -165,7 +197,25 @@ namespace Nekoyume.UI.Module
                 var equippedSlot = combinationState.FirstOrDefault(x => x.Value.PetId == petId);
                 viewData.CombinationSlotIndex =
                     equippedSlot.Equals(default(KeyValuePair<int, CombinationSlotState>)) ?
-                    int.MaxValue : equippedSlot.Key;    
+                    int.MaxValue : equippedSlot.Key;
+            }
+
+            if (craftInfo.HasValue)
+            {
+                (var description, var applied) = PetFrontHelper.GetDescriptionText(
+                    optionInfo,
+                    craftInfo.Value,
+                    petState,
+                    States.Instance.GameConfigState);
+                viewData.Description = description;
+                viewData.IsAppliable = applied;
+            }
+            else
+            {
+                viewData.Description = L10nManager.Localize(
+                    $"PET_DESCRIPTION_{optionInfo.OptionType}",
+                    optionInfo.OptionValue);
+                viewData.IsAppliable = true;
             }
 
             return viewData;
