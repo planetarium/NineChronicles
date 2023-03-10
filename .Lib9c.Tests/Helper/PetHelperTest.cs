@@ -3,7 +3,7 @@ namespace Lib9c.Tests.Helper
     using System;
     using System.Linq;
     using Nekoyume.Helper;
-    using Nekoyume.TableData.Pet;
+    using Nekoyume.TableData;
     using Xunit;
 
     public class PetHelperTest
