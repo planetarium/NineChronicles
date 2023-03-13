@@ -550,9 +550,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fixedFontAsset: 0
   fixedFontStyle: 0
-  fixedFontSizeOffset: 0
-  fixedSpacingOption: 0
-  fixedMarginOption: 0
+  fixedFontSizeOffset: 1
+  fixedSpacingOption: 1
+  fixedMarginOption: 1
   fontMaterialType: 0
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -2254,7 +2254,7 @@ PrefabInstance:
     - target: {fileID: 2945095307097995939, guid: bfcfded41fec54118a92f2b1664737fb,
         type: 3}
       propertyPath: m_fontSize
-      value: 13.1
+      value: 13.85
       objectReference: {fileID: 0}
     - target: {fileID: 2945095307097995939, guid: bfcfded41fec54118a92f2b1664737fb,
         type: 3}

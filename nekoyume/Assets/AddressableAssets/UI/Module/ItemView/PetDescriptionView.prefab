@@ -227,7 +227,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 92, y: -47}
-  m_SizeDelta: {x: 630, y: 94}
+  m_SizeDelta: {x: 427, y: 94}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &6578515138388901911
 CanvasRenderer:
@@ -255,7 +255,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 3
-  m_Spacing: 0
+  m_Spacing: 10
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
@@ -1018,9 +1018,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -568, y: -320}
+  m_AnchoredPosition: {x: -568, y: -258}
   m_SizeDelta: {x: 760, y: 124}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &181007622222205576
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1182,7 +1182,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: When equipped, blocks required for crafting are reduced by <color=#4af328>17.5%</color>
+  m_text: <Style=G5> 2,780   <style=SymbolAfter>  <color=#4af328><Style=G5> 2,502</color>
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,

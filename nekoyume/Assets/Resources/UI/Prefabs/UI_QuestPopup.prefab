@@ -3703,8 +3703,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13f158393b194ed28b3e5a1e80c30d50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellInterval: -0.79611653
-  scrollOffset: -0.79611653
+  cellInterval: -1.0329671
+  scrollOffset: -1.0329671
   loop: 0
   cellContainer: {fileID: 5437261362768753071}
   reuseCellMarginCount: 0
@@ -3713,7 +3713,7 @@ MonoBehaviour:
   spacing: 0
   cellPrefab: {fileID: 8553884987421549240, guid: 95933a86cd1c843859ee9d5e2a311cd0,
     type: 3}
-  cellSize: 82
+  cellSize: 94
   forcedScrollSensitivity: 10
   fillWithNullToEmptyViewport: 0
   animationCellContainer: {fileID: 9066206674448611921}

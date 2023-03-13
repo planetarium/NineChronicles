@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Coffee.UIEffects;
@@ -7,13 +7,14 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.State;
+using Nekoyume.UI.Module.Pet;
 using Nekoyume.UI.Scroller;
 using Spine.Unity;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Nekoyume.UI.Module.Pet
+namespace Nekoyume.UI.Module
 {
     using UniRx;
     public class PetSlotView : MonoBehaviour
@@ -84,13 +85,13 @@ namespace Nekoyume.UI.Module.Pet
                 return;
             }
 
-            petGraphic.skeletonDataAsset = PetRenderingHelper.GetPetSkeletonData(model.PetRow.Id);
+            petGraphic.skeletonDataAsset = PetFrontHelper.GetPetSkeletonData(model.PetRow.Id);
             petGraphic.rectTransform.localPosition =
-                PetRenderingHelper.GetLocalPositionInCard(model.PetRow.Id);
+                PetFrontHelper.GetLocalPositionInCard(model.PetRow.Id);
             petGraphic.rectTransform.localScale =
-                PetRenderingHelper.GetLocalScaleInCard(model.PetRow.Id);
+                PetFrontHelper.GetLocalScaleInCard(model.PetRow.Id);
             petGraphic.Initialize(true);
-            var hsv = PetRenderingHelper.GetHsv(model.PetRow.Id);
+            var hsv = PetFrontHelper.GetHsv(model.PetRow.Id);
             uiHsvModifiers.ForEach(modifier =>
             {
                 modifier.hue = hsv.x;
@@ -104,7 +105,7 @@ namespace Nekoyume.UI.Module.Pet
                 .Level;
             var isOwn = States.Instance.PetStates.TryGetPetState(model.PetRow.Id, out _petState);
             var isMaxLevel = _petState?.Level == maxLevel;
-            soulStoneImage.overrideSprite = PetRenderingHelper.GetSoulStoneSprite(model.PetRow.Id);
+            soulStoneImage.overrideSprite = PetFrontHelper.GetSoulStoneSprite(model.PetRow.Id);
             soulStoneText.text = isMaxLevel
                 ? "MAX"
                 : States.Instance.AvatarBalance[model.PetRow.SoulStoneTicker]
@@ -113,7 +114,7 @@ namespace Nekoyume.UI.Module.Pet
                 ? $"<size=14>Lv.</size>{_petState.Level}"
                 : "-";
             levelText.color = isMaxLevel
-                ? PetRenderingHelper.GetUIColor(PetRenderingHelper.MaxLevelText)
+                ? PetFrontHelper.GetUIColor(PetFrontHelper.MaxLevelText)
                 : Color.white;
             petInfoText.color = LocalizationExtensions.GetItemGradeColor(model.PetRow.Grade);
             petInfoText.text = L10nManager.Localize($"PET_NAME_{model.PetRow.Id}");
@@ -139,7 +140,7 @@ namespace Nekoyume.UI.Module.Pet
                 if (isLoading)
                 {
                     petInfoText.color =
-                        PetRenderingHelper.GetUIColor(PetRenderingHelper.LevelUpText);
+                        PetFrontHelper.GetUIColor(PetFrontHelper.LevelUpText);
                     petInfoText.text =
                         L10nManager.Localize(isOwn
                             ? "UI_LEVELUP_IN_PROGRESS"

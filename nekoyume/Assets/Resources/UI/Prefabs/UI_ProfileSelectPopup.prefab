@@ -91,10 +91,10 @@ MonoBehaviour:
   onDccUnlocked:
   - {fileID: 2685720191577024899}
   - {fileID: 912247973850471893}
-  avatarButton: {fileID: 9068298338845066486}
-  dccButton: {fileID: 5239590022500042460}
   avatarCharacterView: {fileID: 2833133475668939387}
   dccCharacterView: {fileID: 2257496951156075111}
+  avatarButton: {fileID: 9068298338845066486}
+  dccButton: {fileID: 5239590022500042460}
 --- !u!1 &432678005806932435
 GameObject:
   m_ObjectHideFlags: 0
@@ -3370,7 +3370,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 10508bfb6a2314ad7b45a5ada9cd159a,
+      objectReference: {fileID: 21300000, guid: 45179b48ce56c4ed18b4c1f9ef4e72b2,
         type: 3}
     - target: {fileID: 7717451892436469240, guid: 543ea58faa96c47bea69a87c29ba0ce7,
         type: 3}
@@ -3764,7 +3764,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 10508bfb6a2314ad7b45a5ada9cd159a,
+      objectReference: {fileID: 21300000, guid: 45179b48ce56c4ed18b4c1f9ef4e72b2,
         type: 3}
     - target: {fileID: 7717451892436469240, guid: 543ea58faa96c47bea69a87c29ba0ce7,
         type: 3}

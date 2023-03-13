@@ -1,9 +1,10 @@
-﻿using System.Linq;
+using System.Linq;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
+using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Pet;
 using Nekoyume.UI.Scroller;
 using Spine.Unity;
@@ -87,7 +88,7 @@ namespace Nekoyume.UI
         {
             scroll.UpdateData(TableSheets.Instance.PetSheet.Values
                 .Select(row =>
-                    new PetSlotViewModel(row, PetRenderingHelper.HasNotification(row.Id))));
+                    new PetSlotViewModel(row, PetFrontHelper.HasNotification(row.Id))));
             if (scroll.TryGetFirstItem(out var cell))
             {
                 OnClickPetSlot(cell);
@@ -102,7 +103,7 @@ namespace Nekoyume.UI
                 _selectedViewModel?.Selected.SetValueAndForceNotify(false);
                 _selectedViewModel = viewModel;
                 petSkeletonGraphic.skeletonDataAsset =
-                    PetRenderingHelper.GetPetSkeletonData(row.Id);
+                    PetFrontHelper.GetPetSkeletonData(row.Id);
                 petSkeletonGraphic.Initialize(true);
                 _selectedViewModel.Selected.SetValueAndForceNotify(true);
                 petNameText.text = L10nManager.Localize($"PET_NAME_{row.Id}");

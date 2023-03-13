@@ -4,6 +4,7 @@ using Nekoyume.State;
 using Newtonsoft.Json.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace Nekoyume.UI.Module
 {
@@ -24,7 +25,13 @@ namespace Nekoyume.UI.Module
                 loadingObject.SetActive(true);
                 amountText.gameObject.SetActive(false);
                 var url = $"{Game.Game.instance.URL.DccMileageAPI}{States.Instance.AgentState.address}";
-                _request = StartCoroutine(RequestManager.instance.GetJson(url, (json) =>
+                var headerName = Game.Game.instance.URL.DccEthChainHeaderName;
+                var headerValue = Game.Game.instance.URL.DccEthChainHeaderValue;
+                _request = StartCoroutine(RequestManager.instance.GetJson(
+                    headerName,
+                    headerValue,
+                    url,
+                    (json) =>
                 {
                     var mileage = (int)(JObject.Parse(json)["mileage"]?.ToObject<decimal>() ?? 0);
                     amountText.text = mileage.ToCurrencyNotation();

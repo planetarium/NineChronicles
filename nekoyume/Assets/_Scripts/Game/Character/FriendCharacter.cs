@@ -39,7 +39,8 @@ namespace Nekoyume.Game.Character
                 avatarState.ear,
                 avatarState.lens,
                 avatarState.hair,
-                avatarState.tail);
+                avatarState.tail,
+                true);
         }
     }
 }

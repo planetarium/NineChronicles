@@ -629,7 +629,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6569213869565610535}
-  - component: {fileID: 7385548660718957312}
+  - component: {fileID: 5134610612906153839}
   m_Layer: 5
   m_Name: Scroll
   m_TagString: Untagged
@@ -659,7 +659,7 @@ RectTransform:
   m_AnchoredPosition: {x: 2.5, y: 0}
   m_SizeDelta: {x: -5, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &7385548660718957312
+--- !u!114 &5134610612906153839
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -668,23 +668,27 @@ MonoBehaviour:
   m_GameObject: {fileID: 2243823407953250639}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9f0e995f494626a4f878eedbded37c8d, type: 3}
+  m_Script: {fileID: 11500000, guid: 1aa08ab6e0800fa44ae55d278d1423e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  viewport: {fileID: 1026522502316324891}
-  scrollDirection: 0
-  movementType: 1
-  elasticity: 0.1
-  scrollSensitivity: 20
-  inertia: 1
-  decelerationRate: 0.03
-  snap:
-    Enable: 0
-    VelocityThreshold: 0.5
-    Duration: 0.3
-    Easing: 24
-  draggable: 1
-  scrollbar: {fileID: 2608674382117522709}
+  m_Content: {fileID: 2584435005914544671}
+  m_Horizontal: 0
+  m_Vertical: 1
+  m_MovementType: 2
+  m_Elasticity: 0.1
+  m_Inertia: 1
+  m_DecelerationRate: 0.135
+  m_ScrollSensitivity: 1
+  m_Viewport: {fileID: 1026522502316324891}
+  m_HorizontalScrollbar: {fileID: 0}
+  m_VerticalScrollbar: {fileID: 2608674382117522709}
+  m_HorizontalScrollbarVisibility: 0
+  m_VerticalScrollbarVisibility: 0
+  m_HorizontalScrollbarSpacing: 0
+  m_VerticalScrollbarSpacing: 0
+  m_OnValueChanged:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &2655491252385531903
 GameObject:
   m_ObjectHideFlags: 0
@@ -925,7 +929,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 5, y: 0}
+  m_AnchoredPosition: {x: 0.0007171631, y: 0}
   m_SizeDelta: {x: -10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3242600546882812517
@@ -1101,7 +1105,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 784574343054602591}
   m_HandleRect: {fileID: 3733760882002214943}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -1690,6 +1694,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   descriptionViewParent: {fileID: 2584435005914544671}
   descriptionViewPrefab: {fileID: 8878132426017819148}
+  scrollRect: {fileID: 5134610612906153839}
 --- !u!1 &5961282307343359900
 GameObject:
   m_ObjectHideFlags: 0

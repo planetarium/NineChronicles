@@ -57,11 +57,16 @@ namespace Nekoyume.Game.Avatar
             StopFade();
         }
 
-        public SkeletonAnimation GetSkeletonAnimation()
+        public SkeletonAnimation GetBodySkeletonAnimation()
         {
             return _isActiveFullCostume
                 ? _parts[AvatarPartsType.full_costume]
                 : _parts[AvatarPartsType.body_back];
+        }
+
+        public SkeletonAnimation GetSkeletonAnimation(AvatarPartsType partsType)
+        {
+            return _parts[partsType];
         }
 
         public float GetSpineAlpha()
@@ -152,6 +157,7 @@ namespace Nekoyume.Game.Avatar
                             skeletonAnimation.gameObject.SetActive(value);
                         }
                     }
+                    Destroy(_cachedWeaponVFX);
                 }
                 else
                 {
@@ -168,10 +174,7 @@ namespace Nekoyume.Game.Avatar
                         }
                     }
                 }
-
-                _cachedWeaponVFX?.SetActive(!_isActiveFullCostume);
             }
-
 
             foreach (var sa in _parts.Values.Where(x => x.isActiveAndEnabled))
             {
@@ -269,6 +272,10 @@ namespace Nekoyume.Game.Avatar
             }
             var s = SplitIndex(index);
             var preIndex = s[0] + s[4] + s[5] + s[6] + s[7];
+            if (skinTone > 0)
+            {
+                skinTone -= 1;
+            }
             var skinName = $"{index}-{skinTone}";
             // Debug.Log($"[UpdateBody] : {preIndex} / {skinName}");
 
@@ -507,7 +514,8 @@ namespace Nekoyume.Game.Avatar
         private bool UpdateSkeletonDataAsset(AvatarPartsType type, SkeletonDataAsset asset)
         {
             var skeletonAnimation = _parts[type];
-            if (skeletonAnimation.skeletonDataAsset.name == asset.name)
+            if (skeletonAnimation.skeleton is not null &&
+                skeletonAnimation.skeletonDataAsset.name == asset.name)
             {
                 return false;
             }

@@ -23,5 +23,20 @@ namespace Nekoyume.UI
                 onFailed?.Invoke(request);
             }
         }
+
+        public IEnumerator GetJson(
+            string url,
+            string headerName,
+            string headerValue,
+            Action<string> onSuccess)
+        {
+            using var request = UnityWebRequest.Get(url);
+            request.SetRequestHeader(headerName, headerValue);
+            yield return request.SendWebRequest();
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                onSuccess(request.downloadHandler.text);
+            }
+        }
     }
 }

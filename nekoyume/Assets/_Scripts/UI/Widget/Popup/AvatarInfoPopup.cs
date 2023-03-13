@@ -133,11 +133,13 @@ namespace Nekoyume.UI
 
             activeDccButton.onClick.AddListener(() =>
             {
+                Dcc.instance.SetVisible(_isVisibleDcc.Value ? 0 : 1);
                 _isVisibleDcc.SetValueAndForceNotify(!_isVisibleDcc.Value);
             });
 
             activeCostumeButton.onClick.AddListener(() =>
             {
+                Dcc.instance.SetVisible(_isVisibleDcc.Value ? 0 : 1);
                 _isVisibleDcc.SetValueAndForceNotify(!_isVisibleDcc.Value);
             });
 
@@ -184,7 +186,6 @@ namespace Nekoyume.UI
             _isVisibleDcc.Value = isActiveDcc;
             _isVisibleDcc.Subscribe(x =>
             {
-                Dcc.instance.SetVisible(x ? 1 : 0);
                 _activeDcc.sprite = x ? activeSprite : disableSprite;
                 _activeCostume.sprite = x ? disableSprite : activeSprite;
                 information.UpdateView(_currentBattleType);

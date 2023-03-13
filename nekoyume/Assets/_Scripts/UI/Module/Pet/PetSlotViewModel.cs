@@ -1,4 +1,4 @@
-﻿using Nekoyume.TableData.Pet;
+﻿using Nekoyume.TableData;
 using UniRx;
 
 namespace Nekoyume.UI.Module.Pet

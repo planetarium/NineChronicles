@@ -16,6 +16,8 @@ namespace Nekoyume.Helper
         private string dccMetadata;
         private string dccConnect;
         private string dccMileageAPI;
+        private string dccEthChainHeaderName;
+        private string dccEthChainHeaderValue;
         public bool Empty { get; private set; } = true;
 
         [Option("dcc-avatars", Required = true, HelpText = "dcc avatar list")]
@@ -58,6 +60,28 @@ namespace Nekoyume.Helper
             set
             {
                 dccMileageAPI = value;
+                Empty = false;
+            }
+        }
+
+        [Option("dcc-eth-chain-header-name", Required = true, HelpText = "Dcc eth chain header name")]
+        public string DccEthChainHeaderName
+        {
+            get => dccEthChainHeaderName;
+            set
+            {
+                dccEthChainHeaderName = value;
+                Empty = false;
+            }
+        }
+
+        [Option("dcc-eth-chain-header-value", Required = true, HelpText = "Dcc eth chain header value")]
+        public string DccEthChainHeaderValue
+        {
+            get => dccEthChainHeaderValue;
+            set
+            {
+                dccEthChainHeaderValue = value;
                 Empty = false;
             }
         }

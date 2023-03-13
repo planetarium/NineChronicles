@@ -66,14 +66,16 @@ namespace Nekoyume.Game.Character
             int earIndex,
             int lensIndex,
             int hairIndex,
-            int tailIndex)
+            int tailIndex,
+            bool isFriendCharacter = false,
+            System.Action onFinish = null)
         {
             var armor = (Armor)equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
             var weapon = (Weapon)equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Weapon);
 
             UpdateAvatar(avatarAddress, animator, hudContainer,
                 costumes, armor, weapon,
-                earIndex, lensIndex, hairIndex, tailIndex);
+                earIndex, lensIndex, hairIndex, tailIndex, isFriendCharacter, onFinish);
         }
 
         public void Set(
@@ -130,14 +132,17 @@ namespace Nekoyume.Game.Character
             int earIndex,
             int lensIndex,
             int hairIndex,
-            int tailIndex)
+            int tailIndex,
+            bool isFriendCharacter = false,
+            System.Action onFinish = null)
         {
             _animator = animator;
             _hudContainer = hudContainer;
             Destroy(_cachedCharacterTitle);
 
             var isDcc = Dcc.instance.IsVisible(avatarAddress, out var id, out var isVisible);
-            if (isDcc && States.Instance.CurrentAvatarState is not null &&
+            if (isDcc && !isFriendCharacter &&
+                States.Instance.CurrentAvatarState is not null &&
                 avatarAddress == States.Instance.CurrentAvatarState.address)
             {
                 isDcc = isVisible;
@@ -158,7 +163,10 @@ namespace Nekoyume.Game.Character
                 UpdateAcEye(dccParts[DccPartsType.ac_eye], true);
                 UpdateAcHead(dccParts[DccPartsType.ac_head], true);
 
-                pet.SetPosition(SpineController.GetSkeletonAnimation(), false);
+                if (!isFriendCharacter)
+                {
+                    pet.SetPosition(SpineController.GetBodySkeletonAnimation(), false);
+                }
             }
             else
             {
@@ -181,7 +189,11 @@ namespace Nekoyume.Game.Character
                     UpdateArmor(armor, 0, false);
                     UpdateWeapon(weapon);
                 }
-                pet.SetPosition(SpineController.GetSkeletonAnimation(), fullCostume is not null);
+
+                if (!isFriendCharacter)
+                {
+                    pet.SetPosition(SpineController.GetBodySkeletonAnimation(), fullCostume is not null);
+                }
             }
 
             var title = costumes.FirstOrDefault(x => x.ItemSubType == ItemSubType.Title);
@@ -189,6 +201,8 @@ namespace Nekoyume.Game.Character
             {
                 UpdateTitle(title);
             }
+
+            onFinish?.Invoke();
         }
 
         private void UpdateFullCostume(Costume fullCostume)
@@ -280,7 +294,7 @@ namespace Nekoyume.Game.Character
         {
             var target = SpineController.gameObject;
             var animator = SpineController.GetComponent<Animator>();
-            var sk = SpineController.GetSkeletonAnimation();
+            var sk = SpineController.GetBodySkeletonAnimation();
             var mr = sk.GetComponent<MeshRenderer>();
             _animator.InitTarget(target, mr, sk, animator);
         }

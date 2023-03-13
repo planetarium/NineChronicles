@@ -26,7 +26,7 @@ namespace Nekoyume.UI
             var option = TableSheets.Instance.PetOptionSheet[petId].LevelOptionMap[1];
             petInfoView.Set(L10nManager.Localize($"PET_NAME_{petRow.Id}"), petRow.Grade);
             contentText.text = L10nManager.Localize($"PET_DESCRIPTION_{option.OptionType}",option.OptionValue);
-            petSkeletonGraphic.skeletonDataAsset = PetRenderingHelper.GetPetSkeletonData(petId);
+            petSkeletonGraphic.skeletonDataAsset = PetFrontHelper.GetPetSkeletonData(petId);
             petSkeletonGraphic.Initialize(true);
         }
     }
