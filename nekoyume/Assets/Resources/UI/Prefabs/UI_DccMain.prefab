@@ -4965,8 +4965,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 63.995, y: -15}
-  m_SizeDelta: {x: 79.99, y: 21.32}
+  m_AnchoredPosition: {x: 61.85, y: -15}
+  m_SizeDelta: {x: 75.7, y: 20.13}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8590888497271921555
 CanvasRenderer:
@@ -7212,6 +7212,7 @@ MonoBehaviour:
   collectionButton: {fileID: 2726461851139129850}
   backButton: {fileID: 8853667321893535037}
   notification: {fileID: 1564436145759176780}
+  connectedObject: {fileID: 667687042968767213}
 --- !u!1 &3076933251019978267
 GameObject:
   m_ObjectHideFlags: 0
@@ -19205,7 +19206,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -90.01, y: 0}
+  m_SizeDelta: {x: -94.3, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4378816959146959305
 CanvasRenderer:

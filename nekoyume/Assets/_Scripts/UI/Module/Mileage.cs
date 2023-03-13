@@ -19,20 +19,7 @@ namespace Nekoyume.UI.Module
 
         private void OnEnable()
         {
-            if (Dcc.instance.Avatars is null)
-            {
-                gameObject.SetActive(false);
-                return;
-            }
-
-            if (States.Instance.AgentState is null)
-            {
-                gameObject.SetActive(false);
-                return;
-            }
-
-            if (States.Instance.AgentState.avatarAddresses.Values.Any(addr =>
-                    Dcc.instance.Avatars.TryGetValue(addr.ToHex(), out _)))
+            if (Dcc.instance.IsConnected.GetValueOrDefault())
             {
                 loadingObject.SetActive(true);
                 amountText.gameObject.SetActive(false);

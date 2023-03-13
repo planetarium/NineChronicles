@@ -235,6 +235,13 @@ namespace Nekoyume.Game
                 var responseData = DccAvatars.FromJson(json);
                 Dcc.instance.Init(responseData.Avatars);
             }));
+            StartCoroutine(RequestManager.instance.GetJson($"{URL.DccMileageAPI}{Agent.Address}", _ =>
+            {
+                Dcc.instance.IsConnected = true;
+            }, _ =>
+            {
+                Dcc.instance.IsConnected = false;
+            }));
 
             Event.OnUpdateAddresses.AsObservable().Subscribe(_ =>
             {
