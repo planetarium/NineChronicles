@@ -602,6 +602,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Pet
       objectReference: {fileID: 0}
+    - target: {fileID: 7231692366079871913, guid: 97aabf5643f4b9345bdea08fa22939ff,
+        type: 3}
+      propertyPath: defaultPetPosition.y
+      value: 1.6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 97aabf5643f4b9345bdea08fa22939ff, type: 3}
 --- !u!4 &117023295 stripped

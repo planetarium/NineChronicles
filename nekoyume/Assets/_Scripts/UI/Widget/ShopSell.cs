@@ -60,7 +60,8 @@ namespace Nekoyume.UI
                     L10nManager.Localize("UI_SHOP_UPDATESELLALL_POPUP"),
                     L10nManager.Localize("UI_YES"),
                     L10nManager.Localize("UI_NO"),
-                    SubscribeReRegisterProduct);
+                    SubscribeReRegisterProduct,
+                    null, CostType.ActionPoint, 5);
             });
 
             buyButton.onClick.AddListener(() =>

@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -22,7 +20,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private SimpleCountableItemView itemView = null;
         [SerializeField]
-        protected ConditionalButton submitButton = null;
+        protected ConditionalCostButton submitButton = null;
 
         protected T _data;
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();

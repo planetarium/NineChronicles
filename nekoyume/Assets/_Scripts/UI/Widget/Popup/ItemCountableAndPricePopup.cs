@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using Nekoyume.EnumType;
-using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -18,6 +17,7 @@ namespace Nekoyume.UI
 
     public class ItemCountableAndPricePopup : ItemCountPopup<Model.ItemCountableAndPricePopup>
     {
+        [SerializeField] private ConditionalCostButton reregisterButton = null;
         [SerializeField] private Button overrideCancelButton;
 
         [SerializeField] private TMP_InputField priceInputField = null;
@@ -28,7 +28,6 @@ namespace Nekoyume.UI
         [SerializeField] private Button removeCountButton = null;
         [SerializeField] private Button resetPriceButton = null;
         [SerializeField] private Button notificationButton = null;
-        [SerializeField] private ConditionalButton reregisterButton = null;
         [SerializeField] private List<Button> addPriceButton = null;
 
         [SerializeField] private TextMeshProUGUI unitPrice;
@@ -299,6 +298,9 @@ namespace Nekoyume.UI
             submitButton.gameObject.SetActive(isSell);
             reregisterButton.gameObject.SetActive(!isSell);
             notificationButton.gameObject.SetActive(!isSell);
+
+            submitButton.SetCost(CostType.ActionPoint, 5);
+            reregisterButton.SetCost(CostType.ActionPoint, 5);
             Pop(data);
         }
     }
