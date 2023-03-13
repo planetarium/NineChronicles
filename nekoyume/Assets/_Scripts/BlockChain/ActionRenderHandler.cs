@@ -1090,37 +1090,42 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            var info = eval.Action.ProductInfos.FirstOrDefault();
-            if (info is null)
-            {
-                return;
-            }
+            var productInfos = eval.Action.ProductInfos;
 
-            var (itemName, itemProduct, favProduct) = await Game.Game.instance.MarketServiceClient.GetProductInfo(info.ProductId);
-            var count = 0;
-            if (itemProduct is not null)
-            {
-                count = (int)itemProduct.Quantity;
-            }
-
-            if (favProduct is not null)
-            {
-                count = (int)favProduct.Quantity;
-                await States.Instance.SetBalanceAsync(favProduct.Ticker);
-            }
-
-            LocalLayerModifier.AddNewMail(eval.Action.AvatarAddress, info.ProductId);
             string message;
-            if (count > 1)
+            if (productInfos.Count > 1)
             {
-                message = string.Format(
-                    L10nManager.Localize("NOTIFICATION_MULTIPLE_SELL_CANCEL_COMPLETE"),
-                    itemName, count);
+                message = L10nManager.Localize("NOTIFICATION_CANCELREGISTER_ALL_COMPLETE");
             }
             else
             {
-                message = string.Format(L10nManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE"),
-                    itemName);
+                var productInfo = productInfos.FirstOrDefault();
+                var (itemName, itemProduct, favProduct) = await Game.Game.instance.MarketServiceClient.GetProductInfo(productInfo.ProductId);
+                var count = 0;
+                if (itemProduct is not null)
+                {
+                    count = (int)itemProduct.Quantity;
+                }
+
+                if (favProduct is not null)
+                {
+                    count = (int)favProduct.Quantity;
+                    await States.Instance.SetBalanceAsync(favProduct.Ticker);
+                }
+
+                LocalLayerModifier.AddNewMail(eval.Action.AvatarAddress, productInfo.ProductId);
+                if (count > 1)
+                {
+                    message = string.Format(
+                        L10nManager.Localize("NOTIFICATION_MULTIPLE_SELL_CANCEL_COMPLETE"),
+                        itemName, count);
+                }
+                else
+                {
+                    message = string.Format(
+                        L10nManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE"),
+                        itemName);
+                }
             }
 
             OneLineSystem.Push(MailType.Auction, message,

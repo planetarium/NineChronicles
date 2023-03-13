@@ -612,7 +612,7 @@ namespace Nekoyume.BlockChain
 
         public IObservable<ActionEvaluation<CancelProductRegistration>> CancelProductRegistration(
             Address avatarAddress,
-            IProductInfo productInfo)
+            List<IProductInfo> productInfo)
         {
             var sentryTrace = Analyzer.Instance.Track("Unity/CancelProductRegistration", new Dictionary<string, Value>()
             {
@@ -623,7 +623,7 @@ namespace Nekoyume.BlockChain
             var action = new CancelProductRegistration
             {
                 AvatarAddress = avatarAddress,
-                ProductInfos = new List<IProductInfo> { productInfo }
+                ProductInfos = productInfo
             };
 
             ProcessAction(action);
