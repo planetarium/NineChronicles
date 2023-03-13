@@ -28,7 +28,8 @@ namespace Nekoyume.UI
             string url,
             string headerName,
             string headerValue,
-            Action<string> onSuccess)
+            Action<string> onSuccess,
+            Action<UnityWebRequest> onFailed = null)
         {
             using var request = UnityWebRequest.Get(url);
             request.SetRequestHeader(headerName, headerValue);
@@ -36,6 +37,10 @@ namespace Nekoyume.UI
             if (request.result == UnityWebRequest.Result.Success)
             {
                 onSuccess(request.downloadHandler.text);
+            }
+            else
+            {
+                onFailed?.Invoke(request);
             }
         }
     }

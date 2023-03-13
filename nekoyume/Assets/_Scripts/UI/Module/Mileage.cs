@@ -25,19 +25,21 @@ namespace Nekoyume.UI.Module
                 loadingObject.SetActive(true);
                 amountText.gameObject.SetActive(false);
                 var url = $"{Game.Game.instance.URL.DccMileageAPI}{States.Instance.AgentState.address}";
-                var headerName = Game.Game.instance.URL.DccEthChainHeaderName;
-                var headerValue = Game.Game.instance.URL.DccEthChainHeaderValue;
                 _request = StartCoroutine(RequestManager.instance.GetJson(
-                    headerName,
-                    headerValue,
                     url,
                     (json) =>
-                {
-                    var mileage = (int)(JObject.Parse(json)["mileage"]?.ToObject<decimal>() ?? 0);
-                    amountText.text = mileage.ToCurrencyNotation();
-                    loadingObject.SetActive(false);
-                    amountText.gameObject.SetActive(true);
-                }));
+                    {
+                        var mileage =
+                            (int) (JObject.Parse(json)["mileage"]?.ToObject<decimal>() ?? 0);
+                        amountText.text = mileage.ToCurrencyNotation();
+                        loadingObject.SetActive(false);
+                        amountText.gameObject.SetActive(true);
+                    },
+                    request =>
+                    {
+                        Debug.LogError($"URL:{request.url}, error:{request.error}");
+                        gameObject.SetActive(false);
+                    }));
             }
             else
             {
