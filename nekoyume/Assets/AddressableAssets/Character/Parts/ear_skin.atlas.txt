@@ -13,16 +13,16 @@ ear/05_ear_02_front
   index: -1
 ear/05_ear_03_front
   rotate: true
-  xy: 455, 93
-  size: 45, 58
-  orig: 45, 58
+  xy: 485, 198
+  size: 44, 58
+  orig: 44, 58
   offset: 0, 0
   index: -1
 ear/05_ear_04_front
   rotate: true
-  xy: 485, 198
-  size: 44, 58
-  orig: 44, 58
+  xy: 455, 93
+  size: 45, 58
+  orig: 45, 58
   offset: 0, 0
   index: -1
 ear/05_ear_05_front
@@ -349,17 +349,17 @@ ear/10_ear_02_back
   index: -1
 ear/10_ear_03_back
   rotate: true
-  xy: 282, 240
-  size: 30, 53
-  orig: 30, 55
-  offset: 0, 2
-  index: -1
-ear/10_ear_04_back
-  rotate: true
   xy: 337, 240
   size: 30, 52
   orig: 30, 55
   offset: 0, 3
+  index: -1
+ear/10_ear_04_back
+  rotate: true
+  xy: 282, 240
+  size: 30, 53
+  orig: 30, 55
+  offset: 0, 2
   index: -1
 ear/10_ear_05_back
   rotate: true
