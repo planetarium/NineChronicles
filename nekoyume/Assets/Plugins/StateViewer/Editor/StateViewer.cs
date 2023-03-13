@@ -145,9 +145,9 @@ namespace StateViewer.Editor
             _stateTreeView = new StateTreeView(
                 stateTreeViewState,
                 new MultiColumnHeader(headerState));
+            _searchField = new SearchField();
             _stateTreeView.OnDirty += OnStateTreeViewDirty;
             _stateTreeView.SetData(default, Null.Value);
-            _searchField = new SearchField();
             _searchField.downOrUpArrowKeyPressed += _stateTreeView.SetFocusAndEnsureSelectedItem;
             initialized = true;
         }

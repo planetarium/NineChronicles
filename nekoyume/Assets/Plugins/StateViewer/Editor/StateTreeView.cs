@@ -37,7 +37,7 @@ namespace StateViewer.Editor
         public void SetData(Address addr, IValue data)
         {
             _addr = addr;
-            var model = MakeItemModelRecursive("", data);
+            var model = MakeItemModelRecursive(ValueKind.Text, "", data);
             _itemModels = new[] { model };
             Reload();
             OnDirty?.Invoke(false);
@@ -62,6 +62,7 @@ namespace StateViewer.Editor
         }
 
         private StateTreeViewItem.Model MakeItemModelRecursive(
+            ValueKind keyType,
             string key,
             IValue data,
             bool editable = false
@@ -78,6 +79,7 @@ namespace StateViewer.Editor
                 {
                     viewModel = new StateTreeViewItem.Model(
                         _elementId++,
+                        keyType,
                         key,
                         data.Kind,
                         Convert(data),
@@ -90,6 +92,7 @@ namespace StateViewer.Editor
                 {
                     viewModel = new StateTreeViewItem.Model(
                         _elementId++,
+                        keyType,
                         key,
                         data.Kind,
                         $"Count: {list.Count}",
@@ -99,7 +102,8 @@ namespace StateViewer.Editor
                     {
                         var item = list[i];
                         var childViewModel = MakeItemModelRecursive(
-                            $"{i.ToString()}",
+                            ValueKind.Binary,
+                            i.ToString(),
                             item
                         );
                         viewModel.AddChild(childViewModel);
@@ -111,14 +115,15 @@ namespace StateViewer.Editor
                 {
                     viewModel = new StateTreeViewItem.Model(
                         _elementId++,
+                        ValueKind.Text,
                         key,
                         data.Kind,
                         $"Count: {dict.Count}"
                     );
                     foreach (var pair in dict)
                     {
-                        StateTreeViewItem.Model childViewModel;
-                        childViewModel = MakeItemModelRecursive(
+                        var childViewModel = MakeItemModelRecursive(
+                            pair.Key is Binary ? ValueKind.Binary : ValueKind.Text,
                             $"{Convert(pair.Key)}",
                             pair.Value
                         );
@@ -197,7 +202,11 @@ namespace StateViewer.Editor
                             && viewModel.Editable
                            )
                         {
-                            GUI.TextField(cellRect, viewModel.Key);
+                            var key = GUI.TextField(cellRect, viewModel.Key);
+                            if (key != viewModel.Key)
+                            {
+                                viewModel.SetKey(key);
+                            }
                         }
                         else
                         {
@@ -243,10 +252,15 @@ namespace StateViewer.Editor
                             {
                                 viewModel.AddChild(new StateTreeViewItem.Model(
                                     _elementId++,
+                                    viewModel.Children.Count == 0
+                                        ? ValueKind.Text
+                                        : viewModel.Children[0].KeyType,
                                     viewModel.Type is ValueKind.List
                                         ? $"{viewModel.Children.Count}"
                                         : "New Key",
-                                    viewModel.Children[0].Type,
+                                    viewModel.Children.Count == 0
+                                        ? ValueKind.Text
+                                        : viewModel.Children[0].Type,
                                     string.Empty,
                                     editable: viewModel.Parent is { Type: ValueKind.Dictionary }));
                                 viewModel.Value = $"Count: {viewModel.Children.Count}";
