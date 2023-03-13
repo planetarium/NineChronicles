@@ -25,8 +25,12 @@ namespace Nekoyume.UI.Module
                 loadingObject.SetActive(true);
                 amountText.gameObject.SetActive(false);
                 var url = $"{Game.Game.instance.URL.DccMileageAPI}{States.Instance.AgentState.address}";
+                var headerName = Game.Game.instance.URL.DccEthChainHeaderName;
+                var headerValue = Game.Game.instance.URL.DccEthChainHeaderValue;
                 _request = StartCoroutine(RequestManager.instance.GetJson(
                     url,
+                    headerName,
+                    headerValue,
                     (json) =>
                     {
                         var mileage =
