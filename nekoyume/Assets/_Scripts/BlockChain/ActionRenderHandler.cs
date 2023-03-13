@@ -374,7 +374,8 @@ namespace Nekoyume.BlockChain
         private void TransferAsset()
         {
             _actionRenderer.EveryRender<TransferAsset>()
-                .Where(HasUpdatedAssetsForCurrentAgent)
+                .Where(eval =>
+                    HasUpdatedAssetsForCurrentAgent(eval) || HasUpdatedAssetsForCurrentAvatar(eval))
                 .ObserveOnMainThread()
                 .Subscribe(ResponseTransferAsset)
                 .AddTo(_disposables);
@@ -1778,6 +1779,7 @@ namespace Nekoyume.BlockChain
             var senderAddress = eval.Action.Sender;
             var recipientAddress = eval.Action.Recipient;
             var currentAgentAddress = States.Instance.AgentState.address;
+            var currentAvatarAddress = States.Instance.CurrentAvatarState.address;
             var playToEarnRewardAddress = new Address("d595f7e85e1757d6558e9e448fa9af77ab28be4c");
 
             if (senderAddress == currentAgentAddress)
@@ -1805,6 +1807,19 @@ namespace Nekoyume.BlockChain
                             senderAddress),
                         NotificationCell.NotificationType.Notification);
                 }
+            }
+            else if (recipientAddress == currentAvatarAddress)
+            {
+                var amount = eval.Action.Amount;
+                var currency = amount.Currency;
+                States.Instance.AvatarBalance[currency.Ticker] = eval.OutputStates.GetBalance(
+                    currentAvatarAddress,
+                    eval.Action.Amount.Currency
+                );
+                OneLineSystem.Push(MailType.System,
+                    L10nManager.Localize("UI_TRANSFERASSET_NOTIFICATION_RECIPIENT", amount,
+                        senderAddress),
+                    NotificationCell.NotificationType.Notification);
             }
 
             UpdateAgentStateAsync(eval).Forget();
