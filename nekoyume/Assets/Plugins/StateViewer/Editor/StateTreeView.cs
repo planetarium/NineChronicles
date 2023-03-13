@@ -92,7 +92,8 @@ namespace StateViewer.Editor
                         _elementId++,
                         key,
                         data.Kind,
-                        $"Count: {list.Count}"
+                        $"Count: {list.Count}",
+                        editable: false
                     );
                     for (var i = 0; i < list.Count; i++)
                     {
@@ -191,7 +192,10 @@ namespace StateViewer.Editor
                         // base.RowGUI(args);
                         var offset = GetContentIndent(item) + extraSpaceBeforeIconAndLabel;
                         cellRect.xMin += offset;
-                        if (viewModel.Editable)
+                        if (viewModel.Parent != null
+                            && viewModel.Parent.Type != ValueKind.List
+                            && viewModel.Editable
+                           )
                         {
                             GUI.TextField(cellRect, viewModel.Key);
                         }
