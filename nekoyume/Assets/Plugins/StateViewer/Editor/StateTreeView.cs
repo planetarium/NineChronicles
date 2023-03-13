@@ -199,7 +199,7 @@ namespace StateViewer.Editor
                         cellRect.xMin += offset;
                         if (viewModel.Parent != null
                             && viewModel.Parent.Type != ValueKind.List
-                            && viewModel.Editable
+                            && (viewModel.Parent.Type == ValueKind.Dictionary || viewModel.Editable)
                            )
                         {
                             var key = GUI.TextField(cellRect, viewModel.Key);
