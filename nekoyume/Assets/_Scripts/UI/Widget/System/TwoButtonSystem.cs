@@ -31,7 +31,10 @@ namespace Nekoyume.UI
             CloseWidget = Cancel;
             confirmButton.OnClick = Confirm;
             cancelButton.OnClick = Cancel;
-            costButton.OnClickSubject.Subscribe(_ => Confirm()).AddTo(gameObject);
+            if (costButton)
+            {
+                costButton.OnClickSubject.Subscribe(_ => Confirm()).AddTo(gameObject);
+            }
         }
 
         public void Show(string content, string confirmText, string cancelText,
