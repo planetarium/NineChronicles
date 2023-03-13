@@ -23,10 +23,10 @@ namespace Nekoyume.UI.Module
         private Button button;
 
         [SerializeField]
-        private SkeletonGraphic petGraphic;
+        private PetInfoView infoView;
 
         [SerializeField]
-        private Image soulStoneImage;
+        private SkeletonGraphic petGraphic;
 
         [SerializeField]
         private GameObject emptyObject;
@@ -35,13 +35,7 @@ namespace Nekoyume.UI.Module
         private GameObject petInfoObject;
 
         [SerializeField]
-        private TextMeshProUGUI soulStoneText;
-
-        [SerializeField]
         private TextMeshProUGUI levelText;
-
-        [SerializeField]
-        private TextMeshProUGUI petInfoText;
 
         [SerializeField]
         private GameObject levelUpNotification;
@@ -105,19 +99,13 @@ namespace Nekoyume.UI.Module
                 .Level;
             var isOwn = States.Instance.PetStates.TryGetPetState(model.PetRow.Id, out _petState);
             var isMaxLevel = _petState?.Level == maxLevel;
-            soulStoneImage.overrideSprite = PetFrontHelper.GetSoulStoneSprite(model.PetRow.Id);
-            soulStoneText.text = isMaxLevel
-                ? "MAX"
-                : States.Instance.AvatarBalance[model.PetRow.SoulStoneTicker]
-                    .GetQuantityString();
+            infoView.Set(model.PetRow.Id, model.PetRow.Grade);
             levelText.text = isOwn
-                ? $"<size=14>Lv.</size>{_petState.Level}"
+                ? $"Lv.{_petState.Level}"
                 : "-";
             levelText.color = isMaxLevel
                 ? PetFrontHelper.GetUIColor(PetFrontHelper.MaxLevelText)
                 : Color.white;
-            petInfoText.color = LocalizationExtensions.GetItemGradeColor(model.PetRow.Grade);
-            petInfoText.text = L10nManager.Localize($"PET_NAME_{model.PetRow.Id}");
 
             model.HasNotification.Subscribe(b =>
             {
@@ -137,15 +125,15 @@ namespace Nekoyume.UI.Module
             {
                 var isLoading = id == model.PetRow.Id;
                 loading.SetActive(isLoading);
-                if (isLoading)
-                {
-                    petInfoText.color =
-                        PetFrontHelper.GetUIColor(PetFrontHelper.LevelUpText);
-                    petInfoText.text =
-                        L10nManager.Localize(isOwn
-                            ? "UI_LEVELUP_IN_PROGRESS"
-                            : "UI_SUMMONING_IN_PROGRESS");
-                }
+                // if (isLoading)
+                // {
+                //     petInfoText.color =
+                //         PetFrontHelper.GetUIColor(PetFrontHelper.LevelUpText);
+                //     petInfoText.text =
+                //         L10nManager.Localize(isOwn
+                //             ? "UI_LEVELUP_IN_PROGRESS"
+                //             : "UI_SUMMONING_IN_PROGRESS");
+                // }
             }).AddTo(_disposables);
         }
 

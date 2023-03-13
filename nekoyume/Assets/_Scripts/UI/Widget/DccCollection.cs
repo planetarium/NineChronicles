@@ -4,7 +4,6 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
-using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Pet;
 using Nekoyume.UI.Scroller;
 using Spine.Unity;
@@ -27,19 +26,16 @@ namespace Nekoyume.UI
         private SkeletonGraphic petSkeletonGraphic;
 
         [SerializeField]
+        private PetInfoView infoView;
+
+        [SerializeField]
         private Button lockedButton;
 
         [SerializeField]
         private Button levelUpButton;
 
         [SerializeField]
-        private TextMeshProUGUI petNameText;
-
-        [SerializeField]
         private TextMeshProUGUI levelText;
-
-        [SerializeField]
-        private TextMeshProUGUI soulStoneText;
 
         [SerializeField]
         private TextMeshProUGUI levelUpButtonText;
@@ -106,18 +102,14 @@ namespace Nekoyume.UI
                     PetFrontHelper.GetPetSkeletonData(row.Id);
                 petSkeletonGraphic.Initialize(true);
                 _selectedViewModel.Selected.SetValueAndForceNotify(true);
-                petNameText.text = L10nManager.Localize($"PET_NAME_{row.Id}");
+                infoView.Set(row.Id, row.Grade);
 
                 var isOwn = States.Instance.PetStates.TryGetPetState(row.Id, out var petState);
                 var costSheet = TableSheets.Instance.PetCostSheet[row.Id];
-                var isMaxLevel = !costSheet.TryGetCost((isOwn ? petState.Level : 0) + 1, out var nextCost);
+                var isMaxLevel = !costSheet.TryGetCost((isOwn ? petState.Level : 0) + 1, out _);
                 if (isOwn)
                 {
                     levelText.text = $"Lv.{petState.Level}";
-                    soulStoneText.text = isMaxLevel
-                        ? "MAX"
-                        : $"{States.Instance.AvatarBalance[row.SoulStoneTicker].MajorUnit.ToString()}" +
-                          $"/{nextCost.SoulStoneQuantity}";
                     levelUpButtonText.text = isMaxLevel
                         ? "Info"
                         : LevelUpText;
@@ -125,9 +117,6 @@ namespace Nekoyume.UI
                 else
                 {
                     levelText.text = "-";
-                    soulStoneText.text =
-                        $"{States.Instance.AvatarBalance[row.SoulStoneTicker].MajorUnit.ToString()}" +
-                        $"/{nextCost.SoulStoneQuantity}";
                     levelUpButtonText.text = SummonText;
                 }
             }

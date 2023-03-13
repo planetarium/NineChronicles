@@ -110,7 +110,7 @@ namespace Nekoyume.UI
             submitButton.gameObject.SetActive(true);
             submitButton.Text = SummonText;
             petInfoView.Set(
-                L10nManager.Localize($"PET_NAME_{_petRow.Id}"),
+                _petRow.Id,
                 _petRow.Grade
             );
             SetObjectByTargetLevel(_petRow.Id, 0, 1);
@@ -145,7 +145,7 @@ namespace Nekoyume.UI
             var option = TableSheets.Instance.PetOptionSheet[petState.PetId].LevelOptionMap[petState.Level];
             contentText.text = L10nManager.Localize($"PET_DESCRIPTION_{option.OptionType}",
                 option.OptionValue);
-            petInfoView.Set(L10nManager.Localize($"PET_NAME_{petState.PetId}"),
+            petInfoView.Set(_petRow.Id,
                 _petRow.Grade
             );
             petSkeletonGraphic.skeletonDataAsset =

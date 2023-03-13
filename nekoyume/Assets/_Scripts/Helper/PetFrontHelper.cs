@@ -19,11 +19,11 @@ namespace Nekoyume.Helper
 {
     public static class PetFrontHelper
     {
-        public const string NotOwnText = "NotPossesedText";
-        public const string NotOwnSlot = "NotPossesedSlot";
-        public const string SummonableText = "SummonableText";
         public const string LevelUpText = "LevelUpText";
         public const string MaxLevelText = "MaxLevelText";
+        public const string SoulStoneGaugeMax = "SoulStoneGaugeMax";
+        public const string SoulStoneGaugeSummon = "SoulStoneGaugeSummon";
+        public const string SoulStoneGaugeLevelUp = "SoulStoneGaugeLevelUp";
 
         private const string PetCardSpriteScriptableObjectPath = "ScriptableObject/PetRenderingData";
         private static readonly Dictionary<int, PetRenderingScriptableObject.PetRenderingData> PetRenderingData;

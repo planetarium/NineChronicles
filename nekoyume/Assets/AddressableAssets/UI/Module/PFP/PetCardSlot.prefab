@@ -662,6 +662,7 @@ GameObject:
   - component: {fileID: 4572957636467888557}
   - component: {fileID: 8326130674025161170}
   - component: {fileID: 5559613029112027038}
+  - component: {fileID: 2282655497011132171}
   m_Layer: 5
   m_Name: PetCardSlot
   m_TagString: Untagged
@@ -712,13 +713,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   button: {fileID: 6996397769613101194}
+  infoView: {fileID: 2282655497011132171}
   petGraphic: {fileID: 1485459764886245813}
-  soulStoneImage: {fileID: 1301023677919696542}
   emptyObject: {fileID: 5608618909936560178}
   petInfoObject: {fileID: 8183665222623121126}
-  soulStoneText: {fileID: 73179211294257026}
   levelText: {fileID: 1198890531772279685}
-  petInfoText: {fileID: 1123592539402976611}
   levelUpNotification: {fileID: 6589356487000040698}
   hasNotification: {fileID: 1302393289915582021}
   loading: {fileID: 4240935538933731206}
@@ -727,6 +726,26 @@ MonoBehaviour:
   - {fileID: 4097028554281713856}
   - {fileID: 1083136493420883593}
   selectedObject: {fileID: 6184325115000664632}
+--- !u!114 &2282655497011132171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2590611624859990470}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9d1a8e4f3b74c64b89ac2572ae1d6d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  petNameText: {fileID: 1123592539402976611}
+  gradeText: {fileID: 0}
+  subTypeText: {fileID: 0}
+  spacerImage: {fileID: 0}
+  soulStoneImage: {fileID: 1301023677919696542}
+  soulStoneGaugeSlider: {fileID: 1713761660573327637}
+  sliderFillRectImage: {fileID: 4710110511343556448}
+  soulStoneText: {fileID: 73179211294257026}
 --- !u!1 &3317523229236390243
 GameObject:
   m_ObjectHideFlags: 0
