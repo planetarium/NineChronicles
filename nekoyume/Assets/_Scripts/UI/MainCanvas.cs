@@ -340,8 +340,6 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<CodeRewardPopup>());
             yield return null;
-            secondWidgets.Add(Widget.Create<DailyRewardItemPopup>());
-            yield return null;
             secondWidgets.Add(Widget.Create<PrologueDialogPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<CombinationLoadingScreen>());
