@@ -81,7 +81,7 @@ namespace Nekoyume.UI
                     TableSheets.Instance.PetOptionSheet);
             }
 
-            costText.text = cost.ToString();
+            costText.text = cost.MajorUnit.ToString();
 
             var currencyText = L10nManager.Localize("UI_CRYSTAL");
             var usageText = L10nManager.Localize("UI_CRYSTAL_REPLACE_MATERIAL");
