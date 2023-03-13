@@ -528,6 +528,14 @@ MonoBehaviour:
       text: {fileID: 635055132470339038}
     - parent: {fileID: 4141431072124935929}
       text: {fileID: 82808351145309564}
+  - type: 2
+    costTexts:
+    - parent: {fileID: 8015469120950172008}
+      text: {fileID: 1290052796790607030}
+    - parent: {fileID: 8321659637126687067}
+      text: {fileID: 967342417782244864}
+    - parent: {fileID: 4053213538172240342}
+      text: {fileID: 8370634044987006190}
   costParents:
   - {fileID: 6976532599820261529}
   - {fileID: 8002832149925165051}
