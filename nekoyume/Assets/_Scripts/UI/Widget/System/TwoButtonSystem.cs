@@ -57,7 +57,11 @@ namespace Nekoyume.UI
             cancelButton.Text = cancelText;
             if (costType == CostType.None || cost == 0)
             {
-                costButton.gameObject.SetActive(false);
+                if (costButton)
+                {
+                    costButton.gameObject.SetActive(false);
+                }
+
                 confirmButton.gameObject.SetActive(true);
                 confirmButton.Text = confirmText;
             }
