@@ -200,7 +200,7 @@ namespace Nekoyume.UI.Module
                     int.MaxValue : equippedSlot.Key;
             }
 
-            if (craftInfo.HasValue)
+            if (craftInfo.HasValue && viewData.HasState)
             {
                 (var description, var applied) = PetFrontHelper.GetDescriptionText(
                     optionInfo,
