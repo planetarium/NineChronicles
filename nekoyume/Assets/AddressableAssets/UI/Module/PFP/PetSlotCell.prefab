@@ -82,6 +82,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: PetCardSlot
       objectReference: {fileID: 0}
+    - target: {fileID: 4233289780577852124, guid: 842c632f5ca56e3408834c2009f40abe,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4240935538933731206, guid: 842c632f5ca56e3408834c2009f40abe,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4572957636467888557, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}
       propertyPath: m_Pivot.x
@@ -186,6 +196,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6184325115000664632, guid: 842c632f5ca56e3408834c2009f40abe,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6804222873127714215, guid: 842c632f5ca56e3408834c2009f40abe,
         type: 3}

@@ -84,7 +84,6 @@ namespace Nekoyume.UI.Module.Pet
                 return;
             }
 
-            var isOwn = States.Instance.PetStates.TryGetPetState(model.PetRow.Id, out _petState);
             petGraphic.skeletonDataAsset = PetRenderingHelper.GetPetSkeletonData(model.PetRow.Id);
             petGraphic.rectTransform.localPosition =
                 PetRenderingHelper.GetLocalPositionInCard(model.PetRow.Id);
@@ -98,18 +97,22 @@ namespace Nekoyume.UI.Module.Pet
                 modifier.saturation = hsv.y;
                 modifier.value = hsv.z;
             });
-            soulStoneImage.overrideSprite = PetRenderingHelper.GetSoulStoneSprite(model.PetRow.Id);
-            soulStoneText.text = States.Instance.AvatarBalance[model.PetRow.SoulStoneTicker]
-                .GetQuantityString();
             var maxLevel = TableSheets.Instance.PetCostSheet[model.PetRow.Id]
                 .Cost
                 .OrderBy(data => data.Level)
                 .Last()
                 .Level;
+            var isOwn = States.Instance.PetStates.TryGetPetState(model.PetRow.Id, out _petState);
+            var isMaxLevel = _petState?.Level == maxLevel;
+            soulStoneImage.overrideSprite = PetRenderingHelper.GetSoulStoneSprite(model.PetRow.Id);
+            soulStoneText.text = isMaxLevel
+                ? "MAX"
+                : States.Instance.AvatarBalance[model.PetRow.SoulStoneTicker]
+                    .GetQuantityString();
             levelText.text = isOwn
-                ? $"<size=14>Lv.</size>{_petState.Level}/{maxLevel}"
-                : string.Empty;
-            levelText.color = _petState?.Level == maxLevel
+                ? $"<size=14>Lv.</size>{_petState.Level}"
+                : "-";
+            levelText.color = isMaxLevel
                 ? PetRenderingHelper.GetUIColor(PetRenderingHelper.MaxLevelText)
                 : Color.white;
             petInfoText.color = LocalizationExtensions.GetItemGradeColor(model.PetRow.Grade);

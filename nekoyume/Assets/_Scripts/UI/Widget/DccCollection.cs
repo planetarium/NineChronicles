@@ -7,6 +7,7 @@ using Nekoyume.State;
 using Nekoyume.UI.Module.Pet;
 using Nekoyume.UI.Scroller;
 using Spine.Unity;
+using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -30,7 +31,22 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button levelUpButton;
 
+        [SerializeField]
+        private TextMeshProUGUI petNameText;
+
+        [SerializeField]
+        private TextMeshProUGUI levelText;
+
+        [SerializeField]
+        private TextMeshProUGUI soulStoneText;
+
+        [SerializeField]
+        private TextMeshProUGUI levelUpButtonText;
+
         private PetSlotViewModel _selectedViewModel;
+
+        private const string LevelUpText = "Levelup";
+        private const string SummonText = "Summon";
 
         protected override void Awake()
         {
@@ -65,12 +81,6 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreShowAnimation);
             UpdateView();
-            if (scroll.TryGetFirstItem(out var cell))
-            {
-                cell.Selected.SetValueAndForceNotify(true);
-                OnClickPetSlot(cell);
-                _selectedViewModel = cell;
-            }
         }
 
         public void UpdateView()
@@ -78,6 +88,10 @@ namespace Nekoyume.UI
             scroll.UpdateData(TableSheets.Instance.PetSheet.Values
                 .Select(row =>
                     new PetSlotViewModel(row, PetRenderingHelper.HasNotification(row.Id))));
+            if (scroll.TryGetFirstItem(out var cell))
+            {
+                OnClickPetSlot(cell);
+            }
         }
 
         public void OnClickPetSlot(PetSlotViewModel viewModel)
@@ -91,6 +105,30 @@ namespace Nekoyume.UI
                     PetRenderingHelper.GetPetSkeletonData(row.Id);
                 petSkeletonGraphic.Initialize(true);
                 _selectedViewModel.Selected.SetValueAndForceNotify(true);
+                petNameText.text = L10nManager.Localize($"PET_NAME_{row.Id}");
+
+                var isOwn = States.Instance.PetStates.TryGetPetState(row.Id, out var petState);
+                var costSheet = TableSheets.Instance.PetCostSheet[row.Id];
+                var isMaxLevel = !costSheet.TryGetCost((isOwn ? petState.Level : 0) + 1, out var nextCost);
+                if (isOwn)
+                {
+                    levelText.text = $"Lv.{petState.Level}";
+                    soulStoneText.text = isMaxLevel
+                        ? "MAX"
+                        : $"{States.Instance.AvatarBalance[row.SoulStoneTicker].MajorUnit.ToString()}" +
+                          $"/{nextCost.SoulStoneQuantity}";
+                    levelUpButtonText.text = isMaxLevel
+                        ? "Info"
+                        : LevelUpText;
+                }
+                else
+                {
+                    levelText.text = "-";
+                    soulStoneText.text =
+                        $"{States.Instance.AvatarBalance[row.SoulStoneTicker].MajorUnit.ToString()}" +
+                        $"/{nextCost.SoulStoneQuantity}";
+                    levelUpButtonText.text = SummonText;
+                }
             }
         }
     }
