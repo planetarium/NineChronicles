@@ -8529,6 +8529,7 @@ MonoBehaviour:
   runeButton: {fileID: 0}
   materialButton: {fileID: 4579792300162133034}
   costumeButton: {fileID: 4579792300162133034}
+  fungibleAssetButton: {fileID: 0}
   scroll: {fileID: 8659116146397617775}
   resetScrollOnEnable: 0
   tooltipSocket: {fileID: 0}
@@ -17505,7 +17506,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4284444872
-  m_fontColor: {r: 0.7830189, g: 0.43939388, b: 0.37304202, a: 1}
+  m_fontColor: {r: 0.6698113, g: 0.4079173, b: 0.37597898, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -25002,7 +25003,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 58, y: 58}
+  m_SizeDelta: {x: 40, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1769086095294988663
 CanvasRenderer:
