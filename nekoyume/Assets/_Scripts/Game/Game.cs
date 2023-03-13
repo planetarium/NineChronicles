@@ -231,6 +231,19 @@ namespace Nekoyume.Game
             Arena.Initialize();
             RaidStage.Initialize();
             StartCoroutine(CoInitDccAvatar());
+            var headerName = URL.DccEthChainHeaderName;
+            var headerValue = URL.DccEthChainHeaderValue;
+            StartCoroutine(RequestManager.instance.GetJson(
+                $"{URL.DccMileageAPI}{Agent.Address}",
+                headerName,
+                headerValue,
+                _ =>
+                {
+                    Dcc.instance.IsConnected = true;
+                }, _ =>
+                {
+                    Dcc.instance.IsConnected = false;
+                }));
 
             Event.OnUpdateAddresses.AsObservable().Subscribe(_ =>
             {

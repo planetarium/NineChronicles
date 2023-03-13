@@ -34,7 +34,7 @@ namespace Nekoyume.UI
             States.Instance.PetStates.TryGetPetState(petRow.Id, out var prevPetState);
             var currentOption = TableSheets.Instance.PetOptionSheet[action.PetId].LevelOptionMap[prevPetState.Level];
             var targetOption = TableSheets.Instance.PetOptionSheet[action.PetId].LevelOptionMap[action.TargetLevel];
-            petInfoView.Set(L10nManager.Localize($"PET_NAME_{petRow.Id}"), petRow.Grade);
+            petInfoView.Set(petRow.Id, petRow.Grade);
             contentText.text = L10nManager.Localize(
                 $"PET_DESCRIPTION_TWO_OPTION_{targetOption.OptionType}",
                 currentOption.OptionValue,

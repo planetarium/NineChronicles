@@ -20,20 +20,7 @@ namespace Nekoyume.UI.Module
 
         private void OnEnable()
         {
-            if (Dcc.instance.Avatars is null)
-            {
-                gameObject.SetActive(false);
-                return;
-            }
-
-            if (States.Instance.AgentState is null)
-            {
-                gameObject.SetActive(false);
-                return;
-            }
-
-            if (States.Instance.AgentState.avatarAddresses.Values.Any(addr =>
-                    Dcc.instance.Avatars.TryGetValue(addr.ToHex(), out _)))
+            if (Dcc.instance.IsConnected.GetValueOrDefault())
             {
                 loadingObject.SetActive(true);
                 amountText.gameObject.SetActive(false);
@@ -41,16 +28,22 @@ namespace Nekoyume.UI.Module
                 var headerName = Game.Game.instance.URL.DccEthChainHeaderName;
                 var headerValue = Game.Game.instance.URL.DccEthChainHeaderValue;
                 _request = StartCoroutine(RequestManager.instance.GetJson(
+                    url,
                     headerName,
                     headerValue,
-                    url,
                     (json) =>
-                {
-                    var mileage = (int)(JObject.Parse(json)["mileage"]?.ToObject<decimal>() ?? 0);
-                    amountText.text = mileage.ToCurrencyNotation();
-                    loadingObject.SetActive(false);
-                    amountText.gameObject.SetActive(true);
-                }));
+                    {
+                        var mileage =
+                            (int) (JObject.Parse(json)["mileage"]?.ToObject<decimal>() ?? 0);
+                        amountText.text = mileage.ToCurrencyNotation();
+                        loadingObject.SetActive(false);
+                        amountText.gameObject.SetActive(true);
+                    },
+                    request =>
+                    {
+                        Debug.LogError($"URL:{request.url}, error:{request.error}");
+                        gameObject.SetActive(false);
+                    }));
             }
             else
             {

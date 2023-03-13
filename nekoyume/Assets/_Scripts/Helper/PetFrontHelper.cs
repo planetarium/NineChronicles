@@ -12,17 +12,18 @@ using Nekoyume.State;
 using Nekoyume.TableData.Pet;
 using Nekoyume.UI;
 using Spine.Unity;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace Nekoyume.Helper
 {
     public static class PetFrontHelper
     {
-        public const string NotOwnText = "NotPossesedText";
-        public const string NotOwnSlot = "NotPossesedSlot";
-        public const string SummonableText = "SummonableText";
         public const string LevelUpText = "LevelUpText";
         public const string MaxLevelText = "MaxLevelText";
+        public const string SoulStoneGaugeMax = "SoulStoneGaugeMax";
+        public const string SoulStoneGaugeSummon = "SoulStoneGaugeSummon";
+        public const string SoulStoneGaugeLevelUp = "SoulStoneGaugeLevelUp";
 
         private const string PetCardSpriteScriptableObjectPath = "ScriptableObject/PetRenderingData";
         private static readonly Dictionary<int, PetRenderingScriptableObject.PetRenderingData> PetRenderingData;
@@ -46,11 +47,6 @@ namespace Nekoyume.Helper
                 data => data.color);
         }
 
-        public static Sprite GetPetCardSprite(int id)
-        {
-            return PetRenderingData[id].cardSlotSprite;
-        }
-
         public static Sprite GetSoulStoneSprite(int id)
         {
             return PetRenderingData[id].soulStoneSprite;
@@ -59,6 +55,21 @@ namespace Nekoyume.Helper
         public static SkeletonDataAsset GetPetSkeletonData(int id)
         {
             return PetRenderingData[id].spineDataAsset;
+        }
+
+        public static float3 GetHsv(int id)
+        {
+            return PetRenderingData[id].hsv;
+        }
+
+        public static Vector3 GetLocalPositionInCard(int id)
+        {
+            return PetRenderingData[id].localPosition;
+        }
+
+        public static Vector3 GetLocalScaleInCard(int id)
+        {
+            return PetRenderingData[id].localScale;
         }
 
         public static Color GetUIColor(string key)

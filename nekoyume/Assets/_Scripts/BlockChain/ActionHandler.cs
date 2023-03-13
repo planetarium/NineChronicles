@@ -37,6 +37,17 @@ namespace Nekoyume.BlockChain
             return evaluation.OutputStates.UpdatedFungibleAssets.ContainsKey(States.Instance.AgentState.address);
         }
 
+        protected static bool HasUpdatedAssetsForCurrentAvatar<T>(ActionEvaluation<T> evaluation)
+            where T : ActionBase
+        {
+            if (States.Instance.CurrentAvatarState is null)
+            {
+                return false;
+            }
+
+            return evaluation.OutputStates.UpdatedFungibleAssets.ContainsKey(States.Instance.CurrentAvatarState.address);
+        }
+
         protected static bool ValidateEvaluationForCurrentAvatarState<T>(ActionEvaluation<T> evaluation)
             where T : ActionBase
         {

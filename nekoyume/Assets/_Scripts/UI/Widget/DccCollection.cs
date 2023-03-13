@@ -4,9 +4,10 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
-using Nekoyume.UI.Module;
+using Nekoyume.UI.Module.Pet;
 using Nekoyume.UI.Scroller;
 using Spine.Unity;
+using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,7 +26,24 @@ namespace Nekoyume.UI
         private SkeletonGraphic petSkeletonGraphic;
 
         [SerializeField]
+        private PetInfoView infoView;
+
+        [SerializeField]
         private Button lockedButton;
+
+        [SerializeField]
+        private Button levelUpButton;
+
+        [SerializeField]
+        private TextMeshProUGUI levelText;
+
+        [SerializeField]
+        private TextMeshProUGUI levelUpButtonText;
+
+        private PetSlotViewModel _selectedViewModel;
+
+        private const string LevelUpText = "Levelup";
+        private const string SummonText = "Summon";
 
         protected override void Awake()
         {
@@ -41,26 +59,19 @@ namespace Nekoyume.UI
                     L10nManager.Localize("UI_INFO_NEW_MERCHANDISE_ADDED_SOON"),
                     NotificationCell.NotificationType.Information);
             });
-            scroll.OnClick.Subscribe(viewModel =>
+            levelUpButton.onClick.AddListener(() =>
             {
-                var row = viewModel.PetRow;
-                if (row is not null)
+                var row = _selectedViewModel.PetRow;
+                if (States.Instance.PetStates.TryGetPetState(row.Id, out var petState))
                 {
-                    petSkeletonGraphic.skeletonDataAsset =
-                        PetFrontHelper.GetPetSkeletonData(row.Id);
-                    petSkeletonGraphic.Initialize(true);
-                    if (States.Instance.PetStates.TryGetPetState(
-                            row.Id,
-                            out var petState))
-                    {
-                        Find<PetEnhancementPopup>().ShowForLevelUp(petState);
-                    }
-                    else
-                    {
-                        Find<PetEnhancementPopup>().ShowForSummon(viewModel.PetRow);
-                    }
+                    Find<PetEnhancementPopup>().ShowForLevelUp(petState);
                 }
-            }).AddTo(gameObject);
+                else
+                {
+                    Find<PetEnhancementPopup>().ShowForSummon(row);
+                }
+            });
+            scroll.OnClick.Subscribe(OnClickPetSlot).AddTo(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -74,6 +85,41 @@ namespace Nekoyume.UI
             scroll.UpdateData(TableSheets.Instance.PetSheet.Values
                 .Select(row =>
                     new PetSlotViewModel(row, PetFrontHelper.HasNotification(row.Id))));
+            if (scroll.TryGetFirstItem(out var cell))
+            {
+                OnClickPetSlot(cell);
+            }
+        }
+
+        public void OnClickPetSlot(PetSlotViewModel viewModel)
+        {
+            var row = viewModel.PetRow;
+            if (row is not null && !viewModel.Equals(_selectedViewModel))
+            {
+                _selectedViewModel?.Selected.SetValueAndForceNotify(false);
+                _selectedViewModel = viewModel;
+                petSkeletonGraphic.skeletonDataAsset =
+                    PetFrontHelper.GetPetSkeletonData(row.Id);
+                petSkeletonGraphic.Initialize(true);
+                _selectedViewModel.Selected.SetValueAndForceNotify(true);
+                infoView.Set(row.Id, row.Grade);
+
+                var isOwn = States.Instance.PetStates.TryGetPetState(row.Id, out var petState);
+                var costSheet = TableSheets.Instance.PetCostSheet[row.Id];
+                var isMaxLevel = !costSheet.TryGetCost((isOwn ? petState.Level : 0) + 1, out _);
+                if (isOwn)
+                {
+                    levelText.text = $"Lv.{petState.Level}";
+                    levelUpButtonText.text = isMaxLevel
+                        ? "Info"
+                        : LevelUpText;
+                }
+                else
+                {
+                    levelText.text = "-";
+                    levelUpButtonText.text = SummonText;
+                }
+            }
         }
     }
 }

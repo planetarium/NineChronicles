@@ -41,5 +41,6 @@ namespace Nekoyume.L10n
 	Shadow_0,
 	QuestRewardText6,
 	SpeechBubbleInformation,
+        ButtonGreen,
     }
 }
