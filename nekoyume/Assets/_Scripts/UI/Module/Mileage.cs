@@ -33,7 +33,7 @@ namespace Nekoyume.UI.Module
             }
 
             if (States.Instance.AgentState.avatarAddresses.Values.Any(addr =>
-                    Dcc.instance.Avatars.TryGetValue(addr.ToHex(), out _)))
+                    Dcc.instance.Avatars.TryGetValue(addr.ToString(), out _)))
             {
                 loadingObject.SetActive(true);
                 amountText.gameObject.SetActive(false);
@@ -41,9 +41,9 @@ namespace Nekoyume.UI.Module
                 var headerName = Game.Game.instance.URL.DccEthChainHeaderName;
                 var headerValue = Game.Game.instance.URL.DccEthChainHeaderValue;
                 _request = StartCoroutine(RequestManager.instance.GetJson(
+                    url,
                     headerName,
                     headerValue,
-                    url,
                     (json) =>
                 {
                     var mileage = (int)(JObject.Parse(json)["mileage"]?.ToObject<decimal>() ?? 0);
