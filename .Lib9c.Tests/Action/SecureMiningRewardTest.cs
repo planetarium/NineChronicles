@@ -23,6 +23,9 @@ namespace Lib9c.Tests.Action
         private static readonly Address _treasury =
             new Address("0xB3bCa3b3c6069EF5Bdd6384bAD98F11378Dc360E");
 
+        private static readonly Address _nil =
+            new Address("0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF");
+
         private static readonly ImmutableList<Address> _authMiners = new[]
         {
             new Address("ab1dce17dCE1Db1424BB833Af6cC087cd4F5CB6d"),
@@ -66,6 +69,9 @@ namespace Lib9c.Tests.Action
 
             // (1000 + 2000 + 3000 + 4000) * 0.4
             Assert.Equal(NCG * 4000, nextState.GetBalance(_treasury, NCG));
+
+            // (1000 + 2000 + 3000 + 4000) * 0.4
+            Assert.Equal(NCG * 4000, nextState.GetBalance(_nil, NCG));
         }
 
         [Fact]
