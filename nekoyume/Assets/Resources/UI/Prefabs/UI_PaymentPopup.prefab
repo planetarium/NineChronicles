@@ -147,14 +147,14 @@ MonoBehaviour:
   m_text: "\uBE44\uC6A9 \uD569\uACC4"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ee85c922f6a7b4b5ba900ec7f0dedb49, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 0dd5ff07d6b414a099a10f9e2c6f9c2a, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 7a8f63fef1d0e4bdabf2c620b8ee8e93, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4286944470
-  m_fontColor: {r: 0.8392157, g: 0.5803922, b: 0.52156866, a: 1}
+    rgba: 4291100671
+  m_fontColor: {r: 1, g: 1, b: 0.76862746, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -230,7 +230,7 @@ MonoBehaviour:
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
   fixedMarginOption: 0
-  fontMaterialType: 1
+  fontMaterialType: 26
   l10nKey: UI_PROCEED_DISCORD
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
@@ -2076,7 +2076,7 @@ MonoBehaviour:
   m_text: 0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 898671fed158d405b97de070206058b8, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 6690b8bb0ae42444baa2d75973755853, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

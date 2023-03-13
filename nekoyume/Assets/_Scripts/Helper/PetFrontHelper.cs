@@ -100,7 +100,7 @@ namespace Nekoyume.Helper
             PetState petState,
             GameConfigState gameConfigState)
         {
-            var appliedColorHex = Palette.GetColor(EnumType.ColorType.TextGrade01).ColorToHex();
+            var appliedColorHex = Palette.GetColor(EnumType.ColorType.TextPositive).ColorToHex();
 
             switch (optionInfo.OptionType)
             {
