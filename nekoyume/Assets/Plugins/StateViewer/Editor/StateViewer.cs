@@ -3,8 +3,10 @@ using System.Text;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Libplanet;
+using Libplanet.Assets;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
+using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
@@ -37,6 +39,11 @@ namespace StateViewer.Editor
         private SearchField _searchField;
 
         private string _searchString;
+
+        private Currency _ncg;
+        private Currency _crystal;
+        private string _ncgValue;
+        private string _crystalValue;
 
         private StateProxy _stateProxy;
 
@@ -207,6 +214,9 @@ namespace StateViewer.Editor
             DrawSearchField();
 
             GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
+            DrawFAVField();
+
+            GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
             _stateTreeView.OnGUI(GetRect(maxHeight: position.height));
         }
 
@@ -252,6 +262,21 @@ namespace StateViewer.Editor
             OnConfirm(_searchString).Forget();
         }
 
+        private void DrawFAVField()
+        {
+            // NCG
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label("NCG");
+            _ncgValue = GUILayout.TextField($"{_ncgValue}");
+            EditorGUILayout.EndHorizontal();
+
+            // CRYSTAL
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label("CRYSTAL");
+            _crystalValue = GUILayout.TextField($"{_crystalValue}");
+            EditorGUILayout.EndHorizontal();
+        }
+
         private void OnStateTreeViewDirty(bool dirty)
         {
             savable = !dirty &&
@@ -271,6 +296,10 @@ namespace StateViewer.Editor
             {
                 var (addr, value) = await _stateProxy.GetStateAsync(searchString);
                 _stateTreeView.SetData(addr, value);
+                var ncgBalance = await Game.instance.Agent.GetBalanceAsync(addr, _ncg);
+                _ncgValue = $"{ncgBalance.MajorUnit}.{ncgBalance.MinorUnit}";
+                var crystalBalance = await Game.instance.Agent.GetBalanceAsync(addr, _crystal);
+                _crystalValue = $"{crystalBalance.MajorUnit}.{crystalBalance.MinorUnit}";
             }
             catch (KeyNotFoundException)
             {
@@ -302,6 +331,9 @@ namespace StateViewer.Editor
             {
                 _stateProxy.RegisterAlias("me", states.CurrentAvatarState.address);
             }
+
+            _ncg = states.GoldBalanceState.Gold.Currency;
+            _crystal = CrystalCalculator.CRYSTAL;
         }
     }
 }
