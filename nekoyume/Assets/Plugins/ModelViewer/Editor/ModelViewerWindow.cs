@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
+using Bencodex.Types;
+using ModelViewer.Runtime;
 using Nekoyume.Model.State;
 using UnityEditor;
 using UnityEngine;
 
-namespace Plugins.ModelViewer.Editor
+namespace ModelViewer.Editor
 {
     public class ModelViewerWindow : EditorWindow
     {
@@ -36,6 +37,8 @@ namespace Plugins.ModelViewer.Editor
             public readonly GUIContent Content;
             public readonly RowViewModel[] Fields;
             public readonly RowViewModel[] Properties;
+            public readonly object Object;
+            public readonly IValue SerializedObject;
 
             public TypeViewModel(TypeModel typeModel)
             {
@@ -46,6 +49,10 @@ namespace Plugins.ModelViewer.Editor
                 Properties = typeModel.PropertyInfos
                     .Select(pi => new RowViewModel(pi))
                     .ToArray();
+                Object = ModelFactory.Create(typeModel.Type);
+                SerializedObject = (IValue)Object.GetType()
+                    .GetMethod("Serialize")?
+                    .Invoke(Object, null);
             }
         }
 
@@ -75,6 +82,7 @@ namespace Plugins.ModelViewer.Editor
         private static readonly List<TypeViewModel> ViewModelCache = new();
 
         private int _selectedIndex;
+        private Vector2 _scrollPos;
 
         [MenuItem("Tools/Lib9c/Model Viewer")]
         public static void ShowWindow() =>
@@ -88,6 +96,7 @@ namespace Plugins.ModelViewer.Editor
                 .ToArray();
             CacheModels(types, Lib9CModelNamespace, ModelCache, ViewModelCache);
             CacheModels(types, NekoyumeModelNamespace, ModelCache, ViewModelCache);
+            Debug.Log($"[ModelViewer] Cached {ModelCache.Count} models.");
         }
 
         private static void CacheModels(
@@ -103,16 +112,31 @@ namespace Plugins.ModelViewer.Editor
                              !type.IsEnum &&
                              !type.IsInterface &&
                              !type.GetCustomAttributes().Any(attr =>
-                                 attr is CompilerGeneratedAttribute)))
+                                 attr is ObsoleteAttribute
+                                     or CompilerGeneratedAttribute)))
             {
+                // NOTE: Skip types that does not have a `IValue Serialize()` method.
+                var methodInfo = type.GetMethod("Serialize");
+                if (methodInfo is null ||
+                    methodInfo.GetParameters().Length != 0 ||
+                    methodInfo.ReturnType != typeof(IValue))
+                {
+                    continue;
+                }
+
+                // NOTE: Skip `LazyState<,>` types because it does not stored in the state directly.
+                if (type.IsGenericType &&
+                    typeof(LazyState<,>).IsAssignableFrom(type.GetGenericTypeDefinition()))
+                {
+                    continue;
+                }
+
                 var typeModel = new TypeModel(type);
                 var typeViewModel = new TypeViewModel(typeModel);
                 modelCache[type] = typeModel;
                 viewModelCache.Add(typeViewModel);
             }
         }
-
-        private Vector2 _scrollPos;
 
         private void OnGUI()
         {
@@ -144,6 +168,11 @@ namespace Plugins.ModelViewer.Editor
             {
                 GUILayout.Label($"<b>{vm.Name}</b>: {vm.TypeFullName}", EditorStyles.label);
             }
+
+            EditorGUILayout.Space();
+            GUILayout.Label("Objects", EditorStyles.boldLabel);
+            GUILayout.Label(selectedVm.Object?.ToString() ?? "null");
+            GUILayout.Label(selectedVm.SerializedObject.Inspect(true));
 
             EditorGUILayout.EndScrollView();
         }
