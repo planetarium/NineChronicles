@@ -1443,7 +1443,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 8272794064149044386}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.75
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1459,6 +1459,8 @@ GameObject:
   - component: {fileID: 4754550326108158953}
   - component: {fileID: 3339448749891416136}
   - component: {fileID: 8572846953005700537}
+  - component: {fileID: 5333559165744261076}
+  - component: {fileID: 6860878919945687372}
   m_Layer: 5
   m_Name: Bg
   m_TagString: Untagged
@@ -1524,6 +1526,31 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &5333559165744261076
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7840675817591689019}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b36febf8f4647fcbb37d13526f5c039, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  touchHandler: {fileID: 6860878919945687372}
+--- !u!114 &6860878919945687372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7840675817591689019}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2410c6e911349d6ad72dc1f01bb7559, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &4434054710902560282
 PrefabInstance:
   m_ObjectHideFlags: 0
