@@ -368,7 +368,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 113, y: -726}
+  m_AnchoredPosition: {x: 113, y: -725}
   m_SizeDelta: {x: 113, y: 1030}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &6414006549547577007
@@ -532,6 +532,10 @@ MonoBehaviour:
   gradeText: {fileID: 905448852502384607}
   subTypeText: {fileID: 238632087521670439}
   spacerImage: {fileID: 4839632036766206957}
+  soulStoneImage: {fileID: 0}
+  soulStoneGaugeSlider: {fileID: 0}
+  sliderFillRectImage: {fileID: 0}
+  soulStoneText: {fileID: 0}
 --- !u!225 &4234942289417127081
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -580,7 +584,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -320}
+  m_AnchoredPosition: {x: 20, y: -320}
   m_SizeDelta: {x: 176, y: 640}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &6163904168463603932
@@ -2416,7 +2420,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: -320}
+  m_AnchoredPosition: {x: -20, y: -320}
   m_SizeDelta: {x: 176, y: 640}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &8608202736149232754
