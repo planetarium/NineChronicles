@@ -183,7 +183,7 @@ namespace Nekoyume.UI
         )
         {
             // portrait
-            if (Dcc.instance.Avatars.TryGetValue(avatarState.address.ToHex(), out var dccId))
+            if (Dcc.instance.Avatars.TryGetValue(avatarState.address.ToString(), out var dccId))
             {
                 _activatedDccId = dccId;
                 characterView.SetByDccId(dccId);
