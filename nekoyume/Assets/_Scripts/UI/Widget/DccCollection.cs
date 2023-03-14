@@ -41,6 +41,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI levelUpButtonText;
 
+        [SerializeField]
+        private GameObject levelUpNotification;
+
         private PetSlotViewModel _selectedViewModel;
 
         private const string LevelUpText = "Levelup";
@@ -121,6 +124,7 @@ namespace Nekoyume.UI
                     levelUpButtonText.text = isMaxLevel
                         ? "Info"
                         : LevelUpText;
+                    levelUpNotification.SetActive(viewModel.HasNotification.Value);
                 }
                 else
                 {
