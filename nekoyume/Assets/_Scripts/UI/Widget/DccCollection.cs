@@ -4,6 +4,7 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
+using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Pet;
 using Nekoyume.UI.Scroller;
 using Spine.Unity;
@@ -78,6 +79,13 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreShowAnimation);
             UpdateView();
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Mileage);
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            Find<DccMain>().Show(true);
+            base.Close(ignoreCloseAnimation);
         }
 
         public void UpdateView()
