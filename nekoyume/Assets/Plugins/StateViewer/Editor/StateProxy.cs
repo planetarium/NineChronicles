@@ -19,18 +19,17 @@ namespace StateViewer.Editor
 
         public async UniTask<(Address addr, IValue value)> GetStateAsync(string searchString)
         {
-            Address address;
-
-            if (searchString.Length == 40)
+            try
             {
-                address = new Address(searchString);
+                var addr = new Address(searchString);
+                return (addr, await Agent.GetStateAsync(addr));
             }
-            else
+            catch
             {
-                address = Aliases[searchString];
+                return Aliases.ContainsKey(searchString)
+                    ? (Aliases[searchString], await Agent.GetStateAsync(Aliases[searchString]))
+                    : (default, default);
             }
-
-            return (address, await Agent.GetStateAsync(address));
         }
 
         public void RegisterAlias(string alias, Address address)
