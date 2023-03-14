@@ -134,10 +134,10 @@ namespace Nekoyume.UI.Module
             var viewDatas = _views.Select(x =>
                 (view: x.Value, viewData: GetViewData(x.Key, petStates, craftInfo)));
             var views = viewDatas
-                .OrderByDescending(x => x.viewData.HasState)
-                .ThenByDescending(x => x.viewData.Empty)
+                .OrderBy(x => x.viewData.Equipped)
                 .ThenByDescending(x => x.viewData.IsAppliable)
-                .ThenBy(x => x.viewData.Equipped)
+                .ThenByDescending(x => x.viewData.Empty)
+                .ThenByDescending(x => x.viewData.HasState)
                 .ThenBy(x => x.viewData.CombinationSlotIndex)
                 .ThenByDescending(x => x.view.Grade)
                 .ThenByDescending(x => x.viewData.Level)
