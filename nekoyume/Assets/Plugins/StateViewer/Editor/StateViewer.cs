@@ -267,13 +267,13 @@ namespace StateViewer.Editor
             // NCG
             EditorGUILayout.BeginHorizontal();
             GUILayout.Label("NCG");
-            _ncgValue = GUILayout.TextField($"{_ncgValue}");
+            _ncgValue = GUILayout.TextField(_ncgValue);
             EditorGUILayout.EndHorizontal();
 
             // CRYSTAL
             EditorGUILayout.BeginHorizontal();
             GUILayout.Label("CRYSTAL");
-            _crystalValue = GUILayout.TextField($"{_crystalValue}");
+            _crystalValue = GUILayout.TextField(_crystalValue);
             EditorGUILayout.EndHorizontal();
         }
 
@@ -296,10 +296,10 @@ namespace StateViewer.Editor
             {
                 var (addr, value) = await _stateProxy.GetStateAsync(searchString);
                 _stateTreeView.SetData(addr, value);
-                var ncgBalance = await Game.instance.Agent.GetBalanceAsync(addr, _ncg);
-                _ncgValue = $"{ncgBalance.MajorUnit}.{ncgBalance.MinorUnit}";
-                var crystalBalance = await Game.instance.Agent.GetBalanceAsync(addr, _crystal);
-                _crystalValue = $"{crystalBalance.MajorUnit}.{crystalBalance.MinorUnit}";
+                var (_, ncg) = _stateProxy.GetBalance(addr, _ncg);
+                _ncgValue = $"{ncg.MajorUnit}.{ncg.MinorUnit}";
+                var (_, crystal) = _stateProxy.GetBalance(addr, _crystal);
+                _crystalValue = $"{crystal.MajorUnit}.{crystal.MinorUnit}";
             }
             catch (KeyNotFoundException)
             {
