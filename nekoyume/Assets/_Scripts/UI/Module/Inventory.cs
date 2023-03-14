@@ -423,7 +423,7 @@ namespace Nekoyume.UI.Module
             }
 
             result = result
-                .OrderByDescending(x => x.Equipped)
+                .OrderByDescending(x => x.Equipped.Value)
                 .ThenByDescending(x => bestItems.Exists(y => y.Equals(x)))
                 .ThenBy(x => x.ItemBase.ItemSubType)
                 .ThenByDescending(x => Util.IsUsableItem(x.ItemBase))
