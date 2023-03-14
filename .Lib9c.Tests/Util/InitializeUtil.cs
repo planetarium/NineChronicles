@@ -1,5 +1,6 @@
 namespace Lib9c.Tests.Util
 {
+    using System.Collections.Immutable;
     using System.IO;
     using Libplanet;
     using Libplanet.Action;
@@ -21,10 +22,14 @@ namespace Lib9c.Tests.Util
             IAccountStateDelta initialStatesWithAvatarStateV1,
             IAccountStateDelta initialStatesWithAvatarStateV2
             ) InitializeStates(
+                Address? adminAddr = null,
                 bool isDevEx = false
             )
         {
-            IAccountStateDelta states = new State();
+            adminAddr ??= new PrivateKey().ToAddress();
+            var states = new State().SetState(
+                Addresses.Admin,
+                new AdminState(adminAddr.Value, long.MaxValue).Serialize());
             var sheets = TableSheetsImporter.ImportSheets(
                 isDevEx
                     ? Path.GetFullPath("../../").Replace(
@@ -36,15 +41,18 @@ namespace Lib9c.Tests.Util
             {
                 states = states.SetState(
                     Addresses.TableSheet.Derive(key),
-                    StateExtensions.Serialize(value));
+                    value.Serialize());
             }
 
             var tableSheets = new TableSheets(sheets);
-            var goldCurrency = Currency.Legacy("NCG", 2, null);
+            var goldCurrency = Currency.Legacy(
+                "NCG",
+                2,
+                minters: new[] { adminAddr.Value }.ToImmutableHashSet());
             var goldCurrencyState = new GoldCurrencyState(goldCurrency);
-            states = states.SetState(
-                goldCurrencyState.address,
-                goldCurrencyState.Serialize());
+            states = states
+                .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
+                .MintAsset(goldCurrencyState.address, goldCurrency * 1_000_000_000);
 
             var gameConfigState = new GameConfigState(sheets[nameof(GameConfigSheet)]);
             states = states.SetState(gameConfigState.address, gameConfigState.Serialize());
