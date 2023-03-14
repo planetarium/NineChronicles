@@ -46,7 +46,7 @@ namespace Nekoyume.UI
         {
             var avatarState = States.Instance.CurrentAvatarState;
             var isDccActive = Dcc.instance.Avatars
-                .TryGetValue(avatarState.address.ToHex(), out var dccId);
+                .TryGetValue(avatarState.address.ToString(), out var dccId);
 
             avatarCharacterView.SetByAvatarState(avatarState);
             if (isDccActive)
