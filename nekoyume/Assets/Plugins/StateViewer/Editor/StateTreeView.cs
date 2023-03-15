@@ -115,7 +115,7 @@ namespace StateViewer.Editor
                 {
                     viewModel = new StateTreeViewItem.Model(
                         _elementId++,
-                        ValueKind.Text,
+                        keyType,
                         key,
                         data.Kind,
                         $"Count: {dict.Count}"
@@ -123,7 +123,7 @@ namespace StateViewer.Editor
                     foreach (var pair in dict)
                     {
                         var childViewModel = MakeItemModelRecursive(
-                            pair.Key is Binary ? ValueKind.Binary : ValueKind.Text,
+                            pair.Key.Kind,
                             $"{Convert(pair.Key)}",
                             pair.Value
                         );

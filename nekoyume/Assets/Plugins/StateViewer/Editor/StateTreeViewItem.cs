@@ -137,13 +137,17 @@ namespace StateViewer.Editor
                     case ValueKind.Dictionary:
                     {
                         IKey? key;
-                        if (KeyType is not ValueKind.Binary)
+                        if (KeyType is ValueKind.Binary)
                         {
-                            key = new Text(Key);
+                            key = (IKey?)Convert(Key, bom: false);
+                        }
+                        else if (KeyType is ValueKind.Text)
+                        {
+                            key = (Text)Key;
                         }
                         else
                         {
-                            key = (IKey?)Convert(Key);
+                            throw new NotSupportedException($"KeyType{KeyType} is not supported.");
                         }
 
                         Debug.LogFormat(key.ToString());
@@ -151,7 +155,7 @@ namespace StateViewer.Editor
                         return new Dictionary(Children.Aggregate(
                             ImmutableDictionary<IKey, IValue>.Empty,
                             (current, child) => current.SetItem(
-                                (IKey)Convert(child.Key),
+                                (IKey)Convert(child.Key, bom: child.KeyType == ValueKind.Text),
                                 child.Serialize()))
                         );
                     }
