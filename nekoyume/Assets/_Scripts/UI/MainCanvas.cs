@@ -388,6 +388,7 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<ProfileSelectPopup>());
             yield return null;
+            secondWidgets.Add(Widget.Create<CostTwoButtonPopup>());
 
             // tooltip
             secondWidgets.Add(Widget.Create<EquipmentTooltip>());
