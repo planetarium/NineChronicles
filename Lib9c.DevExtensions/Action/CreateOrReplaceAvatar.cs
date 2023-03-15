@@ -282,7 +282,7 @@ namespace Lib9c.DevExtensions.Action
 
             // Set Inventory.
             var inventoryAddr = avatarAddr.Derive(LegacyInventoryKey);
-            var inventory = new Inventory();
+            var inventory = new Nekoyume.Model.Item.Inventory();
             var equipmentItemSheet = sheets.GetSheet<EquipmentItemSheet>();
             var enhancementCostSheetV2 = sheets.GetSheet<EnhancementCostSheetV2>();
             var recipeSheet = sheets.GetSheet<EquipmentItemRecipeSheet>();

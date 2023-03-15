@@ -15,6 +15,8 @@ using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
 using static Lib9c.SerializeKeys;
+using System.Collections.Immutable;
+using Nekoyume.Model.Coupons;
 
 namespace Nekoyume.Action
 {
@@ -432,6 +434,23 @@ namespace Nekoyume.Action
                 throw;
             }
         }
+
+#nullable enable
+        public static IImmutableDictionary<Guid, Coupon> GetCouponWallet(this IAccountStateView states, Address agentAddress)
+        {
+            Address walletAddress = agentAddress.Derive(CouponWalletKey);
+            IValue? serialized = states.GetState(walletAddress);
+            if (!(serialized is { } serializedValue))
+            {
+                return ImmutableDictionary<Guid, Coupon>.Empty;
+            }
+
+             var serializedWallet = (Bencodex.Types.List)serializedValue;
+             return serializedWallet
+                .Select(serializedCoupon => new Coupon(serializedCoupon))
+                .ToImmutableDictionary(v => v.Id, v => v);
+        }
+#nullable disable
 
         public static IEnumerable<GoldDistribution> GetGoldDistribution(
             this IAccountStateView states)
