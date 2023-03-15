@@ -1367,6 +1367,11 @@
             when the class of the given <paramref name="innerAction"/>
             is not annotated with <see cref="T:Libplanet.Action.ActionTypeAttribute"/>.</exception>
         </member>
+        <member name="P:Libplanet.Action.PolymorphicAction`1.ActionTypeLoader">
+            <summary>
+            <see cref="T:Libplanet.Action.StaticActionTypeLoader"/> for <see cref="T:Libplanet.Action.PolymorphicAction`1"/>.
+            </summary>
+        </member>
         <member name="P:Libplanet.Action.PolymorphicAction`1.InnerAction">
             <summary>
             The wrapped action object of <typeparamref name="T"/>
