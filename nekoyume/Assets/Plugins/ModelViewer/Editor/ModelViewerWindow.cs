@@ -79,7 +79,7 @@ namespace ModelViewer.Editor
 
         private static readonly Dictionary<Type, TypeModel> ModelCache = new();
 
-        private static readonly List<TypeViewModel> ViewModelCache = new();
+        private static List<TypeViewModel> _viewModelCache = new();
 
         private int _selectedIndex;
         private Vector2 _scrollPos;
@@ -94,8 +94,11 @@ namespace ModelViewer.Editor
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(asm => asm.GetTypes())
                 .ToArray();
-            CacheModels(types, Lib9CModelNamespace, ModelCache, ViewModelCache);
-            CacheModels(types, NekoyumeModelNamespace, ModelCache, ViewModelCache);
+            CacheModels(types, Lib9CModelNamespace, ModelCache, _viewModelCache);
+            CacheModels(types, NekoyumeModelNamespace, ModelCache, _viewModelCache);
+            _viewModelCache = _viewModelCache
+                .OrderBy(e => e.Content.text)
+                .ToList();
             Debug.Log($"[ModelViewer] Cached {ModelCache.Count} models.");
         }
 
@@ -143,18 +146,18 @@ namespace ModelViewer.Editor
             _selectedIndex = EditorGUILayout.Popup(
                 new GUIContent("Type"),
                 _selectedIndex,
-                ViewModelCache
+                _viewModelCache
                     .Select(vm => vm.Content)
                     .ToArray());
             if (_selectedIndex < 0 ||
-                _selectedIndex >= ViewModelCache.Count)
+                _selectedIndex >= _viewModelCache.Count)
             {
                 return;
             }
 
             EditorStyles.label.richText = true; // TODO: cache.
             _scrollPos = EditorGUILayout.BeginScrollView(_scrollPos);
-            var selectedVm = ViewModelCache[_selectedIndex];
+            var selectedVm = _viewModelCache[_selectedIndex];
             EditorGUILayout.Space();
             GUILayout.Label("Fields", EditorStyles.boldLabel);
             foreach (var vm in selectedVm.Fields)
