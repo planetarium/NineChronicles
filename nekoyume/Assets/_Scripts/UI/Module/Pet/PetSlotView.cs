@@ -55,6 +55,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private GameObject selectedObject;
 
+        [SerializeField]
+        private TextMeshProUGUI stateText;
+
         private PetState _petState;
         private readonly List<IDisposable> _disposables = new();
 
@@ -125,15 +128,14 @@ namespace Nekoyume.UI.Module
             {
                 var isLoading = id == model.PetRow.Id;
                 loading.SetActive(isLoading);
-                // if (isLoading)
-                // {
-                //     petInfoText.color =
-                //         PetFrontHelper.GetUIColor(PetFrontHelper.LevelUpText);
-                //     petInfoText.text =
-                //         L10nManager.Localize(isOwn
-                //             ? "UI_LEVELUP_IN_PROGRESS"
-                //             : "UI_SUMMONING_IN_PROGRESS");
-                // }
+                if (isLoading)
+                {
+                    stateText.text =
+                        L10nManager.Localize(isOwn
+                            ? "UI_LEVELUP_IN_PROGRESS"
+                            : "UI_SUMMONING_IN_PROGRESS");
+                    summonableNotification.SetActive(false);
+                }
             }).AddTo(_disposables);
         }
 

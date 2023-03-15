@@ -609,7 +609,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 16
+  m_fontSize: 8
   m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -726,6 +726,7 @@ MonoBehaviour:
   - {fileID: 4097028554281713856}
   - {fileID: 1083136493420883593}
   selectedObject: {fileID: 6184325115000664632}
+  stateText: {fileID: 6804222873127714215}
 --- !u!114 &2282655497011132171
 MonoBehaviour:
   m_ObjectHideFlags: 0
