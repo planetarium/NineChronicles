@@ -14,6 +14,7 @@ using Nekoyume.Model.Mail;
 using Nekoyume.Model.Market;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using UnityEngine;
 using UnityEngine.UI;
 using Inventory = Nekoyume.UI.Module.Inventory;
@@ -57,23 +58,67 @@ namespace Nekoyume.UI
             SharedModel = new Shop();
             CloseWidget = null;
 
+
+            void Subscribe(ConditionalButton.State state, string key, Action<bool> action)
+            {
+                var inventoryItems = States.Instance.CurrentAvatarState.inventory.Items;
+                var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
+                var apStoneCount = inventoryItems.Where(x =>
+                        x.item.ItemSubType == ItemSubType.ApStone &&
+                        !x.Locked &&
+                        !(x.item is ITradableItem tradableItem &&
+                          tradableItem.RequiredBlockIndex > blockIndex))
+                    .Sum(item => item.count);
+
+                switch (state)
+                {
+                    case ConditionalButton.State.Normal:
+                        AudioController.PlayClick();
+                        action(false);
+                        break;
+                    case ConditionalButton.State.Conditional:
+                        if (apStoneCount <= 0)
+                        {
+                            OneLineSystem.Push(
+                                MailType.System,
+                                L10nManager.Localize("ERROR_ACTION_POINT"),
+                                NotificationCell.NotificationType.Alert);
+                            break;
+                        }
+
+                        var confirm = Widget.Find<IconAndButtonSystem>();
+                        confirm.ShowWithTwoButton(L10nManager.Localize("UI_CONFIRM"),
+                            L10nManager.Localize("UI_APREFILL_GUIDE_FORMAT",
+                                L10nManager.Localize(key), apStoneCount),
+                            L10nManager.Localize("UI_OK"),
+                            L10nManager.Localize("UI_CANCEL"),
+                            false, IconAndButtonSystem.SystemType.Information);
+                        confirm.ConfirmCallback = () => action(true);
+                        break;
+                    case ConditionalButton.State.Disabled:
+                        break;
+                }
+            }
+
             reregistrationButton.onClick.AddListener(() =>
             {
-                Find<TwoButtonSystem>().Show(
+                Find<CostTwoButtonPopup>().Show(
                     L10nManager.Localize("UI_SHOP_UPDATESELLALL_POPUP"),
                     L10nManager.Localize("UI_YES"),
                     L10nManager.Localize("UI_NO"),
-                    SubscribeReRegisterProduct,
-                    null, CostType.ActionPoint, 5);
+                    CostType.ActionPoint, 5,
+                    state => Subscribe(state, "UI_SHOP_UPDATESELLALL",
+                        SubscribeReRegisterProduct));
             });
             cancelRegistrationButton.onClick.AddListener(() =>
             {
-                Find<TwoButtonSystem>().Show(
+                Find<CostTwoButtonPopup>().Show(
                     L10nManager.Localize("UI_SHOP_CANCELLATIONALL_POPUP"),
                     L10nManager.Localize("UI_YES"),
                     L10nManager.Localize("UI_NO"),
-                    SubscribeCancelProductRegistration,
-                    null, CostType.ActionPoint, 5);
+                    CostType.ActionPoint, 5,
+                    state => Subscribe(state, "UI_SHOP_CANCELLATIONALL",
+                        SubscribeCancelProductRegistration));
             });
 
             buyButton.onClick.AddListener(() =>
@@ -368,7 +413,7 @@ namespace Nekoyume.UI
             data.Item.Value.CountEnabled.Value = false;
         }
 
-        private async void SubscribeReRegisterProduct()
+        private async void SubscribeReRegisterProduct(bool chargeAp)
         {
             var itemProducts = ReactiveShopState.SellItemProducts.Value;
             var favProducts = ReactiveShopState.SellFungibleAssetProducts.Value;
@@ -400,7 +445,7 @@ namespace Nekoyume.UI
                 oneLineSystemInfos.Add((itemName, (int)product.Quantity));
             }
 
-            Game.Game.instance.ActionManager.ReRegisterProduct(avatarAddress, reRegisterInfos, true).Subscribe();  //
+            Game.Game.instance.ActionManager.ReRegisterProduct(avatarAddress, reRegisterInfos, chargeAp).Subscribe();
             Analyzer.Instance.Track("Unity/ReRegisterProductAll", new Dictionary<string, Value>()
             {
                 ["Quantity"] = reRegisterInfos.Count,
@@ -434,7 +479,7 @@ namespace Nekoyume.UI
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
         }
 
-        private async void SubscribeCancelProductRegistration()
+        private async void SubscribeCancelProductRegistration(bool chargeAp)
         {
             var itemProducts = ReactiveShopState.SellItemProducts.Value;
             var favProducts = ReactiveShopState.SellFungibleAssetProducts.Value;
@@ -489,7 +534,7 @@ namespace Nekoyume.UI
                 oneLineSystemInfos.Add((itemName, (int)favProduct.Quantity));
             }
 
-            Game.Game.instance.ActionManager.CancelProductRegistration(avatarAddress, productInfos, true).Subscribe();  //
+            Game.Game.instance.ActionManager.CancelProductRegistration(avatarAddress, productInfos, chargeAp).Subscribe();
             Analyzer.Instance.Track("Unity/CancelRegisterProductAll", new Dictionary<string, Value>()
             {
                 ["Quantity"] = productInfos.Count,
