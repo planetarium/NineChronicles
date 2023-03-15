@@ -200,7 +200,12 @@ namespace StateViewer.Editor
                 {
                     _stateTreeView.Serialize(),
                 };
-                ActionManager.Instance?.ManipulateState(stateList);
+                var balanceList = new List<(Address addr, FungibleAssetValue fav)>
+                {
+                    (new Address(_searchString), FungibleAssetValue.Parse(_ncg, _ncgValue)),
+                    (new Address(_searchString), FungibleAssetValue.Parse(_crystal, _crystalValue)),
+                };
+                ActionManager.Instance?.ManipulateState(stateList, balanceList);
             }
 
             drawTestValues = EditorGUILayout.Toggle("Show Test Values", drawTestValues);
