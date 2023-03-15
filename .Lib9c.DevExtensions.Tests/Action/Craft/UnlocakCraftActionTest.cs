@@ -24,7 +24,7 @@ namespace Lib9c.DevExtensions.Tests.Action.Craft
         public UnlockCraftActionTest()
         {
             (_tableSheets, _agentAddress, _avatarAddress, _, _initialStateV2) =
-                InitializeUtil.InitializeStates(true);
+                InitializeUtil.InitializeStates(isDevEx: true);
             _worldInformationAddress = _avatarAddress.Derive(LegacyWorldInformationKey);
         }
 

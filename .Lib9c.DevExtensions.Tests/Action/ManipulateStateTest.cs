@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
 using Lib9c.DevExtensions.Action;
@@ -10,19 +11,22 @@ using Lib9c.Tests.Action;
 using Lib9c.Tests.Util;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Assets;
+using Libplanet.Crypto;
 using Nekoyume.Action;
 using Nekoyume.Model;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Quest;
 using Nekoyume.Model.State;
-using Nekoyume.TableData;
 using Xunit;
 
 namespace Lib9c.DevExtensions.Tests.Action
 {
     public class ManipulateStateTest
     {
+        private static readonly Address AdminAddr = new PrivateKey().ToAddress();
+
         private readonly TableSheets _tableSheets;
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
@@ -36,7 +40,9 @@ namespace Lib9c.DevExtensions.Tests.Action
         public ManipulateStateTest()
         {
             (_tableSheets, _agentAddress, _avatarAddress, _, _initialStateV2) =
-                InitializeUtil.InitializeStates(isDevEx: true);
+                InitializeUtil.InitializeStates(
+                    adminAddr: AdminAddr,
+                    isDevEx: true);
             _inventoryAddress = _avatarAddress.Derive(SerializeKeys.LegacyInventoryKey);
             _worldInformationAddress =
                 _avatarAddress.Derive(SerializeKeys.LegacyWorldInformationKey);
@@ -285,17 +291,67 @@ namespace Lib9c.DevExtensions.Tests.Action
                 questList
             };
         }
+
+        public static IEnumerable<object[]> FetchBalance()
+        {
+            var ncg = Currency.Legacy(
+                "NCG",
+                2,
+                new[] { AdminAddr }.ToImmutableHashSet());
+            yield return new object[]
+            {
+                new PrivateKey().ToAddress(),
+                new FungibleAssetValue(ncg, 0, 1),
+            };
+            yield return new object[]
+            {
+                new PrivateKey().ToAddress(),
+                new FungibleAssetValue(ncg, 1, 0),
+            };
+            yield return new object[]
+            {
+                new PrivateKey().ToAddress(),
+                new FungibleAssetValue(ncg, 1_000_000_000 - 1, 99),
+            };
+            yield return new object[]
+            {
+                new PrivateKey().ToAddress(),
+                new FungibleAssetValue(ncg, 1_000_000_000, 0),
+            };
+
+            var crystal = Currency.Legacy("CRYSTAL", 18, null);
+            yield return new object[]
+            {
+                new PrivateKey().ToAddress(),
+                new FungibleAssetValue(crystal, 0, 1),
+            };
+            yield return new object[]
+            {
+                new PrivateKey().ToAddress(),
+                new FungibleAssetValue(crystal, 1, 0),
+            };
+            yield return new object[]
+            {
+                new PrivateKey().ToAddress(),
+                new FungibleAssetValue(
+                    crystal,
+                    long.MaxValue,
+                    999999999999999999),
+            };
+        }
         // ~MemberData
 
         // Logics
         private IAccountStateDelta Manipulate(
             IAccountStateDelta state,
-            List<(Address, IValue)> targetStateList
+            List<(Address addr, IValue value)> targetStateList,
+            List<(Address addr, FungibleAssetValue fav)> targetBalanceList
         )
         {
             var action = new ManipulateState
             {
-                StateList = targetStateList
+                StateList = targetStateList,
+                BalanceList = targetBalanceList,
             };
 
             return action.Execute(new ActionContext
@@ -404,7 +460,8 @@ namespace Lib9c.DevExtensions.Tests.Action
                 new List<(Address, IValue)>
                 {
                     (_avatarAddress, newAvatarState.SerializeV2())
-                }
+                },
+                new List<(Address, FungibleAssetValue)>()
             );
 
             TestAvatarState(
@@ -445,7 +502,8 @@ namespace Lib9c.DevExtensions.Tests.Action
                 new List<(Address, IValue)>
                 {
                     (_inventoryAddress, targetInventory.Serialize()),
-                }
+                },
+                new List<(Address, FungibleAssetValue)>()
             );
 
             TestInventoryState(state, targetInventory);
@@ -460,7 +518,8 @@ namespace Lib9c.DevExtensions.Tests.Action
                 new List<(Address, IValue)>
                 {
                     (_worldInformationAddress, targetInfo.Serialize())
-                }
+                },
+                new List<(Address, FungibleAssetValue)>()
             );
 
             TestWorldInformation(state, lastClearedStage);
@@ -474,10 +533,27 @@ namespace Lib9c.DevExtensions.Tests.Action
                 new List<(Address, IValue)>
                 {
                     (_questListAddress, questList.Serialize())
-                }
+                },
+                new List<(Address, FungibleAssetValue)>()
             );
 
             TestQuestState(state, targetQuestIdList);
+        }
+
+        [Theory]
+        [MemberData(nameof(FetchBalance))]
+        public void SetBalance(Address addr, FungibleAssetValue fav)
+        {
+            var states = Manipulate(
+                _initialStateV2,
+                new List<(Address, IValue)>(),
+                new List<(Address, FungibleAssetValue)>
+                {
+                    (addr, fav)
+                }
+            );
+
+            Assert.Equal(fav, states.GetBalance(addr, fav.Currency));
         }
 
         [Fact]
@@ -503,14 +579,21 @@ namespace Lib9c.DevExtensions.Tests.Action
             var questData = FetchQuest().Last();
             var targetQuestIdList = (List<int>)questData[0];
             var questList = (QuestList)questData[1];
+            var balanceList = FetchBalance()
+                .Select(objects => (addr: (Address)objects[0], fav: (FungibleAssetValue)objects[1]))
+                .Where(tuple => !(tuple.fav.Currency.Ticker == "NCG" && tuple.fav.MajorUnit > 100))
+                .ToList();
 
-            var state = Manipulate(_initialStateV2, new List<(Address, IValue)>
+            var state = Manipulate(
+                _initialStateV2,
+                new List<(Address, IValue)>
                 {
                     (_avatarAddress, newAvatarState.Serialize()),
                     (_inventoryAddress, inventory.Serialize()),
                     (_worldInformationAddress, worldState.Serialize()),
                     (_questListAddress, questList.Serialize()),
-                }
+                },
+                balanceList
             );
 
             TestAvatarState(state,
@@ -522,6 +605,11 @@ namespace Lib9c.DevExtensions.Tests.Action
             TestInventoryState(state, inventory);
             TestWorldInformation(state, lastClearedStage);
             TestQuestState(state, targetQuestIdList);
+
+            foreach (var (addr, fav) in balanceList)
+            {
+                Assert.Equal(fav, state.GetBalance(addr, fav.Currency));
+            }
         }
     }
 }
