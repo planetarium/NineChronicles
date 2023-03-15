@@ -163,19 +163,64 @@ namespace Nekoyume.UI
 
         private void ShowSellTooltip(ShopItem model)
         {
+            var inventoryItems = States.Instance.CurrentAvatarState.inventory.Items;
+            var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
+            var apStoneCount = inventoryItems.Where(x =>
+                    x.item.ItemSubType == ItemSubType.ApStone &&
+                    !x.Locked &&
+                    !(x.item is ITradableItem tradableItem &&
+                      tradableItem.RequiredBlockIndex > blockIndex))
+                .Sum(item => item.count);
+
+            void Subscribe(ConditionalButton.State state, string key, Action<bool> action)
+            {
+                switch (state)
+                {
+                    case ConditionalButton.State.Normal:
+                        AudioController.PlayClick();
+                        action(false);
+                        break;
+                    case ConditionalButton.State.Conditional:
+                        if (apStoneCount <= 0)
+                        {
+                            OneLineSystem.Push(
+                                MailType.System,
+                                L10nManager.Localize("ERROR_ACTION_POINT"),
+                                NotificationCell.NotificationType.Alert);
+                            break;
+                        }
+
+                        var confirm = Widget.Find<IconAndButtonSystem>();
+                        confirm.ShowWithTwoButton(L10nManager.Localize("UI_CONFIRM"),
+                            L10nManager.Localize("UI_APREFILL_GUIDE_FORMAT",
+                                L10nManager.Localize(key), apStoneCount),
+                            L10nManager.Localize("UI_OK"),
+                            L10nManager.Localize("UI_CANCEL"),
+                            false, IconAndButtonSystem.SystemType.Information);
+                        confirm.ConfirmCallback = () => action(true);
+                        break;
+                    case ConditionalButton.State.Disabled:
+                        break;
+                }
+            }
+
             if (model.ItemBase is not null)
             {
                 var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
-                tooltip.Show(model,
-                    () => ShowReRegisterProductPopup(model),
-                    () => ShowRetrievePopup(model),
+                tooltip.Show(model, apStoneCount,
+                    state => Subscribe(state, "UI_RETRIEVE",
+                        chargeAp => ShowReRegisterProductPopup(model, chargeAp)),
+                    state => Subscribe(state, "UI_REREGISTER",
+                        chargeAp => ShowRetrievePopup(model, chargeAp)),
                     view.ClearSelectedItem);
             }
             else
             {
-                Find<FungibleAssetTooltip>().Show(model,
-                    () => ShowReRegisterProductPopup(model),
-                    () => ShowRetrievePopup(model),
+                Find<FungibleAssetTooltip>().Show(model, apStoneCount,
+                    state => Subscribe(state, "UI_RETRIEVE",
+                        chargeAp => ShowReRegisterProductPopup(model, chargeAp)),
+                    state => Subscribe(state, "UI_REREGISTER",
+                        chargeAp => ShowRetrievePopup(model, chargeAp)),
                     view.ClearSelectedItem);
             }
         }

@@ -176,21 +176,24 @@ namespace Nekoyume.UI
 
         public virtual void Show(
             ShopItem item,
-            System.Action onRegister,
-            System.Action onSellCancellation,
+            int apStoneCount,
+            Action<ConditionalButton.State> onRegister,
+            Action<ConditionalButton.State> onSellCancellation,
             System.Action onClose)
         {
             submitButtonContainer.SetActive(false);
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(true);
-            sell.Set(item.Product.RegisteredBlockIndex + Order.ExpirationInterval,
-                () =>
+            sell.Set(
+                item.Product.RegisteredBlockIndex + Order.ExpirationInterval,
+                apStoneCount,
+                state =>
                 {
-                    onSellCancellation?.Invoke();
+                    onSellCancellation?.Invoke(state);
                     Close();
-                }, () =>
+                }, state =>
                 {
-                    onRegister?.Invoke();
+                    onRegister?.Invoke(state);
                     Close();
                 });
             detail.Set(
