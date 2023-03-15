@@ -12,6 +12,7 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<FungibleAssetValue> UnitPrice = new();
         public readonly ReactiveProperty<int> Count = new(1);
         public readonly ReactiveProperty<bool> IsSell = new();
+        public readonly ReactiveProperty<bool> ChargeAp = new(false);
 
         public readonly Subject<int> OnChangeCount = new();
         public readonly Subject<decimal> OnChangePrice = new();

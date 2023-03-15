@@ -240,6 +240,7 @@ namespace Nekoyume.UI
             data.IsSell.Value = true;
             data.InfoText.Value = string.Empty;
             data.CountEnabled.Value = true;
+            data.ChargeAp.Value = false;  // 나중에 버튼 누르면
 
             if (model.ItemBase is not null)
             {
@@ -263,12 +264,13 @@ namespace Nekoyume.UI
             data.Item.Value.CountEnabled.Value = false;
         }
 
-        private void ShowReRegisterProductPopup(ShopItem model) // 판매 갱신
+        private void ShowReRegisterProductPopup(ShopItem model, bool chargeAp) // 판매 갱신
         {
             var data = SharedModel.ItemCountableAndPricePopup.Value;
             data.IsSell.Value = false;
             data.InfoText.Value = string.Empty;
             data.CountEnabled.Value = true;
+            data.ChargeAp.Value = chargeAp;
 
             if (model.Product is not null)
             {
@@ -353,7 +355,7 @@ namespace Nekoyume.UI
                 oneLineSystemInfos.Add((itemName, (int)product.Quantity));
             }
 
-            Game.Game.instance.ActionManager.ReRegisterProduct(avatarAddress, reRegisterInfos).Subscribe();
+            Game.Game.instance.ActionManager.ReRegisterProduct(avatarAddress, reRegisterInfos, true).Subscribe();  //
             Analyzer.Instance.Track("Unity/ReRegisterProductAll", new Dictionary<string, Value>()
             {
                 ["Quantity"] = reRegisterInfos.Count,
@@ -442,7 +444,7 @@ namespace Nekoyume.UI
                 oneLineSystemInfos.Add((itemName, (int)favProduct.Quantity));
             }
 
-            Game.Game.instance.ActionManager.CancelProductRegistration(avatarAddress, productInfos).Subscribe();
+            Game.Game.instance.ActionManager.CancelProductRegistration(avatarAddress, productInfos, true).Subscribe();  //
             Analyzer.Instance.Track("Unity/CancelRegisterProductAll", new Dictionary<string, Value>()
             {
                 ["Quantity"] = productInfos.Count,
@@ -475,7 +477,7 @@ namespace Nekoyume.UI
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
         }
 
-        private void ShowRetrievePopup(ShopItem model) // 판매 취소
+        private void ShowRetrievePopup(ShopItem model, bool chargeAp) // 판매 취소
         {
             var productId = model.Product?.ProductId ?? model.FungibleAssetProduct.ProductId;
             var price = model.Product?.Price ?? model.FungibleAssetProduct.Price;
@@ -490,6 +492,7 @@ namespace Nekoyume.UI
             SharedModel.ItemCountAndPricePopup.Value.Price.Value = (BigInteger)price *
                 States.Instance.GoldBalanceState.Gold.Currency;
             SharedModel.ItemCountAndPricePopup.Value.PriceInteractable.Value = false;
+            SharedModel.ItemCountAndPricePopup.Value.ChargeAp.Value = chargeAp;
             var itemCount = (int)quantity;
             if (model.Product is null)
             {
@@ -561,7 +564,8 @@ namespace Nekoyume.UI
                         : ProductType.NonFungible
                 };
 
-                Game.Game.instance.ActionManager.RegisterProduct(avatarAddress, info).Subscribe();
+                Game.Game.instance.ActionManager
+                    .RegisterProduct(avatarAddress, info, data.ChargeAp.Value).Subscribe();
                 if (tradableItem is not TradableMaterial)
                 {
                     LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId,
@@ -586,7 +590,8 @@ namespace Nekoyume.UI
                     Type = ProductType.FungibleAssetValue
                 };
 
-                Game.Game.instance.ActionManager.RegisterProduct(avatarAddress, info).Subscribe();
+                Game.Game.instance.ActionManager
+                    .RegisterProduct(avatarAddress, info, data.ChargeAp.Value).Subscribe();
                 States.Instance.SetBalance(fungibleAsset);
                 inventory.UpdateFungibleAssets();
                 PostRegisterProduct(fungibleAsset.GetLocalizedName());
@@ -618,8 +623,8 @@ namespace Nekoyume.UI
                 : data.Item.Value.FungibleAssetValue.Value.GetLocalizedName();
             PostRegisterProduct(itemName);
 
-            Game.Game.instance.ActionManager.ReRegisterProduct(avatarAddress, reRegisterInfos)
-                .Subscribe();
+            Game.Game.instance.ActionManager
+                .ReRegisterProduct(avatarAddress, reRegisterInfos, data.ChargeAp.Value).Subscribe();
             Analyzer.Instance.Track("Unity/ReRegisterProduct", new Dictionary<string, Value>()
             {
                 ["AvatarAddress"] = avatarAddress.ToString(),
@@ -789,8 +794,7 @@ namespace Nekoyume.UI
                     }
                 };
                 Game.Game.instance.ActionManager.CancelProductRegistration(
-                    itemProduct.SellerAvatarAddress,
-                    productInfo).Subscribe();
+                    itemProduct.SellerAvatarAddress, productInfo, model.ChargeAp.Value).Subscribe();
             }
             else
             {
@@ -808,8 +812,7 @@ namespace Nekoyume.UI
                     }
                 };
                 Game.Game.instance.ActionManager.CancelProductRegistration(
-                    fav.SellerAvatarAddress,
-                    productInfo).Subscribe();
+                    fav.SellerAvatarAddress, productInfo, model.ChargeAp.Value).Subscribe();
             }
 
             ResponseCancelProductRegistration();
