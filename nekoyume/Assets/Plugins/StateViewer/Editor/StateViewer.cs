@@ -296,10 +296,17 @@ namespace StateViewer.Editor
             {
                 var (addr, value) = await _stateProxy.GetStateAsync(searchString);
                 _stateTreeView.SetData(addr, value);
-                var (_, ncg) = _stateProxy.GetBalance(addr, _ncg);
-                _ncgValue = $"{ncg.MajorUnit}.{ncg.MinorUnit}";
-                var (_, crystal) = _stateProxy.GetBalance(addr, _crystal);
-                _crystalValue = $"{crystal.MajorUnit}.{crystal.MinorUnit}";
+
+                await UniTask.Run(() =>
+                {
+                    var (_, ncg) = _stateProxy.GetBalance(addr, _ncg);
+                    _ncgValue = $"{ncg.MajorUnit}.{ncg.MinorUnit}";
+                });
+                await UniTask.Run(() =>
+                {
+                    var (_, crystal) = _stateProxy.GetBalance(addr, _crystal);
+                    _crystalValue = $"{crystal.MajorUnit}.{crystal.MinorUnit}";
+                });
             }
             catch (KeyNotFoundException)
             {
