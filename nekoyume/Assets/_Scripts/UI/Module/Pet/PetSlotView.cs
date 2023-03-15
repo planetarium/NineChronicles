@@ -12,6 +12,7 @@ using Nekoyume.UI.Scroller;
 using Spine.Unity;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
@@ -44,10 +45,13 @@ namespace Nekoyume.UI.Module
         private GameObject hasNotification;
 
         [SerializeField]
-        private GameObject loading;
+        private GameObject dimObject;
 
         [SerializeField]
         private GameObject summonableNotification;
+
+        [SerializeField]
+        private GameObject loadingObject;
 
         [SerializeField]
         private List<UIHsvModifier> uiHsvModifiers;
@@ -75,7 +79,8 @@ namespace Nekoyume.UI.Module
             hasNotification.SetActive(false);
             levelUpNotification.SetActive(false);
             selectedObject.SetActive(false);
-            loading.SetActive(false);
+            dimObject.SetActive(false);
+            loadingObject.SetActive(false);
             summonableNotification.SetActive(false);
             if (model.PetRow is null)
             {
@@ -109,6 +114,7 @@ namespace Nekoyume.UI.Module
             levelText.color = isMaxLevel
                 ? PetFrontHelper.GetUIColor(PetFrontHelper.MaxLevelText)
                 : Color.white;
+            dimObject.SetActive(!isOwn);
 
             model.HasNotification.Subscribe(b =>
             {
@@ -127,14 +133,15 @@ namespace Nekoyume.UI.Module
             LoadingHelper.PetEnhancement.Subscribe(id =>
             {
                 var isLoading = id == model.PetRow.Id;
-                loading.SetActive(isLoading);
+                loadingObject.SetActive(isLoading);
                 if (isLoading)
                 {
+                    dimObject.SetActive(true);
+                    summonableNotification.SetActive(false);
                     stateText.text =
                         L10nManager.Localize(isOwn
                             ? "UI_LEVELUP_IN_PROGRESS"
                             : "UI_SUMMONING_IN_PROGRESS");
-                    summonableNotification.SetActive(false);
                 }
             }).AddTo(_disposables);
         }

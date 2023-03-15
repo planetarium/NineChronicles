@@ -121,6 +121,9 @@ namespace Nekoyume.UI
                 if (isOwn)
                 {
                     levelText.text = $"Lv.{petState.Level}";
+                    levelText.color = isMaxLevel
+                        ? PetFrontHelper.GetUIColor(PetFrontHelper.MaxLevelText)
+                        : Color.white;
                     levelUpButtonText.text = isMaxLevel
                         ? "Info"
                         : LevelUpText;
@@ -130,6 +133,7 @@ namespace Nekoyume.UI
                 {
                     levelText.text = "-";
                     levelUpButtonText.text = SummonText;
+                    levelUpNotification.SetActive(false);
                 }
             }
         }
