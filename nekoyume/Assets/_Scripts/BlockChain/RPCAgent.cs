@@ -16,6 +16,7 @@ using Libplanet.Assets;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
 using Libplanet.Tx;
+using LruCacheNet;
 using MagicOnion.Client;
 using MessagePack;
 using mixpanel;
@@ -166,23 +167,29 @@ namespace Nekoyume.BlockChain
 
         public async Task<IValue> GetStateAsync(Address address)
         {
+            var game = Game.Game.instance;
             // Check state & cached because force update state after rpc disconnected.
-            if (Game.Game.instance.CachedAddresses.TryGetValue(address, out bool cached) && cached &&
-                Game.Game.instance.CachedStates.TryGetValue(address, out IValue value) && !(value is Null))
+            if (game.CachedStateAddresses.TryGetValue(address, out var cached) &&
+                cached &&
+                game.CachedStates.TryGetValue(address, out var value) &&
+                !(value is Null))
             {
                 await Task.CompletedTask;
                 return value;
             }
+
             byte[] raw = await _service.GetState(address.ToByteArray(), BlockTipHash.ToByteArray());
             IValue result = _codec.Decode(raw);
-            if (Game.Game.instance.CachedAddresses.ContainsKey(address))
+            if (game.CachedStateAddresses.ContainsKey(address))
             {
-                Game.Game.instance.CachedAddresses[address] = true;
+                game.CachedStateAddresses[address] = true;
             }
-            if (Game.Game.instance.CachedStates.ContainsKey(address))
+
+            if (game.CachedStates.ContainsKey(address))
             {
-                Game.Game.instance.CachedStates.AddOrUpdate(address, result);
+                game.CachedStates.AddOrUpdate(address, result);
             }
+
             return result;
         }
 
@@ -201,28 +208,36 @@ namespace Nekoyume.BlockChain
                 serialized.ElementAt(1).ToBigInteger());
         }
 
-        public async Task<FungibleAssetValue> GetBalanceAsync(Address address, Currency currency)
+        public async Task<FungibleAssetValue> GetBalanceAsync(Address addr, Currency currency)
         {
-            if (Game.Game.instance.CachedBalance.TryGetValue(address, out FungibleAssetValue value) &&
-                !value.Equals(default) && Game.Game.instance.CachedAddresses.TryGetValue(address, out bool cached) &&
-                cached)
+            var game = Game.Game.instance;
+            if (game.CachedBalance.TryGetValue(currency, out var cache) &&
+                cache.TryGetValue(addr, out var fav) &&
+                !fav.Equals(default))
             {
                 await Task.CompletedTask;
-                return value;
+                return fav;
             }
+
             // FIXME: `CurrencyExtension.Serialize()` should be changed to `Currency.Serialize()`.
             byte[] raw = await _service.GetBalance(
-                address.ToByteArray(),
+                addr.ToByteArray(),
                 _codec.Encode(CurrencyExtensions.Serialize(currency)),
                 BlockTipHash.ToByteArray()
             );
-            var serialized = (Bencodex.Types.List) _codec.Decode(raw);
+            var serialized = (List)_codec.Decode(raw);
             var balance = FungibleAssetValue.FromRawValue(
                 new Currency(serialized.ElementAt(0)),
                 serialized.ElementAt(1).ToBigInteger());
-            if (address.Equals(Address))
+            if (addr.Equals(Address))
             {
-                Game.Game.instance.CachedBalance[Address] = balance;
+                if (!game.CachedBalance.ContainsKey(currency))
+                {
+                    game.CachedBalance[currency] =
+                        new LruCache<Address, FungibleAssetValue>(2);
+                }
+
+                game.CachedBalance[currency][addr] = balance;
             }
 
             return balance;
@@ -716,11 +731,11 @@ namespace Nekoyume.BlockChain
 
             foreach (var address in addresses)
             {
-                string add = address.ToString();
-                Game.Game.instance.CachedAddresses[address] = false;
-                if (!Game.Game.instance.CachedStates.ContainsKey(address))
+                var game = Game.Game.instance;
+                game.CachedStateAddresses[address] = false;
+                if (!game.CachedStates.ContainsKey(address))
                 {
-                    Game.Game.instance.CachedStates.Add(address, new Null());
+                    game.CachedStates.Add(address, new Null());
                 }
             }
 
