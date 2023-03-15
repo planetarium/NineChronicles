@@ -79,7 +79,10 @@ namespace Lib9c.DevExtensions.Action
                 ["stateList"] = StateList.Serialize(),
                 ["bl"] = new List(BalanceList
                     .OrderBy(tuple => tuple.addr)
-                    .ThenBy(tuple => tuple.fav)
+                    .ThenBy(tuple => tuple.fav.Currency.Ticker)
+                    .ThenBy(tuple => tuple.fav.Currency.DecimalPlaces)
+                    .ThenBy(tuple => tuple.fav.Currency.Minters)
+                    .ThenBy(tuple => tuple.fav.RawValue)
                     .Select(tuple => new List(
                         tuple.addr.Serialize(),
                         tuple.fav.Serialize()))),

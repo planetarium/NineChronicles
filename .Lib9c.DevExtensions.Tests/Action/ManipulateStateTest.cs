@@ -14,6 +14,7 @@ using Libplanet.Action;
 using Libplanet.Assets;
 using Libplanet.Crypto;
 using Nekoyume.Action;
+using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
@@ -26,6 +27,13 @@ namespace Lib9c.DevExtensions.Tests.Action
     public class ManipulateStateTest
     {
         private static readonly Address AdminAddr = new PrivateKey().ToAddress();
+
+        private static readonly Currency Ncg = Currency.Legacy(
+            "NCG",
+            2,
+            new[] { AdminAddr }.ToImmutableHashSet());
+
+        private static readonly Currency Crystal = CrystalCalculator.CRYSTAL;
 
         private readonly TableSheets _tableSheets;
         private readonly Address _agentAddress;
@@ -294,47 +302,41 @@ namespace Lib9c.DevExtensions.Tests.Action
 
         public static IEnumerable<object[]> FetchBalance()
         {
-            var ncg = Currency.Legacy(
-                "NCG",
-                2,
-                new[] { AdminAddr }.ToImmutableHashSet());
             yield return new object[]
             {
                 new PrivateKey().ToAddress(),
-                new FungibleAssetValue(ncg, 0, 1),
+                new FungibleAssetValue(Ncg, 0, 1),
             };
             yield return new object[]
             {
                 new PrivateKey().ToAddress(),
-                new FungibleAssetValue(ncg, 1, 0),
+                new FungibleAssetValue(Ncg, 1, 0),
             };
             yield return new object[]
             {
                 new PrivateKey().ToAddress(),
-                new FungibleAssetValue(ncg, 1_000_000_000 - 1, 99),
+                new FungibleAssetValue(Ncg, 1_000_000_000 - 1, 99),
             };
             yield return new object[]
             {
                 new PrivateKey().ToAddress(),
-                new FungibleAssetValue(ncg, 1_000_000_000, 0),
-            };
-
-            var crystal = Currency.Legacy("CRYSTAL", 18, null);
-            yield return new object[]
-            {
-                new PrivateKey().ToAddress(),
-                new FungibleAssetValue(crystal, 0, 1),
+                new FungibleAssetValue(Ncg, 1_000_000_000, 0),
             };
             yield return new object[]
             {
                 new PrivateKey().ToAddress(),
-                new FungibleAssetValue(crystal, 1, 0),
+                new FungibleAssetValue(Crystal, 0, 1),
+            };
+            yield return new object[]
+            {
+                new PrivateKey().ToAddress(),
+                new FungibleAssetValue(Crystal, 1, 0),
             };
             yield return new object[]
             {
                 new PrivateKey().ToAddress(),
                 new FungibleAssetValue(
-                    crystal,
+                    Crystal,
                     long.MaxValue,
                     999999999999999999),
             };
@@ -491,6 +493,38 @@ namespace Lib9c.DevExtensions.Tests.Action
             {
                 Assert.True(worldInformation.IsStageCleared(i));
             }
+        }
+
+        [Fact]
+        public void Serialize()
+        {
+            var ncg = new FungibleAssetValue(Ncg, 100, 0);
+            var crystal = new FungibleAssetValue(Crystal, 100, 0);
+            var action = new ManipulateState
+            {
+                StateList = new List<(Address, IValue)>
+                {
+                    (_avatarAddress, _avatarState.SerializeV2()),
+                },
+                BalanceList = new List<(Address, FungibleAssetValue)>
+                {
+                    (_agentAddress, ncg),
+                    (_agentAddress, crystal),
+                },
+            };
+            var serialized = action.PlainValue;
+            var deserialized = new ManipulateState();
+            deserialized.LoadPlainValue(serialized);
+            Assert.True(action.StateList.SequenceEqual(deserialized.StateList));
+            Assert.True(action.BalanceList
+                .OrderBy(tuple => tuple.addr)
+                .ThenBy(tuple => tuple.fav.Currency.Ticker)
+                .ThenBy(tuple => tuple.fav.Currency.DecimalPlaces)
+                .ThenBy(tuple => tuple.fav.Currency.Minters)
+                .ThenBy(tuple => tuple.fav.RawValue)
+                .SequenceEqual(deserialized.BalanceList));
+            var serialized2 = deserialized.PlainValue;
+            Assert.Equal(serialized, serialized2);
         }
 
         [Theory]
