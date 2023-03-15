@@ -90,6 +90,12 @@ namespace ModelViewer.Editor
 
         private void OnEnable()
         {
+            _selectedIndex = 0;
+            _scrollPos = Vector2.zero;
+        }
+
+        private static void GenerateTypes()
+        {
             ModelCache.Clear();
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(asm => asm.GetTypes())
@@ -143,6 +149,12 @@ namespace ModelViewer.Editor
 
         private void OnGUI()
         {
+            if (GUILayout.Button("Generate Types"))
+            {
+                OnEnable();
+                GenerateTypes();
+            }
+
             _selectedIndex = EditorGUILayout.Popup(
                 new GUIContent("Type"),
                 _selectedIndex,
@@ -155,7 +167,7 @@ namespace ModelViewer.Editor
                 return;
             }
 
-            EditorStyles.label.richText = true; // TODO: cache.
+            EditorStyles.label.richText = true;
             _scrollPos = EditorGUILayout.BeginScrollView(_scrollPos);
             var selectedVm = _viewModelCache[_selectedIndex];
             EditorGUILayout.Space();
@@ -178,6 +190,7 @@ namespace ModelViewer.Editor
             GUILayout.Label(selectedVm.SerializedObject.Inspect(true));
 
             EditorGUILayout.EndScrollView();
+            EditorStyles.label.richText = false;
         }
     }
 }
