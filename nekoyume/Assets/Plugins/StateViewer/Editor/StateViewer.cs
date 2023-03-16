@@ -78,6 +78,8 @@ namespace StateViewer.Editor
 
         private void OnEnable()
         {
+            minSize = new Vector2(800f, 300f);
+
             stateTreeViewState ??= new TreeViewState();
             var serializedKeyColumn = new MultiColumnHeaderState.Column
             {
