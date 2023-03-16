@@ -121,18 +121,25 @@ namespace Nekoyume.UI
             petSkeletonGraphic.Initialize(true);
             requiredSoulStoneImage.overrideSprite =
                 PetFrontHelper.GetSoulStoneSprite(_petRow.Id);
-            submitButton.OnSubmitSubject.Subscribe(_ =>
+            submitButton.OnClickSubject.Subscribe(state =>
             {
-                if (LoadingHelper.PetEnhancement.Value == 0 && !_notEnoughBalance)
+                switch (state)
                 {
-                    Action(_petRow.Id, 1);
-                }
-                else
-                {
-                    OneLineSystem.Push(
-                        MailType.System,
-                        L10nManager.Localize("UI_CAN_NOT_ENTER_PET_MENU"),
-                        NotificationCell.NotificationType.Information);
+                    case ConditionalButton.State.Normal:
+                        Action(_petRow.Id, 1);
+                        break;
+                    case ConditionalButton.State.Conditional:
+                        OneLineSystem.Push(
+                            MailType.System,
+                            L10nManager.Localize("UI_NOT_ENOUGH_NCG"),
+                            NotificationCell.NotificationType.Information);
+                        break;
+                    case ConditionalButton.State.Disabled:
+                        OneLineSystem.Push(
+                            MailType.System,
+                            L10nManager.Localize("UI_CAN_NOT_ENTER_PET_MENU"),
+                            NotificationCell.NotificationType.Information);
+                        break;
                 }
             }).AddTo(_disposables);
         }
@@ -177,19 +184,25 @@ namespace Nekoyume.UI
                         _sliderCurrentValue = value;
                         SetObjectByTargetLevel(petState.PetId, petState.Level, value + petState.Level);
                     });
-                submitButton.OnSubmitSubject.Subscribe(_ =>
+                submitButton.OnClickSubject.Subscribe(state =>
                 {
-                    Action(petState.PetId, _targetLevel);
-                    if (LoadingHelper.PetEnhancement.Value == 0 && !_notEnoughBalance)
+                    switch (state)
                     {
-
-                    }
-                    else
-                    {
-                        OneLineSystem.Push(
-                            MailType.System,
-                            L10nManager.Localize("UI_CAN_NOT_ENTER_PET_MENU"),
-                            NotificationCell.NotificationType.Information);
+                        case ConditionalButton.State.Normal:
+                            Action(_petRow.Id, _targetLevel);
+                            break;
+                        case ConditionalButton.State.Conditional:
+                            OneLineSystem.Push(
+                                MailType.System,
+                                L10nManager.Localize("UI_NOT_ENOUGH_NCG"),
+                                NotificationCell.NotificationType.Information);
+                            break;
+                        case ConditionalButton.State.Disabled:
+                            OneLineSystem.Push(
+                                MailType.System,
+                                L10nManager.Localize("UI_CAN_NOT_ENTER_PET_MENU"),
+                                NotificationCell.NotificationType.Information);
+                            break;
                     }
                 }).AddTo(_disposables);
             }
@@ -252,7 +265,7 @@ namespace Nekoyume.UI
             var enough = enoughNcg && enoughSoulStone;
             _notEnoughBalance = !enough;
             soulStoneNotEnoughObject.SetActive(_notEnoughBalance);
-            submitButton.SetCost(new ConditionalCostButton.CostParam(CostType.NCG, ncg));
+            submitButton.SetCost(CostType.NCG, ncg);
             submitButton.Interactable = enough && LoadingHelper.PetEnhancement.Value == 0;
         }
 

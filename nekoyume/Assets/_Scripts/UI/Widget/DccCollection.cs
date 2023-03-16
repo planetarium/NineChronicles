@@ -132,6 +132,7 @@ namespace Nekoyume.UI
                 else
                 {
                     levelText.text = "-";
+                    levelText.color = Color.white;
                     levelUpButtonText.text = SummonText;
                     levelUpNotification.SetActive(false);
                 }
