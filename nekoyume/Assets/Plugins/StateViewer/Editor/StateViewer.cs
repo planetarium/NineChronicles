@@ -11,7 +11,6 @@ using Nekoyume.Model.State;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Event = UnityEngine.Event;
 
 namespace StateViewer.Editor
@@ -24,20 +23,16 @@ namespace StateViewer.Editor
         [SerializeField]
         private bool drawTestValues;
 
-        [SerializeField]
-        private bool savable;
-
         // SerializeField is used to ensure the view state is written to the window
         // layout file. This means that the state survives restarting Unity as long as the window
         // is not closed. If the attribute is omitted then the state is still serialized/deserialized.
-        [FormerlySerializedAs("stateViewState")]
         [SerializeField]
         private TreeViewState stateTreeViewState;
 
         private StateTreeView _stateTreeView;
+        private Vector2 _stateTreeViewScrollPosition;
 
         private SearchField _searchField;
-
         private string _searchString;
 
         private Currency _ncg;
@@ -153,7 +148,6 @@ namespace StateViewer.Editor
                 stateTreeViewState,
                 new MultiColumnHeader(headerState));
             _searchField = new SearchField();
-            _stateTreeView.OnDirty += OnStateTreeViewDirty;
             _stateTreeView.SetData(default, Null.Value);
             _searchField.downOrUpArrowKeyPressed += _stateTreeView.SetFocusAndEnsureSelectedItem;
             initialized = true;
@@ -184,7 +178,9 @@ namespace StateViewer.Editor
             else
             {
                 EditorGUILayout.HelpBox(
-                    "This feature is only available in Play mode.",
+                    "This feature is only available in play mode.\n" +
+                    "Use the test values below if you want to test the State Viewer" +
+                    " in non-play mode.",
                     MessageType.Warning);
             }
 
@@ -193,36 +189,24 @@ namespace StateViewer.Editor
 
         private void DrawAll()
         {
-            if (//savable &&
-                GUILayout.Button("Save"))
-            {
-                var stateList = new List<(Address addr, IValue value)>
-                {
-                    _stateTreeView.Serialize(),
-                };
-                var balanceList = new List<(Address addr, FungibleAssetValue fav)>
-                {
-                    (new Address(_searchString), FungibleAssetValue.Parse(_ncg, _ncgValue)),
-                    (new Address(_searchString), FungibleAssetValue.Parse(_crystal, _crystalValue)),
-                };
-                ActionManager.Instance?.ManipulateState(stateList, balanceList);
-            }
-
-            drawTestValues = EditorGUILayout.Toggle("Show Test Values", drawTestValues);
-            if (drawTestValues)
+            if (!Application.isPlaying)
             {
                 GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
                 DrawTestValues();
             }
 
+            DrawHorizontalLine();
+            GUILayout.Label("State", EditorStyles.boldLabel);
             GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
             DrawSearchField();
-
             GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
-            DrawFAVField();
-
+            DrawStateTreeView();
             GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
-            _stateTreeView.OnGUI(GetRect(maxHeight: position.height));
+            DrawSaveButton();
+            GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
+            DrawHorizontalLine();
+            GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
+            DrawBalances();
         }
 
         private static Rect GetRect(
@@ -237,8 +221,21 @@ namespace StateViewer.Editor
                 GUILayout.ExpandWidth(true));
         }
 
+        private void DrawHorizontalLine()
+        {
+            var rect = EditorGUILayout.GetControlRect(false, 1f);
+            // rect.height = 1f;
+            EditorGUI.DrawRect(rect, new Color(0.5f, 0.5f, 0.5f, 1));
+        }
+
         private void DrawTestValues()
         {
+            drawTestValues = EditorGUILayout.Toggle("Test Values", drawTestValues);
+            if (!drawTestValues)
+            {
+                return;
+            }
+
             EditorGUILayout.BeginHorizontal();
             for (var i = 0; i < _testValues.Length; i++)
             {
@@ -254,8 +251,10 @@ namespace StateViewer.Editor
 
         private void DrawSearchField()
         {
-            var rect = GetRect();
-            _searchString = _searchField.OnGUI(rect, _searchString);
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Address");
+            _searchString = _searchField.OnGUI(_searchString);
+            GUILayout.EndHorizontal();
 
             var current = Event.current;
             if (current.keyCode != KeyCode.Return ||
@@ -267,26 +266,59 @@ namespace StateViewer.Editor
             OnConfirm(_searchString).Forget();
         }
 
-        private void DrawFAVField()
+        private void DrawStateTreeView()
         {
+            _stateTreeViewScrollPosition =
+                GUILayout.BeginScrollView(_stateTreeViewScrollPosition);
+            _stateTreeView.OnGUI(GetRect(maxHeight: position.height));
+            GUILayout.EndScrollView();
+        }
+
+        private void DrawSaveButton()
+        {
+            GUILayout.BeginHorizontal();
+            EditorGUILayout.Space();
+            if (GUILayout.Button("Save", GUILayout.MaxWidth(50f)))
+            {
+                var stateList = new List<(Address addr, IValue value)>
+                {
+                    _stateTreeView.Serialize(),
+                };
+                ActionManager.Instance?.ManipulateState(stateList, null);
+            }
+
+            GUILayout.EndHorizontal();
+        }
+
+        private void DrawBalances()
+        {
+            GUILayout.Label("Balances", EditorStyles.boldLabel);
+
             // NCG
             EditorGUILayout.BeginHorizontal();
-            GUILayout.Label("NCG");
-            _ncgValue = GUILayout.TextField(_ncgValue);
+            _ncgValue = EditorGUILayout.TextField("NCG", _ncgValue);
+            if (GUILayout.Button("Save", GUILayout.MaxWidth(50f)))
+            {
+                var balanceList = new List<(Address addr, FungibleAssetValue fav)>
+                {
+                    (new Address(_searchString), FungibleAssetValue.Parse(_ncg, _ncgValue)),
+                };
+                ActionManager.Instance?.ManipulateState(null, balanceList);
+            }
             EditorGUILayout.EndHorizontal();
 
             // CRYSTAL
             EditorGUILayout.BeginHorizontal();
-            GUILayout.Label("CRYSTAL");
-            _crystalValue = GUILayout.TextField(_crystalValue);
+            _crystalValue = EditorGUILayout.TextField("CRYSTAL", _crystalValue);
+            if (GUILayout.Button("Save", GUILayout.MaxWidth(50f)))
+            {
+                var balanceList = new List<(Address addr, FungibleAssetValue fav)>
+                {
+                    (new Address(_searchString), FungibleAssetValue.Parse(_crystal, _crystalValue)),
+                };
+                ActionManager.Instance?.ManipulateState(null, balanceList);
+            }
             EditorGUILayout.EndHorizontal();
-        }
-
-        private void OnStateTreeViewDirty(bool dirty)
-        {
-            savable = !dirty &&
-                      Application.isPlaying &&
-                      Game.instance.IsInitialized;
         }
 
         private async UniTaskVoid OnConfirm(string searchString)
@@ -306,9 +338,6 @@ namespace StateViewer.Editor
                 {
                     var (_, ncg) = _stateProxy.GetBalance(addr, _ncg);
                     _ncgValue = $"{ncg.MajorUnit}.{ncg.MinorUnit}";
-                });
-                await UniTask.Run(() =>
-                {
                     var (_, crystal) = _stateProxy.GetBalance(addr, _crystal);
                     _crystalValue = $"{crystal.MajorUnit}.{crystal.MinorUnit}";
                 });
