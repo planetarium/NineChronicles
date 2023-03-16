@@ -23,12 +23,16 @@ namespace StateViewer.Editor
         [SerializeField]
         private bool drawTestValues;
 
+        [SerializeField]
+        private MultiColumnHeaderState stateTreeHeaderState;
+
         // SerializeField is used to ensure the view state is written to the window
         // layout file. This means that the state survives restarting Unity as long as the window
         // is not closed. If the attribute is omitted then the state is still serialized/deserialized.
         [SerializeField]
         private TreeViewState stateTreeViewState;
 
+        private MultiColumnHeader _stateTreeHeader;
         private StateTreeView _stateTreeView;
         private Vector2 _stateTreeViewScrollPosition;
 
@@ -135,7 +139,7 @@ namespace StateViewer.Editor
                 autoResize = true,
                 allowToggleVisibility = false,
             };
-            var headerState = new MultiColumnHeaderState(new[]
+            stateTreeHeaderState = new MultiColumnHeaderState(new[]
             {
                 serializedKeyColumn,
                 aliasColumn,
@@ -144,9 +148,11 @@ namespace StateViewer.Editor
                 editColumn,
                 addRemoveColumn,
             });
+            _stateTreeHeader = new MultiColumnHeader(stateTreeHeaderState);
+            _stateTreeHeader.ResizeToFit();
             _stateTreeView = new StateTreeView(
                 stateTreeViewState,
-                new MultiColumnHeader(headerState));
+                _stateTreeHeader);
             _searchField = new SearchField();
             _stateTreeView.SetData(default, Null.Value);
             _searchField.downOrUpArrowKeyPressed += _stateTreeView.SetFocusAndEnsureSelectedItem;
@@ -224,7 +230,6 @@ namespace StateViewer.Editor
         private void DrawHorizontalLine()
         {
             var rect = EditorGUILayout.GetControlRect(false, 1f);
-            // rect.height = 1f;
             EditorGUI.DrawRect(rect, new Color(0.5f, 0.5f, 0.5f, 1));
         }
 
@@ -310,6 +315,7 @@ namespace StateViewer.Editor
                 };
                 ActionManager.Instance?.ManipulateState(null, balanceList);
             }
+
             EditorGUILayout.EndHorizontal();
 
             // CRYSTAL
@@ -323,6 +329,7 @@ namespace StateViewer.Editor
                 };
                 ActionManager.Instance?.ManipulateState(null, balanceList);
             }
+
             EditorGUILayout.EndHorizontal();
         }
 
