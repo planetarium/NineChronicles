@@ -23,12 +23,16 @@ namespace StateViewer.Editor
         [SerializeField]
         private bool drawTestValues;
 
+        [SerializeField]
+        private MultiColumnHeaderState stateTreeHeaderState;
+
         // SerializeField is used to ensure the view state is written to the window
         // layout file. This means that the state survives restarting Unity as long as the window
         // is not closed. If the attribute is omitted then the state is still serialized/deserialized.
         [SerializeField]
         private TreeViewState stateTreeViewState;
 
+        private MultiColumnHeader _stateTreeHeader;
         private StateTreeView _stateTreeView;
         private Vector2 _stateTreeViewScrollPosition;
 
@@ -74,10 +78,12 @@ namespace StateViewer.Editor
 
         private void OnEnable()
         {
+            minSize = new Vector2(800f, 300f);
+
             stateTreeViewState ??= new TreeViewState();
-            var serializedKeyColumn = new MultiColumnHeaderState.Column
+            var keyOrIndexColumn = new MultiColumnHeaderState.Column
             {
-                headerContent = new GUIContent("Serialized Key"),
+                headerContent = new GUIContent("Key/Index"),
                 headerTextAlignment = TextAlignment.Center,
                 canSort = false,
                 width = 100,
@@ -90,8 +96,8 @@ namespace StateViewer.Editor
                 headerContent = new GUIContent("Alias"),
                 headerTextAlignment = TextAlignment.Center,
                 canSort = false,
-                width = 200,
-                minWidth = 200,
+                width = 150,
+                minWidth = 150,
                 autoResize = true,
                 allowToggleVisibility = true,
             };
@@ -101,7 +107,8 @@ namespace StateViewer.Editor
                 headerTextAlignment = TextAlignment.Center,
                 canSort = false,
                 width = 100,
-                minWidth = 70,
+                minWidth = 100,
+                maxWidth = 100,
                 autoResize = true,
                 allowToggleVisibility = false,
             };
@@ -110,7 +117,7 @@ namespace StateViewer.Editor
                 headerContent = new GUIContent("Value"),
                 headerTextAlignment = TextAlignment.Center,
                 canSort = false,
-                width = 500,
+                width = 300,
                 minWidth = 100,
                 autoResize = true,
                 allowToggleVisibility = false,
@@ -122,6 +129,7 @@ namespace StateViewer.Editor
                 canSort = false,
                 width = 100,
                 minWidth = 100,
+                maxWidth = 100,
                 autoResize = true,
                 allowToggleVisibility = false,
             };
@@ -132,21 +140,24 @@ namespace StateViewer.Editor
                 canSort = false,
                 width = 100,
                 minWidth = 100,
+                maxWidth = 100,
                 autoResize = true,
                 allowToggleVisibility = false,
             };
-            var headerState = new MultiColumnHeaderState(new[]
+            stateTreeHeaderState = new MultiColumnHeaderState(new[]
             {
-                serializedKeyColumn,
+                keyOrIndexColumn,
                 aliasColumn,
                 valueKindColumn,
                 valueColumn,
                 editColumn,
                 addRemoveColumn,
             });
+            _stateTreeHeader = new MultiColumnHeader(stateTreeHeaderState);
+            _stateTreeHeader.ResizeToFit();
             _stateTreeView = new StateTreeView(
                 stateTreeViewState,
-                new MultiColumnHeader(headerState));
+                _stateTreeHeader);
             _searchField = new SearchField();
             _stateTreeView.SetData(default, Null.Value);
             _searchField.downOrUpArrowKeyPressed += _stateTreeView.SetFocusAndEnsureSelectedItem;
@@ -224,7 +235,6 @@ namespace StateViewer.Editor
         private void DrawHorizontalLine()
         {
             var rect = EditorGUILayout.GetControlRect(false, 1f);
-            // rect.height = 1f;
             EditorGUI.DrawRect(rect, new Color(0.5f, 0.5f, 0.5f, 1));
         }
 
@@ -255,6 +265,10 @@ namespace StateViewer.Editor
             GUILayout.Label("Address");
             _searchString = _searchField.OnGUI(_searchString);
             GUILayout.EndHorizontal();
+            if (!_searchField.HasFocus())
+            {
+                return;
+            }
 
             var current = Event.current;
             if (current.keyCode != KeyCode.Return ||
@@ -263,6 +277,7 @@ namespace StateViewer.Editor
                 return;
             }
 
+            _stateTreeView.SetFocus();
             OnConfirm(_searchString).Forget();
         }
 
@@ -305,6 +320,7 @@ namespace StateViewer.Editor
                 };
                 ActionManager.Instance?.ManipulateState(null, balanceList);
             }
+
             EditorGUILayout.EndHorizontal();
 
             // CRYSTAL
@@ -318,6 +334,7 @@ namespace StateViewer.Editor
                 };
                 ActionManager.Instance?.ManipulateState(null, balanceList);
             }
+
             EditorGUILayout.EndHorizontal();
         }
 
@@ -346,6 +363,8 @@ namespace StateViewer.Editor
             {
                 _stateTreeView.SetData(default, (Text)"empty");
             }
+
+            _stateTreeView.SetFocusAndEnsureSelectedItem();
         }
 
         private void InitializeStateProxy()
