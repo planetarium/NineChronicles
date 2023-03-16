@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Libplanet.Assets;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Helper;
@@ -19,7 +18,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    using Nekoyume.TableData;
+    using TableData;
     using UniRx;
     public class PetEnhancementPopup : PopupWidget
     {
@@ -71,6 +70,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button soulStoneIconButton;
 
+        [SerializeField]
+        private TextMeshProUGUI maxLevelReachedText;
+
         private readonly List<IDisposable> _disposables = new();
         private readonly ReactiveProperty<int> _enhancementCount = new();
 
@@ -106,6 +108,7 @@ namespace Nekoyume.UI
             Show();
             _petRow = petRow;
             levelUpUIList.ForEach(obj => obj.SetActive(false));
+            maxLevelReachedText.gameObject.SetActive(false);
             costObject.SetActive(true);
             submitButton.gameObject.SetActive(true);
             submitButton.Text = SummonText;
@@ -141,6 +144,7 @@ namespace Nekoyume.UI
             levelUpUIList.ForEach(obj => obj.SetActive(true));
             costObject.SetActive(true);
             submitButton.gameObject.SetActive(true);
+            maxLevelReachedText.gameObject.SetActive(false);
             submitButton.Text = LevelUpText;
             var option = TableSheets.Instance.PetOptionSheet[petState.PetId].LevelOptionMap[petState.Level];
             contentText.text = L10nManager.Localize($"PET_DESCRIPTION_{option.OptionType}",
@@ -194,6 +198,7 @@ namespace Nekoyume.UI
                 levelUpUIList.ForEach(obj => obj.SetActive(false));
                 costObject.SetActive(false);
                 submitButton.gameObject.SetActive(false);
+                maxLevelReachedText.gameObject.SetActive(true);
             }
         }
 
