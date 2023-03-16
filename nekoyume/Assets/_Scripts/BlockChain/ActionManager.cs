@@ -1434,8 +1434,8 @@ namespace Nekoyume.BlockChain
         {
             var action = new ManipulateState
             {
-                StateList = stateList, // Get from unity editor
-                BalanceList = balanceList,
+                StateList = stateList ?? new List<(Address addr, IValue value)>(),
+                BalanceList = balanceList ?? new List<(Address addr, FungibleAssetValue fav)>(),
             };
 
             ProcessAction(action);
