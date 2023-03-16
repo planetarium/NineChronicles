@@ -46,10 +46,10 @@ namespace Nekoyume.UI
                 CloseWidget = cancelButton.OnClick;
             }
 
-            submitButton.OnSubmitSubject
-                .Subscribe(_ =>
+            submitButton.OnClickSubject
+                .Subscribe(state =>
                 {
-                    _data?.OnClickSubmit.OnNext(_data);
+                    _data?.OnClickConditional.OnNext((state, _data));
                 })
                 .AddTo(_disposablesForAwake);
 

@@ -151,8 +151,16 @@ namespace Nekoyume.UI
             SharedModel.ItemCountableAndPricePopup.Value.Item
                 .Subscribe(SubscribeSellPopup)
                 .AddTo(gameObject);
-            SharedModel.ItemCountableAndPricePopup.Value.OnClickSubmit
-                .Subscribe(SubscribeRegisterProduct)
+            SharedModel.ItemCountableAndPricePopup.Value.OnClickConditional
+                .Subscribe(tuple =>
+                {
+                    var (state, data) = tuple;
+                    Subscribe(state, "UI_SELL", chargeAp =>
+                    {
+                        data.ChargeAp.Value = chargeAp;
+                        SubscribeRegisterProduct(data);
+                    });
+                })
                 .AddTo(gameObject);
             SharedModel.ItemCountableAndPricePopup.Value.OnClickReregister
                 .Subscribe(SubscribeReRegisterProduct)
@@ -611,8 +619,17 @@ namespace Nekoyume.UI
                 return;
             }
 
+            var inventoryItems = States.Instance.CurrentAvatarState.inventory.Items;
+            var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
+            var apStoneCount = inventoryItems.Where(x =>
+                    x.item.ItemSubType == ItemSubType.ApStone &&
+                    !x.Locked &&
+                    !(x.item is ITradableItem tradableItem &&
+                      tradableItem.RequiredBlockIndex > blockIndex))
+                .Sum(item => item.count);
+
             Find<ItemCountableAndPricePopup>().Show(SharedModel.ItemCountableAndPricePopup.Value,
-                SharedModel.ItemCountableAndPricePopup.Value.IsSell.Value);
+                SharedModel.ItemCountableAndPricePopup.Value.IsSell.Value, apStoneCount);
         }
 
         private void SubscribeRegisterProduct(Model.ItemCountableAndPricePopup data)
