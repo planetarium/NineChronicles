@@ -58,48 +58,6 @@ namespace Nekoyume.UI
             SharedModel = new Shop();
             CloseWidget = null;
 
-
-            void Subscribe(ConditionalButton.State state, string key, Action<bool> action)
-            {
-                var inventoryItems = States.Instance.CurrentAvatarState.inventory.Items;
-                var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
-                var apStoneCount = inventoryItems.Where(x =>
-                        x.item.ItemSubType == ItemSubType.ApStone &&
-                        !x.Locked &&
-                        !(x.item is ITradableItem tradableItem &&
-                          tradableItem.RequiredBlockIndex > blockIndex))
-                    .Sum(item => item.count);
-
-                switch (state)
-                {
-                    case ConditionalButton.State.Normal:
-                        AudioController.PlayClick();
-                        action(false);
-                        break;
-                    case ConditionalButton.State.Conditional:
-                        if (apStoneCount <= 0)
-                        {
-                            OneLineSystem.Push(
-                                MailType.System,
-                                L10nManager.Localize("ERROR_ACTION_POINT"),
-                                NotificationCell.NotificationType.Alert);
-                            break;
-                        }
-
-                        var confirm = Widget.Find<IconAndButtonSystem>();
-                        confirm.ShowWithTwoButton(L10nManager.Localize("UI_CONFIRM"),
-                            L10nManager.Localize("UI_APREFILL_GUIDE_FORMAT",
-                                L10nManager.Localize(key), apStoneCount),
-                            L10nManager.Localize("UI_OK"),
-                            L10nManager.Localize("UI_CANCEL"),
-                            false, IconAndButtonSystem.SystemType.Information);
-                        confirm.ConfirmCallback = () => action(true);
-                        break;
-                    case ConditionalButton.State.Disabled:
-                        break;
-                }
-            }
-
             reregistrationButton.onClick.AddListener(() =>
             {
                 Find<CostTwoButtonPopup>().Show(
@@ -107,7 +65,7 @@ namespace Nekoyume.UI
                     L10nManager.Localize("UI_YES"),
                     L10nManager.Localize("UI_NO"),
                     CostType.ActionPoint, 5,
-                    state => Subscribe(state, "UI_SHOP_UPDATESELLALL",
+                    state => SubscribeConditionalButtonForChargeAp(state, "UI_SHOP_UPDATESELLALL",
                         SubscribeReRegisterProduct));
             });
             cancelRegistrationButton.onClick.AddListener(() =>
@@ -117,7 +75,7 @@ namespace Nekoyume.UI
                     L10nManager.Localize("UI_YES"),
                     L10nManager.Localize("UI_NO"),
                     CostType.ActionPoint, 5,
-                    state => Subscribe(state, "UI_SHOP_CANCELLATIONALL",
+                    state => SubscribeConditionalButtonForChargeAp(state, "UI_SHOP_CANCELLATIONALL",
                         SubscribeCancelProductRegistration));
             });
 
@@ -155,7 +113,7 @@ namespace Nekoyume.UI
                 .Subscribe(tuple =>
                 {
                     var (state, data) = tuple;
-                    Subscribe(state, "UI_SELL", chargeAp =>
+                    SubscribeConditionalButtonForChargeAp(state, "UI_SELL", chargeAp =>
                     {
                         data.ChargeAp.Value = chargeAp;
                         SubscribeRegisterProduct(data);
@@ -225,56 +183,68 @@ namespace Nekoyume.UI
                       tradableItem.RequiredBlockIndex > blockIndex))
                 .Sum(item => item.count);
 
-            void Subscribe(ConditionalButton.State state, string key, Action<bool> action)
-            {
-                switch (state)
-                {
-                    case ConditionalButton.State.Normal:
-                        AudioController.PlayClick();
-                        action(false);
-                        break;
-                    case ConditionalButton.State.Conditional:
-                        if (apStoneCount <= 0)
-                        {
-                            OneLineSystem.Push(
-                                MailType.System,
-                                L10nManager.Localize("ERROR_ACTION_POINT"),
-                                NotificationCell.NotificationType.Alert);
-                            break;
-                        }
-
-                        var confirm = Widget.Find<IconAndButtonSystem>();
-                        confirm.ShowWithTwoButton(L10nManager.Localize("UI_CONFIRM"),
-                            L10nManager.Localize("UI_APREFILL_GUIDE_FORMAT",
-                                L10nManager.Localize(key), apStoneCount),
-                            L10nManager.Localize("UI_OK"),
-                            L10nManager.Localize("UI_CANCEL"),
-                            false, IconAndButtonSystem.SystemType.Information);
-                        confirm.ConfirmCallback = () => action(true);
-                        break;
-                    case ConditionalButton.State.Disabled:
-                        break;
-                }
-            }
-
             if (model.ItemBase is not null)
             {
                 var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
                 tooltip.Show(model, apStoneCount,
-                    state => Subscribe(state, "UI_RETRIEVE",
-                        chargeAp => ShowReRegisterProductPopup(model, chargeAp)),
-                    state => Subscribe(state, "UI_REREGISTER",
-                        chargeAp => ShowRetrievePopup(model, chargeAp)),
+                    state => SubscribeConditionalButtonForChargeAp(state, "UI_RETRIEVE",
+                        chargeAp => ShowReRegisterProductPopup(model, chargeAp), apStoneCount),
+                    state => SubscribeConditionalButtonForChargeAp(state, "UI_REREGISTER",
+                        chargeAp => ShowRetrievePopup(model, chargeAp), apStoneCount),
                     view.ClearSelectedItem);
             }
             else
             {
                 Find<FungibleAssetTooltip>().Show(model, apStoneCount,
-                    state => Subscribe(state, "UI_RETRIEVE",
-                        chargeAp => ShowReRegisterProductPopup(model, chargeAp)),
-                    state => Subscribe(state, "UI_REREGISTER",
-                        chargeAp => ShowRetrievePopup(model, chargeAp)),
+                    state => SubscribeConditionalButtonForChargeAp(state, "UI_RETRIEVE",
+                        chargeAp => ShowReRegisterProductPopup(model, chargeAp), apStoneCount),
+                    state => SubscribeConditionalButtonForChargeAp(state, "UI_REREGISTER",
+                        chargeAp => ShowRetrievePopup(model, chargeAp), apStoneCount),
                     view.ClearSelectedItem);
+            }
+        }
+        private void SubscribeConditionalButtonForChargeAp(ConditionalButton.State state,
+            string key, Action<bool> action, int? apStoneCount = null)
+        {
+            if (apStoneCount == null)
+            {
+                var inventoryItems = States.Instance.CurrentAvatarState.inventory.Items;
+                var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
+                apStoneCount = inventoryItems.Where(x =>
+                        x.item.ItemSubType == ItemSubType.ApStone &&
+                        !x.Locked &&
+                        !(x.item is ITradableItem tradableItem &&
+                          tradableItem.RequiredBlockIndex > blockIndex))
+                    .Sum(item => item.count);
+            }
+
+            switch (state)
+            {
+                case ConditionalButton.State.Normal:
+                    AudioController.PlayClick();
+                    action(false);
+                    break;
+                case ConditionalButton.State.Conditional:
+                    if (apStoneCount <= 0)
+                    {
+                        OneLineSystem.Push(
+                            MailType.System,
+                            L10nManager.Localize("ERROR_ACTION_POINT"),
+                            NotificationCell.NotificationType.Alert);
+                        break;
+                    }
+
+                    var confirm = Widget.Find<IconAndButtonSystem>();
+                    confirm.ShowWithTwoButton(L10nManager.Localize("UI_CONFIRM"),
+                        L10nManager.Localize("UI_APREFILL_GUIDE_FORMAT",
+                            L10nManager.Localize(key), apStoneCount),
+                        L10nManager.Localize("UI_OK"),
+                        L10nManager.Localize("UI_CANCEL"),
+                        false, IconAndButtonSystem.SystemType.Information);
+                    confirm.ConfirmCallback = () => action(true);
+                    break;
+                case ConditionalButton.State.Disabled:
+                    break;
             }
         }
 
