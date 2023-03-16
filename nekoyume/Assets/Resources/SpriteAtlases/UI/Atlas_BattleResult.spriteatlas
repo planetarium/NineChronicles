@@ -126,7 +126,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 4ce5d5e573d21409bb1dec6720f6a9b1, type: 3}
   - {fileID: 21300000, guid: 804646e5fde1747a99d792f2ab580649, type: 3}
   - {fileID: 21300000, guid: e5fc96e56a10d7841806464b6daf7207, type: 3}
-  - {fileID: 21300000, guid: 2a128af529287764183ca61a2503f256, type: 3}
   - {fileID: 21300000, guid: 7bf3e44650dbc904684badbe312edb69, type: 3}
   - {fileID: 21300000, guid: 77914e46007b1f845ac8ebe9557d241f, type: 3}
   - {fileID: 21300000, guid: e07e115688eab4935aef5f1adee4f598, type: 3}
@@ -136,6 +135,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 39b6f57621a5c4783a0ab41f1b09f8b4, type: 3}
   - {fileID: 21300000, guid: d2e596a6e4f454d439b735a988b14318, type: 3}
   - {fileID: 21300000, guid: 01d50aa6de16842469c70f236e4541e0, type: 3}
+  - {fileID: 21300000, guid: 7a908ca694d5f46c2ace7a2539050b43, type: 3}
   - {fileID: 21300000, guid: 92f297b6639fe43dfa13151ae0b44e54, type: 3}
   - {fileID: 21300000, guid: dc38b4c6f210e4b7b975ca319ff7ad1d, type: 3}
   - {fileID: 21300000, guid: 246367d6aa9d90448bc371fcabd0b795, type: 3}
@@ -221,13 +221,13 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 23190dbba14e76846b53703f5a3141aa, type: 3}
   - {fileID: 21300000, guid: be3b65cbfef2f43169dcfe77b80cdffa, type: 3}
   - {fileID: 21300000, guid: eae315ebbb3f0b34db0e5cbf2ae66102, type: 3}
-  - {fileID: 21300000, guid: 10508bfb6a2314ad7b45a5ada9cd159a, type: 3}
   - {fileID: 21300000, guid: 2539b00cd57924ecdaeddcd9fc3db15d, type: 3}
   - {fileID: 21300000, guid: b202830c8a3394ca89b0ebb5931d1969, type: 3}
   - {fileID: 21300000, guid: cb638a1c9a3d04d888d6f5ba2f046f4b, type: 3}
   - {fileID: 21300000, guid: a7a8329c7b8ed4d8883ab7473aded99a, type: 3}
   - {fileID: 21300000, guid: e28e699cae37d40cb842b1589deeb59f, type: 3}
   - {fileID: 21300000, guid: ab608a9ca4dd14350ad3eaa750cb5cd1, type: 3}
+  - {fileID: 21300000, guid: 0db5ca9cb69d44ea5a32026c9c00c472, type: 3}
   - {fileID: 21300000, guid: 1a1a06ace2d6f904b83ef5cb4e006d5b, type: 3}
   - {fileID: 21300000, guid: 85e011bc4905b47798ea91e720b5cb09, type: 3}
   - {fileID: 21300000, guid: 9eadcdbcedf9a6b4dab8e421dfd3acc9, type: 3}
@@ -247,7 +247,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 3c39dfed8a782494f9def5a4cdfe99b4, type: 3}
   - {fileID: 21300000, guid: 22e176fdf9f23824c9600955271593c0, type: 3}
   - {fileID: 21300000, guid: 3039830e96fb0134aaa61e13c672fef4, type: 3}
-  - {fileID: 21300000, guid: 1a2f661ed7471524c9fde8f945f75580, type: 3}
   - {fileID: 21300000, guid: a9885d1ec8c1dae4294b4bf8a9a9e178, type: 3}
   - {fileID: 21300000, guid: 0d11282efb8a045558d8b1364266b5c0, type: 3}
   - {fileID: 21300000, guid: b741d13ee7bb44ad185d1d90c24c35c2, type: 3}
@@ -260,7 +259,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 17b939be3a8968e4fa84f1732bba89f6, type: 3}
   - {fileID: 21300000, guid: b00134ceb6ddd49d9b26b011d12ffb4b, type: 3}
   - {fileID: 21300000, guid: 03fb94ce603b3fa4d83f90720bcf8959, type: 3}
-  - {fileID: 21300000, guid: e7b9c9de85c590f43b3cb44ccc5d574e, type: 3}
   - {fileID: 21300000, guid: d8af57eec015042759964f4e4b579c85, type: 3}
   - {fileID: 21300000, guid: c485c6feb063aa644893bf5af972b14e, type: 3}
   - {fileID: 21300000, guid: c350a7fef0fe5400aae666922ecd5884, type: 3}
@@ -351,7 +349,6 @@ SpriteAtlas:
   - Common_Arrow_s
   - 8x8_rect_white
   - icon_ticket_pvp
-  - Icon_VS_01_Black
   - UI_arrow_03
   - icon_ticket_summer
   - UI_scroll_bar1_02
@@ -361,6 +358,7 @@ SpriteAtlas:
   - button_brown_plus
   - button_brown_01
   - Common_Prrogressbar_thumbBg_2
+  - UI_main_icon_Rune
   - icon_Food_01_black
   - icon_notice_06_black
   - Button_Tab_bg_Normal_04
@@ -446,13 +444,13 @@ SpriteAtlas:
   - ui_line_06
   - button_brown_minus_T2
   - UI_icon_item_star_02
-  - button_yellow_02 - Copy
   - UI_line_03
   - icon_Inventory_02_black
   - UI_Popup_icon_09
   - UI_Combination_bg_05_2
   - button_brown_help
   - Bg_particle_00
+  - icon_FungibleAsset_01_black
   - UI_icon_select_02
   - UI_page_Select
   - characterselect_warrior_01
@@ -472,7 +470,6 @@ SpriteAtlas:
   - UI_icon_login_lock
   - UI_victory_gold_ribbon
   - UI_box_05_ef
-  - Icon_Personnel_2
   - UI_mail_popup_01
   - Common_bg_7R_Gradiant
   - UI_scroll_bg
@@ -485,7 +482,6 @@ SpriteAtlas:
   - UI_victory_ribbon
   - button_Round_Press
   - button_page_02
-  - Icon_Personnel_1
   - UI_Popup_icon_10
   - UI_victory_gold
   - Ch_LevelBg

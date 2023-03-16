@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -423,7 +423,8 @@ namespace Nekoyume.UI.Module
             }
 
             result = result
-                .OrderByDescending(x => bestItems.Exists(y => y.Equals(x)))
+                .OrderByDescending(x => x.Equipped.Value)
+                .ThenByDescending(x => bestItems.Exists(y => y.Equals(x)))
                 .ThenBy(x => x.ItemBase.ItemSubType)
                 .ThenByDescending(x => Util.IsUsableItem(x.ItemBase))
                 .ThenByDescending(x => CPHelper.GetCP(x.ItemBase as Equipment))

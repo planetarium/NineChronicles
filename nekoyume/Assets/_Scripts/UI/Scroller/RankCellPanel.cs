@@ -181,7 +181,7 @@ namespace Nekoyume.UI.Scroller
         public void SetEmpty(AvatarState avatarState)
         {
             rankText.text = "-";
-            if (Dcc.instance.Avatars.TryGetValue(avatarState.address.ToHex(), out var dccId))
+            if (Dcc.instance.Avatars.TryGetValue(avatarState.address.ToString(), out var dccId))
             {
                 characterView.SetByDccId(dccId, avatarState.level);
             }

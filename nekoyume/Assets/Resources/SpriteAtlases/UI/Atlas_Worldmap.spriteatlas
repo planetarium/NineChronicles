@@ -53,11 +53,11 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 2e310e10c96094d069f3a1e565f90219, type: 3}
   - {fileID: 21300000, guid: d5bba040384424598ab3223d98d114ba, type: 3}
   - {fileID: 21300000, guid: 4a9272609920145898c8f1dcc45eac38, type: 3}
+  - {fileID: 21300000, guid: 0a5a2f801c99148228b54a14b3ef79e7, type: 3}
   - {fileID: 21300000, guid: 0caf5fc0e3b7f481b8bcfdac4e6c54b5, type: 3}
   - {fileID: 21300000, guid: e8157fe07c6784eb08998259c260f4f7, type: 3}
   - {fileID: 21300000, guid: ec8c86f01a72b7f4cafe351342d90b23, type: 3}
   - {fileID: 21300000, guid: 744110414a2bd425ab998af6aadc8b47, type: 3}
-  - {fileID: 21300000, guid: 5b0a38c1b967e4863baff610f8d3733e, type: 3}
   - {fileID: 21300000, guid: 8e634b02454de483bb10e6c6c9419e0d, type: 3}
   - {fileID: 21300000, guid: 9e635d2230b8942e19e5237d8fcc0080, type: 3}
   - {fileID: 21300000, guid: fbcb61637b42a4b3b91a0bbfbebc6aff, type: 3}
@@ -74,24 +74,25 @@ SpriteAtlas:
   - {fileID: 21300000, guid: a9ff32e70226c43dbbfcb26d6eae5228, type: 3}
   - {fileID: 21300000, guid: 3079cbf7ac3ef44e3b704fe8269d90bf, type: 3}
   - {fileID: 21300000, guid: 393ebe8864bbd4f04982ced1bf53943e, type: 3}
+  - {fileID: 21300000, guid: 833f5ac8afbf841a8afcb0bba773bb3a, type: 3}
   - {fileID: 21300000, guid: b8b531f80d8c54c8fa32aca4b1e0d131, type: 3}
   - {fileID: 21300000, guid: c38cbe89fdcd54cbebec4ae89e0a963f, type: 3}
   - {fileID: 21300000, guid: 12344d9942c34405598506e0aa65e2a6, type: 3}
   - {fileID: 21300000, guid: 6ea41e3ad64c9467295f882c5802167a, type: 3}
   - {fileID: 21300000, guid: e78a0f3a63de66b4c930c068f7c04150, type: 3}
   - {fileID: 21300000, guid: 2671acca97db80043ac1877d1dac7b0d, type: 3}
-  - {fileID: 21300000, guid: ada9c8ea8671b476c895ec6e2c4f441d, type: 3}
   - {fileID: 21300000, guid: 9d84056bdc45e480980fd1015f4a671f, type: 3}
+  - {fileID: 21300000, guid: 888f99eb2ada04b76b7fe078e4c8f939, type: 3}
   - {fileID: 21300000, guid: 5d04de0cba5e04a97806dcaf509ccfd0, type: 3}
   - {fileID: 21300000, guid: a211b81cab9ea4d7983481fb61681507, type: 3}
   - {fileID: 21300000, guid: df00862c0702744b98e8367bc0338615, type: 3}
-  - {fileID: 21300000, guid: 37bd3fdc421854475a3a3b2ed5f90ff7, type: 3}
   - {fileID: 21300000, guid: ff64b30d7fc654fa8ae7f000dc432e76, type: 3}
   - {fileID: 21300000, guid: 0a928c4ddca4c4896bacef3016b43d05, type: 3}
   - {fileID: 21300000, guid: f82d087e5df87430bbc54866ce062403, type: 3}
   - {fileID: 21300000, guid: 9280eabeaa0244db9aa93984db26a46e, type: 3}
   - {fileID: 21300000, guid: 648f41cee527b44b88ace5933ba336d9, type: 3}
   - {fileID: 21300000, guid: 0b98c6ce995ec49ada8e08a10d26e600, type: 3}
+  - {fileID: 21300000, guid: eddc87ce4d64d4271a9c70b2f824f522, type: 3}
   - {fileID: 21300000, guid: a98df43fbf9104092afd129e34d5290a, type: 3}
   - {fileID: 21300000, guid: 957e973f4b797b0458ee4e8401dae322, type: 3}
   - {fileID: 21300000, guid: dda0847f7ce3e43de99547d58de443e1, type: 3}
@@ -102,11 +103,11 @@ SpriteAtlas:
   - bg_worldmap_hardmode_icon_03
   - bg_worldmap_outline_01
   - bg_worldmap_Jotunheim_icon_02
+  - bg_worldmap_eventlock_icon_02_2
   - Worldmap_bg_00
   - bg_worldmap_alfheim_icon_01
   - bg_worldmap_line_01
   - battle_UI_icon_boss
-  - bg_worldmap_eventDungeon_icon_03_Backup
   - bg_worldmap_alfheim_icon_03
   - bg_worldmap_outline_03
   - Worldmap_Tile_bg_01
@@ -123,24 +124,25 @@ SpriteAtlas:
   - battle_UI_icon_05
   - Worldmap_bg_03
   - battle_UI_icon_01
+  - bg_worldmap_winterevent_icon_03
   - bg_worldmap_muspelheim_icon_03
   - bg_worldmap_svartalfaheimr_icon_01
   - button_page_01
   - bg_worldmap_svartalfaheimr_icon_02
   - button_page_01_reverse
   - UI_bg_worldmap
-  - bg_worldmap_eventDungeon_icon_01_Backup
   - bg_worldmap_hardmode_icon_02
+  - bg_worldmap_winterevent_icon_02
   - bg_worldmap_svartalfaheimr_icon_03
   - bg_worldmap_yggdrasil_icon_01
   - bg_worldmap_Jotunheim_icon_01
-  - bg_worldmap_eventDungeon_icon_02_Backup
   - battle_UI_icon_04
   - bg_worldmap_muspelheim_icon_02
   - Worldmap_Tile_bg_02
   - battle_UI_icon_06
   - bg_worldmap_Jotunheim_icon_03
   - bg_worldmap_alfheim_icon_02
+  - bg_worldmap_winterevent_icon_01
   - UI_icon_lock_03
   - bg_worldmap_line_02
   - Worldmap_LockIcon

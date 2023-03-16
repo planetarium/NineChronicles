@@ -74,7 +74,7 @@ namespace Nekoyume.UI.Module.Lobby
                 // always allow
                 case MenuType.Staking:
                 case MenuType.Dcc:
-                    _requireStage = 1;
+                    _requireStage = 0;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -83,9 +83,8 @@ namespace Nekoyume.UI.Module.Lobby
             var unlockConditionString = string.Format(
                 L10nManager.Localize("UI_STAGE_LOCK_FORMAT"),
                 _requireStage);
-            // _messageForCat =
-            //     $"{L10nManager.Localize(localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
-            _messageForCat = string.Empty;
+            _messageForCat =
+                $"{L10nManager.Localize(localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
 
             hoverScaleTweener.AddCondition(PointEnterTrigger, PointExitTrigger);
         }

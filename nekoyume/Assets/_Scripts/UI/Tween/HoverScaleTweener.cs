@@ -1,15 +1,24 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using UnityEngine;
+using System;
 
 namespace Nekoyume.UI.Tween
 {
+    using Bencodex.Types;
+    using System.Collections.Generic;
     using UniRx;
     using UniRx.Triggers;
+    using UnityEngine.EventSystems;
 
     public class HoverScaleTweener : MonoBehaviour
     {
         [SerializeField]
         private RectTransform target;
+
+        private ObservablePointerEnterTrigger _enterTrigger;
+        private ObservablePointerExitTrigger _exitTrigger;
+        private Func<bool> _onPointerEnter;
+        private Func<bool> _onPointerExit;
 
         [SerializeField]
         private float tweenDuration = 0.3f;
@@ -18,61 +27,47 @@ namespace Nekoyume.UI.Tween
         private float targetScale = 1.05f;
 
         private Vector3 _originLocalScale;
-        private bool _isAddedCondition;
+        private readonly List<IDisposable> _disposables = new();
 
         private void Awake()
         {
             _originLocalScale = target.localScale;
-        }
-
-        private void Start()
-        {
-            if (!_isAddedCondition)
-            {
-                AddCondition();
-            }
+            _enterTrigger = gameObject.AddComponent<ObservablePointerEnterTrigger>();
+            _exitTrigger = gameObject.AddComponent<ObservablePointerExitTrigger>();
         }
 
         private void OnEnable()
         {
             target.localScale = _originLocalScale;
+            _enterTrigger.OnPointerEnterAsObservable()
+                .Subscribe(OnPointerEnter)
+                .AddTo(_disposables);
+            _exitTrigger.OnPointerExitAsObservable()
+                .Subscribe(OnPointerExit)
+                .AddTo(_disposables);
+        }
+
+        private void OnDisable()
+        {
+            _disposables.DisposeAllAndClear();
         }
 
         public void AddCondition(System.Func<bool> enter = null, System.Func<bool> exit = null)
         {
-            gameObject.AddComponent<ObservablePointerEnterTrigger>()
-                .OnPointerEnterAsObservable().Subscribe(x =>
-                {
-                    if (enter == null)
-                    {
-                        target.DOScale(_originLocalScale * targetScale, tweenDuration);
-                        return;
-                    }
+            _onPointerEnter = enter;
+            _onPointerExit = exit;
+        }
 
-                    if (enter.Invoke())
-                    {
-                        target.DOScale(_originLocalScale * targetScale, tweenDuration);
-                    }
-                })
-                .AddTo(gameObject);
+        private void OnPointerEnter(PointerEventData eventData)
+        {
+            target.DOScale(_originLocalScale * targetScale, tweenDuration);
+            _onPointerEnter?.Invoke();
+        }
 
-            gameObject.AddComponent<ObservablePointerExitTrigger>()
-                .OnPointerExitAsObservable().Subscribe(x =>
-                {
-                    if (exit == null)
-                    {
-                        target.DOScale(_originLocalScale, tweenDuration);
-                        return;
-                    }
-
-                    if (exit.Invoke())
-                    {
-                        target.DOScale(_originLocalScale, tweenDuration);
-                    }
-                })
-                .AddTo(gameObject);
-
-            _isAddedCondition = true;
+        private void OnPointerExit(PointerEventData eventData)
+        {
+            target.DOScale(_originLocalScale, tweenDuration);
+            _onPointerExit?.Invoke();
         }
     }
 }

@@ -206,6 +206,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 7ebb47861ebb0954798cefb8f7b0a771, type: 3}
   - {fileID: 21300000, guid: d2e596a6e4f454d439b735a988b14318, type: 3}
   - {fileID: 21300000, guid: 01d50aa6de16842469c70f236e4541e0, type: 3}
+  - {fileID: 21300000, guid: 7a908ca694d5f46c2ace7a2539050b43, type: 3}
   - {fileID: 21300000, guid: 92f297b6639fe43dfa13151ae0b44e54, type: 3}
   - {fileID: 21300000, guid: 474642c630309ed45a9942c6fa07ebb5, type: 3}
   - {fileID: 21300000, guid: dc38b4c6f210e4b7b975ca319ff7ad1d, type: 3}
@@ -334,7 +335,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 7597efdbf8bac4788a22497146762066, type: 3}
   - {fileID: 21300000, guid: eae315ebbb3f0b34db0e5cbf2ae66102, type: 3}
   - {fileID: 21300000, guid: 470625fbeca6a0a4687b9f6f2111a634, type: 3}
-  - {fileID: 21300000, guid: 10508bfb6a2314ad7b45a5ada9cd159a, type: 3}
   - {fileID: 21300000, guid: 2539b00cd57924ecdaeddcd9fc3db15d, type: 3}
   - {fileID: 21300000, guid: b202830c8a3394ca89b0ebb5931d1969, type: 3}
   - {fileID: 21300000, guid: cb638a1c9a3d04d888d6f5ba2f046f4b, type: 3}
@@ -346,6 +346,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: a4d7d59c891b7d44189a7808e6449342, type: 3}
   - {fileID: 21300000, guid: e28e699cae37d40cb842b1589deeb59f, type: 3}
   - {fileID: 21300000, guid: ab608a9ca4dd14350ad3eaa750cb5cd1, type: 3}
+  - {fileID: 21300000, guid: 0db5ca9cb69d44ea5a32026c9c00c472, type: 3}
   - {fileID: 21300000, guid: 1a1a06ace2d6f904b83ef5cb4e006d5b, type: 3}
   - {fileID: 21300000, guid: 468ffdacf521c4de89f23c873d787325, type: 3}
   - {fileID: 21300000, guid: 85e011bc4905b47798ea91e720b5cb09, type: 3}
@@ -570,6 +571,7 @@ SpriteAtlas:
   - UI_icon_item_bg_02
   - button_brown_01
   - Common_Prrogressbar_thumbBg_2
+  - UI_main_icon_Rune
   - icon_Food_01_black
   - Icon_Rune_Random
   - icon_notice_06_black
@@ -698,7 +700,6 @@ SpriteAtlas:
   - UI_bg_frame_16_deco2
   - UI_icon_item_star_02
   - UI_bg_frame_deco_04
-  - button_yellow_02 - Copy
   - UI_line_03
   - icon_Inventory_02_black
   - UI_Popup_icon_09
@@ -710,6 +711,7 @@ SpriteAtlas:
   - ui_bg_quest
   - button_brown_help
   - Bg_particle_00
+  - icon_FungibleAsset_01_black
   - UI_icon_select_02
   - UI_bg_CP_02
   - UI_page_Select
