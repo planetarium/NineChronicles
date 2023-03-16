@@ -255,6 +255,10 @@ namespace StateViewer.Editor
             GUILayout.Label("Address");
             _searchString = _searchField.OnGUI(_searchString);
             GUILayout.EndHorizontal();
+            if (!_searchField.HasFocus())
+            {
+                return;
+            }
 
             var current = Event.current;
             if (current.keyCode != KeyCode.Return ||
@@ -263,6 +267,7 @@ namespace StateViewer.Editor
                 return;
             }
 
+            _stateTreeView.SetFocus();
             OnConfirm(_searchString).Forget();
         }
 
@@ -346,6 +351,8 @@ namespace StateViewer.Editor
             {
                 _stateTreeView.SetData(default, (Text)"empty");
             }
+
+            _stateTreeView.SetFocusAndEnsureSelectedItem();
         }
 
         private void InitializeStateProxy()
