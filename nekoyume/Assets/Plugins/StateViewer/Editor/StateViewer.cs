@@ -81,9 +81,9 @@ namespace StateViewer.Editor
             minSize = new Vector2(800f, 300f);
 
             stateTreeViewState ??= new TreeViewState();
-            var serializedKeyColumn = new MultiColumnHeaderState.Column
+            var keyOrIndexColumn = new MultiColumnHeaderState.Column
             {
-                headerContent = new GUIContent("Serialized Key"),
+                headerContent = new GUIContent("Key/Index"),
                 headerTextAlignment = TextAlignment.Center,
                 canSort = false,
                 width = 100,
@@ -96,8 +96,8 @@ namespace StateViewer.Editor
                 headerContent = new GUIContent("Alias"),
                 headerTextAlignment = TextAlignment.Center,
                 canSort = false,
-                width = 200,
-                minWidth = 200,
+                width = 150,
+                minWidth = 150,
                 autoResize = true,
                 allowToggleVisibility = true,
             };
@@ -107,7 +107,8 @@ namespace StateViewer.Editor
                 headerTextAlignment = TextAlignment.Center,
                 canSort = false,
                 width = 100,
-                minWidth = 70,
+                minWidth = 100,
+                maxWidth = 100,
                 autoResize = true,
                 allowToggleVisibility = false,
             };
@@ -116,7 +117,7 @@ namespace StateViewer.Editor
                 headerContent = new GUIContent("Value"),
                 headerTextAlignment = TextAlignment.Center,
                 canSort = false,
-                width = 500,
+                width = 300,
                 minWidth = 100,
                 autoResize = true,
                 allowToggleVisibility = false,
@@ -128,6 +129,7 @@ namespace StateViewer.Editor
                 canSort = false,
                 width = 100,
                 minWidth = 100,
+                maxWidth = 100,
                 autoResize = true,
                 allowToggleVisibility = false,
             };
@@ -138,12 +140,13 @@ namespace StateViewer.Editor
                 canSort = false,
                 width = 100,
                 minWidth = 100,
+                maxWidth = 100,
                 autoResize = true,
                 allowToggleVisibility = false,
             };
             stateTreeHeaderState = new MultiColumnHeaderState(new[]
             {
-                serializedKeyColumn,
+                keyOrIndexColumn,
                 aliasColumn,
                 valueKindColumn,
                 valueColumn,
