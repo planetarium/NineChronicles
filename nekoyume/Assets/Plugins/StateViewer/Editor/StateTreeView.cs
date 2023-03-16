@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using Bencodex.Json;
 using Bencodex.Types;
-using Lib9c;
 using Libplanet;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
@@ -20,7 +19,7 @@ namespace StateViewer.Editor
 
         private StateTreeViewItem.Model[] _itemModels;
         private Address _addr;
-        private readonly Dictionary<string, string> _reversedSerializeKeys = new();
+        private int _elementId;
 
         public (Address addr, IValue value) Serialize()
         {
@@ -33,41 +32,12 @@ namespace StateViewer.Editor
             rowHeight = EditorGUIUtility.singleLineHeight;
             showAlternatingRowBackgrounds = true;
             showBorder = true;
-
-            if (_reversedSerializeKeys.Count == 0)
-            {
-                ReverseSerializedKeys();
-            }
         }
-
-        private void ReverseSerializedKeys()
-        {
-            foreach (var field in typeof(SerializeKeys).GetFields(
-                         BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy
-                     )
-                    )
-            {
-                if (field.IsLiteral && !field.IsInitOnly)
-                {
-                    _reversedSerializeKeys.Add(field.GetRawConstantValue().ToString(), field.Name);
-                }
-            }
-
-            Debug.LogFormat("SerializeKeys are reversed: {0}", _reversedSerializeKeys.Count);
-        }
-
-        private string GetReversedKey(string key)
-        {
-            return _reversedSerializeKeys.ContainsKey(key)
-                ? _reversedSerializeKeys[key]
-                : key;
-        }
-
 
         public void SetData(Address addr, IValue data)
         {
             _addr = addr;
-            var (model, _) = MakeItemModelRecursive("", data, 1);
+            var model = MakeItemModelRecursive(ValueKind.Text, "", data);
             _itemModels = new[] { model };
             Reload();
             OnDirty?.Invoke(false);
@@ -75,7 +45,7 @@ namespace StateViewer.Editor
 
         private static string Convert(IValue value)
         {
-            var converter = new Bencodex.Json.BencodexJsonConverter();
+            var converter = new BencodexJsonConverter();
             var serializerOption = new JsonSerializerOptions
             {
                 WriteIndented = false,
@@ -91,11 +61,12 @@ namespace StateViewer.Editor
                 .Replace("\"", "");
         }
 
-        private (StateTreeViewItem.Model viewModel, int currentId)
-            MakeItemModelRecursive(
-                string key,
-                IValue data,
-                int currentId)
+        private StateTreeViewItem.Model MakeItemModelRecursive(
+            ValueKind keyType,
+            string key,
+            IValue data,
+            bool editable = false
+        )
         {
             StateTreeViewItem.Model viewModel;
             switch (data)
@@ -105,67 +76,77 @@ namespace StateViewer.Editor
                 case Boolean:
                 case Integer:
                 case Text:
+                {
                     viewModel = new StateTreeViewItem.Model(
-                        currentId++,
+                        _elementId++,
+                        keyType,
                         key,
-                        GetReversedKey(key),
-                        data.Kind.ToString(),
-                        Convert(data));
+                        data.Kind,
+                        Convert(data),
+                        editable: editable
+                    );
 
-                    return (viewModel, currentId);
+                    return viewModel;
+                }
                 case List list:
                 {
                     viewModel = new StateTreeViewItem.Model(
-                        currentId++,
+                        _elementId++,
+                        keyType,
                         key,
-                        GetReversedKey(key),
-                        data.Kind.ToString(),
-                        $"Count: {list.Count}");
+                        data.Kind,
+                        $"Count: {list.Count}",
+                        editable: false
+                    );
                     for (var i = 0; i < list.Count; i++)
                     {
                         var item = list[i];
-                        StateTreeViewItem.Model childViewModel;
-                        (childViewModel, currentId) = MakeItemModelRecursive(
-                            $"[{i.ToString()}]",
-                            item,
-                            currentId);
+                        var childViewModel = MakeItemModelRecursive(
+                            ValueKind.Binary,
+                            i.ToString(),
+                            item
+                        );
                         viewModel.AddChild(childViewModel);
                     }
 
-                    return (viewModel, currentId);
+                    return viewModel;
                 }
                 case Dictionary dict:
                 {
                     viewModel = new StateTreeViewItem.Model(
-                        currentId++,
+                        _elementId++,
+                        keyType,
                         key,
-                        GetReversedKey(key),
-                        data.Kind.ToString(),
-                        $"Count: {dict.Count}");
+                        data.Kind,
+                        $"Count: {dict.Count}"
+                    );
                     foreach (var pair in dict)
                     {
-                        StateTreeViewItem.Model childViewModel;
-                        (childViewModel, currentId) = MakeItemModelRecursive(
-                            $"[{Convert(pair.Key)}]",
-                            pair.Value,
-                            currentId);
+                        var childViewModel = MakeItemModelRecursive(
+                            pair.Key.Kind,
+                            $"{Convert(pair.Key)}",
+                            pair.Value
+                        );
                         viewModel.AddChild(childViewModel);
                     }
 
-                    return (viewModel, currentId);
+                    return viewModel;
                 }
                 default:
                     Debug.LogError($"data type {data.GetType()} is not supported.");
-                    return (null, currentId);
+                    return null;
             }
         }
 
-        protected override TreeViewItem BuildRoot() => new()
+        protected override TreeViewItem BuildRoot()
         {
-            id = 0,
-            depth = -1,
-            displayName = "Root",
-        };
+            return new TreeViewItem
+            {
+                id = _elementId++,
+                depth = -1,
+                displayName = "Root",
+            };
+        }
 
         protected override IList<TreeViewItem> BuildRows(TreeViewItem root)
         {
@@ -198,65 +179,120 @@ namespace StateViewer.Editor
             return totalRows;
         }
 
+        private int _index;
+
         protected override void RowGUI(RowGUIArgs args)
         {
             var item = (StateTreeViewItem)args.item;
             for (var i = 0; i < args.GetNumVisibleColumns(); ++i)
             {
                 var columnIndex = args.GetColumn(i);
-                if (columnIndex == 0)
-                {
-                    base.RowGUI(args);
-                    continue;
-                }
-
                 var cellRect = args.GetCellRect(i);
                 CenterRectUsingSingleLineHeight(ref cellRect);
 
                 var viewModel = item.ViewModel;
                 switch (columnIndex)
                 {
-                    case 1:
+                    case 0: // Key
+                        // base.RowGUI(args);
+                        var offset = GetContentIndent(item) + extraSpaceBeforeIconAndLabel;
+                        cellRect.xMin += offset;
+                        if (viewModel.Parent != null
+                            && viewModel.Parent.Type != ValueKind.List
+                            && (viewModel.Parent.Type == ValueKind.Dictionary || viewModel.Editable)
+                           )
+                        {
+                            var key = GUI.TextField(cellRect, viewModel.Key);
+                            if (key != viewModel.Key)
+                            {
+                                viewModel.SetKey(key);
+                            }
+                        }
+                        else
+                        {
+                            GUI.Label(cellRect, viewModel.Key);
+                        }
+
+                        break;
+                    case 1: // Alias
                         GUI.Label(cellRect, viewModel.DisplayKey);
                         break;
-                    case 2:
-                        GUI.Label(cellRect, viewModel.Type);
+                    case 2: // ValueKind
+                        var names = Enum.GetNames(typeof(ValueKind));
+                        viewModel.Type = Enum.Parse<ValueKind>(
+                            names[EditorGUI.Popup(
+                                cellRect,
+                                Array.IndexOf(names, viewModel.Type.ToString()),
+                                names)]);
+
                         break;
-                    case 3 when viewModel.Type == ValueKind.List.ToString() ||
-                                viewModel.Type == ValueKind.Dictionary.ToString():
+                    case 3 when viewModel.Type is ValueKind.List or ValueKind.Dictionary: // Value
                         GUI.Label(cellRect, viewModel.Value);
                         break;
                     case 3:
-                        var value = GUI.TextField(cellRect, viewModel.Value);
-                        if (value != viewModel.Value)
+                        if (viewModel.Editable)
                         {
-                            viewModel.SetValue(value);
-                            OnDirty?.Invoke(true);
+                            var value = GUI.TextField(cellRect, viewModel.Value);
+                            if (value != viewModel.Value)
+                            {
+                                viewModel.SetValue(value);
+                                OnDirty?.Invoke(true);
+                            }
+                        }
+                        else
+                        {
+                            GUI.Label(cellRect, viewModel.Value);
                         }
 
                         break;
                     case 4:
-                        if (viewModel.Type == ValueKind.List.ToString() ||
-                            viewModel.Type == ValueKind.Dictionary.ToString())
+                        if (viewModel.Type is ValueKind.List or ValueKind.Dictionary)
                         {
                             if (GUI.Button(cellRect, "Add"))
                             {
                                 viewModel.AddChild(new StateTreeViewItem.Model(
-                                    viewModel.Id + 1,
-                                    "New",
-                                    "New",
-                                    ValueKind.Null.ToString(),
-                                    string.Empty));
+                                    _elementId++,
+                                    viewModel.Children.Count == 0
+                                        ? ValueKind.Text
+                                        : viewModel.Children[0].KeyType,
+                                    viewModel.Type is ValueKind.List
+                                        ? $"{viewModel.Children.Count}"
+                                        : "New Key",
+                                    viewModel.Children.Count == 0
+                                        ? ValueKind.Text
+                                        : viewModel.Children[0].Type,
+                                    string.Empty,
+                                    editable: viewModel.Parent is { Type: ValueKind.Dictionary }));
+                                viewModel.Value = $"Count: {viewModel.Children.Count}";
                                 Reload();
                                 OnDirty?.Invoke(true);
                             }
                         }
-                        else if (viewModel.Parent is null)
+                        else if (viewModel.Editable)
                         {
-                            // Do nothing.
+                            if (GUI.Button(cellRect, "Save"))
+                            {
+                                viewModel.Editable = false;
+                                // Save changed value and update treeview
+                                Reload();
+                                OnDirty?.Invoke(true);
+                            }
                         }
-                        else if (viewModel.Parent.Type == ValueKind.List.ToString() ||
-                                 viewModel.Parent.Type == ValueKind.Dictionary.ToString())
+                        else
+                        {
+                            if (GUI.Button(cellRect, "Edit"))
+                            {
+                                viewModel.Editable = true;
+                                // Make key and type editable
+                                // Update displayKey
+                                Reload();
+                                OnDirty?.Invoke(true);
+                            }
+                        }
+
+                        break;
+                    case 5:
+                        if (!(viewModel.Parent is null))
                         {
                             if (GUI.Button(cellRect, "Remove"))
                             {

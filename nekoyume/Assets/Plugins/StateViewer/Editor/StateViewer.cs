@@ -3,8 +3,10 @@ using System.Text;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Libplanet;
+using Libplanet.Assets;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
+using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
@@ -37,6 +39,11 @@ namespace StateViewer.Editor
         private SearchField _searchField;
 
         private string _searchString;
+
+        private Currency _ncg;
+        private Currency _crystal;
+        private string _ncgValue;
+        private string _crystalValue;
 
         private StateProxy _stateProxy;
 
@@ -83,9 +90,9 @@ namespace StateViewer.Editor
                 autoResize = true,
                 allowToggleVisibility = false,
             };
-            var keyColumn = new MultiColumnHeaderState.Column
+            var aliasColumn = new MultiColumnHeaderState.Column
             {
-                headerContent = new GUIContent("Key"),
+                headerContent = new GUIContent("Alias"),
                 headerTextAlignment = TextAlignment.Center,
                 canSort = false,
                 width = 200,
@@ -93,9 +100,9 @@ namespace StateViewer.Editor
                 autoResize = true,
                 allowToggleVisibility = true,
             };
-            var typeColumn = new MultiColumnHeaderState.Column
+            var valueKindColumn = new MultiColumnHeaderState.Column
             {
-                headerContent = new GUIContent("Type"),
+                headerContent = new GUIContent("ValueKind"),
                 headerTextAlignment = TextAlignment.Center,
                 canSort = false,
                 width = 100,
@@ -115,7 +122,17 @@ namespace StateViewer.Editor
             };
             var editColumn = new MultiColumnHeaderState.Column
             {
-                headerContent = new GUIContent("Edit"),
+                headerContent = new GUIContent("Add/Edit"),
+                headerTextAlignment = TextAlignment.Center,
+                canSort = false,
+                width = 100,
+                minWidth = 100,
+                autoResize = true,
+                allowToggleVisibility = false,
+            };
+            var addRemoveColumn = new MultiColumnHeaderState.Column
+            {
+                headerContent = new GUIContent("Remove"),
                 headerTextAlignment = TextAlignment.Center,
                 canSort = false,
                 width = 100,
@@ -126,17 +143,18 @@ namespace StateViewer.Editor
             var headerState = new MultiColumnHeaderState(new[]
             {
                 serializedKeyColumn,
-                keyColumn,
-                typeColumn,
+                aliasColumn,
+                valueKindColumn,
                 valueColumn,
                 editColumn,
+                addRemoveColumn,
             });
             _stateTreeView = new StateTreeView(
                 stateTreeViewState,
                 new MultiColumnHeader(headerState));
+            _searchField = new SearchField();
             _stateTreeView.OnDirty += OnStateTreeViewDirty;
             _stateTreeView.SetData(default, Null.Value);
-            _searchField = new SearchField();
             _searchField.downOrUpArrowKeyPressed += _stateTreeView.SetFocusAndEnsureSelectedItem;
             initialized = true;
         }
@@ -182,7 +200,12 @@ namespace StateViewer.Editor
                 {
                     _stateTreeView.Serialize(),
                 };
-                ActionManager.Instance?.ManipulateState(stateList);
+                var balanceList = new List<(Address addr, FungibleAssetValue fav)>
+                {
+                    (new Address(_searchString), FungibleAssetValue.Parse(_ncg, _ncgValue)),
+                    (new Address(_searchString), FungibleAssetValue.Parse(_crystal, _crystalValue)),
+                };
+                ActionManager.Instance?.ManipulateState(stateList, balanceList);
             }
 
             drawTestValues = EditorGUILayout.Toggle("Show Test Values", drawTestValues);
@@ -194,6 +217,9 @@ namespace StateViewer.Editor
 
             GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
             DrawSearchField();
+
+            GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
+            DrawFAVField();
 
             GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
             _stateTreeView.OnGUI(GetRect(maxHeight: position.height));
@@ -241,6 +267,21 @@ namespace StateViewer.Editor
             OnConfirm(_searchString).Forget();
         }
 
+        private void DrawFAVField()
+        {
+            // NCG
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label("NCG");
+            _ncgValue = GUILayout.TextField(_ncgValue);
+            EditorGUILayout.EndHorizontal();
+
+            // CRYSTAL
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label("CRYSTAL");
+            _crystalValue = GUILayout.TextField(_crystalValue);
+            EditorGUILayout.EndHorizontal();
+        }
+
         private void OnStateTreeViewDirty(bool dirty)
         {
             savable = !dirty &&
@@ -260,6 +301,17 @@ namespace StateViewer.Editor
             {
                 var (addr, value) = await _stateProxy.GetStateAsync(searchString);
                 _stateTreeView.SetData(addr, value);
+
+                await UniTask.Run(() =>
+                {
+                    var (_, ncg) = _stateProxy.GetBalance(addr, _ncg);
+                    _ncgValue = $"{ncg.MajorUnit}.{ncg.MinorUnit}";
+                });
+                await UniTask.Run(() =>
+                {
+                    var (_, crystal) = _stateProxy.GetBalance(addr, _crystal);
+                    _crystalValue = $"{crystal.MajorUnit}.{crystal.MinorUnit}";
+                });
             }
             catch (KeyNotFoundException)
             {
@@ -291,6 +343,9 @@ namespace StateViewer.Editor
             {
                 _stateProxy.RegisterAlias("me", states.CurrentAvatarState.address);
             }
+
+            _ncg = states.GoldBalanceState.Gold.Currency;
+            _crystal = CrystalCalculator.CRYSTAL;
         }
     }
 }

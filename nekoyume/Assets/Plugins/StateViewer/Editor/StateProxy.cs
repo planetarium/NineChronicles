@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Libplanet;
+using Libplanet.Assets;
 using Nekoyume.BlockChain;
 
 namespace StateViewer.Editor
@@ -19,18 +20,27 @@ namespace StateViewer.Editor
 
         public async UniTask<(Address addr, IValue value)> GetStateAsync(string searchString)
         {
-            Address address;
-
-            if (searchString.Length == 40)
+            try
             {
-                address = new Address(searchString);
+                var addr = new Address(searchString);
+                return (addr, await Agent.GetStateAsync(addr));
             }
-            else
+            catch
             {
-                address = Aliases[searchString];
+                return Aliases.ContainsKey(searchString)
+                    ? (Aliases[searchString], await Agent.GetStateAsync(Aliases[searchString]))
+                    : (default, default);
             }
+        }
 
-            return (address, await Agent.GetStateAsync(address));
+        // NOTE: Why not use <see cref="Nekoyume.BlockChain.IAgent.GetBalanceAsync()"/>?
+        //       Because the implementation by
+        //       <see cref="Nekoyume.BlockChain.RPCAgent.GetBalanceAsync()"/> has a bug.
+        public (Address addr, FungibleAssetValue fav) GetBalance(
+            Address addr,
+            Currency currency)
+        {
+            return (addr, Agent.GetBalance(addr, currency));
         }
 
         public void RegisterAlias(string alias, Address address)

@@ -1926,7 +1926,9 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .Subscribe(async _ =>
                 {
-                    await RxProps.SelectAvatarAsync(States.Instance.CurrentAvatarKey);
+                    await RxProps.SelectAvatarAsync(
+                        States.Instance.CurrentAvatarKey,
+                        forceNewSelection: true);
                     await WorldBossStates.Set(States.Instance.CurrentAvatarState.address);
                     await States.Instance.InitRuneSlotStates();
                     await States.Instance.InitItemSlotStates();

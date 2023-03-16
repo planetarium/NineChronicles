@@ -1429,11 +1429,13 @@ namespace Nekoyume.BlockChain
         }
 
         public IObservable<ActionEvaluation<ManipulateState>> ManipulateState(
-            List<(Address, IValue)> stateList)
+            List<(Address, IValue)> stateList,
+            List<(Address, FungibleAssetValue)> balanceList)
         {
             var action = new ManipulateState
             {
                 StateList = stateList, // Get from unity editor
+                BalanceList = balanceList,
             };
 
             ProcessAction(action);
