@@ -184,7 +184,9 @@ namespace StateViewer.Editor
             else
             {
                 EditorGUILayout.HelpBox(
-                    "This feature is only available in Play mode.",
+                    "This feature is only available in play mode.\n" +
+                    "Use the test values below if you want to test the State Viewer" +
+                    " in non-play mode.",
                     MessageType.Warning);
             }
 
@@ -193,6 +195,12 @@ namespace StateViewer.Editor
 
         private void DrawAll()
         {
+            if (!Application.isPlaying)
+            {
+                GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
+                DrawTestValues();
+            }
+
             if (//savable &&
                 GUILayout.Button("Save"))
             {
@@ -206,13 +214,6 @@ namespace StateViewer.Editor
                     (new Address(_searchString), FungibleAssetValue.Parse(_crystal, _crystalValue)),
                 };
                 ActionManager.Instance?.ManipulateState(stateList, balanceList);
-            }
-
-            drawTestValues = EditorGUILayout.Toggle("Show Test Values", drawTestValues);
-            if (drawTestValues)
-            {
-                GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
-                DrawTestValues();
             }
 
             GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
@@ -239,6 +240,12 @@ namespace StateViewer.Editor
 
         private void DrawTestValues()
         {
+            drawTestValues = EditorGUILayout.Toggle("Test Values", drawTestValues);
+            if (!drawTestValues)
+            {
+                return;
+            }
+
             EditorGUILayout.BeginHorizontal();
             for (var i = 0; i < _testValues.Length; i++)
             {
