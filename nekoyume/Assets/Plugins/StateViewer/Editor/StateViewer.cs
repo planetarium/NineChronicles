@@ -261,8 +261,10 @@ namespace StateViewer.Editor
 
         private void DrawSearchField()
         {
-            var rect = GetRect();
-            _searchString = _searchField.OnGUI(rect, _searchString);
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Address");
+            _searchString = _searchField.OnGUI(_searchString);
+            GUILayout.EndHorizontal();
 
             var current = Event.current;
             if (current.keyCode != KeyCode.Return ||
