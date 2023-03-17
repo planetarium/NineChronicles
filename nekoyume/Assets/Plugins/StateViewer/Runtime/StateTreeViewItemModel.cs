@@ -19,7 +19,7 @@ namespace StateViewer.Runtime
         /// <summary>
         /// <see cref="UnityEditor.IMGUI.Controls.TreeViewItem"/> has unique id.
         /// </summary>
-        public int Id { get; }
+        public int TreeViewItemId { get; }
 
         /// <summary>
         /// <see cref="Bencodex.Types.Dictionary"/> or <see cref="Bencodex.Types.List"/>
@@ -35,7 +35,7 @@ namespace StateViewer.Runtime
         public List<StateTreeViewItemModel> Children { get; } = new();
 
         public StateTreeViewItemModel(
-            int id,
+            int treeViewItemId,
             ValueKind keyType,
             string key,
             ValueKind valueType,
@@ -47,7 +47,7 @@ namespace StateViewer.Runtime
                 ReverseSerializedKeys();
             }
 
-            Id = id;
+            TreeViewItemId = treeViewItemId;
             KeyType = keyType;
             Key = key;
             DisplayKey = $"[{GetReversedKey(key)}]";

@@ -18,9 +18,9 @@ namespace StateViewer.Editor
     {
         public event Action<bool> OnDirty;
 
-        private StateTreeViewItemModel[] _itemModels;
         private Address _addr;
-        private int _elementId;
+        private StateTreeViewItemModel[] _itemModels;
+        private int _treeViewItemId;
 
         public (Address addr, IValue value) Serialize()
         {
@@ -81,7 +81,7 @@ namespace StateViewer.Editor
                 case Text:
                 {
                     viewModel = new StateTreeViewItemModel(
-                        _elementId++,
+                        _treeViewItemId++,
                         keyType,
                         key,
                         data.Kind,
@@ -94,7 +94,7 @@ namespace StateViewer.Editor
                 case List list:
                 {
                     viewModel = new StateTreeViewItemModel(
-                        _elementId++,
+                        _treeViewItemId++,
                         keyType,
                         key,
                         data.Kind,
@@ -117,7 +117,7 @@ namespace StateViewer.Editor
                 case Dictionary dict:
                 {
                     viewModel = new StateTreeViewItemModel(
-                        _elementId++,
+                        _treeViewItemId++,
                         keyType,
                         key,
                         data.Kind,
@@ -145,7 +145,7 @@ namespace StateViewer.Editor
         {
             return new TreeViewItem
             {
-                id = _elementId++,
+                id = _treeViewItemId++,
                 depth = -1,
                 displayName = "Root",
             };
@@ -168,7 +168,7 @@ namespace StateViewer.Editor
                 totalRows.Add(item);
                 if (model.Children.Count >= 1)
                 {
-                    if (IsExpanded(model.Id))
+                    if (IsExpanded(model.TreeViewItemId))
                     {
                         AddChildrenRecursive(model, item, totalRows);
                         continue;
@@ -253,7 +253,7 @@ namespace StateViewer.Editor
                             if (GUI.Button(cellRect, "Add"))
                             {
                                 viewModel.AddChild(new StateTreeViewItemModel(
-                                    _elementId++,
+                                    _treeViewItemId++,
                                     viewModel.Children.Count == 0
                                         ? ValueKind.Text
                                         : viewModel.Children[0].KeyType,
@@ -321,7 +321,7 @@ namespace StateViewer.Editor
                 totalRows.Add(childItem);
                 if (childModel.Children.Count >= 1)
                 {
-                    if (IsExpanded(childModel.Id))
+                    if (IsExpanded(childModel.TreeViewItemId))
                     {
                         AddChildrenRecursive(childModel, childItem, totalRows);
                         continue;

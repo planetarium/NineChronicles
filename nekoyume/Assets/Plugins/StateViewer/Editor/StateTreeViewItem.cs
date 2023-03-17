@@ -11,7 +11,7 @@ namespace StateViewer.Editor
     {
         public StateTreeViewItemModel ViewModel { get; }
 
-        public StateTreeViewItem(StateTreeViewItemModel viewModel) : base(viewModel.Id)
+        public StateTreeViewItem(StateTreeViewItemModel viewModel) : base(viewModel.TreeViewItemId)
         {
             displayName = viewModel.Key;
             ViewModel = viewModel;
