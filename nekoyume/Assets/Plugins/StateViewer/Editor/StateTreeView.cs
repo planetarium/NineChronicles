@@ -43,6 +43,8 @@ namespace StateViewer.Editor
             OnDirty?.Invoke(false);
         }
 
+        public void ClearData() => SetData(default, Null.Value);
+
         private static string Convert(IValue value)
         {
             var converter = new BencodexJsonConverter();

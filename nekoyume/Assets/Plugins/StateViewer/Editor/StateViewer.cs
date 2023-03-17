@@ -159,8 +159,8 @@ namespace StateViewer.Editor
                 stateTreeViewState,
                 _stateTreeHeader);
             _searchField = new SearchField();
-            _stateTreeView.SetData(default, Null.Value);
             _searchField.downOrUpArrowKeyPressed += _stateTreeView.SetFocusAndEnsureSelectedItem;
+            ClearAll();
             initialized = true;
         }
 
@@ -196,6 +196,13 @@ namespace StateViewer.Editor
             }
 
             DrawAll();
+        }
+
+        private void ClearAll()
+        {
+            _stateTreeView.ClearData();
+            _ncgValue = string.Empty;
+            _crystalValue = string.Empty;
         }
 
         private void DrawAll()
@@ -340,6 +347,12 @@ namespace StateViewer.Editor
 
         private async UniTaskVoid OnConfirm(string searchString)
         {
+            if (string.IsNullOrEmpty(searchString))
+            {
+                ClearAll();
+                return;
+            }
+
             if (!Application.isPlaying ||
                 !Game.instance.IsInitialized)
             {
@@ -361,7 +374,7 @@ namespace StateViewer.Editor
             }
             catch (KeyNotFoundException)
             {
-                _stateTreeView.SetData(default, (Text)"empty");
+                ClearAll();
             }
 
             _stateTreeView.SetFocusAndEnsureSelectedItem();
