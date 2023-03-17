@@ -167,7 +167,7 @@ namespace Nekoyume.Game
             base.Awake();
 
 #if UNITY_IOS
-            _options = CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.json"));
+            _commandLineOptions = CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.json"));
 #else
             _commandLineOptions = CommandLineOptions.Load(
                 CommandLineOptionsJsonPath
@@ -219,7 +219,7 @@ namespace Nekoyume.Game
 #endif
             var options = MessagePackSerializerOptions.Standard.WithResolver(resolver);
             MessagePackSerializer.DefaultOptions = options;
-
+            
 #if UNITY_EDITOR
             if (useSystemLanguage)
             {
@@ -232,7 +232,7 @@ namespace Nekoyume.Game
                 languageType.Subscribe(value => L10nManager.SetLanguage(value)).AddTo(gameObject);
             }
 #else
-            yield return L10nManager.Initialize(LanguageTypeMapper.ISO396(_options.Language)).ToYieldInstruction();
+            yield return L10nManager.Initialize(LanguageTypeMapper.ISO396(_commandLineOptions.Language)).ToYieldInstruction();
 #endif
             Debug.Log("[Game] Start() L10nManager initialized");
 
