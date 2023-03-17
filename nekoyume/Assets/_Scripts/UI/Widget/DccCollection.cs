@@ -44,6 +44,12 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject levelUpNotification;
 
+        [SerializeField]
+        private CategoryTabButton allButton;
+
+        [SerializeField]
+        private CategoryTabButton petButton;
+
         private PetSlotViewModel _selectedViewModel;
 
         private const string LevelUpText = "Levelup";
@@ -56,6 +62,22 @@ namespace Nekoyume.UI
             {
                 Close(true);
             });
+            allButton.OnClick.Subscribe(tabButton =>
+            {
+                if (!tabButton.IsToggledOn)
+                {
+                    tabButton.SetToggledOn();
+                    petButton.SetToggledOff();
+                }
+            }).AddTo(gameObject);
+            petButton.OnClick.Subscribe(tabButton =>
+            {
+                if (!tabButton.IsToggledOn)
+                {
+                    tabButton.SetToggledOn();
+                    allButton.SetToggledOff();
+                }
+            }).AddTo(gameObject);
             lockedButton.onClick.AddListener(() =>
             {
                 OneLineSystem.Push(
