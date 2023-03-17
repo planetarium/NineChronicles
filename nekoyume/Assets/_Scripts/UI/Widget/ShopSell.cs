@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
+using Lib9c.Model.Order;
 using Libplanet.Assets;
 using mixpanel;
 using Nekoyume.Action;
@@ -203,7 +204,7 @@ namespace Nekoyume.UI
                     view.ClearSelectedItem);
             }
         }
-        private void SubscribeConditionalButtonForChargeAp(ConditionalButton.State state,
+        private static void SubscribeConditionalButtonForChargeAp(ConditionalButton.State state,
             string key, Action<bool> action, int? apStoneCount = null)
         {
             if (apStoneCount == null)
@@ -393,8 +394,11 @@ namespace Nekoyume.UI
 
         private async void SubscribeReRegisterProduct(bool chargeAp)
         {
-            var itemProducts = ReactiveShopState.SellItemProducts.Value;
-            var favProducts = ReactiveShopState.SellFungibleAssetProducts.Value;
+            var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
+            var itemProducts = ReactiveShopState.SellItemProducts.Value.Where(product =>
+                product.RegisteredBlockIndex + Order.ExpirationInterval <= blockIndex);
+            var favProducts = ReactiveShopState.SellFungibleAssetProducts.Value.Where(product =>
+                product.RegisteredBlockIndex + Order.ExpirationInterval <= blockIndex);
             if (!itemProducts.Any() && !favProducts.Any())
             {
                 OneLineSystem.Push(
@@ -459,8 +463,11 @@ namespace Nekoyume.UI
 
         private async void SubscribeCancelProductRegistration(bool chargeAp)
         {
-            var itemProducts = ReactiveShopState.SellItemProducts.Value;
-            var favProducts = ReactiveShopState.SellFungibleAssetProducts.Value;
+            var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
+            var itemProducts = ReactiveShopState.SellItemProducts.Value.Where(product =>
+                product.RegisteredBlockIndex + Order.ExpirationInterval <= blockIndex);
+            var favProducts = ReactiveShopState.SellFungibleAssetProducts.Value.Where(product =>
+                product.RegisteredBlockIndex + Order.ExpirationInterval <= blockIndex);
             if (!itemProducts.Any() && !favProducts.Any())
             {
                 OneLineSystem.Push(
