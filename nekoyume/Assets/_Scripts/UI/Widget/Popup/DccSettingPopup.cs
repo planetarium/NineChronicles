@@ -35,7 +35,7 @@ namespace Nekoyume.UI
             Application.OpenURL(OpenSeaURL);
         }
 
-        private void ConnectDcc()
+        public void ConnectDcc()
         {
             var agentAddress = Game.Game.instance.Agent.Address.ToHex();
             var message = DateTimeOffset.Now.ToUnixTimeMilliseconds();
