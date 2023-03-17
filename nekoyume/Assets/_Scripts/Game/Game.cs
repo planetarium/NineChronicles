@@ -100,7 +100,7 @@ namespace Nekoyume.Game
         public readonly Dictionary<Currency, LruCache<Address, FungibleAssetValue>>
             CachedBalance = new();
 
-        private CommandLineOptions _options;
+        private CommandLineOptions _commandLineOptions;
 
         private AmazonCloudWatchLogsClient _logsClient;
 
@@ -169,7 +169,7 @@ namespace Nekoyume.Game
 #if UNITY_IOS
             _options = CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.json"));
 #else
-            _options = CommandLineOptions.Load(
+            _commandLineOptions = CommandLineOptions.Load(
                 CommandLineOptionsJsonPath
             );
 #endif
@@ -177,9 +177,9 @@ namespace Nekoyume.Game
             URL = Url.Load(UrlJsonPath);
 
             Debug.Log("[Game] Awake() CommandLineOptions loaded");
-            Debug.Log($"APV: {_options.AppProtocolVersion}");
+            Debug.Log($"APV: {_commandLineOptions.AppProtocolVersion}");
 
-            if (_options.RpcClient)
+            if (_commandLineOptions.RpcClient)
             {
                 Agent = GetComponent<RPCAgent>();
                 SubscribeRPCAgent();
@@ -277,14 +277,14 @@ namespace Nekoyume.Game
             // Initialize MainCanvas second
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
             // Initialize NineChroniclesAPIClient.
-            _apiClient = new NineChroniclesAPIClient(_options.ApiServerHost);
-            if (!string.IsNullOrEmpty(_options.RpcServerHost))
+            _apiClient = new NineChroniclesAPIClient(_commandLineOptions.ApiServerHost);
+            if (!string.IsNullOrEmpty(_commandLineOptions.RpcServerHost))
             {
-                _rpcClient = new NineChroniclesAPIClient($"http://{_options.RpcServerHost}/graphql");
+                _rpcClient = new NineChroniclesAPIClient($"http://{_commandLineOptions.RpcServerHost}/graphql");
             }
 
-            WorldBossQuery.SetUrl(_options.OnBoardingHost);
-            MarketServiceClient = new MarketServiceClient(_options.MarketServiceHost);
+            WorldBossQuery.SetUrl(_commandLineOptions.OnBoardingHost);
+            MarketServiceClient = new MarketServiceClient(_commandLineOptions.MarketServiceHost);
             // Initialize Rank.SharedModel
             RankPopup.UpdateSharedModel();
             // Initialize Stage
@@ -315,7 +315,10 @@ namespace Nekoyume.Game
                 SavedPetId = !petList.Any() ? null : petList[Random.Range(0, petList.Count)];
             }).AddTo(gameObject);
 
-            Widget.Find<VersionSystem>().SetVersion(_options.AppProtocolVersion);
+            var appProtocolVersion = _commandLineOptions.AppProtocolVersion is null
+                ? default
+                : Libplanet.Net.AppProtocolVersion.FromToken(_commandLineOptions.AppProtocolVersion);
+            Widget.Find<VersionSystem>().SetVersion(appProtocolVersion.Version);
 
             ShowNext(agentInitializeSucceed);
             StartCoroutine(CoUpdate());
@@ -711,7 +714,7 @@ namespace Nekoyume.Game
 
         private IEnumerator CoLogin(Action<bool> callback)
         {
-            if (_options.Maintenance)
+            if (_commandLineOptions.Maintenance)
             {
                 var w = Widget.Create<IconAndButtonSystem>();
                 w.CancelCallback = () =>
@@ -733,7 +736,7 @@ namespace Nekoyume.Game
                 yield break;
             }
 
-            if (_options.TestEnd)
+            if (_commandLineOptions.TestEnd)
             {
                 var w = Widget.Find<ConfirmPopup>();
                 w.CloseCallback = result =>
@@ -756,23 +759,23 @@ namespace Nekoyume.Game
 
             var settings = Widget.Find<UI.SettingPopup>();
             settings.UpdateSoundSettings();
-            settings.UpdatePrivateKey(_options.PrivateKey);
+            settings.UpdatePrivateKey(_commandLineOptions.PrivateKey);
 
             var loginPopup = Widget.Find<LoginSystem>();
 
             if (Application.isBatchMode)
             {
-                loginPopup.Show(_options.KeyStorePath, _options.PrivateKey);
+                loginPopup.Show(_commandLineOptions.KeyStorePath, _commandLineOptions.PrivateKey);
             }
             else
             {
                 var intro = Widget.Find<IntroScreen>();
-                intro.Show(_options.KeyStorePath, _options.PrivateKey);
+                intro.Show(_commandLineOptions.KeyStorePath, _commandLineOptions.PrivateKey);
                 yield return new WaitUntil(() => loginPopup.Login);
             }
 
             yield return Agent.Initialize(
-                _options,
+                _commandLineOptions,
                 loginPopup.GetPrivateKey(),
                 callback
             );
@@ -781,7 +784,7 @@ namespace Nekoyume.Game
         public void ResetStore()
         {
             var confirm = Widget.Find<ConfirmPopup>();
-            var storagePath = _options.StoragePath ?? BlockChain.Agent.DefaultStoragePath;
+            var storagePath = _commandLineOptions.StoragePath ?? BlockChain.Agent.DefaultStoragePath;
             confirm.CloseCallback = result =>
             {
                 if (result == ConfirmResult.No)
@@ -810,7 +813,7 @@ namespace Nekoyume.Game
                     return;
                 }
 
-                var keyPath = _options.KeyStorePath;
+                var keyPath = _commandLineOptions.KeyStorePath;
                 if (Directory.Exists(keyPath))
                 {
                     Directory.Delete(keyPath, true);
@@ -840,7 +843,7 @@ namespace Nekoyume.Game
             else
             {
                 const string groupName = "9c-player-logs";
-                var streamName = _options.AwsSinkGuid;
+                var streamName = _commandLineOptions.AwsSinkGuid;
                 try
                 {
                     var req = new CreateLogGroupRequest(groupName);
@@ -943,8 +946,8 @@ namespace Nekoyume.Game
         private void InitializeAnalyzer()
         {
             var uniqueId = Agent.Address.ToString();
-            var rpcServerHost = _options.RpcClient
-                ? _options.RpcServerHost
+            var rpcServerHost = _commandLineOptions.RpcClient
+                ? _commandLineOptions.RpcServerHost
                 : null;
 
 #if UNITY_EDITOR
@@ -959,7 +962,7 @@ namespace Nekoyume.Game
                 isTrackable = false;
             }
 
-            if (_options.Development)
+            if (_commandLineOptions.Development)
             {
                 Debug.Log("This is development mode.");
                 isTrackable = false;

@@ -2054,6 +2054,7 @@ namespace Nekoyume.BlockChain
                 .AddTo(_disposables);
         }
 
+#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
         private void ManipulateState()
         {
             _actionRenderer.EveryRender<ManipulateState>()
@@ -2074,6 +2075,7 @@ namespace Nekoyume.BlockChain
                 })
                 .AddTo(_disposables);
         }
+#endif
 
         private void ResponseTestbed(ActionEvaluation<CreateTestbed> eval)
         {
