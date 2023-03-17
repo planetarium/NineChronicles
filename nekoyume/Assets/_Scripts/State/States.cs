@@ -144,7 +144,7 @@ namespace Nekoyume.State
             AgentStateSubject.OnNextCrystal(CrystalBalance);
         }
 
-        public async Task InitRuneStoneBalance()
+        public async UniTask InitRuneStoneBalance()
         {
             var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
             var avatarAddress = CurrentAvatarState.address;
@@ -158,7 +158,7 @@ namespace Nekoyume.State
             }
         }
 
-        public async Task InitRuneStates()
+        public async UniTask InitRuneStates()
         {
             var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
             var avatarAddress = CurrentAvatarState.address;
@@ -285,7 +285,7 @@ namespace Nekoyume.State
             }
         }
 
-        public async Task InitSoulStoneBalance()
+        public async UniTask InitSoulStoneBalance()
         {
             var petSheet = Game.Game.instance.TableSheets.PetSheet;
             var avatarAddress = CurrentAvatarState.address;
@@ -574,20 +574,18 @@ namespace Nekoyume.State
         /// <summary>
         /// 인자로 받은 인덱스의 아바타 상태를 선택한다.
         /// </summary>
-        /// <param name="index"></param>
-        /// <param name="initializeReactiveState"></param>
-        /// <returns></returns>
         /// <exception cref="KeyNotFoundException"></exception>
         public async UniTask<AvatarState> SelectAvatarAsync(
             int index,
-            bool initializeReactiveState = true)
+            bool initializeReactiveState = true,
+            bool forceNewSelection = false)
         {
             if (!_avatarStates.ContainsKey(index))
             {
                 throw new KeyNotFoundException($"{nameof(index)}({index})");
             }
 
-            var isNewlySelected = CurrentAvatarKey != index;
+            var isNewlySelected = forceNewSelection || CurrentAvatarKey != index;
 
             CurrentAvatarKey = index;
             var avatarState = _avatarStates[CurrentAvatarKey];

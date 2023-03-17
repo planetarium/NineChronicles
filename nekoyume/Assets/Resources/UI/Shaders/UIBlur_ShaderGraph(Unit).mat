@@ -8,8 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: UIBlur_ShaderGraph(Unit)
-  m_Shader: {fileID: -6465566751694194690, guid: 8bc37e815a07e49489ae2b2b33373b49,
-    type: 3}
+  m_Shader: {fileID: 4800000, guid: d49c4b361412d5d4292b3f621ea8ba3a, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords:
   - ETC1_EXTERNAL_ALPHA
@@ -70,5 +69,8 @@ Material:
     m_Floats:
     - Vector1_1844C1E0: 0.2
     - Vector1_CCD8714A: 0.48
+    - _BlurIntensity: 2
+    - _Height: 512
+    - _Width: 512
     m_Colors: []
   m_BuildTextureStacks: []

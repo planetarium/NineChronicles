@@ -2,17 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Libplanet;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using Nekoyume.State;
-using UnityEngine;
 
 namespace Nekoyume.UI.Module.WorldBoss
 {
     using Nekoyume.TableData;
     using UniRx;
+
     public static class WorldBossStates
     {
         private static readonly Dictionary<Address, RaiderState> _raiderStates = new();
@@ -81,7 +82,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             _killRewards.Clear();
         }
 
-        public static async Task Set(Address avatarAddress)
+        public static async UniTask Set(Address avatarAddress)
         {
             var (raidRow, raider, killReward, isOnSeason) = await GetDataAsync();
             if (isOnSeason)

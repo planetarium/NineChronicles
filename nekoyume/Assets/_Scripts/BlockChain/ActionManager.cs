@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Numerics;
+using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Lib9c.Renderers;
 using Libplanet;
@@ -10,7 +10,6 @@ using Libplanet.Assets;
 using Libplanet.Tx;
 using mixpanel;
 using Nekoyume.Action;
-using Nekoyume.Game.Character;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.ActionExtensions;
@@ -1473,6 +1472,28 @@ namespace Nekoyume.BlockChain
                     catch (Exception e2)
                     {
                     }
+                });
+        }
+
+        public IObservable<ActionEvaluation<ManipulateState>> ManipulateState(
+            List<(Address, IValue)> stateList,
+            List<(Address, FungibleAssetValue)> balanceList)
+        {
+            var action = new ManipulateState
+            {
+                StateList = stateList ?? new List<(Address addr, IValue value)>(),
+                BalanceList = balanceList ?? new List<(Address addr, FungibleAssetValue fav)>(),
+            };
+
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<ManipulateState>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e =>
+                {
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
                 });
         }
 #endif

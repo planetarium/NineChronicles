@@ -5,6 +5,7 @@ using Cysharp.Threading.Tasks;
 using Lib9c.Renderers;
 using Libplanet;
 using Libplanet.Assets;
+using LruCacheNet;
 using Nekoyume.Action;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
@@ -289,10 +290,19 @@ namespace Nekoyume.BlockChain
 
         private static void UpdateGoldBalanceState(GoldBalanceState goldBalanceState)
         {
+            var game = Game.Game.instance;
             if (goldBalanceState is { } &&
-                Game.Game.instance.Agent.Address.Equals(goldBalanceState.address))
+                game.Agent.Address.Equals(goldBalanceState.address))
             {
-                Game.Game.instance.CachedBalance[goldBalanceState.address] = goldBalanceState.Gold;
+                var currency = goldBalanceState.Gold.Currency;
+                if (!game.CachedBalance.ContainsKey(currency))
+                {
+                    game.CachedBalance[currency] =
+                        new LruCache<Address, FungibleAssetValue>(2);
+                }
+
+                game.CachedBalance[currency][goldBalanceState.address] =
+                    goldBalanceState.Gold;
             }
 
             States.Instance.SetGoldBalanceState(goldBalanceState);

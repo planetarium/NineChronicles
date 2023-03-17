@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
+using UnityEngine;
 
 namespace Nekoyume.BlockChain
 {
@@ -13,7 +14,7 @@ namespace Nekoyume.BlockChain
             Development,
         }
 
-        private const string Postfix = "";  // E.g., "_20191211"
+        private const string Postfix = ""; // E.g., "_20191211"
 
         private static readonly IImmutableDictionary<Env, string> DirNames = new Dictionary<Env, string>
         {
@@ -36,6 +37,11 @@ namespace Nekoyume.BlockChain
 #endif
             }
 
+            if (Platform.IsMobilePlatform())
+            {
+                return Platform.GetPersistentDataPath("DefaultStorage");
+            }
+
             var dirname = DirNames.TryGetValue(env.Value, out var dirName) ? dirName : DirNames[Env.Production];
             // Linux/macOS: $HOME/.local/share/planetarium/
             // Windows: %LOCALAPPDATA%\planetarium\ (i.e., %HOME%\AppData\Local\planetarium\)
@@ -43,7 +49,6 @@ namespace Nekoyume.BlockChain
                 GetPrefixPath(),
                 dirname + Postfix
             );
-
         }
 
         public static string GetPrefixPath()
@@ -51,6 +56,11 @@ namespace Nekoyume.BlockChain
             var prefix = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             // Linux/macOS: $HOME/.local/share/planetarium/
             // Windows: %LOCALAPPDATA%\planetarium\ (i.e., %HOME%\AppData\Local\planetarium\9c)
+            if (Platform.IsMobilePlatform())
+            {
+                return Platform.GetPersistentDataPath("planetarium");
+            }
+
             return Path.Combine(prefix, "planetarium");
         }
     }

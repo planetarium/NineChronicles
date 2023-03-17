@@ -2,11 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -21,7 +19,6 @@ using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
-using Libplanet.Net;
 using Libplanet.RocksDBStore;
 using Libplanet.Store;
 using Libplanet.Store.Trie;
@@ -32,8 +29,6 @@ using Nekoyume.Action;
 using Nekoyume.BlockChain.Policy;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
-using Nekoyume.L10n;
-using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.Serilog;
 using Nekoyume.State;
@@ -47,7 +42,7 @@ using NCTx = Libplanet.Tx.Transaction<Libplanet.Action.PolymorphicAction<Nekoyum
 
 namespace Nekoyume.BlockChain
 {
-    using Libplanet.Net.Transports;
+    using System.Runtime.InteropServices;
     using UniRx;
 
     /// <summary>
@@ -55,12 +50,7 @@ namespace Nekoyume.BlockChain
     /// </summary>
     public class Agent : MonoBehaviour, IDisposable, IAgent
     {
-        private const string DefaultIceServer =
-            "turn://0ed3e48007413e7c2e638f13ddd75ad272c6c507e081bd76a75e4b7adc86c9af:0apejou+ycZFfwtREeXFKdfLj2gCclKzz5ZJ49Cmy6I=@turn-us.planetarium.dev:3478/";
-
-        private const int MaxSeed = 3;
-
-        public static readonly string DefaultStoragePath = StorePath.GetDefaultStoragePath();
+        public static string DefaultStoragePath;
 
         public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
         public Subject<BlockHash> BlockTipHashSubject { get; } = new Subject<BlockHash>();
@@ -71,8 +61,6 @@ namespace Nekoyume.BlockChain
         private static IEnumerator _autoPlayer;
         private static IEnumerator _logger;
         private const float TxProcessInterval = 3.0f;
-        private const int SwarmDialTimeout = 5000;
-        private const int SwarmLinger = 1 * 1000;
         private const string QueuedActionsFileName = "queued_actions.dat";
 
         private readonly ConcurrentQueue<NCAction> _queuedActions =
@@ -81,12 +69,9 @@ namespace Nekoyume.BlockChain
         private readonly TransactionMap _transactions = new TransactionMap(20);
 
         protected BlockChain<NCAction> blocks;
-        private Swarm<NCAction> _swarm;
         protected BaseStore store;
         private IStagePolicy<NCAction> _stagePolicy;
         private IStateStore _stateStore;
-        private ImmutableList<BoundPeer> _seedPeers;
-        private ImmutableList<BoundPeer> _peerList;
 
         private static CancellationTokenSource _cancellationTokenSource;
 
@@ -112,33 +97,18 @@ namespace Nekoyume.BlockChain
         public IObservable<(NCTx tx, List<NCAction> actions)> OnMakeTransaction => _onMakeTransactionSubject;
 
         public event EventHandler BootstrapStarted;
-        public event EventHandler<PreloadState> PreloadProcessed;
         public event Func<UniTask> PreloadEndedAsync;
         public event EventHandler<long> TipChanged;
         public static event Action<Guid> OnEnqueueOwnGameAction;
         public static event Action<bool> OnHasOwnTx;
 
         private bool SyncSucceed { get; set; }
-        public AppProtocolVersion EncounteredHighestVersion { get; private set; }
 
         private static TelemetryClient _telemetryClient;
 
         private const string InstrumentationKey = "953da29a-95f7-4f04-9efe-d48c42a1b53a";
 
         public bool disposed;
-
-        static Agent()
-        {
-            try
-            {
-                Libplanet.Crypto.CryptoConfig.CryptoBackend = new Secp256K1CryptoBackend<SHA256>();
-            }
-            catch (Exception e)
-            {
-                Debug.Log("Secp256K1CryptoBackend initialize failed. Use default backend.");
-                Debug.LogException(e);
-            }
-        }
 
         public IEnumerator Initialize(
             CommandLineOptions options,
@@ -157,19 +127,15 @@ namespace Nekoyume.BlockChain
         private async Task InitAsync(
             PrivateKey privateKey,
             string path,
-            IEnumerable<BoundPeer> peers,
-            HostOptions hostOptions,
             bool consoleSink,
             bool development,
-            AppProtocolVersion appProtocolVersion,
-            IEnumerable<PublicKey> trustedAppProtocolVersionSigners,
             string storageType = null,
             string genesisBlockPath = null)
         {
             InitializeLogger(consoleSink, development);
             BlockPolicySource = new BlockPolicySource(Log.Logger, LogEventLevel.Debug);
 
-            var genesisBlock = BlockManager.ImportBlock(genesisBlockPath ?? BlockManager.GenesisBlockPath);
+            var genesisBlock = BlockManager.ImportBlock(genesisBlockPath ?? BlockManager.GenesisBlockPath());
             if (genesisBlock is null)
             {
                 Debug.LogError("There is no genesis block.");
@@ -177,20 +143,17 @@ namespace Nekoyume.BlockChain
 
             Debug.Log($"Store Path: {path}");
             Debug.Log($"Genesis Block Hash: {genesisBlock.Hash}");
-            Debug.LogFormat(
-                "AppProtocolVersion: {0}\nAppProtocolVersion.Token: {1}",
-                appProtocolVersion,
-                appProtocolVersion.Token
-            );
 
             var policy = BlockPolicySource.GetPolicy();
             _stagePolicy = new VolatileStagePolicy<NCAction>();
             PrivateKey = privateKey;
+
             store = LoadStore(path, storageType);
 
             try
             {
-                IKeyValueStore stateKeyValueStore = new RocksDBKeyValueStore(Path.Combine(path, "states"));
+                string keyPath = path + "/states";
+                IKeyValueStore stateKeyValueStore = new RocksDBKeyValueStore(keyPath);
                 _stateStore = new TrieStateStore(stateKeyValueStore);
                 blocks = new BlockChain<NCAction>(
                     policy,
@@ -213,40 +176,8 @@ namespace Nekoyume.BlockChain
 #endif
             lastTenBlocks = new ConcurrentQueue<(Block<NCAction>, DateTimeOffset)>();
 
-            EncounteredHighestVersion = appProtocolVersion;
+            if (!consoleSink) InitializeTelemetryClient(privateKey.ToAddress());
 
-            // FIXME: this should be changed to reflect libplanet API change after it is reworked.
-            // for context, refer to https://github.com/planetarium/libplanet/discussions/2303.
-            var appProtocolVersionOptions = new AppProtocolVersionOptions();
-            appProtocolVersionOptions.AppProtocolVersion =
-                appProtocolVersion;
-            appProtocolVersionOptions.TrustedAppProtocolVersionSigners =
-                trustedAppProtocolVersionSigners.ToImmutableHashSet();
-            appProtocolVersionOptions.DifferentAppProtocolVersionEncountered =
-                DifferentAppProtocolVersionEncountered;
-            var swarmOptions = new SwarmOptions();
-            var transport = await NetMQTransport.Create(
-                privateKey,
-                appProtocolVersionOptions,
-                hostOptions,
-                swarmOptions.MessageTimestampBuffer);
-
-            var initSwarmTask = Task.Run(() => new Swarm<NCAction>(
-                blockChain: blocks,
-                privateKey: privateKey,
-                transport: transport,
-                options: swarmOptions));
-
-            initSwarmTask.Wait();
-            _swarm = initSwarmTask.Result;
-
-            if (!consoleSink) InitializeTelemetryClient(_swarm.Address);
-
-            _peerList = peers
-                .Where(peer => peer.PublicKey != privateKey.PublicKey)
-                .ToImmutableList();
-            _seedPeers = (_peerList.Count > MaxSeed ? _peerList.Sample(MaxSeed) : _peerList)
-                .ToImmutableList();
             // Init SyncSucceed
             SyncSucceed = true;
 
@@ -258,30 +189,19 @@ namespace Nekoyume.BlockChain
         {
             _cancellationTokenSource?.Cancel();
             // `_swarm`의 내부 큐가 비워진 다음 완전히 종료할 때까지 더 기다립니다.
-            Task.Run(async () =>
+            Task.Run(() => {
+                try
                 {
-                    await _swarm?.StopAsync(TimeSpan.FromMilliseconds(SwarmLinger));
-
-                    // 프리로드 중일 경우 StopAsync 에서 딜레이가 없을 수 있어서 딜레이를 추가 합니다.
-                    // FIXME: Swarm<T>에 프리로딩을 기다리는 API가 생길 때까지만 이렇게 해둡니다.
-                    await Task.Delay(SwarmLinger);
-                })
-                .ContinueWith(_ =>
+                    store?.Dispose();
+                    if (_stateStore is IDisposable disposable)
+                    {
+                        disposable.Dispose();
+                    }
+                }
+                catch (ObjectDisposedException)
                 {
-                    try
-                    {
-                        _swarm?.Dispose();
-                        store?.Dispose();
-                        if (_stateStore is IDisposable disposable)
-                        {
-                            disposable.Dispose();
-                        }
-                    }
-                    catch (ObjectDisposedException)
-                    {
-                    }
-                })
-                .Wait(SwarmLinger + 1 * 1000);
+                }
+            });
 
             SaveQueuedActions();
             disposed = true;
@@ -363,7 +283,26 @@ namespace Nekoyume.BlockChain
 
         private void Awake()
         {
+            PrepareForNativeLib_256K1();
+            // Move static constructor to there to avoid conflict of native library loading
+            try
+            {
+                // Avoid to construct repeatly
+                if(Libplanet.Crypto.CryptoConfig.CryptoBackend is not Secp256K1CryptoBackend<SHA256>)
+                {
+                    Libplanet.Crypto.CryptoConfig.CryptoBackend = new Secp256K1CryptoBackend<SHA256>();
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Log("Secp256K1CryptoBackend initialize failed. Use default backend.");
+                Debug.LogException(e);
+            }
+
+            DefaultStoragePath = StorePath.GetDefaultStoragePath();
+
             ForceDotNet.Force();
+
             string parentDir = Path.GetDirectoryName(DefaultStoragePath);
             if (!Directory.Exists(parentDir))
             {
@@ -371,6 +310,24 @@ namespace Nekoyume.BlockChain
             }
 
             DeletePreviousStore();
+        }
+
+        private void PrepareForNativeLib_256K1()
+        {
+            if (Application.platform == RuntimePlatform.Android)
+            {
+                string Path_256K1 = default;
+                OSPlatform os = default;
+                Architecture arc = default;
+                Path_256K1 = Application.dataPath.Split("/base.apk")[0];
+                Path_256K1 = Path.Combine(Path_256K1, "lib");
+                Path_256K1 = Path.Combine(Path_256K1, Environment.Is64BitProcess ? "arm64" : "arm");
+                Path_256K1 = Path.Combine(Path_256K1, "libsecp256k1.so");
+                os = OSPlatform.Linux;
+                arc = Environment.Is64BitProcess ? Architecture.Arm64 : Architecture.Arm;
+                // Load native library for secp256k1
+                Secp256k1Net.UnityPathHelper.SetSpecificPath(Path_256K1, os, arc);
+            }
         }
 
         protected void OnDestroy()
@@ -387,54 +344,22 @@ namespace Nekoyume.BlockChain
 
         private async void InitAgentAsync(Action<bool> callback, PrivateKey privateKey, CommandLineOptions options)
         {
-            var peers = options.Peers.Select(LoadPeer);
-            var iceServerList = options.IceServers.Select(LoadIceServer).ToImmutableList();
-
-            if (!iceServerList.Any())
-            {
-                iceServerList = new[] { LoadIceServer(DefaultIceServer) }.ToImmutableList();
-            }
-
-            var iceServers = iceServerList.Sample(1).ToImmutableList();
-
-            var host = GetHost(options);
-            var port = options.Port;
             var consoleSink = options.ConsoleSink;
             var storagePath = options.StoragePath ?? DefaultStoragePath;
             var storageType = options.StorageType;
             var development = options.Development;
             var genesisBlockPath = options.GenesisBlockPath;
-            var appProtocolVersion = options.AppProtocolVersion is null
-                ? default
-                : Libplanet.Net.AppProtocolVersion.FromToken(options.AppProtocolVersion);
-            AppProtocolVersion = appProtocolVersion.Version;
-            var trustedAppProtocolVersionSigners = options.TrustedAppProtocolVersionSigners
-                .Select(s => new PublicKey(ByteUtil.ParseHex(s)));
-            var hostOptions = new HostOptions(host, iceServers, port ?? default);
             await InitAsync(
                 privateKey,
                 storagePath,
-                peers,
-                hostOptions,
                 consoleSink,
                 development,
-                appProtocolVersion,
-                trustedAppProtocolVersionSigners,
                 storageType,
                 genesisBlockPath
             );
 
             // 별도 쓰레드에서는 GameObject.GetComponent<T> 를 사용할 수 없기때문에 미리 선언.
             var loadingScreen = Widget.Find<PreloadingScreen>();
-            BootstrapStarted += (_, state) =>
-                loadingScreen.Message = L10nManager.Localize("UI_LOADING_BOOTSTRAP_START");
-            PreloadProcessed += (_, state) =>
-            {
-                if (loadingScreen)
-                {
-                    loadingScreen.Message = GetLoadingScreenMessage(state);
-                }
-            };
 
             PreloadEndedAsync += async () =>
             {
@@ -449,7 +374,6 @@ namespace Nekoyume.BlockChain
                     await GetBalanceAsync(Address, goldCurrency)));
                 States.Instance.SetCrystalBalance(
                     await GetBalanceAsync(Address, CrystalCalculator.CRYSTAL));
-
                 if (await GetStateAsync(
                         StakeState.DeriveAddress(States.Instance.AgentState.address))
                     is Dictionary stakeDict)
@@ -500,7 +424,6 @@ namespace Nekoyume.BlockChain
                 LoadQueuedActions();
                 TipChanged += (___, index) => { BlockIndexSubject.OnNext(index); };
             };
-
             _miner = options.NoMiner ? null : CoMiner();
             _autoPlayer = options.AutoPlay ? CoAutoPlayer() : null;
 
@@ -530,22 +453,6 @@ namespace Nekoyume.BlockChain
         private static string GetHost(CommandLineOptions options)
         {
             return string.IsNullOrEmpty(options.Host) ? null : options.Host;
-        }
-
-        private static BoundPeer LoadPeer(string peerInfo)
-        {
-            var tokens = peerInfo.Split(',');
-            var pubKey = new PublicKey(ByteUtil.ParseHex(tokens[0]));
-            var host = tokens[1];
-            var port = int.Parse(tokens[2]);
-
-            return new BoundPeer(pubKey, new DnsEndPoint(host, port));
-        }
-
-        private static IceServer LoadIceServer(string iceServerInfo)
-        {
-            var uri = new Uri(iceServerInfo);
-            return new IceServer(uri);
         }
 
         private static BaseStore LoadStore(string path, string storageType)
@@ -641,33 +548,6 @@ namespace Nekoyume.BlockChain
             Log.Logger = loggerConfiguration.CreateLogger();
         }
 
-        private void DifferentAppProtocolVersionEncountered(
-            BoundPeer peer,
-            AppProtocolVersion peerVersion,
-            AppProtocolVersion localVersion
-        )
-        {
-            // TODO: 론처 쪽 코드의 LibplanetController.NewAppProtocolVersionEncountered() 메서드와 기본적인
-            // 로직은 같지만 구체적으로 취해야 할 액션이 크게 달라서 코드 공유를 하지 못하고 있음. 판단 로직과 판단에 따른
-            // 행동 로직을 분리해서 판단 부분은 코드를 공유할 필요가 있음.
-            Debug.LogWarningFormat(
-                "Different Version Encountered; expected (local): {0}; actual ({1}): {2}",
-                localVersion, peer, peerVersion
-            );
-            if (localVersion.Version < peerVersion.Version)
-            {
-                // 위 조건에 해당하지 않을 때는 true를 넣는 것이 아니라 no-op이어야 함.
-                // (이 콜백 함수 자체가 여러 차례 호출될 수 있기 때문에 SyncSucceed가 false로 채워졌는데
-                // 그 다음에 다시 true로 덮어씌어지거나 하면 안되기 때문.)
-                SyncSucceed = false;
-            }
-
-            if (peerVersion.Version > EncounteredHighestVersion.Version)
-            {
-                EncounteredHighestVersion = peerVersion;
-            }
-        }
-
         private IEnumerator CoLogger()
         {
             Widget.Create<BattleSimulator>(true);
@@ -697,132 +577,16 @@ namespace Nekoyume.BlockChain
         private IEnumerator CoSwarmRunner()
         {
             BootstrapStarted?.Invoke(this, null);
-            if (_peerList.Any())
-            {
-                var bootstrapTask = Task.Run(async () =>
-                {
-                    try
-                    {
-                        await _swarm.BootstrapAsync(
-                            seedPeers: _seedPeers,
-                            dialTimeout: null,
-                            searchDepth: 1,
-                            cancellationToken: _cancellationTokenSource.Token
-                        );
-                    }
-                    catch (SwarmException e)
-                    {
-                        Debug.LogFormat("Bootstrap failed. {0}", e.Message);
-                        throw;
-                    }
-                    catch (TimeoutException)
-                    {
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogFormat("Exception occurred during bootstrap {0}", e);
-                        throw;
-                    }
-                });
-                yield return new WaitUntil(() => bootstrapTask.IsCompleted);
-#if !UNITY_EDITOR
-                if (!Application.isBatchMode && (bootstrapTask.IsFaulted || bootstrapTask.IsCanceled))
-                {
-                    var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_FORMAT"),
-                        L10nManager.Localize("BOOTSTRAP_FAIL"));
-
-                    Widget.Find<TitleOneButtonSystem>().Show(
-                        L10nManager.Localize("UI_ERROR"),
-                        errorMsg,
-                        L10nManager.Localize("UI_QUIT"),
-                        false
-                    );
-                    yield break;
-                }
-#endif
-                var started = DateTimeOffset.UtcNow;
-                var existingBlocks = blocks?.Tip?.Index ?? 0;
-                Debug.Log("Preloading starts");
-
-                // _swarm.PreloadAsync() 에서 대기가 발생하기 때문에
-                // 이를 다른 스레드에서 실행하여 우회하기 위해 Task로 감쌉니다.
-                var swarmPreloadTask = Task.Run(async () =>
-                {
-                    await _swarm.PreloadAsync(
-                        TimeSpan.FromMilliseconds(SwarmDialTimeout),
-                        25,
-                        new Progress<PreloadState>(state =>
-                            PreloadProcessed?.Invoke(this, state)
-                        ),
-                        cancellationToken: _cancellationTokenSource.Token
-                    );
-                });
-
-                yield return new WaitUntil(() => swarmPreloadTask.IsCompleted);
-                var ended = DateTimeOffset.UtcNow;
-
-                if (swarmPreloadTask.Exception is Exception exc)
-                {
-                    Debug.LogErrorFormat(
-                        "Preloading terminated with an exception: {0}",
-                        exc
-                    );
-                    throw exc;
-                }
-
-                var index = blocks?.Tip?.Index ?? 0;
-                Debug.LogFormat(
-                    "Preloading finished; elapsed time: {0}; blocks: {1}",
-                    ended - started,
-                    index - existingBlocks
-                );
-            }
+            Debug.Log("PreloadEndedAsync=" + PreloadEndedAsync == null ? "null" : "ok");
 
             yield return PreloadEndedAsync?.Invoke().ToCoroutine();
 
-            var swarmStartTask = Task.Run(async () =>
+            Task.Run(() =>
             {
-                try
-                {
-                    await _swarm.StartAsync();
-                }
-                catch (TaskCanceledException)
-                {
-                }
-                // Avoid TerminatingException in test.
-                catch (TerminatingException)
-                {
-                }
-                catch (Exception e)
-                {
-                    Debug.LogErrorFormat(
-                        "Swarm terminated with an exception: {0}",
-                        e
-                    );
-                    throw;
-                }
-            });
-
-            Task.Run(async () =>
-            {
-                await _swarm.WaitForRunningAsync();
-
                 BlockRenderer.BlockSubject
                     .ObserveOnMainThread()
                     .Subscribe(TipChangedHandler);
-
-                Debug.LogFormat(
-                    "The address of this node: {0},{1},{2}",
-                    ByteUtil.Hex(PrivateKey.PublicKey.Format(true)),
-                    _swarm.EndPoint.Host,
-                    _swarm.EndPoint.Port
-                );
-                Debug.LogFormat("Address: {0}, PublicKey: {1}",
-                    PrivateKey.PublicKey.ToAddress(),
-                    ByteUtil.Hex(PrivateKey.PublicKey.Format(true)));
             });
-
-            yield return new WaitUntil(() => swarmStartTask.IsCompleted);
         }
 
         private void TipChangedHandler((
@@ -914,7 +678,7 @@ namespace Nekoyume.BlockChain
 
         private IEnumerator CoMiner()
         {
-            var miner = new Miner(blocks, _swarm, PrivateKey);
+            var miner = new Miner(blocks, PrivateKey);
             var sleepInterval = new WaitForSeconds(15);
             while (true)
             {
@@ -933,17 +697,13 @@ namespace Nekoyume.BlockChain
                 string.Join(",", polymorphicActions.Select(i => i.InnerAction)));
             Transaction<NCAction> tx = blocks.MakeTransaction(PrivateKey, polymorphicActions);
             _onMakeTransactionSubject.OnNext((tx, actions));
-            if (_swarm.Running)
-            {
-                _swarm.BroadcastTxs(new[] { tx });
-            }
 
             return tx;
         }
 
         private void LoadQueuedActions()
         {
-            var path = Path.Combine(Application.persistentDataPath, QueuedActionsFileName);
+            var path = Platform.GetPersistentDataPath(QueuedActionsFileName);
             if (File.Exists(path))
             {
                 var actionsListBytes = File.ReadAllBytes(path);
@@ -966,8 +726,7 @@ namespace Nekoyume.BlockChain
             if (_queuedActions.Any())
             {
                 List<GameAction> actionsList;
-
-                var path = Path.Combine(Application.persistentDataPath, QueuedActionsFileName);
+                var path = Platform.GetPersistentDataPath(QueuedActionsFileName);
                 if (!File.Exists(path))
                 {
                     Debug.Log("Create new queuedActions list.");
@@ -1022,53 +781,6 @@ namespace Nekoyume.BlockChain
 
                 yield return new WaitForSeconds(.3f);
             }
-        }
-
-        private string GetLoadingScreenMessage(PreloadState state)
-        {
-            string localizationKey;
-            long count;
-            long totalCount;
-
-            switch (state)
-            {
-                case BlockHashDownloadState blockHashDownloadState:
-                    localizationKey = "UI_LOADING_BLOCK_HASH_DOWNLOAD";
-                    count = blockHashDownloadState.ReceivedBlockHashCount;
-                    totalCount = blockHashDownloadState.EstimatedTotalBlockHashCount;
-                    break;
-
-                case BlockDownloadState blockDownloadState:
-                    localizationKey = "UI_LOADING_BLOCK_DOWNLOAD";
-                    count = blockDownloadState.ReceivedBlockCount;
-                    totalCount = blockDownloadState.TotalBlockCount;
-                    break;
-
-                case BlockVerificationState blockVerificationState:
-                    localizationKey = "UI_LOADING_BLOCK_VERIFICATION";
-                    count = blockVerificationState.VerifiedBlockCount;
-                    totalCount = blockVerificationState.TotalBlockCount;
-                    break;
-
-                case StateDownloadState stateReferenceDownloadState:
-                    localizationKey = "UI_LOADING_STATE_REFERENCE_DOWNLOAD";
-                    count = stateReferenceDownloadState.ReceivedIterationCount;
-                    totalCount = stateReferenceDownloadState.TotalIterationCount;
-                    break;
-
-                case ActionExecutionState actionExecutionState:
-                    localizationKey = "UI_LOADING_ACTION_EXECUTE";
-                    count = actionExecutionState.ExecutedBlockCount;
-                    totalCount = actionExecutionState.TotalBlockCount;
-                    break;
-
-                default:
-                    throw new Exception("Unknown state was reported during preload.");
-            }
-
-            string format = L10nManager.Localize(localizationKey);
-            string text = string.Format(format, count, totalCount);
-            return $"{text}  ({state.CurrentPhase} / {PreloadState.TotalPhase})";
         }
     }
 }

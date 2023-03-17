@@ -1,13 +1,18 @@
+name: Build
+
 on:
   push:
     branches: []
     tags: ["*"]
 
-name: Build
+env:
+  UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+  UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+  UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
 
 jobs:
-  build-unity:
-    name: Build for ${{ matrix.targetPlatform }} on version ${{ matrix.unityVersion }}
+  build:
+    name: Build for ${{ matrix.targetPlatform }}
     runs-on:
       labels: ["linux", "8cores"]
     strategy:
@@ -15,146 +20,78 @@ jobs:
       matrix:
         projectPath:
           - nekoyume
-        unityVersion:
-          - 2021.3.5f1
         targetPlatform:
-          - Windows
-          - Linux
+          - Android
+          - StandaloneWindows
+          - StandaloneLinux64
+          - StandaloneOSX
+
     steps:
-      - name: Set environment variables
+      - name: Set CRLF
         run: |
           targetPlatform=${{ matrix.targetPlatform }}
 
-          if [ "$targetPlatform" == "Windows" ]; then
-            echo "DOCKER_IMAGE_TAG=${{ matrix.unityVersion }}-windows-mono-1" >> $GITHUB_ENV
-          elif [ "$targetPlatform" == "macOS" ]; then
-            echo "DOCKER_IMAGE_TAG=${{ matrix.unityVersion }}-mac-mono-1" >> $GITHUB_ENV
-          elif [ "$targetPlatform" == "Linux" ]; then
-            echo "DOCKER_IMAGE_TAG=${{ matrix.unityVersion }}-linux-il2cpp-1" >> $GITHUB_ENV
+          if [ "$targetPlatform" == "Android" ]; then
+            git config --global core.autocrlf true
           fi
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           lfs: true
           submodules: true
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: ${{ matrix.projectPath }}/Library
-          key: ${{ matrix.targetPlatform }}-${{ matrix.projectPath }}-Library-v4
+          key: Library-${{ matrix.projectPath }}-ubuntu-${{ matrix.targetPlatform }}
+          restore-keys: |
+            Library-${{ matrix.projectPath }}-ubuntu-
+            Library-
 
-      - name: inject client data
-        run: |
-          TARGET_NETWORK=$(case "$GITHUB_REF" in
-            refs/heads/main)
-              echo -n "mainnet"
-              ;;
-
-            refs/heads/rc-*)
-            echo -n "internal"
-              ;;
-
-            refs/heads/previewnet)
-              echo -n "previewnet"
-              ;;
-
-            *)
-              echo -n "unknown"
-              ;;
-          esac)
-
-          chmod +x .github/bin/inject-client-data.sh
-          .github/bin/inject-client-data.sh \
-          "$GITHUB_SHA" \
-          "$TARGET_NETWORK"
-
-      - name: Build Unity Player using docker
-        run: |
-          docker run \
-            --env UNITY_LICENSE="${{ secrets.UNITY_LICENSE }}" \
-            --env UNITY_EMAIL="${{ secrets.UNITY_EMAIL }}" \
-            --env UNITY_PASSWORD="${{ secrets.UNITY_PASSWORD }}" \
-            --env UNITY_SERIAL="${{ secrets.UNITY_SERIAL }}" \
-            -w "${{ github.workspace }}" \
-            -v "${{ github.workspace }}":"${{ github.workspace }}" \
-            unityci/editor:${DOCKER_IMAGE_TAG} \
-            scripts/build-player.sh ${{ matrix.targetPlatform }}
-
-      - uses: actions/upload-artifact@v2
+      - uses: game-ci/unity-builder@v2
         with:
-          name: 9c-${{ matrix.targetPlatform }}
-          path: nekoyume/Build/${{ matrix.targetPlatform }}
-          retention-days: 1
-          if-no-files-found: error
-  publish:
-    name: Publish Unity Player for ${{ matrix.targetPlatform }}
-    runs-on: ubuntu-20.04
-    strategy:
-      fail-fast: false
-      matrix:
-        targetPlatform:
-          - Windows
-          - Linux
-    needs: build-unity
-    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/rc-') || github.ref == 'refs/heads/previewnet' || github.ref == 'refs/heads/2022q2' }}
-    steps:
-      - uses: actions/checkout@v2
+          projectPath: ${{ matrix.projectPath }}
+          targetPlatform: ${{ matrix.targetPlatform }}
+          buildMethod: 'Editor.Builder.Build${{ matrix.targetPlatform }}'
+          androidTargetSdkVersion: AndroidApiLevel28
 
-      - id: download_player
-        uses: actions/download-artifact@v2
-        with:
-          name: 9c-${{ matrix.targetPlatform }}
-          path: /tmp/player
-
-      - name: Set up Python # FIXME: 나중에 내장 파이썬 버전이 3.7 이상으로 올라가면 삭제할 것
-        uses: actions/setup-python@v2
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
           python-version: 3.11.0
 
       - name: Pack
         run: |
-          set -evx
-          mkdir -p $HOME/.local/bin
-          npm config set prefix $HOME/.local/bin
-          export PATH="$HOME/.local/bin:$PATH"
-          npm install --global strip-json-comments-cli
+          targetPlatform=${{ matrix.targetPlatform }}
 
-          # macOS 내장 date는 ISO 8601 서식 옵션이 따로 없음
-          timestamp="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          if [ "$targetPlatform" == "Android" ]; then
+            tr -d "\r" < .github/bin/pack.sh > .github/bin/pack_trimed.sh
+            rm .github/bin/pack.sh
+            mv .github/bin/pack_trimed.sh .github/bin/pack.sh
+          fi
+
+          sudo mv $GITHUB_WORKSPACE/build /tmp/player
           pip3 install wheel
-
-          .github/bin/pack.sh \
-          /tmp/package \
+          sudo bash .github/bin/pack.sh \
+          /tmp/packages \
           "${{ matrix.targetPlatform }}" \
-          "${{ steps.download_player.outputs.download-path }}" \
-          "$timestamp"
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
+          "/tmp/player"
 
-      - uses: chrnorm/deployment-action@releases/v1
-        id: build_artifact
+      - uses: actions/upload-artifact@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          description: "Build artifact"
-          environment: build-artifact
+          name: Build-${{ matrix.targetPlatform }}
+          path: /tmp/packages
+          retention-days: 7
+          if-no-files-found: error
 
-      - run: mv /tmp/package ./package # s3-upload-action이 상대 경로만 지원
+      - run: sudo mv /tmp/packages ./packages # s3-upload-action이 상대 경로만 지원
         if: success()
         shell: bash
 
       - name: Upload Artifacts
-        run: aws s3 cp package s3://9c-artifacts/${{ github.sha }}/ --recursive
+        if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/rc-') || github.ref == 'refs/heads/previewnet' || github.ref == 'refs/heads/2022q2' }}
+        run: aws s3 cp packages s3://9c-artifacts/${{ github.sha }}/ --recursive
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
-
-      - if: success()
-        uses: chrnorm/deployment-status@releases/v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          target_url: ${{ steps.S3.outputs.object_locations[0] }}
-          state: "success"
-          deployment_id: ${{ steps.build_artifact.outputs.deployment_id }}

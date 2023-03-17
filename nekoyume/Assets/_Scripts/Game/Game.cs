@@ -31,6 +31,8 @@ using UnityEngine;
 using UnityEngine.Playables;
 using Menu = Nekoyume.UI.Menu;
 using Random = UnityEngine.Random;
+using RocksDbSharp;
+using UnityEngine.Android;
 
 namespace Nekoyume.Game
 {
@@ -88,14 +90,15 @@ namespace Nekoyume.Game
         public NineChroniclesAPIClient RpcClient => _rpcClient;
 
         public MarketServiceClient MarketServiceClient;
+
         public Url URL { get; private set; }
 
-        public readonly LruCache<Address, IValue> CachedStates = new LruCache<Address, IValue>();
+        public readonly LruCache<Address, IValue> CachedStates = new();
 
-        public readonly LruCache<Address, FungibleAssetValue> CachedBalance =
-            new LruCache<Address, FungibleAssetValue>(2);
+        public readonly Dictionary<Address, bool> CachedStateAddresses = new();
 
-        public readonly Dictionary<Address, bool> CachedAddresses = new Dictionary<Address, bool>();
+        public readonly Dictionary<Currency, LruCache<Address, FungibleAssetValue>>
+            CachedBalance = new();
 
         private CommandLineOptions _options;
 
@@ -109,8 +112,8 @@ namespace Nekoyume.Game
 
         private string _msg;
 
-        private static readonly string CommandLineOptionsJsonPath =
-            Path.Combine(Application.streamingAssetsPath, "clo.json");
+        public static string CommandLineOptionsJsonPath =
+            Platform.GetStreamingAssetsPath("clo.json");
 
         private static readonly string UrlJsonPath =
             Path.Combine(Application.streamingAssetsPath, "url.json");
@@ -120,14 +123,57 @@ namespace Nekoyume.Game
         protected override void Awake()
         {
             Debug.Log("[Game] Awake() invoked");
+            Application.runInBackground = true;
+#if UNITY_IOS && !UNITY_IOS_SIMULATOR && !UNITY_EDITOR
+            string prefix = Path.Combine(Platform.DataPath.Replace("Data", ""), "Frameworks");
+            //Load dynamic library of rocksdb
+            string RocksdbLibPath = Path.Combine(prefix, "rocksdb.framework", "librocksdb");
+            Native.LoadLibrary(RocksdbLibPath);
 
+            //Set the path of secp256k1's dynamic library
+            string secp256k1LibPath = Path.Combine(prefix, "secp256k1.framework", "libsecp256k1");
+            Secp256k1Net.UnityPathHelper.SetSpecificPath(secp256k1LibPath);
+#elif UNITY_IOS_SIMULATOR && !UNITY_EDITOR
+            string rocksdbLibPath = Platform.GetStreamingAssetsPath("librocksdb.dylib");
+            Native.LoadLibrary(rocksdbLibPath);
+
+            string secp256LibPath = Platform.GetStreamingAssetsPath("libsecp256k1.dylib");
+            Secp256k1Net.UnityPathHelper.SetSpecificPath(secp256LibPath);
+#elif UNITY_ANDROID
+            string loadPath = Application.dataPath.Split("/base.apk")[0];
+            loadPath = Path.Combine(loadPath, "lib");
+            loadPath = Path.Combine(loadPath, Environment.Is64BitOperatingSystem ? "arm64" : "arm");
+            loadPath = Path.Combine(loadPath, "librocksdb.so");
+            Debug.LogWarning($"native load path = {loadPath}");
+            RocksDbSharp.Native.LoadLibrary(loadPath);
+
+            bool HasStoragePermission() =>
+                Permission.HasUserAuthorizedPermission(Permission.ExternalStorageWrite)
+                && Permission.HasUserAuthorizedPermission(Permission.ExternalStorageRead);
+
+            String[] permission = new String[]
+            {
+                Permission.ExternalStorageRead,
+                Permission.ExternalStorageWrite
+            };
+
+            while (!HasStoragePermission())
+            {
+                Permission.RequestUserPermissions(permission);
+            }
+#endif
             Application.targetFrameRate = 60;
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             base.Awake();
 
+#if UNITY_IOS
+            _options = CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.json"));
+#else
             _options = CommandLineOptions.Load(
                 CommandLineOptionsJsonPath
             );
+#endif
+
             URL = Url.Load(UrlJsonPath);
 
             Debug.Log("[Game] Awake() CommandLineOptions loaded");
@@ -151,11 +197,26 @@ namespace Nekoyume.Game
 
         private IEnumerator Start()
         {
+#if LIB9C_DEV_EXTENSIONS && UNITY_ANDROID
+            Lib9c.DevExtensions.TestbedHelper.LoadTestbedCreateAvatarForQA();
+#endif
             Debug.Log("[Game] Start() invoked");
+
+#if ENABLE_IL2CPP
+            // Because of strict AOT environments, use StaticCompositeResolver for IL2CPP.
+            StaticCompositeResolver.Instance.Register(
+                    MagicOnion.Resolvers.MagicOnionResolver.Instance,
+                    Lib9c.Formatters.NineChroniclesResolver.Instance,
+                    MessagePack.Resolvers.GeneratedResolver.Instance,
+                    MessagePack.Resolvers.StandardResolver.Instance
+                );
+            var resolver = StaticCompositeResolver.Instance;
+#else
             var resolver = MessagePack.Resolvers.CompositeResolver.Create(
                 NineChroniclesResolver.Instance,
                 StandardResolver.Instance
             );
+#endif
             var options = MessagePackSerializerOptions.Standard.WithResolver(resolver);
             MessagePackSerializer.DefaultOptions = options;
 
@@ -254,7 +315,7 @@ namespace Nekoyume.Game
                 SavedPetId = !petList.Any() ? null : petList[Random.Range(0, petList.Count)];
             }).AddTo(gameObject);
 
-            Widget.Find<VersionSystem>().SetVersion(Agent.AppProtocolVersion);
+            Widget.Find<VersionSystem>().SetVersion(_options.AppProtocolVersion);
 
             ShowNext(agentInitializeSucceed);
             StartCoroutine(CoUpdate());
@@ -531,7 +592,7 @@ namespace Nekoyume.Game
             Widget.Find<PreloadingScreen>().Close();
         }
 
-        #endregion
+#endregion
 
         protected override void OnApplicationQuit()
         {
@@ -909,5 +970,21 @@ namespace Nekoyume.Game
                 rpcServerHost,
                 isTrackable);
         }
+
+#if UNITY_ANDROID
+        void Update()
+        {
+            if (Platform.IsMobilePlatform())
+            {
+                int width = Screen.resolutions[0].width;
+                int height = Screen.resolutions[0].height;
+                if (Screen.currentResolution.width != height || Screen.currentResolution.height != width)
+                {
+                    Debug.LogWarning($"fix Resolution to w={width} h={height}");
+                    Screen.SetResolution(height, width, true);
+                }
+            }
+        }
+#endif
     }
 }

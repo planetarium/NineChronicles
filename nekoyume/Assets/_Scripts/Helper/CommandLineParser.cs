@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Nekoyume.L10n;
 using UnityEngine;
+using System.Runtime.InteropServices;
 
 namespace Nekoyume.Helper
 {
@@ -394,12 +395,21 @@ namespace Nekoyume.Helper
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 ReadCommentHandling = JsonCommentHandling.Skip,
             };
-
+#if UNITY_ANDROID
+            // error: current no clo.json
+            UnityEngine.WWW www = new UnityEngine.WWW(Platform.GetStreamingAssetsPath("clo.json"));
+            while (!www.isDone)
+            {
+                // wait for data load
+            }
+            return JsonSerializer.Deserialize<CommandLineOptions>(www.text, jsonOptions);
+#else
             if (File.Exists(localPath))
             {
                 Debug.Log($"Get options from local: {localPath}");
                 return JsonSerializer.Deserialize<CommandLineOptions>(File.ReadAllText(localPath), jsonOptions);
             }
+#endif
 
             Debug.LogErrorFormat("Failed to find {0}. Using default options.", localPath);
             return new CommandLineOptions();
