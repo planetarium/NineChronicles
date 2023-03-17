@@ -215,7 +215,7 @@ namespace Nekoyume.UI.Module
                 viewData.Description = L10nManager.Localize(
                     $"PET_DESCRIPTION_{optionInfo.OptionType}",
                     optionInfo.OptionValue);
-                viewData.IsAppliable = true;
+                viewData.IsAppliable = false;
             }
 
             return viewData;
