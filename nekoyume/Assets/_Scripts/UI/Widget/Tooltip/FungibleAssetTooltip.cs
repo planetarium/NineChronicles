@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Coffee.UIEffects;
@@ -7,17 +6,13 @@ using Lib9c.Model.Order;
 using Libplanet.Assets;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
-using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
-using Nekoyume.Model.Item;
 using Nekoyume.State;
-using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using ShopItem = Nekoyume.UI.Model.ShopItem;
 
 namespace Nekoyume.UI
@@ -138,21 +133,24 @@ namespace Nekoyume.UI
         /// </summary>
         public void Show(
             ShopItem item,
-            System.Action onRegister,
-            System.Action onSellCancellation,
+            int apStoneCount,
+            Action<ConditionalButton.State> onRegister,
+            Action<ConditionalButton.State> onSellCancellation,
             System.Action onClose)
         {
             registerButton.gameObject.SetActive(false);
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(true);
-            sell.Set(item.FungibleAssetProduct.RegisteredBlockIndex + Order.ExpirationInterval,
-                () =>
+            sell.Set(
+                item.FungibleAssetProduct.RegisteredBlockIndex + Order.ExpirationInterval,
+                apStoneCount,
+                state =>
                 {
-                    onSellCancellation?.Invoke();
+                    onSellCancellation?.Invoke(state);
                     Close();
-                }, () =>
+                }, state =>
                 {
-                    onRegister?.Invoke();
+                    onRegister?.Invoke(state);
                     Close();
                 });
 

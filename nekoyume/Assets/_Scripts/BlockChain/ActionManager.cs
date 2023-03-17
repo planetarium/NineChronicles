@@ -583,7 +583,8 @@ namespace Nekoyume.BlockChain
 
         public IObservable<ActionEvaluation<RegisterProduct>> RegisterProduct(
             Address avatarAddress,
-            IRegisterInfo registerInfo)
+            IRegisterInfo registerInfo,
+            bool chargeAp)
         {
             var sentryTrace = Analyzer.Instance.Track("Unity/RegisterProduct", new Dictionary<string, Value>()
             {
@@ -596,7 +597,8 @@ namespace Nekoyume.BlockChain
             var action = new RegisterProduct
             {
                 AvatarAddress = avatarAddress,
-                RegisterInfos = new List<IRegisterInfo> { registerInfo }
+                RegisterInfos = new List<IRegisterInfo> { registerInfo },
+                ChargeAp = chargeAp,
             };
 
             ProcessAction(action);
@@ -612,7 +614,8 @@ namespace Nekoyume.BlockChain
 
         public IObservable<ActionEvaluation<CancelProductRegistration>> CancelProductRegistration(
             Address avatarAddress,
-            IProductInfo productInfo)
+            List<IProductInfo> productInfo,
+            bool chargeAp)
         {
             var sentryTrace = Analyzer.Instance.Track("Unity/CancelProductRegistration", new Dictionary<string, Value>()
             {
@@ -623,7 +626,8 @@ namespace Nekoyume.BlockChain
             var action = new CancelProductRegistration
             {
                 AvatarAddress = avatarAddress,
-                ProductInfos = new List<IProductInfo> { productInfo }
+                ProductInfos = productInfo,
+                ChargeAp = chargeAp,
             };
 
             ProcessAction(action);
@@ -639,12 +643,14 @@ namespace Nekoyume.BlockChain
 
         public IObservable<ActionEvaluation<ReRegisterProduct>> ReRegisterProduct(
             Address avatarAddress,
-            List<(IProductInfo, IRegisterInfo)> reRegisterInfos)
+            List<(IProductInfo, IRegisterInfo)> reRegisterInfos,
+            bool chargeAp)
         {
             var action = new ReRegisterProduct
             {
                 AvatarAddress = avatarAddress,
-                ReRegisterInfos = reRegisterInfos
+                ReRegisterInfos = reRegisterInfos,
+                ChargeAp = chargeAp,
             };
 
             ProcessAction(action);

@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
+using Lib9c.Model.Order;
 using Libplanet.Assets;
 using mixpanel;
 using Nekoyume.Action;
@@ -14,6 +15,7 @@ using Nekoyume.Model.Mail;
 using Nekoyume.Model.Market;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using UnityEngine;
 using UnityEngine.UI;
 using Inventory = Nekoyume.UI.Module.Inventory;
@@ -39,6 +41,9 @@ namespace Nekoyume.UI
         private Button reregistrationButton;
 
         [SerializeField]
+        private Button cancelRegistrationButton;
+
+        [SerializeField]
         private Button buyButton = null;
 
         [SerializeField]
@@ -56,12 +61,23 @@ namespace Nekoyume.UI
 
             reregistrationButton.onClick.AddListener(() =>
             {
-                Find<TwoButtonSystem>().Show(
+                Find<CostTwoButtonPopup>().Show(
                     L10nManager.Localize("UI_SHOP_UPDATESELLALL_POPUP"),
                     L10nManager.Localize("UI_YES"),
                     L10nManager.Localize("UI_NO"),
-                    SubscribeReRegisterProduct,
-                    null, CostType.ActionPoint, 5);
+                    CostType.ActionPoint, 5,
+                    state => SubscribeConditionalButtonForChargeAp(state, "UI_SHOP_UPDATESELLALL",
+                        SubscribeReRegisterProduct));
+            });
+            cancelRegistrationButton.onClick.AddListener(() =>
+            {
+                Find<CostTwoButtonPopup>().Show(
+                    L10nManager.Localize("UI_SHOP_CANCELLATIONALL_POPUP"),
+                    L10nManager.Localize("UI_YES"),
+                    L10nManager.Localize("UI_NO"),
+                    CostType.ActionPoint, 5,
+                    state => SubscribeConditionalButtonForChargeAp(state, "UI_SHOP_CANCELLATIONALL",
+                        SubscribeCancelProductRegistration));
             });
 
             buyButton.onClick.AddListener(() =>
@@ -94,8 +110,16 @@ namespace Nekoyume.UI
             SharedModel.ItemCountableAndPricePopup.Value.Item
                 .Subscribe(SubscribeSellPopup)
                 .AddTo(gameObject);
-            SharedModel.ItemCountableAndPricePopup.Value.OnClickSubmit
-                .Subscribe(SubscribeRegisterProduct)
+            SharedModel.ItemCountableAndPricePopup.Value.OnClickConditional
+                .Subscribe(tuple =>
+                {
+                    var (state, data) = tuple;
+                    SubscribeConditionalButtonForChargeAp(state, "UI_SELL", chargeAp =>
+                    {
+                        data.ChargeAp.Value = chargeAp;
+                        SubscribeRegisterProduct(data);
+                    });
+                })
                 .AddTo(gameObject);
             SharedModel.ItemCountableAndPricePopup.Value.OnClickReregister
                 .Subscribe(SubscribeReRegisterProduct)
@@ -151,20 +175,77 @@ namespace Nekoyume.UI
 
         private void ShowSellTooltip(ShopItem model)
         {
+            var inventoryItems = States.Instance.CurrentAvatarState.inventory.Items;
+            var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
+            var apStoneCount = inventoryItems.Where(x =>
+                    x.item.ItemSubType == ItemSubType.ApStone &&
+                    !x.Locked &&
+                    !(x.item is ITradableItem tradableItem &&
+                      tradableItem.RequiredBlockIndex > blockIndex))
+                .Sum(item => item.count);
+
             if (model.ItemBase is not null)
             {
                 var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
-                tooltip.Show(model,
-                    () => ShowReRegisterProductPopup(model),
-                    () => ShowRetrievePopup(model),
+                tooltip.Show(model, apStoneCount,
+                    state => SubscribeConditionalButtonForChargeAp(state, "UI_RETRIEVE",
+                        chargeAp => ShowReRegisterProductPopup(model, chargeAp), apStoneCount),
+                    state => SubscribeConditionalButtonForChargeAp(state, "UI_REREGISTER",
+                        chargeAp => ShowRetrievePopup(model, chargeAp), apStoneCount),
                     view.ClearSelectedItem);
             }
             else
             {
-                Find<FungibleAssetTooltip>().Show(model,
-                    () => ShowReRegisterProductPopup(model),
-                    () => ShowRetrievePopup(model),
+                Find<FungibleAssetTooltip>().Show(model, apStoneCount,
+                    state => SubscribeConditionalButtonForChargeAp(state, "UI_RETRIEVE",
+                        chargeAp => ShowReRegisterProductPopup(model, chargeAp), apStoneCount),
+                    state => SubscribeConditionalButtonForChargeAp(state, "UI_REREGISTER",
+                        chargeAp => ShowRetrievePopup(model, chargeAp), apStoneCount),
                     view.ClearSelectedItem);
+            }
+        }
+        private static void SubscribeConditionalButtonForChargeAp(ConditionalButton.State state,
+            string key, Action<bool> action, int? apStoneCount = null)
+        {
+            if (apStoneCount == null)
+            {
+                var inventoryItems = States.Instance.CurrentAvatarState.inventory.Items;
+                var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
+                apStoneCount = inventoryItems.Where(x =>
+                        x.item.ItemSubType == ItemSubType.ApStone &&
+                        !x.Locked &&
+                        !(x.item is ITradableItem tradableItem &&
+                          tradableItem.RequiredBlockIndex > blockIndex))
+                    .Sum(item => item.count);
+            }
+
+            switch (state)
+            {
+                case ConditionalButton.State.Normal:
+                    AudioController.PlayClick();
+                    action(false);
+                    break;
+                case ConditionalButton.State.Conditional:
+                    if (apStoneCount <= 0)
+                    {
+                        OneLineSystem.Push(
+                            MailType.System,
+                            L10nManager.Localize("ERROR_ACTION_POINT"),
+                            NotificationCell.NotificationType.Alert);
+                        break;
+                    }
+
+                    var confirm = Widget.Find<IconAndButtonSystem>();
+                    confirm.ShowWithTwoButton(L10nManager.Localize("UI_CONFIRM"),
+                        L10nManager.Localize("UI_APREFILL_GUIDE_FORMAT",
+                            L10nManager.Localize(key), apStoneCount),
+                        L10nManager.Localize("UI_OK"),
+                        L10nManager.Localize("UI_CANCEL"),
+                        false, IconAndButtonSystem.SystemType.Information);
+                    confirm.ConfirmCallback = () => action(true);
+                    break;
+                case ConditionalButton.State.Disabled:
+                    break;
             }
         }
 
@@ -228,6 +309,7 @@ namespace Nekoyume.UI
             data.IsSell.Value = true;
             data.InfoText.Value = string.Empty;
             data.CountEnabled.Value = true;
+            data.ChargeAp.Value = false;  // 나중에 버튼 누르면
 
             if (model.ItemBase is not null)
             {
@@ -251,12 +333,13 @@ namespace Nekoyume.UI
             data.Item.Value.CountEnabled.Value = false;
         }
 
-        private void ShowReRegisterProductPopup(ShopItem model) // 판매 갱신
+        private void ShowReRegisterProductPopup(ShopItem model, bool chargeAp) // 판매 갱신
         {
             var data = SharedModel.ItemCountableAndPricePopup.Value;
             data.IsSell.Value = false;
             data.InfoText.Value = string.Empty;
             data.CountEnabled.Value = true;
+            data.ChargeAp.Value = chargeAp;
 
             if (model.Product is not null)
             {
@@ -309,11 +392,14 @@ namespace Nekoyume.UI
             data.Item.Value.CountEnabled.Value = false;
         }
 
-        private async void SubscribeReRegisterProduct()
+        private async void SubscribeReRegisterProduct(bool chargeAp)
         {
-            var itemProducts = ReactiveShopState.SellItemProducts.Value;
-            var favProducts = ReactiveShopState.SellFungibleAssetProducts.Value;
-            if (!itemProducts.Any() &&  !favProducts.Any())
+            var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
+            var itemProducts = ReactiveShopState.SellItemProducts.Value.Where(product =>
+                product.RegisteredBlockIndex + Order.ExpirationInterval <= blockIndex);
+            var favProducts = ReactiveShopState.SellFungibleAssetProducts.Value.Where(product =>
+                product.RegisteredBlockIndex + Order.ExpirationInterval <= blockIndex);
+            if (!itemProducts.Any() && !favProducts.Any())
             {
                 OneLineSystem.Push(
                     MailType.System,
@@ -341,7 +427,7 @@ namespace Nekoyume.UI
                 oneLineSystemInfos.Add((itemName, (int)product.Quantity));
             }
 
-            Game.Game.instance.ActionManager.ReRegisterProduct(avatarAddress, reRegisterInfos).Subscribe();
+            Game.Game.instance.ActionManager.ReRegisterProduct(avatarAddress, reRegisterInfos, chargeAp).Subscribe();
             Analyzer.Instance.Track("Unity/ReRegisterProductAll", new Dictionary<string, Value>()
             {
                 ["Quantity"] = reRegisterInfos.Count,
@@ -375,7 +461,98 @@ namespace Nekoyume.UI
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
         }
 
-        private void ShowRetrievePopup(ShopItem model) // 판매 취소
+        private async void SubscribeCancelProductRegistration(bool chargeAp)
+        {
+            var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
+            var itemProducts = ReactiveShopState.SellItemProducts.Value.Where(product =>
+                product.RegisteredBlockIndex + Order.ExpirationInterval <= blockIndex);
+            var favProducts = ReactiveShopState.SellFungibleAssetProducts.Value.Where(product =>
+                product.RegisteredBlockIndex + Order.ExpirationInterval <= blockIndex);
+            if (!itemProducts.Any() && !favProducts.Any())
+            {
+                OneLineSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_SHOP_NONCANCELLATIONALL"),
+                    NotificationCell.NotificationType.Alert);
+
+                return;
+            }
+
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var goldCurrency = States.Instance.GoldBalanceState.Gold.Currency;
+
+            var oneLineSystemInfos = new List<(string name, int count)>();
+            var productInfos = new List<IProductInfo>();
+            foreach (var itemProduct in itemProducts)
+            {
+                productInfos.Add(new ItemProductInfo()
+                {
+                    ProductId = itemProduct.ProductId,
+                    Price = new FungibleAssetValue(goldCurrency,
+                        (BigInteger)itemProduct.Price, 0),
+                    AgentAddress = itemProduct.SellerAgentAddress,
+                    AvatarAddress = itemProduct.SellerAvatarAddress,
+                    Type = itemProduct.ItemType == ItemType.Material
+                        ? ProductType.Fungible
+                        : ProductType.NonFungible,
+                    Legacy = itemProduct.Legacy,
+                    ItemSubType = itemProduct.ItemSubType,
+                    TradableId = itemProduct.TradableId
+                });
+
+                var (itemName, _, _) = await Game.Game.instance.MarketServiceClient.GetProductInfo(itemProduct.ProductId);
+                oneLineSystemInfos.Add((itemName, (int)itemProduct.Quantity));
+            }
+
+            foreach (var favProduct in favProducts)
+            {
+                productInfos.Add(new FavProductInfo()
+                {
+                    ProductId = favProduct.ProductId,
+                    Price = new FungibleAssetValue(goldCurrency, (BigInteger)favProduct.Price, 0),
+                    AgentAddress = favProduct.SellerAgentAddress,
+                    AvatarAddress = favProduct.SellerAvatarAddress,
+                    Type = ProductType.FungibleAssetValue,
+                });
+
+                var (itemName, _, _) = await Game.Game.instance.MarketServiceClient.GetProductInfo(favProduct.ProductId);
+                oneLineSystemInfos.Add((itemName, (int)favProduct.Quantity));
+            }
+
+            Game.Game.instance.ActionManager.CancelProductRegistration(avatarAddress, productInfos, chargeAp).Subscribe();
+            Analyzer.Instance.Track("Unity/CancelRegisterProductAll", new Dictionary<string, Value>()
+            {
+                ["Quantity"] = productInfos.Count,
+                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+            });
+
+            string message;
+            if (productInfos.Count > 1)
+            {
+                message = L10nManager.Localize("NOTIFICATION_CANCELREGISTER_ALL_START");
+            }
+            else
+            {
+                var info = oneLineSystemInfos.FirstOrDefault();
+                if (info.count > 1)
+                {
+                    message = string.Format(
+                        L10nManager.Localize("NOTIFICATION_MULTIPLE_SELL_CANCEL_START"),
+                        info.name, info.count);
+                }
+                else
+                {
+                    message = string.Format(L10nManager.Localize("NOTIFICATION_SELL_CANCEL_START"),
+                        info.name);
+                }
+            }
+
+            OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
+            AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
+        }
+
+        private void ShowRetrievePopup(ShopItem model, bool chargeAp) // 판매 취소
         {
             var productId = model.Product?.ProductId ?? model.FungibleAssetProduct.ProductId;
             var price = model.Product?.Price ?? model.FungibleAssetProduct.Price;
@@ -390,6 +567,7 @@ namespace Nekoyume.UI
             SharedModel.ItemCountAndPricePopup.Value.Price.Value = (BigInteger)price *
                 States.Instance.GoldBalanceState.Gold.Currency;
             SharedModel.ItemCountAndPricePopup.Value.PriceInteractable.Value = false;
+            SharedModel.ItemCountAndPricePopup.Value.ChargeAp.Value = chargeAp;
             var itemCount = (int)quantity;
             if (model.Product is null)
             {
@@ -418,8 +596,17 @@ namespace Nekoyume.UI
                 return;
             }
 
+            var inventoryItems = States.Instance.CurrentAvatarState.inventory.Items;
+            var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
+            var apStoneCount = inventoryItems.Where(x =>
+                    x.item.ItemSubType == ItemSubType.ApStone &&
+                    !x.Locked &&
+                    !(x.item is ITradableItem tradableItem &&
+                      tradableItem.RequiredBlockIndex > blockIndex))
+                .Sum(item => item.count);
+
             Find<ItemCountableAndPricePopup>().Show(SharedModel.ItemCountableAndPricePopup.Value,
-                SharedModel.ItemCountableAndPricePopup.Value.IsSell.Value);
+                SharedModel.ItemCountableAndPricePopup.Value.IsSell.Value, apStoneCount);
         }
 
         private void SubscribeRegisterProduct(Model.ItemCountableAndPricePopup data)
@@ -461,7 +648,8 @@ namespace Nekoyume.UI
                         : ProductType.NonFungible
                 };
 
-                Game.Game.instance.ActionManager.RegisterProduct(avatarAddress, info).Subscribe();
+                Game.Game.instance.ActionManager
+                    .RegisterProduct(avatarAddress, info, data.ChargeAp.Value).Subscribe();
                 if (tradableItem is not TradableMaterial)
                 {
                     LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId,
@@ -486,7 +674,8 @@ namespace Nekoyume.UI
                     Type = ProductType.FungibleAssetValue
                 };
 
-                Game.Game.instance.ActionManager.RegisterProduct(avatarAddress, info).Subscribe();
+                Game.Game.instance.ActionManager
+                    .RegisterProduct(avatarAddress, info, data.ChargeAp.Value).Subscribe();
                 States.Instance.SetBalance(fungibleAsset);
                 inventory.UpdateFungibleAssets();
                 PostRegisterProduct(fungibleAsset.GetLocalizedName());
@@ -518,8 +707,8 @@ namespace Nekoyume.UI
                 : data.Item.Value.FungibleAssetValue.Value.GetLocalizedName();
             PostRegisterProduct(itemName);
 
-            Game.Game.instance.ActionManager.ReRegisterProduct(avatarAddress, reRegisterInfos)
-                .Subscribe();
+            Game.Game.instance.ActionManager
+                .ReRegisterProduct(avatarAddress, reRegisterInfos, data.ChargeAp.Value).Subscribe();
             Analyzer.Instance.Track("Unity/ReRegisterProduct", new Dictionary<string, Value>()
             {
                 ["AvatarAddress"] = avatarAddress.ToString(),
@@ -671,39 +860,43 @@ namespace Nekoyume.UI
             var itemProduct = ReactiveShopState.GetSellItemProduct(model.ProductId.Value);
             if (itemProduct is not null)
             {
-                var productInfo = new ItemProductInfo()
+                var productInfo = new List<IProductInfo>
                 {
-                    ProductId = itemProduct.ProductId,
-                    Price = new FungibleAssetValue(model.Price.Value.Currency,
-                        (BigInteger)itemProduct.Price, 0),
-                    AgentAddress = itemProduct.SellerAgentAddress,
-                    AvatarAddress = itemProduct.SellerAvatarAddress,
-                    Type = itemProduct.ItemType == ItemType.Material
-                        ? ProductType.Fungible
-                        : ProductType.NonFungible,
-                    Legacy = itemProduct.Legacy,
-                    ItemSubType = itemProduct.ItemSubType,
-                    TradableId = itemProduct.TradableId
+                    new ItemProductInfo()
+                    {
+                        ProductId = itemProduct.ProductId,
+                        Price = new FungibleAssetValue(model.Price.Value.Currency,
+                            (BigInteger)itemProduct.Price, 0),
+                        AgentAddress = itemProduct.SellerAgentAddress,
+                        AvatarAddress = itemProduct.SellerAvatarAddress,
+                        Type = itemProduct.ItemType == ItemType.Material
+                            ? ProductType.Fungible
+                            : ProductType.NonFungible,
+                        Legacy = itemProduct.Legacy,
+                        ItemSubType = itemProduct.ItemSubType,
+                        TradableId = itemProduct.TradableId
+                    }
                 };
                 Game.Game.instance.ActionManager.CancelProductRegistration(
-                    itemProduct.SellerAvatarAddress,
-                    productInfo).Subscribe();
+                    itemProduct.SellerAvatarAddress, productInfo, model.ChargeAp.Value).Subscribe();
             }
             else
             {
                 var fav = ReactiveShopState.GetSellFungibleAssetProduct(model.ProductId.Value);
-                var productInfo = new FavProductInfo()
+                var productInfo = new List<IProductInfo>()
                 {
-                    ProductId = fav.ProductId,
-                    Price = new FungibleAssetValue(model.Price.Value.Currency,
-                        (BigInteger)fav.Price, 0),
-                    AgentAddress = fav.SellerAgentAddress,
-                    AvatarAddress = fav.SellerAvatarAddress,
-                    Type = ProductType.FungibleAssetValue,
+                    new FavProductInfo()
+                    {
+                        ProductId = fav.ProductId,
+                        Price = new FungibleAssetValue(model.Price.Value.Currency,
+                            (BigInteger)fav.Price, 0),
+                        AgentAddress = fav.SellerAgentAddress,
+                        AvatarAddress = fav.SellerAvatarAddress,
+                        Type = ProductType.FungibleAssetValue,
+                    }
                 };
                 Game.Game.instance.ActionManager.CancelProductRegistration(
-                    fav.SellerAvatarAddress,
-                    productInfo).Subscribe();
+                    fav.SellerAvatarAddress, productInfo, model.ChargeAp.Value).Subscribe();
             }
 
             ResponseCancelProductRegistration();

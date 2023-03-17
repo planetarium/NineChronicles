@@ -134,7 +134,7 @@ namespace Nekoyume.UI
             }
 
             reregisterButton.Text = L10nManager.Localize("UI_REREGISTER");
-            reregisterButton.OnSubmitSubject
+            reregisterButton.OnClickSubject
                 .Subscribe(_ =>
                 {
                     _data?.OnClickReregister.OnNext(_data);
@@ -276,7 +276,7 @@ namespace Nekoyume.UI
             return (T)Convert.ChangeType(result, typeof(T));
         }
 
-        public void Show(Model.ItemCountableAndPricePopup data, bool isSell)
+        public void Show(Model.ItemCountableAndPricePopup data, bool isSell, int apStoneCount)
         {
             if (isSell)
             {
@@ -284,7 +284,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                SubmitWidget = () => reregisterButton.OnSubmitSubject.OnNext(default);
+                SubmitWidget = () => reregisterButton.OnClickSubject.OnNext(default);
             }
 
             var isCountableItem = data.Item.Value.MaxCount.Value > 1;
@@ -299,8 +299,16 @@ namespace Nekoyume.UI
             reregisterButton.gameObject.SetActive(!isSell);
             notificationButton.gameObject.SetActive(!isSell);
 
-            submitButton.SetCost(CostType.ActionPoint, 5);
-            reregisterButton.SetCost(CostType.ActionPoint, 5);
+            if (isSell)
+            {
+                submitButton.SetCost(CostType.ActionPoint, 5);
+                submitButton.Interactable = apStoneCount > 0;
+            }
+            else
+            {
+                reregisterButton.SetCost(CostType.ActionPoint, 5);
+            }
+
             Pop(data);
         }
     }
