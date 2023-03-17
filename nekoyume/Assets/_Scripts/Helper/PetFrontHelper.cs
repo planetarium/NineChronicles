@@ -79,25 +79,23 @@ namespace Nekoyume.Helper
 
         public static bool HasNotification(int id)
         {
-            var currentLevel = 0;
+            var nextLevel = 1;
             if (States.Instance.PetStates.TryGetPetState(id, out var pet))
             {
-                currentLevel = pet.Level;
+                nextLevel = pet.Level + 1;
             }
 
-            var costList = TableSheets.Instance.PetCostSheet[id].Cost
-                .OrderBy(cost => cost.Level)
-                .ToList();
-            if (costList.Last().Level == currentLevel)
+            var isMaxLevel = !TableSheets.Instance.PetCostSheet[id]
+                .TryGetCost(nextLevel, out var nextCost);
+            if (isMaxLevel)
             {
                 return false;
             }
 
-            var needCost = costList[currentLevel];
-            var ncgCost = States.Instance.GoldBalanceState.Gold.Currency * needCost.NcgQuantity;
+            var ncgCost = States.Instance.GoldBalanceState.Gold.Currency * nextCost.NcgQuantity;
             var soulStoneCost =
                 PetHelper.GetSoulstoneCurrency(TableSheets.Instance.PetSheet[id].SoulStoneTicker) *
-                needCost.SoulStoneQuantity;
+                nextCost.SoulStoneQuantity;
             return States.Instance.GoldBalanceState.Gold >= ncgCost &&
                    States.Instance.AvatarBalance.TryGetValue(
                        soulStoneCost.Currency.Ticker,

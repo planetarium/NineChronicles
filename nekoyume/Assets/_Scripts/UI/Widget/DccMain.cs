@@ -14,6 +14,9 @@ namespace Nekoyume.UI
     public class DccMain : Widget
     {
         [SerializeField]
+        private Button dccConnectButton;
+
+        [SerializeField]
         private Button collectionButton;
 
         [SerializeField]
@@ -58,9 +61,14 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
+            dccConnectButton.onClick.AddListener(() =>
+            {
+                Find<DccSettingPopup>().ConnectDcc();
+            });
             collectionButton.onClick.AddListener(() =>
             {
                 Find<DccCollection>().Show(true);
+                Close(true);
             });
             backButton.onClick.AddListener(() =>
             {

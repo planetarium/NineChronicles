@@ -1,19 +1,22 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
+using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Pet;
 using Nekoyume.UI.Scroller;
 using Spine.Unity;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
     public class DccCollection : Widget
     {
         [SerializeField]
@@ -40,7 +43,17 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI levelUpButtonText;
 
+        [SerializeField]
+        private GameObject levelUpNotification;
+
+        [SerializeField]
+        private CategoryTabButton allButton;
+
+        [SerializeField]
+        private CategoryTabButton petButton;
+
         private PetSlotViewModel _selectedViewModel;
+        private readonly List<IDisposable> _disposables = new();
 
         private const string LevelUpText = "Levelup";
         private const string SummonText = "Summon";
@@ -71,13 +84,42 @@ namespace Nekoyume.UI
                     Find<PetEnhancementPopup>().ShowForSummon(row);
                 }
             });
-            scroll.OnClick.Subscribe(OnClickPetSlot).AddTo(gameObject);
+        }
+
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+            _disposables.DisposeAllAndClear();
         }
 
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
             UpdateView();
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Mileage);
+            allButton.OnClick.Subscribe(tabButton =>
+            {
+                if (!tabButton.IsToggledOn)
+                {
+                    tabButton.SetToggledOn();
+                    petButton.SetToggledOff();
+                }
+            }).AddTo(_disposables);
+            petButton.OnClick.Subscribe(tabButton =>
+            {
+                if (!tabButton.IsToggledOn)
+                {
+                    tabButton.SetToggledOn();
+                    allButton.SetToggledOff();
+                }
+            }).AddTo(_disposables);
+            scroll.OnClick.Subscribe(OnClickPetSlot).AddTo(_disposables);
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            Find<DccMain>().Show(true);
+            base.Close(ignoreCloseAnimation);
         }
 
         public void UpdateView()
@@ -110,14 +152,20 @@ namespace Nekoyume.UI
                 if (isOwn)
                 {
                     levelText.text = $"Lv.{petState.Level}";
+                    levelText.color = isMaxLevel
+                        ? PetFrontHelper.GetUIColor(PetFrontHelper.MaxLevelText)
+                        : Color.white;
                     levelUpButtonText.text = isMaxLevel
                         ? "Info"
                         : LevelUpText;
+                    levelUpNotification.SetActive(viewModel.HasNotification.Value);
                 }
                 else
                 {
                     levelText.text = "-";
+                    levelText.color = Color.white;
                     levelUpButtonText.text = SummonText;
+                    levelUpNotification.SetActive(false);
                 }
             }
         }

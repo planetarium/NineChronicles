@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Libplanet.Assets;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Helper;
@@ -19,7 +18,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    using Nekoyume.TableData;
+    using TableData;
     using UniRx;
     public class PetEnhancementPopup : PopupWidget
     {
@@ -71,6 +70,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button soulStoneIconButton;
 
+        [SerializeField]
+        private TextMeshProUGUI maxLevelReachedText;
+
         private readonly List<IDisposable> _disposables = new();
         private readonly ReactiveProperty<int> _enhancementCount = new();
 
@@ -106,6 +108,7 @@ namespace Nekoyume.UI
             Show();
             _petRow = petRow;
             levelUpUIList.ForEach(obj => obj.SetActive(false));
+            maxLevelReachedText.gameObject.SetActive(false);
             costObject.SetActive(true);
             submitButton.gameObject.SetActive(true);
             submitButton.Text = SummonText;
@@ -118,19 +121,29 @@ namespace Nekoyume.UI
             petSkeletonGraphic.Initialize(true);
             requiredSoulStoneImage.overrideSprite =
                 PetFrontHelper.GetSoulStoneSprite(_petRow.Id);
-            submitButton.OnSubmitSubject.Subscribe(_ =>
+            submitButton.OnClickSubject.Subscribe(state =>
             {
-                if (LoadingHelper.PetEnhancement.Value == 0 && !_notEnoughBalance)
+                switch (state)
                 {
-                    Action(_petRow.Id, 1);
+                    case ConditionalButton.State.Normal:
+                        Action(_petRow.Id, 1);
+                        break;
+                    case ConditionalButton.State.Conditional:
+                        OneLineSystem.Push(
+                            MailType.System,
+                            L10nManager.Localize("UI_NOT_ENOUGH_NCG"),
+                            NotificationCell.NotificationType.Information);
+                        break;
+                    case ConditionalButton.State.Disabled:
+                        break;
                 }
-                else
-                {
-                    OneLineSystem.Push(
-                        MailType.System,
-                        L10nManager.Localize("UI_CAN_NOT_ENTER_PET_MENU"),
-                        NotificationCell.NotificationType.Information);
-                }
+            }).AddTo(_disposables);
+            submitButton.OnClickDisabledSubject.Subscribe(_ =>
+            {
+                OneLineSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_CAN_NOT_ENTER_PET_MENU"),
+                    NotificationCell.NotificationType.Information);
             }).AddTo(_disposables);
         }
 
@@ -141,6 +154,7 @@ namespace Nekoyume.UI
             levelUpUIList.ForEach(obj => obj.SetActive(true));
             costObject.SetActive(true);
             submitButton.gameObject.SetActive(true);
+            maxLevelReachedText.gameObject.SetActive(false);
             submitButton.Text = LevelUpText;
             var option = TableSheets.Instance.PetOptionSheet[petState.PetId].LevelOptionMap[petState.Level];
             contentText.text = L10nManager.Localize($"PET_DESCRIPTION_{option.OptionType}",
@@ -173,20 +187,29 @@ namespace Nekoyume.UI
                         _sliderCurrentValue = value;
                         SetObjectByTargetLevel(petState.PetId, petState.Level, value + petState.Level);
                     });
-                submitButton.OnSubmitSubject.Subscribe(_ =>
+                submitButton.OnClickSubject.Subscribe(state =>
                 {
-                    Action(petState.PetId, _targetLevel);
-                    if (LoadingHelper.PetEnhancement.Value == 0 && !_notEnoughBalance)
+                    switch (state)
                     {
-
+                        case ConditionalButton.State.Normal:
+                            Action(_petRow.Id, _targetLevel);
+                            break;
+                        case ConditionalButton.State.Conditional:
+                            OneLineSystem.Push(
+                                MailType.System,
+                                L10nManager.Localize("UI_NOT_ENOUGH_NCG"),
+                                NotificationCell.NotificationType.Information);
+                            break;
+                        case ConditionalButton.State.Disabled:
+                            break;
                     }
-                    else
-                    {
-                        OneLineSystem.Push(
-                            MailType.System,
-                            L10nManager.Localize("UI_CAN_NOT_ENTER_PET_MENU"),
-                            NotificationCell.NotificationType.Information);
-                    }
+                }).AddTo(_disposables);
+                submitButton.OnClickDisabledSubject.Subscribe(_ =>
+                {
+                    OneLineSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("UI_CAN_NOT_ENTER_PET_MENU"),
+                        NotificationCell.NotificationType.Information);
                 }).AddTo(_disposables);
             }
             else
@@ -194,6 +217,7 @@ namespace Nekoyume.UI
                 levelUpUIList.ForEach(obj => obj.SetActive(false));
                 costObject.SetActive(false);
                 submitButton.gameObject.SetActive(false);
+                maxLevelReachedText.gameObject.SetActive(true);
             }
         }
 
@@ -247,8 +271,16 @@ namespace Nekoyume.UI
             var enough = enoughNcg && enoughSoulStone;
             _notEnoughBalance = !enough;
             soulStoneNotEnoughObject.SetActive(_notEnoughBalance);
-            submitButton.SetCost(new ConditionalCostButton.CostParam(CostType.NCG, ncg));
-            submitButton.Interactable = enough && LoadingHelper.PetEnhancement.Value == 0;
+            submitButton.SetCost(CostType.NCG, ncg);
+            if (LoadingHelper.PetEnhancement.Value != 0)
+            {
+                submitButton.Interactable = enough && LoadingHelper.PetEnhancement.Value == 0;
+            }
+            else
+            {
+                submitButton.Interactable = true;
+                submitButton.UpdateObjects();
+            }
         }
 
         private void Action(int petId, int targetLevel)

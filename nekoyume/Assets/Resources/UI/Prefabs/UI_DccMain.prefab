@@ -7209,6 +7209,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
+  dccConnectButton: {fileID: 2674962434267271633}
   collectionButton: {fileID: 2726461851139129850}
   backButton: {fileID: 8853667321893535037}
   notification: {fileID: 1564436145759176780}
@@ -11353,7 +11354,6 @@ GameObject:
   - component: {fileID: 200848358277904005}
   - component: {fileID: 2544356046192537198}
   - component: {fileID: 2674962434267271633}
-  - component: {fileID: 8455284449113610684}
   - component: {fileID: 4645357471669922436}
   - component: {fileID: 8575888233686408927}
   m_Layer: 5
@@ -11437,19 +11437,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &8455284449113610684
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4714524216439060255}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 12066c21e7a128745913799faa1146e1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  websiteLink: https://dcc-frontend-git-develop-kimwz.vercel.app/connect
 --- !u!95 &4645357471669922436
 Animator:
   serializedVersion: 4
@@ -14766,7 +14753,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: aba0ba0dab1cd465fbdebfbe12630d05, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 80bb8647478564e1d811870231fb8325, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
