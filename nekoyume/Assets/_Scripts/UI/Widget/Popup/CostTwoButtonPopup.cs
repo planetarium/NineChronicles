@@ -14,15 +14,15 @@ namespace Nekoyume.UI
     public class CostTwoButtonPopup : PopupWidget
     {
         [SerializeField]
-        private ConditionalCostButton costButton = null;
+        private ConditionalCostButton costButton;
 
         [SerializeField]
-        private TextButton cancelButton = null;
+        private TextButton cancelButton;
 
         [SerializeField]
-        private TextMeshProUGUI contentText = null;
+        private TextMeshProUGUI contentText;
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposables = new();
         private System.Action _cancelCallback;
 
         protected override void Awake()

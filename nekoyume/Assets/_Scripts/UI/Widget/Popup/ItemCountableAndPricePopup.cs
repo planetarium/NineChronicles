@@ -307,7 +307,6 @@ namespace Nekoyume.UI
             else
             {
                 reregisterButton.SetCost(CostType.ActionPoint, 5);
-                // reregisterButton.SetConditionalState(true);
             }
 
             Pop(data);
