@@ -15,7 +15,15 @@ namespace Nekoyume.UI
         [SerializeField]
         private List<CombinationSlot> slots;
 
-        private readonly List<IDisposable> _disposablesOfOnEnable = new();
+        [SerializeField]
+        private PetInventory petInventory;
+
+        private readonly List<IDisposable> _disposablesOnEnable = new();
+
+        public override void Initialize()
+        {
+            petInventory.Initialize(false);
+        }
 
         protected override void OnEnable()
         {
@@ -23,12 +31,20 @@ namespace Nekoyume.UI
             Game.Game.instance.Agent.BlockIndexSubject
                 .ObserveOnMainThread()
                 .Subscribe(UpdateSlots)
-                .AddTo(_disposablesOfOnEnable);
+                .AddTo(_disposablesOnEnable);
+            petInventory.OnSelectedSubject
+                .Subscribe(_ =>
+                {
+                    Find<DccCollection>().Show();
+                    Close(true);
+                })
+                .AddTo(_disposablesOnEnable);
+            petInventory.Hide();
         }
 
         protected override void OnDisable()
         {
-            _disposablesOfOnEnable.DisposeAllAndClear();
+            _disposablesOnEnable.DisposeAllAndClear();
             base.OnDisable();
         }
 
@@ -67,6 +83,11 @@ namespace Nekoyume.UI
 
             slotIndex = -1;
             return false;
+        }
+
+        public void TogglePetPopup(int slotIndex)
+        {
+            petInventory.Toggle(slotIndex);
         }
 
         private void UpdateSlots(long blockIndex)

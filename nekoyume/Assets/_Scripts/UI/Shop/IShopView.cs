@@ -1,15 +1,16 @@
-﻿using System.Collections.Generic;
-using Lib9c.Model.Order;
+﻿using System;
+using System.Collections.Generic;
+using MarketService.Response;
 using Nekoyume.UI.Model;
 using UniRx;
-using UnityEngine;
 
 namespace Nekoyume.UI.Module
 {
     public interface IShopView
     {
         public void Show(
-            ReactiveProperty<List<OrderDigest>> digests,
-            System.Action<ShopItem> clickItem);
+            ReactiveProperty<List<ItemProductResponseModel>> itemProducts,
+            ReactiveProperty<List<FungibleAssetValueProductResponseModel>> fungibleAssetProducts,
+            Action<ShopItem> clickItem);
     }
 }

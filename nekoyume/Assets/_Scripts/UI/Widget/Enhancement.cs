@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.L10n;
@@ -111,7 +111,7 @@ namespace Nekoyume.UI
             base.Initialize();
 
             upgradeButton.OnSubmitSubject
-                .Subscribe(_ => Action())
+                .Subscribe(_ => OnSubmit())
                 .AddTo(gameObject);
 
             _costSheet = Game.Game.instance.TableSheets.EnhancementCostSheetV2;
@@ -160,7 +160,7 @@ namespace Nekoyume.UI
                     NotificationCell.NotificationType.Alert));
         }
 
-        private void Action()
+        private void OnSubmit()
         {
             var (baseItem, materialItem) = enhancementInventory.GetSelectedModels();
             if (!IsInteractableButton(baseItem, materialItem))
@@ -178,6 +178,24 @@ namespace Nekoyume.UI
                 return;
             }
 
+            var sheet = Game.Game.instance.TableSheets.EnhancementCostSheetV2;
+            if (ItemEnhancement.TryGetRow(baseItem, sheet, out var row))
+            {
+                var craftInfo = new Craft.CraftInfo()
+                {
+                    RequiredBlockMin = row.SuccessRequiredBlockIndex,
+                    RequiredBlockMax = row.GreatSuccessRequiredBlockIndex,
+                };
+
+                Find<PetSelectionPopup>().Show(craftInfo, petId => EnhancementAction(
+                    baseItem,
+                    materialItem,
+                    petId));
+            }
+        }
+
+        private void EnhancementAction(Equipment baseItem, Equipment materialItem, int? petId)
+        {
             var slots = Find<CombinationSlotsPopup>();
             if (!slots.TryGetEmptyCombinationSlot(out var slotIndex))
             {
@@ -197,11 +215,12 @@ namespace Nekoyume.UI
                 NotificationCell.NotificationType.Information);
 
             Game.Game.instance.ActionManager
-                .ItemEnhancement(baseItem, materialItem, slotIndex, _costNcg).Subscribe();
+                .ItemEnhancement(baseItem, materialItem, slotIndex, _costNcg, petId).Subscribe();
 
             enhancementInventory.DeselectItem(true);
 
             StartCoroutine(CoCombineNPCAnimation(baseItem, row.SuccessRequiredBlockIndex, Clear));
+            States.Instance.PetStates.LockPetTemporarily(petId);
         }
 
         private void Clear()

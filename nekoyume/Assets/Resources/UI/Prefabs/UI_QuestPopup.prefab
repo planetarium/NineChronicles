@@ -3703,8 +3703,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13f158393b194ed28b3e5a1e80c30d50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellInterval: -0.79611653
-  scrollOffset: -0.79611653
+  cellInterval: -1.0329671
+  scrollOffset: -1.0329671
   loop: 0
   cellContainer: {fileID: 5437261362768753071}
   reuseCellMarginCount: 0
@@ -3713,7 +3713,7 @@ MonoBehaviour:
   spacing: 0
   cellPrefab: {fileID: 8553884987421549240, guid: 95933a86cd1c843859ee9d5e2a311cd0,
     type: 3}
-  cellSize: 82
+  cellSize: 94
   forcedScrollSensitivity: 10
   fillWithNullToEmptyViewport: 0
   animationCellContainer: {fileID: 9066206674448611921}
@@ -6642,12 +6642,37 @@ PrefabInstance:
     - target: {fileID: 3521576152166620241, guid: 53e520f2a4d6941b3afdb31ab7af136b,
         type: 3}
       propertyPath: m_fontSize
-      value: 28
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 3521576152166620241, guid: 53e520f2a4d6941b3afdb31ab7af136b,
+        type: 3}
+      propertyPath: m_fontColor.b
+      value: 0.8066038
+      objectReference: {fileID: 0}
+    - target: {fileID: 3521576152166620241, guid: 53e520f2a4d6941b3afdb31ab7af136b,
+        type: 3}
+      propertyPath: m_fontColor.g
+      value: 0.88456196
       objectReference: {fileID: 0}
     - target: {fileID: 3521576152166620241, guid: 53e520f2a4d6941b3afdb31ab7af136b,
         type: 3}
       propertyPath: m_fontSizeBase
-      value: 28
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 3521576152166620241, guid: 53e520f2a4d6941b3afdb31ab7af136b,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 1e2662a16fa294b34b880f24adee2f6d, type: 2}
+    - target: {fileID: 3521576152166620241, guid: 53e520f2a4d6941b3afdb31ab7af136b,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4291748607
+      objectReference: {fileID: 0}
+    - target: {fileID: 3521576152166620241, guid: 53e520f2a4d6941b3afdb31ab7af136b,
+        type: 3}
+      propertyPath: m_enableVertexGradient
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 53e520f2a4d6941b3afdb31ab7af136b, type: 3}

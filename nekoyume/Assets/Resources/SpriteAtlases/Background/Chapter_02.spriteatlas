@@ -72,19 +72,37 @@ SpriteAtlas:
     - {fileID: 2800000, guid: 99dc59759415a9c4e85a2517032dac20, type: 3}
     - {fileID: 2800000, guid: c28be297a500e9a449caf7d35f05615a, type: 3}
     - {fileID: 2800000, guid: 500584f7cbcb7394b9bd80e714ee0c9c, type: 3}
+    - {fileID: 2800000, guid: 8bc0ef4ea8b834041974ff967a155cfc, type: 3}
+    - {fileID: 2800000, guid: 8b0a316377f19ad4cb51621b8f356769, type: 3}
+    - {fileID: 2800000, guid: 423a4b2639d1f9d46b11a66a2ff1222c, type: 3}
+    - {fileID: 2800000, guid: 0b92ce8ff56fbe04eb5e3694b46c5de8, type: 3}
+    - {fileID: 2800000, guid: f1d9d1729bb3a4e438bdf8f31435626b, type: 3}
+    - {fileID: 2800000, guid: 67f5c6646e104814a954f119d18a5a26, type: 3}
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
+  - {fileID: 21300000, guid: f1d9d1729bb3a4e438bdf8f31435626b, type: 3}
+  - {fileID: 21300000, guid: 8b0a316377f19ad4cb51621b8f356769, type: 3}
+  - {fileID: 21300000, guid: 67f5c6646e104814a954f119d18a5a26, type: 3}
   - {fileID: 21300000, guid: 99dc59759415a9c4e85a2517032dac20, type: 3}
+  - {fileID: 21300000, guid: 423a4b2639d1f9d46b11a66a2ff1222c, type: 3}
   - {fileID: 21300000, guid: c28be297a500e9a449caf7d35f05615a, type: 3}
   - {fileID: 21300000, guid: 500584f7cbcb7394b9bd80e714ee0c9c, type: 3}
+  - {fileID: 21300000, guid: 8bc0ef4ea8b834041974ff967a155cfc, type: 3}
+  - {fileID: 21300000, guid: 0b92ce8ff56fbe04eb5e3694b46c5de8, type: 3}
   - {fileID: 21300000, guid: 530353ff0143b5d45924607af915eb0c, type: 3}
   m_PackedSpriteNamesToIndex:
+  - chapter_02_03_01
+  - chapter_02_01_02
+  - chapter_02_03_02
   - bg_chapter02_02_03
+  - chapter_02_02_01
   - bg_chapter02_03_03
   - bg_chapter02_01_06
+  - chapter_02_01_01
+  - chapter_02_02_02
   - bg_chapter02_01_03
   m_RenderDataMap: {}
   m_Tag: Chapter_02

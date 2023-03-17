@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3139ea811bc824440bc87d060f488833, type: 3}
+  m_Name: UI_PetData
+  m_EditorClassIdentifier: 
+  dataList:
+  - id: 1001
+    icon: {fileID: 21300000, guid: 13d74f77240eb1e4bb6dd5c8910002ef, type: 3}
+  - id: 1002
+    icon: {fileID: 21300000, guid: 90ad4e5532e96fc4d8bbc1c6fbc65f98, type: 3}
+  - id: 1003
+    icon: {fileID: 21300000, guid: 93b9ac42f2858d34d8085790f4bfdcf7, type: 3}
+  - id: 1004
+    icon: {fileID: 21300000, guid: e329414d51938b143b42221d7ac20283, type: 3}
+  defaultPetId: 1001

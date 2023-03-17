@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using Nekoyume.EnumType;
-using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -18,6 +17,7 @@ namespace Nekoyume.UI
 
     public class ItemCountableAndPricePopup : ItemCountPopup<Model.ItemCountableAndPricePopup>
     {
+        [SerializeField] private ConditionalCostButton reregisterButton = null;
         [SerializeField] private Button overrideCancelButton;
 
         [SerializeField] private TMP_InputField priceInputField = null;
@@ -28,7 +28,6 @@ namespace Nekoyume.UI
         [SerializeField] private Button removeCountButton = null;
         [SerializeField] private Button resetPriceButton = null;
         [SerializeField] private Button notificationButton = null;
-        [SerializeField] private ConditionalButton reregisterButton = null;
         [SerializeField] private List<Button> addPriceButton = null;
 
         [SerializeField] private TextMeshProUGUI unitPrice;
@@ -135,7 +134,7 @@ namespace Nekoyume.UI
             }
 
             reregisterButton.Text = L10nManager.Localize("UI_REREGISTER");
-            reregisterButton.OnSubmitSubject
+            reregisterButton.OnClickSubject
                 .Subscribe(_ =>
                 {
                     _data?.OnClickReregister.OnNext(_data);
@@ -189,6 +188,7 @@ namespace Nekoyume.UI
 
             priceInputField.text = data.Count.Value.ToString();
             countInputField.text = data.Count.Value.ToString();
+            _data.ProductId.Value = data.ProductId.Value;
             _data.Price.Value = data.Price.Value;
             _data.UnitPrice.Value = data.UnitPrice.Value;
 
@@ -276,7 +276,7 @@ namespace Nekoyume.UI
             return (T)Convert.ChangeType(result, typeof(T));
         }
 
-        public void Show(Model.ItemCountableAndPricePopup data, bool isSell)
+        public void Show(Model.ItemCountableAndPricePopup data, bool isSell, int apStoneCount)
         {
             if (isSell)
             {
@@ -284,7 +284,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                SubmitWidget = () => reregisterButton.OnSubmitSubject.OnNext(default);
+                SubmitWidget = () => reregisterButton.OnClickSubject.OnNext(default);
             }
 
             var isCountableItem = data.Item.Value.MaxCount.Value > 1;
@@ -298,6 +298,17 @@ namespace Nekoyume.UI
             submitButton.gameObject.SetActive(isSell);
             reregisterButton.gameObject.SetActive(!isSell);
             notificationButton.gameObject.SetActive(!isSell);
+
+            if (isSell)
+            {
+                submitButton.SetCost(CostType.ActionPoint, 5);
+                submitButton.Interactable = apStoneCount > 0;
+            }
+            else
+            {
+                reregisterButton.SetCost(CostType.ActionPoint, 5);
+            }
+
             Pop(data);
         }
     }

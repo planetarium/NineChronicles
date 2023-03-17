@@ -1,16 +1,19 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using Libplanet.Assets;
 using mixpanel;
 using Nekoyume.Action;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
+using Nekoyume.Model.Market;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
@@ -86,69 +89,29 @@ namespace Nekoyume.UI
         {
             Find<DataLoadingScreen>().Show();
             Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
-
-            var initWeaponTask = Task.Run(async () =>
-            {
-                var list = new List<ItemSubType> { ItemSubType.Weapon, };
-                await ReactiveShopState.SetBuyDigestsAsync(list);
-                return true;
-            });
-
-            var initWeaponResult = await initWeaponTask;
-            if (initWeaponResult)
-            {
-                base.Show(ignoreShowAnimation);
-                view.Show(ReactiveShopState.BuyDigest, ShowItemTooltip);
-                Find<DataLoadingScreen>().Close();
-                HelpTooltip.HelpMe(100018, true);
-                AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
-            }
-
-            _cancellationTokenSource = new CancellationTokenSource();
-            var initOthersTask = Task.Run(async () =>
-            {
-                var list = new List<ItemSubType>
-                {
-                    ItemSubType.Armor,
-                    ItemSubType.Belt,
-                    ItemSubType.Necklace,
-                    ItemSubType.Ring,
-                    ItemSubType.Food,
-                    ItemSubType.FullCostume,
-                    ItemSubType.HairCostume,
-                    ItemSubType.EarCostume,
-                    ItemSubType.EyeCostume,
-                    ItemSubType.TailCostume,
-                    ItemSubType.Title,
-                    ItemSubType.Hourglass,
-                    ItemSubType.ApStone,
-                };
-                await ReactiveShopState.SetBuyDigestsAsync(list);
-                return true;
-            }, _cancellationTokenSource.Token);
-
-            if (initOthersTask.IsCanceled)
-            {
-                return;
-            }
-
-            var initOthersResult = await initOthersTask;
-            if (!initOthersResult)
-            {
-                return;
-            }
-
-            view.IsDoneLoadItem = true;
+            await ReactiveShopState.RequestBuyProductsAsync(ItemSubType.Weapon, MarketOrderType.cp_desc, 0, 60);
+            base.Show(ignoreShowAnimation);
+            view.Show(
+                ReactiveShopState.BuyItemProducts,
+                ReactiveShopState.BuyFungibleAssetProducts,
+                ShowItemTooltip);
+            HelpTooltip.HelpMe(100018, true);
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
+            Find<DataLoadingScreen>().Close();
         }
 
         public void Open()
         {
             base.Show(true);
-            view.Show(ReactiveShopState.BuyDigest, ShowItemTooltip);
+            view.Show(
+                ReactiveShopState.BuyItemProducts,
+                ReactiveShopState.BuyFungibleAssetProducts,
+                ShowItemTooltip);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            ReactiveShopState.ClearCache();
             if (view.IsCartEmpty)
             {
                 OnClose();
@@ -183,10 +146,19 @@ namespace Nekoyume.UI
 
         private void ShowItemTooltip(ShopItem model)
         {
-            var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
-            tooltip.Show(model,
-                () => ShowBuyPopup(new List<ShopItem> { model }),
-                view.ClearSelectedItems);
+            if (model.ItemBase is not null)
+            {
+                var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
+                tooltip.Show(model,
+                    () => ShowBuyPopup(new List<ShopItem> { model }),
+                    view.ClearSelectedItems);
+            }
+            else
+            {
+                Find<FungibleAssetTooltip>().Show(model,
+                    () => ShowBuyPopup(new List<ShopItem> { model }),
+                    view.ClearSelectedItems);
+            }
         }
 
         private void ShowBuyPopup(List<ShopItem> models)
@@ -200,7 +172,14 @@ namespace Nekoyume.UI
                 new FungibleAssetValue(States.Instance.GoldBalanceState.Gold.Currency, 0, 0);
             foreach (var model in models)
             {
-                sumPrice += model.OrderDigest.Price;
+                if (model.ItemBase is not null)
+                {
+                    sumPrice += (BigInteger)model.Product.Price * States.Instance.GoldBalanceState.Gold.Currency;
+                }
+                else
+                {
+                    sumPrice += (BigInteger)model.FungibleAssetProduct.Price * States.Instance.GoldBalanceState.Gold.Currency;
+                }
             }
 
             if (States.Instance.GoldBalanceState.Gold < sumPrice)
@@ -220,16 +199,51 @@ namespace Nekoyume.UI
                 (() => Buy(models)));
         }
 
-        private async void Buy(List<ShopItem> models)
+        private void Buy(List<ShopItem> models)
         {
-            var purchaseInfos = new ConcurrentBag<PurchaseInfo>();
-            await foreach (var item in models.ToAsyncEnumerable())
+            var productInfos = new List<IProductInfo>();
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var currency = States.Instance.GoldBalanceState.Gold.Currency;
+            foreach (var model in models)
             {
-                var purchaseInfo = await GetPurchaseInfo(item.OrderDigest.OrderId);
-                purchaseInfos.Add(purchaseInfo);
+                var itemProduct = model.Product;
+                if (itemProduct is not null)
+                {
+                    var productInfo = new ItemProductInfo()
+                    {
+                        ProductId = itemProduct.ProductId,
+                        Price = new FungibleAssetValue(currency,
+                            (BigInteger)itemProduct.Price, 0),
+                        AgentAddress = itemProduct.SellerAgentAddress,
+                        AvatarAddress = itemProduct.SellerAvatarAddress,
+                        Type = itemProduct.ItemType == ItemType.Material
+                            ? ProductType.Fungible
+                            : ProductType.NonFungible,
+                        Legacy = itemProduct.Legacy,
+                        ItemSubType = itemProduct.ItemSubType,
+                        TradableId = itemProduct.TradableId
+                    };
+                    productInfos.Add(productInfo);
+                }
+                else
+                {
+                    var fungibleAssetProduct = model.FungibleAssetProduct;
+                    var productInfo = new FavProductInfo()
+                    {
+                        ProductId = fungibleAssetProduct.ProductId,
+                        Price = new FungibleAssetValue(currency,
+                            (BigInteger)fungibleAssetProduct.Price, 0),
+                        AgentAddress = fungibleAssetProduct.SellerAgentAddress,
+                        AvatarAddress = fungibleAssetProduct.SellerAvatarAddress,
+                        Type = ProductType.FungibleAssetValue,
+                    };
+                    productInfos.Add(productInfo);
+                }
             }
 
-            Game.Game.instance.ActionManager.Buy(purchaseInfos.ToList()).Subscribe();
+            ReactiveShopState.UpdatePurchaseProductIds(productInfos.Select(x=> x.ProductId).ToList());
+            Game.Game.instance.ActionManager.BuyProduct(avatarAddress, productInfos).Subscribe();
+
 
             if (models.Count > 0)
             {
@@ -246,33 +260,33 @@ namespace Nekoyume.UI
             {
                 var props = new Dictionary<string, Value>()
                 {
-                    ["Price"] = model.OrderDigest.Price.GetQuantityString(),
+                    ["Price"] = model.Product?.Price ?? model.FungibleAssetProduct.Price,
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                     ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                 };
-                Analyzer.Instance.Track("Unity/Buy", props);
+                Analyzer.Instance.Track("Unity/BuyProduct", props);
 
-                var count = model.OrderDigest.ItemCount;
+                var count = model.Product?.Quantity ?? model.FungibleAssetProduct.Quantity;
+                var itemName = model.ItemBase?.GetLocalizedName() ?? model.FungibleAssetValue.GetLocalizedName();
                 model.Selected.Value = false;
-                ReactiveShopState.RemoveBuyDigest(model.OrderDigest.OrderId);
 
                 string message;
                 if (count > 1)
                 {
                     message = string.Format(L10nManager.Localize("NOTIFICATION_MULTIPLE_BUY_START"),
-                        model.ItemBase.GetLocalizedName(), count);
+                        itemName, count);
                 }
                 else
                 {
                     message = string.Format(L10nManager.Localize("NOTIFICATION_BUY_START"),
-                        model.ItemBase.GetLocalizedName());
+                        itemName);
                 }
 
                 OneLineSystem.Push(MailType.Auction, message,
                     NotificationCell.NotificationType.Information);
             }
 
-            view.ClearSelectedItems();
+            view.OnBuyProductAction();
             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
         }
 

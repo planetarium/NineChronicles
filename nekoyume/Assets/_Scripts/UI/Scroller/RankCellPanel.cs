@@ -1,5 +1,5 @@
 using Libplanet;
-using Nekoyume.L10n;
+using Nekoyume.Game;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
 using Nekoyume.State;
@@ -84,9 +84,17 @@ namespace Nekoyume.UI.Scroller
                 .Remove(addressStringCount);
 
             UpdateRank(rankingInfo.Rank);
-            characterView.SetByFullCostumeOrArmorId(
-                rankingInfo.ArmorId,
-                rankingInfo.AvatarLevel);
+            if (Dcc.instance.Avatars.TryGetValue(rankingInfo.AvatarAddress, out var dccId))
+            {
+                characterView.SetByDccId(dccId, rankingInfo.AvatarLevel);
+            }
+            else
+            {
+                characterView.SetByFullCostumeOrArmorId(
+                    rankingInfo.ArmorId,
+                    rankingInfo.AvatarLevel);
+            }
+
             gameObject.SetActive(true);
 
             switch (rankingInfo)
@@ -173,7 +181,15 @@ namespace Nekoyume.UI.Scroller
         public void SetEmpty(AvatarState avatarState)
         {
             rankText.text = "-";
-            characterView.SetByAvatarState(avatarState);
+            if (Dcc.instance.Avatars.TryGetValue(avatarState.address.ToString(), out var dccId))
+            {
+                characterView.SetByDccId(dccId, avatarState.level);
+            }
+            else
+            {
+                characterView.SetByAvatarState(avatarState);
+            }
+
             nicknameText.text = avatarState.name;
             addressText.text = avatarState.address.ToString()
                 .Remove(addressStringCount);

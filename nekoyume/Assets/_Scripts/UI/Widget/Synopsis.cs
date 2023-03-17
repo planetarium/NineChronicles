@@ -40,8 +40,8 @@ namespace Nekoyume.UI
             public Image image;
             [Tooltip("SkeletonAnimation이 들어가는 여부")]
             public bool hasSkeletonAnimation;
-            [Tooltip("페이드 혹은 나타날 SkeletonAnimation")]
-            public SkeletonAnimation skeletonAnimation;
+            [Tooltip("페이드 혹은 나타날 CanvasGroup")]
+            public CanvasGroup canvasGroup;
             [Tooltip("페이드 혹은 나타날 사진")]
             public Sprite sprite;
             [Tooltip("이미지가 나타날때 방법")]
@@ -168,10 +168,8 @@ namespace Nekoyume.UI
 
                         if (script.hasSkeletonAnimation)
                         {
-                            script.skeletonAnimation.skeleton.A = 1;
-                            skeletonTweener = DOTween.To(() => script.skeletonAnimation.skeleton.A,
-                                alpha => script.skeletonAnimation.skeleton.A = alpha, 0,
-                                script.imageAnimationTime);
+                            script.canvasGroup.alpha = 1;
+                            script.canvasGroup.DOFade(0, script.imageAnimationTime);
                         }
 
                         tweener.Play();
@@ -197,10 +195,8 @@ namespace Nekoyume.UI
 
                         if (script.hasSkeletonAnimation)
                         {
-                            script.skeletonAnimation.skeleton.A = 0;
-                            skeletonTweener = DOTween.To(() => script.skeletonAnimation.skeleton.A,
-                                alpha => script.skeletonAnimation.skeleton.A = alpha, 1,
-                                script.imageAnimationTime);
+                            script.canvasGroup.alpha = 0;
+                            script.canvasGroup.DOFade(1, script.imageAnimationTime);
                         }
 
                         tweener.Play();
@@ -382,7 +378,8 @@ namespace Nekoyume.UI
         private async Task End()
         {
             PlayerFactory.Create();
-            if (Util.TryGetStoredAvatarSlotIndex(out var slotIndex))
+            if (Util.TryGetStoredAvatarSlotIndex(out var slotIndex) &&
+                States.Instance.AvatarStates.ContainsKey(slotIndex))
             {
                 try
                 {

@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Helper;
 using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.WorldBoss;
 using Nekoyume.UI.Scroller;
 using TMPro;
@@ -16,7 +18,7 @@ namespace Nekoyume.UI
     public class WorldBossRankItemView : MonoBehaviour
     {
         [SerializeField]
-        private Image portrait;
+        private DetailedCharacterView characterView;
 
         [SerializeField]
         private Image rankImage;
@@ -29,9 +31,6 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private TextMeshProUGUI address;
-
-        [SerializeField]
-        private TextMeshProUGUI level;
 
         [SerializeField]
         private TextMeshProUGUI cp;
@@ -81,11 +80,17 @@ namespace Nekoyume.UI
                 _gradeObject = Instantiate(prefab, gradeContainer);
             }
 
-            portrait.sprite = SpriteHelper.GetItemIcon(model.Portrait);
+            if (Dcc.instance.Avatars.TryGetValue(model.Address, out var dccId))
+            {
+                characterView.SetByDccId(dccId, model.Level);
+            }
+            else
+            {
+                characterView.SetByFullCostumeOrArmorId(model.Portrait, model.Level);
+            }
 
             avatarName.text = model.AvatarName;
             address.text = $"#{model.Address[..4]}";
-            level.text = $"{model.Level}";
             cp.text = $"{model.Cp:#,0}";
             highScore.text = $"{model.HighScore:#,0}";
             totalScore.text = $"{model.TotalScore:#,0}";

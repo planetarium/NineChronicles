@@ -1,10 +1,8 @@
 using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
 using Bencodex.Types;
@@ -15,10 +13,8 @@ using Libplanet.Assets;
 using LruCacheNet;
 using MessagePack;
 using MessagePack.Resolvers;
-using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
-using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Notice;
 using Nekoyume.Game.VFX;
@@ -28,17 +24,19 @@ using Nekoyume.Model.State;
 using Nekoyume.Pattern;
 using Nekoyume.State;
 using Nekoyume.UI;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module.WorldBoss;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
 using UnityEngine.Playables;
 using Menu = Nekoyume.UI.Menu;
+using Random = UnityEngine.Random;
 using RocksDbSharp;
 using UnityEngine.Android;
 
 namespace Nekoyume.Game
 {
-    using Nekoyume.GraphQL;
+    using GraphQL;
     using UniRx;
 
     [RequireComponent(typeof(Agent), typeof(RPCAgent))]
@@ -82,6 +80,8 @@ namespace Nekoyume.Game
         public bool IsInitialized { get; private set; }
         public bool IsInWorld { get; set; }
 
+        public int? SavedPetId { get; set; }
+
         public Prologue Prologue => prologue;
 
         public const string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
@@ -89,13 +89,18 @@ namespace Nekoyume.Game
         public NineChroniclesAPIClient ApiClient => _apiClient;
         public NineChroniclesAPIClient RpcClient => _rpcClient;
 
+        public MarketServiceClient MarketServiceClient;
+
+        public Url URL { get; private set; }
+
         public readonly LruCache<Address, IValue> CachedStates = new();
+
         public readonly Dictionary<Address, bool> CachedStateAddresses = new();
 
         public readonly Dictionary<Currency, LruCache<Address, FungibleAssetValue>>
             CachedBalance = new();
 
-        private CommandLineOptions _options;
+        private CommandLineOptions _commandLineOptions;
 
         private AmazonCloudWatchLogsClient _logsClient;
 
@@ -109,6 +114,9 @@ namespace Nekoyume.Game
 
         public static string CommandLineOptionsJsonPath =
             Platform.GetStreamingAssetsPath("clo.json");
+
+        private static readonly string UrlJsonPath =
+            Path.Combine(Application.streamingAssetsPath, "url.json");
 
         #region Mono & Initialization
 
@@ -159,16 +167,19 @@ namespace Nekoyume.Game
             base.Awake();
 
 #if UNITY_IOS
-            _options = CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.json"));
+            _commandLineOptions = CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.json"));
 #else
-            _options = CommandLineOptions.Load(
+            _commandLineOptions = CommandLineOptions.Load(
                 CommandLineOptionsJsonPath
             );
 #endif
-            Debug.Log("[Game] Awake() CommandLineOptions loaded");
-            Debug.Log($"APV: {_options.AppProtocolVersion}");
 
-            if (_options.RpcClient)
+            URL = Url.Load(UrlJsonPath);
+
+            Debug.Log("[Game] Awake() CommandLineOptions loaded");
+            Debug.Log($"APV: {_commandLineOptions.AppProtocolVersion}");
+
+            if (_commandLineOptions.RpcClient)
             {
                 Agent = GetComponent<RPCAgent>();
                 SubscribeRPCAgent();
@@ -208,7 +219,7 @@ namespace Nekoyume.Game
 #endif
             var options = MessagePackSerializerOptions.Standard.WithResolver(resolver);
             MessagePackSerializer.DefaultOptions = options;
-
+            
 #if UNITY_EDITOR
             if (useSystemLanguage)
             {
@@ -221,7 +232,7 @@ namespace Nekoyume.Game
                 languageType.Subscribe(value => L10nManager.SetLanguage(value)).AddTo(gameObject);
             }
 #else
-            yield return L10nManager.Initialize(LanguageTypeMapper.ISO396(_options.Language)).ToYieldInstruction();
+            yield return L10nManager.Initialize(LanguageTypeMapper.ISO396(_commandLineOptions.Language)).ToYieldInstruction();
 #endif
             Debug.Log("[Game] Start() L10nManager initialized");
 
@@ -266,20 +277,48 @@ namespace Nekoyume.Game
             // Initialize MainCanvas second
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
             // Initialize NineChroniclesAPIClient.
-            _apiClient = new NineChroniclesAPIClient(_options.ApiServerHost);
-            if (!string.IsNullOrEmpty(_options.RpcServerHost))
+            _apiClient = new NineChroniclesAPIClient(_commandLineOptions.ApiServerHost);
+            if (!string.IsNullOrEmpty(_commandLineOptions.RpcServerHost))
             {
-                _rpcClient = new NineChroniclesAPIClient($"http://{_options.RpcServerHost}/graphql");
+                _rpcClient = new NineChroniclesAPIClient($"http://{_commandLineOptions.RpcServerHost}/graphql");
             }
 
-            WorldBossQuery.SetUrl(_options.OnBoardingHost);
-
+            WorldBossQuery.SetUrl(_commandLineOptions.OnBoardingHost);
+            MarketServiceClient = new MarketServiceClient(_commandLineOptions.MarketServiceHost);
             // Initialize Rank.SharedModel
             RankPopup.UpdateSharedModel();
             // Initialize Stage
             Stage.Initialize();
             Arena.Initialize();
             RaidStage.Initialize();
+            StartCoroutine(CoInitDccAvatar());
+            var headerName = URL.DccEthChainHeaderName;
+            var headerValue = URL.DccEthChainHeaderValue;
+            StartCoroutine(RequestManager.instance.GetJson(
+                $"{URL.DccMileageAPI}{Agent.Address}",
+                headerName,
+                headerValue,
+                _ =>
+                {
+                    Dcc.instance.IsConnected = true;
+                }, _ =>
+                {
+                    Dcc.instance.IsConnected = false;
+                }));
+
+            Event.OnUpdateAddresses.AsObservable().Subscribe(_ =>
+            {
+                var petList = States.Instance.PetStates.GetPetStatesAll()
+                    .Where(petState => petState != null)
+                    .Select(petState => petState.PetId)
+                    .ToList();
+                SavedPetId = !petList.Any() ? null : petList[Random.Range(0, petList.Count)];
+            }).AddTo(gameObject);
+
+            var appProtocolVersion = _commandLineOptions.AppProtocolVersion is null
+                ? default
+                : Libplanet.Net.AppProtocolVersion.FromToken(_commandLineOptions.AppProtocolVersion);
+            Widget.Find<VersionSystem>().SetVersion(appProtocolVersion.Version);
 
             ShowNext(agentInitializeSucceed);
             StartCoroutine(CoUpdate());
@@ -556,7 +595,7 @@ namespace Nekoyume.Game
             Widget.Find<PreloadingScreen>().Close();
         }
 
-        #endregion
+#endregion
 
         protected override void OnApplicationQuit()
         {
@@ -605,12 +644,19 @@ namespace Nekoyume.Game
 
         public void BackToNest()
         {
+            StartCoroutine(CoBackToNest());
+        }
+
+        private IEnumerator CoBackToNest()
+        {
+            yield return StartCoroutine(Game.instance.CoInitDccAvatar());
+
             if (IsInWorld)
             {
                 NotificationSystem.Push(Nekoyume.Model.Mail.MailType.System,
                     L10nManager.Localize("UI_BLOCK_EXIT"),
                     NotificationCell.NotificationType.Information);
-                return;
+                yield break;
             }
 
             Event.OnNestEnter.Invoke();
@@ -668,7 +714,7 @@ namespace Nekoyume.Game
 
         private IEnumerator CoLogin(Action<bool> callback)
         {
-            if (_options.Maintenance)
+            if (_commandLineOptions.Maintenance)
             {
                 var w = Widget.Create<IconAndButtonSystem>();
                 w.CancelCallback = () =>
@@ -690,7 +736,7 @@ namespace Nekoyume.Game
                 yield break;
             }
 
-            if (_options.TestEnd)
+            if (_commandLineOptions.TestEnd)
             {
                 var w = Widget.Find<ConfirmPopup>();
                 w.CloseCallback = result =>
@@ -713,23 +759,23 @@ namespace Nekoyume.Game
 
             var settings = Widget.Find<UI.SettingPopup>();
             settings.UpdateSoundSettings();
-            settings.UpdatePrivateKey(_options.PrivateKey);
+            settings.UpdatePrivateKey(_commandLineOptions.PrivateKey);
 
             var loginPopup = Widget.Find<LoginSystem>();
 
             if (Application.isBatchMode)
             {
-                loginPopup.Show(_options.KeyStorePath, _options.PrivateKey);
+                loginPopup.Show(_commandLineOptions.KeyStorePath, _commandLineOptions.PrivateKey);
             }
             else
             {
                 var intro = Widget.Find<IntroScreen>();
-                intro.Show(_options.KeyStorePath, _options.PrivateKey);
+                intro.Show(_commandLineOptions.KeyStorePath, _commandLineOptions.PrivateKey);
                 yield return new WaitUntil(() => loginPopup.Login);
             }
 
             yield return Agent.Initialize(
-                _options,
+                _commandLineOptions,
                 loginPopup.GetPrivateKey(),
                 callback
             );
@@ -738,7 +784,7 @@ namespace Nekoyume.Game
         public void ResetStore()
         {
             var confirm = Widget.Find<ConfirmPopup>();
-            var storagePath = _options.StoragePath ?? BlockChain.Agent.DefaultStoragePath;
+            var storagePath = _commandLineOptions.StoragePath ?? BlockChain.Agent.DefaultStoragePath;
             confirm.CloseCallback = result =>
             {
                 if (result == ConfirmResult.No)
@@ -767,7 +813,7 @@ namespace Nekoyume.Game
                     return;
                 }
 
-                var keyPath = _options.KeyStorePath;
+                var keyPath = _commandLineOptions.KeyStorePath;
                 if (Directory.Exists(keyPath))
                 {
                     Directory.Delete(keyPath, true);
@@ -797,7 +843,7 @@ namespace Nekoyume.Game
             else
             {
                 const string groupName = "9c-player-logs";
-                var streamName = _options.AwsSinkGuid;
+                var streamName = _commandLineOptions.AwsSinkGuid;
                 try
                 {
                     var req = new CreateLogGroupRequest(groupName);
@@ -873,6 +919,19 @@ namespace Nekoyume.Game
             return msg;
         }
 
+        private IEnumerator CoInitDccAvatar()
+        {
+            return RequestManager.instance.GetJson(
+                URL.DccAvatars,
+                URL.DccEthChainHeaderName,
+                URL.DccEthChainHeaderValue,
+                (json) =>
+                {
+                    var responseData = DccAvatars.FromJson(json);
+                    Dcc.instance.Init(responseData.Avatars);
+                });
+        }
+
         public void PauseTimeline(PlayableDirector whichOne)
         {
             _activeDirector = whichOne;
@@ -887,8 +946,8 @@ namespace Nekoyume.Game
         private void InitializeAnalyzer()
         {
             var uniqueId = Agent.Address.ToString();
-            var rpcServerHost = _options.RpcClient
-                ? _options.RpcServerHost
+            var rpcServerHost = _commandLineOptions.RpcClient
+                ? _commandLineOptions.RpcServerHost
                 : null;
 
 #if UNITY_EDITOR
@@ -903,7 +962,7 @@ namespace Nekoyume.Game
                 isTrackable = false;
             }
 
-            if (_options.Development)
+            if (_commandLineOptions.Development)
             {
                 Debug.Log("This is development mode.");
                 isTrackable = false;
@@ -914,9 +973,10 @@ namespace Nekoyume.Game
                 rpcServerHost,
                 isTrackable);
         }
+
+#if UNITY_ANDROID
         void Update()
         {
-#if UNITY_ANDROID
             if (Platform.IsMobilePlatform())
             {
                 int width = Screen.resolutions[0].width;
@@ -927,8 +987,7 @@ namespace Nekoyume.Game
                     Screen.SetResolution(height, width, true);
                 }
             }
-#endif
         }
-
+#endif
     }
 }

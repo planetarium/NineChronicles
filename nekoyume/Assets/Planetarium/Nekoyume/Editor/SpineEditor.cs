@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using Nekoyume.Game.Character;
+using Nekoyume.Game.ScriptableObject;
 using Nekoyume.TestScene;
 using Spine.Unity;
 using Spine.Unity.Editor;
@@ -18,7 +20,8 @@ namespace Planetarium.Nekoyume.Editor
     // TODO: 사용자가 알기 쉽게 예외 상황 전부 알림 띄워주기.
     public static class SpineEditor
     {
-        private const string FindAssetFilter = "CharacterAnimator t:AnimatorController";
+        private const string CharacterAnimatorFindAssetFilter = "CharacterAnimator t:AnimatorController";
+        private const string PetAnimatorFindAssetFilter = "PetAnimator t:AnimatorController";
 
         private const string FullCostumePrefabPath = "Assets/Resources/Character/FullCostume";
 
@@ -33,6 +36,9 @@ namespace Planetarium.Nekoyume.Editor
 
         private const string PlayerPrefabPath = "Assets/Resources/Character/Player";
         private const string PlayerSpineRootPath = "Assets/AddressableAssets/Character/Player";
+
+        private const string PetPrefabPath = "Assets/Resources/Character/Pet";
+        private const string PetSpineRootPath = "Assets/AddressableAssets/Character/Pet";
 
         private static readonly Vector3 Position = Vector3.zero;
 
@@ -85,6 +91,21 @@ namespace Planetarium.Nekoyume.Editor
             CreateSpinePrefabAllOfPath(PlayerSpineRootPath);
         }
 
+        [MenuItem("Tools/9C/Populate Avatar List", false, 0)]
+        public static void PopulateAvatarList()
+        {
+            var avatar = Resources.Load<AvatarScriptableObject>("ScriptableObject/Avatar");
+            PopulateList(PlayerSpineRootPath, avatar.Body, false);
+            PopulateList(FullCostumeSpineRootPath, avatar.FullCostume, true);
+            EditorUtility.SetDirty(avatar);
+        }
+
+        [MenuItem("Tools/9C/Create Spine Prefab(All Pet)", false, 0)]
+        public static void CreateSpinePrefabAllOfPet()
+        {
+            CreateSpinePrefabAllOfPath(PetSpineRootPath);
+        }
+
         private static string GetPrefabPath(string prefabName)
         {
             string pathFormat = null;
@@ -106,6 +127,11 @@ namespace Planetarium.Nekoyume.Editor
             if (SpineCharacterViewer.IsPlayer(prefabName))
             {
                 pathFormat = PlayerPrefabPath;
+            }
+
+            if (SpineCharacterViewer.IsPet(prefabName))
+            {
+                pathFormat = PetPrefabPath;
             }
 
             return string.IsNullOrEmpty(pathFormat)
@@ -152,12 +178,23 @@ namespace Planetarium.Nekoyume.Editor
             meshRenderer.receiveShadows = false;
             meshRenderer.sortingLayerName = "Character";
 
-            var animatorControllerGuidArray = AssetDatabase.FindAssets(FindAssetFilter);
+            string findAssetFilter;
+            if (SpineCharacterViewer.IsPet(prefabName))
+            {
+                meshRenderer.sortingOrder = 1;
+                findAssetFilter = PetAnimatorFindAssetFilter;
+            }
+            else
+            {
+                findAssetFilter = CharacterAnimatorFindAssetFilter;
+            }
+
+            var animatorControllerGuidArray = AssetDatabase.FindAssets(findAssetFilter);
             if (animatorControllerGuidArray.Length == 0)
             {
                 Object.DestroyImmediate(gameObject);
                 throw new AssetNotFoundException(
-                    $"AssetDatabase.FindAssets(\"{FindAssetFilter}\")");
+                    $"AssetDatabase.FindAssets(\"{findAssetFilter}\")");
             }
 
             var animatorControllerPath =
@@ -368,6 +405,26 @@ namespace Planetarium.Nekoyume.Editor
                             });
                     }
                     break;
+                case PetSpineController petSpineController:
+                    foreach (var animationType in PetAnimation.List)
+                    {
+                        var assetPath = Path.Combine(animationAssetsPath, $"{animationType}.asset");
+                        var asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
+                        if (asset is null)
+                        {
+                            Object.DestroyImmediate(gameObject);
+                            throw new AssetNotFoundException(assetPath);
+                        }
+
+                        controller.statesAndAnimations.Add(
+                            new SpineController.StateNameToAnimationReference
+                            {
+                                stateName = animationType.ToString(),
+                                animation = asset
+                            });
+                    }
+
+                    break;
             }
 
             return controller;
@@ -397,6 +454,11 @@ namespace Planetarium.Nekoyume.Editor
             if (SpineCharacterViewer.IsPlayer(prefabName))
             {
                 return ValidateForPlayer(skeletonDataAsset);
+            }
+
+            if (SpineCharacterViewer.IsPet(prefabName))
+            {
+                return ValidateForPet(skeletonDataAsset);
             }
 
             return false;
@@ -446,6 +508,8 @@ namespace Planetarium.Nekoyume.Editor
 
             return result;
         }
+
+        private static bool ValidateForPet(SkeletonDataAsset skeletonDataAsset) => true;
 
         #endregion
 
@@ -518,6 +582,11 @@ namespace Planetarium.Nekoyume.Editor
                 return target.AddComponent<NPCSpineController>();
             }
 
+            if (SpineCharacterViewer.IsPet(prefabName))
+            {
+                return target.AddComponent<PetSpineController>();
+            }
+
             return target.AddComponent<CharacterSpineController>();
         }
 
@@ -583,6 +652,42 @@ namespace Planetarium.Nekoyume.Editor
                     return new Vector3(.64f, .64f, 1f);
                 case "300005":
                     return new Vector3(.8f, .8f, 1f);
+            }
+        }
+
+        private static void PopulateList(string path, List<SkeletonDataAsset> list, bool isFullCostume)
+        {
+            if (!AssetDatabase.IsValidFolder(path))
+            {
+                Debug.LogWarning($"Not Found Folder! {path}");
+                return;
+            }
+
+            list.Clear();
+            var subFolderPaths = AssetDatabase.GetSubFolders(path);
+            foreach (var subFolderPath in subFolderPaths)
+            {
+                var id = Path.GetFileName(subFolderPath);
+                var name = isFullCostume ? $"{id}_SkeletonData.asset": $"body_skin_{id}_SkeletonData.asset";
+                var skeletonDataAssetPath = Path.Combine(subFolderPath, name);
+                Debug.Log($"Try to create spine prefab with {skeletonDataAssetPath}");
+                var skeletonDataAsset =
+                    AssetDatabase.LoadAssetAtPath<SkeletonDataAsset>(skeletonDataAssetPath);
+                if (ReferenceEquals(skeletonDataAsset, null) || skeletonDataAsset == null)
+                {
+                    // Debug.LogError($"Not Found SkeletonData from {skeletonDataAssetPath}");
+                    continue;
+                }
+
+                try
+                {
+                    list.Add(skeletonDataAsset);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                    return;
+                }
             }
         }
     }

@@ -423,6 +423,11 @@ namespace Nekoyume.Game.Character
             Animator.StopRun();
         }
 
+        public void Run()
+        {
+            Animator.Run();
+        }
+
         private void OnTriggerEnter(Collider other)
         {
             if (!other.gameObject.CompareTag(TargetTag))

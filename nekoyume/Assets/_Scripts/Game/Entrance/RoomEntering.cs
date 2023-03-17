@@ -1,6 +1,6 @@
 using System.Collections;
-using System.Linq;
 using Nekoyume.BlockChain;
+using Nekoyume.Game.Character;
 using Nekoyume.Model.EnumType;
 using Nekoyume.State;
 using Nekoyume.UI;
@@ -37,7 +37,10 @@ namespace Nekoyume.Game.Entrance
 
             var avatarState = States.Instance.CurrentAvatarState;
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Adventure);
-            Game.instance.Lobby.Character.Set(avatarState, equipments, costumes);
+            var onFinish = false;
+            Game.instance.Lobby.Character.Set(avatarState, equipments, costumes, () => onFinish = true);
+
+            yield return new WaitUntil(() => onFinish);
             Game.instance.Lobby.Character.EnterRoom();
             Widget.Find<Menu>().EnterRoom();
             ActionCamera.instance.SetPosition(0f, 0f);
@@ -74,6 +77,7 @@ namespace Nekoyume.Game.Entrance
             }
 
             ActionRenderHandler.Instance.Pending = false;
+
             yield return new WaitForSeconds(1.0f);
             Widget.Find<Status>().Show();
             Widget.Find<EventBanner>().Show();

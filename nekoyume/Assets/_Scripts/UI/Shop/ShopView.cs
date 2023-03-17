@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using Lib9c.Model.Order;
+using Libplanet.Assets;
+using MarketService.Response;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Market;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using TMPro;
@@ -44,14 +48,15 @@ namespace Nekoyume.UI.Module
         private readonly Dictionary<ItemSubTypeFilter, List<ShopItem>> _items = new();
         private readonly List<ShopItem> _selectedModels = new();
         private readonly List<ShopItemView> _itemViews = new();
-        private readonly ReactiveProperty<int> _page = new();
+        protected readonly ReactiveProperty<int> _page = new();
         private readonly List<IDisposable> _disposables = new();
 
         private Image _nextPageImage;
         private Image _previousPageImage;
-        private int _column;
-        private int _row;
+        protected int _column;
+        protected  int _row;
         private int _pageCount = 1;
+        protected bool _isActive;
 
         protected Action<ShopItem> ClickItemAction;
         protected abstract void OnAwake();
@@ -68,7 +73,7 @@ namespace Nekoyume.UI.Module
             _selectedModels.Clear();
             _selectedModels.AddRange(GetSortedModels(_items));
             _pageCount = _selectedModels.Any()
-                ? _selectedModels.Count / (_column * _row) + 1
+                ? _selectedModels.Count / (_column * _row + 1)
                 : 1;
             if (resetPage)
             {
@@ -79,14 +84,15 @@ namespace Nekoyume.UI.Module
         }
 
         public void Show(
-            ReactiveProperty<List<OrderDigest>> digests,
+            ReactiveProperty<List<ItemProductResponseModel>> itemProducts,
+            ReactiveProperty<List<FungibleAssetValueProductResponseModel>> fungibleAssetProducts,
             Action<ShopItem> clickItem)
         {
             Reset();
             InstantiateItemView();
             SetAction(clickItem);
-            Set(digests);
-            UpdateView();
+            Set(itemProducts, fungibleAssetProducts);
+            UpdateView(page: _page.Value);
         }
 
         private void Awake()
@@ -116,7 +122,18 @@ namespace Nekoyume.UI.Module
             _page.ObserveOnMainThread().Subscribe(UpdatePage).AddTo(gameObject);
         }
 
-        private void UpdatePage(int page)
+        private void OnEnable()
+        {
+            _isActive = true;
+        }
+
+        private void OnDisable()
+        {
+            _isActive = false;
+            Reset();
+        }
+
+        protected virtual void UpdatePage(int page)
         {
             var index = page * _itemViews.Count;
             foreach (var view in _itemViews)
@@ -177,6 +194,7 @@ namespace Nekoyume.UI.Module
             {
                 var go = Instantiate(shopPrefab, gridLayoutGroup.transform);
                 var view = go.GetComponent<ShopItemView>();
+                go.SetActive(false);
                 _itemViews.Add(view);
             }
 
@@ -191,43 +209,50 @@ namespace Nekoyume.UI.Module
             ClickItemAction = clickItem;
         }
 
-        private void Set(IObservable<List<OrderDigest>> orderDigests)
+        protected void Set(
+            ReactiveProperty<List<ItemProductResponseModel>> itemProducts,
+            ReactiveProperty<List<FungibleAssetValueProductResponseModel>> fungibleAssetProducts)
         {
             _disposables.DisposeAllAndClear();
-            orderDigests.ObserveOnMainThread().Subscribe(digests =>
+            _items[ItemSubTypeFilter.All] = _items[ItemSubTypeFilter.All]
+                .Where(x => x.Product is null).ToList();
+
+            foreach (var item in _items)
             {
-                foreach (var item in _items)
-                {
-                    item.Value.Clear();
-                }
+                item.Value.Clear();
+            }
 
-                if (digests is null)
-                {
-                    return;
-                }
-
+            if (itemProducts.Value is not null)
+            {
                 var itemSheet = TableSheets.Instance.ItemSheet;
-                foreach (var digest in digests)
+                foreach (var product in itemProducts.Value)
                 {
-                    AddItem(digest, itemSheet);
-                }
+                    if (!ReactiveShopState.TryGetItemBase(product, out var itemBase))
+                    {
+                        continue;
+                    }
 
-                UpdateView(page: _page.Value);
-            }).AddTo(_disposables);
+                    AddItem(product, itemBase, itemSheet);
+                }
+            }
+
+            if (fungibleAssetProducts.Value is not null)
+            {
+                foreach (var product in fungibleAssetProducts.Value)
+                {
+                    AddItem(product);
+                }
+            }
+
             Game.Game.instance.Agent.BlockIndexSubject
                 .Subscribe(UpdateExpired)
                 .AddTo(_disposables);
         }
 
-        private void AddItem(OrderDigest digest, ItemSheet sheet)
+        private void AddItem(ItemProductResponseModel product, ItemBase itemBase, ItemSheet sheet)
         {
-            if (!ReactiveShopState.TryGetShopItem(digest, out var itemBase))
-            {
-                return;
-            }
-
-            var model = CreateItem(itemBase, digest, sheet);
-            var filters = ItemSubTypeFilterExtension.GetItemSubTypeFilter(digest.ItemId);
+            var model = CreateItem(product, itemBase, sheet);
+            var filters = ItemSubTypeFilterExtension.GetItemSubTypeFilter(product.ItemId);
             foreach (var filter in filters)
             {
                 if (!_items.ContainsKey(filter))
@@ -238,6 +263,21 @@ namespace Nekoyume.UI.Module
                 _items[filter].Add(model);
                 _items[ItemSubTypeFilter.All].Add(model);
             }
+        }
+
+        private void AddItem(FungibleAssetValueProductResponseModel product)
+        {
+            var currency = Currency.Legacy(product.Ticker, 0, null);
+            var fav = new FungibleAssetValue(currency, (int)product.Quantity, 0);
+            var model = CreateItem(product, fav);
+            var filter = fav.GetItemSubTypeFilter();
+            if (!_items.ContainsKey(filter))
+            {
+                _items.Add(filter, new List<ShopItem>());
+            }
+
+            _items[filter].Add(model);
+            _items[ItemSubTypeFilter.All].Add(model);
         }
 
         private static void DestroyChildren(Transform parent)
@@ -255,37 +295,50 @@ namespace Nekoyume.UI.Module
         }
 
         private static ShopItem CreateItem(
+            ItemProductResponseModel product,
             ItemBase item,
-            OrderDigest digest,
             ItemSheet sheet)
         {
-            var grade = sheet[digest.ItemId].Grade;
+            var grade = sheet[product.ItemId].Grade;
             var limit = item.ItemType != ItemType.Material &&
                         !Util.IsUsableItem(item);
-            return new ShopItem(item, digest, grade, limit);
+            return new ShopItem(item, product, grade, limit);
+        }
+
+        private static ShopItem CreateItem(
+            FungibleAssetValueProductResponseModel product,
+            FungibleAssetValue fav)
+        {
+            var grade = Util.GetTickerGrade(product.Ticker);
+            return new ShopItem(fav, product, grade);
         }
 
         private void UpdateExpired(long blockIndex)
         {
             foreach (var model in _selectedModels)
             {
-                var isExpired = model.OrderDigest.ExpiredBlockIndex - blockIndex <= 0;
+                var registeredBlockIndex = model.Product?.RegisteredBlockIndex ?? model.FungibleAssetProduct.RegisteredBlockIndex;
+                var isExpired = registeredBlockIndex + Order.ExpirationInterval - blockIndex <= 0;
                 model.Expired.Value = isExpired;
             }
         }
 
-        public void SetLoading(List<OrderDigest> digests, bool isLoading = true)
+        protected void UpdateSelected(List<ShopItem> selectedItems)
         {
-            var items = _items[ItemSubTypeFilter.All];
-            foreach (var digest in digests)
+            foreach (var model in _selectedModels)
             {
-                var item = items.Find(x => x.OrderDigest.OrderId == digest.OrderId);
-                if (item is null)
+                if (model.ItemBase is not null)
                 {
-                    continue;
+                    model.Selected.Value = selectedItems
+                        .Where(x => x.Product is not null)
+                        .Any(x => x.Product.ProductId == model.Product.ProductId);
                 }
-
-                item.Loading.Value = isLoading;
+                else
+                {
+                    model.Selected.Value = selectedItems
+                        .Where(x => x.FungibleAssetProduct is not null)
+                        .Any(x => x.FungibleAssetProduct.ProductId == model.FungibleAssetProduct.ProductId);
+                }
             }
         }
     }

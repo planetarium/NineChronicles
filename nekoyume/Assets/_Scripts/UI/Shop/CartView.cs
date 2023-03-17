@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using Libplanet.Assets;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
@@ -60,7 +61,7 @@ namespace Nekoyume.UI.Module
             _onClickHideCart = onClickHideCart;
         }
 
-        public void UpdateCart(List<ShopItem> selectedItems)
+        public void UpdateCart(List<ShopItem> selectedItems, System.Action onClick)
         {
             var sortedItems = selectedItems.Where(x => !x.Expired.Value).ToList();
             var price = new FungibleAssetValue(States.Instance.GoldBalanceState.Gold.Currency, 0 ,0);
@@ -68,13 +69,17 @@ namespace Nekoyume.UI.Module
             {
                 if (i < sortedItems.Count)
                 {
-                    price += sortedItems[i].OrderDigest.Price;
+                    var p = sortedItems[i].ItemBase is not null
+                        ? (BigInteger)sortedItems[i].Product.Price
+                        : (BigInteger)sortedItems[i].FungibleAssetProduct.Price;
+                    price += p * States.Instance.GoldBalanceState.Gold.Currency;
                     cartItems[i].gameObject.SetActive(true);
                     cartItems[i].Set(sortedItems[i], (item) =>
                     {
+                        onClick?.Invoke();
                         item.Selected.SetValueAndForceNotify(false);
                         selectedItems.Remove(item);
-                        UpdateCart(selectedItems);
+                        UpdateCart(selectedItems, onClick);
                     });
                 }
                 else

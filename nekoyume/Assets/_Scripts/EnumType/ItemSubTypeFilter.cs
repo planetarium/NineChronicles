@@ -30,11 +30,20 @@ namespace Nekoyume.EnumType
         EyeCostume,
         TailCostume,
         Title,
-        Materials,
 
+        Hourglass,
+        ApStone,
+
+        RuneStone,
+        PetSoulStone,
+
+        Materials,
         Equipment,
         Food,
         Costume,
+        Stones,
+
+
     }
 
     public static class ItemSubTypeFilterExtension
@@ -62,7 +71,10 @@ namespace Nekoyume.EnumType
                     ItemSubTypeFilter.EyeCostume,
                     ItemSubTypeFilter.TailCostume,
                     ItemSubTypeFilter.Title,
-                    ItemSubTypeFilter.Materials,
+                    ItemSubTypeFilter.Hourglass,
+                    ItemSubTypeFilter.ApStone,
+                    ItemSubTypeFilter.RuneStone,
+                    ItemSubTypeFilter.PetSoulStone,
                 };
             }
         }
@@ -99,11 +111,68 @@ namespace Nekoyume.EnumType
                 case ItemSubTypeFilter.Materials:
                     return L10nManager.Localize("UI_MATERIALS");
 
+                case ItemSubTypeFilter.Stones:
+                    return "Stones";
+
+                case ItemSubTypeFilter.RuneStone:
+                    return "RuneStone";
+
+                case ItemSubTypeFilter.PetSoulStone:
+                    return "PetSoulStone";
+
                 default:
                     return ((ItemSubType) Enum.Parse(typeof(ItemSubType), type.ToString()))
                         .GetLocalizedString();
             }
         }
+
+        public static ItemSubType ToItemSubType(this ItemSubTypeFilter type)
+        {
+            switch (type)
+            {
+                case ItemSubTypeFilter.All:
+                case ItemSubTypeFilter.Equipment:
+                case ItemSubTypeFilter.Weapon:
+                    return ItemSubType.Weapon;
+
+                case ItemSubTypeFilter.Armor:
+                    return ItemSubType.Armor;
+
+                case ItemSubTypeFilter.Belt:
+                    return ItemSubType.Belt;
+
+                case ItemSubTypeFilter.Necklace:
+                    return ItemSubType.Necklace;
+
+                case ItemSubTypeFilter.Ring:
+                    return ItemSubType.Ring;
+
+                case ItemSubTypeFilter.Food:
+                case ItemSubTypeFilter.Food_HP:
+                case ItemSubTypeFilter.Food_ATK:
+                case ItemSubTypeFilter.Food_DEF:
+                case ItemSubTypeFilter.Food_CRI:
+                case ItemSubTypeFilter.Food_HIT:
+                    return ItemSubType.Food;
+
+                case ItemSubTypeFilter.Materials:
+                case ItemSubTypeFilter.Hourglass:
+                    return ItemSubType.Hourglass;
+
+                case ItemSubTypeFilter.ApStone:
+                    return ItemSubType.ApStone;
+
+                case ItemSubTypeFilter.Costume:
+                case ItemSubTypeFilter.FullCostume:
+                    return ItemSubType.FullCostume;
+
+                case ItemSubTypeFilter.Title:
+                    return ItemSubType.Title;
+            }
+
+            return ItemSubType.Weapon;
+        }
+
 
         public static ItemSubTypeFilter StatTypeToItemSubTypeFilter(StatType statType)
         {
@@ -190,8 +259,9 @@ namespace Nekoyume.EnumType
                 case ItemSubType.Title:
                     return new List<ItemSubTypeFilter> { ItemSubTypeFilter.Title };
                 case ItemSubType.Hourglass:
+                    return new List<ItemSubTypeFilter> { ItemSubTypeFilter.Hourglass };
                 case ItemSubType.ApStone:
-                    return new List<ItemSubTypeFilter> { ItemSubTypeFilter.Materials };
+                    return new List<ItemSubTypeFilter> { ItemSubTypeFilter.ApStone };
                 case ItemSubType.Food:
                 case ItemSubType.EquipmentMaterial:
                 case ItemSubType.FoodMaterial:

@@ -1,36 +1,42 @@
-using Nekoyume.Game.Controller;
+using System;
+using System.Collections.Generic;
 using Nekoyume.UI;
+using Nekoyume.UI.Module;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume
 {
+    using UniRx;
+
     public class ItemTooltipSell : MonoBehaviour
     {
         [SerializeField]
         private BlockTimer timer;
 
         [SerializeField]
-        private Button retrieveButton;
+        private ConditionalCostButton retrieveButton;
 
         [SerializeField]
-        private Button registerButton;
+        private ConditionalCostButton registerButton;
 
-        public void Set(long expiredBlockIndex, System.Action onRetrieve, System.Action onRegister)
+        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+
+        public void Set(
+            long expiredBlockIndex,
+            int apStoneCount,
+            Action<ConditionalButton.State> onRetrieve,
+            Action<ConditionalButton.State> onRegister)
         {
-            retrieveButton.onClick.RemoveAllListeners();
-            retrieveButton.onClick.AddListener(() =>
-            {
-                AudioController.PlayClick();
-                onRetrieve?.Invoke();
-            });
+            _disposables.DisposeAllAndClear();
 
-            registerButton.onClick.RemoveAllListeners();
-            registerButton.onClick.AddListener(() =>
-            {
-                AudioController.PlayClick();
-                onRegister?.Invoke();
-            });
+            retrieveButton.SetCost(CostType.ActionPoint, 5);
+            retrieveButton.Interactable = apStoneCount > 0;
+            retrieveButton.OnClickSubject.Subscribe(onRetrieve).AddTo(_disposables);
+
+            registerButton.SetCost(CostType.ActionPoint, 5);
+            registerButton.Interactable = apStoneCount > 0;
+            registerButton.OnClickSubject.Subscribe(onRegister).AddTo(_disposables);
+
             timer.UpdateTimer(expiredBlockIndex);
         }
     }

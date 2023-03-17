@@ -1,0 +1,94 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Chapter_06
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 1
+    - serializedVersion: 3
+      m_BuildTarget: Android
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: 47
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 1
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    - serializedVersion: 3
+      m_BuildTarget: iPhone
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: 50
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 1
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 0
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 2800000, guid: 1435eceb273ee1c4aa1d642abaafd858, type: 3}
+    - {fileID: 2800000, guid: cf96f1b7edb19744cab8f1d9e88036cf, type: 3}
+    - {fileID: 2800000, guid: bfb0bd0ad019032419185d56c7bee29b, type: 3}
+    - {fileID: 2800000, guid: 1eb529856f1ff1e418853ccf97188a9f, type: 3}
+    - {fileID: 2800000, guid: 8a5f16eb654960c49b1ec8d87b4f7809, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 1eb529856f1ff1e418853ccf97188a9f, type: 3}
+  - {fileID: 21300000, guid: cf96f1b7edb19744cab8f1d9e88036cf, type: 3}
+  - {fileID: 21300000, guid: bfb0bd0ad019032419185d56c7bee29b, type: 3}
+  - {fileID: 21300000, guid: 8a5f16eb654960c49b1ec8d87b4f7809, type: 3}
+  - {fileID: 21300000, guid: 1435eceb273ee1c4aa1d642abaafd858, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - bg_chapter06_03_02
+  - bg_chapter06_02_02
+  - bg_chapter06_02_03
+  - bg_chapter06_03_03
+  - bg_chapter06_01_02
+  m_RenderDataMap: {}
+  m_Tag: Chapter_06
+  m_IsVariant: 0

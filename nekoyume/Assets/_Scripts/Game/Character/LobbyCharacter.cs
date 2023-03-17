@@ -3,8 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
+using Nekoyume.State;
 using Nekoyume.UI;
 using UnityEngine;
 
@@ -29,11 +31,13 @@ namespace Nekoyume.Game.Character
         public void Set(
             AvatarState avatarState,
             List<Equipment> equipments,
-            List<Costume> costumes)
+            List<Costume> costumes,
+            System.Action onFinish = null)
         {
             _hudContainer ??= Widget.Create<HudContainer>(true);
             _hudContainer.transform.localPosition = Vector3.left * 200000;
             appearance.Set(
+                avatarState.address,
                 Animator,
                 _hudContainer,
                 costumes,
@@ -41,7 +45,8 @@ namespace Nekoyume.Game.Character
                 avatarState.ear,
                 avatarState.lens,
                 avatarState.hair,
-                avatarState.tail);
+                avatarState.tail,
+                onFinish: onFinish);
 
             var title = costumes.FirstOrDefault(x => x.ItemSubType == ItemSubType.Title);
             Widget.Find<Menu>().UpdateTitle(title);
@@ -60,10 +65,16 @@ namespace Nekoyume.Game.Character
             Animator.Touch();
         }
 
+        public void TouchPet()
+        {
+            appearance.Pet.Animator.Play(PetAnimation.Type.Interaction);
+        }
+
         public void EnterRoom()
         {
             var status = Widget.Find<Status>();
             status.Close(true);
+            appearance.Pet.SetSpineObject();
             StartCoroutine(CoPlayAnimation());
         }
 

@@ -5,6 +5,7 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Libplanet.Assets;
 using Nekoyume.Action;
+using Nekoyume.EnumType;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
@@ -192,6 +193,23 @@ namespace Nekoyume
                 case RaidRewardMail rewardMail:
                     return L10nManager.Localize("UI_RAID_SEASON_REWARD_MAIL_FORMAT",
                         rewardMail.RaidId, rewardMail.CurrencyName, rewardMail.Amount);
+
+                case ProductCancelMail productCancelMail :
+                    var (productName, _,  _) =
+                        await Game.Game.instance.MarketServiceClient.GetProductInfo(productCancelMail
+                        .ProductId);
+                    return L10nManager.Localize("UI_SELL_CANCEL_MAIL_FORMAT", productName);
+                case ProductBuyerMail productBuyerMail:
+                    var (buyProductName, _,  _) =
+                        await Game.Game.instance.MarketServiceClient.GetProductInfo(productBuyerMail
+                        .ProductId);
+                    return L10nManager.Localize("UI_BUYER_MAIL_FORMAT", buyProductName);
+                case ProductSellerMail productSellerMail:
+                    var (sellProductName, item, fav) =
+                        await Game.Game.instance.MarketServiceClient.GetProductInfo(productSellerMail.ProductId);
+                    return L10nManager.Localize("UI_SELLER_MAIL_FORMAT",
+                        item?.Price ?? fav.Price, sellProductName);
+
                 default:
                     throw new NotSupportedException(
                         $"Given mail[{mail}] doesn't support {nameof(ToInfo)}() method.");
@@ -415,6 +433,47 @@ namespace Nekoyume
                 default:
                     return $"<color=#{GetColorHexByGrade(item)}>{name}</color>";
             }
+        }
+
+        public static string GetLocalizedName(this FungibleAssetValue fav)
+        {
+            var isRune = false;
+            var id = 0;
+            var ticker = fav.Currency.Ticker;
+            if (RuneFrontHelper.TryGetRuneData(ticker, out var runeData))
+            {
+                var sheet = Game.Game.instance.TableSheets.RuneListSheet;
+                if (sheet.TryGetValue(runeData.id, out var row))
+                {
+                    isRune = true;
+                    id = runeData.id;
+                }
+            }
+
+            var petSheet = Game.Game.instance.TableSheets.PetSheet;
+            var petRow = petSheet.Values.FirstOrDefault(x => x.SoulStoneTicker == ticker);
+            if (petRow is not null)
+            {
+                isRune = false;
+                id = petRow.Id;
+            }
+            return L10nManager.Localize(isRune ? $"RUNE_NAME_{id}" : $"PET_NAME_{id}");
+        }
+
+        public static ItemSubTypeFilter GetItemSubTypeFilter(this FungibleAssetValue fav)
+        {
+            if (RuneFrontHelper.TryGetRuneData(fav.Currency.Ticker, out _))
+            {
+                return ItemSubTypeFilter.RuneStone;
+            }
+
+            var petSheet = Game.Game.instance.TableSheets.PetSheet;
+            if (petSheet.Values.Any(x => x.SoulStoneTicker == fav.Currency.Ticker))
+            {
+                return ItemSubTypeFilter.PetSoulStone;
+            }
+
+            return ItemSubTypeFilter.Stones;
         }
 
         public static string GetLocalizedNonColoredName(this ItemBase item, bool useElementalIcon = true)

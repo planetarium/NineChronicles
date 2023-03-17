@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +31,7 @@ namespace Nekoyume.UI.Module
             Rune,
             Material,
             Costume,
+            FungibleAsset,
         }
 
         [SerializeField]
@@ -49,6 +50,9 @@ namespace Nekoyume.UI.Module
         private CategoryTabButton costumeButton = null;
 
         [SerializeField]
+        private CategoryTabButton fungibleAssetButton = null;
+
+        [SerializeField]
         private InventoryScroll scroll = null;
 
         [SerializeField]
@@ -62,6 +66,7 @@ namespace Nekoyume.UI.Module
         private readonly List<InventoryItem> _materials = new();
         private readonly List<InventoryItem> _costumes = new();
         private readonly List<InventoryItem> _runes = new();
+        private readonly List<InventoryItem> _fungibleAssets = new();
 
         private readonly ToggleGroup _toggleGroup = new();
 
@@ -90,6 +95,7 @@ namespace Nekoyume.UI.Module
             _toggleGroup.RegisterToggleable(runeButton);
             _toggleGroup.RegisterToggleable(materialButton);
             _toggleGroup.RegisterToggleable(costumeButton);
+            _toggleGroup.RegisterToggleable(fungibleAssetButton);
 
             equipmentButton.OnClick
                 .Subscribe(button => OnTabButtonClick(button, InventoryTabType.Equipment))
@@ -105,6 +111,9 @@ namespace Nekoyume.UI.Module
                 .AddTo(gameObject);
             materialButton.OnClick
                 .Subscribe(button => OnTabButtonClick(button, InventoryTabType.Material))
+                .AddTo(gameObject);
+            fungibleAssetButton.OnClick
+                .Subscribe(button => OnTabButtonClick(button, InventoryTabType.FungibleAsset))
                 .AddTo(gameObject);
 
             foreach (var type in ItemTypes)
@@ -197,6 +206,7 @@ namespace Nekoyume.UI.Module
             _materials.Clear();
             _costumes.Clear();
             _runes.Clear();
+            _fungibleAssets.Clear();
 
             if (inventory is null)
             {
@@ -218,6 +228,11 @@ namespace Nekoyume.UI.Module
             foreach (var runeState in States.Instance.RuneStates)
             {
                 _runes.Add(new InventoryItem(runeState));
+            }
+
+            foreach (var fav in States.Instance.AvatarBalance.Values)
+            {
+                _fungibleAssets.Add(new InventoryItem(fav));
             }
 
             var models = GetModels(_activeTabType);
@@ -368,6 +383,7 @@ namespace Nekoyume.UI.Module
                 InventoryTabType.Equipment => GetOrganizedEquipments(),
                 InventoryTabType.Material => GetOrganizedMaterials(),
                 InventoryTabType.Rune => GetOrganizedRunes(),
+                InventoryTabType.FungibleAsset => GetOrganizedFungibleAssets(),
                 _ => throw new ArgumentOutOfRangeException(nameof(tabType), tabType, null)
             };
         }
@@ -386,6 +402,11 @@ namespace Nekoyume.UI.Module
 
         private void OnDoubleClick(InventoryItem item)
         {
+            if (item.ItemBase is null && item.RuneState is null)
+            {
+                return;
+            }
+
             _selectedModel?.Selected.SetValueAndForceNotify(false);
             _selectedModel = null;
             _onDoubleClickItem?.Invoke(item);
@@ -402,7 +423,8 @@ namespace Nekoyume.UI.Module
             }
 
             result = result
-                .OrderByDescending(x => bestItems.Exists(y => y.Equals(x)))
+                .OrderByDescending(x => x.Equipped.Value)
+                .ThenByDescending(x => bestItems.Exists(y => y.Equals(x)))
                 .ThenBy(x => x.ItemBase.ItemSubType)
                 .ThenByDescending(x => Util.IsUsableItem(x.ItemBase))
                 .ThenByDescending(x => CPHelper.GetCP(x.ItemBase as Equipment))
@@ -428,6 +450,11 @@ namespace Nekoyume.UI.Module
         private List<InventoryItem> GetOrganizedRunes()
         {
             return _runes.OrderBy(x => x.DimObjectEnabled.Value).ToList();
+        }
+
+        private List<InventoryItem> GetOrganizedFungibleAssets()
+        {
+            return _fungibleAssets;
         }
 
         private void UpdateEquipmentNotification(IEnumerable<InventoryItem> bestItems)
@@ -780,6 +807,16 @@ namespace Nekoyume.UI.Module
             scroll.UpdateData(models, resetScrollOnEnable);
         }
 
+        public void UpdateFungibleAssets()
+        {
+            _fungibleAssets.Clear();
+            foreach (var fav in States.Instance.AvatarBalance.Values)
+            {
+                _fungibleAssets.Add(new InventoryItem(fav));
+            }
+            scroll.UpdateData(_fungibleAssets, resetScrollOnEnable);
+        }
+
         public void UpdateCostumes(List<Guid> costumes)
         {
             UpdateCostumeEquipped(costumes);
@@ -927,6 +964,11 @@ namespace Nekoyume.UI.Module
             foreach (var rune in _runes)
             {
                 rune.Focused.Value = false;
+            }
+
+            foreach (var fa in _fungibleAssets)
+            {
+                fa.Focused.Value = false;
             }
         }
 

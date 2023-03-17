@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Numerics;
+using Lib9c.Model.Order;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
+using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UnityEngine;
@@ -173,26 +176,29 @@ namespace Nekoyume.UI
 
         public virtual void Show(
             ShopItem item,
-            System.Action onRegister,
-            System.Action onSellCancellation,
+            int apStoneCount,
+            Action<ConditionalButton.State> onRegister,
+            Action<ConditionalButton.State> onSellCancellation,
             System.Action onClose)
         {
             submitButtonContainer.SetActive(false);
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(true);
-            sell.Set(item.OrderDigest.ExpiredBlockIndex,
-                () =>
+            sell.Set(
+                item.Product.RegisteredBlockIndex + Order.ExpirationInterval,
+                apStoneCount,
+                state =>
                 {
-                    onSellCancellation?.Invoke();
+                    onSellCancellation?.Invoke(state);
                     Close();
-                }, () =>
+                }, state =>
                 {
-                    onRegister?.Invoke();
+                    onRegister?.Invoke(state);
                     Close();
                 });
             detail.Set(
                 item.ItemBase,
-                item.OrderDigest.ItemCount,
+                (int) item.Product.Quantity,
                 !Util.IsUsableItem(item.ItemBase) &&
                 (item.ItemBase.ItemType == ItemType.Equipment ||
                  item.ItemBase.ItemType == ItemType.Costume));
@@ -211,8 +217,8 @@ namespace Nekoyume.UI
             submitButtonContainer.SetActive(false);
             sell.gameObject.SetActive(false);
             buy.gameObject.SetActive(true);
-            buy.Set(item.OrderDigest.ExpiredBlockIndex,
-                item.OrderDigest.Price,
+            buy.Set(item.Product.RegisteredBlockIndex + Order.ExpirationInterval,
+                (BigInteger)item.Product.Price * States.Instance.GoldBalanceState.Gold.Currency,
                 () =>
                 {
                     onBuy?.Invoke();
@@ -221,7 +227,7 @@ namespace Nekoyume.UI
 
             detail.Set(
                 item.ItemBase,
-                item.OrderDigest.ItemCount,
+                (int)item.Product.Quantity,
                 !Util.IsUsableItem(item.ItemBase) &&
                 (item.ItemBase.ItemType == ItemType.Equipment ||
                  item.ItemBase.ItemType == ItemType.Costume));

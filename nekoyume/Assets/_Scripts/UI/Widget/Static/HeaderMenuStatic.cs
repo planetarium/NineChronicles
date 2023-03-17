@@ -15,6 +15,8 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    using Nekoyume.Game;
+    using Nekoyume.Helper;
     using Nekoyume.UI.Scroller;
     using UniRx;
 
@@ -43,6 +45,7 @@ namespace Nekoyume.UI.Module
             WorldBoss,
             CurrencyOnly,
             RuneStone,
+            Mileage,
         }
 
         [Serializable]
@@ -84,6 +87,9 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private WorldBossTickets worldBossTickets;
+
+        [SerializeField]
+        private GameObject mileage;
 
         [SerializeField]
         private VFX inventoryVFX;
@@ -172,8 +178,8 @@ namespace Nekoyume.UI.Module
                             return;
                         }
 
-                        var stage = Game.Game.instance.Stage;
-                        if (!Game.Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
+                        var stage = Game.instance.Stage;
+                        if (!Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
                         {
                             widget.Show(() => { toggleInfo.Toggle.isOn = false; });
                         }
@@ -223,8 +229,8 @@ namespace Nekoyume.UI.Module
                 }
             });
 
-            Game.Event.OnRoomEnter.AddListener(_ => UpdateAssets(AssetVisibleState.Main));
-            Game.Game.instance.Agent.BlockIndexSubject
+            Event.OnRoomEnter.AddListener(_ => UpdateAssets(AssetVisibleState.Main));
+            Game.instance.Agent.BlockIndexSubject
                 .ObserveOnMainThread()
                 .Subscribe(SubscribeBlockIndex)
                 .AddTo(gameObject);
@@ -314,6 +320,9 @@ namespace Nekoyume.UI.Module
                 case AssetVisibleState.RuneStone:
                     SetActiveAssets(isNcgActive:true, isRuneStoneActive:true );
                     break;
+                case AssetVisibleState.Mileage:
+                    SetActiveAssets(isNcgActive:true, isMileageActive:true);
+                    break;
             }
         }
 
@@ -325,9 +334,11 @@ namespace Nekoyume.UI.Module
             bool isArenaTicketsActive = false,
             bool isEventDungeonTicketsActive = false,
             bool isEventWorldBossTicketsActive = false,
-            bool isRuneStoneActive = false)
+            bool isRuneStoneActive = false,
+            bool isMileageActive = false)
         {
             ncg.gameObject.SetActive(isNcgActive);
+            crystal.gameObject.SetActive(isNcgActive && !isMileageActive);
             actionPoint.gameObject.SetActive(isActionPointActive);
             dailyBonus.SetActive(isDailyBonusActive);
             hourglass.gameObject.SetActive(isHourglassActive);
@@ -335,6 +346,7 @@ namespace Nekoyume.UI.Module
             eventDungeonTickets.gameObject.SetActive(isEventDungeonTicketsActive);
             worldBossTickets.gameObject.SetActive(isEventWorldBossTicketsActive);
             runeStone.gameObject.SetActive(isRuneStoneActive);
+            mileage.gameObject.SetActive(isMileageActive);
         }
 
         private void SubscribeBlockIndex(long blockIndex)
@@ -380,9 +392,9 @@ namespace Nekoyume.UI.Module
 
         private void SubscribeInventory(Nekoyume.Model.Item.Inventory inventory)
         {
-            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            var blockIndex = Game.instance.Agent.BlockIndex;
             var avatarLevel = States.Instance.CurrentAvatarState?.level ?? 0;
-            var sheets = Game.Game.instance.TableSheets;
+            var sheets = Game.instance.TableSheets;
             var hasNotification = inventory?.HasNotification(avatarLevel, blockIndex,
                 sheets.ItemRequirementSheet,
                 sheets.EquipmentItemRecipeSheet,
@@ -419,10 +431,23 @@ namespace Nekoyume.UI.Module
                 return false;
             }
 
-            var gameConfigState = Game.Game.instance.States.GameConfigState;
+            var gameConfigState = Game.instance.States.GameConfigState;
             var diff = state.RequiredBlockIndex - currentBlockIndex;
-            var cost = RapidCombination0.CalculateHourglassCount(gameConfigState, diff);
-            var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
+            int cost;
+            if (state.PetId.HasValue &&
+                States.Instance.PetStates.TryGetPetState(state.PetId.Value, out var petState))
+            {
+                cost = PetHelper.CalculateDiscountedHourglass(
+                    diff,
+                    States.Instance.GameConfigState.HourglassPerBlock,
+                    petState,
+                    TableSheets.Instance.PetOptionSheet);
+            }
+            else
+            {
+                cost = RapidCombination0.CalculateHourglassCount(gameConfigState, diff);
+            }
+            var row = Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
                 r.ItemSubType == ItemSubType.Hourglass);
             var isEnough =
                 States.Instance.CurrentAvatarState.inventory.HasFungibleItem(row.ItemId, currentBlockIndex, cost);

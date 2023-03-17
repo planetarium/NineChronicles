@@ -3,6 +3,7 @@ using System.Linq;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using UnityEngine;
 using ShopItem = Nekoyume.UI.Model.ShopItem;
 
@@ -38,11 +39,12 @@ namespace Nekoyume.UI
 
         public override void Show(
             ShopItem item,
-            System.Action onRegister,
-            System.Action onSellCancellation,
+            int apStoneCount,
+            Action<ConditionalButton.State> onRegister,
+            Action<ConditionalButton.State> onSellCancellation,
             System.Action onClose)
         {
-            base.Show(item, onRegister, onSellCancellation, onClose);
+            base.Show(item, apStoneCount, onRegister, onSellCancellation, onClose);
             acquisitionGroup.SetActive(false);
         }
 

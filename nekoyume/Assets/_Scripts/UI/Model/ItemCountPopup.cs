@@ -1,5 +1,6 @@
 using System;
 using Nekoyume.L10n;
+using Nekoyume.UI.Module;
 
 namespace Nekoyume.UI.Model
 {
@@ -15,7 +16,7 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<string> SubmitText = new ReactiveProperty<string>("");
         public readonly ReactiveProperty<bool> Submittable = new ReactiveProperty<bool>(true);
         public readonly ReactiveProperty<string> InfoText = new ReactiveProperty<string>("");
-        public readonly Subject<T> OnClickSubmit = new Subject<T>();
+        public readonly Subject<(ConditionalButton.State, T)> OnClickConditional = new();
         public readonly Subject<T> OnClickCancel = new Subject<T>();
 
         public ItemCountPopup()
@@ -44,7 +45,7 @@ namespace Nekoyume.UI.Model
             SubmitText.Dispose();
             Submittable.Dispose();
             InfoText.Dispose();
-            OnClickSubmit.Dispose();
+            OnClickConditional.Dispose();
             OnClickCancel.Dispose();
         }
     }

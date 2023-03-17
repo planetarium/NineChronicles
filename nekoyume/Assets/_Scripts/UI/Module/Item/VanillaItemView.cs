@@ -1,5 +1,6 @@
 using Coffee.UIEffects;
 using DG.Tweening;
+using Libplanet.Assets;
 using Nekoyume.Game;
 using Nekoyume.Game.ScriptableObject;
 using Nekoyume.Helper;
@@ -77,6 +78,14 @@ namespace Nekoyume.UI.Module
         {
             var material = new Nekoyume.Model.Item.Material(itemRow as MaterialItemSheet.Row);
             SetData(material, onClick);
+        }
+
+        public void SetData(FungibleAssetValue fav, System.Action onClick = null)
+        {
+            gradeImage.enabled = false;
+            iconImage.enabled = true;
+            iconImage.overrideSprite = fav.GetIconSprite();
+            iconImage.SetNativeSize();
         }
 
         protected ItemViewData GetItemViewData(ItemBase itemBase)

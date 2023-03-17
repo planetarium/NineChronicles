@@ -31,6 +31,7 @@ namespace Nekoyume.Game.Character
             _hudContainer ??= Widget.Create<HudContainer>(true);
             _hudContainer.transform.localPosition = Vector3.left * 200000;
             appearance.Set(
+                avatarState.address,
                 Animator,
                 _hudContainer,
                 costumes,
@@ -38,7 +39,8 @@ namespace Nekoyume.Game.Character
                 avatarState.ear,
                 avatarState.lens,
                 avatarState.hair,
-                avatarState.tail);
+                avatarState.tail,
+                true);
         }
     }
 }

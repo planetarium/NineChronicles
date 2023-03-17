@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BTAI;
 using DG.Tweening;
+using Libplanet;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
@@ -46,6 +47,7 @@ namespace Nekoyume.Game.Character
         private readonly Dictionary<int, VFX.VFX> _persistingVFXMap = new();
 
         public List<ArenaActionParams> Actions { get; } = new List<ArenaActionParams>();
+        public Pet Pet => appearance.Pet;
 
         private bool IsDead => _currentHp <= 0;
 
@@ -76,7 +78,11 @@ namespace Nekoyume.Game.Character
             _persistingVFXMap.Clear();
         }
 
-        public void Init(ArenaPlayerDigest digest, ArenaCharacter target, bool isEnemy)
+        public void Init(
+            ArenaPlayerDigest digest,
+            Address avatarAddress,
+            ArenaCharacter target,
+            bool isEnemy)
         {
             gameObject.SetActive(true);
             transform.localPosition = new Vector3(isEnemy ? StartPos : -StartPos, -1.2f, 0);
@@ -91,7 +97,7 @@ namespace Nekoyume.Game.Character
             _equipments.Clear();
             _equipments.AddRange(digest.Equipments);
             _target = target;
-            appearance.Set(digest, Animator, _hudContainer);
+            appearance.Set(digest, avatarAddress, Animator, _hudContainer);
             AttackTime = SpineAnimationHelper.GetAnimationDuration(appearance, "Attack");
             CriticalAttackTime = SpineAnimationHelper.GetAnimationDuration(appearance, "CriticalAttack");
         }

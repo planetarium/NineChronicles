@@ -1,15 +1,11 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Nekoyume.EnumType;
-using Nekoyume.Game;
 using Nekoyume.Game.Controller;
-using Nekoyume.Helper;
 using Nekoyume.L10n;
-using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI;
@@ -38,7 +34,7 @@ namespace Nekoyume
         private CartView cartView;
 
         [SerializeField]
-        private List<ToggleDropdown> toggleDropdowns = new List<ToggleDropdown>();
+        private List<ToggleDropdown> toggleDropdowns = new();
 
         [SerializeField]
         private Button sortButton;
@@ -73,12 +69,13 @@ namespace Nekoyume
         [SerializeField]
         private GameObject loading;
 
-        private readonly List<ItemSubTypeFilter> _toggleTypes = new List<ItemSubTypeFilter>()
+        private readonly List<ItemSubTypeFilter> _toggleTypes = new()
         {
             ItemSubTypeFilter.Equipment,
             ItemSubTypeFilter.Food,
             ItemSubTypeFilter.Materials,
             ItemSubTypeFilter.Costume,
+            ItemSubTypeFilter.Stones,
         };
 
         private readonly Dictionary<ItemSubTypeFilter, List<ItemSubTypeFilter>> _toggleSubTypes =
@@ -106,6 +103,10 @@ namespace Nekoyume
                 },
                 {
                     ItemSubTypeFilter.Materials, new List<ItemSubTypeFilter>()
+                    {
+                        ItemSubTypeFilter.Hourglass,
+                        ItemSubTypeFilter.ApStone,
+                    }
                 },
                 {
                     ItemSubTypeFilter.Costume, new List<ItemSubTypeFilter>()
@@ -116,6 +117,13 @@ namespace Nekoyume
                         ItemSubTypeFilter.EyeCostume,
                         ItemSubTypeFilter.TailCostume,
                         ItemSubTypeFilter.Title,
+                    }
+                },
+                {
+                    ItemSubTypeFilter.Stones, new List<ItemSubTypeFilter>()
+                    {
+                        ItemSubTypeFilter.RuneStone,
+                        ItemSubTypeFilter.PetSoulStone,
                     }
                 },
             };
@@ -148,7 +156,6 @@ namespace Nekoyume
         private TextMeshProUGUI _sortText;
 
         public bool IsFocused => inputField.isFocused;
-        public bool IsDoneLoadItem { get; set; }
         public bool IsCartEmpty => !_selectedItems.Any();
 
         public void ClearSelectedItems()
@@ -159,7 +166,7 @@ namespace Nekoyume
             }
 
             _selectedItems.Clear();
-            cartView.UpdateCart(_selectedItems);
+            cartView.UpdateCart(_selectedItems, () => UpdateSelected(_selectedItems));
         }
 
         public void SetAction(Action<List<ShopItem>> onBuyMultiple)
@@ -240,16 +247,8 @@ namespace Nekoyume
                         return;
                     }
 
-                    if (_toggleSubTypes[toggleType].Count > 0)
-                    {
-                        _selectedSubTypeFilter.Value = _toggleSubTypes[toggleType].First();
-                        toggleDropdown.items.First().isOn = true;
-                    }
-                    else
-                    {
-                        _selectedSubTypeFilter.Value = ItemSubTypeFilter.Materials;
-                    }
-
+                    _selectedSubTypeFilter.Value = _toggleSubTypes[toggleType].First();
+                    toggleDropdown.items.First().isOn = true;
                     UpdateView();
                 });
                 toggleDropdown.onClickToggle.AddListener(AudioController.PlayClick);
@@ -297,20 +296,65 @@ namespace Nekoyume
             levelLimitToggle.onValueChanged.AddListener(value => _levelLimit.Value = value);
         }
 
+        public async void OnBuyProductAction()
+        {
+            await CheckItem(_selectedSubTypeFilter.Value);
+            UpdateView();
+            ClearSelectedItems();
+        }
+
+        private async void OnUpdateSubTypeFilter(ItemSubTypeFilter filter)
+        {
+            await CheckItem(filter);
+            UpdateView();
+        }
+
+        private async void OnUpdateAscending(bool isAscending)
+        {
+            sortOrderIcon.localScale = new Vector3(1, isAscending ? 1 : -1, 1);
+            await CheckItem(_selectedSubTypeFilter.Value);
+            UpdateView();
+        }
+
+        protected override async void UpdatePage(int page)
+        {
+            await CheckItem(_selectedSubTypeFilter.Value);
+            base.UpdatePage(page);
+            UpdateView(resetPage:false, page);
+        }
+
+        private async Task CheckItem(ItemSubTypeFilter filter)
+        {
+            if (!_isActive)
+            {
+                return;
+            }
+
+            var orderType = _selectedSortFilter.Value.ToMarketOrderType(_isAscending.Value);
+            var itemSubType = filter.ToItemSubType();
+            var count = ReactiveShopState.GetCachedBuyItemCount(orderType, itemSubType);
+            var limit = _column * _row;
+            if (count < (_page.Value + 1) * limit)
+            {
+                loading.SetActive(true);
+                await ReactiveShopState.RequestBuyProductsAsync(itemSubType, orderType, count, limit * 5);
+                loading.SetActive(false);
+            }
+
+            ReactiveShopState.SetBuyProducts(orderType);
+            Set(ReactiveShopState.BuyItemProducts, ReactiveShopState.BuyFungibleAssetProducts);
+        }
+
         protected override void SubscribeToSearchConditions()
         {
-            _selectedSubTypeFilter.Subscribe(_ => UpdateView()).AddTo(gameObject);
+            _selectedSubTypeFilter.Subscribe(OnUpdateSubTypeFilter).AddTo(gameObject);
             _selectedSortFilter.Subscribe(filter =>
             {
                 _sortText.text = L10nManager.Localize($"UI_{filter.ToString().ToUpper()}");
                 UpdateView();
             }).AddTo(gameObject);
             _selectedItemIds.Subscribe(_ => UpdateView()).AddTo(gameObject);
-            _isAscending.Subscribe(v =>
-            {
-                sortOrderIcon.localScale = new Vector3(1, v ? 1 : -1, 1);
-                UpdateView();
-            }).AddTo(gameObject);
+            _isAscending.Subscribe(OnUpdateAscending).AddTo(gameObject);
             _levelLimit.Subscribe(_ => UpdateView()).AddTo(gameObject);
 
             _mode.Subscribe(x =>
@@ -335,17 +379,35 @@ namespace Nekoyume
                 case BuyMode.Single:
                     if (_selectedItems.Any())
                     {
-                        if (_selectedItems.Exists(x =>
-                                x.OrderDigest.OrderId.Equals(item.OrderDigest.OrderId)))
+                        if (item.ItemBase is not null)
                         {
-                            ClearSelectedItems();
+                            if (_selectedItems.Exists(x =>
+                                    x.Product.ProductId.Equals(item.Product.ProductId)))
+                            {
+                                ClearSelectedItems();
+                            }
+                            else
+                            {
+                                ClearSelectedItems();
+                                item.Selected.SetValueAndForceNotify(true);
+                                _selectedItems.Add(item);
+                                ClickItemAction?.Invoke(item); // Show tooltip popup
+                            }
                         }
                         else
                         {
-                            ClearSelectedItems();
-                            item.Selected.SetValueAndForceNotify(true);
-                            _selectedItems.Add(item);
-                            ClickItemAction?.Invoke(item); // Show tooltip popup
+                            if (_selectedItems.Exists(x =>
+                                    x.FungibleAssetProduct.ProductId.Equals(item.FungibleAssetProduct.ProductId)))
+                            {
+                                ClearSelectedItems();
+                            }
+                            else
+                            {
+                                ClearSelectedItems();
+                                item.Selected.SetValueAndForceNotify(true);
+                                _selectedItems.Add(item);
+                                ClickItemAction?.Invoke(item); // Show tooltip popup
+                            }
                         }
                     }
                     else
@@ -359,8 +421,31 @@ namespace Nekoyume
 
                 case BuyMode.Multiple:
                     cartView.gameObject.SetActive(true);
-                    var selectedItem = _selectedItems.FirstOrDefault(x =>
-                        x.OrderDigest.OrderId.Equals(item.OrderDigest.OrderId));
+
+                    ShopItem selectedItem = null;
+                    if (item.ItemBase is not null)
+                    {
+                        foreach (var shopItem in _selectedItems.Where(x => x.Product is not null))
+                        {
+                            if (item.Product.ProductId == shopItem.Product.ProductId)
+                            {
+                                selectedItem = shopItem;
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (var shopItem in _selectedItems.Where(x => x.FungibleAssetProduct is not null))
+                        {
+                            if (item.FungibleAssetProduct.ProductId == shopItem.FungibleAssetProduct.ProductId)
+                            {
+                                selectedItem = shopItem;
+                                break;
+                            }
+                        }
+                    }
+
                     if (selectedItem == null)
                     {
                         if (item.Expired.Value)
@@ -389,11 +474,12 @@ namespace Nekoyume
                         _selectedItems.Remove(selectedItem);
                     }
 
-                    cartView.UpdateCart(_selectedItems);
+                    cartView.UpdateCart(_selectedItems, () => UpdateSelected(_selectedItems));
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+            UpdateSelected(_selectedItems);
         }
 
         protected override void Reset()
@@ -403,7 +489,10 @@ namespace Nekoyume
             toggleDropdowns.First().items.First().isOn = true;
             inputField.text = string.Empty;
             resetButton.interactable = false;
-            _resetAnimator.Play(_hashDisabled);
+            if (_resetAnimator.isActiveAndEnabled)
+            {
+                _resetAnimator.Play(_hashDisabled);
+            }
 
             _selectedSubTypeFilter.SetValueAndForceNotify(ItemSubTypeFilter.Weapon);
             _selectedSortFilter.SetValueAndForceNotify(ShopSortFilter.CP);
@@ -418,84 +507,7 @@ namespace Nekoyume
         protected override IEnumerable<ShopItem> GetSortedModels(
             Dictionary<ItemSubTypeFilter, List<ShopItem>> items)
         {
-            var models = items[_selectedSubTypeFilter.Value];
-            models = models.Where(x => !x.Expired.Value).ToList();
-
-            if (IsLoading(models))
-            {
-                return new List<ShopItem>();
-            }
-
-            if (_selectedItemIds.Value.Any()) // _selectedItemIds
-            {
-                models = models.Where(x =>
-                    _selectedItemIds.Value.Exists(y => x.ItemBase.Id.Equals(y))).ToList();
-            }
-
-            if (_levelLimit.Value)
-            {
-                models = models.Where(x => Util.IsUsableItem(x.ItemBase)).ToList();
-            }
-
-            BigInteger GetCrystalPerPrice(ShopItem item)
-            {
-                return item.ItemBase.ItemType == ItemType.Equipment
-                    ? CrystalCalculator.CalculateCrystal(
-                            new[] {(Equipment) item.ItemBase},
-                            false,
-                            TableSheets.Instance.CrystalEquipmentGrindingSheet,
-                            TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet,
-                            States.Instance.StakingLevel).DivRem(item.OrderDigest.Price.MajorUnit)
-                        .Quotient
-                        .MajorUnit
-                    : 0;
-            }
-
-            return _selectedSortFilter.Value switch
-            {
-                ShopSortFilter.CP => _isAscending.Value
-                    ? models.OrderBy(x => x.OrderDigest.CombatPoint).ToList()
-                    : models.OrderByDescending(x => x.OrderDigest.CombatPoint).ToList(),
-                ShopSortFilter.Price => _isAscending.Value
-                    ? models.OrderBy(x => x.OrderDigest.Price).ToList()
-                    : models.OrderByDescending(x => x.OrderDigest.Price).ToList(),
-                ShopSortFilter.Class => _isAscending.Value
-                    ? models.OrderBy(x => x.Grade)
-                        .ThenByDescending(x => x.ItemBase.ItemType)
-                        .ToList()
-                    : models.OrderByDescending(x => x.Grade)
-                        .ThenByDescending(x => x.ItemBase.ItemType)
-                        .ToList(),
-                ShopSortFilter.Crystal => _isAscending.Value
-                    ? models.OrderBy(GetCrystalPerPrice).ToList()
-                    : models.OrderByDescending(GetCrystalPerPrice).ToList(),
-                _ => throw new ArgumentOutOfRangeException()
-            };
-        }
-
-        private bool IsLoading(ICollection models)
-        {
-            if (IsDoneLoadItem)
-            {
-                loading.SetActive(false);
-                inputField.interactable = true;
-                levelLimitToggle.interactable = true;
-                _sortAnimator.Play(_hashNormal);
-                _sortOrderAnimator.Play(_hashNormal);
-                _levelLimitAnimator.Play(_hashNormal);
-            }
-            else
-            {
-                loading.SetActive(models.Count == 0);
-                inputField.interactable = models.Count > 0;
-                levelLimitToggle.interactable = models.Count > 0;
-                var hash = models.Count > 0 ? _hashNormal : _hashDisabled;
-                _sortAnimator.Play(hash);
-                _sortOrderAnimator.Play(hash);
-                _levelLimitAnimator.Play(hash);
-            }
-
-            return loading.activeSelf;
+            return items[_selectedSubTypeFilter.Value];
         }
 
         protected override void UpdateView(bool resetPage = true, int page = 0)
@@ -511,12 +523,13 @@ namespace Nekoyume
                 case BuyMode.Single:
                     break;
                 case BuyMode.Multiple:
-                    cartView.UpdateCart(_selectedItems);
+                    cartView.UpdateCart(_selectedItems, () => UpdateSelected(_selectedItems));
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
+            UpdateSelected(_selectedItems);
             base.UpdateView(resetPage, page);
         }
 
