@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Nekoyume.Action;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
@@ -59,6 +59,9 @@ namespace Nekoyume.Extensions
                 case ItemEnhancement10.ResultModel r:
                     resultId = r.id;
                     break;
+                case ItemEnhancement11.ResultModel r:
+                    resultId = r.id;
+                    break;
                 case MonsterCollectionResult r:
                     resultId = r.id;
                     break;
@@ -105,7 +108,7 @@ namespace Nekoyume.Extensions
                 case DailyReward2.DailyRewardResult r:
                     resultId = r.id;
                     break;
-                case ItemEnhancement.ResultModel r:
+                case ItemEnhancement11.ResultModel r:
                     resultId = r.id;
                     break;
                 case ItemEnhancement7.ResultModel r:
@@ -182,6 +185,13 @@ namespace Nekoyume.Extensions
                         resultId,
                         requiredBlockIndex);
                     return true;
+                case ItemEnhancement11.ResultModel r:
+                    itemEnhanceMail = new ItemEnhanceMail(
+                        r,
+                        blockIndex,
+                        resultId,
+                        requiredBlockIndex);
+                    return true;
                 case CombinationConsumable5.ResultModel r:
                     combinationMail = new CombinationMail(
                         r,
@@ -212,7 +222,7 @@ namespace Nekoyume.Extensions
 
             switch (state.Result)
             {
-                case ItemEnhancement.ResultModel r:
+                case ItemEnhancement11.ResultModel r:
                     itemEnhanceMail = new ItemEnhanceMail(
                         r,
                         blockIndex,

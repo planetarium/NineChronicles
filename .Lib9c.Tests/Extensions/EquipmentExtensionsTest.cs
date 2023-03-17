@@ -1,4 +1,4 @@
-﻿namespace Lib9c.Tests.Extensions
+namespace Lib9c.Tests.Extensions
 {
     using System;
     using System.Linq;
@@ -140,10 +140,12 @@
             {
                 CombinationEquipment.AddAndUnlockOption(
                     new AgentState(new PrivateKey().ToAddress()),
+                    null,
                     equipment,
                     random,
                     subRecipeRow,
                     equipmentItemOptionSheet,
+                    null,
                     skillSheet
                 );
             }

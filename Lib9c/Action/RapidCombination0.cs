@@ -139,13 +139,18 @@ namespace Nekoyume.Action
 
         public static int CalculateHourglassCount(GameConfigState state, long diff)
         {
+            return CalculateHourglassCount(state.HourglassPerBlock, diff);
+        }
+
+        public static int CalculateHourglassCount(decimal hourglassPerBlock, long diff)
+        {
             if (diff <= 0)
             {
                 return 0;
             }
 
-            var cost = Math.Ceiling((decimal) diff / state.HourglassPerBlock);
-            return Math.Max(1, (int) cost);
+            var cost = Math.Ceiling(diff / hourglassPerBlock);
+            return Math.Max(1, (int)cost);
         }
     }
 }

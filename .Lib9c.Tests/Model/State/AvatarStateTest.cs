@@ -407,6 +407,48 @@ namespace Lib9c.Tests.Model.State
         }
 
         [Theory]
+        [InlineData(0, 5, false, false, typeof(NotEnoughActionPointException))]
+        [InlineData(0, 5, true, false, typeof(NotEnoughMaterialException))]
+        [InlineData(120, 5, false, true, null)]
+        [InlineData(120, 5, false, false, null)]
+        [InlineData(120, 5, true, false, null)]
+        [InlineData(120, 5, true, true, null)]
+        public void UseAp(int ap, int requiredAp, bool chargeAp, bool materialExist, Type exc)
+        {
+            var avatarState = GetNewAvatarState(default, default);
+            var gameConfigState = new GameConfigState((Text)_tableSheets.GameConfigSheet.Serialize());
+            var row = _tableSheets.MaterialItemSheet.Values.First(r =>
+                r.ItemSubType == ItemSubType.ApStone);
+            if (materialExist)
+            {
+                var apStone = ItemFactory.CreateMaterial(row);
+                avatarState.inventory.AddItem(apStone);
+            }
+
+            avatarState.actionPoint = ap;
+
+            Assert.Equal(avatarState.inventory.HasItem(row.Id), materialExist);
+
+            if (exc is null)
+            {
+                avatarState.UseAp(requiredAp, chargeAp, _tableSheets.MaterialItemSheet, 0L, gameConfigState);
+                Assert.Equal(materialExist, avatarState.inventory.TryGetItem(row.Id, out var inventoryItem));
+                if (materialExist)
+                {
+                    Assert.Equal(1, inventoryItem.count);
+                }
+
+                Assert.Equal(gameConfigState.ActionPointMax - requiredAp, avatarState.actionPoint);
+            }
+            else
+            {
+                Assert.Throws(
+                    exc, () => avatarState.UseAp(requiredAp, chargeAp, _tableSheets.MaterialItemSheet, 0L, gameConfigState)
+                );
+            }
+        }
+
+        [Theory]
         [InlineData(ItemSubType.Weapon, 1, GameConfig.MaxEquipmentSlotCount.Weapon, 0, 0)]
         [InlineData(ItemSubType.Armor, 1, GameConfig.MaxEquipmentSlotCount.Armor, 0, 1)]
         [InlineData(ItemSubType.Belt, 2, GameConfig.MaxEquipmentSlotCount.Belt, 0, 0)]

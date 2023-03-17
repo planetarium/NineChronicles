@@ -108,20 +108,12 @@ namespace Nekoyume.Action
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, sellerAvatarAddress);
-            var sw = new Stopwatch();
-            sw.Start();
-            var started = DateTimeOffset.UtcNow;
-            Log.Debug("{AddressesHex}Sell Cancel exec started", addressesHex);
 
             if (!states.TryGetAvatarStateV2(context.Signer, sellerAvatarAddress, out var avatarState, out _))
             {
                 throw new FailedLoadStateException(
                     $"{addressesHex}Aborted as the avatar state of the seller failed to load.");
             }
-
-            sw.Stop();
-            Log.Verbose("{AddressesHex}Sell Cancel Get AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
-            sw.Restart();
 
             if (!avatarState.worldInformation.IsStageCleared(GameConfig.RequireClearedStageLevel.ActionsInShop))
             {
@@ -130,9 +122,35 @@ namespace Nekoyume.Action
                     GameConfig.RequireClearedStageLevel.ActionsInShop, current);
             }
 
+            if (!states.TryGetState(Order.DeriveAddress(orderId), out Dictionary orderDict))
+            {
+                throw new FailedLoadStateException(
+                    $"{addressesHex}failed to load {nameof(Order)}({Order.DeriveAddress(orderId)}).");
+            }
+
+            Order order = OrderFactory.Deserialize(orderDict);
+            return Cancel(context, states, avatarState, addressesHex, order);
+        }
+
+        public static IAccountStateDelta Cancel(IActionContext context, IAccountStateDelta states, AvatarState avatarState, string addressesHex, Order order)
+        {
+            var orderTradableId = order.TradableId;
+            var avatarAddress = avatarState.address;
+            Address shardedShopAddress = ShardedShopStateV2.DeriveAddress(order.ItemSubType, order.OrderId);
+            Address digestListAddress = OrderDigestListState.DeriveAddress(avatarAddress);
+            Address itemAddress = Addresses.GetItemAddress(orderTradableId);
+            Address inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
+            Address worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
+            Address questListAddress = avatarAddress.Derive(LegacyQuestListKey);
+            var sw = new Stopwatch();
+            sw.Start();
+            var started = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}Sell Cancel exec started", addressesHex);
+
             if (!states.TryGetState(shardedShopAddress, out BxDictionary shopStateDict))
             {
-                throw new FailedLoadStateException($"{addressesHex}failed to load {nameof(ShardedShopStateV2)}({shardedShopAddress}).");
+                throw new FailedLoadStateException(
+                    $"{addressesHex}failed to load {nameof(ShardedShopStateV2)}({shardedShopAddress}).");
             }
 
             sw.Stop();
@@ -146,23 +164,18 @@ namespace Nekoyume.Action
             {
                 throw new FailedLoadStateException($"{addressesHex}failed to load {nameof(OrderDigest)}({digestListAddress}).");
             }
+
             var digestList = new OrderDigestListState(rawList);
 
             // migration method
-            avatarState.inventory.UnlockInvalidSlot(digestList, context.Signer, sellerAvatarAddress);
-            avatarState.inventory.ReconfigureFungibleItem(digestList, tradableId);
-            avatarState.inventory.LockByReferringToDigestList(digestList, tradableId, context.BlockIndex);
+            avatarState.inventory.UnlockInvalidSlot(digestList, context.Signer, avatarAddress);
+            avatarState.inventory.ReconfigureFungibleItem(digestList, orderTradableId);
+            avatarState.inventory.LockByReferringToDigestList(digestList, orderTradableId, context.BlockIndex);
             //
 
-            digestList.Remove(orderId);
+            digestList.Remove(order.OrderId);
 
-            if (!states.TryGetState(Order.DeriveAddress(orderId), out Dictionary orderDict))
-            {
-                throw new FailedLoadStateException($"{addressesHex}failed to load {nameof(Order)}({Order.DeriveAddress(orderId)}).");
-            }
-
-            Order order = OrderFactory.Deserialize(orderDict);
-            order.ValidateCancelOrder(avatarState, tradableId);
+            order.ValidateCancelOrder(avatarState, orderTradableId);
             var sellItem = order.Cancel(avatarState, context.BlockIndex);
             if (context.BlockIndex < order.ExpiredBlockIndex)
             {
@@ -172,7 +185,7 @@ namespace Nekoyume.Action
             }
 
             var expirationMail = avatarState.mailBox.OfType<OrderExpirationMail>()
-                .FirstOrDefault(m => m.OrderId.Equals(orderId));
+                .FirstOrDefault(m => m.OrderId.Equals(order.OrderId));
             if (!(expirationMail is null))
             {
                 avatarState.mailBox.Remove(expirationMail);
@@ -180,9 +193,9 @@ namespace Nekoyume.Action
 
             var mail = new CancelOrderMail(
                 context.BlockIndex,
-                orderId,
+                order.OrderId,
                 context.BlockIndex,
-                orderId
+                order.OrderId
             );
             avatarState.Update(mail);
 
@@ -193,10 +206,10 @@ namespace Nekoyume.Action
             states = states
                 .SetState(itemAddress, sellItem.Serialize())
                 .SetState(digestListAddress, digestList.Serialize())
-                .SetState(inventoryAddress,avatarState.inventory.Serialize())
+                .SetState(inventoryAddress, avatarState.inventory.Serialize())
                 .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
                 .SetState(questListAddress, avatarState.questList.Serialize())
-                .SetState(sellerAvatarAddress, avatarState.SerializeV2());
+                .SetState(avatarAddress, avatarState.SerializeV2());
             sw.Stop();
             Log.Verbose("{AddressesHex}Sell Cancel Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
