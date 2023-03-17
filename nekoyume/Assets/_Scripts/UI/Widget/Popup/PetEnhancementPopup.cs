@@ -135,12 +135,15 @@ namespace Nekoyume.UI
                             NotificationCell.NotificationType.Information);
                         break;
                     case ConditionalButton.State.Disabled:
-                        OneLineSystem.Push(
-                            MailType.System,
-                            L10nManager.Localize("UI_CAN_NOT_ENTER_PET_MENU"),
-                            NotificationCell.NotificationType.Information);
                         break;
                 }
+            }).AddTo(_disposables);
+            submitButton.OnClickDisabledSubject.Subscribe(_ =>
+            {
+                OneLineSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_CAN_NOT_ENTER_PET_MENU"),
+                    NotificationCell.NotificationType.Information);
             }).AddTo(_disposables);
         }
 
@@ -198,12 +201,15 @@ namespace Nekoyume.UI
                                 NotificationCell.NotificationType.Information);
                             break;
                         case ConditionalButton.State.Disabled:
-                            OneLineSystem.Push(
-                                MailType.System,
-                                L10nManager.Localize("UI_CAN_NOT_ENTER_PET_MENU"),
-                                NotificationCell.NotificationType.Information);
                             break;
                     }
+                }).AddTo(_disposables);
+                submitButton.OnClickDisabledSubject.Subscribe(_ =>
+                {
+                    OneLineSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("UI_CAN_NOT_ENTER_PET_MENU"),
+                        NotificationCell.NotificationType.Information);
                 }).AddTo(_disposables);
             }
             else
@@ -266,7 +272,15 @@ namespace Nekoyume.UI
             _notEnoughBalance = !enough;
             soulStoneNotEnoughObject.SetActive(_notEnoughBalance);
             submitButton.SetCost(CostType.NCG, ncg);
-            submitButton.Interactable = enough && LoadingHelper.PetEnhancement.Value == 0;
+            if (LoadingHelper.PetEnhancement.Value != 0)
+            {
+                submitButton.Interactable = enough && LoadingHelper.PetEnhancement.Value == 0;
+            }
+            else
+            {
+                submitButton.Interactable = true;
+                submitButton.UpdateObjects();
+            }
         }
 
         private void Action(int petId, int targetLevel)
