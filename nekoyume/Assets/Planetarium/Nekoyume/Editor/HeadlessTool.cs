@@ -32,19 +32,28 @@ namespace Planetarium.Nekoyume.Editor
                 );
             Debug.LogFormat($"Docs root directory is changed to: {_docsRoot}");
             _headlessPath = Path.Join(_docsRoot, "NineChronicles.Headless");
-            Debug.LogFormat("Cloning Repository...");
 
-            var cloneProcess = Process.Start(
+            Debug.LogFormat("Cloning Repository...");
+            var process = Process.Start(
                 "git",
                 $@"clone https://github.com/planetarium/NineChronicles.Headless {_headlessPath}"
             );
-            cloneProcess.WaitForExit();
+            process.WaitForExit();
             Debug.Log("Headless repository cloned.");
 
-            var startInfo = new ProcessStartInfo("git", "submodule update --init --recursive");
+            var startInfo = new ProcessStartInfo("git", "checkout development");
             startInfo.WorkingDirectory = _headlessPath;
-            var submoduleProcess = Process.Start(startInfo);
-            submoduleProcess.WaitForExit();
+            process = Process.Start(startInfo);
+            process.WaitForExit();
+
+            startInfo.Arguments = "pull origin development";
+            startInfo.WorkingDirectory = _headlessPath;
+            process = Process.Start(startInfo);
+
+            process.WaitForExit();
+            startInfo.Arguments = "submodule update --init --recursive";
+            process = Process.Start(startInfo);
+            process.WaitForExit();
             Debug.Log("Submodules updated.");
         }
     }
