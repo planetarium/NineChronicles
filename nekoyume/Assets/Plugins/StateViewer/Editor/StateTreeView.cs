@@ -6,6 +6,7 @@ using System.Text.Json;
 using Bencodex.Json;
 using Bencodex.Types;
 using Libplanet;
+using StateViewer.Runtime;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -17,7 +18,7 @@ namespace StateViewer.Editor
     {
         public event Action<bool> OnDirty;
 
-        private StateTreeViewItem.Model[] _itemModels;
+        private StateTreeViewItemModel[] _itemModels;
         private Address _addr;
         private int _elementId;
 
@@ -63,14 +64,14 @@ namespace StateViewer.Editor
                 .Replace("\"", "");
         }
 
-        private StateTreeViewItem.Model MakeItemModelRecursive(
+        private StateTreeViewItemModel MakeItemModelRecursive(
             ValueKind keyType,
             string key,
             IValue data,
             bool editable = false
         )
         {
-            StateTreeViewItem.Model viewModel;
+            StateTreeViewItemModel viewModel;
             switch (data)
             {
                 case Null:
@@ -79,7 +80,7 @@ namespace StateViewer.Editor
                 case Integer:
                 case Text:
                 {
-                    viewModel = new StateTreeViewItem.Model(
+                    viewModel = new StateTreeViewItemModel(
                         _elementId++,
                         keyType,
                         key,
@@ -92,7 +93,7 @@ namespace StateViewer.Editor
                 }
                 case List list:
                 {
-                    viewModel = new StateTreeViewItem.Model(
+                    viewModel = new StateTreeViewItemModel(
                         _elementId++,
                         keyType,
                         key,
@@ -115,7 +116,7 @@ namespace StateViewer.Editor
                 }
                 case Dictionary dict:
                 {
-                    viewModel = new StateTreeViewItem.Model(
+                    viewModel = new StateTreeViewItemModel(
                         _elementId++,
                         keyType,
                         key,
@@ -195,8 +196,7 @@ namespace StateViewer.Editor
                 var viewModel = item.ViewModel;
                 switch (columnIndex)
                 {
-                    case 0: // Key
-                        // base.RowGUI(args);
+                    case 0: // Key/Index
                         var offset = GetContentIndent(item) + extraSpaceBeforeIconAndLabel;
                         cellRect.xMin += offset;
                         if (viewModel.Parent != null
@@ -231,7 +231,7 @@ namespace StateViewer.Editor
                     case 3 when viewModel.Type is ValueKind.List or ValueKind.Dictionary: // Value
                         GUI.Label(cellRect, viewModel.Value);
                         break;
-                    case 3:
+                    case 3: // Value
                         if (viewModel.Editable)
                         {
                             var value = GUI.TextField(cellRect, viewModel.Value);
@@ -247,12 +247,12 @@ namespace StateViewer.Editor
                         }
 
                         break;
-                    case 4:
+                    case 4: // Edit
                         if (viewModel.Type is ValueKind.List or ValueKind.Dictionary)
                         {
                             if (GUI.Button(cellRect, "Add"))
                             {
-                                viewModel.AddChild(new StateTreeViewItem.Model(
+                                viewModel.AddChild(new StateTreeViewItemModel(
                                     _elementId++,
                                     viewModel.Children.Count == 0
                                         ? ValueKind.Text
@@ -310,7 +310,7 @@ namespace StateViewer.Editor
         }
 
         private void AddChildrenRecursive(
-            StateTreeViewItem.Model parentModel,
+            StateTreeViewItemModel parentModel,
             TreeViewItem parentItem,
             ICollection<TreeViewItem> totalRows)
         {
