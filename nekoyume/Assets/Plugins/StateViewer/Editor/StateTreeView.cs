@@ -19,12 +19,12 @@ namespace StateViewer.Editor
         public event Action<bool> OnDirty;
 
         private Address _addr;
-        private StateTreeViewItemModel[] _itemModels;
+        private StateTreeViewItemModel _itemModel;
         private int _treeViewItemId;
 
         public (Address addr, IValue value) Serialize()
         {
-            return (_addr, _itemModels[0].Serialize());
+            return (_addr, _itemModel.Serialize());
         }
 
         public StateTreeView(TreeViewState treeViewState, MultiColumnHeader multiColumnHeader)
@@ -38,8 +38,7 @@ namespace StateViewer.Editor
         public void SetData(Address addr, IValue data)
         {
             _addr = addr;
-            var model = MakeItemModelRecursive(ValueKind.Text, "", data);
-            _itemModels = new[] { model };
+            _itemModel = MakeItemModelRecursive(ValueKind.Text, "", data);
             Reload();
             OnDirty?.Invoke(false);
         }
@@ -156,24 +155,22 @@ namespace StateViewer.Editor
             var totalRows = GetRows() ?? new List<TreeViewItem>();
             totalRows.Clear();
 
-            if (_itemModels is null)
+            if (_itemModel is null)
             {
                 return totalRows;
             }
 
-            foreach (var model in _itemModels)
+            var item = new StateTreeViewItem(_itemModel);
+            root.AddChild(item);
+            totalRows.Add(item);
+            if (_itemModel.Children.Count >= 1)
             {
-                var item = new StateTreeViewItem(model);
-                root.AddChild(item);
-                totalRows.Add(item);
-                if (model.Children.Count >= 1)
+                if (IsExpanded(_itemModel.TreeViewItemId))
                 {
-                    if (IsExpanded(model.TreeViewItemId))
-                    {
-                        AddChildrenRecursive(model, item, totalRows);
-                        continue;
-                    }
-
+                    AddChildrenRecursive(_itemModel, item, totalRows);
+                }
+                else
+                {
                     item.children = CreateChildListForCollapsedParent();
                 }
             }
