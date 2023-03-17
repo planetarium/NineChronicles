@@ -28,14 +28,18 @@ namespace StateViewer.Runtime
         public string Key { get; private set; }
         public ValueKind KeyType { get; }
         public string DisplayKey { get; }
-        public ValueKind Type { get; set; }
+        public ValueKind ValueType { get; set; }
         public string Value { get; set; }
         public bool Editable { get; set; }
         public StateTreeViewItemModel Parent { get; private set; }
         public List<StateTreeViewItemModel> Children { get; } = new();
 
-        public StateTreeViewItemModel(int id, ValueKind keyType, string key,
-            ValueKind type, string value,
+        public StateTreeViewItemModel(
+            int id,
+            ValueKind keyType,
+            string key,
+            ValueKind valueType,
+            string value,
             bool editable = true)
         {
             if (_reversedSerializeKeys.Count == 0)
@@ -47,7 +51,7 @@ namespace StateViewer.Runtime
             KeyType = keyType;
             Key = key;
             DisplayKey = $"[{GetReversedKey(key)}]";
-            Type = type;
+            ValueType = valueType;
             Value = value;
             Editable = editable;
         }
@@ -123,7 +127,7 @@ namespace StateViewer.Runtime
 
         public IValue Serialize()
         {
-            switch (Type)
+            switch (ValueType)
             {
                 case ValueKind.Null:
                     return Null.Value;

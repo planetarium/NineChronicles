@@ -200,8 +200,8 @@ namespace StateViewer.Editor
                         var offset = GetContentIndent(item) + extraSpaceBeforeIconAndLabel;
                         cellRect.xMin += offset;
                         if (viewModel.Parent != null
-                            && viewModel.Parent.Type != ValueKind.List
-                            && (viewModel.Parent.Type == ValueKind.Dictionary || viewModel.Editable)
+                            && viewModel.Parent.ValueType != ValueKind.List
+                            && (viewModel.Parent.ValueType == ValueKind.Dictionary || viewModel.Editable)
                            )
                         {
                             var key = GUI.TextField(cellRect, viewModel.Key);
@@ -221,14 +221,14 @@ namespace StateViewer.Editor
                         break;
                     case 2: // ValueKind
                         var names = Enum.GetNames(typeof(ValueKind));
-                        viewModel.Type = Enum.Parse<ValueKind>(
+                        viewModel.ValueType = Enum.Parse<ValueKind>(
                             names[EditorGUI.Popup(
                                 cellRect,
-                                Array.IndexOf(names, viewModel.Type.ToString()),
+                                Array.IndexOf(names, viewModel.ValueType.ToString()),
                                 names)]);
 
                         break;
-                    case 3 when viewModel.Type is ValueKind.List or ValueKind.Dictionary: // Value
+                    case 3 when viewModel.ValueType is ValueKind.List or ValueKind.Dictionary: // Value
                         GUI.Label(cellRect, viewModel.Value);
                         break;
                     case 3: // Value
@@ -248,7 +248,7 @@ namespace StateViewer.Editor
 
                         break;
                     case 4: // Edit
-                        if (viewModel.Type is ValueKind.List or ValueKind.Dictionary)
+                        if (viewModel.ValueType is ValueKind.List or ValueKind.Dictionary)
                         {
                             if (GUI.Button(cellRect, "Add"))
                             {
@@ -257,14 +257,14 @@ namespace StateViewer.Editor
                                     viewModel.Children.Count == 0
                                         ? ValueKind.Text
                                         : viewModel.Children[0].KeyType,
-                                    viewModel.Type is ValueKind.List
+                                    viewModel.ValueType is ValueKind.List
                                         ? $"{viewModel.Children.Count}"
                                         : "New Key",
                                     viewModel.Children.Count == 0
                                         ? ValueKind.Text
-                                        : viewModel.Children[0].Type,
+                                        : viewModel.Children[0].ValueType,
                                     string.Empty,
-                                    editable: viewModel.Parent is { Type: ValueKind.Dictionary }));
+                                    editable: viewModel.Parent is { ValueType: ValueKind.Dictionary }));
                                 viewModel.Value = $"Count: {viewModel.Children.Count}";
                                 Reload();
                                 OnDirty?.Invoke(true);
