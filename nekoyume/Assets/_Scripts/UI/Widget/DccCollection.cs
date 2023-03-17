@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Game;
 using Nekoyume.Helper;
@@ -9,12 +11,12 @@ using Nekoyume.UI.Module.Pet;
 using Nekoyume.UI.Scroller;
 using Spine.Unity;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
     public class DccCollection : Widget
     {
         [SerializeField]
@@ -51,6 +53,7 @@ namespace Nekoyume.UI
         private CategoryTabButton petButton;
 
         private PetSlotViewModel _selectedViewModel;
+        private readonly List<IDisposable> _disposables = new();
 
         private const string LevelUpText = "Levelup";
         private const string SummonText = "Summon";
@@ -62,22 +65,6 @@ namespace Nekoyume.UI
             {
                 Close(true);
             });
-            allButton.OnClick.Subscribe(tabButton =>
-            {
-                if (!tabButton.IsToggledOn)
-                {
-                    tabButton.SetToggledOn();
-                    petButton.SetToggledOff();
-                }
-            }).AddTo(gameObject);
-            petButton.OnClick.Subscribe(tabButton =>
-            {
-                if (!tabButton.IsToggledOn)
-                {
-                    tabButton.SetToggledOn();
-                    allButton.SetToggledOff();
-                }
-            }).AddTo(gameObject);
             lockedButton.onClick.AddListener(() =>
             {
                 OneLineSystem.Push(
@@ -97,7 +84,12 @@ namespace Nekoyume.UI
                     Find<PetEnhancementPopup>().ShowForSummon(row);
                 }
             });
-            scroll.OnClick.Subscribe(OnClickPetSlot).AddTo(gameObject);
+        }
+
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+            _disposables.DisposeAllAndClear();
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -105,6 +97,23 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
             UpdateView();
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Mileage);
+            allButton.OnClick.Subscribe(tabButton =>
+            {
+                if (!tabButton.IsToggledOn)
+                {
+                    tabButton.SetToggledOn();
+                    petButton.SetToggledOff();
+                }
+            }).AddTo(_disposables);
+            petButton.OnClick.Subscribe(tabButton =>
+            {
+                if (!tabButton.IsToggledOn)
+                {
+                    tabButton.SetToggledOn();
+                    allButton.SetToggledOff();
+                }
+            }).AddTo(_disposables);
+            scroll.OnClick.Subscribe(OnClickPetSlot).AddTo(_disposables);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
