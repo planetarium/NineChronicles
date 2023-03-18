@@ -307,29 +307,22 @@ namespace Nekoyume
         private async void OnUpdateSubTypeFilter(ItemSubTypeFilter filter)
         {
             _page.SetValueAndForceNotify(0);
-            // await CheckItem(filter);
-            // UpdateView();
         }
 
         private async void OnUpdateSortTypeFilter(ShopSortFilter filter)
         {
             _page.SetValueAndForceNotify(0);
             _sortText.text = L10nManager.Localize($"UI_{filter.ToString().ToUpper()}");
-            // await CheckItem(_selectedSubTypeFilter.Value);
-            // UpdateView();
         }
 
         private async void OnUpdateAscending(bool isAscending)
         {
             _page.SetValueAndForceNotify(0);
             sortOrderIcon.localScale = new Vector3(1, isAscending ? 1 : -1, 1);
-            // await CheckItem(_selectedSubTypeFilter.Value);
-            // UpdateView();
         }
 
         protected override async void UpdatePage(int page)
         {
-            Debug.Log("#### [UpdatePage]");
             await CheckItem(_selectedSubTypeFilter.Value);
             base.UpdatePage(page);
             UpdateView();
@@ -493,6 +486,7 @@ namespace Nekoyume
 
         protected override void Reset()
         {
+            toggleDropdowns.First().isOn = false;
             cartView.gameObject.SetActive(false);
             toggleDropdowns.First().isOn = true;
             toggleDropdowns.First().items.First().isOn = true;
