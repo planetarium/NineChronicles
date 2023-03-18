@@ -460,22 +460,6 @@ namespace Nekoyume
             return L10nManager.Localize(isRune ? $"RUNE_NAME_{id}" : $"PET_NAME_{id}");
         }
 
-        public static ItemSubTypeFilter GetItemSubTypeFilter(this FungibleAssetValue fav)
-        {
-            if (RuneFrontHelper.TryGetRuneData(fav.Currency.Ticker, out _))
-            {
-                return ItemSubTypeFilter.RuneStone;
-            }
-
-            var petSheet = Game.Game.instance.TableSheets.PetSheet;
-            if (petSheet.Values.Any(x => x.SoulStoneTicker == fav.Currency.Ticker))
-            {
-                return ItemSubTypeFilter.PetSoulStone;
-            }
-
-            return ItemSubTypeFilter.Stones;
-        }
-
         public static string GetLocalizedNonColoredName(this ItemBase item, bool useElementalIcon = true)
         {
             return GetLocalizedNonColoredName(item.ElementalType, item.Id,

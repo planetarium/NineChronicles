@@ -79,8 +79,16 @@ namespace Nekoyume
 
         protected override void SubscribeToSearchConditions()
         {
-            _selectedSubTypeFilter.Subscribe(_ => UpdateView()).AddTo(gameObject);
-            _selectedSortFilter.Subscribe(_ => UpdateView()).AddTo(gameObject);
+            _selectedSubTypeFilter.Subscribe(_ =>
+            {
+                _page.SetValueAndForceNotify(0);
+                UpdateView();
+            }).AddTo(gameObject);
+            _selectedSortFilter.Subscribe(_ =>
+            {
+                _page.SetValueAndForceNotify(0);
+                UpdateView();
+            }).AddTo(gameObject);
         }
 
         protected override void OnClickItem(ShopItem item)

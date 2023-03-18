@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Nekoyume.EnumType;
@@ -180,6 +181,7 @@ namespace Nekoyume
             _sortOrderAnimator = sortOrderButton.GetComponent<Animator>();
             _levelLimitAnimator = levelLimitToggle.GetComponent<Animator>();
             _resetAnimator = resetButton.GetComponent<Animator>();
+            loading.SetActive(false);
 
             _sortText = sortButton.GetComponentInChildren<TextMeshProUGUI>();
             var tableSheets = Game.Game.instance.TableSheets;
@@ -228,7 +230,7 @@ namespace Nekoyume
                     }
                 });
 
-            Game.Game.instance.Agent.BlockIndexSubject.Subscribe(_ => UpdateView(false))
+            Game.Game.instance.Agent.BlockIndexSubject.Subscribe(_ => UpdateView())
                 .AddTo(gameObject);
         }
 
@@ -249,7 +251,6 @@ namespace Nekoyume
 
                     _selectedSubTypeFilter.Value = _toggleSubTypes[toggleType].First();
                     toggleDropdown.items.First().isOn = true;
-                    UpdateView();
                 });
                 toggleDropdown.onClickToggle.AddListener(AudioController.PlayClick);
 
@@ -305,22 +306,33 @@ namespace Nekoyume
 
         private async void OnUpdateSubTypeFilter(ItemSubTypeFilter filter)
         {
-            await CheckItem(filter);
-            UpdateView();
+            _page.SetValueAndForceNotify(0);
+            // await CheckItem(filter);
+            // UpdateView();
+        }
+
+        private async void OnUpdateSortTypeFilter(ShopSortFilter filter)
+        {
+            _page.SetValueAndForceNotify(0);
+            _sortText.text = L10nManager.Localize($"UI_{filter.ToString().ToUpper()}");
+            // await CheckItem(_selectedSubTypeFilter.Value);
+            // UpdateView();
         }
 
         private async void OnUpdateAscending(bool isAscending)
         {
+            _page.SetValueAndForceNotify(0);
             sortOrderIcon.localScale = new Vector3(1, isAscending ? 1 : -1, 1);
-            await CheckItem(_selectedSubTypeFilter.Value);
-            UpdateView();
+            // await CheckItem(_selectedSubTypeFilter.Value);
+            // UpdateView();
         }
 
         protected override async void UpdatePage(int page)
         {
+            Debug.Log("#### [UpdatePage]");
             await CheckItem(_selectedSubTypeFilter.Value);
             base.UpdatePage(page);
-            UpdateView(resetPage:false, page);
+            UpdateView();
         }
 
         private async Task CheckItem(ItemSubTypeFilter filter)
@@ -332,27 +344,24 @@ namespace Nekoyume
 
             var orderType = _selectedSortFilter.Value.ToMarketOrderType(_isAscending.Value);
             var itemSubType = filter.ToItemSubType();
-            var count = ReactiveShopState.GetCachedBuyItemCount(orderType, itemSubType);
+            var count = ReactiveShopState.GetCachedBuyItemCount(orderType, filter);
             var limit = _column * _row;
             if (count < (_page.Value + 1) * limit)
             {
                 loading.SetActive(true);
-                await ReactiveShopState.RequestBuyProductsAsync(itemSubType, orderType, count, limit * 5);
+                await ReactiveShopState.RequestBuyProductsAsync(itemSubType, orderType, limit * 5);
                 loading.SetActive(false);
             }
 
             ReactiveShopState.SetBuyProducts(orderType);
             Set(ReactiveShopState.BuyItemProducts, ReactiveShopState.BuyFungibleAssetProducts);
+            UpdateView();
         }
 
         protected override void SubscribeToSearchConditions()
         {
             _selectedSubTypeFilter.Subscribe(OnUpdateSubTypeFilter).AddTo(gameObject);
-            _selectedSortFilter.Subscribe(filter =>
-            {
-                _sortText.text = L10nManager.Localize($"UI_{filter.ToString().ToUpper()}");
-                UpdateView();
-            }).AddTo(gameObject);
+            _selectedSortFilter.Subscribe(OnUpdateSortTypeFilter).AddTo(gameObject);
             _selectedItemIds.Subscribe(_ => UpdateView()).AddTo(gameObject);
             _isAscending.Subscribe(OnUpdateAscending).AddTo(gameObject);
             _levelLimit.Subscribe(_ => UpdateView()).AddTo(gameObject);
@@ -494,6 +503,7 @@ namespace Nekoyume
                 _resetAnimator.Play(_hashDisabled);
             }
 
+            _page.SetValueAndForceNotify(0);
             _selectedSubTypeFilter.SetValueAndForceNotify(ItemSubTypeFilter.Weapon);
             _selectedSortFilter.SetValueAndForceNotify(ShopSortFilter.CP);
             _selectedItemIds.Value.Clear();
@@ -510,7 +520,7 @@ namespace Nekoyume
             return items[_selectedSubTypeFilter.Value];
         }
 
-        protected override void UpdateView(bool resetPage = true, int page = 0)
+        protected override void UpdateView()
         {
             var expiredItems = _selectedItems.Where(x => x.Expired.Value).ToList();
             foreach (var item in expiredItems)
@@ -530,7 +540,7 @@ namespace Nekoyume
             }
 
             UpdateSelected(_selectedItems);
-            base.UpdateView(resetPage, page);
+            base.UpdateView();
         }
 
         private void OnSearch()
