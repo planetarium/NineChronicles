@@ -1,15 +1,10 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Threading.Tasks;
-using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
-using Libplanet.Assets;
 using MarketService.Response;
 using Nekoyume.EnumType;
-using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
 using Nekoyume.TableData;
@@ -61,6 +56,14 @@ namespace Nekoyume.State
                     new Dictionary<ItemSubType, List<ItemProductResponseModel>>()
                 },
                 {
+                    MarketOrderType.crystal,
+                    new Dictionary<ItemSubType, List<ItemProductResponseModel>>()
+                },
+                {
+                    MarketOrderType.crystal_desc,
+                    new Dictionary<ItemSubType, List<ItemProductResponseModel>>()
+                },
+                {
                     MarketOrderType.crystal_per_price,
                     new Dictionary<ItemSubType, List<ItemProductResponseModel>>()
                 },
@@ -87,6 +90,8 @@ namespace Nekoyume.State
                 { MarketOrderType.price_desc, new Dictionary<ItemSubType, bool>() },
                 { MarketOrderType.grade, new Dictionary<ItemSubType, bool>() },
                 { MarketOrderType.grade_desc, new Dictionary<ItemSubType, bool>() },
+                { MarketOrderType.crystal, new Dictionary<ItemSubType, bool>() },
+                { MarketOrderType.crystal_desc, new Dictionary<ItemSubType, bool>() },
                 { MarketOrderType.crystal_per_price, new Dictionary<ItemSubType, bool>() },
                 { MarketOrderType.crystal_per_price_desc, new Dictionary<ItemSubType, bool>() },
             };
@@ -216,10 +221,16 @@ namespace Nekoyume.State
         public static void SetBuyProducts(MarketOrderType marketOrderType)
         {
             var products = new List<ItemProductResponseModel>();
-            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+            var curBlockIndex = Game.Game.instance.Agent.BlockIndex;
             foreach (var models in CachedBuyItemProducts[marketOrderType].Values)
             {
-                products.AddRange(models.Where(x => x.RegisteredBlockIndex + Order.ExpirationInterval - currentBlockIndex > 0));
+                var legacyProducts = models
+                    .Where(x => x.Legacy)
+                    .Where(x => x.RegisteredBlockIndex + Order.ExpirationInterval - curBlockIndex > 0)
+                    .ToList();
+                var newProducts = models.Where(x => !x.Legacy).ToList();
+                products.AddRange(legacyProducts);
+                products.AddRange(newProducts);
             }
 
             var agentAddress = States.Instance.AgentState.address;

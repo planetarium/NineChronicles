@@ -50,6 +50,7 @@ namespace Nekoyume
             button.SetSubmittable(value > 0);
         }
 
+        // It's a function for legacy. You must delete it after 100380
         public void Set(long expiredBlockIndex, FungibleAssetValue price, System.Action onSubmit)
         {
             _onSubmit = onSubmit;
@@ -58,7 +59,17 @@ namespace Nekoyume
             button.SetSubmittable(value > 0);
             button.SetSubmitText(L10nManager.Localize("UI_BUY"));
             button.ShowNCG(price, price <= States.Instance.GoldBalanceState.Gold);
+            timer.gameObject.SetActive(true);
             timer.UpdateTimer(expiredBlockIndex);
+        }
+
+        public void Set(FungibleAssetValue price, System.Action onSubmit)
+        {
+            _onSubmit = onSubmit;
+            button.SetSubmittable(true);
+            button.SetSubmitText(L10nManager.Localize("UI_BUY"));
+            button.ShowNCG(price, price <= States.Instance.GoldBalanceState.Gold);
+            timer.gameObject.SetActive(false);
         }
     }
 }

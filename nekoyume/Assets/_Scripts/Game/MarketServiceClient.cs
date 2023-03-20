@@ -36,7 +36,7 @@ namespace Nekoyume.Game
                 PropertyNameCaseInsensitive = true
             };
             var response = JsonSerializer.Deserialize<MarketProductResponse>(json, options);
-            return (response.ItemProducts.Where(p => p.Exist).ToList(), response.TotalCount);
+            return (response.ItemProducts.ToList(), response.TotalCount);
         }
 
         public async Task<(List<FungibleAssetValueProductResponseModel>, int)> GetBuyFungibleAssetProducts(
@@ -51,7 +51,7 @@ namespace Nekoyume.Game
                 PropertyNameCaseInsensitive = true
             };
             var response = JsonSerializer.Deserialize<MarketProductResponse>(json, options);
-            return (response.FungibleAssetValueProducts.Where(p => p.Exist).ToList(), response.TotalCount);
+            return (response.FungibleAssetValueProducts.ToList(), response.TotalCount);
         }
 
         public async Task<(List<FungibleAssetValueProductResponseModel>, List<ItemProductResponseModel>)>
@@ -64,8 +64,8 @@ namespace Nekoyume.Game
                 PropertyNameCaseInsensitive = true
             };
             var response = JsonSerializer.Deserialize<MarketProductResponse>(json, options);
-            var fungibleAssets = response.FungibleAssetValueProducts.Where(p => p.Exist).ToList();
-            var items = response.ItemProducts.Where(p => p.Exist).ToList();
+            var fungibleAssets = response.FungibleAssetValueProducts.ToList();
+            var items = response.ItemProducts.ToList();
             return (fungibleAssets, items);
         }
 
@@ -78,8 +78,8 @@ namespace Nekoyume.Game
                 PropertyNameCaseInsensitive = true
             };
             var response = JsonSerializer.Deserialize<MarketProductResponse>(json, options);
-            var fungibleAssets = response.FungibleAssetValueProducts.Where(p => p.Exist).ToList();
-            var items = response.ItemProducts.Where(p => p.Exist).ToList();
+            var fungibleAssets = response.FungibleAssetValueProducts.ToList();
+            var items = response.ItemProducts.ToList();
             return (fungibleAssets, items);
         }
 

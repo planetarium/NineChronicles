@@ -120,6 +120,7 @@ namespace Nekoyume
         {
             itemSubTypeFilter.SetValueWithoutNotify(0);
             sortFilter.SetValueWithoutNotify(0);
+            _page.SetValueAndForceNotify(0);
             _selectedSubTypeFilter.Value = ItemSubTypeFilter.All;
             _selectedSortFilter.Value = ShopSortFilter.CP;
             _selectedItem = null;

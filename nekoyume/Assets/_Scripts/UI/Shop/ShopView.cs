@@ -317,8 +317,12 @@ namespace Nekoyume.UI.Module
         {
             foreach (var model in _selectedModels)
             {
-                var registeredBlockIndex = model.Product?.RegisteredBlockIndex ?? model.FungibleAssetProduct.RegisteredBlockIndex;
-                var isExpired = registeredBlockIndex + Order.ExpirationInterval - blockIndex <= 0;
+                var isExpired = false;
+                if (model.Product is not null && model.Product.Legacy)
+                {
+                    isExpired = model.Product.RegisteredBlockIndex + Order.ExpirationInterval - blockIndex <= 0;
+                }
+
                 model.Expired.Value = isExpired;
             }
         }

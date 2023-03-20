@@ -258,11 +258,11 @@ namespace Nekoyume.UI
         {
             inventory.SetShop(ShowItemTooltip);
             await ReactiveShopState.RequestSellProductsAsync();
+            base.Show(ignoreShowAnimation);
             view.Show(
                 ReactiveShopState.SellItemProducts,
                 ReactiveShopState.SellFungibleAssetProducts,
                 ShowSellTooltip);
-            base.Show(ignoreShowAnimation);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
             UpdateSpeechBubble();
         }

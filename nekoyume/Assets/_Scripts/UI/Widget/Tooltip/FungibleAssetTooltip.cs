@@ -116,8 +116,7 @@ namespace Nekoyume.UI
             registerButton.gameObject.SetActive(false);
             buy.gameObject.SetActive(true);
             sell.gameObject.SetActive(false);
-            buy.Set(item.FungibleAssetProduct.RegisteredBlockIndex + Order.ExpirationInterval,
-                (BigInteger)item.FungibleAssetProduct.Price * States.Instance.GoldBalanceState.Gold.Currency,
+            buy.Set((BigInteger)item.FungibleAssetProduct.Price * States.Instance.GoldBalanceState.Gold.Currency,
                 ()=>
                 {
                     onBuy?.Invoke();
@@ -141,9 +140,7 @@ namespace Nekoyume.UI
             registerButton.gameObject.SetActive(false);
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(true);
-            sell.Set(
-                item.FungibleAssetProduct.RegisteredBlockIndex + Order.ExpirationInterval,
-                apStoneCount,
+            sell.Set(apStoneCount,
                 state =>
                 {
                     onSellCancellation?.Invoke(state);
