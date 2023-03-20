@@ -250,6 +250,9 @@ namespace Nekoyume
                     }
 
                     _selectedSubTypeFilter.Value = _toggleSubTypes[toggleType].First();
+                    _selectedSortFilter.Value = _selectedSubTypeFilter.Value
+                        is ItemSubTypeFilter.RuneStone or ItemSubTypeFilter.PetSoulStone
+                        ? ShopSortFilter.Price : ShopSortFilter.CP;
                     toggleDropdown.items.First().isOn = true;
                 });
                 toggleDropdown.onClickToggle.AddListener(AudioController.PlayClick);
@@ -268,6 +271,9 @@ namespace Nekoyume
                             return;
                         }
 
+                        _selectedSortFilter.Value = subToggleType
+                            is ItemSubTypeFilter.RuneStone or ItemSubTypeFilter.PetSoulStone
+                            ? ShopSortFilter.Price : ShopSortFilter.CP;
                         _selectedSubTypeFilter.Value = subToggleType;
                     });
                     item.onClickToggle.AddListener(AudioController.PlayClick);
@@ -277,9 +283,18 @@ namespace Nekoyume
             sortButton.onClick.AddListener(() =>
             {
                 var count = Enum.GetNames(typeof(ShopSortFilter)).Length;
-                _selectedSortFilter.Value = (int)_selectedSortFilter.Value < count - 1
-                    ? _selectedSortFilter.Value + 1
-                    : 0;
+                switch (_selectedSubTypeFilter.Value)
+                {
+                    case ItemSubTypeFilter.RuneStone:
+                    case ItemSubTypeFilter.PetSoulStone:
+                        _selectedSortFilter.Value = ShopSortFilter.Price;
+                        break;
+
+                    default:
+                        _selectedSortFilter.Value = (int)_selectedSortFilter.Value < count - 1 ? _selectedSortFilter.Value + 1 : 0;
+                        break;
+                }
+
             });
             sortOrderButton.onClick.AddListener(() =>
             {
@@ -299,8 +314,7 @@ namespace Nekoyume
 
         public async void OnBuyProductAction()
         {
-            await CheckItem(_selectedSubTypeFilter.Value);
-            UpdateView();
+            _page.SetValueAndForceNotify(_page.Value);
             ClearSelectedItems();
         }
 
@@ -335,18 +349,35 @@ namespace Nekoyume
                 return;
             }
 
-            var orderType = _selectedSortFilter.Value.ToMarketOrderType(_isAscending.Value);
-            var itemSubType = filter.ToItemSubType();
+            var orderType = filter is ItemSubTypeFilter.RuneStone or ItemSubTypeFilter.PetSoulStone
+                ? _isAscending.Value ? MarketOrderType.price : MarketOrderType.price_desc
+                : _selectedSortFilter.Value.ToMarketOrderType(_isAscending.Value);
             var count = ReactiveShopState.GetCachedBuyItemCount(orderType, filter);
             var limit = _column * _row;
+            Debug.Log($"[CheckItem] count : {count}");
             if (count < (_page.Value + 1) * limit)
             {
                 loading.SetActive(true);
-                await ReactiveShopState.RequestBuyProductsAsync(itemSubType, orderType, limit * 5);
+                if (filter is ItemSubTypeFilter.RuneStone or ItemSubTypeFilter.PetSoulStone)
+                {
+                    await ReactiveShopState.RequestBuyFungibleAssetsAsync(filter, orderType, limit * 5);
+                }
+                else
+                {
+                    await ReactiveShopState.RequestBuyProductsAsync(filter, orderType, limit * 5);
+                }
                 loading.SetActive(false);
             }
 
-            ReactiveShopState.SetBuyProducts(orderType);
+            if (filter is ItemSubTypeFilter.RuneStone or ItemSubTypeFilter.PetSoulStone)
+            {
+                ReactiveShopState.SetBuyFungibleAssets(orderType);
+            }
+            else
+            {
+                ReactiveShopState.SetBuyProducts(orderType);
+            }
+
             Set(ReactiveShopState.BuyItemProducts, ReactiveShopState.BuyFungibleAssetProducts);
             UpdateView();
         }

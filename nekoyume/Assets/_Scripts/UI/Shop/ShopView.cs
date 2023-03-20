@@ -310,7 +310,7 @@ namespace Nekoyume.UI.Module
             FungibleAssetValue fav)
         {
             var grade = Util.GetTickerGrade(product.Ticker);
-            return new ShopItem(fav, product, grade);
+            return new ShopItem(fav, product, grade, fav.MajorUnit <= 0);
         }
 
         private void UpdateExpired(long blockIndex)

@@ -1017,7 +1017,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Text Here
+  m_text: UI_SELL
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 7a651b26cd62dc0479659cbcab053405, type: 2}
@@ -1104,7 +1104,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 1
-  l10nKey: 
+  l10nKey: UI_SELL
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -1734,7 +1734,7 @@ MonoBehaviour:
   verticalLayoutGroup: {fileID: 8345192229530743519}
   buy: {fileID: 8793554886593601801}
   sell: {fileID: 423074168894967273}
-  registerButton: {fileID: 2803322654250512466}
+  registerButton: {fileID: 22187803267127462}
   scrollbar: {fileID: 8873302638679854649}
   nameText: {fileID: 998707616170734106}
   contentText: {fileID: 7383756604538187351}
@@ -6290,7 +6290,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: GET
+  m_text: UI_SELL
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 7a651b26cd62dc0479659cbcab053405, type: 2}
@@ -6377,7 +6377,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 1
-  l10nKey: 
+  l10nKey: UI_SELL
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -9913,7 +9913,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: GET
+  m_text: UI_SELL
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 7a651b26cd62dc0479659cbcab053405, type: 2}
@@ -10000,7 +10000,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 1
-  l10nKey: 
+  l10nKey: UI_SELL
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -11944,6 +11944,7 @@ GameObject:
   - component: {fileID: 4299289840026799393}
   - component: {fileID: 2953282941287036125}
   - component: {fileID: 8523188292787138101}
+  - component: {fileID: 22187803267127462}
   m_Layer: 5
   m_Name: SellButton
   m_TagString: Untagged
@@ -12124,6 +12125,28 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &22187803267127462
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8204480603433695048}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd36e9ecf7775ae45bc40a208c43fc92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  button: {fileID: 2803322654250512466}
+  disabledButton: {fileID: 5135927502341244360}
+  normalObject: {fileID: 8697689503785021906}
+  normalText: {fileID: 1212280955960280175}
+  conditionalObject: {fileID: 5388017456185043167}
+  conditionalText: {fileID: 7780770480057364369}
+  disabledObject: {fileID: 5838725172710597910}
+  disabledText: {fileID: 6861949547982917075}
+  effectOverlay: {fileID: 5829466190555783495}
+  conditionInfoKey: 
 --- !u!1 &8338749321528852612
 GameObject:
   m_ObjectHideFlags: 0
@@ -14216,7 +14239,7 @@ PrefabInstance:
     - target: {fileID: 3480436870340489609, guid: 63867f78a3a288049b3e8f4d0025b208,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 75
       objectReference: {fileID: 0}
     - target: {fileID: 3480436870340489609, guid: 63867f78a3a288049b3e8f4d0025b208,
         type: 3}
@@ -15439,7 +15462,7 @@ PrefabInstance:
     - target: {fileID: 3480436870340489609, guid: 63867f78a3a288049b3e8f4d0025b208,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 115
       objectReference: {fileID: 0}
     - target: {fileID: 3480436870340489609, guid: 63867f78a3a288049b3e8f4d0025b208,
         type: 3}

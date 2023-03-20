@@ -32,7 +32,7 @@ namespace Nekoyume.UI
         private ItemTooltipSell sell;
 
         [SerializeField]
-        private Button registerButton;
+        private ConditionalButton registerButton;
 
         [SerializeField]
         private Scrollbar scrollbar;
@@ -80,7 +80,7 @@ namespace Nekoyume.UI
             base.Awake();
             CloseWidget = () => Close();
             SubmitWidget = () => Close();
-            registerButton.onClick.AddListener(() =>
+            registerButton.OnClickSubject.Subscribe(_ =>
             {
                 _onRegister?.Invoke();
                 Close(true);
@@ -162,6 +162,7 @@ namespace Nekoyume.UI
             System.Action onClose)
         {
             registerButton.gameObject.SetActive(true);
+            registerButton.Interactable = item.FungibleAssetValue.MajorUnit > 0;
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
             _onRegister = onRegister;
