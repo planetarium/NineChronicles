@@ -11,7 +11,6 @@ using System.Numerics;
 using Nekoyume.Action;
 using Nekoyume.Extensions;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
@@ -179,22 +178,10 @@ namespace Nekoyume.UI
             }
 
             var sheet = Game.Game.instance.TableSheets.EnhancementCostSheetV2;
-            if (ItemEnhancement.TryGetRow(baseItem, sheet, out var row))
-            {
-                var craftInfo = new Craft.CraftInfo()
-                {
-                    RequiredBlockMin = row.SuccessRequiredBlockIndex,
-                    RequiredBlockMax = row.GreatSuccessRequiredBlockIndex,
-                };
-
-                Find<PetSelectionPopup>().Show(craftInfo, petId => EnhancementAction(
-                    baseItem,
-                    materialItem,
-                    petId));
-            }
+            EnhancementAction(baseItem, materialItem);
         }
 
-        private void EnhancementAction(Equipment baseItem, Equipment materialItem, int? petId)
+        private void EnhancementAction(Equipment baseItem, Equipment materialItem)
         {
             var slots = Find<CombinationSlotsPopup>();
             if (!slots.TryGetEmptyCombinationSlot(out var slotIndex))
@@ -215,12 +202,11 @@ namespace Nekoyume.UI
                 NotificationCell.NotificationType.Information);
 
             Game.Game.instance.ActionManager
-                .ItemEnhancement(baseItem, materialItem, slotIndex, _costNcg, petId).Subscribe();
+                .ItemEnhancement(baseItem, materialItem, slotIndex, _costNcg).Subscribe();
 
             enhancementInventory.DeselectItem(true);
 
             StartCoroutine(CoCombineNPCAnimation(baseItem, row.SuccessRequiredBlockIndex, Clear));
-            States.Instance.PetStates.LockPetTemporarily(petId);
         }
 
         private void Clear()
