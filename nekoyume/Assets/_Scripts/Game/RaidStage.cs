@@ -210,8 +210,8 @@ namespace Nekoyume.Game
             _wave = 0;
             _currentScore = 0;
 
+            _player.Pet.DelayedPlay(Character.PetAnimation.Type.BattleStart, 2.5f);
             yield return StartCoroutine(container.CoPlayAppearCutscene());
-            _player.Pet.Animator.Play(Character.PetAnimation.Type.BattleStart);
             _boss.Animator.Idle();
         }
 
