@@ -18,6 +18,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.Model.Pet;
     using TableData;
     using UniRx;
     public class PetEnhancementPopup : PopupWidget
@@ -212,17 +213,31 @@ namespace Nekoyume.UI
             var targetOption = TableSheets.Instance.PetOptionSheet[petId].LevelOptionMap[_targetLevel];
             if (targetLevel == 1)
             {
-                contentText.text =
-                    L10nManager.Localize($"PET_DESCRIPTION_{targetOption.OptionType}",
-                        targetOption.OptionValue);
+                contentText.text = PetFrontHelper.GetDefaultDescriptionText(
+                    targetOption, States.Instance.GameConfigState);
             }
             else
             {
                 var currentOption = TableSheets.Instance.PetOptionSheet[petId].LevelOptionMap[currentLevel];
-                contentText.text =
-                    L10nManager.Localize($"PET_DESCRIPTION_TWO_OPTION_{targetOption.OptionType}",
-                        currentOption.OptionValue,
-                        targetOption.OptionValue);
+                if (currentOption.OptionType == PetOptionType.IncreaseBlockPerHourglass)
+                {
+                    var originalValue = States.Instance.GameConfigState.HourglassPerBlock;
+                    var optionValue = currentOption.OptionValue;
+                    var currentOptionValueText = $"{originalValue + optionValue} ({originalValue}+{optionValue})";
+                    var targetOptionValue = targetOption.OptionValue;
+                    var targetOptionValueText = $"{originalValue + targetOptionValue} ({originalValue}+{targetOptionValue})";
+                    contentText.text =
+                        L10nManager.Localize($"PET_DESCRIPTION_TWO_OPTION_{targetOption.OptionType}",
+                            currentOptionValueText,
+                            targetOptionValueText);
+                }
+                else
+                {
+                    contentText.text =
+                        L10nManager.Localize($"PET_DESCRIPTION_TWO_OPTION_{targetOption.OptionType}",
+                            currentOption.OptionValue,
+                            targetOption.OptionValue);
+                }
             }
 
             soulStoneCostText.text = soulStone.ToString();
