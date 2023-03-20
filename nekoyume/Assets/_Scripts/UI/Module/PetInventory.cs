@@ -1,6 +1,7 @@
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.Pet;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData.Pet;
@@ -212,9 +213,8 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                viewData.Description = L10nManager.Localize(
-                    $"PET_DESCRIPTION_{optionInfo.OptionType}",
-                    optionInfo.OptionValue);
+                viewData.Description = PetFrontHelper.GetDefaultDescriptionText(
+                    optionInfo, States.Instance.GameConfigState);
                 viewData.IsAppliable = false;
             }
 
