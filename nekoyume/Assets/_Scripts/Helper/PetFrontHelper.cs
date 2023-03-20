@@ -129,9 +129,9 @@ namespace Nekoyume.Helper
                         TableSheets.Instance.PetOptionSheet);
                     if (requiredMax == craftInfo.RequiredBlockMax)
                     {
-                        return (L10nManager.Localize(
-                            $"PET_DESCRIPTION_{optionInfo.OptionType}",
-                            optionInfo.OptionValue), false);
+                        var defaultDescription =
+                            GetDefaultDescriptionText(optionInfo, gameConfigState);
+                        return (defaultDescription, false);
                     }
 
                     return (string.Format(
@@ -147,12 +147,10 @@ namespace Nekoyume.Helper
                     if (!TableSheets.Instance.EquipmentItemSubRecipeSheetV2
                         .TryGetValue(craftInfo.SubrecipeId, out var subrecipeRow))
                     {
-                        return (L10nManager.Localize(
-                            $"PET_DESCRIPTION_{optionInfo.OptionType}",
-                            optionInfo.OptionValue), false);
+                        var defaultDescription =
+                            GetDefaultDescriptionText(optionInfo, gameConfigState);
+                        return (defaultDescription, false);
                     }
-                    isFixedValue =
-                        optionInfo.OptionType == PetOptionType.AdditionalOptionRateByFixedValue;
 
                     var before = new StringBuilder();
                     var after = new StringBuilder();
@@ -182,7 +180,7 @@ namespace Nekoyume.Helper
                         before.ToString(),
                         appliedColorHex,
                         after.ToString(),
-                        isFixedValue ? $"{optionInfo.OptionValue}%p" : $"{optionInfo.OptionValue}%"), true);
+                        $"{optionInfo.OptionValue}%"), true);
                 case Model.Pet.PetOptionType.IncreaseBlockPerHourglass:
                     return (string.Format(
                         HourglassFormat,
@@ -197,9 +195,9 @@ namespace Nekoyume.Helper
                         TableSheets.Instance.PetOptionSheet);
                     if (craftInfo.CostCrystal.MajorUnit == cost.MajorUnit)
                     {
-                        return (L10nManager.Localize(
-                            $"PET_DESCRIPTION_{optionInfo.OptionType}",
-                            optionInfo.OptionValue), false);
+                        var defaultDescription =
+                            GetDefaultDescriptionText(optionInfo, gameConfigState);
+                        return (defaultDescription, false);
                     }
 
                     return (string.Format(
@@ -209,9 +207,30 @@ namespace Nekoyume.Helper
                         cost.MajorUnit,
                         optionInfo.OptionValue), true);
                 default:
-                    return (L10nManager.Localize(
-                        $"PET_DESCRIPTION_{optionInfo.OptionType}",
-                        optionInfo.OptionValue), false);
+                    var desc =
+                        GetDefaultDescriptionText(optionInfo, gameConfigState);
+                    return (desc, false);
+            }
+        }
+
+        public static string GetDefaultDescriptionText(
+            PetOptionSheet.Row.PetOptionInfo optionInfo,
+            GameConfigState gameConfigState)
+        {
+            if (optionInfo.OptionType == PetOptionType.IncreaseBlockPerHourglass)
+            {
+                var originalValue = gameConfigState.HourglassPerBlock;
+                var optionValue = optionInfo.OptionValue;
+                var optionValueText = $"{originalValue + optionValue} ({originalValue}+{optionValue})";
+                return L10nManager.Localize(
+                    $"PET_DESCRIPTION_{optionInfo.OptionType}",
+                    optionValueText);
+            }
+            else
+            {
+                return L10nManager.Localize(
+                    $"PET_DESCRIPTION_{optionInfo.OptionType}",
+                    optionInfo.OptionValue);
             }
         }
     }
