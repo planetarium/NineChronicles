@@ -96,8 +96,6 @@ namespace Nekoyume.Game.Character
             _equipments.AddRange(digest.Equipments);
             _target = target;
             appearance.Set(digest, avatarAddress, Animator, _hudContainer);
-            AttackTime = SpineAnimationHelper.GetAnimationDuration(appearance, "Attack");
-            CriticalAttackTime = SpineAnimationHelper.GetAnimationDuration(appearance, "CriticalAttack");
         }
 
         public void Spawn(Model.ArenaCharacter model)
