@@ -124,7 +124,7 @@ namespace Nekoyume.UI
                         CostType.NCG,
                         cost.GetQuantityString(),
                         L10nManager.Localize("UI_NOT_ENOUGH_NCG_WITH_SUPPLIER_INFO"),
-                        L10nManager.Localize("UI_GO_TO_MARKET"),
+                        L10nManager.Localize("UI_SHOP"),
                         goToMarget);
                 }
                 Close(!enoughBalance);
