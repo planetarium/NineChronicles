@@ -31,8 +31,6 @@ namespace Nekoyume.Game.Character
         private const float AnimatorTimeScale = 1.2f;
         private const float StartPos = 2.5f;
         private const float RunDuration = 1f;
-        private float AttackTime;
-        private float CriticalAttackTime;
 
         private ArenaCharacter _target;
         private ArenaBattle _arenaBattle;
@@ -366,7 +364,7 @@ namespace Nekoyume.Game.Character
                 Animator.Attack();
             }
 
-            yield return new WaitForSeconds(isCritical ? CriticalAttackTime : AttackTime);
+            yield return new WaitForSeconds(Animator.AnimationLength());
         }
 
         private IEnumerator CoAnimationCastAttack(bool isCritical)
