@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using Nekoyume.EnumType;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
+using Nekoyume.State;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
@@ -276,7 +279,7 @@ namespace Nekoyume.UI
             return (T)Convert.ChangeType(result, typeof(T));
         }
 
-        public void Show(Model.ItemCountableAndPricePopup data, bool isSell, int apStoneCount)
+        public void Show(Model.ItemCountableAndPricePopup data, bool isSell)
         {
             if (isSell)
             {
@@ -301,8 +304,18 @@ namespace Nekoyume.UI
 
             if (isSell)
             {
+                var condition = ConditionalCostButton.CheckCostOfType(CostType.ActionPoint, 5);
+                var inventoryItems = States.Instance.CurrentAvatarState.inventory.Items;
+                var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
+                var apStoneCount = inventoryItems.Where(x =>
+                        x.item.ItemSubType == ItemSubType.ApStone &&
+                        !x.Locked &&
+                        !(x.item is ITradableItem tradableItem &&
+                          tradableItem.RequiredBlockIndex > blockIndex))
+                    .Sum(item => item.count);
+
                 submitButton.SetCost(CostType.ActionPoint, 5);
-                submitButton.Interactable = apStoneCount > 0;
+                submitButton.Interactable = condition || apStoneCount > 0;
             }
             else
             {

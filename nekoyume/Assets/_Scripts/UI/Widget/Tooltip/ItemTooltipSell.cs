@@ -30,12 +30,14 @@ namespace Nekoyume
         {
             _disposables.DisposeAllAndClear();
 
+            var condition = ConditionalCostButton.CheckCostOfType(CostType.ActionPoint, 5);
+
             retrieveButton.SetCost(CostType.ActionPoint, 5);
-            retrieveButton.Interactable = apStoneCount > 0;
+            retrieveButton.Interactable = condition || apStoneCount > 0;
             retrieveButton.OnClickSubject.Subscribe(onRetrieve).AddTo(_disposables);
 
             registerButton.SetCost(CostType.ActionPoint, 5);
-            registerButton.Interactable = apStoneCount > 0;
+            registerButton.Interactable = condition || apStoneCount > 0;
             registerButton.OnClickSubject.Subscribe(onRegister).AddTo(_disposables);
 
             timer.gameObject.SetActive(true);
@@ -49,12 +51,14 @@ namespace Nekoyume
         {
             _disposables.DisposeAllAndClear();
 
+            var condition = ConditionalCostButton.CheckCostOfType(CostType.ActionPoint, 5);
+
             retrieveButton.SetCost(CostType.ActionPoint, 5);
-            retrieveButton.Interactable = apStoneCount > 0;
+            retrieveButton.Interactable = condition || apStoneCount > 0;
             retrieveButton.OnClickSubject.Subscribe(onRetrieve).AddTo(_disposables);
 
             registerButton.SetCost(CostType.ActionPoint, 5);
-            registerButton.Interactable = apStoneCount > 0;
+            registerButton.Interactable = condition || apStoneCount > 0;
             registerButton.OnClickSubject.Subscribe(onRegister).AddTo(_disposables);
 
             timer.gameObject.SetActive(false);
