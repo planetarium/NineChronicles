@@ -269,7 +269,7 @@ namespace Nekoyume.UI
             var soulStoneName = L10nManager.Localize($"ITEM_NAME_{row.Id}");
             var count = States.Instance.AvatarBalance[row.SoulStoneTicker].GetQuantityString();
             var content = L10nManager.Localize($"ITEM_DESCRIPTION_{row.Id}");
-            var buttonText = L10nManager.Localize("UI_GO_TO_MARKET");
+            var buttonText = L10nManager.Localize("UI_SHOP");
 
             void Callback()
             {
