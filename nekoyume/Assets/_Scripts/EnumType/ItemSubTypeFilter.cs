@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Libplanet.Assets;
 using Nekoyume.Game;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
@@ -173,6 +175,25 @@ namespace Nekoyume.EnumType
             return ItemSubType.Weapon;
         }
 
+        public static StatType ToItemStatType(this ItemSubTypeFilter type)
+        {
+            switch (type)
+            {
+                case ItemSubTypeFilter.Food_HP:
+                    return StatType.HP;
+                case ItemSubTypeFilter.Food_ATK:
+                    return StatType.ATK;
+                case ItemSubTypeFilter.Food_DEF:
+                    return StatType.DEF;
+                case ItemSubTypeFilter.Food_CRI:
+                    return StatType.CRI;
+                case ItemSubTypeFilter.Food_HIT:
+                    return StatType.HIT;
+                default:
+                    return StatType.NONE;
+            }
+        }
+
 
         public static ItemSubTypeFilter StatTypeToItemSubTypeFilter(StatType statType)
         {
@@ -193,6 +214,22 @@ namespace Nekoyume.EnumType
                 default:
                     throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
             }
+        }
+
+        public static ItemSubTypeFilter GetItemSubTypeFilter(this FungibleAssetValue fav)
+        {
+            if (RuneFrontHelper.TryGetRuneData(fav.Currency.Ticker, out _))
+            {
+                return ItemSubTypeFilter.RuneStone;
+            }
+
+            var petSheet = Game.Game.instance.TableSheets.PetSheet;
+            if (petSheet.Values.Any(x => x.SoulStoneTicker == fav.Currency.Ticker))
+            {
+                return ItemSubTypeFilter.PetSoulStone;
+            }
+
+            return ItemSubTypeFilter.Stones;
         }
 
         public static List<ItemSubTypeFilter> GetItemSubTypeFilter(int itemId)

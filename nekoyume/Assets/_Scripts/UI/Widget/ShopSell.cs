@@ -140,18 +140,6 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
         }
 
-        private void ShowFavTooltip(InventoryItem model)
-        {
-            var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
-            tooltip.Show(
-                model,
-                L10nManager.Localize("UI_SELL"),
-                model.ItemBase is ITradableItem,
-                () => ShowSell(model),
-                inventory.ClearSelectedItem,
-                () => L10nManager.Localize("UI_UNTRADABLE"));
-        }
-
         private void ShowItemTooltip(InventoryItem model)
         {
             if (model.ItemBase is not null)
@@ -169,7 +157,11 @@ namespace Nekoyume.UI
             {
                 Find<FungibleAssetTooltip>().Show(model,
                     () => ShowSell(model),
-                    view.ClearSelectedItem);
+                    ()=>
+                    {
+                        inventory.ClearSelectedItem();
+                        view.ClearSelectedItem();
+                    });
             }
         }
 
@@ -258,11 +250,11 @@ namespace Nekoyume.UI
         {
             inventory.SetShop(ShowItemTooltip);
             await ReactiveShopState.RequestSellProductsAsync();
+            base.Show(ignoreShowAnimation);
             view.Show(
                 ReactiveShopState.SellItemProducts,
                 ReactiveShopState.SellFungibleAssetProducts,
                 ShowSellTooltip);
-            base.Show(ignoreShowAnimation);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
             UpdateSpeechBubble();
         }

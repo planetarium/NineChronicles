@@ -9,6 +9,7 @@ namespace Nekoyume.EnumType
         Price = 1,
         Class = 2,
         Crystal = 3,
+        CrystalPerPrice = 4,
     }
 
     public static class ShopSortFilterExtension
@@ -23,6 +24,7 @@ namespace Nekoyume.EnumType
                     ShopSortFilter.Price,
                     ShopSortFilter.Class,
                     ShopSortFilter.Crystal,
+                    ShopSortFilter.CrystalPerPrice,
                 };
             }
         }
@@ -34,7 +36,8 @@ namespace Nekoyume.EnumType
                 ShopSortFilter.CP => isAscending ? MarketOrderType.cp : MarketOrderType.cp_desc,
                 ShopSortFilter.Price => isAscending ? MarketOrderType.price : MarketOrderType.price_desc,
                 ShopSortFilter.Class => isAscending ? MarketOrderType.grade : MarketOrderType.grade_desc,
-                ShopSortFilter.Crystal => isAscending ? MarketOrderType.crystal_per_price : MarketOrderType.crystal_per_price_desc,
+                ShopSortFilter.Crystal => isAscending ? MarketOrderType.crystal : MarketOrderType.crystal_desc,
+                ShopSortFilter.CrystalPerPrice => isAscending ? MarketOrderType.crystal_per_price : MarketOrderType.crystal_per_price_desc,
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
             };
         }
