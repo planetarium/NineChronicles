@@ -13,7 +13,7 @@ namespace StateViewer.Editor
 
         public StateTreeViewItem(StateTreeViewItemModel viewModel) : base(viewModel.TreeViewItemId)
         {
-            displayName = viewModel.Key;
+            displayName = viewModel.IndexOrKeyContent;
             ViewModel = viewModel;
         }
     }

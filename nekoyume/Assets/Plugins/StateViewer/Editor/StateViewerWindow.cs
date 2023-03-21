@@ -15,8 +15,34 @@ using Event = UnityEngine.Event;
 
 namespace StateViewer.Editor
 {
-    public class StateViewer : EditorWindow
+    public class StateViewerWindow : EditorWindow
     {
+        public static readonly IValue[] TestValues =
+        {
+            Null.Value,
+            new Binary("test", Encoding.UTF8),
+            new Boolean(true),
+            new Integer(100),
+            new Text("test"),
+            new List(
+                (Text)"element at index 0",
+                new List(
+                    (Text)"element at index 0",
+                    (Text)"element at index 1"),
+                Dictionary.Empty
+                    .SetItem("key1", 1)
+                    .SetItem("key2", 2)),
+            Dictionary.Empty
+                .SetItem("key1", 1)
+                .SetItem("key2", new List(
+                    (Text)"element at index 0",
+                    (Text)"element at index 1"))
+                .SetItem("key3", Dictionary.Empty
+                    .SetItem("key1", 1)
+                    .SetItem("key2", 2)),
+            new Address("0x0123456789012345678901234567890123456789").Bencoded,
+        };
+
         [SerializeField]
         private bool initialized;
 
@@ -46,44 +72,18 @@ namespace StateViewer.Editor
 
         private StateProxy _stateProxy;
 
-        private readonly IValue[] _testValues =
-        {
-            Null.Value,
-            new Binary("test", Encoding.UTF8),
-            new Boolean(true),
-            new Integer(100),
-            new Text("test"),
-            new List(
-                (Text)"element at index 0",
-                new List(
-                    (Text)"element at index 0",
-                    (Text)"element at index 1"),
-                Dictionary.Empty
-                    .SetItem("key1", 1)
-                    .SetItem("key2", 2)),
-            Dictionary.Empty
-                .SetItem("key1", 1)
-                .SetItem("key2", new List(
-                    (Text)"element at index 0",
-                    (Text)"element at index 1"))
-                .SetItem("key3", Dictionary.Empty
-                    .SetItem("key1", 1)
-                    .SetItem("key2", 2)),
-            new Address("0x0123456789012345678901234567890123456789").Bencoded,
-        };
-
         [MenuItem("Tools/Lib9c/State Viewer")]
         private static void ShowWindow() =>
-            GetWindow<StateViewer>("State Viewer", true).Show();
+            GetWindow<StateViewerWindow>("State Viewer", true).Show();
 
         private void OnEnable()
         {
             minSize = new Vector2(800f, 300f);
 
             stateTreeViewState ??= new TreeViewState();
-            var keyOrIndexColumn = new MultiColumnHeaderState.Column
+            var indexOrKeyColumn = new MultiColumnHeaderState.Column
             {
-                headerContent = new GUIContent("Key/Index"),
+                headerContent = new GUIContent("Index/Key"),
                 headerTextAlignment = TextAlignment.Center,
                 canSort = false,
                 width = 100,
@@ -146,7 +146,7 @@ namespace StateViewer.Editor
             };
             stateTreeHeaderState = new MultiColumnHeaderState(new[]
             {
-                keyOrIndexColumn,
+                indexOrKeyColumn,
                 aliasColumn,
                 valueKindColumn,
                 valueColumn,
@@ -239,7 +239,7 @@ namespace StateViewer.Editor
                 GUILayout.ExpandWidth(true));
         }
 
-        private void DrawHorizontalLine()
+        private static void DrawHorizontalLine()
         {
             var rect = EditorGUILayout.GetControlRect(false, 1f);
             EditorGUI.DrawRect(rect, new Color(0.5f, 0.5f, 0.5f, 1));
@@ -254,9 +254,9 @@ namespace StateViewer.Editor
             }
 
             EditorGUILayout.BeginHorizontal();
-            for (var i = 0; i < _testValues.Length; i++)
+            for (var i = 0; i < TestValues.Length; i++)
             {
-                var testValue = _testValues[i];
+                var testValue = TestValues[i];
                 if (GUILayout.Button($"{i}: {testValue.Kind}"))
                 {
                     _stateTreeView.SetData(default, testValue);

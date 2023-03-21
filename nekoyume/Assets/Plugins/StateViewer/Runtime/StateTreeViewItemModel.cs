@@ -1,174 +1,242 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
-using System.Text;
-using System.Text.Json;
 using Bencodex.Types;
 using Lib9c;
 using Nekoyume.Model.State;
-using UnityEngine;
+using Boolean = Bencodex.Types.Boolean;
 
 namespace StateViewer.Runtime
 {
     public class StateTreeViewItemModel : IState
     {
-        private readonly Dictionary<string, string> _reversedSerializeKeys = new();
+        private Dictionary<string, string>? _reversedSerializeKeys;
 
         /// <summary>
         /// <see cref="UnityEditor.IMGUI.Controls.TreeViewItem"/> has unique id.
         /// </summary>
-        public int TreeViewItemId { get; }
+        public int TreeViewItemId { get; set; }
 
-        /// <summary>
-        /// <see cref="Bencodex.Types.Dictionary"/> or <see cref="Bencodex.Types.List"/>
-        /// element's key or index.
-        /// </summary>
-        public string Key { get; private set; }
-        public ValueKind KeyType { get; }
-        public string DisplayKey { get; }
-        public ValueKind ValueType { get; set; }
-        public string Value { get; set; }
-        public bool Editable { get; set; }
-        public StateTreeViewItemModel Parent { get; private set; }
+        public IValue Value { get; }
+
+        public string ValueContent { get; set; }
+
+        public StateTreeViewItemModel? Parent { get; }
+
+        public int? Index { get; }
+
+        public IKey? Key { get; }
+
+        public string IndexOrKeyContent { get; private set; }
+
+        public string AliasContent { get; }
+
         public List<StateTreeViewItemModel> Children { get; } = new();
 
         public StateTreeViewItemModel(
             int treeViewItemId,
-            ValueKind keyType,
-            string key,
-            ValueKind valueType,
-            string value,
-            bool editable = true)
+            IValue data,
+            StateTreeViewItemModel? parent = null,
+            int? index = null,
+            IKey? key = null,
+            string? alias = null) : this(data, parent, index, key, alias)
         {
-            if (_reversedSerializeKeys.Count == 0)
-            {
-                ReverseSerializedKeys();
-            }
-
             TreeViewItemId = treeViewItemId;
-            KeyType = keyType;
+        }
+
+        public StateTreeViewItemModel(
+            IValue data,
+            StateTreeViewItemModel? parent = null,
+            int? index = null,
+            IKey? key = null,
+            string? alias = null)
+        {
+            Value = data;
+            switch (Value.Kind)
+            {
+                case ValueKind.Null:
+                case ValueKind.Boolean:
+                case ValueKind.Integer:
+                case ValueKind.Binary:
+                case ValueKind.Text:
+                    ValueContent = ParseToString(Value);
+                    break;
+                case ValueKind.List:
+                    ValueContent = ParseToString(Value);
+                    var list = (List)Value;
+                    Children.AddRange(list.Select((childValue, i) =>
+                        new StateTreeViewItemModel(
+                            childValue,
+                            parent: this,
+                            index: i)));
+                    break;
+                case ValueKind.Dictionary:
+                    ValueContent = ParseToString(Value);
+                    var dict = (Dictionary)Value;
+                    Children.AddRange(dict.Select(pair =>
+                        new StateTreeViewItemModel(
+                            pair.Value,
+                            parent: this,
+                            key: pair.Key)));
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            Parent = parent;
+            Index = index;
             Key = key;
-            DisplayKey = $"[{GetReversedKey(key)}]";
-            ValueType = valueType;
-            Value = value;
-            Editable = editable;
-        }
-
-        private void ReverseSerializedKeys()
-        {
-            foreach (var field in typeof(SerializeKeys).GetFields(
-                         BindingFlags.Public | BindingFlags.Static |
-                         BindingFlags.FlattenHierarchy
-                     )
-                    )
-            {
-                if (field.IsLiteral && !field.IsInitOnly)
-                {
-                    _reversedSerializeKeys.Add(field.GetRawConstantValue().ToString(),
-                        field.Name);
-                }
-            }
-        }
-
-        private string GetReversedKey(string key)
-        {
-            return _reversedSerializeKeys.ContainsKey(key)
-                ? _reversedSerializeKeys[key]
-                : key;
-        }
-
-        public void SetKey(string key)
-        {
-            Key = key;
-        }
-
-        public void SetValue(string value)
-        {
-            Value = value;
-        }
-
-        public void AddChild(StateTreeViewItemModel? child)
-        {
-            if (child is null)
-            {
-                return;
-            }
-
-            child.Parent?.RemoveChild(child);
-            Children.Add(child);
-            child.Parent = this;
-        }
-
-        public void RemoveChild(StateTreeViewItemModel? child)
-        {
-            if (child is null)
-            {
-                return;
-            }
-
-            if (Children.Contains(child))
-            {
-                Children.Remove(child);
-                child.Parent = null;
-            }
-        }
-
-        private static IValue? Convert(string value, bool bom = true)
-        {
-            var sanitized = value.Replace("[", "").Replace("]", "");
-            var converter = new Bencodex.Json.BencodexJsonConverter();
-            var serializerOptions = new JsonSerializerOptions();
-            var reader = new Utf8JsonReader(Encoding.UTF8.GetBytes(
-                bom ? $"\"\\uFEFF{sanitized}\"" : $"\"{sanitized}\""));
-            return converter.Read(ref reader, typeof(Binary), serializerOptions);
+            IndexOrKeyContent = Index is null
+                ? Key is null
+                    ? string.Empty
+                    : ParseToString(Key)
+                : Index.ToString();
+            AliasContent = alias ?? GetAlias(IndexOrKeyContent);
         }
 
         public IValue Serialize()
         {
-            switch (ValueType)
+            switch (Value.Kind)
             {
                 case ValueKind.Null:
-                    return Null.Value;
                 case ValueKind.Boolean:
-                    return Value.Serialize();
                 case ValueKind.Binary:
                 case ValueKind.Integer:
-                    return Convert(Value, false);
                 case ValueKind.Text:
-                    return Convert(Value);
+                    return ParseToValue(ValueContent, Value.Kind);
                 case ValueKind.List:
                     return new List(Children.Select(child =>
                         child.Serialize()));
                 case ValueKind.Dictionary:
-                {
-                    IKey? key;
-                    if (KeyType is ValueKind.Binary)
+                    return new Dictionary(Children.Select(child =>
                     {
-                        key = (IKey?)Convert(Key, bom: false);
-                    }
-                    else if (KeyType is ValueKind.Text)
-                    {
-                        key = (Text)Key;
-                    }
-                    else
-                    {
-                        throw new NotSupportedException($"KeyType{KeyType} is not supported.");
-                    }
+                        if (child.Key is null)
+                        {
+                            throw new Exception("Key of child is null.");
+                        }
 
-                    Debug.LogFormat(key.ToString());
-
-                    return new Dictionary(Children.Aggregate(
-                        ImmutableDictionary<IKey, IValue>.Empty,
-                        (current, child) => current.SetItem(
-                            (IKey)Convert(child.Key, bom: child.KeyType == ValueKind.Text),
-                            child.Serialize()))
-                    );
-                }
+                        return new KeyValuePair<IKey, IValue>(
+                            (IKey)ParseToValue(child.IndexOrKeyContent, child.Key.Kind),
+                            child.Serialize());
+                    }));
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
+
+        public void SetIndexOrKeyContent(string value)
+        {
+            IndexOrKeyContent = value;
+        }
+
+        private static string ParseToString(IValue value)
+        {
+            switch (value.Kind)
+            {
+                case ValueKind.Null:
+                    return "null";
+                case ValueKind.Boolean:
+                    return ((Boolean)value).Inspect(false);
+                case ValueKind.Integer:
+                    return ((Integer)value).Inspect(false);
+                case ValueKind.Binary:
+                    var inner = string.Join(
+                        string.Empty,
+                        ((Binary)value).ByteArray
+                        .Select(b => b.ToString("X2")));
+                    return $"0x{inner}";
+                case ValueKind.Text:
+                    return (Text)value;
+                case ValueKind.List:
+                    return $"[{((List)value).Count}]";
+                case ValueKind.Dictionary:
+                    return $"{{{((Dictionary)value).Count}}}";
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private static IValue ParseToValue(string value, ValueKind valueKind)
+        {
+            switch (valueKind)
+            {
+                case ValueKind.Null:
+                    return Null.Value;
+                case ValueKind.Boolean:
+                    return new Boolean(bool.Parse(value));
+                case ValueKind.Binary:
+                    var hex = value.StartsWith("0x")
+                        ? value[2..]
+                        : value;
+                    return new Binary(Enumerable.Range(0, hex.Length)
+                        .Where(x => x % 2 == 0)
+                        .Select(x => Convert.ToByte(hex[x..(x + 2)], 16))
+                        .ToArray());
+                case ValueKind.Integer:
+                    return new Integer(BigInteger.Parse(value));
+                case ValueKind.Text:
+                    return new Text(value);
+                case ValueKind.List:
+                case ValueKind.Dictionary:
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private string GetAlias(string key)
+        {
+            _reversedSerializeKeys ??= typeof(SerializeKeys)
+                .GetFields(
+                    BindingFlags.Public |
+                    BindingFlags.Static)
+                .ToDictionary(
+                    field => field.GetRawConstantValue().ToString(),
+                    field => field.Name);
+
+            return _reversedSerializeKeys.ContainsKey(key)
+                ? _reversedSerializeKeys[key]
+                : string.Empty;
+        }
+
+        // public void AddChild(StateTreeViewItemModel? child)
+        // {
+        //     if (child is null)
+        //     {
+        //         return;
+        //     }
+        //
+        //     child.Parent?.RemoveChild(child);
+        //     Children.Add(child);
+        //     child.Parent = this;
+        // }
+        //
+        // public void RemoveChild(StateTreeViewItemModel? child)
+        // {
+        //     if (child is null)
+        //     {
+        //         return;
+        //     }
+        //
+        //     if (Children.Contains(child))
+        //     {
+        //         Children.Remove(child);
+        //         child.Parent = null;
+        //     }
+        // }
+
+        // private static IValue? Convert(string value, bool bom = true)
+        // {
+        //     var sanitized = value.Replace("[", "").Replace("]", "");
+        //     var converter = new Bencodex.Json.BencodexJsonConverter();
+        //     var serializerOptions = new JsonSerializerOptions();
+        //     var reader = new Utf8JsonReader(Encoding.UTF8.GetBytes(
+        //         bom ? $"\"\\uFEFF{sanitized}\"" : $"\"{sanitized}\""));
+        //     return converter.Read(ref reader, typeof(Binary), serializerOptions);
+        // }
     }
 }
