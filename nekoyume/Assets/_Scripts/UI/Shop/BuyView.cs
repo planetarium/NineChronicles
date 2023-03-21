@@ -354,7 +354,6 @@ namespace Nekoyume
                 : _selectedSortFilter.Value.ToMarketOrderType(_isAscending.Value);
             var count = ReactiveShopState.GetCachedBuyItemCount(orderType, filter);
             var limit = _column * _row;
-            Debug.Log($"[CheckItem] count : {count}");
             if (count < (_page.Value + 1) * limit)
             {
                 loading.SetActive(true);
@@ -364,7 +363,7 @@ namespace Nekoyume
                 }
                 else
                 {
-                    await ReactiveShopState.RequestBuyProductsAsync(filter, orderType, limit * 5);
+                    await ReactiveShopState.RequestBuyProductsAsync(filter, orderType, limit * 15);
                 }
                 loading.SetActive(false);
             }

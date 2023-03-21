@@ -16,10 +16,10 @@ namespace Nekoyume.State
 {
     public static class ReactiveShopState
     {
-        public static ReactiveProperty<List<ItemProductResponseModel>> BuyItemProducts { get; } =
+        public static ReactiveProperty<Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>> BuyItemProducts { get; } =
             new();
 
-        public static ReactiveProperty<List<ItemProductResponseModel>> SellItemProducts { get; } =
+        public static ReactiveProperty<Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>> SellItemProducts { get; } =
             new();
 
         public static ReactiveProperty<List<FungibleAssetValueProductResponseModel>>
@@ -42,7 +42,7 @@ namespace Nekoyume.State
                 { MarketOrderType.crystal_per_price, new Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>() },
                 { MarketOrderType.crystal_per_price_desc, new Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>() }
             };
-        private static readonly List<ItemProductResponseModel> CachedSellItemProducts = new();
+        private static readonly Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>> CachedSellItemProducts = new();
 
         private static readonly Dictionary<MarketOrderType, Dictionary<ItemSubTypeFilter, List<FungibleAssetValueProductResponseModel>>>
             CachedBuyFungibleAssetProducts = new()
@@ -82,8 +82,8 @@ namespace Nekoyume.State
 
         public static void ClearCache()
         {
-            BuyItemProducts.Value = new List<ItemProductResponseModel>();
-            SellItemProducts.Value = new List<ItemProductResponseModel>();
+            BuyItemProducts.Value = new Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>();
+            SellItemProducts.Value = new Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>();
             BuyFungibleAssetProducts.Value = new List<FungibleAssetValueProductResponseModel>();
             SellFungibleAssetProducts.Value = new List<FungibleAssetValueProductResponseModel>();
 
@@ -138,18 +138,23 @@ namespace Nekoyume.State
             var itemSubType = filter.ToItemSubType();
             var statType = filter.ToItemStatType();
             var (products, totalCount) = await Game.Game.instance.MarketServiceClient.GetBuyProducts(itemSubType, offset, limit, orderType, statType);
-            Debug.Log($"[RequestBuyProductsAsync] : {itemSubType} / {filter} / {orderType} / {offset} / {limit} / {statType} / MAX:{totalCount}");
+            // Debug.Log($"[RequestBuyProductsAsync] : {itemSubType} / {filter} / {orderType} / {offset} / {limit} / {statType} / MAX:{totalCount}");
 
-            var productModels = CachedBuyItemProducts[orderType][filter];
-            foreach (var product in products)
+            await foreach (var product in products)
             {
-                if (productModels.All(x => x.ProductId != product.ProductId))
+                if (!CachedBuyItemProducts[orderType].ContainsKey(filter))
+                {
+                    continue;
+                }
+
+                if (CachedBuyItemProducts[orderType][filter].All(x => x.ProductId != product.ProductId))
                 {
                     CachedBuyItemProducts[orderType][filter].Add(product);
                 }
             }
 
-            BuyProductMaxChecker[orderType][filter] = totalCount == CachedBuyItemProducts[orderType][filter].Count;
+            var total = CachedBuyItemProducts[orderType].ContainsKey(filter)? CachedBuyItemProducts[orderType][filter].Count : 0;
+            BuyProductMaxChecker[orderType][filter] = totalCount == total;
             SetBuyProducts(orderType);
         }
 
@@ -197,8 +202,22 @@ namespace Nekoyume.State
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var (fungibleAssets, items) =
                 await Game.Game.instance.MarketServiceClient.GetProducts(avatarAddress);
-            CachedSellItemProducts.Clear();
-            CachedSellItemProducts.AddRange(items);
+
+            foreach (var (k, v) in CachedSellItemProducts)
+            {
+                v.Clear();
+            }
+
+            foreach (var item in items)
+            {
+                var filter = ItemSubTypeFilterExtension.GetItemSubTypeFilter(item.ItemId).First();
+                if (!CachedSellItemProducts.ContainsKey(filter))
+                {
+                    CachedSellItemProducts.Add(filter, new List<ItemProductResponseModel>());
+                }
+
+                CachedSellItemProducts[filter].Add(item);
+            }
 
             CachedSellFungibleAssetProducts.Clear();
             CachedSellFungibleAssetProducts.AddRange(fungibleAssets);
@@ -207,29 +226,35 @@ namespace Nekoyume.State
 
         public static void SetBuyProducts(MarketOrderType marketOrderType)
         {
-            var products = new List<ItemProductResponseModel>();
             var curBlockIndex = Game.Game.instance.Agent.BlockIndex;
-            foreach (var model in CachedBuyItemProducts[marketOrderType].Values.SelectMany(models => models))
+            var agentAddress = States.Instance.AgentState.address;
+
+            var products =new Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>();
+            foreach (var (k, v) in CachedBuyItemProducts[marketOrderType])
             {
-                if (model.Legacy)
+                if (!products.ContainsKey(k))
                 {
-                    if (model.RegisteredBlockIndex + Order.ExpirationInterval - curBlockIndex > 0)
-                    {
-                        products.Add(model);
-                    }
+                    products.Add(k, new List<ItemProductResponseModel>());
                 }
-                else
+
+                foreach (var model in v.Where(model => model.SellerAgentAddress != agentAddress &&
+                                                       !PurchasedProductIds.Contains(model.ProductId)))
                 {
-                    products.Add(model);
+                    if (model.Legacy)
+                    {
+                        if (model.RegisteredBlockIndex + Order.ExpirationInterval - curBlockIndex > 0)
+                        {
+                            products[k].Add(model);
+                        }
+                    }
+                    else
+                    {
+                        products[k].Add(model);
+                    }
                 }
             }
 
-            var agentAddress = States.Instance.AgentState.address;
-            var buyProducts = products
-                .Where(x => !x.SellerAgentAddress.Equals(agentAddress))
-                .Where(x => !PurchasedProductIds.Contains(x.ProductId))
-                .ToList();
-            BuyItemProducts.Value = buyProducts;
+            BuyItemProducts.Value = products;
         }
 
         public static void SetBuyFungibleAssets(MarketOrderType marketOrderType)
@@ -262,28 +287,11 @@ namespace Nekoyume.State
             }
         }
 
-        public static void RemoveSellProduct(Guid productId)
-        {
-            var itemProduct = SellItemProducts.Value.FirstOrDefault(x =>
-                x.ProductId.Equals(productId));
-            if (itemProduct is not null)
-            {
-                SellItemProducts.Value.Remove(itemProduct);
-                SellItemProducts.SetValueAndForceNotify(SellItemProducts.Value);
-            }
-
-            var fungibleAssetProduct = SellFungibleAssetProducts.Value.FirstOrDefault(x =>
-                x.ProductId.Equals(productId));
-            if (fungibleAssetProduct is not null)
-            {
-                SellFungibleAssetProducts.Value.Remove(fungibleAssetProduct);
-                SellFungibleAssetProducts.SetValueAndForceNotify(SellFungibleAssetProducts.Value);
-            }
-        }
-
         public static ItemProductResponseModel GetSellItemProduct(Guid productId)
         {
-            return SellItemProducts.Value.FirstOrDefault(x => x.ProductId == productId);
+            return SellItemProducts.Value.Values
+                .Select(models => models.FirstOrDefault(x => x.ProductId == productId))
+                .FirstOrDefault(model => model is not null);
         }
 
         public static FungibleAssetValueProductResponseModel GetSellFungibleAssetProduct(
