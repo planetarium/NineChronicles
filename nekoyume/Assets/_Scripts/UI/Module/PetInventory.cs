@@ -215,7 +215,8 @@ namespace Nekoyume.UI.Module
             {
                 viewData.Description = PetFrontHelper.GetDefaultDescriptionText(
                     optionInfo, States.Instance.GameConfigState);
-                viewData.IsAppliable = false;
+                // If craftInfo is null, it should not be dimmed. (for displaying description)
+                viewData.IsAppliable = !craftInfo.HasValue;
             }
 
             return viewData;
