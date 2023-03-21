@@ -2,9 +2,12 @@ using System.Collections.Generic;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
+using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -135,6 +138,9 @@ namespace Nekoyume.UI
             {
                 Dcc.instance.SetVisible(_isVisibleDcc.Value ? 0 : 1);
                 _isVisibleDcc.SetValueAndForceNotify(!_isVisibleDcc.Value);
+                var msg = _isVisibleDcc.Value ? "UI_DCC_COSTUME_ACTIVATION" : "UI_DCC_COSTUME_DISABLED";
+                NotificationSystem.Push(MailType.System, L10nManager.Localize(msg),
+                    NotificationCell.NotificationType.Information);
             });
 
             activeCostumeButton.onClick.AddListener(() =>
