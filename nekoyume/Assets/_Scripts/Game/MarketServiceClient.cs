@@ -10,6 +10,7 @@ using MarketService.Response;
 using Nekoyume.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
+using UnityEngine;
 
 namespace Nekoyume.Game
 {

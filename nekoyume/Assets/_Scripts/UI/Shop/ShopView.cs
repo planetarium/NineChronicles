@@ -84,7 +84,7 @@ namespace Nekoyume.UI.Module
         }
 
         public void Show(
-            ReactiveProperty<List<ItemProductResponseModel>> itemProducts,
+            ReactiveProperty<Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>> itemProducts,
             ReactiveProperty<List<FungibleAssetValueProductResponseModel>> fungibleAssetProducts,
             Action<ShopItem> clickItem)
         {
@@ -210,7 +210,7 @@ namespace Nekoyume.UI.Module
         }
 
         protected void Set(
-            ReactiveProperty<List<ItemProductResponseModel>> itemProducts,
+            ReactiveProperty<Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>> itemProducts,
             ReactiveProperty<List<FungibleAssetValueProductResponseModel>> fungibleAssetProducts)
         {
             _disposables.DisposeAllAndClear();
@@ -225,14 +225,17 @@ namespace Nekoyume.UI.Module
             if (itemProducts.Value is not null)
             {
                 var itemSheet = TableSheets.Instance.ItemSheet;
-                foreach (var product in itemProducts.Value)
+                foreach (var (filter, products) in itemProducts.Value)
                 {
-                    if (!ReactiveShopState.TryGetItemBase(product, out var itemBase))
+                    foreach (var product in products)
                     {
-                        continue;
-                    }
+                        if (!ReactiveShopState.TryGetItemBase(product, out var itemBase))
+                        {
+                            continue;
+                        }
 
-                    AddItem(product, itemBase, itemSheet);
+                        AddItem(filter, product, itemBase, itemSheet);
+                    }
                 }
             }
 
@@ -249,20 +252,16 @@ namespace Nekoyume.UI.Module
                 .AddTo(_disposables);
         }
 
-        private void AddItem(ItemProductResponseModel product, ItemBase itemBase, ItemSheet sheet)
+        private void AddItem(ItemSubTypeFilter filter, ItemProductResponseModel product, ItemBase itemBase, ItemSheet sheet)
         {
             var model = CreateItem(product, itemBase, sheet);
-            var filters = ItemSubTypeFilterExtension.GetItemSubTypeFilter(product.ItemId);
-            foreach (var filter in filters)
+            if (!_items.ContainsKey(filter))
             {
-                if (!_items.ContainsKey(filter))
-                {
-                    _items.Add(filter, new List<ShopItem>());
-                }
-
-                _items[filter].Add(model);
-                _items[ItemSubTypeFilter.All].Add(model);
+                _items.Add(filter, new List<ShopItem>());
             }
+
+            _items[filter].Add(model);
+            _items[ItemSubTypeFilter.All].Add(model);
         }
 
         private void AddItem(FungibleAssetValueProductResponseModel product)
