@@ -1783,7 +1783,6 @@ namespace Nekoyume.BlockChain
             var currentAgentAddress = States.Instance.AgentState.address;
             var currentAvatarAddress = States.Instance.CurrentAvatarState.address;
             var playToEarnRewardAddress = new Address("d595f7e85e1757d6558e9e448fa9af77ab28be4c");
-
             if (senderAddress == currentAgentAddress)
             {
                 var amount = eval.Action.Amount;

@@ -723,6 +723,7 @@ namespace Nekoyume.BlockChain
             var currentAvatarState = States.Instance.CurrentAvatarState;
             if (!(currentAvatarState is null))
             {
+                addresses.Add(currentAvatarState.address);
                 var slotAddresses = currentAvatarState.combinationSlotAddresses.ToArray();
                 addresses.AddRange(slotAddresses);
             }
