@@ -55,6 +55,12 @@ namespace Nekoyume.UI
             HelpTooltip.HelpMe(100008, true);
         }
 
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            base.Close(ignoreCloseAnimation);
+            petInventory.Hide();
+        }
+
         public void SetCaching(
             Address avatarAddress,
             int slotIndex,
