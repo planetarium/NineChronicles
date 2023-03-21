@@ -195,5 +195,24 @@ namespace Lib9c.Tests.Action
                 Random = new TestRandom(),
             }));
         }
+
+        [Fact]
+        public void Execute_Throw_ArgumentOutOfRangeException()
+        {
+            var productInfos = new List<IProductInfo>();
+            for (int i = 0; i < CancelProductRegistration.Capacity + 1; i++)
+            {
+                productInfos.Add(new ItemProductInfo());
+            }
+
+            var action = new CancelProductRegistration
+            {
+                AvatarAddress = _avatarAddress,
+                ProductInfos = productInfos,
+                ChargeAp = false,
+            };
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => action.Execute(new ActionContext()));
+        }
     }
 }

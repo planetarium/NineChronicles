@@ -317,5 +317,23 @@
 
             Assert.Throws<ListEmptyException>(() => action.Execute(new ActionContext()));
         }
+
+        [Fact]
+        public void Execute_Throw_ArgumentOutOfRangeException()
+        {
+            var reRegisterInfos = new List<(IProductInfo, IRegisterInfo)>();
+            for (int i = 0; i < ReRegisterProduct.Capacity + 1; i++)
+            {
+                reRegisterInfos.Add((new ItemProductInfo(), new RegisterInfo()));
+            }
+
+            var action = new ReRegisterProduct
+            {
+                AvatarAddress = _avatarAddress,
+                ReRegisterInfos = reRegisterInfos,
+            };
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => action.Execute(new ActionContext()));
+        }
     }
 }
