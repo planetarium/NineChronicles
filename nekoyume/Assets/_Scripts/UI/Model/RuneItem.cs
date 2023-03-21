@@ -37,6 +37,14 @@ namespace Nekoyume.UI.Model
 
             IsMaxLevel = level == optionRow.LevelOptionMap.Count;
 
+            var runeRow = Game.Game.instance.TableSheets.RuneSheet[row.Id];
+            if (!States.Instance.AvatarBalance.ContainsKey(runeRow.Ticker))
+            {
+                return;
+            }
+
+            RuneStone = States.Instance.AvatarBalance[runeRow.Ticker];
+
             var costSheet = Game.Game.instance.TableSheets.RuneCostSheet;
             if (!costSheet.TryGetValue(row.Id, out var costRow))
             {
@@ -55,13 +63,6 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
-            var runeRow = Game.Game.instance.TableSheets.RuneSheet[row.Id];
-            if (!States.Instance.AvatarBalance.ContainsKey(runeRow.Ticker))
-            {
-                return;
-            }
-
-            RuneStone = States.Instance.AvatarBalance[runeRow.Ticker];
             EnoughRuneStone = RuneStone.MajorUnit >= Cost.RuneStoneQuantity;
             EnoughCrystal = States.Instance.CrystalBalance.MajorUnit >= Cost.CrystalQuantity;
             EnoughNcg = States.Instance.GoldBalanceState.Gold.MajorUnit >= Cost.NcgQuantity;
