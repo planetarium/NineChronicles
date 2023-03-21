@@ -371,6 +371,24 @@ namespace Lib9c.Tests.Action
             }));
         }
 
+        [Fact]
+        public void Execute_Throw_ArgumentOutOfRangeException()
+        {
+            var registerInfos = new List<RegisterInfo>();
+            for (int i = 0; i < RegisterProduct.Capacity + 1; i++)
+            {
+                registerInfos.Add(new RegisterInfo());
+            }
+
+            var action = new RegisterProduct
+            {
+                AvatarAddress = _avatarState.address,
+                RegisterInfos = registerInfos,
+            };
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => action.Execute(new ActionContext()));
+        }
+
         public class ValidateMember
         {
             public IEnumerable<IRegisterInfo> RegisterInfos { get; set; }

@@ -23,6 +23,9 @@ namespace Nekoyume.Action
     [ActionType("buy_product")]
     public class BuyProduct : GameAction
     {
+        // Capacity from Buy limits in NineChronicles
+        // https://github.com/planetarium/NineChronicles/blob/v100372-1/nekoyume/Assets/_Scripts/UI/Shop/BuyView.cs#L127
+        public const int Capacity = 20;
         public Address AvatarAddress;
         public IEnumerable<IProductInfo> ProductInfos;
 
@@ -42,6 +45,12 @@ namespace Nekoyume.Action
             if (!ProductInfos.Any())
             {
                 throw new ListEmptyException("ProductInfos was empty.");
+            }
+
+            if (ProductInfos.Count() > Capacity)
+            {
+                throw new ArgumentOutOfRangeException($"{nameof(ProductInfos)} must be less than or equal {Capacity}.");
+
             }
 
             if (ProductInfos.Any(p => p.AgentAddress == context.Signer ||

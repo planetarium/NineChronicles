@@ -311,6 +311,24 @@ namespace Lib9c.Tests.Action
             }
         }
 
+        [Fact]
+        public void Execute_Throw_ArgumentOutOfRangeException()
+        {
+            var productInfos = new List<ItemProductInfo>();
+            for (int i = 0; i < BuyProduct.Capacity + 1; i++)
+            {
+                productInfos.Add(new ItemProductInfo());
+            }
+
+            var action = new BuyProduct
+            {
+                AvatarAddress = _sellerAvatarAddress2,
+                ProductInfos = productInfos,
+            };
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => action.Execute(new ActionContext()));
+        }
+
         public class ExecuteMember
         {
             public IEnumerable<IProductInfo> ProductInfos { get; set; }

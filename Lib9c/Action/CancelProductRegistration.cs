@@ -20,6 +20,7 @@ namespace Nekoyume.Action
     public class CancelProductRegistration : GameAction
     {
         public const int CostAp = 5;
+        public const int Capacity = 100;
         public Address AvatarAddress;
         public List<IProductInfo> ProductInfos;
         public bool ChargeAp;
@@ -34,6 +35,11 @@ namespace Nekoyume.Action
             if (!ProductInfos.Any())
             {
                 throw new ListEmptyException("ProductInfos was empty.");
+            }
+
+            if (ProductInfos.Count > Capacity)
+            {
+                throw new ArgumentOutOfRangeException($"{nameof(ProductInfos)} must be less than or equal {Capacity}.");
             }
 
             foreach (var productInfo in ProductInfos)
