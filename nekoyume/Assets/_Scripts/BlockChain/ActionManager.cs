@@ -1391,7 +1391,13 @@ namespace Nekoyume.BlockChain
             int petId,
             int targetLevel)
         {
-            // TODO: add Analyzer tracking
+            var sentryTrace = Analyzer.Instance.Track("Unity/PetEnhancement", new Dictionary<string, Value>()
+            {
+                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                ["TargetLevel"] = targetLevel,
+                ["PetId"] = petId,
+            }, true);
             var action = new PetEnhancement
             {
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
@@ -1408,7 +1414,7 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e =>
                 {
                     Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
-                });
+                }).Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
