@@ -64,9 +64,14 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
+            CloseWidget = () =>
+            {
+                Find<DccMain>().Show(true);
+                Close(true);
+            };
             backButton.onClick.AddListener(() =>
             {
-                Close(true);
+                CloseWidget.Invoke();
             });
             dccButton.onClick.AddListener(() =>
             {
@@ -121,12 +126,6 @@ namespace Nekoyume.UI
                 }
             }).AddTo(_disposables);
             scroll.OnClick.Subscribe(OnClickPetSlot).AddTo(_disposables);
-        }
-
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            Find<DccMain>().Show(true);
-            base.Close(ignoreCloseAnimation);
         }
 
         public void UpdateView()

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
@@ -135,8 +136,8 @@ namespace Nekoyume.UI
             maxLevelReachedText.gameObject.SetActive(false);
             submitButton.Text = LevelUpText;
             var option = TableSheets.Instance.PetOptionSheet[petState.PetId].LevelOptionMap[petState.Level];
-            contentText.text = L10nManager.Localize($"PET_DESCRIPTION_{option.OptionType}",
-                option.OptionValue);
+            contentText.text =
+                PetFrontHelper.GetDefaultDescriptionText(option, States.Instance.GameConfigState);
             petInfoView.Set(_petRow.Id,
                 _petRow.Grade
             );
