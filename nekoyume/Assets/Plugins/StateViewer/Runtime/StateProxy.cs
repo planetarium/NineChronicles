@@ -9,7 +9,7 @@ using Nekoyume.BlockChain;
 
 namespace StateViewer.Runtime
 {
-    internal class StateProxy
+    public class StateProxy
     {
         public IAgent Agent { get; }
         private Dictionary<string, Address> Aliases { get; }

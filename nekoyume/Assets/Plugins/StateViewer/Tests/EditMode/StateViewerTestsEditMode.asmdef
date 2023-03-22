@@ -2,9 +2,10 @@
     "name": "StateViewerTestsEditMode",
     "rootNamespace": "",
     "references": [
-        "GUID:1564f2a090ce2426caf8f207948f5d49",
         "GUID:27619889b8ba8c24980f49ee34dbb44a",
-        "GUID:0acc523941302664db1f4e527237feb3"
+        "GUID:0acc523941302664db1f4e527237feb3",
+        "GUID:af96a0512358e405c827cf7d23907e5a",
+        "GUID:1564f2a090ce2426caf8f207948f5d49"
     ],
     "includePlatforms": [
         "Editor"
