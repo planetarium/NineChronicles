@@ -74,6 +74,7 @@ namespace Nekoyume.UI.Module
 
                 baseItemView.LevelLimitObject.SetActive(model.LevelLimited);
 
+                baseItemView.OptionTag.gameObject.SetActive(true);
                 baseItemView.OptionTag.Set(model.ItemBase);
 
                 baseItemView.CountText.gameObject.SetActive(model.ItemBase.ItemType == ItemType.Material);
