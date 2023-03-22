@@ -1,8 +1,5 @@
-using Nekoyume.Game.Character;
-using Nekoyume.Helper;
+using Libplanet;
 using Nekoyume.L10n;
-using Nekoyume.Model.State;
-using Nekoyume.State;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
@@ -26,14 +23,14 @@ namespace Nekoyume.UI
             string playerName,
             int playerLevel,
             int playerFullCostumeOrArmorId,
+            Address playerAvatarAddress,
             string enemyName,
             int enemyLevel,
-            int enemyFullCostumeOrArmorId)
+            int enemyFullCostumeOrArmorId,
+            Address enemyAvatarAddress)
         {
-            var playerSprite = SpriteHelper.GetItemIcon(playerFullCostumeOrArmorId);
-            playerProfile.Set(playerLevel, playerName, playerSprite);
-            var enemySprite = SpriteHelper.GetItemIcon(enemyFullCostumeOrArmorId);
-            enemyProfile.Set(enemyLevel, enemyName, enemySprite);
+            playerProfile.Set(playerLevel, playerName, playerFullCostumeOrArmorId, playerAvatarAddress);
+            enemyProfile.Set(enemyLevel, enemyName, enemyFullCostumeOrArmorId, enemyAvatarAddress);
             loadingText.text = L10nManager.Localize("UI_MATCHING_OPPONENT");
             Show();
         }
