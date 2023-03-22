@@ -55,7 +55,7 @@ Material:
     - _BumpOutline: 0
     - _ColorMask: 15
     - _Diffuse: 0
-    - _FaceDilate: -0.02
+    - _FaceDilate: 0.039
     - _FaceUVSpeedX: 0
     - _FaceUVSpeedY: 0
     - _GlowInner: 1
@@ -74,7 +74,7 @@ Material:
     - _Reflectivity: 10
     - _ScaleRatioA: 0.8333333
     - _ScaleRatioB: 0.3121875
-    - _ScaleRatioC: 0.49910071
+    - _ScaleRatioC: 0.463729
     - _ScaleX: 1
     - _ScaleY: 1
     - _ShaderFlags: 0
@@ -137,7 +137,7 @@ MonoBehaviour:
     m_AscentLine: 46.4
     m_CapLine: 29
     m_MeanLine: 22
-    m_Baseline: 0
+    m_Baseline: 2
     m_DescentLine: -12.8
     m_SuperscriptOffset: 46.4
     m_SuperscriptSize: 0.5

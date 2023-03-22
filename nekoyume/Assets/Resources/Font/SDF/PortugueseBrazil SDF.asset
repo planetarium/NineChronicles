@@ -55,7 +55,7 @@ Material:
     - _BumpOutline: 0
     - _ColorMask: 15
     - _Diffuse: 0
-    - _FaceDilate: -0.02
+    - _FaceDilate: 0.048
     - _FaceUVSpeedX: 0
     - _FaceUVSpeedY: 0
     - _GlowInner: 1
@@ -74,7 +74,7 @@ Material:
     - _Reflectivity: 10
     - _ScaleRatioA: 0.8333333
     - _ScaleRatioB: 0.374625
-    - _ScaleRatioC: 0.49910071
+    - _ScaleRatioC: 0.45833334
     - _ScaleX: 1
     - _ScaleY: 1
     - _ShaderFlags: 0
