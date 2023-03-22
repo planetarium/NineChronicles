@@ -82,7 +82,24 @@ namespace Nekoyume.UI.Module
 
         public void SetData(FungibleAssetValue fav, System.Action onClick = null)
         {
-            gradeImage.enabled = false;
+            if (!RuneFrontHelper.TryGetRuneData(fav.Currency.Ticker, out var runeData))
+            {
+                return;
+            }
+            var sheet = Game.Game.instance.TableSheets.RuneListSheet;
+            if (!sheet.TryGetValue(runeData.id, out var row))
+            {
+                return;
+            }
+
+            var data = itemViewData.GetItemViewData(row.Grade);
+
+            gradeHsv.range = data.GradeHsvRange;
+            gradeHsv.hue = data.GradeHsvHue;
+            gradeHsv.saturation = data.GradeHsvSaturation;
+            gradeHsv.value = data.GradeHsvValue;
+
+            gradeImage.overrideSprite = data.GradeBackground;
             iconImage.enabled = true;
             iconImage.overrideSprite = fav.GetIconSprite();
             iconImage.SetNativeSize();
