@@ -2,10 +2,8 @@ namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.Immutable;
     using System.Globalization;
     using System.Linq;
-    using System.Numerics;
     using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
@@ -13,14 +11,11 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
-    using Nekoyume.Arena;
     using Nekoyume.Extensions;
     using Nekoyume.Helper;
-    using Nekoyume.Model.Arena;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
-    using Nekoyume.TableData;
     using Xunit;
     using static Lib9c.SerializeKeys;
 

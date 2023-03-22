@@ -10,10 +10,8 @@ using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
-using Nekoyume.Arena;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
-using Nekoyume.Model.Arena;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
@@ -44,10 +42,10 @@ namespace Nekoyume.Action
         public Address avatarAddress;
         public int slotIndex;
 
-        public Guid ItemId => itemId;
-        public Guid MaterialId => materialId;
-        public Address AvatarAddress => avatarAddress;
-        public int SlotIndex => slotIndex;
+        Guid IItemEnhancementV2.ItemId => itemId;
+        Guid IItemEnhancementV2.MaterialId => materialId;
+        Address IItemEnhancementV2.AvatarAddress => avatarAddress;
+        int IItemEnhancementV2.SlotIndex => slotIndex;
 
         [Serializable]
         public class ResultModel : AttachmentActionResult
@@ -73,7 +71,7 @@ namespace Nekoyume.Action
                 actionPoint = serialized["actionPoint"].ToInteger();
                 enhancementResult = serialized["enhancementResult"].ToEnum<EnhancementResult>();
                 preItemUsable = serialized.ContainsKey("preItemUsable")
-                    ? (ItemUsable) ItemFactory.Deserialize((Dictionary) serialized["preItemUsable"])
+                    ? (ItemUsable)ItemFactory.Deserialize((Dictionary)serialized["preItemUsable"])
                     : null;
                 CRYSTAL = serialized["c"].ToFungibleAssetValue();
             }
@@ -82,16 +80,16 @@ namespace Nekoyume.Action
 #pragma warning disable LAA1002
                 new Dictionary(new Dictionary<IKey, IValue>
                 {
-                    [(Text) "id"] = id.Serialize(),
-                    [(Text) "materialItemIdList"] = materialItemIdList
+                    [(Text)"id"] = id.Serialize(),
+                    [(Text)"materialItemIdList"] = materialItemIdList
                         .OrderBy(i => i)
                         .Select(g => g.Serialize()).Serialize(),
-                    [(Text) "gold"] = gold.Serialize(),
-                    [(Text) "actionPoint"] = actionPoint.Serialize(),
-                    [(Text) "enhancementResult"] = enhancementResult.Serialize(),
-                    [(Text) "preItemUsable"] = preItemUsable.Serialize(),
-                    [(Text) "c"] = CRYSTAL.Serialize(),
-                }.Union((Dictionary) base.Serialize()));
+                    [(Text)"gold"] = gold.Serialize(),
+                    [(Text)"actionPoint"] = actionPoint.Serialize(),
+                    [(Text)"enhancementResult"] = enhancementResult.Serialize(),
+                    [(Text)"preItemUsable"] = preItemUsable.Serialize(),
+                    [(Text)"c"] = CRYSTAL.Serialize(),
+                }.Union((Dictionary)base.Serialize()));
 #pragma warning restore LAA1002
         }
 
@@ -116,7 +114,7 @@ namespace Nekoyume.Action
             itemId = plainValue["itemId"].ToGuid();
             materialId = plainValue["materialId"].ToGuid();
             avatarAddress = plainValue["avatarAddress"].ToAddress();
-            if (plainValue.TryGetValue((Text) "slotIndex", out var value))
+            if (plainValue.TryGetValue((Text)"slotIndex", out var value))
             {
                 slotIndex = value.ToInteger();
             }
@@ -207,7 +205,7 @@ namespace Nekoyume.Action
             }
 
             var maxLevel = GetEquipmentMaxLevel(enhancementEquipment, enhancementCostSheet);
-            if(enhancementEquipment.level >= maxLevel)
+            if (enhancementEquipment.level >= maxLevel)
             {
                 throw new EquipmentLevelExceededException(
                     $"{addressesHex}Aborted due to invalid equipment level: {enhancementEquipment.level} < {maxLevel}");
@@ -294,7 +292,7 @@ namespace Nekoyume.Action
             enhancementEquipment.Unequip();
 
             // clone items
-            var preItemUsable = new Equipment((Dictionary) enhancementEquipment.Serialize());
+            var preItemUsable = new Equipment((Dictionary)enhancementEquipment.Serialize());
 
             // Equipment level up & Update
             var equipmentResult = GetEnhancementResult(row, ctx.Random);
@@ -326,7 +324,7 @@ namespace Nekoyume.Action
 
                 crystal = CrystalCalculator.CalculateCrystal(
                     context.Signer,
-                    new [] { preItemUsable },
+                    new[] { preItemUsable },
                     stakedAmount,
                     true,
                     sheets.GetSheet<CrystalEquipmentGrindingSheet>(),
@@ -419,7 +417,7 @@ namespace Nekoyume.Action
             var grade = equipment.Grade;
             var level = equipment.level + 1;
             var itemSubType = equipment.ItemSubType;
-            row = sheet.OrderedList.FirstOrDefault(x => x.Grade == grade  && x.Level == level && x.ItemSubType == itemSubType);
+            row = sheet.OrderedList.FirstOrDefault(x => x.Grade == grade && x.Level == level && x.ItemSubType == itemSubType);
             return row != null;
         }
 
