@@ -32,14 +32,13 @@ namespace Nekoyume.UI
         [SerializeField]
         private ConditionalButton dccButton;
 
-        private const string DccShortCutUrl = "https://dcc.nine-chronicles.com/staking";
-
         protected override void Awake()
         {
             base.Awake();
 
             closeButton.onClick.AddListener(() => Close());
-            dccShortCutButton.onClick.AddListener(() => Application.OpenURL(DccShortCutUrl));
+            dccShortCutButton.onClick.AddListener(() =>
+                Find<DccSettingPopup>().ConnectDcc());
         }
 
         public void Show()
