@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
-using Lib9c.Model.Order;
 using Libplanet.Assets;
 using MarketService.Response;
 using mixpanel;
@@ -228,7 +227,7 @@ namespace Nekoyume.UI
                         break;
                     }
 
-                    var confirm = Widget.Find<IconAndButtonSystem>();
+                    var confirm = Find<IconAndButtonSystem>();
                     confirm.ShowWithTwoButton(L10nManager.Localize("UI_CONFIRM"),
                         L10nManager.Localize("UI_APREFILL_GUIDE_FORMAT",
                             L10nManager.Localize(key), apStoneCount),
@@ -594,17 +593,8 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var inventoryItems = States.Instance.CurrentAvatarState.inventory.Items;
-            var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
-            var apStoneCount = inventoryItems.Where(x =>
-                    x.item.ItemSubType == ItemSubType.ApStone &&
-                    !x.Locked &&
-                    !(x.item is ITradableItem tradableItem &&
-                      tradableItem.RequiredBlockIndex > blockIndex))
-                .Sum(item => item.count);
-
             Find<ItemCountableAndPricePopup>().Show(SharedModel.ItemCountableAndPricePopup.Value,
-                SharedModel.ItemCountableAndPricePopup.Value.IsSell.Value, apStoneCount);
+                SharedModel.ItemCountableAndPricePopup.Value.IsSell.Value);
         }
 
         private void SubscribeRegisterProduct(Model.ItemCountableAndPricePopup data)
