@@ -296,9 +296,11 @@ namespace Nekoyume.UI
                 playerAvatar.NameWithHash,
                 playerAvatar.level,
                 Util.GetPortraitId(BattleType.Arena),
+                playerAvatar.address,
                 _chooseAvatarState.NameWithHash,
                 _chooseAvatarState.level,
-                Util.GetPortraitId(_chooseAvatarEquipments, _chooseAvatarCostumes));
+                Util.GetPortraitId(_chooseAvatarEquipments, _chooseAvatarCostumes),
+                _chooseAvatarState.address);
 
             var costumes = States.Instance.CurrentItemSlotStates[BattleType.Arena].Costumes;
             var equipments = States.Instance.CurrentItemSlotStates[BattleType.Arena].Equipments;
@@ -324,9 +326,11 @@ namespace Nekoyume.UI
                 playerAvatar.NameWithHash,
                 playerAvatar.level,
                 Util.GetPortraitId(BattleType.Arena),
+                playerAvatar.address,
                 _chooseAvatarState.NameWithHash,
                 _chooseAvatarState.level,
-                Util.GetPortraitId(_chooseAvatarEquipments, _chooseAvatarCostumes));
+                Util.GetPortraitId(_chooseAvatarEquipments, _chooseAvatarCostumes),
+                _chooseAvatarState.address);
 
             var costumes = States.Instance.CurrentItemSlotStates[BattleType.Arena].Costumes;
             var equipments = States.Instance.CurrentItemSlotStates[BattleType.Arena].Equipments;

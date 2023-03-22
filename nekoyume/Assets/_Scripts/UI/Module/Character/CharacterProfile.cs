@@ -1,31 +1,26 @@
+using Libplanet;
+using Nekoyume.Game;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
     public class CharacterProfile : MonoBehaviour
     {
-        public bool enemy;
-        public Image portrait;
-        public Image portraitEnemy;
-        public TextMeshProUGUI characterInfo;
+        [SerializeField] private TextMeshProUGUI characterInfoText;
+        [SerializeField] private DetailedCharacterView characterView;
 
-        public void Set(int level, string nameWithHash, Sprite sprite)
+        public void Set(int level, string nameWithHash, int fullCostumeOrArmorId, Address address)
         {
-            characterInfo.text = $"<color=#B38271>Lv.{level}</color> {nameWithHash}";
+            characterInfoText.text = nameWithHash;
 
-            if (enemy)
+            if (Dcc.instance.Avatars.TryGetValue(address.ToString(), out var dccId))
             {
-                portraitEnemy.overrideSprite = sprite;
-                portrait.gameObject.SetActive(false);
-                portraitEnemy.gameObject.SetActive(true);
+                characterView.SetByDccId(dccId, level);
             }
             else
             {
-                portrait.overrideSprite = sprite;
-                portrait.gameObject.SetActive(true);
-                portraitEnemy.gameObject.SetActive(false);
+                characterView.SetByFullCostumeOrArmorId(fullCostumeOrArmorId, level);
             }
         }
     }
