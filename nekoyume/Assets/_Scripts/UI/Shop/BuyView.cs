@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
@@ -385,9 +385,17 @@ namespace Nekoyume
         {
             _selectedSubTypeFilter.Subscribe(OnUpdateSubTypeFilter).AddTo(gameObject);
             _selectedSortFilter.Subscribe(OnUpdateSortTypeFilter).AddTo(gameObject);
-            _selectedItemIds.Subscribe(_ => UpdateView()).AddTo(gameObject);
+            _selectedItemIds.Subscribe(_ =>
+            {
+                _page.SetValueAndForceNotify(0);
+                UpdateView();
+            }).AddTo(gameObject);
             _isAscending.Subscribe(OnUpdateAscending).AddTo(gameObject);
-            _levelLimit.Subscribe(_ => UpdateView()).AddTo(gameObject);
+            _levelLimit.Subscribe(_ =>
+            {
+                _page.SetValueAndForceNotify(0);
+                UpdateView();
+            }).AddTo(gameObject);
 
             _mode.Subscribe(x =>
             {
@@ -541,11 +549,26 @@ namespace Nekoyume
         protected override IEnumerable<ShopItem> GetSortedModels(
             Dictionary<ItemSubTypeFilter, List<ShopItem>> items)
         {
-            return items[_selectedSubTypeFilter.Value];
+            var models = items[_selectedSubTypeFilter.Value];
+            if (_selectedItemIds.Value.Any()) // _selectedItemIds
+            {
+                var selectedModels  = models.Where(x =>
+                    _selectedItemIds.Value.Exists(y => x.ItemBase.Id.Equals(y))).ToList();
+                models = selectedModels;
+            }
+
+            if (_levelLimit.Value)
+            {
+                models = models.Where(x => Util.IsUsableItem(x.ItemBase)).ToList();
+            }
+
+            return models;
         }
 
         protected override void UpdateView()
         {
+            base.UpdateView();
+
             var expiredItems = _selectedItems.Where(x => x.Expired.Value).ToList();
             foreach (var item in expiredItems)
             {
@@ -564,7 +587,6 @@ namespace Nekoyume
             }
 
             UpdateSelected(_selectedItems);
-            base.UpdateView();
         }
 
         private void OnSearch()
