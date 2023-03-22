@@ -136,17 +136,8 @@ namespace Nekoyume.UI
             maxLevelReachedText.gameObject.SetActive(false);
             submitButton.Text = LevelUpText;
             var option = TableSheets.Instance.PetOptionSheet[petState.PetId].LevelOptionMap[petState.Level];
-            var optionString = option.OptionValue.ToString(CultureInfo.InvariantCulture);
-            if (option.OptionType == PetOptionType.IncreaseBlockPerHourglass)
-            {
-                var originalValue = States.Instance.GameConfigState.HourglassPerBlock;
-                var optionValue = option.OptionValue;
-                optionString =
-                    $"{originalValue + optionValue} ({originalValue}+{optionValue})";
-            }
-
-            contentText.text = L10nManager.Localize($"PET_DESCRIPTION_{option.OptionType}",
-                optionString);
+            contentText.text =
+                PetFrontHelper.GetDefaultDescriptionText(option, States.Instance.GameConfigState);
             petInfoView.Set(_petRow.Id,
                 _petRow.Grade
             );
