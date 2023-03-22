@@ -179,7 +179,7 @@ namespace Nekoyume.State
                     .Add(filter, new List<FungibleAssetValueProductResponseModel>());
             }
 
-            var ticker = filter == ItemSubTypeFilter.RuneStone ? "RUNE" : "Soulstone";
+            var ticker = filter == ItemSubTypeFilter.RuneStone ? "RUNE" : "SOULSTONE";
             var offset = CachedBuyFungibleAssetProducts[orderType][filter].Count;
             var (fungibleAssets, totalCount) =
                 await Game.Game.instance.MarketServiceClient.GetBuyFungibleAssetProducts(ticker, offset, limit, orderType);
