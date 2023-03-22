@@ -287,7 +287,11 @@ namespace StateViewer.Runtime
                         parent: this,
                         key: (IKey)ParseToValue(key, ValueKind.Text)));
                     break;
+                default:
+                    return;
             }
+
+            ValueContent = ParseToString(Value);
         }
 
         public void RemoveChild(StateTreeViewItemModel? child)
@@ -317,9 +321,12 @@ namespace StateViewer.Runtime
                     Value = new Dictionary(dict.Remove(child.Key!));
                     Children.Remove(child);
                     break;
+                default:
+                    return;
             }
 
             child.Parent = null;
+            ValueContent = ParseToString(Value);
         }
 
         public int FindIdRecursive(int prevId)
