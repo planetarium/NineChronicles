@@ -1348,7 +1348,7 @@ namespace Nekoyume.BlockChain
             {
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
                 RuneId = runeId,
-                TryCount = tryCount,
+                TryCount = tryCount > 0 ? tryCount : 1,
             };
 
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);

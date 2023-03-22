@@ -156,6 +156,7 @@ namespace Nekoyume.UI
                     return;
                 }
                 TryCount.Value = Math.Min(_maxTryCount, TryCount.Value + 1);
+                TryCount.Value = Math.Max(1, TryCount.Value);
             });
             minusButton.onClick.AddListener(() =>
             {
@@ -505,7 +506,11 @@ namespace Nekoyume.UI
                     1,
                     _maxTryCount > 0 ? _maxTryCount : 1,
                     1,
-                    (x) => TryCount.Value = x,
+                    (x) =>
+                    {
+                        TryCount.Value = x;
+                        TryCount.Value = Math.Max(1, TryCount.Value);
+                    },
                     _maxTryCount > 0,
                     true);
             }
