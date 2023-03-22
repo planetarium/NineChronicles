@@ -89,8 +89,8 @@ namespace Nekoyume.L10n
         /// <summary>
         /// font file: Assets/Font/TTF/NotoSansThai_Regular.orf
         /// font asset file: Assets/Resources/Font/SDF/Thai SDF.asset
-        ///     - Sampling Font Size: 80
-        ///     - Padding: 7
+        ///     - Sampling Font Size: 40
+        ///     - Padding: 5
         ///     - Packing Method: Fast
         ///     - Atlas Resolution: 512x512
         ///     - Character Set: Unicode Range (Hex)
