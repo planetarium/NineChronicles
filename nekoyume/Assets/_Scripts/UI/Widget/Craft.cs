@@ -88,7 +88,7 @@ namespace Nekoyume.UI
 
         private const string ConsumableRecipeGroupPath = "Recipe/ConsumableRecipeGroup";
 
-        private bool _isEquipment;
+        private bool _isTutorial;
 
         private List<IDisposable> _disposables = new List<IDisposable>();
 
@@ -499,10 +499,18 @@ namespace Nekoyume.UI
                 RequiredBlockMax = requiredBlock + additionalBlock,
             };
 
-            Find<PetSelectionPopup>().Show(craftInfo, petId =>
+            if (_isTutorial)
             {
-                CombinationEquipmentAction(recipeInfo, petId);
-            });
+                CombinationEquipmentAction(recipeInfo, null);
+                _isTutorial = false;
+            }
+            else
+            {
+                Find<PetSelectionPopup>().Show(craftInfo, petId =>
+                {
+                    CombinationEquipmentAction(recipeInfo, petId);
+                });
+            }
         }
 
         private void OnClickConsumableAction(SubRecipeView.RecipeInfo recipeInfo)
@@ -739,6 +747,7 @@ namespace Nekoyume.UI
 
         public void TutorialActionClickCombinationSubmitButton()
         {
+            _isTutorial = true;
             equipmentSubRecipeView.CombineCurrentRecipe();
         }
 

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Bencodex.Types;
@@ -58,7 +58,7 @@ namespace Nekoyume
                 avatarState.inventory = preInventory;
             }
 
-            if (serializedValues[1] is Dictionary serializedWorldInformation)
+            if (serializedValues[2] is Dictionary serializedWorldInformation)
             {
                 avatarState.worldInformation = new WorldInformation(serializedWorldInformation);
             }
@@ -67,7 +67,7 @@ namespace Nekoyume
                 avatarState.worldInformation = preWorldInformation;
             }
 
-            if (serializedValues[2] is Dictionary serializedQuestList)
+            if (serializedValues[3] is Dictionary serializedQuestList)
             {
                 avatarState.questList = new QuestList(serializedQuestList);
             }
