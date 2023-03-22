@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Collections.Generic;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
@@ -5,7 +7,7 @@ using Libplanet;
 using Libplanet.Assets;
 using Nekoyume.BlockChain;
 
-namespace StateViewer.Editor
+namespace StateViewer.Runtime
 {
     internal class StateProxy
     {
@@ -18,7 +20,7 @@ namespace StateViewer.Editor
             Aliases = new Dictionary<string, Address>();
         }
 
-        public async UniTask<(Address addr, IValue value)> GetStateAsync(string searchString)
+        public async UniTask<(Address addr, IValue? value)> GetStateAsync(string searchString)
         {
             try
             {

@@ -8,6 +8,7 @@ using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
+using StateViewer.Runtime;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -72,6 +73,9 @@ namespace StateViewer.Editor
 
         private StateProxy _stateProxy;
 
+        private static bool IsSavable => !Application.isPlaying ||
+                                         !Game.instance.IsInitialized;
+
         [MenuItem("Tools/Lib9c/State Viewer")]
         private static void ShowWindow() =>
             GetWindow<StateViewerWindow>("State Viewer", true).Show();
@@ -122,9 +126,9 @@ namespace StateViewer.Editor
                 autoResize = true,
                 allowToggleVisibility = false,
             };
-            var editColumn = new MultiColumnHeaderState.Column
+            var addColumn = new MultiColumnHeaderState.Column
             {
-                headerContent = new GUIContent("Add/Edit"),
+                headerContent = new GUIContent("Add"),
                 headerTextAlignment = TextAlignment.Center,
                 canSort = false,
                 width = 100,
@@ -133,7 +137,7 @@ namespace StateViewer.Editor
                 autoResize = true,
                 allowToggleVisibility = false,
             };
-            var addRemoveColumn = new MultiColumnHeaderState.Column
+            var removeColumn = new MultiColumnHeaderState.Column
             {
                 headerContent = new GUIContent("Remove"),
                 headerTextAlignment = TextAlignment.Center,
@@ -150,8 +154,8 @@ namespace StateViewer.Editor
                 aliasColumn,
                 valueKindColumn,
                 valueColumn,
-                editColumn,
-                addRemoveColumn,
+                addColumn,
+                removeColumn,
             });
             _stateTreeHeader = new MultiColumnHeader(stateTreeHeaderState);
             _stateTreeHeader.ResizeToFit();
@@ -300,6 +304,7 @@ namespace StateViewer.Editor
         {
             GUILayout.BeginHorizontal();
             EditorGUILayout.Space();
+            EditorGUI.BeginDisabledGroup(IsSavable);
             if (GUILayout.Button("Save", GUILayout.MaxWidth(50f)))
             {
                 var stateList = new List<(Address addr, IValue value)>
@@ -309,6 +314,7 @@ namespace StateViewer.Editor
                 ActionManager.Instance?.ManipulateState(stateList, null);
             }
 
+            EditorGUI.EndDisabledGroup();
             GUILayout.EndHorizontal();
         }
 
@@ -319,6 +325,7 @@ namespace StateViewer.Editor
             // NCG
             EditorGUILayout.BeginHorizontal();
             _ncgValue = EditorGUILayout.TextField("NCG", _ncgValue);
+            EditorGUI.BeginDisabledGroup(IsSavable);
             if (GUILayout.Button("Save", GUILayout.MaxWidth(50f)))
             {
                 var balanceList = new List<(Address addr, FungibleAssetValue fav)>
@@ -328,10 +335,12 @@ namespace StateViewer.Editor
                 ActionManager.Instance?.ManipulateState(null, balanceList);
             }
 
+            EditorGUI.EndDisabledGroup();
             EditorGUILayout.EndHorizontal();
 
             // CRYSTAL
             EditorGUILayout.BeginHorizontal();
+            EditorGUI.BeginDisabledGroup(IsSavable);
             _crystalValue = EditorGUILayout.TextField("CRYSTAL", _crystalValue);
             if (GUILayout.Button("Save", GUILayout.MaxWidth(50f)))
             {
@@ -342,6 +351,7 @@ namespace StateViewer.Editor
                 ActionManager.Instance?.ManipulateState(null, balanceList);
             }
 
+            EditorGUI.EndDisabledGroup();
             EditorGUILayout.EndHorizontal();
         }
 

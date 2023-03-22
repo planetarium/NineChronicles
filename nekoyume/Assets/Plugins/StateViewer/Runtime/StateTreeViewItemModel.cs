@@ -15,49 +15,118 @@ namespace StateViewer.Runtime
 {
     public class StateTreeViewItemModel : IState
     {
-        private Dictionary<string, string>? _reversedSerializeKeys;
+        private static Dictionary<string, string>? _reversedSerializeKeys;
+
+        private IValue _originValue;
 
         /// <summary>
         /// <see cref="UnityEditor.IMGUI.Controls.TreeViewItem"/> has unique id.
         /// </summary>
-        public int TreeViewItemId { get; set; }
+        public int TreeViewItemId { get; private set; }
 
-        public IValue Value { get; }
+        public int TreeViewItemIdPrev { get; private set; }
 
-        public string ValueContent { get; set; }
+        public IValue Value { get; private set; }
 
-        public StateTreeViewItemModel? Parent { get; }
+        public ValueKind ValueType => Value.Kind;
 
-        public int? Index { get; }
+        public string ValueContent { get; private set; }
 
-        public IKey? Key { get; }
+        public StateTreeViewItemModel? Parent { get; private set; }
+
+        public int? Index { get; private set; }
+
+        public IKey? Key { get; private set; }
 
         public string IndexOrKeyContent { get; private set; }
 
-        public string AliasContent { get; }
+        public string AliasContent { get; private set; }
 
         public List<StateTreeViewItemModel> Children { get; } = new();
 
+#pragma warning disable CS8618
         public StateTreeViewItemModel(
-            int treeViewItemId,
-            IValue data,
-            StateTreeViewItemModel? parent = null,
-            int? index = null,
-            IKey? key = null,
-            string? alias = null) : this(data, parent, index, key, alias)
-        {
-            TreeViewItemId = treeViewItemId;
-        }
-
-        public StateTreeViewItemModel(
+#pragma warning restore CS8618
             IValue data,
             StateTreeViewItemModel? parent = null,
             int? index = null,
             IKey? key = null,
             string? alias = null)
         {
-            Value = data;
+            _originValue = data;
+            SetValue(_originValue);
+
+            Parent = parent;
+            var indexOrKeyContent = index is null
+                ? key is null
+                    ? null
+                    : ParseToString(key)
+                : index.ToString();
+            if (Parent is null && indexOrKeyContent is not null)
+            {
+                throw new Exception("index or key parameter is not null when parent is null.");
+            }
+
+            SetIndexOrKeyContent(indexOrKeyContent, alias);
+        }
+
+        /// <summary>
+        /// Returns the serialized value of the current state.
+        /// This method replace the original value.
+        /// </summary>
+        public IValue Serialize()
+        {
             switch (Value.Kind)
+            {
+                case ValueKind.Null:
+                case ValueKind.Boolean:
+                case ValueKind.Binary:
+                case ValueKind.Integer:
+                case ValueKind.Text:
+                    _originValue = ParseToValue(ValueContent, Value.Kind);
+                    break;
+                case ValueKind.List:
+                    _originValue = new List(Children
+                        .OrderBy(child => child.Index)
+                        .Select(child => child.Serialize()));
+                    break;
+                case ValueKind.Dictionary:
+                    _originValue = new Dictionary(Children.Select(child =>
+                    {
+                        if (child.Key is null)
+                        {
+                            throw new Exception("Key of child is null.");
+                        }
+
+                        return new KeyValuePair<IKey, IValue>(
+                            child.Key,
+                            child.Serialize());
+                    }));
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            return _originValue;
+        }
+
+        public int SetTreeViewItemIdRecursive(int treeViewItemId, bool alsoSetPrev = false)
+        {
+            TreeViewItemIdPrev = alsoSetPrev ? treeViewItemId : TreeViewItemId;
+            TreeViewItemId = treeViewItemId;
+            foreach (var child in Children)
+            {
+                treeViewItemId = child.SetTreeViewItemIdRecursive(treeViewItemId + 1);
+            }
+
+            return treeViewItemId;
+        }
+
+        public void SetValue(IValue value)
+        {
+            Value = value;
+            Children.Clear();
+            switch (ValueType)
             {
                 case ValueKind.Null:
                 case ValueKind.Boolean:
@@ -87,51 +156,194 @@ namespace StateViewer.Runtime
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-
-            Parent = parent;
-            Index = index;
-            Key = key;
-            IndexOrKeyContent = Index is null
-                ? Key is null
-                    ? string.Empty
-                    : ParseToString(Key)
-                : Index.ToString();
-            AliasContent = alias ?? GetAlias(IndexOrKeyContent);
         }
 
-        public IValue Serialize()
+        public void SetValueKindContent(ValueKind valueKind)
         {
-            switch (Value.Kind)
+            if (valueKind == ValueType)
+            {
+                return;
+            }
+
+            if (valueKind == _originValue.Kind)
+            {
+                SetValue(_originValue);
+                return;
+            }
+
+            switch (valueKind)
             {
                 case ValueKind.Null:
+                    SetValue(Null.Value);
+                    break;
                 case ValueKind.Boolean:
-                case ValueKind.Binary:
+                    SetValue(new Boolean());
+                    break;
                 case ValueKind.Integer:
+                    SetValue(new Integer());
+                    break;
+                case ValueKind.Binary:
+                    SetValue(new Binary());
+                    break;
                 case ValueKind.Text:
-                    return ParseToValue(ValueContent, Value.Kind);
+                    SetValue(new Text());
+                    break;
                 case ValueKind.List:
-                    return new List(Children.Select(child =>
-                        child.Serialize()));
+                    SetValue(List.Empty);
+                    break;
                 case ValueKind.Dictionary:
-                    return new Dictionary(Children.Select(child =>
-                    {
-                        if (child.Key is null)
-                        {
-                            throw new Exception("Key of child is null.");
-                        }
-
-                        return new KeyValuePair<IKey, IValue>(
-                            (IKey)ParseToValue(child.IndexOrKeyContent, child.Key.Kind),
-                            child.Serialize());
-                    }));
-                default:
-                    throw new ArgumentOutOfRangeException();
+                    SetValue(Dictionary.Empty);
+                    break;
+                default: throw new ArgumentOutOfRangeException();
             }
         }
 
-        public void SetIndexOrKeyContent(string value)
+        public void SetValueContent(string valueContent, bool updateValue = true)
         {
-            IndexOrKeyContent = value;
+            if (updateValue)
+            {
+                try
+                {
+                    var value = ParseToValue(valueContent, ValueType);
+                    SetValue(value);
+                    return;
+                }
+                catch
+                {
+                    // ignored.
+                }
+            }
+
+            ValueContent = valueContent;
+            // TODO: We need a way for the user to recognize that the Value hasn't changed.
+        }
+
+        // FIXME: Separate alias.
+        public void SetIndexOrKeyContent(
+            string? indexOrKey,
+            string? alias = null)
+        {
+            if (indexOrKey is null)
+            {
+                IndexOrKeyContent = string.Empty;
+                return;
+            }
+
+            if (Parent is null)
+            {
+                throw new Exception("Parent is null.");
+            }
+
+            IndexOrKeyContent = indexOrKey;
+            alias ??= GetAlias(indexOrKey);
+            if (Parent.ValueType == ValueKind.List)
+            {
+                Index = int.Parse(indexOrKey);
+                AliasContent = alias;
+                return;
+            }
+
+            if (Parent.ValueType != ValueKind.Dictionary)
+            {
+                throw new Exception("Parent's value type is not list or dictionary.");
+            }
+
+            ValueKind keyType;
+            try
+            {
+                Key = (IKey)ParseToValue(IndexOrKeyContent, ValueKind.Binary);
+                keyType = ValueKind.Binary;
+            }
+            catch
+            {
+                Key = (IKey)ParseToValue(IndexOrKeyContent, ValueKind.Text);
+                keyType = ValueKind.Text;
+            }
+
+            AliasContent = string.IsNullOrEmpty(alias)
+                ? keyType.ToString()
+                : $"({keyType}){alias}";
+        }
+
+        public void AddChild(IValue child)
+        {
+            switch (ValueType)
+            {
+                case ValueKind.List:
+                    var list = ((List)Value).Add(child);
+                    Value = list;
+                    Children.Add(new StateTreeViewItemModel(
+                        child,
+                        parent: this,
+                        index: list.Count - 1));
+                    break;
+                case ValueKind.Dictionary:
+                    var dict = (Dictionary)Value;
+                    var key = dict.Count.ToString();
+                    dict = dict.Add(key, child);
+                    Value = dict;
+                    Children.Add(new StateTreeViewItemModel(
+                        child,
+                        parent: this,
+                        key: (IKey)ParseToValue(key, ValueKind.Text)));
+                    break;
+            }
+        }
+
+        public void RemoveChild(StateTreeViewItemModel? child)
+        {
+            if (child is null ||
+                !Children.Contains(child))
+            {
+                return;
+            }
+
+            switch (ValueType)
+            {
+                case ValueKind.List:
+                    IImmutableList<IValue> list = (List)Value;
+                    list = list.RemoveAt(child.Index!.Value);
+                    Value = new List(list);
+                    Children.Remove(child);
+                    for (var i = 0; i < Children.Count; i++)
+                    {
+                        var c = Children[i];
+                        c.SetIndexOrKeyContent(i.ToString());
+                    }
+
+                    break;
+                case ValueKind.Dictionary:
+                    var dict = (Dictionary)Value;
+                    Value = new Dictionary(dict.Remove(child.Key!));
+                    Children.Remove(child);
+                    break;
+            }
+
+            child.Parent = null;
+        }
+
+        public int FindIdRecursive(int prevId)
+        {
+            if (TreeViewItemIdPrev == prevId)
+            {
+                return TreeViewItemId;
+            }
+
+            foreach (var child in Children)
+            {
+                if (child is null)
+                {
+                    continue;
+                }
+
+                var id = child.FindIdRecursive(prevId);
+                if (id != -1)
+                {
+                    return id;
+                }
+            }
+
+            return -1;
         }
 
         private static string ParseToString(IValue value)
@@ -145,11 +357,7 @@ namespace StateViewer.Runtime
                 case ValueKind.Integer:
                     return ((Integer)value).Inspect(false);
                 case ValueKind.Binary:
-                    var inner = string.Join(
-                        string.Empty,
-                        ((Binary)value).ByteArray
-                        .Select(b => b.ToString("X2")));
-                    return $"0x{inner}";
+                    return $"0x{((Binary)value).ToHex()}";
                 case ValueKind.Text:
                     return (Text)value;
                 case ValueKind.List:
@@ -170,13 +378,12 @@ namespace StateViewer.Runtime
                 case ValueKind.Boolean:
                     return new Boolean(bool.Parse(value));
                 case ValueKind.Binary:
-                    var hex = value.StartsWith("0x")
-                        ? value[2..]
-                        : value;
-                    return new Binary(Enumerable.Range(0, hex.Length)
-                        .Where(x => x % 2 == 0)
-                        .Select(x => Convert.ToByte(hex[x..(x + 2)], 16))
-                        .ToArray());
+                    if (value.StartsWith("0x"))
+                    {
+                        value = value[2..];
+                    }
+
+                    return Binary.FromHex(value);
                 case ValueKind.Integer:
                     return new Integer(BigInteger.Parse(value));
                 case ValueKind.Text:
@@ -188,7 +395,7 @@ namespace StateViewer.Runtime
             }
         }
 
-        private string GetAlias(string key)
+        private static string GetAlias(string key)
         {
             _reversedSerializeKeys ??= typeof(SerializeKeys)
                 .GetFields(
@@ -202,41 +409,5 @@ namespace StateViewer.Runtime
                 ? _reversedSerializeKeys[key]
                 : string.Empty;
         }
-
-        // public void AddChild(StateTreeViewItemModel? child)
-        // {
-        //     if (child is null)
-        //     {
-        //         return;
-        //     }
-        //
-        //     child.Parent?.RemoveChild(child);
-        //     Children.Add(child);
-        //     child.Parent = this;
-        // }
-        //
-        // public void RemoveChild(StateTreeViewItemModel? child)
-        // {
-        //     if (child is null)
-        //     {
-        //         return;
-        //     }
-        //
-        //     if (Children.Contains(child))
-        //     {
-        //         Children.Remove(child);
-        //         child.Parent = null;
-        //     }
-        // }
-
-        // private static IValue? Convert(string value, bool bom = true)
-        // {
-        //     var sanitized = value.Replace("[", "").Replace("]", "");
-        //     var converter = new Bencodex.Json.BencodexJsonConverter();
-        //     var serializerOptions = new JsonSerializerOptions();
-        //     var reader = new Utf8JsonReader(Encoding.UTF8.GetBytes(
-        //         bom ? $"\"\\uFEFF{sanitized}\"" : $"\"{sanitized}\""));
-        //     return converter.Read(ref reader, typeof(Binary), serializerOptions);
-        // }
     }
 }
