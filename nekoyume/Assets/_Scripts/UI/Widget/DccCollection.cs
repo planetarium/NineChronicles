@@ -23,6 +23,9 @@ namespace Nekoyume.UI
         private Button backButton;
 
         [SerializeField]
+        private Button dccButton;
+
+        [SerializeField]
         private PetSlotScroll scroll;
 
         [SerializeField]
@@ -64,6 +67,10 @@ namespace Nekoyume.UI
             backButton.onClick.AddListener(() =>
             {
                 Close(true);
+            });
+            dccButton.onClick.AddListener(() =>
+            {
+                Application.OpenURL(Game.Game.instance.URL.DccMileageShop);
             });
             lockedButton.onClick.AddListener(() =>
             {
