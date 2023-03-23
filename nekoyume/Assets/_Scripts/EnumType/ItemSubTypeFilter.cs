@@ -44,8 +44,6 @@ namespace Nekoyume.EnumType
         Food,
         Costume,
         Stones,
-
-
     }
 
     public static class ItemSubTypeFilterExtension
@@ -68,10 +66,6 @@ namespace Nekoyume.EnumType
                     ItemSubTypeFilter.Food_CRI,
                     ItemSubTypeFilter.Food_HIT,
                     ItemSubTypeFilter.FullCostume,
-                    ItemSubTypeFilter.HairCostume,
-                    ItemSubTypeFilter.EarCostume,
-                    ItemSubTypeFilter.EyeCostume,
-                    ItemSubTypeFilter.TailCostume,
                     ItemSubTypeFilter.Title,
                     ItemSubTypeFilter.Hourglass,
                     ItemSubTypeFilter.ApStone,

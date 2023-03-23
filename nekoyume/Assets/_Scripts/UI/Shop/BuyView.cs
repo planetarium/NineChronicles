@@ -113,10 +113,6 @@ namespace Nekoyume
                     ItemSubTypeFilter.Costume, new List<ItemSubTypeFilter>()
                     {
                         ItemSubTypeFilter.FullCostume,
-                        ItemSubTypeFilter.HairCostume,
-                        ItemSubTypeFilter.EarCostume,
-                        ItemSubTypeFilter.EyeCostume,
-                        ItemSubTypeFilter.TailCostume,
                         ItemSubTypeFilter.Title,
                     }
                 },

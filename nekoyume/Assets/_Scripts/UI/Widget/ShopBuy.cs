@@ -26,6 +26,8 @@ namespace Nekoyume.UI
 {
     public class ShopBuy : Widget
     {
+        private const int ItemDisplayCount = 240;
+
         [SerializeField]
         private Button sellButton;
 
@@ -89,7 +91,7 @@ namespace Nekoyume.UI
         {
             Find<DataLoadingScreen>().Show();
             Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
-            await ReactiveShopState.RequestBuyProductsAsync(ItemSubTypeFilter.Weapon, MarketOrderType.cp_desc, 60);
+            await ReactiveShopState.RequestBuyProductsAsync(ItemSubTypeFilter.Weapon, MarketOrderType.cp_desc, ItemDisplayCount);
             base.Show(ignoreShowAnimation);
             view.Show(
                 ReactiveShopState.BuyItemProducts,

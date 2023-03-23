@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using Cysharp.Threading.Tasks;
 using Libplanet.Action;
 using Libplanet.Assets;
@@ -490,17 +491,17 @@ namespace Nekoyume.UI
 
                 sliderContainer.SetActive(true);
                 var maxRuneStone = item.Cost.RuneStoneQuantity > 0
-                    ? (int)item.RuneStone.MajorUnit / item.Cost.RuneStoneQuantity
+                    ? item.RuneStone.MajorUnit / item.Cost.RuneStoneQuantity
                     : -1;
                 var maxCrystal = item.Cost.CrystalQuantity > 0
-                    ? (int)States.Instance.CrystalBalance.MajorUnit / item.Cost.CrystalQuantity
+                    ? States.Instance.CrystalBalance.MajorUnit / item.Cost.CrystalQuantity
                     : -1;
                 var maxNcg = item.Cost.NcgQuantity > 0
-                    ? (int)States.Instance.GoldBalanceState.Gold.MajorUnit / item.Cost.NcgQuantity
+                    ? States.Instance.GoldBalanceState.Gold.MajorUnit / item.Cost.NcgQuantity
                     : -1;
-                var maxValues = new List<int> { maxRuneStone, maxCrystal, maxNcg };
-                _maxTryCount = maxValues.Where(x => x >= 0).Min();
-                _maxTryCount = Math.Min(100, _maxTryCount);
+                var maxValues = new List<BigInteger> { maxRuneStone, maxCrystal, maxNcg };
+                var count = (int)maxValues.Where(x => x >= 0).Min();
+                _maxTryCount = Math.Min(100, count);
                 slider.Set(1,
                     _maxTryCount > 0 ? _maxTryCount : 1,
                     1,
