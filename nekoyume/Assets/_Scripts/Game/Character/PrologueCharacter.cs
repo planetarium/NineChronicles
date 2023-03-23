@@ -242,10 +242,11 @@ namespace Nekoyume.Game.Character
             var effect = Game.instance.Stage.objectPool.Get<FenrirSkillVFX>(position);
             effect.Stop();
             AudioController.instance.PlaySfx(AudioController.SfxCode.FenrirGrowlSkill);
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(2f);
             Animator.Skill();
             ActionCamera.instance.Shake();
-            yield return new WaitUntil(() => AttackEndCalled);
+            var time = Time.time;
+            yield return new WaitUntil(() => AttackEndCalled || Time.time - time > 1f);
             for (var i = 0; i < 2; i++)
             {
                 var first = i == 0;
