@@ -1,3 +1,4 @@
+using System.Linq;
 using Coffee.UIEffects;
 using DG.Tweening;
 using Libplanet.Assets;
@@ -82,17 +83,25 @@ namespace Nekoyume.UI.Module
 
         public void SetData(FungibleAssetValue fav, System.Action onClick = null)
         {
-            if (!RuneFrontHelper.TryGetRuneData(fav.Currency.Ticker, out var runeData))
+            var grade = 1;
+            if (RuneFrontHelper.TryGetRuneData(fav.Currency.Ticker, out var runeData))
             {
-                return;
-            }
-            var sheet = Game.Game.instance.TableSheets.RuneListSheet;
-            if (!sheet.TryGetValue(runeData.id, out var row))
-            {
-                return;
+                var sheet = Game.Game.instance.TableSheets.RuneListSheet;
+                if (!sheet.TryGetValue(runeData.id, out var row))
+                {
+                    return;
+                }
             }
 
-            var data = itemViewData.GetItemViewData(row.Grade);
+
+            var petSheet = Game.Game.instance.TableSheets.PetSheet;
+            var petRow = petSheet.Values.FirstOrDefault(x => x.SoulStoneTicker == fav.Currency.Ticker);
+            if (petRow is not null)
+            {
+                grade = petRow.Grade;
+            }
+
+            var data = itemViewData.GetItemViewData(grade);
 
             gradeHsv.range = data.GradeHsvRange;
             gradeHsv.hue = data.GradeHsvHue;

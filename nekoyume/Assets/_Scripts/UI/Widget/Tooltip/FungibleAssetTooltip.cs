@@ -174,7 +174,6 @@ namespace Nekoyume.UI
         private void UpdateInformation(FungibleAssetValue fav, System.Action onClose)
         {
             var grade = 1;
-            var isRune = false;
             var id = 0;
             var ticker = fav.Currency.Ticker;
             if (RuneFrontHelper.TryGetRuneData(ticker, out var runeData))
@@ -183,7 +182,6 @@ namespace Nekoyume.UI
                 if (sheet.TryGetValue(runeData.id, out var row))
                 {
                     grade = row.Grade;
-                    isRune = true;
                     id = runeData.id;
                 }
             }
@@ -192,7 +190,6 @@ namespace Nekoyume.UI
             var petRow = petSheet.Values.FirstOrDefault(x => x.SoulStoneTicker == ticker);
             if (petRow is not null)
             {
-                isRune = false;
                 grade = petRow.Grade;
                 id = petRow.Id;
             }
