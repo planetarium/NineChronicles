@@ -65,7 +65,7 @@ namespace Nekoyume.UI
 
             scoreText.text = $"{log.Score}";
             winLoseCountText.text = winDefeatCount.HasValue
-                ? $"Win: {winDefeatCount.Value.win} Defeat: {winDefeatCount.Value.defeat}"
+                ? $"Win {winDefeatCount.Value.win} Lose {winDefeatCount.Value.defeat}"
                 : string.Empty;
             winLoseCountText.gameObject.SetActive(winDefeatCount.HasValue);
 
