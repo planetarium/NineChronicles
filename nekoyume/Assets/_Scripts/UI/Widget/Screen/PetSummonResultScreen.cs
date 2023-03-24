@@ -1,6 +1,6 @@
-﻿using Nekoyume.Game;
+using Nekoyume.Game;
 using Nekoyume.Helper;
-using Nekoyume.L10n;
+using Nekoyume.State;
 using Nekoyume.UI.Module.Pet;
 using Spine.Unity;
 using TMPro;
@@ -25,7 +25,8 @@ namespace Nekoyume.UI
             var petRow = TableSheets.Instance.PetSheet[petId];
             var option = TableSheets.Instance.PetOptionSheet[petId].LevelOptionMap[1];
             petInfoView.Set(petRow.Id, petRow.Grade);
-            contentText.text = L10nManager.Localize($"PET_DESCRIPTION_{option.OptionType}",option.OptionValue);
+            contentText.text = PetFrontHelper.GetDefaultDescriptionText(
+                option, States.Instance.GameConfigState);
             petSkeletonGraphic.skeletonDataAsset = PetFrontHelper.GetPetSkeletonData(petId);
             petSkeletonGraphic.Initialize(true);
         }
