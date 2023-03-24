@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -6,6 +8,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Bencodex.Types;
 using Lib9c.DevExtensions.Action.Interface;
+using Libplanet;
 using Libplanet.Action;
 using Nekoyume;
 using Nekoyume.Action;
@@ -32,39 +35,36 @@ namespace Lib9c.DevExtensions.Action
         public int Ear { get; private set; }
         public int Tail { get; private set; }
         public int Level { get; private set; }
-        public (int itemId, int enhancement)[] Equipments { get; private set; }
+        public IOrderedEnumerable<(int equipmentId, int level)> Equipments { get; private set; }
+        public IOrderedEnumerable<(int consumableId, int count)> Foods { get; private set; }
+        public IOrderedEnumerable<int> CostumeIds { get; private set; }
+        public IOrderedEnumerable<(int runeId, int level)> Runes { get; private set; }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal
         {
             get
             {
-                var list = List.Empty
-                    .Add(AvatarIndex.Serialize())
-                    .Add(Name.Serialize())
-                    .Add(Hair.Serialize())
-                    .Add(Lens.Serialize())
-                    .Add(Ear.Serialize())
-                    .Add(Tail.Serialize())
-                    .Add(Level.Serialize());
-
-                var equipmentList = List.Empty;
-                if (Equipments != null &&
-                    Equipments.Length > 0)
-                {
-                    for (var i = 0; i < Equipments.Length; i++)
-                    {
-                        var (itemId, enhancement) = Equipments[i];
-                        equipmentList = equipmentList.Add(List.Empty
-                            .Add(itemId.Serialize())
-                            .Add(enhancement.Serialize()));
-                    }
-                }
-
-                list = list.Add(equipmentList);
-
+                var list = new List(
+                    (Integer)AvatarIndex,
+                    (Text)Name,
+                    (Integer)Hair,
+                    (Integer)Lens,
+                    (Integer)Ear,
+                    (Integer)Tail,
+                    (Integer)Level,
+                    new List(Equipments.Select(e => new List(
+                        (Integer)e.equipmentId,
+                        (Integer)e.level))),
+                    new List(Foods.Select(e => new List(
+                        (Integer)e.consumableId,
+                        (Integer)e.count))),
+                    new List(CostumeIds.Select(e => (Integer)e)),
+                    new List(Runes.Select(e => new List(
+                        (Integer)e.runeId,
+                        (Integer)e.level))));
                 return new Dictionary<string, IValue>
                 {
-                    ["l"] = list.Serialize(),
+                    ["l"] = list,
                 }.ToImmutableDictionary();
             }
         }
@@ -73,37 +73,84 @@ namespace Lib9c.DevExtensions.Action
             IImmutableDictionary<string, IValue> plainValue)
         {
             var list = (List)plainValue["l"];
-            AvatarIndex = list[0].ToInteger();
-            Name = list[1].ToDotnetString();
-            Hair = list[2].ToInteger();
-            Lens = list[3].ToInteger();
-            Ear = list[4].ToInteger();
-            Tail = list[5].ToInteger();
-            Level = list[6].ToInteger();
-            var equipments = (List)list[7];
-            Equipments = new (int itemId, int enhancement)[equipments.Count];
-            for (var i = 0; i < equipments.Count; i++)
-            {
-                var equipment = (List)equipments[i];
-                Equipments[i] = (
-                    equipment[0].ToInteger(),
-                    equipment[1].ToInteger());
-            }
+            AvatarIndex = (Integer)list[0];
+            Name = (Text)list[1];
+            Hair = (Integer)list[2];
+            Lens = (Integer)list[3];
+            Ear = (Integer)list[4];
+            Tail = (Integer)list[5];
+            Level = (Integer)list[6];
+            Equipments = ((List)list[7])
+                .OfType<List>()
+                .Select<List, (int equipmentId, int level)>(l => ((Integer)l[0], (Integer)l[1]))
+                .OrderBy(tuple => tuple.equipmentId)
+                .ThenBy(tuple => tuple.level);
+            Foods = ((List)list[8])
+                .OfType<List>()
+                .Select<List, (int consumableId, int count)>(l => ((Integer)l[0], (Integer)l[1]))
+                .OrderBy(tuple => tuple.consumableId)
+                .ThenBy(tuple => tuple.count);
+            CostumeIds = ((List)list[9])
+                .Select(i => (int)(Integer)i)
+                .OrderBy(id => id);
+            Runes = ((List)list[10])
+                .OfType<List>()
+                .Select<List, (int runeId, int level)>(l => ((Integer)l[0], (Integer)l[1]))
+                .OrderBy(tuple => tuple.runeId)
+                .ThenBy(tuple => tuple.level);
         }
 
-        public CreateOrReplaceAvatar() : this(0)
+        public CreateOrReplaceAvatar() :
+            this(equipments: ((int equipmentId, int level)[]?)null)
         {
         }
 
         public CreateOrReplaceAvatar(
-            int avatarIndex,
+            int avatarIndex = 0,
             string name = "Avatar",
             int hair = 0,
             int lens = 0,
             int ear = 0,
             int tail = 0,
             int level = 1,
-            (int itemId, int enhancement)[] equipments = null)
+            (int equipmentId, int level)[]? equipments = null,
+            (int consumableId, int count)[]? foods = null,
+            int[]? costumeIds = null,
+            (int runeId, int level)[]? runes = null) :
+            this(
+                avatarIndex,
+                name,
+                hair,
+                lens,
+                ear,
+                tail,
+                level,
+                (equipments ?? Array.Empty<(int equipmentId, int level)>())
+                .OrderBy(tuple => tuple.equipmentId)
+                .ThenBy(tuple => tuple.level),
+                (foods ?? Array.Empty<(int consumableId, int count)>())
+                .OrderBy(tuple => tuple.consumableId)
+                .ThenBy(tuple => tuple.count),
+                (costumeIds ?? Array.Empty<int>())
+                .OrderBy(id => id),
+                (runes ?? Array.Empty<(int runeId, int level)>())
+                .OrderBy(tuple => tuple.runeId)
+                .ThenBy(tuple => tuple.level))
+        {
+        }
+
+        public CreateOrReplaceAvatar(
+            int avatarIndex = 0,
+            string name = "Avatar",
+            int hair = 0,
+            int lens = 0,
+            int ear = 0,
+            int tail = 0,
+            int level = 1,
+            IOrderedEnumerable<(int equipmentId, int level)>? equipments = null,
+            IOrderedEnumerable<(int consumableId, int count)>? foods = null,
+            IOrderedEnumerable<int>? costumeIds = null,
+            IOrderedEnumerable<(int runeId, int level)>? runes = null)
         {
             if (avatarIndex < 0 ||
                 avatarIndex >= GameConfig.SlotCount)
@@ -167,21 +214,81 @@ namespace Lib9c.DevExtensions.Action
             {
                 foreach (var tuple in equipments)
                 {
-                    var (itemId, enhancement) = tuple;
-                    if (itemId < 0)
+                    var (equipmentId, eLevel) = tuple;
+                    if (equipmentId < 0)
                     {
                         throw new ArgumentException(
-                            $"Invalid itemId: ({itemId})." +
+                            $"Invalid itemId: ({equipmentId})." +
                             " It must be greater than or equal to 0.",
-                            nameof(itemId));
+                            nameof(equipmentId));
                     }
 
-                    if (enhancement < 0)
+                    if (eLevel < 0)
                     {
                         throw new ArgumentException(
-                            $"Invalid enhancement: ({enhancement})." +
+                            $"Invalid enhancement: ({eLevel})." +
                             " It must be greater than or equal to 0.",
-                            nameof(enhancement));
+                            nameof(eLevel));
+                    }
+                }
+            }
+
+            if (foods != null)
+            {
+                foreach (var tuple in foods)
+                {
+                    var (consumableId, count) = tuple;
+                    if (consumableId < 0)
+                    {
+                        throw new ArgumentException(
+                            $"Invalid itemId: ({consumableId})." +
+                            " It must be greater than or equal to 0.",
+                            nameof(consumableId));
+                    }
+
+                    if (count < 1)
+                    {
+                        throw new ArgumentException(
+                            $"Invalid count: ({count})." +
+                            " It must be greater than or equal to 0.",
+                            nameof(count));
+                    }
+                }
+            }
+
+            if (costumeIds != null)
+            {
+                foreach (var costumeId in costumeIds)
+                {
+                    if (costumeId < 0)
+                    {
+                        throw new ArgumentException(
+                            $"Invalid costumeId: ({costumeId})." +
+                            " It must be greater than or equal to 0.",
+                            nameof(costumeId));
+                    }
+                }
+            }
+
+            if (runes != null)
+            {
+                foreach (var tuple in runes)
+                {
+                    var (runeId, runeLevel) = tuple;
+                    if (runeId < 0)
+                    {
+                        throw new ArgumentException(
+                            $"Invalid itemId: ({runeId})." +
+                            " It must be greater than or equal to 0.",
+                            nameof(runeId));
+                    }
+
+                    if (runeLevel < 0)
+                    {
+                        throw new ArgumentException(
+                            $"Invalid enhancement: ({runeLevel})." +
+                            " It must be greater than or equal to 0.",
+                            nameof(runeLevel));
                     }
                 }
             }
@@ -193,7 +300,17 @@ namespace Lib9c.DevExtensions.Action
             Ear = ear;
             Tail = tail;
             Level = level;
-            Equipments = equipments ?? Array.Empty<(int itemId, int enhancement)>();
+            Equipments = equipments ?? Array.Empty<(int equipmentId, int level)>()
+                .OrderBy(tuple => tuple.equipmentId)
+                .ThenBy(tuple => tuple.level);
+            Foods = foods ?? Array.Empty<(int consumableId, int count)>()
+                .OrderBy(tuple => tuple.consumableId)
+                .ThenBy(tuple => tuple.count);
+            CostumeIds = costumeIds ?? Array.Empty<int>()
+                .OrderBy(id => id);
+            Runes = runes ?? Array.Empty<(int runeId, int level)>()
+                .OrderBy(tuple => tuple.runeId)
+                .ThenBy(tuple => tuple.level);
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -203,15 +320,21 @@ namespace Lib9c.DevExtensions.Action
                 return context.PreviousStates;
             }
 
-            var states = context.PreviousStates;
-            var agentAddr = context.Signer;
-            var avatarAddr = context.Signer.Derive(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    CreateAvatar.DeriveFormat,
-                    AvatarIndex
-                )
-            );
+            return Execute(
+                context.PreviousStates,
+                context.Random,
+                context.BlockIndex,
+                context.Signer);
+        }
+
+        public IAccountStateDelta Execute(
+            IAccountStateDelta states,
+            IRandom random,
+            long blockIndex,
+            Address signer)
+        {
+            var agentAddr = signer;
+            var avatarAddr = Addresses.GetAvatarAddress(agentAddr, AvatarIndex);
 
             // Set AgentState.
             var agent = states.GetState(agentAddr) is Dictionary agentDict
@@ -238,6 +361,8 @@ namespace Lib9c.DevExtensions.Action
                     typeof(EquipmentItemSubRecipeSheetV2),
                     typeof(EquipmentItemOptionSheet),
                     typeof(SkillSheet),
+                    typeof(ConsumableItemSheet),
+                    typeof(CostumeItemSheet),
                 });
             var gameConfig = states.GetGameConfigState();
 
@@ -245,7 +370,7 @@ namespace Lib9c.DevExtensions.Action
             var avatar = new AvatarState(
                 avatarAddr,
                 agentAddr,
-                context.BlockIndex,
+                blockIndex,
                 sheets.GetAvatarSheets(),
                 gameConfig,
                 default,
@@ -263,7 +388,7 @@ namespace Lib9c.DevExtensions.Action
             // Set WorldInformation.
             var worldInfoAddr = avatarAddr.Derive(LegacyWorldInformationKey);
             var worldInfo = new WorldInformation(
-                context.BlockIndex,
+                blockIndex,
                 sheets.GetSheet<WorldSheet>(),
                 false);
             states = states.SetState(worldInfoAddr, worldInfo.Serialize());
@@ -282,7 +407,7 @@ namespace Lib9c.DevExtensions.Action
 
             // Set Inventory.
             var inventoryAddr = avatarAddr.Derive(LegacyInventoryKey);
-            var inventory = new Nekoyume.Model.Item.Inventory();
+            var inventory = new Inventory();
             var equipmentItemSheet = sheets.GetSheet<EquipmentItemSheet>();
             var enhancementCostSheetV2 = sheets.GetSheet<EnhancementCostSheetV2>();
             var recipeSheet = sheets.GetSheet<EquipmentItemRecipeSheet>();
@@ -291,10 +416,9 @@ namespace Lib9c.DevExtensions.Action
             var skillSheet = sheets.GetSheet<SkillSheet>();
 
             // FIXME: Separate the logic of equipment creation from the action.
-            for (var i = 0; i < Equipments.Length; i++)
+            foreach (var (equipmentId, eLevel) in Equipments)
             {
-                var (itemId, enhancement) = Equipments[i];
-                if (!equipmentItemSheet.TryGetValue(itemId, out var itemRow, true))
+                if (!equipmentItemSheet.TryGetValue(equipmentId, out var itemRow, true))
                 {
                     continue;
                 }
@@ -302,17 +426,22 @@ namespace Lib9c.DevExtensions.Action
                 // NOTE: Do not use `level` argument at here.
                 var equipment = (Equipment)ItemFactory.CreateItemUsable(
                     itemRow,
-                    context.Random.GenerateRandomGuid(),
-                    context.BlockIndex,
-                    0);
+                    random.GenerateRandomGuid(),
+                    blockIndex);
+                if (equipment.Grade == 0)
+                {
+                    inventory.AddItem(equipment);
+                    continue;
+                }
+
                 var recipe = recipeSheet.OrderedList!
-                    .First(e => e.ResultEquipmentId == itemId);
+                    .First(e => e.ResultEquipmentId == equipmentId);
                 var subRecipe = subRecipeSheetV2[recipe.SubRecipeIds[1]];
                 CombinationEquipment.AddAndUnlockOption(
                     agent,
                     null,
                     equipment,
-                    context.Random,
+                    random,
                     subRecipe,
                     optionSheet,
                     null,
@@ -346,19 +475,45 @@ namespace Lib9c.DevExtensions.Action
                     equipment.StatsMap.AddStatAdditionalValue(option.StatType, option.StatMax);
                 }
 
-                if (enhancement > 0 &&
+                if (eLevel > 0 &&
                     ItemEnhancement.TryGetRow(
                         equipment,
                         enhancementCostSheetV2,
                         out var row))
                 {
-                    for (var j = 0; j < enhancement; j++)
+                    for (var j = 0; j < eLevel; j++)
                     {
-                        equipment.LevelUpV2(context.Random, row, true);
+                        equipment.LevelUpV2(random, row, true);
                     }
                 }
 
                 inventory.AddItem(equipment);
+            }
+
+            var consumableItemSheet = sheets.GetSheet<ConsumableItemSheet>();
+            foreach (var (consumableId, count) in Foods)
+            {
+                if (consumableItemSheet.TryGetValue(consumableId, out var consumableRow))
+                {
+                    for (var i = 0; i < count; i++)
+                    {
+                        inventory.AddItem(ItemFactory.CreateItemUsable(
+                            consumableRow,
+                            random.GenerateRandomGuid(),
+                            blockIndex));
+                    }
+                }
+            }
+
+            var costumeItemSheet = sheets.GetSheet<CostumeItemSheet>();
+            foreach (var costumeId in CostumeIds)
+            {
+                if (costumeItemSheet.TryGetValue(costumeId, out var costumeRow))
+                {
+                    inventory.AddItem(ItemFactory.CreateCostume(
+                        costumeRow,
+                        random.GenerateRandomGuid()));
+                }
             }
 
             states = states.SetState(inventoryAddr, inventory.Serialize());
@@ -380,6 +535,21 @@ namespace Lib9c.DevExtensions.Action
                 states = states.SetState(slotAddr, slot.Serialize());
             }
             // ~Set CombinationSlot.
+
+            // Set Runes
+            foreach (var (runeId, level) in Runes)
+            {
+                var rune = new RuneState(runeId);
+                for (var i = 0; i < level; i++)
+                {
+                    rune.LevelUp();
+                }
+
+                states = states.SetState(
+                    RuneState.DeriveAddress(avatarAddr, runeId),
+                    rune.Serialize());
+            }
+            // ~Set Runes
 
             return states;
         }

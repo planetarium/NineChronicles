@@ -15,7 +15,10 @@ namespace Lib9c.DevExtensions.Action.Factory
                 int ear = 0,
                 int tail = 0,
                 int level = 1,
-                (int itemId, int enhancement)[] equipments = null)
+                (int equipmentId, int level)[] equipments = null,
+                (int consumableId, int count)[] foods = null,
+                int[] costumeIds = null,
+                (int runeId, int level)[] runes = null)
         {
             try
             {
@@ -29,7 +32,10 @@ namespace Lib9c.DevExtensions.Action.Factory
                         ear,
                         tail,
                         level,
-                        equipments));
+                        equipments,
+                        foods,
+                        costumeIds,
+                        runes));
             }
             catch (ArgumentException e)
             {
