@@ -219,26 +219,10 @@ namespace Nekoyume.UI
             }
             else
             {
-                var currentOption = TableSheets.Instance.PetOptionSheet[petId].LevelOptionMap[currentLevel];
-                if (currentOption.OptionType == PetOptionType.IncreaseBlockPerHourglass)
-                {
-                    var originalValue = States.Instance.GameConfigState.HourglassPerBlock;
-                    var optionValue = currentOption.OptionValue;
-                    var currentOptionValueText = $"{originalValue + optionValue} ({originalValue}+{optionValue})";
-                    var targetOptionValue = targetOption.OptionValue;
-                    var targetOptionValueText = $"{originalValue + targetOptionValue} ({originalValue}+{targetOptionValue})";
-                    contentText.text =
-                        L10nManager.Localize($"PET_DESCRIPTION_TWO_OPTION_{targetOption.OptionType}",
-                            currentOptionValueText,
-                            targetOptionValueText);
-                }
-                else
-                {
-                    contentText.text =
-                        L10nManager.Localize($"PET_DESCRIPTION_TWO_OPTION_{targetOption.OptionType}",
-                            currentOption.OptionValue,
-                            targetOption.OptionValue);
-                }
+                var currentOption = TableSheets.Instance.PetOptionSheet[petId]
+                    .LevelOptionMap[currentLevel];
+                contentText.text = PetFrontHelper.GetComparisonDescriptionText(
+                    currentOption, targetOption);
             }
 
             soulStoneCostText.text = soulStone.ToString();
