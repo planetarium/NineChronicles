@@ -233,5 +233,28 @@ namespace Nekoyume.Helper
                     optionInfo.OptionValue);
             }
         }
+
+        public static string GetComparisonDescriptionText(
+            PetOptionSheet.Row.PetOptionInfo currentOption,
+            PetOptionSheet.Row.PetOptionInfo targetOption)
+        {
+            if (currentOption.OptionType == PetOptionType.IncreaseBlockPerHourglass)
+            {
+                var originalValue = States.Instance.GameConfigState.HourglassPerBlock;
+                var optionValue = currentOption.OptionValue;
+                var currentOptionValueText = $"{originalValue + optionValue} ({originalValue}+{optionValue})";
+                var targetOptionValue = targetOption.OptionValue;
+                var targetOptionValueText = $"{originalValue + targetOptionValue} ({originalValue}+{targetOptionValue})";
+                return L10nManager.Localize($"PET_DESCRIPTION_TWO_OPTION_{targetOption.OptionType}",
+                        currentOptionValueText,
+                        targetOptionValueText);
+            }
+            else
+            {
+                return L10nManager.Localize($"PET_DESCRIPTION_TWO_OPTION_{targetOption.OptionType}",
+                        currentOption.OptionValue,
+                        targetOption.OptionValue);
+            }
+        }
     }
 }
