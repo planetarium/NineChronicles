@@ -38,12 +38,13 @@ namespace Nekoyume.UI.Model
         public ShopItem(
             FungibleAssetValue fungibleAssetValue,
             FungibleAssetValueProductResponseModel product,
-            int grade)
+            int grade,
+            bool limited)
         {
             FungibleAssetValue = fungibleAssetValue;
             FungibleAssetProduct = product;
             Grade = grade;
-            LevelLimited = false;
+            LevelLimited = limited;
             Selected = new ReactiveProperty<bool>(false);
             Expired = new ReactiveProperty<bool>(false);
             Loading = new ReactiveProperty<bool>(false);

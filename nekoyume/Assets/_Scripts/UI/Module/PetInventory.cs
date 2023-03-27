@@ -1,6 +1,7 @@
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.Pet;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData.Pet;
@@ -212,10 +213,10 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                viewData.Description = L10nManager.Localize(
-                    $"PET_DESCRIPTION_{optionInfo.OptionType}",
-                    optionInfo.OptionValue);
-                viewData.IsAppliable = true;
+                viewData.Description = PetFrontHelper.GetDefaultDescriptionText(
+                    optionInfo, States.Instance.GameConfigState);
+                // If craftInfo is null, it should not be dimmed. (for displaying description)
+                viewData.IsAppliable = !craftInfo.HasValue;
             }
 
             return viewData;

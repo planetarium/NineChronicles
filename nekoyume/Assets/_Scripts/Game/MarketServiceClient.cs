@@ -9,6 +9,8 @@ using Libplanet.Assets;
 using MarketService.Response;
 using Nekoyume.EnumType;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Stat;
+using UnityEngine;
 
 namespace Nekoyume.Game
 {
@@ -27,31 +29,33 @@ namespace Nekoyume.Game
             ItemSubType itemSubType,
             int offset,
             int limit,
-            MarketOrderType order)
+            MarketOrderType order,
+            StatType statType)
         {
-            var url = $"{_url}/Market/products/items/{(int)itemSubType}?limit={limit}&offset={offset}&order={order}";
+            var url = $"{_url}/Market/products/items/{(int)itemSubType}?limit={limit}&offset={offset}&order={order}&stat={statType.ToString()}";
             var json = await _client.GetStringAsync(url);
             var options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             };
             var response = JsonSerializer.Deserialize<MarketProductResponse>(json, options);
-            return (response.ItemProducts.Where(p => p.Exist).ToList(), response.TotalCount);
+            return (response.ItemProducts.ToList(), response.TotalCount);
         }
 
         public async Task<(List<FungibleAssetValueProductResponseModel>, int)> GetBuyFungibleAssetProducts(
             string ticker,
             int offset,
-            int limit)
+            int limit,
+            MarketOrderType order)
         {
-            var url = $"{_url}/Market/products/fav/{ticker}?limit={limit}&offset={offset}";
+            var url = $"{_url}/Market/products/fav/{ticker}?limit={limit}&offset={offset}&order={order}";
             var json = await _client.GetStringAsync(url);
             var options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             };
             var response = JsonSerializer.Deserialize<MarketProductResponse>(json, options);
-            return (response.FungibleAssetValueProducts.Where(p => p.Exist).ToList(), response.TotalCount);
+            return (response.FungibleAssetValueProducts.ToList(), response.TotalCount);
         }
 
         public async Task<(List<FungibleAssetValueProductResponseModel>, List<ItemProductResponseModel>)>
@@ -64,8 +68,8 @@ namespace Nekoyume.Game
                 PropertyNameCaseInsensitive = true
             };
             var response = JsonSerializer.Deserialize<MarketProductResponse>(json, options);
-            var fungibleAssets = response.FungibleAssetValueProducts.Where(p => p.Exist).ToList();
-            var items = response.ItemProducts.Where(p => p.Exist).ToList();
+            var fungibleAssets = response.FungibleAssetValueProducts.ToList();
+            var items = response.ItemProducts.ToList();
             return (fungibleAssets, items);
         }
 
@@ -78,8 +82,8 @@ namespace Nekoyume.Game
                 PropertyNameCaseInsensitive = true
             };
             var response = JsonSerializer.Deserialize<MarketProductResponse>(json, options);
-            var fungibleAssets = response.FungibleAssetValueProducts.Where(p => p.Exist).ToList();
-            var items = response.ItemProducts.Where(p => p.Exist).ToList();
+            var fungibleAssets = response.FungibleAssetValueProducts.ToList();
+            var items = response.ItemProducts.ToList();
             return (fungibleAssets, items);
         }
 

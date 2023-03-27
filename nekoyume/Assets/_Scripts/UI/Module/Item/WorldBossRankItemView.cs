@@ -80,7 +80,8 @@ namespace Nekoyume.UI
                 _gradeObject = Instantiate(prefab, gradeContainer);
             }
 
-            if (Dcc.instance.Avatars.TryGetValue(model.Address, out var dccId))
+            var prefixedAddress = "0x" + model.Address;
+            if (Dcc.instance.Avatars.TryGetValue(prefixedAddress, out var dccId))
             {
                 characterView.SetByDccId(dccId, model.Level);
             }

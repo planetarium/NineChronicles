@@ -176,7 +176,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2453831653966912630}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &2453831652237097423
 MeshFilter:
@@ -226,7 +226,7 @@ MeshRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 3
+  m_SortingOrder: 4
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &2453831652237097421
 MonoBehaviour:
@@ -1026,7 +1026,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2453831653966912630}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &2453831653708135024
 MeshFilter:
@@ -1076,7 +1076,7 @@ MeshRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 4
+  m_SortingOrder: 5
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &2453831653708135038
 MonoBehaviour:
@@ -1168,9 +1168,9 @@ Transform:
   m_Children:
   - {fileID: 2453831653147030750}
   - {fileID: 2453831653253612935}
+  - {fileID: 2453831654188472599}
   - {fileID: 2453831652237097418}
   - {fileID: 2453831653708135039}
-  - {fileID: 2453831654188472599}
   - {fileID: 2453831652824800179}
   - {fileID: 2453831652976915080}
   - {fileID: 2453831654330395790}
@@ -1198,11 +1198,11 @@ MonoBehaviour:
   - Type: 2
     SkeletonAnimation: {fileID: 2453831653253612934}
   - Type: 3
-    SkeletonAnimation: {fileID: 2453831652237097421}
-  - Type: 4
-    SkeletonAnimation: {fileID: 2453831653708135038}
-  - Type: 5
     SkeletonAnimation: {fileID: 2453831654188472598}
+  - Type: 4
+    SkeletonAnimation: {fileID: 2453831652237097421}
+  - Type: 5
+    SkeletonAnimation: {fileID: 2453831653708135038}
   - Type: 6
     SkeletonAnimation: {fileID: 2453831652824800178}
   - Type: 7
@@ -1272,7 +1272,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2453831653966912630}
-  m_RootOrder: 4
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &2453831654188472808
 MeshFilter:
@@ -1322,7 +1322,7 @@ MeshRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 5
+  m_SortingOrder: 3
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &2453831654188472598
 MonoBehaviour:

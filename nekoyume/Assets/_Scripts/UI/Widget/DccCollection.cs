@@ -23,6 +23,9 @@ namespace Nekoyume.UI
         private Button backButton;
 
         [SerializeField]
+        private Button dccButton;
+
+        [SerializeField]
         private PetSlotScroll scroll;
 
         [SerializeField]
@@ -61,9 +64,18 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
+            CloseWidget = () =>
+            {
+                Find<DccMain>().Show(true);
+                Close(true);
+            };
             backButton.onClick.AddListener(() =>
             {
-                Close(true);
+                CloseWidget.Invoke();
+            });
+            dccButton.onClick.AddListener(() =>
+            {
+                Application.OpenURL(Game.Game.instance.URL.DccMileageShop);
             });
             lockedButton.onClick.AddListener(() =>
             {
@@ -114,12 +126,6 @@ namespace Nekoyume.UI
                 }
             }).AddTo(_disposables);
             scroll.OnClick.Subscribe(OnClickPetSlot).AddTo(_disposables);
-        }
-
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            Find<DccMain>().Show(true);
-            base.Close(ignoreCloseAnimation);
         }
 
         public void UpdateView()

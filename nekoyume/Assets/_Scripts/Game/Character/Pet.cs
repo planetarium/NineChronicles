@@ -16,8 +16,8 @@ namespace Nekoyume.Game.Character
         public PetAnimator Animator { get; private set; }
 
         private BoneFollower _boneFollower;
-        private Coroutine _coroutine;
-
+        private Coroutine _playSpecialCoroutine;
+        private Coroutine _delayedPlayCoroutine;
 
         private void Awake()
         {
@@ -79,12 +79,13 @@ namespace Nekoyume.Game.Character
 
             Animator.ResetTarget(go);
 
-            if (_coroutine != null)
+            if (_playSpecialCoroutine != null)
             {
-                StopCoroutine(_coroutine);
+                StopCoroutine(_playSpecialCoroutine);
+                _playSpecialCoroutine = null;
             }
 
-            _coroutine = StartCoroutine(CoPlaySpecial());
+            _playSpecialCoroutine = StartCoroutine(CoPlaySpecial());
         }
 
         private IEnumerator CoPlaySpecial()
@@ -95,6 +96,29 @@ namespace Nekoyume.Game.Character
 
                 Animator.Play(PetAnimation.Type.Special);
             }
+        }
+
+        public void DelayedPlay(PetAnimation.Type type, float time = 0f)
+        {
+            if (time <= 0)
+            {
+                Animator.Play(type);
+                return;
+            }
+
+            if (_delayedPlayCoroutine != null)
+            {
+                StopCoroutine(_delayedPlayCoroutine);
+                _delayedPlayCoroutine = null;
+            }
+
+            _delayedPlayCoroutine = StartCoroutine(CoDelayedPlay(type, time));
+        }
+
+        private IEnumerator CoDelayedPlay(PetAnimation.Type type, float time)
+        {
+            yield return new WaitForSeconds(time);
+            Animator.Play(type);
         }
 
         [ContextMenu("Spawn Pet")]

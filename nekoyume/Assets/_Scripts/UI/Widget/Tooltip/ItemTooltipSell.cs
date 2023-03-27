@@ -21,6 +21,7 @@ namespace Nekoyume
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
+        // It's a function for legacy. You must delete it after 100380
         public void Set(
             long expiredBlockIndex,
             int apStoneCount,
@@ -29,15 +30,38 @@ namespace Nekoyume
         {
             _disposables.DisposeAllAndClear();
 
+            var condition = ConditionalCostButton.CheckCostOfType(CostType.ActionPoint, 5);
+
             retrieveButton.SetCost(CostType.ActionPoint, 5);
-            retrieveButton.Interactable = apStoneCount > 0;
+            retrieveButton.Interactable = condition || apStoneCount > 0;
             retrieveButton.OnClickSubject.Subscribe(onRetrieve).AddTo(_disposables);
 
             registerButton.SetCost(CostType.ActionPoint, 5);
-            registerButton.Interactable = apStoneCount > 0;
+            registerButton.Interactable = condition || apStoneCount > 0;
             registerButton.OnClickSubject.Subscribe(onRegister).AddTo(_disposables);
 
+            timer.gameObject.SetActive(true);
             timer.UpdateTimer(expiredBlockIndex);
+        }
+
+        public void Set(
+            int apStoneCount,
+            Action<ConditionalButton.State> onRetrieve,
+            Action<ConditionalButton.State> onRegister)
+        {
+            _disposables.DisposeAllAndClear();
+
+            var condition = ConditionalCostButton.CheckCostOfType(CostType.ActionPoint, 5);
+
+            retrieveButton.SetCost(CostType.ActionPoint, 5);
+            retrieveButton.Interactable = condition || apStoneCount > 0;
+            retrieveButton.OnClickSubject.Subscribe(onRetrieve).AddTo(_disposables);
+
+            registerButton.SetCost(CostType.ActionPoint, 5);
+            registerButton.Interactable = condition || apStoneCount > 0;
+            registerButton.OnClickSubject.Subscribe(onRegister).AddTo(_disposables);
+
+            timer.gameObject.SetActive(false);
         }
     }
 }
