@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
 using Bencodex.Types;
@@ -51,6 +52,8 @@ namespace Nekoyume.Game
         [SerializeField] private Lobby lobby;
 
         [SerializeField] private bool useSystemLanguage = true;
+
+        [SerializeField] private bool useLocalHeadless = false;
 
         [SerializeField] private LanguageTypeReactiveProperty languageType = default;
 
@@ -117,6 +120,8 @@ namespace Nekoyume.Game
 
         private static readonly string UrlJsonPath =
             Path.Combine(Application.streamingAssetsPath, "url.json");
+
+        private Thread headlessThread;
 
         #region Mono & Initialization
 
@@ -187,6 +192,17 @@ namespace Nekoyume.Game
             else
             {
                 Agent = GetComponent<Agent>();
+            }
+
+            // Local Headless
+            if (useLocalHeadless && HeadlessHelper.CheckHeadlessSettings())
+            {
+                Agent = GetComponent<RPCAgent>();
+                // FIXME: Can I move this to another file like `clo.local.json`?
+                _commandLineOptions = CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.local.json"));
+                SubscribeRPCAgent();
+                headlessThread = new Thread(HeadlessHelper.RunLocalHeadless);
+                headlessThread.Start();
             }
 
             States = new States();
@@ -326,6 +342,11 @@ namespace Nekoyume.Game
 
         protected override void OnDestroy()
         {
+            if (headlessThread is not null && headlessThread.IsAlive)
+            {
+                headlessThread.Interrupt();
+            }
+
             ActionManager?.Dispose();
             base.OnDestroy();
         }
