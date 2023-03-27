@@ -91,8 +91,9 @@ namespace Nekoyume.UI.Module
                 {
                     return;
                 }
-            }
 
+                grade = row.Grade;
+            }
 
             var petSheet = Game.Game.instance.TableSheets.PetSheet;
             var petRow = petSheet.Values.FirstOrDefault(x => x.SoulStoneTicker == fav.Currency.Ticker);
