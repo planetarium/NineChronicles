@@ -573,6 +573,7 @@ namespace Nekoyume.UI
         protected override void OnCompleteOfShowAnimationInternal()
         {
             base.OnCompleteOfShowAnimationInternal();
+            Find<DialogPopup>().Show(1, PlayTutorial);
             StartCoroutine(CoHelpPopup());
         }
 

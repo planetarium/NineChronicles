@@ -32,7 +32,7 @@ namespace Nekoyume.UI
         private ItemTooltipSell sell;
 
         [SerializeField]
-        private Button registerButton;
+        private ConditionalButton registerButton;
 
         [SerializeField]
         private Scrollbar scrollbar;
@@ -80,7 +80,7 @@ namespace Nekoyume.UI
             base.Awake();
             CloseWidget = () => Close();
             SubmitWidget = () => Close();
-            registerButton.onClick.AddListener(() =>
+            registerButton.OnClickSubject.Subscribe(_ =>
             {
                 _onRegister?.Invoke();
                 Close(true);
@@ -116,8 +116,7 @@ namespace Nekoyume.UI
             registerButton.gameObject.SetActive(false);
             buy.gameObject.SetActive(true);
             sell.gameObject.SetActive(false);
-            buy.Set(item.FungibleAssetProduct.RegisteredBlockIndex + Order.ExpirationInterval,
-                (BigInteger)item.FungibleAssetProduct.Price * States.Instance.GoldBalanceState.Gold.Currency,
+            buy.Set((BigInteger)item.FungibleAssetProduct.Price * States.Instance.GoldBalanceState.Gold.Currency,
                 ()=>
                 {
                     onBuy?.Invoke();
@@ -141,9 +140,7 @@ namespace Nekoyume.UI
             registerButton.gameObject.SetActive(false);
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(true);
-            sell.Set(
-                item.FungibleAssetProduct.RegisteredBlockIndex + Order.ExpirationInterval,
-                apStoneCount,
+            sell.Set(apStoneCount,
                 state =>
                 {
                     onSellCancellation?.Invoke(state);
@@ -165,6 +162,7 @@ namespace Nekoyume.UI
             System.Action onClose)
         {
             registerButton.gameObject.SetActive(true);
+            registerButton.Interactable = item.FungibleAssetValue.MajorUnit > 0;
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
             _onRegister = onRegister;
@@ -176,7 +174,6 @@ namespace Nekoyume.UI
         private void UpdateInformation(FungibleAssetValue fav, System.Action onClose)
         {
             var grade = 1;
-            var isRune = false;
             var id = 0;
             var ticker = fav.Currency.Ticker;
             if (RuneFrontHelper.TryGetRuneData(ticker, out var runeData))
@@ -185,7 +182,6 @@ namespace Nekoyume.UI
                 if (sheet.TryGetValue(runeData.id, out var row))
                 {
                     grade = row.Grade;
-                    isRune = true;
                     id = runeData.id;
                 }
             }
@@ -194,7 +190,6 @@ namespace Nekoyume.UI
             var petRow = petSheet.Values.FirstOrDefault(x => x.SoulStoneTicker == ticker);
             if (petRow is not null)
             {
-                isRune = false;
                 grade = petRow.Grade;
                 id = petRow.Id;
             }

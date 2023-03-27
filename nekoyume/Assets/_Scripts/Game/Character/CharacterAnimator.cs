@@ -203,6 +203,11 @@ namespace Nekoyume.Game.Character
             Animator.Play(nameof(CharacterAnimation.Type.Attack), BaseLayerIndex, 0f);
         }
 
+        public float AnimationLength()
+        {
+            return Animator.GetCurrentAnimatorStateInfo(BaseLayerIndex).length;
+        }
+
         public void Cast()
         {
             if (!ValidateAnimator())

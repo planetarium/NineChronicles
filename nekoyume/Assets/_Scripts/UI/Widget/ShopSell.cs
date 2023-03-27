@@ -4,8 +4,8 @@ using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
-using Lib9c.Model.Order;
 using Libplanet.Assets;
+using MarketService.Response;
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.Game.Controller;
@@ -140,18 +140,6 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
         }
 
-        private void ShowFavTooltip(InventoryItem model)
-        {
-            var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
-            tooltip.Show(
-                model,
-                L10nManager.Localize("UI_SELL"),
-                model.ItemBase is ITradableItem,
-                () => ShowSell(model),
-                inventory.ClearSelectedItem,
-                () => L10nManager.Localize("UI_UNTRADABLE"));
-        }
-
         private void ShowItemTooltip(InventoryItem model)
         {
             if (model.ItemBase is not null)
@@ -169,7 +157,11 @@ namespace Nekoyume.UI
             {
                 Find<FungibleAssetTooltip>().Show(model,
                     () => ShowSell(model),
-                    view.ClearSelectedItem);
+                    ()=>
+                    {
+                        inventory.ClearSelectedItem();
+                        view.ClearSelectedItem();
+                    });
             }
         }
 
@@ -235,7 +227,7 @@ namespace Nekoyume.UI
                         break;
                     }
 
-                    var confirm = Widget.Find<IconAndButtonSystem>();
+                    var confirm = Find<IconAndButtonSystem>();
                     confirm.ShowWithTwoButton(L10nManager.Localize("UI_CONFIRM"),
                         L10nManager.Localize("UI_APREFILL_GUIDE_FORMAT",
                             L10nManager.Localize(key), apStoneCount),
@@ -258,11 +250,11 @@ namespace Nekoyume.UI
         {
             inventory.SetShop(ShowItemTooltip);
             await ReactiveShopState.RequestSellProductsAsync();
+            base.Show(ignoreShowAnimation);
             view.Show(
                 ReactiveShopState.SellItemProducts,
                 ReactiveShopState.SellFungibleAssetProducts,
                 ShowSellTooltip);
-            base.Show(ignoreShowAnimation);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
             UpdateSpeechBubble();
         }
@@ -394,11 +386,14 @@ namespace Nekoyume.UI
 
         private async void SubscribeReRegisterProduct(bool chargeAp)
         {
-            var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
-            var itemProducts = ReactiveShopState.SellItemProducts.Value.Where(product =>
-                product.RegisteredBlockIndex + Order.ExpirationInterval <= blockIndex);
-            var favProducts = ReactiveShopState.SellFungibleAssetProducts.Value.Where(product =>
-                product.RegisteredBlockIndex + Order.ExpirationInterval <= blockIndex);
+            var itemProducts = new List<ItemProductResponseModel>();
+            foreach (var products in ReactiveShopState.SellItemProducts.Value.Values)
+            {
+                itemProducts.AddRange(products);
+            }
+
+            var favProducts = ReactiveShopState.SellFungibleAssetProducts.Value;
+
             if (!itemProducts.Any() && !favProducts.Any())
             {
                 OneLineSystem.Push(
@@ -463,11 +458,13 @@ namespace Nekoyume.UI
 
         private async void SubscribeCancelProductRegistration(bool chargeAp)
         {
-            var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
-            var itemProducts = ReactiveShopState.SellItemProducts.Value.Where(product =>
-                product.RegisteredBlockIndex + Order.ExpirationInterval <= blockIndex);
-            var favProducts = ReactiveShopState.SellFungibleAssetProducts.Value.Where(product =>
-                product.RegisteredBlockIndex + Order.ExpirationInterval <= blockIndex);
+            var itemProducts = new List<ItemProductResponseModel>();
+            foreach (var products in ReactiveShopState.SellItemProducts.Value.Values)
+            {
+                itemProducts.AddRange(products);
+            }
+
+            var favProducts = ReactiveShopState.SellFungibleAssetProducts.Value;
             if (!itemProducts.Any() && !favProducts.Any())
             {
                 OneLineSystem.Push(
@@ -596,17 +593,8 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var inventoryItems = States.Instance.CurrentAvatarState.inventory.Items;
-            var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
-            var apStoneCount = inventoryItems.Where(x =>
-                    x.item.ItemSubType == ItemSubType.ApStone &&
-                    !x.Locked &&
-                    !(x.item is ITradableItem tradableItem &&
-                      tradableItem.RequiredBlockIndex > blockIndex))
-                .Sum(item => item.count);
-
             Find<ItemCountableAndPricePopup>().Show(SharedModel.ItemCountableAndPricePopup.Value,
-                SharedModel.ItemCountableAndPricePopup.Value.IsSell.Value, apStoneCount);
+                SharedModel.ItemCountableAndPricePopup.Value.IsSell.Value);
         }
 
         private void SubscribeRegisterProduct(Model.ItemCountableAndPricePopup data)

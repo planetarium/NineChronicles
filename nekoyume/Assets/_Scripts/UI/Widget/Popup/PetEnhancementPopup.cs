@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
@@ -18,6 +19,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.Model.Pet;
     using TableData;
     using UniRx;
     public class PetEnhancementPopup : PopupWidget
@@ -82,7 +84,7 @@ namespace Nekoyume.UI
         private int _targetLevel;
         private int _sliderMax;
         private int _sliderCurrentValue;
-        private bool _notEnoughBalance;
+        private bool _enoughBalance;
         private PetSheet.Row _petRow;
 
         protected override void Awake()
@@ -116,35 +118,12 @@ namespace Nekoyume.UI
                 _petRow.Id,
                 _petRow.Grade
             );
-            SetObjectByTargetLevel(_petRow.Id, 0, 1);
+            _targetLevel = 1;
+            SetObjectByTargetLevel(_petRow.Id, 0, _targetLevel);
             petSkeletonGraphic.skeletonDataAsset = PetFrontHelper.GetPetSkeletonData(_petRow.Id);
             petSkeletonGraphic.Initialize(true);
             requiredSoulStoneImage.overrideSprite =
                 PetFrontHelper.GetSoulStoneSprite(_petRow.Id);
-            submitButton.OnClickSubject.Subscribe(state =>
-            {
-                switch (state)
-                {
-                    case ConditionalButton.State.Normal:
-                        Action(_petRow.Id, 1);
-                        break;
-                    case ConditionalButton.State.Conditional:
-                        OneLineSystem.Push(
-                            MailType.System,
-                            L10nManager.Localize("UI_NOT_ENOUGH_NCG"),
-                            NotificationCell.NotificationType.Information);
-                        break;
-                    case ConditionalButton.State.Disabled:
-                        break;
-                }
-            }).AddTo(_disposables);
-            submitButton.OnClickDisabledSubject.Subscribe(_ =>
-            {
-                OneLineSystem.Push(
-                    MailType.System,
-                    L10nManager.Localize("UI_CAN_NOT_ENTER_PET_MENU"),
-                    NotificationCell.NotificationType.Information);
-            }).AddTo(_disposables);
         }
 
         public void ShowForLevelUp(PetState petState)
@@ -157,8 +136,8 @@ namespace Nekoyume.UI
             maxLevelReachedText.gameObject.SetActive(false);
             submitButton.Text = LevelUpText;
             var option = TableSheets.Instance.PetOptionSheet[petState.PetId].LevelOptionMap[petState.Level];
-            contentText.text = L10nManager.Localize($"PET_DESCRIPTION_{option.OptionType}",
-                option.OptionValue);
+            contentText.text =
+                PetFrontHelper.GetDefaultDescriptionText(option, States.Instance.GameConfigState);
             petInfoView.Set(_petRow.Id,
                 _petRow.Grade
             );
@@ -187,30 +166,6 @@ namespace Nekoyume.UI
                         _sliderCurrentValue = value;
                         SetObjectByTargetLevel(petState.PetId, petState.Level, value + petState.Level);
                     });
-                submitButton.OnClickSubject.Subscribe(state =>
-                {
-                    switch (state)
-                    {
-                        case ConditionalButton.State.Normal:
-                            Action(_petRow.Id, _targetLevel);
-                            break;
-                        case ConditionalButton.State.Conditional:
-                            OneLineSystem.Push(
-                                MailType.System,
-                                L10nManager.Localize("UI_NOT_ENOUGH_NCG"),
-                                NotificationCell.NotificationType.Information);
-                            break;
-                        case ConditionalButton.State.Disabled:
-                            break;
-                    }
-                }).AddTo(_disposables);
-                submitButton.OnClickDisabledSubject.Subscribe(_ =>
-                {
-                    OneLineSystem.Push(
-                        MailType.System,
-                        L10nManager.Localize("UI_CAN_NOT_ENTER_PET_MENU"),
-                        NotificationCell.NotificationType.Information);
-                }).AddTo(_disposables);
             }
             else
             {
@@ -224,13 +179,26 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            LoadingHelper.PetEnhancement.Subscribe(id =>
-            {
-                // buttonDisableObject.SetActive(_notEnoughBalance || id != 0);
-            }).AddTo(_disposables);
             _enhancementCount.Subscribe(value =>
             {
                 slider.ForceMove(value);
+            }).AddTo(_disposables);
+            LoadingHelper.PetEnhancement.Subscribe(id =>
+            {
+                submitButton.Interactable = _enoughBalance && id == 0;
+            }).AddTo(_disposables);
+            submitButton.OnSubmitSubject.Subscribe(_ =>
+            {
+                Action(_petRow.Id, _targetLevel);
+            }).AddTo(_disposables);
+            submitButton.OnClickDisabledSubject.Subscribe(_ =>
+            {
+                OneLineSystem.Push(
+                    MailType.System,
+                    _enoughBalance
+                        ? L10nManager.Localize("UI_CAN_NOT_ENTER_PET_MENU")
+                        : L10nManager.Localize("UI_NOT_ENOUGH_NCG"),
+                    NotificationCell.NotificationType.Information);
             }).AddTo(_disposables);
         }
 
@@ -246,17 +214,15 @@ namespace Nekoyume.UI
             var targetOption = TableSheets.Instance.PetOptionSheet[petId].LevelOptionMap[_targetLevel];
             if (targetLevel == 1)
             {
-                contentText.text =
-                    L10nManager.Localize($"PET_DESCRIPTION_{targetOption.OptionType}",
-                        targetOption.OptionValue);
+                contentText.text = PetFrontHelper.GetDefaultDescriptionText(
+                    targetOption, States.Instance.GameConfigState);
             }
             else
             {
-                var currentOption = TableSheets.Instance.PetOptionSheet[petId].LevelOptionMap[currentLevel];
-                contentText.text =
-                    L10nManager.Localize($"PET_DESCRIPTION_TWO_OPTION_{targetOption.OptionType}",
-                        currentOption.OptionValue,
-                        targetOption.OptionValue);
+                var currentOption = TableSheets.Instance.PetOptionSheet[petId]
+                    .LevelOptionMap[currentLevel];
+                contentText.text = PetFrontHelper.GetComparisonDescriptionText(
+                    currentOption, targetOption);
             }
 
             soulStoneCostText.text = soulStone.ToString();
@@ -269,18 +235,10 @@ namespace Nekoyume.UI
             var enoughSoulStone
                 = States.Instance.AvatarBalance[soulStoneCost.Currency.Ticker] >= soulStoneCost;
             var enough = enoughNcg && enoughSoulStone;
-            _notEnoughBalance = !enough;
-            soulStoneNotEnoughObject.SetActive(_notEnoughBalance);
+            _enoughBalance = enough;
+            soulStoneNotEnoughObject.SetActive(!enoughSoulStone);
             submitButton.SetCost(CostType.NCG, ncg);
-            if (LoadingHelper.PetEnhancement.Value != 0)
-            {
-                submitButton.Interactable = enough && LoadingHelper.PetEnhancement.Value == 0;
-            }
-            else
-            {
-                submitButton.Interactable = true;
-                submitButton.UpdateObjects();
-            }
+            submitButton.Interactable = enoughSoulStone && LoadingHelper.PetEnhancement.Value == 0;
         }
 
         private void Action(int petId, int targetLevel)
@@ -296,7 +254,7 @@ namespace Nekoyume.UI
             var soulStoneName = L10nManager.Localize($"ITEM_NAME_{row.Id}");
             var count = States.Instance.AvatarBalance[row.SoulStoneTicker].GetQuantityString();
             var content = L10nManager.Localize($"ITEM_DESCRIPTION_{row.Id}");
-            var buttonText = L10nManager.Localize("UI_GO_TO_MARKET");
+            var buttonText = L10nManager.Localize("UI_SHOP");
 
             void Callback()
             {

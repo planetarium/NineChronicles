@@ -65,7 +65,7 @@ namespace Nekoyume.UI.Model
             Equipped = new ReactiveProperty<bool>(false);
             LevelLimited = new ReactiveProperty<bool>(false);
             Tradable = new ReactiveProperty<bool>(false);
-            DimObjectEnabled = new ReactiveProperty<bool>(false);
+            DimObjectEnabled = new ReactiveProperty<bool>(count <= 0);
             Selected = new ReactiveProperty<bool>(false);
             Focused = new ReactiveProperty<bool>(false);
             HasNotification = new ReactiveProperty<bool>(false);

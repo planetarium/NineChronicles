@@ -68,23 +68,23 @@ namespace Nekoyume.UI.Module
         protected abstract IEnumerable<ShopItem> GetSortedModels(
             Dictionary<ItemSubTypeFilter, List<ShopItem>> items);
 
-        protected virtual void UpdateView(bool resetPage = true, int page = 0)
+        protected virtual void UpdateView()
         {
             _selectedModels.Clear();
             _selectedModels.AddRange(GetSortedModels(_items));
-            _pageCount = _selectedModels.Any()
-                ? _selectedModels.Count / (_column * _row + 1)
-                : 1;
-            if (resetPage)
+
+            if (_column * _row > 0)
             {
-                _page.SetValueAndForceNotify(page);
+                _pageCount = _selectedModels.Any()
+                    ? _selectedModels.Count / (_column * _row) + 1
+                    : 1;
             }
 
             UpdateExpired(Game.Game.instance.Agent.BlockIndex);
         }
 
         public void Show(
-            ReactiveProperty<List<ItemProductResponseModel>> itemProducts,
+            ReactiveProperty<Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>> itemProducts,
             ReactiveProperty<List<FungibleAssetValueProductResponseModel>> fungibleAssetProducts,
             Action<ShopItem> clickItem)
         {
@@ -92,7 +92,7 @@ namespace Nekoyume.UI.Module
             InstantiateItemView();
             SetAction(clickItem);
             Set(itemProducts, fungibleAssetProducts);
-            UpdateView(page: _page.Value);
+            UpdateView();
         }
 
         private void Awake()
@@ -125,12 +125,12 @@ namespace Nekoyume.UI.Module
         private void OnEnable()
         {
             _isActive = true;
+            Reset();
         }
 
         private void OnDisable()
         {
             _isActive = false;
-            Reset();
         }
 
         protected virtual void UpdatePage(int page)
@@ -210,7 +210,7 @@ namespace Nekoyume.UI.Module
         }
 
         protected void Set(
-            ReactiveProperty<List<ItemProductResponseModel>> itemProducts,
+            ReactiveProperty<Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>> itemProducts,
             ReactiveProperty<List<FungibleAssetValueProductResponseModel>> fungibleAssetProducts)
         {
             _disposables.DisposeAllAndClear();
@@ -225,14 +225,17 @@ namespace Nekoyume.UI.Module
             if (itemProducts.Value is not null)
             {
                 var itemSheet = TableSheets.Instance.ItemSheet;
-                foreach (var product in itemProducts.Value)
+                foreach (var (filter, products) in itemProducts.Value)
                 {
-                    if (!ReactiveShopState.TryGetItemBase(product, out var itemBase))
+                    foreach (var product in products)
                     {
-                        continue;
-                    }
+                        if (!ReactiveShopState.TryGetItemBase(product, out var itemBase))
+                        {
+                            continue;
+                        }
 
-                    AddItem(product, itemBase, itemSheet);
+                        AddItem(filter, product, itemBase, itemSheet);
+                    }
                 }
             }
 
@@ -249,20 +252,16 @@ namespace Nekoyume.UI.Module
                 .AddTo(_disposables);
         }
 
-        private void AddItem(ItemProductResponseModel product, ItemBase itemBase, ItemSheet sheet)
+        private void AddItem(ItemSubTypeFilter filter, ItemProductResponseModel product, ItemBase itemBase, ItemSheet sheet)
         {
             var model = CreateItem(product, itemBase, sheet);
-            var filters = ItemSubTypeFilterExtension.GetItemSubTypeFilter(product.ItemId);
-            foreach (var filter in filters)
+            if (!_items.ContainsKey(filter))
             {
-                if (!_items.ContainsKey(filter))
-                {
-                    _items.Add(filter, new List<ShopItem>());
-                }
-
-                _items[filter].Add(model);
-                _items[ItemSubTypeFilter.All].Add(model);
+                _items.Add(filter, new List<ShopItem>());
             }
+
+            _items[filter].Add(model);
+            _items[ItemSubTypeFilter.All].Add(model);
         }
 
         private void AddItem(FungibleAssetValueProductResponseModel product)
@@ -310,15 +309,19 @@ namespace Nekoyume.UI.Module
             FungibleAssetValue fav)
         {
             var grade = Util.GetTickerGrade(product.Ticker);
-            return new ShopItem(fav, product, grade);
+            return new ShopItem(fav, product, grade, fav.MajorUnit <= 0);
         }
 
         private void UpdateExpired(long blockIndex)
         {
             foreach (var model in _selectedModels)
             {
-                var registeredBlockIndex = model.Product?.RegisteredBlockIndex ?? model.FungibleAssetProduct.RegisteredBlockIndex;
-                var isExpired = registeredBlockIndex + Order.ExpirationInterval - blockIndex <= 0;
+                var isExpired = false;
+                if (model.Product is not null && model.Product.Legacy)
+                {
+                    isExpired = model.Product.RegisteredBlockIndex + Order.ExpirationInterval - blockIndex <= 0;
+                }
+
                 model.Expired.Value = isExpired;
             }
         }

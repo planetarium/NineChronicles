@@ -34,7 +34,13 @@ namespace Nekoyume.UI.Model
                 _originalCount = value.Count.Value;
             });
 
-            OnClickCancel.Subscribe(value => value.Item.Value.Count.Value = _originalCount);
+            OnClickCancel.Subscribe(value =>
+            {
+                if (value.Item.Value is not null)
+                {
+                    value.Item.Value.Count.Value = _originalCount;
+                }
+            });
         }
 
         public virtual void Dispose()

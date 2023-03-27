@@ -1,11 +1,11 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Text.Json;
-using Bencodex.Json;
+using System.Linq;
 using Bencodex.Types;
 using Libplanet;
+using StateViewer.Runtime;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -15,15 +15,17 @@ namespace StateViewer.Editor
 {
     public class StateTreeView : TreeView
     {
-        public event Action<bool> OnDirty;
+        private const int RootTreeViewItemId = 0;
+        private static readonly string[] ValueKindNames = Enum.GetNames(typeof(ValueKind));
 
-        private StateTreeViewItem.Model[] _itemModels;
+        public event Action<bool>? OnDirty;
+
         private Address _addr;
-        private int _elementId;
+        private StateTreeViewItemModel? _itemModel;
 
         public (Address addr, IValue value) Serialize()
         {
-            return (_addr, _itemModels[0].Serialize());
+            return (_addr, _itemModel?.Serialize() ?? Null.Value);
         }
 
         public StateTreeView(TreeViewState treeViewState, MultiColumnHeader multiColumnHeader)
@@ -34,117 +36,60 @@ namespace StateViewer.Editor
             showBorder = true;
         }
 
-        public void SetData(Address addr, IValue data)
+        public void SetData(Address addr, IValue? data)
         {
             _addr = addr;
-            var model = MakeItemModelRecursive(ValueKind.Text, "", data);
-            _itemModels = new[] { model };
-            Reload();
-            OnDirty?.Invoke(false);
+            _itemModel = new StateTreeViewItemModel(
+                data ?? Null.Value,
+                alias: "root");
+            ProcessWhenItemModelHierarchyChanged(initialize: true);
         }
 
-        private static string Convert(IValue value)
+        private void ProcessWhenItemModelHierarchyChanged(bool initialize = false)
         {
-            var converter = new BencodexJsonConverter();
-            var serializerOption = new JsonSerializerOptions
+            if (_itemModel is null)
             {
-                WriteIndented = false,
-            };
-            using var stream = new MemoryStream();
-            var writerOption = new JsonWriterOptions
-            {
-                Indented = false,
-            };
-            var writer = new Utf8JsonWriter(stream, writerOption);
-            converter.Write(writer, value, serializerOption);
-            return Encoding.UTF8.GetString(stream.ToArray()).Replace("\\uFEFF", "")
-                .Replace("\"", "");
-        }
-
-        private StateTreeViewItem.Model MakeItemModelRecursive(
-            ValueKind keyType,
-            string key,
-            IValue data,
-            bool editable = false
-        )
-        {
-            StateTreeViewItem.Model viewModel;
-            switch (data)
-            {
-                case Null:
-                case Binary:
-                case Boolean:
-                case Integer:
-                case Text:
-                {
-                    viewModel = new StateTreeViewItem.Model(
-                        _elementId++,
-                        keyType,
-                        key,
-                        data.Kind,
-                        Convert(data),
-                        editable: editable
-                    );
-
-                    return viewModel;
-                }
-                case List list:
-                {
-                    viewModel = new StateTreeViewItem.Model(
-                        _elementId++,
-                        keyType,
-                        key,
-                        data.Kind,
-                        $"Count: {list.Count}",
-                        editable: false
-                    );
-                    for (var i = 0; i < list.Count; i++)
-                    {
-                        var item = list[i];
-                        var childViewModel = MakeItemModelRecursive(
-                            ValueKind.Binary,
-                            i.ToString(),
-                            item
-                        );
-                        viewModel.AddChild(childViewModel);
-                    }
-
-                    return viewModel;
-                }
-                case Dictionary dict:
-                {
-                    viewModel = new StateTreeViewItem.Model(
-                        _elementId++,
-                        keyType,
-                        key,
-                        data.Kind,
-                        $"Count: {dict.Count}"
-                    );
-                    foreach (var pair in dict)
-                    {
-                        var childViewModel = MakeItemModelRecursive(
-                            pair.Key.Kind,
-                            $"{Convert(pair.Key)}",
-                            pair.Value
-                        );
-                        viewModel.AddChild(childViewModel);
-                    }
-
-                    return viewModel;
-                }
-                default:
-                    Debug.LogError($"data type {data.GetType()} is not supported.");
-                    return null;
+                return;
             }
+
+            // Cache selection ids
+            var selectionIdsPrev = GetSelection();
+            // Cache Expanded ids
+            var expandedIdsPrev = GetExpanded();
+            const int firstId = RootTreeViewItemId + 1;
+            _itemModel.SetTreeViewItemIdRecursive(firstId, alsoSetPrev: initialize);
+            // Restore selection ids
+            if (selectionIdsPrev is not null)
+            {
+                var selectionIds = selectionIdsPrev
+                    .Select(prevId => _itemModel.FindIdRecursive(prevId))
+                    .Where(prevId => prevId >= firstId)
+                    .ToList();
+                SetSelection(selectionIds, TreeViewSelectionOptions.None);
+            }
+
+            // Restore Expanded ids
+            if (expandedIdsPrev is not null)
+            {
+                var expendedIds = expandedIdsPrev
+                    .Select(prevId => _itemModel.FindIdRecursive(prevId))
+                    .Where(prevId => prevId >= firstId)
+                    .ToArray();
+                SetExpanded(expendedIds);
+            }
+
+            Reload();
+            OnDirty?.Invoke(true);
         }
+
+        public void ClearData() => SetData(default, Null.Value);
 
         protected override TreeViewItem BuildRoot()
         {
             return new TreeViewItem
             {
-                id = _elementId++,
+                id = RootTreeViewItemId,
                 depth = -1,
-                displayName = "Root",
             };
         }
 
@@ -153,24 +98,22 @@ namespace StateViewer.Editor
             var totalRows = GetRows() ?? new List<TreeViewItem>();
             totalRows.Clear();
 
-            if (_itemModels is null)
+            if (_itemModel is null)
             {
                 return totalRows;
             }
 
-            foreach (var model in _itemModels)
+            var item = new StateTreeViewItem(_itemModel);
+            root.AddChild(item);
+            totalRows.Add(item);
+            if (_itemModel.Children.Count >= 1)
             {
-                var item = new StateTreeViewItem(model);
-                root.AddChild(item);
-                totalRows.Add(item);
-                if (model.Children.Count >= 1)
+                if (IsExpanded(_itemModel.TreeViewItemId))
                 {
-                    if (IsExpanded(model.Id))
-                    {
-                        AddChildrenRecursive(model, item, totalRows);
-                        continue;
-                    }
-
+                    AddChildrenRecursive(_itemModel, item, totalRows);
+                }
+                else
+                {
                     item.children = CreateChildListForCollapsedParent();
                 }
             }
@@ -178,8 +121,6 @@ namespace StateViewer.Editor
             SetupDepthsFromParentsAndChildren(root);
             return totalRows;
         }
-
-        private int _index;
 
         protected override void RowGUI(RowGUIArgs args)
         {
@@ -193,113 +134,100 @@ namespace StateViewer.Editor
                 var viewModel = item.ViewModel;
                 switch (columnIndex)
                 {
-                    case 0: // Key
-                        // base.RowGUI(args);
+                    case 0: // Index or Key
                         var offset = GetContentIndent(item) + extraSpaceBeforeIconAndLabel;
                         cellRect.xMin += offset;
-                        if (viewModel.Parent != null
-                            && viewModel.Parent.Type != ValueKind.List
-                            && (viewModel.Parent.Type == ValueKind.Dictionary || viewModel.Editable)
-                           )
+                        if (viewModel.Parent is null ||
+                            viewModel.Parent.ValueType != ValueKind.Dictionary)
                         {
-                            var key = GUI.TextField(cellRect, viewModel.Key);
-                            if (key != viewModel.Key)
-                            {
-                                viewModel.SetKey(key);
-                            }
+                            GUI.Label(cellRect, viewModel.IndexOrKeyContent);
                         }
                         else
                         {
-                            GUI.Label(cellRect, viewModel.Key);
+                            var indexOrKey = GUI.TextField(cellRect, viewModel.IndexOrKeyContent);
+                            if (indexOrKey != viewModel.IndexOrKeyContent)
+                            {
+                                viewModel.SetIndexOrKeyContent(indexOrKey);
+                            }
                         }
 
                         break;
                     case 1: // Alias
-                        GUI.Label(cellRect, viewModel.DisplayKey);
+                        GUI.Label(cellRect, viewModel.AliasContent);
                         break;
                     case 2: // ValueKind
-                        var names = Enum.GetNames(typeof(ValueKind));
-                        viewModel.Type = Enum.Parse<ValueKind>(
-                            names[EditorGUI.Popup(
-                                cellRect,
-                                Array.IndexOf(names, viewModel.Type.ToString()),
-                                names)]);
-
-                        break;
-                    case 3 when viewModel.Type is ValueKind.List or ValueKind.Dictionary: // Value
-                        GUI.Label(cellRect, viewModel.Value);
-                        break;
-                    case 3:
-                        if (viewModel.Editable)
+                        var valueKindFrom = viewModel.ValueType;
+                        var fromIndex = Array.IndexOf(
+                            ValueKindNames,
+                            valueKindFrom.ToString());
+                        var toIndex = EditorGUI.Popup(
+                            cellRect,
+                            fromIndex,
+                            ValueKindNames);
+                        if (toIndex != fromIndex &&
+                            EditorUtility.DisplayDialog(
+                                "Warning",
+                                "If you change the value kind, the value" +
+                                " that does not saved to blockchain state will be lost.",
+                                "OK",
+                                "Cancel"))
                         {
-                            var value = GUI.TextField(cellRect, viewModel.Value);
-                            if (value != viewModel.Value)
+                            var valueKindTo = Enum.Parse<ValueKind>(ValueKindNames[toIndex]);
+                            viewModel.SetValueKindContent(valueKindTo);
+                            if (valueKindFrom is ValueKind.List or ValueKind.Dictionary ||
+                                valueKindTo is ValueKind.List or ValueKind.Dictionary)
                             {
-                                viewModel.SetValue(value);
-                                OnDirty?.Invoke(true);
-                            }
-                        }
-                        else
-                        {
-                            GUI.Label(cellRect, viewModel.Value);
-                        }
-
-                        break;
-                    case 4:
-                        if (viewModel.Type is ValueKind.List or ValueKind.Dictionary)
-                        {
-                            if (GUI.Button(cellRect, "Add"))
-                            {
-                                viewModel.AddChild(new StateTreeViewItem.Model(
-                                    _elementId++,
-                                    viewModel.Children.Count == 0
-                                        ? ValueKind.Text
-                                        : viewModel.Children[0].KeyType,
-                                    viewModel.Type is ValueKind.List
-                                        ? $"{viewModel.Children.Count}"
-                                        : "New Key",
-                                    viewModel.Children.Count == 0
-                                        ? ValueKind.Text
-                                        : viewModel.Children[0].Type,
-                                    string.Empty,
-                                    editable: viewModel.Parent is { Type: ValueKind.Dictionary }));
-                                viewModel.Value = $"Count: {viewModel.Children.Count}";
-                                Reload();
-                                OnDirty?.Invoke(true);
-                            }
-                        }
-                        else if (viewModel.Editable)
-                        {
-                            if (GUI.Button(cellRect, "Save"))
-                            {
-                                viewModel.Editable = false;
-                                // Save changed value and update treeview
-                                Reload();
-                                OnDirty?.Invoke(true);
-                            }
-                        }
-                        else
-                        {
-                            if (GUI.Button(cellRect, "Edit"))
-                            {
-                                viewModel.Editable = true;
-                                // Make key and type editable
-                                // Update displayKey
-                                Reload();
-                                OnDirty?.Invoke(true);
+                                ProcessWhenItemModelHierarchyChanged();
                             }
                         }
 
                         break;
-                    case 5:
-                        if (!(viewModel.Parent is null))
+                    case 3 // Value
+                        when viewModel.ValueType is
+                            ValueKind.Null or
+                            ValueKind.List or
+                            ValueKind.Dictionary:
+                        GUI.Label(cellRect, viewModel.ValueContent);
+                        break;
+                    case 3 // Value
+                        when viewModel.ValueType is ValueKind.Boolean:
+                        var from = (bool)(Boolean)viewModel.Value;
+                        var to = GUI.Toggle(cellRect, from, from ? "(true)" : "(false)");
+                        if (to != from)
                         {
-                            if (GUI.Button(cellRect, "Remove"))
-                            {
-                                viewModel.Parent.RemoveChild(viewModel);
-                                Reload();
-                                OnDirty?.Invoke(true);
-                            }
+                            viewModel.SetValue((Boolean)to);
+                        }
+
+                        break;
+                    case 3: // Value
+                        var value = GUI.TextField(cellRect, viewModel.ValueContent);
+                        if (value != viewModel.ValueContent)
+                        {
+                            // TODO: Validate value
+                            viewModel.SetValueContent(value);
+                            OnDirty?.Invoke(true);
+                        }
+
+                        break;
+                    case 4: // Add
+                        if (viewModel.ValueType is ValueKind.List or ValueKind.Dictionary &&
+                            GUI.Button(cellRect, "Add"))
+                        {
+                            // NOTE: Why `viewModel.Children[0].Serialize()` not `viewModel.Children[0].Value`?
+                            //       Because to use same value of edited content.
+                            viewModel.AddChild(viewModel.Children.Count == 0
+                                ? Null.Value
+                                : viewModel.Children[0].Serialize());
+                            ProcessWhenItemModelHierarchyChanged();
+                        }
+
+                        break;
+                    case 5: // Remove
+                        if (viewModel.Parent is not null &&
+                            GUI.Button(cellRect, "Remove"))
+                        {
+                            viewModel.Parent.RemoveChild(viewModel);
+                            ProcessWhenItemModelHierarchyChanged();
                         }
 
                         break;
@@ -308,7 +236,7 @@ namespace StateViewer.Editor
         }
 
         private void AddChildrenRecursive(
-            StateTreeViewItem.Model parentModel,
+            StateTreeViewItemModel parentModel,
             TreeViewItem parentItem,
             ICollection<TreeViewItem> totalRows)
         {
@@ -319,7 +247,7 @@ namespace StateViewer.Editor
                 totalRows.Add(childItem);
                 if (childModel.Children.Count >= 1)
                 {
-                    if (IsExpanded(childModel.Id))
+                    if (IsExpanded(childModel.TreeViewItemId))
                     {
                         AddChildrenRecursive(childModel, childItem, totalRows);
                         continue;

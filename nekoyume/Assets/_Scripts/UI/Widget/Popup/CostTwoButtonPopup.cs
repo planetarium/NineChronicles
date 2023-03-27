@@ -61,6 +61,7 @@ namespace Nekoyume.UI
             costButton.SetCost(costType, cost);
             if (costType == CostType.ActionPoint)
             {
+                var condition = ConditionalCostButton.CheckCostOfType(costType, cost);
                 var inventoryItems = States.Instance.CurrentAvatarState.inventory.Items;
                 var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
                 var apStoneCount = inventoryItems.Where(x =>
@@ -69,7 +70,7 @@ namespace Nekoyume.UI
                         !(x.item is ITradableItem tradableItem &&
                           tradableItem.RequiredBlockIndex > blockIndex))
                     .Sum(item => item.count);
-                costButton.Interactable = apStoneCount > 0;
+                costButton.Interactable = condition || apStoneCount > 0;
             }
 
             base.Show();

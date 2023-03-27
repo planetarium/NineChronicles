@@ -172,7 +172,7 @@ namespace Nekoyume.UI.Module
             return CostType.None;
         }
 
-        private static bool CheckCostOfType(CostType type, long cost)
+        public static bool CheckCostOfType(CostType type, long cost)
         {
             switch (type)
             {

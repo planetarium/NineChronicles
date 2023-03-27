@@ -67,6 +67,8 @@ namespace Nekoyume.UI.Module.Pet
                 var isOwn = States.Instance.PetStates.TryGetPetState(id, out var pet);
                 var isMaxLevel = !TableSheets.Instance.PetCostSheet[id]
                     .TryGetCost((pet?.Level ?? 0) + 1, out var nextCost);
+                soulStoneGaugeSlider.maxValue = 1;
+                soulStoneGaugeSlider.minValue = 0;
                 soulStoneGaugeSlider.value = 1;
                 if (isMaxLevel)
                 {

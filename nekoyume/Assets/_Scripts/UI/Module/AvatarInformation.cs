@@ -251,7 +251,7 @@ namespace Nekoyume.UI.Module
 
                         var attractMessage = enough
                             ? L10nManager.Localize("UI_YES")
-                            : L10nManager.Localize("UI_GO_TO_MARKET");
+                            : L10nManager.Localize("UI_SHOP");
                         Widget.Find<PaymentPopup>().ShowAttract(
                             CostType.NCG,
                             cost,

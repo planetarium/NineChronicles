@@ -184,18 +184,36 @@ namespace Nekoyume.UI
             submitButtonContainer.SetActive(false);
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(true);
-            sell.Set(
-                item.Product.RegisteredBlockIndex + Order.ExpirationInterval,
-                apStoneCount,
-                state =>
-                {
-                    onSellCancellation?.Invoke(state);
-                    Close();
-                }, state =>
-                {
-                    onRegister?.Invoke(state);
-                    Close();
-                });
+            if (item.Product.Legacy)
+            {
+                sell.Set(
+                    item.Product.RegisteredBlockIndex + Order.ExpirationInterval,
+                    apStoneCount,
+                    state =>
+                    {
+                        onSellCancellation?.Invoke(state);
+                        Close();
+                    }, state =>
+                    {
+                        onRegister?.Invoke(state);
+                        Close();
+                    });
+            }
+            else
+            {
+                sell.Set(
+                    apStoneCount,
+                    state =>
+                    {
+                        onSellCancellation?.Invoke(state);
+                        Close();
+                    }, state =>
+                    {
+                        onRegister?.Invoke(state);
+                        Close();
+                    });
+            }
+
             detail.Set(
                 item.ItemBase,
                 (int) item.Product.Quantity,
@@ -217,13 +235,25 @@ namespace Nekoyume.UI
             submitButtonContainer.SetActive(false);
             sell.gameObject.SetActive(false);
             buy.gameObject.SetActive(true);
-            buy.Set(item.Product.RegisteredBlockIndex + Order.ExpirationInterval,
-                (BigInteger)item.Product.Price * States.Instance.GoldBalanceState.Gold.Currency,
-                () =>
-                {
-                    onBuy?.Invoke();
-                    Close();
-                });
+            if (item.Product.Legacy)
+            {
+                buy.Set(item.Product.RegisteredBlockIndex + Order.ExpirationInterval,
+                    (BigInteger)item.Product.Price * States.Instance.GoldBalanceState.Gold.Currency,
+                    () =>
+                    {
+                        onBuy?.Invoke();
+                        Close();
+                    });
+            }
+            else
+            {
+                buy.Set((BigInteger)item.Product.Price * States.Instance.GoldBalanceState.Gold.Currency,
+                    () =>
+                    {
+                        onBuy?.Invoke();
+                        Close();
+                    });
+            }
 
             detail.Set(
                 item.ItemBase,

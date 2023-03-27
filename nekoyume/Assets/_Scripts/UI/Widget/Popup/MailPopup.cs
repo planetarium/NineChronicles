@@ -177,6 +177,30 @@ namespace Nekoyume.UI
                     }
                     break;
 
+                case ProductCancelMail productCancelMail:
+                    var (_, cItemProduct, cFavProduct) = await Game.Game.instance.MarketServiceClient.GetProductInfo(productCancelMail.ProductId);
+                    if (cItemProduct is not null)
+                    {
+                        var item = States.Instance.CurrentAvatarState.inventory.Items
+                            .FirstOrDefault(i => i.item is ITradableItem item &&
+                                                 item.TradableId.Equals(cItemProduct.TradableId));
+                        if (item?.item is null)
+                        {
+                            return;
+                        }
+
+                        mailRewards.Add(new MailReward(item.item, (int)cItemProduct.Quantity, true));
+                    }
+
+                    if (cFavProduct is not null)
+                    {
+                        var currency = Currency.Legacy(cFavProduct.Ticker, 0, null);
+                        var fav = new FungibleAssetValue(currency, (int)cFavProduct.Quantity, 0);
+                        mailRewards.Add(new MailReward(fav, (int)cFavProduct.Quantity, true));
+                    }
+                    break;
+
+
                 case OrderBuyerMail buyerMail:
                     var bOrder = await Util.GetOrder(buyerMail.OrderId);
                     var bItem = await Util.GetItemBaseByTradableId(bOrder.TradableId, bOrder.ExpiredBlockIndex);

@@ -2034,6 +2034,7 @@ MonoBehaviour:
   tutorialTargets: []
   tutorialActions: 
   backButton: {fileID: 4465445792812148215}
+  dccButton: {fileID: 5632069024862792094}
   scroll: {fileID: 2567904878328409846}
   petSkeletonGraphic: {fileID: 2257138408582950614}
   infoView: {fileID: 1239752866301356276}
@@ -2884,9 +2885,7 @@ GameObject:
   - component: {fileID: 2166804179485779931}
   - component: {fileID: 5632069024862792094}
   - component: {fileID: 2861590099692578842}
-  - component: {fileID: 1824969669471338678}
   - component: {fileID: 7820426791777332487}
-  - component: {fileID: 828421152946817592}
   m_Layer: 5
   m_Name: DccButton
   m_TagString: Untagged
@@ -2999,26 +2998,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!95 &1824969669471338678
-Animator:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3806823034475924686}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: d51280edccfb44430a6429385b827e88, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &7820426791777332487
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3036,19 +3015,6 @@ MonoBehaviour:
   m_Hue: 0.46
   m_Saturation: 0
   m_Value: -0.247
---- !u!114 &828421152946817592
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3806823034475924686}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 12066c21e7a128745913799faa1146e1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  websiteLink: https://dcc-frontend-git-develop-kimwz.vercel.app/shop
 --- !u!1 &3872803797411425708
 GameObject:
   m_ObjectHideFlags: 0
@@ -4273,7 +4239,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 22.25
+  m_fontSize: 18.9
   m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -12557,9 +12523,9 @@ RectTransform:
   m_Father: {fileID: 7138048280016497612}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 125.5, y: -31}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 140, y: 46}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4327467318392833406
@@ -13952,7 +13918,7 @@ PrefabInstance:
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 88
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}

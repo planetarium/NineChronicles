@@ -744,8 +744,7 @@ namespace Nekoyume.BlockChain
             Equipment baseEquipment,
             Equipment materialEquipment,
             int slotIndex,
-            BigInteger costNCG,
-            int? petId)
+            BigInteger costNCG)
         {
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
@@ -760,10 +759,6 @@ namespace Nekoyume.BlockChain
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
             LocalLayerModifier.SetItemEquip(avatarAddress, baseEquipment.NonFungibleId, false);
             LocalLayerModifier.SetItemEquip(avatarAddress, materialEquipment.NonFungibleId, false);
-            if (petId.HasValue)
-            {
-                States.Instance.PetStates.LockPetTemporarily(petId.Value);
-            }
 
             var sentryTrace = Analyzer.Instance.Track(
                 "Unity/Item Enhancement",
@@ -771,7 +766,6 @@ namespace Nekoyume.BlockChain
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
-                ["PetId"] = petId ?? default,
             }, true);
 
             var action = new ItemEnhancement
@@ -780,7 +774,6 @@ namespace Nekoyume.BlockChain
                 materialId = materialEquipment.NonFungibleId,
                 avatarAddress = avatarAddress,
                 slotIndex = slotIndex,
-                petId = petId,
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
@@ -1355,7 +1348,7 @@ namespace Nekoyume.BlockChain
             {
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
                 RuneId = runeId,
-                TryCount = tryCount,
+                TryCount = tryCount > 0 ? tryCount : 1,
             };
 
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
@@ -1398,7 +1391,13 @@ namespace Nekoyume.BlockChain
             int petId,
             int targetLevel)
         {
-            // TODO: add Analyzer tracking
+            var sentryTrace = Analyzer.Instance.Track("Unity/PetEnhancement", new Dictionary<string, Value>()
+            {
+                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                ["TargetLevel"] = targetLevel,
+                ["PetId"] = petId,
+            }, true);
             var action = new PetEnhancement
             {
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
@@ -1415,7 +1414,7 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e =>
                 {
                     Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
-                });
+                }).Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR

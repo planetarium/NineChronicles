@@ -98,7 +98,8 @@ namespace Nekoyume.UI.Module.Arena.Board
         {
             _currentData = itemData;
 
-            if (Dcc.instance.Avatars.TryGetValue(itemData.address, out var dccId))
+            var prefixedAddress = "0x" + itemData.address;
+            if (Dcc.instance.Avatars.TryGetValue(prefixedAddress, out var dccId))
             {
                 _characterView.SetByDccId(dccId, _currentData.level);
             }

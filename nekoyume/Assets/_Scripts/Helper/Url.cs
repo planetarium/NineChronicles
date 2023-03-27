@@ -16,6 +16,7 @@ namespace Nekoyume.Helper
         private string dccMetadata;
         private string dccConnect;
         private string dccMileageAPI;
+        private string dccMileageShop;
         private string dccEthChainHeaderName;
         private string dccEthChainHeaderValue;
         public bool Empty { get; private set; } = true;
@@ -49,6 +50,17 @@ namespace Nekoyume.Helper
             set
             {
                 dccConnect = value;
+                Empty = false;
+            }
+        }
+
+        [Option("dcc-mileage-shop", Required = true, HelpText = "dcc mileage shop")]
+        public string DccMileageShop
+        {
+            get => dccMileageShop;
+            set
+            {
+                dccMileageShop = value;
                 Empty = false;
             }
         }

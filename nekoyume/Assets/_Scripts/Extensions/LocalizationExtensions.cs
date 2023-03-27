@@ -440,6 +440,7 @@ namespace Nekoyume
             var isRune = false;
             var id = 0;
             var ticker = fav.Currency.Ticker;
+            var grade = 1;
             if (RuneFrontHelper.TryGetRuneData(ticker, out var runeData))
             {
                 var sheet = Game.Game.instance.TableSheets.RuneListSheet;
@@ -447,6 +448,7 @@ namespace Nekoyume
                 {
                     isRune = true;
                     id = runeData.id;
+                    grade = row.Grade;
                 }
             }
 
@@ -456,24 +458,11 @@ namespace Nekoyume
             {
                 isRune = false;
                 id = petRow.Id;
-            }
-            return L10nManager.Localize(isRune ? $"RUNE_NAME_{id}" : $"PET_NAME_{id}");
-        }
-
-        public static ItemSubTypeFilter GetItemSubTypeFilter(this FungibleAssetValue fav)
-        {
-            if (RuneFrontHelper.TryGetRuneData(fav.Currency.Ticker, out _))
-            {
-                return ItemSubTypeFilter.RuneStone;
+                grade = petRow.Grade;
             }
 
-            var petSheet = Game.Game.instance.TableSheets.PetSheet;
-            if (petSheet.Values.Any(x => x.SoulStoneTicker == fav.Currency.Ticker))
-            {
-                return ItemSubTypeFilter.PetSoulStone;
-            }
-
-            return ItemSubTypeFilter.Stones;
+            var name = L10nManager.Localize(isRune ? $"RUNE_NAME_{id}" : $"PET_NAME_{id}");
+            return $"<color=#{GetColorHexByGrade(grade)}>{name}</color>";
         }
 
         public static string GetLocalizedNonColoredName(this ItemBase item, bool useElementalIcon = true)

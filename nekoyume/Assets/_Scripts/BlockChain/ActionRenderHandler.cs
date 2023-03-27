@@ -909,7 +909,7 @@ namespace Nekoyume.BlockChain
                 var avatarAddress = eval.Action.avatarAddress;
                 var slotIndex = eval.Action.slotIndex;
                 var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, slotIndex);
-                var result = (ItemEnhancement11.ResultModel)slot.Result;
+                var result = (ItemEnhancement.ResultModel)slot.Result;
                 var itemUsable = result.itemUsable;
                 if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress,
                         out var avatarState, out _))
@@ -941,22 +941,18 @@ namespace Nekoyume.BlockChain
                 UpdateCurrentAvatarStateAsync(eval).Forget();
                 RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
                 var action = eval.Action;
-                if (action.petId.HasValue)
-                {
-                    UpdatePetState(avatarAddress, eval.OutputStates, action.petId.Value);
-                }
 
                 // Notify
                 string formatKey;
                 switch (result.enhancementResult)
                 {
-                    case Action.ItemEnhancement11.EnhancementResult.GreatSuccess:
+                    case Action.ItemEnhancement.EnhancementResult.GreatSuccess:
                         formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_GREATER";
                         break;
-                    case Action.ItemEnhancement11.EnhancementResult.Success:
+                    case Action.ItemEnhancement.EnhancementResult.Success:
                         formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
                         break;
-                    case Action.ItemEnhancement11.EnhancementResult.Fail:
+                    case Action.ItemEnhancement.EnhancementResult.Fail:
                         Analyzer.Instance.Track("Unity/ItemEnhancement Failed",
                             new Dictionary<string, Value>()
                             {
@@ -1787,7 +1783,6 @@ namespace Nekoyume.BlockChain
             var currentAgentAddress = States.Instance.AgentState.address;
             var currentAvatarAddress = States.Instance.CurrentAvatarState.address;
             var playToEarnRewardAddress = new Address("d595f7e85e1757d6558e9e448fa9af77ab28be4c");
-
             if (senderAddress == currentAgentAddress)
             {
                 var amount = eval.Action.Amount;
