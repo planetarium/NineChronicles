@@ -18,8 +18,8 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/957
     /// </summary>
     [Serializable]
-    [ActionType("daily_reward7")]
-    public class DailyReward : GameAction, IDailyRewardV1
+    [ActionType("daily_reward6")]
+    public class DailyReward6 : GameAction, IDailyRewardV1
     {
         public Address avatarAddress;
         public const string AvatarAddressKey = "a";
