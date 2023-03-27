@@ -78,29 +78,22 @@ namespace Lib9c.Tests.Action
                 Signer = _agentAddress,
             });
 
-            var updatedAddresses = new List<Address>
-            {
-                _avatarAddress,
-                _avatarAddress.Derive(LegacyInventoryKey),
-                _avatarAddress.Derive(LegacyWorldInformationKey),
-                _avatarAddress.Derive(LegacyQuestListKey),
-            };
-
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
+            var updatedAddress = Assert.Single(nextState.UpdatedAddresses);
+            Assert.Equal(_avatarAddress, updatedAddress);
         }
 
         [Theory]
-        [InlineData(1)]
-        [InlineData(2)]
-        public void Execute(int avatarStateSerializedVersion)
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Execute(bool legacy)
         {
             IAccountStateDelta previousStates = null;
-            switch (avatarStateSerializedVersion)
+            switch (legacy)
             {
-                case 1:
+                case true:
                     previousStates = _initialState;
                     break;
-                case 2:
+                case false:
                     var avatarState = _initialState.GetAvatarState(_avatarAddress);
                     previousStates = SetAvatarStateAsV2To(_initialState, avatarState);
                     break;
@@ -108,7 +101,8 @@ namespace Lib9c.Tests.Action
 
             var nextState = ExecuteInternal(previousStates, 1800);
             var nextGameConfigState = nextState.GetGameConfigState();
-            var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
+            nextState.TryGetAvatarStateV2(_agentAddress, _avatarAddress, out var nextAvatarState, out var migrationRequired);
+            Assert.Equal(legacy, migrationRequired);
             Assert.NotNull(nextAvatarState);
             Assert.NotNull(nextAvatarState.inventory);
             Assert.NotNull(nextAvatarState.questList);
