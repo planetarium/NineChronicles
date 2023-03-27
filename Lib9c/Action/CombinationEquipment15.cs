@@ -16,18 +16,17 @@ using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
-using Nekoyume.TableData.Pet;
 using Serilog;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1711
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1749
     /// </summary>
     [Serializable]
-    [ActionType("combination_equipment16")]
-    public class CombinationEquipment : GameAction, ICombinationEquipmentV4
+    [ActionType("combination_equipment15")]
+    public class CombinationEquipment15 : GameAction, ICombinationEquipmentV3
     {
         public const string AvatarAddressKey = "a";
         public Address avatarAddress;
@@ -44,19 +43,15 @@ namespace Nekoyume.Action
         public bool payByCrystal;
         public const string UseHammerPointKey = "h";
         public bool useHammerPoint;
-        public const string PetIdKey = "pid";
-        public int? petId;
-
         public const int BasicSubRecipeHammerPoint = 1;
         public const int SpecialSubRecipeHammerPoint = 2;
 
-        Address ICombinationEquipmentV4.AvatarAddress => avatarAddress;
-        int ICombinationEquipmentV4.RecipeId => recipeId;
-        int ICombinationEquipmentV4.SlotIndex => slotIndex;
-        int? ICombinationEquipmentV4.SubRecipeId => subRecipeId;
-        bool ICombinationEquipmentV4.PayByCrystal => payByCrystal;
-        bool ICombinationEquipmentV4.UseHammerPoint => useHammerPoint;
-        int? ICombinationEquipmentV4.PetId => petId;
+        Address ICombinationEquipmentV3.AvatarAddress => avatarAddress;
+        int ICombinationEquipmentV3.RecipeId => recipeId;
+        int ICombinationEquipmentV3.SlotIndex => slotIndex;
+        int? ICombinationEquipmentV3.SubRecipeId => subRecipeId;
+        bool ICombinationEquipmentV3.PayByCrystal => payByCrystal;
+        bool ICombinationEquipmentV3.UseHammerPoint => useHammerPoint;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
@@ -67,7 +62,6 @@ namespace Nekoyume.Action
                 [SubRecipeIdKey] = subRecipeId.Serialize(),
                 [PayByCrystalKey] = payByCrystal.Serialize(),
                 [UseHammerPointKey] = useHammerPoint.Serialize(),
-                [PetIdKey] = petId.Serialize(),
             }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(
@@ -79,7 +73,6 @@ namespace Nekoyume.Action
             subRecipeId = plainValue[SubRecipeIdKey].ToNullableInteger();
             payByCrystal = plainValue[PayByCrystalKey].ToBoolean();
             useHammerPoint = plainValue[UseHammerPointKey].ToBoolean();
-            petId = plainValue[PetIdKey].ToNullableInteger();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -137,24 +130,6 @@ namespace Nekoyume.Action
                     $"{addressesHex}Aborted as the slot state is invalid: {slotState} @ {slotIndex}");
             }
             // ~Validate SlotIndex
-
-            // Validate PetState
-            PetState petState = null;
-            if (petId.HasValue)
-            {
-                var petStateAddress = PetState.DeriveAddress(avatarAddress, petId.Value);
-                if (!states.TryGetState(petStateAddress, out List rawState))
-                {
-                    throw new FailedLoadStateException($"{addressesHex}Aborted as the {nameof(PetState)} was failed to load.");
-                }
-                petState = new PetState(rawState);
-
-                if (!petState.Validate(context.BlockIndex))
-                {
-                    throw new PetIsLockedException($"{addressesHex}Aborted as the pet is already in use.");
-                }
-            }
-            // ~Validate PetState
 
             // Validate Work
             var costActionPoint = 0;
@@ -322,7 +297,6 @@ namespace Nekoyume.Action
                 }
             }
 
-            var petOptionSheet = states.GetSheet<PetOptionSheet>();
             if (useHammerPoint)
             {
                 if (!existHammerPointSheet)
@@ -355,11 +329,9 @@ namespace Nekoyume.Action
                     context,
                     avatarState,
                     hammerPointState,
-                    petState,
                     sheets,
                     materialItemSheet,
                     hammerPointSheet,
-                    petOptionSheet,
                     recipeRow,
                     requiredFungibleItems,
                     addressesHex);
@@ -395,7 +367,7 @@ namespace Nekoyume.Action
             // ~Transfer Required NCG
 
             // Create Equipment
-            var equipment = (Equipment) ItemFactory.CreateItemUsable(
+            var equipment = (Equipment)ItemFactory.CreateItemUsable(
                 equipmentRow,
                 context.Random.GenerateRandomGuid(),
                 endBlockIndex,
@@ -405,12 +377,10 @@ namespace Nekoyume.Action
             {
                 AddAndUnlockOption(
                     agentState,
-                    petState,
                     equipment,
                     context.Random,
                     subRecipeRow,
                     sheets.GetSheet<EquipmentItemOptionSheet>(),
-                    petOptionSheet,
                     sheets.GetSheet<SkillSheet>()
                 );
                 endBlockIndex = equipment.RequiredBlockIndex;
@@ -443,20 +413,6 @@ namespace Nekoyume.Action
             }
             // ~Create Equipment
 
-            // Apply block time discount
-            if (!(petState is null))
-            {
-                var requiredBlockIndex = endBlockIndex - context.BlockIndex;
-                var gameConfigState = states.GetGameConfigState();
-                requiredBlockIndex = PetHelper.CalculateReducedBlockOnCraft(
-                    requiredBlockIndex,
-                    gameConfigState.RequiredAppraiseBlock,
-                    petState,
-                    petOptionSheet);
-                endBlockIndex = context.BlockIndex + requiredBlockIndex;
-                equipment.Update(endBlockIndex);
-            }
-
             // Add or Update Equipment
             avatarState.blockIndex = context.BlockIndex;
             avatarState.updatedAt = context.BlockIndex;
@@ -479,17 +435,8 @@ namespace Nekoyume.Action
                 recipeId = recipeId,
                 subRecipeId = subRecipeId,
             };
-            slotState.Update(attachmentResult, context.BlockIndex, endBlockIndex, petId);
+            slotState.Update(attachmentResult, context.BlockIndex, endBlockIndex);
             // ~Update Slot
-
-            // Update Pet
-            if (!(petState is null))
-            {
-                petState.Update(endBlockIndex);
-                var petStateAddress = PetState.DeriveAddress(avatarAddress, petState.PetId);
-                states = states.SetState(petStateAddress, petState.Serialize());
-            }
-            // ~Update Pet
 
             // Create Mail
             var mail = new CombinationMail(
@@ -508,7 +455,7 @@ namespace Nekoyume.Action
                 .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
                 .SetState(questListAddress, avatarState.questList.Serialize())
                 .SetState(slotAddress, slotState.Serialize())
-                .SetState(hammerPointAddress,hammerPointState.Serialize())
+                .SetState(hammerPointAddress, hammerPointState.Serialize())
                 .SetState(context.Signer, agentState.Serialize());
         }
 
@@ -537,11 +484,9 @@ namespace Nekoyume.Action
             IActionContext context,
             AvatarState avatarState,
             HammerPointState hammerPointState,
-            PetState petState,
             Dictionary<Type, (Address, ISheet)> sheets,
             MaterialItemSheet materialItemSheet,
             CrystalHammerPointSheet hammerPointSheet,
-            PetOptionSheet petOptionSheet,
             EquipmentItemRecipeSheet.Row recipeRow,
             Dictionary<int, int> requiredFungibleItems,
             string addressesHex)
@@ -581,8 +526,8 @@ namespace Nekoyume.Action
                     throw new SheetRowNotFoundException(nameof(MaterialItemSheet), itemId);
                 }
             }
-
             // ~Remove Required Materials
+
             if (costCrystal > 0 * CrystalCalculator.CRYSTAL)
             {
                 var crystalFluctuationSheet = sheets.GetSheet<CrystalFluctuationSheet>();
@@ -590,23 +535,12 @@ namespace Nekoyume.Action
                     .First(r => r.Type == CrystalFluctuationSheet.ServiceType.Combination);
                 var (dailyCostState, weeklyCostState, _, _) =
                     states.GetCrystalCostStates(context.BlockIndex, row.BlockInterval);
-
                 // 1x fixed crystal cost.
                 costCrystal = CrystalCalculator.CalculateCombinationCost(
                     costCrystal,
                     row: row,
                     prevWeeklyCostState: null,
                     beforePrevWeeklyCostState: null);
-
-                // Apply pet discount if possible.
-                if (!(petState is null))
-                {
-                    costCrystal = PetHelper.CalculateDiscountedMaterialCost(
-                        costCrystal,
-                        petState,
-                        petOptionSheet);
-                }
-
                 // Update Daily Formula.
                 dailyCostState.Count++;
                 dailyCostState.CRYSTAL += costCrystal;
@@ -639,12 +573,10 @@ namespace Nekoyume.Action
 
         public static void AddAndUnlockOption(
             AgentState agentState,
-            PetState petState,
             Equipment equipment,
             IRandom random,
             EquipmentItemSubRecipeSheetV2.Row subRecipe,
             EquipmentItemOptionSheet optionSheet,
-            PetOptionSheet petOptionSheet,
             SkillSheet skillSheet
         )
         {
@@ -659,18 +591,7 @@ namespace Nekoyume.Action
                 }
 
                 var value = random.Next(1, GameConfig.MaximumProbability + 1);
-                var ratio = optionInfo.Ratio;
-
-                // Apply pet bonus if possible
-                if (!(petState is null))
-                {
-                    ratio = PetHelper.GetBonusOptionProbability(
-                        ratio,
-                        petState,
-                        petOptionSheet);
-                }
-
-                if (value > ratio)
+                if (value > optionInfo.Ratio)
                 {
                     continue;
                 }

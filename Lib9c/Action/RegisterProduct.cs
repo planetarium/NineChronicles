@@ -20,6 +20,7 @@ namespace Nekoyume.Action
     public class RegisterProduct : GameAction
     {
         public const int CostAp = 5;
+        public const int Capacity = 100;
         public Address AvatarAddress;
         public IEnumerable<IRegisterInfo> RegisterInfos;
         public bool ChargeAp;
@@ -35,6 +36,11 @@ namespace Nekoyume.Action
             if (!RegisterInfos.Any())
             {
                 throw new ListEmptyException("RegisterInfos was empty");
+            }
+
+            if (RegisterInfos.Count() > Capacity)
+            {
+                throw new ArgumentOutOfRangeException($"{nameof(RegisterInfos)} must be less than or equal {Capacity}.");
             }
 
             var ncg = states.GetGoldCurrency();
