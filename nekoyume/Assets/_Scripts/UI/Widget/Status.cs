@@ -1,20 +1,14 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
+using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Helper;
-using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
-using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Timer;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using UniRx;
-using ObservableExtensions = UniRx.ObservableExtensions;
 
 namespace Nekoyume.UI
 {
@@ -26,7 +20,10 @@ namespace Nekoyume.UI
         private FramedCharacterView characterView = null;
 
         [SerializeField]
-        private TextMeshProUGUI textLvName = null;
+        private TextMeshProUGUI textName = null;
+
+        [SerializeField]
+        private TextMeshProUGUI textLevel = null;
 
         [SerializeField]
         private TextMeshProUGUI textHp = null;
@@ -51,6 +48,7 @@ namespace Nekoyume.UI
 
         private Player _player;
 
+        private int? _activatedDccId;
         #region Mono
 
         protected override void Awake()
@@ -58,9 +56,13 @@ namespace Nekoyume.UI
             base.Awake();
 
             Game.Event.OnRoomEnter.AddListener(b => Show());
-            Game.Event.OnUpdatePlayerEquip.Subscribe(characterView.SetByPlayer)
-                .AddTo(gameObject);
+            Game.Event.OnUpdatePlayerEquip.Where(_ => _activatedDccId != null)
+                .Subscribe(characterView.SetByPlayer).AddTo(gameObject);
             Game.Event.OnUpdatePlayerStatus.Subscribe(SubscribeOnUpdatePlayerStatus)
+                .AddTo(gameObject);
+
+            characterView.OnClickCharacterIcon
+                .Subscribe(_ => Find<ProfileSelectPopup>().Show())
                 .AddTo(gameObject);
 
             CloseWidget = null;
@@ -106,7 +108,10 @@ namespace Nekoyume.UI
 
         public void UpdateOnlyPlayer(Player player)
         {
-            characterView.SetByPlayer(player);
+            if (_activatedDccId == null)
+            {
+                characterView.SetByPlayer(player);
+            }
 
             if (player)
             {
@@ -118,7 +123,11 @@ namespace Nekoyume.UI
 
         public void UpdatePlayer(Player player)
         {
-            characterView.SetByPlayer(player);
+            if (_activatedDccId == null)
+            {
+                characterView.SetByPlayer(player);
+            }
+
             Show();
 
             if (player)
@@ -131,9 +140,7 @@ namespace Nekoyume.UI
 
         private void SubscribeOnUpdatePlayerStatus(Player player)
         {
-            if (player is null ||
-                player is EnemyPlayer ||
-                player.Model is null)
+            if (player is null || player is EnemyPlayer || player.Model is null)
             {
                 return;
             }
@@ -150,9 +157,7 @@ namespace Nekoyume.UI
             }
 
             var level = _player.Level;
-
-            var avatarName = States.Instance.CurrentAvatarState.NameWithHash;
-            textLvName.text = $"<color=#B38271>LV. {level}</color> {avatarName}";
+            textLevel.text = level.ToString();
             var displayHp = _player.CurrentHP;
             textHp.text = $"{displayHp} / {_player.HP}";
             textExp.text =
@@ -178,11 +183,21 @@ namespace Nekoyume.UI
         )
         {
             // portrait
-            var portraitId = Util.GetPortraitId(equipments, costumes);
-            characterView.SetByFullCostumeOrArmorId(portraitId);
+            if (Dcc.instance.Avatars.TryGetValue(avatarState.address.ToString(), out var dccId))
+            {
+                _activatedDccId = dccId;
+                characterView.SetByDccId(dccId);
+            }
+            else
+            {
+                _activatedDccId = null;
+                var portraitId = Util.GetPortraitId(equipments, costumes);
+                characterView.SetByFullCostumeOrArmorId(portraitId);
+            }
 
             // level& name
-            textLvName.text = $"<color=#B38271>LV. {avatarState.level}</color> {avatarState.NameWithHash}";
+            textLevel.text = avatarState.level.ToString();
+            textName.text = avatarState.NameWithHash;
 
             // exp
             var levelSheet = Game.Game.instance.TableSheets.CharacterLevelSheet;

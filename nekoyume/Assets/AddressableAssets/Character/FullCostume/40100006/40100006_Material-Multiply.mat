@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: 40100006_Material-Multiply
-  m_Shader: {fileID: 4800000, guid: b2f45941d9f4fe9479ce1aebb9d63fbf, type: 3}
+  m_Shader: {fileID: 4800000, guid: 8bdcdc7ee298e594a9c20c61d25c33b6, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords:
   - _USE8NEIGHBOURHOOD_ON
@@ -33,13 +33,10 @@ Material:
     m_Floats:
     - <noninit>: 0
     - _Cutoff: 0.1
-    - _DoubleSidedLighting: 0
-    - _LightAffectsAdditive: 0
     - _OutlineMipLevel: 0
     - _OutlineReferenceTexWidth: 1024
     - _OutlineSmoothness: 1
     - _OutlineWidth: 3
-    - _ReceiveShadows: 0
     - _StencilComp: 8
     - _StencilRef: 1
     - _StraightAlphaInput: 0

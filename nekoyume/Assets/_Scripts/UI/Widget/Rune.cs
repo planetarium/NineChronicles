@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using Cysharp.Threading.Tasks;
 using Libplanet.Action;
 using Libplanet.Assets;
@@ -156,6 +157,7 @@ namespace Nekoyume.UI
                     return;
                 }
                 TryCount.Value = Math.Min(_maxTryCount, TryCount.Value + 1);
+                TryCount.Value = Math.Max(1, TryCount.Value);
             });
             minusButton.onClick.AddListener(() =>
             {
@@ -225,7 +227,7 @@ namespace Nekoyume.UI
                     random);
             }
 
-            await States.Instance.InitRuneStatesAsync();
+            await States.Instance.InitRuneStates();
             States.Instance.UpdateRuneSlotState();
 
             var fav = await States.Instance.SetRuneStoneBalance(_selectedRuneItem.Row.Id);
@@ -489,23 +491,27 @@ namespace Nekoyume.UI
 
                 sliderContainer.SetActive(true);
                 var maxRuneStone = item.Cost.RuneStoneQuantity > 0
-                    ? (int)item.RuneStone.MajorUnit / item.Cost.RuneStoneQuantity
+                    ? item.RuneStone.MajorUnit / item.Cost.RuneStoneQuantity
                     : -1;
                 var maxCrystal = item.Cost.CrystalQuantity > 0
-                    ? (int)States.Instance.CrystalBalance.MajorUnit / item.Cost.CrystalQuantity
+                    ? States.Instance.CrystalBalance.MajorUnit / item.Cost.CrystalQuantity
                     : -1;
                 var maxNcg = item.Cost.NcgQuantity > 0
-                    ? (int)States.Instance.GoldBalanceState.Gold.MajorUnit / item.Cost.NcgQuantity
+                    ? States.Instance.GoldBalanceState.Gold.MajorUnit / item.Cost.NcgQuantity
                     : -1;
-                var maxValues = new List<int> { maxRuneStone, maxCrystal, maxNcg };
-                _maxTryCount = maxValues.Where(x => x >= 0).Min();
-                _maxTryCount = Math.Min(100, _maxTryCount);
+                var maxValues = new List<BigInteger> { maxRuneStone, maxCrystal, maxNcg };
+                var count = (int)maxValues.Where(x => x >= 0).Min();
+                _maxTryCount = Math.Min(100, count);
                 slider.Set(1,
                     _maxTryCount > 0 ? _maxTryCount : 1,
                     1,
                     _maxTryCount > 0 ? _maxTryCount : 1,
                     1,
-                    (x) => TryCount.Value = x,
+                    (x) =>
+                    {
+                        TryCount.Value = x;
+                        TryCount.Value = Math.Max(1, TryCount.Value);
+                    },
                     _maxTryCount > 0,
                     true);
             }
@@ -529,7 +535,8 @@ namespace Nekoyume.UI
                         out var info,
                         out var canObtain);
                     name = L10nManager.Localize($"ITEM_NAME_{runeStoneId}");
-                    count = States.Instance.RuneStoneBalance[runeStoneId].GetQuantityString();
+                    var ticker = Game.Game.instance.TableSheets.RuneSheet[runeStoneId].Ticker;
+                    count = States.Instance.AvatarBalance[ticker].GetQuantityString();
                     content = L10nManager.Localize($"ITEM_DESCRIPTION_{runeStoneId}");
                     buttonText = canObtain
                         ? L10nManager.Localize("UI_MAIN_MENU_WORLDBOSS")

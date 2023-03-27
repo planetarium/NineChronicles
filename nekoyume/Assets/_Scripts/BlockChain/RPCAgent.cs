@@ -16,6 +16,7 @@ using Libplanet.Assets;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
 using Libplanet.Tx;
+using LruCacheNet;
 using MagicOnion.Client;
 using MessagePack;
 using mixpanel;
@@ -92,8 +93,6 @@ namespace Nekoyume.BlockChain
 
         public readonly Subject<(RPCAgent, int retryCount)> OnRetryAttempt = new Subject<(RPCAgent, int)>();
 
-        public int AppProtocolVersion { get; private set; }
-
         public BlockHash BlockTipHash { get; private set; }
 
         private readonly Subject<(NCTx tx, List<NCAction> actions)> _onMakeTransactionSubject =
@@ -109,8 +108,7 @@ namespace Nekoyume.BlockChain
             Action<bool> callback)
         {
             PrivateKey = privateKey;
-
-            _channel = new Channel(
+            _channel = new Grpc.Core.Channel(
                 options.RpcServerHost,
                 options.RpcServerPort,
                 ChannelCredentials.Insecure,
@@ -135,15 +133,26 @@ namespace Nekoyume.BlockChain
             yield return new WaitUntil(() => getTipTask.IsCompleted);
             OnRenderBlock(null, getTipTask.Result);
             yield return null;
-            var task = Task.Run(async () =>
+
+            // Android Mono only support arm7(32bit) backend in unity engine.
+            bool architecture_is_32bit = ! Environment.Is64BitProcess;
+            bool is_Android = Application.platform == RuntimePlatform.Android;
+            if (is_Android && architecture_is_32bit)
             {
-                _genesis = await BlockManager.ImportBlockAsync(options.GenesisBlockPath ?? BlockManager.GenesisBlockPath);
-            });
-            yield return new WaitUntil(() => task.IsCompleted);
-            var appProtocolVersion = options.AppProtocolVersion is null
-                ? default
-                : Libplanet.Net.AppProtocolVersion.FromToken(options.AppProtocolVersion);
-            AppProtocolVersion = appProtocolVersion.Version;
+                // 1. System.Net.WebClient is invaild when use Android Mono in currnet unity version.
+                // See this: https://issuetracker.unity3d.com/issues/system-dot-net-dot-webclient-not-working-when-building-on-android
+                // 2. If we use WWW class as a workaround, unfortunately, this class can't be used in aysnc function.
+                // So I can only use normal ImportBlock() function when build in Android Mono backend :(
+                _genesis = BlockManager.ImportBlock(null);
+            }
+            else
+            {
+                var task = Task.Run(async () =>
+                {
+                    _genesis = await BlockManager.ImportBlockAsync(options.GenesisBlockPath ?? BlockManager.GenesisBlockPath());
+                });
+                yield return new WaitUntil(() => task.IsCompleted);
+            }
 
             RegisterDisconnectEvent(_hub);
             StartCoroutine(CoTxProcessor());
@@ -158,23 +167,29 @@ namespace Nekoyume.BlockChain
 
         public async Task<IValue> GetStateAsync(Address address)
         {
+            var game = Game.Game.instance;
             // Check state & cached because force update state after rpc disconnected.
-            if (Game.Game.instance.CachedAddresses.TryGetValue(address, out bool cached) && cached &&
-                Game.Game.instance.CachedStates.TryGetValue(address, out IValue value) && !(value is Null))
+            if (game.CachedStateAddresses.TryGetValue(address, out var cached) &&
+                cached &&
+                game.CachedStates.TryGetValue(address, out var value) &&
+                !(value is Null))
             {
                 await Task.CompletedTask;
                 return value;
             }
+
             byte[] raw = await _service.GetState(address.ToByteArray(), BlockTipHash.ToByteArray());
             IValue result = _codec.Decode(raw);
-            if (Game.Game.instance.CachedAddresses.ContainsKey(address))
+            if (game.CachedStateAddresses.ContainsKey(address))
             {
-                Game.Game.instance.CachedAddresses[address] = true;
+                game.CachedStateAddresses[address] = true;
             }
-            if (Game.Game.instance.CachedStates.ContainsKey(address))
+
+            if (game.CachedStates.ContainsKey(address))
             {
-                Game.Game.instance.CachedStates.AddOrUpdate(address, result);
+                game.CachedStates.AddOrUpdate(address, result);
             }
+
             return result;
         }
 
@@ -193,28 +208,36 @@ namespace Nekoyume.BlockChain
                 serialized.ElementAt(1).ToBigInteger());
         }
 
-        public async Task<FungibleAssetValue> GetBalanceAsync(Address address, Currency currency)
+        public async Task<FungibleAssetValue> GetBalanceAsync(Address addr, Currency currency)
         {
-            if (Game.Game.instance.CachedBalance.TryGetValue(address, out FungibleAssetValue value) &&
-                !value.Equals(default) && Game.Game.instance.CachedAddresses.TryGetValue(address, out bool cached) &&
-                cached)
+            var game = Game.Game.instance;
+            if (game.CachedBalance.TryGetValue(currency, out var cache) &&
+                cache.TryGetValue(addr, out var fav) &&
+                !fav.Equals(default))
             {
                 await Task.CompletedTask;
-                return value;
+                return fav;
             }
+
             // FIXME: `CurrencyExtension.Serialize()` should be changed to `Currency.Serialize()`.
             byte[] raw = await _service.GetBalance(
-                address.ToByteArray(),
+                addr.ToByteArray(),
                 _codec.Encode(CurrencyExtensions.Serialize(currency)),
                 BlockTipHash.ToByteArray()
             );
-            var serialized = (Bencodex.Types.List) _codec.Decode(raw);
+            var serialized = (List)_codec.Decode(raw);
             var balance = FungibleAssetValue.FromRawValue(
                 new Currency(serialized.ElementAt(0)),
                 serialized.ElementAt(1).ToBigInteger());
-            if (address.Equals(Address))
+            if (addr.Equals(Address))
             {
-                Game.Game.instance.CachedBalance[Address] = balance;
+                if (!game.CachedBalance.ContainsKey(currency))
+                {
+                    game.CachedBalance[currency] =
+                        new LruCache<Address, FungibleAssetValue>(2);
+                }
+
+                game.CachedBalance[currency][addr] = balance;
             }
 
             return balance;
@@ -424,6 +447,7 @@ namespace Nekoyume.BlockChain
 
         private IEnumerator CoTxProcessor()
         {
+            int i = 0;
             while (true)
             {
                 yield return new WaitForSeconds(TxProcessInterval);
@@ -432,7 +456,7 @@ namespace Nekoyume.BlockChain
                 {
                     continue;
                 }
-
+                Debug.Log($"[ActionDebug] before MakeTransaction {++i}");
                 Task task = Task.Run(async () =>
                 {
                     await MakeTransaction(new List<NCAction> { action });
@@ -462,11 +486,23 @@ namespace Nekoyume.BlockChain
                 _genesis?.Hash,
                 actions
             );
-            _onMakeTransactionSubject.OnNext((tx, actions));
-            await _service.PutTransaction(tx.Serialize(true));
 
+            string actionsName = default;
             foreach (var action in actions)
             {
+                actionsName += "\n#";
+                actionsName += action.ToString();
+                actionsName += ", id=" + ((GameAction)action.InnerAction)?.Id;
+            }
+            Debug.Log($"[Transaction]\nnonce={nonce}\nPrivateKeyAddr={PrivateKey.ToAddress().ToString()}" +
+                $"\nHash={_genesis?.Hash}\nactionsName={actionsName}");
+
+            _onMakeTransactionSubject.OnNext((tx, actions));
+            await _service.PutTransaction(tx.Serialize(true));
+            foreach (var action in actions)
+            {
+                Debug.Log($"[Transaction] action = {action.ToString()}");
+
                 if (action.InnerAction is GameAction gameAction)
                 {
                     _transactions.TryAdd(gameAction.Id, tx.Id);
@@ -687,6 +723,7 @@ namespace Nekoyume.BlockChain
             var currentAvatarState = States.Instance.CurrentAvatarState;
             if (!(currentAvatarState is null))
             {
+                addresses.Add(currentAvatarState.address);
                 var slotAddresses = currentAvatarState.combinationSlotAddresses.ToArray();
                 addresses.AddRange(slotAddresses);
             }
@@ -695,10 +732,11 @@ namespace Nekoyume.BlockChain
 
             foreach (var address in addresses)
             {
-                Game.Game.instance.CachedAddresses[address] = false;
-                if (!Game.Game.instance.CachedStates.ContainsKey(address))
+                var game = Game.Game.instance;
+                game.CachedStateAddresses[address] = false;
+                if (!game.CachedStates.ContainsKey(address))
                 {
-                    Game.Game.instance.CachedStates.Add(address, new Null());
+                    game.CachedStates.Add(address, new Null());
                 }
             }
 

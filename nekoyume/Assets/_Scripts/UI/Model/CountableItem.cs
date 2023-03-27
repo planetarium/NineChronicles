@@ -1,4 +1,5 @@
 using System;
+using Libplanet.Assets;
 using Nekoyume.Model.Item;
 
 namespace Nekoyume.UI.Model
@@ -11,7 +12,7 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<int> Count = new ReactiveProperty<int>(0);
         public readonly ReactiveProperty<bool> CountEnabled = new ReactiveProperty<bool>(true);
         public readonly ReactiveProperty<Func<CountableItem, bool>> CountEnabledFunc = new ReactiveProperty<Func<CountableItem, bool>>();
-        
+
         public CountableItem(ItemBase item, int count) : base(item)
         {
             Count.Value = count;
@@ -27,7 +28,23 @@ namespace Nekoyume.UI.Model
                 CountEnabled.Value = CountEnabledFunc.Value(this);
             });
         }
-        
+
+        public CountableItem(FungibleAssetValue fav, int count) : base(fav)
+        {
+            Count.Value = count;
+            CountEnabledFunc.Value = CountEnabledFuncDefault;
+
+            CountEnabledFunc.Subscribe(func =>
+            {
+                if (CountEnabledFunc.Value == null)
+                {
+                    CountEnabledFunc.Value = CountEnabledFuncDefault;
+                }
+
+                CountEnabled.Value = CountEnabledFunc.Value(this);
+            });
+        }
+
         public override void Dispose()
         {
             Count.Dispose();
@@ -42,7 +59,7 @@ namespace Nekoyume.UI.Model
             {
                 return false;
             }
-            
+
             return countableItem.ItemBase.Value.ItemType == ItemType.Material;
         }
     }

@@ -1,16 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Numerics;
+using Bencodex.Types;
 using Cysharp.Threading.Tasks;
+using Lib9c.Renderers;
 using Libplanet;
 using Libplanet.Assets;
 using Libplanet.Tx;
-using Lib9c.Renderers;
 using mixpanel;
 using Nekoyume.Action;
-using Nekoyume.Game.Character;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.ActionExtensions;
@@ -581,113 +580,115 @@ namespace Nekoyume.BlockChain
                 }).Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
-        public IObservable<ActionEvaluation<Sell>> Sell(
-            ITradableItem tradableItem,
-            int count,
-            FungibleAssetValue price,
-            ItemSubType itemSubType)
+        public IObservable<ActionEvaluation<RegisterProduct>> RegisterProduct(
+            Address avatarAddress,
+            IRegisterInfo registerInfo,
+            bool chargeAp)
         {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var sentryTrace = Analyzer.Instance.Track("Unity/Sell", new Dictionary<string, Value>()
+            var sentryTrace = Analyzer.Instance.Track("Unity/RegisterProduct", new Dictionary<string, Value>()
             {
-                ["TradableItemId"] = tradableItem.TradableId.ToString(),
-                ["Count"] = count.ToString(),
-                ["Price"] = price.ToString(),
+                ["ProductType"] = registerInfo.Type.ToString(),
+                ["Price"] = registerInfo.Price.ToString(),
+                ["AvatarAddress"] = registerInfo.AvatarAddress.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+            }, true);
+
+            var action = new RegisterProduct
+            {
+                AvatarAddress = avatarAddress,
+                RegisterInfos = new List<IRegisterInfo> { registerInfo },
+                ChargeAp = chargeAp,
+            };
+
+            ProcessAction(action);
+
+            return _agent.ActionRenderer.EveryRender<RegisterProduct>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e => throw HandleException(action.Id, e))
+                .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
+        }
+
+        public IObservable<ActionEvaluation<CancelProductRegistration>> CancelProductRegistration(
+            Address avatarAddress,
+            List<IProductInfo> productInfo,
+            bool chargeAp)
+        {
+            var sentryTrace = Analyzer.Instance.Track("Unity/CancelProductRegistration", new Dictionary<string, Value>()
+            {
                 ["AvatarAddress"] = avatarAddress.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             }, true);
 
-            if (!(tradableItem is TradableMaterial))
+            var action = new CancelProductRegistration
             {
-                LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex,
-                    count);
+                AvatarAddress = avatarAddress,
+                ProductInfos = productInfo,
+                ChargeAp = chargeAp,
+            };
+
+            ProcessAction(action);
+
+            return _agent.ActionRenderer.EveryRender<CancelProductRegistration>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e => throw HandleException(action.Id, e))
+                .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
+        }
+
+        public IObservable<ActionEvaluation<ReRegisterProduct>> ReRegisterProduct(
+            Address avatarAddress,
+            List<(IProductInfo, IRegisterInfo)> reRegisterInfos,
+            bool chargeAp)
+        {
+            var action = new ReRegisterProduct
+            {
+                AvatarAddress = avatarAddress,
+                ReRegisterInfos = reRegisterInfos,
+                ChargeAp = chargeAp,
+            };
+
+            ProcessAction(action);
+
+            return _agent.ActionRenderer.EveryRender<ReRegisterProduct>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e => throw HandleException(action.Id, e))
+                .Finally(() => { });
+        }
+
+        public IObservable<ActionEvaluation<BuyProduct>> BuyProduct(
+            Address avatarAddress,
+            List<IProductInfo> productInfos)
+        {
+            var buyerAgentAddress = States.Instance.AgentState.address;
+            foreach (var info in productInfos)
+            {
+                LocalLayerModifier
+                    .ModifyAgentGoldAsync(buyerAgentAddress, -info.Price)
+                    .Forget();
             }
 
-            // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
-            LocalLayerModifier.SetItemEquip(avatarAddress, tradableItem.TradableId, false);
-
-            var action = new Sell
+            var action = new BuyProduct
             {
-                sellerAvatarAddress = avatarAddress,
-                tradableId = tradableItem.TradableId,
-                count = count,
-                price = price,
-                itemSubType = itemSubType,
-                orderId = Guid.NewGuid(),
+                AvatarAddress = avatarAddress,
+                ProductInfos = productInfos,
             };
-
-            Debug.Log($"action: {action.orderId}");
-            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
-            LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
-
-            return _agent.ActionRenderer.EveryRender<Sell>()
+            return _agent.ActionRenderer.EveryRender<BuyProduct>()
                 .Timeout(ActionTimeout)
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e => throw HandleException(action.Id, e))
-                .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
+                .DoOnError(e => throw HandleException(action.Id, e));
         }
 
-        public IObservable<ActionEvaluation<SellCancellation>> SellCancellation(
-            Address sellerAvatarAddress,
-            Guid orderId,
-            Guid tradableId,
-            ItemSubType itemSubType)
-        {
-            var sentryTrace = Analyzer.Instance.Track("Unity/Sell Cancellation", new Dictionary<string, Value>()
-            {
-                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
-            }, true);
-            var action = new SellCancellation
-            {
-                orderId = orderId,
-                tradableId = tradableId,
-                sellerAvatarAddress = sellerAvatarAddress,
-                itemSubType = itemSubType,
-            };
-            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
-            LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
-            ProcessAction(action);
-
-            return _agent.ActionRenderer.EveryRender<SellCancellation>()
-                .Timeout(ActionTimeout)
-                .Where(eval => eval.Action.Id.Equals(action.Id))
-                .First()
-                .ObserveOnMainThread()
-                .DoOnError(e => throw HandleException(action.Id, e))
-                .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
-        }
-
-        public IObservable<ActionEvaluation<UpdateSell>> UpdateSell(List<UpdateSellInfo> updateSellInfos)
-        {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var sentryTrace = Analyzer.Instance.Track("Unity/UpdateSell", new Dictionary<string, Value>()
-            {
-                ["AvatarAddress"] = avatarAddress.ToString(),
-                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
-            }, true);
-
-            var action = new UpdateSell
-            {
-                sellerAvatarAddress = avatarAddress,
-                updateSellInfos = updateSellInfos
-            };
-
-            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
-            LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
-            ProcessAction(action);
-
-            return _agent.ActionRenderer.EveryRender<UpdateSell>()
-                .Timeout(ActionTimeout)
-                .Where(eval => eval.Action.Id.Equals(action.Id))
-                .First()
-                .ObserveOnMainThread()
-                .DoOnError(e => throw HandleException(action.Id, e))
-                .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
-        }
 
         public IObservable<ActionEvaluation<Buy>> Buy(List<PurchaseInfo> purchaseInfos)
         {
@@ -943,13 +944,15 @@ namespace Nekoyume.BlockChain
             SubRecipeView.RecipeInfo recipeInfo,
             int slotIndex,
             bool payByCrystal,
-            bool useHammerPoint)
+            bool useHammerPoint,
+            int? petId)
         {
             var sentryTx = Analyzer.Instance.Track(
                 "Unity/Create CombinationEquipment",
                 new Dictionary<string, Value>()
             {
                 ["RecipeId"] = recipeInfo.RecipeId,
+                ["PetId"] = petId ?? default,
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             }, true);
@@ -998,6 +1001,7 @@ namespace Nekoyume.BlockChain
                 subRecipeId = recipeInfo.SubRecipeId,
                 payByCrystal = payByCrystal,
                 useHammerPoint = useHammerPoint,
+                petId = petId,
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
@@ -1020,7 +1024,20 @@ namespace Nekoyume.BlockChain
             var materialRow = Game.Game.instance.TableSheets.MaterialItemSheet.Values
                 .First(r => r.ItemSubType == ItemSubType.Hourglass);
             var diff = state.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
-            var cost = RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
+            int cost;
+            if (state.PetId.HasValue &&
+                States.Instance.PetStates.TryGetPetState(state.PetId.Value, out var petState))
+            {
+                cost = PetHelper.CalculateDiscountedHourglass(
+                    diff,
+                    States.Instance.GameConfigState.HourglassPerBlock,
+                    petState,
+                    TableSheets.Instance.PetOptionSheet);
+            }
+            else
+            {
+                cost = RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
+            }
             LocalLayerModifier.RemoveItem(avatarAddress, materialRow.ItemId, cost);
             var sentryTrace = Analyzer.Instance.Track(
                 "Unity/Rapid Combination",
@@ -1331,13 +1348,12 @@ namespace Nekoyume.BlockChain
             {
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
                 RuneId = runeId,
-                TryCount = tryCount,
+                TryCount = tryCount > 0 ? tryCount : 1,
             };
 
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
-            _lastBattleActionId = action.Id;
             return _agent.ActionRenderer.EveryRender<RuneEnhancement>()
                 .Timeout(ActionTimeout)
                 .Where(eval => eval.Action.Id.Equals(action.Id))
@@ -1360,7 +1376,6 @@ namespace Nekoyume.BlockChain
 
             LoadingHelper.UnlockRuneSlot.Add(slotIndex);
             ProcessAction(action);
-            _lastBattleActionId = action.Id;
             return _agent.ActionRenderer.EveryRender<UnlockRuneSlot>()
                 .Timeout(ActionTimeout)
                 .Where(eval => eval.Action.Id.Equals(action.Id))
@@ -1370,6 +1385,36 @@ namespace Nekoyume.BlockChain
                 {
                     Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
                 });
+        }
+
+        public IObservable<ActionEvaluation<PetEnhancement>> PetEnhancement(
+            int petId,
+            int targetLevel)
+        {
+            var sentryTrace = Analyzer.Instance.Track("Unity/PetEnhancement", new Dictionary<string, Value>()
+            {
+                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                ["TargetLevel"] = targetLevel,
+                ["PetId"] = petId,
+            }, true);
+            var action = new PetEnhancement
+            {
+                AvatarAddress = States.Instance.CurrentAvatarState.address,
+                PetId = petId,
+                TargetLevel = targetLevel
+            };
+
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<PetEnhancement>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e =>
+                {
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
+                }).Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
@@ -1426,6 +1471,28 @@ namespace Nekoyume.BlockChain
                     catch (Exception e2)
                     {
                     }
+                });
+        }
+
+        public IObservable<ActionEvaluation<ManipulateState>> ManipulateState(
+            List<(Address, IValue)> stateList,
+            List<(Address, FungibleAssetValue)> balanceList)
+        {
+            var action = new ManipulateState
+            {
+                StateList = stateList ?? new List<(Address addr, IValue value)>(),
+                BalanceList = balanceList ?? new List<(Address addr, FungibleAssetValue fav)>(),
+            };
+
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<ManipulateState>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e =>
+                {
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
                 });
         }
 #endif

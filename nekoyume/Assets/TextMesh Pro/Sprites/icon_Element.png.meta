@@ -135,7 +135,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 83
+        y: 90
         width: 40
         height: 45
       alignment: 0
@@ -156,7 +156,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 40
-        y: 83
+        y: 90
         width: 40
         height: 45
       alignment: 0
@@ -177,7 +177,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 80
-        y: 83
+        y: 90
         width: 40
         height: 45
       alignment: 0
@@ -198,7 +198,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 38
+        y: 45
         width: 40
         height: 45
       alignment: 0
@@ -219,7 +219,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 40
-        y: 38
+        y: 45
         width: 40
         height: 45
       alignment: 0
@@ -240,7 +240,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 80
-        y: 38
+        y: 45
         width: 40
         height: 45
       alignment: 0
@@ -252,6 +252,48 @@ TextureImporter:
       bones: []
       spriteID: a7b24f49d185d453990adb8a00565efa
       internalID: -404947918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: icon_Goods_10
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 40
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 32f17bd1f1b33f24d99a5ce4bb8d935d
+      internalID: 1653308058
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: icon_Goods_11
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 0
+        width: 40
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c81230ba18b992e4481f3054482a695c
+      internalID: -1508334627
       vertices: []
       indices: 
       edges: []
@@ -272,6 +314,8 @@ TextureImporter:
       icon_Element_0: 1920470558327384504
       icon_Element_4: -456205142301826713
       icon_Element_2: -487271604577885838
+      icon_Goods_11: -1508334627
+      icon_Goods_10: 1653308058
       icon_Element_1: 7302422104324929580
   spritePackingTag: 
   pSDRemoveMatte: 0

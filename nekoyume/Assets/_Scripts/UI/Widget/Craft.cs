@@ -25,12 +25,23 @@ using NUnit.Framework;
 
 namespace Nekoyume.UI
 {
+    using Libplanet.Assets;
     using mixpanel;
     using UniRx;
     using Toggle = Module.Toggle;
 
     public class Craft : Widget
     {
+        public struct CraftInfo
+        {
+            public int RecipeID;
+            public int SubrecipeId;
+            public FungibleAssetValue CostCrystal;
+            public long RequiredBlockMin;
+            public long RequiredBlockMax;
+        }
+
+
         private static readonly int FirstClicked =
             Animator.StringToHash("FirstClicked");
         private static readonly int EquipmentClick =
@@ -77,7 +88,7 @@ namespace Nekoyume.UI
 
         private const string ConsumableRecipeGroupPath = "Recipe/ConsumableRecipeGroup";
 
-        private bool _isEquipment;
+        private bool _isTutorial;
 
         private List<IDisposable> _disposables = new List<IDisposable>();
 
@@ -465,45 +476,49 @@ namespace Nekoyume.UI
 
         private void OnClickEquipmentAction(SubRecipeView.RecipeInfo recipeInfo)
         {
-            // NOTE: Is these lines necessary?
-            // var requirementSheet = TableSheets.Instance.ItemRequirementSheet;
-            // var recipeSheet = TableSheets.Instance.EquipmentItemRecipeSheet;
-            // if (!recipeSheet.TryGetValue(recipeInfo.RecipeId, out var recipeRow))
-            // {
-            //     return;
-            // }
-            //
-            // var resultItemRow = recipeRow.GetResultEquipmentItemRow();
-            // if (!requirementSheet.TryGetValue(resultItemRow.Id, out _))
-            // {
-            //     CombinationEquipmentAction(recipeInfo);
-            //     return;
-            // }
+            var equipmentRow = TableSheets.Instance.EquipmentItemRecipeSheet[recipeInfo.RecipeId];
+            var requiredBlock = equipmentRow.RequiredBlockIndex;
+            var additionalBlock = 0L;
+            if (recipeInfo.SubRecipeId.HasValue)
+            {
+                var subRecipeRow =
+                    TableSheets.Instance.EquipmentItemSubRecipeSheetV2[recipeInfo.SubRecipeId.Value];
+                requiredBlock += subRecipeRow.RequiredBlockIndex;
+                foreach (var optionInfo in subRecipeRow.Options)
+                {
+                    additionalBlock += optionInfo.RequiredBlockIndex;
+                }
+            }
 
-            CombinationEquipmentAction(recipeInfo);
+            var craftInfo = new CraftInfo()
+            {
+                RecipeID = recipeInfo.RecipeId,
+                SubrecipeId = recipeInfo.SubRecipeId ?? 0,
+                CostCrystal = recipeInfo.CostCrystal,
+                RequiredBlockMin = requiredBlock,
+                RequiredBlockMax = requiredBlock + additionalBlock,
+            };
+
+            if (_isTutorial)
+            {
+                CombinationEquipmentAction(recipeInfo, null);
+                _isTutorial = false;
+            }
+            else
+            {
+                Find<PetSelectionPopup>().Show(craftInfo, petId =>
+                {
+                    CombinationEquipmentAction(recipeInfo, petId);
+                });
+            }
         }
 
         private void OnClickConsumableAction(SubRecipeView.RecipeInfo recipeInfo)
         {
-            // NOTE: Is these lines necessary?
-            // var requirementSheet = TableSheets.Instance.ItemRequirementSheet;
-            // var recipeSheet = TableSheets.Instance.ConsumableItemRecipeSheet;
-            // if (!recipeSheet.TryGetValue(recipeInfo.RecipeId, out var recipeRow))
-            // {
-            //     return;
-            // }
-            //
-            // var resultItemRow = recipeRow.GetResultConsumableItemRow();
-            // if (!requirementSheet.TryGetValue(resultItemRow.Id, out _))
-            // {
-            //     CombinationConsumableAction(recipeInfo);
-            //     return;
-            // }
-
             CombinationConsumableAction(recipeInfo);
         }
 
-        private void CombinationEquipmentAction(SubRecipeView.RecipeInfo recipeInfo)
+        private void CombinationEquipmentAction(SubRecipeView.RecipeInfo recipeInfo, int? petId)
         {
             var subRecipeView = Util.IsEventEquipmentRecipe(recipeInfo.RecipeId)
                 ? eventEquipmentSubRecipeView
@@ -536,6 +551,9 @@ namespace Nekoyume.UI
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             if (insufficientMaterials.Any())
             {
+                var petState = States.Instance.PetStates
+                    .GetPetState(petId.HasValue ? petId.Value : default);
+
                 Find<ReplaceMaterialPopup>().Show(insufficientMaterials,
                     () =>
                     {
@@ -554,7 +572,7 @@ namespace Nekoyume.UI
                             {
                                 ["MaterialCount"] = insufficientMaterials
                                     .Sum(x => x.Value),
-                                ["BurntCrystal"] = (long)recipeInfo.CostCrystal,
+                                ["BurntCrystal"] = (long)recipeInfo.CostCrystal.MajorUnit,
                                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                             });
@@ -564,10 +582,13 @@ namespace Nekoyume.UI
                                 recipeInfo,
                                 slotIndex,
                                 true,
-                                false)
+                                false,
+                                petId)
                             .Subscribe();
                         StartCoroutine(CoCombineNPCAnimation(equipment, requiredBlockIndex));
-                    });
+                        States.Instance.PetStates.LockPetTemporarily(petId);
+                    },
+                    petState);
             }
             else
             {
@@ -583,9 +604,11 @@ namespace Nekoyume.UI
                         recipeInfo,
                         slotIndex,
                         false,
-                        false)
+                        false,
+                        petId)
                     .Subscribe();
                 StartCoroutine(CoCombineNPCAnimation(equipment, requiredBlockIndex));
+                States.Instance.PetStates.LockPetTemporarily(petId);
             }
         }
 
@@ -724,6 +747,7 @@ namespace Nekoyume.UI
 
         public void TutorialActionClickCombinationSubmitButton()
         {
+            _isTutorial = true;
             equipmentSubRecipeView.CombineCurrentRecipe();
         }
 

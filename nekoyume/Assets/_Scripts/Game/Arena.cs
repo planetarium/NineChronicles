@@ -2,17 +2,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Libplanet;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Util;
 using Nekoyume.Game.VFX.Skill;
 using Nekoyume.Model;
-using Nekoyume.Model.Arena;
-using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.Item;
-using Nekoyume.State;
 using Nekoyume.UI;
 using UnityEngine;
 using ArenaCharacter = Nekoyume.Model.ArenaCharacter;
@@ -87,6 +85,8 @@ namespace Nekoyume.Game
             List<ItemBase> rewards,
             ArenaPlayerDigest myDigest,
             ArenaPlayerDigest enemyDigest,
+            Address myAvatarAddress,
+            Address enemyAvatarAddress,
             (int, int)? winDefeatCount = null)
         {
             if (!_isPlaying)
@@ -103,7 +103,8 @@ namespace Nekoyume.Game
                 if (log?.Events.Count > 0)
                 {
                     _battleCoroutine =
-                        StartCoroutine(CoEnter(log, rewards, myDigest, enemyDigest, winDefeatCount));
+                        StartCoroutine(CoEnter(log, rewards, myDigest, enemyDigest,
+                            myAvatarAddress, enemyAvatarAddress, winDefeatCount));
                 }
             }
             else
@@ -117,9 +118,11 @@ namespace Nekoyume.Game
             IReadOnlyList<ItemBase> rewards,
             ArenaPlayerDigest myDigest,
             ArenaPlayerDigest enemyDigest,
+            Address myAvatarAddress,
+            Address enemyAvatarAddress,
             (int, int)? winDefeatCount = null)
         {
-            yield return StartCoroutine(CoStart(myDigest, enemyDigest));
+            yield return StartCoroutine(CoStart(myDigest, enemyDigest, myAvatarAddress, enemyAvatarAddress));
 
             foreach (var e in log)
             {
@@ -129,18 +132,24 @@ namespace Nekoyume.Game
             yield return StartCoroutine(CoEnd(log, rewards, winDefeatCount));
         }
 
-        private IEnumerator CoStart(ArenaPlayerDigest myDigest, ArenaPlayerDigest enemyDigest)
+        private IEnumerator CoStart(
+            ArenaPlayerDigest myDigest,
+            ArenaPlayerDigest enemyDigest,
+            Address myAvatarAddress,
+            Address enemyAvatarAddress)
         {
             container.SetActive(true);
-            me.Init(myDigest, enemy, false);
-            enemy.Init(enemyDigest, me, true);
+            me.Init(myDigest, myAvatarAddress, enemy, false);
+            enemy.Init(enemyDigest, enemyAvatarAddress, me, true);
 
             _turnNumber = 1;
 
-            Widget.Find<ArenaBattle>().Show(myDigest, enemyDigest);
+            Widget.Find<ArenaBattle>().Show(myDigest, enemyDigest, myAvatarAddress, enemyAvatarAddress);
+            enemy.Pet.Animator.DestroyTarget();
             yield return new WaitForSeconds(2.0f);
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.PVPBattle);
+            me.Pet.Animator.Play(PetAnimation.Type.BattleStart);
             Widget.Find<ArenaBattleLoadingScreen>().Close();
             Game.instance.IsInWorld = true;
         }
@@ -162,6 +171,7 @@ namespace Nekoyume.Game
             var arenaCharacter = log.Result == ArenaLog.ArenaResult.Win ? me : enemy;
             arenaCharacter.Animator.Win();
             arenaCharacter.ShowSpeech("PLAYER_WIN");
+            arenaCharacter.Pet.Animator.Play(PetAnimation.Type.BattleEnd);
             Widget.Find<ArenaBattle>().Close();
             Widget.Find<RankingBattleResultPopup>().Show(log, rewards, OnEnd, winDefeatCount);
             yield return null;

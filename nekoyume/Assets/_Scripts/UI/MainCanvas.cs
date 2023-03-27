@@ -178,6 +178,8 @@ namespace Nekoyume.UI
                 Widget.Create<RuneEnhancementResultScreen>(),
                 Widget.Create<MailRewardScreen>(),
                 Widget.Create<CPScreen>(),
+                Widget.Create<PetLevelUpResultScreen>(),
+                Widget.Create<PetSummonResultScreen>(),
 
                 // 팝업 영역.
                 Widget.Create<SettingPopup>(),
@@ -251,6 +253,12 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<ArenaBattlePreparation>());
             yield return null;
             secondWidgets.Add(Widget.Create<RaidPreparation>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<DccMain>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<DccCollection>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<Status>());
             yield return null;
             secondWidgets.Add(Widget.Create<ArenaJoin>());
             yield return null;
@@ -326,11 +334,11 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<BuyItemInformationPopup>());
             yield return null;
+            secondWidgets.Add(Widget.Create<BuyFungibleAssetInformationPopup>());
+            yield return null;
             secondWidgets.Add(Widget.Create<DialogPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<CodeRewardPopup>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<DailyRewardItemPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<PrologueDialogPopup>());
             yield return null;
@@ -364,6 +372,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<TicketPurchasePopup>());
             yield return null;
+            secondWidgets.Add(Widget.Create<PetEnhancementPopup>());
+            yield return null;
             secondWidgets.Add(Widget.Create<MaterialNavigationPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<ArenaTicketPurchasePopup>());
@@ -371,6 +381,14 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<ItemMaterialSelectPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<ArenaTicketPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<DccSettingPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<PetSelectionPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<ProfileSelectPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<CostTwoButtonPopup>());
             yield return null;
 
             // tooltip
@@ -383,6 +401,8 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<CostumeTooltip>());
             yield return null;
             secondWidgets.Add(Widget.Create<RuneTooltip>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<FungibleAssetTooltip>());
             yield return null;
             secondWidgets.Add(Widget.Create<AvatarTooltip>());
             yield return null;

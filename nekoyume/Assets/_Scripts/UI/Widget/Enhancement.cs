@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.L10n;
@@ -11,7 +11,6 @@ using System.Numerics;
 using Nekoyume.Action;
 using Nekoyume.Extensions;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
@@ -111,7 +110,7 @@ namespace Nekoyume.UI
             base.Initialize();
 
             upgradeButton.OnSubmitSubject
-                .Subscribe(_ => Action())
+                .Subscribe(_ => OnSubmit())
                 .AddTo(gameObject);
 
             _costSheet = Game.Game.instance.TableSheets.EnhancementCostSheetV2;
@@ -160,7 +159,7 @@ namespace Nekoyume.UI
                     NotificationCell.NotificationType.Alert));
         }
 
-        private void Action()
+        private void OnSubmit()
         {
             var (baseItem, materialItem) = enhancementInventory.GetSelectedModels();
             if (!IsInteractableButton(baseItem, materialItem))
@@ -178,6 +177,12 @@ namespace Nekoyume.UI
                 return;
             }
 
+            var sheet = Game.Game.instance.TableSheets.EnhancementCostSheetV2;
+            EnhancementAction(baseItem, materialItem);
+        }
+
+        private void EnhancementAction(Equipment baseItem, Equipment materialItem)
+        {
             var slots = Find<CombinationSlotsPopup>();
             if (!slots.TryGetEmptyCombinationSlot(out var slotIndex))
             {

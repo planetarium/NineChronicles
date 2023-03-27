@@ -1,4 +1,5 @@
 using System;
+using Spine.Unity;
 using UniRx;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -21,10 +22,22 @@ namespace Nekoyume.Game.Character
             Root = root;
             OnEvent = new Subject<string>();
         }
-        
+
         public void Dispose()
         {
             OnEvent?.Dispose();
+        }
+
+        public virtual void InitTarget(
+            GameObject target,
+            MeshRenderer meshRenderer,
+            SkeletonAnimation skeletonAnimation,
+            Animator animator)
+        {
+            Target = target;
+            Animator = animator;
+            Animator.speed = TimeScale;
+            BaseLayerIndex = Animator.GetLayerIndex("Base Layer");
         }
 
         public virtual void ResetTarget(GameObject value)

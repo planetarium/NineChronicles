@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Linq;
 using Nekoyume.BlockChain;
@@ -58,37 +58,13 @@ namespace Nekoyume.UI
             });
             superCraftButton.OnSubmitSubject.Subscribe(_ =>
             {
-                if (Find<CombinationSlotsPopup>().TryGetEmptyCombinationSlot(out var slotIndex))
+                var craftInfo = new Craft.CraftInfo()
                 {
-                    ActionManager.Instance.CombinationEquipment(
-                        new SubRecipeView.RecipeInfo
-                        {
-                            RecipeId = _recipeRow.Id,
-                            SubRecipeId = _recipeRow.SubRecipeIds[_subRecipeIndex],
-                            CostNCG = default,
-                            CostCrystal = default,
-                            CostAP = 0,
-                            Materials = default,
-                            ReplacedMaterials = null,
-                        },
-                        slotIndex,
-                        false,
-                        true).Subscribe();
-                    var sheets = TableSheets.Instance;
-                    var equipmentRow = sheets
-                        .EquipmentItemRecipeSheet[_recipeRow.Id];
-                    var equipment = (Equipment) ItemFactory.CreateItemUsable(
-                        equipmentRow.GetResultEquipmentItemRow(),
-                        Guid.Empty,
-                        SuperCraftIndex);
-                    Find<CombinationSlotsPopup>().SetCaching(
-                        States.Instance.CurrentAvatarState.address,
-                        slotIndex,
-                        true,
-                        SuperCraftIndex,
-                        itemUsable: equipment);
-                    StartCoroutine(CoCombineNpcAnimation(equipment));
-                }
+                    RecipeID = _recipeRow.Id,
+                    SubrecipeId = premiumRecipeToggle.isOn ? PremiumRecipeIndex : BasicRecipeIndex,
+                };
+
+                Find<PetSelectionPopup>().Show(craftInfo, SendAction);
             }).AddTo(gameObject);
         }
 
@@ -107,6 +83,42 @@ namespace Nekoyume.UI
             base.Show(ignoreAnimation);
             premiumRecipeToggle.isOn = true;
             SetSkillInfoText(_recipeRow.SubRecipeIds[PremiumRecipeIndex]);
+        }
+
+        private void SendAction(int? petId)
+        {
+            if (Find<CombinationSlotsPopup>().TryGetEmptyCombinationSlot(out var slotIndex))
+            {
+                ActionManager.Instance.CombinationEquipment(
+                    new SubRecipeView.RecipeInfo
+                    {
+                        RecipeId = _recipeRow.Id,
+                        SubRecipeId = _recipeRow.SubRecipeIds[_subRecipeIndex],
+                        CostNCG = default,
+                        CostCrystal = default,
+                        CostAP = 0,
+                        Materials = default,
+                        ReplacedMaterials = null,
+                    },
+                    slotIndex,
+                    false,
+                    true,
+                    petId).Subscribe();
+                var sheets = TableSheets.Instance;
+                var equipmentRow = sheets
+                    .EquipmentItemRecipeSheet[_recipeRow.Id];
+                var equipment = (Equipment)ItemFactory.CreateItemUsable(
+                    equipmentRow.GetResultEquipmentItemRow(),
+                    Guid.Empty,
+                    SuperCraftIndex);
+                Find<CombinationSlotsPopup>().SetCaching(
+                    States.Instance.CurrentAvatarState.address,
+                    slotIndex,
+                    true,
+                    SuperCraftIndex,
+                    itemUsable: equipment);
+                StartCoroutine(CoCombineNpcAnimation(equipment));
+            }
         }
 
         private void SetSkillInfoText(int subRecipeId)

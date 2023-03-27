@@ -337,7 +337,12 @@ namespace Nekoyume.TestScene
 
         public static bool IsPlayer(string prefabName)
         {
-            return prefabName.StartsWith("1");
+            return prefabName.Length > 4 && prefabName.StartsWith("1");
+        }
+
+        public static bool IsPet(string prefabName)
+        {
+            return prefabName.Length < 5 && prefabName.StartsWith("1");
         }
 
         #endregion

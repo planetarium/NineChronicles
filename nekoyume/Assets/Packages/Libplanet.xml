@@ -1367,6 +1367,11 @@
             when the class of the given <paramref name="innerAction"/>
             is not annotated with <see cref="T:Libplanet.Action.ActionTypeAttribute"/>.</exception>
         </member>
+        <member name="P:Libplanet.Action.PolymorphicAction`1.ActionTypeLoader">
+            <summary>
+            <see cref="T:Libplanet.Action.StaticActionTypeLoader"/> for <see cref="T:Libplanet.Action.PolymorphicAction`1"/>.
+            </summary>
+        </member>
         <member name="P:Libplanet.Action.PolymorphicAction`1.InnerAction">
             <summary>
             The wrapped action object of <typeparamref name="T"/>
@@ -3028,6 +3033,16 @@
             by the same address, those with greater nonce never comes before those with
             lesser nonce.</returns>
         </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.ValidateGenesisBlock(Libplanet.Blocks.Block{`0})">
+            <summary>
+            Checks if given <paramref name="block"/> is a valid genesis <see cref="T:Libplanet.Blocks.Block`1"/>.
+            </summary>
+            <param name="block">The target <see cref="T:Libplanet.Blocks.Block`1"/> to validate.</param>
+            <returns><see langword="null"/> if given <paramref name="block"/> is valid,
+            otherwise an <see cref="T:Libplanet.Blocks.InvalidBlockException"/>.</returns>
+            <exception cref="T:System.ArgumentException">If <paramref name="block"/> has
+            <see cref="P:Libplanet.Blocks.Block`1.Index"/> value anything other than 0.</exception>
+        </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.MineBlock(Libplanet.Crypto.PrivateKey,System.Nullable{System.DateTimeOffset},System.Nullable{System.Boolean},System.Collections.Generic.IComparer{Libplanet.Tx.Transaction{`0}},System.Nullable{System.Threading.CancellationToken})">
             <summary>
             <para>
@@ -3634,6 +3649,9 @@
             such as whether a <see cref="T:Libplanet.Blocks.Block`1"/> has the right difficulty,
             a <see cref="T:Libplanet.Tx.Transaction`1"/> has the right signer, etc.
             </para>
+            <para>
+            Note that all index dependent sub-policies are ignored for genesis <see cref="T:Libplanet.Blocks.Block`1"/>s.
+            </para>
             </summary>
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
             <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
@@ -3705,9 +3723,15 @@
         </member>
         <member name="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetNextBlockDifficulty(Libplanet.Blockchain.BlockChain{`0})">
             <summary>
+            <para>
             Determines a right <see cref="P:Libplanet.Blocks.Block`1.Difficulty"/>
             for a new <see cref="T:Libplanet.Blocks.Block`1"/> to be mined
             right after the given <paramref name="blockChain"/>.
+            </para>
+            <para>
+            Any specific implementation of this method should assume a genesis
+            <see cref="T:Libplanet.Blocks.Block`1"/> will always have zero difficulty.
+            </para>
             </summary>
             <param name="blockChain">Consecutive <see cref="T:Libplanet.Blocks.Block`1"/>s to be
             followed by a new <see cref="T:Libplanet.Blocks.Block`1"/> to be mined.</param>
@@ -10436,9 +10460,10 @@
         </member>
         <member name="T:Libplanet.Tx.InvalidTxNonceException">
             <summary>
-            The exception that is thrown when the <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/>
-            is different from <see cref="M:Libplanet.Blockchain.BlockChain`1.GetNextTxNonce(Libplanet.Address)"/> result of
-            the <see cref="P:Libplanet.Tx.Transaction`1.Signer"/>.
+            An exception that is thrown when the <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/>
+            of a <see cref="T:Libplanet.Tx.Transaction`1"/> included in a <see cref="T:Libplanet.Blocks.Block`1"/>
+            is inconsistent with the expected nonce for the <see cref="P:Libplanet.Tx.Transaction`1.Signer"/>
+            when appending to a <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.
             </summary>
         </member>
         <member name="M:Libplanet.Tx.InvalidTxNonceException.#ctor(System.String,Libplanet.Tx.TxId,System.Int64,System.Int64)">
@@ -10447,18 +10472,18 @@
             <see cref="T:Libplanet.Tx.InvalidTxNonceException"/> class.
             </summary>
             <param name="message">The message that describes the error.</param>
-            <param name="txid">The invalid <see cref="T:Libplanet.Tx.Transaction`1"/>'s
+            <param name="txId">The invalid <see cref="T:Libplanet.Tx.Transaction`1"/>'s
             <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.  It is automatically included to
             the <see cref="P:System.Exception.Message"/> string.</param>
-            <param name="expectedNonce"><see cref="M:Libplanet.Blockchain.BlockChain`1.GetNextTxNonce(Libplanet.Address)"/>
-            result of the <see cref="P:Libplanet.Tx.Transaction`1.Signer"/>.</param>
-            <param name="improperNonce">The actual
-            <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/>.</param>
+            <param name="expectedNonce">The expected <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/> value
+            for the <see cref="T:Libplanet.Tx.Transaction`1"/>.</param>
+            <param name="improperNonce">The actual <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/>.</param>
         </member>
         <member name="P:Libplanet.Tx.InvalidTxNonceException.ExpectedNonce">
             <summary>
-            <see cref="M:Libplanet.Blockchain.BlockChain`1.GetNextTxNonce(Libplanet.Address)"/> result of the
-            <see cref="P:Libplanet.Tx.Transaction`1.Signer"/>.
+            The expected <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/> value
+            for the <see cref="T:Libplanet.Tx.Transaction`1"/> with <see cref="T:Libplanet.Tx.TxId"/>
+            as its <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.
             </summary>
         </member>
         <member name="P:Libplanet.Tx.InvalidTxNonceException.ImproperNonce">

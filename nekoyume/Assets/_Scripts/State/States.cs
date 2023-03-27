@@ -52,7 +52,7 @@ namespace Nekoyume.State
 
         public FungibleAssetValue CrystalBalance { get; private set; }
 
-        public Dictionary<int, FungibleAssetValue> RuneStoneBalance { get; } = new();
+        public Dictionary<string, FungibleAssetValue> AvatarBalance { get; } = new();
 
         public List<RuneState> RuneStates { get; } = new();
 
@@ -63,11 +63,13 @@ namespace Nekoyume.State
 
         public int StakingLevel { get; private set; }
 
-        public GrandFinaleStates GrandFinaleStates { get; } = new GrandFinaleStates();
+        public GrandFinaleStates GrandFinaleStates { get; } = new();
         private class Workshop
         {
             public Dictionary<int, CombinationSlotState> States { get; }= new();
         }
+
+        public PetStates PetStates { get; } = new();
 
         private readonly Dictionary<Address, Workshop> _slotStates = new();
 
@@ -134,7 +136,7 @@ namespace Nekoyume.State
         {
             if (!fav.Currency.Equals(CrystalCalculator.CRYSTAL))
             {
-                Debug.LogWarning($"Currency does not match. {fav.Currency}");
+                Debug.LogWarning($"Currency not matches. {fav.Currency}");
                 return;
             }
 
@@ -142,20 +144,21 @@ namespace Nekoyume.State
             AgentStateSubject.OnNextCrystal(CrystalBalance);
         }
 
-        public async Task InitRuneStoneBalanceAsync()
+        public async UniTask InitRuneStoneBalance()
         {
-            RuneStoneBalance.Clear();
             var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
             var avatarAddress = CurrentAvatarState.address;
+            var runes = new List<FungibleAssetValue>();
             await foreach (var row in runeSheet.Values)
             {
+                AvatarBalance.Remove(row.Ticker);
                 var rune = RuneHelper.ToCurrency(row, 0, null);
                 var fungibleAsset = await Game.Game.instance.Agent.GetBalanceAsync(avatarAddress, rune);
-                RuneStoneBalance[row.Id] = fungibleAsset;
+                AvatarBalance.Add(row.Ticker, fungibleAsset);
             }
         }
 
-        public async Task InitRuneStatesAsync()
+        public async UniTask InitRuneStates()
         {
             var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
             var avatarAddress = CurrentAvatarState.address;
@@ -282,7 +285,20 @@ namespace Nekoyume.State
             }
         }
 
-        private async UniTask InitItemSlotStateAsync(int slotIndex, AvatarState avatarState)
+        public async UniTask InitSoulStoneBalance()
+        {
+            var petSheet = Game.Game.instance.TableSheets.PetSheet;
+            var avatarAddress = CurrentAvatarState.address;
+            await foreach (var row in petSheet.Values)
+            {
+                AvatarBalance.Remove(row.SoulStoneTicker);
+                var soulStone = PetHelper.GetSoulstoneCurrency(row.SoulStoneTicker);
+                var fungibleAsset = await Game.Game.instance.Agent.GetBalanceAsync(avatarAddress, soulStone);
+                AvatarBalance.Add(soulStone.Ticker, fungibleAsset);
+            }
+        }
+
+        private async UniTask InitItemSlotState(int slotIndex, AvatarState avatarState)
         {
             if (ItemSlotStates.ContainsKey(slotIndex))
             {
@@ -368,8 +384,27 @@ namespace Nekoyume.State
             var runeRow = runeSheet.Values.First(x => x.Id == runeId);
             var rune = RuneHelper.ToCurrency(runeRow, 0, null);
             var fungibleAsset = await Game.Game.instance.Agent.GetBalanceAsync(avatarAddress, rune);
-            RuneStoneBalance[runeRow.Id] = fungibleAsset;
+            AvatarBalance[runeRow.Ticker] = fungibleAsset;
             return fungibleAsset;
+        }
+
+        public async Task SetBalanceAsync(string ticker)
+        {
+            var avatarAddress = CurrentAvatarState.address;
+            var currency = Currency.Legacy(ticker, 0, null);
+            var fungibleAsset = await Game.Game.instance.Agent.GetBalanceAsync(avatarAddress, currency);
+            AvatarBalance[ticker] = fungibleAsset;
+        }
+
+        /// <summary>
+        /// For caching
+        /// </summary>
+        public void SetBalance(FungibleAssetValue fav)
+        {
+            var preFav = AvatarBalance[fav.Currency.Ticker];
+            var major = preFav.MajorUnit - fav.MajorUnit;
+            var miner = preFav.MinorUnit - fav.MinorUnit;
+            AvatarBalance[fav.Currency.Ticker] = new FungibleAssetValue(fav.Currency, major, miner);
         }
 
         public void SetStakeState(StakeState stakeState, GoldBalanceState stakedBalanceState, int stakingLevel)
@@ -508,12 +543,7 @@ namespace Nekoyume.State
                 _avatarStates.Add(index, state);
             }
 
-            if (index == CurrentAvatarKey)
-            {
-                await InitRuneStoneBalanceAsync();
-                await InitRuneStatesAsync();
-            }
-            await InitItemSlotStateAsync(index, state);
+            await InitItemSlotState(index, state);
 
             if (index == CurrentAvatarKey)
             {
@@ -544,20 +574,18 @@ namespace Nekoyume.State
         /// <summary>
         /// 인자로 받은 인덱스의 아바타 상태를 선택한다.
         /// </summary>
-        /// <param name="index"></param>
-        /// <param name="initializeReactiveState"></param>
-        /// <returns></returns>
         /// <exception cref="KeyNotFoundException"></exception>
         public async UniTask<AvatarState> SelectAvatarAsync(
             int index,
-            bool initializeReactiveState = true)
+            bool initializeReactiveState = true,
+            bool forceNewSelection = false)
         {
             if (!_avatarStates.ContainsKey(index))
             {
                 throw new KeyNotFoundException($"{nameof(index)}({index})");
             }
 
-            var isNewlySelected = CurrentAvatarKey != index;
+            var isNewlySelected = forceNewSelection || CurrentAvatarKey != index;
 
             CurrentAvatarKey = index;
             var avatarState = _avatarStates[CurrentAvatarKey];
@@ -601,6 +629,7 @@ namespace Nekoyume.State
 
                     await SetCombinationSlotStatesAsync(curAvatarState);
                     await AddOrReplaceAvatarStateAsync(curAvatarState, CurrentAvatarKey);
+                    await SetPetStates(avatarState.address);
                 });
             }
 
@@ -660,6 +689,14 @@ namespace Nekoyume.State
             {
                 slots.States.Add(index, state);
             }
+        }
+
+        public Dictionary<int, CombinationSlotState> GetCombinationSlotState()
+        {
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            var states = _slotStates[CurrentAvatarState.address].States;
+            return states.Where(x => !x.Value.Validate(CurrentAvatarState, blockIndex))
+                         .ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
         public Dictionary<int, CombinationSlotState> GetCombinationSlotState(
@@ -804,6 +841,21 @@ namespace Nekoyume.State
         {
             runeState = RuneStates.FirstOrDefault(x => x.RuneId == runeId);
             return runeState != null;
+        }
+
+        private async UniTask SetPetStates(Address avatarAddress)
+        {
+            var petIds = TableSheets.Instance.PetSheet.Values.Select(row => row.Id).ToList();
+            var petRawStates = await Game.Game.instance.Agent.GetStateBulk(
+                petIds.Select(id => PetState.DeriveAddress(avatarAddress, id))
+            );
+            foreach (var petId in petIds)
+            {
+                var petAddress = PetState.DeriveAddress(avatarAddress, petId);
+                PetStates.UpdatePetState(
+                    petId,
+                    petRawStates[petAddress] is List rawState ? new PetState(rawState) : null);
+            }
         }
     }
 }

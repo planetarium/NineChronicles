@@ -1,3 +1,4 @@
+using System;
 using Libplanet.Assets;
 using Nekoyume.State;
 using UniRx;
@@ -7,8 +8,9 @@ namespace Nekoyume.UI.Model
     public class ItemCountAndPricePopup : ItemCountPopup<ItemCountAndPricePopup>
     {
         public readonly ReactiveProperty<FungibleAssetValue> Price;
-
-        public readonly ReactiveProperty<bool> PriceInteractable = new ReactiveProperty<bool>(true);
+        public readonly ReactiveProperty<bool> PriceInteractable = new(true);
+        public readonly ReactiveProperty<Guid> ProductId = new ();
+        public readonly ReactiveProperty<bool> ChargeAp = new (false);
 
         public ItemCountAndPricePopup()
         {
@@ -20,7 +22,7 @@ namespace Nekoyume.UI.Model
         {
             Price.Dispose();
             PriceInteractable.Dispose();
-
+            ProductId.Dispose();
             base.Dispose();
         }
     }

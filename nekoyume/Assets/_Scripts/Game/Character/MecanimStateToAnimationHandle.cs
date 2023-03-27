@@ -49,8 +49,8 @@ namespace Nekoyume.Game.Character
             try
             {
                 var (body, tail) = animationAsset ?
-                    _controller.PlayAnimationForState(animationAsset, layer) : 
-                    _controller.PlayAnimationForState(animationClip, layer);
+                    _controller.PlayAnimationForState(animationAsset, layer, () => OnEnd(animator)) :
+                    _controller.PlayAnimationForState(animationClip, layer, () => OnEnd(animator));
                 _trackEntry = body;
                 _trackEntry.TimeScale = timeScale;
                 if (tail != null)
@@ -66,26 +66,36 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public override void OnStateUpdate(
-            Animator animator,
-            AnimatorStateInfo stateInfo,
-            int layerIndex)
+        // public override void OnStateUpdate(
+        //     Animator animator,
+        //     AnimatorStateInfo stateInfo,
+        //     int layerIndex)
+        // {
+        //     if (loop)
+        //     {
+        //         return;
+        //     }
+        //
+        //     if (_trackEntry is null)
+        //     {
+        //         return;
+        //     }
+        //
+        //     _normalizedTime = _trackEntry.AnimationTime / _trackEntry.AnimationEnd;
+        //     if (_normalizedTime >= exitTime)
+        //     {
+        //         animator.SetTrigger(TransitionHash);
+        //     }
+        // }
+
+        private void OnEnd(Animator animator)
         {
             if (loop)
             {
                 return;
             }
 
-            if (_trackEntry is null)
-            {
-                return;
-            }
-
-            _normalizedTime = _trackEntry.AnimationTime / _trackEntry.AnimationEnd;
-            if (_normalizedTime >= exitTime)
-            {
-                animator.SetTrigger(TransitionHash);
-            }
+            animator.SetTrigger(TransitionHash);
         }
     }
 }

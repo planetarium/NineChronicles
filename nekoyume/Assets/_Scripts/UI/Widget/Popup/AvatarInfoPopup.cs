@@ -1,10 +1,16 @@
 using System.Collections.Generic;
+using Nekoyume.Game;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
+using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Toggle = Nekoyume.UI.Module.Toggle;
 using ToggleGroup = Nekoyume.UI.Module.ToggleGroup;
@@ -36,6 +42,15 @@ namespace Nekoyume.UI
         private Button closeButton;
 
         [SerializeField]
+        private Button dccSlotButton;
+
+        [SerializeField]
+        private Button activeDccButton;
+
+        [SerializeField]
+        private Button activeCostumeButton;
+
+        [SerializeField]
         private Toggle grindModeToggle;
 
         [SerializeField]
@@ -50,6 +65,20 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject equipmentSlotObject;
 
+        [SerializeField]
+        private Image dccImage;
+
+        [SerializeField]
+        private Sprite activeSprite;
+
+        [SerializeField]
+        private Sprite disableSprite;
+
+        [SerializeField]
+        private Sprite dccSlotDefaultSprite;
+
+        private Image _activeDcc;
+        private Image _activeCostume;
         private BattlePreparation _battlePreparation;
         private ArenaBattlePreparation _arenaPreparation;
         private RaidPreparation _raidPreparation;
@@ -62,11 +91,18 @@ namespace Nekoyume.UI
             { BattleType.Raid , null},
         };
 
+        private int isActiveDcc = 0;
+        private BattleType _currentBattleType = BattleType.Adventure;
+
+        private readonly ReactiveProperty<bool> _isVisibleDcc = new();
+
         protected override void Awake()
         {
             _toggleGroup.RegisterToggleable(adventureButton);
             _toggleGroup.RegisterToggleable(arenaButton);
             _toggleGroup.RegisterToggleable(raidButton);
+            _activeDcc = activeDccButton.GetComponent<Image>();
+            _activeCostume = activeCostumeButton.GetComponent<Image>();
 
             adventureButton.OnClick
                 .Subscribe(b =>
@@ -91,6 +127,26 @@ namespace Nekoyume.UI
             {
                 Close();
                 AudioController.PlayClick();
+            });
+
+            dccSlotButton.onClick.AddListener(() =>
+            {
+                Find<DccSettingPopup>().Show();
+            });
+
+            activeDccButton.onClick.AddListener(() =>
+            {
+                Dcc.instance.SetVisible(_isVisibleDcc.Value ? 0 : 1);
+                _isVisibleDcc.SetValueAndForceNotify(!_isVisibleDcc.Value);
+                var msg = _isVisibleDcc.Value ? "UI_DCC_COSTUME_ACTIVATION" : "UI_DCC_COSTUME_DISABLED";
+                NotificationSystem.Push(MailType.System, L10nManager.Localize(msg),
+                    NotificationCell.NotificationType.Information);
+            });
+
+            activeCostumeButton.onClick.AddListener(() =>
+            {
+                Dcc.instance.SetVisible(_isVisibleDcc.Value ? 0 : 1);
+                _isVisibleDcc.SetValueAndForceNotify(!_isVisibleDcc.Value);
             });
 
             base.Awake();
@@ -130,6 +186,24 @@ namespace Nekoyume.UI
             information.UpdateInventory(BattleType.Adventure);
             OnClickPresetTab(adventureButton, BattleType.Adventure, _onToggleCallback[BattleType.Adventure]);
             HelpTooltip.HelpMe(100013, true);
+
+            var avatarState = Game.Game.instance.States.CurrentAvatarState;
+            var isActiveDcc = Dcc.instance.IsVisible(avatarState.address, out var id, out var isVisible);
+            _isVisibleDcc.Value = isActiveDcc;
+            _isVisibleDcc.Subscribe(x =>
+            {
+                _activeDcc.sprite = x ? activeSprite : disableSprite;
+                _activeCostume.sprite = x ? disableSprite : activeSprite;
+                information.UpdateView(_currentBattleType);
+            }).AddTo(gameObject);
+
+            activeDccButton.gameObject.SetActive(isActiveDcc);
+            activeCostumeButton.gameObject.SetActive(isActiveDcc);
+            dccImage.sprite = isActiveDcc ? SpriteHelper.GetDccProfileIcon(id) : dccSlotDefaultSprite;
+            if (isActiveDcc)
+            {
+                _isVisibleDcc.SetValueAndForceNotify(isVisible);
+            }
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -166,6 +240,7 @@ namespace Nekoyume.UI
             _toggleGroup.SetToggledOffAll();
             toggle.SetToggledOn();
             onSetToggle?.Invoke();
+            _currentBattleType = battleType;
 
             UpdateNickname(currentAvatarState.level, currentAvatarState.NameWithHash);
             information.UpdateView(battleType);

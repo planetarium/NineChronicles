@@ -251,7 +251,7 @@ namespace Nekoyume.UI.Module
 
                         var attractMessage = enough
                             ? L10nManager.Localize("UI_YES")
-                            : L10nManager.Localize("UI_GO_TO_MARKET");
+                            : L10nManager.Localize("UI_SHOP");
                         Widget.Find<PaymentPopup>().ShowAttract(
                             CostType.NCG,
                             cost,
@@ -665,11 +665,7 @@ namespace Nekoyume.UI.Module
 
         private void ShowItemTooltip(InventoryItem model)
         {
-            if (model.RuneState != null)
-            {
-                ShowRuneTooltip(model);
-            }
-            else
+            if (model.ItemBase is not null)
             {
                 var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
                 var (submitText,
@@ -685,6 +681,14 @@ namespace Nekoyume.UI.Module
                     () => inventory.ClearSelectedItem(),
                     blocked,
                     enhancement);
+            }
+            else if (model.RuneState is not null)
+            {
+                ShowRuneTooltip(model);
+            }
+            else
+            {
+                ShowFavTooltip(model);
             }
         }
 
@@ -721,6 +725,17 @@ namespace Nekoyume.UI.Module
                     inventory.ClearSelectedItem();
                     UpdateRuneView();
                 });
+        }
+
+        private void ShowFavTooltip(InventoryItem model)
+        {
+            Widget.Find<FungibleAssetTooltip>().
+                Show(model,
+                    () =>
+                    {
+                        inventory.ClearSelectedItem();
+                        UpdateRuneView();
+                    });
         }
 
         private (string, bool, System.Action, System.Action, System.Action)

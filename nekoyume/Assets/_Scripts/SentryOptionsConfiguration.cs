@@ -1,3 +1,4 @@
+#if UNITY_IOS && !UNITY_IOS_SIMULATOR && !UNITY_EDITOR && !UNITY_ANDROID
 using System;
 using System.IO;
 using Nekoyume.Helper;
@@ -24,3 +25,4 @@ public class SentryOptionsConfiguration : ScriptableOptionsConfiguration
         options.AddExceptionFilterForType<NullReferenceException>();
     }
 }
+#endif

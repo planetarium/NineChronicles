@@ -196,13 +196,13 @@ namespace Nekoyume.UI
             var equipment =
                 (Equipment)ItemFactory.CreateItemUsable(row, random.GenerateRandomGuid(), 0);
             var agentState = States.Instance.AgentState;
-            Action.CombinationEquipment.AddAndUnlockOption(
-                agentState,
-                equipment,
-                random,
-                subRecipeRow,
-                itemOptionSheet,
-                skillSheet);
+            // Action.CombinationEquipment.AddAndUnlockOption(
+            //     agentState,
+            //     equipment,
+            //     random,
+            //     subRecipeRow,
+            //     itemOptionSheet,
+            //     skillSheet);
             return equipment;
         }
 

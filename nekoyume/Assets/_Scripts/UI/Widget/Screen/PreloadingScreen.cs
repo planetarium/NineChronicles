@@ -50,15 +50,13 @@ namespace Nekoyume.UI
             {
                 if (States.Instance.AgentState.avatarAddresses.Any() &&
                     States.Instance.AvatarStates.Any(x => x.Value.level > 49) &&
-                    Util.TryGetStoredAvatarSlotIndex(out var si))
+                    Util.TryGetStoredAvatarSlotIndex(out var slotIndex) &&
+                    States.Instance.AvatarStates.ContainsKey(slotIndex))
                 {
                     var loadingScreen = Find<DataLoadingScreen>();
                     loadingScreen.Message = L10nManager.Localize("UI_LOADING_BOOTSTRAP_START");
                     loadingScreen.Show();
-                    await RxProps.SelectAvatarAsync(si);
-                    await WorldBossStates.Set(States.Instance.CurrentAvatarState.address);
-                    await States.Instance.InitRuneSlotStates();
-                    await States.Instance.InitItemSlotStates();
+                    await RxProps.SelectAvatarAsync(slotIndex);
                     loadingScreen.Close();
                     Game.Event.OnRoomEnter.Invoke(false);
                     Game.Event.OnUpdateAddresses.Invoke();
@@ -85,9 +83,6 @@ namespace Nekoyume.UI
                     else
                     {
                         await RxProps.SelectAvatarAsync(slotIndex);
-                        await WorldBossStates.Set(States.Instance.CurrentAvatarState.address);
-                        await States.Instance.InitRuneSlotStates();
-                        await States.Instance.InitItemSlotStates();
                         Game.Event.OnRoomEnter.Invoke(false);
                         Game.Event.OnUpdateAddresses.Invoke();
                     }

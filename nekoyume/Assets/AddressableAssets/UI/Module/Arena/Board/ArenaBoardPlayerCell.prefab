@@ -2285,26 +2285,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1778458280767228570, guid: 2a68c5685c2668a4c8e9ff8c45bab175,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 63
-      objectReference: {fileID: 0}
-    - target: {fileID: 1778458280767228570, guid: 2a68c5685c2668a4c8e9ff8c45bab175,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 63
-      objectReference: {fileID: 0}
-    - target: {fileID: 1778458280767228570, guid: 2a68c5685c2668a4c8e9ff8c45bab175,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1778458280767228570, guid: 2a68c5685c2668a4c8e9ff8c45bab175,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 2471016746552703132, guid: 2a68c5685c2668a4c8e9ff8c45bab175,
         type: 3}
       propertyPath: m_fontSize
@@ -2415,32 +2395,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3713038486637188217, guid: 2a68c5685c2668a4c8e9ff8c45bab175,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 56
-      objectReference: {fileID: 0}
-    - target: {fileID: 3713038486637188217, guid: 2a68c5685c2668a4c8e9ff8c45bab175,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 56
-      objectReference: {fileID: 0}
-    - target: {fileID: 3713038486637188217, guid: 2a68c5685c2668a4c8e9ff8c45bab175,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 1.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3713038486637188217, guid: 2a68c5685c2668a4c8e9ff8c45bab175,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 1.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7198632883933894425, guid: 2a68c5685c2668a4c8e9ff8c45bab175,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 5b82abb359b51484992c7487a023213c,
-        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2a68c5685c2668a4c8e9ff8c45bab175, type: 3}
 --- !u!224 &825334131671523455 stripped

@@ -1,7 +1,6 @@
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Module;
 using TMPro;
-using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.UI
@@ -9,7 +8,7 @@ namespace Nekoyume.UI
     public class TwoButtonSystem : SystemWidget
     {
         [SerializeField]
-        private TextButton confirmButton = null;
+        protected TextButton confirmButton = null;
 
         [SerializeField]
         private TextButton cancelButton = null;
@@ -40,14 +39,15 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var fixedcontent = content.Replace("\\n", "\n");
-            contentText.text = fixedcontent;
+            var fixedContent = content.Replace("\\n", "\n");
+            contentText.text = fixedContent;
 
             _confirmCallback = confirmCallback;
             _cancelCallback = cancelCallback;
 
             confirmButton.Text = confirmText;
             cancelButton.Text = cancelText;
+
             base.Show();
         }
 

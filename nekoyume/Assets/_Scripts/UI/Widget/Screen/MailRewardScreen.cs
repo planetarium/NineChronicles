@@ -85,13 +85,17 @@ namespace Nekoyume.UI
 
             _mailRewardsList.Clear();
 
-            var sortedRewards = mailRewards
+            var favRewards = mailRewards.Where(x => x.ItemBase is null).ToList();
+            var itemRewards = mailRewards.Where(x => x.ItemBase is not null).ToList();
+            var sortedItemRewards = itemRewards
                 .OrderBy(x => x.ItemBase.ItemType == ItemType.Consumable)
                 .ThenBy(x => x.ItemBase.ItemType == ItemType.Equipment)
                 .ThenBy(x => x.ItemBase.ItemType == ItemType.Material)
                 .ThenBy(x => x.IsPurchased)
                 .ToList();
-
+            var sortedRewards = new List<MailReward>();
+            sortedRewards.AddRange(sortedItemRewards);
+            sortedRewards.AddRange(favRewards);
             _count = (sortedRewards.Count - 1) / MaxItemCount;
             for (var i = 0; i < _count + 1; i++)
             {

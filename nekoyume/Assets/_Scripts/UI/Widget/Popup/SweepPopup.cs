@@ -354,7 +354,7 @@ namespace Nekoyume.UI
             var (_, exp) = avatarState.GetLevelAndExp(levelSheet, row.Id,
                 apPlayCount + apStonePlayCount);
             var earnedExp = exp - avatarState.exp;
-            return earnedExp;
+            return Math.Max(earnedExp, 0);
         }
 
         private void UpdateStartButton()

@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Nekoyume.L10n;
 using UnityEngine;
+using System.Runtime.InteropServices;
 
 namespace Nekoyume.Helper
 {
@@ -62,6 +63,8 @@ namespace Nekoyume.Helper
         private string onBoardingHost;
 
         private double sentrySampleRate = 0;
+
+        private string marketServiceHost;
 
         public bool Empty { get; private set; } = true;
 
@@ -359,9 +362,21 @@ namespace Nekoyume.Helper
             }
         }
 
+        [Option("market-service-host", Required = false, HelpText = "shop service host")]
+        public string MarketServiceHost
+        {
+            get => marketServiceHost;
+            set
+            {
+                marketServiceHost = value;
+                Empty = false;
+            }
+        }
+
+
         public static CommandLineOptions Load(string localPath)
         {
-            var options = CommandLineParser.GetCommandLineOptions();
+            var options = CommandLineParser.GetCommandLineOptions<CommandLineOptions>();
             if (options != null && !options.Empty)
             {
                 Debug.Log($"Get options from commandline.");
@@ -380,18 +395,27 @@ namespace Nekoyume.Helper
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 ReadCommentHandling = JsonCommentHandling.Skip,
             };
-
+#if UNITY_ANDROID
+            // error: current no clo.json
+            UnityEngine.WWW www = new UnityEngine.WWW(Platform.GetStreamingAssetsPath("clo.json"));
+            while (!www.isDone)
+            {
+                // wait for data load
+            }
+            return JsonSerializer.Deserialize<CommandLineOptions>(www.text, jsonOptions);
+#else
             if (File.Exists(localPath))
             {
                 Debug.Log($"Get options from local: {localPath}");
                 return JsonSerializer.Deserialize<CommandLineOptions>(File.ReadAllText(localPath), jsonOptions);
             }
+#endif
 
             Debug.LogErrorFormat("Failed to find {0}. Using default options.", localPath);
             return new CommandLineOptions();
         }
 
-        private class StringEnumerableConverter : JsonConverter<IEnumerable<string>>
+        public class StringEnumerableConverter : JsonConverter<IEnumerable<string>>
         {
             public override IEnumerable<string> Read(
                 ref Utf8JsonReader reader,
@@ -443,17 +467,17 @@ namespace Nekoyume.Helper
 
     public static class CommandLineParser
     {
-        public static CommandLineOptions GetCommandLineOptions()
+        public static T GetCommandLineOptions<T>() where T : class
         {
             string[] args = Environment.GetCommandLineArgs();
 
             var parser = new Parser(with => with.IgnoreUnknownArguments = true);
 
-            ParserResult<CommandLineOptions> result = parser.ParseArguments<CommandLineOptions>(args);
+            ParserResult<T> result = parser.ParseArguments<T>(args);
 
             if (result.Tag == ParserResultType.Parsed)
             {
-                return ((Parsed<CommandLineOptions>)result).Value;
+                return ((Parsed<T>)result).Value;
             }
 
             result.WithNotParsed(

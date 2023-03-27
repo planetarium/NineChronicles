@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20af5049cbb24252b52d2f5cee5797ab, type: 3}
+  m_Name: Avatar
+  m_EditorClassIdentifier: Nekoyume:Nekoyume.Game.ScriptableObject:AvatarScriptableObject
+  Body:
+  - {fileID: 11400000, guid: d8cf6348e9aafc2469a9e56668efbd08, type: 2}
+  - {fileID: 11400000, guid: e5a1bccf257798d42bae6dd5eecd6478, type: 2}
+  - {fileID: 11400000, guid: 12a0ae22a01eca64e81cbe1ec99bf663, type: 2}
+  - {fileID: 11400000, guid: f8358daac023fd34db9620fc7320aa9d, type: 2}
+  - {fileID: 11400000, guid: 7134486a07361f7408d87b9f68aa6876, type: 2}
+  - {fileID: 11400000, guid: a5fc778e749e9ba409c878fc775cee61, type: 2}
+  - {fileID: 11400000, guid: a2311b3948ce1844a9845db1adc51674, type: 2}
+  - {fileID: 11400000, guid: d523c6d98e3fc93418de7d4fd617987f, type: 2}
+  - {fileID: 11400000, guid: d6e0fc3a0b0db36428e8545b35b6aef5, type: 2}
+  FullCostume:
+  - {fileID: 11400000, guid: f5e6e535b664b40d59211f0b32ccb48e, type: 2}
+  - {fileID: 11400000, guid: e2951d4e1dfc440bf8a984036eacbba2, type: 2}
+  - {fileID: 11400000, guid: e0694e43f7873f94eb09885ae6d764c3, type: 2}
+  - {fileID: 11400000, guid: 6dc8f557bb34418409f87659a52b275d, type: 2}
+  - {fileID: 11400000, guid: 978c7955a644dc54e80547d7df0f1249, type: 2}
+  - {fileID: 11400000, guid: 40e655e0b26545348b92e0933ea029ae, type: 2}
+  - {fileID: 11400000, guid: 41ffa3b6c8fb04a419048034222c41aa, type: 2}
+  - {fileID: 11400000, guid: 8565353dff3d8d74caf842de5ead031d, type: 2}
+  - {fileID: 11400000, guid: 20fe342b155aaca4ca57a0bfa5e27ce9, type: 2}
+  - {fileID: 11400000, guid: 3a061f7ca70b37048b3121662af22d03, type: 2}
+  - {fileID: 11400000, guid: f7a00f4f0ea6c467893508e2204d7f02, type: 2}

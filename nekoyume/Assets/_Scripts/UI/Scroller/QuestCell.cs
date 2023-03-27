@@ -138,7 +138,7 @@ namespace Nekoyume.UI.Scroller
                     background.color = Color.white;
                     fillImage.color = ColorHelper.HexToColorRGB("ffffff");
                     titleText.color = ColorHelper.HexToColorRGB("ffa78b");
-                    contentText.color = ColorHelper.HexToColorRGB("955c4a");
+                    contentText.color = ColorHelper.HexToColorRGB("B99289");
                     progressText.color = ColorHelper.HexToColorRGB("e0a491");
                     receiveButton.gameObject.SetActive(true);
                     receiveButton.Interactable = true;
@@ -149,7 +149,7 @@ namespace Nekoyume.UI.Scroller
                     fillImage.color = ColorHelper.HexToColorRGB("282828");
                     background.color = ColorHelper.HexToColorRGB("7b7b7b");
                     titleText.color = ColorHelper.HexToColorRGB("614037");
-                    contentText.color = ColorHelper.HexToColorRGB("38251e");
+                    contentText.color = ColorHelper.HexToColorRGB("B99289");
                     progressText.color = ColorHelper.HexToColorRGB("282828");
                     receiveButton.gameObject.SetActive(false);
                 }
@@ -159,7 +159,7 @@ namespace Nekoyume.UI.Scroller
                 background.color = Color.white;
                 fillImage.color = ColorHelper.HexToColorRGB("ffffff");
                 titleText.color = ColorHelper.HexToColorRGB("ffa78b");
-                contentText.color = ColorHelper.HexToColorRGB("955c4a");
+                contentText.color = ColorHelper.HexToColorRGB("B99289");
                 progressText.color = ColorHelper.HexToColorRGB("e0a491");
                 receiveButton.gameObject.SetActive(true);
                 receiveButton.Interactable = false;
@@ -210,7 +210,7 @@ namespace Nekoyume.UI.Scroller
             fillImage.color = ColorHelper.HexToColorRGB("282828");
             background.color = ColorHelper.HexToColorRGB("7b7b7b");
             titleText.color = ColorHelper.HexToColorRGB("614037");
-            contentText.color = ColorHelper.HexToColorRGB("38251e");
+            contentText.color = ColorHelper.HexToColorRGB("B99289");
             progressText.color = ColorHelper.HexToColorRGB("282828");
             receiveButton.gameObject.SetActive(false);
         }

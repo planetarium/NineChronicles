@@ -1,318 +1,427 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Bencodex.Types;
-using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
-using Libplanet;
-using Libplanet.Assets;
+using MarketService.Response;
+using Nekoyume.EnumType;
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.State;
+using Nekoyume.Model.Skill;
+using Nekoyume.TableData;
 using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.State
 {
-    /// <summary>
-    /// Changes in the values included in ShopState are notified to the outside through each ReactiveProperty<T> field.
-    /// </summary>
     public static class ReactiveShopState
     {
-        private static readonly List<ItemSubType> ItemSubTypes = new()
+        public static ReactiveProperty<Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>> BuyItemProducts { get; } =
+            new();
+
+        public static ReactiveProperty<Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>> SellItemProducts { get; } =
+            new();
+
+        public static ReactiveProperty<List<FungibleAssetValueProductResponseModel>>
+            BuyFungibleAssetProducts { get; } = new();
+
+        public static ReactiveProperty<List<FungibleAssetValueProductResponseModel>>
+            SellFungibleAssetProducts { get; } = new();
+
+        private static readonly Dictionary<MarketOrderType, Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>>
+            CachedBuyItemProducts = new()
+            {
+                { MarketOrderType.cp, new Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>() },
+                { MarketOrderType.cp_desc, new Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>() },
+                { MarketOrderType.price, new Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>() },
+                { MarketOrderType.price_desc, new Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>() },
+                { MarketOrderType.grade, new Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>() },
+                { MarketOrderType.grade_desc, new Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>() },
+                { MarketOrderType.crystal, new Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>() },
+                { MarketOrderType.crystal_desc, new Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>() },
+                { MarketOrderType.crystal_per_price, new Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>() },
+                { MarketOrderType.crystal_per_price_desc, new Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>() }
+            };
+        private static readonly Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>> CachedSellItemProducts = new();
+
+        private static readonly Dictionary<MarketOrderType, Dictionary<ItemSubTypeFilter, List<FungibleAssetValueProductResponseModel>>>
+            CachedBuyFungibleAssetProducts = new()
+            {
+                { MarketOrderType.price, new Dictionary<ItemSubTypeFilter, List<FungibleAssetValueProductResponseModel>>() },
+                { MarketOrderType.price_desc, new Dictionary<ItemSubTypeFilter, List<FungibleAssetValueProductResponseModel>>() },
+            };
+        private static readonly List<FungibleAssetValueProductResponseModel> CachedSellFungibleAssetProducts = new();
+
+        private static readonly Dictionary<MarketOrderType, Dictionary<ItemSubTypeFilter, bool>> BuyProductMaxChecker = new()
+            {
+                { MarketOrderType.cp, new Dictionary<ItemSubTypeFilter, bool>() },
+                { MarketOrderType.cp_desc, new Dictionary<ItemSubTypeFilter, bool>() },
+                { MarketOrderType.price, new Dictionary<ItemSubTypeFilter, bool>() },
+                { MarketOrderType.price_desc, new Dictionary<ItemSubTypeFilter, bool>() },
+                { MarketOrderType.grade, new Dictionary<ItemSubTypeFilter, bool>() },
+                { MarketOrderType.grade_desc, new Dictionary<ItemSubTypeFilter, bool>() },
+                { MarketOrderType.crystal, new Dictionary<ItemSubTypeFilter, bool>() },
+                { MarketOrderType.crystal_desc, new Dictionary<ItemSubTypeFilter, bool>() },
+                { MarketOrderType.crystal_per_price, new Dictionary<ItemSubTypeFilter, bool>() },
+                { MarketOrderType.crystal_per_price_desc, new Dictionary<ItemSubTypeFilter, bool>() },
+            };
+
+        private static readonly Dictionary<MarketOrderType, Dictionary<ItemSubTypeFilter, bool>> BuyFavMaxChecker = new ()
         {
-            ItemSubType.Weapon,
-            ItemSubType.Armor,
-            ItemSubType.Belt,
-            ItemSubType.Necklace,
-            ItemSubType.Ring,
-            ItemSubType.Food,
-            ItemSubType.FullCostume,
-            ItemSubType.HairCostume,
-            ItemSubType.EarCostume,
-            ItemSubType.EyeCostume,
-            ItemSubType.TailCostume,
-            ItemSubType.Title,
-            ItemSubType.Hourglass,
-            ItemSubType.ApStone,
+            { MarketOrderType.price, new Dictionary<ItemSubTypeFilter, bool>
+            {
+                { ItemSubTypeFilter.RuneStone, false}, { ItemSubTypeFilter.PetSoulStone, false}
+            }},
+            { MarketOrderType.price_desc, new Dictionary<ItemSubTypeFilter, bool>
+            {
+                { ItemSubTypeFilter.RuneStone, false}, { ItemSubTypeFilter.PetSoulStone, false}
+            }},
         };
 
-        private static readonly List<ItemSubType> ShardedSubTypes = new()
+        private static List<Guid> PurchasedProductIds = new();
+
+        public static void ClearCache()
         {
-            ItemSubType.Weapon,
-            ItemSubType.Armor,
-            ItemSubType.Belt,
-            ItemSubType.Necklace,
-            ItemSubType.Ring,
-            ItemSubType.Food,
-            ItemSubType.Hourglass,
-            ItemSubType.ApStone,
-        };
+            BuyItemProducts.Value = new Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>();
+            SellItemProducts.Value = new Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>();
+            BuyFungibleAssetProducts.Value = new List<FungibleAssetValueProductResponseModel>();
+            SellFungibleAssetProducts.Value = new List<FungibleAssetValueProductResponseModel>();
 
-        public static ReactiveProperty<List<OrderDigest>> BuyDigest { get; } = new();
-
-        public static ReactiveProperty<List<OrderDigest>> SellDigest { get; } = new();
-
-        // key: orderId
-        private static ConcurrentDictionary<Guid, ItemBase> CachedShopItems { get; } = new();
-
-
-        private static readonly Dictionary<ItemSubType, List<OrderDigest>> _buyDigest = new();
-        private static List<Guid> _removedOrderIds { get; } = new();
-
-        public static OrderDigest GetSellDigest(
-            Guid tradableId,
-            long requiredBlockIndex,
-            FungibleAssetValue price,
-            int count)
-        {
-            return SellDigest.Value.FirstOrDefault(x =>
-                x.TradableId.Equals(tradableId) &&
-                x.ExpiredBlockIndex.Equals(requiredBlockIndex) &&
-                x.Price.Equals(price) &&
-                x.ItemCount.Equals(count));
-        }
-
-        public static bool TryGetShopItem(OrderDigest orderDigest, out ItemBase itemBase)
-        {
-            if (!CachedShopItems.ContainsKey(orderDigest.OrderId))
+            foreach (var v in CachedBuyItemProducts.Values)
             {
-                Debug.LogWarning($"[{nameof(TryGetShopItem)}] Not found address:" +
-                                 $" {orderDigest.OrderId}");
-                itemBase = null;
-                return false;
+                v.Clear();
+            }
+            foreach (var v in CachedBuyFungibleAssetProducts.Values)
+            {
+                v.Clear();
+            }
+            foreach (var v in BuyProductMaxChecker.Values)
+            {
+                v.Clear();
+            }
+            foreach (var v in BuyFavMaxChecker.Values)
+            {
+                v.Clear();
             }
 
-            itemBase = CachedShopItems[orderDigest.OrderId];
-            return true;
+            CachedSellItemProducts.Clear();
+            CachedSellFungibleAssetProducts.Clear();
         }
 
-        public static async UniTask SetBuyDigestsAsync(List<ItemSubType> list)
+        public static async Task RequestBuyProductsAsync(
+            ItemSubTypeFilter filter,
+            MarketOrderType orderType,
+            int limit)
         {
-            await UniTask.Run(async () =>
+            if (Game.Game.instance.MarketServiceClient is null)
             {
-                _removedOrderIds.Clear();
+                return;
+            }
 
-                foreach (var itemSubType in list)
+            if (!BuyProductMaxChecker[orderType].ContainsKey(filter))
+            {
+                BuyProductMaxChecker[orderType].Add(filter, false);
+            }
+
+            if (BuyProductMaxChecker[orderType][filter])
+            {
+                return;
+            }
+
+            if (!CachedBuyItemProducts[orderType].ContainsKey(filter))
+            {
+                CachedBuyItemProducts[orderType]
+                    .Add(filter, new List<ItemProductResponseModel>());
+            }
+
+            var offset = CachedBuyItemProducts[orderType][filter].Count;
+            var itemSubType = filter.ToItemSubType();
+            var statType = filter.ToItemStatType();
+            var (products, totalCount) = await Game.Game.instance.MarketServiceClient.GetBuyProducts(itemSubType, offset, limit, orderType, statType);
+            // Debug.Log($"[RequestBuyProductsAsync] : {itemSubType} / {filter} / {orderType} / {offset} / {limit} / {statType} / MAX:{totalCount}");
+
+            await foreach (var product in products)
+            {
+                if (!CachedBuyItemProducts[orderType].ContainsKey(filter))
                 {
-                    var digests = await GetBuyOrderDigestsAsync(itemSubType);
-                    var result = await UpdateCachedShopItemsAsync(digests);
-                    if (result)
-                    {
-                        AddBuyDigest(digests, itemSubType);
-                    }
+                    continue;
                 }
 
-                return true;
-            });
-        }
-
-        private static void AddBuyDigest(IEnumerable<OrderDigest> digests, ItemSubType itemSubType)
-        {
-            var agentAddress = States.Instance.AgentState.address;
-            var d = digests
-                .Where(digest => !digest.SellerAgentAddress.Equals(agentAddress))
-                .ToList();
-            if (!_buyDigest.ContainsKey(itemSubType))
-            {
-                _buyDigest.Add(itemSubType, new List<OrderDigest>());
-            }
-
-            _buyDigest[itemSubType] = d;
-
-            var buyDigests = new List<OrderDigest>();
-            foreach (var pair in _buyDigest)
-            {
-                buyDigests.AddRange(pair.Value);
-            }
-
-            var removeList = buyDigests
-                .Where(digest => _removedOrderIds.Contains(digest.OrderId))
-                .ToList();
-            foreach (var orderDigest in removeList)
-            {
-                buyDigests.Remove(orderDigest);
-            }
-
-            BuyDigest.Value = buyDigests;
-        }
-
-        public static async UniTask UpdateSellDigestsAsync()
-        {
-            var digests = await GetSellOrderDigestsAsync();
-            var result = await UpdateCachedShopItemsAsync(digests);
-            if (result)
-            {
-                SellDigest.Value = digests;
-            }
-        }
-
-        public static void RemoveBuyDigest(Guid orderId)
-        {
-            var item = BuyDigest.Value.FirstOrDefault(x =>
-                x.OrderId.Equals(orderId));
-            if (item != null)
-            {
-                if (!_removedOrderIds.Contains(orderId))
+                if (CachedBuyItemProducts[orderType][filter].All(x => x.ProductId != product.ProductId))
                 {
-                    _removedOrderIds.Add(orderId);
-                }
-
-                BuyDigest.Value.Remove(item);
-                BuyDigest.SetValueAndForceNotify(BuyDigest.Value);
-            }
-        }
-
-        public static void RemoveSellDigest(Guid orderId)
-        {
-            var item = SellDigest.Value.FirstOrDefault(x =>
-                x.OrderId.Equals(orderId));
-            if (item != null)
-            {
-                SellDigest.Value.Remove(item);
-                SellDigest.SetValueAndForceNotify(SellDigest.Value);
-            }
-        }
-
-        private static async UniTask<List<OrderDigest>> GetBuyOrderDigestsAsync(
-            ItemSubType itemSubType)
-        {
-            var orderDigests = new Dictionary<Address, List<OrderDigest>>();
-            var addressList = new List<Address>();
-
-            if (ShardedSubTypes.Contains(itemSubType))
-            {
-                addressList.AddRange(ShardedShopState.AddressKeys.Select(addressKey =>
-                    ShardedShopStateV2.DeriveAddress(itemSubType, addressKey)));
-            }
-            else
-            {
-                var address = ShardedShopStateV2.DeriveAddress(itemSubType, string.Empty);
-                addressList.Add(address);
-            }
-
-            var values =
-                await Game.Game.instance.Agent.GetStateBulk(addressList);
-            var shopStates = new List<ShardedShopStateV2>();
-            foreach (var kv in values)
-            {
-                if (kv.Value is Dictionary shopDict)
-                {
-                    shopStates.Add(new ShardedShopStateV2(shopDict));
+                    CachedBuyItemProducts[orderType][filter].Add(product);
                 }
             }
 
-            AddOrderDigest(shopStates, orderDigests);
-
-            var digests = new List<OrderDigest>();
-            foreach (var items in orderDigests.Values)
-            {
-                digests.AddRange(items);
-            }
-
-            return digests;
+            var total = CachedBuyItemProducts[orderType].ContainsKey(filter)? CachedBuyItemProducts[orderType][filter].Count : 0;
+            BuyProductMaxChecker[orderType][filter] = totalCount == total;
+            SetBuyProducts(orderType);
         }
 
-        private static void AddOrderDigest(
-            List<ShardedShopStateV2> shopStates,
-            IDictionary<Address, List<OrderDigest>> orderDigests)
+        public static async Task RequestBuyFungibleAssetsAsync(
+            ItemSubTypeFilter filter,
+            MarketOrderType orderType,
+            int limit)
         {
-            foreach (var shopState in shopStates)
+            if (!BuyFavMaxChecker[orderType].ContainsKey(filter))
             {
-                foreach (var orderDigest in shopState.OrderDigestList)
-                {
-                    if (orderDigest.ExpiredBlockIndex != 0 &&
-                        orderDigest.ExpiredBlockIndex > Game.Game.instance.Agent.BlockIndex)
-                    {
-                        var agentAddress = orderDigest.SellerAgentAddress;
-                        if (!orderDigests.ContainsKey(agentAddress))
-                        {
-                            orderDigests[agentAddress] = new List<OrderDigest>();
-                        }
+                BuyFavMaxChecker[orderType].Add(filter, false);
+            }
 
-                        orderDigests[agentAddress].Add(orderDigest);
-                    }
+            if (BuyFavMaxChecker[orderType][filter])
+            {
+                return;
+            }
+
+            if (!CachedBuyFungibleAssetProducts[orderType].ContainsKey(filter))
+            {
+                CachedBuyFungibleAssetProducts[orderType]
+                    .Add(filter, new List<FungibleAssetValueProductResponseModel>());
+            }
+
+            var ticker = filter == ItemSubTypeFilter.RuneStone ? "RUNE" : "SOULSTONE";
+            var offset = CachedBuyFungibleAssetProducts[orderType][filter].Count;
+            var (fungibleAssets, totalCount) =
+                await Game.Game.instance.MarketServiceClient.GetBuyFungibleAssetProducts(ticker, offset, limit, orderType);
+            // Debug.Log($"[RequestBuyFungibleAssetsAsync] : {ticker} / {filter} / {orderType} / {offset} / {limit} / MAX:{totalCount}");
+            var fungibleAssetModels = CachedBuyFungibleAssetProducts[orderType][filter];
+            foreach (var asset in fungibleAssets)
+            {
+                if (fungibleAssetModels.All(x => x.ProductId != asset.ProductId))
+                {
+                    CachedBuyFungibleAssetProducts[orderType][filter].Add(asset);
                 }
             }
+
+            BuyFavMaxChecker[orderType][filter] = totalCount == CachedBuyFungibleAssetProducts[orderType][filter].Count;
+            SetBuyFungibleAssets(orderType);
         }
 
-        private static async UniTask<List<OrderDigest>> GetSellOrderDigestsAsync()
+        public static async Task RequestSellProductsAsync()
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var receiptAddress = OrderDigestListState.DeriveAddress(avatarAddress);
-            var receiptState = await Game.Game.instance.Agent.GetStateAsync(receiptAddress);
-            var receipts = new List<OrderDigest>();
-            if (receiptState is Dictionary dictionary)
-            {
-                var state = new OrderDigestListState(dictionary);
-                var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
-                var validOrderDigests = state.OrderDigestList
-                    .Where(x => x.ExpiredBlockIndex > currentBlockIndex);
-                receipts.AddRange(validOrderDigests);
+            var (fungibleAssets, items) =
+                await Game.Game.instance.MarketServiceClient.GetProducts(avatarAddress);
 
-                var expiredOrderDigests = state.OrderDigestList
-                    .Where(x => x.ExpiredBlockIndex <= currentBlockIndex);
-                var inventory = States.Instance.CurrentAvatarState.inventory;
-                var lockedDigests = expiredOrderDigests
-                    .Where(x => inventory.TryGetLockedItem(new OrderLock(x.OrderId), out _))
-                    .ToList();
-                receipts.AddRange(lockedDigests);
+            foreach (var (k, v) in CachedSellItemProducts)
+            {
+                v.Clear();
             }
 
-            return receipts;
+            foreach (var item in items)
+            {
+                var filter = ItemSubTypeFilterExtension.GetItemSubTypeFilter(item.ItemId).First();
+                if (!CachedSellItemProducts.ContainsKey(filter))
+                {
+                    CachedSellItemProducts.Add(filter, new List<ItemProductResponseModel>());
+                }
+
+                CachedSellItemProducts[filter].Add(item);
+            }
+
+            CachedSellFungibleAssetProducts.Clear();
+            CachedSellFungibleAssetProducts.AddRange(fungibleAssets);
+            SetSellProducts();
         }
 
-        private static async UniTask<bool> UpdateCachedShopItemsAsync(
-            IEnumerable<OrderDigest> digests)
+        public static void SetBuyProducts(MarketOrderType marketOrderType)
         {
-            var selectedDigests = digests
-                .Where(orderDigest => !CachedShopItems.ContainsKey(orderDigest.OrderId))
-                .ToList();
-            var tuples = selectedDigests
-                .Select(e => (Address: Addresses.GetItemAddress(e.TradableId), OrderDigest: e))
-                .ToArray();
-            var itemAddresses = tuples
-                .Select(tuple => tuple.Address)
-                .Distinct();
-            var itemValues =
-                await Game.Game.instance.Agent.GetStateBulk(itemAddresses);
-            foreach (var (address, orderDigest) in tuples)
+            var curBlockIndex = Game.Game.instance.Agent.BlockIndex;
+            var agentAddress = States.Instance.AgentState.address;
+
+            var products =new Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>();
+            foreach (var (k, v) in CachedBuyItemProducts[marketOrderType])
             {
-                if (!itemValues.ContainsKey(address))
+                if (!products.ContainsKey(k))
                 {
-                    Debug.LogWarning($"[{nameof(ReactiveShopState)}] Not found address:" +
-                                     $" {address.ToHex()}");
-                    continue;
+                    products.Add(k, new List<ItemProductResponseModel>());
                 }
 
-                var itemValue = itemValues[address];
-                if (!(itemValue is Dictionary dictionary))
+                foreach (var model in v.Where(model => model.SellerAgentAddress != agentAddress &&
+                                                       !PurchasedProductIds.Contains(model.ProductId)))
                 {
-                    Debug.LogWarning($"[{nameof(ReactiveShopState)}] {nameof(itemValue)}" +
-                                     $" cannot cast to {typeof(Bencodex.Types.Dictionary).FullName}");
-                    continue;
+                    if (model.Legacy)
+                    {
+                        if (model.RegisteredBlockIndex + Order.ExpirationInterval - curBlockIndex > 0)
+                        {
+                            products[k].Add(model);
+                        }
+                    }
+                    else
+                    {
+                        products[k].Add(model);
+                    }
                 }
-
-                var itemBase = ItemFactory.Deserialize(dictionary);
-                switch (itemBase)
-                {
-                    case TradableMaterial tm:
-                        tm.RequiredBlockIndex = orderDigest.ExpiredBlockIndex;
-                        break;
-                    case ItemUsable iu:
-                        iu.RequiredBlockIndex = orderDigest.ExpiredBlockIndex;
-                        break;
-                    case Costume c:
-                        c.RequiredBlockIndex = orderDigest.ExpiredBlockIndex;
-                        break;
-                }
-
-                CachedShopItems.TryAdd(orderDigest.OrderId, itemBase);
             }
 
-            return true;
+            BuyItemProducts.Value = products;
+        }
+
+        public static void SetBuyFungibleAssets(MarketOrderType marketOrderType)
+        {
+            var fav = new List<FungibleAssetValueProductResponseModel>();
+            foreach (var models in CachedBuyFungibleAssetProducts[marketOrderType].Values)
+            {
+                fav.AddRange(models);
+            }
+
+            var agentAddress = States.Instance.AgentState.address;
+            var favProducts = fav
+                .Where(x => !x.SellerAgentAddress.Equals(agentAddress))
+                .Where(x => !PurchasedProductIds.Contains(x.ProductId))
+                .ToList();
+            BuyFungibleAssetProducts.Value = favProducts;
+        }
+
+        public static void SetSellProducts()
+        {
+            SellItemProducts.Value = CachedSellItemProducts;
+            SellFungibleAssetProducts.Value = CachedSellFungibleAssetProducts;
+        }
+
+        public static void UpdatePurchaseProductIds(IEnumerable<Guid> ids)
+        {
+            foreach (var guid in ids.Where(guid => !PurchasedProductIds.Contains(guid)))
+            {
+                PurchasedProductIds.Add(guid);
+            }
+        }
+
+        public static ItemProductResponseModel GetSellItemProduct(Guid productId)
+        {
+            return SellItemProducts.Value.Values
+                .Select(models => models.FirstOrDefault(x => x.ProductId == productId))
+                .FirstOrDefault(model => model is not null);
+        }
+
+        public static FungibleAssetValueProductResponseModel GetSellFungibleAssetProduct(
+            Guid productId)
+        {
+            return SellFungibleAssetProducts.Value.FirstOrDefault(x => x.ProductId == productId);
+        }
+
+        public static bool TryGetItemBase(ItemProductResponseModel product, out ItemBase itemBase)
+        {
+            var itemRow = Game.Game.instance.TableSheets.ItemSheet[product.ItemId];
+            var id = product.TradableId;
+            var requiredBlockIndex = product.RegisteredBlockIndex + Order.ExpirationInterval;
+            var madeWithMimisbrunnrRecipe = false;
+            ITradableItem tradableItem = null;
+            switch (itemRow.ItemSubType)
+            {
+                // Consumable
+                case ItemSubType.Food:
+                    tradableItem = new Consumable((ConsumableItemSheet.Row)itemRow, id,
+                        requiredBlockIndex);
+                    break;
+                // Equipment
+                case ItemSubType.Weapon:
+                    tradableItem = new Weapon((EquipmentItemSheet.Row)itemRow, id,
+                        requiredBlockIndex, madeWithMimisbrunnrRecipe);
+                    break;
+                case ItemSubType.Armor:
+                    tradableItem = new Armor((EquipmentItemSheet.Row)itemRow, id,
+                        requiredBlockIndex, madeWithMimisbrunnrRecipe);
+                    break;
+                case ItemSubType.Belt:
+                    tradableItem = new Belt((EquipmentItemSheet.Row)itemRow, id,
+                        requiredBlockIndex, madeWithMimisbrunnrRecipe);
+                    break;
+                case ItemSubType.Necklace:
+                    tradableItem = new Necklace((EquipmentItemSheet.Row)itemRow, id,
+                        requiredBlockIndex, madeWithMimisbrunnrRecipe);
+                    break;
+                case ItemSubType.Ring:
+                    tradableItem = new Ring((EquipmentItemSheet.Row)itemRow, id,
+                        requiredBlockIndex, madeWithMimisbrunnrRecipe);
+                    break;
+                case ItemSubType.ApStone:
+                case ItemSubType.Hourglass:
+                    tradableItem = new TradableMaterial((MaterialItemSheet.Row)itemRow);
+                    break;
+                case ItemSubType.EarCostume:
+                case ItemSubType.EyeCostume:
+                case ItemSubType.FullCostume:
+                case ItemSubType.HairCostume:
+                case ItemSubType.TailCostume:
+                case ItemSubType.Title:
+                    tradableItem = new Costume((CostumeItemSheet.Row)itemRow, id);
+                    break;
+            }
+
+            if (tradableItem is ItemUsable itemUsable)
+            {
+                foreach (var skillModel in product.SkillModels)
+                {
+                    var skillRow =
+                        Game.Game.instance.TableSheets.SkillSheet[skillModel.SkillId];
+                    var skill = SkillFactory.Get(skillRow, skillModel.Power, skillModel.Chance);
+                    itemUsable.Skills.Add(skill);
+                }
+
+                foreach (var statModel in product.StatModels)
+                {
+                    if (statModel.Additional)
+                    {
+                        itemUsable.StatsMap.AddStatAdditionalValue(statModel.Type,
+                            statModel.Value);
+                    }
+                    else
+                    {
+                        var current = itemUsable.StatsMap.GetBaseStats(true)
+                            .First(r => r.statType == statModel.Type).baseValue;
+                        itemUsable.StatsMap.AddStatValue(statModel.Type,
+                            statModel.Value - current);
+                    }
+                }
+            }
+
+            if (tradableItem is Equipment equipment)
+            {
+                equipment.level = product.Level;
+            }
+
+            itemBase = (ItemBase)tradableItem;
+            return itemBase is not null;
+        }
+
+        public static int GetCachedBuyItemCount(MarketOrderType orderType, ItemSubTypeFilter filter)
+        {
+            switch (filter)
+            {
+                case ItemSubTypeFilter.RuneStone:
+                case ItemSubTypeFilter.PetSoulStone:
+                    if (!CachedBuyFungibleAssetProducts.ContainsKey(orderType))
+                    {
+                        return 0;
+                    }
+
+                    if (!CachedBuyFungibleAssetProducts[orderType].ContainsKey(filter))
+                    {
+                        return 0;
+                    }
+
+                    return CachedBuyFungibleAssetProducts[orderType][filter].Count;
+
+                default:
+                    if (!CachedBuyItemProducts.ContainsKey(orderType))
+                    {
+                        return 0;
+                    }
+
+                    if (!CachedBuyItemProducts[orderType].ContainsKey(filter))
+                    {
+                        return 0;
+                    }
+
+                    var curBlockIndex = Game.Game.instance.Agent.BlockIndex;
+                    var legacyItemCount = CachedBuyItemProducts[orderType][filter]
+                        .Where(x => x.Legacy)
+                        .Count(x => x.RegisteredBlockIndex + Order.ExpirationInterval - curBlockIndex > 0);
+                    var newItemCount = CachedBuyItemProducts[orderType][filter].Count(x=> !x.Legacy);
+                    var sum = legacyItemCount + newItemCount;
+                    return sum;
+            }
         }
     }
 }

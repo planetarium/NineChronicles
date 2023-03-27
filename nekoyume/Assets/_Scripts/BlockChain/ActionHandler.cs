@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using Lib9c.Renderers;
 using Libplanet;
 using Libplanet.Assets;
+using LruCacheNet;
 using Nekoyume.Action;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
@@ -14,6 +16,7 @@ using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.BlockChain
 {
@@ -35,10 +38,36 @@ namespace Nekoyume.BlockChain
             return evaluation.OutputStates.UpdatedFungibleAssets.ContainsKey(States.Instance.AgentState.address);
         }
 
+        protected static bool HasUpdatedAssetsForCurrentAvatar<T>(ActionEvaluation<T> evaluation)
+            where T : ActionBase
+        {
+            return States.Instance.CurrentAvatarState is not null &&
+                   evaluation.OutputStates.UpdatedFungibleAssets.ContainsKey(
+                       States.Instance.CurrentAvatarState.address);
+        }
+
         protected static bool ValidateEvaluationForCurrentAvatarState<T>(ActionEvaluation<T> evaluation)
-            where T : ActionBase =>
-            !(States.Instance.CurrentAvatarState is null)
-            && evaluation.OutputStates.UpdatedAddresses.Contains(States.Instance.CurrentAvatarState.address);
+            where T : ActionBase
+        {
+            if (!(States.Instance.CurrentAvatarState is null))
+            {
+                var avatarAddress = States.Instance.CurrentAvatarState.address;
+                var addresses = new List<Address>
+                {
+                    avatarAddress,
+                };
+                string[] keys =
+                {
+                    LegacyInventoryKey,
+                    LegacyWorldInformationKey,
+                    LegacyQuestListKey,
+                };
+                addresses.AddRange(keys.Select(key => avatarAddress.Derive(key)));
+                return addresses.Any(a => evaluation.OutputStates.UpdatedAddresses.Contains(a));
+            }
+
+            return false;
+        }
 
         protected static bool ValidateEvaluationForCurrentAgent<T>(ActionEvaluation<T> evaluation)
             where T : ActionBase
@@ -258,10 +287,19 @@ namespace Nekoyume.BlockChain
 
         private static void UpdateGoldBalanceState(GoldBalanceState goldBalanceState)
         {
+            var game = Game.Game.instance;
             if (goldBalanceState is { } &&
-                Game.Game.instance.Agent.Address.Equals(goldBalanceState.address))
+                game.Agent.Address.Equals(goldBalanceState.address))
             {
-                Game.Game.instance.CachedBalance[goldBalanceState.address] = goldBalanceState.Gold;
+                var currency = goldBalanceState.Gold.Currency;
+                if (!game.CachedBalance.ContainsKey(currency))
+                {
+                    game.CachedBalance[currency] =
+                        new LruCache<Address, FungibleAssetValue>(2);
+                }
+
+                game.CachedBalance[currency][goldBalanceState.address] =
+                    goldBalanceState.Gold;
             }
 
             States.Instance.SetGoldBalanceState(goldBalanceState);

@@ -1335,6 +1335,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: LoadingIndicator
       objectReference: {fileID: 0}
+    - target: {fileID: 7352629730520191688, guid: 1a0b987d9e902134fa44625a2541ac08,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 24
+      objectReference: {fileID: 0}
+    - target: {fileID: 7352629730520191688, guid: 1a0b987d9e902134fa44625a2541ac08,
+        type: 3}
+      propertyPath: m_fontSizeBase
+      value: 24
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1a0b987d9e902134fa44625a2541ac08, type: 3}
 --- !u!114 &1626463727538564179 stripped

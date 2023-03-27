@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Module;
@@ -41,41 +42,64 @@ namespace Nekoyume
             baseItemView.GrindingCountObject.SetActive((false));
             baseItemView.LevelLimitObject.SetActive(false);
 
-            baseItemView.ItemImage.overrideSprite =
-                BaseItemView.GetItemIcon(mailReward.ItemBase);
-
-            var data = baseItemView.GetItemViewData(mailReward.ItemBase);
-            baseItemView.GradeImage.overrideSprite = data.GradeBackground;
-            baseItemView.GradeHsv.range = data.GradeHsvRange;
-            baseItemView.GradeHsv.hue = data.GradeHsvHue;
-            baseItemView.GradeHsv.saturation = data.GradeHsvSaturation;
-            baseItemView.GradeHsv.value = data.GradeHsvValue;
-
-            if (mailReward.ItemBase is Equipment { level: > 0 } equipment)
+            if (mailReward.ItemBase is not null)
             {
-                baseItemView.EnhancementText.gameObject.SetActive(true);
-                baseItemView.EnhancementText.text = $"+{equipment.level}";
-                if (equipment.level >= Util.VisibleEnhancementEffectLevel)
+                baseItemView.ItemImage.overrideSprite =
+                    BaseItemView.GetItemIcon(mailReward.ItemBase);
+
+                var data = baseItemView.GetItemViewData(mailReward.ItemBase);
+                baseItemView.GradeImage.overrideSprite = data.GradeBackground;
+                baseItemView.GradeHsv.range = data.GradeHsvRange;
+                baseItemView.GradeHsv.hue = data.GradeHsvHue;
+                baseItemView.GradeHsv.saturation = data.GradeHsvSaturation;
+                baseItemView.GradeHsv.value = data.GradeHsvValue;
+
+                if (mailReward.ItemBase is Equipment { level: > 0 } equipment)
                 {
-                    baseItemView.EnhancementImage.material = data.EnhancementMaterial;
-                    baseItemView.EnhancementImage.gameObject.SetActive(true);
+                    baseItemView.EnhancementText.gameObject.SetActive(true);
+                    baseItemView.EnhancementText.text = $"+{equipment.level}";
+                    if (equipment.level >= Util.VisibleEnhancementEffectLevel)
+                    {
+                        baseItemView.EnhancementImage.material = data.EnhancementMaterial;
+                        baseItemView.EnhancementImage.gameObject.SetActive(true);
+                    }
+                    else
+                    {
+                        baseItemView.EnhancementImage.gameObject.SetActive(false);
+                    }
                 }
                 else
                 {
+                    baseItemView.EnhancementText.gameObject.SetActive(false);
                     baseItemView.EnhancementImage.gameObject.SetActive(false);
                 }
+
+                baseItemView.OptionTag.gameObject.SetActive(true);
+                baseItemView.OptionTag.Set(mailReward.ItemBase);
+
+                baseItemView.CountText.gameObject.SetActive(
+                    mailReward.ItemBase.ItemType == ItemType.Material);
+                baseItemView.CountText.text = mailReward.Count.ToString();
             }
             else
             {
+                var fav = mailReward.FavFungibleAssetValue;
+                var grade = Util.GetTickerGrade(fav.Currency.Ticker);
+                baseItemView.ItemImage.overrideSprite = fav.GetIconSprite();
+
+                var data = baseItemView.GetItemViewData(grade);
+                baseItemView.GradeImage.overrideSprite = data.GradeBackground;
+                baseItemView.GradeHsv.range = data.GradeHsvRange;
+                baseItemView.GradeHsv.hue = data.GradeHsvHue;
+                baseItemView.GradeHsv.saturation = data.GradeHsvSaturation;
+                baseItemView.GradeHsv.value = data.GradeHsvValue;
+
                 baseItemView.EnhancementText.gameObject.SetActive(false);
                 baseItemView.EnhancementImage.gameObject.SetActive(false);
+                baseItemView.OptionTag.gameObject.SetActive(false);
+                baseItemView.CountText.text = mailReward.FavFungibleAssetValue.GetQuantityString();
             }
 
-            baseItemView.OptionTag.Set(mailReward.ItemBase);
-
-            baseItemView.CountText.gameObject.SetActive(
-                mailReward.ItemBase.ItemType == ItemType.Material);
-            baseItemView.CountText.text = mailReward.Count.ToString();
             effect.SetActive(false);
         }
 

@@ -1,5 +1,7 @@
+using System.Linq;
 using Coffee.UIEffects;
 using DG.Tweening;
+using Libplanet.Assets;
 using Nekoyume.Game;
 using Nekoyume.Game.ScriptableObject;
 using Nekoyume.Helper;
@@ -77,6 +79,40 @@ namespace Nekoyume.UI.Module
         {
             var material = new Nekoyume.Model.Item.Material(itemRow as MaterialItemSheet.Row);
             SetData(material, onClick);
+        }
+
+        public void SetData(FungibleAssetValue fav, System.Action onClick = null)
+        {
+            var grade = 1;
+            if (RuneFrontHelper.TryGetRuneData(fav.Currency.Ticker, out var runeData))
+            {
+                var sheet = Game.Game.instance.TableSheets.RuneListSheet;
+                if (!sheet.TryGetValue(runeData.id, out var row))
+                {
+                    return;
+                }
+
+                grade = row.Grade;
+            }
+
+            var petSheet = Game.Game.instance.TableSheets.PetSheet;
+            var petRow = petSheet.Values.FirstOrDefault(x => x.SoulStoneTicker == fav.Currency.Ticker);
+            if (petRow is not null)
+            {
+                grade = petRow.Grade;
+            }
+
+            var data = itemViewData.GetItemViewData(grade);
+
+            gradeHsv.range = data.GradeHsvRange;
+            gradeHsv.hue = data.GradeHsvHue;
+            gradeHsv.saturation = data.GradeHsvSaturation;
+            gradeHsv.value = data.GradeHsvValue;
+
+            gradeImage.overrideSprite = data.GradeBackground;
+            iconImage.enabled = true;
+            iconImage.overrideSprite = fav.GetIconSprite();
+            iconImage.SetNativeSize();
         }
 
         protected ItemViewData GetItemViewData(ItemBase itemBase)
