@@ -198,7 +198,6 @@ namespace Nekoyume.Game
             if (useLocalHeadless && HeadlessHelper.CheckHeadlessSettings())
             {
                 Agent = GetComponent<RPCAgent>();
-                // FIXME: Can I move this to another file like `clo.local.json`?
                 _commandLineOptions = CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.local.json"));
                 SubscribeRPCAgent();
                 headlessThread = new Thread(HeadlessHelper.RunLocalHeadless);
