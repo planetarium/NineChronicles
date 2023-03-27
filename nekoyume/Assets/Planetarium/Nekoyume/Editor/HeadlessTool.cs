@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -6,8 +6,6 @@ using Nekoyume.BlockChain;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
-using Directory = System.IO.Directory;
-using Path = System.IO.Path;
 
 namespace Planetarium.Nekoyume.Editor
 {
@@ -89,7 +87,8 @@ namespace Planetarium.Nekoyume.Editor
                 process.WaitForExit();
                 Debug.Log($"Lib9c symlink created. with {process.ExitCode}");
             }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) || RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ||
+                     RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
                 startInfo = new ProcessStartInfo
                 {
