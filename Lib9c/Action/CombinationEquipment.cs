@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
@@ -16,17 +16,18 @@ using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
+using Nekoyume.TableData.Pet;
 using Serilog;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1334
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1711
     /// </summary>
     [Serializable]
-    [ActionType("combination_equipment15")]
-    public class CombinationEquipment : GameAction, ICombinationEquipmentV3
+    [ActionType("combination_equipment16")]
+    public class CombinationEquipment : GameAction, ICombinationEquipmentV4
     {
         public const string AvatarAddressKey = "a";
         public Address avatarAddress;
@@ -43,15 +44,19 @@ namespace Nekoyume.Action
         public bool payByCrystal;
         public const string UseHammerPointKey = "h";
         public bool useHammerPoint;
+        public const string PetIdKey = "pid";
+        public int? petId;
+
         public const int BasicSubRecipeHammerPoint = 1;
         public const int SpecialSubRecipeHammerPoint = 2;
 
-        Address ICombinationEquipmentV3.AvatarAddress => avatarAddress;
-        int ICombinationEquipmentV3.RecipeId => recipeId;
-        int ICombinationEquipmentV3.SlotIndex => slotIndex;
-        int? ICombinationEquipmentV3.SubRecipeId => subRecipeId;
-        bool ICombinationEquipmentV3.PayByCrystal => payByCrystal;
-        bool ICombinationEquipmentV3.UseHammerPoint => useHammerPoint;
+        Address ICombinationEquipmentV4.AvatarAddress => avatarAddress;
+        int ICombinationEquipmentV4.RecipeId => recipeId;
+        int ICombinationEquipmentV4.SlotIndex => slotIndex;
+        int? ICombinationEquipmentV4.SubRecipeId => subRecipeId;
+        bool ICombinationEquipmentV4.PayByCrystal => payByCrystal;
+        bool ICombinationEquipmentV4.UseHammerPoint => useHammerPoint;
+        int? ICombinationEquipmentV4.PetId => petId;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
@@ -62,6 +67,7 @@ namespace Nekoyume.Action
                 [SubRecipeIdKey] = subRecipeId.Serialize(),
                 [PayByCrystalKey] = payByCrystal.Serialize(),
                 [UseHammerPointKey] = useHammerPoint.Serialize(),
+                [PetIdKey] = petId.Serialize(),
             }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(
@@ -73,6 +79,7 @@ namespace Nekoyume.Action
             subRecipeId = plainValue[SubRecipeIdKey].ToNullableInteger();
             payByCrystal = plainValue[PayByCrystalKey].ToBoolean();
             useHammerPoint = plainValue[UseHammerPointKey].ToBoolean();
+            petId = plainValue[PetIdKey].ToNullableInteger();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -130,6 +137,24 @@ namespace Nekoyume.Action
                     $"{addressesHex}Aborted as the slot state is invalid: {slotState} @ {slotIndex}");
             }
             // ~Validate SlotIndex
+
+            // Validate PetState
+            PetState petState = null;
+            if (petId.HasValue)
+            {
+                var petStateAddress = PetState.DeriveAddress(avatarAddress, petId.Value);
+                if (!states.TryGetState(petStateAddress, out List rawState))
+                {
+                    throw new FailedLoadStateException($"{addressesHex}Aborted as the {nameof(PetState)} was failed to load.");
+                }
+                petState = new PetState(rawState);
+
+                if (!petState.Validate(context.BlockIndex))
+                {
+                    throw new PetIsLockedException($"{addressesHex}Aborted as the pet is already in use.");
+                }
+            }
+            // ~Validate PetState
 
             // Validate Work
             var costActionPoint = 0;
@@ -297,6 +322,7 @@ namespace Nekoyume.Action
                 }
             }
 
+            var petOptionSheet = states.GetSheet<PetOptionSheet>();
             if (useHammerPoint)
             {
                 if (!existHammerPointSheet)
@@ -329,9 +355,11 @@ namespace Nekoyume.Action
                     context,
                     avatarState,
                     hammerPointState,
+                    petState,
                     sheets,
                     materialItemSheet,
                     hammerPointSheet,
+                    petOptionSheet,
                     recipeRow,
                     requiredFungibleItems,
                     addressesHex);
@@ -377,10 +405,12 @@ namespace Nekoyume.Action
             {
                 AddAndUnlockOption(
                     agentState,
+                    petState,
                     equipment,
                     context.Random,
                     subRecipeRow,
                     sheets.GetSheet<EquipmentItemOptionSheet>(),
+                    petOptionSheet,
                     sheets.GetSheet<SkillSheet>()
                 );
                 endBlockIndex = equipment.RequiredBlockIndex;
@@ -413,6 +443,20 @@ namespace Nekoyume.Action
             }
             // ~Create Equipment
 
+            // Apply block time discount
+            if (!(petState is null))
+            {
+                var requiredBlockIndex = endBlockIndex - context.BlockIndex;
+                var gameConfigState = states.GetGameConfigState();
+                requiredBlockIndex = PetHelper.CalculateReducedBlockOnCraft(
+                    requiredBlockIndex,
+                    gameConfigState.RequiredAppraiseBlock,
+                    petState,
+                    petOptionSheet);
+                endBlockIndex = context.BlockIndex + requiredBlockIndex;
+                equipment.Update(endBlockIndex);
+            }
+
             // Add or Update Equipment
             avatarState.blockIndex = context.BlockIndex;
             avatarState.updatedAt = context.BlockIndex;
@@ -435,8 +479,17 @@ namespace Nekoyume.Action
                 recipeId = recipeId,
                 subRecipeId = subRecipeId,
             };
-            slotState.Update(attachmentResult, context.BlockIndex, endBlockIndex);
+            slotState.Update(attachmentResult, context.BlockIndex, endBlockIndex, petId);
             // ~Update Slot
+
+            // Update Pet
+            if (!(petState is null))
+            {
+                petState.Update(endBlockIndex);
+                var petStateAddress = PetState.DeriveAddress(avatarAddress, petState.PetId);
+                states = states.SetState(petStateAddress, petState.Serialize());
+            }
+            // ~Update Pet
 
             // Create Mail
             var mail = new CombinationMail(
@@ -484,99 +537,114 @@ namespace Nekoyume.Action
             IActionContext context,
             AvatarState avatarState,
             HammerPointState hammerPointState,
+            PetState petState,
             Dictionary<Type, (Address, ISheet)> sheets,
             MaterialItemSheet materialItemSheet,
             CrystalHammerPointSheet hammerPointSheet,
+            PetOptionSheet petOptionSheet,
             EquipmentItemRecipeSheet.Row recipeRow,
             Dictionary<int, int> requiredFungibleItems,
             string addressesHex)
         {
             // Remove Required Materials
-                var inventory = avatarState.inventory;
-                var crystalMaterialSheet = sheets.GetSheet<CrystalMaterialCostSheet>();
-                var costCrystal = CrystalCalculator.CRYSTAL * 0;
-                foreach (var pair in requiredFungibleItems.OrderBy(pair => pair.Key))
+            var inventory = avatarState.inventory;
+            var crystalMaterialSheet = sheets.GetSheet<CrystalMaterialCostSheet>();
+            var costCrystal = CrystalCalculator.CRYSTAL * 0;
+            foreach (var pair in requiredFungibleItems.OrderBy(pair => pair.Key))
+            {
+                var itemId = pair.Key;
+                var requiredCount = pair.Value;
+                if (materialItemSheet.TryGetValue(itemId, out var materialRow))
                 {
-                    var itemId = pair.Key;
-                    var requiredCount = pair.Value;
-                    if (materialItemSheet.TryGetValue(itemId, out var materialRow))
+                    int itemCount = inventory.TryGetItem(itemId, out Inventory.Item item)
+                        ? item.count
+                        : 0;
+                    if (itemCount < requiredCount && payByCrystal)
                     {
-                        int itemCount = inventory.TryGetItem(itemId, out Inventory.Item item)
-                            ? item.count
-                            : 0;
-                        if (itemCount < requiredCount && payByCrystal)
-                        {
-                            costCrystal += CrystalCalculator.CalculateMaterialCost(
-                                itemId,
-                                requiredCount - itemCount,
-                                crystalMaterialSheet);
-                            requiredCount = itemCount;
-                        }
-
-                        if (requiredCount > 0 && !inventory.RemoveFungibleItem(materialRow.ItemId,
-                                context.BlockIndex,
-                                requiredCount))
-                        {
-                            throw new NotEnoughMaterialException(
-                                $"{addressesHex}Aborted as the player has no enough material ({pair.Key} * {pair.Value})");
-                        }
+                        costCrystal += CrystalCalculator.CalculateMaterialCost(
+                            itemId,
+                            requiredCount - itemCount,
+                            crystalMaterialSheet);
+                        requiredCount = itemCount;
                     }
-                    else
+
+                    if (requiredCount > 0 && !inventory.RemoveFungibleItem(materialRow.ItemId,
+                            context.BlockIndex,
+                            requiredCount))
                     {
-                        throw new SheetRowNotFoundException(nameof(MaterialItemSheet), itemId);
+                        throw new NotEnoughMaterialException(
+                            $"{addressesHex}Aborted as the player has no enough material ({pair.Key} * {pair.Value})");
                     }
                 }
-                // ~Remove Required Materials
-
-                if (costCrystal > 0 * CrystalCalculator.CRYSTAL)
+                else
                 {
-                    var crystalFluctuationSheet = sheets.GetSheet<CrystalFluctuationSheet>();
-                    var row = crystalFluctuationSheet.Values
-                        .First(r => r.Type == CrystalFluctuationSheet.ServiceType.Combination);
-                    var (dailyCostState, weeklyCostState, _, _) =
-                        states.GetCrystalCostStates(context.BlockIndex, row.BlockInterval);
-                    // 1x fixed crystal cost.
-                    costCrystal = CrystalCalculator.CalculateCombinationCost(
+                    throw new SheetRowNotFoundException(nameof(MaterialItemSheet), itemId);
+                }
+            }
+
+            // ~Remove Required Materials
+            if (costCrystal > 0 * CrystalCalculator.CRYSTAL)
+            {
+                var crystalFluctuationSheet = sheets.GetSheet<CrystalFluctuationSheet>();
+                var row = crystalFluctuationSheet.Values
+                    .First(r => r.Type == CrystalFluctuationSheet.ServiceType.Combination);
+                var (dailyCostState, weeklyCostState, _, _) =
+                    states.GetCrystalCostStates(context.BlockIndex, row.BlockInterval);
+
+                // 1x fixed crystal cost.
+                costCrystal = CrystalCalculator.CalculateCombinationCost(
+                    costCrystal,
+                    row: row,
+                    prevWeeklyCostState: null,
+                    beforePrevWeeklyCostState: null);
+
+                // Apply pet discount if possible.
+                if (!(petState is null))
+                {
+                    costCrystal = PetHelper.CalculateDiscountedMaterialCost(
                         costCrystal,
-                        row: row,
-                        prevWeeklyCostState: null,
-                        beforePrevWeeklyCostState: null);
-                    // Update Daily Formula.
-                    dailyCostState.Count++;
-                    dailyCostState.CRYSTAL += costCrystal;
-                    // Update Weekly Formula.
-                    weeklyCostState.Count++;
-                    weeklyCostState.CRYSTAL += costCrystal;
-
-                    var crystalBalance =
-                        states.GetBalance(context.Signer, CrystalCalculator.CRYSTAL);
-                    if (costCrystal > crystalBalance)
-                    {
-                        throw new NotEnoughFungibleAssetValueException(
-                            $"required {costCrystal}, but balance is {crystalBalance}");
-                    }
-
-                    states = states
-                        .SetState(dailyCostState.Address, dailyCostState.Serialize())
-                        .SetState(weeklyCostState.Address, weeklyCostState.Serialize())
-                        .TransferAsset(context.Signer, Addresses.MaterialCost, costCrystal);
+                        petState,
+                        petOptionSheet);
                 }
 
-                var isBasicSubRecipe = !subRecipeId.HasValue ||
-                                       recipeRow.SubRecipeIds[0] == subRecipeId.Value;
+                // Update Daily Formula.
+                dailyCostState.Count++;
+                dailyCostState.CRYSTAL += costCrystal;
+                // Update Weekly Formula.
+                weeklyCostState.Count++;
+                weeklyCostState.CRYSTAL += costCrystal;
 
-                hammerPointState.AddHammerPoint(
-                    isBasicSubRecipe ? BasicSubRecipeHammerPoint : SpecialSubRecipeHammerPoint,
-                    hammerPointSheet);
-                return states;
+                var crystalBalance =
+                    states.GetBalance(context.Signer, CrystalCalculator.CRYSTAL);
+                if (costCrystal > crystalBalance)
+                {
+                    throw new NotEnoughFungibleAssetValueException(
+                        $"required {costCrystal}, but balance is {crystalBalance}");
+                }
+
+                states = states
+                    .SetState(dailyCostState.Address, dailyCostState.Serialize())
+                    .SetState(weeklyCostState.Address, weeklyCostState.Serialize())
+                    .TransferAsset(context.Signer, Addresses.MaterialCost, costCrystal);
+            }
+
+            var isBasicSubRecipe = !subRecipeId.HasValue ||
+                                   recipeRow.SubRecipeIds[0] == subRecipeId.Value;
+
+            hammerPointState.AddHammerPoint(
+                isBasicSubRecipe ? BasicSubRecipeHammerPoint : SpecialSubRecipeHammerPoint,
+                hammerPointSheet);
+            return states;
         }
 
         public static void AddAndUnlockOption(
             AgentState agentState,
+            PetState petState,
             Equipment equipment,
             IRandom random,
             EquipmentItemSubRecipeSheetV2.Row subRecipe,
             EquipmentItemOptionSheet optionSheet,
+            PetOptionSheet petOptionSheet,
             SkillSheet skillSheet
         )
         {
@@ -591,7 +659,18 @@ namespace Nekoyume.Action
                 }
 
                 var value = random.Next(1, GameConfig.MaximumProbability + 1);
-                if (value > optionInfo.Ratio)
+                var ratio = optionInfo.Ratio;
+
+                // Apply pet bonus if possible
+                if (!(petState is null))
+                {
+                    ratio = PetHelper.GetBonusOptionProbability(
+                        ratio,
+                        petState,
+                        petOptionSheet);
+                }
+
+                if (value > ratio)
                 {
                     continue;
                 }

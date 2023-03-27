@@ -15,6 +15,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
+    using Nekoyume.Model.Market;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Serilog;
@@ -29,6 +30,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _avatarAddress;
         private readonly GoldCurrencyState _goldCurrencyState;
         private readonly TableSheets _tableSheets;
+        private readonly GameConfigState _gameConfigState;
 
         public SellCancellationTest(ITestOutputHelper outputHelper)
         {
@@ -56,13 +58,14 @@ namespace Lib9c.Tests.Action
             _agentAddress = new PrivateKey().ToAddress();
             var agentState = new AgentState(_agentAddress);
             _avatarAddress = new PrivateKey().ToAddress();
+            _gameConfigState = new GameConfigState((Text)_tableSheets.GameConfigSheet.Serialize());
             var rankingMapAddress = new PrivateKey().ToAddress();
             var avatarState = new AvatarState(
                 _avatarAddress,
                 _agentAddress,
                 0,
                 _tableSheets.GetAvatarSheets(),
-                new GameConfigState(),
+                _gameConfigState,
                 rankingMapAddress)
             {
                 worldInformation = new WorldInformation(
@@ -76,6 +79,7 @@ namespace Lib9c.Tests.Action
                 .SetState(GoldCurrencyState.Address, _goldCurrencyState.Serialize())
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(Addresses.Shop, new ShopState().Serialize())
+                .SetState(Addresses.GameConfig, _gameConfigState.Serialize())
                 .SetState(_avatarAddress, avatarState.Serialize());
         }
 
@@ -226,7 +230,7 @@ namespace Lib9c.Tests.Action
                 itemSubType = itemSubType,
                 tradableId = itemId,
             };
-            var nextState = sellCancellationAction.Execute(new ActionContext
+            var expectedState = sellCancellationAction.Execute(new ActionContext
             {
                 BlockIndex = 101,
                 PreviousStates = prevState,
@@ -235,39 +239,70 @@ namespace Lib9c.Tests.Action
                 Signer = _agentAddress,
             });
 
-            ShardedShopStateV2 nextShopState = new ShardedShopStateV2((Dictionary)nextState.GetState(shardedShopAddress));
-            Assert.Empty(nextShopState.OrderDigestList);
+            var cancelProductRegistration = new CancelProductRegistration
+            {
+                AvatarAddress = _avatarAddress,
+                ProductInfos = new List<IProductInfo>
+                {
+                    new ItemProductInfo
+                    {
+                        ProductId = orderId,
+                        AgentAddress = _agentAddress,
+                        AvatarAddress = _avatarAddress,
+                        Legacy = true,
+                        Price = order.Price,
+                        Type = tradableItem is TradableMaterial
+                            ? ProductType.Fungible
+                            : ProductType.NonFungible,
+                    },
+                },
+            };
 
-            var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
-            Assert.Equal(expectedCount, nextAvatarState.inventory.Items.Sum(i => i.count));
-            Assert.False(nextAvatarState.inventory.TryGetTradableItems(
-                itemId,
-                0,
-                itemCount,
-                out List<Inventory.Item> _
-            ));
-            Assert.True(nextAvatarState.inventory.TryGetTradableItems(
-                itemId,
-                requiredBlockIndex,
-                itemCount,
-                out List<Inventory.Item> inventoryItems
-            ));
-            Assert.False(nextAvatarState.inventory.TryGetLockedItem(new OrderLock(orderId), out _));
-            Assert.Equal(inventoryCount, inventoryItems.Count);
-            Inventory.Item inventoryItem = inventoryItems.First();
-            Assert.Equal(itemCount, inventoryItem.count);
-            Assert.Equal(inventoryCount, nextAvatarState.inventory.Items.Count);
-            ITradableItem nextTradableItem = (ITradableItem)inventoryItem.item;
-            Assert.Equal(101, nextTradableItem.RequiredBlockIndex);
-            Assert.Equal(30, nextAvatarState.mailBox.Count);
-            Assert.Empty(nextAvatarState.mailBox.OfType<OrderExpirationMail>());
-            var cancelMail = nextAvatarState.mailBox.OfType<CancelOrderMail>().First();
-            Assert.Equal(orderId, cancelMail.OrderId);
-            var nextReceiptList = new OrderDigestListState((Dictionary)nextState.GetState(orderDigestList.Address));
-            Assert.Empty(nextReceiptList.OrderDigestList);
+            var actualState = cancelProductRegistration.Execute(new ActionContext
+            {
+                BlockIndex = 101,
+                PreviousStates = prevState,
+                Random = new TestRandom(),
+                Rehearsal = false,
+                Signer = _agentAddress,
+            });
 
-            var sellCancelItem = (ITradableItem)ItemFactory.Deserialize((Dictionary)nextState.GetState(Addresses.GetItemAddress(itemId)));
-            Assert.Equal(101, sellCancelItem.RequiredBlockIndex);
+            foreach (var nextState in new[] { expectedState, actualState })
+            {
+                ShardedShopStateV2 nextShopState = new ShardedShopStateV2((Dictionary)nextState.GetState(shardedShopAddress));
+                Assert.Empty(nextShopState.OrderDigestList);
+
+                var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
+                Assert.Equal(expectedCount, nextAvatarState.inventory.Items.Sum(i => i.count));
+                Assert.False(nextAvatarState.inventory.TryGetTradableItems(
+                    itemId,
+                    0,
+                    itemCount,
+                    out List<Inventory.Item> _
+                ));
+                Assert.True(nextAvatarState.inventory.TryGetTradableItems(
+                    itemId,
+                    requiredBlockIndex,
+                    itemCount,
+                    out List<Inventory.Item> inventoryItems
+                ));
+                Assert.False(nextAvatarState.inventory.TryGetLockedItem(new OrderLock(orderId), out _));
+                Assert.Equal(inventoryCount, inventoryItems.Count);
+                Inventory.Item inventoryItem = inventoryItems.First();
+                Assert.Equal(itemCount, inventoryItem.count);
+                Assert.Equal(inventoryCount, nextAvatarState.inventory.Items.Count);
+                ITradableItem nextTradableItem = (ITradableItem)inventoryItem.item;
+                Assert.Equal(101, nextTradableItem.RequiredBlockIndex);
+                Assert.Equal(30, nextAvatarState.mailBox.Count);
+                Assert.Empty(nextAvatarState.mailBox.OfType<OrderExpirationMail>());
+                var cancelMail = nextAvatarState.mailBox.OfType<CancelOrderMail>().First();
+                Assert.Equal(orderId, cancelMail.OrderId);
+                var nextReceiptList = new OrderDigestListState((Dictionary)nextState.GetState(orderDigestList.Address));
+                Assert.Empty(nextReceiptList.OrderDigestList);
+
+                var sellCancelItem = (ITradableItem)ItemFactory.Deserialize((Dictionary)nextState.GetState(Addresses.GetItemAddress(itemId)));
+                Assert.Equal(101, sellCancelItem.RequiredBlockIndex);
+            }
         }
 
         [Fact]

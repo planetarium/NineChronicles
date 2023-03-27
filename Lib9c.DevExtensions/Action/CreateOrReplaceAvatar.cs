@@ -282,7 +282,7 @@ namespace Lib9c.DevExtensions.Action
 
             // Set Inventory.
             var inventoryAddr = avatarAddr.Derive(LegacyInventoryKey);
-            var inventory = new Inventory();
+            var inventory = new Nekoyume.Model.Item.Inventory();
             var equipmentItemSheet = sheets.GetSheet<EquipmentItemSheet>();
             var enhancementCostSheetV2 = sheets.GetSheet<EnhancementCostSheetV2>();
             var recipeSheet = sheets.GetSheet<EquipmentItemRecipeSheet>();
@@ -310,10 +310,12 @@ namespace Lib9c.DevExtensions.Action
                 var subRecipe = subRecipeSheetV2[recipe.SubRecipeIds[1]];
                 CombinationEquipment.AddAndUnlockOption(
                     agent,
+                    null,
                     equipment,
                     context.Random,
                     subRecipe,
                     optionSheet,
+                    null,
                     skillSheet);
                 var additionalOptionStats = equipment.StatsMap.GetAdditionalStats().ToArray();
                 foreach (var statMapEx in additionalOptionStats)

@@ -10,22 +10,12 @@
     <RootNamespace>Nekoyume</RootNamespace>
     <LangVersion>8</LangVersion>
     <EnableDynamicLoading>true</EnableDynamicLoading>
-    <Configurations>Debug;Release;DevEx</Configurations>
+    <Configurations>Debug;Release</Configurations>
     <Platforms>AnyCPU</Platforms>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)' == 'DevEx' ">
-    <DebugSymbols Condition=" '$(DebugSymbols)' == '' ">true</DebugSymbols>
-    <Optimize Condition=" '$(Optimize)' == '' ">false</Optimize>
-    <NoWarn>$(NoWarn);S3459</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Include="..\BTAI\*.cs" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(Configuration)' == 'DevEx' ">
-    <Compile Include="..\Lib9c.DevExtensions\**\*.cs" Exclude="..\Lib9c.DevExtensions\.*\**\*.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,12 +30,6 @@
     <PackageReference Include="CsvHelper" Version="15.0.5" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(Configuration)' == 'DevEx' ">
-    <PackageReference Include="Cocona.Core" Version="1.5.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
-  </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\.Libplanet\Libplanet\Libplanet.csproj">
       <Private>false</Private>
@@ -57,10 +41,6 @@
       <!-- https://github.com/dotnet/roslyn/issues/18093#issuecomment-405702631 -->
     </ProjectReference>
     <ProjectReference Include="..\Lib9c.Abstractions\Lib9c.Abstractions.csproj" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(Configuration)' == 'DevEx' ">
-    <ProjectReference Include="..\.Libplanet\Libplanet.RocksDBStore\Libplanet.RocksDBStore.csproj" />
   </ItemGroup>
 
 </Project>

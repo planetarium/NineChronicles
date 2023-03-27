@@ -83,6 +83,10 @@ namespace Nekoyume.Action
                     .SetState(sellerAvatarAddress, MarkChanged);
             }
 
+            if (!(states.GetState(Addresses.Market) is null))
+            {
+                throw new ActionObsoletedException("Sell action is obsoleted. please use SellProduct.");
+            }
             var addressesHex = GetSignerAndOtherAddressesHex(context, sellerAvatarAddress);
 
             var sw = new Stopwatch();

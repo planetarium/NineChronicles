@@ -1008,6 +1008,29 @@ namespace Nekoyume.Model.State
             return items;
         }
 
+        public void UseAp(int requiredAp, bool chargeAp, MaterialItemSheet materialItemSheet, long blockIndex, GameConfigState gameConfigState)
+        {
+            if (actionPoint < requiredAp)
+            {
+                switch (chargeAp)
+                {
+                    case true:
+                        MaterialItemSheet.Row row = materialItemSheet
+                            .OrderedList!
+                            .First(r => r.ItemSubType == ItemSubType.ApStone);
+                        if (!inventory.RemoveFungibleItem(row.ItemId, blockIndex))
+                        {
+                            throw new NotEnoughMaterialException("not enough ap stone.");
+                        }
+                        actionPoint = gameConfigState.ActionPointMax;
+                        break;
+                    case false:
+                        throw new NotEnoughActionPointException("");
+                }
+            }
+            actionPoint -= requiredAp;
+        }
+
         public override IValue Serialize() =>
 #pragma warning disable LAA1002
             new Dictionary(new Dictionary<IKey, IValue>

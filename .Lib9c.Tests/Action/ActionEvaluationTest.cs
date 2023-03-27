@@ -13,7 +13,9 @@ namespace Lib9c.Tests.Action
     using MessagePack;
     using MessagePack.Resolvers;
     using Nekoyume.Action;
+    using Nekoyume.Helper;
     using Nekoyume.Model.Item;
+    using Nekoyume.Model.Market;
     using Nekoyume.Model.State;
     using Xunit;
 
@@ -83,6 +85,10 @@ namespace Lib9c.Tests.Action
         [InlineData(typeof(ClaimRaidReward))]
         [InlineData(typeof(ClaimWordBossKillReward))]
         [InlineData(typeof(PrepareRewardAssets))]
+        [InlineData(typeof(RegisterProduct))]
+        [InlineData(typeof(ReRegisterProduct))]
+        [InlineData(typeof(CancelProductRegistration))]
+        [InlineData(typeof(BuyProduct))]
         public void Serialize_With_MessagePack(Type actionType)
         {
             var action = GetAction(actionType);
@@ -311,6 +317,123 @@ namespace Lib9c.Tests.Action
                     Assets = new List<FungibleAssetValue>
                     {
                         _currency * 100,
+                    },
+                },
+                RegisterProduct _ => new RegisterProduct
+                {
+                    RegisterInfos = new List<IRegisterInfo>
+                    {
+                        new RegisterInfo
+                        {
+                            AvatarAddress = new PrivateKey().ToAddress(),
+                            ItemCount = 1,
+                            Price = 1 * _currency,
+                            TradableId = Guid.NewGuid(),
+                            Type = ProductType.Fungible,
+                        },
+                        new AssetInfo
+                        {
+                            AvatarAddress = new PrivateKey().ToAddress(),
+                            Price = 1 * _currency,
+                            Asset = 1 * RuneHelper.StakeRune,
+                            Type = ProductType.FungibleAssetValue,
+                        },
+                    },
+                    AvatarAddress = _sender,
+                    ChargeAp = true,
+                },
+                ReRegisterProduct _ => new ReRegisterProduct
+                {
+                    AvatarAddress = new PrivateKey().ToAddress(),
+                    ReRegisterInfos = new List<(IProductInfo, IRegisterInfo)>
+                    {
+                        (
+                            new ItemProductInfo
+                            {
+                                AvatarAddress = new PrivateKey().ToAddress(),
+                                AgentAddress = new PrivateKey().ToAddress(),
+                                Price = 1 * _currency,
+                                ProductId = Guid.NewGuid(),
+                                Type = ProductType.Fungible,
+                            },
+                            new RegisterInfo
+                            {
+                                AvatarAddress = new PrivateKey().ToAddress(),
+                                ItemCount = 1,
+                                Price = 1 * _currency,
+                                TradableId = Guid.NewGuid(),
+                                Type = ProductType.Fungible,
+                            }
+                        ),
+                        (
+                            new ItemProductInfo
+                            {
+                                AvatarAddress = new PrivateKey().ToAddress(),
+                                AgentAddress = new PrivateKey().ToAddress(),
+                                Price = 1 * _currency,
+                                ProductId = Guid.NewGuid(),
+                                Type = ProductType.NonFungible,
+                            },
+                            new RegisterInfo
+                            {
+                                AvatarAddress = new PrivateKey().ToAddress(),
+                                ItemCount = 1,
+                                Price = 1 * _currency,
+                                TradableId = Guid.NewGuid(),
+                                Type = ProductType.NonFungible,
+                            }
+                        ),
+                        (
+                            new FavProductInfo
+                            {
+                                AvatarAddress = new PrivateKey().ToAddress(),
+                                AgentAddress = new PrivateKey().ToAddress(),
+                                Price = 1 * _currency,
+                                ProductId = Guid.NewGuid(),
+                                Type = ProductType.FungibleAssetValue,
+                            },
+                            new AssetInfo
+                            {
+                                AvatarAddress = new PrivateKey().ToAddress(),
+                                Price = 1 * _currency,
+                                Asset = 1 * RuneHelper.StakeRune,
+                                Type = ProductType.FungibleAssetValue,
+                            }
+                        ),
+                    },
+                    ChargeAp = true,
+                },
+                CancelProductRegistration _ => new CancelProductRegistration
+                {
+                    AvatarAddress = new PrivateKey().ToAddress(),
+                    ProductInfos = new List<IProductInfo>
+                    {
+                        new FavProductInfo
+                        {
+                            AvatarAddress = new PrivateKey().ToAddress(),
+                            AgentAddress = new PrivateKey().ToAddress(),
+                            Price = 1 * _currency,
+                            ProductId = Guid.NewGuid(),
+                            Type = ProductType.FungibleAssetValue,
+                        },
+                    },
+                    ChargeAp = true,
+                },
+                BuyProduct _ => new BuyProduct
+                {
+                    AvatarAddress = new PrivateKey().ToAddress(),
+                    ProductInfos = new List<IProductInfo>
+                    {
+                        new ItemProductInfo
+                        {
+                            AvatarAddress = new PrivateKey().ToAddress(),
+                            AgentAddress = new PrivateKey().ToAddress(),
+                            Price = 1 * _currency,
+                            ProductId = Guid.NewGuid(),
+                            Type = ProductType.Fungible,
+                            ItemSubType = ItemSubType.Armor,
+                            TradableId = Guid.NewGuid(),
+                        },
                     },
                 },
                 _ => throw new InvalidCastException(),

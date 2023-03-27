@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Nekoyume.Action;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
