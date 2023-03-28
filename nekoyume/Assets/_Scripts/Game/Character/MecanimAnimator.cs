@@ -58,7 +58,10 @@ namespace Nekoyume.Game.Character
         public void DestroyTarget()
         {
             if (Target is null)
-                throw new ArgumentNullException();
+            {
+                Debug.LogWarning($"Target is null. {nameof(MecanimAnimator)}.{nameof(DestroyTarget)}");
+                return;
+            }
 
             Object.Destroy(Target);
             Target = null;
