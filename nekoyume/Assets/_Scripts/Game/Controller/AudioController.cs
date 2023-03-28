@@ -51,6 +51,7 @@ namespace Nekoyume.Game.Controller
             public const string WorldBossBattle02 = "bgm_worldboss_battle_02";
             public const string WorldBossBattleResult = "bgm_worldboss_battle_result";
             public const string WorldBossTitle = "bgm_worldboss_title";
+            public const string Dcc = "bgm_dcc";
         }
 
         public class SfxCode

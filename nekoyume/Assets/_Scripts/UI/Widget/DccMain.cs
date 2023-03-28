@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Nekoyume.Game;
+using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module;
@@ -85,6 +86,7 @@ namespace Nekoyume.UI
         {
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Mileage);
             connectedObject.SetActive(Dcc.instance.IsConnected.GetValueOrDefault());
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Dcc);
             base.Show(ignoreShowAnimation);
         }
     }
