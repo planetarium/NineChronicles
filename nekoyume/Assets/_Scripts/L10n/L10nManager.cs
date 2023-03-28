@@ -402,6 +402,18 @@ namespace Nekoyume.L10n
             return Localize(key);
         }
 
+        public static string LocalizeRuneName(int id)
+        {
+            var key = $"RUNE_NAME_{id}";
+            return Localize(key);
+        }
+
+        public static string LocalizePetName(int id)
+        {
+            var key = $"PET_NAME_{id}";
+            return Localize(key);
+        }
+
         public static int LocalizedCount(string key)
         {
             ValidateStateAndKey(key);

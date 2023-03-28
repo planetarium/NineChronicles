@@ -129,6 +129,11 @@ namespace Nekoyume
         protected override IEnumerable<ShopItem> GetSortedModels(
             Dictionary<ItemSubTypeFilter, List<ShopItem>> items)
         {
+            if (items[_selectedSubTypeFilter.Value] is null)
+            {
+                return new List<ShopItem>();
+            }
+
             var models = items[_selectedSubTypeFilter.Value].Distinct();
             var fungibleAssetProducts = models.Where(x => x.Product is null);
             var itemProducts = models.Where(x => x.Product is not null).ToList();
