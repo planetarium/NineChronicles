@@ -1002,82 +1002,84 @@ namespace Nekoyume.BlockChain
 
         private async void ResponseRegisterProductAsync(ActionEvaluation<RegisterProduct> eval)
         {
-            if (eval.Exception is null)
+            if (eval.Exception is not null)
             {
-                var info = eval.Action.RegisterInfos.FirstOrDefault();
-                if (info is null)
-                {
-                    return;
-                }
-
-                var count = 1;
-                var itemName = string.Empty;
-                switch (info)
-                {
-                    case RegisterInfo registerInfo:
-                        count = registerInfo.ItemCount;
-                        var rand = new LocalRandom(eval.RandomSeed);
-                        var productId = rand.GenerateRandomGuid();
-                        var deriveAddress = Product.DeriveAddress(productId);
-                        eval.OutputStates.TryGetState(deriveAddress, out List rawState);
-                        var product = ProductFactory.DeserializeProduct(rawState);
-                        if (product is not ItemProduct itemProduct)
-                        {
-                            return;
-                        }
-
-                        if (itemProduct.TradableItem is not ItemBase item)
-                        {
-                            return;
-                        }
-
-                        itemName = item.GetLocalizedName();
-                        var slotIndex = States.Instance.AvatarStates
-                            .FirstOrDefault(x => x.Value.address == registerInfo.AvatarAddress).Key;
-                        var itemSlotStates = States.Instance.ItemSlotStates[slotIndex];
-
-                        for (var i = 1; i < (int)BattleType.End; i++)
-                        {
-                            var battleType = (BattleType)i;
-                            var currentItemSlotState =
-                                States.Instance.CurrentItemSlotStates[battleType];
-                            currentItemSlotState.Costumes.Remove(registerInfo.TradableId);
-                            currentItemSlotState.Equipments.Remove(registerInfo.TradableId);
-
-                            var itemSlotState = itemSlotStates[battleType];
-                            itemSlotState.Costumes.Remove(registerInfo.TradableId);
-                            itemSlotState.Equipments.Remove(registerInfo.TradableId);
-                        }
-
-                        break;
-                    case AssetInfo assetInfo:
-                        await States.Instance.SetBalanceAsync(assetInfo.Asset.Currency.Ticker);
-                        itemName = assetInfo.Asset.GetLocalizedName();
-                        count = Convert.ToInt32(assetInfo.Asset.GetQuantityString());
-                        break;
-                }
-
-                UpdateCurrentAvatarStateAsync(eval).Forget();
-
-                var message = string.Empty;
-                if (count > 1)
-                {
-                    message = string.Format(
-                        L10nManager.Localize("NOTIFICATION_MULTIPLE_SELL_COMPLETE"),
-                        itemName,
-                        count);
-                }
-                else
-                {
-                    message = string.Format(L10nManager.Localize("NOTIFICATION_SELL_COMPLETE"),
-                        itemName);
-                }
-
-                OneLineSystem.Push(
-                    MailType.Auction,
-                    message,
-                    NotificationCell.NotificationType.Information);
+                return;
             }
+
+            var info = eval.Action.RegisterInfos.FirstOrDefault();
+            if (info is null)
+            {
+                return;
+            }
+
+            var count = 1;
+            var itemName = string.Empty;
+            switch (info)
+            {
+                case RegisterInfo registerInfo:
+                    count = registerInfo.ItemCount;
+                    var rand = new LocalRandom(eval.RandomSeed);
+                    var productId = rand.GenerateRandomGuid();
+                    var deriveAddress = Product.DeriveAddress(productId);
+                    eval.OutputStates.TryGetState(deriveAddress, out List rawState);
+                    var product = ProductFactory.DeserializeProduct(rawState);
+                    if (product is not ItemProduct itemProduct)
+                    {
+                        return;
+                    }
+
+                    if (itemProduct.TradableItem is not ItemBase item)
+                    {
+                        return;
+                    }
+
+                    itemName = item.GetLocalizedName();
+                    var slotIndex = States.Instance.AvatarStates
+                        .FirstOrDefault(x => x.Value.address == registerInfo.AvatarAddress).Key;
+                    var itemSlotStates = States.Instance.ItemSlotStates[slotIndex];
+
+                    for (var i = 1; i < (int)BattleType.End; i++)
+                    {
+                        var battleType = (BattleType)i;
+                        var currentItemSlotState =
+                            States.Instance.CurrentItemSlotStates[battleType];
+                        currentItemSlotState.Costumes.Remove(registerInfo.TradableId);
+                        currentItemSlotState.Equipments.Remove(registerInfo.TradableId);
+
+                        var itemSlotState = itemSlotStates[battleType];
+                        itemSlotState.Costumes.Remove(registerInfo.TradableId);
+                        itemSlotState.Equipments.Remove(registerInfo.TradableId);
+                    }
+
+                    break;
+                case AssetInfo assetInfo:
+                    await States.Instance.SetBalanceAsync(assetInfo.Asset.Currency.Ticker);
+                    itemName = assetInfo.Asset.GetLocalizedName();
+                    count = Convert.ToInt32(assetInfo.Asset.GetQuantityString());
+                    break;
+            }
+
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+
+            var message = string.Empty;
+            if (count > 1)
+            {
+                message = string.Format(
+                    L10nManager.Localize("NOTIFICATION_MULTIPLE_SELL_COMPLETE"),
+                    itemName,
+                    count);
+            }
+            else
+            {
+                message = string.Format(L10nManager.Localize("NOTIFICATION_SELL_COMPLETE"),
+                    itemName);
+            }
+
+            OneLineSystem.Push(
+                MailType.Auction,
+                message,
+                NotificationCell.NotificationType.Information);
         }
 
         private async void ResponseCancelProductRegistrationAsync(ActionEvaluation<CancelProductRegistration> eval)
@@ -1087,9 +1089,8 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            var productInfos = eval.Action.ProductInfos;
-
             string message;
+            var productInfos = eval.Action.ProductInfos;
             if (productInfos.Count > 1)
             {
                 message = L10nManager.Localize("NOTIFICATION_CANCELREGISTER_ALL_COMPLETE");
