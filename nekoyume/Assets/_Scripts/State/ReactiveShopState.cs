@@ -316,24 +316,34 @@ namespace Nekoyume.State
                     break;
                 // Equipment
                 case ItemSubType.Weapon:
-                    tradableItem = new Weapon((EquipmentItemSheet.Row)itemRow, id,
+                    Equipment e = new Weapon((EquipmentItemSheet.Row)itemRow, id,
                         requiredBlockIndex, madeWithMimisbrunnrRecipe);
+                    e.optionCountFromCombination = product.OptionCountFromCombination;
+                    tradableItem = e;
                     break;
                 case ItemSubType.Armor:
-                    tradableItem = new Armor((EquipmentItemSheet.Row)itemRow, id,
+                    e = new Armor((EquipmentItemSheet.Row)itemRow, id,
                         requiredBlockIndex, madeWithMimisbrunnrRecipe);
+                    e.optionCountFromCombination = product.OptionCountFromCombination;
+                    tradableItem = e;
                     break;
                 case ItemSubType.Belt:
-                    tradableItem = new Belt((EquipmentItemSheet.Row)itemRow, id,
+                    e = new Belt((EquipmentItemSheet.Row)itemRow, id,
                         requiredBlockIndex, madeWithMimisbrunnrRecipe);
+                    e.optionCountFromCombination = product.OptionCountFromCombination;
+                    tradableItem = e;
                     break;
                 case ItemSubType.Necklace:
-                    tradableItem = new Necklace((EquipmentItemSheet.Row)itemRow, id,
+                    e = new Necklace((EquipmentItemSheet.Row)itemRow, id,
                         requiredBlockIndex, madeWithMimisbrunnrRecipe);
+                    e.optionCountFromCombination = product.OptionCountFromCombination;
+                    tradableItem = e;
                     break;
                 case ItemSubType.Ring:
-                    tradableItem = new Ring((EquipmentItemSheet.Row)itemRow, id,
+                    e = new Ring((EquipmentItemSheet.Row)itemRow, id,
                         requiredBlockIndex, madeWithMimisbrunnrRecipe);
+                    e.optionCountFromCombination = product.OptionCountFromCombination;
+                    tradableItem = e;
                     break;
                 case ItemSubType.ApStone:
                 case ItemSubType.Hourglass:
