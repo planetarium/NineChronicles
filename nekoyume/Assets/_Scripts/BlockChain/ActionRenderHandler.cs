@@ -1007,6 +1007,18 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
+            if (eval.Action.ChargeAp)
+            {
+                var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values
+                    .First(r => r.ItemSubType == ItemSubType.ApStone);
+                LocalLayerModifier.AddItem(eval.Action.AvatarAddress, row.ItemId);
+            }
+
+            if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.AvatarAddress))
+            {
+                GameConfigStateSubject.ActionPointState.Remove(eval.Action.AvatarAddress);
+            }
+
             var info = eval.Action.RegisterInfos.FirstOrDefault();
             if (info is null)
             {
@@ -1089,6 +1101,18 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
+            if (eval.Action.ChargeAp)
+            {
+                var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values
+                    .First(r => r.ItemSubType == ItemSubType.ApStone);
+                LocalLayerModifier.AddItem(eval.Action.AvatarAddress, row.ItemId);
+            }
+
+            if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.AvatarAddress))
+            {
+                GameConfigStateSubject.ActionPointState.Remove(eval.Action.AvatarAddress);
+            }
+
             string message;
             var productInfos = eval.Action.ProductInfos;
             if (productInfos.Count > 1)
@@ -1136,6 +1160,18 @@ namespace Nekoyume.BlockChain
             if (eval.Exception is not null)
             {
                 return;
+            }
+
+            if (eval.Action.ChargeAp)
+            {
+                var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values
+                    .First(r => r.ItemSubType == ItemSubType.ApStone);
+                LocalLayerModifier.AddItem(eval.Action.AvatarAddress, row.ItemId);
+            }
+
+            if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.AvatarAddress))
+            {
+                GameConfigStateSubject.ActionPointState.Remove(eval.Action.AvatarAddress);
             }
 
             string message;
