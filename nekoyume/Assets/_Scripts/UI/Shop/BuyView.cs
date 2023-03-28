@@ -126,7 +126,9 @@ namespace Nekoyume
             };
 
         private readonly List<ShopItem> _selectedItems = new();
-        private readonly List<int> _itemIds = new List<int>();
+        private readonly List<int> _itemIds = new();
+        private readonly List<int> _runeIds = new();
+        private readonly List<int> _petIds = new();
         private readonly int _hashNormal = Animator.StringToHash("Normal");
         private readonly int _hashDisabled = Animator.StringToHash("Disabled");
         private const int CartMaxCount = 20;
@@ -185,6 +187,8 @@ namespace Nekoyume
             _itemIds.AddRange(tableSheets.ConsumableItemSheet.Values.Select(x => x.Id));
             _itemIds.AddRange(tableSheets.CostumeItemSheet.Values.Select(x => x.Id));
             _itemIds.AddRange(tableSheets.MaterialItemSheet.Values.Select(x => x.Id));
+            _runeIds.AddRange(tableSheets.RuneListSheet.Values.Select(x=> x.Id));
+            _petIds.AddRange(tableSheets.PetSheet.Values.Select(x=> x.Id));
 
             historyButton.onClick.AddListener(() =>
             {
@@ -548,8 +552,47 @@ namespace Nekoyume
             var models = items[_selectedSubTypeFilter.Value];
             if (_selectedItemIds.Value.Any()) // _selectedItemIds
             {
-                var selectedModels  = models.Where(x =>
-                    _selectedItemIds.Value.Exists(y => x.ItemBase.Id.Equals(y))).ToList();
+                var selectedModels = new List<ShopItem>();
+                switch (_selectedSubTypeFilter.Value)
+                {
+                    case ItemSubTypeFilter.RuneStone:
+                        foreach (var model in models)
+                        {
+                            var ticker = model.FungibleAssetValue.Currency.Ticker;
+                            if (!RuneFrontHelper.TryGetRuneData(ticker, out var runeData))
+                            {
+                                continue;
+                            }
+
+                            if (_selectedItemIds.Value.Exists(x => x == runeData.id))
+                            {
+                                selectedModels.Add(model);
+                            }
+                        }
+                        break;
+                    case ItemSubTypeFilter.PetSoulStone:
+                        var petSheet = Game.Game.instance.TableSheets.PetSheet;
+                        foreach (var model in models)
+                        {
+                            var ticker = model.FungibleAssetValue.Currency.Ticker;
+                            var petRow = petSheet.Values.FirstOrDefault(x => x.SoulStoneTicker == ticker);
+                            if (petRow is null)
+                            {
+                                continue;
+                            }
+
+                            if (_selectedItemIds.Value.Exists(x => x == petRow.Id))
+                            {
+                                selectedModels.Add(model);
+                            }
+                        }
+                        break;
+                    default:
+                        selectedModels  = models.Where(x =>
+                            _selectedItemIds.Value.Exists(y => x.ItemBase.Id.Equals(y))).ToList();
+                        break;
+                }
+
                 models = selectedModels;
             }
 
@@ -595,6 +638,24 @@ namespace Nekoyume
             {
                 var itemName = L10nManager.LocalizeItemName(id);
                 if (Regex.IsMatch(itemName, inputField.text, RegexOptions.IgnoreCase))
+                {
+                    containItemIds.Add(id);
+                }
+            }
+
+            foreach (var id in _runeIds)
+            {
+                var runeName = L10nManager.LocalizeRuneName(id);
+                if (Regex.IsMatch(runeName, inputField.text, RegexOptions.IgnoreCase))
+                {
+                    containItemIds.Add(id);
+                }
+            }
+
+            foreach (var id in _petIds)
+            {
+                var petName = L10nManager.LocalizePetName(id);
+                if (Regex.IsMatch(petName, inputField.text, RegexOptions.IgnoreCase))
                 {
                     containItemIds.Add(id);
                 }
