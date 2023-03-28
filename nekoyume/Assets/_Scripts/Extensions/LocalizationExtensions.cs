@@ -207,8 +207,10 @@ namespace Nekoyume
                 case ProductSellerMail productSellerMail:
                     var (sellProductName, item, fav) =
                         await Game.Game.instance.MarketServiceClient.GetProductInfo(productSellerMail.ProductId);
-                    return L10nManager.Localize("UI_SELLER_MAIL_FORMAT",
-                        item?.Price ?? fav.Price, sellProductName);
+                    var price = item?.Price ?? fav.Price;
+                    var tax = decimal.Divide(price, 100) * Buy.TaxRate;
+                    var tp = price - tax;
+                    return L10nManager.Localize("UI_SELLER_MAIL_FORMAT", tp , sellProductName);
 
                 default:
                     throw new NotSupportedException(

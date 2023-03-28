@@ -20,7 +20,7 @@ namespace Nekoyume
         [SerializeField]
         private SubmitWithCostButton button;
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposables = new();
         private long _expiredBlockIndex;
 
         private System.Action _onSubmit;
@@ -33,18 +33,12 @@ namespace Nekoyume
             }).AddTo(gameObject);
         }
 
-        private void OnEnable()
-        {
-            Game.Game.instance.Agent.BlockIndexSubject.Subscribe(SetBlockIndex)
-                .AddTo(_disposables);
-        }
-
         private void OnDisable()
         {
             _disposables.DisposeAllAndClear();
         }
 
-        private void SetBlockIndex(long blockIndex)
+        private void SubscribeBlockIndex(long blockIndex)
         {
             var value = _expiredBlockIndex - blockIndex;
             button.SetSubmittable(value > 0);
@@ -61,6 +55,10 @@ namespace Nekoyume
             button.ShowNCG(price, price <= States.Instance.GoldBalanceState.Gold);
             timer.gameObject.SetActive(true);
             timer.UpdateTimer(expiredBlockIndex);
+
+            Game.Game.instance.Agent.BlockIndexSubject
+                .Subscribe(SubscribeBlockIndex)
+                .AddTo(_disposables);
         }
 
         public void Set(FungibleAssetValue price, System.Action onSubmit)
