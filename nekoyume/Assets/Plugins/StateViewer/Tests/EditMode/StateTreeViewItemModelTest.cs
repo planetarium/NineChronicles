@@ -7,7 +7,7 @@ namespace StateViewer.Tests.EditMode
 {
     public class StateTreeViewItemModelTest
     {
-        [TestCaseSource(typeof(StateViewerWindow), nameof(StateViewerWindow.TestValues))]
+        [Test, TestCaseSource(typeof(StateViewerWindow), nameof(StateViewerWindow.TestValues))]
         public void Serialize(IValue value)
         {
             // Arrange
