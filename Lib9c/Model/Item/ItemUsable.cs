@@ -136,22 +136,17 @@ namespace Nekoyume.Model.Item
             RequiredBlockIndex = blockIndex;
         }
 
-        public override IValue Serialize() =>
-#pragma warning disable LAA1002
-            new Dictionary(new Dictionary<IKey, IValue>
-            {
-                [(Text) "itemId"] = ItemId.Serialize(),
-                [(Text) "statsMap"] = StatsMap.Serialize(),
-                [(Text) "skills"] = new List(Skills
-                    .OrderByDescending(i => i.Chance)
-                    .ThenByDescending(i => i.Power)
-                    .Select(s => s.Serialize())),
-                [(Text) "buffSkills"] = new List(BuffSkills
-                    .OrderByDescending(i => i.Chance)
-                    .ThenByDescending(i => i.Power)
-                    .Select(s => s.Serialize())),
-                [(Text) "requiredBlockIndex"] = RequiredBlockIndex.Serialize(),
-            }.Union((Dictionary) base.Serialize()));
-#pragma warning restore LAA1002
+        public override IValue Serialize() => ((Dictionary)base.Serialize())
+            .Add("itemId", ItemId.Serialize())
+            .Add("statsMap", StatsMap.Serialize())
+            .Add("skills", new List(Skills
+                .OrderByDescending(i => i.Chance)
+                .ThenByDescending(i => i.Power)
+                .Select(s => s.Serialize())))
+            .Add("buffSkills", new List(BuffSkills
+                .OrderByDescending(i => i.Chance)
+                .ThenByDescending(i => i.Power)
+                .Select(s => s.Serialize())))
+            .Add("requiredBlockIndex", RequiredBlockIndex.Serialize());
     }
 }
