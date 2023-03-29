@@ -46,17 +46,16 @@ namespace Nekoyume.Action
             }
 
             Address? agentAddress = null;
-            bool leagcy = false;
+            bool useLegacyKey = false;
             if (serializedAvatar.ContainsKey(AgentAddressKey))
             {
                 agentAddress = serializedAvatar[AgentAddressKey].ToAddress();
             }
-            else
+            else if (serializedAvatar.ContainsKey(LegacyAgentAddressKey))
             {
-                if (serializedAvatar.ContainsKey(LegacyAgentAddressKey))
                 {
                     agentAddress = serializedAvatar[LegacyAgentAddressKey].ToAddress();
-                    leagcy = true;
+                    useLegacyKey = true;
                 }
             }
 
@@ -72,7 +71,7 @@ namespace Nekoyume.Action
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the game config was failed to load.");
             }
 
-            var indexKey = leagcy ? LegacyDailyRewardReceivedIndexKey : DailyRewardReceivedIndexKey;
+            var indexKey = useLegacyKey ? LegacyDailyRewardReceivedIndexKey : DailyRewardReceivedIndexKey;
             var dailyRewardReceivedIndex = (long)(Integer)serializedAvatar[indexKey];
             if (context.BlockIndex < dailyRewardReceivedIndex + gameConfigState.DailyRewardInterval)
             {
@@ -84,7 +83,7 @@ namespace Nekoyume.Action
                 throw new RequiredBlockIndexException(sb.ToString());
             }
 
-            var apKey = leagcy ? LegacyActionPointKey : ActionPointKey;
+            var apKey = useLegacyKey ? LegacyActionPointKey : ActionPointKey;
             serializedAvatar = serializedAvatar
                 .SetItem(indexKey, context.BlockIndex)
                 .SetItem(apKey, gameConfigState.ActionPointMax);
