@@ -1906,18 +1906,16 @@ namespace Nekoyume.BlockChain
         {
             Widget.Find<UnlockWorldLoadingScreen>().Close();
 
-            if (!(eval.Exception is null))
+            if (eval.Exception is not null)
             {
                 Debug.LogError($"unlock world exc : {eval.Exception.InnerException}");
                 return;
-                // Exception handling...
             }
 
             var worldMap = Widget.Find<WorldMap>();
             worldMap.SharedViewModel.UnlockedWorldIds.AddRange(eval.Action.WorldIds);
             worldMap.SetWorldInformation(States.Instance.CurrentAvatarState.worldInformation);
 
-            UpdateCurrentAvatarStateAsync(eval).Forget();
             UpdateAgentStateAsync(eval).Forget();
         }
 

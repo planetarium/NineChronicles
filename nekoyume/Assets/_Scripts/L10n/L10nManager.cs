@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using CsvHelper;
+using CsvHelper.Configuration;
 using UniRx;
 using UnityEngine;
 
@@ -174,6 +175,7 @@ namespace Nekoyume.L10n
         }
 
         #endregion
+
         /// <summary>
         /// Get records manually using getField() with names without using Convert CSV rows into class objects that not support in IL2CPP.
         /// </summary>
@@ -210,6 +212,7 @@ namespace Nekoyume.L10n
                 };
                 records.Add(record);
             }
+
             return records;
         }
 
@@ -235,12 +238,14 @@ namespace Nekoyume.L10n
                         // wait for load
                     }
 
-                    StreamReader streamReader =
-                        new StreamReader(new MemoryStream(csvFile.bytes), System.Text.Encoding.Default);
-                    CsvReader csvReader = new CsvReader((TextReader)streamReader, CultureInfo.InvariantCulture);
-
-                    csvReader.Configuration.PrepareHeaderForMatch =
-                        (header, index) => header.ToLower();
+                    using var streamReader = new StreamReader(
+                        new MemoryStream(csvFile.bytes),
+                        System.Text.Encoding.Default);
+                    var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
+                    {
+                        PrepareHeaderForMatch = args => args.Header.ToLower(),
+                    };
+                    using var csvReader = new CsvReader(streamReader, csvConfig);
 #if ENABLE_IL2CPP
                     var records = GetL10nCsvModelRecords(csvReader);
 #else
@@ -297,13 +302,15 @@ namespace Nekoyume.L10n
 
                 var dictionary = new Dictionary<string, string>();
                 var csvFileInfos = new DirectoryInfo(CsvFilesRootDirectoryPath).GetFiles("*.csv");
+                var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
+                {
+                    PrepareHeaderForMatch = args => args.Header.ToLower(),
+                };
                 foreach (var csvFileInfo in csvFileInfos)
                 {
                     using (var streamReader = new StreamReader(csvFileInfo.FullName))
-                    using (var csvReader = new CsvReader(streamReader, CultureInfo.InvariantCulture))
+                    using (var csvReader = new CsvReader(streamReader, csvConfig))
                     {
-                        csvReader.Configuration.PrepareHeaderForMatch =
-                            (header, index) => header.ToLower();
                         var records = csvReader.GetRecords<L10nCsvModel>();
                         var recordsIndex = 0;
                         try
@@ -392,6 +399,18 @@ namespace Nekoyume.L10n
         public static string LocalizeItemName(int itemId)
         {
             var key = $"ITEM_NAME_{itemId}";
+            return Localize(key);
+        }
+
+        public static string LocalizeRuneName(int id)
+        {
+            var key = $"RUNE_NAME_{id}";
+            return Localize(key);
+        }
+
+        public static string LocalizePetName(int id)
+        {
+            var key = $"PET_NAME_{id}";
             return Localize(key);
         }
 
