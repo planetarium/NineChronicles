@@ -18,6 +18,31 @@ namespace Lib9c.DevExtensions.Action
         public List<(Address addr, IValue value)> StateList { get; set; }
         public List<(Address addr, FungibleAssetValue fav)> BalanceList { get; set; }
 
+        protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
+            new Dictionary<string, IValue>
+            {
+                ["sl"] = StateList.Serialize(),
+                ["bl"] = new List(BalanceList
+                    .OrderBy(tuple => tuple.addr)
+                    .ThenBy(tuple => tuple.fav.Currency.Ticker)
+                    .ThenBy(tuple => tuple.fav.Currency.DecimalPlaces)
+                    .ThenBy(tuple => tuple.fav.Currency.Minters)
+                    .ThenBy(tuple => tuple.fav.RawValue)
+                    .Select(tuple => new List(
+                        tuple.addr.Serialize(),
+                        tuple.fav.Serialize()))),
+            }.ToImmutableDictionary();
+
+        protected override void LoadPlainValueInternal(
+            IImmutableDictionary<string, IValue> plainValue)
+        {
+            StateList = plainValue["sl"].ToStateList();
+            BalanceList = ((List)plainValue["bl"])
+                .OfType<List>()
+                .Select(list => (list[0].ToAddress(), list[1].ToFungibleAssetValue()))
+                .ToList();
+        }
+
         public override IAccountStateDelta Execute(IActionContext context)
         {
             if (context.Rehearsal)
@@ -25,14 +50,22 @@ namespace Lib9c.DevExtensions.Action
                 return context.PreviousStates;
             }
 
-            var states = context.PreviousStates;
-            foreach (var (addr, value) in StateList)
+            return Execute(context.PreviousStates, StateList, BalanceList);
+        }
+
+        public static IAccountStateDelta Execute(
+            IAccountStateDelta prevStates,
+            List<(Address addr, IValue value)> stateList,
+            List<(Address addr, FungibleAssetValue fav)> balanceList)
+        {
+            var states = prevStates;
+            foreach (var (addr, value) in stateList)
             {
                 states = states.SetState(addr, value);
             }
 
             var ncg = states.GetGoldCurrency();
-            foreach (var (addr, fav) in BalanceList)
+            foreach (var (addr, fav) in balanceList)
             {
                 var currentFav = states.GetBalance(addr, fav.Currency);
                 if (currentFav == fav)
@@ -71,31 +104,6 @@ namespace Lib9c.DevExtensions.Action
             }
 
             return states;
-        }
-
-        protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
-            new Dictionary<string, IValue>
-            {
-                ["stateList"] = StateList.Serialize(),
-                ["bl"] = new List(BalanceList
-                    .OrderBy(tuple => tuple.addr)
-                    .ThenBy(tuple => tuple.fav.Currency.Ticker)
-                    .ThenBy(tuple => tuple.fav.Currency.DecimalPlaces)
-                    .ThenBy(tuple => tuple.fav.Currency.Minters)
-                    .ThenBy(tuple => tuple.fav.RawValue)
-                    .Select(tuple => new List(
-                        tuple.addr.Serialize(),
-                        tuple.fav.Serialize()))),
-            }.ToImmutableDictionary();
-
-        protected override void LoadPlainValueInternal(
-            IImmutableDictionary<string, IValue> plainValue)
-        {
-            StateList = plainValue["stateList"].ToStateList();
-            BalanceList = ((List)plainValue["bl"])
-                .OfType<List>()
-                .Select(list => (list[0].ToAddress(), list[1].ToFungibleAssetValue()))
-                .ToList();
         }
     }
 }
