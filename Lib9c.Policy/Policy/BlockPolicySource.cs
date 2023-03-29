@@ -118,7 +118,7 @@ namespace Nekoyume.BlockChain.Policy
                 maxTransactionsPerSignerPerBlockPolicy: MaxTransactionsPerSignerPerBlockPolicy.Internal,
                 authorizedMinersPolicy: AuthorizedMinersPolicy.Mainnet,
                 permissionedMinersPolicy: PermissionedMinersPolicy.Mainnet,
-                minBlockProtocolVersionPolicy: MinBlockProtocolVersionPolicy.Mainnet);
+                minBlockProtocolVersionPolicy: MinBlockProtocolVersionPolicy.Internal);
 
         /// <summary>
         /// Creates an <see cref="IBlockPolicy{T}"/> instance for 9c-permanent-test deployment.
