@@ -15,19 +15,33 @@ namespace Nekoyume.Helper
             await monoBehaviour.StartCoroutineAsync(request);
             if (!(request.asset is AddressableAssetsContainer addressableAssetsContainer))
                 throw new FailedToLoadResourceException<AddressableAssetsContainer>(AddressableAssetsContainerPath);
-        
+
             return InitializeInternal(addressableAssetsContainer.tableCsvAssets);
         }
 
         public static TableSheets MakeTableSheets()
         {
-            var asset = Resources.Load<AddressableAssetsContainer>(AddressableAssetsContainerPath);
-            if (asset is null)
-                throw new FailedToLoadResourceException<AddressableAssetsContainer>(AddressableAssetsContainerPath);
-            
-            return InitializeInternal(asset.tableCsvAssets);
+            var csv = ImportSheets();
+            return new TableSheets(csv);
         }
-        
+
+        public static Dictionary<string, string> ImportSheets()
+        {
+            var container = Resources.Load<AddressableAssetsContainer>(AddressableAssetsContainerPath);
+            if (container is null)
+            {
+                throw new FailedToLoadResourceException<AddressableAssetsContainer>(AddressableAssetsContainerPath);
+            }
+
+            var csv = new Dictionary<string, string>();
+            foreach (var asset in container.tableCsvAssets)
+            {
+                csv[asset.name] = asset.text;
+            }
+
+            return csv;
+        }
+
         private static TableSheets InitializeInternal(List<TextAsset> tableCsvAssets)
         {
             var csv = new Dictionary<string, string>();
@@ -39,6 +53,5 @@ namespace Nekoyume.Helper
             var tableSheets = new TableSheets(csv);
             return tableSheets;
         }
-
     }
 }
