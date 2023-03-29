@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Bencodex.Types;
 using Nekoyume.Model.State;
 using static Lib9c.SerializeKeys;
@@ -30,12 +28,7 @@ namespace Nekoyume.Model.Mail
 
         protected override string TypeId => nameof(OrderBuyerMail);
 
-        public override IValue Serialize() =>
-#pragma warning disable LAA1002
-            new Dictionary(new Dictionary<IKey, IValue>
-            {
-                [(Text)OrderIdKey] = OrderId.Serialize(),
-            }.Union((Dictionary)base.Serialize()));
-#pragma warning restore LAA1002
+        public override IValue Serialize() => ((Dictionary)base.Serialize())
+            .Add(OrderIdKey, OrderId.Serialize());
     }
 }

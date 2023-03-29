@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Bencodex.Types;
 using Nekoyume.Action;
 
@@ -25,12 +23,7 @@ namespace Nekoyume.Model.Mail
             );
         }
 
-        public override IValue Serialize() =>
-#pragma warning disable LAA1002
-            new Dictionary(new Dictionary<IKey, IValue>
-            {
-                [(Text)"attachment"] = attachment.Serialize(),
-            }.Union((Dictionary)base.Serialize()));
-#pragma warning restore LAA1002
+        public override IValue Serialize() => ((Dictionary)base.Serialize())
+            .Add("attachment", attachment.Serialize());
     }
 }

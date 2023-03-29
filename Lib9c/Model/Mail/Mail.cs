@@ -64,14 +64,11 @@ namespace Nekoyume.Model.Mail
 
         protected abstract string TypeId { get; }
 
-        public virtual IValue Serialize() =>
-            new Dictionary(new Dictionary<IKey, IValue>
-            {
-                [(Text)"id"] = id.Serialize(),
-                [(Text)"typeId"] = TypeId.Serialize(),
-                [(Text)"blockIndex"] = blockIndex.Serialize(),
-                [(Text)"requiredBlockIndex"] = requiredBlockIndex.Serialize(),
-            });
+        public virtual IValue Serialize() => Dictionary.Empty
+            .Add("id", id.Serialize())
+            .Add("typeId", TypeId.Serialize())
+            .Add("blockIndex", blockIndex.Serialize())
+            .Add("requiredBlockIndex", requiredBlockIndex.Serialize());
 
         public static Mail Deserialize(Dictionary serialized)
         {
