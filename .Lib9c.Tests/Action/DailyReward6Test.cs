@@ -15,13 +15,13 @@ namespace Lib9c.Tests.Action
     using Xunit.Abstractions;
     using static Lib9c.SerializeKeys;
 
-    public class DailyRewardTest
+    public class DailyReward6Test
     {
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
         private readonly IAccountStateDelta _initialState;
 
-        public DailyRewardTest(ITestOutputHelper outputHelper)
+        public DailyReward6Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -64,7 +64,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Rehearsal()
         {
-            var action = new DailyReward
+            var action = new DailyReward6
             {
                 avatarAddress = _avatarAddress,
             };
@@ -78,22 +78,29 @@ namespace Lib9c.Tests.Action
                 Signer = _agentAddress,
             });
 
-            var updatedAddress = Assert.Single(nextState.UpdatedAddresses);
-            Assert.Equal(_avatarAddress, updatedAddress);
+            var updatedAddresses = new List<Address>
+            {
+                _avatarAddress,
+                _avatarAddress.Derive(LegacyInventoryKey),
+                _avatarAddress.Derive(LegacyWorldInformationKey),
+                _avatarAddress.Derive(LegacyQuestListKey),
+            };
+
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
         }
 
         [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void Execute(bool legacy)
+        [InlineData(1)]
+        [InlineData(2)]
+        public void Execute(int avatarStateSerializedVersion)
         {
             IAccountStateDelta previousStates = null;
-            switch (legacy)
+            switch (avatarStateSerializedVersion)
             {
-                case true:
+                case 1:
                     previousStates = _initialState;
                     break;
-                case false:
+                case 2:
                     var avatarState = _initialState.GetAvatarState(_avatarAddress);
                     previousStates = SetAvatarStateAsV2To(_initialState, avatarState);
                     break;
@@ -101,8 +108,7 @@ namespace Lib9c.Tests.Action
 
             var nextState = ExecuteInternal(previousStates, 1800);
             var nextGameConfigState = nextState.GetGameConfigState();
-            nextState.TryGetAvatarStateV2(_agentAddress, _avatarAddress, out var nextAvatarState, out var migrationRequired);
-            Assert.Equal(legacy, migrationRequired);
+            var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
             Assert.NotNull(nextAvatarState);
             Assert.NotNull(nextAvatarState.inventory);
             Assert.NotNull(nextAvatarState.questList);
@@ -177,7 +183,7 @@ rune_skill_slot_unlock_cost,500";
 
         private IAccountStateDelta ExecuteInternal(IAccountStateDelta previousStates, long blockIndex = 0)
         {
-            var dailyRewardAction = new DailyReward
+            var dailyRewardAction = new DailyReward6
             {
                 avatarAddress = _avatarAddress,
             };

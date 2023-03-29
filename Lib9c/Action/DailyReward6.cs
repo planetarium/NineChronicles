@@ -14,12 +14,12 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1828
-    /// Updated at https://github.com/planetarium/lib9c/pull/1828
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/615
+    /// Updated at https://github.com/planetarium/lib9c/pull/957
     /// </summary>
     [Serializable]
-    [ActionType("daily_reward7")]
-    public class DailyReward : GameAction, IDailyRewardV1
+    [ActionType("daily_reward6")]
+    public class DailyReward6 : GameAction, IDailyRewardV1
     {
         public Address avatarAddress;
         public const string AvatarAddressKey = "a";
@@ -29,37 +29,23 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             var states = context.PreviousStates;
+            var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
+            var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
+            var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
             if (context.Rehearsal)
             {
                 return states
                     .SetState(avatarAddress, MarkChanged)
+                    .SetState(inventoryAddress, MarkChanged)
+                    .SetState(worldInformationAddress, MarkChanged)
+                    .SetState(questListAddress, MarkChanged)
                     .MarkBalanceChanged(GoldCurrencyMock, avatarAddress);
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             var started = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}DailyReward exec started", addressesHex);
-            if (!states.TryGetState(avatarAddress, out Dictionary serializedAvatar))
-            {
-                throw new FailedLoadStateException(
-                    $"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
-            }
-
-            Address? agentAddress = null;
-            bool useLegacyKey = false;
-            if (serializedAvatar.ContainsKey(AgentAddressKey))
-            {
-                agentAddress = serializedAvatar[AgentAddressKey].ToAddress();
-            }
-            else if (serializedAvatar.ContainsKey(LegacyAgentAddressKey))
-            {
-                {
-                    agentAddress = serializedAvatar[LegacyAgentAddressKey].ToAddress();
-                    useLegacyKey = true;
-                }
-            }
-
-            if (agentAddress is null || agentAddress != context.Signer)
+            if (!states.TryGetAgentAvatarStatesV2(context.Signer, avatarAddress, out _, out AvatarState avatarState, out _))
             {
                 throw new FailedLoadStateException(
                     $"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
@@ -71,22 +57,18 @@ namespace Nekoyume.Action
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the game config was failed to load.");
             }
 
-            var indexKey = useLegacyKey ? LegacyDailyRewardReceivedIndexKey : DailyRewardReceivedIndexKey;
-            var dailyRewardReceivedIndex = (long)(Integer)serializedAvatar[indexKey];
-            if (context.BlockIndex < dailyRewardReceivedIndex + gameConfigState.DailyRewardInterval)
+            if (context.BlockIndex < avatarState.dailyRewardReceivedIndex + gameConfigState.DailyRewardInterval)
             {
                 var sb = new StringBuilder()
                     .Append($"{addressesHex}Not enough block index to receive daily rewards.")
                     .Append(
-                        $" Expected: Equals or greater than ({dailyRewardReceivedIndex + gameConfigState.DailyRewardInterval}).")
+                        $" Expected: Equals or greater than ({avatarState.dailyRewardReceivedIndex + gameConfigState.DailyRewardInterval}).")
                     .Append($" Actual: ({context.BlockIndex})");
                 throw new RequiredBlockIndexException(sb.ToString());
             }
 
-            var apKey = useLegacyKey ? LegacyActionPointKey : ActionPointKey;
-            serializedAvatar = serializedAvatar
-                .SetItem(indexKey, context.BlockIndex)
-                .SetItem(apKey, gameConfigState.ActionPointMax);
+            avatarState.dailyRewardReceivedIndex = context.BlockIndex;
+            avatarState.actionPoint = gameConfigState.ActionPointMax;
 
             if (gameConfigState.DailyRuneRewardAmount > 0)
             {
@@ -97,7 +79,11 @@ namespace Nekoyume.Action
 
             var ended = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}DailyReward Total Executed Time: {Elapsed}", addressesHex, ended - started);
-            return states.SetState(avatarAddress, serializedAvatar);
+            return states
+                .SetState(avatarAddress, avatarState.SerializeV2())
+                .SetState(inventoryAddress, avatarState.inventory.Serialize())
+                .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
+                .SetState(questListAddress, avatarState.questList.Serialize());
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
