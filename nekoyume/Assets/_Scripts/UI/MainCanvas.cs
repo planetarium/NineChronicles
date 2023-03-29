@@ -254,10 +254,6 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<RaidPreparation>());
             yield return null;
-            secondWidgets.Add(Widget.Create<DccMain>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<DccCollection>());
-            yield return null;
             secondWidgets.Add(Widget.Create<Status>());
             yield return null;
             secondWidgets.Add(Widget.Create<ArenaJoin>());
@@ -283,6 +279,10 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<Grind>());
             yield return null;
             secondWidgets.Add(Widget.Create<Rune>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<DccMain>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<DccCollection>());
             yield return null;
 
             // header menu
