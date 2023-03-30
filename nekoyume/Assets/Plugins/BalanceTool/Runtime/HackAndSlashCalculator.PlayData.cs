@@ -17,9 +17,7 @@ namespace BalanceTool.Runtime
             public readonly (int consumableId, int count)[] Foods;
             public readonly int[] CostumeIds;
             public readonly (int runeSlotIndex, int runeId, int level)[] Runes;
-
-            // public readonly (int buffId, int level)[] BuffBonuses;
-
+            public readonly int CrystalRandomBuffId;
             public readonly int PlayCount;
             public readonly PlayResult? Result;
 
@@ -31,6 +29,7 @@ namespace BalanceTool.Runtime
                 (int consumableId, int count)[] foods,
                 int[] costumeIds,
                 (int runeSlotIndex, int runeId, int level)[] runes,
+                int crystalRandomBuffId,
                 int playCount = 1,
                 PlayResult? result = null)
             {
@@ -41,6 +40,7 @@ namespace BalanceTool.Runtime
                 Foods = foods;
                 CostumeIds = costumeIds;
                 Runes = runes;
+                CrystalRandomBuffId = crystalRandomBuffId;
                 PlayCount = playCount;
                 Result = result;
             }
@@ -55,6 +55,7 @@ namespace BalanceTool.Runtime
                     Foods,
                     CostumeIds,
                     Runes,
+                    CrystalRandomBuffId,
                     PlayCount,
                     result);
             }
@@ -105,41 +106,33 @@ namespace BalanceTool.Runtime
                         csv.GetField<int>($"rune_{i:00}_level")))
                     .Where(tuple => tuple.runeId > 0)
                     .ToArray();
+                var crystalRandomBuffId = csv.GetField<int>("crystal_random_buff_id");
                 var playCount = csv.GetField<int>("play_count");
 
-                if (!csv.TryGetField<int>("wave_01_cleared", out _))
+                PlayResult? result = null;
+                if (csv.TryGetField<int>("wave_01_cleared", out _))
                 {
-                    records.Add(new PlayData(
-                        worldId,
-                        stageId,
-                        level,
-                        equipments,
-                        foods,
-                        costumeIds,
-                        runes,
-                        globalPlayCount > 0
-                            ? globalPlayCount
-                            : playCount));
-                    continue;
+                    var clearedWaves = Enumerable.Range(1, waveCount)
+                        .Select(waveNum => (waveNum, clears: csv.GetField<int>($"wave_{waveNum:00}_cleared")))
+                        .Where(tuple => tuple.clears > 0)
+                        .ToDictionary(
+                            tuple => tuple.waveNum,
+                            tuple => tuple.clears);
+                    var totalRewards = Enumerable.Range(0, RewardCountDefault)
+                        .Select<int, (int itemId, int count)>(i => (
+                            csv.GetField<int>($"reward_{i:00}_id"),
+                            csv.GetField<int>($"reward_{i:00}_count")))
+                        .Where(tuple => tuple is { itemId: > 0, count: > 0 })
+                        .ToDictionary(
+                            tuple => tuple.itemId,
+                            tuple => tuple.count);
+                    var totalExp = csv.GetField<int>("total_exp");
+                    result = new PlayResult(
+                        clearedWaves,
+                        totalRewards,
+                        totalExp);
                 }
 
-                var clearedWaves = Enumerable.Range(1, waveCount)
-                    .ToDictionary(
-                        i => i,
-                        i => csv.GetField<int>($"wave_{i:00}_cleared"));
-                var totalRewards = Enumerable.Range(0, RewardCountDefault)
-                    .Select<int, (int itemId, int count)>(i => (
-                        csv.GetField<int>($"reward_{i:00}_id"),
-                        csv.GetField<int>($"reward_{i:00}_count")))
-                    .Where(tuple => tuple is { itemId: > 0, count: > 0 })
-                    .ToDictionary(
-                        tuple => tuple.itemId,
-                        tuple => tuple.count);
-                var totalExp = csv.GetField<int>("total_exp");
-                var result = new PlayResult(
-                    clearedWaves,
-                    totalRewards,
-                    totalExp);
                 records.Add(new PlayData(
                     worldId,
                     stageId,
@@ -148,6 +141,7 @@ namespace BalanceTool.Runtime
                     foods,
                     costumeIds,
                     runes,
+                    crystalRandomBuffId,
                     globalPlayCount > 0
                         ? globalPlayCount
                         : playCount,
@@ -190,6 +184,7 @@ namespace BalanceTool.Runtime
                 csv.WriteField($"rune_{i:00}_level");
             }
 
+            csv.WriteField("crystal_random_buff_id");
             csv.WriteField("play_count");
 
             for (var i = 1; i <= waveCount; i++)
@@ -268,6 +263,7 @@ namespace BalanceTool.Runtime
                     }
                 }
 
+                csv.WriteField(playData.CrystalRandomBuffId);
                 csv.WriteField(playData.PlayCount);
 
                 if (playData.Result.HasValue)

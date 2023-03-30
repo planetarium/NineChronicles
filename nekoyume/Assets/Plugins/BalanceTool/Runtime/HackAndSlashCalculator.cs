@@ -1,7 +1,10 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
+using Cysharp.Threading.Tasks;
 using Lib9c.DevExtensions;
 using Lib9c.DevExtensions.Action;
 using Libplanet;
@@ -13,14 +16,15 @@ using Nekoyume.Extensions;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
+using UnityEngine;
 
 namespace BalanceTool.Runtime
 {
     public static partial class HackAndSlashCalculator
     {
-        public static IEnumerable<PlayData> Calculate(
+        public static async UniTask<IEnumerable<PlayData>> CalculateAsync(
             IAccountStateDelta prevStates,
-            IRandom random,
+            int? randomSeed,
             long blockIndex,
             Address agentAddr,
             int avatarIndex,
@@ -53,9 +57,9 @@ namespace BalanceTool.Runtime
                     typeof(RuneListSheet),
                 });
 
-            return playDataList.Select(pd => ExecuteHackAndSlash(
+            return await playDataList.Select(pd => ExecuteHackAndSlashAsync(
                 states,
-                random,
+                randomSeed,
                 blockIndex,
                 agentAddr,
                 avatarIndex,
@@ -63,15 +67,17 @@ namespace BalanceTool.Runtime
                 sheets));
         }
 
-        private static PlayData ExecuteHackAndSlash(
+        private static async UniTask<PlayData> ExecuteHackAndSlashAsync(
             IAccountStateDelta states,
-            IRandom random,
+            int? randomSeed,
             long blockIndex,
             Address agentAddr,
             int avatarIndex,
             PlayData playData,
             Dictionary<Type, (Address address, ISheet sheet)> sheets)
         {
+            randomSeed ??= new RandomImpl(DateTime.Now.Millisecond).Next(0, int.MaxValue);
+            var random = new RandomImpl(randomSeed.Value);
             // Create and save AvatarState to states by playData.
             var cra = new CreateOrReplaceAvatar(
                 avatarIndex: avatarIndex,
@@ -79,11 +85,17 @@ namespace BalanceTool.Runtime
                 equipments: playData.Equipments,
                 foods: playData.Foods,
                 costumeIds: playData.CostumeIds,
-                runes: playData.Runes.Select(tuple => (tuple.runeId, tuple.level)).ToArray());
-            states = cra.Execute(states, random, blockIndex, agentAddr);
+                runes: playData.Runes.Select(tuple => (tuple.runeId, tuple.level)).ToArray(),
+                crystalRandomBuff: playData.CrystalRandomBuffId == 0
+                    ? null
+                    : (playData.StageId, new[] { playData.CrystalRandomBuffId }));
+            states = await UniTask.Run(() => cra.Execute(
+                states,
+                new RandomImpl(random.Next()),
+                blockIndex,
+                agentAddr));
 
             // Execute HackAndSlash and apply to playData.Result.
-            var randomForHas = new RandomImpl(random.Next());
             var avatarAddr = Addresses.GetAvatarAddress(agentAddr, avatarIndex);
             var avatarState = states.GetAvatarStateV2(avatarAddr);
             var inventory = avatarState.inventory;
@@ -98,7 +110,9 @@ namespace BalanceTool.Runtime
                 RuneInfos = playData.Runes
                     .Select(e => new RuneSlotInfo(e.runeSlotIndex, e.runeId))
                     .ToList(),
-                StageBuffId = null, // Fix to null. But it will be set by playData.StageBuffId.
+                StageBuffId = playData.CrystalRandomBuffId == 0
+                    ? null
+                    : playData.CrystalRandomBuffId,
                 ApStoneCount = 0, // Fix to 0.
                 TotalPlayCount = 1, // Fix to 1.
             };
@@ -118,30 +132,31 @@ namespace BalanceTool.Runtime
 
             var prevLevel = avatarState.level;
             var exp = StageRewardExpHelper.GetExp(prevLevel, has.StageId);
-            var simulator = RecreateSimulator(
-                randomForHas,
-                blockIndex,
-                has,
-                avatarState,
-                runeStates,
-                skillsOnWaveStart,
-                sheets.GetSheet<StageSheet>()[has.StageId],
-                sheets.GetSheet<StageWaveSheet>()[has.StageId],
-                sheets.GetStageSimulatorSheets(),
-                sheets.GetSheet<EnemySkillSheet>(),
-                sheets.GetSheet<CostumeStatSheet>(),
-                sheets.GetSheet<MaterialItemSheet>(),
-                sheets.GetSheet<WorldSheet>(),
-                sheets.GetSheet<WorldUnlockSheet>(),
-                exp);
             var result = new PlayResult(null);
             for (var i = 0; i < playData.PlayCount; i++)
             {
+                var hasRandomSeed = random.Next();
                 states = has.Execute(
                     states,
                     agentAddr,
                     blockIndex,
-                    randomForHas);
+                    new RandomImpl(hasRandomSeed));
+                var simulator = CreateSimulatedSimulator(
+                    new RandomImpl(hasRandomSeed),
+                    blockIndex,
+                    has,
+                    avatarState,
+                    runeStates,
+                    skillsOnWaveStart,
+                    sheets.GetSheet<StageSheet>()[has.StageId],
+                    sheets.GetSheet<StageWaveSheet>()[has.StageId],
+                    sheets.GetStageSimulatorSheets(),
+                    sheets.GetSheet<EnemySkillSheet>(),
+                    sheets.GetSheet<CostumeStatSheet>(),
+                    sheets.GetSheet<MaterialItemSheet>(),
+                    sheets.GetSheet<WorldSheet>(),
+                    sheets.GetSheet<WorldUnlockSheet>(),
+                    exp);
                 result = ApplyToPlayResult(
                     exp,
                     simulator,
@@ -151,7 +166,7 @@ namespace BalanceTool.Runtime
             return playData.WithResult(result);
         }
 
-        private static StageSimulator RecreateSimulator(
+        private static StageSimulator CreateSimulatedSimulator(
             IRandom random,
             long blockIndex,
             HackAndSlash has,
@@ -183,7 +198,7 @@ namespace BalanceTool.Runtime
                 stageSimulatorSheets,
                 enemySkillSheet,
                 costumeStatSheet,
-                StageSimulatorV2.GetWaveRewards(
+                StageSimulator.GetWaveRewards(
                     random,
                     stageRow,
                     materialItemSheet));
@@ -223,15 +238,18 @@ namespace BalanceTool.Runtime
             }
 
             var totalRewards = new Dictionary<int, int>(result.TotalRewards);
-            foreach (var itemBase in simulator.Reward)
+            if (clearedWaveNumber >= 2)
             {
-                if (totalRewards.ContainsKey(itemBase.Id))
+                foreach (var itemBase in simulator.Reward)
                 {
-                    totalRewards[itemBase.Id] += 1;
-                }
-                else
-                {
-                    totalRewards[itemBase.Id] = 1;
+                    if (totalRewards.ContainsKey(itemBase.Id))
+                    {
+                        totalRewards[itemBase.Id] += 1;
+                    }
+                    else
+                    {
+                        totalRewards[itemBase.Id] = 1;
+                    }
                 }
             }
 

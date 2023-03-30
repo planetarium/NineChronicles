@@ -2053,14 +2053,12 @@ namespace Nekoyume.BlockChain
             _actionRenderer.EveryRender<ManipulateState>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(async _ =>
+                .Subscribe(async eval =>
                 {
+                    await UpdateCurrentAvatarStateAsync(eval);
                     await RxProps.SelectAvatarAsync(
                         States.Instance.CurrentAvatarKey,
                         forceNewSelection: true);
-                    await WorldBossStates.Set(States.Instance.CurrentAvatarState.address);
-                    await States.Instance.InitRuneSlotStates();
-                    await States.Instance.InitItemSlotStates();
                     NotificationSystem.Push(
                         MailType.System,
                         "State Manipulated",

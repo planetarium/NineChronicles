@@ -11,22 +11,32 @@ namespace BalanceTool.Editor
 {
     public class BalanceToolWindow : EditorWindow
     {
+        private const string Header =
+            "world_id,stage_id,avatar_level,equipment_00_id,equipment_00_level,equipment_01_id,equipment_01_level,equipment_02_id,equipment_02_level,equipment_03_id,equipment_03_level,equipment_04_id,equipment_04_level,equipment_05_id,equipment_05_level,food_00_id,food_00_count,food_01_id,food_01_count,food_02_id,food_02_count,food_03_id,food_03_count,costume_00_id,costume_01_id,costume_02_id,costume_03_id,costume_04_id,costume_05_id,rune_00_id,rune_00_level,rune_01_id,rune_01_level,rune_02_id,rune_02_level,rune_03_id,rune_03_level,crystal_random_buff_id,play_count";
+
         private const int WaveCountDefault = 3;
 
         private IAccountStateDelta _prevStates;
-        private IRandom _random;
         private Address _agentAddr;
         private int _avatarIndex;
 
         // inputs.
-        private string _playDataCsv;
-        private Vector2 _playDataCsvScrollPos;
-        private int _globalPlayCount;
-        private int _waveCount;
+        [SerializeField]
+        private string playDataCsv = Header;
+
+        [SerializeField]
+        private int globalPlayCount = 0;
+
+        [SerializeField]
+        private int waveCount = WaveCountDefault;
 
         // outputs.
-        private string _output;
+        [SerializeField]
+        private string output = string.Empty;
+
+        private Vector2 _playDataCsvScrollPos;
         private Vector2 _outputScrollPos;
+        private bool _workingInCalculate;
 
         [MenuItem("Tools/Lib9c/Balance Tool")]
         public static void ShowWindow() =>
@@ -43,8 +53,10 @@ namespace BalanceTool.Editor
                 _,
                 _prevStates) = InitializeUtil.InitializeStates(
                 avatarIndex: _avatarIndex);
-            _random = new RandomImpl();
-            _waveCount = WaveCountDefault;
+
+            _playDataCsvScrollPos = Vector2.zero;
+            _outputScrollPos = Vector2.zero;
+            _workingInCalculate = false;
         }
 
         private void OnGUI()
@@ -52,53 +64,34 @@ namespace BalanceTool.Editor
             GUILayout.Label("Inputs", EditorStyles.boldLabel);
             GUILayout.Label("Play Data Csv");
             _playDataCsvScrollPos = EditorGUILayout.BeginScrollView(_playDataCsvScrollPos);
-            _playDataCsv = EditorGUI.TextArea(
+            playDataCsv = EditorGUI.TextArea(
                 GetRect(minLineCount: 3),
-                _playDataCsv);
+                playDataCsv);
             EditorGUILayout.EndScrollView();
-            _globalPlayCount = int.TryParse(
-                EditorGUILayout.TextField("Global Play Count", _globalPlayCount.ToString()),
-                out var globalPlayCount)
-                ? globalPlayCount
-                : _globalPlayCount;
-            _waveCount = int.TryParse(
-                EditorGUILayout.TextField("Wave Count", _waveCount.ToString()),
-                out var waveCount)
-                ? waveCount
-                : _waveCount;
+            globalPlayCount = int.TryParse(
+                EditorGUILayout.TextField("Global Play Count", globalPlayCount.ToString()),
+                out var gpc)
+                ? gpc
+                : globalPlayCount;
+            waveCount = int.TryParse(
+                EditorGUILayout.TextField("Wave Count", waveCount.ToString()),
+                out var wc)
+                ? wc
+                : waveCount;
+
+            EditorGUI.BeginDisabledGroup(_workingInCalculate);
             if (GUILayout.Button("Calculate"))
             {
-                try
-                {
-                    var playDataList = _globalPlayCount > 0
-                        ? HackAndSlashCalculator.ConvertToPlayDataList(
-                            _playDataCsv,
-                            globalPlayCount: _globalPlayCount)
-                        : HackAndSlashCalculator.ConvertToPlayDataList(
-                            _playDataCsv);
-                    var playDataListWithResult = HackAndSlashCalculator.Calculate(
-                        _prevStates,
-                        _random,
-                        0,
-                        _agentAddr,
-                        _avatarIndex,
-                        playDataList);
-                    _output = HackAndSlashCalculator.ConvertToCsv(
-                        playDataListWithResult,
-                        waveCount: _waveCount);
-                }
-                catch (Exception e)
-                {
-                    _output = e.Message + Environment.NewLine + e.StackTrace;
-                    Debug.LogException(e);
-                }
+                Calculate();
             }
+
+            EditorGUI.EndDisabledGroup();
 
             GUILayout.Label("Outputs", EditorStyles.boldLabel);
             _outputScrollPos = EditorGUILayout.BeginScrollView(_outputScrollPos);
             EditorGUI.TextArea(
                 GetRect(minLineCount: 3),
-                _output);
+                output);
             EditorGUILayout.EndScrollView();
         }
 
@@ -115,6 +108,37 @@ namespace BalanceTool.Editor
                 minHeight,
                 position.height,
                 GUILayout.ExpandWidth(true));
+        }
+
+        private async void Calculate()
+        {
+            _workingInCalculate = true;
+            try
+            {
+                var playDataList = globalPlayCount > 0
+                    ? HackAndSlashCalculator.ConvertToPlayDataList(
+                        playDataCsv,
+                        globalPlayCount: globalPlayCount)
+                    : HackAndSlashCalculator.ConvertToPlayDataList(
+                        playDataCsv);
+                var playDataListWithResult = await HackAndSlashCalculator.CalculateAsync(
+                    _prevStates,
+                    randomSeed: 0, // null,
+                    0,
+                    _agentAddr,
+                    _avatarIndex,
+                    playDataList);
+                output = HackAndSlashCalculator.ConvertToCsv(
+                    playDataListWithResult,
+                    waveCount: waveCount);
+                _workingInCalculate = false;
+            }
+            catch (Exception e)
+            {
+                output = e.Message + Environment.NewLine + e.StackTrace;
+                Debug.LogException(e);
+                _workingInCalculate = false;
+            }
         }
     }
 }
