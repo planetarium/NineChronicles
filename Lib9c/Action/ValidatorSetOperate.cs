@@ -8,7 +8,7 @@ using Libplanet.Consensus;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("op_validator_set_1")]
+    [ActionType("op_validator_set")]
     public sealed class ValidatorSetOperate
         : GameAction, IEquatable<ValidatorSetOperate>
     {
