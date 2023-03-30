@@ -44,7 +44,7 @@ namespace Nekoyume
                     sheets.GetStageSimulatorSheets(),
                     sheets.EnemySkillSheet,
                     sheets.CostumeStatSheet,
-                    StageSimulatorV2.GetWaveRewards(random, stageRow, sheets.MaterialItemSheet));
+                    StageSimulator.GetWaveRewards(random, stageRow, sheets.MaterialItemSheet));
                 simulator.Simulate();
 
                 if (simulator.Log.IsClear)
