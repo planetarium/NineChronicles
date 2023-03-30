@@ -1,3 +1,4 @@
+// See also: HeadlessHelper.cs
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -25,7 +26,7 @@ namespace Planetarium.Nekoyume.Editor
             ? PlayerPrefs.GetString("headlessPath")
             : "";
 
-        private static string _storeName = "9c_dev";
+        private static string _storeName = "unity-runner";
         private static string _genesisPath = FixPath(Application.streamingAssetsPath);
 
 
@@ -111,7 +112,7 @@ namespace Planetarium.Nekoyume.Editor
         {
             // TODO: Select option to use local genesis or download genesis from URL (like use mainnet genesis)
             Debug.Log($"Delete and create genesis-block to {BlockManager.GenesisBlockPath()}");
-            Directory.Delete(Path.Combine(_genesisPath, _storeName), true);
+            Directory.Delete(Path.Combine(_docsRoot, "planetarium", _storeName), true);
             LibplanetEditor.DeleteAllEditorAndMakeGenesisBlock();
         }
 
@@ -147,7 +148,7 @@ namespace Planetarium.Nekoyume.Editor
             }
 
             Debug.Log(Path.Combine(_genesisPath, "genesis-block"));
-            Debug.Log(Path.Combine(_genesisPath, _storeName));
+            Debug.Log(Path.Combine(_docsRoot, "planetarium", _storeName));
             var startInfo = new ProcessStartInfo
             {
                 FileName = "dotnet",
@@ -155,7 +156,7 @@ namespace Planetarium.Nekoyume.Editor
                     @$"run -c DevEx \
                            --project NineChronicles.Headless.Executable -C appsettings.local.json \
                            --genesis-block-path {Path.Combine(_genesisPath, "genesis-block")} \
-                           --store-path {Path.Combine(_genesisPath, _storeName)} \
+                           --store-path {Path.Combine(_docsRoot, "planetarium", _storeName)} \
                            --store-type memory",
             };
             Debug.Log(startInfo.Arguments);
