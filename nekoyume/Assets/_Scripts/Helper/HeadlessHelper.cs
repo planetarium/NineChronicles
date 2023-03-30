@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if UNITY_EDITOR
+
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -53,7 +54,7 @@ namespace Nekoyume.Helper
                 {
                     FileName = "dotnet",
                     Arguments =
-                        @$"run -c DevEx --project NineChronicles.Headless.Executable -C appsettings.local.json --genesis-block-path ""{Path.Combine(_genesisPath, "genesis-block")}"" --store-path ""{Path.Combine(_docsRoot, "planetarium", _storeName)}"" --store-type memory",
+                        @$"run -c DevEx --project NineChronicles.Headless.Executable -C appsettings.local.json --genesis-block-path ""{Path.Combine(_genesisPath, "genesis-block")}"" --store-path ""{Path.Combine(_docsRoot, "planetarium", _storeName)}"" --store-type rocksdb",
                 };
                 Debug.Log(startInfo.Arguments);
                 startInfo.WorkingDirectory = _headlessPath;
@@ -76,3 +77,5 @@ namespace Nekoyume.Helper
                 : Path.AltDirectorySeparatorChar).ToString());
     }
 }
+
+#endif

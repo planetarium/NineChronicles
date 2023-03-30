@@ -194,15 +194,18 @@ namespace Nekoyume.Game
                 Agent = GetComponent<Agent>();
             }
 
+#if UNITY_EDITOR
             // Local Headless
             if (useLocalHeadless && HeadlessHelper.CheckHeadlessSettings())
             {
                 Agent = GetComponent<RPCAgent>();
-                _commandLineOptions = CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.local.json"));
+                _commandLineOptions =
+                    CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.local.json"));
                 SubscribeRPCAgent();
                 headlessThread = new Thread(HeadlessHelper.RunLocalHeadless);
                 headlessThread.Start();
             }
+#endif
 
             States = new States();
             LocalLayer = new LocalLayer();
