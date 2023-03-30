@@ -110,10 +110,14 @@ namespace Nekoyume.UI.Scroller
             if (fillWithNullToEmptyCellGroup)
             {
                 var cellCountInGroup = Context.GetGroupCount();
-                var addCount = cellCountInGroup - itemsSource.Count % cellCountInGroup;
-                for (var i = 0; i < addCount; i++)
+                var remain = itemsSource.Count % cellCountInGroup;
+                if (remain != 0)
                 {
-                    itemsSource.Add(null);
+                    var addCount = cellCountInGroup - remain;
+                    for (var i = 0; i < addCount; i++)
+                    {
+                        itemsSource.Add(null);
+                    }
                 }
             }
 
