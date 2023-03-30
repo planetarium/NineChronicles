@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Numerics;
 using Bencodex.Types;
 using Libplanet.Action;
 using Libplanet.Consensus;
+using Libplanet.Crypto;
 
 namespace Nekoyume.Action
 {
@@ -12,6 +14,10 @@ namespace Nekoyume.Action
     public sealed class ValidatorSetOperate
         : GameAction, IEquatable<ValidatorSetOperate>
     {
+        // fixme: this is a temporary key for backward compatibility.
+        private static readonly byte[] PowerKey = { 0x70 }; // 'p'
+        private static readonly byte[] PublicKeyKey = { 0x50 }; // 'P'
+
         public ValidatorSetOperate()
         {
             Error = "An uninitialized action.";
@@ -143,7 +149,8 @@ namespace Nekoyume.Action
             }
 
             Operator = op;
-            Operand = new Validator(operandDict);
+            // FIXME: This is a temporary code for backward compatibility.
+            Operand = BackwardCompability(operandDict);
             Error = null;
         }
 
@@ -161,6 +168,23 @@ namespace Nekoyume.Action
 
             Error =
                 $"The serialized dictionary lacks the key \"{nameof(ValidatorSetOperateKey)}\".";
+        }
+
+        private Validator BackwardCompability(Bencodex.Types.Dictionary dict)
+        {
+            try
+            {
+                return new Validator(dict);
+            }
+            catch (Exception)
+            {
+                BigInteger power =
+                    new BigInteger(dict.GetValue<Binary>(PowerKey).ToByteArray());
+                PublicKey publicKey =
+                    new PublicKey(dict.GetValue<Binary>(PublicKeyKey).ToByteArray());
+
+                return new Validator(publicKey, power);
+            }
         }
     }
 }
