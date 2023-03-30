@@ -92,7 +92,7 @@ namespace Nekoyume.Action
                             ? new Text(op.ToString())
                             : (IValue)Null.Value
                     )
-                    .Add("operand", Operand.Encoded)
+                    .Add("operand", Operand.Bencoded)
                 : (Text)Error;
 
         public override void LoadPlainValue(IValue plainValue)
