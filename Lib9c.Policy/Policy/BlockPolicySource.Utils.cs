@@ -234,29 +234,5 @@ namespace Nekoyume.BlockChain.Policy
                     $"a permissioned miner: {block.Miner}");
             }
         }
-
-        private static bool IsAllowedToMineRaw(
-            Address miner,
-            long index,
-            IVariableSubPolicy<ImmutableHashSet<Address>> authorizedMinersPolicy,
-            IVariableSubPolicy<ImmutableHashSet<Address>> permissionedMinersPolicy)
-        {
-            // For genesis blocks, any miner is allowed to mine.
-            if (index == 0)
-            {
-                return true;
-            }
-            else if (authorizedMinersPolicy.IsTargetIndex(index))
-            {
-                return authorizedMinersPolicy.Getter(index).Contains(miner);
-            }
-            else if (permissionedMinersPolicy.IsTargetIndex(index))
-            {
-                return permissionedMinersPolicy.Getter(index).Contains(miner);
-            }
-
-            // If none of the conditions apply, any miner is allowed to mine.
-            return true;
-        }
     }
 }

@@ -119,7 +119,6 @@ namespace Lib9c.Tools.SubCommand
                         out delta)
                     : preEvalBlock.DetermineStateRootHash(
                         chain,
-                        StateCompleterSet<NCAction>.Reject,
                         out delta);
                 DateTimeOffset now = DateTimeOffset.Now;
                 if (invalidStateRootHashBlock is null && !stateRootHash.Equals(block.StateRootHash))

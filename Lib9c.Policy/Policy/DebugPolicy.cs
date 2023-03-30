@@ -14,16 +14,13 @@ namespace Nekoyume.BlockChain.Policy
 {
     public class DebugPolicy : IBlockPolicy<PolymorphicAction<ActionBase>>
     {
-        public DebugPolicy(long blockDifficulty)
+        public DebugPolicy()
         {
-            _blockDifficulty = blockDifficulty;
         }
-
-        public IComparer<IBlockExcerpt> CanonicalChainComparer { get; } = new TotalDifficultyComparer();
 
         public IAction BlockAction { get; } = new RewardGold();
 
-        private readonly long _blockDifficulty;
+        public IFeeCalculator? FeeCalculator { get; }
 
         public TxPolicyViolationException ValidateNextBlockTx(
             BlockChain<PolymorphicAction<ActionBase>> blockChain,
@@ -39,15 +36,7 @@ namespace Nekoyume.BlockChain.Policy
             return null;
         }
 
-        public long GetNextBlockDifficulty(BlockChain<PolymorphicAction<ActionBase>> blockChain)
-        {
-            return blockChain.Count > 0 ? _blockDifficulty : 0;
-        }
-
         public long GetMaxTransactionsBytes(long index) => long.MaxValue;
-
-        public HashAlgorithmType GetHashAlgorithm(long index) =>
-            HashAlgorithmType.Of<SHA256>();
 
         public int GetMinTransactionsPerBlock(long index) => 0;
 
