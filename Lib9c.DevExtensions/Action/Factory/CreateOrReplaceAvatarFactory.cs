@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using Lib9c.DevExtensions.Action.Interface;
 
@@ -5,7 +7,7 @@ namespace Lib9c.DevExtensions.Action.Factory
 {
     public static class CreateOrReplaceAvatarFactory
     {
-        public static (Exception exception, ICreateOrReplaceAvatar result)
+        public static (Exception? exception, ICreateOrReplaceAvatar? result)
             TryGetByBlockIndex(
                 long blockIndex,
                 int avatarIndex = 0,
@@ -15,10 +17,11 @@ namespace Lib9c.DevExtensions.Action.Factory
                 int ear = 0,
                 int tail = 0,
                 int level = 1,
-                (int equipmentId, int level)[] equipments = null,
-                (int consumableId, int count)[] foods = null,
-                int[] costumeIds = null,
-                (int runeId, int level)[] runes = null)
+                (int equipmentId, int level)[]? equipments = null,
+                (int consumableId, int count)[]? foods = null,
+                int[]? costumeIds = null,
+                (int runeId, int level)[]? runes = null,
+                (int stageId, int[] crystalRandomBuffIds)? crystalRandomBuff = null)
         {
             try
             {
@@ -35,7 +38,8 @@ namespace Lib9c.DevExtensions.Action.Factory
                         equipments,
                         foods,
                         costumeIds,
-                        runes));
+                        runes,
+                        crystalRandomBuff));
             }
             catch (ArgumentException e)
             {

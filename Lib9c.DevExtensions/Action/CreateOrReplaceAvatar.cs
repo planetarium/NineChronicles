@@ -20,6 +20,7 @@ using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Nekoyume.TableData.Crystal;
 using static Lib9c.SerializeKeys;
 
 namespace Lib9c.DevExtensions.Action
@@ -39,6 +40,13 @@ namespace Lib9c.DevExtensions.Action
         public IOrderedEnumerable<(int consumableId, int count)> Foods { get; private set; }
         public IOrderedEnumerable<int> CostumeIds { get; private set; }
         public IOrderedEnumerable<(int runeId, int level)> Runes { get; private set; }
+
+        public (int stageId, IOrderedEnumerable<int> crystalRandomBuffIds)? CrystalRandomBuff
+        {
+            get;
+            private set;
+        }
+        // public
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal
         {
@@ -61,7 +69,13 @@ namespace Lib9c.DevExtensions.Action
                     new List(CostumeIds.Select(e => (Integer)e)),
                     new List(Runes.Select(e => new List(
                         (Integer)e.runeId,
-                        (Integer)e.level))));
+                        (Integer)e.level))),
+                    CrystalRandomBuff is null
+                        ? (IValue)Null.Value
+                        : new List(
+                            (Integer)CrystalRandomBuff.Value.stageId,
+                            new List(CrystalRandomBuff.Value.crystalRandomBuffIds.Select(e =>
+                                (Integer)e))));
                 return new Dictionary<string, IValue>
                 {
                     ["l"] = list,
@@ -98,6 +112,13 @@ namespace Lib9c.DevExtensions.Action
                 .Select<List, (int runeId, int level)>(l => ((Integer)l[0], (Integer)l[1]))
                 .OrderBy(tuple => tuple.runeId)
                 .ThenBy(tuple => tuple.level);
+            CrystalRandomBuff = list[11] is List l11
+                ? (
+                    (Integer)l11[0],
+                    ((List)l11[1])
+                    .Select(crystalRandomBuffId => (int)(Integer)crystalRandomBuffId)
+                    .OrderBy(crystalRandomBuffId => crystalRandomBuffId))
+                : ((int stageId, IOrderedEnumerable<int> crystalRandomBuffIds)?)null;
         }
 
         public CreateOrReplaceAvatar() :
@@ -116,7 +137,8 @@ namespace Lib9c.DevExtensions.Action
             (int equipmentId, int level)[]? equipments = null,
             (int consumableId, int count)[]? foods = null,
             int[]? costumeIds = null,
-            (int runeId, int level)[]? runes = null) :
+            (int runeId, int level)[]? runes = null,
+            (int stageId, int[] crystalRandomBuffIds)? crystalRandomBuff = null) :
             this(
                 avatarIndex,
                 name,
@@ -135,7 +157,11 @@ namespace Lib9c.DevExtensions.Action
                 .OrderBy(id => id),
                 (runes ?? Array.Empty<(int runeId, int level)>())
                 .OrderBy(tuple => tuple.runeId)
-                .ThenBy(tuple => tuple.level))
+                .ThenBy(tuple => tuple.level),
+                crystalRandomBuff is null
+                    ? ((int stageId, IOrderedEnumerable<int> crystalRandomBuffIds)?)null
+                    : (crystalRandomBuff.Value.stageId,
+                        crystalRandomBuff.Value.crystalRandomBuffIds.OrderBy(e => e)))
         {
         }
 
@@ -150,7 +176,8 @@ namespace Lib9c.DevExtensions.Action
             IOrderedEnumerable<(int equipmentId, int level)>? equipments = null,
             IOrderedEnumerable<(int consumableId, int count)>? foods = null,
             IOrderedEnumerable<int>? costumeIds = null,
-            IOrderedEnumerable<(int runeId, int level)>? runes = null)
+            IOrderedEnumerable<(int runeId, int level)>? runes = null,
+            (int stageId, IOrderedEnumerable<int> crystalRandomBuffIds)? crystalRandomBuff = null)
         {
             if (avatarIndex < 0 ||
                 avatarIndex >= GameConfig.SlotCount)
@@ -293,6 +320,28 @@ namespace Lib9c.DevExtensions.Action
                 }
             }
 
+            if (crystalRandomBuff != null)
+            {
+                if (crystalRandomBuff.Value.stageId < 0)
+                {
+                    throw new ArgumentException(
+                        $"Invalid stageId: ({crystalRandomBuff.Value.stageId})." +
+                        " It must be greater than or equal to 0.",
+                        nameof(crystalRandomBuff));
+                }
+
+                foreach (var buffId in crystalRandomBuff.Value.crystalRandomBuffIds)
+                {
+                    if (buffId < 0)
+                    {
+                        throw new ArgumentException(
+                            $"Invalid buffId: ({buffId})." +
+                            " It must be greater than or equal to 0.",
+                            nameof(buffId));
+                    }
+                }
+            }
+
             AvatarIndex = avatarIndex;
             Name = name;
             Hair = hair;
@@ -311,6 +360,7 @@ namespace Lib9c.DevExtensions.Action
             Runes = runes ?? Array.Empty<(int runeId, int level)>()
                 .OrderBy(tuple => tuple.runeId)
                 .ThenBy(tuple => tuple.level);
+            CrystalRandomBuff = crystalRandomBuff;
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -363,6 +413,7 @@ namespace Lib9c.DevExtensions.Action
                     typeof(SkillSheet),
                     typeof(ConsumableItemSheet),
                     typeof(CostumeItemSheet),
+                    typeof(CrystalStageBuffGachaSheet),
                 });
             var gameConfig = states.GetGameConfigState();
 
@@ -479,11 +530,11 @@ namespace Lib9c.DevExtensions.Action
                     ItemEnhancement.TryGetRow(
                         equipment,
                         enhancementCostSheetV2,
-                        out var row))
+                        out var enhancementCostRow))
                 {
                     for (var j = 0; j < eLevel; j++)
                     {
-                        equipment.LevelUpV2(random, row, true);
+                        equipment.LevelUpV2(random, enhancementCostRow, true);
                     }
                 }
 
@@ -522,13 +573,7 @@ namespace Lib9c.DevExtensions.Action
             // Set CombinationSlot.
             for (var i = 0; i < AvatarState.CombinationSlotCapacity; i++)
             {
-                var slotAddr = avatarAddr.Derive(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        CombinationSlotState.DeriveFormat,
-                        i
-                    )
-                );
+                var slotAddr = Addresses.GetCombinationSlotAddress(avatarAddr, i);
                 var slot = new CombinationSlotState(
                     slotAddr,
                     GameConfig.RequireClearedStageLevel.CombinationEquipmentAction);
@@ -550,6 +595,35 @@ namespace Lib9c.DevExtensions.Action
                     rune.Serialize());
             }
             // ~Set Runes
+
+            // Set CrystalRandomBuffState
+            var crystalRandomSkillAddr =
+                Addresses.GetSkillStateAddressFromAvatarAddress(avatarAddr);
+            if (CrystalRandomBuff is null)
+            {
+                states = states.SetState(crystalRandomSkillAddr, Null.Value);
+            }
+            else
+            {
+                var crb = CrystalRandomBuff.Value;
+                var crystalRandomSkillState = new CrystalRandomSkillState(
+                    crystalRandomSkillAddr,
+                    crb.stageId);
+                var crystalStageBuffGachaSheet = sheets.GetSheet<CrystalStageBuffGachaSheet>();
+                if (crystalStageBuffGachaSheet.TryGetValue(
+                        crb.stageId,
+                        out var crystalStageBuffGachaRow))
+                {
+                    crystalRandomSkillState.Update(
+                        crystalStageBuffGachaRow.MaxStar,
+                        crystalStageBuffGachaSheet);
+                }
+
+                crystalRandomSkillState.Update(crb.crystalRandomBuffIds.ToList());
+                states = states.SetState(crystalRandomSkillAddr,
+                    crystalRandomSkillState.Serialize());
+            }
+            // ~Set CrystalRandomBuffState
 
             return states;
         }

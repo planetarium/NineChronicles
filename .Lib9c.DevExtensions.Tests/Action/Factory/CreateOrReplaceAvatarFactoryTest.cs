@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Linq;
 using Lib9c.DevExtensions.Action.Factory;
@@ -20,10 +22,11 @@ namespace Lib9c.DevExtensions.Tests.Action.Factory
             int ear,
             int tail,
             int level,
-            (int equipmentId, int level)[] equipments,
-            (int consumableId, int count)[] foods,
-            int[] costumeIds,
-            (int runeId, int level)[] runes)
+            (int equipmentId, int level)[]? equipments,
+            (int consumableId, int count)[]? foods,
+            int[]? costumeIds,
+            (int runeId, int level)[]? runes,
+            (int stageId, int[] crystalRandomBuffIds)? crystalRandomBuff)
         {
             var (e, r) = CreateOrReplaceAvatarFactory
                 .TryGetByBlockIndex(
@@ -38,10 +41,11 @@ namespace Lib9c.DevExtensions.Tests.Action.Factory
                     equipments,
                     foods,
                     costumeIds,
-                    runes);
+                    runes,
+                    crystalRandomBuff);
             Assert.Null(e);
             Assert.NotNull(r);
-            Assert.Equal(avatarIndex, r.AvatarIndex);
+            Assert.Equal(avatarIndex, r!.AvatarIndex);
             Assert.Equal(name, r.Name);
             Assert.Equal(hair, r.Hair);
             Assert.Equal(lens, r.Lens);
@@ -83,6 +87,18 @@ namespace Lib9c.DevExtensions.Tests.Action.Factory
             {
                 Assert.True(runes.SequenceEqual(r.Runes));
             }
+
+            if (crystalRandomBuff is null)
+            {
+                Assert.Null(r.CrystalRandomBuff);
+            }
+            else
+            {
+                Assert.NotNull(r.CrystalRandomBuff);
+                Assert.Equal(crystalRandomBuff.Value.stageId, r.CrystalRandomBuff!.Value.stageId);
+                Assert.True(crystalRandomBuff.Value.crystalRandomBuffIds.SequenceEqual(
+                    r.CrystalRandomBuff.Value.crystalRandomBuffIds));
+            }
         }
 
         [Theory]
@@ -98,10 +114,11 @@ namespace Lib9c.DevExtensions.Tests.Action.Factory
             int ear,
             int tail,
             int level,
-            (int equipmentId, int level)[] equipments,
-            (int consumableId, int count)[] foods,
-            int[] costumeIds,
-            (int runeId, int level)[] runes)
+            (int equipmentId, int level)[]? equipments,
+            (int consumableId, int count)[]? foods,
+            int[]? costumeIds,
+            (int runeId, int level)[]? runes,
+            (int stageId, int[] crystalRandomBuffIds)? crystalRandomBuff)
         {
             var (e, r) = CreateOrReplaceAvatarFactory
                 .TryGetByBlockIndex(
@@ -116,7 +133,8 @@ namespace Lib9c.DevExtensions.Tests.Action.Factory
                     equipments,
                     foods,
                     costumeIds,
-                    runes);
+                    runes,
+                    crystalRandomBuff);
             Assert.NotNull(e);
             Assert.IsType<ArgumentException>(e);
             Assert.Null(r);
