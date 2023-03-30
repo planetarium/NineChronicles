@@ -184,9 +184,10 @@
             <paramref name="blockHeader"/> as its key.
             </para>
             </summary>
-            <param name="blockHeader">This is the header of the <see cref="T:Libplanet.Blockchain.BlockChain`1"/>
+            <param name="blockHeader">The header of the <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s
             tip at the time of downloading the blocks.</param>
-            <param name="branch">The list of downloaded <see cref="T:Libplanet.Blocks.Block`1"/>s.</param>
+            <param name="branch">The list of downloaded <see cref="T:Libplanet.Blocks.Block`1"/>s and
+            its <see cref="T:Libplanet.Blocks.BlockCommit"/>s.</param>
         </member>
         <member name="M:Libplanet.Net.BlockCandidateTable`1.GetCurrentRoundCandidate(Libplanet.Blocks.BlockHeader)">
             <summary>
@@ -194,7 +195,8 @@
             </summary>
             <param name="thisRoundTip">Canonical <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s
             tip of this round.</param>
-            <returns>A <see cref="T:System.Collections.Generic.List`1"/> of <see cref="T:Libplanet.Blocks.Block`1"/>s associated with
+            <returns>A <see cref="T:System.Collections.Generic.List`1"/> of <see cref="T:Libplanet.Blocks.Block`1"/>s with associated
+            <see cref="T:Libplanet.Blocks.BlockCommit"/>s by
             <paramref name="thisRoundTip"/> if found, otherwise <see langword="null"/>.
             The result is guaranteed to be non-empty and consecutive sorted by
             <see cref="P:Libplanet.Blocks.Block`1.Index"/>.
@@ -374,6 +376,1132 @@
         <member name="M:Libplanet.Net.BoundPeer.ToString">
             <inheritdoc/>
         </member>
+        <member name="T:Libplanet.Net.Consensus.ConsensusContext`1">
+            <summary>
+            A class that maintains the states of a <see cref="T:Libplanet.Net.Consensus.Context`1"/> for block
+            indices now in consensus.
+            </summary>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type of <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.
+            </typeparam>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.ConsensusContext`1.#ctor(Libplanet.Net.Consensus.ConsensusContext{`0}.DelegateBroadcastMessage,Libplanet.Blockchain.BlockChain{`0},Libplanet.Crypto.PrivateKey,System.TimeSpan,Libplanet.Net.Consensus.ContextTimeoutOption)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Libplanet.Net.Consensus.ConsensusContext`1"/> class.
+            </summary>
+            <param name="broadcastMessage">A delegate method that will broadcasting given
+            <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/> to validators.
+            </param>
+            <param name="blockChain">A blockchain that will be committed, which
+            will be voted by consensus, and used for proposing a block.
+            </param>
+            <param name="privateKey">A <see cref="T:Libplanet.Crypto.PrivateKey"/> for signing message and blocks.
+            </param>
+            <param name="newHeightDelay">A time delay in starting the consensus for the next height
+            block. <seealso cref="M:Libplanet.Net.Consensus.ConsensusContext`1.OnTipChanged(System.Object,System.ValueTuple{Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0}})"/>
+            </param>
+            <param name="contextTimeoutOption">A <see cref="T:Libplanet.Net.Consensus.ContextTimeoutOption"/> for
+            configuring a timeout for each <see cref="P:Libplanet.Net.Consensus.ConsensusContext`1.Step"/>.</param>
+        </member>
+        <member name="T:Libplanet.Net.Consensus.ConsensusContext`1.DelegateBroadcastMessage">
+            <summary>
+            A delegate method for using as broadcasting a <see cref="T:Libplanet.Net.Messages.Message"/> to
+            validators.
+            </summary>
+            <param name="message">A message to broadcast.</param>
+        </member>
+        <member name="P:Libplanet.Net.Consensus.ConsensusContext`1.Height">
+            <summary>
+            The index of block that <see cref="T:Libplanet.Net.Consensus.ConsensusContext`1"/> is watching. The value can be
+            changed by starting a consensus or appending a block.
+            </summary>
+            <seealso cref="M:Libplanet.Net.Consensus.ConsensusContext`1.NewHeight(System.Int64)"/>  <seealso cref="M:Libplanet.Net.Consensus.ConsensusContext`1.OnTipChanged(System.Object,System.ValueTuple{Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0}})"/>
+            <returns>If <see cref="M:Libplanet.Net.Consensus.ConsensusContext`1.NewHeight(System.Int64)"/> or <see cref="M:Libplanet.Net.Consensus.ConsensusContext`1.OnTipChanged(System.Object,System.ValueTuple{Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0}})"/> is called
+            before, returns current working height, otherwise returns <c>-1</c>.</returns>
+        </member>
+        <member name="P:Libplanet.Net.Consensus.ConsensusContext`1.Round">
+            <summary>
+            A current round of <see cref="T:Libplanet.Net.Consensus.Context`1"/> in current <see cref="P:Libplanet.Net.Consensus.ConsensusContext`1.Height"/>.
+            </summary>
+            <returns>If there is <see cref="T:Libplanet.Net.Consensus.Context`1"/> for <see cref="P:Libplanet.Net.Consensus.ConsensusContext`1.Height"/> returns the round
+            of current <see cref="T:Libplanet.Net.Consensus.Context`1"/>, or otherwise returns -1.
+            </returns>
+        </member>
+        <member name="P:Libplanet.Net.Consensus.ConsensusContext`1.Step">
+            <summary>
+            The current step of <see cref="T:Libplanet.Net.Consensus.Context`1"/> in current <see cref="P:Libplanet.Net.Consensus.ConsensusContext`1.Height"/>.
+            </summary>
+            <returns>If there is <see cref="T:Libplanet.Net.Consensus.Context`1"/> for <see cref="P:Libplanet.Net.Consensus.ConsensusContext`1.Height"/> returns the step
+            of current <see cref="T:Libplanet.Net.Consensus.Context`1"/>, or otherwise returns
+            <see cref="F:Libplanet.Net.Consensus.Step.Null"/>.
+            </returns>
+        </member>
+        <member name="P:Libplanet.Net.Consensus.ConsensusContext`1.Contexts">
+            <summary>
+            A dictionary of <see cref="T:Libplanet.Net.Consensus.Context`1"/> for each heights. Each key represents the
+            height of value, and value is the <see cref="T:Libplanet.Net.Consensus.Context`1"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.ConsensusContext`1.Dispose">
+            <inheritdoc cref="M:System.IDisposable.Dispose"/>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.ConsensusContext`1.NewHeight(System.Int64)">
+            <summary>
+            Starts a new <see cref="T:Libplanet.Net.Consensus.Context`1"/> for given <paramref name="height"/>.
+            </summary>
+            <param name="height">The height of a new <see cref="T:Libplanet.Net.Consensus.Context`1"/> to start.</param>
+            <exception cref="T:Libplanet.Net.Consensus.InvalidHeightIncreasingException">Thrown if given
+            <paramref name="height"/> is less than or equal to <see cref="P:Libplanet.Net.Consensus.ConsensusContext`1.Height"/>.</exception>
+            <remarks>The method is also called when the tip of the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> is
+            changed (i.e., committed, synchronized).
+            </remarks>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.ConsensusContext`1.HandleMessage(Libplanet.Net.Messages.ConsensusMsg)">
+            <summary>
+            <para>
+            Handles a received <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/> by either dispatching it to the right
+            <see cref="T:Libplanet.Net.Consensus.Context`1"/> or discarding it.
+            </para>
+            <para>
+            In particular, this discards <paramref name="consensusMessage"/> with
+            <see cref="P:Libplanet.Net.Messages.ConsensusMsg.Height"/> less than <see cref="P:Libplanet.Net.Consensus.ConsensusContext`1.Height"/>.  Otherwise,
+            given <paramref name="consensusMessage"/> is passed on to a <see cref="T:Libplanet.Net.Consensus.Context`1"/>
+            with <see cref="P:Libplanet.Net.Consensus.Context`1.Height"/> the same as <see cref="P:Libplanet.Net.Messages.ConsensusMsg.Height"/> of
+            <paramref name="consensusMessage"/>.  If there is no such <see cref="T:Libplanet.Net.Consensus.Context`1"/>,
+            then a new <see cref="T:Libplanet.Net.Consensus.Context`1"/> is created for the dispatch.
+            </para>
+            </summary>
+            <param name="consensusMessage">The <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/> received from
+            any validator.
+            </param>
+            <returns>
+            <see langword="true"/> if <paramref name="consensusMessage"/> is dispatched to
+            a <see cref="T:Libplanet.Net.Consensus.Context`1"/>, <see langword="false"/> otherwise.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.ConsensusContext`1.ToString">
+            <summary>
+            Returns the summary for <see cref="T:Libplanet.Net.Consensus.ConsensusContext`1"/>.
+            </summary>
+            <returns>Returns the current height <see cref="T:Libplanet.Net.Consensus.Context`1"/>. if there's no instance of
+            <see cref="T:Libplanet.Net.Consensus.Context`1"/> for current height, returns "No context".
+            </returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.ConsensusContext`1.OnContextStateChanged(System.Object,System.ValueTuple{System.Int32,System.Int32,Libplanet.Net.Consensus.Step})">
+            <summary>
+            A handler to process <see cref="E:Libplanet.Net.Consensus.Context`1.StateChanged"/> <see langword="event"/>s.
+            In particular, this watches for a successful state change into
+            <see cref="F:Libplanet.Net.Consensus.Step.EndCommit"/> for a <see cref="T:Libplanet.Net.Consensus.Context`1"/> to turn off
+            bootstrapping.
+            </summary>
+            <param name="sender">The source object invoking the event.</param>
+            <param name="e">The event arguments given by the source object.</param>
+            <remarks>
+            This is conditionally attached to <see cref="E:Libplanet.Net.Consensus.Context`1.StateChanged"/>
+            to reduce memory usage.
+            </remarks>
+            <seealso cref="M:Libplanet.Net.Consensus.ConsensusContext`1.AttachEventHandlers(Libplanet.Net.Consensus.Context{`0})"/>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.ConsensusContext`1.OnTipChanged(System.Object,System.ValueTuple{Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0}})">
+            <summary>
+            A handler for <see cref="E:Libplanet.Blockchain.BlockChain`1.TipChanged"/> event that calls
+            <see cref="M:Libplanet.Net.Consensus.ConsensusContext`1.NewHeight(System.Int64)"/>.  Starting a new height will be delayed for
+            <see cref="F:Libplanet.Net.Consensus.ConsensusContext`1._newHeightDelay"/> in order to collect remaining delayed votes
+            and stabilize the consensus process by waiting for Global Stabilization Time.
+            </summary>
+            <param name="sender">The source object instance for <see cref="T:System.EventHandler"/>.
+            </param>
+            <param name="e">The event arguments given by <see cref="E:Libplanet.Blockchain.BlockChain`1.TipChanged"/>
+            as a tuple of the old tip and the new tip.
+            </param>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.ConsensusContext`1.CreateContext(System.Int64)">
+            <summary>
+            Create new context of height of the given <paramref name="height"/>
+            and attach event handlers to it, and return the created context.
+            </summary>
+            <param name="height">The height of the context to create.</param>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.ConsensusContext`1.RemoveOldContexts(System.Int64)">
+            <summary>
+            Discard and remove all contexts that has lower height with
+            the given <paramref name="height"/>.
+            </summary>
+            <param name="height">The upper bound of height of the contexts to be discarded.</param>
+        </member>
+        <member name="E:Libplanet.Net.Consensus.ConsensusContext`1.ExceptionOccurred">
+            <inheritdoc cref="E:Libplanet.Net.Consensus.Context`1.ExceptionOccurred"/>
+        </member>
+        <member name="E:Libplanet.Net.Consensus.ConsensusContext`1.TimeoutProcessed">
+            <inheritdoc cref="E:Libplanet.Net.Consensus.Context`1.TimeoutProcessed"/>
+        </member>
+        <member name="E:Libplanet.Net.Consensus.ConsensusContext`1.StateChanged">
+            <inheritdoc cref="E:Libplanet.Net.Consensus.Context`1.StateChanged"/>
+        </member>
+        <member name="E:Libplanet.Net.Consensus.ConsensusContext`1.MessageBroadcasted">
+            <inheritdoc cref="E:Libplanet.Net.Consensus.Context`1.MessageBroadcasted"/>
+        </member>
+        <member name="E:Libplanet.Net.Consensus.ConsensusContext`1.MessageConsumed">
+            <inheritdoc cref="E:Libplanet.Net.Consensus.Context`1.MessageConsumed"/>
+        </member>
+        <member name="E:Libplanet.Net.Consensus.ConsensusContext`1.MutationConsumed">
+            <inheritdoc cref="E:Libplanet.Net.Consensus.Context`1.MutationConsumed"/>
+        </member>
+        <member name="T:Libplanet.Net.Consensus.ConsensusReactor`1">
+            <summary>
+            A manager class for starting network and joining into consensus.
+            <seealso cref="T:Libplanet.Net.Consensus.ConsensusContext`1"/>
+            </summary>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type of <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.
+            </typeparam>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.ConsensusReactor`1.#ctor(Libplanet.Net.Transports.ITransport,Libplanet.Blockchain.BlockChain{`0},Libplanet.Crypto.PrivateKey,System.Collections.Immutable.ImmutableList{Libplanet.Net.BoundPeer},System.Collections.Immutable.ImmutableList{Libplanet.Net.BoundPeer},System.TimeSpan,Libplanet.Net.Consensus.ContextTimeoutOption)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Libplanet.Net.Consensus.ConsensusReactor`1"/> class.
+            </summary>
+            <param name="consensusTransport">An <see cref="T:Libplanet.Net.Transports.ITransport"/> for sending the
+            <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/>s to validators.</param>
+            <param name="blockChain">A blockchain that will be committed, which
+            will be voted by consensus, and used for proposing a block.
+            </param>
+            <param name="privateKey">A <see cref="T:Libplanet.Crypto.PrivateKey"/> for using in signing a block,
+            message.
+            </param>
+            <param name="validatorPeers">A list of validator's <see cref="T:Libplanet.Net.BoundPeer"/>, including
+            itself.
+            </param>
+            <param name="seedPeers">A list of seed's <see cref="T:Libplanet.Net.BoundPeer"/>.</param>
+            <param name="newHeightDelay">A time delay in starting the consensus for the next height
+            block.
+            </param>
+            <param name="contextTimeoutOption">A <see cref="T:Libplanet.Net.Consensus.ContextTimeoutOption"/> for
+            configuring a timeout for each <see cref="T:Libplanet.Net.Consensus.Step"/>.</param>
+        </member>
+        <member name="P:Libplanet.Net.Consensus.ConsensusReactor`1.Running">
+            <summary>
+            Whether this <see cref="T:Libplanet.Net.Consensus.ConsensusReactor`1"/> is running.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Consensus.ConsensusReactor`1.Height">
+            <inheritdoc cref="P:Libplanet.Net.Consensus.ConsensusContext`1.Height"/>
+        </member>
+        <member name="P:Libplanet.Net.Consensus.ConsensusReactor`1.Validators">
+            <summary>
+            An <see cref="T:System.Collections.Generic.IEnumerable`1"/> of the validators.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.ConsensusReactor`1.Dispose">
+            <summary>
+            <inheritdoc cref="M:System.IDisposable.Dispose"/>
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.ConsensusReactor`1.StartAsync(System.Threading.CancellationToken)">
+            <summary>
+            Starts the instance and joins into consensus.
+            </summary>
+            <param name="cancellationToken">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>Returns the <see cref="M:Libplanet.Net.Transports.ITransport.StartAsync(System.Threading.CancellationToken)"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.ConsensusReactor`1.StopAsync(System.Threading.CancellationToken)">
+            <summary>
+            Stops the instance and consensus.
+            </summary>
+            <param name="cancellationToken">A cancellation Token.</param>
+            <returns>Returns the <see cref="M:Libplanet.Net.Transports.ITransport.StopAsync(System.TimeSpan,System.Threading.CancellationToken)"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.ConsensusReactor`1.ToString">
+            <summary>
+            Returns a summary of current consensus status in JSON-formatted string.
+            </summary>
+            <returns>Returns a summary in JSON-formatted string.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.ConsensusReactor`1.AddMessage(Libplanet.Net.Messages.ConsensusMsg)">
+            <summary>
+            Adds <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/> to gossip.
+            </summary>
+            <param name="message">A <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/> to add.</param>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.ConsensusReactor`1.ProcessMessage(Libplanet.Net.Messages.Message)">
+            <summary>
+            A handler for received <see cref="T:Libplanet.Net.Messages.Message"/>s.
+            </summary>
+            <param name="message">A message to process.</param>
+        </member>
+        <member name="T:Libplanet.Net.Consensus.ConsensusReactorOption">
+            <summary>
+            A option struct for initializing <see cref="T:Libplanet.Net.Consensus.ConsensusReactor`1"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Consensus.ConsensusReactorOption.ConsensusPort">
+            <summary>
+            A port number that is used for exchanging <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Consensus.ConsensusReactorOption.ConsensusWorkers">
+            <summary>
+            A number of <see cref="T:Libplanet.Net.Transports.ITransport"/>'s worker.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Consensus.ConsensusReactorOption.ConsensusPrivateKey">
+            <summary>
+            A <see cref="T:Libplanet.Crypto.PrivateKey"/> for signing block and message.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Consensus.ConsensusReactorOption.SeedPeers">
+            <summary>
+            A list of seeds.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Consensus.ConsensusReactorOption.ConsensusPeers">
+            <summary>
+            A list of validators.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Consensus.ConsensusReactorOption.TargetBlockInterval">
+            <summary>
+            A time delay in starting the consensus for the next height block.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Consensus.ConsensusReactorOption.ContextTimeoutOptions">
+            <summary>
+            A timeout second and multiplier value for used in <see cref="T:Libplanet.Net.Consensus.Context`1"/>.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Net.Consensus.Context`1">
+            <summary>
+            A state machine class of PBFT consensus algorithm. The state machine is responsible for
+            proposing, validating, voting a block and committing the voted block to the blockchain.
+            There are five states:
+            <list type="bullet">
+                <item>
+                    <see cref="F:Libplanet.Net.Consensus.Step.Default"/> which is the initial state when
+                    the <see cref="M:Libplanet.Net.Consensus.Context`1.Start(Libplanet.Blocks.BlockCommit,System.Boolean)"/> is not called (i.e., round has not been started).
+                </item>
+                <item>
+                    <see cref="F:Libplanet.Net.Consensus.Step.Propose"/>, which is the state when
+                    the round has been started and waiting for the block proposal. If a validator is a
+                    proposer of the round, it will propose a block to the other validators and to
+                    itself.
+                </item>
+                <item>
+                    <see cref="F:Libplanet.Net.Consensus.Step.PreVote"/>, which is the state when a block
+                    proposal for a round has been received. While translating to this step, state
+                    machine votes for the block whether block is valid or not, and waiting for any +2/3
+                    votes from other validators.
+                </item>
+                <item>
+                    <see cref="F:Libplanet.Net.Consensus.Step.PreCommit"/>, which is the state received
+                    any +2/3 votes in <see cref="F:Libplanet.Net.Consensus.Step.PreVote"/>. While
+                    translating to this step, state machine votes for whether the block should be
+                    committed or not, and waiting for any +2/3 committing votes from other validators.
+                    If <see cref="F:Libplanet.Net.Consensus.Step.PreCommit"/>
+                    receives +2/3 commit votes with NIL, starts new round <see cref="M:Libplanet.Net.Consensus.Context`1.StartRound(System.Int32)"/> and
+                    moves step to <see cref="F:Libplanet.Net.Consensus.Step.Propose"/>.
+                </item>
+                <item>
+                    <see cref="F:Libplanet.Net.Consensus.Step.EndCommit"/>, which is the state represents
+                    committing vote has been received from other validators. Block will be committed
+                    to the blockchain and consensus for this height is stopped. (responsibility of next
+                    height handling is at <see cref="P:Libplanet.Net.Consensus.Context`1.ConsensusContext"/>).
+                </item>
+                <item>
+                    In the above states, <see cref="F:Libplanet.Net.Consensus.Step.Propose"/>, If
+                    receiving proposal fails in <see cref="M:Libplanet.Net.Consensus.Context`1.TimeoutPropose(System.Int64)"/>, then step is moved to
+                    <see cref="F:Libplanet.Net.Consensus.Step.PreVote"/> and vote NIL.
+                </item>
+                <item>
+                    Similar to Propose, <see cref="F:Libplanet.Net.Consensus.Step.PreVote"/> and
+                    <see cref="F:Libplanet.Net.Consensus.Step.PreCommit"/> also wait for
+                    <see cref="M:Libplanet.Net.Consensus.Context`1.TimeoutPreVote(System.Int64)"/> or <see cref="M:Libplanet.Net.Consensus.Context`1.TimeoutPreCommit(System.Int64)"/> respectively,
+                    if +2/3 vote received but neither NIL nor Block is not +2/3. If still +2/3 vote is
+                    not received neither NIL nor Block after timeout runs out, then move to next step
+                    and vote NIL.
+                </item>
+            </list>
+            Validators are bonding/bonded nodes that participate in the consensus.
+            </summary>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type of <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.
+            </typeparam>
+            <remarks>
+            A <see cref="T:Libplanet.Net.Consensus.Context`1"/> represents a consensus of a single height and its multiple
+            rounds.
+            </remarks>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Context`1.Start(Libplanet.Blocks.BlockCommit,System.Boolean)">
+            <summary>
+            Starts round #0 of consensus for <see cref="P:Libplanet.Net.Consensus.Context`1.Height"/>.
+            </summary>
+            <param name="lastCommit">A <see cref="P:Libplanet.Blocks.Block`1.LastCommit"/> from previous block.
+            </param>
+            <param name="bootstrapping">A <see langword="bool"/> flag indicating whether
+            this <see cref="T:Libplanet.Net.Consensus.Context`1"/> should run as a bootstrapping <see cref="T:Libplanet.Net.Consensus.Context`1"/>
+            or not.</param>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Context`1.MessageConsumerTask(System.Threading.CancellationToken)">
+            <summary>
+            Consumes every <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/> in the message queue.
+            </summary>
+            <param name="cancellationToken">A cancellation token for reading
+            <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/>s from the message queue.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Context`1.MutationConsumerTask(System.Threading.CancellationToken)">
+            <summary>
+            Consumes every <see cref="T:System.Action"/> in the mutation queue.
+            </summary>
+            <param name="cancellationToken">A cancellation token for reading
+            <see cref="T:System.Action"/>s from the mutation queue.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Context`1.ProduceMessage(Libplanet.Net.Messages.ConsensusMsg)">
+            <summary>
+            Adds <paramref name="message"/> to the message queue.
+            </summary>
+            <param name="message">A <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/> to be processed.</param>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Context`1.ProduceMutation(System.Action)">
+            <summary>
+            Adds a mutating <see cref="T:System.Action"/> to the mutation queue.
+            </summary>
+            <param name="mutation">A <see cref="T:System.Action"/> to be processed.</param>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Context`1.OnTimeoutPropose(System.Int32)">
+            <summary>
+            Schedules <see cref="M:Libplanet.Net.Consensus.Context`1.ProcessTimeoutPropose(System.Int32)"/> to be queued after
+            <see cref="M:Libplanet.Net.Consensus.Context`1.TimeoutPropose(System.Int64)"/> amount of time.
+            </summary>
+            <param name="round">A round that the timeout task is scheduled for.</param>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Context`1.OnTimeoutPreVote(System.Int32)">
+            <summary>
+            Schedules <see cref="M:Libplanet.Net.Consensus.Context`1.ProcessTimeoutPreVote(System.Int32)"/> to be queued after
+            <see cref="M:Libplanet.Net.Consensus.Context`1.TimeoutPreVote(System.Int64)"/> amount of time.
+            </summary>
+            <param name="round">A round that the timeout task is scheduled for.</param>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Context`1.OnTimeoutPreCommit(System.Int32)">
+            <summary>
+            Schedules <see cref="M:Libplanet.Net.Consensus.Context`1.ProcessTimeoutPreCommit(System.Int32)"/> to be queued after
+            <see cref="M:Libplanet.Net.Consensus.Context`1.TimeoutPreCommit(System.Int64)"/> amount of time.
+            </summary>
+            <param name="round">The round that the timeout task is scheduled for.</param>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Context`1.#ctor(Libplanet.Net.Consensus.ConsensusContext{`0},Libplanet.Blockchain.BlockChain{`0},System.Int64,Libplanet.Crypto.PrivateKey,Libplanet.Consensus.ValidatorSet,Libplanet.Net.Consensus.ContextTimeoutOption)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Libplanet.Net.Consensus.Context`1"/> class.
+            </summary>
+            <param name="consensusContext">A command class for receiving
+            <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/> from or broadcasts to other validators.</param>
+            <param name="blockChain">A blockchain that will be committed, which
+            will be voted by consensus, and used for proposing a block.
+            </param>
+            <param name="height">A target <see cref="P:Libplanet.Net.Consensus.Context`1.Height"/> of the consensus state.
+            </param>
+            <param name="privateKey">A private key for signing a block and message.
+            <seealso cref="M:Libplanet.Net.Consensus.Context`1.GetValue"/>
+            <seealso cref="M:Libplanet.Net.Consensus.Context`1.ProcessGenericUponRules"/>
+            <seealso cref="M:Libplanet.Net.Consensus.Context`1.MakeVote(System.Int32,System.Nullable{Libplanet.Blocks.BlockHash},Libplanet.Consensus.VoteFlag)"/>
+            </param>
+            <param name="validators">The <see cref="T:Libplanet.Consensus.ValidatorSet"/> for
+            given <paramref name="height"/>.</param>
+            <param name="contextTimeoutOptions">A <see cref="T:Libplanet.Net.Consensus.ContextTimeoutOption"/> for
+            configuring a timeout for each <see cref="P:Libplanet.Net.Consensus.Context`1.Step"/>.</param>
+        </member>
+        <member name="P:Libplanet.Net.Consensus.Context`1.Height">
+            <summary>
+            A target height of this consensus state. This is also a block index now in consensus.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Consensus.Context`1.Round">
+            <summary>
+            A round represents of this consensus state.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Consensus.Context`1.Step">
+            <summary>
+            A step represents of this consensus state. See <see cref="T:Libplanet.Net.Consensus.Context`1"/> for more detail.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Consensus.Context`1.ConsensusContext">
+            <summary>
+            A command class for receiving <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/> from or broadcasts to other
+            validators.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Context`1.Dispose">
+            <inheritdoc cref="M:System.IDisposable.Dispose"/>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Context`1.GetBlockCommit">
+            <summary>
+            Returns a <see cref="T:Libplanet.Blocks.BlockCommit"/> if the context is committed.
+            </summary>
+            <returns>Returns <see cref="T:Libplanet.Blocks.BlockCommit"/> if the context is committed
+            otherwise returns <see langword="null"/>.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Context`1.ToString">
+            <summary>
+            Returns the summary of context in JSON-formatted string.
+            </summary>
+            <returns>Returns a JSON-formatted string of context state.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Context`1.TimeoutPreVote(System.Int64)">
+            <summary>
+            Gets the timeout of <see cref="F:Libplanet.Net.Consensus.Step.PreVote"/> with the given
+            round.
+            </summary>
+            <param name="round">A round to get the timeout.</param>
+            <returns>A duration in <see cref="T:System.TimeSpan"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Context`1.TimeoutPreCommit(System.Int64)">
+            <summary>
+            Gets the timeout of <see cref="F:Libplanet.Net.Consensus.Step.PreCommit"/> with the given
+            round.
+            </summary>
+            <param name="round">A round to get the timeout.</param>
+            <returns>A duration in <see cref="T:System.TimeSpan"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Context`1.TimeoutPropose(System.Int64)">
+            <summary>
+            Gets the timeout of <see cref="F:Libplanet.Net.Consensus.Step.Propose"/> with the given
+            round.
+            </summary>
+            <param name="round">A round to get the timeout.</param>
+            <returns>A duration in <see cref="T:System.TimeSpan"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Context`1.GetValue">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Blocks.Block`1"/> to propose.
+            </summary>
+            <returns>A new <see cref="T:Libplanet.Blocks.Block`1"/> if successfully proposed,
+            otherwise <see langword="null"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Context`1.BroadcastMessage(Libplanet.Net.Messages.ConsensusMsg)">
+            <summary>
+            Broadcasts <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/> to validators.
+            </summary>
+            <param name="message">A <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/> to broadcast.</param>
+            <remarks><see cref="T:Libplanet.Net.Messages.ConsensusMsg"/> should be broadcasted to itself. See
+            <see cref="P:Libplanet.Net.Consensus.ConsensusContext`1.BroadcastMessage"/>.</remarks>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Context`1.IsValid(Libplanet.Blocks.Block{`0})">
+            <summary>
+            Validates the given block.
+            </summary>
+            <param name="block">A <see cref="T:Libplanet.Blocks.Block`1"/> to validate.</param>
+            <returns><see langword="true"/> if block is valid, otherwise <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Context`1.MakeVote(System.Int32,System.Nullable{Libplanet.Blocks.BlockHash},Libplanet.Consensus.VoteFlag)">
+            <summary>
+            Creates a signed <see cref="T:Libplanet.Consensus.Vote"/> for a <see cref="T:Libplanet.Net.Messages.ConsensusPreVoteMsg"/> or
+            a <see cref="T:Libplanet.Net.Messages.ConsensusPreCommitMsg"/>.
+            </summary>
+            <param name="round">Current context round.</param>
+            <param name="hash">Current context locked <see cref="T:Libplanet.Blocks.BlockHash"/>.</param>
+            <param name="flag"><see cref="T:Libplanet.Consensus.VoteFlag"/> of <see cref="T:Libplanet.Consensus.Vote"/> to create.
+            Set to <see cref="F:Libplanet.Consensus.VoteFlag.PreVote"/> if message is <see cref="T:Libplanet.Net.Messages.ConsensusPreVoteMsg"/>.
+            If message is <see cref="T:Libplanet.Net.Messages.ConsensusPreCommitMsg"/>, Set to
+            <see cref="F:Libplanet.Consensus.VoteFlag.PreCommit"/>.</param>
+            <returns>Returns a signed <see cref="T:Libplanet.Consensus.Vote"/> with consensus private key.</returns>
+            <exception cref="T:System.ArgumentException">If <paramref name="flag"/> is either
+            <see cref="F:Libplanet.Consensus.VoteFlag.Null"/> or <see cref="F:Libplanet.Consensus.VoteFlag.Unknown"/>.</exception>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Context`1.GetProposal(System.Int32)">
+            <summary>
+            Gets the proposed block and valid round of the given round.
+            </summary>
+            <param name="round">A round to get.</param>
+            <returns>Returns a tuple of proposer and valid round.  If proposal for the round
+            does not exist, returns <see langword="null"/> instead.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Context`1.HasTwoThirdsPreVote(System.Int32,System.Func{Libplanet.Net.Messages.ConsensusPreVoteMsg,System.Boolean})">
+            <summary>
+            Checks whether the round has +2/3 <see cref="T:Libplanet.Net.Messages.ConsensusPreVoteMsg"/> for
+            <paramref name="round"/> and <paramref name="predicate"/>.
+            </summary>
+            <param name="round">The round to check.</param>
+            <param name="predicate">An additional predicate for counting votes.</param>
+            <returns>Returns <see langword="true"/> if the count is +2/3,
+            otherwise <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Context`1.HasTwoThirdsPreCommit(System.Int32,System.Func{Libplanet.Net.Messages.ConsensusPreCommitMsg,System.Boolean})">
+            <summary>
+            Checks whether the round has +2/3 <see cref="T:Libplanet.Net.Messages.ConsensusPreCommitMsg"/> for
+            <paramref name="round"/> and <paramref name="predicate"/>.
+            </summary>
+            <param name="round">The round to check.</param>
+            <param name="predicate">An additional predicate for counting votes.</param>
+            <returns>Returns <see langword="true"/> if the count is +2/3,
+            otherwise <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Context`1.HasOneThirdValidators(System.Int32)">
+            <summary>
+            Checks whether given <paramref name="round"/> has +1/3 distinct validators
+            already participating in it, i.e. has a <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/> in the
+            <see cref="T:Libplanet.Net.Consensus.MessageLog"/>.
+            </summary>
+            <param name="round">The round to check.</param>
+            <returns><see langword="true"/> if the count is +1/3,
+            otherwise <see langword="false"/>.</returns>
+        </member>
+        <member name="E:Libplanet.Net.Consensus.Context`1.ExceptionOccurred">
+            <summary>
+            An event that is invoked when an <see cref="T:System.Exception"/> is thrown.
+            </summary>
+        </member>
+        <member name="E:Libplanet.Net.Consensus.Context`1.TimeoutProcessed">
+            <summary>
+            An event that invoked when any timeout triggered mutation is processed.
+            This is conditionally triggered when internal countdown timer has reached zero,
+            i.e. when certain conditions are met.
+            </summary>
+        </member>
+        <member name="E:Libplanet.Net.Consensus.Context`1.StateChanged">
+            <summary>
+            An event that is invoked when the message log size, <see cref="P:Libplanet.Net.Consensus.Context`1.Round"/>,
+            and/or <see cref="P:Libplanet.Net.Consensus.Context`1.Step"/> is changed.
+            </summary>
+        </member>
+        <member name="E:Libplanet.Net.Consensus.Context`1.MessageBroadcasted">
+            <summary>
+            An event that is invoked when a <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/> is broadcasted.
+            </summary>
+        </member>
+        <member name="E:Libplanet.Net.Consensus.Context`1.MessageConsumed">
+            <summary>
+            An event that is invoked when a queued <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/> is consumed.
+            </summary>
+            <remarks>
+            This only indicates that a <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/> has been dequeued from
+            internal queue.  This only creates an <see cref="T:System.Action"/> to be consumed
+            by a <see cref="M:Libplanet.Net.Consensus.Context`1.MutationConsumerTask(System.Threading.CancellationToken)"/> and may or may not result in a state change
+            further down the line.
+            </remarks>
+        </member>
+        <member name="E:Libplanet.Net.Consensus.Context`1.MutationConsumed">
+            <summary>
+            An event that is invoked when a queued <see cref="T:System.Action"/> is consumed.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Context`1.StartRound(System.Int32)">
+            <summary>
+            Starts a new round.
+            </summary>
+            <param name="round">The round to start.</param>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Context`1.AddMessage(Libplanet.Net.Messages.ConsensusMsg)">
+            <summary>
+            Validates given <paramref name="message"/> and add it to the message log.
+            </summary>
+            <param name="message">A <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/> to be added.
+            </param>
+            <remarks>
+            If an invalid <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/> is given, this method throws
+            an <see cref="T:Libplanet.Net.Consensus.InvalidConsensusMessageException"/> and handles it <em>internally</em>
+            while invoking <see cref="E:Libplanet.Net.Consensus.Context`1.ExceptionOccurred"/> event.
+            An <see cref="T:Libplanet.Net.Consensus.InvalidConsensusMessageException"/> can be thrown when
+            the internal <see cref="T:Libplanet.Net.Consensus.MessageLog"/> does not accept it, i.e.
+            <see cref="M:Libplanet.Net.Consensus.MessageLog.Add(Libplanet.Net.Messages.ConsensusMsg)"/> returns <see langword="false"/>.
+            </remarks>
+            <seealso cref="M:Libplanet.Net.Consensus.MessageLog.Add(Libplanet.Net.Messages.ConsensusMsg)"/>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Context`1.ProcessGenericUponRules">
+            <summary>
+            Checks the current state to mutate <see cref="P:Libplanet.Net.Consensus.Context`1.Step"/> and/or schedule timeouts.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Context`1.ProcessHeightOrRoundUponRules(Libplanet.Net.Messages.ConsensusMsg)">
+            <summary>
+            Checks the current state to mutate <see cref="P:Libplanet.Net.Consensus.Context`1.Round"/> or to terminate
+            by setting <see cref="P:Libplanet.Net.Consensus.Context`1.Step"/> to <see cref="F:Libplanet.Net.Consensus.Step.EndCommit"/>.
+            </summary>
+            <param name="message">The <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/> to process.
+            Although this is not strictly needed, this is used for optimization.</param>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Context`1.ProcessTimeoutPropose(System.Int32)">
+            <summary>
+            A timeout mutation to run if no <see cref="T:Libplanet.Net.Messages.ConsensusProposalMsg"/> is received in
+            <see cref="M:Libplanet.Net.Consensus.Context`1.TimeoutPropose(System.Int64)"/> and is still in <see cref="F:Libplanet.Net.Consensus.Step.Propose"/> step.
+            </summary>
+            <param name="round">A round that the timeout task is scheduled for.</param>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Context`1.ProcessTimeoutPreVote(System.Int32)">
+            <summary>
+            A timeout mutation to run if +2/3 <see cref="T:Libplanet.Net.Messages.ConsensusPreVoteMsg"/>s were received but
+            is still in <paramref name="round"/> round and <see cref="F:Libplanet.Net.Consensus.Step.PreVote"/> step
+            after <see cref="M:Libplanet.Net.Consensus.Context`1.TimeoutPreVote(System.Int64)"/>.
+            </summary>
+            <param name="round">A round that the timeout task is scheduled for.</param>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Context`1.ProcessTimeoutPreCommit(System.Int32)">
+            <summary>
+            A timeout mutation to run if +2/3 <see cref="T:Libplanet.Net.Messages.ConsensusPreCommitMsg"/>s were received but
+            is still in <paramref name="round"/> round and <see cref="F:Libplanet.Net.Consensus.Step.PreCommit"/> step
+            after <see cref="M:Libplanet.Net.Consensus.Context`1.TimeoutPreVote(System.Int64)"/>.
+            </summary>
+            <param name="round">A round that the timeout task is scheduled for.</param>
+        </member>
+        <member name="T:Libplanet.Net.Consensus.ContextTimeoutOption">
+            <summary>
+            A options class to configure <see cref="T:Libplanet.Net.Consensus.Context`1"/> timeout for each <see cref="T:Libplanet.Net.Consensus.Step"/>.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Net.Consensus.Gossip">
+            <summary>
+            A class gossips messages into network. Peers will be stored and managed by Kademlia DHT.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Gossip.#ctor(Libplanet.Net.Transports.ITransport,System.Collections.Immutable.ImmutableArray{Libplanet.Net.BoundPeer},System.Collections.Immutable.ImmutableArray{Libplanet.Net.BoundPeer},System.Action{Libplanet.Net.Messages.Message},System.TimeSpan,System.Nullable{System.Int64})">
+            <summary>
+            Creates a <see cref="T:Libplanet.Net.Consensus.Gossip"/> instance.
+            </summary>
+            <param name="transport">
+            An <see cref="T:Libplanet.Net.Transports.ITransport"/> used for communicating messages.</param>
+            <param name="peers">A list of <see cref="T:Libplanet.Net.BoundPeer"/> composing network.</param>
+            <param name="seeds">A list of <see cref="T:Libplanet.Net.BoundPeer"/> for lookup network.</param>
+            <param name="processMessage">Action to be called when receiving a new message.</param>
+            <param name="seenTtl">Time To Live of each entry of the seen cache.
+            2 minutes is recommended.</param>
+            <param name="seenCacheLimit">The size limit of the seen cache in byte.</param>
+        </member>
+        <member name="P:Libplanet.Net.Consensus.Gossip.Running">
+            <summary>
+            Whether this <see cref="T:Libplanet.Net.Consensus.Gossip"/> instance is running.
+            </summary>
+            <value>Gets the value indicates whether the instance is running.</value>
+        </member>
+        <member name="P:Libplanet.Net.Consensus.Gossip.AsPeer">
+            <summary>
+            <see cref="T:Libplanet.Net.BoundPeer"/> representation of transport used in <see cref="T:Libplanet.Net.Consensus.Gossip"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Consensus.Gossip.Peers">
+            <summary>
+            The list of <see cref="T:Libplanet.Net.BoundPeer"/>s in the <see cref="T:Libplanet.Net.Consensus.Gossip"/>'s table.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Gossip.StartAsync(System.Threading.CancellationToken)">
+            <summary>
+            Start the <see cref="T:Libplanet.Net.Consensus.Gossip"/> instance.
+            </summary>
+            <param name="ctx">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Gossip.StopAsync(System.TimeSpan,System.Threading.CancellationToken)">
+            <summary>
+            Stop the <see cref="T:Libplanet.Net.Consensus.Gossip"/> instance.
+            </summary>
+            <param name="waitFor">
+            The <see cref="T:System.TimeSpan"/> of delay before actual stopping.</param>
+            <param name="ctx">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Gossip.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Gossip.WaitForRunningAsync">
+            <summary>
+            Waits until this <see cref="T:Libplanet.Net.Consensus.Gossip"/> instance gets started to run.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> completed when <see cref="P:Libplanet.Net.Consensus.Gossip.Running"/>
+            property becomes <see langword="true"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Gossip.AddMessage(Libplanet.Net.Messages.MessageContent)">
+            <summary>
+            Process a <see cref="T:Libplanet.Net.Messages.MessageContent"/> and add it to the gossip.
+            </summary>
+            <param name="content">A <see cref="T:Libplanet.Net.Messages.MessageContent"/> instance to
+            process and gossip.</param>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Gossip.AddMessage(Libplanet.Net.Messages.Message)">
+            <summary>
+            Process a <see cref="T:Libplanet.Net.Messages.Message"/> and add it to the gossip.
+            </summary>
+            <param name="message">A <see cref="T:Libplanet.Net.Messages.Message"/> instance to
+            process and gossip.</param>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Gossip.AddMessages(System.Collections.Generic.IEnumerable{Libplanet.Net.Messages.MessageContent})">
+            <summary>
+            Adds multiple <see cref="T:Libplanet.Net.Messages.MessageContent"/>s in parallel.
+            <seealso cref="M:Libplanet.Net.Consensus.Gossip.AddMessage(Libplanet.Net.Messages.MessageContent)"/>
+            </summary>
+            <param name="contents">
+            An enumerable <see cref="T:Libplanet.Net.Messages.MessageContent"/> instance to process and gossip.</param>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Gossip.AddMessages(System.Collections.Generic.IEnumerable{Libplanet.Net.Messages.Message})">
+            <summary>
+            Adds multiple <see cref="T:Libplanet.Net.Messages.Message"/>s in parallel.
+            <seealso cref="M:Libplanet.Net.Consensus.Gossip.AddMessage(Libplanet.Net.Messages.Message)"/>
+            </summary>
+            <param name="messages">
+            An enumerable <see cref="T:Libplanet.Net.Messages.Message"/> instance to process and gossip.</param>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Gossip.PeersToBroadcast(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},System.Int32)">
+            <summary>
+            Selects <paramref name="count"/> <see cref="T:Libplanet.Net.BoundPeer"/>s from <paramref name="peers"/>.
+            </summary>
+            <param name="peers">A <see cref="T:Libplanet.Net.BoundPeer"/> pool.</param>
+            <param name="count">Number of <see cref="T:Libplanet.Net.BoundPeer"/> to choose.</param>
+            <returns>
+            An enumerable <see cref="T:Libplanet.Net.BoundPeer"/>'s of length <paramref name="count"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Gossip.HandleMessageAsync(System.Threading.CancellationToken)">
+            <summary>
+            Handle a message received from <see cref="P:Libplanet.Net.Transports.ITransport.ProcessMessageHandler"/>.
+            </summary>
+            <param name="ctx">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>A function with parameter of <see cref="T:Libplanet.Net.Messages.Message"/>
+            and return <see cref="T:System.Threading.Tasks.Task"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Gossip.HeartbeatTask(System.Threading.CancellationToken)">
+            <summary>
+            A lifecycle task which will run in every <see cref="F:Libplanet.Net.Consensus.Gossip._heartbeatInterval"/>.
+            </summary>
+            <param name="ctx">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Gossip.HandleHaveAsync(Libplanet.Net.Messages.Message,System.Threading.CancellationToken)">
+            <summary>
+            A function handling <see cref="T:Libplanet.Net.Messages.HaveMessage"/>.
+            <seealso cref="M:Libplanet.Net.Consensus.Gossip.HandleMessageAsync(System.Threading.CancellationToken)"/>
+            </summary>
+            <param name="msg">Target <see cref="T:Libplanet.Net.Messages.HaveMessage"/>.</param>
+            <param name="ctx">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Gossip.HandleWantAsync(Libplanet.Net.Messages.Message,System.Threading.CancellationToken)">
+            <summary>
+            A function handling <see cref="T:Libplanet.Net.Messages.WantMessage"/>.
+            <seealso cref="M:Libplanet.Net.Consensus.Gossip.HandleMessageAsync(System.Threading.CancellationToken)"/>
+            </summary>
+            <param name="msg">Target <see cref="T:Libplanet.Net.Messages.WantMessage"/>.</param>
+            <param name="ctx">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Gossip.RebuildTableAsync(System.Threading.CancellationToken)">
+            <summary>
+            A lifecycle task which will run in every <see cref="F:Libplanet.Net.Consensus.Gossip._rebuildTableInterval"/> for
+            refreshing peer table from seed peer.
+            </summary>
+            <param name="ctx">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Gossip.RefreshTableAsync(System.Threading.CancellationToken)">
+            <summary>
+            Periodically checks whether peers in table is alive.
+            </summary>
+            <param name="ctx">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.Gossip.ReplyMessagePongAsync(Libplanet.Net.Messages.Message,System.Threading.CancellationToken)">
+            <summary>
+            Replies a <see cref="T:Libplanet.Net.Messages.PongMsg"/> of received <paramref name="message"/>.
+            </summary>
+            <param name="message">A message to replies.</param>
+            <param name="ctx">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="T:Libplanet.Net.Consensus.InvalidConsensusMessageException">
+            <summary>
+            An exception thrown when a received <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/> is invalid.  In particular,
+            this is thrown pre-emptively before a <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/> is processed, i.e.
+            does not change the state of a <see cref="T:Libplanet.Net.Consensus.Context`1"/> in a meaningful way.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.InvalidConsensusMessageException.#ctor(System.String,Libplanet.Net.Messages.MessageContent,System.Exception)">
+            <summary>
+            Initializes a new instance of <see cref="T:Libplanet.Net.Consensus.InvalidConsensusMessageException"/> class.
+            </summary>
+            <param name="message">The error message that explains the reason for the exception.
+            </param>
+            <param name="receivedMessage">The <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/> that caused this exception.
+            </param>
+            <param name="innerException">The exception that is the cause of the current exception.
+            </param>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.InvalidConsensusMessageException.#ctor(System.String,Libplanet.Net.Messages.MessageContent)">
+            <summary>
+            Initializes a new instance of <see cref="T:Libplanet.Net.Consensus.InvalidConsensusMessageException"/> class.
+            </summary>
+            <param name="message">The error message that explains the reason for the exception.
+            </param>
+            <param name="receivedMessage">The <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/> that caused this exception.
+            </param>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.InvalidConsensusMessageException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Libplanet.Net.Consensus.InvalidConsensusMessageException"/>
+            class with serialized data.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/>
+            that holds the serialized object data about the exception being thrown.
+            </param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext"/>
+            that contains contextual information about the source or destination.
+            </param>
+        </member>
+        <member name="T:Libplanet.Net.Consensus.InvalidHeightIncreasingException">
+            <summary>
+            An exception thrown when a <see cref="M:Libplanet.Net.Consensus.ConsensusContext`1.NewHeight(System.Int64)"/> has called with
+            height is not the index of <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> + 1.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.InvalidHeightIncreasingException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of <see cref="T:Libplanet.Net.Consensus.InvalidHeightIncreasingException"/> class.
+            </summary>
+            <param name="message">The error message that explains the reason for the exception.
+            </param>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.InvalidHeightIncreasingException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Libplanet.Net.Consensus.InvalidHeightIncreasingException"/>
+            class with serialized data.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" />
+            that holds the serialized object data about the exception being thrown.
+            </param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" />
+            that contains contextual information about the source or destination.
+            </param>
+        </member>
+        <member name="T:Libplanet.Net.Consensus.IReactor">
+            <summary>
+            A interface of consensus reactors.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.IReactor.StartAsync(System.Threading.CancellationToken)">
+            <summary>
+            Starts a reactor.
+            </summary>
+            <param name="cancellationToken">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>A awaitable tasks from reactor for starting.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.IReactor.StopAsync(System.Threading.CancellationToken)">
+            <summary>
+            Stops a reactor.
+            </summary>
+            <param name="cancellationToken">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>A awaitable tasks from reactor for stopping.</returns>
+        </member>
+        <member name="T:Libplanet.Net.Consensus.MessageCache">
+            <summary>
+            Cache object that stores recently seen <see cref="T:Libplanet.Net.Messages.Message"/>s.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.MessageCache.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Create a message cache instance that stores
+            recently seen <see cref="T:Libplanet.Net.Messages.Message"/>s for gossip.
+            </summary>
+            <param name="len">Size of the cache history window.</param>
+            <param name="gossip">Maximum number of windows to be selected for gossip.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Thrown when <paramref name="len"/> is less than or equal to 0,
+            or <paramref name="gossip"/> is less than or equal to 0
+            or greater than <paramref name="len"/>.</exception>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.MessageCache.Put(Libplanet.Net.Messages.MessageContent)">
+            <summary>
+            Puts the <paramref name="message"/> into message cache.
+            </summary>
+            <param name="message">A <see cref="T:Libplanet.Net.Messages.Message"/> to cache.</param>
+            <exception cref="T:System.ArgumentException">
+            Thrown when a <see cref="T:Libplanet.Net.Messages.Message"/> with the same id already exists.</exception>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.MessageCache.Get(Libplanet.Net.Messages.MessageId)">
+            <summary>
+            Gets copied value of the message with <paramref name="id"/>
+            if it exists in the message cache.
+            </summary>
+            <param name="id">A <see cref="T:Libplanet.Net.Messages.MessageId"/> of the <see cref="T:Libplanet.Net.Messages.Message"/> to get.</param>
+            <returns>A message with id <paramref name="id"/>.</returns>
+            <exception cref="T:System.Collections.Generic.KeyNotFoundException">Thrown when a <see cref="T:Libplanet.Net.Messages.Message"/> of id
+            <paramref name="id"/> does not exist in the message cache.</exception>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.MessageCache.GetGossipIds">
+            <summary>
+            Selects at maximum <c>gossip</c> messages used for gossiping.
+            </summary>
+            <returns>A list of message ids to gossip.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.MessageCache.Shift">
+            <summary>
+            Shifts the current window and discard messages older than
+            the history length of the cache.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Net.Consensus.MessageLog">
+            <summary>
+            <para>
+            An <see cref="T:System.Exception"/> free concurrent <see cref="T:System.Collections.Generic.Dictionary`2"/> wrapper
+            to be used for <see cref="T:Libplanet.Net.Consensus.Context`1"/> with well-defined default behaviors.
+            </para>
+            <para>
+            This is <see cref="T:Libplanet.Net.Consensus.Context`1"/> aware in the sense that it knows the height, the list of
+            validators for the given height, and the valid proposer selection mechanism.
+            Using this info, <see cref="T:Libplanet.Net.Consensus.MessageLog"/> prevents adding an invalid
+            <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/> to an internal collection, such as adding multiple
+            <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/>s for the same <see cref="P:Libplanet.Net.Consensus.Context`1.Round"/> and
+            the same validator.  See <see cref="M:Libplanet.Net.Consensus.MessageLog.Add(Libplanet.Net.Messages.ConsensusMsg)"/> for more detail.
+            </para>
+            </summary>
+            <seealso cref="M:Libplanet.Net.Consensus.MessageLog.Add(Libplanet.Net.Messages.ConsensusMsg)"/>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.MessageLog.Add(Libplanet.Net.Messages.ConsensusMsg)">
+            <summary>
+            <para>
+            Tries to add given <paramref name="message"/> to the collection.
+            </para>
+            <para>
+            Given <paramref name="message"/> will be ignored, i.e. not be added, for
+            any of the following reasons:
+            <list type="bullet">
+            <item><description>
+                If <paramref name="message"/>'s height does not match the height of
+                this <see cref="T:Libplanet.Net.Consensus.MessageLog"/>.
+            </description></item>
+            <item><description>
+                If <paramref name="message"/>'s validator is not one of the validators
+                for the height of this <see cref="T:Libplanet.Net.Consensus.MessageLog"/>.
+            </description></item>
+            <item><description>
+                If <paramref name="message"/> is a <see cref="T:Libplanet.Net.Messages.ConsensusProposalMsg"/> and
+                <pararef name="message"/>'s validator does not match the expected
+                validator for the <see cref="P:Libplanet.Net.Messages.ConsensusMsg.Height"/>
+                and <see cref="P:Libplanet.Net.Messages.ConsensusMsg.Round"/>.
+            </description></item>
+            <item><description>
+                If <paramref name="message"/> is a <see cref="T:Libplanet.Net.Messages.ConsensusProposalMsg"/> and
+                there is already a <see cref="T:Libplanet.Net.Messages.ConsensusProposalMsg"/> with the same
+                <see cref="P:Libplanet.Net.Messages.ConsensusMsg.Round"/>.
+            </description></item>
+            <item><description>
+                If <paramref name="message"/> is a <see cref="T:Libplanet.Net.Messages.ConsensusPreVoteMsg"/> and
+                there is already a <see cref="T:Libplanet.Net.Messages.ConsensusPreVoteMsg"/> with the same
+                <see cref="P:Libplanet.Net.Messages.ConsensusMsg.Round"/> and <see cref="P:Libplanet.Net.Messages.ConsensusMsg.ValidatorPublicKey"/>.
+            </description></item>
+            <item><description>
+                If <paramref name="message"/> is a <see cref="T:Libplanet.Net.Messages.ConsensusPreCommitMsg"/> and
+                there is already a <see cref="T:Libplanet.Net.Messages.ConsensusPreCommitMsg"/> with the same
+                <see cref="P:Libplanet.Net.Messages.ConsensusMsg.Round"/> and <see cref="P:Libplanet.Net.Messages.ConsensusMsg.ValidatorPublicKey"/>.
+            </description></item>
+            </list>
+            </para>
+            </summary>
+            <param name="message">The <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/> to add.</param>
+            <returns>
+            <see langword="true"/> if <paramref name="message"/> was successfully added,
+            <see langword="false"/> otherwise.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.MessageLog.GetProposal(System.Int32)">
+            <summary>
+            Gets the <see cref="T:Libplanet.Net.Messages.ConsensusProposalMsg"/> for given <paramref name="round"/>.
+            </summary>
+            <param name="round">The round to search.</param>
+            <returns>The <see cref="T:Libplanet.Net.Messages.ConsensusProposalMsg"/> for given <paramref name="round"/>
+            if found, otherwise <see langword="null"/>.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.MessageLog.GetPreVotes(System.Int32)">
+            <summary>
+            Gets all <see cref="T:Libplanet.Net.Messages.ConsensusPreVoteMsg"/>s in given <paramref name="round"/>.
+            </summary>
+            <param name="round">The round to search.</param>
+            <returns>All <see cref="T:Libplanet.Net.Messages.ConsensusPreVoteMsg"/>s in given <paramref name="round"/>.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.MessageLog.GetPreCommits(System.Int32)">
+            <summary>
+            Gets all <see cref="T:Libplanet.Net.Messages.ConsensusPreCommitMsg"/>s in given <paramref name="round"/>.
+            </summary>
+            <param name="round">The round to search.</param>
+            <returns>All <see cref="T:Libplanet.Net.Messages.ConsensusPreCommitMsg"/>s in given <paramref name="round"/>.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.MessageLog.GetValidators(System.Int32)">
+            <summary>
+            Counts distinct validators for <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/>s in given
+            <paramref name="round"/>.
+            </summary>
+            <param name="round">The round to search.</param>
+            <returns>The number of distinct validators for <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/>s
+            in given <paramref name="round"/>.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.MessageLog.GetValidatorsCount(System.Int32)">
+            <summary>
+            Counts distinct validators for <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/>s in given
+            <paramref name="round"/>.
+            </summary>
+            <param name="round">The round to search.</param>
+            <returns>The number of distinct validators for <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/>s
+            in given <paramref name="round"/>.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.MessageLog.GetTotalCount">
+            <summary>
+            Counts the total number of <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/>s in a log.
+            </summary>
+            <returns>The number of all <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/>s.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Consensus.MessageLog.GetBlockCommit(System.Int32,Libplanet.Blocks.BlockHash)">
+            <summary>
+            Returns a <see cref="T:Libplanet.Blocks.BlockCommit"/> for given <paramref name="round"/>
+            and <paramref name="hash"/>.
+            </summary>
+            <param name="round">The round to match.</param>
+            <param name="hash">The <see cref="T:Libplanet.Blocks.BlockHash"/> to match.</param>
+            <returns>A <see cref="T:Libplanet.Blocks.BlockCommit"/> created on the fly if
+            conditions are met (i.e. there are 2/3+ <see cref="T:Libplanet.Consensus.Vote"/>s with
+            <see cref="F:Libplanet.Consensus.VoteFlag.PreCommit"/> flag for given <paramref name="round"/>
+            and <paramref name="hash"/>), otherwise <see langword="null"/>.</returns>
+        </member>
+        <member name="F:Libplanet.Net.Consensus.Step.Default">
+            <summary>
+            Initial Step.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Consensus.Step.Propose">
+            <summary>
+            Proposing Step.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Consensus.Step.PreVote">
+            <summary>
+            Voting Step.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Consensus.Step.PreCommit">
+            <summary>
+            Commit voting step.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Consensus.Step.EndCommit">
+            <summary>
+            Commit end step.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Consensus.Step.Null">
+            <summary>
+            Only when context does not exists.
+            </summary>
+        </member>
         <member name="T:Libplanet.Net.DifferentAppProtocolVersionEncountered">
             <summary>
             A delegate to call back when a <see cref="T:Libplanet.Net.Swarm`1"/> encounters
@@ -432,6 +1560,159 @@
             The continuous block hashes, from the lowest index to the highest index.
             </summary>
         </member>
+        <member name="M:Libplanet.Net.Messages.BlocksMsg.#ctor(System.Collections.Generic.IEnumerable{System.Byte[]})">
+            <summary>
+            Creates an instance of <see cref="T:Libplanet.Net.Messages.BlocksMsg"/> with given <paramref name="payloads"/>.
+            </summary>
+            <param name="payloads">The payload for this <see cref="T:Libplanet.Net.Messages.Message"/>.  The length
+            should be twice the length of <see cref="T:Libplanet.Blocks.Block`1"/>s to send where even indices are
+            encoded <see cref="T:Libplanet.Blocks.Block`1"/>s and odd indices are encoded <see cref="T:Libplanet.Blocks.BlockCommit"/>s.
+            </param>
+            <exception cref="T:System.ArgumentException">Thrown when the length of
+            <paramref name="payloads"/> is not even.</exception>
+        </member>
+        <member name="P:Libplanet.Net.Messages.BlocksMsg.Payloads">
+            <summary>
+            A <see cref="T:System.Collections.Generic.List`1"/> of <see langword="byte"/> arrays representing the payload
+            of this <see cref="T:Libplanet.Net.Messages.Message"/>.  Even indices are encoded <see cref="T:Libplanet.Blocks.Block`1"/>s
+            and odd indices are encoded <see cref="T:Libplanet.Blocks.BlockCommit"/>s.
+            </summary>
+            <remarks>
+            This is guaranteed to be of even length.
+            </remarks>
+        </member>
+        <member name="T:Libplanet.Net.Messages.ConsensusMsg">
+            <summary>
+            A abstract base class message for consensus.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Messages.ConsensusMsg.#ctor(Libplanet.Crypto.PublicKey,System.Int64,System.Int32,System.Nullable{Libplanet.Blocks.BlockHash})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/> class.
+            </summary>
+            <param name="validatorPublicKey">
+            A <see cref="T:Libplanet.Crypto.PublicKey"/> of the validator who made this message.</param>
+            <param name="height">A <see cref="P:Libplanet.Net.Consensus.Context`1.Height"/> the message is for.</param>
+            <param name="round">A <see cref="P:Libplanet.Net.Consensus.Context`1.Round"/> the message is written for.</param>
+            <param name="blockHash">A <see cref="P:Libplanet.Net.Messages.ConsensusMsg.BlockHash"/> the message is written for.</param>
+        </member>
+        <member name="P:Libplanet.Net.Messages.ConsensusMsg.ValidatorPublicKey">
+            <summary>
+            A <see cref="T:Libplanet.Crypto.PublicKey"/> of the validator who made this message.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Messages.ConsensusMsg.Height">
+            <summary>
+            A <see cref="P:Libplanet.Net.Consensus.Context`1.Height"/> the message is written for.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Messages.ConsensusMsg.Round">
+            <summary>
+            A <see cref="P:Libplanet.Net.Consensus.Context`1.Round"/> the message is written for.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Messages.ConsensusMsg.BlockHash">
+            <summary>
+            A <see cref="P:Libplanet.Net.Messages.ConsensusMsg.BlockHash"/> the message is written for.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Net.Messages.ConsensusPreCommitMsg">
+            <summary>
+            A message class for <see cref="F:Libplanet.Net.Consensus.Step.PreCommit"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Messages.ConsensusPreCommitMsg.#ctor(Libplanet.Consensus.Vote)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Libplanet.Net.Messages.ConsensusPreCommitMsg"/> class.
+            </summary>
+            <param name="vote">The <see cref="T:Libplanet.Consensus.Vote"/> for <see cref="F:Libplanet.Net.Consensus.Step.PreCommit"/>
+            to attach.
+            </param>
+            <exception cref="T:System.ArgumentException">Thrown when given <paramref name="vote"/>'s
+            <see cref="P:Libplanet.Consensus.Vote.Flag"/> is not <see cref="F:Libplanet.Consensus.VoteFlag.PreCommit"/>.</exception>
+        </member>
+        <member name="M:Libplanet.Net.Messages.ConsensusPreCommitMsg.#ctor(System.Byte[][])">
+            <summary>
+            Initializes a new instance of the <see cref="T:Libplanet.Net.Messages.ConsensusPreCommitMsg"/> class
+            with marshalled message.
+            </summary>
+            <param name="dataframes">A marshalled message.</param>
+        </member>
+        <member name="P:Libplanet.Net.Messages.ConsensusPreCommitMsg.PreCommit">
+            <summary>
+            A <see cref="T:Libplanet.Consensus.Vote"/> for <see cref="F:Libplanet.Net.Consensus.Step.PreCommit"/>.  This will always
+            have its <see cref="P:Libplanet.Consensus.Vote.Flag"/> set to <see cref="F:Libplanet.Consensus.VoteFlag.PreCommit"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Messages.ConsensusPreCommitMsg.DataFrames">
+            <inheritdoc cref="P:Libplanet.Net.Messages.MessageContent.DataFrames"/>
+        </member>
+        <member name="P:Libplanet.Net.Messages.ConsensusPreCommitMsg.Type">
+            <inheritdoc cref="T:Libplanet.Net.Messages.MessageContent.MessageType"/>
+        </member>
+        <member name="T:Libplanet.Net.Messages.ConsensusPreVoteMsg">
+            <summary>
+            A message class for <see cref="F:Libplanet.Net.Consensus.Step.PreVote"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Messages.ConsensusPreVoteMsg.#ctor(Libplanet.Consensus.Vote)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Libplanet.Net.Messages.ConsensusPreVoteMsg"/> class.
+            </summary>
+            <param name="vote">The <see cref="T:Libplanet.Consensus.Vote"/> for <see cref="F:Libplanet.Net.Consensus.Step.PreVote"/>
+            to attach.
+            </param>
+            <exception cref="T:System.ArgumentException">Thrown when given <paramref name="vote"/>'s
+            <see cref="P:Libplanet.Consensus.Vote.Flag"/> is not <see cref="F:Libplanet.Consensus.VoteFlag.PreVote"/>.</exception>
+        </member>
+        <member name="M:Libplanet.Net.Messages.ConsensusPreVoteMsg.#ctor(System.Byte[][])">
+            <summary>
+            Initializes a new instance of the <see cref="T:Libplanet.Net.Messages.ConsensusPreVoteMsg"/> class
+            with marshalled message.
+            </summary>
+            <param name="dataframes">A marshalled message.</param>
+        </member>
+        <member name="P:Libplanet.Net.Messages.ConsensusPreVoteMsg.PreVote">
+            <summary>
+            A <see cref="T:Libplanet.Consensus.Vote"/> for <see cref="F:Libplanet.Net.Consensus.Step.PreVote"/>.  This will always
+            have its <see cref="P:Libplanet.Consensus.Vote.Flag"/> set to <see cref="F:Libplanet.Consensus.VoteFlag.PreVote"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Messages.ConsensusPreVoteMsg.DataFrames">
+            <inheritdoc cref="P:Libplanet.Net.Messages.MessageContent.DataFrames"/>
+        </member>
+        <member name="P:Libplanet.Net.Messages.ConsensusPreVoteMsg.Type">
+            <inheritdoc cref="T:Libplanet.Net.Messages.MessageContent.MessageType"/>
+        </member>
+        <member name="T:Libplanet.Net.Messages.ConsensusProposalMsg">
+            <summary>
+            A message class for <see cref="F:Libplanet.Net.Consensus.Step.Propose"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Messages.ConsensusProposalMsg.#ctor(Libplanet.Consensus.Proposal)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Libplanet.Net.Messages.ConsensusProposalMsg"/> class.
+            </summary>
+            <param name="proposal">A <see cref="P:Libplanet.Net.Messages.ConsensusProposalMsg.Proposal"/> of given height and round.</param>
+        </member>
+        <member name="M:Libplanet.Net.Messages.ConsensusProposalMsg.#ctor(System.Byte[][])">
+            <summary>
+            Initializes a new instance of the <see cref="T:Libplanet.Net.Messages.ConsensusProposalMsg"/> class
+            with marshalled message.
+            </summary>
+            <param name="dataframes">A marshalled message.</param>
+        </member>
+        <member name="P:Libplanet.Net.Messages.ConsensusProposalMsg.Proposal">
+            <summary>
+            A marshalled <see cref="T:Libplanet.Blocks.Block`1"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Messages.ConsensusProposalMsg.DataFrames">
+            <inheritdoc cref="P:Libplanet.Net.Messages.MessageContent.DataFrames"/>
+        </member>
+        <member name="P:Libplanet.Net.Messages.ConsensusProposalMsg.Type">
+            <inheritdoc cref="T:Libplanet.Net.Messages.MessageContent.MessageType"/>
+        </member>
         <member name="T:Libplanet.Net.Messages.DifferentVersionMsg">
             <summary>
             A reply to any messages with different <see cref="T:Libplanet.Net.AppProtocolVersion"/>.
@@ -444,6 +1725,12 @@
             Message containing request for nearby peers.
             </summary>
             <seealso cref="T:Libplanet.Net.Messages.NeighborsMsg"/>
+        </member>
+        <member name="T:Libplanet.Net.Messages.HaveMessage">
+            <summary>
+            List of message IDs that the peer seen recently.
+            </summary>
+            <seealso cref="T:Libplanet.Net.Messages.WantMessage"/>
         </member>
         <member name="M:Libplanet.Net.Messages.IMessageCodec`1.Encode(Libplanet.Net.Messages.MessageContent,Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,Libplanet.Net.BoundPeer,System.DateTimeOffset,System.Byte[])">
             <summary>
@@ -597,6 +1884,31 @@
             value of the message.
             </summary>
         </member>
+        <member name="F:Libplanet.Net.Messages.MessageContent.MessageType.ConsensusProposal">
+            <summary>
+            Consensus proposal message.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.MessageContent.MessageType.ConsensusVote">
+            <summary>
+            Consensus vote message.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.MessageContent.MessageType.ConsensusCommit">
+            <summary>
+            Consensus commit message.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.MessageContent.MessageType.HaveMessage">
+            <summary>
+            List of message IDs that the peer seen recently.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.MessageContent.MessageType.WantMessage">
+            <summary>
+            List of message IDs that the peer want to have.
+            </summary>
+        </member>
         <member name="P:Libplanet.Net.Messages.MessageContent.Type">
             <summary>
             The type of the message.
@@ -606,6 +1918,104 @@
             <summary>
             The body of the message.
             </summary>
+        </member>
+        <member name="P:Libplanet.Net.Messages.MessageContent.Id">
+            <summary>
+            A bytearray representing SHA-256 digest of <see cref="T:Libplanet.Net.Messages.MessageContent"/>.
+            </summary>
+            <returns>A mutable <see cref="T:System.Byte"/> array representing
+            SHA-256 digest of <see cref="T:Libplanet.Net.Messages.Message"/>.
+            </returns>
+        </member>
+        <member name="T:Libplanet.Net.Messages.MessageId">
+            <summary>
+            <see cref="T:Libplanet.Net.Messages.MessageId"/>, abbreviation of message identifier,
+            is a SHA-256 digest derived from a <see cref="T:Libplanet.Net.Messages.Message"/>'s
+            content.
+            <para>As it is a SHA-256 digest, it consists of 32 <see cref="T:System.Byte"/>s,
+            and 64 characters in hexadecimal.
+            (See also <see cref="F:Libplanet.Net.Messages.MessageId.Size"/> constant.)</para>
+            </summary>
+            <seealso cref="P:Libplanet.Net.Messages.MessageContent.Id"/>
+        </member>
+        <member name="F:Libplanet.Net.Messages.MessageId.Size">
+            <summary>
+            The <see cref="T:System.Byte"/>s size that each <see cref="T:Libplanet.Net.Messages.MessageId"/> takes.
+            <para>As a message ID is a SHA-256 digest, it is 32 <see cref="T:System.Byte"/>s.
+            </para>
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Messages.MessageId.#ctor(System.Byte[])">
+            <summary>
+            Converts a <see cref="T:System.Byte"/> array into a <see cref="T:Libplanet.Net.Messages.MessageId"/>.
+            </summary>
+            <param name="messageId">A <see cref="T:System.Byte"/> array that encodes
+            a <see cref="T:Libplanet.Net.Messages.MessageId"/>.  It must not be <see langword="null"/>,
+            and its <see cref="P:System.Array.Length"/> must be the same to
+            <see cref="F:Libplanet.Net.Messages.MessageId.Size"/>.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the given
+            <paramref name="messageId"/>'s <see cref="P:System.Array.Length"/> is not
+            the same to the required <see cref="F:Libplanet.Net.Messages.MessageId.Size"/>.</exception>
+        </member>
+        <member name="P:Libplanet.Net.Messages.MessageId.ByteArray">
+            <summary>
+            A bare immutable <see cref="T:System.Byte"/> array of
+            this <see cref="T:Libplanet.Net.Messages.MessageId"/>.
+            </summary>
+            <remarks>It is immutable.  For a mutable array, use
+            <see cref="M:Libplanet.Net.Messages.MessageId.ToByteArray"/> method instead.</remarks>
+            <seealso cref="M:Libplanet.Net.Messages.MessageId.ToByteArray"/>
+        </member>
+        <member name="M:Libplanet.Net.Messages.MessageId.FromHex(System.String)">
+            <summary>
+            Creates a <see cref="T:Libplanet.Net.Messages.MessageId"/> value from a <paramref name="hex"/> string.
+            </summary>
+            <param name="hex">A hexadecimal string which encodes a <see cref="T:Libplanet.Net.Messages.MessageId"/>.
+            This has to contain 64 hexadecimal digits and must not be <see langword="null"/>
+            This is usually made by <see cref="M:Libplanet.Net.Messages.MessageId.ToHex"/> method.</param>
+            <returns>A corresponding <see cref="T:Libplanet.Net.Messages.MessageId"/> value.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when the given <paramref name="hex"/>
+            string is <see langword="null"/>.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the given
+            <paramref name="hex"/> is shorter or longer than 64 characters.</exception>
+            <exception cref="T:System.FormatException">Thrown when the given <paramref name="hex"/> string is
+            not a valid hexadecimal string.</exception>
+            <seealso cref="M:Libplanet.Net.Messages.MessageId.ToHex"/>
+        </member>
+        <member name="M:Libplanet.Net.Messages.MessageId.ToByteArray">
+            <summary>
+            Gets a bare mutable <see cref="T:System.Byte"/> array of
+            this <see cref="T:Libplanet.Net.Messages.MessageId"/>.
+            </summary>
+            <returns>A new mutable <see cref="T:System.Byte"/> array of
+            this <see cref="T:Libplanet.Net.Messages.MessageId"/>.
+            Since a returned array is created every time the method is called,
+            any mutations on that array does not affect to
+            the <see cref="T:Libplanet.Net.Messages.MessageId"/> object.
+            </returns>
+            <seealso cref="P:Libplanet.Net.Messages.MessageId.ByteArray"/>
+        </member>
+        <member name="M:Libplanet.Net.Messages.MessageId.ToHex">
+            <summary>
+            Gets a hexadecimal form of a <see cref="T:Libplanet.Net.Messages.MessageId"/>.
+            </summary>
+            <returns>64 hexadecimal characters.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Messages.MessageId.ToString">
+            <summary>
+            Gets a <see cref="T:Libplanet.Net.Messages.MessageId"/>'s representative string.
+            </summary>
+            <returns>A string which represents this <see cref="T:Libplanet.Net.Messages.MessageId"/>.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Net.Messages.MessageId.CompareTo(Libplanet.Net.Messages.MessageId)">
+            <inheritdoc cref="M:System.IComparable`1.CompareTo(`0)"/>
+        </member>
+        <member name="M:Libplanet.Net.Messages.MessageId.CompareTo(System.Object)">
+            <inheritdoc cref="M:System.IComparable.CompareTo(System.Object)"/>
+        </member>
+        <member name="M:Libplanet.Net.Messages.MessageId.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc />
         </member>
         <member name="T:Libplanet.Net.Messages.MessageValidator">
             <summary>
@@ -776,6 +2186,12 @@
             </summary>
             <seealso cref="T:Libplanet.Net.Messages.PingMsg"/>
         </member>
+        <member name="T:Libplanet.Net.Messages.WantMessage">
+            <summary>
+            List of message IDs that the peer want to have.
+            </summary>
+            <seealso cref="T:Libplanet.Net.Messages.HaveMessage"/>
+        </member>
         <member name="T:Libplanet.Net.PeerChainState">
             <summary>
             The blockchain state of <see cref="T:Libplanet.Net.BoundPeer"/>.
@@ -789,11 +2205,6 @@
         <member name="P:Libplanet.Net.PeerChainState.TipIndex">
             <summary>
             The blockchain tip of the <see cref="T:Libplanet.Net.BoundPeer"/>.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Net.PeerChainState.TotalDifficulty">
-            <summary>
-            The total difficulty of the blockchain of the <see cref="T:Libplanet.Net.BoundPeer"/>.
             </summary>
         </member>
         <member name="M:Libplanet.Net.PeerChainState.ToString">
@@ -1479,7 +2890,7 @@
             operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
         </member>
-        <member name="M:Libplanet.Net.Swarm`1.#ctor(Libplanet.Blockchain.BlockChain{`0},Libplanet.Crypto.PrivateKey,Libplanet.Net.Transports.ITransport,Libplanet.Net.SwarmOptions)">
+        <member name="M:Libplanet.Net.Swarm`1.#ctor(Libplanet.Blockchain.BlockChain{`0},Libplanet.Crypto.PrivateKey,Libplanet.Net.Transports.ITransport,Libplanet.Net.SwarmOptions,Libplanet.Net.Transports.ITransport,System.Nullable{Libplanet.Net.Consensus.ConsensusReactorOption})">
             <summary>
             Creates a <see cref="T:Libplanet.Net.Swarm`1"/>.  This constructor in only itself does not start
             any communication with the network.
@@ -1488,13 +2899,25 @@
             <param name="privateKey">A private key to sign messages.  The public part of
             this key become a part of its end address for being pointed by peers.</param>
             <param name="transport">The <see cref="T:Libplanet.Net.Transports.ITransport"/> to use for
-            network communication.</param>
+            network communication in block synchronization.</param>
             <param name="options">Options for <see cref="T:Libplanet.Net.Swarm`1"/>.</param>
+            <param name="consensusTransport">The <see cref="T:Libplanet.Net.Transports.ITransport"/> to use for
+            network communication in consensus.
+            If null is given, the node cannot join block consensus.
+            </param>
+            <param name="consensusOption"><see cref="T:Libplanet.Net.Consensus.ConsensusReactorOption"/> for
+            initialize <see cref="T:Libplanet.Net.Consensus.ConsensusReactor`1"/>.</param>
         </member>
         <member name="P:Libplanet.Net.Swarm`1.LastMessageTimestamp">
             <summary>
             The last time when any message was arrived.
             It can be <see langword="null"/> if no message has been arrived yet.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Swarm`1.Validators">
+            <summary>
+            Returns list of the validators that consensus has in its routing table.
+            If the node is not joining consensus, returns <c>null</c>.
             </summary>
         </member>
         <member name="P:Libplanet.Net.Swarm`1.BlockChain">
@@ -1712,6 +3135,44 @@
             that this operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
         </member>
+        <member name="M:Libplanet.Net.Swarm`1.GetDemandBlockHashes(Libplanet.Blockchain.BlockChain{`0},System.Collections.Generic.IList{System.ValueTuple{Libplanet.Net.BoundPeer,Libplanet.Blocks.IBlockExcerpt}},System.IProgress{Libplanet.Net.PreloadState},System.Threading.CancellationToken)">
+            <summary>
+            Gets all <see cref="T:Libplanet.Blocks.BlockHash"/>es for <see cref="T:Libplanet.Blocks.Block`1"/>s needed to be downloaded
+            by querying <see cref="T:Libplanet.Net.BoundPeer"/>s.
+            </summary>
+            <param name="blockChain">The <see cref="T:Libplanet.Blockchain.BlockChain`1"/> to use as a reference
+            for generating a <see cref="T:Libplanet.Blockchain.BlockLocator"/> when querying.  This may not necessarily
+            be <see cref="P:Libplanet.Net.Swarm`1.BlockChain"/>, the canonical <see cref="T:Libplanet.Blockchain.BlockChain`1"/> instance held
+            by this <see cref="T:Libplanet.Net.Swarm`1"/> instance.</param>
+            <param name="peersWithExcerpts">The <see cref="T:System.Collections.Generic.List`1"/> of <see cref="T:Libplanet.Net.BoundPeer"/>s
+            to query with their tips known.</param>
+            <param name="progress">The <see cref="T:System.IProgress`1"/> to report to.</param>
+            <param name="cancellationToken">The cancellation token that should be used to propagate
+            a notification that this operation should be canceled.</param>
+            <returns>An <see cref="T:System.Collections.Generic.IAsyncEnumerable`1"/> of <see langword="long"/> and
+            <see cref="T:Libplanet.Blocks.BlockHash"/> pairs, where the <see langword="long"/> value is the
+            <see cref="P:Libplanet.Blocks.Block`1.Index"/> of the <see cref="T:Libplanet.Blocks.Block`1"/> associated with the
+            <see cref="T:Libplanet.Blocks.BlockHash"/> value.</returns>
+            <exception cref="T:System.AggregateException">Thrown when failed to download
+            <see cref="T:Libplanet.Blocks.BlockHash"/>es from a <see cref="T:Libplanet.Net.BoundPeer"/>.</exception>
+            <remarks>
+            <para>
+            This method uses the tip information for each <see cref="T:Libplanet.Net.BoundPeer"/> provided with
+            <paramref name="peersWithExcerpts"/> whether to make a query in the first place.
+            </para>
+            <para>
+            Returned list of tuples are simply concatenation of query results from different
+            <see cref="T:Libplanet.Net.BoundPeer"/>s with possible duplicates.
+            </para>
+            <para>
+            This implicitly assumes returned <see cref="T:Libplanet.Net.Messages.BlockHashesMsg"/> is properly
+            indexed with a valid branching <see cref="T:Libplanet.Blocks.BlockHash"/> as its first element and
+            skips it when constructing the result as it is not necessary to download.
+            As such, returned result is simply a "dump" of possible <see cref="T:Libplanet.Blocks.BlockHash"/>es
+            to download.
+            </para>
+            </remarks>
+        </member>
         <member name="M:Libplanet.Net.Swarm`1.GetPeersWithExcerpts(System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
             <summary>
             Gets <see cref="T:Libplanet.Blocks.IBlockExcerpt"/>es from randomly selected <see cref="T:Libplanet.Net.BoundPeer"/>s
@@ -1726,8 +3187,7 @@
             that this operation should be canceled.</param>
             <returns>An awaitable task with a <see cref="T:System.Collections.Generic.List`1"/> of tuples
             of <see cref="T:Libplanet.Net.BoundPeer"/> and <see cref="T:Libplanet.Blocks.IBlockExcerpt"/> ordered by
-            the <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.CanonicalChainComparer"/> given by
-            <see cref="P:Libplanet.Blockchain.BlockChain`1.Policy"/> in descending order.</returns>
+            <see cref="P:Libplanet.Blocks.IBlockExcerpt.Index"/> in descending order.</returns>
         </member>
         <member name="M:Libplanet.Net.Swarm`1.DialExistingPeers(System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
             <summary>
@@ -1943,17 +3403,6 @@
             <see cref="T:Libplanet.Net.AppProtocolVersion"/>.</param>
             <param name="timeout">Timeout value for request.</param>
             <returns><see cref="T:Libplanet.Net.AppProtocolVersion"/> of given peer. </returns>
-        </member>
-        <member name="M:Libplanet.Net.Transports.BoundPeerExtensions.ResolveNetMQAddressAsync(Libplanet.Net.BoundPeer)">
-            <summary>
-            Get IPv4 TCP address <see cref="T:System.String"/> of given <see cref="T:Libplanet.Net.BoundPeer"/>
-            to be used on NetMQ transport.
-            </summary>
-            <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to get TCP NetMQ address.</param>
-            <returns>IPv4 TCP address <see cref="T:System.String"/> of given <paramref name="peer"/>.
-            </returns>
-            <exception cref="T:Libplanet.Net.Transports.TransportException">Thrown if failed to resolve address for given peer.
-            </exception>
         </member>
         <member name="T:Libplanet.Net.Transports.CommunicationFailException">
             <summary>
