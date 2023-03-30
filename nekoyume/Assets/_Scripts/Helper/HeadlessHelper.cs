@@ -42,10 +42,7 @@ namespace Nekoyume.Helper
                 {
                     FileName = "dotnet",
                     Arguments =
-                        @$"run --project NineChronicles.Headless.Executable -C appsettings.local.json \
-                           --genesis-block-path {Path.Combine(_genesisPath, "genesis-block")} \
-                           --store-path {Path.Combine(_genesisPath, _storeName)} \
-                           --store-type memory",
+                        @$"run -c DevEx --project NineChronicles.Headless.Executable -C appsettings.local.json --genesis-block-path ""{Path.Combine(_genesisPath, "genesis-block")}"" --store-path ""{Path.Combine(_genesisPath, _storeName)}"" --store-type memory",
                 };
                 Debug.Log(startInfo.Arguments);
                 startInfo.WorkingDirectory = _headlessPath;

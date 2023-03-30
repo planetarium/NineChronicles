@@ -152,7 +152,8 @@ namespace Planetarium.Nekoyume.Editor
             {
                 FileName = "dotnet",
                 Arguments =
-                    @$"run --project NineChronicles.Headless.Executable -C appsettings.local.json \
+                    @$"run -c DevEx \
+                           --project NineChronicles.Headless.Executable -C appsettings.local.json \
                            --genesis-block-path {Path.Combine(_genesisPath, "genesis-block")} \
                            --store-path {Path.Combine(_genesisPath, _storeName)} \
                            --store-type memory",
