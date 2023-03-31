@@ -62,7 +62,7 @@ namespace Planetarium.Nekoyume.Editor
                 10);
             activationKeys.ForEach(x => Debug.Log(x.Encode()));
 
-            var block = BlockManager.MineGenesisBlock(pendingActivationStates.ToArray());
+            var block = BlockManager.MineGenesisBlock(pendingActivationStates.ToArray(), null);
             BlockManager.ExportBlock(block, path);
         }
 
