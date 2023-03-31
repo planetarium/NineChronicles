@@ -342,7 +342,7 @@ face/D09_eyebrow_02
   index: -1
 face/D09_mouth_01
   rotate: false
-  xy: 644, 50
+  xy: 631, 107
   size: 4, 4
   orig: 6, 6
   offset: 1, 1
@@ -390,15 +390,15 @@ face/D10_eyebrow_02
   offset: 1, 1
   index: -1
 face/D10_mouth_01
-  rotate: false
-  xy: 630, 99
+  rotate: true
+  xy: 626, 89
   size: 8, 4
   orig: 10, 6
   offset: 1, 1
   index: -1
 face/D10_mouth_02
-  rotate: false
-  xy: 607, 132
+  rotate: true
+  xy: 607, 138
   size: 10, 4
   orig: 12, 6
   offset: 1, 1
@@ -748,7 +748,7 @@ face/D19_eyebrow_02
   index: -1
 face/D19_mouth_01
   rotate: true
-  xy: 637, 61
+  xy: 630, 99
   size: 6, 2
   orig: 8, 4
   offset: 1, 1
@@ -1252,7 +1252,7 @@ face/D30_eyebrow_02
   index: -1
 face/D30_mouth_01
   rotate: true
-  xy: 632, 51
+  xy: 629, 133
   size: 6, 3
   orig: 8, 5
   offset: 1, 1
@@ -1294,7 +1294,7 @@ face/D31_eyebrow_02
   index: -1
 face/D31_mouth_01
   rotate: true
-  xy: 638, 71
+  xy: 634, 99
   size: 6, 2
   orig: 8, 4
   offset: 1, 1
@@ -1434,14 +1434,14 @@ face/D34_eyebrow_02
   index: -1
 face/D34_mouth_01
   rotate: true
-  xy: 631, 106
+  xy: 631, 79
   size: 8, 4
   orig: 10, 6
   offset: 1, 1
   index: -1
 face/D34_mouth_02
-  rotate: true
-  xy: 614, 151
+  rotate: false
+  xy: 607, 132
   size: 10, 4
   orig: 12, 6
   offset: 1, 1
@@ -1665,7 +1665,7 @@ face/D39_mouth_01
   index: -1
 face/D39_mouth_02
   rotate: true
-  xy: 619, 105
+  xy: 626, 141
   size: 9, 4
   orig: 11, 6
   offset: 1, 1
@@ -1748,8 +1748,8 @@ face/D41_eyebrow_02
   offset: 1, 1
   index: -1
 face/D41_mouth_01
-  rotate: false
-  xy: 619, 132
+  rotate: true
+  xy: 619, 140
   size: 9, 5
   orig: 11, 7
   offset: 1, 1
@@ -1805,7 +1805,7 @@ face/D42_eyebrow_02
   index: -1
 face/D42_mouth_01
   rotate: true
-  xy: 631, 79
+  xy: 625, 117
   size: 8, 4
   orig: 10, 6
   offset: 1, 1
@@ -1861,7 +1861,7 @@ face/D43_eyebrow_02
   index: -1
 face/D43_mouth_01
   rotate: true
-  xy: 607, 150
+  xy: 610, 171
   size: 10, 5
   orig: 12, 7
   offset: 1, 1
@@ -1903,7 +1903,7 @@ face/D44_eyebrow_02
   index: -1
 face/D44_mouth_01
   rotate: true
-  xy: 614, 139
+  xy: 613, 138
   size: 10, 4
   orig: 12, 6
   offset: 1, 1
@@ -1980,7 +1980,7 @@ face/D46_eyebrow_02
   index: -1
 face/D46_mouth_01
   rotate: true
-  xy: 637, 53
+  xy: 632, 71
   size: 6, 2
   orig: 8, 4
   offset: 1, 1
@@ -2035,8 +2035,8 @@ face/D47_eyebrow_02
   offset: 1, 1
   index: -1
 face/D47_mouth_01
-  rotate: false
-  xy: 638, 44
+  rotate: true
+  xy: 632, 63
   size: 6, 2
   orig: 8, 4
   offset: 1, 1
@@ -2071,7 +2071,7 @@ face/D48_eyebrow_02
   index: -1
 face/D48_mouth_01
   rotate: true
-  xy: 607, 138
+  xy: 607, 150
   size: 10, 5
   orig: 12, 7
   offset: 1, 1
@@ -2344,14 +2344,14 @@ face/D54_eyebrow_02
   index: -1
 face/D54_mouth_01
   rotate: true
-  xy: 637, 79
+  xy: 631, 123
   size: 8, 3
   orig: 10, 5
   offset: 1, 1
   index: -1
 face/D54_mouth_02
-  rotate: false
-  xy: 619, 99
+  rotate: true
+  xy: 619, 116
   size: 9, 4
   orig: 11, 6
   offset: 1, 1
@@ -2456,7 +2456,7 @@ face/D56_mouth_01
   index: -1
 face/D56_mouth_02
   rotate: true
-  xy: 602, 171
+  xy: 602, 183
   size: 10, 7
   orig: 12, 9
   offset: 1, 1
@@ -2498,7 +2498,7 @@ face/D57_eyebrow_02
   index: -1
 face/D57_mouth_02
   rotate: true
-  xy: 625, 105
+  xy: 619, 105
   size: 9, 4
   orig: 11, 6
   offset: 1, 1
@@ -2585,20 +2585,6 @@ face/D59_eyebrow_02
   xy: 422, 151
   size: 33, 6
   orig: 35, 8
-  offset: 1, 1
-  index: -1
-face/D59_mouth_01
-  rotate: true
-  xy: 620, 140
-  size: 9, 6
-  orig: 11, 8
-  offset: 1, 1
-  index: -1
-face/D59_mouth_02
-  rotate: true
-  xy: 644, 10
-  size: 10, 8
-  orig: 12, 10
   offset: 1, 1
   index: -1
 face/D60_eye_01
@@ -2749,15 +2735,15 @@ mouth_01-2
   offset: 1, 1
   index: -1
 mouth_01-3
-  rotate: true
-  xy: 646, 45
+  rotate: false
+  xy: 637, 79
   size: 3, 2
   orig: 5, 4
   offset: 1, 1
   index: -1
 mouth_01-4
   rotate: true
-  xy: 641, 63
+  xy: 632, 55
   size: 6, 2
   orig: 8, 4
   offset: 1, 1
@@ -2771,28 +2757,28 @@ mouth_01-5
   index: -1
 mouth_01-6
   rotate: true
-  xy: 641, 56
+  xy: 636, 72
   size: 5, 2
   orig: 7, 4
   offset: 1, 1
   index: -1
 mouth_01-7
-  rotate: true
-  xy: 626, 116
+  rotate: false
+  xy: 619, 99
   size: 9, 4
   orig: 11, 6
   offset: 1, 1
   index: -1
 mouth_01-8
   rotate: false
-  xy: 645, 38
+  xy: 637, 83
   size: 4, 4
   orig: 6, 6
   offset: 1, 1
   index: -1
 mouth_02
   rotate: true
-  xy: 634, 89
+  xy: 625, 107
   size: 8, 4
   orig: 10, 6
   offset: 1, 1
@@ -2813,7 +2799,7 @@ mouth_02-3
   index: -1
 mouth_02-4
   rotate: true
-  xy: 632, 69
+  xy: 632, 89
   size: 8, 4
   orig: 10, 6
   offset: 1, 1
@@ -2827,14 +2813,14 @@ mouth_02-5
   index: -1
 mouth_02-6
   rotate: true
-  xy: 619, 116
+  xy: 620, 152
   size: 9, 5
   orig: 11, 7
   offset: 1, 1
   index: -1
 mouth_02-7
   rotate: true
-  xy: 632, 59
+  xy: 631, 113
   size: 8, 3
   orig: 10, 5
   offset: 1, 1
@@ -2869,14 +2855,14 @@ mouth_03-11
   index: -1
 mouth_03-2
   rotate: true
-  xy: 611, 171
+  xy: 602, 171
   size: 10, 6
   orig: 12, 8
   offset: 1, 1
   index: -1
 mouth_03-10
   rotate: true
-  xy: 611, 171
+  xy: 602, 171
   size: 10, 6
   orig: 12, 8
   offset: 1, 1
@@ -2890,7 +2876,7 @@ mouth_03-3
   index: -1
 mouth_03-4
   rotate: true
-  xy: 602, 183
+  xy: 644, 10
   size: 10, 8
   orig: 12, 10
   offset: 1, 1
@@ -2903,8 +2889,8 @@ mouth_03-5
   offset: 1, 1
   index: -1
 mouth_03-6
-  rotate: true
-  xy: 626, 89
+  rotate: false
+  xy: 619, 132
   size: 8, 6
   orig: 10, 8
   offset: 1, 1
@@ -2932,14 +2918,14 @@ mouth_03-9
   index: -1
 mouth_04
   rotate: true
-  xy: 620, 151
+  xy: 614, 151
   size: 10, 4
   orig: 10, 4
   offset: 0, 0
   index: -1
 mouth_05
-  rotate: false
-  xy: 637, 48
+  rotate: true
+  xy: 632, 48
   size: 5, 3
   orig: 5, 3
   offset: 0, 0
