@@ -165,7 +165,7 @@ namespace Nekoyume.BlockChain.Policy
         {
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
             var data = TestbedHelper.LoadData<TestbedCreateAvatar>("TestbedCreateAvatar");
-             return new DebugPolicy(data.BlockDifficulty);
+             return new DebugPolicy();
 #else
             maxTransactionsBytesPolicy = maxTransactionsBytesPolicy
                 ?? MaxTransactionsBytesPolicy.Default;
