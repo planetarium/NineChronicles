@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Numerics;
 using System.Threading.Tasks;
 using Bencodex;
+using JetBrains.Annotations;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blocks;
+using Libplanet.Crypto;
 using Libplanet.Tx;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
@@ -103,17 +106,24 @@ namespace Nekoyume.BlockChain
         }
 
         public static Block<PolymorphicAction<ActionBase>> MineGenesisBlock(
-            PendingActivationState[] pendingActivationStates)
+            PendingActivationState[] pendingActivationStates,
+            [CanBeNull] PublicKey proposer)
         {
             var tableSheets = Game.Game.GetTableCsvAssets();
             string goldDistributionCsvPath = Platform.GetStreamingAssetsPath("GoldDistribution.csv");
             GoldDistribution[] goldDistributions =
                 GoldDistribution.LoadInDescendingEndBlockOrder(goldDistributionCsvPath);
-            return Nekoyume.BlockHelper.MineGenesisBlock(
+            var initialValidatorSet = new Dictionary<PublicKey, BigInteger>();
+            if (proposer is not null)
+            {
+                initialValidatorSet[proposer] = BigInteger.One;
+            }
+            return Nekoyume.BlockHelper.ProposeGenesisBlock(
                 tableSheets,
                 goldDistributions,
                 pendingActivationStates,
                 new AdminState(new Address("F9A15F870701268Bd7bBeA6502eB15F4997f32f9"), 1500000),
+                initialValidators: initialValidatorSet,
                 isActivateAdminAddress: false);
         }
 
