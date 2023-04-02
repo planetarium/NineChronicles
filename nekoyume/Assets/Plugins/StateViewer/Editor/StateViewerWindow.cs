@@ -8,6 +8,7 @@ using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
+using StateViewer.Runtime;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -15,8 +16,34 @@ using Event = UnityEngine.Event;
 
 namespace StateViewer.Editor
 {
-    public class StateViewer : EditorWindow
+    public class StateViewerWindow : EditorWindow
     {
+        public static readonly IValue[] TestValues =
+        {
+            Null.Value,
+            new Binary("test", Encoding.UTF8),
+            new Boolean(true),
+            new Integer(100),
+            new Text("test"),
+            new List(
+                (Text)"element at index 0",
+                new List(
+                    (Text)"element at index 0",
+                    (Text)"element at index 1"),
+                Dictionary.Empty
+                    .SetItem("key1", 1)
+                    .SetItem("key2", 2)),
+            Dictionary.Empty
+                .SetItem("key1", 1)
+                .SetItem("key2", new List(
+                    (Text)"element at index 0",
+                    (Text)"element at index 1"))
+                .SetItem("key3", Dictionary.Empty
+                    .SetItem("key1", 1)
+                    .SetItem("key2", 2)),
+            new Address("0x0123456789012345678901234567890123456789").Bencoded,
+        };
+
         [SerializeField]
         private bool initialized;
 
@@ -46,44 +73,21 @@ namespace StateViewer.Editor
 
         private StateProxy _stateProxy;
 
-        private readonly IValue[] _testValues =
-        {
-            Null.Value,
-            new Binary("test", Encoding.UTF8),
-            new Boolean(true),
-            new Integer(100),
-            new Text("test"),
-            new List(
-                (Text)"element at index 0",
-                new List(
-                    (Text)"element at index 0",
-                    (Text)"element at index 1"),
-                Dictionary.Empty
-                    .SetItem("key1", 1)
-                    .SetItem("key2", 2)),
-            Dictionary.Empty
-                .SetItem("key1", 1)
-                .SetItem("key2", new List(
-                    (Text)"element at index 0",
-                    (Text)"element at index 1"))
-                .SetItem("key3", Dictionary.Empty
-                    .SetItem("key1", 1)
-                    .SetItem("key2", 2)),
-            new Address("0x0123456789012345678901234567890123456789").Bencoded,
-        };
+        private static bool IsSavable => !Application.isPlaying ||
+                                         !Game.instance.IsInitialized;
 
         [MenuItem("Tools/Lib9c/State Viewer")]
         private static void ShowWindow() =>
-            GetWindow<StateViewer>("State Viewer", true).Show();
+            GetWindow<StateViewerWindow>("State Viewer", true).Show();
 
         private void OnEnable()
         {
             minSize = new Vector2(800f, 300f);
 
             stateTreeViewState ??= new TreeViewState();
-            var keyOrIndexColumn = new MultiColumnHeaderState.Column
+            var indexOrKeyColumn = new MultiColumnHeaderState.Column
             {
-                headerContent = new GUIContent("Key/Index"),
+                headerContent = new GUIContent("Index/Key"),
                 headerTextAlignment = TextAlignment.Center,
                 canSort = false,
                 width = 100,
@@ -122,9 +126,9 @@ namespace StateViewer.Editor
                 autoResize = true,
                 allowToggleVisibility = false,
             };
-            var editColumn = new MultiColumnHeaderState.Column
+            var addColumn = new MultiColumnHeaderState.Column
             {
-                headerContent = new GUIContent("Add/Edit"),
+                headerContent = new GUIContent("Add"),
                 headerTextAlignment = TextAlignment.Center,
                 canSort = false,
                 width = 100,
@@ -133,7 +137,7 @@ namespace StateViewer.Editor
                 autoResize = true,
                 allowToggleVisibility = false,
             };
-            var addRemoveColumn = new MultiColumnHeaderState.Column
+            var removeColumn = new MultiColumnHeaderState.Column
             {
                 headerContent = new GUIContent("Remove"),
                 headerTextAlignment = TextAlignment.Center,
@@ -146,12 +150,12 @@ namespace StateViewer.Editor
             };
             stateTreeHeaderState = new MultiColumnHeaderState(new[]
             {
-                keyOrIndexColumn,
+                indexOrKeyColumn,
                 aliasColumn,
                 valueKindColumn,
                 valueColumn,
-                editColumn,
-                addRemoveColumn,
+                addColumn,
+                removeColumn,
             });
             _stateTreeHeader = new MultiColumnHeader(stateTreeHeaderState);
             _stateTreeHeader.ResizeToFit();
@@ -159,8 +163,8 @@ namespace StateViewer.Editor
                 stateTreeViewState,
                 _stateTreeHeader);
             _searchField = new SearchField();
-            _stateTreeView.SetData(default, Null.Value);
             _searchField.downOrUpArrowKeyPressed += _stateTreeView.SetFocusAndEnsureSelectedItem;
+            ClearAll();
             initialized = true;
         }
 
@@ -198,6 +202,13 @@ namespace StateViewer.Editor
             DrawAll();
         }
 
+        private void ClearAll()
+        {
+            _stateTreeView.ClearData();
+            _ncgValue = string.Empty;
+            _crystalValue = string.Empty;
+        }
+
         private void DrawAll()
         {
             if (!Application.isPlaying)
@@ -232,7 +243,7 @@ namespace StateViewer.Editor
                 GUILayout.ExpandWidth(true));
         }
 
-        private void DrawHorizontalLine()
+        private static void DrawHorizontalLine()
         {
             var rect = EditorGUILayout.GetControlRect(false, 1f);
             EditorGUI.DrawRect(rect, new Color(0.5f, 0.5f, 0.5f, 1));
@@ -247,9 +258,9 @@ namespace StateViewer.Editor
             }
 
             EditorGUILayout.BeginHorizontal();
-            for (var i = 0; i < _testValues.Length; i++)
+            for (var i = 0; i < TestValues.Length; i++)
             {
-                var testValue = _testValues[i];
+                var testValue = TestValues[i];
                 if (GUILayout.Button($"{i}: {testValue.Kind}"))
                 {
                     _stateTreeView.SetData(default, testValue);
@@ -293,6 +304,7 @@ namespace StateViewer.Editor
         {
             GUILayout.BeginHorizontal();
             EditorGUILayout.Space();
+            EditorGUI.BeginDisabledGroup(IsSavable);
             if (GUILayout.Button("Save", GUILayout.MaxWidth(50f)))
             {
                 var stateList = new List<(Address addr, IValue value)>
@@ -302,6 +314,7 @@ namespace StateViewer.Editor
                 ActionManager.Instance?.ManipulateState(stateList, null);
             }
 
+            EditorGUI.EndDisabledGroup();
             GUILayout.EndHorizontal();
         }
 
@@ -312,6 +325,7 @@ namespace StateViewer.Editor
             // NCG
             EditorGUILayout.BeginHorizontal();
             _ncgValue = EditorGUILayout.TextField("NCG", _ncgValue);
+            EditorGUI.BeginDisabledGroup(IsSavable);
             if (GUILayout.Button("Save", GUILayout.MaxWidth(50f)))
             {
                 var balanceList = new List<(Address addr, FungibleAssetValue fav)>
@@ -321,10 +335,12 @@ namespace StateViewer.Editor
                 ActionManager.Instance?.ManipulateState(null, balanceList);
             }
 
+            EditorGUI.EndDisabledGroup();
             EditorGUILayout.EndHorizontal();
 
             // CRYSTAL
             EditorGUILayout.BeginHorizontal();
+            EditorGUI.BeginDisabledGroup(IsSavable);
             _crystalValue = EditorGUILayout.TextField("CRYSTAL", _crystalValue);
             if (GUILayout.Button("Save", GUILayout.MaxWidth(50f)))
             {
@@ -335,11 +351,18 @@ namespace StateViewer.Editor
                 ActionManager.Instance?.ManipulateState(null, balanceList);
             }
 
+            EditorGUI.EndDisabledGroup();
             EditorGUILayout.EndHorizontal();
         }
 
         private async UniTaskVoid OnConfirm(string searchString)
         {
+            if (string.IsNullOrEmpty(searchString))
+            {
+                ClearAll();
+                return;
+            }
+
             if (!Application.isPlaying ||
                 !Game.instance.IsInitialized)
             {
@@ -361,7 +384,7 @@ namespace StateViewer.Editor
             }
             catch (KeyNotFoundException)
             {
-                _stateTreeView.SetData(default, (Text)"empty");
+                ClearAll();
             }
 
             _stateTreeView.SetFocusAndEnsureSelectedItem();

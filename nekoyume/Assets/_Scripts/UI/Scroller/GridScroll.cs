@@ -29,6 +29,9 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private bool fillWithNullToEmptyViewport = default;
 
+        [SerializeField]
+        private bool fillWithNullToEmptyCellGroup;
+
         protected abstract FancyCell<TItemData, TContext> CellTemplate { get; }
 
         protected override void SetupCellTemplate() => Setup<TCellGroup>(CellTemplate);
@@ -101,6 +104,20 @@ namespace Nekoyume.UI.Scroller
                 for (var i = 0; i < addCount; i++)
                 {
                     itemsSource.Add(null);
+                }
+            }
+
+            if (fillWithNullToEmptyCellGroup)
+            {
+                var cellCountInGroup = Context.GetGroupCount();
+                var remain = itemsSource.Count % cellCountInGroup;
+                if (remain != 0)
+                {
+                    var addCount = cellCountInGroup - remain;
+                    for (var i = 0; i < addCount; i++)
+                    {
+                        itemsSource.Add(null);
+                    }
                 }
             }
 
