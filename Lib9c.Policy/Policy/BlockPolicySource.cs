@@ -34,30 +34,9 @@ namespace Nekoyume.BlockChain.Policy
 {
     public partial class BlockPolicySource
     {
-        public const long MinimumDifficulty = 5_000_000;
-
-        public const long DifficultyStability = 2048;
-
-        /// <summary>
-        /// Last index in which restriction will apply.
-        /// </summary>
-        public const long AuthorizedMinersPolicyEndIndex = 5_716_957;
-
-        public const long AuthorizedMinersPolicyInterval = 50;
-
         public const int MaxTransactionsPerBlock = 100;
 
-        public const long PermissionedMiningStartIndex = 2_225_500;
-
         public static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(8);
-
-        public static readonly ImmutableHashSet<Address> AuthorizedMiners = new Address[]
-        {
-            new Address("ab1dce17dCE1Db1424BB833Af6cC087cd4F5CB6d"),
-            new Address("3217f757064Cd91CAba40a8eF3851F4a9e5b4985"),
-            new Address("474CB59Dea21159CeFcC828b30a8D864e0b94a6B"),
-            new Address("636d187B4d434244A92B65B06B5e7da14b3810A9"),
-        }.ToImmutableHashSet();
 
         private readonly IActionTypeLoader _actionTypeLoader;
 
