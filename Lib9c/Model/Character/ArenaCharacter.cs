@@ -53,11 +53,9 @@ namespace Nekoyume.Model
             get => _stats.Level;
             set => _stats.SetStats(value);
         }
-        public int CurrentHP
-        {
-            get => _stats.CurrentHP;
-            set => _stats.CurrentHP = value;
-        }
+
+        public decimal CurrentHP { get; private set; }
+
         public int HP => _stats.HP;
         public int AdditionalHP => _stats.BuffStats.HP;
         public int ATK => _stats.ATK;
@@ -105,6 +103,7 @@ namespace Nekoyume.Model
                 sheets.CostumeStatSheet);
             _skills = GetSkills(digest.Equipments, sheets.SkillSheet);
             _attackCountMax = AttackCountHelper.GetCountMax(digest.Level);
+            ResetCurrentHP();
         }
 
         public ArenaCharacter(
@@ -136,6 +135,7 @@ namespace Nekoyume.Model
                 sheets.CostumeStatSheet);
             _skills = GetSkills(digest.Equipments, sheets.SkillSheet);
             _attackCountMax = AttackCountHelper.GetCountMax(digest.Level);
+            ResetCurrentHP();
         }
 
         private ArenaCharacter(ArenaCharacter value)
@@ -170,6 +170,7 @@ namespace Nekoyume.Model
             _attackCountMax = value._attackCount;
             _attackCount = value._attackCount;
             _target = value._target;
+            CurrentHP = value.CurrentHP;
         }
 
         private ElementalType GetElementalType(IEnumerable<Equipment> equipments, ItemSubType itemSubType)
@@ -198,6 +199,11 @@ namespace Nekoyume.Model
             return row;
         }
 
+        protected void ResetCurrentHP()
+        {
+            CurrentHP = Math.Max(0, _stats.HP);
+        }
+
         private static CharacterStats GetStat(
             ArenaPlayerDigest digest,
             CharacterSheet.Row characterRow,
@@ -218,7 +224,6 @@ namespace Nekoyume.Model
 
             stats.SetOption(options);
             stats.IncreaseHpForArena();
-            stats.EqualizeCurrentHPWithHP();
             return stats;
         }
 
@@ -253,12 +258,12 @@ namespace Nekoyume.Model
                 statModifiers.AddRange(
                     optionInfo.Stats.Select(x =>
                         new StatModifier(
-                            x.statMap.StatType,
+                            x.stat.StatType,
                             x.operationType,
-                            x.statMap.ValueAsInt)));
-                _stats.AddOption(statModifiers);
+                            x.stat.ValueAsInt)));
+                _stats.AddOptional(statModifiers);
                 _stats.IncreaseHpForArena();
-                _stats.EqualizeCurrentHPWithHP();
+                ResetCurrentHP();
 
                 if (optionInfo.SkillId == default ||
                     !skillSheet.TryGetValue(optionInfo.SkillId, out var skillRow))
@@ -314,12 +319,12 @@ namespace Nekoyume.Model
                 statModifiers.AddRange(
                     optionInfo.Stats.Select(x =>
                         new StatModifier(
-                            x.statMap.StatType,
+                            x.stat.StatType,
                             x.operationType,
-                            x.statMap.ValueAsInt)));
-                _stats.AddOption(statModifiers);
+                            x.stat.ValueAsInt)));
+                _stats.AddOptional(statModifiers);
                 _stats.IncreaseHpForArena();
-                _stats.EqualizeCurrentHPWithHP();
+                ResetCurrentHP();
 
                 if (optionInfo.SkillId == default ||
                     !skillSheet.TryGetValue(optionInfo.SkillId, out var skillRow))

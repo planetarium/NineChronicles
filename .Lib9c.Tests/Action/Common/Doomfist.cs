@@ -54,10 +54,10 @@ namespace Lib9c.Tests.Action
                     avatarLevel >= requirementRow.Level)
                 .Aggregate((row1, row2) =>
                 {
-                    var row1Value = row1.Stat.Type == statType
+                    var row1Value = row1.Stat.StatType == statType
                         ? row1.Stat.Value
                         : 0;
-                    var row2Value = row2.Stat.Type == statType
+                    var row2Value = row2.Stat.StatType == statType
                         ? row2.Stat.Value
                         : 0;
                     return row1Value > row2Value

@@ -54,7 +54,7 @@ namespace Nekoyume.Model.Item
                     break;
                 }
                 case EquipmentItemSheet.Row equipmentItemRow:
-                    StatsMap.AddStatValue(equipmentItemRow.Stat.Type, equipmentItemRow.Stat.Value);
+                    StatsMap.AddStatValue(equipmentItemRow.Stat.StatType, equipmentItemRow.Stat.Value);
                     break;
             }
 
@@ -126,7 +126,7 @@ namespace Nekoyume.Model.Item
 
         public int GetOptionCount()
         {
-            return StatsMap.GetAdditionalStats().Count()
+            return StatsMap.GetAdditionalStats(true).Count()
                    + Skills.Count
                    + BuffSkills.Count;
         }

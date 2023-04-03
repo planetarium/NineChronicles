@@ -14,7 +14,7 @@ namespace Nekoyume.Model.Item
     {
         public StatType MainStat => Stats.Any() ? Stats[0].StatType : StatType.NONE;
 
-        public List<StatMap> Stats { get; }
+        public List<DecimalStat> Stats { get; }
 
         public Consumable(ConsumableItemSheet.Row data, Guid id, long requiredBlockIndex) : base(data, id, requiredBlockIndex)
         {
@@ -25,7 +25,7 @@ namespace Nekoyume.Model.Item
         {
             if (serialized.TryGetValue((Text) "stats", out var stats))
             {
-                Stats = stats.ToList(i => new StatMap((Dictionary) i));
+                Stats = stats.ToList(i => new DecimalStat((Dictionary) i));
             }
         }
         

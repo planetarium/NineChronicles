@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Nekoyume.Battle;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
@@ -11,13 +11,13 @@ namespace Nekoyume.Helper
     {
         public readonly int OptionCountFromCombination;
 
-        public readonly (StatType type, int baseValue, int totalValue) MainStat;
+        public readonly (StatType type, decimal baseValue, decimal totalValue) MainStat;
 
-        public readonly List<(StatType type, int value, int count)> StatOptions
-            = new List<(StatType type, int value, int count)>();
+        public readonly List<(StatType type, decimal value, int count)> StatOptions
+            = new List<(StatType type, decimal value, int count)>();
 
-        public readonly List<(SkillSheet.Row skillRow, int power, int chance)> SkillOptions
-            = new List<(SkillSheet.Row skillRow, int power, int chance)>();
+        public readonly List<(SkillSheet.Row skillRow, decimal power, int chance)> SkillOptions
+            = new List<(SkillSheet.Row skillRow, decimal power, int chance)>();
 
         public readonly int CP;
 
@@ -31,7 +31,7 @@ namespace Nekoyume.Helper
 
             MainStat = (
                 equipment.UniqueStatType,
-                equipment.StatsMap.GetStat(equipment.UniqueStatType, true),
+                equipment.StatsMap.GetBaseStat(equipment.UniqueStatType),
                 equipment.StatsMap.GetStat(equipment.UniqueStatType));
 
             var optionCountDiff = OptionCountFromCombination - (additionalStats.Count + equipment.Skills.Count);

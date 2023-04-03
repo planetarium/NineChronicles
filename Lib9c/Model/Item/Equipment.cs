@@ -25,12 +25,12 @@ namespace Nekoyume.Model.Item
         public int SetId { get; }
         public string SpineResourcePath { get; }
         public bool MadeWithMimisbrunnrRecipe { get; }
-        public StatType UniqueStatType => Stat.Type;
+        public StatType UniqueStatType => Stat.StatType;
         public bool Equipped => equipped;
 
         public decimal GetIncrementAmountOfEnhancement()
         {
-            return Math.Max(1.0m, StatsMap.GetStat(UniqueStatType, true) * 0.1m);
+            return Math.Max(1.0m, StatsMap.GetBaseStat(UniqueStatType) * 0.1m);
         }
 
         public Equipment(EquipmentItemSheet.Row data, Guid id, long requiredBlockIndex, bool madeWithMimisbrunnrRecipe = false)
@@ -148,7 +148,7 @@ namespace Nekoyume.Model.Item
             var rand = isGreatSuccess ? row.BaseStatGrowthMax
                 :random.Next(row.BaseStatGrowthMin, row.BaseStatGrowthMax + 1);
             var ratio = rand.NormalizeFromTenThousandths();
-            var baseStat = StatsMap.GetStat(UniqueStatType, true) * ratio;
+            var baseStat = StatsMap.GetBaseStat(UniqueStatType) * ratio;
             if (baseStat > 0)
             {
                 baseStat = Math.Max(1.0m, baseStat);
@@ -167,12 +167,12 @@ namespace Nekoyume.Model.Item
             var options = new List<object>();
             options.AddRange(Skills);
             options.AddRange(BuffSkills);
-            foreach (var statMapEx in StatsMap.GetAdditionalStats())
+            foreach (var (statType, additionalValue) in StatsMap.GetAdditionalStats(true))
             {
                 options.Add(new StatModifier(
-                    statMapEx.StatType,
+                    statType,
                     StatModifier.OperationType.Add,
-                    statMapEx.AdditionalValueAsInt));
+                    additionalValue));
             }
 
             return options;
@@ -180,11 +180,11 @@ namespace Nekoyume.Model.Item
 
         private void UpdateOptions()
         {
-            foreach (var statMapEx in StatsMap.GetAdditionalStats())
+            foreach (var (statType, additionalValue) in StatsMap.GetAdditionalStats(true))
             {
                 StatsMap.SetStatAdditionalValue(
-                    statMapEx.StatType,
-                    statMapEx.AdditionalValue * 1.3m);
+                    statType,
+                    additionalValue * 1.3m);
             }
 
             var skills = new List<Skill.Skill>();
@@ -200,19 +200,19 @@ namespace Nekoyume.Model.Item
 
         private void UpdateOptionsV2(IRandom random, EnhancementCostSheetV2.Row row, bool isGreatSuccess)
         {
-            foreach (var statMapEx in StatsMap.GetAdditionalStats())
+            foreach (var (statType, additionalValue) in StatsMap.GetAdditionalStats(true))
             {
                 var rand = isGreatSuccess
                     ? row.ExtraStatGrowthMax
                     : random.Next(row.ExtraStatGrowthMin, row.ExtraStatGrowthMax + 1);
                 var ratio = rand.NormalizeFromTenThousandths();
-                var addValue = statMapEx.AdditionalValue * ratio;
+                var addValue = additionalValue * ratio;
                 if (addValue > 0)
                 {
                     addValue = Math.Max(1.0m, addValue);
                 }
 
-                StatsMap.SetStatAdditionalValue(statMapEx.StatType, statMapEx.AdditionalValue + addValue);
+                StatsMap.SetStatAdditionalValue(statType, additionalValue + addValue);
             }
 
             var skills = new List<Skill.Skill>();

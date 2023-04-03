@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Bencodex.Types;
 using BTAI;
 using Nekoyume.Battle;
 using Nekoyume.Model.BattleStatus;
@@ -58,11 +59,7 @@ namespace Nekoyume.Model
         public int DRR => Stats.DRR;
         public int CDMG => Stats.CDMG;
 
-        public int CurrentHP
-        {
-            get => Stats.CurrentHP;
-            set => Stats.CurrentHP = value;
-        }
+        public decimal CurrentHP { get; private set; }
 
         public bool IsDead => CurrentHP <= 0;
 
@@ -80,9 +77,11 @@ namespace Nekoyume.Model
             RowData = row;
             CharacterId = characterId;
             Stats = new CharacterStats(RowData, level);
+            ResetCurrentHP();
+            
             if (!(optionalStatModifiers is null))
             {
-                Stats.AddOption(optionalStatModifiers);
+                Stats.AddOptional(optionalStatModifiers);
             }
 
             Skills.Clear();
@@ -92,7 +91,6 @@ namespace Nekoyume.Model
             defElementType = RowData.ElementalType;
             RunSpeed = RowData.RunSpeed;
             attackRange = RowData.AttackRange;
-            CurrentHP = HP;
             AttackCountMax = 0;
         }
 
@@ -116,7 +114,7 @@ namespace Nekoyume.Model
             RunSpeed = runSpeed;
 
             Skills.Clear();
-            CurrentHP = HP;
+            ResetCurrentHP();
             AttackCountMax = 0;
         }
 
@@ -151,6 +149,7 @@ namespace Nekoyume.Model
             RowData = value.RowData;
             Stats = new CharacterStats(value.Stats);
             AttackCountMax = value.AttackCountMax;
+            CurrentHP = value.CurrentHP;
         }
 
         public abstract object Clone();
@@ -388,6 +387,11 @@ namespace Nekoyume.Model
         }
 
         #endregion
+
+        protected void ResetCurrentHP()
+        {
+            CurrentHP = Math.Max(0, Stats.HP);
+        }
 
         public bool IsCritical(bool considerAttackCount = true)
         {

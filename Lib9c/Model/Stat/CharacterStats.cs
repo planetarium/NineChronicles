@@ -7,13 +7,12 @@ using Nekoyume.TableData;
 namespace Nekoyume.Model.Stat
 {
     /// <summary>
-    /// 캐릭터의 스탯을 관리한다.
-    /// 스탯은 레벨에 의한 _baseStats를 기본으로 하고
-    /// > 장비에 의한 _equipmentStats
-    /// > 소모품에 의한 _consumableStats
-    /// > 버프에 의한 _buffStats
-    /// > 옵션에 의한 _optionalStats
-    /// 마지막으로 모든 스탯을 합한 CharacterStats 순서로 계산한다.
+    /// Stat is built with _baseStats based on level,
+    /// _equipmentStats based on equipments,
+    /// _consumableStats based on consumables,
+    /// _buffStats based on buffs
+    /// and _optionalStats for runes, etc...
+    /// Stat of character is built with total of these stats.
     /// </summary>
     [Serializable]
     public class CharacterStats : Stats, IBaseAndAdditionalStats, ICloneable
@@ -39,50 +38,25 @@ namespace Nekoyume.Model.Stat
         public IStats BuffStats => _buffStats;
         public IStats OptionalStats => _optionalStats;
 
+        public decimal BaseHP => BaseStats.HP;
+        public decimal BaseATK => BaseStats.ATK;
+        public decimal BaseDEF => BaseStats.DEF;
+        public decimal BaseCRI => BaseStats.CRI;
+        public decimal BaseHIT => BaseStats.HIT;
+        public decimal BaseSPD => BaseStats.SPD;
+        public decimal BaseDRV => BaseStats.DRV;
+        public decimal BaseDRR => BaseStats.DRR;
+        public decimal BaseCDMG => BaseStats.CDMG;
 
-        public int BaseHP => BaseStats.HP;
-        public int BaseATK => BaseStats.ATK;
-        public int BaseDEF => BaseStats.DEF;
-        public int BaseCRI => BaseStats.CRI;
-        public int BaseHIT => BaseStats.HIT;
-        public int BaseSPD => BaseStats.SPD;
-        public int BaseDRV => BaseStats.DRV;
-        public int BaseDRR => BaseStats.DRR;
-        public int BaseCDMG => BaseStats.CDMG;
-
-        public bool HasBaseHP => BaseStats.HasHP;
-        public bool HasBaseATK => BaseStats.HasATK;
-        public bool HasBaseDEF => BaseStats.HasDEF;
-        public bool HasBaseCRI => BaseStats.HasCRI;
-        public bool HasBaseHIT => BaseStats.HasHIT;
-        public bool HasBaseSPD => BaseStats.HasSPD;
-        public bool HasBaseDRV => BaseStats.HasDRV;
-        public bool HasBaseDRR => BaseStats.HasDRR;
-        public bool HasBaseCDMG => BaseStats.HasCDMG;
-
-        public int AdditionalHP => HP - _baseStats.HP;
-        public int AdditionalATK => ATK - _baseStats.ATK;
-        public int AdditionalDEF => DEF - _baseStats.DEF;
-        public int AdditionalCRI => CRI - _baseStats.CRI;
-        public int AdditionalHIT => HIT - _baseStats.HIT;
-        public int AdditionalSPD => SPD - _baseStats.SPD;
-        public int AdditionalDRV => DRV - _baseStats.DRV;
-        public int AdditionalDRR => DRR - _baseStats.DRR;
-        public int AdditionalCDMG => CDMG - _baseStats.CDMG;
-
-        public bool HasAdditionalHP => AdditionalHP > 0;
-        public bool HasAdditionalATK => AdditionalATK > 0;
-        public bool HasAdditionalDEF => AdditionalDEF > 0;
-        public bool HasAdditionalCRI => AdditionalCRI > 0;
-        public bool HasAdditionalHIT => AdditionalHIT > 0;
-        public bool HasAdditionalSPD => AdditionalSPD > 0;
-        public bool HasAdditionalDRV => AdditionalDRV > 0;
-        public bool HasAdditionalDRR => AdditionalDRR > 0;
-        public bool HasAdditionalCDMG => AdditionalCDMG > 0;
-
-        public bool HasAdditionalStats => HasAdditionalHP || HasAdditionalATK || HasAdditionalDEF || HasAdditionalCRI ||
-                                          HasAdditionalHIT || HasAdditionalSPD || HasAdditionalDRV || HasAdditionalDRR ||
-                                          HasAdditionalCDMG;
+        public decimal AdditionalHP => HP - _baseStats.HP;
+        public decimal AdditionalATK => ATK - _baseStats.ATK;
+        public decimal AdditionalDEF => DEF - _baseStats.DEF;
+        public decimal AdditionalCRI => CRI - _baseStats.CRI;
+        public decimal AdditionalHIT => HIT - _baseStats.HIT;
+        public decimal AdditionalSPD => SPD - _baseStats.SPD;
+        public decimal AdditionalDRV => DRV - _baseStats.DRV;
+        public decimal AdditionalDRR => DRR - _baseStats.DRR;
+        public decimal AdditionalCDMG => CDMG - _baseStats.CDMG;
 
         public CharacterStats(
             CharacterSheet.Row row,
@@ -91,7 +65,6 @@ namespace Nekoyume.Model.Stat
         {
             _row = row ?? throw new ArgumentNullException(nameof(row));
             SetStats(level);
-            EqualizeCurrentHPWithHP();
         }
 
         public CharacterStats(WorldBossCharacterSheet.WaveStatData stat)
@@ -99,7 +72,6 @@ namespace Nekoyume.Model.Stat
             var stats = stat.ToStats();
             _baseStats.Set(stats);
             SetStats(stat.Level);
-            EqualizeCurrentHPWithHP();
         }
             
         public CharacterStats(CharacterStats value) : base(value)
@@ -139,7 +111,7 @@ namespace Nekoyume.Model.Stat
         }
 
         /// <summary>
-        /// 생성자에서 받은 캐릭터 정보와 레벨을 바탕으로 모든 스탯을 재설정한다.
+        /// Set base stats based on character level.
         /// </summary>
         /// <param name="level"></param>
         /// <param name="updateImmediate"></param>
@@ -160,80 +132,35 @@ namespace Nekoyume.Model.Stat
         }
 
         /// <summary>
-        /// 장비들을 바탕으로 장비 스탯을 재설정한다. 또한 소모품 스탯과 버프 스탯을 다시 계산한다.
+        /// Set stats based on equipments. Also recalculates stats from consumables and buffs.
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="equipments"></param>
         /// <param name="updateImmediate"></param>
         /// <returns></returns>
         public CharacterStats SetEquipments(
-            IEnumerable<Equipment> value,
+            IEnumerable<Equipment> equipments,
             EquipmentItemSetEffectSheet sheet,
             bool updateImmediate = true
         )
         {
             _equipmentStatModifiers.Clear();
-            if (!(value is null))
+            if (!(equipments is null))
             {
-                foreach (var equipment in value)
+                foreach (var equipment in equipments)
                 {
                     var statMap = equipment.StatsMap;
-                    if (statMap.HasHP)
+                    foreach (var (statType, value) in statMap.GetStats(true))
                     {
-                        _equipmentStatModifiers.Add(new StatModifier(StatType.HP, StatModifier.OperationType.Add,
-                            statMap.HP));
-                    }
-
-                    if (statMap.HasATK)
-                    {
-                        _equipmentStatModifiers.Add(new StatModifier(StatType.ATK, StatModifier.OperationType.Add,
-                            statMap.ATK));
-                    }
-
-                    if (statMap.HasDEF)
-                    {
-                        _equipmentStatModifiers.Add(new StatModifier(StatType.DEF, StatModifier.OperationType.Add,
-                            statMap.DEF));
-                    }
-
-                    if (statMap.HasCRI)
-                    {
-                        _equipmentStatModifiers.Add(new StatModifier(StatType.CRI, StatModifier.OperationType.Add,
-                            statMap.CRI));
-                    }
-
-                    if (statMap.HasHIT)
-                    {
-                        _equipmentStatModifiers.Add(new StatModifier(StatType.HIT, StatModifier.OperationType.Add,
-                            statMap.HIT));
-                    }
-
-                    if (statMap.HasSPD)
-                    {
-                        _equipmentStatModifiers.Add(new StatModifier(StatType.SPD, StatModifier.OperationType.Add,
-                            statMap.SPD));
-                    }
-
-                    if (statMap.HasDRV)
-                    {
-                        _equipmentStatModifiers.Add(new StatModifier(StatType.DRV, StatModifier.OperationType.Add,
-                            statMap.DRV));
-                    }
-
-                    if (statMap.HasDRR)
-                    {
-                        _equipmentStatModifiers.Add(new StatModifier(StatType.DRR, StatModifier.OperationType.Add,
-                            statMap.DRR));
-                    }
-
-                    if (statMap.HasCDMG)
-                    {
-                        _equipmentStatModifiers.Add(new StatModifier(StatType.CDMG, StatModifier.OperationType.Add,
-                            statMap.CDMG));
+                        var statModifier = new StatModifier(
+                            statType,
+                            StatModifier.OperationType.Add,
+                            value);
+                        _equipmentStatModifiers.Add(statModifier);
                     }
                 }
 
                 // set effects.
-                var setEffectRows = sheet.GetSetEffectRows(value);
+                var setEffectRows = sheet.GetSetEffectRows(equipments);
                 foreach (var statModifier in setEffectRows.SelectMany(row => row.StatModifiers.Values))
                 {
                     _equipmentStatModifiers.Add(statModifier);
@@ -249,71 +176,28 @@ namespace Nekoyume.Model.Stat
         }
 
         /// <summary>
-        /// 소모품들을 바탕으로 소모품 스탯을 재설정한다. 또한 버프 스탯을 다시 계산한다.
+        /// Set stats based on consumables. Also recalculates stats from buffs.
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="consumables"></param>
         /// <param name="updateImmediate"></param>
         /// <returns></returns>
-        public CharacterStats SetConsumables(IEnumerable<Consumable> value, bool updateImmediate = true)
+        public CharacterStats SetConsumables(
+            IEnumerable<Consumable> consumables,
+            bool updateImmediate = true)
         {
             _consumableStatModifiers.Clear();
-            if (!(value is null))
+            if (!(consumables is null))
             {
-                foreach (var consumable in value)
+                foreach (var consumable in consumables)
                 {
                     var statMap = consumable.StatsMap;
-                    if (statMap.HasHP)
+                    foreach (var (statType, value) in statMap.GetStats(true))
                     {
-                        _consumableStatModifiers.Add(new StatModifier(StatType.HP, StatModifier.OperationType.Add,
-                            statMap.HP));
-                    }
-
-                    if (statMap.HasATK)
-                    {
-                        _consumableStatModifiers.Add(new StatModifier(StatType.ATK, StatModifier.OperationType.Add,
-                            statMap.ATK));
-                    }
-
-                    if (statMap.HasDEF)
-                    {
-                        _consumableStatModifiers.Add(new StatModifier(StatType.DEF, StatModifier.OperationType.Add,
-                            statMap.DEF));
-                    }
-
-                    if (statMap.HasCRI)
-                    {
-                        _consumableStatModifiers.Add(new StatModifier(StatType.CRI, StatModifier.OperationType.Add,
-                            statMap.CRI));
-                    }
-
-                    if (statMap.HasHIT)
-                    {
-                        _consumableStatModifiers.Add(new StatModifier(StatType.HIT, StatModifier.OperationType.Add,
-                            statMap.HIT));
-                    }
-
-                    if (statMap.HasSPD)
-                    {
-                        _consumableStatModifiers.Add(new StatModifier(StatType.SPD, StatModifier.OperationType.Add,
-                            statMap.SPD));
-                    }
-
-                    if (statMap.HasDRV)
-                    {
-                        _consumableStatModifiers.Add(new StatModifier(StatType.DRV, StatModifier.OperationType.Add,
-                            statMap.DRV));
-                    }
-
-                    if (statMap.HasDRR)
-                    {
-                        _consumableStatModifiers.Add(new StatModifier(StatType.DRR, StatModifier.OperationType.Add,
-                            statMap.DRR));
-                    }
-
-                    if (statMap.HasCDMG)
-                    {
-                        _consumableStatModifiers.Add(new StatModifier(StatType.CDMG, StatModifier.OperationType.Add,
-                            statMap.CDMG));
+                        var statModifier = new StatModifier(
+                            statType,
+                            StatModifier.OperationType.Add,
+                            value);
+                        _equipmentStatModifiers.Add(statModifier);
                     }
                 }
             }
@@ -327,7 +211,7 @@ namespace Nekoyume.Model.Stat
         }
 
         /// <summary>
-        /// 버프들을 바탕으로 버프 스탯을 재설정한다.
+        /// Set stats based on buffs.
         /// </summary>
         /// <param name="value"></param>
         /// <param name="updateImmediate"></param>
@@ -374,7 +258,7 @@ namespace Nekoyume.Model.Stat
             }
         }
 
-        public void AddOption(IEnumerable<StatModifier> statModifiers)
+        public void AddOptional(IEnumerable<StatModifier> statModifiers)
         {
             _optionalStatModifiers.AddRange(statModifiers);
             UpdateOptionalStats();
@@ -397,12 +281,13 @@ namespace Nekoyume.Model.Stat
         public void SetOption(IEnumerable<StatModifier> statModifiers)
         {
             _optionalStatModifiers.Clear();
-            AddOption(statModifiers);
+            AddOptional(statModifiers);
         }
 
         public void IncreaseHpForArena()
         {
-            hp.SetValue(Math.Max(0, hp.Value * 2));
+            var originalHP = _statMap[StatType.HP];
+            _statMap[StatType.HP].SetValue(Math.Max(0, originalHP.Value * 2));
         }
 
         private void UpdateBaseStats()
@@ -443,16 +328,12 @@ namespace Nekoyume.Model.Stat
         private void UpdateTotalStats()
         {
             Set(_baseStats, _equipmentStats, _consumableStats, _buffStats, _optionalStats);
-            // 최소값 보정
-            hp.SetValue(Math.Max(0, hp.Value));
-            atk.SetValue(Math.Max(0, atk.Value));
-            def.SetValue(Math.Max(0, def.Value));
-            cri.SetValue(Math.Max(0, cri.Value));
-            hit.SetValue(Math.Max(0, hit.Value));
-            spd.SetValue(Math.Max(0, spd.Value));
-            drv.SetValue(Math.Max(0, drv.Value));
-            drr.SetValue(Math.Max(0, drr.Value));
-            cdmg.SetValue(Math.Max(0, cdmg.Value));
+
+            foreach (var (_, stat) in _statMap)
+            {
+                var value = Math.Max(0m, stat.Value);
+                stat.SetValue(value);
+            }
         }
 
         public override object Clone()
@@ -460,115 +341,36 @@ namespace Nekoyume.Model.Stat
             return new CharacterStats(this);
         }
 
-        public IEnumerable<(StatType statType, int baseValue)> GetBaseStats(bool ignoreZero = false)
+        public IEnumerable<(StatType statType, decimal baseValue)> GetBaseStats(bool ignoreZero = false)
         {
-            if (ignoreZero)
+            return _baseStats.GetStats(ignoreZero);
+        }
+
+        public IEnumerable<(StatType statType, decimal additionalValue)> GetAdditionalStats(bool ignoreZero = false)
+        {
+            var baseStats = _baseStats.GetStats();
+            foreach (var (statType, stat) in baseStats)
             {
-                if (HasBaseHP)
-                    yield return (StatType.HP, BaseHP);
-                if (HasBaseATK)
-                    yield return (StatType.ATK, BaseATK);
-                if (HasBaseDEF)
-                    yield return (StatType.DEF, BaseDEF);
-                if (HasBaseCRI)
-                    yield return (StatType.CRI, BaseCRI);
-                if (HasBaseHIT)
-                    yield return (StatType.HIT, BaseHIT);
-                if (HasBaseSPD)
-                    yield return (StatType.SPD, BaseSPD);
-                if (HasBaseDRV)
-                    yield return (StatType.DRV, BaseDRV);
-                if (HasBaseDRR)
-                    yield return (StatType.DRR, BaseDRR);
-                if (HasBaseCDMG)
-                    yield return (StatType.CDMG, BaseCDMG);
-            }
-            else
-            {
-                yield return (StatType.HP, BaseHP);
-                yield return (StatType.ATK, BaseATK);
-                yield return (StatType.DEF, BaseDEF);
-                yield return (StatType.CRI, BaseCRI);
-                yield return (StatType.HIT, BaseHIT);
-                yield return (StatType.SPD, BaseSPD);
-                yield return (StatType.DRV, BaseDRV);
-                yield return (StatType.DRR, BaseDRR);
-                yield return (StatType.CDMG, BaseCDMG);
+                var value = _statMap[statType].Value - stat;
+                if (!ignoreZero || value != decimal.Zero)
+                {
+                    yield return (statType, value);
+                }
             }
         }
 
-        public IEnumerable<(StatType statType, int additionalValue)> GetAdditionalStats(bool ignoreZero = false)
-        {
-            if (ignoreZero)
-            {
-                if (HasAdditionalHP)
-                    yield return (StatType.HP, AdditionalHP);
-                if (HasAdditionalATK)
-                    yield return (StatType.ATK, AdditionalATK);
-                if (HasAdditionalDEF)
-                    yield return (StatType.DEF, AdditionalDEF);
-                if (HasAdditionalCRI)
-                    yield return (StatType.CRI, AdditionalCRI);
-                if (HasAdditionalHIT)
-                    yield return (StatType.HIT, AdditionalHIT);
-                if (HasAdditionalSPD)
-                    yield return (StatType.SPD, AdditionalSPD);
-                if (HasAdditionalDRV)
-                    yield return (StatType.DRV, AdditionalDRV);
-                if (HasAdditionalDRR)
-                    yield return (StatType.DRR, AdditionalDRR);
-                if (HasAdditionalCDMG)
-                    yield return (StatType.CDMG, AdditionalCDMG);
-            }
-            else
-            {
-                yield return (StatType.HP, AdditionalHP);
-                yield return (StatType.ATK, AdditionalATK);
-                yield return (StatType.DEF, AdditionalDEF);
-                yield return (StatType.CRI, AdditionalCRI);
-                yield return (StatType.HIT, AdditionalHIT);
-                yield return (StatType.SPD, AdditionalSPD);
-                yield return (StatType.DRV, AdditionalDRV);
-                yield return (StatType.DRR, AdditionalDRR);
-                yield return (StatType.CDMG, AdditionalCDMG);
-            }
-        }
-
-        public IEnumerable<(StatType statType, int baseValue, int additionalValue)> GetBaseAndAdditionalStats(
+        public IEnumerable<(StatType statType, decimal baseValue, decimal additionalValue)> GetBaseAndAdditionalStats(
             bool ignoreZero = false)
         {
-            if (ignoreZero)
+            var additionalStats = GetAdditionalStats();
+            foreach (var (statType, additionalStat) in additionalStats)
             {
-                if (HasBaseHP || HasAdditionalHP)
-                    yield return (StatType.HP, BaseHP, AdditionalHP);
-                if (HasBaseATK || HasAdditionalATK)
-                    yield return (StatType.ATK, BaseATK, AdditionalATK);
-                if (HasBaseDEF || HasAdditionalDEF)
-                    yield return (StatType.DEF, BaseDEF, AdditionalDEF);
-                if (HasBaseCRI || HasAdditionalCRI)
-                    yield return (StatType.CRI, BaseCRI, AdditionalCRI);
-                if (HasBaseHIT || HasAdditionalHIT)
-                    yield return (StatType.HIT, BaseHIT, AdditionalHIT);
-                if (HasBaseSPD || HasAdditionalSPD)
-                    yield return (StatType.SPD, BaseSPD, AdditionalSPD);
-                if (HasBaseDRV || HasAdditionalDRV)
-                    yield return (StatType.DRV, BaseDRV, AdditionalDRV);
-                if (HasBaseDRR || HasAdditionalDRR)
-                    yield return (StatType.DRR, BaseDRR, AdditionalDRR);
-                if (HasBaseCDMG || HasAdditionalCDMG)
-                    yield return (StatType.CDMG, BaseCDMG, AdditionalCDMG);
-            }
-            else
-            {
-                yield return (StatType.HP, BaseHP, AdditionalHP);
-                yield return (StatType.ATK, BaseATK, AdditionalATK);
-                yield return (StatType.DEF, BaseDEF, AdditionalDEF);
-                yield return (StatType.CRI, BaseCRI, AdditionalCRI);
-                yield return (StatType.HIT, BaseHIT, AdditionalHIT);
-                yield return (StatType.SPD, BaseSPD, AdditionalSPD);
-                yield return (StatType.DRV, BaseDRV, AdditionalDRV);
-                yield return (StatType.DRR, BaseDRR, AdditionalDRR);
-                yield return (StatType.CDMG, BaseCDMG, AdditionalCDMG);
+                var baseStat = _baseStats.GetStat(statType);
+                if (!ignoreZero ||
+                    (baseStat != decimal.Zero) || (additionalStat != decimal.Zero))
+                {
+                    yield return (statType, baseStat, additionalStat);
+                }
             }
         }
     }

@@ -497,10 +497,10 @@ namespace Lib9c.DevExtensions.Action
                     optionSheet,
                     null,
                     skillSheet);
-                var additionalOptionStats = equipment.StatsMap.GetAdditionalStats().ToArray();
+                var additionalOptionStats = equipment.StatsMap.GetAdditionalStats(true).ToArray();
                 foreach (var statMapEx in additionalOptionStats)
                 {
-                    equipment.StatsMap.SetStatAdditionalValue(statMapEx.StatType, 0);
+                    equipment.StatsMap.SetStatAdditionalValue(statMapEx.statType, 0);
                 }
 
                 equipment.Skills.Clear();

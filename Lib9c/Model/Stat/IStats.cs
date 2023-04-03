@@ -4,26 +4,16 @@ namespace Nekoyume.Model.Stat
 {
     public interface IStats
     {
-        int HP { get; }
-        int ATK { get; }
-        int DEF { get; }
-        int CRI { get; }
-        int HIT { get; }
-        int SPD { get; }
-        int DRV { get; }
-        int DRR { get; }
-        int CDMG { get; }
+        decimal HP { get; }
+        decimal ATK { get; }
+        decimal DEF { get; }
+        decimal CRI { get; }
+        decimal HIT { get; }
+        decimal SPD { get; }
+        decimal DRV { get; }
+        decimal DRR { get; }
+        decimal CDMG { get; }
 
-        bool HasHP { get; }
-        bool HasATK { get; }
-        bool HasDEF { get; }
-        bool HasCRI { get; }
-        bool HasHIT { get; }
-        bool HasSPD { get; }
-        bool HasDRV { get; }
-        bool HasDRR { get; }
-        bool HasCDMG { get; }
-
-        IEnumerable<(StatType statType, int value)> GetStats(bool ignoreZero = false);
+        IEnumerable<(StatType statType, decimal value)> GetStats(bool ignoreZero = false);
     }
 }

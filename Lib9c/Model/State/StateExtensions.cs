@@ -210,7 +210,7 @@ namespace Nekoyume.Model.State
 
         public static IValue Serialize(this DecimalStat decimalStat) =>
             Dictionary.Empty
-                .Add("type", StatTypeExtension.Serialize(decimalStat.Type))
+                .Add("type", StatTypeExtension.Serialize(decimalStat.StatType))
                 .Add("value", decimalStat.Value.Serialize());
 
         public static DecimalStat ToDecimalStat(this IValue serialized) =>
