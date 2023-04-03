@@ -16,7 +16,7 @@ namespace Nekoyume.Game
     {
         public static string DccVisible = "dcc_visible";
 
-        public Dictionary<string, int> Avatars { get; private set; }
+        public Dictionary<string, int> Avatars { get; private set; } = new();
         public bool? IsConnected { get; set; } = null;
         private readonly Dictionary<int, Dictionary<DccPartsType, int>> _parts = new();
 

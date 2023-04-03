@@ -237,7 +237,7 @@ namespace Nekoyume.Game
 #endif
             var options = MessagePackSerializerOptions.Standard.WithResolver(resolver);
             MessagePackSerializer.DefaultOptions = options;
-            
+
 #if UNITY_EDITOR
             if (useSystemLanguage)
             {
@@ -309,7 +309,8 @@ namespace Nekoyume.Game
             Stage.Initialize();
             Arena.Initialize();
             RaidStage.Initialize();
-            StartCoroutine(CoInitDccAvatar());
+            // Initialize D:CC NFT data
+            yield return StartCoroutine(CoInitDccAvatar());
             var headerName = URL.DccEthChainHeaderName;
             var headerValue = URL.DccEthChainHeaderValue;
             StartCoroutine(RequestManager.instance.GetJson(
