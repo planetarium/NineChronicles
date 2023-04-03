@@ -1509,38 +1509,6 @@
         <member name="M:Libplanet.Action.Sys.Mint.GetHashCode">
             <inheritdoc cref="M:System.Object.GetHashCode"/>
         </member>
-        <member name="T:Libplanet.Action.Sys.SetValidator">
-            <summary>
-            A system action that promotes given address to the validator.
-            </summary>
-        </member>
-        <member name="M:Libplanet.Action.Sys.SetValidator.#ctor(Libplanet.Consensus.Validator)">
-            <summary>
-            Creates a new instance of <see cref="T:Libplanet.Action.Sys.SetValidator"/> action.
-            </summary>
-            <param name="validator">The <see cref="P:Libplanet.Action.Sys.SetValidator.Validator"/> to be set.</param>
-        </member>
-        <member name="P:Libplanet.Action.Sys.SetValidator.PlainValue">
-            <inheritdoc cref="P:Libplanet.Action.IAction.PlainValue"/>
-        </member>
-        <member name="M:Libplanet.Action.Sys.SetValidator.LoadPlainValue(Bencodex.Types.IValue)">
-            <inheritdoc cref="M:Libplanet.Action.IAction.LoadPlainValue(Bencodex.Types.IValue)"/>
-        </member>
-        <member name="M:Libplanet.Action.Sys.SetValidator.Execute(Libplanet.Action.IActionContext)">
-            <inheritdoc cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/>
-        </member>
-        <member name="M:Libplanet.Action.Sys.SetValidator.Equals(Libplanet.Action.Sys.SetValidator)">
-            <inheritdoc cref="M:System.IEquatable`1.Equals(`0)"/>
-        </member>
-        <member name="M:Libplanet.Action.Sys.SetValidator.Equals(Libplanet.Action.IAction)">
-            <inheritdoc cref="M:System.IEquatable`1.Equals(`0)"/>
-        </member>
-        <member name="M:Libplanet.Action.Sys.SetValidator.Equals(System.Object)">
-            <inheritdoc cref="M:System.Object.Equals(System.Object)"/>
-        </member>
-        <member name="M:Libplanet.Action.Sys.SetValidator.GetHashCode">
-            <inheritdoc cref="M:System.Object.GetHashCode"/>
-        </member>
         <member name="T:Libplanet.Action.Sys.Transfer">
             <summary>
             A system action that transfers the ownership of specified <see cref="P:Libplanet.Action.Sys.Transfer.Amount"/> of tokens to
@@ -6947,7 +6915,7 @@
         </member>
         <member name="M:Libplanet.ByteUtil.Hex(System.Byte[])">
             <summary>
-            Renders a hexadecimal string from a <see cref="T:System.Byte"/> array.
+            Renders a hexadecimal string in lowercase from a <see cref="T:System.Byte"/> array.
             </summary>
             <param name="bytes">A <see cref="T:System.Byte"/> array to renders
             the corresponding hexadecimal string.
@@ -6959,7 +6927,7 @@
         </member>
         <member name="M:Libplanet.ByteUtil.Hex(System.Collections.Immutable.ImmutableArray{System.Byte}@)">
             <summary>
-            Renders a hexadecimal string from a <see cref="T:System.Byte"/> array.
+            Renders a hexadecimal string in lowercase from a <see cref="T:System.Byte"/> array.
             </summary>
             <param name="bytes">A <see cref="T:System.Byte"/> array to renders
             the corresponding hexadecimal string.

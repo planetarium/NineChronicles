@@ -1944,6 +1944,17 @@
             <param name="timeout">Timeout value for request.</param>
             <returns><see cref="T:Libplanet.Net.AppProtocolVersion"/> of given peer. </returns>
         </member>
+        <member name="M:Libplanet.Net.Transports.BoundPeerExtensions.ResolveNetMQAddressAsync(Libplanet.Net.BoundPeer)">
+            <summary>
+            Get IPv4 TCP address <see cref="T:System.String"/> of given <see cref="T:Libplanet.Net.BoundPeer"/>
+            to be used on NetMQ transport.
+            </summary>
+            <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to get TCP NetMQ address.</param>
+            <returns>IPv4 TCP address <see cref="T:System.String"/> of given <paramref name="peer"/>.
+            </returns>
+            <exception cref="T:Libplanet.Net.Transports.TransportException">Thrown if failed to resolve address for given peer.
+            </exception>
+        </member>
         <member name="T:Libplanet.Net.Transports.CommunicationFailException">
             <summary>
             An <see cref="T:System.Exception"/> thrown when fail to complete a sending and receiving messages
