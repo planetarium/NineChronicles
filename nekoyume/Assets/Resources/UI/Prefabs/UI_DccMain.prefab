@@ -7152,6 +7152,7 @@ GameObject:
   - component: {fileID: 2239108142594206111}
   - component: {fileID: 4755661912159286488}
   - component: {fileID: 8934566919809599854}
+  - component: {fileID: 2064401548302375998}
   m_Layer: 5
   m_Name: UI_DccMain
   m_TagString: Untagged
@@ -7214,6 +7215,26 @@ MonoBehaviour:
   backButton: {fileID: 8853667321893535037}
   notification: {fileID: 1564436145759176780}
   connectedObject: {fileID: 667687042968767213}
+--- !u!95 &2064401548302375998
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3037945344740449194}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: ffed50d811ab7634ca328af91805c6d5, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &3076933251019978267
 GameObject:
   m_ObjectHideFlags: 0

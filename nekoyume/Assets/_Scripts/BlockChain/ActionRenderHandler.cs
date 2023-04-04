@@ -1906,18 +1906,16 @@ namespace Nekoyume.BlockChain
         {
             Widget.Find<UnlockWorldLoadingScreen>().Close();
 
-            if (!(eval.Exception is null))
+            if (eval.Exception is not null)
             {
                 Debug.LogError($"unlock world exc : {eval.Exception.InnerException}");
                 return;
-                // Exception handling...
             }
 
             var worldMap = Widget.Find<WorldMap>();
             worldMap.SharedViewModel.UnlockedWorldIds.AddRange(eval.Action.WorldIds);
             worldMap.SetWorldInformation(States.Instance.CurrentAvatarState.worldInformation);
 
-            UpdateCurrentAvatarStateAsync(eval).Forget();
             UpdateAgentStateAsync(eval).Forget();
         }
 
@@ -2055,14 +2053,12 @@ namespace Nekoyume.BlockChain
             _actionRenderer.EveryRender<ManipulateState>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(async _ =>
+                .Subscribe(async eval =>
                 {
+                    await UpdateCurrentAvatarStateAsync(eval);
                     await RxProps.SelectAvatarAsync(
                         States.Instance.CurrentAvatarKey,
                         forceNewSelection: true);
-                    await WorldBossStates.Set(States.Instance.CurrentAvatarState.address);
-                    await States.Instance.InitRuneSlotStates();
-                    await States.Instance.InitItemSlotStates();
                     NotificationSystem.Push(
                         MailType.System,
                         "State Manipulated",
