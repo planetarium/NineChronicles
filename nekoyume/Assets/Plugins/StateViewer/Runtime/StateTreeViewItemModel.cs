@@ -18,6 +18,7 @@ namespace StateViewer.Runtime
         private static Dictionary<string, string>? _reversedSerializeKeys;
 
         private IValue _originValue;
+        private readonly List<StateTreeViewItemModel> _children;
 
         /// <summary>
         /// <see cref="UnityEditor.IMGUI.Controls.TreeViewItem"/> has unique id.
@@ -42,7 +43,7 @@ namespace StateViewer.Runtime
 
         public string AliasContent { get; private set; }
 
-        public List<StateTreeViewItemModel> Children { get; } = new();
+        public IReadOnlyList<StateTreeViewItemModel> Children => _children;
 
 #pragma warning disable CS8618
         public StateTreeViewItemModel(
@@ -54,6 +55,7 @@ namespace StateViewer.Runtime
             string? alias = null)
         {
             _originValue = data;
+            _children = new List<StateTreeViewItemModel>();
             SetValue(_originValue);
 
             Parent = parent;
@@ -125,7 +127,7 @@ namespace StateViewer.Runtime
         public void SetValue(IValue value)
         {
             Value = value;
-            Children.Clear();
+            _children.Clear();
             switch (ValueType)
             {
                 case ValueKind.Null:
@@ -138,7 +140,7 @@ namespace StateViewer.Runtime
                 case ValueKind.List:
                     ValueContent = ParseToString(Value);
                     var list = (List)Value;
-                    Children.AddRange(list.Select((childValue, i) =>
+                    _children.AddRange(list.Select((childValue, i) =>
                         new StateTreeViewItemModel(
                             childValue,
                             parent: this,
@@ -147,7 +149,7 @@ namespace StateViewer.Runtime
                 case ValueKind.Dictionary:
                     ValueContent = ParseToString(Value);
                     var dict = (Dictionary)Value;
-                    Children.AddRange(dict.Select(pair =>
+                    _children.AddRange(dict.Select(pair =>
                         new StateTreeViewItemModel(
                             pair.Value,
                             parent: this,
@@ -272,7 +274,7 @@ namespace StateViewer.Runtime
                 case ValueKind.List:
                     var list = ((List)Value).Add(child);
                     Value = list;
-                    Children.Add(new StateTreeViewItemModel(
+                    _children.Add(new StateTreeViewItemModel(
                         child,
                         parent: this,
                         index: list.Count - 1));
@@ -282,7 +284,7 @@ namespace StateViewer.Runtime
                     var key = dict.Count.ToString();
                     dict = dict.Add(key, child);
                     Value = dict;
-                    Children.Add(new StateTreeViewItemModel(
+                    _children.Add(new StateTreeViewItemModel(
                         child,
                         parent: this,
                         key: (IKey)ParseToValue(key, ValueKind.Text)));
@@ -308,7 +310,7 @@ namespace StateViewer.Runtime
                     IImmutableList<IValue> list = (List)Value;
                     list = list.RemoveAt(child.Index!.Value);
                     Value = new List(list);
-                    Children.Remove(child);
+                    _children.Remove(child);
                     for (var i = 0; i < Children.Count; i++)
                     {
                         var c = Children[i];
@@ -319,7 +321,7 @@ namespace StateViewer.Runtime
                 case ValueKind.Dictionary:
                     var dict = (Dictionary)Value;
                     Value = new Dictionary(dict.Remove(child.Key!));
-                    Children.Remove(child);
+                    _children.Remove(child);
                     break;
                 default:
                     return;
