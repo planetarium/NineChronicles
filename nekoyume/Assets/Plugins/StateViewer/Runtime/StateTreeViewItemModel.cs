@@ -263,7 +263,7 @@ namespace StateViewer.Runtime
             }
 
             AliasContent = string.IsNullOrEmpty(alias)
-                ? keyType.ToString()
+                ? $"({keyType})"
                 : $"({keyType}){alias}";
         }
 
