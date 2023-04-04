@@ -4,7 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.DevExtensions;
 using Libplanet;
+using Nekoyume.Game;
+using Nekoyume.Model.Item;
 using StateViewer.Runtime;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
@@ -17,31 +20,41 @@ namespace StateViewer.Editor
     {
         private const int RootTreeViewItemId = 0;
         private static readonly string[] ValueKindNames = Enum.GetNames(typeof(ValueKind));
+        private static readonly string[] ItemTypeNames = Enum.GetNames(typeof(ItemType));
 
-        public event Action<bool>? OnDirty;
-
+        private readonly TableSheets _tableSheets;
         private Address _addr;
         private StateTreeViewItemModel? _itemModel;
+
+        public ContentKind ContentKind { get; set; }
 
         public (Address addr, IValue value) Serialize()
         {
             return (_addr, _itemModel?.Serialize() ?? Null.Value);
         }
 
-        public StateTreeView(TreeViewState treeViewState, MultiColumnHeader multiColumnHeader)
+        public StateTreeView(
+            TreeViewState treeViewState,
+            MultiColumnHeader multiColumnHeader,
+            TableSheets tableSheets)
             : base(treeViewState, multiColumnHeader)
         {
             rowHeight = EditorGUIUtility.singleLineHeight;
             showAlternatingRowBackgrounds = true;
             showBorder = true;
+            _tableSheets = tableSheets;
         }
 
-        public void SetData(Address addr, IValue? data)
+        public void SetData(
+            Address addr,
+            IValue? data,
+            ContentKind contentKind = ContentKind.None)
         {
             _addr = addr;
             _itemModel = new StateTreeViewItemModel(
                 data ?? Null.Value,
                 alias: "root");
+            ContentKind = contentKind;
             ProcessWhenItemModelHierarchyChanged(initialize: true);
         }
 
@@ -79,7 +92,6 @@ namespace StateViewer.Editor
             }
 
             Reload();
-            OnDirty?.Invoke(true);
         }
 
         public void ClearData() => SetData(default, Null.Value);
@@ -205,7 +217,6 @@ namespace StateViewer.Editor
                         {
                             // TODO: Validate value
                             viewModel.SetValueContent(value);
-                            OnDirty?.Invoke(true);
                         }
 
                         break;
@@ -213,12 +224,7 @@ namespace StateViewer.Editor
                         if (viewModel.ValueType is ValueKind.List or ValueKind.Dictionary &&
                             GUI.Button(cellRect, "Add"))
                         {
-                            // NOTE: Why `viewModel.Children[0].Serialize()` not `viewModel.Children[0].Value`?
-                            //       Because to use same value of edited content.
-                            viewModel.AddChild(viewModel.Children.Count == 0
-                                ? Null.Value
-                                : viewModel.Children[0].Serialize());
-                            ProcessWhenItemModelHierarchyChanged();
+                            OnAddButtonClicked(viewModel);
                         }
 
                         break;
@@ -233,6 +239,57 @@ namespace StateViewer.Editor
                         break;
                 }
             }
+        }
+
+        private void OnAddButtonClicked(StateTreeViewItemModel viewModel)
+        {
+            if (ContentKind != ContentKind.None &&
+                ContentKind != ContentKind.Inventory)
+            {
+                Debug.LogWarning(
+                    $"There's no Implementation for {ContentKind}({nameof(ContentKind)}).");
+                return;
+            }
+
+            if (ContentKind == ContentKind.None ||
+                // NOTE: This is for `ContentKind.Inventory`.
+                //       Check if `viewModel` is root of `Inventory`.
+                viewModel.Parent is not null and not { TreeViewItemId: RootTreeViewItemId })
+            {
+                // NOTE: Why `viewModel.Children[0].Serialize()` not `viewModel.Children[0].Value`?
+                //       Because to use same value of edited content.
+                viewModel.AddChild(viewModel.Children.Count == 0
+                    ? Null.Value
+                    : viewModel.Children[0].Serialize());
+                ProcessWhenItemModelHierarchyChanged();
+                return;
+            }
+
+            // NOTE: This is for the case that `viewModel` is root of `Inventory`.
+            void AddItem(string itemTypeName)
+            {
+                var itemType = Enum.Parse<ItemType>(itemTypeName);
+                var pair = _tableSheets.ItemSheet.First(pair =>
+                    pair.Value.ItemType == itemType);
+                var itemValue = ItemFactory.CreateItem(
+                        pair.Value,
+                        new RandomImpl(DateTime.Now.Millisecond))
+                    .Serialize();
+                viewModel.AddChild(itemValue);
+                ProcessWhenItemModelHierarchyChanged();
+            }
+
+            // Context menu for selecting item type.
+            var menu = new GenericMenu();
+            foreach (var itemTypeName in ItemTypeNames)
+            {
+                menu.AddItem(
+                    new GUIContent(itemTypeName),
+                    false,
+                    () => AddItem(itemTypeName));
+            }
+
+            menu.ShowAsContext();
         }
 
         private void AddChildrenRecursive(
