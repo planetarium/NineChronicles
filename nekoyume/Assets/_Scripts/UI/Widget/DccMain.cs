@@ -64,7 +64,7 @@ namespace Nekoyume.UI
             base.Awake();
             dccConnectButton.onClick.AddListener(() =>
             {
-                Find<DccSettingPopup>().ConnectDcc();
+                Find<ConfirmConnectPopup>().ShowConnectDcc();
             });
             collectionButton.onClick.AddListener(() =>
             {
