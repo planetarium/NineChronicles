@@ -449,6 +449,7 @@ namespace Nekoyume.UI.Scroller
             if (_animationCoroutine != null)
             {
                 StopCoroutine(_animationCoroutine);
+                _animationCoroutine = null;
                 var rows = GetComponentsInChildren<RecipeRow>(true);
                 foreach (var row in rows)
                 {
@@ -461,17 +462,20 @@ namespace Nekoyume.UI.Scroller
 
         private IEnumerator CoAnimateScroller()
         {
+            Scroller.Draggable = false;
+
+            yield return null;
+            Relayout();
+
             var rows = GetComponentsInChildren<RecipeRow>();
             var wait = new WaitForSeconds(animationInterval);
 
-            Scroller.Draggable = false;
             foreach (var row in rows)
             {
                 row.HideWithAlpha();
             }
 
             yield return null;
-            Relayout();
 
             foreach (var row in rows)
             {
