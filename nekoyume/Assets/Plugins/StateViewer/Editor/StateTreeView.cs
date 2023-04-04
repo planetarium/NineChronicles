@@ -194,39 +194,11 @@ namespace StateViewer.Editor
                         }
 
                         break;
-                    case 3 // Value
-                        when viewModel.ValueType is
-                            ValueKind.Null or
-                            ValueKind.List or
-                            ValueKind.Dictionary:
-                        GUI.Label(cellRect, viewModel.ValueContent);
-                        break;
-                    case 3 // Value
-                        when viewModel.ValueType is ValueKind.Boolean:
-                        var from = (bool)(Boolean)viewModel.Value;
-                        var to = GUI.Toggle(cellRect, from, from ? "(true)" : "(false)");
-                        if (to != from)
-                        {
-                            viewModel.SetValue((Boolean)to);
-                        }
-
-                        break;
                     case 3: // Value
-                        var value = GUI.TextField(cellRect, viewModel.ValueContent);
-                        if (value != viewModel.ValueContent)
-                        {
-                            // TODO: Validate value
-                            viewModel.SetValueContent(value);
-                        }
-
+                        DrawValueColumn(viewModel, cellRect);
                         break;
                     case 4: // Add
-                        if (viewModel.ValueType is ValueKind.List or ValueKind.Dictionary &&
-                            GUI.Button(cellRect, "Add"))
-                        {
-                            OnAddButtonClicked(viewModel);
-                        }
-
+                        DrawAddColumn(viewModel, cellRect);
                         break;
                     case 5: // Remove
                         if (viewModel.Parent is not null &&
@@ -241,8 +213,51 @@ namespace StateViewer.Editor
             }
         }
 
-        private void OnAddButtonClicked(StateTreeViewItemModel viewModel)
+        private void DrawValueColumn(
+            StateTreeViewItemModel viewModel,
+            Rect cellRect)
         {
+            switch (viewModel.ValueType)
+            {
+                case ValueKind.Null:
+                case ValueKind.List:
+                case ValueKind.Dictionary:
+                    GUI.Label(cellRect, viewModel.ValueContent);
+                    return;
+                case ValueKind.Boolean:
+                    var from = (bool)(Boolean)viewModel.Value;
+                    var to = GUI.Toggle(cellRect, from, from ? "(true)" : "(false)");
+                    if (to != from)
+                    {
+                        viewModel.SetValue((Boolean)to);
+                    }
+
+                    return;
+                case ValueKind.Integer:
+                case ValueKind.Binary:
+                case ValueKind.Text:
+                default:
+                    break;
+            }
+
+            var value = GUI.TextField(cellRect, viewModel.ValueContent);
+            if (value != viewModel.ValueContent)
+            {
+                // TODO: Validate value
+                viewModel.SetValueContent(value);
+            }
+        }
+
+        private void DrawAddColumn(
+            StateTreeViewItemModel viewModel,
+            Rect cellRect)
+        {
+            if (viewModel.ValueType is not (ValueKind.List or ValueKind.Dictionary) ||
+                !GUI.Button(cellRect, "Add"))
+            {
+                return;
+            }
+
             if (ContentKind != ContentKind.None &&
                 ContentKind != ContentKind.Inventory)
             {
