@@ -4,7 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.DevExtensions;
 using Libplanet;
+using Nekoyume.Game;
+using Nekoyume.Model.Item;
 using StateViewer.Runtime;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
@@ -17,35 +20,46 @@ namespace StateViewer.Editor
     {
         private const int RootTreeViewItemId = 0;
         private static readonly string[] ValueKindNames = Enum.GetNames(typeof(ValueKind));
+        private static readonly string[] ItemTypeNames = Enum.GetNames(typeof(ItemType));
 
-        public event Action<bool>? OnDirty;
-
+        private readonly TableSheets _tableSheets;
         private Address _addr;
         private StateTreeViewItemModel? _itemModel;
+
+        public ContentKind ContentKind { get; set; }
 
         public (Address addr, IValue value) Serialize()
         {
             return (_addr, _itemModel?.Serialize() ?? Null.Value);
         }
 
-        public StateTreeView(TreeViewState treeViewState, MultiColumnHeader multiColumnHeader)
+        public StateTreeView(
+            TreeViewState treeViewState,
+            MultiColumnHeader multiColumnHeader,
+            TableSheets tableSheets)
             : base(treeViewState, multiColumnHeader)
         {
             rowHeight = EditorGUIUtility.singleLineHeight;
             showAlternatingRowBackgrounds = true;
             showBorder = true;
+            _tableSheets = tableSheets;
         }
 
-        public void SetData(Address addr, IValue? data)
+        public void SetData(
+            Address addr,
+            IValue? data,
+            ContentKind contentKind = ContentKind.None)
         {
             _addr = addr;
             _itemModel = new StateTreeViewItemModel(
                 data ?? Null.Value,
                 alias: "root");
+            ContentKind = contentKind;
             ProcessWhenItemModelHierarchyChanged(initialize: true);
         }
 
-        private void ProcessWhenItemModelHierarchyChanged(bool initialize = false)
+        private void ProcessWhenItemModelHierarchyChanged(
+            bool initialize = false)
         {
             if (_itemModel is null)
             {
@@ -54,8 +68,6 @@ namespace StateViewer.Editor
 
             // Cache selection ids
             var selectionIdsPrev = GetSelection();
-            // Cache Expanded ids
-            var expandedIdsPrev = GetExpanded();
             const int firstId = RootTreeViewItemId + 1;
             _itemModel.SetTreeViewItemIdRecursive(firstId, alsoSetPrev: initialize);
             // Restore selection ids
@@ -68,6 +80,8 @@ namespace StateViewer.Editor
                 SetSelection(selectionIds, TreeViewSelectionOptions.None);
             }
 
+            // Cache Expanded ids
+            var expandedIdsPrev = GetExpanded();
             // Restore Expanded ids
             if (expandedIdsPrev is not null)
             {
@@ -79,7 +93,6 @@ namespace StateViewer.Editor
             }
 
             Reload();
-            OnDirty?.Invoke(true);
         }
 
         public void ClearData() => SetData(default, Null.Value);
@@ -122,6 +135,12 @@ namespace StateViewer.Editor
             return totalRows;
         }
 
+        // FIXME: It needs to be refactored.
+        //        Implement a StateTreeViewItem for ItemBase and use it like below.
+        //        ```
+        //        var item = (StateTreeViewItem)args.item;
+        //        item.RowGUI();
+        //        ```
         protected override void RowGUI(RowGUIArgs args)
         {
             var item = (StateTreeViewItem)args.item;
@@ -182,45 +201,11 @@ namespace StateViewer.Editor
                         }
 
                         break;
-                    case 3 // Value
-                        when viewModel.ValueType is
-                            ValueKind.Null or
-                            ValueKind.List or
-                            ValueKind.Dictionary:
-                        GUI.Label(cellRect, viewModel.ValueContent);
-                        break;
-                    case 3 // Value
-                        when viewModel.ValueType is ValueKind.Boolean:
-                        var from = (bool)(Boolean)viewModel.Value;
-                        var to = GUI.Toggle(cellRect, from, from ? "(true)" : "(false)");
-                        if (to != from)
-                        {
-                            viewModel.SetValue((Boolean)to);
-                        }
-
-                        break;
                     case 3: // Value
-                        var value = GUI.TextField(cellRect, viewModel.ValueContent);
-                        if (value != viewModel.ValueContent)
-                        {
-                            // TODO: Validate value
-                            viewModel.SetValueContent(value);
-                            OnDirty?.Invoke(true);
-                        }
-
+                        DrawValueColumn(viewModel, cellRect);
                         break;
                     case 4: // Add
-                        if (viewModel.ValueType is ValueKind.List or ValueKind.Dictionary &&
-                            GUI.Button(cellRect, "Add"))
-                        {
-                            // NOTE: Why `viewModel.Children[0].Serialize()` not `viewModel.Children[0].Value`?
-                            //       Because to use same value of edited content.
-                            viewModel.AddChild(viewModel.Children.Count == 0
-                                ? Null.Value
-                                : viewModel.Children[0].Serialize());
-                            ProcessWhenItemModelHierarchyChanged();
-                        }
-
+                        DrawAddColumn(viewModel, cellRect);
                         break;
                     case 5: // Remove
                         if (viewModel.Parent is not null &&
@@ -233,6 +218,213 @@ namespace StateViewer.Editor
                         break;
                 }
             }
+        }
+
+        private void DrawValueColumn(
+            StateTreeViewItemModel viewModel,
+            Rect cellRect)
+        {
+            switch (viewModel.ValueType)
+            {
+                case ValueKind.Null:
+                case ValueKind.List:
+                case ValueKind.Dictionary:
+                    GUI.Label(cellRect, viewModel.ValueContent);
+                    return;
+                case ValueKind.Boolean:
+                    var from = (bool)(Boolean)viewModel.Value;
+                    var to = GUI.Toggle(cellRect, from, from ? "(true)" : "(false)");
+                    if (to != from)
+                    {
+                        viewModel.SetValue((Boolean)to);
+                    }
+
+                    return;
+                case ValueKind.Integer:
+                case ValueKind.Binary:
+                case ValueKind.Text:
+                default:
+                    break;
+            }
+
+            var value = GUI.TextField(cellRect, viewModel.ValueContent);
+            if (value == viewModel.ValueContent)
+            {
+                return;
+            }
+
+            viewModel.SetValueContent(value);
+            if (ContentKind == ContentKind.None)
+            {
+                return;
+            }
+
+            // NOTE: This is for `ContentKind.Inventory`.
+            //       Check if `viewModel` is <see cref="ItemBase.Id"> of `Inventory`.
+            if (viewModel is null or not
+                {
+                    Parent:
+                    {
+                        IndexOrKeyContent: "item",
+                        Parent:
+                        {
+                            ValueType: ValueKind.Dictionary,
+                            Parent:
+                            {
+                                ValueType: ValueKind.List,
+                                TreeViewItemId: RootTreeViewItemId + 1,
+                            },
+                        },
+                    }
+                })
+            {
+                return;
+            }
+
+            var random = new RandomImpl(DateTime.Now.Millisecond);
+            switch (viewModel.IndexOrKeyContent)
+            {
+                case "id":
+                {
+                    if (!int.TryParse(viewModel.ValueContent, out var itemId) ||
+                        !_tableSheets.ItemSheet.TryGetValue(itemId, out var itemRow))
+                    {
+                        return;
+                    }
+
+                    if (itemRow.ItemType != ItemType.Equipment)
+                    {
+                        var item = ItemFactory.CreateItem(itemRow, random);
+                        viewModel.Parent!.SetValue(item.Serialize());
+                        ProcessWhenItemModelHierarchyChanged();
+                        return;
+                    }
+
+                    if (viewModel.Siblings!.First(child =>
+                            child.IndexOrKeyContent == "item_type").ValueContent == "Equipment")
+                    {
+                        var nonFungibleItemIdContent = viewModel.Siblings!.First(child =>
+                            child.IndexOrKeyContent == "itemId")?.ValueContent ?? null;
+                        var nonFungibleItemId = nonFungibleItemIdContent is null
+                            ? Guid.NewGuid()
+                            : new Guid((Binary)StateTreeViewItemModel.ParseToValue(
+                                nonFungibleItemIdContent,
+                                ValueKind.Binary));
+                        var levelContent = viewModel.Siblings!.FirstOrDefault(child =>
+                            child.IndexOrKeyContent == "level")?.ValueContent ?? "0";
+                        var level = int.TryParse(levelContent, out var l) ? l : 0;
+                        var equipment = BlacksmithMaster.CraftEquipment(
+                            itemId,
+                            nonFungibleItemId: nonFungibleItemId,
+                            level: level,
+                            tableSheets: _tableSheets,
+                            random: random)!;
+                        viewModel.Parent!.SetValue(equipment.Serialize());
+                        ProcessWhenItemModelHierarchyChanged();
+                    }
+                    else
+                    {
+                        var equipment = BlacksmithMaster.CraftEquipment(
+                            itemId,
+                            tableSheets: _tableSheets,
+                            random: random)!;
+                        viewModel.Parent!.SetValue(equipment.Serialize());
+                        ProcessWhenItemModelHierarchyChanged();
+                    }
+
+                    return;
+                }
+                case "level":
+                {
+                    if (viewModel.Siblings!.First(child =>
+                            child.IndexOrKeyContent == "item_type").ValueContent != "Equipment")
+                    {
+                        return;
+                    }
+
+                    var itemIdContent = viewModel.Siblings!.First(child =>
+                        child.IndexOrKeyContent == "id").ValueContent;
+                    var itemId = int.TryParse(itemIdContent, out var id) ? id : 0;
+                    var nonFungibleItemIdContent = viewModel.Siblings!.First(child =>
+                        child.IndexOrKeyContent == "itemId")?.ValueContent ?? null;
+                    var nonFungibleItemId = nonFungibleItemIdContent is null
+                        ? Guid.NewGuid()
+                        : new Guid((Binary)StateTreeViewItemModel.ParseToValue(
+                            nonFungibleItemIdContent,
+                            ValueKind.Binary));
+                    var level = int.TryParse(viewModel.ValueContent, out var l) ? l : 0;
+                    var equipment = BlacksmithMaster.CraftEquipment(
+                        itemId,
+                        nonFungibleItemId: nonFungibleItemId,
+                        level: level,
+                        tableSheets: _tableSheets,
+                        random: random)!;
+                    // FIXME: The expanded state of `viewModel` is not restored.
+                    //        Maybe we should replace some valueContents not to set the IValue.
+                    viewModel.Parent!.SetValue(equipment.Serialize());
+                    ProcessWhenItemModelHierarchyChanged();
+                    return;
+                }
+            }
+        }
+
+        private void DrawAddColumn(
+            StateTreeViewItemModel viewModel,
+            Rect cellRect)
+        {
+            if (viewModel.ValueType is not (ValueKind.List or ValueKind.Dictionary) ||
+                !GUI.Button(cellRect, "Add"))
+            {
+                return;
+            }
+
+            if (ContentKind != ContentKind.None &&
+                ContentKind != ContentKind.Inventory)
+            {
+                Debug.LogWarning(
+                    $"There's no Implementation for {ContentKind}({nameof(ContentKind)}).");
+                return;
+            }
+
+            if (ContentKind == ContentKind.None ||
+                // NOTE: This is for `ContentKind.Inventory`.
+                //       Check if `viewModel` is root of `Inventory`.
+                viewModel.Parent is not null and not { TreeViewItemId: RootTreeViewItemId })
+            {
+                // NOTE: Why `viewModel.Children[0].Serialize()` not `viewModel.Children[0].Value`?
+                //       Because to use same value of edited content.
+                viewModel.AddChild(viewModel.Children.Count == 0
+                    ? Null.Value
+                    : viewModel.Children[0].Serialize());
+                ProcessWhenItemModelHierarchyChanged();
+                return;
+            }
+
+            // NOTE: This is for the case that `viewModel` is root of `Inventory`.
+            void AddInventoryItem(string itemTypeName)
+            {
+                var itemType = Enum.Parse<ItemType>(itemTypeName);
+                var pair = _tableSheets.ItemSheet.First(pair =>
+                    pair.Value.ItemType == itemType);
+                var itemBase = ItemFactory.CreateItem(
+                    pair.Value,
+                    new RandomImpl(DateTime.Now.Millisecond));
+                var inventoryItem = new Inventory.Item(itemBase);
+                viewModel.AddChild(inventoryItem.Serialize());
+                ProcessWhenItemModelHierarchyChanged();
+            }
+
+            // Context menu for selecting item type.
+            var menu = new GenericMenu();
+            foreach (var itemTypeName in ItemTypeNames)
+            {
+                menu.AddItem(
+                    new GUIContent(itemTypeName),
+                    false,
+                    () => AddInventoryItem(itemTypeName));
+            }
+
+            menu.ShowAsContext();
         }
 
         private void AddChildrenRecursive(

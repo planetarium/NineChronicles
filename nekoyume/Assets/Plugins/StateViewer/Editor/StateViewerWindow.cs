@@ -12,7 +12,6 @@ using StateViewer.Runtime;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
-using Event = UnityEngine.Event;
 
 namespace StateViewer.Editor
 {
@@ -48,7 +47,7 @@ namespace StateViewer.Editor
         private bool initialized;
 
         [SerializeField]
-        private bool drawTestValues;
+        private bool useTestValues;
 
         [SerializeField]
         private MultiColumnHeaderState stateTreeHeaderState;
@@ -65,6 +64,7 @@ namespace StateViewer.Editor
 
         private SearchField _searchField;
         private string _searchString;
+        private bool _loadingSomething;
 
         private Currency _ncg;
         private Currency _crystal;
@@ -72,9 +72,10 @@ namespace StateViewer.Editor
         private string _crystalValue;
 
         private StateProxy _stateProxy;
+        private TableSheets _tableSheets;
 
-        private static bool IsSavable => !Application.isPlaying ||
-                                         !Game.instance.IsInitialized;
+        private static bool IsSavable => Application.isPlaying &&
+                                         Game.instance.IsInitialized;
 
         [MenuItem("Tools/Lib9c/State Viewer")]
         private static void ShowWindow() =>
@@ -83,6 +84,7 @@ namespace StateViewer.Editor
         private void OnEnable()
         {
             minSize = new Vector2(800f, 300f);
+            _tableSheets = TableSheetsHelper.MakeTableSheets();
 
             stateTreeViewState ??= new TreeViewState();
             var indexOrKeyColumn = new MultiColumnHeaderState.Column
@@ -161,7 +163,8 @@ namespace StateViewer.Editor
             _stateTreeHeader.ResizeToFit();
             _stateTreeView = new StateTreeView(
                 stateTreeViewState,
-                _stateTreeHeader);
+                _stateTreeHeader,
+                _tableSheets);
             _searchField = new SearchField();
             _searchField.downOrUpArrowKeyPressed += _stateTreeView.SetFocusAndEnsureSelectedItem;
             ClearAll();
@@ -220,7 +223,7 @@ namespace StateViewer.Editor
             DrawHorizontalLine();
             GUILayout.Label("State", EditorStyles.boldLabel);
             GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
-            DrawSearchField();
+            DrawInputs();
             GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
             DrawStateTreeView();
             GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
@@ -251,8 +254,8 @@ namespace StateViewer.Editor
 
         private void DrawTestValues()
         {
-            drawTestValues = EditorGUILayout.Toggle("Test Values", drawTestValues);
-            if (!drawTestValues)
+            useTestValues = EditorGUILayout.Toggle("Use Test Values", useTestValues);
+            if (!useTestValues)
             {
                 return;
             }
@@ -270,26 +273,30 @@ namespace StateViewer.Editor
             EditorGUILayout.EndHorizontal();
         }
 
-        private void DrawSearchField()
+        private void DrawInputs()
         {
             GUILayout.BeginHorizontal();
             GUILayout.Label("Address");
-            _searchString = _searchField.OnGUI(_searchString);
+            _searchString = _searchField.OnGUI(_searchString, GUILayout.Width(350f));
+            GUILayout.FlexibleSpace();
+            GUILayout.Label("Content Kind");
+            _stateTreeView.ContentKind = (ContentKind)EditorGUILayout.EnumPopup(
+                _stateTreeView.ContentKind);
             GUILayout.EndHorizontal();
-            if (!_searchField.HasFocus())
+
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            EditorGUI.BeginDisabledGroup(
+                string.IsNullOrEmpty(_searchString) ||
+                _loadingSomething ||
+                !IsSavable);
+            if (GUILayout.Button("Search"))
             {
-                return;
+                GetStateAndUpdateStateTreeViewAsync(_searchString).Forget();
             }
 
-            var current = Event.current;
-            if (current.keyCode != KeyCode.Return ||
-                current.type != EventType.KeyUp)
-            {
-                return;
-            }
-
-            _stateTreeView.SetFocus();
-            OnConfirm(_searchString).Forget();
+            EditorGUI.EndDisabledGroup();
+            GUILayout.EndHorizontal();
         }
 
         private void DrawStateTreeView()
@@ -303,8 +310,8 @@ namespace StateViewer.Editor
         private void DrawSaveButton()
         {
             GUILayout.BeginHorizontal();
-            EditorGUILayout.Space();
-            EditorGUI.BeginDisabledGroup(IsSavable);
+            GUILayout.FlexibleSpace();
+            EditorGUI.BeginDisabledGroup(!IsSavable);
             if (GUILayout.Button("Save", GUILayout.MaxWidth(50f)))
             {
                 var stateList = new List<(Address addr, IValue value)>
@@ -325,7 +332,7 @@ namespace StateViewer.Editor
             // NCG
             EditorGUILayout.BeginHorizontal();
             _ncgValue = EditorGUILayout.TextField("NCG", _ncgValue);
-            EditorGUI.BeginDisabledGroup(IsSavable);
+            EditorGUI.BeginDisabledGroup(!IsSavable);
             if (GUILayout.Button("Save", GUILayout.MaxWidth(50f)))
             {
                 var balanceList = new List<(Address addr, FungibleAssetValue fav)>
@@ -340,7 +347,7 @@ namespace StateViewer.Editor
 
             // CRYSTAL
             EditorGUILayout.BeginHorizontal();
-            EditorGUI.BeginDisabledGroup(IsSavable);
+            EditorGUI.BeginDisabledGroup(!IsSavable);
             _crystalValue = EditorGUILayout.TextField("CRYSTAL", _crystalValue);
             if (GUILayout.Button("Save", GUILayout.MaxWidth(50f)))
             {
@@ -355,7 +362,7 @@ namespace StateViewer.Editor
             EditorGUILayout.EndHorizontal();
         }
 
-        private async UniTaskVoid OnConfirm(string searchString)
+        private async UniTaskVoid GetStateAndUpdateStateTreeViewAsync(string searchString)
         {
             if (string.IsNullOrEmpty(searchString))
             {
@@ -369,6 +376,7 @@ namespace StateViewer.Editor
                 return;
             }
 
+            _loadingSomething = true;
             try
             {
                 var (addr, value) = await _stateProxy.GetStateAsync(searchString);
@@ -387,6 +395,7 @@ namespace StateViewer.Editor
                 ClearAll();
             }
 
+            _loadingSomething = false;
             _stateTreeView.SetFocusAndEnsureSelectedItem();
         }
 
