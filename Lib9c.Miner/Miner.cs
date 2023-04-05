@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blockchain;
 using Libplanet.Blocks;
+using Libplanet.Consensus;
 using Libplanet.Crypto;
 using Libplanet.Tx;
 using Serilog;
@@ -43,8 +43,7 @@ namespace Nekoyume.BlockChain
 
         public Address Address => _privateKey.ToAddress();
 
-        public async Task<Block<NCAction>?> MineBlockAsync(
-            CancellationToken cancellationToken)
+        public Block<NCAction>? ProposeBlockAsync(CancellationToken cancellationToken)
         {
             var txs = new HashSet<Transaction<NCAction>>();
             var invalidTxs = txs;
@@ -79,11 +78,26 @@ namespace Nekoyume.BlockChain
                     }
                 }
 
-                block = await _chain.MineBlock(
+                var lastCommit = _chain.GetBlockCommit(_chain.Tip.Hash);
+                block = _chain.ProposeBlock(
                     _privateKey,
                     DateTimeOffset.UtcNow,
-                    cancellationToken: cancellationToken,
-                    append: true);
+                    lastCommit: lastCommit);
+                BlockCommit? commit = block.Index > 0
+                    ? new BlockCommit(
+                        block.Index,
+                        0,
+                        block.Hash,
+                        ImmutableArray<Vote>.Empty
+                            .Add(new VoteMetadata(
+                                block.Index,
+                                0,
+                                block.Hash,
+                                DateTimeOffset.UtcNow,
+                                _privateKey.PublicKey,
+                                VoteFlag.PreCommit).Sign(_privateKey)))
+                    : null;
+                _chain.Append(block, commit);
             }
             catch (OperationCanceledException)
             {

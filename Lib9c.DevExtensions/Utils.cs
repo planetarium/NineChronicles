@@ -84,13 +84,27 @@ namespace Lib9c.DevExtensions
             Block<NCAction> genesis = store.GetBlock<NCAction>(
                 genesisBlockHash
             );
-            BlockChain<NCAction> chain = new BlockChain<NCAction>(
-                policy,
-                stagePolicy,
-                store,
-                stateStore,
-                genesis
-            );
+            BlockChain<NCAction> chain;
+            if (store.GetCanonicalChainId() is null)
+            {
+                chain = BlockChain<NCAction>.Create(
+                    policy,
+                    stagePolicy,
+                    store,
+                    stateStore,
+                    genesis
+                );
+            }
+            else
+            {
+                chain = new BlockChain<NCAction>(
+                    policy,
+                    stagePolicy,
+                    store,
+                    stateStore,
+                    genesis
+                );
+            }
             return (chain, store, stateKeyValueStore, stateStore);
         }
 
