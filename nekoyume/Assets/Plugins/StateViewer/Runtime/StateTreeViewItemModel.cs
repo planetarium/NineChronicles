@@ -381,7 +381,7 @@ namespace StateViewer.Runtime
             }
         }
 
-        private static IValue ParseToValue(string value, ValueKind valueKind)
+        public static IValue ParseToValue(string value, ValueKind valueKind)
         {
             switch (valueKind)
             {

@@ -1,5 +1,6 @@
 #nullable enable
 
+using System;
 using System.Linq;
 using Lib9c.DevExtensions;
 using Libplanet.Action;
@@ -15,6 +16,7 @@ namespace StateViewer.Runtime
     {
         public static Equipment? CraftEquipment(
             int equipmentId,
+            Guid? nonFungibleItemId = null,
             int level = 0,
             int subRecipeIndex = 1,
             TableSheets? tableSheets = null,
@@ -32,7 +34,7 @@ namespace StateViewer.Runtime
             var equipmentRow = tableSheets.EquipmentItemSheet[equipmentId];
             var equipment = (Equipment)ItemFactory.CreateItemUsable(
                 equipmentRow,
-                random.GenerateRandomGuid(),
+                nonFungibleItemId ?? random.GenerateRandomGuid(),
                 blockIndex);
             if (equipment.Grade == 0)
             {

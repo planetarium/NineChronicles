@@ -303,12 +303,20 @@ namespace StateViewer.Editor
                     if (viewModel.Siblings!.First(child =>
                             child.IndexOrKeyContent == "item_type").ValueContent == "Equipment")
                     {
+                        var nonFungibleItemIdContent = viewModel.Siblings!.First(child =>
+                            child.IndexOrKeyContent == "itemId")?.ValueContent ?? null;
+                        var nonFungibleItemId = nonFungibleItemIdContent is null
+                            ? Guid.NewGuid()
+                            : new Guid((Binary)StateTreeViewItemModel.ParseToValue(
+                                nonFungibleItemIdContent,
+                                ValueKind.Binary));
                         var levelContent = viewModel.Siblings!.FirstOrDefault(child =>
                             child.IndexOrKeyContent == "level")?.ValueContent ?? "0";
                         var level = int.TryParse(levelContent, out var l) ? l : 0;
                         var equipment = BlacksmithMaster.CraftEquipment(
                             itemId,
-                            level,
+                            nonFungibleItemId: nonFungibleItemId,
+                            level: level,
                             tableSheets: _tableSheets,
                             random: random)!;
                         viewModel.Parent!.SetValue(equipment.Serialize());
@@ -337,10 +345,18 @@ namespace StateViewer.Editor
                     var itemIdContent = viewModel.Siblings!.First(child =>
                         child.IndexOrKeyContent == "id").ValueContent;
                     var itemId = int.TryParse(itemIdContent, out var id) ? id : 0;
+                    var nonFungibleItemIdContent = viewModel.Siblings!.First(child =>
+                        child.IndexOrKeyContent == "itemId")?.ValueContent ?? null;
+                    var nonFungibleItemId = nonFungibleItemIdContent is null
+                        ? Guid.NewGuid()
+                        : new Guid((Binary)StateTreeViewItemModel.ParseToValue(
+                            nonFungibleItemIdContent,
+                            ValueKind.Binary));
                     var level = int.TryParse(viewModel.ValueContent, out var l) ? l : 0;
                     var equipment = BlacksmithMaster.CraftEquipment(
                         itemId,
-                        level,
+                        nonFungibleItemId: nonFungibleItemId,
+                        level: level,
                         tableSheets: _tableSheets,
                         random: random)!;
                     // FIXME: The expanded state of `viewModel` is not restored.
