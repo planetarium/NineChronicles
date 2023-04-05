@@ -45,6 +45,8 @@ namespace StateViewer.Runtime
 
         public IReadOnlyList<StateTreeViewItemModel> Children => _children;
 
+        public IReadOnlyList<StateTreeViewItemModel>? Siblings => Parent?.Children;
+
 #pragma warning disable CS8618
         public StateTreeViewItemModel(
 #pragma warning restore CS8618
@@ -228,6 +230,7 @@ namespace StateViewer.Runtime
             if (indexOrKey is null)
             {
                 IndexOrKeyContent = string.Empty;
+                AliasContent = alias ?? string.Empty;
                 return;
             }
 
