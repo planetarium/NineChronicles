@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +16,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Nekoyume.TableData.Crystal;
 using Xunit;
 using static Lib9c.SerializeKeys;
 
@@ -47,15 +50,15 @@ namespace Lib9c.DevExtensions.Tests.Action
                 gameConfigState.Serialize());
         }
 
-        public static IEnumerable<object[]> Get_Execute_Success_MemberData()
+        public static IEnumerable<object?[]> Get_Execute_Success_MemberData()
         {
-            yield return new object[]
+            yield return new object?[]
             {
                 0, 0, "AB", 0, 0, 0, 0, 1,
-                null,
+                null, null, null, null, null,
             };
 
-            yield return new object[]
+            yield return new object?[]
             {
                 long.MaxValue / 2, // long.MaxValue / 2: Avoid overflow
                 GameConfig.SlotCount - 1,
@@ -78,93 +81,203 @@ namespace Lib9c.DevExtensions.Tests.Action
                     (10511000, 0),
                     (10511000, 21),
                 },
+                new[]
+                {
+                    (200000, 1),
+                    (201010, 2),
+                },
+                new[] { 40100000 },
+                new[]
+                {
+                    (10001, 0),
+                    (20001, 1),
+                    (30001, 10),
+                },
+                (1, new[] { 1, 2, 3 }),
             };
         }
 
-        public static IEnumerable<object[]>
+        public static IEnumerable<object?[]>
             Get_Execute_Failure_MemberData()
         {
             // avatarIndex < 0
-            yield return new object[]
+            yield return new object?[]
             {
                 0, -1, "AB", 0, 0, 0, 0, 1,
-                null,
+                null, null, null, null, null,
             };
 
             // avatarIndex >= GameConfig.SlotCount
-            yield return new object[]
+            yield return new object?[]
             {
                 0, GameConfig.SlotCount, "AB", 0, 0, 0, 0, 1,
-                null,
+                null, null, null, null, null,
             };
 
             // name's length < 1
-            yield return new object[]
+            yield return new object?[]
             {
                 0, 0, "A", 0, 0, 0, 0, 1,
-                null,
+                null, null, null, null, null,
             };
 
             // name's length > 20
-            yield return new object[]
+            yield return new object?[]
             {
                 0, 0, "123456789012345678901", 0, 0, 0, 0, 1,
-                null,
+                null, null, null, null, null,
             };
 
             // hair < 0
-            yield return new object[]
+            yield return new object?[]
             {
                 0, 0, "AB", -1, 0, 0, 0, 1,
-                null,
+                null, null, null, null, null,
             };
 
             // lens < 0
-            yield return new object[]
+            yield return new object?[]
             {
                 0, 0, "AB", 0, -1, 0, 0, 1,
-                null,
+                null, null, null, null, null,
             };
 
             // ear < 0
-            yield return new object[]
+            yield return new object?[]
             {
                 0, 0, "AB", 0, 0, -1, 0, 1,
-                null,
+                null, null, null, null, null,
             };
 
             // tail < 0
-            yield return new object[]
+            yield return new object?[]
             {
                 0, 0, "AB", 0, 0, 0, -1, 1,
-                null,
+                null, null, null, null, null,
             };
 
             // level < 1
-            yield return new object[]
+            yield return new object?[]
             {
                 0, 0, "AB", 0, 0, 0, 0, 0,
-                null,
+                null, null, null, null, null,
             };
 
-            // equipment's itemId < 0
-            yield return new object[]
+            // equipment's equipmentId < 0
+            yield return new object?[]
             {
                 0, 0, "AB", 0, 0, 0, 0, 1,
                 new[]
                 {
                     (-1, 0),
                 },
+                null,
+                null,
+                null,
+                null,
             };
 
-            // equipment's enhancement < 0
-            yield return new object[]
+            // equipment's level < 0
+            yield return new object?[]
             {
                 0, 0, "AB", 0, 0, 0, 0, 1,
                 new[]
                 {
                     (0, -1),
                 },
+                null,
+                null,
+                null,
+                null,
+            };
+
+            // food's consumableId < 0
+            yield return new object?[]
+            {
+                0, 0, "AB", 0, 0, 0, 0, 1,
+                null,
+                new[]
+                {
+                    (-1, 0),
+                },
+                null,
+                null,
+                null,
+            };
+
+            // food's count < 1
+            yield return new object?[]
+            {
+                0, 0, "AB", 0, 0, 0, 0, 1,
+                null,
+                new[]
+                {
+                    (0, 0),
+                },
+                null,
+                null,
+                null,
+            };
+
+            // costumeId < 0
+            yield return new object?[]
+            {
+                0, 0, "AB", 0, 0, 0, 0, 1,
+                null,
+                null,
+                new[] { -1 },
+                null,
+                null,
+            };
+
+            // rune's runeId < 0
+            yield return new object?[]
+            {
+                0, 0, "AB", 0, 0, 0, 0, 1,
+                null,
+                null,
+                null,
+                new[]
+                {
+                    (-1, 0),
+                },
+                null,
+            };
+
+            // rune's level < 0
+            yield return new object?[]
+            {
+                0, 0, "AB", 0, 0, 0, 0, 1,
+                null,
+                null,
+                null,
+                new[]
+                {
+                    (0, -1),
+                },
+                null,
+            };
+
+            // crystal random buff's stageId < 0
+            yield return new object?[]
+            {
+                0, 0, "AB", 0, 0, 0, 0, 1,
+                null,
+                null,
+                null,
+                null,
+                (-1, Array.Empty<int>()),
+            };
+
+            // crystal random buff's buffId < 0
+            yield return new object?[]
+            {
+                0, 0, "AB", 0, 0, 0, 0, 1,
+                null,
+                null,
+                null,
+                null,
+                (0, new[] { -1 }),
             };
         }
 
@@ -179,7 +292,11 @@ namespace Lib9c.DevExtensions.Tests.Action
             int ear,
             int tail,
             int level,
-            (int itemId, int enhancement)[] equipments)
+            (int equipmentId, int level)[]? equipments,
+            (int consumableId, int count)[]? foods,
+            int[]? costumeIds,
+            (int runeId, int level)[]? runes,
+            (int stageId, int[] crystalRandomBuffIds)? crystalRandomBuff)
         {
             var action = new CreateOrReplaceAvatar(
                 avatarIndex,
@@ -189,7 +306,11 @@ namespace Lib9c.DevExtensions.Tests.Action
                 ear,
                 tail,
                 level,
-                equipments);
+                equipments,
+                foods,
+                costumeIds,
+                runes,
+                crystalRandomBuff);
             var ser = action.PlainValue;
             var de = new CreateOrReplaceAvatar();
             de.LoadPlainValue(ser);
@@ -201,6 +322,20 @@ namespace Lib9c.DevExtensions.Tests.Action
             Assert.Equal(action.Tail, de.Tail);
             Assert.Equal(action.Level, de.Level);
             Assert.True(action.Equipments.SequenceEqual(de.Equipments));
+            Assert.True(action.Foods.SequenceEqual(de.Foods));
+            Assert.True(action.CostumeIds.SequenceEqual(de.CostumeIds));
+            Assert.True(action.Runes.SequenceEqual(de.Runes));
+            if (action.CrystalRandomBuff is null)
+            {
+                Assert.Null(de.CrystalRandomBuff);
+            }
+            else
+            {
+                var crb = action.CrystalRandomBuff.Value;
+                var deCrb = de.CrystalRandomBuff!.Value;
+                Assert.Equal(crb.stageId, deCrb.stageId);
+                Assert.True(crb.crystalRandomBuffIds.SequenceEqual(deCrb.crystalRandomBuffIds));
+            }
         }
 
         [Theory]
@@ -214,7 +349,11 @@ namespace Lib9c.DevExtensions.Tests.Action
             int ear,
             int tail,
             int level,
-            (int itemId, int enhancement)[] equipments)
+            (int equipmentId, int level)[]? equipments,
+            (int consumableId, int count)[]? foods,
+            int[]? costumeIds,
+            (int runeId, int level)[]? runes,
+            (int stageId, int[] crystalRandomBuffIds)? crystalRandomBuff)
         {
             var agentAddr = new PrivateKey().ToAddress();
             Execute(
@@ -228,7 +367,11 @@ namespace Lib9c.DevExtensions.Tests.Action
                 ear,
                 tail,
                 level,
-                equipments);
+                equipments,
+                foods,
+                costumeIds,
+                runes,
+                crystalRandomBuff);
         }
 
         [Theory]
@@ -242,7 +385,11 @@ namespace Lib9c.DevExtensions.Tests.Action
             int ear,
             int tail,
             int level,
-            (int itemId, int enhancement)[] equipments)
+            (int equipmentId, int level)[]? equipments,
+            (int consumableId, int count)[]? foods,
+            int[]? costumeIds,
+            (int runeId, int level)[]? runes,
+            (int stageId, int[] crystalRandomBuffIds)? crystalRandomBuff)
         {
             var agentAddr = new PrivateKey().ToAddress();
             Assert.Throws<ArgumentException>(() => Execute(
@@ -256,7 +403,11 @@ namespace Lib9c.DevExtensions.Tests.Action
                 ear,
                 tail,
                 level,
-                equipments));
+                equipments,
+                foods,
+                costumeIds,
+                runes,
+                crystalRandomBuff));
         }
 
         private static void Execute(
@@ -270,7 +421,11 @@ namespace Lib9c.DevExtensions.Tests.Action
             int ear,
             int tail,
             int level,
-            (int itemId, int enhancement)[] equipments,
+            (int equipmentId, int level)[]? equipments,
+            (int consumableId, int count)[]? foods,
+            int[]? costumeIds,
+            (int runeId, int level)[]? runes,
+            (int stageId, int[] crystalRandomBuffIds)? crystalRandomBuff,
             Address? avatarAddr = null)
         {
             var action = new CreateOrReplaceAvatar(
@@ -281,7 +436,11 @@ namespace Lib9c.DevExtensions.Tests.Action
                 ear,
                 tail,
                 level,
-                equipments);
+                equipments,
+                foods,
+                costumeIds,
+                runes,
+                crystalRandomBuff);
             var nextStates = action.Execute(new ActionContext
             {
                 PreviousStates = previousStates,
@@ -290,11 +449,11 @@ namespace Lib9c.DevExtensions.Tests.Action
                 Rehearsal = false,
                 BlockIndex = blockIndex,
             });
-            var agent = new AgentState((Dictionary)nextStates.GetState(agentAddr));
+            var agent = new AgentState((Dictionary)nextStates.GetState(agentAddr)!);
             Assert.Single(agent.avatarAddresses);
             Assert.True(agent.avatarAddresses.ContainsKey(action.AvatarIndex));
             avatarAddr ??= agent.avatarAddresses[action.AvatarIndex];
-            var avatar = new AvatarState((Dictionary)nextStates.GetState(avatarAddr.Value));
+            var avatar = new AvatarState((Dictionary)nextStates.GetState(avatarAddr.Value)!);
             Assert.Equal(action.Name, avatar.name);
             Assert.Equal(action.Hair, avatar.hair);
             Assert.Equal(action.Lens, avatar.lens);
@@ -304,7 +463,7 @@ namespace Lib9c.DevExtensions.Tests.Action
 
             var inventoryAddr = avatarAddr.Value.Derive(LegacyInventoryKey);
             var inventory =
-                new Inventory((List)nextStates.GetState(inventoryAddr));
+                new Inventory((List)nextStates.GetState(inventoryAddr)!);
             var inventoryEquipments = inventory.Equipments.ToArray();
             var equipmentItemRecipeSheet =
                 nextStates.GetSheet<EquipmentItemRecipeSheet>();
@@ -312,9 +471,8 @@ namespace Lib9c.DevExtensions.Tests.Action
                 nextStates.GetSheet<EquipmentItemSubRecipeSheetV2>();
             var equipmentItemOptionSheet =
                 nextStates.GetSheet<EquipmentItemOptionSheet>();
-            for (var i = 0; i < action.Equipments.Length; i++)
+            foreach (var (itemId, enhancement) in action.Equipments)
             {
-                var (itemId, enhancement) = action.Equipments[i];
                 var equipment = inventoryEquipments.First(e =>
                     e.Id == itemId &&
                     e.level == enhancement);
@@ -325,7 +483,7 @@ namespace Lib9c.DevExtensions.Tests.Action
                 Assert.True(equipmentItemSubRecipeSheetV2.TryGetValue(
                     recipe.SubRecipeIds[1],
                     out var subRecipe));
-                var options = subRecipe.Options
+                var options = subRecipe!.Options
                     .Select(e => equipmentItemOptionSheet[e.Id])
                     .ToArray();
                 var statOptions = options
@@ -365,6 +523,46 @@ namespace Lib9c.DevExtensions.Tests.Action
                             e.Power == skillOption.SkillDamageMax &&
                             e.Chance == skillOption.SkillChanceMax);
                 }
+            }
+
+            var inventoryConsumables = inventory.Consumables.ToArray();
+            foreach (var (consumableId, count) in action.Foods)
+            {
+                Assert.Equal(count, inventoryConsumables.Count(e => e.Id == consumableId));
+            }
+
+            var inventoryCostumes = inventory.Costumes.ToArray();
+            foreach (var costumeId in action.CostumeIds)
+            {
+                Assert.Contains(inventoryCostumes, e => e.Id == costumeId);
+            }
+
+            foreach (var (runeId, runeLevel) in action.Runes)
+            {
+                var runeList = (List)nextStates.GetState(
+                    RuneState.DeriveAddress(avatarAddr.Value, runeId))!;
+                Assert.Equal(runeLevel, runeList[1].ToInteger());
+            }
+
+            var crystalRandomSkillAddr =
+                Addresses.GetSkillStateAddressFromAvatarAddress(avatarAddr.Value);
+            if (action.CrystalRandomBuff is null)
+            {
+                Assert.Equal(Null.Value, nextStates.GetState(crystalRandomSkillAddr));
+            }
+            else
+            {
+                var crystalRandomSkillState = new CrystalRandomSkillState(
+                    crystalRandomSkillAddr,
+                    (List)nextStates.GetState(crystalRandomSkillAddr)!);
+                var (stageId, crystalRandomBuffIds) = action.CrystalRandomBuff.Value;
+                Assert.Equal(stageId, crystalRandomSkillState.StageId);
+                var crystalStageBuffGachaSheet = nextStates.GetSheet<CrystalStageBuffGachaSheet>();
+                Assert.True(crystalStageBuffGachaSheet.TryGetValue(
+                    stageId,
+                    out var crystalStageBuffGachaRow));
+                Assert.Equal(crystalStageBuffGachaRow!.MaxStar, crystalRandomSkillState.StarCount);
+                Assert.True(crystalRandomBuffIds.SequenceEqual(crystalRandomSkillState.SkillIds));
             }
         }
     }

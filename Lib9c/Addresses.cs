@@ -88,6 +88,16 @@ namespace Nekoyume
                 ));
         }
 
+        public static Address GetCombinationSlotAddress(Address avatarAddr, int index)
+        {
+            return avatarAddr.Derive(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    CombinationSlotState.DeriveFormat,
+                    index
+                ));
+        }
+
         public static bool IsContainedInAgent(Address agentAddr, Address avatarAddr) =>
             Enumerable.Range(0, Nekoyume.GameConfig.SlotCount)
                 .Select(index => GetAvatarAddress(agentAddr, index))
