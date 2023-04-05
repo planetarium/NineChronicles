@@ -522,14 +522,14 @@ namespace Lib9c.Tests.Action
                     tableSheets: TableSheetsImporter.ImportSheets(),
                     pendingActivationStates: pendingActivationStates.ToArray()
                 );
-                genesis = BlockChain<PolymorphicAction<ActionBase>>.MakeGenesisBlock(
+                genesis = BlockChain<PolymorphicAction<ActionBase>>.ProposeGenesisBlock(
                     new PolymorphicAction<ActionBase>[] { initializeStates }
                 );
             }
 
             var store = new DefaultStore(null);
             var stateStore = new TrieStateStore(new DefaultKeyValueStore(null));
-            var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
+            var blockChain = BlockChain<PolymorphicAction<ActionBase>>.Create(
                 policy: policy,
                 store: store,
                 stagePolicy: stagePolicy,

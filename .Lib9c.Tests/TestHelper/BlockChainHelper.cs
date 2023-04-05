@@ -40,7 +40,7 @@
             store ??= new DefaultStore(null);
             stateStore ??= new TrieStateStore(new DefaultKeyValueStore(null));
             Block<NCAction> genesis = MakeGenesisBlock(adminPrivateKey.ToAddress(), ImmutableHashSet<Address>.Empty);
-            return new BlockChain<NCAction>(policy, stagePolicy, store, stateStore, genesis, renderers: blockRenderers );
+            return BlockChain<NCAction>.Create(policy, stagePolicy, store, stateStore, genesis, renderers: blockRenderers);
         }
 
         public static Block<NCAction> MakeGenesisBlock(
@@ -61,12 +61,11 @@
             }
 
             var sheets = TableSheetsImporter.ImportSheets();
-            return BlockHelper.MineGenesisBlock(
+            return BlockHelper.ProposeGenesisBlock(
                 sheets,
                 new GoldDistribution[0],
                 pendingActivations,
                 new AdminState(adminAddress, 1500000),
-                authorizedMinersState: authorizedMinersState,
                 activatedAccounts: activatedAddresses,
                 isActivateAdminAddress: false,
                 credits: null,

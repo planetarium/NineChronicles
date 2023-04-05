@@ -1,4 +1,4 @@
-namespace Lib9c.Tests
+namespace Lib9c.Tests.Policy
 {
     using System;
     using System.Collections.Generic;
@@ -7,9 +7,9 @@ namespace Lib9c.Tests
     using Nekoyume.BlockChain.Policy;
     using Xunit;
 
-    public class GenericSubPolicyTest
+    public class ConcreteSubPolicyTest
     {
-        public GenericSubPolicyTest()
+        public ConcreteSubPolicyTest()
         {
         }
 
@@ -26,7 +26,7 @@ namespace Lib9c.Tests
             SpannedSubPolicy<bool> fourth = new SpannedSubPolicy<bool>(50, 80, index => index % 5 == 0, true);
 
             // Should be fine.
-            genericSubPolicy = GenericSubPolicy<bool>
+            genericSubPolicy = ConcreteSubPolicy<bool>
                 .Create(false)
                 // 10 ~ 19 => count 10
                 .Add(first)
@@ -59,25 +59,25 @@ namespace Lib9c.Tests
             Assert.Equal(19, genericSubPolicy.SpannedSubPolicies.First().EndIndex);
 
             // Out of order addition should not work.
-            Assert.Throws<ArgumentOutOfRangeException>(() => GenericSubPolicy<bool>
+            Assert.Throws<ArgumentOutOfRangeException>(() => ConcreteSubPolicy<bool>
                 .Create(false)
                 .Add(fourth)
                 .Add(third));
-            Assert.Throws<ArgumentOutOfRangeException>(() => GenericSubPolicy<bool>
+            Assert.Throws<ArgumentOutOfRangeException>(() => ConcreteSubPolicy<bool>
                 .Create(false)
                 .Add(first)
                 .Add(badSecond));
 
             // Create using AddRange().
-            genericSubPolicy = GenericSubPolicy<bool>
+            genericSubPolicy = ConcreteSubPolicy<bool>
                 .Create(false)
                 .AddRange(new List<SpannedSubPolicy<bool>>() { first, second, third, fourth }.ToImmutableList());
-            Assert.Throws<ArgumentOutOfRangeException>(() => GenericSubPolicy<bool>
+            Assert.Throws<ArgumentOutOfRangeException>(() => ConcreteSubPolicy<bool>
                 .Create(false)
                 .AddRange(new List<SpannedSubPolicy<bool>>() { second, first }.ToImmutableList()));
 
             // Type check
-            Assert.IsType<GenericSubPolicy<bool>>(genericSubPolicy);
+            Assert.IsType<ConcreteSubPolicy<bool>>(genericSubPolicy);
         }
     }
 }
