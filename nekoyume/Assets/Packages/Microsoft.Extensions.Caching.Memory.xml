@@ -1,0 +1,393 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.Extensions.Caching.Memory</name>
+    </assembly>
+    <members>
+        <member name="P:Microsoft.Extensions.Caching.Memory.CacheEntry.SlidingExpiration">
+            <summary>
+            Gets or sets how long a cache entry can be inactive (e.g. not accessed) before it will be removed.
+            This will not extend the entry lifetime beyond the absolute expiration (if set).
+            </summary>
+        </member>
+        <member name="P:Microsoft.Extensions.Caching.Memory.CacheEntry.ExpirationTokens">
+            <summary>
+            Gets the <see cref="T:Microsoft.Extensions.Primitives.IChangeToken"/> instances which cause the cache entry to expire.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Extensions.Caching.Memory.CacheEntry.PostEvictionCallbacks">
+            <summary>
+            Gets or sets the callbacks will be fired after the cache entry is evicted from the cache.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Extensions.Caching.Memory.CacheEntry.Priority">
+            <summary>
+            Gets or sets the priority for keeping the cache entry in the cache during a
+            memory pressure triggered cleanup. The default is <see cref="F:Microsoft.Extensions.Caching.Memory.CacheItemPriority.Normal"/>.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Extensions.Caching.Memory.MemoryCache">
+            <summary>
+            An implementation of <see cref="T:Microsoft.Extensions.Caching.Memory.IMemoryCache"/> using a dictionary to
+            store its entries.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.Caching.Memory.MemoryCache.#ctor(Microsoft.Extensions.Options.IOptions{Microsoft.Extensions.Caching.Memory.MemoryCacheOptions})">
+            <summary>
+            Creates a new <see cref="T:Microsoft.Extensions.Caching.Memory.MemoryCache"/> instance.
+            </summary>
+            <param name="optionsAccessor">The options of the cache.</param>
+        </member>
+        <member name="M:Microsoft.Extensions.Caching.Memory.MemoryCache.#ctor(Microsoft.Extensions.Options.IOptions{Microsoft.Extensions.Caching.Memory.MemoryCacheOptions},Microsoft.Extensions.Logging.ILoggerFactory)">
+            <summary>
+            Creates a new <see cref="T:Microsoft.Extensions.Caching.Memory.MemoryCache"/> instance.
+            </summary>
+            <param name="optionsAccessor">The options of the cache.</param>
+            <param name="loggerFactory">The factory used to create loggers.</param>
+        </member>
+        <member name="M:Microsoft.Extensions.Caching.Memory.MemoryCache.Finalize">
+            <summary>
+            Cleans up the background collection events.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Extensions.Caching.Memory.MemoryCache.Count">
+            <summary>
+            Gets the count of the current entries for diagnostic purposes.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Extensions.Caching.Memory.MemoryCache.Size">
+             <summary>
+             Internal accessor for Size for testing only.
+            
+             Note that this is only eventually consistent with the contents of the collection.
+             See comment on <see cref="T:Microsoft.Extensions.Caching.Memory.MemoryCache.CoherentState"/>.
+             </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.Caching.Memory.MemoryCache.CreateEntry(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.Extensions.Caching.Memory.MemoryCache.TryGetValue(System.Object,System.Object@)">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.Extensions.Caching.Memory.MemoryCache.Remove(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.Extensions.Caching.Memory.MemoryCache.Clear">
+            <summary>
+            Removes all keys and values from the cache.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.Caching.Memory.MemoryCache.GetCurrentStatistics">
+            <summary>
+            Gets a snapshot of the current statistics for the memory cache.
+            </summary>
+            <returns>Returns <see langword="null"/> if statistics are not being tracked because <see cref="P:Microsoft.Extensions.Caching.Memory.MemoryCacheOptions.TrackStatistics" /> is <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.Caching.Memory.MemoryCache.UpdateCacheSizeExceedsCapacity(Microsoft.Extensions.Caching.Memory.CacheEntry,Microsoft.Extensions.Caching.Memory.MemoryCache.CoherentState)">
+            <summary>
+            Returns true if increasing the cache size by the size of entry would
+            cause it to exceed any size limit on the cache, otherwise, returns false.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.Caching.Memory.MemoryCache.Compact(System.Double)">
+            Remove at least the given percentage (0.10 for 10%) of the total entries (or estimated memory?), according to the following policy:
+            1. Remove all expired items.
+            2. Bucket by CacheItemPriority.
+            3. Least recently used objects.
+            ?. Items with the soonest absolute expiration.
+            ?. Items with the soonest sliding expiration.
+            ?. Larger objects - estimated by object graph size, inaccurate.
+        </member>
+        <member name="T:Microsoft.Extensions.Caching.Memory.MemoryCache.CoherentState">
+             <summary>
+             Wrapper for the memory cache entries collection.
+            
+             Entries may have various sizes. If a size limit has been set, the cache keeps track of the aggregate of all the entries' sizes
+             in order to trigger compaction when the size limit is exceeded.
+            
+             For performance reasons, the size is not updated atomically with the collection, but is only made eventually consistent.
+            
+             When the memory cache is cleared, it replaces the backing collection entirely. This may occur in parallel with operations
+             like add, set, remove, and compact which may modify the collection and thus its overall size.
+            
+             To keep the overall size eventually consistent, therefore, the collection and the overall size are wrapped in this CoherentState
+             object. Individual operations take a local reference to this wrapper object while they work, and make size updates to this object.
+             Clearing the cache simply replaces the object, so that any still in progress updates do not affect the overall size value for
+             the new backing collection.
+             </summary>
+        </member>
+        <member name="P:Microsoft.Extensions.Caching.Memory.MemoryCacheOptions.ExpirationScanFrequency">
+            <summary>
+            Gets or sets the minimum length of time between successive scans for expired items.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Extensions.Caching.Memory.MemoryCacheOptions.SizeLimit">
+            <summary>
+            Gets or sets the maximum size of the cache.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Extensions.Caching.Memory.MemoryCacheOptions.CompactionPercentage">
+            <summary>
+            Gets or sets the amount to compact the cache by when the maximum size is exceeded.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Extensions.Caching.Memory.MemoryCacheOptions.TrackLinkedCacheEntries">
+            <summary>
+            Gets or sets whether to track linked entries. Disabled by default.
+            </summary>
+            <remarks>Prior to .NET 7 this feature was always enabled.</remarks>
+        </member>
+        <member name="P:Microsoft.Extensions.Caching.Memory.MemoryCacheOptions.TrackStatistics">
+            <summary>
+            Gets or sets whether to track memory cache statistics. Disabled by default.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Extensions.DependencyInjection.MemoryCacheServiceCollectionExtensions">
+            <summary>
+            Extension methods for setting up memory cache related services in an <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.MemoryCacheServiceCollectionExtensions.AddMemoryCache(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds a non distributed in memory implementation of <see cref="T:Microsoft.Extensions.Caching.Memory.IMemoryCache"/> to the
+            <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
+            </summary>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add services to.</param>
+            <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> so that additional calls can be chained.</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.MemoryCacheServiceCollectionExtensions.AddMemoryCache(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Microsoft.Extensions.Caching.Memory.MemoryCacheOptions})">
+            <summary>
+            Adds a non distributed in memory implementation of <see cref="T:Microsoft.Extensions.Caching.Memory.IMemoryCache"/> to the
+            <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
+            </summary>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add services to.</param>
+            <param name="setupAction">
+            The <see cref="T:System.Action`1"/> to configure the provided <see cref="T:Microsoft.Extensions.Caching.Memory.MemoryCacheOptions"/>.
+            </param>
+            <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> so that additional calls can be chained.</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.MemoryCacheServiceCollectionExtensions.AddDistributedMemoryCache(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds a default implementation of <see cref="T:Microsoft.Extensions.Caching.Distributed.IDistributedCache"/> that stores items in memory
+            to the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />. Frameworks that require a distributed cache to work
+            can safely add this dependency as part of their dependency list to ensure that there is at least
+            one implementation available.
+            </summary>
+            <remarks>
+            <see cref="M:Microsoft.Extensions.DependencyInjection.MemoryCacheServiceCollectionExtensions.AddDistributedMemoryCache(Microsoft.Extensions.DependencyInjection.IServiceCollection)"/> should only be used in single
+            server scenarios as this cache stores items in memory and doesn't expand across multiple machines.
+            For those scenarios it is recommended to use a proper distributed cache that can expand across
+            multiple machines.
+            </remarks>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add services to.</param>
+            <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> so that additional calls can be chained.</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.MemoryCacheServiceCollectionExtensions.AddDistributedMemoryCache(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Microsoft.Extensions.Caching.Memory.MemoryDistributedCacheOptions})">
+            <summary>
+            Adds a default implementation of <see cref="T:Microsoft.Extensions.Caching.Distributed.IDistributedCache"/> that stores items in memory
+            to the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />. Frameworks that require a distributed cache to work
+            can safely add this dependency as part of their dependency list to ensure that there is at least
+            one implementation available.
+            </summary>
+            <remarks>
+            <see cref="M:Microsoft.Extensions.DependencyInjection.MemoryCacheServiceCollectionExtensions.AddDistributedMemoryCache(Microsoft.Extensions.DependencyInjection.IServiceCollection)"/> should only be used in single
+            server scenarios as this cache stores items in memory and doesn't expand across multiple machines.
+            For those scenarios it is recommended to use a proper distributed cache that can expand across
+            multiple machines.
+            </remarks>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add services to.</param>
+            <param name="setupAction">
+            The <see cref="T:System.Action`1"/> to configure the provided <see cref="T:Microsoft.Extensions.Caching.Memory.MemoryDistributedCacheOptions"/>.
+            </param>
+            <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> so that additional calls can be chained.</returns>
+        </member>
+        <member name="M:System.ThrowHelper.ThrowIfNull(System.Object,System.String)">
+            <summary>Throws an <see cref="T:System.ArgumentNullException"/> if <paramref name="argument"/> is null.</summary>
+            <param name="argument">The reference type argument to validate as non-null.</param>
+            <param name="paramName">The name of the parameter with which <paramref name="argument"/> corresponds.</param>
+        </member>
+        <member name="T:System.Runtime.InteropServices.LibraryImportAttribute">
+            <summary>
+            Attribute used to indicate a source generator should create a function for marshalling
+            arguments instead of relying on the runtime to generate an equivalent marshalling function at run-time.
+            </summary>
+            <remarks>
+            This attribute is meaningless if the source generator associated with it is not enabled.
+            The current built-in source generator only supports C# and only supplies an implementation when
+            applied to static, partial, non-generic methods.
+            </remarks>
+        </member>
+        <member name="M:System.Runtime.InteropServices.LibraryImportAttribute.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Runtime.InteropServices.LibraryImportAttribute"/>.
+            </summary>
+            <param name="libraryName">Name of the library containing the import.</param>
+        </member>
+        <member name="P:System.Runtime.InteropServices.LibraryImportAttribute.LibraryName">
+            <summary>
+            Gets the name of the library containing the import.
+            </summary>
+        </member>
+        <member name="P:System.Runtime.InteropServices.LibraryImportAttribute.EntryPoint">
+            <summary>
+            Gets or sets the name of the entry point to be called.
+            </summary>
+        </member>
+        <member name="P:System.Runtime.InteropServices.LibraryImportAttribute.StringMarshalling">
+            <summary>
+            Gets or sets how to marshal string arguments to the method.
+            </summary>
+            <remarks>
+            If this field is set to a value other than <see cref="F:System.Runtime.InteropServices.StringMarshalling.Custom" />,
+            <see cref="P:System.Runtime.InteropServices.LibraryImportAttribute.StringMarshallingCustomType" /> must not be specified.
+            </remarks>
+        </member>
+        <member name="P:System.Runtime.InteropServices.LibraryImportAttribute.StringMarshallingCustomType">
+            <summary>
+            Gets or sets the <see cref="T:System.Type"/> used to control how string arguments to the method are marshalled.
+            </summary>
+            <remarks>
+            If this field is specified, <see cref="P:System.Runtime.InteropServices.LibraryImportAttribute.StringMarshalling" /> must not be specified
+            or must be set to <see cref="F:System.Runtime.InteropServices.StringMarshalling.Custom" />.
+            </remarks>
+        </member>
+        <member name="P:System.Runtime.InteropServices.LibraryImportAttribute.SetLastError">
+            <summary>
+            Gets or sets whether the callee sets an error (SetLastError on Windows or errno
+            on other platforms) before returning from the attributed method.
+            </summary>
+        </member>
+        <member name="T:System.Runtime.InteropServices.StringMarshalling">
+            <summary>
+            Specifies how strings should be marshalled for generated p/invokes
+            </summary>
+        </member>
+        <member name="F:System.Runtime.InteropServices.StringMarshalling.Custom">
+            <summary>
+            Indicates the user is suppling a specific marshaller in <see cref="P:System.Runtime.InteropServices.LibraryImportAttribute.StringMarshallingCustomType"/>.
+            </summary>
+        </member>
+        <member name="F:System.Runtime.InteropServices.StringMarshalling.Utf8">
+            <summary>
+            Use the platform-provided UTF-8 marshaller.
+            </summary>
+        </member>
+        <member name="F:System.Runtime.InteropServices.StringMarshalling.Utf16">
+            <summary>
+            Use the platform-provided UTF-16 marshaller.
+            </summary>
+        </member>
+        <member name="P:System.SR.CacheEntryHasEmptySize">
+            <summary>Cache entry must specify a value for {0} when {1} is set.</summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.AllowNullAttribute">
+            <summary>Specifies that null is allowed as an input even if the corresponding type disallows it.</summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.DisallowNullAttribute">
+            <summary>Specifies that null is disallowed as an input even if the corresponding type allows it.</summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.MaybeNullAttribute">
+            <summary>Specifies that an output may be null even if the corresponding type disallows it.</summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.NotNullAttribute">
+            <summary>Specifies that an output will not be null even if the corresponding type allows it. Specifies that an input argument was not null when the call returns.</summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.MaybeNullWhenAttribute">
+            <summary>Specifies that when a method returns <see cref="P:System.Diagnostics.CodeAnalysis.MaybeNullWhenAttribute.ReturnValue"/>, the parameter may be null even if the corresponding type disallows it.</summary>
+        </member>
+        <member name="M:System.Diagnostics.CodeAnalysis.MaybeNullWhenAttribute.#ctor(System.Boolean)">
+            <summary>Initializes the attribute with the specified return value condition.</summary>
+            <param name="returnValue">
+            The return value condition. If the method returns this value, the associated parameter may be null.
+            </param>
+        </member>
+        <member name="P:System.Diagnostics.CodeAnalysis.MaybeNullWhenAttribute.ReturnValue">
+            <summary>Gets the return value condition.</summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.NotNullWhenAttribute">
+            <summary>Specifies that when a method returns <see cref="P:System.Diagnostics.CodeAnalysis.NotNullWhenAttribute.ReturnValue"/>, the parameter will not be null even if the corresponding type allows it.</summary>
+        </member>
+        <member name="M:System.Diagnostics.CodeAnalysis.NotNullWhenAttribute.#ctor(System.Boolean)">
+            <summary>Initializes the attribute with the specified return value condition.</summary>
+            <param name="returnValue">
+            The return value condition. If the method returns this value, the associated parameter will not be null.
+            </param>
+        </member>
+        <member name="P:System.Diagnostics.CodeAnalysis.NotNullWhenAttribute.ReturnValue">
+            <summary>Gets the return value condition.</summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.NotNullIfNotNullAttribute">
+            <summary>Specifies that the output will be non-null if the named parameter is non-null.</summary>
+        </member>
+        <member name="M:System.Diagnostics.CodeAnalysis.NotNullIfNotNullAttribute.#ctor(System.String)">
+            <summary>Initializes the attribute with the associated parameter name.</summary>
+            <param name="parameterName">
+            The associated parameter name.  The output will be non-null if the argument to the parameter specified is non-null.
+            </param>
+        </member>
+        <member name="P:System.Diagnostics.CodeAnalysis.NotNullIfNotNullAttribute.ParameterName">
+            <summary>Gets the associated parameter name.</summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.DoesNotReturnAttribute">
+            <summary>Applied to a method that will never return under any circumstance.</summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.DoesNotReturnIfAttribute">
+            <summary>Specifies that the method will not return if the associated Boolean parameter is passed the specified value.</summary>
+        </member>
+        <member name="M:System.Diagnostics.CodeAnalysis.DoesNotReturnIfAttribute.#ctor(System.Boolean)">
+            <summary>Initializes the attribute with the specified parameter value.</summary>
+            <param name="parameterValue">
+            The condition parameter value. Code after the method will be considered unreachable by diagnostics if the argument to
+            the associated parameter matches this value.
+            </param>
+        </member>
+        <member name="P:System.Diagnostics.CodeAnalysis.DoesNotReturnIfAttribute.ParameterValue">
+            <summary>Gets the condition parameter value.</summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.MemberNotNullAttribute">
+            <summary>Specifies that the method or property will ensure that the listed field and property members have not-null values.</summary>
+        </member>
+        <member name="M:System.Diagnostics.CodeAnalysis.MemberNotNullAttribute.#ctor(System.String)">
+            <summary>Initializes the attribute with a field or property member.</summary>
+            <param name="member">
+            The field or property member that is promised to be not-null.
+            </param>
+        </member>
+        <member name="M:System.Diagnostics.CodeAnalysis.MemberNotNullAttribute.#ctor(System.String[])">
+            <summary>Initializes the attribute with the list of field and property members.</summary>
+            <param name="members">
+            The list of field and property members that are promised to be not-null.
+            </param>
+        </member>
+        <member name="P:System.Diagnostics.CodeAnalysis.MemberNotNullAttribute.Members">
+            <summary>Gets field or property member names.</summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.MemberNotNullWhenAttribute">
+            <summary>Specifies that the method or property will ensure that the listed field and property members have not-null values when returning with the specified return value condition.</summary>
+        </member>
+        <member name="M:System.Diagnostics.CodeAnalysis.MemberNotNullWhenAttribute.#ctor(System.Boolean,System.String)">
+            <summary>Initializes the attribute with the specified return value condition and a field or property member.</summary>
+            <param name="returnValue">
+            The return value condition. If the method returns this value, the associated parameter will not be null.
+            </param>
+            <param name="member">
+            The field or property member that is promised to be not-null.
+            </param>
+        </member>
+        <member name="M:System.Diagnostics.CodeAnalysis.MemberNotNullWhenAttribute.#ctor(System.Boolean,System.String[])">
+            <summary>Initializes the attribute with the specified return value condition and list of field and property members.</summary>
+            <param name="returnValue">
+            The return value condition. If the method returns this value, the associated parameter will not be null.
+            </param>
+            <param name="members">
+            The list of field and property members that are promised to be not-null.
+            </param>
+        </member>
+        <member name="P:System.Diagnostics.CodeAnalysis.MemberNotNullWhenAttribute.ReturnValue">
+            <summary>Gets the return value condition.</summary>
+        </member>
+        <member name="P:System.Diagnostics.CodeAnalysis.MemberNotNullWhenAttribute.Members">
+            <summary>Gets field or property member names.</summary>
+        </member>
+    </members>
+</doc>
