@@ -75,7 +75,7 @@ namespace Nekoyume.UI
             });
             dccButton.onClick.AddListener(() =>
             {
-                Application.OpenURL(Game.Game.instance.URL.DccMileageShop);
+                Find<ConfirmConnectPopup>().ShowConnectDcc(true);
             });
             lockedButton.onClick.AddListener(() =>
             {

@@ -83,7 +83,8 @@ namespace Planetarium.Nekoyume.Editor
         {
             GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
             GUILayout.Label("Agent Addresses", EditorStyles.boldLabel);
-
+            EditorGUI.BeginDisabledGroup(!Application.isPlaying ||
+                                         !Game.instance.IsInitialized);
             if (GUILayout.Button("Setup Current Agent") &&
                 Application.isPlaying &&
                 Game.instance.IsInitialized &&
@@ -93,6 +94,7 @@ namespace Planetarium.Nekoyume.Editor
                 DeriveAvatarAddresses();
             }
 
+            EditorGUI.EndDisabledGroup();
             EditorGUILayout.BeginHorizontal();
             _agentAddr = ToHex(EditorGUILayout.TextField(
                 "Agent Address",

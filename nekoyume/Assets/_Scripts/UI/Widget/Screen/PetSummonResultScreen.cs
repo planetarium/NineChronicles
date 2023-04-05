@@ -1,3 +1,4 @@
+using BrunoMikoski.AnimationSequencer;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.State;
@@ -19,6 +20,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private SkeletonGraphic petSkeletonGraphic;
 
+        [SerializeField]
+        private AnimationSequencerController sequencer;
+
         public void Show(int petId)
         {
             base.Show();
@@ -29,6 +33,12 @@ namespace Nekoyume.UI
                 option, States.Instance.GameConfigState);
             petSkeletonGraphic.skeletonDataAsset = PetFrontHelper.GetPetSkeletonData(petId);
             petSkeletonGraphic.Initialize(true);
+        }
+
+        protected override void OnCompleteOfShowAnimationInternal()
+        {
+            base.OnCompleteOfShowAnimationInternal();
+            sequencer.Play();
         }
     }
 }
