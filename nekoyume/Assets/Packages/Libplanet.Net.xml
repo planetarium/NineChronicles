@@ -1404,10 +1404,8 @@
             </para>
             </summary>
             <param name="message">The <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/> to add.</param>
-            <returns>
-            <see langword="true"/> if <paramref name="message"/> was successfully added,
-            <see langword="false"/> otherwise.
-            </returns>
+            <exception cref="T:Libplanet.Net.Consensus.InvalidConsensusMessageException">Thrown when the given
+            <paramref name="message"/> is invalid.</exception>
         </member>
         <member name="M:Libplanet.Net.Consensus.MessageLog.GetProposal(System.Int32)">
             <summary>
