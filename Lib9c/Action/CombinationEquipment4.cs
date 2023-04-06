@@ -320,7 +320,7 @@ namespace Nekoyume.Action
                     if (optionRow.StatType != StatType.NONE)
                     {
                         var stat = GetStat(optionRow, random);
-                        equipment.StatsMap.AddStatAdditionalValue(stat.StatType, stat.Value);
+                        equipment.StatsMap.AddStatAdditionalValue(stat.StatType, stat.BaseValue);
                     }
                     else
                     {

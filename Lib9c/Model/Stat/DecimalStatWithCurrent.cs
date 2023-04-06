@@ -47,7 +47,7 @@ namespace Nekoyume.Model.Stat
 
         public void SetCurrent(decimal value)
         {
-            Current = Math.Min(Math.Max(0, value), Value);
+            Current = Math.Min(Math.Max(0, value), BaseValue);
         }
 
         public void AddCurrent(decimal value)
@@ -57,7 +57,7 @@ namespace Nekoyume.Model.Stat
 
         public void EqualizeCurrentWithValue()
         {
-            SetCurrent(Value);
+            SetCurrent(BaseValue);
         }
 
         public override object Clone()

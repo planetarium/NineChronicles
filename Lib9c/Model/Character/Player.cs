@@ -571,7 +571,7 @@ namespace Nekoyume.Model
                         new StatModifier(
                             x.stat.StatType,
                             x.operationType,
-                            x.stat.ValueAsInt)));
+                            x.stat.BaseValueAsInt)));
                 Stats.AddOptional(statModifiers);
                 ResetCurrentHP();
 

@@ -211,15 +211,27 @@ namespace Nekoyume.Model.State
         public static IValue Serialize(this DecimalStat decimalStat) =>
             Dictionary.Empty
                 .Add("type", StatTypeExtension.Serialize(decimalStat.StatType))
-                .Add("value", decimalStat.Value.Serialize());
+                .Add("value", decimalStat.BaseValue.Serialize());
 
         public static DecimalStat ToDecimalStat(this IValue serialized) =>
             ((Dictionary)serialized).ToDecimalStat();
 
-        public static DecimalStat ToDecimalStat(this Dictionary serialized) =>
-            new DecimalStat(
-                StatTypeExtension.Deserialize((Binary)serialized["type"]),
-                serialized["value"].ToDecimal());
+        public static DecimalStat ToDecimalStat(this Dictionary serialized)
+        {
+            if (serialized.TryGetValue((Text)"additionalValue", out var additionalValue))
+            {
+                return new DecimalStat(
+                    StatTypeExtension.Deserialize((Binary)serialized["type"]),
+                    serialized["value"].ToDecimal(),
+                    additionalValue.ToDecimal());
+            }
+            else
+            {
+                return new DecimalStat(
+                    StatTypeExtension.Deserialize((Binary)serialized["type"]),
+                    serialized["value"].ToDecimal());
+            }
+        }
 
         #endregion
 

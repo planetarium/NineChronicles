@@ -105,7 +105,6 @@ namespace Nekoyume.Model.Stat
             SetCostumes(costumes, costumeStatSheet);
             SetConsumables(consumables, false);
             UpdateBaseStats();
-            EqualizeCurrentHPWithHP();
 
             return this;
         }
@@ -287,7 +286,7 @@ namespace Nekoyume.Model.Stat
         public void IncreaseHpForArena()
         {
             var originalHP = _statMap[StatType.HP];
-            _statMap[StatType.HP].SetValue(Math.Max(0, originalHP.Value * 2));
+            _statMap[StatType.HP].SetValue(Math.Max(0, originalHP.BaseValue * 2));
         }
 
         private void UpdateBaseStats()
@@ -329,9 +328,9 @@ namespace Nekoyume.Model.Stat
         {
             Set(_baseStats, _equipmentStats, _consumableStats, _buffStats, _optionalStats);
 
-            foreach (var (_, stat) in _statMap)
+            foreach (var stat in _statMap.GetStats())
             {
-                var value = Math.Max(0m, stat.Value);
+                var value = Math.Max(0m, stat.BaseValue);
                 stat.SetValue(value);
             }
         }
@@ -351,7 +350,7 @@ namespace Nekoyume.Model.Stat
             var baseStats = _baseStats.GetStats();
             foreach (var (statType, stat) in baseStats)
             {
-                var value = _statMap[statType].Value - stat;
+                var value = _statMap[statType].BaseValue - stat;
                 if (!ignoreZero || value != decimal.Zero)
                 {
                     yield return (statType, value);

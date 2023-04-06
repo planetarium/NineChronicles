@@ -7,29 +7,17 @@ namespace Nekoyume.Model.Stat
     [Serializable]
     public class Stats : IStats, ICloneable
     {
-        protected readonly Dictionary<StatType, DecimalStat> _statMap
-            = new Dictionary<StatType, DecimalStat>()
-            {
-                { StatType.HP, new DecimalStat(StatType.HP) },
-                { StatType.ATK, new DecimalStat(StatType.ATK) },
-                { StatType.DEF, new DecimalStat(StatType.DEF) },
-                { StatType.CRI, new DecimalStat(StatType.CRI) },
-                { StatType.HIT, new DecimalStat(StatType.HIT) },
-                { StatType.SPD, new DecimalStat(StatType.SPD) },
-                { StatType.DRV, new DecimalStat(StatType.DRV) },
-                { StatType.DRR, new DecimalStat(StatType.DRR) },
-                { StatType.CDMG, new DecimalStat(StatType.CDMG) },
-            };
+        protected readonly StatMap _statMap;
 
-        public decimal HP => _statMap[StatType.HP].Value;
-        public decimal ATK => _statMap[StatType.ATK].Value;
-        public decimal DEF => _statMap[StatType.DEF].Value;
-        public decimal CRI => _statMap[StatType.CRI].Value;
-        public decimal HIT => _statMap[StatType.HP].Value;
-        public decimal SPD => _statMap[StatType.SPD].Value;
-        public decimal DRV => _statMap[StatType.DRV].Value;
-        public decimal DRR => _statMap[StatType.DRR].Value;
-        public decimal CDMG => _statMap[StatType.CDMG].Value;
+        public decimal HP => _statMap[StatType.HP].BaseValue;
+        public decimal ATK => _statMap[StatType.ATK].BaseValue;
+        public decimal DEF => _statMap[StatType.DEF].BaseValue;
+        public decimal CRI => _statMap[StatType.CRI].BaseValue;
+        public decimal HIT => _statMap[StatType.HP].BaseValue;
+        public decimal SPD => _statMap[StatType.SPD].BaseValue;
+        public decimal DRV => _statMap[StatType.DRV].BaseValue;
+        public decimal DRR => _statMap[StatType.DRR].BaseValue;
+        public decimal CDMG => _statMap[StatType.CDMG].BaseValue;
 
         public Stats()
         {
@@ -42,26 +30,23 @@ namespace Nekoyume.Model.Stat
 
         public void Reset()
         {
-            foreach (var property in _statMap.Values)
-            {
-                property.Reset();
-            }
+            _statMap.Reset();
         }
 
         public void Set(params Stats[] statsArray)
         {
-            foreach (var (statType, stat) in _statMap)
+            foreach (var stat in _statMap.GetStats())
             {
-                var sum = statsArray.Sum(s => s.GetStat(statType));
+                var sum = statsArray.Sum(s => s.GetStat(stat.StatType));
                 stat.SetValue(sum);
             }
         }
 
         public void Set(StatsMap value)
         {
-            foreach (var (statType, stat) in _statMap)
+            foreach (var stat in _statMap.GetStats())
             {
-                var sum = value.GetStat(statType);
+                var sum = value.GetStat(stat.StatType);
                 stat.SetValue(sum);
             }
         }
@@ -81,12 +66,7 @@ namespace Nekoyume.Model.Stat
 
         public decimal GetStat(StatType statType)
         {
-            if (!_statMap.TryGetValue(statType, out var stat))
-            {
-                throw new KeyNotFoundException($"[Stats] StatType {statType} is missing in statMap.");
-            }
-
-            return stat.Value;
+            return _statMap.GetStat(statType);
         }
 
         /// <summary>
@@ -97,30 +77,12 @@ namespace Nekoyume.Model.Stat
         /// <returns></returns>
         public void SetStatForTest(StatType statType, decimal value)
         {
-            if (!_statMap.ContainsKey(statType))
-            {
-                throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
-            }
-
             _statMap[statType].SetValue(value);
         }
 
         public IEnumerable<(StatType statType, decimal value)> GetStats(bool ignoreZero = false)
         {
-            foreach (var (statType, stat) in _statMap)
-            {
-                if (ignoreZero)
-                {
-                    if (stat.HasValue)
-                    {
-                        yield return (statType, stat.Value);
-                    }
-                }
-                else
-                {
-                    yield return (statType, stat.Value);
-                }
-            }
+            return _statMap.GetStats(ignoreZero);
         }
 
         public virtual object Clone()

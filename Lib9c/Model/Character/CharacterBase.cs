@@ -49,17 +49,18 @@ namespace Nekoyume.Model
             set => Stats.SetStats(value);
         }
 
-        public int HP => Stats.HP;
-        public int ATK => Stats.ATK;
-        public int DEF => Stats.DEF;
-        public int CRI => Stats.CRI;
-        public int HIT => Stats.HIT;
-        public int SPD => Stats.SPD;
-        public int DRV => Stats.DRV;
-        public int DRR => Stats.DRR;
-        public int CDMG => Stats.CDMG;
+        public int HP => (int)Stats.HP;
+        public int AdditionalHP => (int)Stats.BuffStats.HP;
+        public int ATK => (int)Stats.ATK;
+        public int DEF => (int)Stats.DEF;
+        public int CRI => (int)Stats.CRI;
+        public int HIT => (int)Stats.HIT;
+        public int SPD => (int)Stats.SPD;
+        public int DRV => (int)Stats.DRV;
+        public int DRR => (int)Stats.DRR;
+        public int CDMG => (int)Stats.CDMG;
 
-        public decimal CurrentHP { get; private set; }
+        public int CurrentHP { get; set; }
 
         public bool IsDead => CurrentHP <= 0;
 
@@ -388,9 +389,9 @@ namespace Nekoyume.Model
 
         #endregion
 
-        protected void ResetCurrentHP()
+        public void ResetCurrentHP()
         {
-            CurrentHP = Math.Max(0, Stats.HP);
+            CurrentHP = (int)Math.Max(0, Stats.HP);
         }
 
         public bool IsCritical(bool considerAttackCount = true)

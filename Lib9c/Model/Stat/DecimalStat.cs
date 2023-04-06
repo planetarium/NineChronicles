@@ -8,25 +8,25 @@ namespace Nekoyume.Model.Stat
     [Serializable]
     public class DecimalStat : ICloneable, IState
     {
-        private decimal _value;
+        private decimal _baseValue;
 
         private decimal _additionalValue;
 
-        public bool HasValue => TotalValue != decimal.Zero;
+        public bool HasTotalValue => TotalValue != decimal.Zero;
 
-        public bool HasBaseValue => _value != decimal.Zero;
+        public bool HasBaseValue => _baseValue != decimal.Zero;
 
         public bool HasAdditionalValue => _additionalValue != decimal.Zero;
 
 
-        public readonly StatType StatType;
-        public decimal Value
+        public StatType StatType;
+        public decimal BaseValue
         {
-            get => _value;
+            get => _baseValue;
             private set
             {
-                _value = value;
-                ValueAsInt = (int)_value;
+                _baseValue = value;
+                BaseValueAsInt = (int)_baseValue;
             }
         }
 
@@ -40,34 +40,35 @@ namespace Nekoyume.Model.Stat
             }
         }
 
-        public decimal TotalValue => Value + AdditionalValue;
-        public int TotalValueAsInt => ValueAsInt + AdditionalValueAsInt;
-        public int ValueAsInt { get; private set; }
+        public decimal TotalValue => BaseValue + AdditionalValue;
+        public int TotalValueAsInt => BaseValueAsInt + AdditionalValueAsInt;
+        public int BaseValueAsInt { get; private set; }
         public int AdditionalValueAsInt { get; private set; }
 
         public DecimalStat(StatType type, decimal value = 0m, decimal additionalValue = 0m)
         {
             StatType = type;
-            Value = value;
+            BaseValue = value;
             AdditionalValue = additionalValue;
         }
 
         public virtual void Reset()
         {
-            Value = 0m;
+            BaseValue = 0m;
+            AdditionalValue = 0m;
         }
 
         protected DecimalStat(DecimalStat value)
         {
             StatType = value.StatType;
-            Value = value.Value;
+            BaseValue = value.BaseValue;
             AdditionalValue = value.AdditionalValue;
         }
 
         public DecimalStat(Dictionary serialized)
         {
             StatType = StatTypeExtension.Deserialize((Binary)serialized["statType"]);
-            Value = serialized["value"].ToDecimal();
+            BaseValue = serialized["value"].ToDecimal();
             // This field is added later.
             if (serialized.TryGetValue((Text)"additionalValue", out var additionalValue))
             {
@@ -77,12 +78,12 @@ namespace Nekoyume.Model.Stat
 
         public void SetValue(decimal value)
         {
-            Value = value;
+            BaseValue = value;
         }
 
         public void AddValue(decimal value)
         {
-            SetValue(Value + value);
+            SetValue(BaseValue + value);
         }
 
         public void SetAdditionalValue(decimal value)
@@ -102,7 +103,7 @@ namespace Nekoyume.Model.Stat
 
         protected bool Equals(DecimalStat other)
         {
-            return _value == other._value &&
+            return _baseValue == other._baseValue &&
                 _additionalValue == other._additionalValue &&
                 StatType == other.StatType;
         }
@@ -117,15 +118,23 @@ namespace Nekoyume.Model.Stat
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(_value, _additionalValue, StatType);
+            return HashCode.Combine(_baseValue, _additionalValue, StatType);
         }
 
         public virtual IValue Serialize() =>
             new Dictionary(new Dictionary<IKey, IValue>
             {
                 [(Text)"statType"] = StatType.Serialize(),
-                [(Text)"value"] = Value.Serialize(),
+                [(Text)"value"] = BaseValue.Serialize(),
                 [(Text)"additionalValue"] = AdditionalValue.Serialize(),
             });
+
+        public virtual void Deserialize(Dictionary serialized)
+        {
+            var deserialized = serialized.ToDecimalStat();
+            StatType = deserialized.StatType;
+            BaseValue = deserialized.BaseValue;
+            AdditionalValue = deserialized.AdditionalValue;
+        }
     }
 }

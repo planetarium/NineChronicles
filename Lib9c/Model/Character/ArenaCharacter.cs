@@ -54,18 +54,18 @@ namespace Nekoyume.Model
             set => _stats.SetStats(value);
         }
 
-        public decimal CurrentHP { get; private set; }
+        public int CurrentHP { get; set; }
 
-        public int HP => _stats.HP;
-        public int AdditionalHP => _stats.BuffStats.HP;
-        public int ATK => _stats.ATK;
-        public int DEF => _stats.DEF;
-        public int CRI => _stats.CRI;
-        public int HIT => _stats.HIT;
-        public int SPD => _stats.SPD;
-        public int DRV => _stats.DRV;
-        public int DRR => _stats.DRR;
-        public int CDMG => _stats.CDMG;
+        public int HP => (int)_stats.HP;
+        public int AdditionalHP => (int)_stats.BuffStats.HP;
+        public int ATK => (int)_stats.ATK;
+        public int DEF => (int)_stats.DEF;
+        public int CRI => (int)_stats.CRI;
+        public int HIT => (int)_stats.HIT;
+        public int SPD => (int)_stats.SPD;
+        public int DRV => (int)_stats.DRV;
+        public int DRR => (int)_stats.DRR;
+        public int CDMG => (int)_stats.CDMG;
 
         public bool IsDead => CurrentHP <= 0;
         public Dictionary<int, Buff.Buff> Buffs { get; } = new Dictionary<int, Buff.Buff>();
@@ -201,7 +201,7 @@ namespace Nekoyume.Model
 
         protected void ResetCurrentHP()
         {
-            CurrentHP = Math.Max(0, _stats.HP);
+            CurrentHP = (int)Math.Max(0, _stats.HP);
         }
 
         private static CharacterStats GetStat(
@@ -260,7 +260,7 @@ namespace Nekoyume.Model
                         new StatModifier(
                             x.stat.StatType,
                             x.operationType,
-                            x.stat.ValueAsInt)));
+                            x.stat.BaseValueAsInt)));
                 _stats.AddOptional(statModifiers);
                 _stats.IncreaseHpForArena();
                 ResetCurrentHP();
@@ -321,7 +321,7 @@ namespace Nekoyume.Model
                         new StatModifier(
                             x.stat.StatType,
                             x.operationType,
-                            x.stat.ValueAsInt)));
+                            x.stat.BaseValueAsInt)));
                 _stats.AddOptional(statModifiers);
                 _stats.IncreaseHpForArena();
                 ResetCurrentHP();

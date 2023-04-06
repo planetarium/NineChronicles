@@ -118,7 +118,7 @@ namespace Lib9c.Tests.Action
                 .EquipmentItemSheet
                 .Values
                 .Where(r => r.ItemSubType == ItemSubType.Weapon)
-                .OrderBy(r => r.Stat.ValueAsInt)
+                .OrderBy(r => r.Stat.BaseValueAsInt)
                 .Last()
                 .Id;
 
@@ -136,7 +136,7 @@ namespace Lib9c.Tests.Action
                 .EquipmentItemSheet
                 .Values
                 .Where(r => r.ItemSubType == ItemSubType.Armor)
-                .OrderBy(r => r.Stat.ValueAsInt)
+                .OrderBy(r => r.Stat.BaseValueAsInt)
                 .Last()
                 .Id;
 
