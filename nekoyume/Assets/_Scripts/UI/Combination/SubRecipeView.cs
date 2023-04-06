@@ -235,10 +235,8 @@ namespace Nekoyume.UI
                         if (i == 0)
                         {
                             var stat = resultItem.GetUniqueStat();
-                            var statValueText = stat.Type is StatType.SPD or StatType.DRR or StatType.CDMG
-                                ? (stat.ValueAsInt * 0.01m).ToString(CultureInfo.InvariantCulture)
-                                : stat.ValueAsInt.ToString();
-                            mainStatText.text = string.Format(StatTextFormat, stat.Type, statValueText);
+                            var statValueText = stat.StatType.ValueToString(stat.TotalValue);
+                            mainStatText.text = string.Format(StatTextFormat, stat.StatType, statValueText);
                             mainStatText.gameObject.SetActive(true);
                         }
                         else if (i == 1 && Util.IsEventEquipmentRecipe(equipmentRow.Id))
@@ -267,12 +265,7 @@ namespace Nekoyume.UI
                         if (i < statsCount)
                         {
                             var stat = resultItem.Stats[i];
-                            var statValueText =
-                                    stat.StatType == StatType.SPD ||
-                                    stat.StatType == StatType.DRR ||
-                                    stat.StatType == StatType.CDMG
-                                ? (stat.ValueAsInt * 0.01m).ToString(CultureInfo.InvariantCulture)
-                                : stat.ValueAsInt.ToString();
+                            var statValueText = stat.StatType.ValueToString(stat.TotalValue);
                             mainStatText.text = string.Format(StatTextFormat, stat.StatType, statValueText);
                             mainStatText.gameObject.SetActive(true);
                             continue;

@@ -362,7 +362,7 @@ namespace Nekoyume.UI
                 {
                     var (mainStatType, mainValue, _) = itemOptionInfo.MainStat;
                     var mainAdd = Math.Max(1,
-                        (int)(mainValue * row.BaseStatGrowthMax.NormalizeFromTenThousandths()));
+                        (mainValue * row.BaseStatGrowthMax.NormalizeFromTenThousandths()));
                     mainStatView.gameObject.SetActive(true);
                     mainStatView.Set(mainStatType.ToString(),
                         mainStatType.ValueToString(mainValue),

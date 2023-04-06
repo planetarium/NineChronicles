@@ -10,7 +10,7 @@ namespace Nekoyume.UI.Module
     {
         public TextMeshProUGUI additionalText;
 
-        public void Show(StatType statType, int statValue, int additionalStatValue)
+        public void Show(StatType statType, decimal statValue, decimal additionalStatValue)
         {
             statTypeText.text = statType.ToString();
             valueText.text = GetStatString(statType, statValue);
@@ -38,7 +38,7 @@ namespace Nekoyume.UI.Module
             Show(statType, statValue, additionalStatValue);
         }
 
-        public void SetAdditional(StatType statType, int additionalStatValue)
+        public void SetAdditional(StatType statType, decimal additionalStatValue)
         {
             if (additionalStatValue == 0)
             {
@@ -54,7 +54,7 @@ namespace Nekoyume.UI.Module
             gameObject.SetActive(true);
         }
 
-        protected string GetStatString(StatType statType, int value, bool isSigned = false)
+        protected string GetStatString(StatType statType, decimal value, bool isSigned = false)
         {
             switch (statType)
             {
@@ -74,8 +74,8 @@ namespace Nekoyume.UI.Module
                 case StatType.DRR:
                 case StatType.CDMG:
                     return isSigned
-                        ? (value / 100f).ToString("+0.##;-0.##", CultureInfo.InvariantCulture)
-                        : (value / 100f).ToString(CultureInfo.InvariantCulture);
+                        ? (value / 100m).ToString("+0.##;-0.##", CultureInfo.InvariantCulture)
+                        : (value / 100m).ToString(CultureInfo.InvariantCulture);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
             }

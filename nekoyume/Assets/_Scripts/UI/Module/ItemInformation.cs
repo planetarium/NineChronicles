@@ -186,11 +186,11 @@ namespace Nekoyume.UI.Module
 
                 var optionInfo = new ItemOptionInfo(equipment);
                 var (mainStatType, _, mainStatTotalValue) = optionInfo.MainStat;
-                uniqueStat.Show(mainStatType, mainStatTotalValue);
+                uniqueStat.Show(mainStatType, (int)mainStatTotalValue);
 
                 foreach (var (type, value, count) in optionInfo.StatOptions)
                 {
-                    AddStat(type, value, count);
+                    AddStat(type, (int)value, count);
                     statCount += count;
                 }
             }
@@ -201,9 +201,9 @@ namespace Nekoyume.UI.Module
                 iconArea.countObject.SetActive(false);
                 uniqueStat.gameObject.SetActive(false);
 
-                foreach (var statMapEx in itemUsable.StatsMap.GetStats())
+                foreach (var stat in itemUsable.StatsMap.GetDecimalStats())
                 {
-                    AddStat(statMapEx);
+                    AddStat(stat);
                     statCount++;
                 }
             }
@@ -219,9 +219,9 @@ namespace Nekoyume.UI.Module
                     statsMap.AddStatValue(row.StatType, row.Stat);
                 }
 
-                foreach (var statMapEx in statsMap.GetStats())
+                foreach (var stat in statsMap.GetDecimalStats())
                 {
-                    AddStat(statMapEx);
+                    AddStat(stat);
                     statCount++;
                 }
 
@@ -285,7 +285,7 @@ namespace Nekoyume.UI.Module
             return skillCount;
         }
 
-        private void AddStat(StatMapEx model)
+        private void AddStat(DecimalStat model)
         {
             var statView = GetDisabledStatRow();
             if (statView.Equals(default) ||

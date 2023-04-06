@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.EnumType;
@@ -166,7 +166,7 @@ namespace Nekoyume.UI.Module
                         var statView = statViewList[i];
                         if (i == 0)
                         {
-                            statView.Show(mainStatType, mainStatTotalValue);
+                            statView.Show(mainStatType, (int)mainStatTotalValue);
                             continue;
                         }
 
@@ -175,7 +175,7 @@ namespace Nekoyume.UI.Module
 
                     foreach (var (type, value, count) in optionInfo.StatOptions)
                     {
-                        AddStat(type, value, count);
+                        AddStat(type, (int)value, count);
                         statCount += count;
                     }
 
@@ -194,7 +194,7 @@ namespace Nekoyume.UI.Module
                     iconArea.combatPowerObject.SetActive(false);
                     iconArea.countObject.SetActive(false);
 
-                    var stats = itemUsable.StatsMap.GetStats().ToList();
+                    var stats = itemUsable.StatsMap.GetDecimalStats().ToList();
                     var usableStatCount = stats.Count;
                     for(var i = 0; i < statViewList.Count; i++)
                     {
@@ -220,7 +220,7 @@ namespace Nekoyume.UI.Module
                         statsMap.AddStatValue(row.StatType, row.Stat);
                     }
 
-                    var stats = statsMap.GetStats().ToList();
+                    var stats = statsMap.GetDecimalStats().ToList();
                     var usableStatCount = stats.Count;
                     for(var i = 0; i < statViewList.Count; i++)
                     {
@@ -265,7 +265,7 @@ namespace Nekoyume.UI.Module
             return statCount;
         }
 
-        private void AddStat(StatMapEx model)
+        private void AddStat(DecimalStat model)
         {
             var statView = GetDisabledStatRow();
             if (statView.Equals(default) ||

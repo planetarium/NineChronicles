@@ -9,12 +9,12 @@ namespace Nekoyume
         public static string DecimalStatToString(this DecimalStat stat)
         {
             var value =
-                stat.Type == StatType.SPD ||
-                stat.Type == StatType.DRR ||
-                stat.Type == StatType.CDMG ?
-                (stat.Value / 100m) : stat.Value;
+                stat.StatType == StatType.SPD ||
+                stat.StatType == StatType.DRR ||
+                stat.StatType == StatType.CDMG ?
+                (stat.BaseValue / 100m) : stat.BaseValue;
 
-            return $"{stat.Type} +{(float)value}";
+            return $"{stat.StatType} +{(float)value}";
         }
 
         public static string OptionRowToString(this EquipmentItemOptionSheet.Row optionRow)
@@ -26,7 +26,7 @@ namespace Nekoyume
             return description;
         }
 
-        public static string ValueToString(this StatType statType, int value, string format = null)
+        public static string ValueToString(this StatType statType, decimal value, string format = null)
         {
             if (string.IsNullOrEmpty(format))
             {
@@ -34,8 +34,8 @@ namespace Nekoyume
                     statType == StatType.SPD ||
                     statType == StatType.DRR ||
                     statType == StatType.CDMG
-                    ? (value / 100f).ToString(CultureInfo.InvariantCulture)
-                    : value.ToString();
+                    ? (value / 100m).ToString(CultureInfo.InvariantCulture)
+                    : ((int)value).ToString();
 
                 return str;
             }
@@ -45,8 +45,8 @@ namespace Nekoyume
                     statType == StatType.SPD ||
                     statType == StatType.DRR ||
                     statType == StatType.CDMG
-                    ? (value / 100f).ToString(format, CultureInfo.InvariantCulture)
-                    : value.ToString();
+                    ? (value / 100m).ToString(format, CultureInfo.InvariantCulture)
+                    : ((int)value).ToString();
 
                 return str;
             }
