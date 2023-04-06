@@ -59,7 +59,7 @@ namespace Lib9c.Tests.Action
             var random = new TestRandom();
             var tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
             var runeSheet = tableSheets.RuneSheet;
-            var runeCurrency = RuneHelper.ToCurrency(runeSheet[10001], 0, null);
+            var runeCurrency = RuneHelper.ToCurrency(runeSheet[10001]);
             var avatarAddress = new PrivateKey().ToAddress();
             var bossState = new WorldBossState(
                 tableSheets.WorldBossListSheet[1],
