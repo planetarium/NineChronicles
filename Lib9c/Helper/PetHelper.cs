@@ -12,7 +12,7 @@ namespace Nekoyume.Helper
     public static class PetHelper
     {
         public static Currency GetSoulstoneCurrency(string ticker) =>
-            Currency.Legacy(ticker, 0, minters: null);
+            Currencies.GetSoulStone(ticker);
 
         public static (int ncgQuantity, int soulStoneQuantity) CalculateEnhancementCost(
             PetCostSheet costSheet,
