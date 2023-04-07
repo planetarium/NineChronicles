@@ -16,8 +16,8 @@ namespace Nekoyume.Helper
         public readonly List<(StatType type, decimal value, int count)> StatOptions
             = new List<(StatType type, decimal value, int count)>();
 
-        public readonly List<(SkillSheet.Row skillRow, decimal power, int chance)> SkillOptions
-            = new List<(SkillSheet.Row skillRow, decimal power, int chance)>();
+        public readonly List<(SkillSheet.Row skillRow, int power, int chance)> SkillOptions
+            = new List<(SkillSheet.Row skillRow, int power, int chance)>();
 
         public readonly int CP;
 

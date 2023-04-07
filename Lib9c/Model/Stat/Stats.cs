@@ -7,7 +7,7 @@ namespace Nekoyume.Model.Stat
     [Serializable]
     public class Stats : IStats, ICloneable
     {
-        protected readonly StatMap _statMap;
+        protected readonly StatMap _statMap = new StatMap();
 
         public decimal HP => _statMap[StatType.HP].BaseValue;
         public decimal ATK => _statMap[StatType.ATK].BaseValue;
