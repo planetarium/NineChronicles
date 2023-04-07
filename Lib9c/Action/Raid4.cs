@@ -21,11 +21,11 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1663
     /// </summary>
     [Serializable]
-    [ActionType("raid5")]
-    public class Raid : GameAction, IRaidV2
+    [ActionType("raid4")]
+    public class Raid4 : GameAction, IRaidV2
     {
         public const long RequiredInterval = 5L;
         public Address AvatarAddress;
@@ -126,7 +126,7 @@ namespace Nekoyume.Action
                 throw new RequiredBlockIntervalException($"wait for interval. {context.BlockIndex - raiderState.UpdatedBlockIndex}");
             }
 
-            if (WorldBossHelper.CanRefillTicket(context.BlockIndex, raiderState.RefillBlockIndex, row.StartedBlockIndex))
+            if (WorldBossHelper.CanRefillTicketV1(context.BlockIndex, raiderState.RefillBlockIndex, row.StartedBlockIndex))
             {
                 raiderState.RemainChallengeCount = WorldBossHelper.MaxChallengeCount;
                 raiderState.RefillBlockIndex = context.BlockIndex;

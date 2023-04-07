@@ -7,6 +7,7 @@ namespace Nekoyume.Helper
 {
     public static class WorldBossHelper
     {
+        [Obsolete("Use GameConfigState.DailyWorldBossInterval")]
         public const long RefillInterval = 7200L;
         public const int MaxChallengeCount = 3;
 
@@ -30,6 +31,11 @@ namespace Nekoyume.Helper
         public static FungibleAssetValue CalculateTicketPrice(WorldBossListSheet.Row row, RaiderState raiderState, Currency currency)
         {
             return (row.TicketPrice + row.AdditionalTicketPrice * raiderState.PurchaseCount) * currency;
+        }
+
+        public static bool CanRefillTicketV1(long blockIndex, long refilledIndex, long startedIndex)
+        {
+            return (blockIndex - startedIndex) / RefillInterval > (refilledIndex - startedIndex) / RefillInterval;
         }
 
         public static bool CanRefillTicket(long blockIndex, long refilledIndex, long startedIndex)

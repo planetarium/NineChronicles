@@ -120,7 +120,7 @@ namespace Nekoyume.Action
                 throw new RequiredBlockIntervalException($"wait for interval. {context.BlockIndex - raiderState.UpdatedBlockIndex}");
             }
 
-            if (WorldBossHelper.CanRefillTicket(context.BlockIndex, raiderState.RefillBlockIndex, row.StartedBlockIndex))
+            if (WorldBossHelper.CanRefillTicketV1(context.BlockIndex, raiderState.RefillBlockIndex, row.StartedBlockIndex))
             {
                 raiderState.RemainChallengeCount = WorldBossHelper.MaxChallengeCount;
                 raiderState.RefillBlockIndex = context.BlockIndex;

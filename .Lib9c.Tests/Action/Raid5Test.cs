@@ -20,7 +20,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static SerializeKeys;
 
-    public class Raid4Test
+    public class Raid5Test
     {
         private readonly Dictionary<string, string> _sheets;
         private readonly Address _agentAddress;
@@ -28,7 +28,7 @@ namespace Lib9c.Tests.Action
         private readonly TableSheets _tableSheets;
         private readonly Currency _goldCurrency;
 
-        public Raid4Test()
+        public Raid5Test()
         {
             _sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(_sheets);
@@ -106,7 +106,7 @@ namespace Lib9c.Tests.Action
                 })
                 .StartedBlockIndex;
 
-            var action = new Raid4
+            var action = new Raid
             {
                 AvatarAddress = _avatarAddress,
                 EquipmentIds = new List<Guid>(),
@@ -419,7 +419,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_With_Reward()
         {
-            var action = new Raid4
+            var action = new Raid
             {
                 AvatarAddress = _avatarAddress,
                 EquipmentIds = new List<Guid>(),
@@ -572,7 +572,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_With_Free_Crystal_Fee()
         {
-            var action = new Raid4
+            var action = new Raid
             {
                 AvatarAddress = _avatarAddress,
                 EquipmentIds = new List<Guid>(),
