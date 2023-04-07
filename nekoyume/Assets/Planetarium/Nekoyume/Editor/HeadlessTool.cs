@@ -59,6 +59,19 @@ namespace Planetarium.Nekoyume.Editor
             process.WaitForExit();
             Debug.Log("Headless repository cloned for unity.");
 
+            process = Process.Start(
+                "git",
+                "checkout development"
+                );
+            process.WaitForExit();
+
+            process = Process.Start(
+                "git",
+                "pull origin development"
+                );
+            process.WaitForExit();
+            Debug.Log("Pull latest commits from origin.");
+
             var startInfo = new ProcessStartInfo
             {
                 FileName = "git",
