@@ -152,7 +152,7 @@ namespace Nekoyume.State
             await foreach (var row in runeSheet.Values)
             {
                 AvatarBalance.Remove(row.Ticker);
-                var rune = RuneHelper.ToCurrency(row, 0, null);
+                var rune = RuneHelper.ToCurrency(row);
                 var fungibleAsset = await Game.Game.instance.Agent.GetBalanceAsync(avatarAddress, rune);
                 AvatarBalance.Add(row.Ticker, fungibleAsset);
             }
@@ -382,7 +382,7 @@ namespace Nekoyume.State
 
             var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
             var runeRow = runeSheet.Values.First(x => x.Id == runeId);
-            var rune = RuneHelper.ToCurrency(runeRow, 0, null);
+            var rune = RuneHelper.ToCurrency(runeRow);
             var fungibleAsset = await Game.Game.instance.Agent.GetBalanceAsync(avatarAddress, rune);
             AvatarBalance[runeRow.Ticker] = fungibleAsset;
             return fungibleAsset;

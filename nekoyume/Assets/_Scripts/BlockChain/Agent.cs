@@ -678,7 +678,7 @@ namespace Nekoyume.BlockChain
 
         private IEnumerator CoMiner()
         {
-            var miner = new Miner(blocks, PrivateKey);
+            var miner = new Proposer(blocks, PrivateKey);
             var sleepInterval = new WaitForSeconds(15);
             while (true)
             {
