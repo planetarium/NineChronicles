@@ -21,7 +21,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1858
     /// </summary>
     [Serializable]
     [ActionType("raid5")]
@@ -126,7 +126,9 @@ namespace Nekoyume.Action
                 throw new RequiredBlockIntervalException($"wait for interval. {context.BlockIndex - raiderState.UpdatedBlockIndex}");
             }
 
-            if (WorldBossHelper.CanRefillTicket(context.BlockIndex, raiderState.RefillBlockIndex, row.StartedBlockIndex))
+            var gameConfigState = states.GetGameConfigState();
+            if (WorldBossHelper.CanRefillTicket(context.BlockIndex, raiderState.RefillBlockIndex,
+                    row.StartedBlockIndex, gameConfigState.DailyWorldBossInterval))
             {
                 raiderState.RemainChallengeCount = WorldBossHelper.MaxChallengeCount;
                 raiderState.RefillBlockIndex = context.BlockIndex;

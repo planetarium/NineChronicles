@@ -43,15 +43,18 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(7200L, 0L, 0L, true)]
-        [InlineData(7250L, 7180L, 0L, true)]
-        [InlineData(14400L, 14399L, 0L, true)]
-        [InlineData(7250L, 7210L, 0L, false)]
-        [InlineData(17200L, 10003L, 10000L, true)]
-        [InlineData(17199L, 10003L, 10000L, false)]
-        public void CanRefillTicket(long blockIndex, long refilledBlockIndex, long startedBlockIndex, bool expected)
+        [InlineData(7200L, 0L, 0L, 7200, true)]
+        [InlineData(7250L, 7180L, 0L, 7200, true)]
+        [InlineData(14400L, 14399L, 0L, 7200, true)]
+        [InlineData(7250L, 7210L, 0L, 7200, false)]
+        [InlineData(17200L, 10003L, 10000L, 7200, true)]
+        [InlineData(17199L, 10003L, 10000L, 7200, false)]
+        [InlineData(7300L, 5L, 0L, 7200, true)]
+        [InlineData(7300L, 5L, 0L, 8400, false)]
+        [InlineData(7200L, 0L, 0L, 0, false)]
+        public void CanRefillTicket(long blockIndex, long refilledBlockIndex, long startedBlockIndex, int refillInterval, bool expected)
         {
-            Assert.Equal(expected, WorldBossHelper.CanRefillTicket(blockIndex, refilledBlockIndex, startedBlockIndex));
+            Assert.Equal(expected, WorldBossHelper.CanRefillTicket(blockIndex, refilledBlockIndex, startedBlockIndex, refillInterval));
         }
     }
 }
