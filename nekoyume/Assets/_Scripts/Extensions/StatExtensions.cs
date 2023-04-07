@@ -1,5 +1,6 @@
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
+using System;
 using System.Globalization;
 
 namespace Nekoyume
@@ -26,29 +27,30 @@ namespace Nekoyume
             return description;
         }
 
-        public static string ValueToString(this StatType statType, decimal value, string format = null)
+        public static string ValueToString(this StatType statType, decimal value, bool isSigned = false)
         {
-            if (string.IsNullOrEmpty(format))
+            switch (statType)
             {
-                var str =
-                    statType == StatType.SPD ||
-                    statType == StatType.DRR ||
-                    statType == StatType.CDMG
-                    ? (value / 100m).ToString(CultureInfo.InvariantCulture)
-                    : ((int)value).ToString();
-
-                return str;
-            }
-            else
-            {
-                var str =
-                    statType == StatType.SPD ||
-                    statType == StatType.DRR ||
-                    statType == StatType.CDMG
-                    ? (value / 100m).ToString(format, CultureInfo.InvariantCulture)
-                    : ((int)value).ToString();
-
-                return str;
+                case StatType.HP:
+                case StatType.ATK:
+                case StatType.DEF:
+                case StatType.HIT:
+                case StatType.DRV:
+                    return isSigned
+                        ? value.ToString("+0.##;-0.##")
+                        : ((int)value).ToString();
+                case StatType.CRI:
+                    return isSigned
+                        ? value.ToString("+0.##\\%;-0.##\\%")
+                        : $"{value:0.#\\%}";
+                case StatType.SPD:
+                case StatType.DRR:
+                case StatType.CDMG:
+                    return isSigned
+                        ? (value / 100m).ToString("+0.##;-0.##", CultureInfo.InvariantCulture)
+                        : (value / 100m).ToString("0.##", CultureInfo.InvariantCulture);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
             }
         }
     }

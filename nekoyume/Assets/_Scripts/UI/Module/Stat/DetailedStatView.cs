@@ -13,7 +13,7 @@ namespace Nekoyume.UI.Module
         public void Show(StatType statType, decimal statValue, decimal additionalStatValue)
         {
             statTypeText.text = statType.ToString();
-            valueText.text = GetStatString(statType, statValue);
+            valueText.text = statType.ValueToString(statValue);
             SetAdditional(statType, additionalStatValue);
         }
 
@@ -47,38 +47,11 @@ namespace Nekoyume.UI.Module
             else
             {
                 additionalText.text = additionalStatValue > 0
-                    ? $"({GetStatString(statType, additionalStatValue, true)})"
-                    : $"<color=red>({GetStatString(statType, additionalStatValue, true)})</color>";
+                    ? $"({statType.ValueToString(additionalStatValue, true)})"
+                    : $"<color=red>({statType.ValueToString(additionalStatValue, true)})</color>";
             }
 
             gameObject.SetActive(true);
-        }
-
-        protected string GetStatString(StatType statType, decimal value, bool isSigned = false)
-        {
-            switch (statType)
-            {
-                case StatType.HP:
-                case StatType.ATK:
-                case StatType.DEF:
-                case StatType.HIT:
-                case StatType.DRV:
-                    return isSigned
-                        ? value.ToString("+0.##;-0.##")
-                        : value.ToString();
-                case StatType.CRI:
-                    return isSigned
-                        ? value.ToString("+0.##\\%;-0.##\\%")
-                        : $"{value:0.#\\%}";
-                case StatType.SPD:
-                case StatType.DRR:
-                case StatType.CDMG:
-                    return isSigned
-                        ? (value / 100m).ToString("+0.##;-0.##", CultureInfo.InvariantCulture)
-                        : (value / 100m).ToString(CultureInfo.InvariantCulture);
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
-            }
         }
     }
 }

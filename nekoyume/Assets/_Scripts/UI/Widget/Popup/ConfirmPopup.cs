@@ -36,15 +36,12 @@ namespace Nekoyume.UI
         public void Show(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
             bool localize = true)
         {
-            if (gameObject.activeSelf)
-            {
-                Close(true);
-                Show(title, content, labelYes, labelNo, localize);
-                return;
-            }
-
             Set(title, content, labelYes, labelNo, localize);
-            Show();
+
+            if (!gameObject.activeSelf)
+            {
+                Show();
+            }
         }
 
         public void Set(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
