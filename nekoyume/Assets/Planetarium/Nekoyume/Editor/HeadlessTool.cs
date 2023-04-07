@@ -35,7 +35,7 @@ namespace Planetarium.Nekoyume.Editor
                 ? Path.DirectorySeparatorChar
                 : Path.AltDirectorySeparatorChar).ToString());
 
-        private static string SetDirectory(string title)
+        public static string SetDirectory(string title)
         {
             return FixPath(EditorUtility.OpenFolderPanel(title, _docsRoot, ""));
         }
