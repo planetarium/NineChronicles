@@ -208,27 +208,30 @@ namespace Nekoyume.Model.State
 
         #region DecimalStat
 
-        public static IValue Serialize(this DecimalStat decimalStat) =>
-            Dictionary.Empty
-                .Add("type", StatTypeExtension.Serialize(decimalStat.StatType))
-                .Add("value", decimalStat.BaseValue.Serialize());
-
         public static DecimalStat ToDecimalStat(this IValue serialized) =>
             ((Dictionary)serialized).ToDecimalStat();
 
         public static DecimalStat ToDecimalStat(this Dictionary serialized)
         {
-            if (serialized.TryGetValue((Text)"additionalValue", out var additionalValue))
+            // Legacy Equipment Stat
+            if (serialized.TryGetValue((Text)"type", out var legacyStatType))
             {
                 return new DecimalStat(
-                    StatTypeExtension.Deserialize((Binary)serialized["type"]),
+                    StatTypeExtension.Deserialize((Binary)legacyStatType),
+                    serialized["value"].ToDecimal());
+            }
+            else if (serialized.TryGetValue((Text)"additionalValue", out var additionalValue))
+            {
+                return new DecimalStat(
+                    StatTypeExtension.Deserialize((Binary)serialized["statType"]),
                     serialized["value"].ToDecimal(),
                     additionalValue.ToDecimal());
             }
+            // Item before world 7 release
             else
             {
                 return new DecimalStat(
-                    StatTypeExtension.Deserialize((Binary)serialized["type"]),
+                    StatTypeExtension.Deserialize((Binary)serialized["statType"]),
                     serialized["value"].ToDecimal());
             }
         }

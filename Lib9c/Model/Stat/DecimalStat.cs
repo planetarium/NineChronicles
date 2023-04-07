@@ -121,6 +121,11 @@ namespace Nekoyume.Model.Stat
             return HashCode.Combine(_baseValue, _additionalValue, StatType);
         }
 
+        public IValue SerializeForLegacyEquipmentStat() =>
+            Dictionary.Empty
+                .Add("type", StatTypeExtension.Serialize(StatType))
+                .Add("value", BaseValue.Serialize());
+
         public virtual IValue Serialize() =>
             new Dictionary(new Dictionary<IKey, IValue>
             {
