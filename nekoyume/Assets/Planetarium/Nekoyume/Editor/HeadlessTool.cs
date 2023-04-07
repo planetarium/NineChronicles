@@ -112,7 +112,15 @@ namespace Planetarium.Nekoyume.Editor
         {
             // TODO: Select option to use local genesis or download genesis from URL (like use mainnet genesis)
             Debug.Log($"Delete and create genesis-block to {BlockManager.GenesisBlockPath()}");
-            Directory.Delete(Path.Combine(_docsRoot, "planetarium", _storeName), true);
+            if (Directory.Exists(Path.Combine(_docsRoot, "planetarium", _storeName)))
+            {
+                Directory.Delete(Path.Combine(_docsRoot, "planetarium", _storeName), true);
+            }
+
+            if (!Directory.Exists(Path.Combine(_docsRoot, "planetarium")))
+            {
+                Directory.CreateDirectory(Path.Combine(_docsRoot, "planetarium"));
+            }
             LibplanetEditor.DeleteAllEditorAndMakeGenesisBlock();
         }
 
