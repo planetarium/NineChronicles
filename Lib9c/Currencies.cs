@@ -2,7 +2,6 @@
 
 using System;
 using System.Linq;
-using Libplanet;
 using Libplanet.Assets;
 using Nekoyume.TableData;
 
@@ -10,10 +9,17 @@ namespace Lib9c
 {
     public static class Currencies
     {
-        public static readonly Currency NCG = Currency.Legacy(
-            "NCG",
-            2,
-            new Address("0x47D082a115c63E7b58B1532d20E631538eaFADde"));
+        // NOTE: The minters of the NCG are not same between main-net and other networks
+        //       containing local network. So this cannot be defined as a constant.
+        //       After the pluggable-lib9c applied, this will be defined and
+        //       used all of cases(e.g., main-net, unit tests, local network).
+        // NOTE: If there are forked networks and the NCG's minters should be
+        //       different, this should be changed and the migration solution
+        //       should be applied by the forked network.
+        // public static readonly Currency NCG = Currency.Legacy(
+        //     "NCG",
+        //     2,
+        //     new Address("0x47D082a115c63E7b58B1532d20E631538eaFADde"));
 
         public static readonly Currency Crystal = Currency.Legacy(
             "CRYSTAL",
