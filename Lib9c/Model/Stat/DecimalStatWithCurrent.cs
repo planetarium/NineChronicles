@@ -36,7 +36,7 @@ namespace Nekoyume.Model.Stat
 
         public void SetValueAndCurrent(decimal value)
         {
-            SetValue(value);
+            SetBaseValue(value);
             SetCurrent(value);
         }
 

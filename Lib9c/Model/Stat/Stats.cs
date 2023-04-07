@@ -25,7 +25,7 @@ namespace Nekoyume.Model.Stat
 
         public Stats(Stats value)
         {
-            _statMap = value._statMap;
+            _statMap = new StatMap(value._statMap);
         }
 
         public void Reset()
@@ -38,7 +38,7 @@ namespace Nekoyume.Model.Stat
             foreach (var stat in _statMap.GetStats())
             {
                 var sum = statsArray.Sum(s => s.GetStat(stat.StatType));
-                stat.SetValue(sum);
+                stat.SetBaseValue(sum);
             }
         }
 
@@ -47,7 +47,7 @@ namespace Nekoyume.Model.Stat
             foreach (var stat in _statMap.GetStats())
             {
                 var sum = value.GetStat(stat.StatType);
-                stat.SetValue(sum);
+                stat.SetBaseValue(sum);
             }
         }
 
@@ -77,7 +77,7 @@ namespace Nekoyume.Model.Stat
         /// <returns></returns>
         public void SetStatForTest(StatType statType, decimal value)
         {
-            _statMap[statType].SetValue(value);
+            _statMap[statType].SetBaseValue(value);
         }
 
         public IEnumerable<(StatType statType, decimal value)> GetStats(bool ignoreZero = false)

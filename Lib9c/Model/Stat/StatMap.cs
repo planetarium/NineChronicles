@@ -63,6 +63,17 @@ namespace Nekoyume.Model.Stat
             _statMap = dict.ToImmutableDictionary();
         }
 
+        public StatMap(StatMap statMap)
+        {
+            var builder = ImmutableDictionary.CreateBuilder<StatType, DecimalStat>();
+            foreach (var stat in statMap.GetStats())
+            {
+                builder.Add(stat.StatType, (DecimalStat)stat.Clone());
+            }
+
+            _statMap = builder.ToImmutableDictionary();
+        }
+
         public void Reset()
         {
             foreach (var property in _statMap.Values)
