@@ -33,21 +33,21 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.DevExtensions.Tests",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Libplanet.Net", ".Libplanet\Libplanet.Net\Libplanet.Net.csproj", "{E879E951-62DF-4682-B78D-7E8A7165B58B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.Miner", "Lib9c.Miner\Lib9c.Miner.csproj", "{ED7B7033-B51B-474F-B9A3-D363AE416DD2}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Libplanet.Crypto.Secp256k1", "Libplanet.Crypto.Secp256k1\Libplanet.Crypto.Secp256k1.csproj", "{964DB502-1A12-4979-9A22-E6633AFEA5E8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.MessagePack", "Lib9c.MessagePack\Lib9c.MessagePack.csproj", "{64B1F3F2-B554-4FB1-98A5-24AEBB300056}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.Abstractions", "Lib9c.Abstractions\Lib9c.Abstractions.csproj", "{2D8BB275-57B6-4707-A20F-6836F4EB0EE2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.Miner.Tests", ".Lib9c.Miner.Tests\Lib9c.Miner.Tests.csproj", "{3DE5BBE5-5F81-4518-B828-C36DAC07F492}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.Proposer.Tests", ".Lib9c.Miner.Tests\Lib9c.Proposer.Tests.csproj", "{3DE5BBE5-5F81-4518-B828-C36DAC07F492}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.Policy", "Lib9c.Policy\Lib9c.Policy.csproj", "{7DF9FB47-1B56-4F4E-BA98-4F41C4B0CBF8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.Renderers", "Lib9c.Renderers\Lib9c.Renderers.csproj", "{321113A4-7CAA-462C-941E-366EBD4668EB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.Utils", "Lib9c.Utils\Lib9c.Utils.csproj", "{C1152E56-9CAF-4FF5-A587-DD899A21DEDB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.Proposer", "Lib9c.Proposer\Lib9c.Proposer.csproj", "{7DC1D595-095D-462A-864D-0CE57915901A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -103,10 +103,6 @@ Global
 		{E879E951-62DF-4682-B78D-7E8A7165B58B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E879E951-62DF-4682-B78D-7E8A7165B58B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E879E951-62DF-4682-B78D-7E8A7165B58B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ED7B7033-B51B-474F-B9A3-D363AE416DD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ED7B7033-B51B-474F-B9A3-D363AE416DD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ED7B7033-B51B-474F-B9A3-D363AE416DD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ED7B7033-B51B-474F-B9A3-D363AE416DD2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{964DB502-1A12-4979-9A22-E6633AFEA5E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{964DB502-1A12-4979-9A22-E6633AFEA5E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{964DB502-1A12-4979-9A22-E6633AFEA5E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -135,6 +131,10 @@ Global
 		{C1152E56-9CAF-4FF5-A587-DD899A21DEDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1152E56-9CAF-4FF5-A587-DD899A21DEDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1152E56-9CAF-4FF5-A587-DD899A21DEDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DC1D595-095D-462A-864D-0CE57915901A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DC1D595-095D-462A-864D-0CE57915901A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DC1D595-095D-462A-864D-0CE57915901A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DC1D595-095D-462A-864D-0CE57915901A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
