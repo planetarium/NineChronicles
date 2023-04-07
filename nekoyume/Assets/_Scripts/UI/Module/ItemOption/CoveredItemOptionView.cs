@@ -55,7 +55,7 @@ namespace Nekoyume.UI.Module
                 count,
                 L10nManager.Localize("UI_ITEM_OPTION_COVER_TEXT_FORMAT", type.ToString()));
 
-        public void UpdateAsSkill(string skillName, int totalPower, int totalChance) =>
+        public void UpdateAsSkill(string skillName, decimal totalPower, int totalChance) =>
             UpdateView(
                 $"{skillName} {totalPower} / {totalChance}%",
                 string.Empty,

@@ -64,9 +64,9 @@ namespace Nekoyume.UI.Module
 
         public void UpdateAsTotalAndPlusSkill(
             string skillName,
-            int totalPower,
+            decimal totalPower,
             int totalChance,
-            int plusPower,
+            decimal plusPower,
             int plusChance) =>
             UpdateView(
                 $"{skillName} {totalPower} / {totalChance}%",
