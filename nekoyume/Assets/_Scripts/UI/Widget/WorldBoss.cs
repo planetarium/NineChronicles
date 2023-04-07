@@ -231,7 +231,8 @@ namespace Nekoyume.UI
             }
 
             var raiderState = WorldBossStates.GetRaiderState(avatarAddress);
-            _headerMenu.WorldBossTickets.UpdateTicket(raiderState, currentBlockIndex);
+            var refillInterval = States.Instance.GameConfigState.DailyWorldBossInterval;
+            _headerMenu.WorldBossTickets.UpdateTicket(raiderState, currentBlockIndex, refillInterval);
             UpdateRemainTimer(_period, currentBlockIndex);
             SetActiveQueryLoading(false);
         }
