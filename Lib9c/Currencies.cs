@@ -1,13 +1,12 @@
 #nullable enable
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Libplanet;
 using Libplanet.Assets;
 using Nekoyume.TableData;
 
-namespace Nekoyume
+namespace Lib9c
 {
     public static class Currencies
     {

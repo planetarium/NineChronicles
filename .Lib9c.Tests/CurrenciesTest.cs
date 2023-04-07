@@ -4,7 +4,6 @@ namespace Lib9c.Tests
 
     using System;
     using System.Linq;
-    using Nekoyume;
     using Nekoyume.TableData;
     using Xunit;
 
