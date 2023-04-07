@@ -32,7 +32,7 @@ namespace Nekoyume.UI.Module
                     }
 
                     var (statType, value) = enumerator.Current;
-                    statView.Show(statType, (int)value, 0);
+                    statView.Show(statType, value, 0);
                 }
             }
         }

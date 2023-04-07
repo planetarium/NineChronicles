@@ -446,9 +446,9 @@ namespace Nekoyume.UI
             return _informations.FirstOrDefault(x => x.Type.Equals(type));
         }
 
-        private static int RateOfChange(float prevent, float current)
+        private static int RateOfChange(decimal previous, decimal current)
         {
-            return Mathf.RoundToInt((current - prevent) / prevent * 100);
+            return (int)Math.Round((current - previous) / previous * 100);
         }
     }
 }

@@ -57,7 +57,7 @@ namespace Nekoyume.UI.Module
             IsEmpty = string.IsNullOrEmpty(leftText) && string.IsNullOrEmpty(rightText);
         }
 
-        public void UpdateViewAsTotalAndPlusStat(StatType type, int totalValue, int plusValue) =>
+        public void UpdateViewAsTotalAndPlusStat(StatType type, decimal totalValue, decimal plusValue) =>
             UpdateView(
                 $"{type} {type.ValueToString(totalValue)}",
                 plusValue > 0 ? $"+{type.ValueToString(plusValue)}" : string.Empty);

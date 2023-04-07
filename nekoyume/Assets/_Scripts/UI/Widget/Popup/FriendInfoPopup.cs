@@ -280,12 +280,11 @@ namespace Nekoyume.UI
                 statModifiers.AddRange(
                     statInfo.Stats.Select(x =>
                         new StatModifier(
-                            x.statMap.StatType,
+                            x.stat.StatType,
                             x.operationType,
-                            x.statMap.ValueAsInt)));
+                            x.stat.TotalValue)));
 
-                characterStats.AddOption(statModifiers);
-                characterStats.EqualizeCurrentHPWithHP();
+                characterStats.AddOptional(statModifiers);
             }
 
             avatarStats.SetData(characterStats);

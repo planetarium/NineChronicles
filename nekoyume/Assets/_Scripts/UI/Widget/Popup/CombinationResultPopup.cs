@@ -143,7 +143,7 @@ namespace Nekoyume.UI
                 var equipmentList = !_editorStatOptions.Any() || _editorStatOptions[0].statType == StatType.NONE
                     ? tableSheets.EquipmentItemSheet.OrderedList
                     : tableSheets.EquipmentItemSheet.OrderedList.Where(e =>
-                        e.Stat.Type == _editorStatOptions[0].statType).ToList();
+                        e.Stat.StatType == _editorStatOptions[0].statType).ToList();
                 if (!equipmentList.Any())
                 {
                     Debug.LogError($"{_editorStatOptions[0].statType} cannot be main stat type");

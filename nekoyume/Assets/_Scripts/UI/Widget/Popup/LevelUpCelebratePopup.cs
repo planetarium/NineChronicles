@@ -79,8 +79,8 @@ namespace Nekoyume.UI
                 var type = enumerator.Current;
 
                 view.Show(type,
-                    beforeStat.GetStat(type, true),
-                    afterStat.GetStat(type, true));
+                    beforeStat.GetBaseStat(type),
+                    afterStat.GetBaseStat(type));
                 view.gameObject.SetActive(true);
             }
 
