@@ -82,6 +82,16 @@ namespace Nekoyume.Model.Stat
             }
         }
 
+        public int GetStatAsInt(StatType statType)
+        {
+            if (!_statMap.TryGetValue(statType, out var decimalStat))
+            {
+                throw new KeyNotFoundException($"StatType {statType} is missing in statMap.");
+            }
+
+            return decimalStat.TotalValueAsInt;
+        }
+
         public decimal GetStat(StatType statType)
         {
             if (!_statMap.TryGetValue(statType, out var decimalStat))

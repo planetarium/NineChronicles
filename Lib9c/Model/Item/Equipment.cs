@@ -148,7 +148,7 @@ namespace Nekoyume.Model.Item
             var rand = isGreatSuccess ? row.BaseStatGrowthMax
                 :random.Next(row.BaseStatGrowthMin, row.BaseStatGrowthMax + 1);
             var ratio = rand.NormalizeFromTenThousandths();
-            var baseStat = StatsMap.GetBaseStat(UniqueStatType) * ratio;
+            var baseStat = (int)StatsMap.GetBaseStat(UniqueStatType) * ratio;
             if (baseStat > 0)
             {
                 baseStat = Math.Max(1.0m, baseStat);

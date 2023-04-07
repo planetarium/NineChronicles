@@ -60,7 +60,7 @@ namespace Nekoyume.Model.Stat
                 var originalStatValue =
                     baseStats.Sum(stats => stats.GetStat(statModifier.StatType));
                 var result = statModifier.GetModifiedValue(originalStatValue);
-                _statMap[statModifier.StatType].AddValue(result);
+                _statMap[statModifier.StatType].AddBaseValue(result);
             }
         }
 

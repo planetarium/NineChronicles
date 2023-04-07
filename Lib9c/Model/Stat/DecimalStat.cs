@@ -81,7 +81,7 @@ namespace Nekoyume.Model.Stat
             BaseValue = value;
         }
 
-        public void AddValue(decimal value)
+        public void AddBaseValue(decimal value)
         {
             SetBaseValue(BaseValue + value);
         }

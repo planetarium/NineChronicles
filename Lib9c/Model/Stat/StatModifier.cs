@@ -118,7 +118,7 @@ namespace Nekoyume.Model.Stat
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         public void Modify(DecimalStat value)
         {
-            value.AddValue(GetModifiedValue(Value));
+            value.AddBaseValue(GetModifiedValue(Value));
         }
 
         /// <summary>

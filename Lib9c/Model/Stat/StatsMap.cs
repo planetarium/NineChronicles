@@ -58,6 +58,11 @@ namespace Nekoyume.Model.Stat
             return _statMap != null ? _statMap.GetHashCode() : 0;
         }
 
+        public int GetStatAsInt(StatType statType)
+        {
+            return _statMap.GetStatAsInt(statType);
+        }
+
         public decimal GetStat(StatType statType)
         {
             return _statMap.GetStat(statType);
@@ -75,7 +80,7 @@ namespace Nekoyume.Model.Stat
 
         public void AddStatValue(StatType key, decimal value)
         {
-            _statMap[key].AddValue(value);
+            _statMap[key].AddBaseValue(value);
         }
 
         public void AddStatAdditionalValue(StatType key, decimal additionalValue)
