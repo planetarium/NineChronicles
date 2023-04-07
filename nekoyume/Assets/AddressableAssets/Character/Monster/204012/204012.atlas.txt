@@ -1,110 +1,110 @@
 
 204012.png
-size: 256,256
+size: 128,128
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
 face_01
-  rotate: true
-  xy: 119, 40
+  rotate: false
+  xy: 39, 21
   size: 40, 27
   orig: 40, 27
   offset: 0, 0
   index: -1
 face_02
-  rotate: true
-  xy: 62, 12
+  rotate: false
+  xy: 39, 2
   size: 36, 17
   orig: 36, 17
   offset: 0, 0
   index: -1
 face_03
-  rotate: true
-  xy: 2, 8
+  rotate: false
+  xy: 73, 61
   size: 40, 18
   orig: 40, 18
   offset: 0, 0
   index: -1
 face_04
   rotate: true
-  xy: 22, 8
+  xy: 101, 86
   size: 40, 18
   orig: 40, 18
   offset: 0, 0
   index: -1
 fire
   rotate: false
-  xy: 86, 82
+  xy: 2, 50
   size: 69, 76
   orig: 69, 76
   offset: 0, 0
   index: -1
 fire_02
   rotate: true
-  xy: 72, 90
+  xy: 101, 81
   size: 3, 5
   orig: 3, 5
   offset: 0, 0
   index: -1
 glow
-  rotate: true
-  xy: 2, 50
-  size: 72, 68
-  orig: 72, 68
-  offset: 0, 0
+  rotate: false
+  xy: 2, 15
+  size: 35, 33
+  orig: 36, 34
+  offset: 1, 0
   index: -1
 head
-  rotate: false
-  xy: 72, 54
+  rotate: true
+  xy: 73, 81
   size: 45, 26
   orig: 45, 26
   offset: 0, 0
   index: -1
 shadow
-  rotate: false
-  xy: 2, 124
-  size: 82, 34
-  orig: 82, 34
-  offset: 0, 0
+  rotate: true
+  xy: 81, 19
+  size: 40, 16
+  orig: 41, 17
+  offset: 1, 0
   index: -1
 wood_01
   rotate: false
-  xy: 72, 95
+  xy: 2, 8
   size: 5, 5
   orig: 5, 5
   offset: 0, 0
   index: -1
 wood_02
   rotate: false
-  xy: 42, 25
+  xy: 99, 36
   size: 18, 23
   orig: 18, 23
   offset: 0, 0
   index: -1
 wood_03
   rotate: false
-  xy: 72, 110
+  xy: 77, 5
   size: 12, 12
   orig: 12, 12
   offset: 0, 0
   index: -1
 wood_04
   rotate: false
-  xy: 42, 2
+  xy: 99, 13
   size: 16, 21
   orig: 16, 21
   offset: 0, 0
   index: -1
 wood_05
-  rotate: true
-  xy: 72, 102
+  rotate: false
+  xy: 73, 54
   size: 6, 5
   orig: 6, 5
   offset: 0, 0
   index: -1
 wood_06
   rotate: false
-  xy: 72, 86
+  xy: 108, 82
   size: 3, 2
   orig: 3, 2
   offset: 0, 0
