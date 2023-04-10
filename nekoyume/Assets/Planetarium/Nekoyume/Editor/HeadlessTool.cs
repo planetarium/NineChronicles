@@ -1,8 +1,10 @@
 // See also: HeadlessHelper.cs
+
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+using Libplanet.Crypto;
 using Nekoyume.BlockChain;
 using UnityEditor;
 using UnityEngine;
@@ -59,20 +61,35 @@ namespace Planetarium.Nekoyume.Editor
             process.WaitForExit();
             Debug.Log("Headless repository cloned for unity.");
 
-            process = Process.Start(
-                "git",
-                "checkout development"
-                );
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = "git",
+                Arguments = "reset HEAD --hard",
+                WorkingDirectory = _headlessPath,
+            };
+            process = Process.Start(startInfo);
             process.WaitForExit();
 
-            process = Process.Start(
-                "git",
-                "pull origin development"
-                );
+            startInfo = new ProcessStartInfo
+            {
+                FileName = "git",
+                Arguments = "checkout development",
+                WorkingDirectory = _headlessPath,
+            };
+            process = Process.Start(startInfo);
+            process.WaitForExit();
+
+            startInfo = new ProcessStartInfo
+            {
+                FileName = "git",
+                Arguments = "pull origin development",
+                WorkingDirectory = _headlessPath,
+            };
+            process = Process.Start(startInfo);
             process.WaitForExit();
             Debug.Log("Pull latest commits from origin.");
 
-            var startInfo = new ProcessStartInfo
+            startInfo = new ProcessStartInfo
             {
                 FileName = "git",
                 Arguments = @"submodule update --init --recursive NineChronicles.RPC.Shared",
@@ -134,6 +151,7 @@ namespace Planetarium.Nekoyume.Editor
             {
                 Directory.CreateDirectory(Path.Combine(_docsRoot, "planetarium"));
             }
+
             LibplanetEditor.DeleteAllEditorAndMakeGenesisBlock();
         }
 
@@ -176,6 +194,14 @@ namespace Planetarium.Nekoyume.Editor
                 Arguments =
                     $"run -c DevEx --project NineChronicles.Headless.Executable -C appsettings.local.json --genesis-block-path {Path.Combine(_genesisPath, "genesis-block")} --store-path {Path.Combine(_docsRoot, "planetarium", _storeName)} --store-type memory",
             };
+
+            if (PlayerPrefs.HasKey("initialValidator"))
+            {
+                var pkHex = PlayerPrefs.GetString("initialValidator");
+                startInfo.Arguments +=
+                    $" --miner-private-key {pkHex} --consensus-private-key {pkHex} --consensus-seed {new PrivateKey(pkHex).PublicKey},localhost,60000";
+            }
+
             Debug.Log(startInfo.Arguments);
             startInfo.WorkingDirectory = _headlessPath;
             Debug.Log($"WorkingDirectory: {startInfo.WorkingDirectory}");
