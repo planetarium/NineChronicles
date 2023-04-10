@@ -1,18 +1,18 @@
 using System;
+using Lib9c;
 using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.Model.Pet;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Pet;
-using Serilog;
 
 namespace Nekoyume.Helper
 {
     public static class PetHelper
     {
         public static Currency GetSoulstoneCurrency(string ticker) =>
-            Currency.Legacy(ticker, 0, minters: null);
+            Currencies.GetSoulStone(ticker);
 
         public static (int ncgQuantity, int soulStoneQuantity) CalculateEnhancementCost(
             PetCostSheet costSheet,

@@ -7,7 +7,7 @@ using Libplanet.Crypto;
 using Libplanet.Tx;
 using Nekoyume.BlockChain;
 
-namespace Lib9c.Miner.Tests;
+namespace Lib9c.Proposer.Tests;
 
 public class CustomActionsDeserializableValidatorTest
 {

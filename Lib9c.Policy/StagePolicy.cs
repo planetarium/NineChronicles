@@ -17,7 +17,6 @@ namespace Nekoyume.BlockChain
         private readonly ConcurrentDictionary<Address, SortedList<Transaction<NCAction>, TxId>> _txs;
         private readonly int _quotaPerSigner;
 
-        // From Lib9c.Miner.Miner
         private static readonly ImmutableHashSet<Address> _bannedAccounts = new[]
         {
             new Address("de96aa7702a7a1fd18ee0f84a5a0c7a2c28ec840"),
