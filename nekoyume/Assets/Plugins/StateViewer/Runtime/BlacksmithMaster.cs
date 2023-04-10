@@ -45,6 +45,8 @@ namespace StateViewer.Runtime
                 .First(e => e.ResultEquipmentId == equipmentId);
             var subRecipeId = recipeRow.SubRecipeIds[subRecipeIndex];
             var subRecipeRow = tableSheets.EquipmentItemSubRecipeSheetV2[subRecipeId];
+            var skillSheet = tableSheets.SkillSheet;
+            var enhancementCostSheetV2 = tableSheets.EnhancementCostSheetV2;
             var options = subRecipeRow.Options
                 .Select(option => tableSheets.EquipmentItemOptionSheet[option.Id])
                 .ToArray();
@@ -52,23 +54,25 @@ namespace StateViewer.Runtime
             {
                 if (option.StatType == StatType.NONE)
                 {
-                    var skillRow = tableSheets.SkillSheet[option.SkillId];
+                    var skillRow = skillSheet[option.SkillId];
                     var skill = SkillFactory.Get(
                         skillRow,
                         option.SkillDamageMax,
                         option.SkillChanceMax);
                     equipment.Skills.Add(skill);
+                    equipment.optionCountFromCombination++;
 
                     continue;
                 }
 
                 equipment.StatsMap.AddStatAdditionalValue(option.StatType, option.StatMax);
+                equipment.optionCountFromCombination++;
             }
 
             if (level > 0 &&
                 ItemEnhancement.TryGetRow(
                     equipment,
-                    tableSheets.EnhancementCostSheetV2,
+                    enhancementCostSheetV2,
                     out var enhancementCostRow))
             {
                 for (var i = 0; i < level; i++)
