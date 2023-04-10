@@ -52,6 +52,10 @@ namespace Nekoyume.BlockChain
     {
         public static string DefaultStoragePath;
 
+        // This key is hard-coded key so should not be used personally.
+        public static readonly PrivateKey ProposerKey =
+            new ("9f38eca075b9e2611a7e7a27291c081ee3fd570e88edd396bd09f292876f21c0");
+
         public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
         public Subject<BlockHash> BlockTipHashSubject { get; } = new Subject<BlockHash>();
 
@@ -155,14 +159,27 @@ namespace Nekoyume.BlockChain
                 string keyPath = path + "/states";
                 IKeyValueStore stateKeyValueStore = new RocksDBKeyValueStore(keyPath);
                 _stateStore = new TrieStateStore(stateKeyValueStore);
-                blocks = new BlockChain<NCAction>(
-                    policy,
-                    _stagePolicy,
-                    store,
-                    _stateStore,
-                    genesisBlock,
-                    renderers: BlockPolicySource.GetRenderers()
-                );
+
+                if (store.GetCanonicalChainId() is null)
+                {
+                    blocks = BlockChain<NCAction>.Create(
+                        policy,
+                        _stagePolicy,
+                        store,
+                        _stateStore,
+                        genesisBlock,
+                        renderers: BlockPolicySource.GetRenderers());
+                }
+                else
+                {
+                    blocks = new BlockChain<NCAction>(
+                        policy,
+                        _stagePolicy,
+                        store,
+                        _stateStore,
+                        genesisBlock,
+                        renderers: BlockPolicySource.GetRenderers());
+                }
             }
             catch (InvalidGenesisBlockException)
             {
@@ -678,7 +695,7 @@ namespace Nekoyume.BlockChain
 
         private IEnumerator CoMiner()
         {
-            var miner = new Proposer(blocks, PrivateKey);
+            var miner = new Proposer(blocks, ProposerKey);
             var sleepInterval = new WaitForSeconds(15);
             while (true)
             {
