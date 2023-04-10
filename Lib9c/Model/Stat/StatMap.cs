@@ -125,7 +125,7 @@ namespace Nekoyume.Model.Stat
 
         public IEnumerable<(StatType statType, decimal value)> GetStats(bool ignoreZero = false)
         {
-            foreach (var (statType, stat) in _statMap)
+            foreach (var (statType, stat) in _statMap.OrderBy(x => x.Key))
             {
                 if (ignoreZero)
                 {
@@ -143,7 +143,7 @@ namespace Nekoyume.Model.Stat
 
         public IEnumerable<(StatType statType, decimal baseValue)> GetBaseStats(bool ignoreZero = false)
         {
-            foreach (var (statType, stat) in _statMap)
+            foreach (var (statType, stat) in _statMap.OrderBy(x => x.Key))
             {
                 if (ignoreZero)
                 {
@@ -161,7 +161,7 @@ namespace Nekoyume.Model.Stat
 
         public IEnumerable<(StatType statType, decimal additionalValue)> GetAdditionalStats(bool ignoreZero = false)
         {
-            foreach (var (statType, stat) in _statMap)
+            foreach (var (statType, stat) in _statMap.OrderBy(x => x.Key))
             {
                 if (ignoreZero)
                 {
@@ -180,7 +180,7 @@ namespace Nekoyume.Model.Stat
         public IEnumerable<(StatType statType, decimal baseValue, decimal additionalValue)> GetBaseAndAdditionalStats(
             bool ignoreZero = false)
         {
-            foreach (var (statType, stat) in _statMap)
+            foreach (var (statType, stat) in _statMap.OrderBy(x => x.Key))
             {
                 if (ignoreZero)
                 {
@@ -198,7 +198,7 @@ namespace Nekoyume.Model.Stat
 
         public IEnumerable<DecimalStat> GetStats()
         {
-            foreach (var stat in _statMap)
+            foreach (var stat in _statMap.OrderBy(x => x.Key))
             {
                 yield return stat.Value;
             }
