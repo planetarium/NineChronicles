@@ -595,7 +595,6 @@ namespace Nekoyume.Game
                 // NOTE: `pair.Value` is `null` when the chain not contains the `pair.Key`.
                 pair =>
                 {
-
                     if (pair.Value is Text)
                     {
                         return pair.Value.ToDotnetString();
