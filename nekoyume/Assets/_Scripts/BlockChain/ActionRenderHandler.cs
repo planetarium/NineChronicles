@@ -1004,6 +1004,18 @@ namespace Nekoyume.BlockChain
         {
             if (eval.Exception is not null)
             {
+                var asset = eval.Action.RegisterInfos.FirstOrDefault();
+                if (asset is not AssetInfo assetInfo)
+                {
+                    return;
+                }
+
+                await States.Instance.SetBalanceAsync(assetInfo.Asset.Currency.Ticker);
+                var shopSell = Widget.Find<ShopSell>();
+                if (shopSell.isActiveAndEnabled)
+                {
+                    shopSell.UpdateInventory();
+                }
                 return;
             }
 
