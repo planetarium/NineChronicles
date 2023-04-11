@@ -22,7 +22,7 @@ namespace StateViewer.Editor
         private static readonly string[] ValueKindNames = Enum.GetNames(typeof(ValueKind));
         private static readonly string[] ItemTypeNames = Enum.GetNames(typeof(ItemType));
 
-        private readonly TableSheets _tableSheets;
+        private TableSheets _tableSheets;
         private Address _addr;
         private StateTreeViewItemModel? _itemModel;
 
@@ -42,6 +42,11 @@ namespace StateViewer.Editor
             rowHeight = EditorGUIUtility.singleLineHeight;
             showAlternatingRowBackgrounds = true;
             showBorder = true;
+            SetTableSheet(tableSheets);
+        }
+
+        public void SetTableSheet(TableSheets tableSheets)
+        {
             _tableSheets = tableSheets;
         }
 

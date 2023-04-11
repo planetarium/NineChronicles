@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
+using Bencodex;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Libplanet;
@@ -12,11 +14,21 @@ using StateViewer.Runtime;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
+using Boolean = Bencodex.Types.Boolean;
 
 namespace StateViewer.Editor
 {
     public class StateViewerWindow : EditorWindow
     {
+        public enum SourceFrom
+        {
+            HexEncodedIValue,
+            GetStateFromPlayModeAgent,
+            // GetStateFromRPCServer,
+        }
+
+        public static readonly Codec Codec = new Codec();
+
         public static readonly IValue[] TestValues =
         {
             Null.Value,
@@ -49,6 +61,14 @@ namespace StateViewer.Editor
         [SerializeField]
         private bool useTestValues;
 
+        private SourceFrom _sourceFrom;
+
+        private string _hexEncodedIValue;
+
+        private SearchField _searchField;
+        private string _searchString;
+        private bool _loadingSomething;
+
         [SerializeField]
         private MultiColumnHeaderState stateTreeHeaderState;
 
@@ -62,16 +82,14 @@ namespace StateViewer.Editor
         private StateTreeView _stateTreeView;
         private Vector2 _stateTreeViewScrollPosition;
 
-        private SearchField _searchField;
-        private string _searchString;
-        private bool _loadingSomething;
-
         private Currency _ncg;
         private Currency _crystal;
         private string _ncgValue;
         private string _crystalValue;
 
         private StateProxy _stateProxy;
+
+        // FIXME: TableSheets should be get from a state if needed for each time.
         private TableSheets _tableSheets;
 
         private static bool IsSavable => Application.isPlaying &&
@@ -83,7 +101,9 @@ namespace StateViewer.Editor
 
         private void OnEnable()
         {
-            minSize = new Vector2(800f, 300f);
+            minSize = new Vector2(800f, 400f);
+            _sourceFrom = SourceFrom.GetStateFromPlayModeAgent;
+            _hexEncodedIValue = string.Empty;
             _tableSheets = TableSheetsHelper.MakeTableSheets();
 
             stateTreeViewState ??= new TreeViewState();
@@ -207,7 +227,10 @@ namespace StateViewer.Editor
 
         private void ClearAll()
         {
+            _hexEncodedIValue = string.Empty;
+            _searchString = string.Empty;
             _stateTreeView.ClearData();
+            _stateTreeViewScrollPosition = Vector2.zero;
             _ncgValue = string.Empty;
             _crystalValue = string.Empty;
         }
@@ -236,12 +259,18 @@ namespace StateViewer.Editor
 
         private static Rect GetRect(
             float? minWidth = null,
+            int? minLineCount = null,
             float? maxHeight = null)
         {
+            var minHeight = minLineCount.HasValue
+                ? EditorGUIUtility.singleLineHeight * minLineCount.Value +
+                  EditorGUIUtility.standardVerticalSpacing * (minLineCount.Value - 1)
+                : EditorGUIUtility.singleLineHeight;
+
             return GUILayoutUtility.GetRect(
-                minWidth ?? 1f,
-                1f,
-                EditorGUIUtility.singleLineHeight,
+                minWidth ?? 10f,
+                10f,
+                minHeight,
                 maxHeight ?? EditorGUIUtility.singleLineHeight,
                 GUILayout.ExpandWidth(true));
         }
@@ -275,14 +304,63 @@ namespace StateViewer.Editor
 
         private void DrawInputs()
         {
+            var sourceFrom = (SourceFrom)EditorGUILayout.EnumPopup(
+                "Source From",
+                _sourceFrom);
+            if (sourceFrom != _sourceFrom)
+            {
+                _sourceFrom = sourceFrom;
+                ClearAll();
+            }
+
+            switch (_sourceFrom)
+            {
+                case SourceFrom.HexEncodedIValue:
+                    DrawInputsForSourceFromHexEncodedIValue();
+                    break;
+                case SourceFrom.GetStateFromPlayModeAgent:
+                    DrawInputsForSourceFromGetStateFromPlayModeAgent();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void DrawInputsForSourceFromHexEncodedIValue()
+        {
+            _hexEncodedIValue = EditorGUILayout.TextField(
+                "Hex Encoded IValue",
+                _hexEncodedIValue);
+
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Address");
-            _searchString = _searchField.OnGUI(_searchString, GUILayout.Width(350f));
             GUILayout.FlexibleSpace();
-            GUILayout.Label("Content Kind");
-            _stateTreeView.ContentKind = (ContentKind)EditorGUILayout.EnumPopup(
-                _stateTreeView.ContentKind);
+            EditorGUI.BeginDisabledGroup(
+                string.IsNullOrEmpty(_hexEncodedIValue));
+            if (GUILayout.Button("Decode"))
+            {
+                var addr = default(Address);
+                var bytes = Binary.FromHex(_hexEncodedIValue).ToByteArray();
+                var value = Codec.Decode(bytes);
+                _stateTreeView.SetData(addr, value);
+            }
+
+            EditorGUI.EndDisabledGroup();
             GUILayout.EndHorizontal();
+        }
+
+        private void DrawInputsForSourceFromGetStateFromPlayModeAgent()
+        {
+            EditorGUILayout.BeginHorizontal();
+            var rect = EditorGUILayout.GetControlRect(
+                hasLabel: true,
+                height: EditorGUIUtility.singleLineHeight);
+            rect = EditorGUI.PrefixLabel(rect, new GUIContent("Address"));
+            _searchString = _searchField.OnGUI(rect, _searchString);
+            EditorGUILayout.EndHorizontal();
+
+            _stateTreeView.ContentKind = (ContentKind)EditorGUILayout.EnumPopup(
+                "Content Kind",
+                _stateTreeView.ContentKind);
 
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
@@ -290,7 +368,7 @@ namespace StateViewer.Editor
                 string.IsNullOrEmpty(_searchString) ||
                 _loadingSomething ||
                 !IsSavable);
-            if (GUILayout.Button("Search"))
+            if (GUILayout.Button("Get State Async"))
             {
                 GetStateAndUpdateStateTreeViewAsync(_searchString).Forget();
             }
@@ -303,7 +381,7 @@ namespace StateViewer.Editor
         {
             _stateTreeViewScrollPosition =
                 GUILayout.BeginScrollView(_stateTreeViewScrollPosition);
-            _stateTreeView.OnGUI(GetRect(maxHeight: position.height));
+            _stateTreeView.OnGUI(GetRect(minLineCount: 5, maxHeight: position.height));
             GUILayout.EndScrollView();
         }
 
