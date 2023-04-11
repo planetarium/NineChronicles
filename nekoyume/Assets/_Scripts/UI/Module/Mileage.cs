@@ -20,7 +20,7 @@ namespace Nekoyume.UI.Module
 
         private void OnEnable()
         {
-            if (Dcc.instance.IsConnected.GetValueOrDefault())
+            if (Dcc.instance.IsConnected)
             {
                 loadingObject.SetActive(true);
                 amountText.gameObject.SetActive(false);

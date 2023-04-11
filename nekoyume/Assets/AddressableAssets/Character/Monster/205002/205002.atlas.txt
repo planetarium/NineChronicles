@@ -1,166 +1,166 @@
 
 205002.png
-size: 256,256
+size: 512,128
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
 arm_L
   rotate: true
-  xy: 87, 7
-  size: 31, 55
+  xy: 2, 4
+  size: 29, 53
   orig: 31, 55
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 arm_R
   rotate: true
-  xy: 210, 18
-  size: 36, 40
+  xy: 143, 37
+  size: 34, 38
   orig: 36, 40
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 body
   rotate: true
-  xy: 164, 209
-  size: 45, 61
+  xy: 344, 83
+  size: 43, 59
   orig: 45, 61
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 chain_01
-  rotate: true
-  xy: 108, 41
+  rotate: false
+  xy: 226, 3
   size: 11, 22
   orig: 11, 22
   offset: 0, 0
   index: -1
 chain_02
   rotate: false
-  xy: 164, 172
+  xy: 95, 36
   size: 46, 35
   orig: 46, 35
   offset: 0, 0
   index: -1
 finger_01
   rotate: false
-  xy: 172, 140
-  size: 14, 14
+  xy: 237, 65
+  size: 12, 12
   orig: 14, 14
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 finger_02
-  rotate: false
-  xy: 227, 238
-  size: 19, 16
+  rotate: true
+  xy: 239, 8
+  size: 17, 14
   orig: 19, 16
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 finger_03
   rotate: true
-  xy: 172, 156
-  size: 14, 17
+  xy: 222, 42
+  size: 12, 15
   orig: 14, 17
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 finger_04
-  rotate: true
-  xy: 95, 163
-  size: 10, 12
+  rotate: false
+  xy: 239, 53
+  size: 8, 10
   orig: 10, 12
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 hand_L
-  rotate: true
-  xy: 57, 40
-  size: 121, 49
+  rotate: false
+  xy: 223, 79
+  size: 119, 47
   orig: 121, 49
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 hand_R
   rotate: true
-  xy: 170, 57
-  size: 25, 22
+  xy: 204, 2
+  size: 23, 20
   orig: 25, 22
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 head
   rotate: true
-  xy: 212, 176
-  size: 31, 39
+  xy: 183, 42
+  size: 29, 37
   orig: 31, 39
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 hood_01
-  rotate: false
-  xy: 95, 175
-  size: 67, 79
+  rotate: true
+  xy: 317, 12
+  size: 65, 77
   orig: 67, 79
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 hood_02
   rotate: true
-  xy: 194, 125
-  size: 45, 60
+  xy: 405, 83
+  size: 43, 58
   orig: 45, 60
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 hood_03
   rotate: false
-  xy: 2, 163
+  xy: 2, 35
   size: 91, 91
   orig: 91, 91
   offset: 0, 0
   index: -1
 hood_04
   rotate: false
-  xy: 108, 84
-  size: 62, 77
+  xy: 396, 6
+  size: 60, 75
   orig: 62, 77
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 hood_05
   rotate: true
-  xy: 108, 54
-  size: 28, 60
+  xy: 57, 7
+  size: 26, 58
   orig: 28, 60
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 neck_01
   rotate: false
-  xy: 144, 4
+  xy: 251, 29
   size: 64, 48
   orig: 64, 48
   offset: 0, 0
   index: -1
 neck_02
   rotate: false
-  xy: 227, 219
-  size: 15, 17
+  xy: 222, 56
+  size: 13, 15
   orig: 15, 17
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 shadow
   rotate: false
-  xy: 2, 3
-  size: 83, 30
-  orig: 83, 30
-  offset: 0, 0
+  xy: 204, 27
+  size: 40, 13
+  orig: 42, 15
+  offset: 1, 1
   index: -1
 shoulder_L
   rotate: true
-  xy: 194, 56
-  size: 31, 43
+  xy: 161, 6
+  size: 29, 41
   orig: 31, 43
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 shoulder_R
   rotate: true
-  xy: 172, 89
-  size: 34, 44
+  xy: 117, 2
+  size: 32, 42
   orig: 34, 44
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 tail
-  rotate: false
-  xy: 2, 35
+  rotate: true
+  xy: 95, 73
   size: 53, 126
   orig: 53, 126
   offset: 0, 0

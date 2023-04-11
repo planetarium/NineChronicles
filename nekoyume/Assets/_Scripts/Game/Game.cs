@@ -311,19 +311,7 @@ namespace Nekoyume.Game
             RaidStage.Initialize();
             // Initialize D:CC NFT data
             yield return StartCoroutine(CoInitDccAvatar());
-            var headerName = URL.DccEthChainHeaderName;
-            var headerValue = URL.DccEthChainHeaderValue;
-            StartCoroutine(RequestManager.instance.GetJson(
-                $"{URL.DccMileageAPI}{Agent.Address}",
-                headerName,
-                headerValue,
-                _ =>
-                {
-                    Dcc.instance.IsConnected = true;
-                }, _ =>
-                {
-                    Dcc.instance.IsConnected = false;
-                }));
+            yield return StartCoroutine(CoInitDccConnecting());
 
             Event.OnUpdateAddresses.AsObservable().Subscribe(_ =>
             {
@@ -673,7 +661,8 @@ namespace Nekoyume.Game
 
         private IEnumerator CoBackToNest()
         {
-            yield return StartCoroutine(Game.instance.CoInitDccAvatar());
+            yield return StartCoroutine(CoInitDccAvatar());
+            yield return StartCoroutine(CoInitDccConnecting());
 
             if (IsInWorld)
             {
@@ -953,6 +942,21 @@ namespace Nekoyume.Game
                 {
                     var responseData = DccAvatars.FromJson(json);
                     Dcc.instance.Init(responseData.Avatars);
+                });
+        }
+
+        private IEnumerator CoInitDccConnecting()
+        {
+            return RequestManager.instance.GetJson(
+                $"{URL.DccMileageAPI}{Agent.Address}",
+                URL.DccEthChainHeaderName,
+                URL.DccEthChainHeaderValue,
+                _ =>
+                {
+                    Dcc.instance.IsConnected = true;
+                }, _ =>
+                {
+                    Dcc.instance.IsConnected = false;
                 });
         }
 

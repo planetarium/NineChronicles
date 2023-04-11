@@ -1,124 +1,124 @@
 
 204002.png
-size: 256,256
+size: 256,128
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
 body
-  rotate: true
-  xy: 2, 133
+  rotate: false
+  xy: 2, 19
   size: 69, 107
   orig: 69, 107
   offset: 0, 0
   index: -1
 body_wood_01
-  rotate: false
-  xy: 111, 150
-  size: 50, 52
+  rotate: true
+  xy: 176, 3
+  size: 48, 50
   orig: 50, 52
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 body_wood_02
   rotate: false
-  xy: 206, 135
-  size: 12, 12
+  xy: 70, 7
+  size: 10, 10
   orig: 12, 12
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 body_wood_03
-  rotate: false
-  xy: 248, 245
-  size: 6, 9
+  rotate: true
+  xy: 73, 38
+  size: 4, 7
   orig: 6, 9
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 face_1
-  rotate: false
-  xy: 111, 117
-  size: 48, 31
+  rotate: true
+  xy: 205, 80
+  size: 46, 29
   orig: 48, 31
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 face_2
   rotate: true
-  xy: 220, 148
-  size: 41, 33
+  xy: 82, 3
+  size: 39, 31
   orig: 41, 33
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 face_3
-  rotate: false
-  xy: 161, 119
-  size: 43, 28
+  rotate: true
+  xy: 148, 3
+  size: 41, 26
   orig: 43, 28
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 face_4
   rotate: true
-  xy: 220, 105
-  size: 41, 33
+  xy: 115, 3
+  size: 39, 31
   orig: 41, 33
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 head
-  rotate: true
-  xy: 164, 191
+  rotate: false
+  xy: 73, 44
   size: 63, 82
   orig: 63, 82
   offset: 0, 0
   index: -1
 head_wood
-  rotate: false
-  xy: 163, 149
-  size: 55, 40
+  rotate: true
+  xy: 165, 73
+  size: 53, 38
   orig: 55, 40
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 head_wood_2
   rotate: true
-  xy: 161, 97
-  size: 20, 29
+  xy: 165, 53
+  size: 18, 27
   orig: 20, 29
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 head_wood_3
   rotate: true
-  xy: 217, 72
-  size: 16, 22
+  xy: 2, 3
+  size: 14, 20
   orig: 16, 22
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 leg_L
   rotate: true
-  xy: 217, 90
-  size: 13, 23
+  xy: 47, 6
+  size: 11, 21
   orig: 13, 23
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 leg_R
   rotate: true
-  xy: 192, 88
-  size: 15, 23
+  xy: 24, 4
+  size: 13, 21
   orig: 15, 23
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 shadow
-  rotate: false
-  xy: 2, 204
-  size: 160, 50
-  orig: 160, 50
+  rotate: true
+  xy: 138, 46
+  size: 80, 25
+  orig: 80, 25
   offset: 0, 0
   index: -1
 sweat
-  rotate: false
-  xy: 206, 105
-  size: 11, 28
+  rotate: true
+  xy: 194, 62
+  size: 9, 26
   orig: 11, 28
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 tear
-  rotate: false
-  xy: 248, 236
+  rotate: true
+  xy: 70, 2
   size: 3, 7
   orig: 3, 7
   offset: 0, 0
