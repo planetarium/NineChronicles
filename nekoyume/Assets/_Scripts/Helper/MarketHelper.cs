@@ -1,3 +1,5 @@
+#if UNITY_EDITOR
+
 using System;
 using System.Diagnostics;
 using System.Threading;
@@ -69,3 +71,5 @@ namespace Nekoyume.Helper
         }
     }
 }
+
+#endif
