@@ -13,8 +13,6 @@ namespace BalanceTool.Editor
         private const string Header =
             "world_id,stage_id,avatar_level,equipment_00_id,equipment_00_level,equipment_01_id,equipment_01_level,equipment_02_id,equipment_02_level,equipment_03_id,equipment_03_level,equipment_04_id,equipment_04_level,equipment_05_id,equipment_05_level,food_00_id,food_00_count,food_01_id,food_01_count,food_02_id,food_02_count,food_03_id,food_03_count,costume_00_id,costume_01_id,costume_02_id,costume_03_id,costume_04_id,costume_05_id,rune_00_id,rune_00_level,rune_01_id,rune_01_level,rune_02_id,rune_02_level,rune_03_id,rune_03_level,crystal_random_buff_id,play_count";
 
-        private const int WaveCountDefault = 3;
-
         private IAccountStateDelta _prevStates;
         private Address _agentAddr;
         private int _avatarIndex;
@@ -25,9 +23,6 @@ namespace BalanceTool.Editor
 
         [SerializeField]
         private int globalPlayCount = 0;
-
-        [SerializeField]
-        private int waveCount = WaveCountDefault;
 
         // outputs.
         [SerializeField]
@@ -72,11 +67,6 @@ namespace BalanceTool.Editor
                 out var gpc)
                 ? gpc
                 : globalPlayCount;
-            waveCount = int.TryParse(
-                EditorGUILayout.TextField("Wave Count", waveCount.ToString()),
-                out var wc)
-                ? wc
-                : waveCount;
 
             EditorGUI.BeginDisabledGroup(_workingInCalculate);
             if (GUILayout.Button("Calculate"))
@@ -127,9 +117,7 @@ namespace BalanceTool.Editor
                     _agentAddr,
                     _avatarIndex,
                     playDataList);
-                output = HackAndSlashCalculator.ConvertToCsv(
-                    playDataListWithResult,
-                    waveCount: waveCount);
+                output = HackAndSlashCalculator.ConvertToCsv(playDataListWithResult);
                 _workingInCalculate = false;
             }
             catch (Exception e)

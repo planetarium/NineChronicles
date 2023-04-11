@@ -22,7 +22,7 @@ namespace StateViewer.Editor
         private static readonly string[] ValueKindNames = Enum.GetNames(typeof(ValueKind));
         private static readonly string[] ItemTypeNames = Enum.GetNames(typeof(ItemType));
 
-        private readonly TableSheets _tableSheets;
+        private TableSheets _tableSheets;
         private Address _addr;
         private StateTreeViewItemModel? _itemModel;
 
@@ -42,6 +42,11 @@ namespace StateViewer.Editor
             rowHeight = EditorGUIUtility.singleLineHeight;
             showAlternatingRowBackgrounds = true;
             showBorder = true;
+            SetTableSheet(tableSheets);
+        }
+
+        public void SetTableSheet(TableSheets tableSheets)
+        {
             _tableSheets = tableSheets;
         }
 
@@ -66,10 +71,20 @@ namespace StateViewer.Editor
                 return;
             }
 
-            // Cache selection ids
-            var selectionIdsPrev = GetSelection();
             const int firstId = RootTreeViewItemId + 1;
+            if (initialize)
+            {
+                _itemModel.SetTreeViewItemIdRecursive(firstId, alsoSetPrev: initialize);
+                SetExpanded(firstId, true);
+                Reload();
+                return;
+            }
+
+            // Cache selection and expanded ids
+            var selectionIdsPrev = GetSelection();
+            var expandedIdsPrev = GetExpanded();
             _itemModel.SetTreeViewItemIdRecursive(firstId, alsoSetPrev: initialize);
+
             // Restore selection ids
             if (selectionIdsPrev is not null)
             {
@@ -80,8 +95,6 @@ namespace StateViewer.Editor
                 SetSelection(selectionIds, TreeViewSelectionOptions.None);
             }
 
-            // Cache Expanded ids
-            var expandedIdsPrev = GetExpanded();
             // Restore Expanded ids
             if (expandedIdsPrev is not null)
             {
@@ -282,6 +295,8 @@ namespace StateViewer.Editor
             }
 
             var random = new RandomImpl(DateTime.Now.Millisecond);
+            var itemTypeContent = viewModel.Siblings!.First(child =>
+                child.IndexOrKeyContent == "item_type").ValueContent;
             switch (viewModel.IndexOrKeyContent)
             {
                 case "id":
@@ -295,13 +310,14 @@ namespace StateViewer.Editor
                     if (itemRow.ItemType != ItemType.Equipment)
                     {
                         var item = ItemFactory.CreateItem(itemRow, random);
-                        viewModel.Parent!.SetValue(item.Serialize());
+                        viewModel.Parent!.SetValue(
+                            item.Serialize(),
+                            reuseChildren: itemTypeContent == itemRow.ItemType.ToString());
                         ProcessWhenItemModelHierarchyChanged();
                         return;
                     }
 
-                    if (viewModel.Siblings!.First(child =>
-                            child.IndexOrKeyContent == "item_type").ValueContent == "Equipment")
+                    if (itemTypeContent == ItemType.Equipment.ToString())
                     {
                         var nonFungibleItemIdContent = viewModel.Siblings!.First(child =>
                             child.IndexOrKeyContent == "itemId")?.ValueContent ?? null;
@@ -319,7 +335,7 @@ namespace StateViewer.Editor
                             level: level,
                             tableSheets: _tableSheets,
                             random: random)!;
-                        viewModel.Parent!.SetValue(equipment.Serialize());
+                        viewModel.Parent!.SetValue(equipment.Serialize(), reuseChildren: true);
                         ProcessWhenItemModelHierarchyChanged();
                     }
                     else
@@ -336,8 +352,7 @@ namespace StateViewer.Editor
                 }
                 case "level":
                 {
-                    if (viewModel.Siblings!.First(child =>
-                            child.IndexOrKeyContent == "item_type").ValueContent != "Equipment")
+                    if (itemTypeContent != "Equipment")
                     {
                         return;
                     }
@@ -361,7 +376,7 @@ namespace StateViewer.Editor
                         random: random)!;
                     // FIXME: The expanded state of `viewModel` is not restored.
                     //        Maybe we should replace some valueContents not to set the IValue.
-                    viewModel.Parent!.SetValue(equipment.Serialize());
+                    viewModel.Parent!.SetValue(equipment.Serialize(), reuseChildren: true);
                     ProcessWhenItemModelHierarchyChanged();
                     return;
                 }
