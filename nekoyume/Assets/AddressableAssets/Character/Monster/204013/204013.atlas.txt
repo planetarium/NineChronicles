@@ -1,145 +1,152 @@
 
 204013.png
-size: 256,256
+size: 128,128
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
 eye_00
+  rotate: true
+  xy: 2, 50
+  size: 35, 33
+  orig: 35, 33
+  offset: 0, 0
+  index: -1
+eye_01
   rotate: false
-  xy: 2, 183
-  size: 82, 71
-  orig: 82, 71
+  xy: 33, 2
+  size: 24, 13
+  orig: 24, 13
   offset: 0, 0
   index: -1
 face_01
-  rotate: true
-  xy: 228, 216
+  rotate: false
+  xy: 60, 6
   size: 38, 26
   orig: 38, 26
   offset: 0, 0
   index: -1
 face_02
-  rotate: false
-  xy: 199, 190
+  rotate: true
+  xy: 37, 56
   size: 29, 24
   orig: 29, 24
   offset: 0, 0
   index: -1
 face_03
-  rotate: false
-  xy: 46, 160
+  rotate: true
+  xy: 37, 17
   size: 37, 21
   orig: 37, 21
   offset: 0, 0
   index: -1
 face_04
-  rotate: false
-  xy: 167, 202
+  rotate: true
+  xy: 100, 4
   size: 30, 12
   orig: 30, 12
   offset: 0, 0
   index: -1
 head_01
-  rotate: false
-  xy: 135, 191
+  rotate: true
+  xy: 2, 18
   size: 30, 28
   orig: 30, 28
   offset: 0, 0
   index: -1
 head_02
-  rotate: false
-  xy: 2, 152
+  rotate: true
+  xy: 63, 34
   size: 42, 29
   orig: 42, 29
   offset: 0, 0
   index: -1
 head_03
   rotate: false
-  xy: 167, 216
+  xy: 2, 87
   size: 59, 38
   orig: 59, 38
   offset: 0, 0
   index: -1
 head_04
-  rotate: false
-  xy: 86, 179
+  rotate: true
+  xy: 63, 78
   size: 47, 40
   orig: 47, 40
   offset: 0, 0
   index: -1
 head_05
   rotate: false
-  xy: 167, 186
+  xy: 2, 2
   size: 29, 14
   orig: 29, 14
   offset: 0, 0
   index: -1
 shadow
-  rotate: false
-  xy: 86, 221
-  size: 79, 33
-  orig: 79, 33
-  offset: 0, 0
+  rotate: true
+  xy: 94, 36
+  size: 40, 15
+  orig: 40, 17
+  offset: 0, 1
   index: -1
 wood_01
   rotate: true
-  xy: 249, 191
+  xy: 115, 81
   size: 4, 5
   orig: 4, 5
   offset: 0, 0
   index: -1
 wood_02
   rotate: true
-  xy: 243, 160
+  xy: 105, 78
   size: 7, 8
   orig: 7, 8
   offset: 0, 0
   index: -1
 wood_03
-  rotate: true
-  xy: 198, 175
+  rotate: false
+  xy: 111, 60
   size: 13, 16
   orig: 13, 16
   offset: 0, 0
   index: -1
 wood_04
-  rotate: true
-  xy: 226, 164
+  rotate: false
+  xy: 111, 43
   size: 13, 15
   orig: 13, 15
   offset: 0, 0
   index: -1
 wood_05
-  rotate: true
-  xy: 216, 180
+  rotate: false
+  xy: 114, 31
   size: 8, 10
   orig: 8, 10
   offset: 0, 0
   index: -1
 wood_06
   rotate: false
-  xy: 216, 170
+  xy: 114, 21
   size: 8, 8
   orig: 8, 8
   offset: 0, 0
   index: -1
 wood_07
-  rotate: true
-  xy: 230, 197
+  rotate: false
+  xy: 105, 106
   size: 17, 19
   orig: 17, 19
   offset: 0, 0
   index: -1
 wood_08
   rotate: false
-  xy: 243, 169
+  xy: 114, 11
   size: 8, 8
   orig: 8, 8
   offset: 0, 0
   index: -1
 wood_09
-  rotate: true
-  xy: 230, 179
+  rotate: false
+  xy: 105, 87
   size: 16, 17
   orig: 16, 17
   offset: 0, 0
