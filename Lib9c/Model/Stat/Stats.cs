@@ -13,7 +13,7 @@ namespace Nekoyume.Model.Stat
         public decimal ATK => _statMap[StatType.ATK].BaseValue;
         public decimal DEF => _statMap[StatType.DEF].BaseValue;
         public decimal CRI => _statMap[StatType.CRI].BaseValue;
-        public decimal HIT => _statMap[StatType.HP].BaseValue;
+        public decimal HIT => _statMap[StatType.HIT].BaseValue;
         public decimal SPD => _statMap[StatType.SPD].BaseValue;
         public decimal DRV => _statMap[StatType.DRV].BaseValue;
         public decimal DRR => _statMap[StatType.DRR].BaseValue;
