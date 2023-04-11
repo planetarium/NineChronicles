@@ -13,6 +13,8 @@ namespace Nekoyume.Model.Stat
         decimal DRV { get; }
         decimal DRR { get; }
         decimal CDMG { get; }
+        decimal ArmorPenetration { get; }
+        decimal DamageReflection { get; }
 
         IEnumerable<(StatType statType, decimal value)> GetStats(bool ignoreZero = false);
     }

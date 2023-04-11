@@ -22,6 +22,8 @@ namespace Nekoyume.Model.Stat
         public decimal DRV => _statMap[StatType.DRV].TotalValue;
         public decimal DRR => _statMap[StatType.DRR].TotalValue;
         public decimal CDMG => _statMap[StatType.CDMG].TotalValue;
+        public decimal ArmorPenetration => _statMap[StatType.ArmorPenetration].TotalValue;
+        public decimal DamageReflection => _statMap[StatType.DamageReflection].TotalValue;
 
         public decimal BaseHP => _statMap[StatType.HP].BaseValue;
         public decimal BaseATK => _statMap[StatType.ATK].BaseValue;
@@ -32,6 +34,8 @@ namespace Nekoyume.Model.Stat
         public decimal BaseDRV => _statMap[StatType.DRV].BaseValue;
         public decimal BaseDRR => _statMap[StatType.DRR].BaseValue;
         public decimal BaseCDMG => _statMap[StatType.CDMG].BaseValue;
+        public decimal BaseArmorPenetration => _statMap[StatType.ArmorPenetration].BaseValue;
+        public decimal BaseDamageReflection => _statMap[StatType.DamageReflection].BaseValue;
 
         public decimal AdditionalHP => _statMap[StatType.HP].AdditionalValue;
         public decimal AdditionalATK => _statMap[StatType.ATK].AdditionalValue;
@@ -42,6 +46,8 @@ namespace Nekoyume.Model.Stat
         public decimal AdditionalDRV => _statMap[StatType.DRV].AdditionalValue;
         public decimal AdditionalDRR => _statMap[StatType.DRR].AdditionalValue;
         public decimal AdditionalCDMG => _statMap[StatType.CDMG].AdditionalValue;
+        public decimal AdditionalArmorPenetration => _statMap[StatType.ArmorPenetration].AdditionalValue;
+        public decimal AdditionalDamageReflection => _statMap[StatType.DamageReflection].AdditionalValue;
 
         private readonly ImmutableDictionary<StatType, DecimalStat> _statMap;
 
@@ -58,6 +64,8 @@ namespace Nekoyume.Model.Stat
                 { StatType.DRV, new DecimalStat(StatType.DRV) },
                 { StatType.DRR, new DecimalStat(StatType.DRR) },
                 { StatType.CDMG, new DecimalStat(StatType.CDMG) },
+                { StatType.ArmorPenetration, new DecimalStat(StatType.ArmorPenetration) },
+                { StatType.DamageReflection, new DecimalStat(StatType.DamageReflection) },
             };
 
             _statMap = dict.ToImmutableDictionary();
@@ -226,6 +234,5 @@ namespace Nekoyume.Model.Stat
             }
 #pragma warning restore LAA1002
         }
-
     }
 }

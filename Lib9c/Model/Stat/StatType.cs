@@ -55,6 +55,16 @@ namespace Nekoyume.Model.Stat
         /// Crit Damage (Permyriad)
         /// </summary>
         CDMG,
+
+        /// <summary>
+        /// Armor penetration
+        /// </summary>
+        ArmorPenetration,
+
+        /// <summary>
+        /// Damage reflection
+        /// </summary>
+        DamageReflection,
     }
 
     [Serializable]

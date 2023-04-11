@@ -50,6 +50,8 @@ namespace Nekoyume.Model.Stat
         public decimal BaseDRV => BaseStats.DRV;
         public decimal BaseDRR => BaseStats.DRR;
         public decimal BaseCDMG => BaseStats.CDMG;
+        public decimal BaseArmorPenetration => BaseStats.ArmorPenetration;
+        public decimal BaseDamageReflection => BaseStats.DamageReflection;
 
         public decimal AdditionalHP => HP - _baseStats.HP;
         public decimal AdditionalATK => ATK - _baseStats.ATK;
@@ -60,6 +62,8 @@ namespace Nekoyume.Model.Stat
         public decimal AdditionalDRV => DRV - _baseStats.DRV;
         public decimal AdditionalDRR => DRR - _baseStats.DRR;
         public decimal AdditionalCDMG => CDMG - _baseStats.CDMG;
+        public decimal AdditionalArmorPenetration => ArmorPenetration - _baseStats.ArmorPenetration;
+        public decimal AdditionalDamageReflection => DamageReflection - _baseStats.DamageReflection;
 
         public CharacterStats(
             CharacterSheet.Row row,

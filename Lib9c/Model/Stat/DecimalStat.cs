@@ -136,10 +136,10 @@ namespace Nekoyume.Model.Stat
 
         public virtual void Deserialize(Dictionary serialized)
         {
-            var deserialized = serialized.ToDecimalStat();
-            StatType = deserialized.StatType;
-            BaseValue = deserialized.BaseValue;
-            AdditionalValue = deserialized.AdditionalValue;
+            var (statType, baseValue, additionalValue) = serialized.GetStat();
+            StatType = statType;
+            BaseValue = baseValue;
+            AdditionalValue = additionalValue;
         }
     }
 }

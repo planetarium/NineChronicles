@@ -59,6 +59,8 @@ namespace Nekoyume.Model
         public int DRV => (int)Stats.DRV;
         public int DRR => (int)Stats.DRR;
         public int CDMG => (int)Stats.CDMG;
+        public int ArmorPenetration => (int)Stats.ArmorPenetration;
+        public int DamageReflection => (int)Stats.DamageReflection;
 
         public int CurrentHP { get; set; }
 
