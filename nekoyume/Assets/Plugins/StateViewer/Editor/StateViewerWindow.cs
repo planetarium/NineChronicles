@@ -22,12 +22,13 @@ namespace StateViewer.Editor
     {
         public enum SourceFrom
         {
-            HexEncodedIValue,
+            Base64EncodedBencodexValue,
+            HexEncodedBencodexValue,
             GetStateFromPlayModeAgent,
             // GetStateFromRPCServer,
         }
 
-        public static readonly Codec Codec = new Codec();
+        public static readonly Codec Codec = new();
 
         public static readonly IValue[] TestValues =
         {
@@ -63,7 +64,7 @@ namespace StateViewer.Editor
 
         private SourceFrom _sourceFrom;
 
-        private string _hexEncodedIValue;
+        private string _EncodedBencodexValue;
 
         private SearchField _searchField;
         private string _searchString;
@@ -103,7 +104,7 @@ namespace StateViewer.Editor
         {
             minSize = new Vector2(800f, 400f);
             _sourceFrom = SourceFrom.GetStateFromPlayModeAgent;
-            _hexEncodedIValue = string.Empty;
+            _EncodedBencodexValue = string.Empty;
             _tableSheets = TableSheetsHelper.MakeTableSheets();
 
             stateTreeViewState ??= new TreeViewState();
@@ -227,7 +228,7 @@ namespace StateViewer.Editor
 
         private void ClearAll()
         {
-            _hexEncodedIValue = string.Empty;
+            _EncodedBencodexValue = string.Empty;
             _searchString = string.Empty;
             _stateTreeView.ClearData();
             _stateTreeViewScrollPosition = Vector2.zero;
@@ -315,8 +316,9 @@ namespace StateViewer.Editor
 
             switch (_sourceFrom)
             {
-                case SourceFrom.HexEncodedIValue:
-                    DrawInputsForSourceFromHexEncodedIValue();
+                case SourceFrom.Base64EncodedBencodexValue:
+                case SourceFrom.HexEncodedBencodexValue:
+                    DrawInputsForSourceFromEncodedBencodexValue();
                     break;
                 case SourceFrom.GetStateFromPlayModeAgent:
                     DrawInputsForSourceFromGetStateFromPlayModeAgent();
@@ -326,21 +328,29 @@ namespace StateViewer.Editor
             }
         }
 
-        private void DrawInputsForSourceFromHexEncodedIValue()
+        private void DrawInputsForSourceFromEncodedBencodexValue()
         {
-            _hexEncodedIValue = EditorGUILayout.TextField(
-                "Hex Encoded IValue",
-                _hexEncodedIValue);
+            _EncodedBencodexValue = EditorGUILayout.TextField(
+                "Encoded Bencodex Value",
+                _EncodedBencodexValue);
 
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             EditorGUI.BeginDisabledGroup(
-                string.IsNullOrEmpty(_hexEncodedIValue));
+                string.IsNullOrEmpty(_EncodedBencodexValue));
             if (GUILayout.Button("Decode"))
             {
                 var addr = default(Address);
-                var bytes = Binary.FromHex(_hexEncodedIValue).ToByteArray();
-                var value = Codec.Decode(bytes);
+                var binary = _sourceFrom switch
+                {
+                    SourceFrom.Base64EncodedBencodexValue =>
+                        Binary.FromBase64(_EncodedBencodexValue),
+                    SourceFrom.HexEncodedBencodexValue =>
+                        Binary.FromHex(_EncodedBencodexValue),
+                    SourceFrom.GetStateFromPlayModeAgent or _ =>
+                        throw new ArgumentOutOfRangeException(),
+                };
+                var value = Codec.Decode(binary);
                 _stateTreeView.SetData(addr, value);
             }
 
