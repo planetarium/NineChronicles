@@ -259,15 +259,8 @@ namespace Nekoyume.UI
             {
                 return;
             }
-            var characterStats = new CharacterStats(row, avatarState.level);
-            characterStats.SetAll(
-                avatarState.level,
-                equipments,
-                costumes,
-                null,
-                equipmentSetEffectSheet,
-                costumeSheet);
 
+            var runeStatModifiers = new List<StatModifier>();
             foreach (var runeState in runeStates)
             {
                 if (!runeOptionSheet.TryGetValue(runeState.RuneId, out var statRow) ||
@@ -276,16 +269,23 @@ namespace Nekoyume.UI
                     continue;
                 }
 
-                var statModifiers = new List<StatModifier>();
-                statModifiers.AddRange(
+                runeStatModifiers.AddRange(
                     statInfo.Stats.Select(x =>
                         new StatModifier(
                             x.stat.StatType,
                             x.operationType,
                             x.stat.TotalValue)));
-
-                characterStats.AddOptional(statModifiers);
             }
+
+            var characterStats = new CharacterStats(row, avatarState.level);
+            characterStats.SetAll(
+                avatarState.level,
+                equipments,
+                costumes,
+                null,
+                runeStatModifiers,
+                equipmentSetEffectSheet,
+                costumeSheet);
 
             avatarStats.SetData(characterStats);
         }
