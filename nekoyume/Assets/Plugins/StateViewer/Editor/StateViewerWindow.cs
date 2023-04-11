@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -28,7 +30,7 @@ namespace StateViewer.Editor
             // GetStateFromRPCServer,
         }
 
-        public static readonly Codec Codec = new();
+        private static readonly Codec Codec = new();
 
         public static readonly IValue[] TestValues =
         {
@@ -64,7 +66,7 @@ namespace StateViewer.Editor
 
         private SourceFrom _sourceFrom;
 
-        private string _EncodedBencodexValue;
+        private string _encodedBencodexValue;
 
         private SearchField _searchField;
         private string _searchString;
@@ -104,7 +106,7 @@ namespace StateViewer.Editor
         {
             minSize = new Vector2(800f, 400f);
             _sourceFrom = SourceFrom.GetStateFromPlayModeAgent;
-            _EncodedBencodexValue = string.Empty;
+            _encodedBencodexValue = string.Empty;
             _tableSheets = TableSheetsHelper.MakeTableSheets();
 
             stateTreeViewState ??= new TreeViewState();
@@ -228,7 +230,7 @@ namespace StateViewer.Editor
 
         private void ClearAll()
         {
-            _EncodedBencodexValue = string.Empty;
+            _encodedBencodexValue = string.Empty;
             _searchString = string.Empty;
             _stateTreeView.ClearData();
             _stateTreeViewScrollPosition = Vector2.zero;
@@ -330,28 +332,27 @@ namespace StateViewer.Editor
 
         private void DrawInputsForSourceFromEncodedBencodexValue()
         {
-            _EncodedBencodexValue = EditorGUILayout.TextField(
+            _encodedBencodexValue = EditorGUILayout.TextField(
                 "Encoded Bencodex Value",
-                _EncodedBencodexValue);
+                _encodedBencodexValue);
 
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             EditorGUI.BeginDisabledGroup(
-                string.IsNullOrEmpty(_EncodedBencodexValue));
+                string.IsNullOrEmpty(_encodedBencodexValue));
             if (GUILayout.Button("Decode"))
             {
-                var addr = default(Address);
                 var binary = _sourceFrom switch
                 {
                     SourceFrom.Base64EncodedBencodexValue =>
-                        Binary.FromBase64(_EncodedBencodexValue),
+                        Binary.FromBase64(_encodedBencodexValue),
                     SourceFrom.HexEncodedBencodexValue =>
-                        Binary.FromHex(_EncodedBencodexValue),
+                        Binary.FromHex(_encodedBencodexValue),
                     SourceFrom.GetStateFromPlayModeAgent or _ =>
                         throw new ArgumentOutOfRangeException(),
                 };
                 var value = Codec.Decode(binary);
-                _stateTreeView.SetData(addr, value);
+                _stateTreeView.SetData(null, value);
             }
 
             EditorGUI.EndDisabledGroup();
@@ -399,12 +400,19 @@ namespace StateViewer.Editor
         {
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
-            EditorGUI.BeginDisabledGroup(!IsSavable);
+            EditorGUI.BeginDisabledGroup(_stateTreeView.Address is null || !IsSavable);
             if (GUILayout.Button("Save", GUILayout.MaxWidth(50f)))
             {
+                var (addr, value) = _stateTreeView.Serialize();
+                if (addr is null)
+                {
+                    Debug.LogWarning("Address is null.");
+                    return;
+                }
+
                 var stateList = new List<(Address addr, IValue value)>
                 {
-                    _stateTreeView.Serialize(),
+                    (addr.Value, value),
                 };
                 ActionManager.Instance?.ManipulateState(stateList, null);
             }

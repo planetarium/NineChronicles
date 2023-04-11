@@ -23,12 +23,13 @@ namespace StateViewer.Editor
         private static readonly string[] ItemTypeNames = Enum.GetNames(typeof(ItemType));
 
         private TableSheets _tableSheets;
-        private Address _addr;
+        private Address? _addr;
         private StateTreeViewItemModel? _itemModel;
 
+        public Address? Address => _addr;
         public ContentKind ContentKind { get; set; }
 
-        public (Address addr, IValue value) Serialize()
+        public (Address? addr, IValue value) Serialize()
         {
             return (_addr, _itemModel?.Serialize() ?? Null.Value);
         }
@@ -51,7 +52,7 @@ namespace StateViewer.Editor
         }
 
         public void SetData(
-            Address addr,
+            Address? addr,
             IValue? data,
             ContentKind contentKind = ContentKind.None)
         {
