@@ -209,14 +209,14 @@ namespace Lib9c.Tests.Action
                 case ItemEnhancement.EnhancementResult.GreatSuccess:
                     var baseAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMax.NormalizeFromTenThousandths() + 1);
                     var extraAtk = preItemUsable.StatsMap.AdditionalATK * (costRow.ExtraStatGrowthMax.NormalizeFromTenThousandths() + 1);
-                    Assert.Equal((int)(baseAtk + extraAtk), resultEquipment.StatsMap.ATK);
+                    Assert.Equal(baseAtk + extraAtk, resultEquipment.StatsMap.ATK);
                     break;
                 case ItemEnhancement.EnhancementResult.Success:
                     var baseMinAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMin.NormalizeFromTenThousandths() + 1);
                     var baseMaxAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMax.NormalizeFromTenThousandths() + 1);
                     var extraMinAtk = preItemUsable.StatsMap.AdditionalATK * (costRow.ExtraStatGrowthMin.NormalizeFromTenThousandths() + 1);
                     var extraMaxAtk = preItemUsable.StatsMap.AdditionalATK * (costRow.ExtraStatGrowthMax.NormalizeFromTenThousandths() + 1);
-                    Assert.InRange(resultEquipment.StatsMap.ATK, (int)(baseMinAtk + extraMinAtk), (int)(baseMaxAtk + extraMaxAtk) + 1);
+                    Assert.InRange(resultEquipment.StatsMap.ATK, baseMinAtk + extraMinAtk, baseMaxAtk + extraMaxAtk + 1);
                     break;
                 case ItemEnhancement.EnhancementResult.Fail:
                     Assert.Equal(preItemUsable.StatsMap.ATK, resultEquipment.StatsMap.ATK);

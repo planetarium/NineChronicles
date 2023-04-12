@@ -30,7 +30,8 @@ namespace Nekoyume.Model.Item
 
         public decimal GetIncrementAmountOfEnhancement()
         {
-            return Math.Max(1.0m, StatsMap.GetBaseStat(UniqueStatType) * 0.1m);
+            var stat = (int)StatsMap.GetBaseStat(UniqueStatType);
+            return Math.Max(1.0m, stat * 0.1m);
         }
 
         public Equipment(EquipmentItemSheet.Row data, Guid id, long requiredBlockIndex, bool madeWithMimisbrunnrRecipe = false)
@@ -128,13 +129,11 @@ namespace Nekoyume.Model.Item
             equipped = false;
         }
 
-        // FIXME: 기본 스탯을 복리로 증가시키고 있는데, 단리로 증가시켜야 한다.
-        // 이를 위해서는 기본 스탯을 유지하면서 추가 스탯에 더해야 하는데, UI 표현에 문제가 생기기 때문에 논의 후 개선한다.
-        // 장비가 보유한 스킬의 확률과 수치 강화가 필요한 상태이다.
         public void LevelUp()
         {
             level++;
-            StatsMap.AddStatValue(UniqueStatType, GetIncrementAmountOfEnhancement());
+            var increment = GetIncrementAmountOfEnhancement();
+            StatsMap.AddStatValue(UniqueStatType, increment);
             if (new[] {4, 7, 10}.Contains(level) &&
                 GetOptionCount() > 0)
             {
@@ -146,7 +145,7 @@ namespace Nekoyume.Model.Item
         {
             level++;
             var rand = isGreatSuccess ? row.BaseStatGrowthMax
-                :random.Next(row.BaseStatGrowthMin, row.BaseStatGrowthMax + 1);
+                : random.Next(row.BaseStatGrowthMin, row.BaseStatGrowthMax + 1);
             var ratio = rand.NormalizeFromTenThousandths();
             var baseStat = (int)StatsMap.GetBaseStat(UniqueStatType) * ratio;
             if (baseStat > 0)
