@@ -2,6 +2,7 @@ on:
   push:
     branches:
       - main
+      - development
       - rc-v*
     tags: ["*"]
   pull_request:
