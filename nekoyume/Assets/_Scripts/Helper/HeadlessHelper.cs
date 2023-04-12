@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
+using JetBrains.Annotations;
+using Libplanet.Crypto;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -44,7 +46,7 @@ namespace Nekoyume.Helper
             return true;
         }
 
-        public static void RunLocalHeadless()
+        public static void RunLocalHeadless([CanBeNull] string pkHex)
         {
             try
             {
@@ -56,6 +58,12 @@ namespace Nekoyume.Helper
                     Arguments =
                         @$"run -c DevEx --project NineChronicles.Headless.Executable -C appsettings.local.json --genesis-block-path ""{Path.Combine(_genesisPath, "genesis-block")}"" --store-path ""{Path.Combine(_docsRoot, "planetarium", _storeName)}"" --store-type rocksdb",
                 };
+                if (!string.IsNullOrEmpty(pkHex))
+                {
+                    startInfo.Arguments +=
+                        $" --miner-private-key {pkHex} --consensus-private-key {pkHex} --consensus-seed {new PrivateKey(pkHex!).PublicKey},localhost,60000";
+                }
+
                 Debug.Log(startInfo.Arguments);
                 startInfo.WorkingDirectory = _headlessPath;
                 Debug.Log($"WorkingDirectory: {startInfo.WorkingDirectory}");

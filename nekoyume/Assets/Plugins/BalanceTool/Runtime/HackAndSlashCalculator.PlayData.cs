@@ -151,9 +151,7 @@ namespace BalanceTool.Runtime
             return records;
         }
 
-        public static string ConvertToCsv(
-            IEnumerable<PlayData> playDataList,
-            int waveCount = WaveCountDefault)
+        public static string ConvertToCsv(IEnumerable<PlayData> playDataList)
         {
             using var writer = new StringWriter();
             using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
@@ -187,7 +185,7 @@ namespace BalanceTool.Runtime
             csv.WriteField("crystal_random_buff_id");
             csv.WriteField("play_count");
 
-            for (var i = 1; i <= waveCount; i++)
+            for (var i = 1; i <= WaveCountDefault; i++)
             {
                 csv.WriteField($"wave_{i:00}_cleared");
             }
@@ -269,7 +267,7 @@ namespace BalanceTool.Runtime
                 if (playData.Result.HasValue)
                 {
                     var result = playData.Result.Value;
-                    for (var i = 1; i <= waveCount; i++)
+                    for (var i = 1; i <= WaveCountDefault; i++)
                     {
                         csv.WriteField(result.ClearedWaves.TryGetValue(i, out var value)
                             ? value
@@ -295,7 +293,7 @@ namespace BalanceTool.Runtime
                 }
                 else
                 {
-                    for (var i = 1; i <= waveCount; i++)
+                    for (var i = 1; i <= WaveCountDefault; i++)
                     {
                         csv.WriteField(0);
                     }

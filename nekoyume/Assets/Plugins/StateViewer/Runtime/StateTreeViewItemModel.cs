@@ -18,6 +18,7 @@ namespace StateViewer.Runtime
         private static Dictionary<string, string>? _reversedSerializeKeys;
 
         private IValue _originValue;
+        private readonly List<StateTreeViewItemModel> _children;
 
         /// <summary>
         /// <see cref="UnityEditor.IMGUI.Controls.TreeViewItem"/> has unique id.
@@ -42,7 +43,9 @@ namespace StateViewer.Runtime
 
         public string AliasContent { get; private set; }
 
-        public List<StateTreeViewItemModel> Children { get; } = new();
+        public IReadOnlyList<StateTreeViewItemModel> Children => _children;
+
+        public IReadOnlyList<StateTreeViewItemModel>? Siblings => Parent?.Children;
 
 #pragma warning disable CS8618
         public StateTreeViewItemModel(
@@ -54,6 +57,7 @@ namespace StateViewer.Runtime
             string? alias = null)
         {
             _originValue = data;
+            _children = new List<StateTreeViewItemModel>();
             SetValue(_originValue);
 
             Parent = parent;
@@ -122,10 +126,14 @@ namespace StateViewer.Runtime
             return treeViewItemId;
         }
 
-        public void SetValue(IValue value)
+        public void SetValue(IValue value, bool reuseChildren = false)
         {
             Value = value;
-            Children.Clear();
+            if (!reuseChildren)
+            {
+                _children.Clear();
+            }
+
             switch (ValueType)
             {
                 case ValueKind.Null:
@@ -138,20 +146,77 @@ namespace StateViewer.Runtime
                 case ValueKind.List:
                     ValueContent = ParseToString(Value);
                     var list = (List)Value;
-                    Children.AddRange(list.Select((childValue, i) =>
-                        new StateTreeViewItemModel(
-                            childValue,
+                    if (!reuseChildren)
+                    {
+                        _children.AddRange(list.Select((childValue, i) =>
+                            new StateTreeViewItemModel(
+                                childValue,
+                                parent: this,
+                                index: i)));
+                        break;
+                    }
+
+                    var listCount = list.Count;
+                    var childrenCount = _children.Count;
+                    if (listCount < childrenCount)
+                    {
+                        _children.RemoveRange(listCount, childrenCount - listCount);
+                    }
+
+                    for (var i = 0; i < listCount; i++)
+                    {
+                        var value2 = list[i];
+                        if (i < childrenCount)
+                        {
+                            var child = _children[i];
+                            child.SetValue(value2, reuseChildren);
+                            continue;
+                        }
+
+                        _children.Add(new StateTreeViewItemModel(
+                            value2,
                             parent: this,
-                            index: i)));
+                            index: i));
+                    }
+
                     break;
                 case ValueKind.Dictionary:
                     ValueContent = ParseToString(Value);
                     var dict = (Dictionary)Value;
-                    Children.AddRange(dict.Select(pair =>
-                        new StateTreeViewItemModel(
-                            pair.Value,
-                            parent: this,
-                            key: pair.Key)));
+                    if (!reuseChildren)
+                    {
+                        _children.AddRange(dict.Select(pair =>
+                            new StateTreeViewItemModel(
+                                pair.Value,
+                                parent: this,
+                                key: pair.Key)));
+                        break;
+                    }
+
+                    var removingChildren = _children
+                        .Where(c => c.Key != null && !dict.ContainsKey(c.Key))
+                        .ToArray();
+                    foreach (var child in removingChildren)
+                    {
+                        _children.Remove(child);
+                    }
+
+                    foreach (var (key, value2) in dict)
+                    {
+                        var child = _children.FirstOrDefault(c => c.Key?.Equals(key) ?? false);
+                        if (child is null)
+                        {
+                            _children.Add(new StateTreeViewItemModel(
+                                value2,
+                                parent: this,
+                                key: key));
+                        }
+                        else
+                        {
+                            child.SetValue(value2, reuseChildren);
+                        }
+                    }
+
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -226,6 +291,7 @@ namespace StateViewer.Runtime
             if (indexOrKey is null)
             {
                 IndexOrKeyContent = string.Empty;
+                AliasContent = alias ?? string.Empty;
                 return;
             }
 
@@ -261,7 +327,7 @@ namespace StateViewer.Runtime
             }
 
             AliasContent = string.IsNullOrEmpty(alias)
-                ? keyType.ToString()
+                ? $"({keyType})"
                 : $"({keyType}){alias}";
         }
 
@@ -272,7 +338,7 @@ namespace StateViewer.Runtime
                 case ValueKind.List:
                     var list = ((List)Value).Add(child);
                     Value = list;
-                    Children.Add(new StateTreeViewItemModel(
+                    _children.Add(new StateTreeViewItemModel(
                         child,
                         parent: this,
                         index: list.Count - 1));
@@ -282,7 +348,7 @@ namespace StateViewer.Runtime
                     var key = dict.Count.ToString();
                     dict = dict.Add(key, child);
                     Value = dict;
-                    Children.Add(new StateTreeViewItemModel(
+                    _children.Add(new StateTreeViewItemModel(
                         child,
                         parent: this,
                         key: (IKey)ParseToValue(key, ValueKind.Text)));
@@ -308,7 +374,7 @@ namespace StateViewer.Runtime
                     IImmutableList<IValue> list = (List)Value;
                     list = list.RemoveAt(child.Index!.Value);
                     Value = new List(list);
-                    Children.Remove(child);
+                    _children.Remove(child);
                     for (var i = 0; i < Children.Count; i++)
                     {
                         var c = Children[i];
@@ -319,7 +385,7 @@ namespace StateViewer.Runtime
                 case ValueKind.Dictionary:
                     var dict = (Dictionary)Value;
                     Value = new Dictionary(dict.Remove(child.Key!));
-                    Children.Remove(child);
+                    _children.Remove(child);
                     break;
                 default:
                     return;
@@ -376,7 +442,7 @@ namespace StateViewer.Runtime
             }
         }
 
-        private static IValue ParseToValue(string value, ValueKind valueKind)
+        public static IValue ParseToValue(string value, ValueKind valueKind)
         {
             switch (valueKind)
             {

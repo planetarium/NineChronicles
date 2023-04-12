@@ -105,7 +105,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        public static Block<PolymorphicAction<ActionBase>> MineGenesisBlock(
+        public static Block<PolymorphicAction<ActionBase>> ProposeGenesisBlock(
             PendingActivationState[] pendingActivationStates,
             [CanBeNull] PublicKey proposer)
         {

@@ -1,166 +1,166 @@
 
 204021.png
-size: 512,512
+size: 512,128
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
 arm_L
-  rotate: true
-  xy: 194, 408
+  rotate: false
+  xy: 378, 8
   size: 50, 63
   orig: 50, 63
   offset: 0, 0
   index: -1
 arm_R_01
-  rotate: true
-  xy: 299, 436
+  rotate: false
+  xy: 132, 54
   size: 70, 72
   orig: 70, 72
   offset: 0, 0
   index: -1
 body_01
   rotate: false
-  xy: 2, 408
+  xy: 2, 28
   size: 128, 98
   orig: 128, 98
   offset: 0, 0
   index: -1
 body_02
-  rotate: true
-  xy: 446, 348
-  size: 77, 47
-  orig: 77, 47
+  rotate: false
+  xy: 423, 93
+  size: 54, 33
+  orig: 54, 33
   offset: 0, 0
   index: -1
 face_01
-  rotate: true
-  xy: 227, 375
+  rotate: false
+  xy: 165, 30
   size: 31, 22
   orig: 31, 22
   offset: 0, 0
   index: -1
 face_02
   rotate: false
-  xy: 286, 366
+  xy: 87, 2
   size: 37, 24
   orig: 37, 24
   offset: 0, 0
   index: -1
 face_03
-  rotate: true
-  xy: 325, 359
+  rotate: false
+  xy: 126, 3
   size: 31, 23
   orig: 31, 23
   offset: 0, 0
   index: -1
 face_04
   rotate: false
-  xy: 194, 383
+  xy: 132, 29
   size: 31, 23
   orig: 31, 23
   offset: 0, 0
   index: -1
 head
   rotate: false
-  xy: 132, 405
+  xy: 361, 73
   size: 60, 53
   orig: 60, 53
   offset: 0, 0
   index: -1
 knee_L
   rotate: false
-  xy: 495, 408
+  xy: 268, 3
   size: 8, 8
   orig: 8, 8
   offset: 0, 0
   index: -1
 knee_R
   rotate: false
-  xy: 495, 418
+  xy: 204, 54
   size: 11, 7
   orig: 11, 7
   offset: 0, 0
   index: -1
 leg_L
-  rotate: false
-  xy: 350, 351
+  rotate: true
+  xy: 268, 13
   size: 17, 16
   orig: 17, 16
   offset: 0, 0
   index: -1
 leg_R
-  rotate: false
-  xy: 350, 369
+  rotate: true
+  xy: 229, 6
   size: 21, 18
   orig: 21, 18
   offset: 0, 0
   index: -1
 pelvis
-  rotate: true
-  xy: 259, 368
+  rotate: false
+  xy: 159, 2
   size: 46, 25
   orig: 46, 25
   offset: 0, 0
   index: -1
 shadow
   rotate: false
-  xy: 132, 460
-  size: 165, 46
-  orig: 165, 46
+  xy: 2, 4
+  size: 83, 22
+  orig: 83, 23
   offset: 0, 0
   index: -1
 shoulder_L
   rotate: true
-  xy: 293, 392
-  size: 42, 55
-  orig: 42, 55
+  xy: 264, 32
+  size: 29, 39
+  orig: 29, 39
   offset: 0, 0
   index: -1
 shoulder_R
   rotate: true
-  xy: 373, 377
+  xy: 305, 3
   size: 64, 71
   orig: 64, 71
   offset: 0, 0
   index: -1
 shoulder_R_02
   rotate: false
-  xy: 373, 358
+  xy: 249, 10
   size: 17, 17
   orig: 17, 17
   offset: 0, 0
   index: -1
 thigh_L
   rotate: true
-  xy: 350, 411
+  xy: 198, 29
   size: 23, 20
   orig: 23, 20
   offset: 0, 0
   index: -1
 thigh_R
-  rotate: true
-  xy: 350, 389
+  rotate: false
+  xy: 207, 6
   size: 20, 21
   orig: 20, 21
   offset: 0, 0
   index: -1
 wood_01
-  rotate: true
-  xy: 449, 427
+  rotate: false
+  xy: 280, 69
   size: 79, 57
   orig: 79, 57
   offset: 0, 0
   index: -1
 wood_02
   rotate: true
-  xy: 373, 443
+  xy: 204, 63
   size: 63, 74
   orig: 63, 74
   offset: 0, 0
   index: -1
 wood_03
-  rotate: false
-  xy: 259, 416
+  rotate: true
+  xy: 220, 29
   size: 32, 42
   orig: 32, 42
   offset: 0, 0
