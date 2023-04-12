@@ -45,7 +45,7 @@ namespace Nekoyume.Helper
                 WorkingDirectory = _marketPath,
                 EnvironmentVariables =
                 {
-                    ["WorkerConfig__SyncProduct"] = "false",
+                    ["WorkerConfig__SyncProduct"] = "true",
                     ["WorkerConfig__SyncShop"] = "false",
                     ["RpcConfig__Host"] = options.RpcServerHost,
                     ["RpcConfig__Port"] = options.RpcServerPort.ToString(),

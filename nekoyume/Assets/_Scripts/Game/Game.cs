@@ -211,12 +211,6 @@ namespace Nekoyume.Game
                 headlessThread = new Thread(() => HeadlessHelper.RunLocalHeadless(initialValidator));
                 headlessThread.Start();
             }
-
-            if (useLocalMarketService && MarketHelper.CheckPath())
-            {
-                marketThread = new Thread(() => MarketHelper.RunLocalMarketService(marketDbConnectionString));
-                marketThread.Start();
-            }
 #endif
             Agent = GetComponent<RPCAgent>();
             SubscribeRPCAgent();
@@ -293,6 +287,16 @@ namespace Nekoyume.Game
             );
 
             yield return new WaitUntil(() => agentInitialized);
+
+#if UNITY_EDITOR
+            // wait for headless connect.
+            if (useLocalMarketService && MarketHelper.CheckPath())
+            {
+                marketThread = new Thread(() => MarketHelper.RunLocalMarketService(marketDbConnectionString));
+                marketThread.Start();
+            }
+#endif
+
             InitializeAnalyzer();
             Analyzer.Track("Unity/Started");
             // NOTE: Create ActionManager after Agent initialized.
