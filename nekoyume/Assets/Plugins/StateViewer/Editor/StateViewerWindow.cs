@@ -68,8 +68,8 @@ namespace StateViewer.Editor
 
         private string _encodedBencodexValue;
 
-        private SearchField _searchField;
-        private string _searchString;
+        private SearchField _addrSearchField;
+        private string _searchingAddrStr;
         private bool _loadingSomething;
 
         [SerializeField]
@@ -90,7 +90,7 @@ namespace StateViewer.Editor
         private string _ncgValue;
         private string _crystalValue;
 
-        private StateProxy _stateProxy;
+        private StateProxy? _stateProxy;
 
         // FIXME: TableSheets should be get from a state if needed for each time.
         private TableSheets _tableSheets;
@@ -188,8 +188,8 @@ namespace StateViewer.Editor
                 stateTreeViewState,
                 _stateTreeHeader,
                 _tableSheets);
-            _searchField = new SearchField();
-            _searchField.downOrUpArrowKeyPressed += _stateTreeView.SetFocusAndEnsureSelectedItem;
+            _addrSearchField = new SearchField();
+            _addrSearchField.downOrUpArrowKeyPressed += _stateTreeView.SetFocusAndEnsureSelectedItem;
             ClearAll();
             initialized = true;
         }
@@ -201,37 +201,13 @@ namespace StateViewer.Editor
                 return;
             }
 
-            if (Application.isPlaying)
-            {
-                if (Game.instance.Agent is null ||
-                    Game.instance.States.AgentState is null)
-                {
-                    _stateProxy = null;
-                    EditorGUILayout.HelpBox(
-                        "Please wait until the Agent is initialized.",
-                        MessageType.Info);
-                }
-                else if (_stateProxy is null)
-                {
-                    InitializeStateProxy();
-                }
-            }
-            else
-            {
-                EditorGUILayout.HelpBox(
-                    "This feature is only available in play mode.\n" +
-                    "Use the test values below if you want to test the State Viewer" +
-                    " in non-play mode.",
-                    MessageType.Warning);
-            }
-
             DrawAll();
         }
 
         private void ClearAll()
         {
             _encodedBencodexValue = string.Empty;
-            _searchString = string.Empty;
+            _searchingAddrStr = string.Empty;
             _stateTreeView.ClearData();
             _stateTreeViewScrollPosition = Vector2.zero;
             _ncgValue = string.Empty;
@@ -240,13 +216,6 @@ namespace StateViewer.Editor
 
         private void DrawAll()
         {
-            if (!Application.isPlaying)
-            {
-                GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
-                DrawTestValues();
-            }
-
-            DrawHorizontalLine();
             GUILayout.Label("State", EditorStyles.boldLabel);
             GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
             DrawInputs();
@@ -282,27 +251,6 @@ namespace StateViewer.Editor
         {
             var rect = EditorGUILayout.GetControlRect(false, 1f);
             EditorGUI.DrawRect(rect, new Color(0.5f, 0.5f, 0.5f, 1));
-        }
-
-        private void DrawTestValues()
-        {
-            useTestValues = EditorGUILayout.Toggle("Use Test Values", useTestValues);
-            if (!useTestValues)
-            {
-                return;
-            }
-
-            EditorGUILayout.BeginHorizontal();
-            for (var i = 0; i < TestValues.Length; i++)
-            {
-                var testValue = TestValues[i];
-                if (GUILayout.Button($"{i}: {testValue.Kind}"))
-                {
-                    _stateTreeView.SetData(default, testValue);
-                }
-            }
-
-            EditorGUILayout.EndHorizontal();
         }
 
         private void DrawInputs()
@@ -361,13 +309,34 @@ namespace StateViewer.Editor
 
         private void DrawInputsForSourceFromGetStateFromPlayModeAgent()
         {
-            EditorGUILayout.BeginHorizontal();
-            var rect = EditorGUILayout.GetControlRect(
-                hasLabel: true,
-                height: EditorGUIUtility.singleLineHeight);
-            rect = EditorGUI.PrefixLabel(rect, new GUIContent("Address"));
-            _searchString = _searchField.OnGUI(rect, _searchString);
-            EditorGUILayout.EndHorizontal();
+            if (Application.isPlaying)
+            {
+                if (Game.instance.Agent is null ||
+                    Game.instance.States.AgentState is null)
+                {
+                    _stateProxy = null;
+                    EditorGUILayout.HelpBox(
+                        "Please wait until the Agent is initialized.",
+                        MessageType.Info);
+                }
+                else if (_stateProxy is null)
+                {
+                    InitializeStateProxy();
+                }
+                else
+                {
+                    DrawAddrSearchField();
+                }
+            }
+            else
+            {
+                EditorGUILayout.HelpBox(
+                    "This feature is only available in play mode.\n" +
+                    "Use the test values below if you want to test the State Viewer" +
+                    " in non-play mode.",
+                    MessageType.Warning);
+                DrawTestValues();
+            }
 
             _stateTreeView.ContentKind = (ContentKind)EditorGUILayout.EnumPopup(
                 "Content Kind",
@@ -376,16 +345,48 @@ namespace StateViewer.Editor
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             EditorGUI.BeginDisabledGroup(
-                string.IsNullOrEmpty(_searchString) ||
+                string.IsNullOrEmpty(_searchingAddrStr) ||
                 _loadingSomething ||
                 !IsSavable);
             if (GUILayout.Button("Get State Async"))
             {
-                GetStateAndUpdateStateTreeViewAsync(_searchString).Forget();
+                GetStateAndUpdateStateTreeViewAsync(_searchingAddrStr).Forget();
             }
 
             EditorGUI.EndDisabledGroup();
             GUILayout.EndHorizontal();
+        }
+
+        private void DrawAddrSearchField()
+        {
+            EditorGUILayout.BeginHorizontal();
+            var rect = EditorGUILayout.GetControlRect(
+                hasLabel: true,
+                height: EditorGUIUtility.singleLineHeight);
+            rect = EditorGUI.PrefixLabel(rect, new GUIContent("Address"));
+            _searchingAddrStr = _addrSearchField.OnGUI(rect, _searchingAddrStr);
+            EditorGUILayout.EndHorizontal();
+        }
+
+        private void DrawTestValues()
+        {
+            useTestValues = EditorGUILayout.Toggle("Use Test Values", useTestValues);
+            if (!useTestValues)
+            {
+                return;
+            }
+
+            EditorGUILayout.BeginHorizontal();
+            for (var i = 0; i < TestValues.Length; i++)
+            {
+                var testValue = TestValues[i];
+                if (GUILayout.Button($"{i}: {testValue.Kind}"))
+                {
+                    _stateTreeView.SetData(default, testValue);
+                }
+            }
+
+            EditorGUILayout.EndHorizontal();
         }
 
         private void DrawStateTreeView()
@@ -433,7 +434,7 @@ namespace StateViewer.Editor
             {
                 var balanceList = new List<(Address addr, FungibleAssetValue fav)>
                 {
-                    (new Address(_searchString), FungibleAssetValue.Parse(_ncg, _ncgValue)),
+                    (new Address(_searchingAddrStr), FungibleAssetValue.Parse(_ncg, _ncgValue)),
                 };
                 ActionManager.Instance?.ManipulateState(null, balanceList);
             }
@@ -449,7 +450,7 @@ namespace StateViewer.Editor
             {
                 var balanceList = new List<(Address addr, FungibleAssetValue fav)>
                 {
-                    (new Address(_searchString), FungibleAssetValue.Parse(_crystal, _crystalValue)),
+                    (new Address(_searchingAddrStr), FungibleAssetValue.Parse(_crystal, _crystalValue)),
                 };
                 ActionManager.Instance?.ManipulateState(null, balanceList);
             }
