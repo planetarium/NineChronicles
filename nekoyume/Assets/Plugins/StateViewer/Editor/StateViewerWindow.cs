@@ -31,7 +31,7 @@ namespace StateViewer.Editor
                 return;
             }
 
-            _stateAndBalanceFeature.DrawAll();
+            _stateAndBalanceFeature.OnGUI();
         }
     }
 }

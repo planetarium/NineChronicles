@@ -18,7 +18,7 @@ using Boolean = Bencodex.Types.Boolean;
 
 namespace StateViewer.Editor.Features
 {
-    public class StateAndBalanceFeature
+    public class StateAndBalanceFeature : IStateViewerFeature
     {
         public enum SourceFrom
         {
@@ -198,7 +198,7 @@ namespace StateViewer.Editor.Features
             _crystalValue = string.Empty;
         }
 
-        public void DrawAll()
+        public void OnGUI()
         {
             GUILayout.Label("State", EditorStyles.boldLabel);
             GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
