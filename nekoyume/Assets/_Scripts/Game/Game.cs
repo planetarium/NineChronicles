@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -184,28 +185,21 @@ namespace Nekoyume.Game
             Debug.Log("[Game] Awake() CommandLineOptions loaded");
             Debug.Log($"APV: {_commandLineOptions.AppProtocolVersion}");
 
-            if (_commandLineOptions.RpcClient)
-            {
-                Agent = GetComponent<RPCAgent>();
-                SubscribeRPCAgent();
-            }
-            else
-            {
-                Agent = GetComponent<Agent>();
-            }
-
 #if UNITY_EDITOR
             // Local Headless
             if (useLocalHeadless && HeadlessHelper.CheckHeadlessSettings())
             {
-                Agent = GetComponent<RPCAgent>();
-                _commandLineOptions =
-                    CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.local.json"));
-                SubscribeRPCAgent();
-                headlessThread = new Thread(HeadlessHelper.RunLocalHeadless);
+                string? initialValidator = null;
+                if (PlayerPrefs.HasKey("initialValidator"))
+                {
+                    initialValidator = PlayerPrefs.GetString("initialValidator");
+                }
+                headlessThread = new Thread(() => HeadlessHelper.RunLocalHeadless(initialValidator));
                 headlessThread.Start();
             }
 #endif
+            Agent = GetComponent<RPCAgent>();
+            SubscribeRPCAgent();
 
             States = new States();
             LocalLayer = new LocalLayer();
