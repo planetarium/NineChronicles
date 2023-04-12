@@ -42,7 +42,7 @@ namespace Nekoyume.Action
             }
 
             var states = context.PreviousStates;
-            CheckActionAvailable(ClaimStakeReward.ObsoletedIndex, context);
+            CheckActionAvailable(ClaimStakeReward2.ObsoletedIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             if (!states.TryGetStakeState(context.Signer, out StakeState stakeState))
             {

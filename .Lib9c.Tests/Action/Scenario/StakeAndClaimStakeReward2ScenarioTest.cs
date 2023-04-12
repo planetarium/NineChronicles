@@ -16,7 +16,7 @@ namespace Lib9c.Tests.Action.Scenario
     using static Lib9c.SerializeKeys;
     using State = Lib9c.Tests.Action.State;
 
-    public class StakeAndClaimStakeRewardScenarioTest
+    public class StakeAndClaimStakeReward2ScenarioTest
     {
         private readonly IAccountStateDelta _initialState;
         private readonly Currency _currency;
@@ -25,7 +25,7 @@ namespace Lib9c.Tests.Action.Scenario
         private readonly Address _signerAddress;
         private readonly Address _avatarAddress;
 
-        public StakeAndClaimStakeRewardScenarioTest(ITestOutputHelper outputHelper)
+        public StakeAndClaimStakeReward2ScenarioTest(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -643,7 +643,7 @@ namespace Lib9c.Tests.Action.Scenario
             Assert.True(states.TryGetStakeState(_signerAddress, out StakeState stakeState));
             Assert.NotNull(stakeState);
 
-            action = new ClaimStakeReward(_avatarAddress);
+            action = new ClaimStakeReward2(_avatarAddress);
             states = action.Execute(new ActionContext
             {
                 PreviousStates = states,
@@ -699,7 +699,7 @@ namespace Lib9c.Tests.Action.Scenario
                 _currency * stakeAmount,
                 states.GetBalance(stakeState.address, _currency));
 
-            action = new ClaimStakeReward(_avatarAddress);
+            action = new ClaimStakeReward2(_avatarAddress);
             states = action.Execute(new ActionContext
             {
                 PreviousStates = states,
@@ -772,7 +772,7 @@ namespace Lib9c.Tests.Action.Scenario
                 _currency * stakeAmount,
                 states.GetBalance(stakeState.address, _currency));
 
-            action = new ClaimStakeReward(_avatarAddress);
+            action = new ClaimStakeReward2(_avatarAddress);
             states = action.Execute(new ActionContext
             {
                 PreviousStates = states,
@@ -824,7 +824,7 @@ namespace Lib9c.Tests.Action.Scenario
             // 201,600 블록 도달 이후 → 지정된 캐릭터 앞으로 이하 보상의 수령이 가능해야 한다.
             foreach ((long claimBlockIndex, (int itemId, int amount)[] expectedItems) in claimEvents)
             {
-                action = new ClaimStakeReward(_avatarAddress);
+                action = new ClaimStakeReward2(_avatarAddress);
                 states = action.Execute(new ActionContext
                 {
                     PreviousStates = states,
@@ -876,7 +876,7 @@ namespace Lib9c.Tests.Action.Scenario
                 Assert.Throws<RequiredBlockIndexException>(() =>
                 {
                     // 현재 스테이킹된 NCG를 인출할 수 없다
-                    action = new ClaimStakeReward(_avatarAddress);
+                    action = new ClaimStakeReward2(_avatarAddress);
                     states = action.Execute(new ActionContext
                     {
                         PreviousStates = states,
@@ -911,7 +911,7 @@ namespace Lib9c.Tests.Action.Scenario
                 BlockIndex = 0,
             });
 
-            action = new ClaimStakeReward(_avatarAddress);
+            action = new ClaimStakeReward2(_avatarAddress);
             Assert.Throws<RequiredBlockIndexException>(() => states = action.Execute(new ActionContext
             {
                 PreviousStates = states,

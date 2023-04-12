@@ -11,7 +11,7 @@ namespace Nekoyume.Action.Factory
             long blockIndex,
             Address avatarAddress)
         {
-            if (blockIndex > ClaimStakeReward.ObsoletedIndex)
+            if (blockIndex > ClaimStakeReward2.ObsoletedIndex)
             {
                 return new ClaimStakeReward3(avatarAddress);
             }

@@ -10,9 +10,9 @@ namespace Lib9c.Tests.Action.Factory
     public class ClaimStakeRewardFactoryTest
     {
         [Theory]
-        [InlineData(ClaimStakeReward.ObsoletedIndex - 1, typeof(ClaimStakeReward))]
-        [InlineData(ClaimStakeReward.ObsoletedIndex, typeof(ClaimStakeReward))]
-        [InlineData(ClaimStakeReward.ObsoletedIndex + 1, typeof(ClaimStakeReward3))]
+        [InlineData(ClaimStakeReward2.ObsoletedIndex - 1, typeof(ClaimStakeReward))]
+        [InlineData(ClaimStakeReward2.ObsoletedIndex, typeof(ClaimStakeReward))]
+        [InlineData(ClaimStakeReward2.ObsoletedIndex + 1, typeof(ClaimStakeReward3))]
         public void Create_ByBlockIndex_Success(
             long blockIndex,
             Type type)

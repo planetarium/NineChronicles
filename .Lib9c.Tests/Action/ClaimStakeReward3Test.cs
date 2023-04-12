@@ -107,8 +107,8 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(ClaimStakeReward.ObsoletedIndex)]
-        [InlineData(ClaimStakeReward.ObsoletedIndex - 1)]
+        [InlineData(ClaimStakeReward2.ObsoletedIndex)]
+        [InlineData(ClaimStakeReward2.ObsoletedIndex - 1)]
         public void Execute_Throw_ActionUnAvailableException(long blockIndex)
         {
             var action = new ClaimStakeReward3(_avatarAddress);
@@ -121,10 +121,10 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(ClaimStakeReward.ObsoletedIndex, 100, ClaimStakeReward.ObsoletedIndex + StakeState.LockupInterval, 40, 4, 0)]
-        [InlineData(ClaimStakeReward.ObsoletedIndex, 6000, ClaimStakeReward.ObsoletedIndex + StakeState.LockupInterval, 4800, 36, 4)]
+        [InlineData(ClaimStakeReward2.ObsoletedIndex, 100, ClaimStakeReward2.ObsoletedIndex + StakeState.LockupInterval, 40, 4, 0)]
+        [InlineData(ClaimStakeReward2.ObsoletedIndex, 6000, ClaimStakeReward2.ObsoletedIndex + StakeState.LockupInterval, 4800, 36, 4)]
         // Calculate rune start from hard fork index
-        [InlineData(0L, 6000, ClaimStakeReward.ObsoletedIndex + StakeState.LockupInterval, 136800, 1026, 4)]
+        [InlineData(0L, 6000, ClaimStakeReward2.ObsoletedIndex + StakeState.LockupInterval, 136800, 1026, 4)]
         public void Execute_Success(
             long startedBlockIndex,
             int stakeAmount,
@@ -146,7 +146,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_With_Old_AvatarState_Success()
         {
-            Execute(_avatarAddressForBackwardCompatibility, ClaimStakeReward.ObsoletedIndex, 100, ClaimStakeReward.ObsoletedIndex + StakeState.LockupInterval, 40, 4, 0);
+            Execute(_avatarAddressForBackwardCompatibility, ClaimStakeReward2.ObsoletedIndex, 100, ClaimStakeReward2.ObsoletedIndex + StakeState.LockupInterval, 40, 4, 0);
         }
 
         private void Execute(Address avatarAddress, long startedBlockIndex, int stakeAmount, long blockIndex, int expectedHourglass, int expectedApStone, int expectedRune)
