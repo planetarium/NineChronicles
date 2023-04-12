@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Bencodex.Types;
 using BTAI;
 using Nekoyume.Action;
 using Nekoyume.Arena;
@@ -54,7 +55,13 @@ namespace Nekoyume.Model
             set => _stats.SetStats(value);
         }
 
-        public int CurrentHP { get; set; }
+        private int _currentHP;
+
+        public int CurrentHP
+        {
+            get => _currentHP;
+            set => _currentHP = Math.Max(0, value);
+        }
 
         public int HP => (int)_stats.HP;
         public int AdditionalHP => (int)_stats.BuffStats.HP;

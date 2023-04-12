@@ -1241,7 +1241,7 @@ namespace Lib9c.Tests.Action
                 _tableSheets.StageSheet[stageId],
                 _tableSheets.StageWaveSheet[stageId],
                 false,
-                20,
+                StageRewardExpHelper.GetExp(previousAvatarState.level, stageId),
                 _tableSheets.GetSimulatorSheets(),
                 _tableSheets.EnemySkillSheet,
                 _tableSheets.CostumeStatSheet,

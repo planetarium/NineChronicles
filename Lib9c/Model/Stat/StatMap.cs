@@ -1,11 +1,13 @@
 using Bencodex.Types;
 using Nekoyume.Model.State;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
 namespace Nekoyume.Model.Stat
 {
+    [Serializable]
     public class StatMap : IState
     {
         public DecimalStat this[StatType type]
@@ -49,11 +51,11 @@ namespace Nekoyume.Model.Stat
         public decimal AdditionalArmorPenetration => _statMap[StatType.ArmorPenetration].AdditionalValue;
         public decimal AdditionalDamageReflection => _statMap[StatType.DamageReflection].AdditionalValue;
 
-        private readonly ImmutableDictionary<StatType, DecimalStat> _statMap;
+        private readonly Dictionary<StatType, DecimalStat> _statMap;
 
         public StatMap()
         {
-            var dict = new Dictionary<StatType, DecimalStat>(StatTypeComparer.Instance)
+            _statMap = new Dictionary<StatType, DecimalStat>(StatTypeComparer.Instance)
             {
                 { StatType.HP, new DecimalStat(StatType.HP) },
                 { StatType.ATK, new DecimalStat(StatType.ATK) },
@@ -67,19 +69,15 @@ namespace Nekoyume.Model.Stat
                 { StatType.ArmorPenetration, new DecimalStat(StatType.ArmorPenetration) },
                 { StatType.DamageReflection, new DecimalStat(StatType.DamageReflection) },
             };
-
-            _statMap = dict.ToImmutableDictionary();
         }
 
         public StatMap(StatMap statMap)
         {
-            var builder = ImmutableDictionary.CreateBuilder<StatType, DecimalStat>();
+            _statMap = new Dictionary<StatType, DecimalStat>();
             foreach (var stat in statMap.GetStats())
             {
-                builder.Add(stat.StatType, (DecimalStat)stat.Clone());
+                _statMap.Add(stat.StatType, (DecimalStat)stat.Clone());
             }
-
-            _statMap = builder.ToImmutableDictionary();
         }
 
         public void Reset()

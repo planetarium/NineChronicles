@@ -62,7 +62,13 @@ namespace Nekoyume.Model
         public int ArmorPenetration => (int)Stats.ArmorPenetration;
         public int DamageReflection => (int)Stats.DamageReflection;
 
-        public int CurrentHP { get; set; }
+        private int _currentHP;
+
+        public int CurrentHP
+        {
+            get => _currentHP;
+            set => _currentHP = Math.Max(0, value);
+        }
 
         public bool IsDead => CurrentHP <= 0;
 
