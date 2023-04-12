@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Immutable;
 using Bencodex.Types;
 using Lib9c.Abstractions;
@@ -14,7 +13,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1371
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1458
     /// </summary>
     [ActionType(ActionTypeText)]
     public class ClaimStakeReward3 : GameAction, IClaimStakeReward, IClaimStakeRewardV1
