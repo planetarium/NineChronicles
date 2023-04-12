@@ -42,9 +42,7 @@ namespace Nekoyume.Model.Skill
                     if (!isNormalAttack ||
                         target.IsHit(caster))
                     {
-                        // Apply armor penetration and DEF.
-                        var finalDEF = Math.Clamp(target.DEF - caster.ArmorPenetration, 0, int.MaxValue);
-                        damage = totalDamage - finalDEF;
+                        damage = totalDamage - target.DEF;
                         // Apply multiple hits
                         damage = (int) (damage * multiplier);
                         // Apply damage reduction
