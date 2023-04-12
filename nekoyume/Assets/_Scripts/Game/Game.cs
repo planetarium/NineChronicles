@@ -181,17 +181,7 @@ namespace Nekoyume.Game
 #if UNITY_IOS
             _commandLineOptions = CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.json"));
 #else
-            if (useLocalHeadless || useLocalMarketService)
-            {
-                _commandLineOptions =
-                    CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.local.json"));
-            }
-            else
-            {
-                _commandLineOptions = CommandLineOptions.Load(
-                    CommandLineOptionsJsonPath
-                );
-            }
+            _commandLineOptions = CommandLineOptions.Load(CommandLineOptionsJsonPath);
 #endif
 
             URL = Url.Load(UrlJsonPath);
