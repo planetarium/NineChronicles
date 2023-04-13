@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Lib9c.Miner\Lib9c.Miner.csproj" />
+    <ProjectReference Include="..\Lib9c.Proposer\Lib9c.Proposer.csproj" />
   </ItemGroup>
 
 </Project>

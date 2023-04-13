@@ -18,5 +18,6 @@ namespace Lib9c.DevExtensions.Action.Interface
         IOrderedEnumerable<(int consumableId, int count)> Foods { get; }
         IOrderedEnumerable<int> CostumeIds { get; }
         IOrderedEnumerable<(int runeId, int level)> Runes { get; }
+        (int stageId, IOrderedEnumerable<int> crystalRandomBuffIds)? CrystalRandomBuff { get; }
     }
 }

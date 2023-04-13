@@ -26,6 +26,8 @@ namespace Nekoyume.Action
         // https://docs.google.com/document/d/1ErZ5JQia03KqXRG6IRZ7SORfnxMLZfJg4patVKFGX5Y/edit#
         private static readonly Address Treasury = new Address("0xB3bCa3b3c6069EF5Bdd6384bAD98F11378Dc360E");
 
+        private static readonly Address Nil = new Address("0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF");
+
         private const int TreasuryRate = 40;
 
         private const int EarnRate = 20;
@@ -37,6 +39,9 @@ namespace Nekoyume.Action
                 ImmutableHashSet.Create(new Address("0x47D082a115c63E7b58B1532d20E631538eaFADde"))
             );
 
+        public SecureMiningReward()
+        {
+        }
 
         public SecureMiningReward(Address recipient)
         {
@@ -69,7 +74,7 @@ namespace Nekoyume.Action
 
                 state = state.TransferAsset(minerAddress, Treasury, toTreasury);
                 state = state.TransferAsset(minerAddress, Recipient, toRecipient);
-                state = state.BurnAsset(minerAddress, toBurn);
+                state = state.TransferAsset(minerAddress, Nil, toBurn);
             }
 
             return state;

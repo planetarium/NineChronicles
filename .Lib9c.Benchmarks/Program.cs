@@ -61,15 +61,10 @@ namespace Lib9c.Benchmarks
             var policySource = new BlockPolicySource(Log.Logger, LogEventLevel.Verbose);
             IBlockPolicy<NCAction> policy =
                 policySource.GetPolicy(
-                    // Explicitly set to lowest possible difficulty.
-                    minimumDifficulty: BlockPolicySource.DifficultyStability,
                     maxTransactionsBytesPolicy: null,
                     minTransactionsPerBlockPolicy: null,
                     maxTransactionsPerBlockPolicy: null,
-                    maxTransactionsPerSignerPerBlockPolicy: null,
-                    authorizedMinersPolicy: null,
-                    permissionedMinersPolicy: null,
-                    minBlockProtocolVersionPolicy: null);
+                    maxTransactionsPerSignerPerBlockPolicy: null);
             IStagePolicy<NCAction> stagePolicy = new VolatileStagePolicy<NCAction>();
             var store = new RocksDBStore(storePath);
             if (!(store.GetCanonicalChainId() is Guid chainId))
@@ -121,7 +116,7 @@ namespace Lib9c.Benchmarks
                 );
 
                 IEnumerable<ActionEvaluation> blockEvals =
-                chain.ExecuteActions(block, StateCompleterSet<NCAction>.Reject);
+                chain.ExecuteActions(block);
                 SetStates(
                     chain.Id,
                     store,

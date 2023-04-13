@@ -1,8 +1,7 @@
 #nullable enable
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
-using Libplanet;
+using Lib9c;
 using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Action;
@@ -13,30 +12,19 @@ namespace Nekoyume.Helper
 {
     public static class RuneHelper
     {
-        public static readonly Currency StakeRune = Currency.Legacy("RUNE_GOLDENLEAF", 0, null);
-        public static readonly Currency DailyRewardRune = Currency.Legacy("RUNE_ADVENTURER", 0, null);
+        public static readonly Currency StakeRune = Currencies.StakeRune;
+        public static readonly Currency DailyRewardRune = Currencies.DailyRewardRune;
 
-        public static Currency ToCurrency(
-            RuneSheet.Row runeRow,
-            byte decimalPlaces,
-            IImmutableSet<Address>? minters
-        )
+        public static Currency ToCurrency(RuneSheet.Row runeRow)
         {
-
-#pragma warning disable CS0618
-            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-            return Currency.Legacy(runeRow.Ticker, decimalPlaces, minters);
-#pragma warning restore CS0618
+            return Currencies.GetRune(runeRow.Ticker);
         }
 
         public static FungibleAssetValue ToFungibleAssetValue(
             RuneSheet.Row runeRow,
-            int quantity,
-            byte decimalPlaces = 0,
-            IImmutableSet<Address>? minters = null
-        )
+            int quantity)
         {
-            return ToCurrency(runeRow, decimalPlaces, minters) * quantity;
+            return Currencies.GetRune(runeRow.Ticker) * quantity;
         }
 
         public static List<FungibleAssetValue> CalculateReward(

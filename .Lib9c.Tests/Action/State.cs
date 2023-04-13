@@ -4,28 +4,31 @@ namespace Lib9c.Tests.Action
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
-    using System.Numerics;
     using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
     using Libplanet.Consensus;
 
-    public class State : IAccountStateDelta
+    public class State : IAccountStateDelta, IValidatorSupportStateDelta
     {
         private readonly IImmutableDictionary<Address, IValue> _state;
         private readonly IImmutableDictionary<(Address, Currency), FungibleAssetValue> _balance;
         private readonly IImmutableDictionary<Currency, FungibleAssetValue> _totalSupplies;
+        private readonly ValidatorSet _validatorSet;
 
         public State(
             IImmutableDictionary<Address, IValue> state = null,
             IImmutableDictionary<(Address Address, Currency Currency), FungibleAssetValue> balance = null,
-            IImmutableDictionary<Currency, FungibleAssetValue> totalSupplies = null)
+            IImmutableDictionary<Currency, FungibleAssetValue> totalSupplies = null,
+            ValidatorSet validatorSet = null)
         {
             _state = state ?? ImmutableDictionary<Address, IValue>.Empty;
             _balance = balance ?? ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty;
             _totalSupplies =
                 totalSupplies ?? ImmutableDictionary<Currency, FungibleAssetValue>.Empty;
+            _validatorSet =
+                validatorSet ?? new ValidatorSet();
         }
 
         public IImmutableSet<Address> UpdatedAddresses =>
@@ -143,9 +146,11 @@ namespace Lib9c.Tests.Action
 
         public IAccountStateDelta SetValidator(Validator validator)
         {
-            return new State(_state);
+            return new State(
+                _state,
+                validatorSet: GetValidatorSet().Update(validator));
         }
 
-        public virtual ValidatorSet GetValidatorSet() => new ValidatorSet();
+        public ValidatorSet GetValidatorSet() => _validatorSet;
     }
 }

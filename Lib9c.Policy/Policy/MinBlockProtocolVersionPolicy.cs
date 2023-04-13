@@ -18,6 +18,19 @@ namespace Nekoyume.BlockChain.Policy
             new MinBlockProtocolVersionPolicy(0);
 
         public static IVariableSubPolicy<int> Mainnet =>
-            Default;
+            Default
+                .Add(new SpannedSubPolicy<int>(
+                    startIndex: 6880000,
+                    endIndex: null,
+                    filter: null,
+                    value: 4));
+
+        public static IVariableSubPolicy<int> Internal =>
+            Default
+                .Add(new SpannedSubPolicy<int>(
+                    startIndex: 6384500,
+                    endIndex: null,
+                    filter: null,
+                    value: 4));
     }
 }

@@ -2,12 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Security.Cryptography;
+using System.Numerics;
+using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Action.Sys;
 using Libplanet.Assets;
 using Libplanet.Blockchain;
 using Libplanet.Blocks;
+using Libplanet.Consensus;
 using Libplanet.Crypto;
 using Nekoyume.Action;
 using Nekoyume.BlockChain.Policy;
@@ -19,13 +22,14 @@ namespace Nekoyume
 {
     public static class BlockHelper
     {
-        public static Block<PolymorphicAction<ActionBase>> MineGenesisBlock(
+        public static Block<PolymorphicAction<ActionBase>> ProposeGenesisBlock(
             IDictionary<string, string> tableSheets,
             GoldDistribution[] goldDistributions,
             PendingActivationState[] pendingActivationStates,
             AdminState adminState = null,
             AuthorizedMinersState authorizedMinersState = null,
             IImmutableSet<Address> activatedAccounts = null,
+            Dictionary<PublicKey, BigInteger> initialValidators = null,
             bool isActivateAdminAddress = false,
             IEnumerable<string> credits = null,
             PrivateKey privateKey = null,
@@ -45,6 +49,8 @@ namespace Nekoyume
             {
                 privateKey = new PrivateKey();
             }
+
+            initialValidators ??= new Dictionary<PublicKey, BigInteger>();
 
 #pragma warning disable CS0618
             // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
@@ -73,16 +79,26 @@ namespace Nekoyume
             {
                 initialStatesAction,
             };
+            IEnumerable<IAction> systemActions = new IAction[]
+            {
+                new Initialize(
+                    states: ImmutableDictionary.Create<Address, IValue>(),
+                    validatorSet: new ValidatorSet(
+                        initialValidators.Select(validator =>
+                            new Validator(validator.Key, validator.Value)).ToList()
+                    )
+                ),
+            };
             if (!(actionBases is null))
             {
                 actions.AddRange(actionBases.Select(actionBase =>
                     new PolymorphicAction<ActionBase>(actionBase)));
             }
-
             var blockAction = new BlockPolicySource(Log.Logger).GetPolicy().BlockAction;
             return
-                BlockChain<PolymorphicAction<ActionBase>>.MakeGenesisBlock(
+                BlockChain<PolymorphicAction<ActionBase>>.ProposeGenesisBlock(
                     actions,
+                    systemActions,
                     privateKey: privateKey,
                     blockAction: blockAction,
                     timestamp: timestamp);
