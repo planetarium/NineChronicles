@@ -2,8 +2,13 @@ name: Build
 
 on:
   push:
-    branches: []
+    branches:
+      - main
+      - development
+      - rc-v*
     tags: ["*"]
+  pull_request:
+    types: [ready_for_review, opened, reopened, auto_merge_enabled]
 
 env:
   UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}

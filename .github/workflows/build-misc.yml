@@ -1,7 +1,14 @@
 on:
-  push: []
-  pull_request: []
+  push:
+    branches:
+      - main
+      - development
+      - rc-v*
+    tags: ["*"]
+  pull_request:
+    types: [ready_for_review, opened, reopened, auto_merge_enabled]
   issue_comment: []
+
 name: Build-misc
 
 jobs:
