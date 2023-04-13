@@ -1,15 +1,17 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Text;
 using Bencodex;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
+using Lib9c;
 using Libplanet;
 using Libplanet.Assets;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Helper;
-using Nekoyume.Model.State;
 using StateViewer.Runtime;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
@@ -18,6 +20,7 @@ using Boolean = Bencodex.Types.Boolean;
 
 namespace StateViewer.Editor.Features
 {
+    [Serializable]
     public class StateAndBalanceFeature : IStateViewerFeature
     {
         public enum SourceFrom
@@ -56,7 +59,7 @@ namespace StateViewer.Editor.Features
             new Address("0x0123456789012345678901234567890123456789").Bencoded,
         };
 
-        private EditorWindow _editorWindow;
+        private readonly StateViewerWindow _editorWindow;
 
         private SourceFrom _sourceFrom;
 
@@ -83,24 +86,21 @@ namespace StateViewer.Editor.Features
         private StateTreeView _stateTreeView;
         private Vector2 _stateTreeViewScrollPosition;
 
-        private Currency _ncg;
-        private Currency _crystal;
         private string _ncgValue;
         private string _crystalValue;
-
-        private StateProxy? _stateProxy;
 
         // FIXME: TableSheets should be get from a state if needed for each time.
         private TableSheets _tableSheets;
 
-        private static bool IsSavable => Application.isPlaying &&
-                                         Game.instance.IsInitialized;
-
-        public StateAndBalanceFeature(EditorWindow editorWindow)
+        public StateAndBalanceFeature(StateViewerWindow editorWindow)
         {
             _editorWindow = editorWindow;
             _sourceFrom = SourceFrom.GetStateFromPlayModeAgent;
             _encodedBencodexValue = string.Empty;
+            _searchingAddrStr = string.Empty;
+            _stateTreeViewScrollPosition = Vector2.zero;
+            _ncgValue = string.Empty;
+            _crystalValue = string.Empty;
             _tableSheets = TableSheetsHelper.MakeTableSheets();
 
             stateTreeViewState ??= new TreeViewState();
@@ -222,12 +222,13 @@ namespace StateViewer.Editor.Features
                 ? EditorGUIUtility.singleLineHeight * minLineCount.Value +
                   EditorGUIUtility.standardVerticalSpacing * (minLineCount.Value - 1)
                 : EditorGUIUtility.singleLineHeight;
+            maxHeight ??= minHeight;
 
             return GUILayoutUtility.GetRect(
                 minWidth ?? 10f,
                 10f,
                 minHeight,
-                maxHeight ?? EditorGUIUtility.singleLineHeight,
+                maxHeight.Value,
                 GUILayout.ExpandWidth(true));
         }
 
@@ -293,32 +294,17 @@ namespace StateViewer.Editor.Features
 
         private void DrawInputsForSourceFromGetStateFromPlayModeAgent()
         {
+            StateProxy? stateProxy = null;
             if (Application.isPlaying)
             {
-                if (Game.instance.Agent is null ||
-                    Game.instance.States.AgentState is null)
-                {
-                    _stateProxy = null;
-                    EditorGUILayout.HelpBox(
-                        "Please wait until the Agent is initialized.",
-                        MessageType.Info);
-                }
-                else if (_stateProxy is null)
-                {
-                    InitializeStateProxy();
-                }
-                else
+                stateProxy = _editorWindow.GetStateProxy(drawHelpBox: true);
+                if (stateProxy is { })
                 {
                     DrawAddrSearchField();
                 }
             }
             else
             {
-                EditorGUILayout.HelpBox(
-                    "This feature is only available in play mode.\n" +
-                    "Use the test values below if you want to test the State Viewer" +
-                    " in non-play mode.",
-                    MessageType.Warning);
                 DrawTestValues();
             }
 
@@ -329,12 +315,16 @@ namespace StateViewer.Editor.Features
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             EditorGUI.BeginDisabledGroup(
+                stateProxy is null ||
                 string.IsNullOrEmpty(_searchingAddrStr) ||
                 _loadingSomething ||
-                !IsSavable);
-            if (GUILayout.Button("Get State Async"))
+                !StateViewerWindow.IsSavable);
+            if (GUILayout.Button("Get State Async") &&
+                stateProxy is { })
             {
-                GetStateAndUpdateStateTreeViewAsync(_searchingAddrStr).Forget();
+                GetStateAndUpdateStateTreeViewAsync(
+                    stateProxy,
+                    _searchingAddrStr).Forget();
             }
 
             EditorGUI.EndDisabledGroup();
@@ -375,8 +365,10 @@ namespace StateViewer.Editor.Features
 
         private void DrawStateTreeView()
         {
-            _stateTreeViewScrollPosition =
-                GUILayout.BeginScrollView(_stateTreeViewScrollPosition);
+            _stateTreeViewScrollPosition = GUILayout.BeginScrollView(
+                _stateTreeViewScrollPosition,
+                false,
+                true);
             _stateTreeView.OnGUI(GetRect(
                 minLineCount: 5,
                 maxHeight: _editorWindow.position.height));
@@ -387,7 +379,8 @@ namespace StateViewer.Editor.Features
         {
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
-            EditorGUI.BeginDisabledGroup(_stateTreeView.Address is null || !IsSavable);
+            EditorGUI.BeginDisabledGroup(_stateTreeView.Address is null ||
+                                         !StateViewerWindow.IsSavable);
             if (GUILayout.Button("Save", GUILayout.MaxWidth(50f)))
             {
                 var (addr, value) = _stateTreeView.Serialize();
@@ -415,12 +408,17 @@ namespace StateViewer.Editor.Features
             // NCG
             EditorGUILayout.BeginHorizontal();
             _ncgValue = EditorGUILayout.TextField("NCG", _ncgValue);
-            EditorGUI.BeginDisabledGroup(!IsSavable);
-            if (GUILayout.Button("Save", GUILayout.MaxWidth(50f)))
+            var ncg = _editorWindow.GetNCG();
+            EditorGUI.BeginDisabledGroup(!StateViewerWindow.IsSavable || ncg is null);
+            if (GUILayout.Button("Save", GUILayout.MaxWidth(50f)) &&
+                ncg is { })
             {
                 var balanceList = new List<(Address addr, FungibleAssetValue fav)>
                 {
-                    (new Address(_searchingAddrStr), FungibleAssetValue.Parse(_ncg, _ncgValue)),
+                    (
+                        new Address(_searchingAddrStr),
+                        FungibleAssetValue.Parse(ncg.Value, _ncgValue)
+                    ),
                 };
                 ActionManager.Instance?.ManipulateState(null, balanceList);
             }
@@ -430,14 +428,14 @@ namespace StateViewer.Editor.Features
 
             // CRYSTAL
             EditorGUILayout.BeginHorizontal();
-            EditorGUI.BeginDisabledGroup(!IsSavable);
+            EditorGUI.BeginDisabledGroup(!StateViewerWindow.IsSavable);
             _crystalValue = EditorGUILayout.TextField("CRYSTAL", _crystalValue);
             if (GUILayout.Button("Save", GUILayout.MaxWidth(50f)))
             {
                 var balanceList = new List<(Address addr, FungibleAssetValue fav)>
                 {
                     (new Address(_searchingAddrStr),
-                        FungibleAssetValue.Parse(_crystal, _crystalValue)),
+                        FungibleAssetValue.Parse(Currencies.Crystal, _crystalValue)),
                 };
                 ActionManager.Instance?.ManipulateState(null, balanceList);
             }
@@ -446,16 +444,19 @@ namespace StateViewer.Editor.Features
             EditorGUILayout.EndHorizontal();
         }
 
-        private async UniTaskVoid GetStateAndUpdateStateTreeViewAsync(string searchString)
+        private async UniTaskVoid GetStateAndUpdateStateTreeViewAsync(
+            StateProxy stateProxy,
+            string addrStr)
         {
-            if (string.IsNullOrEmpty(searchString))
+            if (string.IsNullOrEmpty(addrStr))
             {
                 ClearAll();
                 return;
             }
 
-            if (!Application.isPlaying ||
-                !Game.instance.IsInitialized)
+            var ncg = _editorWindow.GetNCG();
+            if (!StateViewerWindow.IsSavable ||
+                ncg is null)
             {
                 return;
             }
@@ -463,15 +464,15 @@ namespace StateViewer.Editor.Features
             _loadingSomething = true;
             try
             {
-                var (addr, value) = await _stateProxy.GetStateAsync(searchString);
+                var (addr, value) = await stateProxy.GetStateAsync(addrStr);
                 _stateTreeView.SetData(addr, value);
 
                 await UniTask.Run(() =>
                 {
-                    var (_, ncg) = _stateProxy.GetBalance(addr, _ncg);
-                    _ncgValue = $"{ncg.MajorUnit}.{ncg.MinorUnit}";
-                    var (_, crystal) = _stateProxy.GetBalance(addr, _crystal);
-                    _crystalValue = $"{crystal.MajorUnit}.{crystal.MinorUnit}";
+                    var (_, ncgFav) = stateProxy.GetBalance(addr, ncg.Value);
+                    _ncgValue = $"{ncgFav.MajorUnit}.{ncgFav.MinorUnit}";
+                    var (_, crystalFav) = stateProxy.GetBalance(addr, Currencies.Crystal);
+                    _crystalValue = $"{crystalFav.MajorUnit}.{crystalFav.MinorUnit}";
                 });
             }
             catch (KeyNotFoundException)
@@ -481,35 +482,6 @@ namespace StateViewer.Editor.Features
 
             _loadingSomething = false;
             _stateTreeView.SetFocusAndEnsureSelectedItem();
-        }
-
-        private void InitializeStateProxy()
-        {
-            _stateProxy = new StateProxy(Game.instance.Agent);
-            var states = Game.instance.States;
-            for (var i = 0; i < 3; ++i)
-            {
-                if (states.AvatarStates.ContainsKey(i))
-                {
-                    _stateProxy.RegisterAlias($"avatar{i}", states.AvatarStates[i].address);
-                }
-            }
-
-            _stateProxy.RegisterAlias("agent", states.AgentState.address);
-            for (var i = 0; i < RankingState.RankingMapCapacity; ++i)
-            {
-                _stateProxy.RegisterAlias("ranking", RankingState.Derive(i));
-            }
-
-            _stateProxy.RegisterAlias("gameConfig", GameConfigState.Address);
-            _stateProxy.RegisterAlias("redeemCode", RedeemCodeState.Address);
-            if (!(states.CurrentAvatarState is null))
-            {
-                _stateProxy.RegisterAlias("me", states.CurrentAvatarState.address);
-            }
-
-            _ncg = states.GoldBalanceState.Gold.Currency;
-            _crystal = CrystalCalculator.CRYSTAL;
         }
     }
 }
