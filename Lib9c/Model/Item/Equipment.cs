@@ -95,14 +95,12 @@ namespace Nekoyume.Model.Item
         public override IValue Serialize()
         {
 #pragma warning disable LAA1002
-            var dict = new Dictionary(new Dictionary<IKey, IValue>
-            {
-                [(Text) LegacyEquippedKey] = equipped.Serialize(),
-                [(Text) LegacyLevelKey] = level.Serialize(),
-                [(Text) LegacyStatKey] = Stat.Serialize(),
-                [(Text) LegacySetIdKey] = SetId.Serialize(),
-                [(Text) LegacySpineResourcePathKey] = SpineResourcePath.Serialize(),
-            }.Union((Dictionary) base.Serialize()));
+            var dict = ((Dictionary)base.Serialize())
+                .Add(LegacyEquippedKey, equipped.Serialize())
+                .Add(LegacyLevelKey, level.Serialize())
+                .Add(LegacyStatKey, Stat.Serialize())
+                .Add(LegacySetIdKey, SetId.Serialize())
+                .Add(LegacySpineResourcePathKey, SpineResourcePath.Serialize());
 
             if (optionCountFromCombination > 0)
             {

@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Bencodex.Types;
 using Libplanet.Assets;
 using Nekoyume.Model.State;
@@ -31,14 +29,8 @@ namespace Nekoyume.Model.Mail
         public override MailType MailType => MailType.Grinding;
 
         protected override string TypeId => nameof(GrindingMail);
-        public override IValue Serialize() =>
-#pragma warning disable LAA1002
-            new Dictionary(new Dictionary<IKey, IValue>
-            {
-                [(Text)"ic"] = ItemCount.Serialize(),
-                [(Text)"a"] = Asset.Serialize(),
-            }.Union((Dictionary)base.Serialize()));
-#pragma warning restore LAA1002
-
+        public override IValue Serialize() => ((Dictionary)base.Serialize())
+            .Add("ic", ItemCount.Serialize())
+            .Add("a", Asset.Serialize());
     }
 }

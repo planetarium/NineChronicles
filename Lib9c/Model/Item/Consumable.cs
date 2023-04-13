@@ -28,21 +28,16 @@ namespace Nekoyume.Model.Item
                 Stats = stats.ToList(i => new StatMap((Dictionary) i));
             }
         }
-        
+
         protected Consumable(SerializationInfo info, StreamingContext _)
             : this((Dictionary) Codec.Decode((byte[]) info.GetValue("serialized", typeof(byte[]))))
         {
         }
 
-        public override IValue Serialize() =>
-#pragma warning disable LAA1002
-            new Dictionary(new Dictionary<IKey, IValue>
-            {
-                [(Text) "stats"] = new List(Stats
-                    .OrderBy(i => i.StatType)
-                    .ThenByDescending(i => i.Value)
-                    .Select(s => s.Serialize())),
-            }.Union((Dictionary) base.Serialize()));
-#pragma warning restore LAA1002
+        public override IValue Serialize() => ((Dictionary)base.Serialize())
+            .Add("stats", new List(Stats
+                .OrderBy(i => i.StatType)
+                .ThenByDescending(i => i.Value)
+                .Select(s => s.Serialize())));
     }
 }
