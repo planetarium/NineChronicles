@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Nekoyume.Game.LiveAsset;
+using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UnityEngine;
@@ -125,7 +126,14 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            if (!Game.Game.instance.Stage.TutorialController.IsCompleted)
+            var worldInfo = States.Instance.CurrentAvatarState?.worldInformation;
+            if (worldInfo is null)
+            {
+                return;
+            }
+
+            var clearedStageId = worldInfo.TryGetLastClearedStageId(out var id) ? id : 1;
+            if (clearedStageId <= GameConfig.RequireClearedStageLevel.CombinationEquipmentAction)
             {
                 return;
             }
