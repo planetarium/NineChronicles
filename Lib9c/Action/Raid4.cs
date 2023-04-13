@@ -24,6 +24,7 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1663
     /// </summary>
     [Serializable]
+    [ActionObsolete(ActionObsoleteConfig.V200001ObsoleteIndex)]
     [ActionType("raid4")]
     public class Raid4 : GameAction, IRaidV2
     {

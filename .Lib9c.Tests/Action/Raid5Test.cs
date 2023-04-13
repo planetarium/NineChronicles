@@ -445,12 +445,13 @@ namespace Lib9c.Tests.Action
                 state = state.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
             }
 
+            var gameConfigState = new GameConfigState(_sheets[nameof(GameConfigSheet)]);
             var avatarState = new AvatarState(
                 _avatarAddress,
                 _agentAddress,
                 0,
                 _tableSheets.GetAvatarSheets(),
-                new GameConfigState(),
+                gameConfigState,
                 default
             );
 
@@ -482,7 +483,8 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress, avatarState.SerializeV2())
                 .SetState(_avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
                 .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), avatarState.worldInformation.Serialize())
-                .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize());
+                .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
+                .SetState(gameConfigState.address, gameConfigState.Serialize());
 
             var bossState =
                 new WorldBossState(worldBossRow, _tableSheets.WorldBossGlobalHpSheet[2])
