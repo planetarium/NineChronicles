@@ -2,9 +2,9 @@
 
 namespace Nekoyume.Game.ScriptableObject
 {
-    [CreateAssetMenu(fileName = "NoticeEndpoint", menuName = "Scriptable Object/Notice Endpoint ScriptableObject",
+    [CreateAssetMenu(fileName = "LiveAssetEndpoint", menuName = "Scriptable Object/LiveAsset Endpoint ScriptableObject",
         order = int.MaxValue)]
-    public class NoticeEndpointScriptableObject : UnityEngine.ScriptableObject
+    public class LiveAssetEndpointScriptableObject : UnityEngine.ScriptableObject
     {
         [field: SerializeField]
         public string EventJsonUrl { get; private set; }
@@ -14,5 +14,8 @@ namespace Nekoyume.Game.ScriptableObject
 
         [field: SerializeField]
         public string ImageRootUrl { get; private set; }
+
+        [field: SerializeField]
+        public string GameConfigJsonUrl { get; private set; }
     }
 }
