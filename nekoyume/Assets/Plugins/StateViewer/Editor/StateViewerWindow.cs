@@ -36,7 +36,6 @@ namespace StateViewer.Editor
         private ViewModel? _viewModel;
         private StateProxy? _stateProxy;
         private Currency? _ncg;
-        private Currency? _crystal;
 
         public static bool IsSavable => Application.isPlaying &&
                                         Game.instance.IsInitialized;
@@ -154,7 +153,6 @@ namespace StateViewer.Editor
             }
 
             _ncg = states.GoldBalanceState.Gold.Currency;
-            _crystal = CrystalCalculator.CRYSTAL;
         }
     }
 }
