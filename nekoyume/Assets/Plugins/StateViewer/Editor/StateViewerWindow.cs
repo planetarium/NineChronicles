@@ -37,6 +37,9 @@ namespace StateViewer.Editor
         private StateProxy? _stateProxy;
         private Currency? _ncg;
 
+        // FIXME: TableSheets should be get from a state if needed for each time.
+        private TableSheets? _tableSheets;
+
         public static bool IsSavable => Application.isPlaying &&
                                         Game.instance.IsInitialized;
 
@@ -120,6 +123,11 @@ namespace StateViewer.Editor
             }
 
             return _ncg ??= Game.instance.States?.GoldBalanceState?.Gold.Currency;
+        }
+
+        public TableSheets? GetTableSheets()
+        {
+            return _tableSheets ??= TableSheetsHelper.MakeTableSheets();
         }
 
         private void InitializeStateProxy()

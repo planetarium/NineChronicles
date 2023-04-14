@@ -41,7 +41,10 @@ namespace StateViewer.Runtime
 
         public string IndexOrKeyContent { get; private set; }
 
-        public string AliasContent { get; private set; }
+        private string _aliasContent = string.Empty;
+        public string AliasContent => OverrideAliasContent ?? _aliasContent;
+
+        public string? OverrideAliasContent { get; set; }
 
         public IReadOnlyList<StateTreeViewItemModel> Children => _children;
 
@@ -291,7 +294,7 @@ namespace StateViewer.Runtime
             if (indexOrKey is null)
             {
                 IndexOrKeyContent = string.Empty;
-                AliasContent = alias ?? string.Empty;
+                _aliasContent = alias ?? string.Empty;
                 return;
             }
 
@@ -305,7 +308,7 @@ namespace StateViewer.Runtime
             if (Parent.ValueType == ValueKind.List)
             {
                 Index = int.Parse(indexOrKey);
-                AliasContent = alias;
+                _aliasContent = alias;
                 return;
             }
 
@@ -326,7 +329,7 @@ namespace StateViewer.Runtime
                 keyType = ValueKind.Text;
             }
 
-            AliasContent = string.IsNullOrEmpty(alias)
+            _aliasContent = string.IsNullOrEmpty(alias)
                 ? $"({keyType})"
                 : $"({keyType}){alias}";
         }

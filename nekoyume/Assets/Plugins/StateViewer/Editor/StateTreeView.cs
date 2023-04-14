@@ -35,7 +35,7 @@ namespace StateViewer.Editor
 
         public Address? Address { get; private set; }
 
-        public ContentKind ContentKind { get; set; }
+        public ContentKind ContentKind { get; private set; }
 
         public (Address? addr, IValue value) Serialize()
         {
@@ -43,7 +43,9 @@ namespace StateViewer.Editor
         }
 
         public StateTreeView(
-            TableSheets tableSheets)
+            TableSheets tableSheets,
+            ContentKind contentKind = ContentKind.None,
+            (bool visible, string[] headerContents)? visibleHeaderContents = null)
             : base(new TreeViewState(), new StateTreeViewHeader())
         {
             treeViewState = state;
@@ -52,6 +54,46 @@ namespace StateViewer.Editor
             showAlternatingRowBackgrounds = true;
             showBorder = true;
             SetTableSheet(tableSheets);
+            SetContentKind(contentKind);
+            if (visibleHeaderContents is { } tuple)
+            {
+                SetVisibleHeaderColumns(tuple.visible, tuple.headerContents);
+            }
+
+            multiColumnHeader.ResizeToFit();
+        }
+
+        public void SetVisibleHeaderColumns(bool visible, params string[] headerContents)
+        {
+            var visibleColumns = new List<int>();
+            var headerStateColumns = multiColumnHeader.state.columns;
+            if (visible)
+            {
+                for (var i = 0; i < headerStateColumns.Length; i++)
+                {
+                    var stateColumn = headerStateColumns[i];
+                    if (headerContents.Contains(stateColumn.headerContent.text))
+                    {
+                        visibleColumns.Add(i);
+                    }
+                }
+            }
+            else
+            {
+                for (var i = 0; i < headerStateColumns.Length; i++)
+                {
+                    var stateColumn = headerStateColumns[i];
+                    if (headerContents.Contains(stateColumn.headerContent.text))
+                    {
+                        continue;
+                    }
+
+                    visibleColumns.Add(i);
+                }
+            }
+
+
+            multiColumnHeader.state.visibleColumns = visibleColumns.ToArray();
         }
 
         public void SetTableSheet(TableSheets tableSheets)
@@ -62,14 +104,56 @@ namespace StateViewer.Editor
         public void SetData(
             Address? addr,
             IValue? data,
-            ContentKind contentKind = ContentKind.None)
+            ContentKind? contentKind = null)
         {
             Address = addr;
             _itemModel = new StateTreeViewItemModel(
                 data ?? Null.Value,
                 alias: "root");
-            ContentKind = contentKind;
+            SetContentKind(contentKind ?? ContentKind, force: true);
             ProcessWhenItemModelHierarchyChanged(initialize: true);
+        }
+
+        public void SetContentKind(ContentKind contentKind, bool force = false)
+        {
+            if (!force &&
+                contentKind == ContentKind)
+            {
+                return;
+            }
+
+            ContentKind = contentKind;
+            if (_itemModel is null)
+            {
+                return;
+            }
+
+            switch (ContentKind)
+            {
+                case ContentKind.None:
+                    for (var i = 0; i < _itemModel.Children.Count; i++)
+                    {
+                        var child = _itemModel.Children[i];
+                        child.OverrideAliasContent = null;
+                    }
+
+                    break;
+                case ContentKind.Inventory:
+                    for (var i = 0; i < _itemModel.Children.Count; i++)
+                    {
+                        var child = _itemModel.Children[i];
+                        var count = child.Children[0].ValueContent;
+                        var itemSheetId = child.Children[1].Children
+                            .First(e => e.IndexOrKeyContent == "id")
+                            .ValueContent;
+                        var content = $"{itemSheetId} x{count}";
+                        child.OverrideAliasContent = content;
+                    }
+
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         private void ProcessWhenItemModelHierarchyChanged(
@@ -114,6 +198,7 @@ namespace StateViewer.Editor
                 SetExpanded(expendedIds);
             }
 
+            SetContentKind(ContentKind, force: true);
             Reload();
         }
 

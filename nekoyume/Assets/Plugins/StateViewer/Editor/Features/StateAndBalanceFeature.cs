@@ -59,36 +59,47 @@ namespace StateViewer.Editor.Features
 
         private readonly StateViewerWindow _editorWindow;
 
-        private SourceFrom _sourceFrom;
+        [SerializeField]
+        private SourceFrom sourceFrom;
 
-        private string _encodedBencodexValue;
+        [SerializeField]
+        private string encodedBencodexValue;
 
         private SearchField _addrSearchField;
-        private string _searchingAddrStr;
+
+        [SerializeField]
+        private string searchingAddrStr;
 
         [SerializeField]
         private bool useTestValues;
 
-        private bool _loadingSomething;
-
         [SerializeField]
         private StateTreeView stateTreeView;
-        private Vector2 _stateTreeViewScrollPosition;
 
-        private string _ncgValue;
-        private string _crystalValue;
+        [SerializeField]
+        private Vector2 stateTreeViewScrollPosition;
+
+        [SerializeField]
+        private string ncgValue;
+
+        [SerializeField]
+        private string crystalValue;
+
+        private bool _loadingSomething;
 
         public StateAndBalanceFeature(StateViewerWindow editorWindow)
         {
             _editorWindow = editorWindow;
-            _sourceFrom = SourceFrom.GetStateFromPlayModeAgent;
-            _encodedBencodexValue = string.Empty;
-            _searchingAddrStr = string.Empty;
-            _stateTreeViewScrollPosition = Vector2.zero;
-            _ncgValue = string.Empty;
-            _crystalValue = string.Empty;
+            sourceFrom = SourceFrom.GetStateFromPlayModeAgent;
+            encodedBencodexValue = string.Empty;
+            searchingAddrStr = string.Empty;
+            stateTreeViewScrollPosition = Vector2.zero;
+            ncgValue = string.Empty;
+            crystalValue = string.Empty;
 
-            stateTreeView = new StateTreeView(editorWindow.GetTableSheets()!);
+            stateTreeView = new StateTreeView(
+                tableSheets: editorWindow.GetTableSheets()!,
+                contentKind: ContentKind.None);
             _addrSearchField = new SearchField();
             _addrSearchField.downOrUpArrowKeyPressed +=
                 stateTreeView.SetFocusAndEnsureSelectedItem;
@@ -97,12 +108,12 @@ namespace StateViewer.Editor.Features
 
         private void ClearAll()
         {
-            _encodedBencodexValue = string.Empty;
-            _searchingAddrStr = string.Empty;
+            encodedBencodexValue = string.Empty;
+            searchingAddrStr = string.Empty;
             stateTreeView.ClearData();
-            _stateTreeViewScrollPosition = Vector2.zero;
-            _ncgValue = string.Empty;
-            _crystalValue = string.Empty;
+            stateTreeViewScrollPosition = Vector2.zero;
+            ncgValue = string.Empty;
+            crystalValue = string.Empty;
         }
 
         public void OnGUI()
@@ -147,16 +158,16 @@ namespace StateViewer.Editor.Features
 
         private void DrawInputs()
         {
-            var sourceFrom = (SourceFrom)EditorGUILayout.EnumPopup(
+            var sourceFromNew = (SourceFrom)EditorGUILayout.EnumPopup(
                 "Source From",
-                _sourceFrom);
-            if (sourceFrom != _sourceFrom)
+                sourceFrom);
+            if (sourceFromNew != sourceFrom)
             {
-                _sourceFrom = sourceFrom;
+                sourceFrom = sourceFromNew;
                 ClearAll();
             }
 
-            switch (_sourceFrom)
+            switch (sourceFrom)
             {
                 case SourceFrom.Base64EncodedBencodexValue:
                 case SourceFrom.HexEncodedBencodexValue:
@@ -172,22 +183,22 @@ namespace StateViewer.Editor.Features
 
         private void DrawInputsForSourceFromEncodedBencodexValue()
         {
-            _encodedBencodexValue = EditorGUILayout.TextField(
+            encodedBencodexValue = EditorGUILayout.TextField(
                 "Encoded Bencodex Value",
-                _encodedBencodexValue);
+                encodedBencodexValue);
 
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             EditorGUI.BeginDisabledGroup(
-                string.IsNullOrEmpty(_encodedBencodexValue));
+                string.IsNullOrEmpty(encodedBencodexValue));
             if (GUILayout.Button("Decode"))
             {
-                var binary = _sourceFrom switch
+                var binary = sourceFrom switch
                 {
                     SourceFrom.Base64EncodedBencodexValue =>
-                        Binary.FromBase64(_encodedBencodexValue),
+                        Binary.FromBase64(encodedBencodexValue),
                     SourceFrom.HexEncodedBencodexValue =>
-                        Binary.FromHex(_encodedBencodexValue),
+                        Binary.FromHex(encodedBencodexValue),
                     SourceFrom.GetStateFromPlayModeAgent or _ =>
                         throw new ArgumentOutOfRangeException(),
                 };
@@ -215,15 +226,15 @@ namespace StateViewer.Editor.Features
                 DrawTestValues();
             }
 
-            stateTreeView.ContentKind = (ContentKind)EditorGUILayout.EnumPopup(
+            stateTreeView.SetContentKind((ContentKind)EditorGUILayout.EnumPopup(
                 "Content Kind",
-                stateTreeView.ContentKind);
+                stateTreeView.ContentKind));
 
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             EditorGUI.BeginDisabledGroup(
                 stateProxy is null ||
-                string.IsNullOrEmpty(_searchingAddrStr) ||
+                string.IsNullOrEmpty(searchingAddrStr) ||
                 _loadingSomething ||
                 !StateViewerWindow.IsSavable);
             if (GUILayout.Button("Get State Async") &&
@@ -231,7 +242,7 @@ namespace StateViewer.Editor.Features
             {
                 GetStateAndUpdateStateTreeViewAsync(
                     stateProxy,
-                    _searchingAddrStr).Forget();
+                    searchingAddrStr).Forget();
             }
 
             EditorGUI.EndDisabledGroup();
@@ -245,7 +256,7 @@ namespace StateViewer.Editor.Features
                 hasLabel: true,
                 height: EditorGUIUtility.singleLineHeight);
             rect = EditorGUI.PrefixLabel(rect, new GUIContent("Address"));
-            _searchingAddrStr = _addrSearchField.OnGUI(rect, _searchingAddrStr);
+            searchingAddrStr = _addrSearchField.OnGUI(rect, searchingAddrStr);
             EditorGUILayout.EndHorizontal();
         }
 
@@ -272,8 +283,8 @@ namespace StateViewer.Editor.Features
 
         private void DrawStateTreeView()
         {
-            _stateTreeViewScrollPosition = GUILayout.BeginScrollView(
-                _stateTreeViewScrollPosition,
+            stateTreeViewScrollPosition = GUILayout.BeginScrollView(
+                stateTreeViewScrollPosition,
                 false,
                 true);
             stateTreeView.OnGUI(GetRect(
@@ -314,7 +325,7 @@ namespace StateViewer.Editor.Features
 
             // NCG
             EditorGUILayout.BeginHorizontal();
-            _ncgValue = EditorGUILayout.TextField("NCG", _ncgValue);
+            ncgValue = EditorGUILayout.TextField("NCG", ncgValue);
             var ncg = _editorWindow.GetNCG();
             EditorGUI.BeginDisabledGroup(!StateViewerWindow.IsSavable || ncg is null);
             if (GUILayout.Button("Save", GUILayout.MaxWidth(50f)) &&
@@ -323,8 +334,8 @@ namespace StateViewer.Editor.Features
                 var balanceList = new List<(Address addr, FungibleAssetValue fav)>
                 {
                     (
-                        new Address(_searchingAddrStr),
-                        FungibleAssetValue.Parse(ncg.Value, _ncgValue)
+                        new Address(searchingAddrStr),
+                        FungibleAssetValue.Parse(ncg.Value, ncgValue)
                     ),
                 };
                 ActionManager.Instance?.ManipulateState(null, balanceList);
@@ -336,13 +347,13 @@ namespace StateViewer.Editor.Features
             // CRYSTAL
             EditorGUILayout.BeginHorizontal();
             EditorGUI.BeginDisabledGroup(!StateViewerWindow.IsSavable);
-            _crystalValue = EditorGUILayout.TextField("CRYSTAL", _crystalValue);
+            crystalValue = EditorGUILayout.TextField("CRYSTAL", crystalValue);
             if (GUILayout.Button("Save", GUILayout.MaxWidth(50f)))
             {
                 var balanceList = new List<(Address addr, FungibleAssetValue fav)>
                 {
-                    (new Address(_searchingAddrStr),
-                        FungibleAssetValue.Parse(Currencies.Crystal, _crystalValue)),
+                    (new Address(searchingAddrStr),
+                        FungibleAssetValue.Parse(Currencies.Crystal, crystalValue)),
                 };
                 ActionManager.Instance?.ManipulateState(null, balanceList);
             }
@@ -377,9 +388,9 @@ namespace StateViewer.Editor.Features
                 await UniTask.Run(() =>
                 {
                     var (_, ncgFav) = stateProxy.GetBalance(addr, ncg.Value);
-                    _ncgValue = $"{ncgFav.MajorUnit}.{ncgFav.MinorUnit}";
+                    ncgValue = $"{ncgFav.MajorUnit}.{ncgFav.MinorUnit}";
                     var (_, crystalFav) = stateProxy.GetBalance(addr, Currencies.Crystal);
-                    _crystalValue = $"{crystalFav.MajorUnit}.{crystalFav.MinorUnit}";
+                    crystalValue = $"{crystalFav.MajorUnit}.{crystalFav.MinorUnit}";
                 });
             }
             catch (KeyNotFoundException)
