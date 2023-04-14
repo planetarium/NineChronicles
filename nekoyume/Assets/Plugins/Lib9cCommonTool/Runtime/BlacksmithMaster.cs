@@ -10,7 +10,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 
-namespace StateViewer.Runtime
+namespace Lib9cCommonTool.Runtime
 {
     public static class BlacksmithMaster
     {
