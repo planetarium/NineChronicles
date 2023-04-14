@@ -10,8 +10,6 @@ using Lib9c;
 using Libplanet;
 using Libplanet.Assets;
 using Nekoyume.BlockChain;
-using Nekoyume.Game;
-using Nekoyume.Helper;
 using StateViewer.Runtime;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
@@ -74,23 +72,11 @@ namespace StateViewer.Editor.Features
         private bool _loadingSomething;
 
         [SerializeField]
-        private MultiColumnHeaderState stateTreeHeaderState;
-
-        // SerializeField is used to ensure the view state is written to the window
-        // layout file. This means that the state survives restarting Unity as long as the window
-        // is not closed. If the attribute is omitted then the state is still serialized/deserialized.
-        [SerializeField]
-        private TreeViewState stateTreeViewState;
-
-        private MultiColumnHeader _stateTreeHeader;
-        private StateTreeView _stateTreeView;
+        private StateTreeView stateTreeView;
         private Vector2 _stateTreeViewScrollPosition;
 
         private string _ncgValue;
         private string _crystalValue;
-
-        // FIXME: TableSheets should be get from a state if needed for each time.
-        private TableSheets _tableSheets;
 
         public StateAndBalanceFeature(StateViewerWindow editorWindow)
         {
@@ -101,90 +87,11 @@ namespace StateViewer.Editor.Features
             _stateTreeViewScrollPosition = Vector2.zero;
             _ncgValue = string.Empty;
             _crystalValue = string.Empty;
-            _tableSheets = TableSheetsHelper.MakeTableSheets();
 
-            stateTreeViewState ??= new TreeViewState();
-            var indexOrKeyColumn = new MultiColumnHeaderState.Column
-            {
-                headerContent = new GUIContent("Index/Key"),
-                headerTextAlignment = TextAlignment.Center,
-                canSort = false,
-                width = 100,
-                minWidth = 100,
-                autoResize = true,
-                allowToggleVisibility = false,
-            };
-            var aliasColumn = new MultiColumnHeaderState.Column
-            {
-                headerContent = new GUIContent("Alias"),
-                headerTextAlignment = TextAlignment.Center,
-                canSort = false,
-                width = 150,
-                minWidth = 150,
-                autoResize = true,
-                allowToggleVisibility = true,
-            };
-            var valueKindColumn = new MultiColumnHeaderState.Column
-            {
-                headerContent = new GUIContent("ValueKind"),
-                headerTextAlignment = TextAlignment.Center,
-                canSort = false,
-                width = 100,
-                minWidth = 100,
-                maxWidth = 100,
-                autoResize = true,
-                allowToggleVisibility = false,
-            };
-            var valueColumn = new MultiColumnHeaderState.Column
-            {
-                headerContent = new GUIContent("Value"),
-                headerTextAlignment = TextAlignment.Center,
-                canSort = false,
-                width = 300,
-                minWidth = 100,
-                autoResize = true,
-                allowToggleVisibility = false,
-            };
-            var addColumn = new MultiColumnHeaderState.Column
-            {
-                headerContent = new GUIContent("Add"),
-                headerTextAlignment = TextAlignment.Center,
-                canSort = false,
-                width = 100,
-                minWidth = 100,
-                maxWidth = 100,
-                autoResize = true,
-                allowToggleVisibility = false,
-            };
-            var removeColumn = new MultiColumnHeaderState.Column
-            {
-                headerContent = new GUIContent("Remove"),
-                headerTextAlignment = TextAlignment.Center,
-                canSort = false,
-                width = 100,
-                minWidth = 100,
-                maxWidth = 100,
-                autoResize = true,
-                allowToggleVisibility = false,
-            };
-            stateTreeHeaderState = new MultiColumnHeaderState(new[]
-            {
-                indexOrKeyColumn,
-                aliasColumn,
-                valueKindColumn,
-                valueColumn,
-                addColumn,
-                removeColumn,
-            });
-            _stateTreeHeader = new MultiColumnHeader(stateTreeHeaderState);
-            _stateTreeHeader.ResizeToFit();
-            _stateTreeView = new StateTreeView(
-                stateTreeViewState,
-                _stateTreeHeader,
-                _tableSheets);
+            stateTreeView = new StateTreeView(editorWindow.GetTableSheets()!);
             _addrSearchField = new SearchField();
             _addrSearchField.downOrUpArrowKeyPressed +=
-                _stateTreeView.SetFocusAndEnsureSelectedItem;
+                stateTreeView.SetFocusAndEnsureSelectedItem;
             ClearAll();
         }
 
@@ -192,7 +99,7 @@ namespace StateViewer.Editor.Features
         {
             _encodedBencodexValue = string.Empty;
             _searchingAddrStr = string.Empty;
-            _stateTreeView.ClearData();
+            stateTreeView.ClearData();
             _stateTreeViewScrollPosition = Vector2.zero;
             _ncgValue = string.Empty;
             _crystalValue = string.Empty;
@@ -285,7 +192,7 @@ namespace StateViewer.Editor.Features
                         throw new ArgumentOutOfRangeException(),
                 };
                 var value = Codec.Decode(binary);
-                _stateTreeView.SetData(null, value);
+                stateTreeView.SetData(null, value);
             }
 
             EditorGUI.EndDisabledGroup();
@@ -308,9 +215,9 @@ namespace StateViewer.Editor.Features
                 DrawTestValues();
             }
 
-            _stateTreeView.ContentKind = (ContentKind)EditorGUILayout.EnumPopup(
+            stateTreeView.ContentKind = (ContentKind)EditorGUILayout.EnumPopup(
                 "Content Kind",
-                _stateTreeView.ContentKind);
+                stateTreeView.ContentKind);
 
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
@@ -356,7 +263,7 @@ namespace StateViewer.Editor.Features
                 var testValue = TestValues[i];
                 if (GUILayout.Button($"{i}: {testValue.Kind}"))
                 {
-                    _stateTreeView.SetData(default, testValue);
+                    stateTreeView.SetData(default, testValue);
                 }
             }
 
@@ -369,7 +276,7 @@ namespace StateViewer.Editor.Features
                 _stateTreeViewScrollPosition,
                 false,
                 true);
-            _stateTreeView.OnGUI(GetRect(
+            stateTreeView.OnGUI(GetRect(
                 minLineCount: 5,
                 maxHeight: _editorWindow.position.height));
             GUILayout.EndScrollView();
@@ -379,11 +286,11 @@ namespace StateViewer.Editor.Features
         {
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
-            EditorGUI.BeginDisabledGroup(_stateTreeView.Address is null ||
+            EditorGUI.BeginDisabledGroup(stateTreeView.Address is null ||
                                          !StateViewerWindow.IsSavable);
             if (GUILayout.Button("Save", GUILayout.MaxWidth(50f)))
             {
-                var (addr, value) = _stateTreeView.Serialize();
+                var (addr, value) = stateTreeView.Serialize();
                 if (addr is null)
                 {
                     Debug.LogWarning("Address is null.");
@@ -465,7 +372,7 @@ namespace StateViewer.Editor.Features
             try
             {
                 var (addr, value) = await stateProxy.GetStateAsync(addrStr);
-                _stateTreeView.SetData(addr, value);
+                stateTreeView.SetData(addr, value);
 
                 await UniTask.Run(() =>
                 {
@@ -481,7 +388,7 @@ namespace StateViewer.Editor.Features
             }
 
             _loadingSomething = false;
-            _stateTreeView.SetFocusAndEnsureSelectedItem();
+            stateTreeView.SetFocusAndEnsureSelectedItem();
         }
     }
 }

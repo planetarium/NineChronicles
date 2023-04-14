@@ -17,30 +17,37 @@ using Boolean = Bencodex.Types.Boolean;
 
 namespace StateViewer.Editor
 {
+    [Serializable]
     public class StateTreeView : TreeView
     {
         private const int RootTreeViewItemId = 0;
         private static readonly string[] ValueKindNames = Enum.GetNames(typeof(ValueKind));
         private static readonly string[] ItemTypeNames = Enum.GetNames(typeof(ItemType));
 
+        // SerializeField is used to ensure the view state is written to the window
+        // layout file. This means that the state survives restarting Unity as long as the window
+        // is not closed. If the attribute is omitted then the state is still serialized/deserialized.
+        [SerializeField]
+        private TreeViewState treeViewState;
+
         private TableSheets _tableSheets;
-        private Address? _addr;
         private StateTreeViewItemModel? _itemModel;
 
-        public Address? Address => _addr;
+        public Address? Address { get; private set; }
+
         public ContentKind ContentKind { get; set; }
 
         public (Address? addr, IValue value) Serialize()
         {
-            return (_addr, _itemModel?.Serialize() ?? Null.Value);
+            return (Address, _itemModel?.Serialize() ?? Null.Value);
         }
 
         public StateTreeView(
-            TreeViewState treeViewState,
-            MultiColumnHeader multiColumnHeader,
             TableSheets tableSheets)
-            : base(treeViewState, multiColumnHeader)
+            : base(new TreeViewState(), new StateTreeViewHeader())
         {
+            treeViewState = state;
+            _tableSheets = tableSheets;
             rowHeight = EditorGUIUtility.singleLineHeight;
             showAlternatingRowBackgrounds = true;
             showBorder = true;
@@ -57,7 +64,7 @@ namespace StateViewer.Editor
             IValue? data,
             ContentKind contentKind = ContentKind.None)
         {
-            _addr = addr;
+            Address = addr;
             _itemModel = new StateTreeViewItemModel(
                 data ?? Null.Value,
                 alias: "root");
