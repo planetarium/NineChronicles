@@ -14,7 +14,7 @@ namespace Nekoyume.Model.Stat
         decimal BaseDRR { get; }
         decimal BaseCDMG { get; }
         decimal BaseArmorPenetration { get; }
-        decimal BaseDamageReflection { get; }
+        decimal BaseThorn { get; }
 
         decimal AdditionalHP { get; }
         decimal AdditionalATK { get; }
@@ -26,7 +26,7 @@ namespace Nekoyume.Model.Stat
         decimal AdditionalDRR { get; }
         decimal AdditionalCDMG { get; }
         decimal AdditionalArmorPenetration { get; }
-        decimal AdditionalDamageReflection { get; }
+        decimal AdditionalThorn { get; }
 
         IEnumerable<(StatType statType, decimal baseValue)> GetBaseStats(bool ignoreZero = false);
         IEnumerable<(StatType statType, decimal additionalValue)> GetAdditionalStats(bool ignoreZero = false);

@@ -74,7 +74,7 @@ namespace Nekoyume.Model
         public int DRR => (int)_stats.DRR;
         public int CDMG => (int)_stats.CDMG;
         public int ArmorPenetration => (int)_stats.ArmorPenetration;
-        public int DamageReflection => (int)_stats.DamageReflection;
+        public int Thorn => (int)_stats.Thorn;
 
         public bool IsDead => CurrentHP <= 0;
         public Dictionary<int, Buff.Buff> Buffs { get; } = new Dictionary<int, Buff.Buff>();

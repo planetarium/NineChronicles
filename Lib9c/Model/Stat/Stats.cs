@@ -19,7 +19,7 @@ namespace Nekoyume.Model.Stat
         public decimal DRR => _statMap[StatType.DRR].BaseValue;
         public decimal CDMG => _statMap[StatType.CDMG].BaseValue;
         public decimal ArmorPenetration => _statMap[StatType.ArmorPenetration].BaseValue;
-        public decimal DamageReflection => _statMap[StatType.DamageReflection].BaseValue;
+        public decimal Thorn => _statMap[StatType.Thorn].BaseValue;
         
         public Stats()
         {

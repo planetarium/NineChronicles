@@ -18,7 +18,7 @@ namespace Nekoyume.Model.Stat
         public decimal DRR => GetStat(StatType.DRR);
         public decimal CDMG => GetStat(StatType.CDMG);
         public decimal ArmorPenetration => GetStat(StatType.ArmorPenetration);
-        public decimal DamageReflection => GetStat(StatType.DamageReflection);
+        public decimal Thorn => GetStat(StatType.Thorn);
 
         public decimal BaseHP => GetBaseStat(StatType.HP);
         public decimal BaseATK => GetBaseStat(StatType.ATK);
@@ -30,7 +30,7 @@ namespace Nekoyume.Model.Stat
         public decimal BaseDRR => GetBaseStat(StatType.DRR);
         public decimal BaseCDMG => GetBaseStat(StatType.CDMG);
         public decimal BaseArmorPenetration => GetBaseStat(StatType.ArmorPenetration);
-        public decimal BaseDamageReflection => GetBaseStat(StatType.DamageReflection);
+        public decimal BaseThorn => GetBaseStat(StatType.Thorn);
 
         public decimal AdditionalHP => GetAdditionalStat(StatType.HP);
         public decimal AdditionalATK => GetAdditionalStat(StatType.ATK);
@@ -42,7 +42,7 @@ namespace Nekoyume.Model.Stat
         public decimal AdditionalDRR => GetAdditionalStat(StatType.DRR);
         public decimal AdditionalCDMG => GetAdditionalStat(StatType.CDMG);
         public decimal AdditionalArmorPenetration => GetAdditionalStat(StatType.ArmorPenetration);
-        public decimal AdditionalDamageReflection => GetAdditionalStat(StatType.DamageReflection);
+        public decimal AdditionalThorn => GetAdditionalStat(StatType.Thorn);
 
         private readonly StatMap _statMap = new StatMap();
 

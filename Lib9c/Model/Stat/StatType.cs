@@ -62,9 +62,9 @@ namespace Nekoyume.Model.Stat
         ArmorPenetration,
 
         /// <summary>
-        /// Damage reflection
+        /// Apply {Thorn} damage to the attacker when an attack is attempted.
         /// </summary>
-        DamageReflection,
+        Thorn,
     }
 
     [Serializable]
