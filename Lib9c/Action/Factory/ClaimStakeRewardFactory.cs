@@ -20,7 +20,7 @@ namespace Nekoyume.Action.Factory
             //        `claim_stake_reward2`. And if the `blockIndex` is less than
             //        the starting block index, it should throw an exception.
             // default: Version 2
-            return new ClaimStakeReward(avatarAddress);
+            return new ClaimStakeReward2(avatarAddress);
         }
 
         public static IClaimStakeReward CreateByVersion(
@@ -28,7 +28,7 @@ namespace Nekoyume.Action.Factory
             Address avatarAddress) => version switch
         {
             1 => new ClaimStakeReward1(avatarAddress),
-            2 => new ClaimStakeReward(avatarAddress),
+            2 => new ClaimStakeReward2(avatarAddress),
             3 => new ClaimStakeReward3(avatarAddress),
             _ => throw new ArgumentOutOfRangeException(
                 $"Invalid version: {version}"),
