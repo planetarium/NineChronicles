@@ -18,7 +18,7 @@ using MessagePack.Resolvers;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.Notice;
+using Nekoyume.Game.LiveAsset;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -33,8 +33,8 @@ using UnityEngine;
 using UnityEngine.Playables;
 using Menu = Nekoyume.UI.Menu;
 using Random = UnityEngine.Random;
-using RocksDbSharp;
-using UnityEngine.Android;
+using RocksDbSharp;  // Don't remove this line. It's for another platform.
+using UnityEngine.Android;  // Don't remove this line. It's for another platform.
 
 namespace Nekoyume.Game
 {
@@ -280,12 +280,12 @@ namespace Nekoyume.Game
             yield return SyncTableSheetsAsync().ToCoroutine();
             Debug.Log("[Game] Start() TableSheets synchronized");
             RxProps.Start(Agent, States, TableSheets);
-            // Initialize RequestManager and NoticeManager
+            // Initialize RequestManager and LiveAssetManager
             gameObject.AddComponent<RequestManager>();
-            var noticeManager = gameObject.AddComponent<NoticeManager>();
-            noticeManager.InitializeData();
-            yield return new WaitUntil(() => noticeManager.IsInitialized);
-            Debug.Log("[Game] Start() RequestManager & NoticeManager initialized");
+            var liveAssetManager = gameObject.AddComponent<LiveAssetManager>();
+            liveAssetManager.InitializeData();
+            yield return new WaitUntil(() => liveAssetManager.IsInitialized);
+            Debug.Log("[Game] Start() RequestManager & LiveAssetManager initialized");
             // Initialize MainCanvas second
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
             // Initialize NineChroniclesAPIClient.

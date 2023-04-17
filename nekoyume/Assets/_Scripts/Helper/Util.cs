@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,14 +8,12 @@ using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
 using Nekoyume.Battle;
 using Nekoyume.Extensions;
-using Nekoyume.Game.Character;
-using Nekoyume.Game.Factory;
+using Nekoyume.Game.LiveAsset;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
-using Nekoyume.UI.Module;
 using Org.BouncyCastle.Crypto.Digests;
 using UnityEngine;
 using Inventory = Nekoyume.Model.Item.Inventory;
@@ -29,15 +26,15 @@ namespace Nekoyume.Helper
         private const string StoredSlotIndex = "AutoSelectedSlotIndex_";
         private static readonly List<int> CrystalEquipmentRecipes = new() { 158, 159, 160 };
 
-        public static string GetBlockToTime(long block)
+        public static string GetBlockToTime(long block, int? secondsPerBlock = null)
         {
             if (block < 0)
             {
                 return string.Empty;
             }
 
-            const int secondsPerBlock = 12;
-            var remainSecond = block * secondsPerBlock;
+            secondsPerBlock ??= LiveAssetManager.instance.GameConfig.SecondsPerBlock;
+            var remainSecond = block * secondsPerBlock.Value;
             var timeSpan = TimeSpan.FromSeconds(remainSecond);
 
             var sb = new StringBuilder();

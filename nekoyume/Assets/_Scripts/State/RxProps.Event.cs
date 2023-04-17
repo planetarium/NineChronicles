@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Nekoyume.Extensions;
+using Nekoyume.Game.LiveAsset;
 using Nekoyume.Model.Event;
 using Nekoyume.TableData.Event;
 
@@ -183,7 +184,8 @@ namespace Nekoyume.State
                 current,
                 _eventScheduleRowForDungeon.Value.DungeonTicketsMax,
                 (int)progressedBlockRange,
-                resetIntervalBlockRange);
+                resetIntervalBlockRange,
+                LiveAssetManager.instance.GameConfig.SecondsPerBlock);
             _eventDungeonTicketProgress.SetValueAndForceNotify(
                 _eventDungeonTicketProgress.Value);
         }
@@ -196,8 +198,9 @@ namespace Nekoyume.State
                 return;
             }
 
+            var secondsPerBlock = LiveAssetManager.instance.GameConfig.SecondsPerBlock;
             var value = _eventScheduleRowForDungeon.Value.DungeonEndBlockIndex - blockIndex;
-            var time = value.BlockRangeToTimeSpanString();
+            var time = value.BlockRangeToTimeSpanString(secondsPerBlock);
             _eventDungeonRemainingTimeText.SetValueAndForceNotify($"{value}({time})");
         }
 
@@ -257,8 +260,9 @@ namespace Nekoyume.State
                 return;
             }
 
+            var secondsPerBlock = LiveAssetManager.instance.GameConfig.SecondsPerBlock;
             var value = _eventScheduleRowForRecipe.Value.RecipeEndBlockIndex - blockIndex;
-            var time = value.BlockRangeToTimeSpanString();
+            var time = value.BlockRangeToTimeSpanString(secondsPerBlock);
             _eventRecipeRemainingTimeText.SetValueAndForceNotify($"{value}({time})");
         }
     }

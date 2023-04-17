@@ -234,8 +234,10 @@ namespace Nekoyume.UI.Module.Lobby
                     else
                     {
                         ticketContainer.SetActive(true);
-                        var count =
-                            WorldBossFrontHelper.GetRemainTicket(raiderState, currentBlockIndex);
+                        var count = WorldBossFrontHelper.GetRemainTicket(
+                            raiderState,
+                            currentBlockIndex,
+                            States.Instance.GameConfigState.DailyWorldBossInterval);
                         ticketText.text = $"{count}";
                     }
 

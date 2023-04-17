@@ -3,6 +3,7 @@ using System.Linq;
 using System.Numerics;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.LiveAsset;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
@@ -250,10 +251,11 @@ namespace Nekoyume.UI
             else
             {
                 var remainingBlock = RewardBlockInterval - waitedBlockRange;
+                var secondsPerBlock = LiveAssetManager.instance.GameConfig.SecondsPerBlock;
                 remainingBlockText.text = string.Format(
                     RemainingBlockFormat,
                     remainingBlock.ToString("N0"),
-                    remainingBlock.BlockRangeToTimeSpanString());
+                    remainingBlock.BlockRangeToTimeSpanString(secondsPerBlock));
 
                 archiveButtonArea.SetActive(false);
                 remainingBlockArea.SetActive(true);
