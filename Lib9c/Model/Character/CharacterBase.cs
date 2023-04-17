@@ -86,12 +86,11 @@ namespace Nekoyume.Model
             RowData = row;
             CharacterId = characterId;
             Stats = new CharacterStats(RowData, level);
-            ResetCurrentHP();
-            
             if (!(optionalStatModifiers is null))
             {
                 Stats.AddOptional(optionalStatModifiers);
             }
+            ResetCurrentHP();
 
             Skills.Clear();
 
@@ -556,6 +555,22 @@ namespace Nekoyume.Model
                 Simulator.Log.Add(effect);
             }
 
+            // Apply thorn damage if target has thorn
+            foreach (var skillInfo in usedSkill.SkillInfos)
+            {
+                var isAttackSkill =
+                    skillInfo.SkillCategory == SkillCategory.NormalAttack ||
+                    skillInfo.SkillCategory == SkillCategory.BlowAttack ||
+                    skillInfo.SkillCategory == SkillCategory.DoubleAttack ||
+                    skillInfo.SkillCategory == SkillCategory.AreaAttack ||
+                    skillInfo.SkillCategory == SkillCategory.BuffRemovalAttack;
+                if (isAttackSkill && skillInfo.Target.Thorn > 0)
+                {
+                    var effect = GiveThornDamage(skillInfo.Target.Thorn);
+                    Simulator.Log.Add(effect);
+                }
+            }
+
             if (IsDead)
             {
                 Die();
@@ -563,6 +578,33 @@ namespace Nekoyume.Model
 
             FinishTargetIfKilledForBeforeV100310(usedSkill);
             FinishTargetIfKilled(usedSkill);
+        }
+
+        private BattleStatus.Skill GiveThornDamage(int targetThorn)
+        {
+            var clone = (CharacterBase)Clone();
+            // minimum 1 damage
+            var thornDamage = Math.Max(1, targetThorn - DEF);
+            CurrentHP -= thornDamage;
+            var damageInfos = new List<BattleStatus.Skill.SkillInfo>()
+            {
+                new BattleStatus.Skill.SkillInfo(
+                    (CharacterBase)Clone(),
+                    thornDamage,
+                    false,
+                    SkillCategory.TickDamage,
+                    Simulator.WaveTurn,
+                    ElementalType.Normal,
+                    SkillTargetType.Enemy)
+            };
+
+            var tickDamage = new TickDamage(
+                default,
+                clone,
+                damageInfos,
+                null);
+
+            return tickDamage;
         }
 
         private void FinishTargetIfKilledForBeforeV100310(BattleStatus.Skill usedSkill)

@@ -7,6 +7,8 @@ using BTAI;
 using Nekoyume.Action;
 using Nekoyume.Arena;
 using Nekoyume.Battle;
+using Nekoyume.Model.BattleStatus;
+using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.Buff;
 using Nekoyume.Model.Character;
 using Nekoyume.Model.Elemental;
@@ -494,6 +496,48 @@ namespace Nekoyume.Model
                 var effect = bleed.GiveEffectForArena(this, _simulator.Turn);
                 _simulator.Log.Add(effect);
             }
+
+            // Apply thorn damage if target has thorn
+            foreach (var skillInfo in usedSkill.SkillInfos)
+            {
+                var isAttackSkill =
+                    skillInfo.SkillCategory == SkillCategory.NormalAttack ||
+                    skillInfo.SkillCategory == SkillCategory.BlowAttack ||
+                    skillInfo.SkillCategory == SkillCategory.DoubleAttack ||
+                    skillInfo.SkillCategory == SkillCategory.AreaAttack ||
+                    skillInfo.SkillCategory == SkillCategory.BuffRemovalAttack;
+                if (isAttackSkill && skillInfo.Target.Thorn > 0)
+                {
+                    var effect = GiveThornDamage(skillInfo.Target.Thorn);
+                    _simulator.Log.Add(effect);
+                }
+            }
+        }
+
+        private ArenaSkill GiveThornDamage(int targetThorn)
+        {
+            var clone = (ArenaCharacter)Clone();
+            // minimum 1 damage
+            var thornDamage = Math.Max(1, targetThorn - DEF);
+            CurrentHP -= thornDamage;
+            var damageInfos = new List<ArenaSkill.ArenaSkillInfo>()
+            {
+                new ArenaSkill.ArenaSkillInfo(
+                    (ArenaCharacter)Clone(),
+                    thornDamage,
+                    false,
+                    SkillCategory.TickDamage,
+                    _simulator.Turn,
+                    ElementalType.Normal,
+                    SkillTargetType.Enemy)
+            };
+
+            var tickDamage = new ArenaTickDamage(
+                clone,
+                damageInfos,
+                null);
+
+            return tickDamage;
         }
 
         private void ReduceDurationOfBuffs()
