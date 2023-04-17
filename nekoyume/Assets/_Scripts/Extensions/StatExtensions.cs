@@ -36,6 +36,8 @@ namespace Nekoyume
                 case StatType.DEF:
                 case StatType.HIT:
                 case StatType.DRV:
+                case StatType.ArmorPenetration:
+                case StatType.Thorn:
                     return isSigned
                         ? value.ToString("+0.##;-0.##")
                         : ((int)value).ToString();
