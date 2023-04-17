@@ -41,32 +41,32 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         // Join new raid.
-        [InlineData(null, true, true, true, false, 0, 0L, false, false, 0, false, false, false, Raid.RequiredInterval)]
+        [InlineData(null, true, true, true, false, 0, 0L, false, false, 0, false, false, false, Raid4.RequiredInterval)]
         // Refill by interval.
-        [InlineData(null, true, true, false, true, 0, -WorldBossHelper.RefillInterval, false, false, 0, false, false, false, Raid.RequiredInterval)]
+        [InlineData(null, true, true, false, true, 0, -WorldBossHelper.RefillInterval, false, false, 0, false, false, false, Raid4.RequiredInterval)]
         // Refill by NCG.
-        [InlineData(null, true, true, false, true, 0, 200L, true, true, 0, false, false, false, Raid.RequiredInterval)]
-        [InlineData(null, true, true, false, true, 0, 200L, true, true, 1, false, false, false, Raid.RequiredInterval)]
+        [InlineData(null, true, true, false, true, 0, 200L, true, true, 0, false, false, false, Raid4.RequiredInterval)]
+        [InlineData(null, true, true, false, true, 0, 200L, true, true, 1, false, false, false, Raid4.RequiredInterval)]
         // Boss level up.
-        [InlineData(null, true, true, false, true, 3, 100L, false, false, 0, true, true, false, Raid.RequiredInterval)]
+        [InlineData(null, true, true, false, true, 3, 100L, false, false, 0, true, true, false, Raid4.RequiredInterval)]
         // Update RaidRewardInfo.
-        [InlineData(null, true, true, false, true, 3, 100L, false, false, 0, true, true, true, Raid.RequiredInterval)]
+        [InlineData(null, true, true, false, true, 3, 100L, false, false, 0, true, true, true, Raid4.RequiredInterval)]
         // Boss skip level up.
-        [InlineData(null, true, true, false, true, 3, 100L, false, false, 0, true, false, false, Raid.RequiredInterval)]
+        [InlineData(null, true, true, false, true, 3, 100L, false, false, 0, true, false, false, Raid4.RequiredInterval)]
         // AvatarState null.
-        [InlineData(typeof(FailedLoadStateException), false, false, false, false, 0, 0L, false, false, 0, false, false, false, Raid.RequiredInterval)]
+        [InlineData(typeof(FailedLoadStateException), false, false, false, false, 0, 0L, false, false, 0, false, false, false, Raid4.RequiredInterval)]
         // Stage not cleared.
-        [InlineData(typeof(NotEnoughClearedStageLevelException), true, false, false, false, 0, 0L, false, false, 0, false, false, false, Raid.RequiredInterval)]
+        [InlineData(typeof(NotEnoughClearedStageLevelException), true, false, false, false, 0, 0L, false, false, 0, false, false, false, Raid4.RequiredInterval)]
         // Insufficient CRYSTAL.
-        [InlineData(typeof(InsufficientBalanceException), true, true, false, false, 0, 0L, false, false, 0, false, false, false, Raid.RequiredInterval)]
+        [InlineData(typeof(InsufficientBalanceException), true, true, false, false, 0, 0L, false, false, 0, false, false, false, Raid4.RequiredInterval)]
         // Insufficient NCG.
-        [InlineData(typeof(InsufficientBalanceException), true, true, false, true, 0, 0L, true, false, 0, false, false, false, Raid.RequiredInterval)]
+        [InlineData(typeof(InsufficientBalanceException), true, true, false, true, 0, 0L, true, false, 0, false, false, false, Raid4.RequiredInterval)]
         // Wait interval.
-        [InlineData(typeof(RequiredBlockIntervalException), true, true, false, true, 3, 10L, false, false, 0, false, false, false, Raid.RequiredInterval - 4L)]
+        [InlineData(typeof(RequiredBlockIntervalException), true, true, false, true, 3, 10L, false, false, 0, false, false, false, Raid4.RequiredInterval - 4L)]
         // Exceed purchase limit.
-        [InlineData(typeof(ExceedTicketPurchaseLimitException), true, true, false, true, 0, 100L, true, false, 1_000, false, false, false, Raid.RequiredInterval)]
+        [InlineData(typeof(ExceedTicketPurchaseLimitException), true, true, false, true, 0, 100L, true, false, 1_000, false, false, false, Raid4.RequiredInterval)]
         // Exceed challenge count.
-        [InlineData(typeof(ExceedPlayCountException), true, true, false, true, 0, 100L, false, false, 0, false, false, false, Raid.RequiredInterval)]
+        [InlineData(typeof(ExceedPlayCountException), true, true, false, true, 0, 100L, false, false, 0, false, false, false, Raid4.RequiredInterval)]
         public void Execute(
             Type exc,
             bool avatarExist,
@@ -460,7 +460,7 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext
             {
-                BlockIndex = worldBossRow.StartedBlockIndex + Raid.RequiredInterval,
+                BlockIndex = worldBossRow.StartedBlockIndex + Raid4.RequiredInterval,
                 PreviousStates = state,
                 Random = new TestRandom(randomSeed),
                 Rehearsal = false,

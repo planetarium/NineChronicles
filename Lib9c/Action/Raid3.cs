@@ -121,7 +121,7 @@ namespace Nekoyume.Action
                     new List(raiderList.Select(a => a.Serialize())));
             }
 
-            if (context.BlockIndex - raiderState.UpdatedBlockIndex < Raid.RequiredInterval)
+            if (context.BlockIndex - raiderState.UpdatedBlockIndex < Raid4.RequiredInterval)
             {
                 throw new RequiredBlockIntervalException($"wait for interval. {context.BlockIndex - raiderState.UpdatedBlockIndex}");
             }

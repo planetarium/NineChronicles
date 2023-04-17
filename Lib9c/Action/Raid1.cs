@@ -105,7 +105,7 @@ namespace Nekoyume.Action
                 states = states.TransferAsset(context.Signer, worldBossAddress, crystalCost);
             }
 
-            if (context.BlockIndex - raiderState.UpdatedBlockIndex < Raid.RequiredInterval)
+            if (context.BlockIndex - raiderState.UpdatedBlockIndex < Raid4.RequiredInterval)
             {
                 throw new RequiredBlockIntervalException($"wait for interval. {context.BlockIndex - raiderState.UpdatedBlockIndex}");
             }

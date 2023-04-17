@@ -27,7 +27,6 @@ namespace Nekoyume.Action
     [ActionType("raid5")]
     public class Raid : GameAction, IRaidV2
     {
-        public const long RequiredInterval = 5L;
         public Address AvatarAddress;
         public List<Guid> EquipmentIds;
         public List<Guid> CostumeIds;
@@ -121,12 +120,12 @@ namespace Nekoyume.Action
                     new List(raiderList.Select(a => a.Serialize())));
             }
 
-            if (context.BlockIndex - raiderState.UpdatedBlockIndex < RequiredInterval)
+            var gameConfigState = states.GetGameConfigState();
+            if (context.BlockIndex - raiderState.UpdatedBlockIndex < gameConfigState.WorldBossRequiredInterval)
             {
                 throw new RequiredBlockIntervalException($"wait for interval. {context.BlockIndex - raiderState.UpdatedBlockIndex}");
             }
 
-            var gameConfigState = states.GetGameConfigState();
             if (WorldBossHelper.CanRefillTicket(context.BlockIndex, raiderState.RefillBlockIndex,
                     row.StartedBlockIndex, gameConfigState.DailyWorldBossInterval))
             {
