@@ -13,9 +13,9 @@ namespace Nekoyume.Model.Stat
 
         public StatType StatType { get; }
         public OperationType Operation { get; }
-        public decimal Value { get; private set; }
+        public int Value { get; private set; }
 
-        public StatModifier(StatType statType, OperationType operation, decimal value)
+        public StatModifier(StatType statType, OperationType operation, int value)
         {
             StatType = statType;
             Operation = operation;
@@ -23,7 +23,7 @@ namespace Nekoyume.Model.Stat
         }
         
         public StatModifier(DecimalStat decimalStat) : this(decimalStat.StatType, OperationType.Add,
-            decimalStat.TotalValue)
+            decimalStat.TotalValueAsInt)
         {
         }
 
@@ -58,7 +58,7 @@ namespace Nekoyume.Model.Stat
             switch (Operation)
             {
                 case OperationType.Add:
-                    return (int)Value;
+                    return Value;
                 case OperationType.Percentage:
                     return (int)(value * Value / 100m);
                 default:
@@ -90,51 +90,9 @@ namespace Nekoyume.Model.Stat
         /// </summary>
         /// <param name="value"></param>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public void Modify(IntStat value)
-        {
-            value.AddValue(GetModifiedValue((int)Value));
-        }
-
-        /// <summary>
-        /// value를 변경시킨다.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="ignoreCurrent"></param>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public void Modify(IntStatWithCurrent value, bool ignoreCurrent)
-        {
-            Modify(value);
-
-            if (ignoreCurrent)
-                return;
-
-            value.AddCurrent(GetModifiedValue((int)Value));
-        }
-
-        /// <summary>
-        /// value를 변경시킨다.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public void Modify(DecimalStat value)
         {
             value.AddBaseValue(GetModifiedValue(Value));
-        }
-
-        /// <summary>
-        /// value를 변경시킨다.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="ignoreCurrent"></param>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public void Modify(DecimalStatWithCurrent value, bool ignoreCurrent)
-        {
-            Modify(value);
-
-            if (ignoreCurrent)
-                return;
-
-            value.AddCurrent(GetModifiedValue(Value));
         }
 
         public override string ToString() =>

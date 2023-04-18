@@ -8,48 +8,48 @@ using System.Linq;
 namespace Nekoyume.Model.Stat
 {
     [Serializable]
-    public class StatMap : IState
+    public class StatMap : IStats, IBaseAndAdditionalStats, IState
     {
         public DecimalStat this[StatType type]
         {
             get => _statMap[type];
         }
 
-        public decimal HP => _statMap[StatType.HP].TotalValue;
-        public decimal ATK => _statMap[StatType.ATK].TotalValue;
-        public decimal DEF => _statMap[StatType.DEF].TotalValue;
-        public decimal CRI => _statMap[StatType.CRI].TotalValue;
-        public decimal HIT => _statMap[StatType.HIT].TotalValue;
-        public decimal SPD => _statMap[StatType.SPD].TotalValue;
-        public decimal DRV => _statMap[StatType.DRV].TotalValue;
-        public decimal DRR => _statMap[StatType.DRR].TotalValue;
-        public decimal CDMG => _statMap[StatType.CDMG].TotalValue;
-        public decimal ArmorPenetration => _statMap[StatType.ArmorPenetration].TotalValue;
-        public decimal Thorn => _statMap[StatType.Thorn].TotalValue;
+        public int HP => _statMap[StatType.HP].TotalValueAsInt;
+        public int ATK => _statMap[StatType.ATK].TotalValueAsInt;
+        public int DEF => _statMap[StatType.DEF].TotalValueAsInt;
+        public int CRI => _statMap[StatType.CRI].TotalValueAsInt;
+        public int HIT => _statMap[StatType.HIT].TotalValueAsInt;
+        public int SPD => _statMap[StatType.SPD].TotalValueAsInt;
+        public int DRV => _statMap[StatType.DRV].TotalValueAsInt;
+        public int DRR => _statMap[StatType.DRR].TotalValueAsInt;
+        public int CDMG => _statMap[StatType.CDMG].TotalValueAsInt;
+        public int ArmorPenetration => _statMap[StatType.ArmorPenetration].TotalValueAsInt;
+        public int Thorn => _statMap[StatType.Thorn].TotalValueAsInt;
 
-        public decimal BaseHP => _statMap[StatType.HP].BaseValue;
-        public decimal BaseATK => _statMap[StatType.ATK].BaseValue;
-        public decimal BaseDEF => _statMap[StatType.DEF].BaseValue;
-        public decimal BaseCRI => _statMap[StatType.CRI].BaseValue;
-        public decimal BaseHIT => _statMap[StatType.HIT].BaseValue;
-        public decimal BaseSPD => _statMap[StatType.SPD].BaseValue;
-        public decimal BaseDRV => _statMap[StatType.DRV].BaseValue;
-        public decimal BaseDRR => _statMap[StatType.DRR].BaseValue;
-        public decimal BaseCDMG => _statMap[StatType.CDMG].BaseValue;
-        public decimal BaseArmorPenetration => _statMap[StatType.ArmorPenetration].BaseValue;
-        public decimal BaseThorn => _statMap[StatType.Thorn].BaseValue;
+        public int BaseHP => _statMap[StatType.HP].BaseValue;
+        public int BaseATK => _statMap[StatType.ATK].BaseValue;
+        public int BaseDEF => _statMap[StatType.DEF].BaseValue;
+        public int BaseCRI => _statMap[StatType.CRI].BaseValue;
+        public int BaseHIT => _statMap[StatType.HIT].BaseValue;
+        public int BaseSPD => _statMap[StatType.SPD].BaseValue;
+        public int BaseDRV => _statMap[StatType.DRV].BaseValue;
+        public int BaseDRR => _statMap[StatType.DRR].BaseValue;
+        public int BaseCDMG => _statMap[StatType.CDMG].BaseValue;
+        public int BaseArmorPenetration => _statMap[StatType.ArmorPenetration].BaseValue;
+        public int BaseThorn => _statMap[StatType.Thorn].BaseValue;
 
-        public decimal AdditionalHP => _statMap[StatType.HP].AdditionalValue;
-        public decimal AdditionalATK => _statMap[StatType.ATK].AdditionalValue;
-        public decimal AdditionalDEF => _statMap[StatType.DEF].AdditionalValue;
-        public decimal AdditionalCRI => _statMap[StatType.CRI].AdditionalValue;
-        public decimal AdditionalHIT => _statMap[StatType.HIT].AdditionalValue;
-        public decimal AdditionalSPD => _statMap[StatType.SPD].AdditionalValue;
-        public decimal AdditionalDRV => _statMap[StatType.DRV].AdditionalValue;
-        public decimal AdditionalDRR => _statMap[StatType.DRR].AdditionalValue;
-        public decimal AdditionalCDMG => _statMap[StatType.CDMG].AdditionalValue;
-        public decimal AdditionalArmorPenetration => _statMap[StatType.ArmorPenetration].AdditionalValue;
-        public decimal AdditionalThorn => _statMap[StatType.Thorn].AdditionalValue;
+        public int AdditionalHP => _statMap[StatType.HP].AdditionalValue;
+        public int AdditionalATK => _statMap[StatType.ATK].AdditionalValue;
+        public int AdditionalDEF => _statMap[StatType.DEF].AdditionalValue;
+        public int AdditionalCRI => _statMap[StatType.CRI].AdditionalValue;
+        public int AdditionalHIT => _statMap[StatType.HIT].AdditionalValue;
+        public int AdditionalSPD => _statMap[StatType.SPD].AdditionalValue;
+        public int AdditionalDRV => _statMap[StatType.DRV].AdditionalValue;
+        public int AdditionalDRR => _statMap[StatType.DRR].AdditionalValue;
+        public int AdditionalCDMG => _statMap[StatType.CDMG].AdditionalValue;
+        public int AdditionalArmorPenetration => _statMap[StatType.ArmorPenetration].AdditionalValue;
+        public int AdditionalThorn => _statMap[StatType.Thorn].AdditionalValue;
 
         private readonly Dictionary<StatType, DecimalStat> _statMap;
 
@@ -88,7 +88,7 @@ namespace Nekoyume.Model.Stat
             }
         }
 
-        public int GetStatAsInt(StatType statType)
+        public int GetStat(StatType statType)
         {
             if (!_statMap.TryGetValue(statType, out var decimalStat))
             {
@@ -98,17 +98,7 @@ namespace Nekoyume.Model.Stat
             return decimalStat.TotalValueAsInt;
         }
 
-        public decimal GetStat(StatType statType)
-        {
-            if (!_statMap.TryGetValue(statType, out var decimalStat))
-            {
-                throw new KeyNotFoundException($"StatType {statType} is missing in statMap.");
-            }
-
-            return decimalStat.TotalValue;
-        }
-
-        public decimal GetBaseStat(StatType statType)
+        public int GetBaseStat(StatType statType)
         {
             if (!_statMap.TryGetValue(statType, out var decimalStat))
             {
@@ -118,7 +108,7 @@ namespace Nekoyume.Model.Stat
             return decimalStat.BaseValue;
         }
 
-        public decimal GetAdditionalStat(StatType statType)
+        public int GetAdditionalStat(StatType statType)
         {
             if (!_statMap.TryGetValue(statType, out var decimalStat))
             {
@@ -128,8 +118,7 @@ namespace Nekoyume.Model.Stat
             return decimalStat.AdditionalValue;
         }
 
-
-        public IEnumerable<(StatType statType, decimal value)> GetStats(bool ignoreZero = false)
+        public IEnumerable<(StatType statType, int value)> GetStats(bool ignoreZero = false)
         {
             foreach (var (statType, stat) in _statMap.OrderBy(x => x.Key))
             {
@@ -137,17 +126,17 @@ namespace Nekoyume.Model.Stat
                 {
                     if (stat.HasTotalValue)
                     {
-                        yield return (statType, stat.TotalValue);
+                        yield return (statType, stat.TotalValueAsInt);
                     }
                 }
                 else
                 {
-                    yield return (statType, stat.TotalValue);
+                    yield return (statType, stat.TotalValueAsInt);
                 }
             }
         }
 
-        public IEnumerable<(StatType statType, decimal baseValue)> GetBaseStats(bool ignoreZero = false)
+        public IEnumerable<(StatType statType, int baseValue)> GetBaseStats(bool ignoreZero = false)
         {
             foreach (var (statType, stat) in _statMap.OrderBy(x => x.Key))
             {
@@ -165,7 +154,7 @@ namespace Nekoyume.Model.Stat
             }
         }
 
-        public IEnumerable<(StatType statType, decimal additionalValue)> GetAdditionalStats(bool ignoreZero = false)
+        public IEnumerable<(StatType statType, int additionalValue)> GetAdditionalStats(bool ignoreZero = false)
         {
             foreach (var (statType, stat) in _statMap.OrderBy(x => x.Key))
             {
@@ -183,7 +172,7 @@ namespace Nekoyume.Model.Stat
             }
         }
 
-        public IEnumerable<(StatType statType, decimal baseValue, decimal additionalValue)> GetBaseAndAdditionalStats(
+        public IEnumerable<(StatType statType, int baseValue, int additionalValue)> GetBaseAndAdditionalStats(
             bool ignoreZero = false)
         {
             foreach (var (statType, stat) in _statMap.OrderBy(x => x.Key))

@@ -506,7 +506,7 @@ namespace Lib9c.DevExtensions.Tests.Action
                 foreach (var statOption in statOptions)
                 {
                     Assert.Contains(
-                        equipment.StatsMap.GetAdditionalStats(true),
+                        equipment.StatsMap.GetAdditionalStats(),
                         stat => stat.statType == statOption.Key &&
                                 stat.additionalValue == statOption.Value);
                 }

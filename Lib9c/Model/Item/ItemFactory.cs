@@ -73,7 +73,7 @@ namespace Nekoyume.Model.Item
 
             for (int i = 0; i < level; ++i)
             {
-                equipment.LevelUp();
+                equipment.LevelUpV1();
             }
 
             return equipment;
