@@ -10,14 +10,14 @@ namespace Nekoyume.UI.Module
     {
         public TextMeshProUGUI afterValueText;
 
-        public void Show(StatType statType, decimal statValue, decimal afterStatValue)
+        public void Show(StatType statType, int statValue, int afterStatValue)
         {
             afterValueText.text
                 = statType.ValueToString(afterStatValue);
             Show(statType, statValue);
         }
 
-        public void Show(string keyText, decimal statValue, decimal afterStatValue)
+        public void Show(string keyText, int statValue, int afterStatValue)
         {
             if (!Enum.TryParse<StatType>(keyText, out var statType))
             {

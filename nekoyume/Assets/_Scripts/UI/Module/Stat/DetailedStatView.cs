@@ -10,7 +10,7 @@ namespace Nekoyume.UI.Module
     {
         public TextMeshProUGUI additionalText;
 
-        public void Show(StatType statType, decimal statValue, decimal additionalStatValue)
+        public void Show(StatType statType, int statValue, int additionalStatValue)
         {
             statTypeText.text = statType.ToString();
             valueText.text = statType.ValueToString(statValue);
@@ -38,7 +38,7 @@ namespace Nekoyume.UI.Module
             Show(statType, statValue, additionalStatValue);
         }
 
-        public void SetAdditional(StatType statType, decimal additionalStatValue)
+        public void SetAdditional(StatType statType, int additionalStatValue)
         {
             if (additionalStatValue == 0)
             {

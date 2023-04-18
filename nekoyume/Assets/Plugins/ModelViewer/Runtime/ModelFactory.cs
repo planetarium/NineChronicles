@@ -223,7 +223,7 @@ namespace ModelViewer.Runtime
                     Guid.NewGuid(),
                     0L);
                 var itemUsable = new Equipment((Dictionary)preItemUsable.Serialize());
-                itemUsable.LevelUp();
+                itemUsable.LevelUpV1();
                 return new ItemEnhancement.ResultModel
                 {
                     id = Guid.NewGuid(),

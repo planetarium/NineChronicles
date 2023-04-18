@@ -361,7 +361,7 @@ namespace Nekoyume.UI
                 if (row.BaseStatGrowthMin != 0 && row.BaseStatGrowthMax != 0)
                 {
                     var (mainStatType, mainValue, _) = itemOptionInfo.MainStat;
-                    var mainAdd = Math.Max(1,
+                    var mainAdd = (int)Math.Max(1,
                         (mainValue * row.BaseStatGrowthMax.NormalizeFromTenThousandths()));
                     mainStatView.gameObject.SetActive(true);
                     mainStatView.Set(mainStatType.ToString(),

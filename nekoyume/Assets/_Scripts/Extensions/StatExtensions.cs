@@ -27,7 +27,7 @@ namespace Nekoyume
             return description;
         }
 
-        public static string ValueToString(this StatType statType, decimal value, bool isSigned = false)
+        public static string ValueToString(this StatType statType, int value, bool isSigned = false)
         {
             switch (statType)
             {
@@ -40,7 +40,7 @@ namespace Nekoyume
                 case StatType.Thorn:
                     return isSigned
                         ? value.ToString("+0.##;-0.##")
-                        : ((int)value).ToString();
+                        : (value).ToString();
                 case StatType.CRI:
                     return isSigned
                         ? value.ToString("+0.##\\%;-0.##\\%")

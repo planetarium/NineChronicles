@@ -23,7 +23,7 @@ namespace Nekoyume.UI.Module
             bulletSubImage.enabled = !isMainStat;
 
             if (isMainStat)
-                Show(decimalStat.StatType, decimalStat.BaseValueAsInt, decimalStat.AdditionalValueAsInt);
+                Show(decimalStat.StatType, decimalStat.BaseValue, decimalStat.AdditionalValue);
             else
                 Show(decimalStat.StatType, decimalStat.TotalValueAsInt, 0);
         }
