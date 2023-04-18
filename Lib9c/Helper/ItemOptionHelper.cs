@@ -11,10 +11,10 @@ namespace Nekoyume.Helper
     {
         public readonly int OptionCountFromCombination;
 
-        public readonly (StatType type, decimal baseValue, decimal totalValue) MainStat;
+        public readonly (StatType type, int baseValue, int totalValue) MainStat;
 
-        public readonly List<(StatType type, decimal value, int count)> StatOptions
-            = new List<(StatType type, decimal value, int count)>();
+        public readonly List<(StatType type, int value, int count)> StatOptions
+            = new List<(StatType type, int value, int count)>();
 
         public readonly List<(SkillSheet.Row skillRow, int power, int chance)> SkillOptions
             = new List<(SkillSheet.Row skillRow, int power, int chance)>();
