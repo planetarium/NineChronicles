@@ -71,7 +71,7 @@ namespace Lib9c.Tests.Model.Item
             var equipment = (Equipment)ItemFactory.CreateItemUsable(row, default, 0, 0);
 
             Assert.Equal(1m, equipment.StatsMap.ATK);
-            equipment.LevelUp();
+            equipment.LevelUpV1();
             Assert.Equal(2m, equipment.StatsMap.ATK);
         }
     }

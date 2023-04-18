@@ -129,7 +129,8 @@ namespace Nekoyume.Model.Item
             equipped = false;
         }
 
-        public void LevelUp()
+        [Obsolete("Use LevelUp")]
+        public void LevelUpV1()
         {
             level++;
             var increment = GetIncrementAmountOfEnhancement();
@@ -141,6 +142,7 @@ namespace Nekoyume.Model.Item
             }
         }
 
+        [Obsolete("Use LevelUp")]
         public void LevelUpV2(IRandom random, EnhancementCostSheetV2.Row row, bool isGreatSuccess)
         {
             level++;
