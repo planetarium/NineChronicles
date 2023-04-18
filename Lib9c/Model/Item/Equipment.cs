@@ -30,7 +30,7 @@ namespace Nekoyume.Model.Item
 
         public decimal GetIncrementAmountOfEnhancement()
         {
-            var stat = (int)StatsMap.GetBaseStat(UniqueStatType);
+            var stat = StatsMap.GetBaseStat(UniqueStatType);
             return Math.Max(1.0m, stat * 0.1m);
         }
 
@@ -149,7 +149,7 @@ namespace Nekoyume.Model.Item
             var rand = isGreatSuccess ? row.BaseStatGrowthMax
                 : random.Next(row.BaseStatGrowthMin, row.BaseStatGrowthMax + 1);
             var ratio = rand.NormalizeFromTenThousandths();
-            var baseStat = (int)StatsMap.GetBaseStat(UniqueStatType) * ratio;
+            var baseStat = StatsMap.GetBaseStat(UniqueStatType) * ratio;
             if (baseStat > 0)
             {
                 baseStat = Math.Max(1.0m, baseStat);

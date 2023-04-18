@@ -9,17 +9,17 @@ namespace Nekoyume.Model.Stat
     {
         protected readonly StatMap _statMap = new StatMap();
 
-        public decimal HP => _statMap[StatType.HP].BaseValue;
-        public decimal ATK => _statMap[StatType.ATK].BaseValue;
-        public decimal DEF => _statMap[StatType.DEF].BaseValue;
-        public decimal CRI => _statMap[StatType.CRI].BaseValue;
-        public decimal HIT => _statMap[StatType.HIT].BaseValue;
-        public decimal SPD => _statMap[StatType.SPD].BaseValue;
-        public decimal DRV => _statMap[StatType.DRV].BaseValue;
-        public decimal DRR => _statMap[StatType.DRR].BaseValue;
-        public decimal CDMG => _statMap[StatType.CDMG].BaseValue;
-        public decimal ArmorPenetration => _statMap[StatType.ArmorPenetration].BaseValue;
-        public decimal DamageReflection => _statMap[StatType.DamageReflection].BaseValue;
+        public int HP => _statMap[StatType.HP].BaseValue;
+        public int ATK => _statMap[StatType.ATK].BaseValue;
+        public int DEF => _statMap[StatType.DEF].BaseValue;
+        public int CRI => _statMap[StatType.CRI].BaseValue;
+        public int HIT => _statMap[StatType.HIT].BaseValue;
+        public int SPD => _statMap[StatType.SPD].BaseValue;
+        public int DRV => _statMap[StatType.DRV].BaseValue;
+        public int DRR => _statMap[StatType.DRR].BaseValue;
+        public int CDMG => _statMap[StatType.CDMG].BaseValue;
+        public int ArmorPenetration => _statMap[StatType.ArmorPenetration].BaseValue;
+        public int DamageReflection => _statMap[StatType.DamageReflection].BaseValue;
         
         public Stats()
         {
@@ -66,7 +66,7 @@ namespace Nekoyume.Model.Stat
             }
         }
 
-        public decimal GetStat(StatType statType)
+        public int GetStat(StatType statType)
         {
             return _statMap.GetStat(statType);
         }
@@ -82,7 +82,7 @@ namespace Nekoyume.Model.Stat
             _statMap[statType].SetBaseValue(value);
         }
 
-        public IEnumerable<(StatType statType, decimal value)> GetStats(bool ignoreZero = false)
+        public IEnumerable<(StatType statType, int value)> GetStats(bool ignoreZero = false)
         {
             return _statMap.GetStats(ignoreZero);
         }

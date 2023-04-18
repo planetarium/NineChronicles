@@ -4,32 +4,32 @@ namespace Nekoyume.Model.Stat
 {
     public interface IBaseAndAdditionalStats
     {
-        decimal BaseHP { get; }
-        decimal BaseATK { get; }
-        decimal BaseDEF { get; }
-        decimal BaseCRI { get; }
-        decimal BaseHIT { get; }
-        decimal BaseSPD { get; }
-        decimal BaseDRV { get; }
-        decimal BaseDRR { get; }
-        decimal BaseCDMG { get; }
-        decimal BaseArmorPenetration { get; }
-        decimal BaseDamageReflection { get; }
+        int BaseHP { get; }
+        int BaseATK { get; }
+        int BaseDEF { get; }
+        int BaseCRI { get; }
+        int BaseHIT { get; }
+        int BaseSPD { get; }
+        int BaseDRV { get; }
+        int BaseDRR { get; }
+        int BaseCDMG { get; }
+        int BaseArmorPenetration { get; }
+        int BaseDamageReflection { get; }
 
-        decimal AdditionalHP { get; }
-        decimal AdditionalATK { get; }
-        decimal AdditionalDEF { get; }
-        decimal AdditionalCRI { get; }
-        decimal AdditionalHIT { get; }
-        decimal AdditionalSPD { get; }
-        decimal AdditionalDRV { get; }
-        decimal AdditionalDRR { get; }
-        decimal AdditionalCDMG { get; }
-        decimal AdditionalArmorPenetration { get; }
-        decimal AdditionalDamageReflection { get; }
+        int AdditionalHP { get; }
+        int AdditionalATK { get; }
+        int AdditionalDEF { get; }
+        int AdditionalCRI { get; }
+        int AdditionalHIT { get; }
+        int AdditionalSPD { get; }
+        int AdditionalDRV { get; }
+        int AdditionalDRR { get; }
+        int AdditionalCDMG { get; }
+        int AdditionalArmorPenetration { get; }
+        int AdditionalDamageReflection { get; }
 
-        IEnumerable<(StatType statType, decimal baseValue)> GetBaseStats(bool ignoreZero = false);
-        IEnumerable<(StatType statType, decimal additionalValue)> GetAdditionalStats(bool ignoreZero = false);
-        IEnumerable<(StatType statType, decimal baseValue, decimal additionalValue)> GetBaseAndAdditionalStats(bool ignoreZero = false);
+        IEnumerable<(StatType statType, int baseValue)> GetBaseStats(bool ignoreZero = false);
+        IEnumerable<(StatType statType, int additionalValue)> GetAdditionalStats(bool ignoreZero = false);
+        IEnumerable<(StatType statType, int baseValue, int additionalValue)> GetBaseAndAdditionalStats(bool ignoreZero = false);
     }
 }

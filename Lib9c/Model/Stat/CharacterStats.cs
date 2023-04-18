@@ -41,29 +41,29 @@ namespace Nekoyume.Model.Stat
         public IStats BuffStats => _buffStats;
         public IStats OptionalStats => _optionalStats;
 
-        public decimal BaseHP => BaseStats.HP;
-        public decimal BaseATK => BaseStats.ATK;
-        public decimal BaseDEF => BaseStats.DEF;
-        public decimal BaseCRI => BaseStats.CRI;
-        public decimal BaseHIT => BaseStats.HIT;
-        public decimal BaseSPD => BaseStats.SPD;
-        public decimal BaseDRV => BaseStats.DRV;
-        public decimal BaseDRR => BaseStats.DRR;
-        public decimal BaseCDMG => BaseStats.CDMG;
-        public decimal BaseArmorPenetration => BaseStats.ArmorPenetration;
-        public decimal BaseDamageReflection => BaseStats.DamageReflection;
+        public int BaseHP => BaseStats.HP;
+        public int BaseATK => BaseStats.ATK;
+        public int BaseDEF => BaseStats.DEF;
+        public int BaseCRI => BaseStats.CRI;
+        public int BaseHIT => BaseStats.HIT;
+        public int BaseSPD => BaseStats.SPD;
+        public int BaseDRV => BaseStats.DRV;
+        public int BaseDRR => BaseStats.DRR;
+        public int BaseCDMG => BaseStats.CDMG;
+        public int BaseArmorPenetration => BaseStats.ArmorPenetration;
+        public int BaseDamageReflection => BaseStats.DamageReflection;
 
-        public decimal AdditionalHP => HP - _baseStats.HP;
-        public decimal AdditionalATK => ATK - _baseStats.ATK;
-        public decimal AdditionalDEF => DEF - _baseStats.DEF;
-        public decimal AdditionalCRI => CRI - _baseStats.CRI;
-        public decimal AdditionalHIT => HIT - _baseStats.HIT;
-        public decimal AdditionalSPD => SPD - _baseStats.SPD;
-        public decimal AdditionalDRV => DRV - _baseStats.DRV;
-        public decimal AdditionalDRR => DRR - _baseStats.DRR;
-        public decimal AdditionalCDMG => CDMG - _baseStats.CDMG;
-        public decimal AdditionalArmorPenetration => ArmorPenetration - _baseStats.ArmorPenetration;
-        public decimal AdditionalDamageReflection => DamageReflection - _baseStats.DamageReflection;
+        public int AdditionalHP => HP - _baseStats.HP;
+        public int AdditionalATK => ATK - _baseStats.ATK;
+        public int AdditionalDEF => DEF - _baseStats.DEF;
+        public int AdditionalCRI => CRI - _baseStats.CRI;
+        public int AdditionalHIT => HIT - _baseStats.HIT;
+        public int AdditionalSPD => SPD - _baseStats.SPD;
+        public int AdditionalDRV => DRV - _baseStats.DRV;
+        public int AdditionalDRR => DRR - _baseStats.DRR;
+        public int AdditionalCDMG => CDMG - _baseStats.CDMG;
+        public int AdditionalArmorPenetration => ArmorPenetration - _baseStats.ArmorPenetration;
+        public int AdditionalDamageReflection => DamageReflection - _baseStats.DamageReflection;
 
         public CharacterStats(
             CharacterSheet.Row row,
@@ -382,25 +382,25 @@ namespace Nekoyume.Model.Stat
             return new CharacterStats(this);
         }
 
-        public IEnumerable<(StatType statType, decimal baseValue)> GetBaseStats(bool ignoreZero = false)
+        public IEnumerable<(StatType statType, int baseValue)> GetBaseStats(bool ignoreZero = false)
         {
             return _baseStats.GetStats(ignoreZero);
         }
 
-        public IEnumerable<(StatType statType, decimal additionalValue)> GetAdditionalStats(bool ignoreZero = false)
+        public IEnumerable<(StatType statType, int additionalValue)> GetAdditionalStats(bool ignoreZero = false)
         {
             var baseStats = _baseStats.GetStats();
             foreach (var (statType, stat) in baseStats)
             {
                 var value = _statMap[statType].BaseValue - stat;
-                if (!ignoreZero || value != decimal.Zero)
+                if (!ignoreZero || value != default)
                 {
                     yield return (statType, value);
                 }
             }
         }
 
-        public IEnumerable<(StatType statType, decimal baseValue, decimal additionalValue)> GetBaseAndAdditionalStats(
+        public IEnumerable<(StatType statType, int baseValue, int additionalValue)> GetBaseAndAdditionalStats(
             bool ignoreZero = false)
         {
             var additionalStats = GetAdditionalStats();
@@ -408,7 +408,7 @@ namespace Nekoyume.Model.Stat
             {
                 var baseStat = _baseStats.GetStat(statType);
                 if (!ignoreZero ||
-                    (baseStat != decimal.Zero) || (additionalStat != decimal.Zero))
+                    (baseStat != default) || (additionalStat != default))
                 {
                     yield return (statType, baseStat, additionalStat);
                 }

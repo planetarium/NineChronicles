@@ -8,41 +8,41 @@ namespace Nekoyume.Model.Stat
     [Serializable]
     public class StatsMap : IStats, IBaseAndAdditionalStats, IState
     {
-        public decimal HP => GetStat(StatType.HP);
-        public decimal ATK => GetStat(StatType.ATK);
-        public decimal DEF => GetStat(StatType.DEF);
-        public decimal CRI => GetStat(StatType.CRI);
-        public decimal HIT => GetStat(StatType.HIT);
-        public decimal SPD => GetStat(StatType.SPD);
-        public decimal DRV => GetStat(StatType.DRV);
-        public decimal DRR => GetStat(StatType.DRR);
-        public decimal CDMG => GetStat(StatType.CDMG);
-        public decimal ArmorPenetration => GetStat(StatType.ArmorPenetration);
-        public decimal DamageReflection => GetStat(StatType.DamageReflection);
+        public int HP => GetStat(StatType.HP);
+        public int ATK => GetStat(StatType.ATK);
+        public int DEF => GetStat(StatType.DEF);
+        public int CRI => GetStat(StatType.CRI);
+        public int HIT => GetStat(StatType.HIT);
+        public int SPD => GetStat(StatType.SPD);
+        public int DRV => GetStat(StatType.DRV);
+        public int DRR => GetStat(StatType.DRR);
+        public int CDMG => GetStat(StatType.CDMG);
+        public int ArmorPenetration => GetStat(StatType.ArmorPenetration);
+        public int DamageReflection => GetStat(StatType.DamageReflection);
 
-        public decimal BaseHP => GetBaseStat(StatType.HP);
-        public decimal BaseATK => GetBaseStat(StatType.ATK);
-        public decimal BaseDEF => GetBaseStat(StatType.DEF);
-        public decimal BaseCRI => GetBaseStat(StatType.CRI);
-        public decimal BaseHIT => GetBaseStat(StatType.HIT);
-        public decimal BaseSPD => GetBaseStat(StatType.SPD);
-        public decimal BaseDRV => GetBaseStat(StatType.DRV);
-        public decimal BaseDRR => GetBaseStat(StatType.DRR);
-        public decimal BaseCDMG => GetBaseStat(StatType.CDMG);
-        public decimal BaseArmorPenetration => GetBaseStat(StatType.ArmorPenetration);
-        public decimal BaseDamageReflection => GetBaseStat(StatType.DamageReflection);
+        public int BaseHP => GetBaseStat(StatType.HP);
+        public int BaseATK => GetBaseStat(StatType.ATK);
+        public int BaseDEF => GetBaseStat(StatType.DEF);
+        public int BaseCRI => GetBaseStat(StatType.CRI);
+        public int BaseHIT => GetBaseStat(StatType.HIT);
+        public int BaseSPD => GetBaseStat(StatType.SPD);
+        public int BaseDRV => GetBaseStat(StatType.DRV);
+        public int BaseDRR => GetBaseStat(StatType.DRR);
+        public int BaseCDMG => GetBaseStat(StatType.CDMG);
+        public int BaseArmorPenetration => GetBaseStat(StatType.ArmorPenetration);
+        public int BaseDamageReflection => GetBaseStat(StatType.DamageReflection);
 
-        public decimal AdditionalHP => GetAdditionalStat(StatType.HP);
-        public decimal AdditionalATK => GetAdditionalStat(StatType.ATK);
-        public decimal AdditionalDEF => GetAdditionalStat(StatType.DEF);
-        public decimal AdditionalCRI => GetAdditionalStat(StatType.CRI);
-        public decimal AdditionalHIT => GetAdditionalStat(StatType.HIT);
-        public decimal AdditionalSPD => GetAdditionalStat(StatType.SPD);
-        public decimal AdditionalDRV => GetAdditionalStat(StatType.DRV);
-        public decimal AdditionalDRR => GetAdditionalStat(StatType.DRR);
-        public decimal AdditionalCDMG => GetAdditionalStat(StatType.CDMG);
-        public decimal AdditionalArmorPenetration => GetAdditionalStat(StatType.ArmorPenetration);
-        public decimal AdditionalDamageReflection => GetAdditionalStat(StatType.DamageReflection);
+        public int AdditionalHP => GetAdditionalStat(StatType.HP);
+        public int AdditionalATK => GetAdditionalStat(StatType.ATK);
+        public int AdditionalDEF => GetAdditionalStat(StatType.DEF);
+        public int AdditionalCRI => GetAdditionalStat(StatType.CRI);
+        public int AdditionalHIT => GetAdditionalStat(StatType.HIT);
+        public int AdditionalSPD => GetAdditionalStat(StatType.SPD);
+        public int AdditionalDRV => GetAdditionalStat(StatType.DRV);
+        public int AdditionalDRR => GetAdditionalStat(StatType.DRR);
+        public int AdditionalCDMG => GetAdditionalStat(StatType.CDMG);
+        public int AdditionalArmorPenetration => GetAdditionalStat(StatType.ArmorPenetration);
+        public int AdditionalDamageReflection => GetAdditionalStat(StatType.DamageReflection);
 
         private readonly StatMap _statMap = new StatMap();
 
@@ -64,22 +64,17 @@ namespace Nekoyume.Model.Stat
             return _statMap != null ? _statMap.GetHashCode() : 0;
         }
 
-        public int GetStatAsInt(StatType statType)
-        {
-            return _statMap.GetStatAsInt(statType);
-        }
-
-        public decimal GetStat(StatType statType)
+        public int GetStat(StatType statType)
         {
             return _statMap.GetStat(statType);
         }
 
-        public decimal GetBaseStat(StatType statType)
+        public int GetBaseStat(StatType statType)
         {
             return _statMap.GetBaseStat(statType);
         }
 
-        public decimal GetAdditionalStat(StatType statType)
+        public int GetAdditionalStat(StatType statType)
         {
             return _statMap.GetAdditionalStat(statType);
         }
@@ -108,22 +103,22 @@ namespace Nekoyume.Model.Stat
 
         public void Deserialize(Dictionary serialized) => _statMap.Deserialize(serialized);
 
-        public IEnumerable<(StatType statType, decimal value)> GetStats(bool ignoreZero = false)
+        public IEnumerable<(StatType statType, int value)> GetStats(bool ignoreZero = false)
         {
             return _statMap.GetStats(ignoreZero);
         }
 
-        public IEnumerable<(StatType statType, decimal baseValue)> GetBaseStats(bool ignoreZero = false)
+        public IEnumerable<(StatType statType, int baseValue)> GetBaseStats(bool ignoreZero = false)
         {
             return _statMap.GetBaseStats(ignoreZero);
         }
 
-        public IEnumerable<(StatType statType, decimal additionalValue)> GetAdditionalStats(bool ignoreZero = false)
+        public IEnumerable<(StatType statType, int additionalValue)> GetAdditionalStats(bool ignoreZero = false)
         {
             return _statMap.GetAdditionalStats(ignoreZero);
         }
 
-        public IEnumerable<(StatType statType, decimal baseValue, decimal additionalValue)> GetBaseAndAdditionalStats(
+        public IEnumerable<(StatType statType, int baseValue, int additionalValue)> GetBaseAndAdditionalStats(
             bool ignoreZero = false)
         {
             return _statMap.GetBaseAndAdditionalStats(ignoreZero);

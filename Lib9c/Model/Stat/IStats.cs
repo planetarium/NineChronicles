@@ -4,18 +4,18 @@ namespace Nekoyume.Model.Stat
 {
     public interface IStats
     {
-        decimal HP { get; }
-        decimal ATK { get; }
-        decimal DEF { get; }
-        decimal CRI { get; }
-        decimal HIT { get; }
-        decimal SPD { get; }
-        decimal DRV { get; }
-        decimal DRR { get; }
-        decimal CDMG { get; }
-        decimal ArmorPenetration { get; }
-        decimal DamageReflection { get; }
+        int HP { get; }
+        int ATK { get; }
+        int DEF { get; }
+        int CRI { get; }
+        int HIT { get; }
+        int SPD { get; }
+        int DRV { get; }
+        int DRR { get; }
+        int CDMG { get; }
+        int ArmorPenetration { get; }
+        int DamageReflection { get; }
 
-        IEnumerable<(StatType statType, decimal value)> GetStats(bool ignoreZero = false);
+        IEnumerable<(StatType statType, int value)> GetStats(bool ignoreZero = false);
     }
 }
