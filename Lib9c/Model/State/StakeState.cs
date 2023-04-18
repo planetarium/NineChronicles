@@ -4,9 +4,7 @@ using System.Globalization;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet;
-using Libplanet.Action;
 using Nekoyume.Action;
-
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Model.State
@@ -25,14 +23,14 @@ namespace Nekoyume.Model.State
             public StakeAchievements(Dictionary serialized)
             {
                 _achievements = serialized.ToDictionary(
-                    pair => int.Parse(((Text) pair.Key).Value, CultureInfo.InvariantCulture),
-                    pair => (int) (Integer) pair.Value);
+                    pair => int.Parse(((Text)pair.Key).Value, CultureInfo.InvariantCulture),
+                    pair => (int)(Integer)pair.Value);
             }
 
             public IValue Serialize() =>
                 new Dictionary(_achievements.ToDictionary(
-                    pair => (IKey)(Text) pair.Key.ToString(CultureInfo.InvariantCulture),
-                    pair => (IValue)(Integer) pair.Value));
+                    pair => (IKey)(Text)pair.Key.ToString(CultureInfo.InvariantCulture),
+                    pair => (IValue)(Integer)pair.Value));
 
             public bool Check(int level, int step)
             {
@@ -55,6 +53,7 @@ namespace Nekoyume.Model.State
 
         public const long RewardInterval = 50400;
         public const long LockupInterval = 50400 * 4;
+        public const long StakeRewardSheetV2Index = 7_000_000L;
 
         public long CancellableBlockIndex { get; private set; }
         public long StartedBlockIndex { get; private set; }
@@ -100,20 +99,27 @@ namespace Nekoyume.Model.State
         }
 
         public override IValue Serialize() =>
-            new Dictionary(SerializeImpl().Union((Dictionary) base.Serialize()));
+            new Dictionary(SerializeImpl().Union((Dictionary)base.Serialize()));
 
         public override IValue SerializeV2() =>
-            new Dictionary(SerializeImpl().Union((Dictionary) base.SerializeV2()));
+            new Dictionary(SerializeImpl().Union((Dictionary)base.SerializeV2()));
 
         public bool IsCancellable(long blockIndex) => blockIndex >= CancellableBlockIndex;
 
         public bool IsClaimable(long blockIndex)
         {
+            return IsClaimable(blockIndex, out _, out _);
+        }
+
+        public bool IsClaimable(long blockIndex, out int v1Step, out int v2Step)
+        {
             if (blockIndex >= ActionObsoleteConfig.V100290ObsoleteIndex)
             {
-                return CalculateAccumulatedRewards(blockIndex) > 0;
+                return CalculateAccumulatedRewards(blockIndex, out v1Step, out v2Step) > 0;
             }
 
+            v1Step = 0;
+            v2Step = 0;
             if (ReceivedBlockIndex == 0)
             {
                 return StartedBlockIndex + RewardInterval <= blockIndex;
@@ -129,33 +135,59 @@ namespace Nekoyume.Model.State
 
         public int CalculateAccumulatedRewards(long blockIndex)
         {
-            return CalculateStep(blockIndex, StartedBlockIndex);
+            return CalculateAccumulatedRewards(blockIndex, out _, out _);
+        }
+
+        public int CalculateAccumulatedRewards(long blockIndex, out int v1Step, out int v2Step)
+        {
+            return CalculateStep(blockIndex, StartedBlockIndex, out v1Step, out v2Step);
         }
 
         public int CalculateAccumulatedRuneRewards(long blockIndex)
         {
-            long startedBlockIndex = Math.Max(StartedBlockIndex, ClaimStakeReward.ObsoletedIndex);
-            return CalculateStep(blockIndex, startedBlockIndex);
+            return CalculateAccumulatedRuneRewards(blockIndex, out _, out _);
         }
 
-        private int CalculateStep(long blockIndex, long startedBlockIndex)
+        public int CalculateAccumulatedRuneRewards(long blockIndex, out int v1Step, out int v2Step)
         {
-            int step = (int)Math.DivRem(
+            long startedBlockIndex = Math.Max(StartedBlockIndex, ClaimStakeReward2.ObsoletedIndex);
+            return CalculateStep(blockIndex, startedBlockIndex, out v1Step, out v2Step);
+        }
+
+        private int CalculateStep(long blockIndex, long startedBlockIndex, out int v1Step,
+            out int v2Step)
+        {
+            int totalStep = (int)Math.DivRem(
                 blockIndex - startedBlockIndex,
                 RewardInterval,
                 out _
             );
+
+            int previousStep = 0;
             if (ReceivedBlockIndex > 0)
             {
-                int previousStep = (int)Math.DivRem(
+                previousStep = (int)Math.DivRem(
                     ReceivedBlockIndex - startedBlockIndex,
                     RewardInterval,
                     out _
                 );
-                step -= previousStep;
             }
 
-            return step;
+            v1Step = totalStep - previousStep;
+            v2Step = 0;
+
+            if (blockIndex >= StakeRewardSheetV2Index)
+            {
+                v1Step = Math.Max((int)Math.DivRem(
+                    StakeRewardSheetV2Index -
+                    Math.Max(ReceivedBlockIndex, startedBlockIndex),
+                    RewardInterval,
+                    out _
+                ), 0);
+                v2Step = totalStep - previousStep - v1Step;
+            }
+
+            return v1Step + v2Step;
         }
 
         public static Address DeriveAddress(Address agentAddress) => agentAddress.Derive("stake");
