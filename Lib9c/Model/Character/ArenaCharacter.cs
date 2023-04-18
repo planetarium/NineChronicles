@@ -58,14 +58,6 @@ namespace Nekoyume.Model
             set => _stats.SetStats(value);
         }
 
-        private int _currentHP;
-
-        public int CurrentHP
-        {
-            get => _currentHP;
-            set => _currentHP = Math.Max(0, value);
-        }
-
         public int HP => _stats.HP;
         public int AdditionalHP => _stats.BuffStats.HP;
         public int ATK => _stats.ATK;
