@@ -48,19 +48,12 @@ namespace Nekoyume.Model
         public float AttackRange { get; }
         public int CharacterId { get; }
         public bool IsEnemy { get; }
+        public int CurrentHP { get; set; }
 
         public int Level
         {
             get => _stats.Level;
             set => _stats.SetStats(value);
-        }
-
-        private int _currentHP;
-
-        public int CurrentHP
-        {
-            get => _currentHP;
-            set => _currentHP = Math.Max(0, value);
         }
 
         public int HP => (int)_stats.HP;

@@ -67,7 +67,7 @@ namespace Nekoyume.Model
         public int CurrentHP
         {
             get => _currentHP;
-            set => _currentHP = Math.Max(0, value);
+            set => _currentHP = Math.Min(Math.Max(0, value), HP);
         }
 
         public bool IsDead => CurrentHP <= 0;
