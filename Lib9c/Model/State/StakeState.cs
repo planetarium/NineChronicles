@@ -5,7 +5,6 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Action;
-using Nekoyume.TableData;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Model.State
@@ -54,6 +53,7 @@ namespace Nekoyume.Model.State
 
         public const long RewardInterval = 50400;
         public const long LockupInterval = 50400 * 4;
+        public const long StakeRewardSheetV2Index = 7_000_000L;
 
         public long CancellableBlockIndex { get; private set; }
         public long StartedBlockIndex { get; private set; }
@@ -176,10 +176,10 @@ namespace Nekoyume.Model.State
             v1Step = totalStep - previousStep;
             v2Step = 0;
 
-            if (blockIndex >= TableDataVersionConfig.StakeRewardSheetV2Index)
+            if (blockIndex >= StakeRewardSheetV2Index)
             {
                 v1Step = Math.Max((int)Math.DivRem(
-                    TableDataVersionConfig.StakeRewardSheetV2Index -
+                    StakeRewardSheetV2Index -
                     Math.Max(ReceivedBlockIndex, startedBlockIndex),
                     RewardInterval,
                     out _

@@ -5,7 +5,6 @@ using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
-using Microsoft.VisualBasic;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
@@ -21,7 +20,7 @@ namespace Nekoyume.Action
     [ActionType(ActionTypeText)]
     public class ClaimStakeReward : GameAction, IClaimStakeReward, IClaimStakeRewardV1
     {
-        private const string ActionTypeText = "claim_stake_reward4";
+        private const string ActionTypeText = "claim_stake_reward3";
 
         private const string StakeRegularRewardSheetV1Data =
             @"level,required_gold,item_id,rate,type
@@ -151,7 +150,7 @@ namespace Nekoyume.Action
             }
 
             var states = context.PreviousStates;
-            CheckActionAvailable(ClaimStakeReward3.ObsoletedIndex, context);
+            CheckActionAvailable(ClaimStakeReward2.ObsoletedIndex, context);
             // TODO: Uncomment this when new version of action is created
             // CheckObsolete(ObsoletedIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
