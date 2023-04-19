@@ -1385,7 +1385,7 @@ namespace Nekoyume.BlockChain
                     skillsOnWaveStart.Add(skill);
                 }
 
-                var tempPlayer = (AvatarState)States.Instance.CurrentAvatarState.Clone();
+                var tempPlayer = new AvatarState((Dictionary)States.Instance.CurrentAvatarState.Serialize());
                 if (LocalMailHelper.Instance.TryGetAllLocalMail(tempPlayer.address, out var mails))
                 {
                     foreach (var mail in mails)
@@ -1394,24 +1394,33 @@ namespace Nekoyume.BlockChain
                     }
                 }
 
-                var resultModel = eval.GetHackAndSlashReward(
-                    new AvatarState((Dictionary)tempPlayer.Serialize()),
+                var resultModel = eval.GetHackAndSlashReward(tempPlayer,
                     States.Instance.GetEquippedRuneStates(BattleType.Adventure),
                     skillsOnWaveStart,
                     tableSheets,
-                    out var simulator);
+                    out var simulator,
+                    out var temporaryAvatar);
                 var log = simulator.Log;
                 Game.Game.instance.Stage.PlayCount = eval.Action.TotalPlayCount;
                 Game.Game.instance.Stage.StageType = StageType.HackAndSlash;
                 if (eval.Action.TotalPlayCount > 1)
                 {
                     Widget.Find<BattleResultPopup>().ModelForMultiHackAndSlash = resultModel;
+                    if (log.result == BattleLog.Result.Win)
+                    {
+                        var currentAvatar = States.Instance.CurrentAvatarState;
+                        currentAvatar.exp = temporaryAvatar.exp;
+                        currentAvatar.level = temporaryAvatar.level;
+                        currentAvatar.inventory = temporaryAvatar.inventory;
+                        currentAvatar.monsterMap = temporaryAvatar.monsterMap;
+                        currentAvatar.eventMap = temporaryAvatar.eventMap;
+                    }
                 }
 
                 if (eval.Action.StageBuffId.HasValue)
                 {
                     Analyzer.Instance.Track("Unity/Use Crystal Bonus Skill",
-                        new Dictionary<string, Value>()
+                        new Dictionary<string, Value>
                         {
                             ["RandomSkillId"] = eval.Action.StageBuffId,
                             ["IsCleared"] = simulator.Log.IsClear,
