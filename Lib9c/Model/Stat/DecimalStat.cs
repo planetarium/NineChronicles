@@ -9,111 +9,81 @@ namespace Nekoyume.Model.Stat
     [Serializable]
     public class DecimalStat : ICloneable, IState
     {
-        public const long DecimalDivider = 100;
+        private decimal _baseValue;
 
-        private long _baseValueInternal;
-
-        private long _additionalValueInternal;
+        private decimal _additionalValue;
 
         public bool HasTotalValue => TotalValue != default;
 
-        public bool HasBaseValue => _baseValueInternal != default;
+        public bool HasBaseValue => _baseValue != default;
 
-        public bool HasAdditionalValue => _additionalValueInternal != default;
+        public bool HasAdditionalValue => _additionalValue != default;
 
         public StatType StatType;
 
-        public decimal BaseValue => (decimal)_baseValueInternal / DecimalDivider;
+        public decimal BaseValue => _baseValue;
 
-        public decimal AdditionalValue => (decimal)_additionalValueInternal / DecimalDivider;
+        public decimal AdditionalValue => _additionalValue;
 
         public int BaseValueAsInt => (int)BaseValue;
 
         public int AdditionalValueAsInt => (int)AdditionalValue;
 
+        [Obsolete("For legacy equipments. (Before world 7 patch)")]
         public int TotalValueAsInt => BaseValueAsInt + AdditionalValueAsInt;
 
-        public decimal TotalValue => (_baseValueInternal + _additionalValueInternal) / (decimal)DecimalDivider;
+        public decimal TotalValue => _baseValue + _additionalValue;
 
         public DecimalStat(StatType type, decimal value = 0m, decimal additionalValue = 0m)
         {
             StatType = type;
-            _baseValueInternal = ToInternalValue(value);
-            _additionalValueInternal = ToInternalValue(additionalValue);
+            _baseValue = value;
+            _additionalValue = additionalValue;
         }
 
         public virtual void Reset()
         {
-            _baseValueInternal = 0;
-            _additionalValueInternal = 0;
+            _baseValue = 0;
+            _additionalValue = 0;
         }
 
         protected DecimalStat(DecimalStat value)
         {
             StatType = value.StatType;
-            _baseValueInternal = value._baseValueInternal;
-            _additionalValueInternal = value._additionalValueInternal;
+            _baseValue = value._baseValue;
+            _additionalValue = value._additionalValue;
         }
 
         public DecimalStat(Dictionary serialized)
         {
             StatType = StatTypeExtension.Deserialize((Binary)serialized["statType"]);
 
-            _baseValueInternal = ToInternalValue(serialized["value"].ToDecimal());
+            _baseValue = serialized["value"].ToDecimal();
             // This field is added later.
             if (serialized.TryGetValue((Text)"additionalValue", out var additionalValue))
             {
-                _additionalValueInternal = ToInternalValue(additionalValue.ToDecimal());
+                _additionalValue = additionalValue.ToDecimal();
             }
         }
 
         public void SetBaseValue(decimal value)
         {
-            var internalValue = ToInternalValue(value);
-            SetBaseValueInternal(internalValue);
-        }
-
-        private void SetBaseValueInternal(long internalValue)
-        {
-            _baseValueInternal = internalValue;
+            _baseValue = value;
         }
 
         public void AddBaseValue(decimal value)
         {
-            var internalValue = ToInternalValue(value);
-            AddBaseValueInternal(internalValue);
-        }
-
-        private void AddBaseValueInternal(long internalValue)
-        {
-            SetBaseValueInternal(_baseValueInternal + internalValue);
+            SetBaseValue(_baseValue + value);
         }
 
         public void SetAdditionalValue(decimal value)
         {
-            var internalValue = ToInternalValue(value);
-            SetAdditionalValueInternal(internalValue);
-        }
-
-        private void SetAdditionalValueInternal(long internalValue)
-        {
-            _additionalValueInternal = internalValue;
+            _additionalValue = value;
         }
 
         public void AddAdditionalValue(decimal value)
         {
-            var internalValue = ToInternalValue(value);
-            AddAdditionalValueInternal(internalValue);
-        }
-
-        private void AddAdditionalValueInternal(long internalValue)
-        {
-            SetAdditionalValueInternal(_additionalValueInternal + internalValue);
-        }
-
-        private long ToInternalValue(decimal value)
-        {
-            return (long)(value * DecimalDivider);
+            SetAdditionalValue(_additionalValue + value);
         }
 
         public virtual object Clone()
@@ -123,8 +93,8 @@ namespace Nekoyume.Model.Stat
 
         protected bool Equals(DecimalStat other)
         {
-            return _baseValueInternal == other._baseValueInternal &&
-                _additionalValueInternal == other._additionalValueInternal &&
+            return _baseValue == other._baseValue &&
+                _additionalValue == other._additionalValue &&
                 StatType == other.StatType;
         }
 
@@ -138,7 +108,7 @@ namespace Nekoyume.Model.Stat
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(_baseValueInternal, _additionalValueInternal, StatType);
+            return HashCode.Combine(_baseValue, _additionalValue, StatType);
         }
 
         public IValue SerializeForLegacyEquipmentStat() =>
@@ -160,8 +130,8 @@ namespace Nekoyume.Model.Stat
         {
             var (statType, baseValue, additionalValue) = serialized.GetStat();
             StatType = statType;
-            _baseValueInternal = ToInternalValue(baseValue);
-            _additionalValueInternal = ToInternalValue(additionalValue);
+            _baseValue = baseValue;
+            _additionalValue = additionalValue;
         }
     }
 }
