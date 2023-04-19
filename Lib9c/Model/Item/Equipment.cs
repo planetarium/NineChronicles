@@ -181,11 +181,11 @@ namespace Nekoyume.Model.Item
 
         private void UpdateOptions()
         {
-            foreach (var (statType, additionalValue) in StatsMap.GetAdditionalStats(true))
+            foreach (var stat in StatsMap.GetDecimalStats())
             {
                 StatsMap.SetStatAdditionalValue(
-                    statType,
-                    additionalValue * 1.3m);
+                    stat.StatType,
+                    stat.AdditionalValue * 1.3m);
             }
 
             var skills = new List<Skill.Skill>();
