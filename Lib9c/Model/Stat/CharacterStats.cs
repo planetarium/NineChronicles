@@ -372,8 +372,16 @@ namespace Nekoyume.Model.Stat
 
             foreach (var stat in _statMap.GetStats())
             {
-                var value = Math.Max(0m, stat.BaseValueAsInt);
-                stat.SetBaseValue(value);
+                if (!LegacyDecimalStatTypes.Contains(stat.StatType))
+                {
+                    var value = Math.Max(0m, stat.BaseValueAsInt);
+                    stat.SetBaseValue(value);
+                }
+                else
+                {
+                    var value = Math.Max(0m, stat.BaseValue);
+                    stat.SetBaseValue(value);
+                }
             }
         }
 

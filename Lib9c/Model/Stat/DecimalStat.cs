@@ -148,14 +148,11 @@ namespace Nekoyume.Model.Stat
 
         public virtual IValue Serialize()
         {
-            var baseValue = _baseValueInternal / (decimal)DecimalDivider;
-            var additionValue = _additionalValueInternal / (decimal)DecimalDivider;
-
             return new Dictionary(new Dictionary<IKey, IValue>
             {
                 [(Text)"statType"] = StatType.Serialize(),
-                [(Text)"value"] = baseValue.Serialize(),
-                [(Text)"additionalValue"] = additionValue.Serialize(),
+                [(Text)"value"] = BaseValue.Serialize(),
+                [(Text)"additionalValue"] = AdditionalValue.Serialize(),
             });
         }
 

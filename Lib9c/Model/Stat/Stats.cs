@@ -22,7 +22,7 @@ namespace Nekoyume.Model.Stat
         public int ArmorPenetration => _statMap[StatType.ArmorPenetration].BaseValueAsInt;
         public int Thorn => _statMap[StatType.Thorn].BaseValueAsInt;
 
-        private readonly HashSet<StatType> LegacyDecimalStatTypes =
+        protected readonly HashSet<StatType> LegacyDecimalStatTypes =
             new HashSet<StatType>{ StatType.CRI, StatType.HIT, StatType.SPD };
         
         public Stats()
@@ -43,8 +43,16 @@ namespace Nekoyume.Model.Stat
         {
             foreach (var stat in _statMap.GetStats())
             {
-                var sum = statsArray.Sum(s => s.GetStatAsInt(stat.StatType));
-                stat.SetBaseValue(sum);
+                if (!LegacyDecimalStatTypes.Contains(stat.StatType))
+                {
+                    var sum = statsArray.Sum(s => s.GetStatAsInt(stat.StatType));
+                    stat.SetBaseValue(sum);
+                }
+                else
+                {
+                    var sum = statsArray.Sum(s => s.GetStat(stat.StatType));
+                    stat.SetBaseValue(sum);
+                }
             }
         }
 
