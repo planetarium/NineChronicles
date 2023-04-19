@@ -1386,14 +1386,6 @@ namespace Nekoyume.BlockChain
                 }
 
                 var tempPlayer = new AvatarState((Dictionary)States.Instance.CurrentAvatarState.Serialize());
-                if (LocalMailHelper.Instance.TryGetAllLocalMail(tempPlayer.address, out var mails))
-                {
-                    foreach (var mail in mails)
-                    {
-                        tempPlayer.mailBox.Remove(mail);
-                    }
-                }
-
                 var resultModel = eval.GetHackAndSlashReward(tempPlayer,
                     States.Instance.GetEquippedRuneStates(BattleType.Adventure),
                     skillsOnWaveStart,
