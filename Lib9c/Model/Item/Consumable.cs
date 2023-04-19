@@ -40,7 +40,7 @@ namespace Nekoyume.Model.Item
             {
                 [(Text) "stats"] = new List(Stats
                     .OrderBy(i => i.StatType)
-                    .ThenByDescending(i => i.BaseValue)
+                    .ThenByDescending(i => i.BaseValueAsInt)
                     .Select(s => s.Serialize())),
             }.Union((Dictionary) base.Serialize()));
 #pragma warning restore LAA1002

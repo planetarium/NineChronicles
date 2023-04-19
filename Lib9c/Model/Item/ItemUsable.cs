@@ -48,13 +48,13 @@ namespace Nekoyume.Model.Item
                 {
                     foreach (var statData in consumableItemRow.Stats)
                     {
-                        StatsMap.AddStatValue(statData.StatType, statData.BaseValue);
+                        StatsMap.AddStatValue(statData.StatType, statData.BaseValueAsInt);
                     }
 
                     break;
                 }
                 case EquipmentItemSheet.Row equipmentItemRow:
-                    StatsMap.AddStatValue(equipmentItemRow.Stat.StatType, equipmentItemRow.Stat.BaseValue);
+                    StatsMap.AddStatValue(equipmentItemRow.Stat.StatType, equipmentItemRow.Stat.BaseValueAsInt);
                     break;
             }
 

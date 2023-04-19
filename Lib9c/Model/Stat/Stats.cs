@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 
 namespace Nekoyume.Model.Stat
 {
@@ -9,17 +10,20 @@ namespace Nekoyume.Model.Stat
     {
         protected readonly StatMap _statMap = new StatMap();
 
-        public int HP => _statMap[StatType.HP].BaseValue;
-        public int ATK => _statMap[StatType.ATK].BaseValue;
-        public int DEF => _statMap[StatType.DEF].BaseValue;
-        public int CRI => _statMap[StatType.CRI].BaseValue;
-        public int HIT => _statMap[StatType.HIT].BaseValue;
-        public int SPD => _statMap[StatType.SPD].BaseValue;
-        public int DRV => _statMap[StatType.DRV].BaseValue;
-        public int DRR => _statMap[StatType.DRR].BaseValue;
-        public int CDMG => _statMap[StatType.CDMG].BaseValue;
-        public int ArmorPenetration => _statMap[StatType.ArmorPenetration].BaseValue;
-        public int Thorn => _statMap[StatType.Thorn].BaseValue;
+        public int HP => _statMap[StatType.HP].BaseValueAsInt;
+        public int ATK => _statMap[StatType.ATK].BaseValueAsInt;
+        public int DEF => _statMap[StatType.DEF].BaseValueAsInt;
+        public int CRI => _statMap[StatType.CRI].BaseValueAsInt;
+        public int HIT => _statMap[StatType.HIT].BaseValueAsInt;
+        public int SPD => _statMap[StatType.SPD].BaseValueAsInt;
+        public int DRV => _statMap[StatType.DRV].BaseValueAsInt;
+        public int DRR => _statMap[StatType.DRR].BaseValueAsInt;
+        public int CDMG => _statMap[StatType.CDMG].BaseValueAsInt;
+        public int ArmorPenetration => _statMap[StatType.ArmorPenetration].BaseValueAsInt;
+        public int Thorn => _statMap[StatType.Thorn].BaseValueAsInt;
+
+        private readonly HashSet<StatType> LegacyDecimalStatTypes =
+            new HashSet<StatType>{ StatType.CRI, StatType.HIT, StatType.SPD };
         
         public Stats()
         {
@@ -39,7 +43,7 @@ namespace Nekoyume.Model.Stat
         {
             foreach (var stat in _statMap.GetStats())
             {
-                var sum = statsArray.Sum(s => s.GetStat(stat.StatType));
+                var sum = statsArray.Sum(s => s.GetStatAsInt(stat.StatType));
                 stat.SetBaseValue(sum);
             }
         }
@@ -48,8 +52,17 @@ namespace Nekoyume.Model.Stat
         {
             foreach (var stat in _statMap.GetStats())
             {
-                var sum = value.GetStat(stat.StatType);
-                stat.SetBaseValue(sum);
+                var statType = stat.StatType;
+                if (!LegacyDecimalStatTypes.Contains(statType))
+                {
+                    var sum = value.GetStatAsInt(statType);
+                    stat.SetBaseValue(sum);
+                }
+                else
+                {
+                    var sum = value.GetStat(statType);
+                    stat.SetBaseValue(sum);
+                }
             }
         }
 
@@ -59,14 +72,30 @@ namespace Nekoyume.Model.Stat
 
             foreach (var statModifier in statModifiers)
             {
-                var originalStatValue =
-                    baseStats.Sum(stats => stats.GetStat(statModifier.StatType));
-                var result = statModifier.GetModifiedValue(originalStatValue);
-                _statMap[statModifier.StatType].AddBaseValue(result);
+                var statType = statModifier.StatType;
+                if (!LegacyDecimalStatTypes.Contains(statType))
+                {
+                    var originalStatValue =
+                        baseStats.Sum(stats => stats.GetStatAsInt(statType));
+                    var result = statModifier.GetModifiedValue(originalStatValue);
+                    _statMap[statModifier.StatType].AddBaseValue(result);
+                }
+                else
+                {
+                    var originalStatValue =
+                        baseStats.Sum(stats => stats.GetStat(statType));
+                    var result = statModifier.GetModifiedValue(originalStatValue);
+                    _statMap[statModifier.StatType].AddBaseValue(result);
+                }
             }
         }
 
-        public int GetStat(StatType statType)
+        public int GetStatAsInt(StatType statType)
+        {
+            return _statMap.GetStatAsInt(statType);
+        }
+
+        public decimal GetStat(StatType statType)
         {
             return _statMap.GetStat(statType);
         }

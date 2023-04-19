@@ -15,27 +15,25 @@ namespace Nekoyume.Model.Stat
 
         private int _additionalValueInternal;
 
-        public bool HasTotalValue => TotalValueAsInt != default;
+        public bool HasTotalValue => TotalValue != default;
 
-        public bool HasBaseValue => BaseValue != default;
+        public bool HasBaseValue => _baseValueInternal != default;
 
-        public bool HasAdditionalValue => AdditionalValue != default;
+        public bool HasAdditionalValue => _additionalValueInternal != default;
 
         public StatType StatType;
 
-        public int BaseValue
-        {
-            get => _baseValueInternal / DecimalDivider;
-        }
+        public decimal BaseValue => (decimal)_baseValueInternal / DecimalDivider;
 
-        public int AdditionalValue
-        {
-            get => _additionalValueInternal / DecimalDivider;
-        }
+        public decimal AdditionalValue => (decimal)_additionalValueInternal / DecimalDivider;
 
-        public int TotalValueAsInt => BaseValue + AdditionalValue;
+        public int BaseValueAsInt => (int)BaseValue;
 
-        public int TotalValue => (_baseValueInternal + _additionalValueInternal) / DecimalDivider;
+        public int AdditionalValueAsInt => (int)AdditionalValue;
+
+        public int TotalValueAsInt => BaseValueAsInt + AdditionalValueAsInt;
+
+        public decimal TotalValue => (_baseValueInternal + _additionalValueInternal) / (decimal)DecimalDivider;
 
         public DecimalStat(StatType type, decimal value = 0m, decimal additionalValue = 0m)
         {
@@ -146,7 +144,7 @@ namespace Nekoyume.Model.Stat
         public IValue SerializeForLegacyEquipmentStat() =>
             Dictionary.Empty
                 .Add("type", StatTypeExtension.Serialize(StatType))
-                .Add("value", BaseValue.Serialize());
+                .Add("value", BaseValueAsInt.Serialize());
 
         public virtual IValue Serialize()
         {

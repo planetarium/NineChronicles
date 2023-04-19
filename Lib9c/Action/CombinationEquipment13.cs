@@ -591,7 +591,7 @@ namespace Nekoyume.Action
                 if (optionRow.StatType != StatType.NONE)
                 {
                     var stat = CombinationEquipment5.GetStat(optionRow, random);
-                    equipment.StatsMap.AddStatAdditionalValue(stat.StatType, stat.BaseValue);
+                    equipment.StatsMap.AddStatAdditionalValue(stat.StatType, stat.BaseValueAsInt);
                     equipment.Update(equipment.RequiredBlockIndex + optionInfo.RequiredBlockIndex);
                     equipment.optionCountFromCombination++;
                     agentState.unlockedOptions.Add(optionRow.Id);

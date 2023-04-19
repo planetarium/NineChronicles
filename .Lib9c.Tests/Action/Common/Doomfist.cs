@@ -55,10 +55,10 @@ namespace Lib9c.Tests.Action
                 .Aggregate((row1, row2) =>
                 {
                     var row1Value = row1.Stat.StatType == statType
-                        ? row1.Stat.BaseValue
+                        ? row1.Stat.BaseValueAsInt
                         : 0;
                     var row2Value = row2.Stat.StatType == statType
-                        ? row2.Stat.BaseValue
+                        ? row2.Stat.BaseValueAsInt
                         : 0;
                     return row1Value > row2Value
                         ? row1

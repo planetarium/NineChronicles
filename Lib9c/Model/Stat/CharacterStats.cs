@@ -322,7 +322,7 @@ namespace Nekoyume.Model.Stat
         public void IncreaseHpForArena()
         {
             var originalHP = _statMap[StatType.HP];
-            _statMap[StatType.HP].SetBaseValue(Math.Max(0, originalHP.BaseValue * 2));
+            _statMap[StatType.HP].SetBaseValue(Math.Max(0, originalHP.BaseValueAsInt * 2));
         }
 
         private void UpdateBaseStats()
@@ -372,7 +372,7 @@ namespace Nekoyume.Model.Stat
 
             foreach (var stat in _statMap.GetStats())
             {
-                var value = Math.Max(0m, stat.BaseValue);
+                var value = Math.Max(0m, stat.BaseValueAsInt);
                 stat.SetBaseValue(value);
             }
         }
@@ -392,7 +392,7 @@ namespace Nekoyume.Model.Stat
             var baseStats = _baseStats.GetStats();
             foreach (var (statType, stat) in baseStats)
             {
-                var value = _statMap[statType].BaseValue - stat;
+                var value = _statMap[statType].BaseValueAsInt - stat;
                 if (!ignoreZero || value != default)
                 {
                     yield return (statType, value);
@@ -406,7 +406,7 @@ namespace Nekoyume.Model.Stat
             var additionalStats = GetAdditionalStats();
             foreach (var (statType, additionalStat) in additionalStats)
             {
-                var baseStat = _baseStats.GetStat(statType);
+                var baseStat = _baseStats.GetStatAsInt(statType);
                 if (!ignoreZero ||
                     (baseStat != default) || (additionalStat != default))
                 {
