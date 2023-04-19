@@ -209,7 +209,7 @@ namespace Lib9c.Tests.Action
                 case ItemEnhancement.EnhancementResult.GreatSuccess:
                     var baseAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMax.NormalizeFromTenThousandths() + 1);
                     var extraAtk = preItemUsable.StatsMap.AdditionalATK * (costRow.ExtraStatGrowthMax.NormalizeFromTenThousandths() + 1);
-                    Assert.Equal(baseAtk + extraAtk, resultEquipment.StatsMap.ATK);
+                    Assert.Equal((int)(baseAtk + extraAtk), resultEquipment.StatsMap.ATK);
                     break;
                 case ItemEnhancement.EnhancementResult.Success:
                     var baseMinAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMin.NormalizeFromTenThousandths() + 1);

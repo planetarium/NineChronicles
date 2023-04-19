@@ -9,11 +9,11 @@ namespace Nekoyume.Model.Stat
     [Serializable]
     public class DecimalStat : ICloneable, IState
     {
-        public const int DecimalDivider = 100;
+        public const long DecimalDivider = 100;
 
-        private int _baseValueInternal;
+        private long _baseValueInternal;
 
-        private int _additionalValueInternal;
+        private long _additionalValueInternal;
 
         public bool HasTotalValue => TotalValue != default;
 
@@ -73,7 +73,7 @@ namespace Nekoyume.Model.Stat
             SetBaseValueInternal(internalValue);
         }
 
-        private void SetBaseValueInternal(int internalValue)
+        private void SetBaseValueInternal(long internalValue)
         {
             _baseValueInternal = internalValue;
         }
@@ -84,7 +84,7 @@ namespace Nekoyume.Model.Stat
             AddBaseValueInternal(internalValue);
         }
 
-        private void AddBaseValueInternal(int internalValue)
+        private void AddBaseValueInternal(long internalValue)
         {
             SetBaseValueInternal(_baseValueInternal + internalValue);
         }
@@ -95,7 +95,7 @@ namespace Nekoyume.Model.Stat
             SetAdditionalValueInternal(internalValue);
         }
 
-        private void SetAdditionalValueInternal(int internalValue)
+        private void SetAdditionalValueInternal(long internalValue)
         {
             _additionalValueInternal = internalValue;
         }
@@ -106,14 +106,14 @@ namespace Nekoyume.Model.Stat
             AddAdditionalValueInternal(internalValue);
         }
 
-        private void AddAdditionalValueInternal(int internalValue)
+        private void AddAdditionalValueInternal(long internalValue)
         {
             SetAdditionalValueInternal(_additionalValueInternal + internalValue);
         }
 
-        private int ToInternalValue(decimal value)
+        private long ToInternalValue(decimal value)
         {
-            return (int)(value * DecimalDivider);
+            return (long)(value * DecimalDivider);
         }
 
         public virtual object Clone()

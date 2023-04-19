@@ -201,19 +201,19 @@ namespace Nekoyume.Model.Item
 
         private void UpdateOptionsV2(IRandom random, EnhancementCostSheetV2.Row row, bool isGreatSuccess)
         {
-            foreach (var (statType, additionalValue) in StatsMap.GetAdditionalStats(true))
+            foreach (var stat in StatsMap.GetDecimalStats())
             {
                 var rand = isGreatSuccess
                     ? row.ExtraStatGrowthMax
                     : random.Next(row.ExtraStatGrowthMin, row.ExtraStatGrowthMax + 1);
                 var ratio = rand.NormalizeFromTenThousandths();
-                var addValue = additionalValue * ratio;
+                var addValue = stat.AdditionalValue * ratio;
                 if (addValue > 0)
                 {
                     addValue = Math.Max(1.0m, addValue);
                 }
 
-                StatsMap.SetStatAdditionalValue(statType, additionalValue + addValue);
+                StatsMap.SetStatAdditionalValue(stat.StatType, stat.AdditionalValue + addValue);
             }
 
             var skills = new List<Skill.Skill>();
