@@ -4,11 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
-using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Action;
-using Nekoyume.BlockChain;
-using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -21,9 +18,7 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
-using Random = System.Random;
 
 namespace Nekoyume.UI
 {
@@ -263,7 +258,7 @@ namespace Nekoyume.UI
         {
             base.Initialize();
 
-            ReactiveAvatarState.MailBox?.Subscribe(SetList).AddTo(gameObject);
+            LocalMailHelper.Instance.ObservableMailBox?.Subscribe(SetList).AddTo(gameObject);
             Game.Game.instance.Agent.BlockIndexSubject
                 .ObserveOnMainThread()
                 .Subscribe(UpdateNotification)
@@ -274,7 +269,7 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            MailBox = States.Instance.CurrentAvatarState.mailBox;
+            MailBox = LocalMailHelper.Instance.MailBox;
             _toggleGroup.SetToggledOffAll();
             allButton.SetToggledOn();
             loading.SetActive(false);
@@ -372,13 +367,12 @@ namespace Nekoyume.UI
 
         private void UpdateNotification(long blockIndex)
         {
-            var avatarState = States.Instance.CurrentAvatarState;
-            if (avatarState is null)
+            MailBox = LocalMailHelper.Instance.MailBox;
+            if (MailBox is null)
             {
                 return;
             }
 
-            MailBox = avatarState.mailBox;
             UpdateTabs(blockIndex);
         }
 
@@ -677,7 +671,6 @@ namespace Nekoyume.UI
         public void Read(RaidRewardMail raidRewardMail)
         {
             raidRewardMail.New = false;
-            ReactiveAvatarState.UpdateMailBox(MailBox);
         }
 
         public void TutorialActionClickFirstCombinationMailSubmitButton()
