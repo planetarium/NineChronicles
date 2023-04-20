@@ -56,6 +56,11 @@ namespace Nekoyume.Game
 
         [SerializeField] private bool useLocalHeadless = false;
 
+        [SerializeField] private bool useLocalMarketService = false;
+
+        [SerializeField] private string marketDbConnectionString =
+            "Host=localhost;Username=postgres;Database=market";
+
         [SerializeField] private LanguageTypeReactiveProperty languageType = default;
 
         [SerializeField] private Prologue prologue = null;
@@ -123,6 +128,7 @@ namespace Nekoyume.Game
             Path.Combine(Application.streamingAssetsPath, "url.json");
 
         private Thread headlessThread;
+        private Thread marketThread;
 
         #region Mono & Initialization
 
@@ -175,9 +181,7 @@ namespace Nekoyume.Game
 #if UNITY_IOS
             _commandLineOptions = CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.json"));
 #else
-            _commandLineOptions = CommandLineOptions.Load(
-                CommandLineOptionsJsonPath
-            );
+            _commandLineOptions = CommandLineOptions.Load(CommandLineOptionsJsonPath);
 #endif
 
             URL = Url.Load(UrlJsonPath);
@@ -273,6 +277,16 @@ namespace Nekoyume.Game
             );
 
             yield return new WaitUntil(() => agentInitialized);
+
+#if UNITY_EDITOR
+            // wait for headless connect.
+            if (useLocalMarketService && MarketHelper.CheckPath())
+            {
+                marketThread = new Thread(() => MarketHelper.RunLocalMarketService(marketDbConnectionString));
+                marketThread.Start();
+            }
+#endif
+
             InitializeAnalyzer();
             Analyzer.Track("Unity/Started");
             // NOTE: Create ActionManager after Agent initialized.
@@ -330,6 +344,11 @@ namespace Nekoyume.Game
             if (headlessThread is not null && headlessThread.IsAlive)
             {
                 headlessThread.Interrupt();
+            }
+
+            if (marketThread is not null && marketThread.IsAlive)
+            {
+                marketThread.Interrupt();
             }
 
             ActionManager?.Dispose();
@@ -564,9 +583,15 @@ namespace Nekoyume.Game
             var csv = dict.ToDictionary(
                 pair => map[pair.Key],
                 // NOTE: `pair.Value` is `null` when the chain not contains the `pair.Key`.
-                pair => pair.Value is null
-                    ? null
-                    : pair.Value.ToDotnetString());
+                pair =>
+                {
+                    if (pair.Value is Text)
+                    {
+                        return pair.Value.ToDotnetString();
+                    }
+
+                    return null;
+                });
 
             TableSheets = new TableSheets(csv);
         }
