@@ -31,17 +31,17 @@ namespace Nekoyume.UI
             slider.normalizedValue = remainTicket / (float)maxTicket;
         }
 
-        public void UpdateTicket(RaiderState state, long current)
+        public void UpdateTicket(RaiderState state, long current, int refillInterval)
         {
             if (!WorldBossFrontHelper.TryGetCurrentRow(current, out var row))
             {
                 return;
             }
 
-            RemainTicket = WorldBossFrontHelper.GetRemainTicket(state, current);
+            RemainTicket = WorldBossFrontHelper.GetRemainTicket(state, current, refillInterval);
             var start = row.StartedBlockIndex;
-            var reminder = (current - start) % WorldBossHelper.RefillInterval;
-            var remain = WorldBossHelper.RefillInterval - reminder;
+            var reminder = (current - start) % refillInterval;
+            var remain = refillInterval - reminder;
             Set(remain, RemainTicket, WorldBossHelper.MaxChallengeCount);
         }
     }

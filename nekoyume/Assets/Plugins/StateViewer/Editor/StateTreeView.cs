@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
 using Lib9c.DevExtensions;
+using Lib9cCommonTool.Runtime;
 using Libplanet;
 using Nekoyume.Game;
 using Nekoyume.Model.Item;
@@ -16,46 +17,143 @@ using Boolean = Bencodex.Types.Boolean;
 
 namespace StateViewer.Editor
 {
+    [Serializable]
     public class StateTreeView : TreeView
     {
         private const int RootTreeViewItemId = 0;
         private static readonly string[] ValueKindNames = Enum.GetNames(typeof(ValueKind));
         private static readonly string[] ItemTypeNames = Enum.GetNames(typeof(ItemType));
 
-        private readonly TableSheets _tableSheets;
-        private Address _addr;
+        // SerializeField is used to ensure the view state is written to the window
+        // layout file. This means that the state survives restarting Unity as long as the window
+        // is not closed. If the attribute is omitted then the state is still serialized/deserialized.
+        [SerializeField]
+        private TreeViewState treeViewState;
+
+        private TableSheets _tableSheets;
         private StateTreeViewItemModel? _itemModel;
 
-        public ContentKind ContentKind { get; set; }
+        public Address? Address { get; private set; }
 
-        public (Address addr, IValue value) Serialize()
+        public ContentKind ContentKind { get; private set; }
+
+        public (Address? addr, IValue value) Serialize()
         {
-            return (_addr, _itemModel?.Serialize() ?? Null.Value);
+            return (Address, _itemModel?.Serialize() ?? Null.Value);
         }
 
         public StateTreeView(
-            TreeViewState treeViewState,
-            MultiColumnHeader multiColumnHeader,
-            TableSheets tableSheets)
-            : base(treeViewState, multiColumnHeader)
+            TableSheets tableSheets,
+            ContentKind contentKind = ContentKind.None,
+            (bool visible, string[] headerContents)? visibleHeaderContents = null)
+            : base(new TreeViewState(), new StateTreeViewHeader())
         {
+            treeViewState = state;
+            _tableSheets = tableSheets;
             rowHeight = EditorGUIUtility.singleLineHeight;
             showAlternatingRowBackgrounds = true;
             showBorder = true;
+            SetTableSheet(tableSheets);
+            SetContentKind(contentKind);
+            if (visibleHeaderContents is { } tuple)
+            {
+                SetVisibleHeaderColumns(tuple.visible, tuple.headerContents);
+            }
+
+            multiColumnHeader.ResizeToFit();
+        }
+
+        public void SetVisibleHeaderColumns(bool visible, params string[] headerContents)
+        {
+            var visibleColumns = new List<int>();
+            var headerStateColumns = multiColumnHeader.state.columns;
+            if (visible)
+            {
+                for (var i = 0; i < headerStateColumns.Length; i++)
+                {
+                    var stateColumn = headerStateColumns[i];
+                    if (headerContents.Contains(stateColumn.headerContent.text))
+                    {
+                        visibleColumns.Add(i);
+                    }
+                }
+            }
+            else
+            {
+                for (var i = 0; i < headerStateColumns.Length; i++)
+                {
+                    var stateColumn = headerStateColumns[i];
+                    if (headerContents.Contains(stateColumn.headerContent.text))
+                    {
+                        continue;
+                    }
+
+                    visibleColumns.Add(i);
+                }
+            }
+
+
+            multiColumnHeader.state.visibleColumns = visibleColumns.ToArray();
+        }
+
+        public void SetTableSheet(TableSheets tableSheets)
+        {
             _tableSheets = tableSheets;
         }
 
         public void SetData(
-            Address addr,
+            Address? addr,
             IValue? data,
-            ContentKind contentKind = ContentKind.None)
+            ContentKind? contentKind = null)
         {
-            _addr = addr;
+            Address = addr;
             _itemModel = new StateTreeViewItemModel(
                 data ?? Null.Value,
                 alias: "root");
-            ContentKind = contentKind;
+            SetContentKind(contentKind ?? ContentKind, force: true);
             ProcessWhenItemModelHierarchyChanged(initialize: true);
+        }
+
+        public void SetContentKind(ContentKind contentKind, bool force = false)
+        {
+            if (!force &&
+                contentKind == ContentKind)
+            {
+                return;
+            }
+
+            ContentKind = contentKind;
+            if (_itemModel is null)
+            {
+                return;
+            }
+
+            switch (ContentKind)
+            {
+                case ContentKind.None:
+                    for (var i = 0; i < _itemModel.Children.Count; i++)
+                    {
+                        var child = _itemModel.Children[i];
+                        child.OverrideAliasContent = null;
+                    }
+
+                    break;
+                case ContentKind.Inventory:
+                    for (var i = 0; i < _itemModel.Children.Count; i++)
+                    {
+                        var child = _itemModel.Children[i];
+                        var count = child.Children[0].ValueContent;
+                        var itemSheetId = child.Children[1].Children
+                            .First(e => e.IndexOrKeyContent == "id")
+                            .ValueContent;
+                        var content = $"{itemSheetId} x{count}";
+                        child.OverrideAliasContent = content;
+                    }
+
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         private void ProcessWhenItemModelHierarchyChanged(
@@ -66,10 +164,20 @@ namespace StateViewer.Editor
                 return;
             }
 
-            // Cache selection ids
-            var selectionIdsPrev = GetSelection();
             const int firstId = RootTreeViewItemId + 1;
+            if (initialize)
+            {
+                _itemModel.SetTreeViewItemIdRecursive(firstId, alsoSetPrev: initialize);
+                SetExpanded(firstId, true);
+                Reload();
+                return;
+            }
+
+            // Cache selection and expanded ids
+            var selectionIdsPrev = GetSelection();
+            var expandedIdsPrev = GetExpanded();
             _itemModel.SetTreeViewItemIdRecursive(firstId, alsoSetPrev: initialize);
+
             // Restore selection ids
             if (selectionIdsPrev is not null)
             {
@@ -80,8 +188,6 @@ namespace StateViewer.Editor
                 SetSelection(selectionIds, TreeViewSelectionOptions.None);
             }
 
-            // Cache Expanded ids
-            var expandedIdsPrev = GetExpanded();
             // Restore Expanded ids
             if (expandedIdsPrev is not null)
             {
@@ -92,6 +198,7 @@ namespace StateViewer.Editor
                 SetExpanded(expendedIds);
             }
 
+            SetContentKind(ContentKind, force: true);
             Reload();
         }
 
@@ -282,6 +389,8 @@ namespace StateViewer.Editor
             }
 
             var random = new RandomImpl(DateTime.Now.Millisecond);
+            var itemTypeContent = viewModel.Siblings!.First(child =>
+                child.IndexOrKeyContent == "item_type").ValueContent;
             switch (viewModel.IndexOrKeyContent)
             {
                 case "id":
@@ -295,13 +404,14 @@ namespace StateViewer.Editor
                     if (itemRow.ItemType != ItemType.Equipment)
                     {
                         var item = ItemFactory.CreateItem(itemRow, random);
-                        viewModel.Parent!.SetValue(item.Serialize());
+                        viewModel.Parent!.SetValue(
+                            item.Serialize(),
+                            reuseChildren: itemTypeContent == itemRow.ItemType.ToString());
                         ProcessWhenItemModelHierarchyChanged();
                         return;
                     }
 
-                    if (viewModel.Siblings!.First(child =>
-                            child.IndexOrKeyContent == "item_type").ValueContent == "Equipment")
+                    if (itemTypeContent == ItemType.Equipment.ToString())
                     {
                         var nonFungibleItemIdContent = viewModel.Siblings!.First(child =>
                             child.IndexOrKeyContent == "itemId")?.ValueContent ?? null;
@@ -319,7 +429,7 @@ namespace StateViewer.Editor
                             level: level,
                             tableSheets: _tableSheets,
                             random: random)!;
-                        viewModel.Parent!.SetValue(equipment.Serialize());
+                        viewModel.Parent!.SetValue(equipment.Serialize(), reuseChildren: true);
                         ProcessWhenItemModelHierarchyChanged();
                     }
                     else
@@ -336,8 +446,7 @@ namespace StateViewer.Editor
                 }
                 case "level":
                 {
-                    if (viewModel.Siblings!.First(child =>
-                            child.IndexOrKeyContent == "item_type").ValueContent != "Equipment")
+                    if (itemTypeContent != "Equipment")
                     {
                         return;
                     }
@@ -361,7 +470,7 @@ namespace StateViewer.Editor
                         random: random)!;
                     // FIXME: The expanded state of `viewModel` is not restored.
                     //        Maybe we should replace some valueContents not to set the IValue.
-                    viewModel.Parent!.SetValue(equipment.Serialize());
+                    viewModel.Parent!.SetValue(equipment.Serialize(), reuseChildren: true);
                     ProcessWhenItemModelHierarchyChanged();
                     return;
                 }
