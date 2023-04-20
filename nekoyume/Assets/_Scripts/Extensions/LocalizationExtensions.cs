@@ -5,7 +5,6 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Libplanet.Assets;
 using Nekoyume.Action;
-using Nekoyume.EnumType;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
@@ -18,6 +17,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
 using Nekoyume.Model.Stat;
+using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
 using Nekoyume.UI.Model;
@@ -207,10 +207,14 @@ namespace Nekoyume
                 case ProductSellerMail productSellerMail:
                     var (sellProductName, item, fav) =
                         await Game.Game.instance.MarketServiceClient.GetProductInfo(productSellerMail.ProductId);
-                    var price = item?.Price ?? fav.Price;
+                    var price = item?.Price ?? fav?.Price ?? 0;
                     var tax = decimal.Divide(price, 100) * Buy.TaxRate;
                     var tp = price - tax;
-                    return L10nManager.Localize("UI_SELLER_MAIL_FORMAT", tp , sellProductName);
+                    var currency = States.Instance.GoldBalanceState.Gold.Currency;
+                    var majorUnit = (int)tp;
+                    var minorUnit = (int)((tp - majorUnit) * 100);
+                    var fungibleAsset = new FungibleAssetValue(currency, majorUnit, minorUnit);
+                    return L10nManager.Localize("UI_SELLER_MAIL_FORMAT", fungibleAsset , sellProductName);
 
                 default:
                     throw new NotSupportedException(
