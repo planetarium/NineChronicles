@@ -59,10 +59,31 @@ public class CustomActionsDeserializableValidatorTest
         public DateTimeOffset Timestamp { get; init; }
         public PublicKey PublicKey { get; init; }
         public BlockHash? GenesisHash { get; init; }
+        public TxActionList Actions { get; init; }
         public TxId Id { get; init; }
         public byte[] Signature { get; init; }
         public Dictionary? SystemAction { get; init; }
         public IImmutableList<IValue>? CustomActions { get; init; }
+        public bool Equals(ITxInvoice? other)
+        {
+            return UpdatedAddresses.Equals(other.UpdatedAddresses) &&
+                   Timestamp.Equals(other.Timestamp) &&
+                   Nullable.Equals(GenesisHash, other.GenesisHash) &&
+                   Actions.Equals(other.Actions);
+        }
+
+        public bool Equals(ITxSigningMetadata? other)
+        {
+            return Nonce == other.Nonce &&
+                   Signer.Equals(other.Signer) &&
+                   PublicKey.Equals(other.PublicKey);
+        }
+
+        public bool Equals(IUnsignedTx? other)
+        {
+            return ((ITxSigningMetadata)this).Equals(other) &&
+                   ((ITxInvoice)this).Equals(other);
+        }
     }
 
     private class MockActionTypeLoader : IActionTypeLoader

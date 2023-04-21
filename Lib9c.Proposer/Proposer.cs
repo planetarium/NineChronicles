@@ -35,7 +35,6 @@ namespace Nekoyume.BlockChain
                 var lastCommit = _chain.GetBlockCommit(_chain.Tip.Hash);
                 block = _chain.ProposeBlock(
                     _privateKey,
-                    DateTimeOffset.UtcNow,
                     lastCommit: lastCommit);
                 BlockCommit? commit = block.Index > 0
                     ? new BlockCommit(
