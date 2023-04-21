@@ -59,16 +59,16 @@ namespace Nekoyume.UI
         // TODO: THIS IS TEMPORARY TABLE. IT MUST CHANGE TO TABLESHEETS.
         private readonly Dictionary<int, (int ap, int arena)> _buffBenefits = new()
         {
-            {1, (0, 0)}, {2, (0, 100)}, {3, (20, 200)}, {4, (20, 200)}, {5, (40, 200)}
+            {1, (0, 0)}, {2, (0, 100)}, {3, (20, 200)}, {4, (20, 200)}, {5, (40, 200)}, {6, (40, 200)}, {7, (40, 200)}
         };
         // temporary table - benefits rate
         private readonly Dictionary<int, int> _benefitRates = new()
         {
-            {1, 20}, {2, 50}, {3, 100}, {4, 500}, {5, 1000}
+            {1, 20}, {2, 50}, {3, 100}, {4, 500}, {5, 1000}, {6, 1000}, {7, 1000}
         };
 
         private readonly StakingBenefitsListView.Model[] _cachedModel =
-            new StakingBenefitsListView.Model[6];
+            new StakingBenefitsListView.Model[8];
 
         public const string StakingUrl = "ninechronicles-launcher://open/monster-collection";
         private const string ActionPointBuffFormat = "{0} <color=#1FFF00>{1}% DC</color>";
@@ -174,7 +174,7 @@ namespace Nekoyume.UI
                     : regular.RequiredGold;
                 depositText.text = deposit.ToString("N0");
                 depositGaugeImage.fillAmount = (float)deposit / nextRequired;
-                remainingDepositText.text = level >= 5
+                remainingDepositText.text = level >= 7
                     ? ""
                     : L10nManager.Localize("UI_REMAINING_NCG_TO_NEXT_LEVEL", nextRequired - deposit);
             }
@@ -189,7 +189,7 @@ namespace Nekoyume.UI
                 string.Format(ActionPointBuffFormat, L10nManager.Localize("STAGE_AP_BONUS"),
                     _cachedModel[level].ActionPointBuff), _benefitRates[level]);
 
-            for (int i = 0; i <= 5; i++)
+            for (int i = 0; i <= 7; i++)
             {
                 benefitsListViews[i].Set(i, level);
             }
@@ -293,7 +293,7 @@ namespace Nekoyume.UI
             var regularFixedSheet = sheets.StakeRegularFixedRewardSheet;
             var stakingMultiplierSheet = sheets.CrystalMonsterCollectionMultiplierSheet;
 
-            for (int level = 1; level <= 5; level++)
+            for (int level = 1; level <= 7; level++)
             {
                 var model = new StakingBenefitsListView.Model();
 
@@ -304,6 +304,8 @@ namespace Nekoyume.UI
                     model.HourGlassInterest = GetReward(regular, regularFixed,regular.RequiredGold, 0);
                     model.ApPotionInterest = GetReward(regular, regularFixed, regular.RequiredGold, 1);
                     model.RuneInterest = GetReward(regular, regularFixed, regular.RequiredGold, 2);
+                    model.GoldenMeatInterest = GetReward(regular, regularFixed, regular.RequiredGold, 3);
+                    model.GoldenPowderInterest = GetReward(regular, regularFixed, regular.RequiredGold, 4);
                 }
 
                 model.BenefitRate = _benefitRates[level];

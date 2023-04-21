@@ -97,9 +97,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -514,9 +514,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -637,8 +637,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 12
-    m_Right: 12
+    m_Left: 6
+    m_Right: 6
     m_Top: 50
     m_Bottom: 10
   m_ChildAlignment: 0
@@ -747,9 +747,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -914,9 +914,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -1037,8 +1037,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 12
-    m_Right: 12
+    m_Left: 6
+    m_Right: 6
     m_Top: 50
     m_Bottom: 10
   m_ChildAlignment: 0
@@ -1147,9 +1147,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -1333,7 +1333,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 89, y: 300}
+  m_SizeDelta: {x: 100, y: 300}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8739685749377770680
 MonoBehaviour:
@@ -1358,6 +1358,8 @@ MonoBehaviour:
     hourGlassInterestText: {fileID: 7729283318293921382}
     apPotionInterestText: {fileID: 8650886195334095416}
     runeInterestText: {fileID: 2446878902685662512}
+    goldenMeatInterestText: {fileID: 943233714504173707}
+    goldenPowderInterestText: {fileID: 9005158052925215597}
     arenaTicketBuffText: {fileID: 5929345045979458712}
     crystalBuffText: {fileID: 3975137677533920718}
     actionPointBuffText: {fileID: 8311748358421801630}
@@ -1367,6 +1369,8 @@ MonoBehaviour:
     hourGlassInterestText: {fileID: 3994420566036772641}
     apPotionInterestText: {fileID: 1328320525002464068}
     runeInterestText: {fileID: 438522784159206070}
+    goldenMeatInterestText: {fileID: 3560731267983232967}
+    goldenPowderInterestText: {fileID: 2218210677059849736}
     arenaTicketBuffText: {fileID: 6311796465302195411}
     crystalBuffText: {fileID: 6886577038886266521}
     actionPointBuffText: {fileID: 4945445962704843551}
@@ -1376,6 +1380,8 @@ MonoBehaviour:
     hourGlassInterestText: {fileID: 8761415201397826876}
     apPotionInterestText: {fileID: 7809945492967645938}
     runeInterestText: {fileID: 7367062187494286046}
+    goldenMeatInterestText: {fileID: 2285219783213786364}
+    goldenPowderInterestText: {fileID: 1225177905193218134}
     arenaTicketBuffText: {fileID: 1873431143519149783}
     crystalBuffText: {fileID: 8765903993948831001}
     actionPointBuffText: {fileID: 2964607621650195575}
@@ -1477,9 +1483,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -1644,9 +1650,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -2055,10 +2061,10 @@ RectTransform:
   m_Father: {fileID: 6365538392262388103}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50, y: -106.1}
-  m_SizeDelta: {x: 76, y: 22.6}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2541675201895626911
 CanvasRenderer:
@@ -2235,9 +2241,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -2630,9 +2636,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -3079,10 +3085,10 @@ RectTransform:
   m_Father: {fileID: 6365538392262388103}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50, y: -133.7}
-  m_SizeDelta: {x: 76, y: 22.6}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6481389122305837645
 CanvasRenderer:
@@ -3177,8 +3183,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 12
-    m_Right: 12
+    m_Left: 6
+    m_Right: 6
     m_Top: 12
     m_Bottom: 5
   m_ChildAlignment: 0
@@ -3287,9 +3293,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -3566,8 +3572,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 12
-    m_Right: 12
+    m_Left: 6
+    m_Right: 6
     m_Top: 12
     m_Bottom: 5
   m_ChildAlignment: 0
@@ -3675,9 +3681,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -3810,9 +3816,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -4023,9 +4029,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -4419,9 +4425,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -4542,8 +4548,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 12
-    m_Right: 12
+    m_Left: 6
+    m_Right: 6
     m_Top: 46
     m_Bottom: 10
   m_ChildAlignment: 0
@@ -4687,8 +4693,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 12
-    m_Right: 12
+    m_Left: 6
+    m_Right: 6
     m_Top: 12
     m_Bottom: 5
   m_ChildAlignment: 0
@@ -4805,7 +4811,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: <Style=G2>x150
+  m_text: <Style=G2>x15000000
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 7a651b26cd62dc0479659cbcab053405, type: 2}
@@ -4832,12 +4838,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 16
+  m_fontSize: 15.15
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -5079,9 +5085,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -5245,9 +5251,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -5628,9 +5634,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -5753,8 +5759,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 12
-    m_Right: 12
+    m_Left: 6
+    m_Right: 6
     m_Top: 12
     m_Bottom: 5
   m_ChildAlignment: 0
@@ -6008,9 +6014,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -6291,9 +6297,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -6526,9 +6532,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -6943,9 +6949,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -7110,9 +7116,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -7277,9 +7283,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -7444,9 +7450,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -7610,9 +7616,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -7919,9 +7925,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -8317,9 +8323,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -8484,9 +8490,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -9260,9 +9266,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -9422,8 +9428,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 12
-    m_Right: 12
+    m_Left: 6
+    m_Right: 6
     m_Top: 50
     m_Bottom: 10
   m_ChildAlignment: 0
@@ -9531,9 +9537,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -9667,9 +9673,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -9898,20 +9904,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5969434910947422524}
     m_Modifications:
-    - target: {fileID: 2771705118944128056, guid: a0ac00980b22c4ccdbbcbd818d881947,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4938599609843786633, guid: a0ac00980b22c4ccdbbcbd818d881947,
         type: 3}
       propertyPath: m_Name
       value: StakingLevelIcon
-      objectReference: {fileID: 0}
-    - target: {fileID: 4938599609843786633, guid: a0ac00980b22c4ccdbbcbd818d881947,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5920494021199402530, guid: a0ac00980b22c4ccdbbcbd818d881947,
         type: 3}
@@ -10017,11 +10013,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6086054613320542698, guid: a0ac00980b22c4ccdbbcbd818d881947,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a0ac00980b22c4ccdbbcbd818d881947, type: 3}
@@ -10155,12 +10146,12 @@ PrefabInstance:
     - target: {fileID: 1066260074002597565, guid: 79eb3cd246b59479a8a8e5022a11679f,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -8.6
+      value: -8.600098
       objectReference: {fileID: 0}
     - target: {fileID: 1066260074002597565, guid: 79eb3cd246b59479a8a8e5022a11679f,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -10.4
+      value: -10.399994
       objectReference: {fileID: 0}
     - target: {fileID: 1066260074002597565, guid: 79eb3cd246b59479a8a8e5022a11679f,
         type: 3}
@@ -10297,12 +10288,12 @@ PrefabInstance:
     - target: {fileID: 1066260074002597565, guid: 79eb3cd246b59479a8a8e5022a11679f,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -8.6
+      value: -8.600098
       objectReference: {fileID: 0}
     - target: {fileID: 1066260074002597565, guid: 79eb3cd246b59479a8a8e5022a11679f,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -10.4
+      value: -10.399994
       objectReference: {fileID: 0}
     - target: {fileID: 1066260074002597565, guid: 79eb3cd246b59479a8a8e5022a11679f,
         type: 3}
@@ -10503,6 +10494,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7492906542787221769}
     m_Modifications:
+    - target: {fileID: 2005815878114762113, guid: a0ac00980b22c4ccdbbcbd818d881947,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -12
+      objectReference: {fileID: 0}
+    - target: {fileID: 2005815878114762113, guid: a0ac00980b22c4ccdbbcbd818d881947,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4938599609843786633, guid: a0ac00980b22c4ccdbbcbd818d881947,
         type: 3}
       propertyPath: m_Name
@@ -10660,6 +10661,16 @@ PrefabInstance:
     - target: {fileID: 255753135471898, guid: a0ac00980b22c4ccdbbcbd818d881947, type: 3}
       propertyPath: m_text
       value: <Style=G0>0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2005815878114762113, guid: a0ac00980b22c4ccdbbcbd818d881947,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -12
+      objectReference: {fileID: 0}
+    - target: {fileID: 2005815878114762113, guid: a0ac00980b22c4ccdbbcbd818d881947,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2771705118944128056, guid: a0ac00980b22c4ccdbbcbd818d881947,
         type: 3}
@@ -10919,12 +10930,12 @@ PrefabInstance:
     - target: {fileID: 1066260074002597565, guid: 79eb3cd246b59479a8a8e5022a11679f,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -8.6
+      value: -8.600098
       objectReference: {fileID: 0}
     - target: {fileID: 1066260074002597565, guid: 79eb3cd246b59479a8a8e5022a11679f,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -10.4
+      value: -10.399994
       objectReference: {fileID: 0}
     - target: {fileID: 1066260074002597565, guid: 79eb3cd246b59479a8a8e5022a11679f,
         type: 3}
@@ -11061,12 +11072,12 @@ PrefabInstance:
     - target: {fileID: 1066260074002597565, guid: 79eb3cd246b59479a8a8e5022a11679f,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -8.6
+      value: -8.600098
       objectReference: {fileID: 0}
     - target: {fileID: 1066260074002597565, guid: 79eb3cd246b59479a8a8e5022a11679f,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -10.4
+      value: -10.399994
       objectReference: {fileID: 0}
     - target: {fileID: 1066260074002597565, guid: 79eb3cd246b59479a8a8e5022a11679f,
         type: 3}
