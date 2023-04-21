@@ -19,6 +19,7 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Libplanet.Store;
     using Libplanet.Store.Trie;
+    using Libplanet.Tx;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Battle;
@@ -523,7 +524,12 @@ namespace Lib9c.Tests.Action
                     pendingActivationStates: pendingActivationStates.ToArray()
                 );
                 genesis = BlockChain<PolymorphicAction<ActionBase>>.ProposeGenesisBlock(
-                    new PolymorphicAction<ActionBase>[] { initializeStates }
+                    transactions: ImmutableList<Transaction<PolymorphicAction<ActionBase>>>.Empty
+                        .Add(Transaction<PolymorphicAction<ActionBase>>.Create(
+                            0,
+                            new PrivateKey(),
+                            null,
+                            new PolymorphicAction<ActionBase>[] { initializeStates }))
                 );
             }
 
