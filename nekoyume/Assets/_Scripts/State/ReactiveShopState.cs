@@ -111,7 +111,8 @@ namespace Nekoyume.State
         public static async Task RequestBuyProductsAsync(
             ItemSubTypeFilter filter,
             MarketOrderType orderType,
-            int limit)
+            int limit,
+            int[] itemIds = null)
         {
             if (Game.Game.instance.MarketServiceClient is null)
             {
@@ -137,10 +138,10 @@ namespace Nekoyume.State
             var offset = CachedBuyItemProducts[orderType][filter].Count;
             var itemSubType = filter.ToItemSubType();
             var statType = filter.ToItemStatType();
-            var (products, totalCount) = await Game.Game.instance.MarketServiceClient.GetBuyProducts(itemSubType, offset, limit, orderType, statType);
-            // Debug.Log($"[RequestBuyProductsAsync] : {itemSubType} / {filter} / {orderType} / {offset} / {limit} / {statType} / MAX:{totalCount}");
+            var (products, totalCount) =
+                await Game.Game.instance.MarketServiceClient.GetBuyProducts(itemSubType, offset, limit, orderType, statType, itemIds);
 
-            await foreach (var product in products)
+            foreach (var product in products)
             {
                 if (!CachedBuyItemProducts[orderType].ContainsKey(filter))
                 {
@@ -161,7 +162,8 @@ namespace Nekoyume.State
         public static async Task RequestBuyFungibleAssetsAsync(
             ItemSubTypeFilter filter,
             MarketOrderType orderType,
-            int limit)
+            int limit,
+            int[] itemIds = null)
         {
             if (!BuyFavMaxChecker[orderType].ContainsKey(filter))
             {
@@ -183,7 +185,6 @@ namespace Nekoyume.State
             var offset = CachedBuyFungibleAssetProducts[orderType][filter].Count;
             var (fungibleAssets, totalCount) =
                 await Game.Game.instance.MarketServiceClient.GetBuyFungibleAssetProducts(ticker, offset, limit, orderType);
-            // Debug.Log($"[RequestBuyFungibleAssetsAsync] : {ticker} / {filter} / {orderType} / {offset} / {limit} / MAX:{totalCount}");
             var fungibleAssetModels = CachedBuyFungibleAssetProducts[orderType][filter];
             foreach (var asset in fungibleAssets)
             {
@@ -294,8 +295,7 @@ namespace Nekoyume.State
                 .FirstOrDefault(model => model is not null);
         }
 
-        public static FungibleAssetValueProductResponseModel GetSellFungibleAssetProduct(
-            Guid productId)
+        public static FungibleAssetValueProductResponseModel GetSellFungibleAssetProduct(Guid productId)
         {
             return SellFungibleAssetProducts.Value.FirstOrDefault(x => x.ProductId == productId);
         }

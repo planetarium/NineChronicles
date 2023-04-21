@@ -451,8 +451,7 @@ namespace Nekoyume.UI
                 }
             }
 
-            OneLineSystem.Push(MailType.Auction, message,
-                NotificationCell.NotificationType.Information);
+            OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
         }
 
