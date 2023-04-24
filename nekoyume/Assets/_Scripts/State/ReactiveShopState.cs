@@ -5,21 +5,19 @@ using System.Threading.Tasks;
 using Lib9c.Model.Order;
 using MarketService.Response;
 using Nekoyume.EnumType;
-using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
 using Nekoyume.TableData;
 using UniRx;
-using UnityEngine;
 
 namespace Nekoyume.State
 {
     public static class ReactiveShopState
     {
-        public static ReactiveProperty<Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>> BuyItemProducts { get; } =
+        public static ReactiveProperty<List<ItemProductResponseModel>> BuyItemProducts { get; } =
             new();
 
-        public static ReactiveProperty<Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>> SellItemProducts { get; } =
+        public static ReactiveProperty<List<ItemProductResponseModel>> SellItemProducts { get; } =
             new();
 
         public static ReactiveProperty<List<FungibleAssetValueProductResponseModel>>
@@ -28,174 +26,102 @@ namespace Nekoyume.State
         public static ReactiveProperty<List<FungibleAssetValueProductResponseModel>>
             SellFungibleAssetProducts { get; } = new();
 
-        private static readonly Dictionary<MarketOrderType, Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>>
-            CachedBuyItemProducts = new()
-            {
-                { MarketOrderType.cp, new Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>() },
-                { MarketOrderType.cp_desc, new Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>() },
-                { MarketOrderType.price, new Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>() },
-                { MarketOrderType.price_desc, new Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>() },
-                { MarketOrderType.grade, new Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>() },
-                { MarketOrderType.grade_desc, new Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>() },
-                { MarketOrderType.crystal, new Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>() },
-                { MarketOrderType.crystal_desc, new Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>() },
-                { MarketOrderType.crystal_per_price, new Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>() },
-                { MarketOrderType.crystal_per_price_desc, new Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>() }
-            };
-        private static readonly Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>> CachedSellItemProducts = new();
+        private static readonly List<ItemProductResponseModel> CachedBuyItemProducts = new();
+        private static readonly List<ItemProductResponseModel> CachedSellItemProducts = new();
 
-        private static readonly Dictionary<MarketOrderType, Dictionary<ItemSubTypeFilter, List<FungibleAssetValueProductResponseModel>>>
-            CachedBuyFungibleAssetProducts = new()
-            {
-                { MarketOrderType.price, new Dictionary<ItemSubTypeFilter, List<FungibleAssetValueProductResponseModel>>() },
-                { MarketOrderType.price_desc, new Dictionary<ItemSubTypeFilter, List<FungibleAssetValueProductResponseModel>>() },
-            };
+        private static readonly List<FungibleAssetValueProductResponseModel> CachedBuyFungibleAssetProducts = new();
         private static readonly List<FungibleAssetValueProductResponseModel> CachedSellFungibleAssetProducts = new();
 
-        private static readonly Dictionary<MarketOrderType, Dictionary<ItemSubTypeFilter, bool>> BuyProductMaxChecker = new()
-            {
-                { MarketOrderType.cp, new Dictionary<ItemSubTypeFilter, bool>() },
-                { MarketOrderType.cp_desc, new Dictionary<ItemSubTypeFilter, bool>() },
-                { MarketOrderType.price, new Dictionary<ItemSubTypeFilter, bool>() },
-                { MarketOrderType.price_desc, new Dictionary<ItemSubTypeFilter, bool>() },
-                { MarketOrderType.grade, new Dictionary<ItemSubTypeFilter, bool>() },
-                { MarketOrderType.grade_desc, new Dictionary<ItemSubTypeFilter, bool>() },
-                { MarketOrderType.crystal, new Dictionary<ItemSubTypeFilter, bool>() },
-                { MarketOrderType.crystal_desc, new Dictionary<ItemSubTypeFilter, bool>() },
-                { MarketOrderType.crystal_per_price, new Dictionary<ItemSubTypeFilter, bool>() },
-                { MarketOrderType.crystal_per_price_desc, new Dictionary<ItemSubTypeFilter, bool>() },
-            };
-
-        private static readonly Dictionary<MarketOrderType, Dictionary<ItemSubTypeFilter, bool>> BuyFavMaxChecker = new ()
-        {
-            { MarketOrderType.price, new Dictionary<ItemSubTypeFilter, bool>
-            {
-                { ItemSubTypeFilter.RuneStone, false}, { ItemSubTypeFilter.PetSoulStone, false}
-            }},
-            { MarketOrderType.price_desc, new Dictionary<ItemSubTypeFilter, bool>
-            {
-                { ItemSubTypeFilter.RuneStone, false}, { ItemSubTypeFilter.PetSoulStone, false}
-            }},
-        };
+        private static bool BuyProductMaxChecker;
+        private static bool BuyFavMaxChecker;
 
         private static List<Guid> PurchasedProductIds = new();
 
         public static void ClearCache()
         {
-            BuyItemProducts.Value = new Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>();
-            SellItemProducts.Value = new Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>();
+            BuyItemProducts.Value = new List<ItemProductResponseModel>();
+            SellItemProducts.Value = new List<ItemProductResponseModel>();
             BuyFungibleAssetProducts.Value = new List<FungibleAssetValueProductResponseModel>();
             SellFungibleAssetProducts.Value = new List<FungibleAssetValueProductResponseModel>();
 
-            foreach (var v in CachedBuyItemProducts.Values)
-            {
-                v.Clear();
-            }
-            foreach (var v in CachedBuyFungibleAssetProducts.Values)
-            {
-                v.Clear();
-            }
-            foreach (var v in BuyProductMaxChecker.Values)
-            {
-                v.Clear();
-            }
-            foreach (var v in BuyFavMaxChecker.Values)
-            {
-                v.Clear();
-            }
-
+            CachedBuyItemProducts.Clear();
             CachedSellItemProducts.Clear();
+            CachedBuyFungibleAssetProducts.Clear();
             CachedSellFungibleAssetProducts.Clear();
+
+            BuyProductMaxChecker = false;
+            BuyFavMaxChecker = false;
         }
 
         public static async Task RequestBuyProductsAsync(
             ItemSubTypeFilter filter,
             MarketOrderType orderType,
             int limit,
+            bool reset = false,
             int[] itemIds = null)
         {
-            if (Game.Game.instance.MarketServiceClient is null)
+            if (!reset && BuyProductMaxChecker)
             {
                 return;
             }
 
-            if (!BuyProductMaxChecker[orderType].ContainsKey(filter))
-            {
-                BuyProductMaxChecker[orderType].Add(filter, false);
-            }
-
-            if (BuyProductMaxChecker[orderType][filter])
-            {
-                return;
-            }
-
-            if (!CachedBuyItemProducts[orderType].ContainsKey(filter))
-            {
-                CachedBuyItemProducts[orderType]
-                    .Add(filter, new List<ItemProductResponseModel>());
-            }
-
-            var offset = CachedBuyItemProducts[orderType][filter].Count;
             var itemSubType = filter.ToItemSubType();
             var statType = filter.ToItemStatType();
+            var offset = reset ? 0 : CachedBuyItemProducts.Count;
             var (products, totalCount) =
                 await Game.Game.instance.MarketServiceClient.GetBuyProducts(itemSubType, offset, limit, orderType, statType, itemIds);
 
+            if (reset)
+            {
+                CachedBuyItemProducts.Clear();
+                CachedBuyFungibleAssetProducts.Clear();
+            }
+
             foreach (var product in products)
             {
-                if (!CachedBuyItemProducts[orderType].ContainsKey(filter))
+                if (CachedBuyItemProducts.All(x => x.ProductId != product.ProductId))
                 {
-                    continue;
-                }
-
-                if (CachedBuyItemProducts[orderType][filter].All(x => x.ProductId != product.ProductId))
-                {
-                    CachedBuyItemProducts[orderType][filter].Add(product);
+                    CachedBuyItemProducts.Add(product);
                 }
             }
 
-            var total = CachedBuyItemProducts[orderType].ContainsKey(filter)? CachedBuyItemProducts[orderType][filter].Count : 0;
-            BuyProductMaxChecker[orderType][filter] = totalCount == total;
-            SetBuyProducts(orderType);
+            BuyProductMaxChecker = totalCount == CachedBuyItemProducts.Count;
+            SetBuyProducts();
         }
 
         public static async Task RequestBuyFungibleAssetsAsync(
             ItemSubTypeFilter filter,
             MarketOrderType orderType,
             int limit,
+            bool reset = true,
             int[] itemIds = null)
         {
-            if (!BuyFavMaxChecker[orderType].ContainsKey(filter))
-            {
-                BuyFavMaxChecker[orderType].Add(filter, false);
-            }
-
-            if (BuyFavMaxChecker[orderType][filter])
+            if (!reset && BuyFavMaxChecker)
             {
                 return;
             }
 
-            if (!CachedBuyFungibleAssetProducts[orderType].ContainsKey(filter))
+            var ticker = filter == ItemSubTypeFilter.RuneStone ? "RUNE" : "SOULSTONE";
+            var offset = reset ? 0 : CachedBuyFungibleAssetProducts.Count;
+            var (fungibleAssets, totalCount) =
+                await Game.Game.instance.MarketServiceClient.GetBuyFungibleAssetProducts(ticker, offset, limit, orderType, itemIds);
+
+            if (reset)
             {
-                CachedBuyFungibleAssetProducts[orderType]
-                    .Add(filter, new List<FungibleAssetValueProductResponseModel>());
+                CachedBuyItemProducts.Clear();
+                CachedBuyFungibleAssetProducts.Clear();
             }
 
-            var ticker = filter == ItemSubTypeFilter.RuneStone ? "RUNE" : "SOULSTONE";
-            var offset = CachedBuyFungibleAssetProducts[orderType][filter].Count;
-            var (fungibleAssets, totalCount) =
-                await Game.Game.instance.MarketServiceClient.GetBuyFungibleAssetProducts(ticker, offset, limit, orderType);
-            var fungibleAssetModels = CachedBuyFungibleAssetProducts[orderType][filter];
             foreach (var asset in fungibleAssets)
             {
-                if (fungibleAssetModels.All(x => x.ProductId != asset.ProductId))
+                if (CachedBuyFungibleAssetProducts.All(x => x.ProductId != asset.ProductId))
                 {
-                    CachedBuyFungibleAssetProducts[orderType][filter].Add(asset);
+                    CachedBuyFungibleAssetProducts.Add(asset);
                 }
             }
 
-            BuyFavMaxChecker[orderType][filter] = totalCount == CachedBuyFungibleAssetProducts[orderType][filter].Count;
-            SetBuyFungibleAssets(orderType);
+            BuyFavMaxChecker = totalCount == CachedBuyFungibleAssetProducts.Count;
+            SetBuyFungibleAssets();
         }
 
         public static async Task RequestSellProductsAsync()
@@ -204,74 +130,52 @@ namespace Nekoyume.State
             var (fungibleAssets, items) =
                 await Game.Game.instance.MarketServiceClient.GetProducts(avatarAddress);
 
-            foreach (var (k, v) in CachedSellItemProducts)
-            {
-                v.Clear();
-            }
-
-            foreach (var item in items)
-            {
-                var filter = ItemSubTypeFilterExtension.GetItemSubTypeFilter(item.ItemId).First();
-                if (!CachedSellItemProducts.ContainsKey(filter))
-                {
-                    CachedSellItemProducts.Add(filter, new List<ItemProductResponseModel>());
-                }
-
-                CachedSellItemProducts[filter].Add(item);
-            }
+            CachedSellItemProducts.Clear();
+            CachedSellItemProducts.AddRange(items);
 
             CachedSellFungibleAssetProducts.Clear();
             CachedSellFungibleAssetProducts.AddRange(fungibleAssets);
+
             SetSellProducts();
         }
 
-        public static void SetBuyProducts(MarketOrderType marketOrderType)
+        public static void SetBuyProducts()
         {
             var curBlockIndex = Game.Game.instance.Agent.BlockIndex;
             var agentAddress = States.Instance.AgentState.address;
 
-            var products =new Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>();
-            foreach (var (k, v) in CachedBuyItemProducts[marketOrderType])
+            var products = new List<ItemProductResponseModel>();
+            foreach (var model in CachedBuyItemProducts.Where(model =>
+                         model.SellerAgentAddress != agentAddress &&
+                         !PurchasedProductIds.Contains(model.ProductId)))
             {
-                if (!products.ContainsKey(k))
+                if (model.Legacy)
                 {
-                    products.Add(k, new List<ItemProductResponseModel>());
+                    if (model.RegisteredBlockIndex + Order.ExpirationInterval - curBlockIndex > 0)
+                    {
+                        products.Add(model);
+                    }
                 }
-
-                foreach (var model in v.Where(model => model.SellerAgentAddress != agentAddress &&
-                                                       !PurchasedProductIds.Contains(model.ProductId)))
+                else
                 {
-                    if (model.Legacy)
-                    {
-                        if (model.RegisteredBlockIndex + Order.ExpirationInterval - curBlockIndex > 0)
-                        {
-                            products[k].Add(model);
-                        }
-                    }
-                    else
-                    {
-                        products[k].Add(model);
-                    }
+                    products.Add(model);
                 }
             }
 
             BuyItemProducts.Value = products;
+            BuyFungibleAssetProducts.Value?.Clear();
         }
 
-        public static void SetBuyFungibleAssets(MarketOrderType marketOrderType)
+        public static void SetBuyFungibleAssets()
         {
-            var fav = new List<FungibleAssetValueProductResponseModel>();
-            foreach (var models in CachedBuyFungibleAssetProducts[marketOrderType].Values)
-            {
-                fav.AddRange(models);
-            }
-
             var agentAddress = States.Instance.AgentState.address;
-            var favProducts = fav
-                .Where(x => !x.SellerAgentAddress.Equals(agentAddress))
-                .Where(x => !PurchasedProductIds.Contains(x.ProductId))
-                .ToList();
+
+            var favProducts = CachedBuyFungibleAssetProducts.Where(x =>
+                    !x.SellerAgentAddress.Equals(agentAddress) &&
+                    !PurchasedProductIds.Contains(x.ProductId)).ToList();
+
             BuyFungibleAssetProducts.Value = favProducts;
+            BuyItemProducts.Value?.Clear();
         }
 
         public static void SetSellProducts()
@@ -290,9 +194,8 @@ namespace Nekoyume.State
 
         public static ItemProductResponseModel GetSellItemProduct(Guid productId)
         {
-            return SellItemProducts.Value.Values
-                .Select(models => models.FirstOrDefault(x => x.ProductId == productId))
-                .FirstOrDefault(model => model is not null);
+            return SellItemProducts.Value
+                .FirstOrDefault(model => model is not null && model.ProductId == productId);
         }
 
         public static FungibleAssetValueProductResponseModel GetSellFungibleAssetProduct(Guid productId)
@@ -395,40 +298,19 @@ namespace Nekoyume.State
             return itemBase is not null;
         }
 
-        public static int GetCachedBuyItemCount(MarketOrderType orderType, ItemSubTypeFilter filter)
+        public static int GetCachedBuyItemCount(ItemSubTypeFilter filter)
         {
             switch (filter)
             {
                 case ItemSubTypeFilter.RuneStone:
                 case ItemSubTypeFilter.PetSoulStone:
-                    if (!CachedBuyFungibleAssetProducts.ContainsKey(orderType))
-                    {
-                        return 0;
-                    }
-
-                    if (!CachedBuyFungibleAssetProducts[orderType].ContainsKey(filter))
-                    {
-                        return 0;
-                    }
-
-                    return CachedBuyFungibleAssetProducts[orderType][filter].Count;
-
+                    return CachedBuyFungibleAssetProducts.Count;
                 default:
-                    if (!CachedBuyItemProducts.ContainsKey(orderType))
-                    {
-                        return 0;
-                    }
-
-                    if (!CachedBuyItemProducts[orderType].ContainsKey(filter))
-                    {
-                        return 0;
-                    }
-
                     var curBlockIndex = Game.Game.instance.Agent.BlockIndex;
-                    var legacyItemCount = CachedBuyItemProducts[orderType][filter]
+                    var legacyItemCount = CachedBuyItemProducts
                         .Where(x => x.Legacy)
                         .Count(x => x.RegisteredBlockIndex + Order.ExpirationInterval - curBlockIndex > 0);
-                    var newItemCount = CachedBuyItemProducts[orderType][filter].Count(x=> !x.Legacy);
+                    var newItemCount = CachedBuyItemProducts.Count(x => !x.Legacy);
                     var sum = legacyItemCount + newItemCount;
                     return sum;
             }

@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using JetBrains.Annotations;
 using Lib9c.Model.Order;
 using Libplanet.Assets;
 using MarketService.Response;
-using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.Market;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using TMPro;
@@ -45,7 +42,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private GameObject shopPrefab;
 
-        private readonly Dictionary<ItemSubTypeFilter, List<ShopItem>> _items = new();
+        private readonly List<ShopItem> _items = new();
         private readonly List<ShopItem> _selectedModels = new();
         private readonly List<ShopItemView> _itemViews = new();
         protected readonly ReactiveProperty<int> _page = new();
@@ -65,8 +62,7 @@ namespace Nekoyume.UI.Module
         protected abstract void OnClickItem(ShopItem item);
         protected abstract void Reset();
 
-        protected abstract IEnumerable<ShopItem> GetSortedModels(
-            Dictionary<ItemSubTypeFilter, List<ShopItem>> items);
+        protected abstract IEnumerable<ShopItem> GetSortedModels(List<ShopItem> items);
 
         protected virtual void UpdateView()
         {
@@ -84,7 +80,7 @@ namespace Nekoyume.UI.Module
         }
 
         public void Show(
-            ReactiveProperty<Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>> itemProducts,
+            ReactiveProperty<List<ItemProductResponseModel>> itemProducts,
             ReactiveProperty<List<FungibleAssetValueProductResponseModel>> fungibleAssetProducts,
             Action<ShopItem> clickItem)
         {
@@ -99,10 +95,7 @@ namespace Nekoyume.UI.Module
         {
             OnAwake();
 
-            foreach (var filter in ItemSubTypeFilterExtension.Filters)
-            {
-                _items.Add(filter, new List<ShopItem>());
-            }
+            _items.Clear();
 
             InitInteractiveUI();
             SubscribeToSearchConditions();
@@ -125,7 +118,6 @@ namespace Nekoyume.UI.Module
         private void OnEnable()
         {
             _isActive = true;
-            Reset();
         }
 
         private void OnDisable()
@@ -210,32 +202,23 @@ namespace Nekoyume.UI.Module
         }
 
         protected void Set(
-            ReactiveProperty<Dictionary<ItemSubTypeFilter, List<ItemProductResponseModel>>> itemProducts,
+            ReactiveProperty<List<ItemProductResponseModel>> itemProducts,
             ReactiveProperty<List<FungibleAssetValueProductResponseModel>> fungibleAssetProducts)
         {
             _disposables.DisposeAllAndClear();
-            _items[ItemSubTypeFilter.All] = _items[ItemSubTypeFilter.All]
-                .Where(x => x.Product is null).ToList();
-
-            foreach (var item in _items)
-            {
-                item.Value.Clear();
-            }
+            _items.Clear();
 
             if (itemProducts.Value is not null)
             {
                 var itemSheet = TableSheets.Instance.ItemSheet;
-                foreach (var (filter, products) in itemProducts.Value)
+                foreach (var product in itemProducts.Value)
                 {
-                    foreach (var product in products)
+                    if (!ReactiveShopState.TryGetItemBase(product, out var itemBase))
                     {
-                        if (!ReactiveShopState.TryGetItemBase(product, out var itemBase))
-                        {
-                            continue;
-                        }
-
-                        AddItem(filter, product, itemBase, itemSheet);
+                        continue;
                     }
+
+                    AddItem(product, itemBase, itemSheet);
                 }
             }
 
@@ -252,31 +235,16 @@ namespace Nekoyume.UI.Module
                 .AddTo(_disposables);
         }
 
-        private void AddItem(ItemSubTypeFilter filter, ItemProductResponseModel product, ItemBase itemBase, ItemSheet sheet)
+        private void AddItem(ItemProductResponseModel product, ItemBase itemBase, ItemSheet sheet)
         {
-            var model = CreateItem(product, itemBase, sheet);
-            if (!_items.ContainsKey(filter))
-            {
-                _items.Add(filter, new List<ShopItem>());
-            }
-
-            _items[filter].Add(model);
-            _items[ItemSubTypeFilter.All].Add(model);
+            _items.Add(CreateItem(product, itemBase, sheet));
         }
 
         private void AddItem(FungibleAssetValueProductResponseModel product)
         {
             var currency = Currency.Legacy(product.Ticker, 0, null);
             var fav = new FungibleAssetValue(currency, (int)product.Quantity, 0);
-            var model = CreateItem(product, fav);
-            var filter = fav.GetItemSubTypeFilter();
-            if (!_items.ContainsKey(filter))
-            {
-                _items.Add(filter, new List<ShopItem>());
-            }
-
-            _items[filter].Add(model);
-            _items[ItemSubTypeFilter.All].Add(model);
+            _items.Add(CreateItem(product, fav));
         }
 
         private static void DestroyChildren(Transform parent)

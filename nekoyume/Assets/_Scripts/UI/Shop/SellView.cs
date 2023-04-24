@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -127,16 +126,20 @@ namespace Nekoyume
         }
 
         protected override IEnumerable<ShopItem> GetSortedModels(
-            Dictionary<ItemSubTypeFilter, List<ShopItem>> items)
+            List<ShopItem> items)
         {
-            if (items[_selectedSubTypeFilter.Value] is null)
+            if (items is null)
             {
                 return new List<ShopItem>();
             }
 
-            var models = items[_selectedSubTypeFilter.Value].Distinct();
-            var fungibleAssetProducts = models.Where(x => x.Product is null);
-            var itemProducts = models.Where(x => x.Product is not null).ToList();
+            var models = items.Distinct();
+            var fungibleAssetProducts = models.Where(x =>
+                x.Product is null
+                && x.FungibleAssetValue.GetItemSubTypeFilter() == _selectedSubTypeFilter.Value);
+            var itemProducts = models.Where(x =>
+                x.Product is not null
+                && x.ItemBase.ItemSubType == _selectedSubTypeFilter.Value.ToItemSubType()).ToList();
 
             var result = new List<ShopItem>();
             switch (_selectedSortFilter.Value)

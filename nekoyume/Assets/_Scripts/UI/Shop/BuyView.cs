@@ -5,7 +5,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
-using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
@@ -69,6 +68,8 @@ namespace Nekoyume
 
         [SerializeField]
         private GameObject loading;
+
+        private int _loadingCount;
 
         private readonly List<ItemSubTypeFilter> _toggleTypes = new()
         {
@@ -140,8 +141,6 @@ namespace Nekoyume
             new(ShopSortFilter.CP);
 
         private readonly ReactiveProperty<bool> _useSearch = new();
-        private readonly ReactiveProperty<List<int>> _selectedItemIds = new(new List<int>());
-
         private readonly ReactiveProperty<bool> _isAscending = new();
         private readonly ReactiveProperty<bool> _levelLimit = new();
 
@@ -180,7 +179,8 @@ namespace Nekoyume
             _sortOrderAnimator = sortOrderButton.GetComponent<Animator>();
             _levelLimitAnimator = levelLimitToggle.GetComponent<Animator>();
             _resetAnimator = resetButton.GetComponent<Animator>();
-            loading.SetActive(false);
+            _loadingCount = 0;
+            loading.SetActive(_loadingCount > 0);
 
             _sortText = sortButton.GetComponentInChildren<TextMeshProUGUI>();
             var tableSheets = Game.Game.instance.TableSheets;
@@ -249,12 +249,12 @@ namespace Nekoyume
                     {
                         return;
                     }
-
                     _selectedSubTypeFilter.Value = _toggleSubTypes[toggleType].First();
                     _selectedSortFilter.Value = _selectedSubTypeFilter.Value
                         is ItemSubTypeFilter.RuneStone or ItemSubTypeFilter.PetSoulStone
                         ? ShopSortFilter.Price : ShopSortFilter.CP;
                     toggleDropdown.items.First().isOn = true;
+                    _page.SetValueAndForceNotify(0);
                 });
                 toggleDropdown.onClickToggle.AddListener(AudioController.PlayClick);
 
@@ -265,17 +265,13 @@ namespace Nekoyume
                     var subIndex = subItems.IndexOf(item);
                     var subTypes = _toggleSubTypes[toggleType];
                     var subToggleType = subTypes[subIndex];
-                    item.onValueChanged.AddListener((value) =>
+                    item.onClickToggle.AddListener(() =>
                     {
-                        if (!value)
-                        {
-                            return;
-                        }
-
                         _selectedSortFilter.Value = subToggleType
                             is ItemSubTypeFilter.RuneStone or ItemSubTypeFilter.PetSoulStone
                             ? ShopSortFilter.Price : ShopSortFilter.CP;
                         _selectedSubTypeFilter.Value = subToggleType;
+                        _page.SetValueAndForceNotify(0);
                     });
                     item.onClickToggle.AddListener(AudioController.PlayClick);
                 }
@@ -295,19 +291,36 @@ namespace Nekoyume
                         _selectedSortFilter.Value = (int)_selectedSortFilter.Value < count - 1 ? _selectedSortFilter.Value + 1 : 0;
                         break;
                 }
-
+                _page.SetValueAndForceNotify(0);
             });
 
             inputField.onValueChanged.AddListener(_ =>
                 searchButton.gameObject.SetActive(inputField.text.Length > 0));
             inputField.onSubmit.AddListener(_ =>
-                _useSearch.SetValueAndForceNotify(inputField.text.Length > 0));
+            {
+                _useSearch.SetValueAndForceNotify(inputField.text.Length > 0);
+                _page.SetValueAndForceNotify(0);
+            });
             searchButton.onClick.AddListener(() =>
-                _useSearch.SetValueAndForceNotify(inputField.text.Length > 0));
-            resetButton.onClick.AddListener(() => _useSearch.Value = !_useSearch.Value);
-
-            sortOrderButton.onClick.AddListener(() => _isAscending.Value = !_isAscending.Value);
-            levelLimitToggle.onValueChanged.AddListener(value => _levelLimit.Value = value);
+            {
+                _useSearch.SetValueAndForceNotify(inputField.text.Length > 0);
+                _page.SetValueAndForceNotify(0);
+            });
+            resetButton.onClick.AddListener(() =>
+            {
+                _useSearch.Value = !_useSearch.Value;
+                _page.SetValueAndForceNotify(0);
+            });
+            sortOrderButton.onClick.AddListener(() =>
+            {
+                _isAscending.Value = !_isAscending.Value;
+                _page.SetValueAndForceNotify(0);
+            });
+            levelLimitToggle.onValueChanged.AddListener(value =>
+            {
+                _levelLimit.Value = value;
+                _page.SetValueAndForceNotify(0);
+            });
         }
 
         public async void OnBuyProductAction()
@@ -316,76 +329,58 @@ namespace Nekoyume
             ClearSelectedItems();
         }
 
-        private async void OnUpdateSubTypeFilter(ItemSubTypeFilter filter)
-        {
-            _page.SetValueAndForceNotify(0);
-        }
-
-        private async void OnUpdateSortTypeFilter(ShopSortFilter filter)
-        {
-            _page.SetValueAndForceNotify(0);
-            _sortText.text = L10nManager.Localize($"UI_{filter.ToString().ToUpper()}");
-        }
-
-        private void OnUpdateUseSearch(bool useSearch)
-        {
-            _page.SetValueAndForceNotify(0);
-
-            resetButton.interactable = useSearch;
-            _resetAnimator.Play(useSearch ? _hashNormal : _hashDisabled);
-            if (!useSearch)
-            {
-                inputField.text = string.Empty;
-            }
-        }
-
-        private async void OnUpdateAscending(bool isAscending)
-        {
-            _page.SetValueAndForceNotify(0);
-            sortOrderIcon.localScale = new Vector3(1, isAscending ? 1 : -1, 1);
-        }
-
         protected override async void UpdatePage(int page)
         {
-            await CheckItem(_selectedSubTypeFilter.Value);
+            await CheckItem();
             base.UpdatePage(page);
             UpdateView();
         }
 
-        private int[] GetFilteredItemIds()
+        private int[] GetFilteredItemIds(ItemSubTypeFilter filter)
         {
             var avatarLevel = Game.Game.instance.States.CurrentAvatarState.level;
             var requirementSheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
 
-            var containItemIds = new List<int>();
             if (!_useSearch.Value && !_levelLimit.Value)
             {
-                return containItemIds.ToArray();
+                return Array.Empty<int>();
             }
 
-            bool IsValid(int id, string itemName)
+            bool IsValid(int id, string itemName, bool useSearch, bool levelLimit)
             {
-                var inSearch = !_useSearch.Value ||
+                var inSearch = !useSearch ||
                                Regex.IsMatch(itemName, inputField.text, RegexOptions.IgnoreCase);
-                var inLevelLimit = !_levelLimit.Value ||
+                var inLevelLimit = !levelLimit ||
                                    (requirementSheet.TryGetValue(id, out var requirementRow) &&
                                     avatarLevel >= requirementRow.Level);
                 return inSearch && inLevelLimit;
             }
 
-            var itemIds = _itemIds.Where(id => IsValid(id, L10nManager.LocalizeItemName(id)));
-            containItemIds.AddRange(itemIds);
-            var runeIds = _runeIds.Where(id => IsValid(id, L10nManager.LocalizeRuneName(id)));
-            containItemIds.AddRange(runeIds);
-            var petIds = _petIds.Where(id => IsValid(id, L10nManager.LocalizePetName(id)));
-            containItemIds.AddRange(petIds);
+            switch (filter)
+            {
+                case ItemSubTypeFilter.RuneStone:
+                     return _runeIds.Where(id => IsValid(id, L10nManager.LocalizeRuneName(id), _useSearch.Value, false)).ToArray();
 
-            return containItemIds.ToArray();
+                case ItemSubTypeFilter.PetSoulStone:
+                    return _petIds.Where(id => IsValid(id, L10nManager.LocalizePetName(id), _useSearch.Value, false)).ToArray();
+
+                default:
+                    return _itemIds.Where(id => IsValid(id, L10nManager.LocalizeItemName(id), _useSearch.Value, _levelLimit.Value)).ToArray();
+            }
         }
 
-        private async Task CheckItem(ItemSubTypeFilter filter)
+        private async Task CheckItem()
         {
             if (!_isActive)
+            {
+                return;
+            }
+
+            var filter = _selectedSubTypeFilter.Value;
+            var limit = _column * _row;
+            var reset = _page.Value == 0;
+            var count = reset ? 0 : ReactiveShopState.GetCachedBuyItemCount(filter);
+            if (reset && count > (_page.Value + 1) * limit)
             {
                 return;
             }
@@ -393,31 +388,22 @@ namespace Nekoyume
             var orderType = filter is ItemSubTypeFilter.RuneStone or ItemSubTypeFilter.PetSoulStone
                 ? _isAscending.Value ? MarketOrderType.price : MarketOrderType.price_desc
                 : _selectedSortFilter.Value.ToMarketOrderType(_isAscending.Value);
-            var count = ReactiveShopState.GetCachedBuyItemCount(orderType, filter);
-            var limit = _column * _row;
-            var filteredItemIds = GetFilteredItemIds();
-            if (count < (_page.Value + 1) * limit)
-            {
-                loading.SetActive(true);
-                if (filter is ItemSubTypeFilter.RuneStone or ItemSubTypeFilter.PetSoulStone)
-                {
-                    await ReactiveShopState.RequestBuyFungibleAssetsAsync(filter, orderType, limit * 5);
-                }
-                else
-                {
-                    await ReactiveShopState.RequestBuyProductsAsync(filter, orderType, limit * 15, filteredItemIds);
-                }
-                loading.SetActive(false);
-            }
+            var filteredItemIds = GetFilteredItemIds(filter);
 
+            _loadingCount++;
+            loading.SetActive(_loadingCount > 0);
             if (filter is ItemSubTypeFilter.RuneStone or ItemSubTypeFilter.PetSoulStone)
             {
-                ReactiveShopState.SetBuyFungibleAssets(orderType);
+                await ReactiveShopState.RequestBuyFungibleAssetsAsync(
+                    filter, orderType, limit * 15, reset, filteredItemIds);
             }
             else
             {
-                ReactiveShopState.SetBuyProducts(orderType);
+                await ReactiveShopState.RequestBuyProductsAsync(
+                    filter, orderType, limit * 15, reset, filteredItemIds);
             }
+            _loadingCount--;
+            loading.SetActive(_loadingCount > 0);
 
             Set(ReactiveShopState.BuyItemProducts, ReactiveShopState.BuyFungibleAssetProducts);
             UpdateView();
@@ -425,13 +411,26 @@ namespace Nekoyume
 
         protected override void SubscribeToSearchConditions()
         {
-            _selectedSubTypeFilter.Subscribe(OnUpdateSubTypeFilter).AddTo(gameObject);
-            _selectedSortFilter.Subscribe(OnUpdateSortTypeFilter).AddTo(gameObject);
-            _useSearch.Subscribe(OnUpdateUseSearch).AddTo(gameObject);
-            _isAscending.Subscribe(OnUpdateAscending).AddTo(gameObject);
-            _levelLimit.Subscribe(_ =>
+            _selectedSortFilter.Subscribe(filter =>
             {
-                _page.SetValueAndForceNotify(0);
+                _sortText.text = L10nManager.Localize($"UI_{filter.ToString().ToUpper()}");
+            }).AddTo(gameObject);
+            _useSearch.Subscribe(useSearch =>
+            {
+                resetButton.interactable = useSearch;
+                _resetAnimator.Play(useSearch ? _hashNormal : _hashDisabled);
+                if (!useSearch)
+                {
+                    inputField.text = string.Empty;
+                }
+            }).AddTo(gameObject);
+            _isAscending.Subscribe(isAscending =>
+            {
+                sortOrderIcon.localScale = new Vector3(1, isAscending ? 1 : -1, 1);
+            }).AddTo(gameObject);
+            _levelLimit.Subscribe(levelLimit =>
+            {
+                levelLimitToggle.isOn = levelLimit;
             }).AddTo(gameObject);
 
             _mode.Subscribe(x =>
@@ -577,68 +576,15 @@ namespace Nekoyume
             _selectedSortFilter.SetValueAndForceNotify(ShopSortFilter.CP);
             _useSearch.SetValueAndForceNotify(false);
             _isAscending.SetValueAndForceNotify(false);
-            _levelLimit.SetValueAndForceNotify(levelLimitToggle.isOn);
+            _levelLimit.SetValueAndForceNotify(false);
             _mode.SetValueAndForceNotify(BuyMode.Single);
 
             ClearSelectedItems();
         }
 
-        protected override IEnumerable<ShopItem> GetSortedModels(
-            Dictionary<ItemSubTypeFilter, List<ShopItem>> items)
+        protected override IEnumerable<ShopItem> GetSortedModels(List<ShopItem> items)
         {
-            var models = items[_selectedSubTypeFilter.Value];
-            if (_selectedItemIds.Value.Any()) // _selectedItemIds
-            {
-                var selectedModels = new List<ShopItem>();
-                switch (_selectedSubTypeFilter.Value)
-                {
-                    case ItemSubTypeFilter.RuneStone:
-                        foreach (var model in models)
-                        {
-                            var ticker = model.FungibleAssetValue.Currency.Ticker;
-                            if (!RuneFrontHelper.TryGetRuneData(ticker, out var runeData))
-                            {
-                                continue;
-                            }
-
-                            if (_selectedItemIds.Value.Exists(x => x == runeData.id))
-                            {
-                                selectedModels.Add(model);
-                            }
-                        }
-                        break;
-                    case ItemSubTypeFilter.PetSoulStone:
-                        var petSheet = Game.Game.instance.TableSheets.PetSheet;
-                        foreach (var model in models)
-                        {
-                            var ticker = model.FungibleAssetValue.Currency.Ticker;
-                            var petRow = petSheet.Values.FirstOrDefault(x => x.SoulStoneTicker == ticker);
-                            if (petRow is null)
-                            {
-                                continue;
-                            }
-
-                            if (_selectedItemIds.Value.Exists(x => x == petRow.Id))
-                            {
-                                selectedModels.Add(model);
-                            }
-                        }
-                        break;
-                    default:
-                        selectedModels  = models.Where(x =>
-                            _selectedItemIds.Value.Exists(y => x.ItemBase.Id.Equals(y))).ToList();
-                        break;
-                }
-
-                models = selectedModels;
-            }
-
-            if (_levelLimit.Value)
-            {
-                models = models.Where(x => Util.IsUsableItem(x.ItemBase)).ToList();
-            }
-
-            return models;
+            return items;
         }
 
         protected override void UpdateView()

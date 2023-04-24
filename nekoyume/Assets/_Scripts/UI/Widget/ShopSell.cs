@@ -5,7 +5,6 @@ using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using Libplanet.Assets;
-using MarketService.Response;
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.Game.Controller;
@@ -386,12 +385,7 @@ namespace Nekoyume.UI
 
         private async void SubscribeReRegisterProduct(bool chargeAp)
         {
-            var itemProducts = new List<ItemProductResponseModel>();
-            foreach (var products in ReactiveShopState.SellItemProducts.Value.Values)
-            {
-                itemProducts.AddRange(products);
-            }
-
+            var itemProducts = ReactiveShopState.SellItemProducts.Value;
             var favProducts = ReactiveShopState.SellFungibleAssetProducts.Value;
 
             if (!itemProducts.Any() && !favProducts.Any())
@@ -457,13 +451,9 @@ namespace Nekoyume.UI
 
         private async void SubscribeCancelProductRegistration(bool chargeAp)
         {
-            var itemProducts = new List<ItemProductResponseModel>();
-            foreach (var products in ReactiveShopState.SellItemProducts.Value.Values)
-            {
-                itemProducts.AddRange(products);
-            }
-
+            var itemProducts = ReactiveShopState.SellItemProducts.Value;
             var favProducts = ReactiveShopState.SellFungibleAssetProducts.Value;
+
             if (!itemProducts.Any() && !favProducts.Any())
             {
                 OneLineSystem.Push(
