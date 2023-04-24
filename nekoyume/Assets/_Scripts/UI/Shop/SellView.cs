@@ -173,6 +173,22 @@ namespace Nekoyume
                                 .MajorUnit
                             : 0).ToList();
                     break;
+                case ShopSortFilter.EquipmentLevel:
+                    result = itemProducts
+                        .OrderByDescending(x => x.ItemBase.ItemType == ItemType.Equipment
+                            ? ((Equipment)x.ItemBase).level
+                            : 0).ToList();
+                    break;
+                case ShopSortFilter.OptionCount:
+                    result = itemProducts
+                        .OrderByDescending(x => x.ItemBase.ItemType == ItemType.Equipment
+                            ? ((Equipment)x.ItemBase).optionCountFromCombination
+                            : 0).ToList();
+                    break;
+                case ShopSortFilter.UnitPrice:
+                    result = itemProducts
+                        .OrderByDescending(x => x.Product.Price / x.Product.Quantity).ToList();
+                    break;
             }
 
             result.AddRange(fungibleAssetProducts);
