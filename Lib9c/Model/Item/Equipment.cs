@@ -96,14 +96,12 @@ namespace Nekoyume.Model.Item
         public override IValue Serialize()
         {
 #pragma warning disable LAA1002
-            var dict = new Dictionary(new Dictionary<IKey, IValue>
-            {
-                [(Text) LegacyEquippedKey] = equipped.Serialize(),
-                [(Text) LegacyLevelKey] = level.Serialize(),
-                [(Text) LegacyStatKey] = Stat.Serialize(),
-                [(Text) LegacySetIdKey] = SetId.Serialize(),
-                [(Text) LegacySpineResourcePathKey] = SpineResourcePath.Serialize(),
-            }.Union((Dictionary) base.Serialize()));
+            var dict = ((Dictionary)base.Serialize())
+                .Add(LegacyEquippedKey, equipped.Serialize())
+                .Add(LegacyLevelKey, level.Serialize())
+                .Add(LegacyStatKey, Stat.SerializeForLegacyEquipmentStat())
+                .Add(LegacySetIdKey, SetId.Serialize())
+                .Add(LegacySpineResourcePathKey, SpineResourcePath.Serialize());
 
             if (optionCountFromCombination > 0)
             {
@@ -142,8 +140,7 @@ namespace Nekoyume.Model.Item
             }
         }
 
-        [Obsolete("Use LevelUp")]
-        public void LevelUpV2(IRandom random, EnhancementCostSheetV2.Row row, bool isGreatSuccess)
+        public void LevelUp(IRandom random, EnhancementCostSheetV2.Row row, bool isGreatSuccess)
         {
             level++;
             var rand = isGreatSuccess ? row.BaseStatGrowthMax

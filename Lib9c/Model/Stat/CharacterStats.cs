@@ -207,7 +207,7 @@ namespace Nekoyume.Model.Stat
                             statType,
                             StatModifier.OperationType.Add,
                             value);
-                        _equipmentStatModifiers.Add(statModifier);
+                        _consumableStatModifiers.Add(statModifier);
                     }
                 }
             }
@@ -322,7 +322,7 @@ namespace Nekoyume.Model.Stat
         public void IncreaseHpForArena()
         {
             var originalHP = _statMap[StatType.HP];
-            _statMap[StatType.HP].SetBaseValue(Math.Max(0, originalHP.BaseValueAsInt * 2));
+            _statMap[StatType.HP].SetBaseValue(Math.Max(0, originalHP.TotalValueAsInt * 2));
         }
 
         private void UpdateBaseStats()

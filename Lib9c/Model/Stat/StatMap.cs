@@ -51,11 +51,8 @@ namespace Nekoyume.Model.Stat
         public int AdditionalArmorPenetration => _statMap[StatType.ArmorPenetration].AdditionalValueAsInt;
         public int AdditionalThorn => _statMap[StatType.Thorn].AdditionalValueAsInt;
 
-        private readonly Dictionary<StatType, DecimalStat> _statMap;
-
-        public StatMap()
-        {
-            _statMap = new Dictionary<StatType, DecimalStat>(StatTypeComparer.Instance)
+        private readonly Dictionary<StatType, DecimalStat> _statMap =
+            new Dictionary<StatType, DecimalStat>(StatTypeComparer.Instance)
             {
                 { StatType.HP, new DecimalStat(StatType.HP) },
                 { StatType.ATK, new DecimalStat(StatType.ATK) },
@@ -69,14 +66,16 @@ namespace Nekoyume.Model.Stat
                 { StatType.ArmorPenetration, new DecimalStat(StatType.ArmorPenetration) },
                 { StatType.Thorn, new DecimalStat(StatType.Thorn) },
             };
+
+        public StatMap()
+        {
         }
 
         public StatMap(StatMap statMap)
         {
-            _statMap = new Dictionary<StatType, DecimalStat>();
-            foreach (var stat in statMap.GetStats())
+            foreach (var stat in statMap.GetExistingStats())
             {
-                _statMap.Add(stat.StatType, (DecimalStat)stat.Clone());
+                _statMap[stat.StatType] = (DecimalStat)stat.Clone();
             }
         }
 
@@ -134,7 +133,7 @@ namespace Nekoyume.Model.Stat
             {
                 if (ignoreZero)
                 {
-                    if (stat.HasTotalValue)
+                    if (stat.HasTotalValueAsInt)
                     {
                         yield return (statType, stat.TotalValueAsInt);
                     }
@@ -152,7 +151,7 @@ namespace Nekoyume.Model.Stat
             {
                 if (ignoreZero)
                 {
-                    if (stat.HasBaseValue)
+                    if (stat.HasBaseValueAsInt)
                     {
                         yield return (statType, stat.BaseValueAsInt);
                     }
@@ -170,7 +169,7 @@ namespace Nekoyume.Model.Stat
             {
                 if (ignoreZero)
                 {
-                    if (stat.HasAdditionalValue)
+                    if (stat.HasAdditionalValueAsInt)
                     {
                         yield return (statType, stat.AdditionalValueAsInt);
                     }
@@ -189,7 +188,7 @@ namespace Nekoyume.Model.Stat
             {
                 if (ignoreZero)
                 {
-                    if (stat.HasBaseValue || stat.HasAdditionalValue)
+                    if (stat.HasBaseValueAsInt || stat.HasAdditionalValueAsInt)
                     {
                         yield return (statType, stat.BaseValueAsInt, stat.AdditionalValueAsInt);
                     }
@@ -209,10 +208,22 @@ namespace Nekoyume.Model.Stat
             }
         }
 
+        public IEnumerable<DecimalStat> GetExistingStats()
+        {
+            foreach (var stat in _statMap
+                .Where(x => x.Value.HasBaseValueAsInt || x.Value.HasAdditionalValueAsInt)
+                .OrderBy(x => x.Key))
+            {
+                yield return stat.Value;
+            }
+        }
+
         public IValue Serialize() =>
 #pragma warning disable LAA1002
             new Dictionary(
-                _statMap.Select(kv =>
+                _statMap
+                    .Where(x => x.Value.HasBaseValue || x.Value.HasAdditionalValue)
+                    .Select(kv =>
                     new KeyValuePair<IKey, IValue>(
                         kv.Key.Serialize(),
                         kv.Value.Serialize()

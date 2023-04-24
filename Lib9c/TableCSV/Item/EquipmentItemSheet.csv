@@ -42,8 +42,8 @@ id,_name,item_sub_type,grade,elemental_type,set_id,stat_type,stat_value,attack_r
 10154001,수르트의 검(바람),Weapon,5,Wind,20,ATK,4219,2,10154001
 10155000,발키리의 검,Weapon,5,Normal,15,ATK,2902,2,10155000
 10200000,누더기 옷,Armor,0,Normal,0,HP,30,2,Character/Player/10200000
-10210000,옷,Armor,1,Normal,1,Thorn,180,2,Character/Player/10210000
-10211000,천 옷(불),Armor,1,Fire,2,ArmorPenetration,222,2,Character/Player/10211000
+10210000,옷,Armor,1,Normal,1,HP,180,2,Character/Player/10210000
+10211000,천 옷(불),Armor,1,Fire,2,HP,222,2,Character/Player/10211000
 10212000,천 옷(물),Armor,1,Water,3,HP,288,2,Character/Player/10212000
 10213000,천 옷(땅),Armor,1,Land,4,HP,915,2,Character/Player/10213000
 10214000,천 옷(바람),Armor,1,Wind,5,HP,2182,2,Character/Player/10214000

@@ -251,7 +251,7 @@ namespace Nekoyume.Model
             return statModifiers.Any();
         }
 
-        [Obsolete("Use SetRune")]
+        [Obsolete("Use SetRune instead.")]
         public void SetRuneV1(
             List<RuneState> runes,
             RuneOptionSheet runeOptionSheet,

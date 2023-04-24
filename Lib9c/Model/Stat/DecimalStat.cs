@@ -9,21 +9,22 @@ namespace Nekoyume.Model.Stat
     [Serializable]
     public class DecimalStat : ICloneable, IState
     {
-        private decimal _baseValue;
+        public decimal BaseValue { get; private set; }
 
-        private decimal _additionalValue;
+        public decimal AdditionalValue { get; private set; }
 
-        public bool HasTotalValue => TotalValue != default;
+        public bool HasTotalValueAsInt => HasBaseValueAsInt || HasAdditionalValueAsInt;
 
-        public bool HasBaseValue => _baseValue != default;
+        public bool HasBaseValueAsInt => BaseValue > 0;
 
-        public bool HasAdditionalValue => _additionalValue != default;
+        public bool HasAdditionalValueAsInt => AdditionalValue > 0;
+
+        public bool HasBaseValue => BaseValue > 0m;
+
+        public bool HasAdditionalValue => AdditionalValue > 0m;
+
 
         public StatType StatType;
-
-        public decimal BaseValue => _baseValue;
-
-        public decimal AdditionalValue => _additionalValue;
 
         public int BaseValueAsInt => (int)BaseValue;
 
@@ -32,58 +33,58 @@ namespace Nekoyume.Model.Stat
         [Obsolete("For legacy equipments. (Before world 7 patch)")]
         public int TotalValueAsInt => BaseValueAsInt + AdditionalValueAsInt;
 
-        public decimal TotalValue => _baseValue + _additionalValue;
+        public decimal TotalValue => BaseValue + AdditionalValue;
 
         public DecimalStat(StatType type, decimal value = 0m, decimal additionalValue = 0m)
         {
             StatType = type;
-            _baseValue = value;
-            _additionalValue = additionalValue;
+            BaseValue = value;
+            AdditionalValue = additionalValue;
         }
 
         public virtual void Reset()
         {
-            _baseValue = 0;
-            _additionalValue = 0;
+            BaseValue = 0;
+            AdditionalValue = 0;
         }
 
         protected DecimalStat(DecimalStat value)
         {
             StatType = value.StatType;
-            _baseValue = value._baseValue;
-            _additionalValue = value._additionalValue;
+            BaseValue = value.BaseValue;
+            AdditionalValue = value.AdditionalValue;
         }
 
         public DecimalStat(Dictionary serialized)
         {
             StatType = StatTypeExtension.Deserialize((Binary)serialized["statType"]);
 
-            _baseValue = serialized["value"].ToDecimal();
+            BaseValue = serialized["value"].ToDecimal();
             // This field is added later.
             if (serialized.TryGetValue((Text)"additionalValue", out var additionalValue))
             {
-                _additionalValue = additionalValue.ToDecimal();
+                AdditionalValue = additionalValue.ToDecimal();
             }
         }
 
         public void SetBaseValue(decimal value)
         {
-            _baseValue = value;
+            BaseValue = value;
         }
 
         public void AddBaseValue(decimal value)
         {
-            SetBaseValue(_baseValue + value);
+            SetBaseValue(BaseValue + value);
         }
 
         public void SetAdditionalValue(decimal value)
         {
-            _additionalValue = value;
+            AdditionalValue = value;
         }
 
         public void AddAdditionalValue(decimal value)
         {
-            SetAdditionalValue(_additionalValue + value);
+            SetAdditionalValue(AdditionalValue + value);
         }
 
         public virtual object Clone()
@@ -93,8 +94,8 @@ namespace Nekoyume.Model.Stat
 
         protected bool Equals(DecimalStat other)
         {
-            return _baseValue == other._baseValue &&
-                _additionalValue == other._additionalValue &&
+            return BaseValue == other.BaseValue &&
+                AdditionalValue == other.AdditionalValue &&
                 StatType == other.StatType;
         }
 
@@ -108,13 +109,8 @@ namespace Nekoyume.Model.Stat
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(_baseValue, _additionalValue, StatType);
+            return HashCode.Combine(BaseValue, AdditionalValue, StatType);
         }
-
-        public IValue SerializeForLegacyEquipmentStat() =>
-            Dictionary.Empty
-                .Add("type", StatTypeExtension.Serialize(StatType))
-                .Add("value", BaseValueAsInt.Serialize());
 
         public virtual IValue Serialize()
         {
@@ -126,12 +122,21 @@ namespace Nekoyume.Model.Stat
             });
         }
 
+        public IValue SerializeSimple()
+        {
+            return new Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text)"statType"] = StatType.Serialize(),
+                [(Text)"value"] = TotalValue.Serialize(),
+            });
+        }
+
         public virtual void Deserialize(Dictionary serialized)
         {
             var (statType, baseValue, additionalValue) = serialized.GetStat();
             StatType = statType;
-            _baseValue = baseValue;
-            _additionalValue = additionalValue;
+            BaseValue = baseValue;
+            AdditionalValue = additionalValue;
         }
     }
 }

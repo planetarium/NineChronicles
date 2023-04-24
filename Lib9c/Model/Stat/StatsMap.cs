@@ -132,7 +132,7 @@ namespace Nekoyume.Model.Stat
 
         public IEnumerable<DecimalStat> GetDecimalStats()
         {
-            return _statMap.GetStats();
+            return _statMap.GetExistingStats();
         }
     }
 }

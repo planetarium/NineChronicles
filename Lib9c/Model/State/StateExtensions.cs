@@ -208,6 +208,11 @@ namespace Nekoyume.Model.State
 
         #region DecimalStat
 
+        public static IValue SerializeForLegacyEquipmentStat(this DecimalStat decimalStat) =>
+            Dictionary.Empty
+                .Add("type", StatTypeExtension.Serialize(decimalStat.StatType))
+                .Add("value", decimalStat.BaseValue.Serialize());
+
         public static DecimalStat ToDecimalStat(this IValue serialized) =>
             ((Dictionary)serialized).ToDecimalStat();
 

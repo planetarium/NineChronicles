@@ -8,7 +8,7 @@ namespace Nekoyume.Model.Stat
     [Serializable]
     public class Stats : IStats, ICloneable
     {
-        protected readonly StatMap _statMap = new StatMap();
+        protected readonly StatMap _statMap;
 
         public int HP => _statMap[StatType.HP].BaseValueAsInt;
         public int ATK => _statMap[StatType.ATK].BaseValueAsInt;
@@ -27,6 +27,7 @@ namespace Nekoyume.Model.Stat
         
         public Stats()
         {
+            _statMap = new StatMap();
         }
 
         public Stats(Stats value)
@@ -58,19 +59,11 @@ namespace Nekoyume.Model.Stat
 
         public void Set(StatsMap value)
         {
-            foreach (var stat in _statMap.GetStats())
+            foreach (var stat in value.GetDecimalStats())
             {
                 var statType = stat.StatType;
-                if (!LegacyDecimalStatTypes.Contains(statType))
-                {
-                    var sum = value.GetStatAsInt(statType);
-                    stat.SetBaseValue(sum);
-                }
-                else
-                {
-                    var sum = value.GetStat(statType);
-                    stat.SetBaseValue(sum);
-                }
+                var sum = value.GetStatAsInt(statType);
+                _statMap[statType].SetBaseValue(sum);
             }
         }
 
