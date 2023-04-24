@@ -947,7 +947,7 @@ namespace Nekoyume.UI.Module
                         new StatModifier(
                             x.stat.StatType,
                             x.operationType,
-                            x.stat.TotalValue)));
+                            x.stat.TotalValueAsInt)));
             }
 
             characterStats.SetAll(

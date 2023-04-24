@@ -235,7 +235,7 @@ namespace Nekoyume.UI
                         if (i == 0)
                         {
                             var stat = resultItem.GetUniqueStat();
-                            var statValueText = stat.StatType.ValueToString(stat.TotalValue);
+                            var statValueText = stat.StatType.ValueToString(stat.TotalValueAsInt);
                             mainStatText.text = string.Format(StatTextFormat, stat.StatType, statValueText);
                             mainStatText.gameObject.SetActive(true);
                         }
@@ -265,7 +265,7 @@ namespace Nekoyume.UI
                         if (i < statsCount)
                         {
                             var stat = resultItem.Stats[i];
-                            var statValueText = stat.StatType.ValueToString(stat.TotalValue);
+                            var statValueText = stat.StatType.ValueToString(stat.TotalValueAsInt);
                             mainStatText.text = string.Format(StatTextFormat, stat.StatType, statValueText);
                             mainStatText.gameObject.SetActive(true);
                             continue;
