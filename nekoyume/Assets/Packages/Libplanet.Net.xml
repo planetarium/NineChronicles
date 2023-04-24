@@ -616,17 +616,17 @@
             <returns>Returns a summary in JSON-formatted string.
             </returns>
         </member>
-        <member name="M:Libplanet.Net.Consensus.ConsensusReactor`1.AddMessage(Libplanet.Net.Messages.ConsensusMsg)">
+        <member name="M:Libplanet.Net.Consensus.ConsensusReactor`1.PublishMessage(Libplanet.Net.Messages.ConsensusMsg)">
             <summary>
             Adds <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/> to gossip.
             </summary>
             <param name="message">A <see cref="T:Libplanet.Net.Messages.ConsensusMsg"/> to add.</param>
         </member>
-        <member name="M:Libplanet.Net.Consensus.ConsensusReactor`1.ProcessMessage(Libplanet.Net.Messages.Message)">
+        <member name="M:Libplanet.Net.Consensus.ConsensusReactor`1.ProcessMessage(Libplanet.Net.Messages.MessageContent)">
             <summary>
             A handler for received <see cref="T:Libplanet.Net.Messages.Message"/>s.
             </summary>
-            <param name="message">A message to process.</param>
+            <param name="content">A message to process.</param>
         </member>
         <member name="T:Libplanet.Net.Consensus.ConsensusReactorOption">
             <summary>
@@ -885,11 +885,16 @@
             <remarks><see cref="T:Libplanet.Net.Messages.ConsensusMsg"/> should be broadcasted to itself. See
             <see cref="P:Libplanet.Net.Consensus.ConsensusContext`1.BroadcastMessage"/>.</remarks>
         </member>
-        <member name="M:Libplanet.Net.Consensus.Context`1.IsValid(Libplanet.Blocks.Block{`0})">
+        <member name="M:Libplanet.Net.Consensus.Context`1.IsValid(Libplanet.Blocks.Block{`0},System.Collections.Generic.IReadOnlyList{Libplanet.Action.ActionEvaluation}@)">
             <summary>
             Validates the given block.
             </summary>
             <param name="block">A <see cref="T:Libplanet.Blocks.Block`1"/> to validate.</param>
+            <param name="evaluatedActions">A list of evaluated actions from <see cref="T:Libplanet.Blocks.Block`1"/>.
+            If a given block is invalid, this will returns
+            <see cref="F:System.Collections.Immutable.ImmutableArray`1.Empty"/>
+            lists.
+            </param>
             <returns><see langword="true"/> if block is valid, otherwise <see langword="false"/>.
             </returns>
         </member>
@@ -1054,7 +1059,7 @@
             A class gossips messages into network. Peers will be stored and managed by Kademlia DHT.
             </summary>
         </member>
-        <member name="M:Libplanet.Net.Consensus.Gossip.#ctor(Libplanet.Net.Transports.ITransport,System.Collections.Immutable.ImmutableArray{Libplanet.Net.BoundPeer},System.Collections.Immutable.ImmutableArray{Libplanet.Net.BoundPeer},System.Action{Libplanet.Net.Messages.Message},System.TimeSpan,System.Nullable{System.Int64})">
+        <member name="M:Libplanet.Net.Consensus.Gossip.#ctor(Libplanet.Net.Transports.ITransport,System.Collections.Immutable.ImmutableArray{Libplanet.Net.BoundPeer},System.Collections.Immutable.ImmutableArray{Libplanet.Net.BoundPeer},System.Action{Libplanet.Net.Messages.MessageContent},System.TimeSpan,System.Nullable{System.Int64})">
             <summary>
             Creates a <see cref="T:Libplanet.Net.Consensus.Gossip"/> instance.
             </summary>
@@ -1111,18 +1116,17 @@
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> completed when <see cref="P:Libplanet.Net.Consensus.Gossip.Running"/>
             property becomes <see langword="true"/>.</returns>
         </member>
+        <member name="M:Libplanet.Net.Consensus.Gossip.PublishMessage(Libplanet.Net.Messages.MessageContent)">
+            <summary>
+            Publish given <see cref="T:Libplanet.Net.Messages.MessageContent"/> to peers.
+            </summary>
+            <param name="content">A <see cref="T:Libplanet.Net.Messages.MessageContent"/> instance to publish.</param>
+        </member>
         <member name="M:Libplanet.Net.Consensus.Gossip.AddMessage(Libplanet.Net.Messages.MessageContent)">
             <summary>
             Process a <see cref="T:Libplanet.Net.Messages.MessageContent"/> and add it to the gossip.
             </summary>
             <param name="content">A <see cref="T:Libplanet.Net.Messages.MessageContent"/> instance to
-            process and gossip.</param>
-        </member>
-        <member name="M:Libplanet.Net.Consensus.Gossip.AddMessage(Libplanet.Net.Messages.Message)">
-            <summary>
-            Process a <see cref="T:Libplanet.Net.Messages.Message"/> and add it to the gossip.
-            </summary>
-            <param name="message">A <see cref="T:Libplanet.Net.Messages.Message"/> instance to
             process and gossip.</param>
         </member>
         <member name="M:Libplanet.Net.Consensus.Gossip.AddMessages(System.Collections.Generic.IEnumerable{Libplanet.Net.Messages.MessageContent})">
@@ -1132,14 +1136,6 @@
             </summary>
             <param name="contents">
             An enumerable <see cref="T:Libplanet.Net.Messages.MessageContent"/> instance to process and gossip.</param>
-        </member>
-        <member name="M:Libplanet.Net.Consensus.Gossip.AddMessages(System.Collections.Generic.IEnumerable{Libplanet.Net.Messages.Message})">
-            <summary>
-            Adds multiple <see cref="T:Libplanet.Net.Messages.Message"/>s in parallel.
-            <seealso cref="M:Libplanet.Net.Consensus.Gossip.AddMessage(Libplanet.Net.Messages.Message)"/>
-            </summary>
-            <param name="messages">
-            An enumerable <see cref="T:Libplanet.Net.Messages.Message"/> instance to process and gossip.</param>
         </member>
         <member name="M:Libplanet.Net.Consensus.Gossip.PeersToBroadcast(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},System.Int32)">
             <summary>
@@ -3401,6 +3397,17 @@
             <see cref="T:Libplanet.Net.AppProtocolVersion"/>.</param>
             <param name="timeout">Timeout value for request.</param>
             <returns><see cref="T:Libplanet.Net.AppProtocolVersion"/> of given peer. </returns>
+        </member>
+        <member name="M:Libplanet.Net.Transports.BoundPeerExtensions.ResolveNetMQAddressAsync(Libplanet.Net.BoundPeer)">
+            <summary>
+            Get IPv4 TCP address <see cref="T:System.String"/> of given <see cref="T:Libplanet.Net.BoundPeer"/>
+            to be used on NetMQ transport.
+            </summary>
+            <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to get TCP NetMQ address.</param>
+            <returns>IPv4 TCP address <see cref="T:System.String"/> of given <paramref name="peer"/>.
+            </returns>
+            <exception cref="T:Libplanet.Net.Transports.TransportException">Thrown if failed to resolve address for given peer.
+            </exception>
         </member>
         <member name="T:Libplanet.Net.Transports.CommunicationFailException">
             <summary>
