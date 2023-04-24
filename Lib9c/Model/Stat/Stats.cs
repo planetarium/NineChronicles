@@ -59,10 +59,10 @@ namespace Nekoyume.Model.Stat
 
         public void Set(StatsMap value)
         {
-            foreach (var stat in value.GetDecimalStats())
+            foreach (var stat in value.GetDecimalStats(true))
             {
                 var statType = stat.StatType;
-                var sum = value.GetStatAsInt(statType);
+                var sum = value.GetStat(statType);
                 _statMap[statType].SetBaseValue(sum);
             }
         }

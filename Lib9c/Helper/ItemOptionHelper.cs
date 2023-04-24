@@ -32,7 +32,7 @@ namespace Nekoyume.Helper
             MainStat = (
                 equipment.UniqueStatType,
                 equipment.StatsMap.GetBaseStat(equipment.UniqueStatType),
-                equipment.StatsMap.GetStatAsInt(equipment.UniqueStatType));
+                equipment.StatsMap.GetStat(equipment.UniqueStatType));
 
             var optionCountDiff = OptionCountFromCombination - (additionalStats.Count + equipment.Skills.Count);
             foreach (var (statType, additionalValue) in additionalStats)

@@ -9,17 +9,17 @@ namespace Nekoyume.Model.Stat
     [Serializable]
     public class StatsMap : IStats, IBaseAndAdditionalStats, IState
     {
-        public int HP => GetStatAsInt(StatType.HP);
-        public int ATK => GetStatAsInt(StatType.ATK);
-        public int DEF => GetStatAsInt(StatType.DEF);
-        public int CRI => GetStatAsInt(StatType.CRI);
-        public int HIT => GetStatAsInt(StatType.HIT);
-        public int SPD => GetStatAsInt(StatType.SPD);
-        public int DRV => GetStatAsInt(StatType.DRV);
-        public int DRR => GetStatAsInt(StatType.DRR);
-        public int CDMG => GetStatAsInt(StatType.CDMG);
-        public int ArmorPenetration => GetStatAsInt(StatType.ArmorPenetration);
-        public int Thorn => GetStatAsInt(StatType.Thorn);
+        public int HP => GetStat(StatType.HP);
+        public int ATK => GetStat(StatType.ATK);
+        public int DEF => GetStat(StatType.DEF);
+        public int CRI => GetStat(StatType.CRI);
+        public int HIT => GetStat(StatType.HIT);
+        public int SPD => GetStat(StatType.SPD);
+        public int DRV => GetStat(StatType.DRV);
+        public int DRR => GetStat(StatType.DRR);
+        public int CDMG => GetStat(StatType.CDMG);
+        public int ArmorPenetration => GetStat(StatType.ArmorPenetration);
+        public int Thorn => GetStat(StatType.Thorn);
 
         public int BaseHP => GetBaseStat(StatType.HP);
         public int BaseATK => GetBaseStat(StatType.ATK);
@@ -65,14 +65,9 @@ namespace Nekoyume.Model.Stat
             return _statMap != null ? _statMap.GetHashCode() : 0;
         }
 
-        public int GetStatAsInt(StatType statType)
+        public int GetStat(StatType statType)
         {
             return _statMap.GetStatAsInt(statType);
-        }
-
-        public decimal GetStat(StatType statType)
-        {
-            return _statMap.GetStat(statType);
         }
 
         public int GetBaseStat(StatType statType)
@@ -130,9 +125,10 @@ namespace Nekoyume.Model.Stat
             return _statMap.GetBaseAndAdditionalStats(ignoreZero);
         }
 
-        public IEnumerable<DecimalStat> GetDecimalStats()
+        public IEnumerable<DecimalStat> GetDecimalStats(bool ignoreZero)
         {
-            return _statMap.GetExistingStats();
+            return ignoreZero ?
+                _statMap.GetExistingStats() : _statMap.GetStats();
         }
     }
 }
