@@ -3,6 +3,7 @@ import os
 import os.path
 import logging
 import tarfile
+import shutil
 import zipfile
 from zipfile import ZIP_DEFLATED
 
@@ -81,6 +82,10 @@ ZIP = {
 }
 
 
+def cleanup_debug_dir(build_result_dir: str):
+    shutil.rmtree(os.path.join(build_result_dir, "9c_BurstDebugInformation_DoNotShip"))
+
+
 def main() -> None:
     args = parser.parse_args()
     logging.basicConfig(level=args.verbose)
@@ -91,6 +96,8 @@ def main() -> None:
         args.input_dir,
         args.platform
     )
+
+    cleanup_debug_dir(build_result_dir)
 
     try:
         ZIP[args.platform](build_result_dir, args.out_dir)
