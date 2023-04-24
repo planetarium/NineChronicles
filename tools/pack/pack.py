@@ -85,6 +85,9 @@ ZIP = {
 def cleanup_debug_dir(build_result_dir: str):
     shutil.rmtree(os.path.join(build_result_dir, "9c_BurstDebugInformation_DoNotShip"))
 
+    if len(os.listdir(build_result_dir)) == 0:
+        raise Exception("Build result is empty")
+
 
 def main() -> None:
     args = parser.parse_args()
