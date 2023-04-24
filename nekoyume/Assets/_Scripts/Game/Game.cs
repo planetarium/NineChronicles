@@ -330,10 +330,10 @@ namespace Nekoyume.Game
                 SavedPetId = !petList.Any() ? null : petList[Random.Range(0, petList.Count)];
             }).AddTo(gameObject);
 
-            var appProtocolVersion = _commandLineOptions.AppProtocolVersion is null
-                ? default
-                : Libplanet.Net.AppProtocolVersion.FromToken(_commandLineOptions.AppProtocolVersion);
-            Widget.Find<VersionSystem>().SetVersion(appProtocolVersion.Version);
+            Helper.Util.TryGetAppProtocolVersionFromToken(
+                _commandLineOptions.AppProtocolVersion,
+                out var appProtocolVersion);
+            Widget.Find<VersionSystem>().SetVersion(appProtocolVersion);
 
             ShowNext(agentInitializeSucceed);
             StartCoroutine(CoUpdate());

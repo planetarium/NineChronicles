@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -425,6 +426,40 @@ namespace Nekoyume.Helper
             var petSheet = Game.Game.instance.TableSheets.PetSheet;
             tickers.AddRange(petSheet.Values.Select(r => r.SoulStoneTicker));
             return tickers;
+        }
+
+        /// <summary>
+        /// Deserializes a string token, return only 'version'.
+        /// <see href="https://github.com/planetarium/libplanet/blob/1.0.0/Libplanet.Net/AppProtocolVersion.cs/#L148">Libplanet.Net.AppProtocolVersion.FromToken()</see>
+        /// </summary>
+        public static void TryGetAppProtocolVersionFromToken(string token, out int apv)
+        {
+            apv = 0;
+            if (token is null)
+            {
+                Debug.LogException(new ArgumentNullException(nameof(token)));
+                return;
+            }
+
+            var pos = token.IndexOf('/');
+            if (pos < 0)
+            {
+                Debug.LogException(new FormatException("Failed to find the first field delimiter."));
+                return;
+            }
+
+            int version;
+            try
+            {
+                version = int.Parse(token.Substring(0, pos), CultureInfo.InvariantCulture);
+            }
+            catch (Exception e) when (e is OverflowException or FormatException)
+            {
+                Debug.LogException(new FormatException($"Failed to parse a version number: {e}", e));
+                return;
+            }
+
+            apv = version;
         }
     }
 }
