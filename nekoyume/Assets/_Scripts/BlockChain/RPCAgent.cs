@@ -498,7 +498,7 @@ namespace Nekoyume.BlockChain
                 $"\nHash={_genesis?.Hash}\nactionsName={actionsName}");
 
             _onMakeTransactionSubject.OnNext((tx, actions));
-            await _service.PutTransaction(tx.Serialize(true));
+            await _service.PutTransaction(tx.Serialize());
             foreach (var action in actions)
             {
                 Debug.Log($"[Transaction] action = {action.ToString()}");
