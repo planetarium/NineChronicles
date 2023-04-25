@@ -17,6 +17,15 @@ namespace Lib9c.Tests.TableData
 7,900001,0,0,31,50,10001,230,10002,60,10003,10,50000
 8,900001,0,0,51,70,10001,75,10002,20,10003,5,25000
 9,900001,0,0,71,100,10001,40,10002,10,10003,0,15000
+10,900002,1,1,0,0,10011,3500,10012,1200,10013,300,1000000
+11,900002,2,2,0,0,10011,2200,10012,650,10013,150,750000
+12,900002,3,3,0,0,10011,1450,10012,450,10013,100,500000
+13,900002,4,10,0,0,10011,1000,10012,330,10013,70,250000
+14,900002,11,100,0,0,10011,560,10012,150,10013,40,150000
+15,900002,0,0,1,30,10011,370,10012,105,10013,25,100000
+16,900002,0,0,31,50,10011,230,10012,60,10013,10,50000
+17,900002,0,0,51,70,10011,75,10012,20,10013,5,25000
+18,900002,0,0,71,100,10011,40,10012,10,0,0,15000
 ";
 
         [Fact]
@@ -36,13 +45,15 @@ namespace Lib9c.Tests.TableData
         }
 
         [Theory]
-        [InlineData(1, 0, 1)]
-        [InlineData(1000, 1, 6)]
-        public void FindRow(int ranking, int rate, int expected)
+        [InlineData(900001, 1, 0, 1)]
+        [InlineData(900001, 1000, 1, 6)]
+        [InlineData(900002, 1, 0, 10)]
+        [InlineData(900002, 1000, 1, 15)]
+        public void FindRow(int bossId, int ranking, int rate, int expected)
         {
             var sheet = new WorldBossRankingRewardSheet();
             sheet.Set(Csv);
-            var row = sheet.FindRow(ranking, rate);
+            var row = sheet.FindRow(bossId, ranking, rate);
             Assert.Equal(expected, row.Id);
         }
 
@@ -50,7 +61,7 @@ namespace Lib9c.Tests.TableData
         public void FIndRow_Throw_ArgumentException()
         {
             var sheet = new WorldBossRankingRewardSheet();
-            Assert.Throws<ArgumentException>(() => sheet.FindRow(0, 0));
+            Assert.Throws<ArgumentException>(() => sheet.FindRow(900003, 0, 0));
         }
 
         [Fact]
@@ -58,7 +69,7 @@ namespace Lib9c.Tests.TableData
         {
             var sheet = new WorldBossRankingRewardSheet();
             sheet.Set(Csv);
-            var row = sheet.FindRow(1, 0);
+            var row = sheet.FindRow(900001, 1, 0);
             var runeSheet = new TableSheets(TableSheetsImporter.ImportSheets()).RuneSheet;
             var rewards = row.GetRewards(runeSheet);
 
