@@ -211,8 +211,8 @@ namespace Nekoyume.Model.Stat
         public IEnumerable<DecimalStat> GetExistingStats()
         {
             foreach (var stat in _statMap
-                .Where(x => x.Value.HasBaseValueAsInt || x.Value.HasAdditionalValueAsInt)
-                .OrderBy(x => x.Key))
+                .OrderBy(x => x.Key)
+                .Where(x => x.Value.HasBaseValueAsInt || x.Value.HasAdditionalValueAsInt))
             {
                 yield return stat.Value;
             }
