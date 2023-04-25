@@ -42,7 +42,7 @@ namespace Nekoyume.Model.Stat
 
         public void Set(params Stats[] statsArray)
         {
-            foreach (var stat in _statMap.GetStats())
+            foreach (var stat in _statMap.GetDecimalStats(false))
             {
                 if (!LegacyDecimalStatTypes.Contains(stat.StatType))
                 {

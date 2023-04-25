@@ -370,7 +370,7 @@ namespace Nekoyume.Model.Stat
         {
             Set(_baseStats, _equipmentStats, _consumableStats, _runeStats, _buffStats, _optionalStats);
 
-            foreach (var stat in _statMap.GetStats())
+            foreach (var stat in _statMap.GetDecimalStats(false))
             {
                 if (!LegacyDecimalStatTypes.Contains(stat.StatType))
                 {

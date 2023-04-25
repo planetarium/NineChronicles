@@ -127,8 +127,7 @@ namespace Nekoyume.Model.Stat
 
         public IEnumerable<DecimalStat> GetDecimalStats(bool ignoreZero)
         {
-            return ignoreZero ?
-                _statMap.GetExistingStats() : _statMap.GetStats();
+            return _statMap.GetDecimalStats(ignoreZero);
         }
     }
 }

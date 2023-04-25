@@ -73,7 +73,7 @@ namespace Nekoyume.Model.Stat
 
         public StatMap(StatMap statMap)
         {
-            foreach (var stat in statMap.GetExistingStats())
+            foreach (var stat in statMap.GetDecimalStats(false))
             {
                 _statMap[stat.StatType] = (DecimalStat)stat.Clone();
             }
@@ -200,22 +200,12 @@ namespace Nekoyume.Model.Stat
             }
         }
 
-        public IEnumerable<DecimalStat> GetStats()
+        public IEnumerable<DecimalStat> GetDecimalStats(bool ignoreZero)
         {
-            foreach (var stat in _statMap.OrderBy(x => x.Key))
-            {
-                yield return stat.Value;
-            }
-        }
-
-        public IEnumerable<DecimalStat> GetExistingStats()
-        {
-            foreach (var stat in _statMap
-                .OrderBy(x => x.Key)
-                .Where(x => x.Value.HasBaseValueAsInt || x.Value.HasAdditionalValueAsInt))
-            {
-                yield return stat.Value;
-            }
+            var values = _statMap.OrderBy(x => x.Key).Select(x => x.Value);
+            return ignoreZero ?
+                values.Where(x => x.HasBaseValueAsInt || x.HasAdditionalValueAsInt) :
+                values;
         }
 
         public IValue Serialize() =>
