@@ -122,7 +122,7 @@ namespace Nekoyume.UI.Module
             if (Model.item.Value.ItemBase.Value is Equipment equipment)
             {
                 var uniqueStatType = equipment.UniqueStatType;
-                foreach (var stat in equipment.StatsMap.GetDecimalStats())
+                foreach (var stat in equipment.StatsMap.GetDecimalStats(true))
                 {
                     if (!stat.StatType.Equals(uniqueStatType))
                         continue;
@@ -131,7 +131,7 @@ namespace Nekoyume.UI.Module
                     statCount++;
                 }
 
-                foreach (var stat in equipment.StatsMap.GetDecimalStats())
+                foreach (var stat in equipment.StatsMap.GetDecimalStats(true))
                 {
                     if (stat.StatType.Equals(uniqueStatType))
                         continue;
@@ -142,7 +142,7 @@ namespace Nekoyume.UI.Module
             }
             else if (Model.item.Value.ItemBase.Value is ItemUsable itemUsable)
             {
-                foreach (var stat in itemUsable.StatsMap.GetDecimalStats())
+                foreach (var stat in itemUsable.StatsMap.GetDecimalStats(true))
                 {
                     AddStat(stat);
                     statCount++;

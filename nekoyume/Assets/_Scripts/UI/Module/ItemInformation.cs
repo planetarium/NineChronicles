@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -201,7 +202,7 @@ namespace Nekoyume.UI.Module
                 iconArea.countObject.SetActive(false);
                 uniqueStat.gameObject.SetActive(false);
 
-                foreach (var stat in itemUsable.StatsMap.GetDecimalStats())
+                foreach (var stat in itemUsable.StatsMap.GetDecimalStats(true))
                 {
                     AddStat(stat);
                     statCount++;
@@ -219,7 +220,7 @@ namespace Nekoyume.UI.Module
                     statsMap.AddStatValue(row.StatType, row.Stat);
                 }
 
-                foreach (var stat in statsMap.GetDecimalStats())
+                foreach (var stat in statsMap.GetDecimalStats(true))
                 {
                     AddStat(stat);
                     statCount++;

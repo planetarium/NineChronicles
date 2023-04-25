@@ -194,7 +194,7 @@ namespace Nekoyume.UI.Module
                     iconArea.combatPowerObject.SetActive(false);
                     iconArea.countObject.SetActive(false);
 
-                    var stats = itemUsable.StatsMap.GetDecimalStats().ToList();
+                    var stats = itemUsable.StatsMap.GetDecimalStats(true).ToList();
                     var usableStatCount = stats.Count;
                     for(var i = 0; i < statViewList.Count; i++)
                     {
@@ -220,7 +220,7 @@ namespace Nekoyume.UI.Module
                         statsMap.AddStatValue(row.StatType, row.Stat);
                     }
 
-                    var stats = statsMap.GetDecimalStats().ToList();
+                    var stats = statsMap.GetDecimalStats(true).ToList();
                     var usableStatCount = stats.Count;
                     for(var i = 0; i < statViewList.Count; i++)
                     {
