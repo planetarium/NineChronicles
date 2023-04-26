@@ -365,7 +365,8 @@ namespace Nekoyume.Model
             var minDuration = int.MaxValue;
             foreach (var buff in StatBuffs)
             {
-                if (buff.RowData.StatModifier.Value < 0)
+                if (buff.RowData.BaseValue < 0 ||
+                    buff.RowData.StatRatio < 0m)
                 {
                     continue;
                 }

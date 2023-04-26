@@ -32,16 +32,14 @@ namespace Nekoyume.Model.Buff
 
         public StatModifier GetModifier()
         {
-            if (CustomField.HasValue)
-            {
-                var modifier = new StatModifier(
-                    RowData.StatModifier.StatType,
-                    RowData.StatModifier.Operation,
-                    CustomField.Value.BuffValue);
-                return modifier;
-            }
+            var value = CustomField.HasValue ?
+                CustomField.Value.BuffValue :
+                RowData.BaseValue;
 
-            return RowData.StatModifier;
+            return new StatModifier(
+                RowData.StatType,
+                RowData.OperationType,
+                value);
         }
 
         public override object Clone()

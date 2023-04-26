@@ -10,7 +10,7 @@ namespace Nekoyume.Model.Buff
     {
         public static StatBuff GetStatBuff(StatBuffSheet.Row row)
         {
-            switch (row.StatModifier.StatType)
+            switch (row.StatType)
             {
                 case StatType.HP:
                     return new HPBuff(row);
@@ -36,7 +36,7 @@ namespace Nekoyume.Model.Buff
 
         public static StatBuff GetCustomStatBuff(StatBuffSheet.Row row, SkillCustomField customField)
         {
-            switch (row.StatModifier.StatType)
+            switch (row.StatType)
             {
                 case StatType.HP:
                     return new HPBuff(customField, row);
