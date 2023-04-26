@@ -14,13 +14,7 @@ namespace Planetarium.Nekoyume.Editor
     {
         private static PublicKey GetOrCreateInitialValidator()
         {
-            var pk = new PrivateKey();
-            if (PlayerPrefs.HasKey("initialValidator"))
-            {
-                pk = new PrivateKey(PlayerPrefs.GetString("initialValidator"));
-            }
-
-            PlayerPrefs.SetString("initialValidator", ByteUtil.Hex(pk.ByteArray));
+            var pk = Agent.ProposerKey;
             Debug.Log($"Private Key of initialValidator: {ByteUtil.Hex(pk.ByteArray)}");
             Debug.Log($"Public Key of initialValidator: {pk.PublicKey}");
             return pk.PublicKey;

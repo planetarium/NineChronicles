@@ -4,7 +4,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
-using Libplanet.Crypto;
+using Libplanet;
 using Nekoyume.BlockChain;
 using UnityEditor;
 using UnityEngine;
@@ -197,9 +197,9 @@ namespace Planetarium.Nekoyume.Editor
 
             if (PlayerPrefs.HasKey("initialValidator"))
             {
-                var pkHex = PlayerPrefs.GetString("initialValidator");
+                var pkHex = ByteUtil.Hex(Agent.ProposerKey.ByteArray);
                 startInfo.Arguments +=
-                    $" --miner-private-key {pkHex} --consensus-private-key {pkHex} --consensus-seed {new PrivateKey(pkHex).PublicKey},localhost,60000";
+                    $" --miner-private-key {pkHex} --consensus-private-key {pkHex} --consensus-seed {Agent.ProposerKey.PublicKey},localhost,60000";
             }
 
             Debug.Log(startInfo.Arguments);
