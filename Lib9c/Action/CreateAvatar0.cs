@@ -320,8 +320,8 @@ namespace Nekoyume.Action
             {
                 if (optionRow.StatType != StatType.NONE)
                 {
-                    var statMap = CombinationEquipment5.GetStat(optionRow, random);
-                    equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.Value);
+                    var stat = CombinationEquipment5.GetStat(optionRow, random);
+                    equipment.StatsMap.AddStatAdditionalValue(stat.StatType, stat.BaseValue);
                 }
                 else
                 {

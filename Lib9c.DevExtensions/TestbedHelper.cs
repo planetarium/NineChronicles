@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -160,8 +160,8 @@ namespace Lib9c.DevExtensions
             {
                 if (optionRow.StatType != StatType.NONE)
                 {
-                    var statMap = CombinationEquipment5.GetStat(optionRow, random);
-                    equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.Value);
+                    var stat = CombinationEquipment5.GetStat(optionRow, random);
+                    equipment.StatsMap.AddStatAdditionalValue(stat.StatType, stat.BaseValue);
                 }
                 else
                 {

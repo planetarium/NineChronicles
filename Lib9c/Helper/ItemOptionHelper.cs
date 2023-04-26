@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Nekoyume.Battle;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
@@ -31,7 +31,7 @@ namespace Nekoyume.Helper
 
             MainStat = (
                 equipment.UniqueStatType,
-                equipment.StatsMap.GetStat(equipment.UniqueStatType, true),
+                equipment.StatsMap.GetBaseStat(equipment.UniqueStatType),
                 equipment.StatsMap.GetStat(equipment.UniqueStatType));
 
             var optionCountDiff = OptionCountFromCombination - (additionalStats.Count + equipment.Skills.Count);

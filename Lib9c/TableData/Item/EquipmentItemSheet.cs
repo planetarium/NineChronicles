@@ -47,7 +47,7 @@ namespace Nekoyume.TableData
             public override IValue Serialize() => new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
             {
                 [(Text) "set_id"] = (Integer) SetId,
-                [(Text) "stat"] = Stat.Serialize(),
+                [(Text) "stat"] = Stat.SerializeForLegacyEquipmentStat(),
                 [(Text) "attack_range"] = AttackRange.Serialize(),
                 [(Text) "spine_resource_path"] = (Text) SpineResourcePath,
             }.Union((Bencodex.Types.Dictionary) base.Serialize()));

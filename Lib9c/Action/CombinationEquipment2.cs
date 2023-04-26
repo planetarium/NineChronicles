@@ -246,10 +246,10 @@ namespace Nekoyume.Action
             SlotIndex = plainValue["slotIndex"].ToInteger();
         }
 
-        private static StatMap GetStat(EquipmentItemOptionSheet.Row row, IRandom random)
+        private static DecimalStat GetStat(EquipmentItemOptionSheet.Row row, IRandom random)
         {
             var value = random.Next(row.StatMin, row.StatMax + 1);
-            return new StatMap(row.StatType, value);
+            return new DecimalStat(row.StatType, value);
         }
 
         private static Skill GetSkill(EquipmentItemOptionSheet.Row row, SkillSheet skillSheet,
@@ -310,8 +310,8 @@ namespace Nekoyume.Action
                 {
                     if (optionRow.StatType != StatType.NONE)
                     {
-                        var statMap = GetStat(optionRow, random);
-                        equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.Value);
+                        var stat = GetStat(optionRow, random);
+                        equipment.StatsMap.AddStatAdditionalValue(stat.StatType, stat.BaseValue);
                     }
                     else
                     {

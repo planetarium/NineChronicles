@@ -42,7 +42,9 @@ namespace Nekoyume.Model.Skill.Arena
                         damage = CriticalHelper.GetCriticalDamageForArena(caster, damage);
                     }
 
-                    damage = Math.Max(damage - target.DEF, 1);
+                    // Apply armor penetration and DEF.
+                    var finalDEF = Math.Clamp(target.DEF - caster.ArmorPenetration, 0, int.MaxValue);
+                    damage = Math.Max(damage - finalDEF, 1);
                     // Apply damage reduce
                     damage = (int)((damage - target.DRV) * (1 - target.DRR / 10000m));
                     target.CurrentHP -= damage;

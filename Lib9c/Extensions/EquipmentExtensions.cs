@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
 using Nekoyume.Helper;
@@ -64,7 +64,7 @@ namespace Nekoyume.Extensions
                 return IsMadeWithSpecificMimisbrunnrRecipe(equipment, itemOptionInfo, false);
             }
 
-            (StatType type, int value, int count) uniqueStatOption;
+            (StatType type, decimal value, int count) uniqueStatOption;
             try
             {
                 uniqueStatOption = itemOptionInfo.StatOptions

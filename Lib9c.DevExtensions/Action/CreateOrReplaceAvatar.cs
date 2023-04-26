@@ -500,7 +500,7 @@ namespace Lib9c.DevExtensions.Action
                 var additionalOptionStats = equipment.StatsMap.GetAdditionalStats().ToArray();
                 foreach (var statMapEx in additionalOptionStats)
                 {
-                    equipment.StatsMap.SetStatAdditionalValue(statMapEx.StatType, 0);
+                    equipment.StatsMap.SetStatAdditionalValue(statMapEx.statType, 0);
                 }
 
                 equipment.Skills.Clear();
@@ -534,7 +534,7 @@ namespace Lib9c.DevExtensions.Action
                 {
                     for (var j = 0; j < eLevel; j++)
                     {
-                        equipment.LevelUpV2(random, enhancementCostRow, true);
+                        equipment.LevelUp(random, enhancementCostRow, true);
                     }
                 }
 

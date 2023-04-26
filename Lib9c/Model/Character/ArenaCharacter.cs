@@ -2,10 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Bencodex.Types;
 using BTAI;
 using Nekoyume.Action;
 using Nekoyume.Arena;
 using Nekoyume.Battle;
+using Nekoyume.Model.BattleStatus;
+using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.Buff;
 using Nekoyume.Model.Character;
 using Nekoyume.Model.Elemental;
@@ -48,16 +51,20 @@ namespace Nekoyume.Model
         public int CharacterId { get; }
         public bool IsEnemy { get; }
 
+        private int _currentHP;
+
+        public int CurrentHP
+        {
+            get => _currentHP;
+            set => _currentHP = Math.Min(Math.Max(0, value), HP);
+        }
+
         public int Level
         {
             get => _stats.Level;
             set => _stats.SetStats(value);
         }
-        public int CurrentHP
-        {
-            get => _stats.CurrentHP;
-            set => _stats.CurrentHP = value;
-        }
+
         public int HP => _stats.HP;
         public int AdditionalHP => _stats.BuffStats.HP;
         public int ATK => _stats.ATK;
@@ -68,6 +75,8 @@ namespace Nekoyume.Model
         public int DRV => _stats.DRV;
         public int DRR => _stats.DRR;
         public int CDMG => _stats.CDMG;
+        public int ArmorPenetration => _stats.ArmorPenetration;
+        public int Thorn => _stats.Thorn;
 
         public bool IsDead => CurrentHP <= 0;
         public Dictionary<int, Buff.Buff> Buffs { get; } = new Dictionary<int, Buff.Buff>();
@@ -105,6 +114,7 @@ namespace Nekoyume.Model
                 sheets.CostumeStatSheet);
             _skills = GetSkills(digest.Equipments, sheets.SkillSheet);
             _attackCountMax = AttackCountHelper.GetCountMax(digest.Level);
+            ResetCurrentHP();
         }
 
         public ArenaCharacter(
@@ -136,6 +146,7 @@ namespace Nekoyume.Model
                 sheets.CostumeStatSheet);
             _skills = GetSkills(digest.Equipments, sheets.SkillSheet);
             _attackCountMax = AttackCountHelper.GetCountMax(digest.Level);
+            ResetCurrentHP();
         }
 
         private ArenaCharacter(ArenaCharacter value)
@@ -170,6 +181,7 @@ namespace Nekoyume.Model
             _attackCountMax = value._attackCount;
             _attackCount = value._attackCount;
             _target = value._target;
+            CurrentHP = value.CurrentHP;
         }
 
         private ElementalType GetElementalType(IEnumerable<Equipment> equipments, ItemSubType itemSubType)
@@ -198,6 +210,11 @@ namespace Nekoyume.Model
             return row;
         }
 
+        protected void ResetCurrentHP()
+        {
+            CurrentHP = Math.Max(0, _stats.HP);
+        }
+
         private static CharacterStats GetStat(
             ArenaPlayerDigest digest,
             CharacterSheet.Row characterRow,
@@ -218,7 +235,6 @@ namespace Nekoyume.Model
 
             stats.SetOption(options);
             stats.IncreaseHpForArena();
-            stats.EqualizeCurrentHPWithHP();
             return stats;
         }
 
@@ -235,7 +251,7 @@ namespace Nekoyume.Model
             return statModifiers.Any();
         }
 
-        [Obsolete("Use SetRune")]
+        [Obsolete("Use SetRune instead.")]
         public void SetRuneV1(
             List<RuneState> runes,
             RuneOptionSheet runeOptionSheet,
@@ -253,12 +269,12 @@ namespace Nekoyume.Model
                 statModifiers.AddRange(
                     optionInfo.Stats.Select(x =>
                         new StatModifier(
-                            x.statMap.StatType,
+                            x.stat.StatType,
                             x.operationType,
-                            x.statMap.ValueAsInt)));
-                _stats.AddOption(statModifiers);
+                            x.stat.TotalValueAsInt)));
+                _stats.AddOptional(statModifiers);
                 _stats.IncreaseHpForArena();
-                _stats.EqualizeCurrentHPWithHP();
+                ResetCurrentHP();
 
                 if (optionInfo.SkillId == default ||
                     !skillSheet.TryGetValue(optionInfo.SkillId, out var skillRow))
@@ -314,12 +330,12 @@ namespace Nekoyume.Model
                 statModifiers.AddRange(
                     optionInfo.Stats.Select(x =>
                         new StatModifier(
-                            x.statMap.StatType,
+                            x.stat.StatType,
                             x.operationType,
-                            x.statMap.ValueAsInt)));
-                _stats.AddOption(statModifiers);
+                            x.stat.TotalValueAsInt)));
+                _stats.AddOptional(statModifiers);
                 _stats.IncreaseHpForArena();
-                _stats.EqualizeCurrentHPWithHP();
+                ResetCurrentHP();
 
                 if (optionInfo.SkillId == default ||
                     !skillSheet.TryGetValue(optionInfo.SkillId, out var skillRow))
@@ -480,6 +496,48 @@ namespace Nekoyume.Model
                 var effect = bleed.GiveEffectForArena(this, _simulator.Turn);
                 _simulator.Log.Add(effect);
             }
+
+            // Apply thorn damage if target has thorn
+            foreach (var skillInfo in usedSkill.SkillInfos)
+            {
+                var isAttackSkill =
+                    skillInfo.SkillCategory == SkillCategory.NormalAttack ||
+                    skillInfo.SkillCategory == SkillCategory.BlowAttack ||
+                    skillInfo.SkillCategory == SkillCategory.DoubleAttack ||
+                    skillInfo.SkillCategory == SkillCategory.AreaAttack ||
+                    skillInfo.SkillCategory == SkillCategory.BuffRemovalAttack;
+                if (isAttackSkill && skillInfo.Target.Thorn > 0)
+                {
+                    var effect = GiveThornDamage(skillInfo.Target.Thorn);
+                    _simulator.Log.Add(effect);
+                }
+            }
+        }
+
+        private ArenaSkill GiveThornDamage(int targetThorn)
+        {
+            var clone = (ArenaCharacter)Clone();
+            // minimum 1 damage
+            var thornDamage = Math.Max(1, targetThorn - DEF);
+            CurrentHP -= thornDamage;
+            var damageInfos = new List<ArenaSkill.ArenaSkillInfo>()
+            {
+                new ArenaSkill.ArenaSkillInfo(
+                    (ArenaCharacter)Clone(),
+                    thornDamage,
+                    false,
+                    SkillCategory.TickDamage,
+                    _simulator.Turn,
+                    ElementalType.Normal,
+                    SkillTargetType.Enemy)
+            };
+
+            var tickDamage = new ArenaTickDamage(
+                clone,
+                damageInfos,
+                null);
+
+            return tickDamage;
         }
 
         private void ReduceDurationOfBuffs()

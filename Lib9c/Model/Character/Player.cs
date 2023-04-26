@@ -549,7 +549,7 @@ namespace Nekoyume.Model
                 );
             }
             Stats.SetOption(statModifiers);
-            Stats.EqualizeCurrentHPWithHP();
+            ResetCurrentHP();
         }
 
         public void SetRune(
@@ -569,11 +569,11 @@ namespace Nekoyume.Model
                 statModifiers.AddRange(
                     optionInfo.Stats.Select(x =>
                         new StatModifier(
-                            x.statMap.StatType,
+                            x.stat.StatType,
                             x.operationType,
-                            x.statMap.ValueAsInt)));
-                Stats.AddOption(statModifiers);
-                Stats.EqualizeCurrentHPWithHP();
+                            x.stat.TotalValueAsInt)));
+                Stats.AddOptional(statModifiers);
+                ResetCurrentHP();
 
                 if (optionInfo.SkillId == default ||
                     !skillSheet.TryGetValue(optionInfo.SkillId, out var skillRow))
