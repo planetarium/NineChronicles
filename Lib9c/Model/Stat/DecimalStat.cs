@@ -122,7 +122,7 @@ namespace Nekoyume.Model.Stat
             });
         }
 
-        public IValue SerializeSimple()
+        public IValue SerializeWithoutAdditional()
         {
             return new Dictionary(new Dictionary<IKey, IValue>
             {

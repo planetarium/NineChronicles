@@ -46,7 +46,7 @@ namespace Nekoyume.TableData
 #pragma warning disable LAA1002
                 new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
                 {
-                    [(Text) "stats"] = new Bencodex.Types.List(Stats.Select(stat => stat.SerializeSimple())),
+                    [(Text) "stats"] = new Bencodex.Types.List(Stats.Select(stat => stat.SerializeWithoutAdditional())),
                 }.Union((Bencodex.Types.Dictionary) base.Serialize()));
 #pragma warning restore LAA1002
 

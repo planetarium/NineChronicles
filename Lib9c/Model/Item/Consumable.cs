@@ -39,7 +39,7 @@ namespace Nekoyume.Model.Item
             .Add("stats", new List(Stats
                 .OrderBy(i => i.StatType)
                 .ThenByDescending(i => i.BaseValue)
-                .Select(s => s.SerializeSimple())));
+                .Select(s => s.SerializeWithoutAdditional())));
 #pragma warning restore LAA1002
     }
 }
