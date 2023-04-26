@@ -285,6 +285,11 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
+        public void UpdateInventory()
+        {
+            inventory.UpdateFungibleAssets();
+        }
+
         private void ShowSell(InventoryItem model)
         {
             if (model is null)
@@ -676,8 +681,10 @@ namespace Nekoyume.UI
             }
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var reRegisterInfos = new List<(IProductInfo, IRegisterInfo)>();
-            reRegisterInfos.Add(GetReRegisterInfo(data.ProductId.Value, (int)data.Price.Value.MajorUnit));
+            var reRegisterInfos = new List<(IProductInfo, IRegisterInfo)>
+            {
+                GetReRegisterInfo(data.ProductId.Value, (int)data.Price.Value.MajorUnit)
+            };
 
             var itemName = data.Item.Value.ItemBase.Value is not null
                 ? data.Item.Value.ItemBase.Value.GetLocalizedName()
