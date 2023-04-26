@@ -201,9 +201,20 @@ namespace Nekoyume.Game
                 headlessThread = new Thread(() => HeadlessHelper.RunLocalHeadless(initialValidator));
                 headlessThread.Start();
             }
-#endif
+
+            if (useLocalHeadless)
+            {
+                Agent = GetComponent<RPCAgent>();
+                SubscribeRPCAgent();
+            }
+            else
+            {
+                Agent = GetComponent<Agent>();
+            }
+#else
             Agent = GetComponent<RPCAgent>();
             SubscribeRPCAgent();
+#endif
 
             States = new States();
             LocalLayer = new LocalLayer();
