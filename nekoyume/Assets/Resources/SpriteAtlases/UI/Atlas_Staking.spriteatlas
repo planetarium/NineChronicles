@@ -69,6 +69,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: b21cbe451c9d74724be3962754247a2e, type: 3}
   - {fileID: 21300000, guid: 49914665360c7dd41a5a01a1bcdbdcb9, type: 3}
   - {fileID: 21300000, guid: 28de4bb53520d4141a26ac790bb88a4f, type: 3}
+  - {fileID: 21300000, guid: be4b27f5757edba43a41d0811a555e42, type: 3}
   - {fileID: 21300000, guid: 2eb8497622881d04aad7ff63b4894baf, type: 3}
   - {fileID: 21300000, guid: a2d1f5e68537cf04ea4c5e13c9ddbc89, type: 3}
   - {fileID: 21300000, guid: 8efd7a17ae635458c812966d604e1b9c, type: 3}
@@ -80,6 +81,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: ccaf8329f07255f499c0bc8376e27dd0, type: 3}
   - {fileID: 21300000, guid: a17d9639b997784438094f272394c8de, type: 3}
   - {fileID: 21300000, guid: 2eb2e04962d584832b47c58fbbc57679, type: 3}
+  - {fileID: 21300000, guid: 728f6169050fa7b4a9295aa9365f5ce3, type: 3}
   - {fileID: 21300000, guid: 13aa00d95e7886b4e852d384f0f133ec, type: 3}
   - {fileID: 21300000, guid: 8b32627b591c7704ea5bd5e6a9424b75, type: 3}
   - {fileID: 21300000, guid: 2de1008b5226e4244aeb6a0971d3c2f1, type: 3}
@@ -113,6 +115,7 @@ SpriteAtlas:
   - UI_bg_Staking_Select
   - Buff_Grade_2
   - UI_bg_Staking_Press
+  - icon_Staking_Buff_06
   - Icon_Buff_Grade_1
   - Icon_Buff_Grade_Bg_3
   - icon_Staking_Buff_05
@@ -124,6 +127,7 @@ SpriteAtlas:
   - Buff_Grade_3
   - Buff_Grade_1
   - UI_bg_Staking
+  - icon_Staking_Buff_07
   - UI_Grade_Confirmation
   - Random_Buff_Glow
   - Buff_bg_icon_Staking

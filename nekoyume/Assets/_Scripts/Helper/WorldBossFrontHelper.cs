@@ -135,7 +135,7 @@ namespace Nekoyume.Helper
             return IsItInSeason(currentBlockIndex) ? WorldBossStatus.Season : WorldBossStatus.OffSeason;
         }
 
-        public static int GetRemainTicket(RaiderState state, long currentBlockIndex)
+        public static int GetRemainTicket(RaiderState state, long currentBlockIndex, int refillInterval)
         {
             if (!TryGetCurrentRow(currentBlockIndex, out var row))
             {
@@ -148,9 +148,9 @@ namespace Nekoyume.Helper
             }
 
             var startBlockIndex = row.StartedBlockIndex;
-            var refillBlockIndex = state?.RefillBlockIndex ?? 0;
+            var refillBlockIndex = state.RefillBlockIndex;
             var refillable = WorldBossHelper.CanRefillTicket(
-                currentBlockIndex, refillBlockIndex, startBlockIndex);
+                currentBlockIndex, refillBlockIndex, startBlockIndex, refillInterval);
             return refillable ? WorldBossHelper.MaxChallengeCount : state.RemainChallengeCount;
         }
 

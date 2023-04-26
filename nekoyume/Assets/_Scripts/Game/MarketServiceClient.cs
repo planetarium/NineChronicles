@@ -10,7 +10,6 @@ using MarketService.Response;
 using Nekoyume.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
-using UnityEngine;
 
 namespace Nekoyume.Game
 {
@@ -30,9 +29,15 @@ namespace Nekoyume.Game
             int offset,
             int limit,
             MarketOrderType order,
-            StatType statType)
+            StatType statType,
+            int[] itemIds)
         {
             var url = $"{_url}/Market/products/items/{(int)itemSubType}?limit={limit}&offset={offset}&order={order}&stat={statType.ToString()}";
+            if (itemIds is not null && itemIds.Any())
+            {
+                url = url + "&itemIds=" + string.Join("&itemIds=", itemIds);
+            }
+
             var json = await _client.GetStringAsync(url);
             var options = new JsonSerializerOptions
             {
@@ -46,9 +51,15 @@ namespace Nekoyume.Game
             string ticker,
             int offset,
             int limit,
-            MarketOrderType order)
+            MarketOrderType order,
+            int[] itemIds)
         {
             var url = $"{_url}/Market/products/fav/{ticker}?limit={limit}&offset={offset}&order={order}";
+            if (itemIds is not null && itemIds.Any())
+            {
+                url = url + "&itemIds=" + string.Join("&itemIds=", itemIds);
+            }
+
             var json = await _client.GetStringAsync(url);
             var options = new JsonSerializerOptions
             {

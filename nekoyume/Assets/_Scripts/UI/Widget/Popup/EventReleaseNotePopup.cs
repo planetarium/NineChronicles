@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Nekoyume.Game.Notice;
+using Nekoyume.Game.LiveAsset;
+using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UnityEngine;
@@ -82,21 +83,21 @@ namespace Nekoyume.UI
             _tabGroup.SetToggledOn(eventTabButton);
             closeButton.onClick.AddListener(() => Close());
 
-            var noticeManager = NoticeManager.instance;
-            eventTabButton.HasNotification.SetValueAndForceNotify(noticeManager.HasUnreadEvent);
-            noticeTabButton.HasNotification.SetValueAndForceNotify(noticeManager.HasUnreadNotice);
-            noticeManager.ObservableHasUnreadEvent
+            var liveAssetManager = LiveAssetManager.instance;
+            eventTabButton.HasNotification.SetValueAndForceNotify(liveAssetManager.HasUnreadEvent);
+            noticeTabButton.HasNotification.SetValueAndForceNotify(liveAssetManager.HasUnreadNotice);
+            liveAssetManager.ObservableHasUnreadEvent
                 .SubscribeTo(eventTabButton.HasNotification)
                 .AddTo(gameObject);
-            noticeManager.ObservableHasUnreadNotice
+            liveAssetManager.ObservableHasUnreadNotice
                 .SubscribeTo(noticeTabButton.HasNotification)
                 .AddTo(gameObject);
-            var eventData = noticeManager.BannerData;
+            var eventData = liveAssetManager.BannerData;
             foreach (var notice in eventData)
             {
                 var item = Instantiate(originEventNoticeItem, eventScrollViewport);
                 item.Set(notice,
-                    !noticeManager.IsAlreadyReadNotice(notice.Description),
+                    !liveAssetManager.IsAlreadyReadNotice(notice.Description),
                     OnClickEventNoticeItem);
                 _eventBannerItems.Add(notice.Description, item);
                 if (_selectedEventBannerItem == null)
@@ -106,12 +107,12 @@ namespace Nekoyume.UI
                 }
             }
 
-            var noticeData = noticeManager.NoticeData.ToList();
+            var noticeData = liveAssetManager.NoticeData.ToList();
             foreach (var notice in noticeData)
             {
                 var item = Instantiate(originNoticeItem, noticeScrollViewport);
                 item.Set(notice,
-                    !noticeManager.IsAlreadyReadNotice(notice.Header),
+                    !liveAssetManager.IsAlreadyReadNotice(notice.Header),
                     OnClickNoticeItem);
                 if (_selectedNoticeItem == null)
                 {
@@ -125,13 +126,20 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            if (!Game.Game.instance.Stage.TutorialController.IsCompleted)
+            var worldInfo = States.Instance.CurrentAvatarState?.worldInformation;
+            if (worldInfo is null)
             {
                 return;
             }
 
-            var hasUnreadContents = NoticeManager.instance.HasUnreadEvent ||
-                                    NoticeManager.instance.HasUnreadNotice;
+            var clearedStageId = worldInfo.TryGetLastClearedStageId(out var id) ? id : 1;
+            if (clearedStageId <= GameConfig.RequireClearedStageLevel.CombinationEquipmentAction)
+            {
+                return;
+            }
+
+            var hasUnreadContents = LiveAssetManager.instance.HasUnreadEvent ||
+                                    LiveAssetManager.instance.HasUnreadNotice;
             var notReadAtToday = true;
             if (PlayerPrefs.HasKey(LastReadingDayKey) &&
                 DateTime.TryParseExact(PlayerPrefs.GetString(LastReadingDayKey),
@@ -192,13 +200,13 @@ namespace Nekoyume.UI
         private void RenderNotice(NoticeData data)
         {
             noticeView.Set(data);
-            NoticeManager.instance.AddToCheckedList(data.Header);
+            LiveAssetManager.instance.AddToCheckedList(data.Header);
         }
 
         private void RenderNotice(EventNoticeData data)
         {
             eventView.Set(data.PopupImage, data.Url, data.UseAgentAddress);
-            NoticeManager.instance.AddToCheckedList(data.Description);
+            LiveAssetManager.instance.AddToCheckedList(data.Description);
         }
     }
 }

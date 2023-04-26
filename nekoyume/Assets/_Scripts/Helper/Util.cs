@@ -9,14 +9,12 @@ using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
 using Nekoyume.Battle;
 using Nekoyume.Extensions;
-using Nekoyume.Game.Character;
-using Nekoyume.Game.Factory;
+using Nekoyume.Game.LiveAsset;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
-using Nekoyume.UI.Module;
 using Org.BouncyCastle.Crypto.Digests;
 using UnityEngine;
 using Inventory = Nekoyume.Model.Item.Inventory;
@@ -29,15 +27,15 @@ namespace Nekoyume.Helper
         private const string StoredSlotIndex = "AutoSelectedSlotIndex_";
         private static readonly List<int> CrystalEquipmentRecipes = new() { 158, 159, 160 };
 
-        public static string GetBlockToTime(long block)
+        public static string GetBlockToTime(long block, int? secondsPerBlock = null)
         {
             if (block < 0)
             {
                 return string.Empty;
             }
 
-            const int secondsPerBlock = 12;
-            var remainSecond = block * secondsPerBlock;
+            secondsPerBlock ??= LiveAssetManager.instance.GameConfig.SecondsPerBlock;
+            var remainSecond = block * secondsPerBlock.Value;
             var timeSpan = TimeSpan.FromSeconds(remainSecond);
 
             var sb = new StringBuilder();
@@ -428,6 +426,40 @@ namespace Nekoyume.Helper
             var petSheet = Game.Game.instance.TableSheets.PetSheet;
             tickers.AddRange(petSheet.Values.Select(r => r.SoulStoneTicker));
             return tickers;
+        }
+
+        /// <summary>
+        /// Deserializes a string token, return only 'version'.
+        /// <see href="https://github.com/planetarium/libplanet/blob/1.0.0/Libplanet.Net/AppProtocolVersion.cs/#L148">Libplanet.Net.AppProtocolVersion.FromToken()</see>
+        /// </summary>
+        public static void TryGetAppProtocolVersionFromToken(string token, out int apv)
+        {
+            apv = 0;
+            if (token is null)
+            {
+                Debug.LogException(new ArgumentNullException(nameof(token)));
+                return;
+            }
+
+            var pos = token.IndexOf('/');
+            if (pos < 0)
+            {
+                Debug.LogException(new FormatException("Failed to find the first field delimiter."));
+                return;
+            }
+
+            int version;
+            try
+            {
+                version = int.Parse(token.Substring(0, pos), CultureInfo.InvariantCulture);
+            }
+            catch (Exception e) when (e is OverflowException or FormatException)
+            {
+                Debug.LogException(new FormatException($"Failed to parse a version number: {e}", e));
+                return;
+            }
+
+            apv = version;
         }
     }
 }

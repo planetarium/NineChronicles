@@ -2,9 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using Libplanet;
 using Libplanet.Crypto;
-using Nekoyume;
 using Nekoyume.BlockChain;
-using Nekoyume.Game;
 using Nekoyume.Model;
 using Nekoyume.Model.State;
 using UnityEditor;
@@ -14,11 +12,19 @@ namespace Planetarium.Nekoyume.Editor
 {
     public static class LibplanetEditor
     {
+        private static PublicKey GetOrCreateInitialValidator()
+        {
+            var pk = Agent.ProposerKey;
+            Debug.Log($"Private Key of initialValidator: {ByteUtil.Hex(pk.ByteArray)}");
+            Debug.Log($"Public Key of initialValidator: {pk.PublicKey}");
+            return pk.PublicKey;
+        }
+
         [MenuItem("Tools/Libplanet/Delete All(Editor) - Make Genesis Block For Dev To StreamingAssets Folder")]
         public static void DeleteAllEditorAndMakeGenesisBlock()
         {
             DeleteAll(StorePath.GetDefaultStoragePath(StorePath.Env.Development));
-            MakeGenesisBlock(BlockManager.GenesisBlockPath());
+            MakeGenesisBlock(BlockManager.GenesisBlockPath(), GetOrCreateInitialValidator());
         }
 
         [MenuItem("Tools/Libplanet/Delete All(Player) - Make Genesis Block For Prod To StreamingAssets Folder")]
@@ -54,7 +60,7 @@ namespace Planetarium.Nekoyume.Editor
             }
         }
 
-        private static void MakeGenesisBlock(string path)
+        private static void MakeGenesisBlock(string path, PublicKey proposer = null)
         {
             CreateActivationKey(
                 out List<PendingActivationState> pendingActivationStates,
@@ -64,7 +70,7 @@ namespace Planetarium.Nekoyume.Editor
 
             var block = BlockManager.ProposeGenesisBlock(
                 pendingActivationStates.ToArray(),
-                Agent.ProposerKey.PublicKey);
+                proposer ?? Agent.ProposerKey.PublicKey);
             BlockManager.ExportBlock(block, path);
         }
 
@@ -76,15 +82,15 @@ namespace Planetarium.Nekoyume.Editor
             pendingActivationStates = new List<PendingActivationState>();
             activationKeys = new List<ActivationKey>();
 
-             for (int i = 0; i < countOfKeys; i++)
-             {
-                 var pendingKey = new PrivateKey();
-                 var nonce = pendingKey.PublicKey.ToAddress().ToByteArray();
-                 (ActivationKey ak, PendingActivationState s) =
-                     ActivationKey.Create(pendingKey, nonce);
-                 pendingActivationStates.Add(s);
-                 activationKeys.Add(ak);
-             }
+            for (int i = 0; i < countOfKeys; i++)
+            {
+                var pendingKey = new PrivateKey();
+                var nonce = pendingKey.PublicKey.ToAddress().ToByteArray();
+                (ActivationKey ak, PendingActivationState s) =
+                    ActivationKey.Create(pendingKey, nonce);
+                pendingActivationStates.Add(s);
+                activationKeys.Add(ak);
+            }
         }
     }
 }

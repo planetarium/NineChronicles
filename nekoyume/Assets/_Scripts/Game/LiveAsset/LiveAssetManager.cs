@@ -10,11 +10,11 @@ using Nekoyume.UI.Model;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace Nekoyume.Game.Notice
+namespace Nekoyume.Game.LiveAsset
 {
     using UniRx;
 
-    public class NoticeManager : MonoSingleton<NoticeManager>
+    public class LiveAssetManager : MonoSingleton<LiveAssetManager>
     {
         private const string AlreadyReadNoticeKey = "AlreadyReadNoticeList";
         private static readonly Vector2 Pivot = new(0.5f, 0.5f);
@@ -22,7 +22,7 @@ namespace Nekoyume.Game.Notice
         private readonly List<EventNoticeData> _bannerData = new();
         private readonly ReactiveCollection<string> _alreadyReadNotices = new();
         private Notices _notices;
-        private NoticeEndpointScriptableObject _endpoint;
+        private LiveAssetEndpointScriptableObject _endpoint;
 
         public bool HasUnreadEvent =>
             _bannerData.Any(d => !_alreadyReadNotices.Contains(d.Description));
@@ -40,13 +40,15 @@ namespace Nekoyume.Game.Notice
 
         public IReadOnlyList<EventNoticeData> BannerData => _bannerData;
         public IReadOnlyList<NoticeData> NoticeData => _notices.NoticeData;
+        public GameConfig GameConfig { get; private set; }
         public bool IsInitialized { get; private set; }
 
         public void InitializeData()
         {
-            _endpoint = Resources.Load<NoticeEndpointScriptableObject>("ScriptableObject/NoticeEndpoint");
+            _endpoint = Resources.Load<LiveAssetEndpointScriptableObject>("ScriptableObject/LiveAssetEndpoint");
             StartCoroutine(RequestManager.instance.GetJson(_endpoint.EventJsonUrl, SetEventData));
             StartCoroutine(RequestManager.instance.GetJson(_endpoint.NoticeJsonUrl, SetNotices));
+            StartCoroutine(RequestManager.instance.GetJson(_endpoint.GameConfigJsonUrl, SetLiveAssetData));
         }
 
         public void AddToCheckedList(string key)
@@ -75,6 +77,11 @@ namespace Nekoyume.Game.Notice
         {
             var responseData = JsonSerializer.Deserialize<EventBanners>(response);
             MakeNoticeData(responseData?.Banners.OrderBy(x => x.Priority)).Forget();
+        }
+
+        private void SetLiveAssetData(string response)
+        {
+            GameConfig = JsonSerializer.Deserialize<GameConfig>(response);
         }
 
         private async UniTaskVoid MakeNoticeData(IEnumerable<EventBannerData> bannerData)

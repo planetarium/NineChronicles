@@ -41,7 +41,10 @@ namespace StateViewer.Runtime
 
         public string IndexOrKeyContent { get; private set; }
 
-        public string AliasContent { get; private set; }
+        private string _aliasContent = string.Empty;
+        public string AliasContent => OverrideAliasContent ?? _aliasContent;
+
+        public string? OverrideAliasContent { get; set; }
 
         public IReadOnlyList<StateTreeViewItemModel> Children => _children;
 
@@ -126,10 +129,14 @@ namespace StateViewer.Runtime
             return treeViewItemId;
         }
 
-        public void SetValue(IValue value)
+        public void SetValue(IValue value, bool reuseChildren = false)
         {
             Value = value;
-            _children.Clear();
+            if (!reuseChildren)
+            {
+                _children.Clear();
+            }
+
             switch (ValueType)
             {
                 case ValueKind.Null:
@@ -142,20 +149,77 @@ namespace StateViewer.Runtime
                 case ValueKind.List:
                     ValueContent = ParseToString(Value);
                     var list = (List)Value;
-                    _children.AddRange(list.Select((childValue, i) =>
-                        new StateTreeViewItemModel(
-                            childValue,
+                    if (!reuseChildren)
+                    {
+                        _children.AddRange(list.Select((childValue, i) =>
+                            new StateTreeViewItemModel(
+                                childValue,
+                                parent: this,
+                                index: i)));
+                        break;
+                    }
+
+                    var listCount = list.Count;
+                    var childrenCount = _children.Count;
+                    if (listCount < childrenCount)
+                    {
+                        _children.RemoveRange(listCount, childrenCount - listCount);
+                    }
+
+                    for (var i = 0; i < listCount; i++)
+                    {
+                        var value2 = list[i];
+                        if (i < childrenCount)
+                        {
+                            var child = _children[i];
+                            child.SetValue(value2, reuseChildren);
+                            continue;
+                        }
+
+                        _children.Add(new StateTreeViewItemModel(
+                            value2,
                             parent: this,
-                            index: i)));
+                            index: i));
+                    }
+
                     break;
                 case ValueKind.Dictionary:
                     ValueContent = ParseToString(Value);
                     var dict = (Dictionary)Value;
-                    _children.AddRange(dict.Select(pair =>
-                        new StateTreeViewItemModel(
-                            pair.Value,
-                            parent: this,
-                            key: pair.Key)));
+                    if (!reuseChildren)
+                    {
+                        _children.AddRange(dict.Select(pair =>
+                            new StateTreeViewItemModel(
+                                pair.Value,
+                                parent: this,
+                                key: pair.Key)));
+                        break;
+                    }
+
+                    var removingChildren = _children
+                        .Where(c => c.Key != null && !dict.ContainsKey(c.Key))
+                        .ToArray();
+                    foreach (var child in removingChildren)
+                    {
+                        _children.Remove(child);
+                    }
+
+                    foreach (var (key, value2) in dict)
+                    {
+                        var child = _children.FirstOrDefault(c => c.Key?.Equals(key) ?? false);
+                        if (child is null)
+                        {
+                            _children.Add(new StateTreeViewItemModel(
+                                value2,
+                                parent: this,
+                                key: key));
+                        }
+                        else
+                        {
+                            child.SetValue(value2, reuseChildren);
+                        }
+                    }
+
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -230,7 +294,7 @@ namespace StateViewer.Runtime
             if (indexOrKey is null)
             {
                 IndexOrKeyContent = string.Empty;
-                AliasContent = alias ?? string.Empty;
+                _aliasContent = alias ?? string.Empty;
                 return;
             }
 
@@ -244,7 +308,7 @@ namespace StateViewer.Runtime
             if (Parent.ValueType == ValueKind.List)
             {
                 Index = int.Parse(indexOrKey);
-                AliasContent = alias;
+                _aliasContent = alias;
                 return;
             }
 
@@ -265,7 +329,7 @@ namespace StateViewer.Runtime
                 keyType = ValueKind.Text;
             }
 
-            AliasContent = string.IsNullOrEmpty(alias)
+            _aliasContent = string.IsNullOrEmpty(alias)
                 ? $"({keyType})"
                 : $"({keyType}){alias}";
         }

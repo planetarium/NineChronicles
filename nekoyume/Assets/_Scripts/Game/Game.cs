@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ using MessagePack.Resolvers;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.Notice;
+using Nekoyume.Game.LiveAsset;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -32,8 +33,8 @@ using UnityEngine;
 using UnityEngine.Playables;
 using Menu = Nekoyume.UI.Menu;
 using Random = UnityEngine.Random;
-using RocksDbSharp;
-using UnityEngine.Android;
+using RocksDbSharp;  // Don't remove this line. It's for another platform.
+using UnityEngine.Android;  // Don't remove this line. It's for another platform.
 
 namespace Nekoyume.Game
 {
@@ -54,6 +55,11 @@ namespace Nekoyume.Game
         [SerializeField] private bool useSystemLanguage = true;
 
         [SerializeField] private bool useLocalHeadless = false;
+
+        [SerializeField] private bool useLocalMarketService = false;
+
+        [SerializeField] private string marketDbConnectionString =
+            "Host=localhost;Username=postgres;Database=market";
 
         [SerializeField] private LanguageTypeReactiveProperty languageType = default;
 
@@ -122,6 +128,7 @@ namespace Nekoyume.Game
             Path.Combine(Application.streamingAssetsPath, "url.json");
 
         private Thread headlessThread;
+        private Thread marketThread;
 
         #region Mono & Initialization
 
@@ -174,9 +181,7 @@ namespace Nekoyume.Game
 #if UNITY_IOS
             _commandLineOptions = CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.json"));
 #else
-            _commandLineOptions = CommandLineOptions.Load(
-                CommandLineOptionsJsonPath
-            );
+            _commandLineOptions = CommandLineOptions.Load(CommandLineOptionsJsonPath);
 #endif
 
             URL = Url.Load(UrlJsonPath);
@@ -184,7 +189,20 @@ namespace Nekoyume.Game
             Debug.Log("[Game] Awake() CommandLineOptions loaded");
             Debug.Log($"APV: {_commandLineOptions.AppProtocolVersion}");
 
-            if (_commandLineOptions.RpcClient)
+#if UNITY_EDITOR
+            // Local Headless
+            if (useLocalHeadless && HeadlessHelper.CheckHeadlessSettings())
+            {
+                string? initialValidator = null;
+                if (PlayerPrefs.HasKey("initialValidator"))
+                {
+                    initialValidator = PlayerPrefs.GetString("initialValidator");
+                }
+                headlessThread = new Thread(() => HeadlessHelper.RunLocalHeadless(initialValidator));
+                headlessThread.Start();
+            }
+
+            if (useLocalHeadless)
             {
                 Agent = GetComponent<RPCAgent>();
                 SubscribeRPCAgent();
@@ -193,18 +211,9 @@ namespace Nekoyume.Game
             {
                 Agent = GetComponent<Agent>();
             }
-
-#if UNITY_EDITOR
-            // Local Headless
-            if (useLocalHeadless && HeadlessHelper.CheckHeadlessSettings())
-            {
-                Agent = GetComponent<RPCAgent>();
-                _commandLineOptions =
-                    CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.local.json"));
-                SubscribeRPCAgent();
-                headlessThread = new Thread(HeadlessHelper.RunLocalHeadless);
-                headlessThread.Start();
-            }
+#else
+            Agent = GetComponent<RPCAgent>();
+            SubscribeRPCAgent();
 #endif
 
             States = new States();
@@ -279,6 +288,16 @@ namespace Nekoyume.Game
             );
 
             yield return new WaitUntil(() => agentInitialized);
+
+#if UNITY_EDITOR
+            // wait for headless connect.
+            if (useLocalMarketService && MarketHelper.CheckPath())
+            {
+                marketThread = new Thread(() => MarketHelper.RunLocalMarketService(marketDbConnectionString));
+                marketThread.Start();
+            }
+#endif
+
             InitializeAnalyzer();
             Analyzer.Track("Unity/Started");
             // NOTE: Create ActionManager after Agent initialized.
@@ -286,12 +305,12 @@ namespace Nekoyume.Game
             yield return SyncTableSheetsAsync().ToCoroutine();
             Debug.Log("[Game] Start() TableSheets synchronized");
             RxProps.Start(Agent, States, TableSheets);
-            // Initialize RequestManager and NoticeManager
+            // Initialize RequestManager and LiveAssetManager
             gameObject.AddComponent<RequestManager>();
-            var noticeManager = gameObject.AddComponent<NoticeManager>();
-            noticeManager.InitializeData();
-            yield return new WaitUntil(() => noticeManager.IsInitialized);
-            Debug.Log("[Game] Start() RequestManager & NoticeManager initialized");
+            var liveAssetManager = gameObject.AddComponent<LiveAssetManager>();
+            liveAssetManager.InitializeData();
+            yield return new WaitUntil(() => liveAssetManager.IsInitialized);
+            Debug.Log("[Game] Start() RequestManager & LiveAssetManager initialized");
             // Initialize MainCanvas second
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
             // Initialize NineChroniclesAPIClient.
@@ -322,10 +341,10 @@ namespace Nekoyume.Game
                 SavedPetId = !petList.Any() ? null : petList[Random.Range(0, petList.Count)];
             }).AddTo(gameObject);
 
-            var appProtocolVersion = _commandLineOptions.AppProtocolVersion is null
-                ? default
-                : Libplanet.Net.AppProtocolVersion.FromToken(_commandLineOptions.AppProtocolVersion);
-            Widget.Find<VersionSystem>().SetVersion(appProtocolVersion.Version);
+            Helper.Util.TryGetAppProtocolVersionFromToken(
+                _commandLineOptions.AppProtocolVersion,
+                out var appProtocolVersion);
+            Widget.Find<VersionSystem>().SetVersion(appProtocolVersion);
 
             ShowNext(agentInitializeSucceed);
             StartCoroutine(CoUpdate());
@@ -336,6 +355,11 @@ namespace Nekoyume.Game
             if (headlessThread is not null && headlessThread.IsAlive)
             {
                 headlessThread.Interrupt();
+            }
+
+            if (marketThread is not null && marketThread.IsAlive)
+            {
+                marketThread.Interrupt();
             }
 
             ActionManager?.Dispose();
@@ -570,9 +594,15 @@ namespace Nekoyume.Game
             var csv = dict.ToDictionary(
                 pair => map[pair.Key],
                 // NOTE: `pair.Value` is `null` when the chain not contains the `pair.Key`.
-                pair => pair.Value is null
-                    ? null
-                    : pair.Value.ToDotnetString());
+                pair =>
+                {
+                    if (pair.Value is Text)
+                    {
+                        return pair.Value.ToDotnetString();
+                    }
+
+                    return null;
+                });
 
             TableSheets = new TableSheets(csv);
         }

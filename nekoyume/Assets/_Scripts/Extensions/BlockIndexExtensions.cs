@@ -6,16 +6,15 @@ namespace Nekoyume
 {
     public static class BlockIndexExtensions
     {
-        private const int SecondsPerBlock = 12;
-
         public static string BlockIndexToDateTimeString(
             this long targetBlockIndex,
             long currentBlockIndex,
+            int secondsPerBlock,
             DateTime now,
             string format)
         {
             var differ = targetBlockIndex - currentBlockIndex;
-            var timeSpan = TimeSpan.FromSeconds(differ * SecondsPerBlock);
+            var timeSpan = TimeSpan.FromSeconds(differ * secondsPerBlock);
             var targetDateTime = now + timeSpan;
             return targetDateTime.ToString(format, CultureInfo.InvariantCulture);
         }
@@ -23,12 +22,13 @@ namespace Nekoyume
         public static string BlockIndexToDateTimeString(
             this long targetBlockIndex,
             long currentBlockIndex,
+            int secondsPerBlock,
             DateTime now) =>
-            BlockIndexToDateTimeString(targetBlockIndex, currentBlockIndex, now, "yyyy/MM/dd");
+            BlockIndexToDateTimeString(targetBlockIndex, currentBlockIndex, secondsPerBlock, now, "yyyy/MM/dd");
 
-        public static string BlockRangeToTimeSpanString(this long blockRange)
+        public static string BlockRangeToTimeSpanString(this long blockRange, int secondsPerBlock)
         {
-            var timeSpan = TimeSpan.FromSeconds(blockRange * SecondsPerBlock);
+            var timeSpan = TimeSpan.FromSeconds(blockRange * secondsPerBlock);
             var sb = new StringBuilder();
             if (timeSpan.Days > 0)
             {
