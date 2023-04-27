@@ -57,10 +57,27 @@ namespace Nekoyume
             }
         }
 
-        public static string EffectToString(this StatBuffSheet.Row row)
+        public static string EffectToString(this StatBuffSheet.Row row, int power)
         {
-            return (row.Value >= 0 ? "+" : string.Empty) +
-                row.Value +
+            var valueText = row.Value.ToString();
+
+            if (power > 0)
+            {
+                var sign = power >= 0 ? "+ " : "-";
+                if (row.ReferencedStatType != StatType.NONE)
+                {
+                    var multiplierText = (Math.Abs(power) / 10000m).ToString("#.##");
+                    
+                    valueText = $"({valueText} {sign} {multiplierText} * {row.ReferencedStatType})";
+                }
+                else
+                {
+                    valueText = (row.Value + power).ToString();
+                }
+            }
+            
+            return (row.Value >= 0 && power >= 0 ? "+" : string.Empty) +
+                valueText +
                 (row.OperationType == StatModifier.OperationType.Percentage ? "%" : string.Empty);
         }
     }

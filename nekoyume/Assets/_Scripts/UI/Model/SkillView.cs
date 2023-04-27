@@ -33,7 +33,7 @@ namespace Nekoyume.UI.Model
                 if (buffs.Any())
                 {
                     var buff = buffs.First();
-                    var powerValue = buff.RowData.ToString();
+                    var powerValue = buff.RowData.EffectToString(skill.Power);
                     power.Value = $"{L10nManager.Localize("UI_SKILL_EFFECT")}: {powerValue}";
                 }
             }
@@ -57,7 +57,7 @@ namespace Nekoyume.UI.Model
             if (buffs.Count() > 0)
             {
                 var buff = buffs.First();
-                powerValue = buff.RowData.ToString();
+                powerValue = buff.RowData.EffectToString(skill.Power);
             }
 
             name.Value = skill.SkillRow.GetLocalizedName();
