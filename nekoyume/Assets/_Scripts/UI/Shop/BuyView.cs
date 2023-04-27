@@ -380,7 +380,7 @@ namespace Nekoyume
             var limit = _column * _row;
             var reset = _page.Value == 0;
             var count = reset ? 0 : ReactiveShopState.GetCachedBuyItemCount(filter);
-            if (reset && count > (_page.Value + 1) * limit)
+            if (!reset && count > (_page.Value + 1) * limit)
             {
                 return;
             }
