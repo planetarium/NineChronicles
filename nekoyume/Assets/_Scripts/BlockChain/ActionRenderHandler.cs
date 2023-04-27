@@ -1085,6 +1085,7 @@ namespace Nekoyume.BlockChain
             }
 
             UpdateCurrentAvatarStateAsync(eval).Forget();
+            await ReactiveShopState.RequestSellProductsAsync();
 
             var message = string.Empty;
             if (count > 1)
@@ -1165,6 +1166,7 @@ namespace Nekoyume.BlockChain
             OneLineSystem.Push(MailType.Auction, message,
                 NotificationCell.NotificationType.Information);
             UpdateCurrentAvatarStateAsync(eval).Forget();
+            await ReactiveShopState.RequestSellProductsAsync();
         }
 
         private async void ResponseReRegisterProduct(ActionEvaluation<ReRegisterProduct> eval)
@@ -1222,6 +1224,7 @@ namespace Nekoyume.BlockChain
             OneLineSystem.Push(MailType.Auction, message,
                 NotificationCell.NotificationType.Information);
             UpdateCurrentAvatarStateAsync(eval).Forget();
+            await ReactiveShopState.RequestSellProductsAsync();
         }
 
         private async void ResponseBuyProduct(ActionEvaluation<BuyProduct> eval)
