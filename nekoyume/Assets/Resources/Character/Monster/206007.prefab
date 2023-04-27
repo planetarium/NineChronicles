@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8197635947727048609}
   - component: {fileID: 1752888090893989717}
   - component: {fileID: 1963784797123236944}
-  - component: {fileID: 569677314189328227}
+  - component: {fileID: 5776654045405899361}
   m_Layer: 8
   m_Name: 206007
   m_TagString: Untagged
@@ -217,29 +217,16 @@ MonoBehaviour:
     animation: {fileID: 11400000, guid: e30c52a24e9b970468b89ea9bea44763, type: 2}
   - stateName: TurnOver_02
     animation: {fileID: 11400000, guid: e30c52a24e9b970468b89ea9bea44763, type: 2}
---- !u!61 &569677314189328227
-BoxCollider2D:
+--- !u!65 &5776654045405899361
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3746282502300632260}
-  m_Enabled: 1
-  m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0.6, y: 2.4374}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
+  m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 12.12, y: 10.95}
-  m_EdgeRadius: 0
+  m_Size: {x: 12.12, y: 10.95, z: 0}
+  m_Center: {x: 0.6, y: 2.43, z: 0}
