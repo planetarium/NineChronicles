@@ -188,6 +188,41 @@ namespace Nekoyume.EnumType
             }
         }
 
+        public static ItemSubTypeFilter ToItemTypeFilter(this ItemSubTypeFilter type)
+        {
+            switch (type)
+            {
+                case ItemSubTypeFilter.All:
+                case ItemSubTypeFilter.Weapon:
+                case ItemSubTypeFilter.Armor:
+                case ItemSubTypeFilter.Belt:
+                case ItemSubTypeFilter.Necklace:
+                case ItemSubTypeFilter.Ring:
+                    return ItemSubTypeFilter.Equipment;
+
+                case ItemSubTypeFilter.Food_HP:
+                case ItemSubTypeFilter.Food_ATK:
+                case ItemSubTypeFilter.Food_DEF:
+                case ItemSubTypeFilter.Food_CRI:
+                case ItemSubTypeFilter.Food_HIT:
+                    return ItemSubTypeFilter.Food;
+
+                case ItemSubTypeFilter.FullCostume:
+                case ItemSubTypeFilter.Title:
+                    return ItemSubTypeFilter.Costume;
+
+                case ItemSubTypeFilter.Hourglass:
+                case ItemSubTypeFilter.ApStone:
+                    return ItemSubTypeFilter.Materials;
+
+                case ItemSubTypeFilter.RuneStone:
+                case ItemSubTypeFilter.PetSoulStone:
+                    return ItemSubTypeFilter.Stones;
+
+                default:
+                    return type;
+            }
+        }
 
         public static ItemSubTypeFilter StatTypeToItemSubTypeFilter(StatType statType)
         {
