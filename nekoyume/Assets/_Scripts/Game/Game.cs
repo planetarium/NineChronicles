@@ -299,13 +299,13 @@ namespace Nekoyume.Game
             ActionManager = new ActionManager(Agent);
             yield return SyncTableSheetsAsync().ToCoroutine();
             Debug.Log("[Game] Start() TableSheets synchronized");
-            RxProps.Start(Agent, States, TableSheets);
             // Initialize RequestManager and LiveAssetManager
             gameObject.AddComponent<RequestManager>();
             var liveAssetManager = gameObject.AddComponent<LiveAssetManager>();
             liveAssetManager.InitializeData();
             yield return new WaitUntil(() => liveAssetManager.IsInitialized);
             Debug.Log("[Game] Start() RequestManager & LiveAssetManager initialized");
+            RxProps.Start(Agent, States, TableSheets);
             // Initialize MainCanvas second
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
             // Initialize NineChroniclesAPIClient.
