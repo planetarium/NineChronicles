@@ -125,7 +125,7 @@ namespace Nekoyume.Game
             Platform.GetStreamingAssetsPath("clo.json");
 
         private static readonly string UrlJsonPath =
-            Path.Combine(Application.streamingAssetsPath, "url.json");
+            Platform.GetStreamingAssetsPath("url.json");
 
         private Thread headlessThread;
         private Thread marketThread;
