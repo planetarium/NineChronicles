@@ -34,12 +34,10 @@ namespace Nekoyume.Helper
                 return string.Empty;
             }
 
-            if(secondsPerBlock is null or 0)
-            {
-                secondsPerBlock = LiveAssetManager.instance.GameConfig.SecondsPerBlock;
-            }
-            var remainSecond = block * secondsPerBlock.Value;
-            var timeSpan = TimeSpan.FromSeconds(remainSecond);
+            secondsPerBlock ??= LiveAssetManager.instance.GameConfig.SecondsPerBlock;
+
+            var remainSecond = block * secondsPerBlock;
+            var timeSpan = TimeSpan.FromSeconds(remainSecond.Value);
 
             var sb = new StringBuilder();
 
