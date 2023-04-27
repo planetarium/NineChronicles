@@ -29,7 +29,15 @@ namespace Nekoyume.Helper
         public IObservable<MailBox> ObservableMailBox => _localMailBox.ObserveOnMainThread();
         public MailBox MailBox => _localMailBox.Value ??= States.Instance.CurrentAvatarState?.mailBox;
 
-        public void Initialize(Address address)
+        public void Add(Address address, Mail mail)
+        {
+            Initialize(address);
+
+            _localMailDictionary[address].Add(mail);
+            UpdateLocalMailBox(States.Instance.CurrentAvatarState.mailBox);
+        }
+
+        private void Initialize(Address address)
         {
             if (_localMailDictionary.ContainsKey(address))
             {
@@ -44,17 +52,6 @@ namespace Nekoyume.Helper
                 .First()
                 .Subscribe(_ => CleanupAndDispose())
                 .AddTo(_disposables);
-        }
-
-        public void Add(Address address, Mail mail)
-        {
-            if (!_localMailDictionary.ContainsKey(address))
-            {
-                _localMailDictionary.Add(address, new List<Mail>());
-            }
-
-            _localMailDictionary[address].Add(mail);
-            UpdateLocalMailBox(States.Instance.CurrentAvatarState.mailBox);
         }
 
         private void CleanupAndDispose()
