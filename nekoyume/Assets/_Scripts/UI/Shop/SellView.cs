@@ -136,10 +136,12 @@ namespace Nekoyume
             var models = items.Distinct();
             var fungibleAssetProducts = models.Where(x =>
                 x.Product is null
-                && x.FungibleAssetValue.GetItemSubTypeFilter() == _selectedSubTypeFilter.Value);
+                && (x.FungibleAssetValue.GetItemSubTypeFilter() == _selectedSubTypeFilter.Value ||
+                    _selectedSubTypeFilter.Value == ItemSubTypeFilter.All));
             var itemProducts = models.Where(x =>
                 x.Product is not null
-                && x.ItemBase.ItemSubType == _selectedSubTypeFilter.Value.ToItemSubType()).ToList();
+                && (x.ItemBase.ItemSubType == _selectedSubTypeFilter.Value.ToItemSubType() ||
+                    _selectedSubTypeFilter.Value == ItemSubTypeFilter.All)).ToList();
 
             var result = new List<ShopItem>();
             switch (_selectedSortFilter.Value)
