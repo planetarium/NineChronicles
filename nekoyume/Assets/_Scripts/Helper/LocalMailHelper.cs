@@ -15,7 +15,7 @@ namespace Nekoyume.Helper
         {
             _localMailDictionary = new Dictionary<Address, List<Mail>>();
             _disposables = new List<IDisposable>();
-            _localMailBox = new ReactiveProperty<MailBox>();
+            _localMailBox = new ReactiveProperty<MailBox>(null);
         }
 
         private readonly Dictionary<Address, List<Mail>> _localMailDictionary;
@@ -25,7 +25,7 @@ namespace Nekoyume.Helper
 
         public static LocalMailHelper Instance => _instance ??= new LocalMailHelper();
         public IObservable<MailBox> ObservableMailBox => _localMailBox.ObserveOnMainThread();
-        public MailBox MailBox => _localMailBox.Value ?? States.Instance.CurrentAvatarState?.mailBox;
+        public MailBox MailBox => _localMailBox.Value ??= States.Instance.CurrentAvatarState?.mailBox;
 
         public void Initialize(Address address)
         {
