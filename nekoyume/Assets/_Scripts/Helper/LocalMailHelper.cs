@@ -16,6 +16,8 @@ namespace Nekoyume.Helper
             _localMailDictionary = new Dictionary<Address, List<Mail>>();
             _disposables = new List<IDisposable>();
             _localMailBox = new ReactiveProperty<MailBox>(null);
+            Event.OnUpdateAddresses.AsObservable()
+                .Subscribe(_ => Initialize(States.Instance.CurrentAvatarState.address));
         }
 
         private readonly Dictionary<Address, List<Mail>> _localMailDictionary;
@@ -34,8 +36,14 @@ namespace Nekoyume.Helper
                 return;
             }
 
-            ReactiveAvatarState.MailBox.Subscribe(UpdateLocalMailBox).AddTo(_disposables);
-            Event.OnUpdateAddresses.AsObservable().First().Subscribe(_ => CleanupAndDispose());
+            _localMailDictionary.Add(address, new List<Mail>());
+            ReactiveAvatarState.MailBox
+                .Subscribe(UpdateLocalMailBox)
+                .AddTo(_disposables);
+            Event.OnUpdateAddresses.AsObservable()
+                .First()
+                .Subscribe(_ => CleanupAndDispose())
+                .AddTo(_disposables);
         }
 
         public void Add(Address address, Mail mail)
