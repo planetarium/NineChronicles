@@ -1,7 +1,11 @@
+using Codice.Client.BaseCommands;
+using Microsoft.Extensions.Primitives;
+using mixpanel;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 using System;
 using System.Globalization;
+using System.Text;
 
 namespace Nekoyume
 {
@@ -54,6 +58,36 @@ namespace Nekoyume
                 default:
                     throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
             }
+        }
+
+        public static string EffectToString(this StatBuffSheet.Row row)
+        {
+            var sb = new StringBuilder();
+
+            if (row.BaseValue > 0)
+            {
+                sb.Append('+');
+            }
+
+            var hasBaseValue = row.BaseValue != 0;
+            var hasStatRatio = row.StatRatio != 0;
+
+            if (hasBaseValue)
+            {
+                sb.Append(row.BaseValue);
+            }
+
+            if (hasStatRatio)
+            {
+                if (hasBaseValue)
+                {
+                    sb.Append('/');
+                }
+                sb.Append($"{row.StatRatio} {row.ReferencedStatType}");
+            }
+
+            return row.OperationType == StatModifier.OperationType.Percentage ?
+                $"({sb})%" : sb.ToString();
         }
     }
 }
