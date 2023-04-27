@@ -60,11 +60,12 @@ namespace Nekoyume.Model.Buff
             }
         }
 
-        public static ActionBuff GetActionBuff(int power, ActionBuffSheet.Row row)
+        public static ActionBuff GetActionBuff(Stats stat, ActionBuffSheet.Row row)
         {
             switch (row.ActionBuffType)
             {
                 case ActionBuffType.Bleed:
+                    var power = (int)decimal.Round(stat.ATK * row.ATKPowerRatio);
                     return new Bleed(row, power);
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -83,7 +84,7 @@ namespace Nekoyume.Model.Buff
         }
 
         public static IList<Buff> GetBuffs(
-            int power,
+            Stats stats,
             ISkill skill,
             SkillBuffSheet skillBuffSheet,
             StatBuffSheet statBuffSheet,
@@ -91,6 +92,7 @@ namespace Nekoyume.Model.Buff
             ActionBuffSheet actionBuffSheet)
         {
             var buffs = new List<Buff>();
+            var overrideBuff = skill is BuffSkill && skill.Power > 0;
 
             if (skillBuffSheet.TryGetValue(skill.SkillRow.Id, out var skillStatBuffRow))
             {
@@ -99,13 +101,36 @@ namespace Nekoyume.Model.Buff
                     if (!statBuffSheet.TryGetValue(buffId, out var buffRow))
                         continue;
 
-                    if (!skill.CustomField.HasValue)
+                    var customField = skill.CustomField;
+                    if (!customField.HasValue &&
+                        overrideBuff)
+                    {
+                        int power;
+                        if (buffRow.ReferencedStatType != StatType.NONE)
+                        {
+                            var multiplier = skill.Power / 10000m;
+                            power = (int)Math.Round(
+                                stats.GetStat(buffRow.ReferencedStatType) * multiplier);
+                        }
+                        else
+                        {
+                            power = skill.Power;
+                        }
+                        
+                        customField = new SkillCustomField()
+                        {
+                            BuffDuration = buffRow.Duration,
+                            BuffValue = power,
+                        };
+                    }
+
+                    if (!customField.HasValue)
                     {
                         buffs.Add(GetStatBuff(buffRow));
                     }
                     else
                     {
-                        buffs.Add(GetCustomStatBuff(buffRow, skill.CustomField.Value));
+                        buffs.Add(GetCustomStatBuff(buffRow, customField.Value));
                     }
                 }
             }
@@ -119,7 +144,7 @@ namespace Nekoyume.Model.Buff
 
                     if (!skill.CustomField.HasValue)
                     {
-                        buffs.Add(GetActionBuff(power, buffRow));
+                        buffs.Add(GetActionBuff(stats, buffRow));
                     }
                     else
                     {

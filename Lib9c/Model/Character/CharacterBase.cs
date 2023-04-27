@@ -242,7 +242,7 @@ namespace Nekoyume.Model
                 this,
                 Simulator.WaveTurn,
                 BuffFactory.GetBuffs(
-                    ATK,
+                    Stats,
                     selectedSkill,
                     Simulator.SkillBuffSheet,
                     Simulator.StatBuffSheet,
@@ -270,7 +270,7 @@ namespace Nekoyume.Model
                 this,
                 Simulator.WaveTurn,
                 BuffFactory.GetBuffs(
-                    ATK,
+                    Stats,
                     selectedSkill,
                     Simulator.SkillBuffSheet,
                     Simulator.StatBuffSheet,
@@ -293,7 +293,7 @@ namespace Nekoyume.Model
                 this,
                 Simulator.WaveTurn,
                 BuffFactory.GetBuffs(
-                    ATK,
+                    Stats,
                     selectedSkill,
                     Simulator.SkillBuffSheet,
                     Simulator.StatBuffSheet,
@@ -365,8 +365,7 @@ namespace Nekoyume.Model
             var minDuration = int.MaxValue;
             foreach (var buff in StatBuffs)
             {
-                if (buff.RowData.BaseValue < 0 ||
-                    buff.RowData.StatRatio < 0m)
+                if (buff.RowData.Value < 0)
                 {
                     continue;
                 }

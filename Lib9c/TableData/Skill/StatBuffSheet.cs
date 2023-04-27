@@ -35,8 +35,7 @@ namespace Nekoyume.TableData
             public SkillTargetType TargetType { get; private set; }
             public StatType StatType { get; private set; }
             public StatModifier.OperationType OperationType { get; private set; }
-            public int BaseValue { get; private set; }
-            public decimal StatRatio { get; private set; }
+            public int Value { get; private set; }
             public StatType ReferencedStatType { get; private set; }
 
             public override void Set(IReadOnlyList<string> fields)
@@ -50,14 +49,10 @@ namespace Nekoyume.TableData
                 // modifier
                 StatType = (StatType)Enum.Parse(typeof(StatType), fields[5]);
                 OperationType = (StatModifier.OperationType)Enum.Parse(typeof(StatModifier.OperationType), fields[6]);
-                BaseValue = ParseInt(fields[7]);
+                Value = ParseInt(fields[7]);
 
-                // optional fields
-                if (TryParseDecimal(fields[8], out var powerRatio))
-                {
-                    StatRatio = powerRatio;
-                    ReferencedStatType = (StatType)Enum.Parse(typeof(StatType), fields[9]);
-                }
+                ReferencedStatType = Enum.TryParse<StatType>(fields[8], out var type)
+                    ? type : StatType.NONE;
             }
         }
 

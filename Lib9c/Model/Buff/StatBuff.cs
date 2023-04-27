@@ -34,7 +34,7 @@ namespace Nekoyume.Model.Buff
         {
             var value = CustomField.HasValue ?
                 CustomField.Value.BuffValue :
-                RowData.BaseValue;
+                RowData.Value;
 
             return new StatModifier(
                 RowData.StatType,

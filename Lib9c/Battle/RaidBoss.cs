@@ -58,6 +58,7 @@ namespace Nekoyume.Model
         {
             var pattern = PatternRowData.Patterns.First(x => x.Wave == _wave);
             var dmg = (int)(ATK * 0.3m);
+            bool isBuff;
 
             foreach (var id in pattern.SkillIds)
             {
@@ -66,7 +67,11 @@ namespace Nekoyume.Model
                     throw new SheetRowNotFoundException(nameof(SkillSheet), id);
                 }
 
-                var skill = SkillFactory.Get(skillRow, dmg, 100);
+                isBuff =
+                    skillRow.SkillCategory == SkillCategory.Buff ||
+                    skillRow.SkillCategory == SkillCategory.Debuff;
+
+                var skill = SkillFactory.Get(skillRow, !isBuff ? dmg : 0, 100);
                 _orderedSkills.Add(skill);
             }
 
@@ -77,7 +82,11 @@ namespace Nekoyume.Model
                 throw new SheetRowNotFoundException(nameof(SkillSheet), enrageSkillId);
             }
 
-            var enrageSkill = SkillFactory.Get(enrageSkillRow, dmg, 100);
+            isBuff =
+                enrageSkillRow.SkillCategory == SkillCategory.Buff ||
+                enrageSkillRow.SkillCategory == SkillCategory.Debuff;
+
+            var enrageSkill = SkillFactory.Get(enrageSkillRow, !isBuff ? dmg : 0, 100);
             _enrageSkill = enrageSkill;
         }
 
@@ -89,7 +98,7 @@ namespace Nekoyume.Model
                 this,
                 Simulator.WaveTurn,
                 BuffFactory.GetBuffs(
-                    ATK,
+                    Stats,
                     skill,
                     Simulator.SkillBuffSheet,
                     Simulator.StatBuffSheet,
@@ -130,7 +139,7 @@ namespace Nekoyume.Model
                 this,
                 Simulator.WaveTurn,
                 BuffFactory.GetBuffs(
-                    ATK,
+                    Stats,
                     _enrageSkill,
                     Simulator.SkillBuffSheet,
                     Simulator.StatBuffSheet,
