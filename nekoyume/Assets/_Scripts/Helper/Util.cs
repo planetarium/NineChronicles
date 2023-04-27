@@ -27,18 +27,18 @@ namespace Nekoyume.Helper
         private const string StoredSlotIndex = "AutoSelectedSlotIndex_";
         private static readonly List<int> CrystalEquipmentRecipes = new() { 158, 159, 160 };
 
-        public static string GetBlockToTime(long block, int? secondsPerBlock = null)
+        public static string GetBlockToTime(long block, int secondsPerBlock = 0)
         {
             if (block < 0)
             {
                 return string.Empty;
             }
 
-            if(secondsPerBlock is null or 0)
+            if(secondsPerBlock == 0)
             {
-                secondsPerBlock = LiveAssetManager.instance.GameConfig.SecondsPerBlock;
+                secondsPerBlock = LiveAssetManager.instance.GameConfig?.SecondsPerBlock ?? 0;
             }
-            var remainSecond = block * secondsPerBlock.Value;
+            var remainSecond = block * secondsPerBlock;
             var timeSpan = TimeSpan.FromSeconds(remainSecond);
 
             var sb = new StringBuilder();
