@@ -92,7 +92,7 @@ namespace Nekoyume.Model.Buff
             ActionBuffSheet actionBuffSheet)
         {
             var buffs = new List<Buff>();
-            var overrideBuff = skill is BuffSkill && skill.Power > 0;
+            var extraValueBuff = skill is BuffSkill && skill.Power > 0;
 
             if (skillBuffSheet.TryGetValue(skill.SkillRow.Id, out var skillStatBuffRow))
             {
@@ -103,24 +103,24 @@ namespace Nekoyume.Model.Buff
 
                     var customField = skill.CustomField;
                     if (!customField.HasValue &&
-                        overrideBuff)
+                        extraValueBuff)
                     {
-                        int power;
+                        int additionalPower;
                         if (buffRow.ReferencedStatType != StatType.NONE)
                         {
                             var multiplier = skill.Power / 10000m;
-                            power = (int)Math.Round(
+                            additionalPower = (int)Math.Round(
                                 stats.GetStat(buffRow.ReferencedStatType) * multiplier);
                         }
                         else
                         {
-                            power = skill.Power;
+                            additionalPower = skill.Power;
                         }
                         
                         customField = new SkillCustomField()
                         {
                             BuffDuration = buffRow.Duration,
-                            BuffValue = power,
+                            BuffValue = buffRow.Value + additionalPower,
                         };
                     }
 
