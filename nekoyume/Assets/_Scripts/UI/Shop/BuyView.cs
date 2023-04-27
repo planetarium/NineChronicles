@@ -126,6 +126,70 @@ namespace Nekoyume
                 },
             };
 
+        private readonly Dictionary<ItemSubTypeFilter, List<ShopSortFilter>> _toggleSortFilters =
+            new()
+            {
+                {
+                    ItemSubTypeFilter.Equipment, new List<ShopSortFilter>()
+                    {
+                        ShopSortFilter.CP,
+                        ShopSortFilter.Price,
+                        ShopSortFilter.Class,
+                        ShopSortFilter.Crystal,
+                        ShopSortFilter.CrystalPerPrice,
+                        ShopSortFilter.EquipmentLevel,
+                        ShopSortFilter.OptionCount,
+                    }
+                },
+                {
+                    ItemSubTypeFilter.Food, new List<ShopSortFilter>()
+                    {
+                        ShopSortFilter.CP,
+                        ShopSortFilter.Price,
+                        ShopSortFilter.Class,
+                        ShopSortFilter.Crystal,
+                        ShopSortFilter.CrystalPerPrice,
+                        ShopSortFilter.EquipmentLevel,
+                        ShopSortFilter.OptionCount,
+                    }
+                },
+                {
+                    ItemSubTypeFilter.Materials, new List<ShopSortFilter>()
+                    {
+                        ShopSortFilter.Price,
+                        ShopSortFilter.UnitPrice,
+                    }
+                },
+                {
+                    ItemSubTypeFilter.Costume, new List<ShopSortFilter>()
+                    {
+                        ShopSortFilter.CP,
+                        ShopSortFilter.Price,
+                        ShopSortFilter.Class,
+                        ShopSortFilter.Crystal,
+                        ShopSortFilter.CrystalPerPrice,
+                        ShopSortFilter.EquipmentLevel,
+                        ShopSortFilter.OptionCount,
+                    }
+                },
+                {
+                    ItemSubTypeFilter.Stones, new List<ShopSortFilter>()
+                    {
+                        ShopSortFilter.Price,
+                        ShopSortFilter.UnitPrice
+                    }
+                },
+            };
+
+        private readonly Dictionary<ItemSubTypeFilter, int> _toggleSortFilterIndex = new()
+        {
+            { ItemSubTypeFilter.Equipment, 0 },
+            { ItemSubTypeFilter.Food, 0 },
+            { ItemSubTypeFilter.Materials, 0 },
+            { ItemSubTypeFilter.Costume, 0 },
+            { ItemSubTypeFilter.Stones, 0 },
+        };
+
         private readonly List<ShopItem> _selectedItems = new();
         private readonly List<int> _itemIds = new();
         private readonly List<int> _runeIds = new();
@@ -250,9 +314,11 @@ namespace Nekoyume
                         return;
                     }
                     _selectedSubTypeFilter.Value = _toggleSubTypes[toggleType].First();
-                    _selectedSortFilter.Value = _selectedSubTypeFilter.Value
-                        is ItemSubTypeFilter.RuneStone or ItemSubTypeFilter.PetSoulStone
-                        ? ShopSortFilter.Price : ShopSortFilter.CP;
+
+                    var itemTypeFilter = _selectedSubTypeFilter.Value.ToItemTypeFilter();
+                    _selectedSortFilter.Value = _toggleSortFilters[itemTypeFilter].First();
+                    _toggleSortFilterIndex[itemTypeFilter] = 0;
+
                     toggleDropdown.items.First().isOn = true;
                     _page.SetValueAndForceNotify(0);
                 });
@@ -267,10 +333,12 @@ namespace Nekoyume
                     var subToggleType = subTypes[subIndex];
                     item.onClickToggle.AddListener(() =>
                     {
-                        _selectedSortFilter.Value = subToggleType
-                            is ItemSubTypeFilter.RuneStone or ItemSubTypeFilter.PetSoulStone
-                            ? ShopSortFilter.Price : ShopSortFilter.CP;
                         _selectedSubTypeFilter.Value = subToggleType;
+
+                        var itemTypeFilter = _selectedSubTypeFilter.Value.ToItemTypeFilter();
+                        _selectedSortFilter.Value = _toggleSortFilters[itemTypeFilter].First();
+                        _toggleSortFilterIndex[itemTypeFilter] = 0;
+
                         _page.SetValueAndForceNotify(0);
                     });
                     item.onClickToggle.AddListener(AudioController.PlayClick);
@@ -279,18 +347,14 @@ namespace Nekoyume
 
             sortButton.onClick.AddListener(() =>
             {
-                var count = Enum.GetNames(typeof(ShopSortFilter)).Length;
-                switch (_selectedSubTypeFilter.Value)
-                {
-                    case ItemSubTypeFilter.RuneStone:
-                    case ItemSubTypeFilter.PetSoulStone:
-                        _selectedSortFilter.Value = ShopSortFilter.Price;
-                        break;
+                var itemTypeFilter = _selectedSubTypeFilter.Value.ToItemTypeFilter();
+                var sortFilters = _toggleSortFilters[itemTypeFilter];
+                var index = _toggleSortFilterIndex[itemTypeFilter];
 
-                    default:
-                        _selectedSortFilter.Value = (int)_selectedSortFilter.Value < count - 1 ? _selectedSortFilter.Value + 1 : 0;
-                        break;
-                }
+                var nextIndex = (index + 1) % sortFilters.Count;
+                _toggleSortFilterIndex[itemTypeFilter] = nextIndex;
+                _selectedSortFilter.Value = sortFilters[nextIndex];
+
                 _page.SetValueAndForceNotify(0);
             });
 
@@ -569,6 +633,11 @@ namespace Nekoyume
             if (_resetAnimator.isActiveAndEnabled)
             {
                 _resetAnimator.Play(_hashDisabled);
+            }
+
+            foreach (var key in _toggleTypes)
+            {
+                _toggleSortFilterIndex[key] = 0;
             }
 
             _page.SetValueAndForceNotify(0);
