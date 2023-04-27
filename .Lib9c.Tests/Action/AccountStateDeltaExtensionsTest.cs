@@ -8,6 +8,7 @@ namespace Lib9c.Tests.Action
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Crypto;
+    using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Helper;
     using Nekoyume.Model.Coupons;
@@ -153,6 +154,33 @@ namespace Lib9c.Tests.Action
                 Bencodex.Types.List.Empty
                     .Add(coupon3.Serialize()),
                 states.GetState(agentAddress2.Derive(SerializeKeys.CouponWalletKey)));
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void Mead(bool mintAgent)
+        {
+            var valkyrie = new PrivateKey().ToAddress();
+            var agentContractAddress = _agentAddress.Derive(nameof(BringEinheri));
+            var mead = Currencies.Mead;
+            var price = 1 * mead;
+            IAccountStateDelta states = new State()
+                .SetState(
+                    agentContractAddress,
+                    List.Empty.Add(valkyrie.Serialize()).Add(true.Serialize()))
+                .MintAsset(valkyrie, price);
+
+            var expectedValkyrieBalance = mintAgent ? price : 0 * mead;
+
+            if (mintAgent)
+            {
+                states = states.MintAsset(_agentAddress, price);
+            }
+
+            states = states.Mead(_agentAddress, 1);
+            Assert.Equal(expectedValkyrieBalance, states.GetBalance(valkyrie, mead));
+            Assert.Equal(price, states.GetBalance(_agentAddress, mead));
         }
     }
 }

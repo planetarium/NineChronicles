@@ -36,6 +36,8 @@ namespace Lib9c
             0,
             minters: null);
 
+        public static readonly Currency Mead = Currency.Legacy("Mead", 18, null);
+
         public static Currency GetRune(string? ticker) =>
             string.IsNullOrEmpty(ticker)
                 ? throw new ArgumentNullException(nameof(ticker))

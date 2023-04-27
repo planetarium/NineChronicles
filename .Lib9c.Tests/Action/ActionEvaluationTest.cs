@@ -89,6 +89,9 @@ namespace Lib9c.Tests.Action
         [InlineData(typeof(ReRegisterProduct))]
         [InlineData(typeof(CancelProductRegistration))]
         [InlineData(typeof(BuyProduct))]
+        [InlineData(typeof(BringEinheri))]
+        [InlineData(typeof(TakeSides))]
+        [InlineData(typeof(ReleaseEinheri))]
         public void Serialize_With_MessagePack(Type actionType)
         {
             var action = GetAction(actionType);
@@ -435,6 +438,18 @@ namespace Lib9c.Tests.Action
                             TradableId = Guid.NewGuid(),
                         },
                     },
+                },
+                BringEinheri _ => new BringEinheri
+                {
+                    EinheriAddress = new PrivateKey().ToAddress(),
+                },
+                TakeSides _ => new TakeSides
+                {
+                    ValkyrieAddress = new PrivateKey().ToAddress(),
+                },
+                ReleaseEinheri _ => new ReleaseEinheri
+                {
+                    EinheriAddress = new PrivateKey().ToAddress(),
                 },
                 _ => throw new InvalidCastException(),
             };
