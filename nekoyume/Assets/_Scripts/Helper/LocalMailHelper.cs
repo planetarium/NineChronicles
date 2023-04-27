@@ -15,7 +15,9 @@ namespace Nekoyume.Helper
         {
             _localMailDictionary = new Dictionary<Address, List<Mail>>();
             _disposables = new List<IDisposable>();
-            _localMailBox = new ReactiveProperty<MailBox>();
+            _localMailBox = new ReactiveProperty<MailBox>(null);
+            Event.OnUpdateAddresses.AsObservable()
+                .Subscribe(_ => Initialize(States.Instance.CurrentAvatarState.address));
         }
 
         private readonly Dictionary<Address, List<Mail>> _localMailDictionary;
@@ -25,28 +27,31 @@ namespace Nekoyume.Helper
 
         public static LocalMailHelper Instance => _instance ??= new LocalMailHelper();
         public IObservable<MailBox> ObservableMailBox => _localMailBox.ObserveOnMainThread();
-        public MailBox MailBox => _localMailBox.Value ?? States.Instance.CurrentAvatarState?.mailBox;
+        public MailBox MailBox => _localMailBox.Value ??= States.Instance.CurrentAvatarState?.mailBox;
 
-        public void Initialize(Address address)
+        public void Add(Address address, Mail mail)
+        {
+            Initialize(address);
+
+            _localMailDictionary[address].Add(mail);
+            UpdateLocalMailBox(States.Instance.CurrentAvatarState.mailBox);
+        }
+
+        private void Initialize(Address address)
         {
             if (_localMailDictionary.ContainsKey(address))
             {
                 return;
             }
 
-            ReactiveAvatarState.MailBox.Subscribe(UpdateLocalMailBox).AddTo(_disposables);
-            Event.OnUpdateAddresses.AsObservable().First().Subscribe(_ => CleanupAndDispose());
-        }
-
-        public void Add(Address address, Mail mail)
-        {
-            if (!_localMailDictionary.ContainsKey(address))
-            {
-                _localMailDictionary.Add(address, new List<Mail>());
-            }
-
-            _localMailDictionary[address].Add(mail);
-            UpdateLocalMailBox(States.Instance.CurrentAvatarState.mailBox);
+            _localMailDictionary.Add(address, new List<Mail>());
+            ReactiveAvatarState.MailBox
+                .Subscribe(UpdateLocalMailBox)
+                .AddTo(_disposables);
+            Event.OnUpdateAddresses.AsObservable()
+                .First()
+                .Subscribe(_ => CleanupAndDispose())
+                .AddTo(_disposables);
         }
 
         private void CleanupAndDispose()
