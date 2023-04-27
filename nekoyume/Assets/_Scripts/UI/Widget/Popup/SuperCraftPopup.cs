@@ -136,7 +136,7 @@ namespace Nekoyume.UI
                 : null;
             skillName.text = L10nManager.Localize($"SKILL_NAME_{skillOptionRow.SkillId}");
             skillPowerText.text = isBuffSkill
-                ? $"{L10nManager.Localize("UI_SKILL_EFFECT")}: {buffRow.StatModifier}"
+                ? $"{L10nManager.Localize("UI_SKILL_EFFECT")}: {buffRow.EffectToString()}"
                 : $"{L10nManager.Localize("UI_SKILL_POWER")}: {skillOptionRow.SkillDamageMax.ToString()}";
             skillChanceText.text =
                 $"{L10nManager.Localize("UI_SKILL_CHANCE")}: {skillOptionRow.SkillChanceMin.NormalizeFromTenThousandths() * 100:0%}";

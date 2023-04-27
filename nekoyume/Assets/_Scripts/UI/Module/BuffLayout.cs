@@ -22,7 +22,7 @@ namespace Nekoyume.UI.Module
                 return false;
             }
 
-            return stat.RowData.StatModifier.StatType == statType;
+            return stat.RowData.StatType == statType;
         });
 
         public bool HasBuff(StatType statType) => buffData.Values.Any(buff =>
@@ -32,7 +32,7 @@ namespace Nekoyume.UI.Module
                 return false;
             }
 
-            return stat.RowData.StatModifier.StatType == statType;
+            return stat.RowData.StatType == statType;
         });
 
         public void Awake()

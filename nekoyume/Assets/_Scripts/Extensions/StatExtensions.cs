@@ -1,3 +1,4 @@
+using mixpanel;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 using System;
@@ -54,6 +55,13 @@ namespace Nekoyume
                 default:
                     throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
             }
+        }
+
+        public static string EffectToString(this StatBuffSheet.Row row)
+        {
+            return (row.Value >= 0 ? "+" : string.Empty) +
+                row.Value +
+                (row.OperationType == StatModifier.OperationType.Percentage ? "%" : string.Empty);
         }
     }
 }
