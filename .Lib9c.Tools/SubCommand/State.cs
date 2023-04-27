@@ -113,7 +113,7 @@ namespace Lib9c.Tools.SubCommand
                     block.Index,
                     block.Hash
                 );
-                IReadOnlyList<ActionEvaluation> delta;
+                IReadOnlyList<IActionEvaluation> delta;
                 HashDigest<SHA256> stateRootHash = block.Index < 1
                     ? BlockChain<NCAction>.DetermineGenesisStateRootHash(
                         preEvalBlock,
@@ -427,7 +427,7 @@ namespace Lib9c.Tools.SubCommand
         }
 
         private static ImmutableDictionary<string, IValue> GetTotalDelta(
-            IReadOnlyList<ActionEvaluation> actionEvaluations,
+            IReadOnlyList<IActionEvaluation> actionEvaluations,
             Func<Address, string> toStateKey,
             Func<(Address, Currency), string> toFungibleAssetKey,
             Func<Currency, string> toTotalSupplyKey,

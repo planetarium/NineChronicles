@@ -115,7 +115,7 @@ namespace Lib9c.Benchmarks
                     block.Transactions.Count()
                 );
 
-                chain.DetermineBlockStateRootHash(block, out IReadOnlyList<ActionEvaluation> blockEvals);
+                chain.DetermineBlockStateRootHash(block, out IReadOnlyList<IActionEvaluation> blockEvals);
                 SetStates(
                     chain.Id,
                     store,
@@ -146,7 +146,7 @@ namespace Lib9c.Benchmarks
             IStore store,
             IStateStore stateStore,
             Block<NCAction> block,
-            IReadOnlyList<ActionEvaluation> actionEvaluations,
+            IReadOnlyList<IActionEvaluation> actionEvaluations,
             bool buildStateReferences
         )
         {
@@ -168,7 +168,7 @@ namespace Lib9c.Benchmarks
 
         // Copied from ActionEvaluationsExtensions.GetTotalDelta().
         private static ImmutableDictionary<string, IValue> GetTotalDelta(
-            IReadOnlyList<ActionEvaluation> actionEvaluations,
+            IReadOnlyList<IActionEvaluation> actionEvaluations,
             Func<Address, string> toStateKey,
             Func<(Address, Currency), string> toFungibleAssetKey)
         {
