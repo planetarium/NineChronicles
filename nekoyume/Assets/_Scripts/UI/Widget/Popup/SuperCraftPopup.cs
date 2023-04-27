@@ -16,6 +16,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.Model.Skill;
     using UniRx;
     public class SuperCraftPopup : PopupWidget
     {
@@ -130,7 +131,10 @@ namespace Nekoyume.UI
                 .Select(x => (ratio: x.Ratio, option: optionSheet[x.Id]))
                 .FirstOrDefault(tuple => tuple.option.SkillId != 0)
                 .option;
-            var isBuffSkill = skillOptionRow.SkillDamageMax == 0;
+            var skillRow = sheets.SkillSheet[skillOptionRow.SkillId];
+            var isBuffSkill =
+                skillRow.SkillType == SkillType.Buff ||
+                skillRow.SkillType == SkillType.Debuff;
             var buffRow = isBuffSkill
                 ? sheets.StatBuffSheet[sheets.SkillBuffSheet[skillOptionRow.SkillId].BuffIds.First()]
                 : null;

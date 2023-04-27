@@ -63,12 +63,12 @@ namespace Nekoyume
 
             if (power > 0)
             {
-                var sign = power >= 0 ? "+ " : "-";
+                var sign = power >= 0 ? "+" : "-";
                 if (row.ReferencedStatType != StatType.NONE)
                 {
-                    var multiplierText = (Math.Abs(power) / 10000m).ToString("#.##");
+                    var multiplierText = (Math.Abs(power) / 10000m).ToString("0.##");
                     
-                    valueText = $"({valueText} {sign} {multiplierText} * {row.ReferencedStatType})";
+                    valueText = $"({valueText} {sign} {multiplierText} {row.ReferencedStatType})";
                 }
                 else
                 {

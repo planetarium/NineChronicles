@@ -3,6 +3,7 @@ using System.Linq;
 using Nekoyume.L10n;
 using Nekoyume.Model.Buff;
 using Nekoyume.Model.Skill;
+using Nekoyume.State;
 using Nekoyume.TableData;
 using UniRx;
 using UnityEngine;
@@ -23,8 +24,9 @@ namespace Nekoyume.UI.Model
             if (skill is BuffSkill buffSkill)
             {
                 var sheets = Game.Game.instance.TableSheets;
+                var stat = Game.Game.instance.Stage.GetPlayer().Model.Stats;
                 var buffs = BuffFactory.GetBuffs(
-                    default,
+                    stat,
                     skill,
                     sheets.SkillBuffSheet,
                     sheets.StatBuffSheet,
@@ -47,8 +49,9 @@ namespace Nekoyume.UI.Model
         {
             var powerValue = string.Empty;
             var sheets = Game.Game.instance.TableSheets;
+            var stat = Game.Game.instance.Stage.GetPlayer().Model.Stats;
             var buffs = BuffFactory.GetBuffs(
-                default,
+                stat,
                 skill,
                 sheets.SkillBuffSheet,
                 sheets.StatBuffSheet,
