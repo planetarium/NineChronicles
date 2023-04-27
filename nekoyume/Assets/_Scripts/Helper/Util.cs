@@ -34,7 +34,10 @@ namespace Nekoyume.Helper
                 return string.Empty;
             }
 
-            secondsPerBlock ??= LiveAssetManager.instance.GameConfig.SecondsPerBlock;
+            if(secondsPerBlock is null or 0)
+            {
+                secondsPerBlock = LiveAssetManager.instance.GameConfig.SecondsPerBlock;
+            }
             var remainSecond = block * secondsPerBlock.Value;
             var timeSpan = TimeSpan.FromSeconds(remainSecond);
 
