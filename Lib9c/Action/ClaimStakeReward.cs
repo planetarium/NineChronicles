@@ -22,7 +22,7 @@ namespace Nekoyume.Action
     {
         private const string ActionTypeText = "claim_stake_reward3";
 
-        private const string StakeRegularRewardSheetV1Data =
+        public const string StakeRegularRewardSheetV1Data =
             @"level,required_gold,item_id,rate,type
 1,50,400000,10,Item
 1,50,500000,800,Item
@@ -40,7 +40,7 @@ namespace Nekoyume.Action
 5,500000,500000,800,Item
 5,500000,20001,6000,Rune";
 
-        private const string StakeRegularFixedRewardSheetV1Data =
+        public const string StakeRegularFixedRewardSheetV1Data =
             @"level,required_gold,item_id,count
 1,50,500000,1
 2,500,500000,2
