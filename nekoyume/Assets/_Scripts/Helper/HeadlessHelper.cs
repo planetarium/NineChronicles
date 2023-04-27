@@ -4,9 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
-using Libplanet;
+using JetBrains.Annotations;
 using Libplanet.Crypto;
-using Nekoyume.BlockChain;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -47,9 +46,8 @@ namespace Nekoyume.Helper
             return true;
         }
 
-        public static void RunLocalHeadless()
+        public static void RunLocalHeadless([CanBeNull] string pkHex)
         {
-            var pkHex = ByteUtil.Hex(Agent.ProposerKey.ByteArray);
             try
             {
                 Debug.Log(Path.Combine(_genesisPath, "genesis-block"));

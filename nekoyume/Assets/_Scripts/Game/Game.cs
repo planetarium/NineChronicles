@@ -193,11 +193,16 @@ namespace Nekoyume.Game
             // Local Headless
             if (useLocalHeadless && HeadlessHelper.CheckHeadlessSettings())
             {
-                headlessThread = new Thread(() => HeadlessHelper.RunLocalHeadless());
+                string? initialValidator = null;
+                if (PlayerPrefs.HasKey("initialValidator"))
+                {
+                    initialValidator = PlayerPrefs.GetString("initialValidator");
+                }
+                headlessThread = new Thread(() => HeadlessHelper.RunLocalHeadless(initialValidator));
                 headlessThread.Start();
             }
 
-            if (useLocalHeadless || _commandLineOptions.RpcClient)
+            if (useLocalHeadless)
             {
                 Agent = GetComponent<RPCAgent>();
                 SubscribeRPCAgent();
