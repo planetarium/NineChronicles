@@ -195,12 +195,9 @@ namespace Planetarium.Nekoyume.Editor
                     $"run -c DevEx --project NineChronicles.Headless.Executable -C appsettings.local.json --genesis-block-path {Path.Combine(_genesisPath, "genesis-block")} --store-path {Path.Combine(_docsRoot, "planetarium", _storeName)} --store-type memory",
             };
 
-            if (PlayerPrefs.HasKey("initialValidator"))
-            {
-                var pkHex = ByteUtil.Hex(Agent.ProposerKey.ByteArray);
-                startInfo.Arguments +=
-                    $" --miner-private-key {pkHex} --consensus-private-key {pkHex} --consensus-seed {Agent.ProposerKey.PublicKey},localhost,60000";
-            }
+            var pkHex = ByteUtil.Hex(Agent.ProposerKey.ByteArray);
+            startInfo.Arguments +=
+                $" --miner-private-key {pkHex} --consensus-private-key {pkHex} --consensus-seed {Agent.ProposerKey.PublicKey},localhost,60000";
 
             Debug.Log(startInfo.Arguments);
             startInfo.WorkingDirectory = _headlessPath;
