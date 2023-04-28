@@ -92,7 +92,7 @@ namespace Lib9c.Tests.Action
                     Random = new TestRandom(randomSeed),
                 });
 
-                var runeCurrency = RuneHelper.ToCurrency(tableSheets.RuneSheet[10001], 0, null);
+                var runeCurrency = RuneHelper.ToCurrency(tableSheets.RuneSheet[10001]);
                 Assert.Equal(1 * runeCurrency, nextState.GetBalance(avatarAddress, runeCurrency));
                 Assert.Equal(100 * CrystalCalculator.CRYSTAL, nextState.GetBalance(agentAddress, CrystalCalculator.CRYSTAL));
                 var nextRewardInfo = new WorldBossKillRewardRecord((List)nextState.GetState(worldBossKillRewardRecordAddress));

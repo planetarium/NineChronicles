@@ -69,13 +69,13 @@ namespace Nekoyume.TableData
         {
         }
 
-        public Row FindRow(int ranking, int rate)
+        public Row FindRow(int bossId, int ranking, int rate)
         {
             if (ranking <= 0 && rate <= 0)
             {
                 throw new ArgumentException($"ranking or rate must be greater than 0. ranking: {ranking}, rate: {rate}");
             }
-            return OrderedList.LastOrDefault(r => r.RankingMin <= ranking && ranking <= r.RankingMax) ?? OrderedList.LastOrDefault(r => r.RateMin <= rate && rate <= r.RateMax);
+            return OrderedList.LastOrDefault(r => r.BossId == bossId && r.RankingMin <= ranking && ranking <= r.RankingMax) ?? OrderedList.LastOrDefault(r => r.BossId == bossId && r.RateMin <= rate && rate <= r.RateMax);
         }
     }
 }

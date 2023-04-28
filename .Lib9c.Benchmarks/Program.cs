@@ -115,8 +115,7 @@ namespace Lib9c.Benchmarks
                     block.Transactions.Count()
                 );
 
-                IEnumerable<ActionEvaluation> blockEvals =
-                chain.ExecuteActions(block);
+                chain.DetermineBlockStateRootHash(block, out IReadOnlyList<ActionEvaluation> blockEvals);
                 SetStates(
                     chain.Id,
                     store,

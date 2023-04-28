@@ -70,20 +70,15 @@ namespace Nekoyume.Model.Item
 
         public override IValue Serialize()
         {
-#pragma warning disable LAA1002
-            var innerDictionary = new Dictionary<IKey, IValue>
-            {
-                [(Text) "equipped"] = equipped.Serialize(),
-                [(Text) "spine_resource_path"] = SpineResourcePath.Serialize(),
-                [(Text) LegacyCostumeItemIdKey] = ItemId.Serialize()
-            };
-            if (RequiredBlockIndex > 0)
-            {
-                innerDictionary.Add((Text) RequiredBlockIndexKey, RequiredBlockIndex.Serialize());
-            }
-            return new Dictionary(innerDictionary.Union((Dictionary) base.Serialize()));
+            var innerDictionary = ((Dictionary)base.Serialize())
+                .Add("equipped", equipped.Serialize())
+                .Add("spine_resource_path", SpineResourcePath.Serialize())
+                .Add(LegacyCostumeItemIdKey, ItemId.Serialize());
+
+            return RequiredBlockIndex > 0
+                ? innerDictionary.Add(RequiredBlockIndexKey, RequiredBlockIndex.Serialize())
+                : innerDictionary;
         }
-#pragma warning restore LAA1002
 
         protected bool Equals(Costume other)
         {

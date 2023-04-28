@@ -14,7 +14,7 @@ namespace Lib9c.Tests.Action
     using Xunit.Abstractions;
     using static Lib9c.SerializeKeys;
 
-    public class ClaimStakeRewardTest
+    public class ClaimStakeReward2Test
     {
         private readonly IAccountStateDelta _initialState;
         private readonly Currency _currency;
@@ -24,7 +24,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _avatarAddress;
         private readonly Address _avatarAddressForBackwardCompatibility;
 
-        public ClaimStakeRewardTest(ITestOutputHelper outputHelper)
+        public ClaimStakeReward2Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -102,8 +102,8 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Serialization()
         {
-            var action = new ClaimStakeReward(_avatarAddress);
-            var deserialized = new ClaimStakeReward();
+            var action = new ClaimStakeReward2(_avatarAddress);
+            var deserialized = new ClaimStakeReward2();
             deserialized.LoadPlainValue(action.PlainValue);
             Assert.Equal(action.AvatarAddress, deserialized.AvatarAddress);
         }
@@ -127,12 +127,12 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_Throw_ActionObsoletedException()
         {
-            var action = new ClaimStakeReward(_avatarAddress);
+            var action = new ClaimStakeReward2(_avatarAddress);
             Assert.Throws<ActionObsoletedException>(() => action.Execute(new ActionContext
             {
                 PreviousStates = _initialState,
                 Signer = _signerAddress,
-                BlockIndex = ClaimStakeReward.ObsoletedIndex + 1,
+                BlockIndex = ClaimStakeReward2.ObsoletedIndex + 1,
             }));
         }
 
@@ -155,7 +155,7 @@ namespace Lib9c.Tests.Action
                 state = state.SetState(Addresses.GetSheetAddress<StakeRegularRewardSheet>(), sheet);
             }
 
-            var action = new ClaimStakeReward(avatarAddress);
+            var action = new ClaimStakeReward2(avatarAddress);
             var states = action.Execute(new ActionContext
             {
                 PreviousStates = state,

@@ -90,10 +90,7 @@ namespace Lib9c.DevExtensions.Tests.Action
             foreach (var rune in faucetRuneInfos)
             {
                 var expectedRune = RuneHelper.ToCurrency(
-                    _runeSheet.OrderedList.First(r => r.Id == rune.RuneId),
-                    0,
-                    null
-                );
+                    _runeSheet.OrderedList.First(r => r.Id == rune.RuneId));
                 Assert.Equal(
                     rune.Amount * expectedRune,
                     states.GetBalance(_avatarAddress, expectedRune)

@@ -11,16 +11,16 @@ namespace Nekoyume.Action.Factory
             long blockIndex,
             Address avatarAddress)
         {
-            if (blockIndex > ClaimStakeReward.ObsoletedIndex)
+            if (blockIndex > ClaimStakeReward2.ObsoletedIndex)
             {
-                return new ClaimStakeReward3(avatarAddress);
+                return new ClaimStakeReward(avatarAddress);
             }
 
             // FIXME: This method should consider the starting block index of
             //        `claim_stake_reward2`. And if the `blockIndex` is less than
             //        the starting block index, it should throw an exception.
             // default: Version 2
-            return new ClaimStakeReward(avatarAddress);
+            return new ClaimStakeReward2(avatarAddress);
         }
 
         public static IClaimStakeReward CreateByVersion(
@@ -28,8 +28,8 @@ namespace Nekoyume.Action.Factory
             Address avatarAddress) => version switch
         {
             1 => new ClaimStakeReward1(avatarAddress),
-            2 => new ClaimStakeReward(avatarAddress),
-            3 => new ClaimStakeReward3(avatarAddress),
+            2 => new ClaimStakeReward2(avatarAddress),
+            3 => new ClaimStakeReward(avatarAddress),
             _ => throw new ArgumentOutOfRangeException(
                 $"Invalid version: {version}"),
         };
