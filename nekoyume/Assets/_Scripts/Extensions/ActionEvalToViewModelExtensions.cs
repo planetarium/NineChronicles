@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Bencodex.Types;
 using Lib9c.Renderers;
 using Nekoyume.Action;
 using Nekoyume.Battle;
@@ -14,20 +15,35 @@ namespace Nekoyume
 {
     public static class ActionEvalToViewModelExtensions
     {
+        /// <summary>
+        /// Simulate HackAndSlash with action evaluation.
+        /// </summary>
+        /// <param name="eval"></param>
+        /// <param name="avatarState"></param>
+        /// <param name="runeStates"></param>
+        /// <param name="skillsOnWaveStart"></param>
+        /// <param name="sheets"></param>
+        /// <param name="outSimulator">First simulator or first winning simulator.</param>
+        /// <param name="outAvatarForRendering">The pre-simulate state of the first winning avatar.
+        /// If it is not null, <see cref="outSimulator"></see> must be first winning simulator.</param>
+        /// <returns>Return summary of all Simulating as <see cref="BattleResultPopup.Model"/>.</returns>
         public static BattleResultPopup.Model GetHackAndSlashReward(
             this ActionEvaluation<HackAndSlash> eval,
             AvatarState avatarState,
             List<RuneState> runeStates,
             List<Model.Skill.Skill> skillsOnWaveStart,
             TableSheets sheets,
-            out StageSimulator firstStageSimulator)
+            out StageSimulator outSimulator,
+            out AvatarState outAvatarForRendering)
         {
-            firstStageSimulator = null;
+            outSimulator = null;
+            outAvatarForRendering = null;
             var model = new BattleResultPopup.Model();
             var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
             var stageRow = sheets.StageSheet[eval.Action.StageId];
             for (var i = 0; i < eval.Action.TotalPlayCount; i++)
             {
+                var prevSerializedAvatarState = (Dictionary)avatarState.Serialize();
                 var prevExp = avatarState.exp;
                 var simulator = new StageSimulator(
                     random,
@@ -44,11 +60,16 @@ namespace Nekoyume
                     sheets.GetStageSimulatorSheets(),
                     sheets.EnemySkillSheet,
                     sheets.CostumeStatSheet,
-                    StageSimulatorV2.GetWaveRewards(random, stageRow, sheets.MaterialItemSheet));
+                    StageSimulator.GetWaveRewards(random, stageRow, sheets.MaterialItemSheet));
                 simulator.Simulate();
-
                 if (simulator.Log.IsClear)
                 {
+                    if (outAvatarForRendering is null)
+                    {
+                        outAvatarForRendering = new AvatarState(prevSerializedAvatarState);
+                        outSimulator = simulator;
+                    }
+
                     simulator.Player.worldInformation.ClearStage(
                         eval.Action.WorldId,
                         eval.Action.StageId,
@@ -59,7 +80,7 @@ namespace Nekoyume
                 }
 
                 avatarState.Update(simulator);
-                firstStageSimulator ??= simulator;
+                outSimulator ??= simulator;
                 model.Exp += simulator.Player.Exp.Current - prevExp;
                 model.ClearedCountForEachWaves[simulator.Log.clearedWaveNumber]++;
                 foreach (var (id, count) in simulator.ItemMap)

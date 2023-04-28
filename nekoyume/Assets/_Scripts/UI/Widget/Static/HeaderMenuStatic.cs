@@ -242,7 +242,7 @@ namespace Nekoyume.UI.Module
             _disposablesAtOnEnable.DisposeAllAndClear();
             ReactiveAvatarState.QuestList?.Subscribe(SubscribeAvatarQuestList)
                 .AddTo(_disposablesAtOnEnable);
-            ReactiveAvatarState.MailBox?.Subscribe(SubscribeAvatarMailBox)
+            LocalMailHelper.Instance.ObservableMailBox.Subscribe(SubscribeAvatarMailBox)
                 .AddTo(_disposablesAtOnEnable);
             ReactiveAvatarState.Inventory?.Subscribe(SubscribeInventory)
                 .AddTo(_disposablesAtOnEnable);

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Libplanet;
+using Nekoyume.Game;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
 
@@ -15,56 +15,73 @@ namespace Nekoyume.Helper
         {
             _localMailDictionary = new Dictionary<Address, List<Mail>>();
             _disposables = new List<IDisposable>();
+            _localMailBox = new ReactiveProperty<MailBox>(null);
+            Event.OnUpdateAddresses.AsObservable()
+                .Subscribe(_ => Initialize(States.Instance.CurrentAvatarState.address));
+            ReactiveAvatarState.MailBox.Subscribe(UpdateLocalMailBox);
         }
 
         private readonly Dictionary<Address, List<Mail>> _localMailDictionary;
         private readonly List<IDisposable> _disposables;
+        private readonly ReactiveProperty<MailBox> _localMailBox;
         private static LocalMailHelper _instance;
+        private MailBox _originalMailBox;
 
         public static LocalMailHelper Instance => _instance ??= new LocalMailHelper();
+        public IObservable<MailBox> ObservableMailBox => _localMailBox.ObserveOnMainThread();
+        public MailBox MailBox => _localMailBox.Value;
 
-        public void Initialize()
+        public void Add(Address address, Mail mail)
         {
-            if (_disposables.Any())
+            Initialize(address);
+
+            _localMailDictionary[address].Add(mail);
+            UpdateLocalMailBox(_originalMailBox);
+        }
+
+        private void Initialize(Address address)
+        {
+            if (_localMailDictionary.ContainsKey(address))
             {
                 return;
             }
 
-            ReactiveAvatarState.MailBox.Subscribe(mailBox =>
-            {
-                if (_localMailDictionary.TryGetValue(States.Instance.CurrentAvatarState.address,
-                        out var mails))
-                {
-                    foreach (var mail in mails.Where(mail => !mailBox.Contains(mail)))
-                    {
-                        // It works like `States.Instance.CurrentAvatarState.mailBox.Add(...)`
-                        mailBox.Add(mail);
-                    }
-                }
-            }).AddTo(_disposables);
+            _localMailDictionary.Add(address, new List<Mail>());
+            Event.OnUpdateAddresses.AsObservable()
+                .First()
+                .Subscribe(_ => CleanupAndDispose())
+                .AddTo(_disposables);
         }
 
-        public void Add(Address address, Mail mail, bool notifyUpdate = false)
+        private void CleanupAndDispose()
         {
-            if (!_localMailDictionary.ContainsKey(address))
-            {
-                _localMailDictionary.Add(address, new List<Mail>());
-            }
-
-            _localMailDictionary[address].Add(mail);
-            if (notifyUpdate)
-            {
-                ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
-            }
-        }
-
-        public void CleanupAndDispose(Address address)
-        {
-            _localMailDictionary[address].Clear();
+            _localMailDictionary.Clear();
             _disposables.DisposeAllAndClear();
         }
 
-        public bool TryGetAllLocalMail(Address address, out List<Mail> localMails) =>
-            _localMailDictionary.TryGetValue(address, out localMails);
+        private void UpdateLocalMailBox(MailBox mailBox)
+        {
+            _originalMailBox = mailBox;
+            var newMailBox = new MailBox();
+
+            if (_originalMailBox is not null)
+            {
+                foreach (var mail in _originalMailBox)
+                {
+                    newMailBox.Add(mail);
+                }
+            }
+
+            if (_localMailDictionary.TryGetValue(States.Instance.CurrentAvatarState.address,
+                    out var localMailList))
+            {
+                foreach (var mail in localMailList)
+                {
+                    newMailBox.Add(mail);
+                }
+            }
+
+            _localMailBox.SetValueAndForceNotify(newMailBox);
+        }
     }
 }

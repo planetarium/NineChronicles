@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Libplanet;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.LiveAsset;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;
@@ -173,10 +174,10 @@ namespace Nekoyume.UI
             _headerMenu.Show(assetVisibleState, showHeaderMenuAnimation);
         }
 
-        private async Task UpdateViewAsync(long currentBlockIndex
-            , bool forceUpdate = false
-            , bool ignoreHeaderMenuAnimation = false
-            , bool ignoreHeaderMenu = false)
+        private async Task UpdateViewAsync(long currentBlockIndex,
+            bool forceUpdate = false,
+            bool ignoreHeaderMenuAnimation = false,
+            bool ignoreHeaderMenu = false)
         {
             if (forceUpdate)
             {
@@ -231,8 +232,10 @@ namespace Nekoyume.UI
             }
 
             var raiderState = WorldBossStates.GetRaiderState(avatarAddress);
-            _headerMenu.WorldBossTickets.UpdateTicket(raiderState, currentBlockIndex);
-            UpdateRemainTimer(_period, currentBlockIndex);
+            var refillInterval = States.Instance.GameConfigState.DailyWorldBossInterval;
+            _headerMenu.WorldBossTickets.UpdateTicket(raiderState, currentBlockIndex, refillInterval);
+            var secondsPerBlock = LiveAssetManager.instance.GameConfig.SecondsPerBlock;
+            UpdateRemainTimer(_period, currentBlockIndex, secondsPerBlock);
             SetActiveQueryLoading(false);
         }
 
@@ -325,14 +328,14 @@ namespace Nekoyume.UI
             }
         }
 
-        private void UpdateRemainTimer((long, long) time, long current)
+        private void UpdateRemainTimer((long, long) time, long current, int secondsPerBlock)
         {
             var (begin, end) = time;
             var range = end - begin;
             var progress = current - begin;
             timerSlider.NormalizedValue = 1f - ((float)progress / range);
             timeBlock.SetTimeBlock($"{end - current:#,0}", Util.GetBlockToTime(end - current));
-            blocksAndDatesPeriod.Show(begin, end, current, DateTime.Now);
+            blocksAndDatesPeriod.Show(begin, end, current, secondsPerBlock, DateTime.Now);
         }
 
         private void ShowDetail(WorldBossDetail.ToggleType toggleType)

@@ -64,7 +64,7 @@ namespace Nekoyume.UI
             base.Awake();
             dccConnectButton.onClick.AddListener(() =>
             {
-                Find<DccSettingPopup>().ConnectDcc();
+                Find<ConfirmConnectPopup>().ShowConnectDcc();
             });
             collectionButton.onClick.AddListener(() =>
             {
@@ -85,7 +85,7 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Mileage);
-            connectedObject.SetActive(Dcc.instance.IsConnected.GetValueOrDefault());
+            connectedObject.SetActive(Dcc.instance.IsConnected);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Dcc);
             base.Show(ignoreShowAnimation);
         }

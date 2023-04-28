@@ -1,8 +1,10 @@
+#nullable enable
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
 using Bencodex.Types;
@@ -16,7 +18,7 @@ using MessagePack.Resolvers;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.Notice;
+using Nekoyume.Game.LiveAsset;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -31,8 +33,8 @@ using UnityEngine;
 using UnityEngine.Playables;
 using Menu = Nekoyume.UI.Menu;
 using Random = UnityEngine.Random;
-using RocksDbSharp;
-using UnityEngine.Android;
+using RocksDbSharp;  // Don't remove this line. It's for another platform.
+using UnityEngine.Android;  // Don't remove this line. It's for another platform.
 
 namespace Nekoyume.Game
 {
@@ -51,6 +53,13 @@ namespace Nekoyume.Game
         [SerializeField] private Lobby lobby;
 
         [SerializeField] private bool useSystemLanguage = true;
+
+        [SerializeField] private bool useLocalHeadless = false;
+
+        [SerializeField] private bool useLocalMarketService = false;
+
+        [SerializeField] private string marketDbConnectionString =
+            "Host=localhost;Username=postgres;Database=market";
 
         [SerializeField] private LanguageTypeReactiveProperty languageType = default;
 
@@ -116,7 +125,10 @@ namespace Nekoyume.Game
             Platform.GetStreamingAssetsPath("clo.json");
 
         private static readonly string UrlJsonPath =
-            Path.Combine(Application.streamingAssetsPath, "url.json");
+            Platform.GetStreamingAssetsPath("url.json");
+
+        private Thread headlessThread;
+        private Thread marketThread;
 
         #region Mono & Initialization
 
@@ -169,9 +181,7 @@ namespace Nekoyume.Game
 #if UNITY_IOS
             _commandLineOptions = CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.json"));
 #else
-            _commandLineOptions = CommandLineOptions.Load(
-                CommandLineOptionsJsonPath
-            );
+            _commandLineOptions = CommandLineOptions.Load(CommandLineOptionsJsonPath);
 #endif
 
             URL = Url.Load(UrlJsonPath);
@@ -179,7 +189,15 @@ namespace Nekoyume.Game
             Debug.Log("[Game] Awake() CommandLineOptions loaded");
             Debug.Log($"APV: {_commandLineOptions.AppProtocolVersion}");
 
-            if (_commandLineOptions.RpcClient)
+#if UNITY_EDITOR
+            // Local Headless
+            if (useLocalHeadless && HeadlessHelper.CheckHeadlessSettings())
+            {
+                headlessThread = new Thread(() => HeadlessHelper.RunLocalHeadless());
+                headlessThread.Start();
+            }
+
+            if (useLocalHeadless || _commandLineOptions.RpcClient)
             {
                 Agent = GetComponent<RPCAgent>();
                 SubscribeRPCAgent();
@@ -188,6 +206,10 @@ namespace Nekoyume.Game
             {
                 Agent = GetComponent<Agent>();
             }
+#else
+            Agent = GetComponent<RPCAgent>();
+            SubscribeRPCAgent();
+#endif
 
             States = new States();
             LocalLayer = new LocalLayer();
@@ -219,7 +241,7 @@ namespace Nekoyume.Game
 #endif
             var options = MessagePackSerializerOptions.Standard.WithResolver(resolver);
             MessagePackSerializer.DefaultOptions = options;
-            
+
 #if UNITY_EDITOR
             if (useSystemLanguage)
             {
@@ -261,19 +283,29 @@ namespace Nekoyume.Game
             );
 
             yield return new WaitUntil(() => agentInitialized);
+
+#if UNITY_EDITOR
+            // wait for headless connect.
+            if (useLocalMarketService && MarketHelper.CheckPath())
+            {
+                marketThread = new Thread(() => MarketHelper.RunLocalMarketService(marketDbConnectionString));
+                marketThread.Start();
+            }
+#endif
+
             InitializeAnalyzer();
             Analyzer.Track("Unity/Started");
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
             yield return SyncTableSheetsAsync().ToCoroutine();
             Debug.Log("[Game] Start() TableSheets synchronized");
-            RxProps.Start(Agent, States, TableSheets);
-            // Initialize RequestManager and NoticeManager
+            // Initialize RequestManager and LiveAssetManager
             gameObject.AddComponent<RequestManager>();
-            var noticeManager = gameObject.AddComponent<NoticeManager>();
-            noticeManager.InitializeData();
-            yield return new WaitUntil(() => noticeManager.IsInitialized);
-            Debug.Log("[Game] Start() RequestManager & NoticeManager initialized");
+            var liveAssetManager = gameObject.AddComponent<LiveAssetManager>();
+            liveAssetManager.InitializeData();
+            yield return new WaitUntil(() => liveAssetManager.IsInitialized);
+            Debug.Log("[Game] Start() RequestManager & LiveAssetManager initialized");
+            RxProps.Start(Agent, States, TableSheets);
             // Initialize MainCanvas second
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
             // Initialize NineChroniclesAPIClient.
@@ -291,20 +323,9 @@ namespace Nekoyume.Game
             Stage.Initialize();
             Arena.Initialize();
             RaidStage.Initialize();
-            StartCoroutine(CoInitDccAvatar());
-            var headerName = URL.DccEthChainHeaderName;
-            var headerValue = URL.DccEthChainHeaderValue;
-            StartCoroutine(RequestManager.instance.GetJson(
-                $"{URL.DccMileageAPI}{Agent.Address}",
-                headerName,
-                headerValue,
-                _ =>
-                {
-                    Dcc.instance.IsConnected = true;
-                }, _ =>
-                {
-                    Dcc.instance.IsConnected = false;
-                }));
+            // Initialize D:CC NFT data
+            yield return StartCoroutine(CoInitDccAvatar());
+            yield return StartCoroutine(CoInitDccConnecting());
 
             Event.OnUpdateAddresses.AsObservable().Subscribe(_ =>
             {
@@ -315,10 +336,10 @@ namespace Nekoyume.Game
                 SavedPetId = !petList.Any() ? null : petList[Random.Range(0, petList.Count)];
             }).AddTo(gameObject);
 
-            var appProtocolVersion = _commandLineOptions.AppProtocolVersion is null
-                ? default
-                : Libplanet.Net.AppProtocolVersion.FromToken(_commandLineOptions.AppProtocolVersion);
-            Widget.Find<VersionSystem>().SetVersion(appProtocolVersion.Version);
+            Helper.Util.TryGetAppProtocolVersionFromToken(
+                _commandLineOptions.AppProtocolVersion,
+                out var appProtocolVersion);
+            Widget.Find<VersionSystem>().SetVersion(appProtocolVersion);
 
             ShowNext(agentInitializeSucceed);
             StartCoroutine(CoUpdate());
@@ -326,6 +347,16 @@ namespace Nekoyume.Game
 
         protected override void OnDestroy()
         {
+            if (headlessThread is not null && headlessThread.IsAlive)
+            {
+                headlessThread.Interrupt();
+            }
+
+            if (marketThread is not null && marketThread.IsAlive)
+            {
+                marketThread.Interrupt();
+            }
+
             ActionManager?.Dispose();
             base.OnDestroy();
         }
@@ -558,9 +589,15 @@ namespace Nekoyume.Game
             var csv = dict.ToDictionary(
                 pair => map[pair.Key],
                 // NOTE: `pair.Value` is `null` when the chain not contains the `pair.Key`.
-                pair => pair.Value is null
-                    ? null
-                    : pair.Value.ToDotnetString());
+                pair =>
+                {
+                    if (pair.Value is Text)
+                    {
+                        return pair.Value.ToDotnetString();
+                    }
+
+                    return null;
+                });
 
             TableSheets = new TableSheets(csv);
         }
@@ -649,7 +686,8 @@ namespace Nekoyume.Game
 
         private IEnumerator CoBackToNest()
         {
-            yield return StartCoroutine(Game.instance.CoInitDccAvatar());
+            yield return StartCoroutine(CoInitDccAvatar());
+            yield return StartCoroutine(CoInitDccConnecting());
 
             if (IsInWorld)
             {
@@ -929,6 +967,21 @@ namespace Nekoyume.Game
                 {
                     var responseData = DccAvatars.FromJson(json);
                     Dcc.instance.Init(responseData.Avatars);
+                });
+        }
+
+        private IEnumerator CoInitDccConnecting()
+        {
+            return RequestManager.instance.GetJson(
+                $"{URL.DccMileageAPI}{Agent.Address}",
+                URL.DccEthChainHeaderName,
+                URL.DccEthChainHeaderValue,
+                _ =>
+                {
+                    Dcc.instance.IsConnected = true;
+                }, _ =>
+                {
+                    Dcc.instance.IsConnected = false;
                 });
         }
 

@@ -88,6 +88,7 @@ namespace Nekoyume.UI.Module
                 baseItemView.EnhancementImage.gameObject.SetActive(false);
             }
 
+            baseItemView.OptionTag.gameObject.SetActive(true);
             baseItemView.OptionTag.Set(model.ItemBase);
 
             baseItemView.CountText.gameObject.SetActive(

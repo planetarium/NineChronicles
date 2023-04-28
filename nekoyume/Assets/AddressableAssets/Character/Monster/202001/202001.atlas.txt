@@ -1,180 +1,187 @@
 
 202001.png
-size: 512,512
+size: 256,256
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
 arm_L
-  rotate: false
-  xy: 385, 450
+  rotate: true
+  xy: 215, 80
   size: 47, 34
   orig: 47, 34
   offset: 0, 0
   index: -1
 arm_R
-  rotate: true
-  xy: 155, 457
+  rotate: false
+  xy: 129, 32
   size: 27, 40
   orig: 27, 40
   offset: 0, 0
   index: -1
 body
-  rotate: true
-  xy: 190, 339
+  rotate: false
+  xy: 2, 46
   size: 68, 90
   orig: 68, 90
   offset: 0, 0
   index: -1
 body_02
   rotate: false
-  xy: 119, 341
+  xy: 98, 128
   size: 69, 67
   orig: 69, 67
   offset: 0, 0
   index: -1
 body_03
   rotate: false
-  xy: 226, 455
+  xy: 192, 32
   size: 29, 29
   orig: 29, 29
   offset: 0, 0
   index: -1
 body_04
-  rotate: false
-  xy: 2, 357
-  size: 115, 60
-  orig: 115, 60
+  rotate: true
+  xy: 182, 205
+  size: 49, 60
+  orig: 49, 60
+  offset: 0, 0
+  index: -1
+body_04-2
+  rotate: true
+  xy: 2, 2
+  size: 42, 29
+  orig: 42, 29
   offset: 0, 0
   index: -1
 ear_L
-  rotate: true
-  xy: 322, 451
+  rotate: false
+  xy: 73, 3
   size: 33, 61
   orig: 33, 61
   offset: 0, 0
   index: -1
 ear_R
-  rotate: true
-  xy: 180, 410
+  rotate: false
+  xy: 72, 66
   size: 43, 60
   orig: 43, 60
   offset: 0, 0
   index: -1
 eye_01
-  rotate: false
-  xy: 14, 474
+  rotate: true
+  xy: 244, 221
   size: 33, 10
   orig: 33, 10
   offset: 0, 0
   index: -1
 face
-  rotate: false
-  xy: 348, 402
+  rotate: true
+  xy: 117, 74
   size: 52, 46
   orig: 52, 46
   offset: 0, 0
   index: -1
 face_01
-  rotate: false
-  xy: 242, 409
+  rotate: true
+  xy: 169, 144
   size: 51, 44
   orig: 51, 44
   offset: 0, 0
   index: -1
 face_02
-  rotate: false
-  xy: 295, 405
+  rotate: true
+  xy: 169, 91
   size: 51, 44
   orig: 51, 44
   offset: 0, 0
   index: -1
 hand_L
-  rotate: true
-  xy: 75, 458
+  rotate: false
+  xy: 129, 2
   size: 26, 28
   orig: 26, 28
   offset: 0, 0
   index: -1
 hand_R
-  rotate: true
-  xy: 49, 461
+  rotate: false
+  xy: 186, 6
   size: 23, 24
   orig: 23, 24
   offset: 0, 0
   index: -1
 leg_L
   rotate: false
-  xy: 257, 455
+  xy: 223, 49
   size: 29, 29
   orig: 29, 29
   offset: 0, 0
   index: -1
 leg_R
   rotate: true
-  xy: 105, 458
+  xy: 165, 63
   size: 26, 48
   orig: 26, 48
   offset: 0, 0
   index: -1
 leg_R_02
   rotate: false
-  xy: 197, 457
+  xy: 157, 3
   size: 27, 27
   orig: 27, 27
   offset: 0, 0
   index: -1
 shadow
-  rotate: false
-  xy: 41, 419
-  size: 94, 37
-  orig: 94, 37
+  rotate: true
+  xy: 108, 17
+  size: 47, 19
+  orig: 47, 19
   offset: 0, 0
   index: -1
 sholuder_L
   rotate: true
-  xy: 288, 455
+  xy: 158, 32
   size: 29, 32
   orig: 29, 32
   offset: 0, 0
   index: -1
 sholuder_R
   rotate: false
-  xy: 434, 449
+  xy: 215, 168
   size: 39, 35
   orig: 39, 35
   offset: 0, 0
   index: -1
 tail
   rotate: false
-  xy: 402, 390
+  xy: 98, 197
   size: 82, 57
   orig: 82, 57
   offset: 0, 0
   index: -1
 tear
   rotate: true
-  xy: 2, 480
+  xy: 244, 215
   size: 4, 10
   orig: 4, 10
   offset: 0, 0
   index: -1
 thigh_L
-  rotate: false
-  xy: 137, 417
+  rotate: true
+  xy: 33, 3
   size: 41, 38
   orig: 41, 38
   offset: 0, 0
   index: -1
 thigh_R
   rotate: false
-  xy: 2, 435
+  xy: 215, 129
   size: 37, 37
   orig: 37, 37
   offset: 0, 0
   index: -1
 weapon
-  rotate: true
-  xy: 282, 306
+  rotate: false
+  xy: 2, 138
   size: 94, 116
   orig: 94, 116
   offset: 0, 0

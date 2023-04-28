@@ -68,7 +68,7 @@ namespace Nekoyume.UI.Module.Lobby
 
         private void CheckSeasonRewards()
         {
-            if (States.Instance.CurrentAvatarState == null || Game.Game.instance.Agent == null)
+            if (States.Instance.CurrentAvatarState == null)
             {
                 return;
             }
@@ -109,7 +109,6 @@ namespace Nekoyume.UI.Module.Lobby
 
         private void MakeSeasonRewardMail(int id, Address address, IEnumerable<SeasonRewards> rewards, bool isNew)
         {
-            LocalMailHelper.Instance.Initialize();
             var now = Game.Game.instance.Agent.BlockIndex;
             foreach (var reward in rewards.OrderBy(reward => reward.ticker))
             {
@@ -122,17 +121,9 @@ namespace Nekoyume.UI.Module.Lobby
                         now,
                         currencyName,
                         reward.amount,
-                        id) {New = isNew},
-                    true
+                        id) {New = isNew}
                 );
             }
-
-            ReactiveAvatarState.Address.First(addr => addr != address)
-                .Subscribe(_ =>
-                {
-                    _madeRaidMail = false;
-                    LocalMailHelper.Instance.CleanupAndDispose(address);
-                });
         }
 
         private void AddSeasonRewardMail(int raidId)
@@ -234,8 +225,10 @@ namespace Nekoyume.UI.Module.Lobby
                     else
                     {
                         ticketContainer.SetActive(true);
-                        var count =
-                            WorldBossFrontHelper.GetRemainTicket(raiderState, currentBlockIndex);
+                        var count = WorldBossFrontHelper.GetRemainTicket(
+                            raiderState,
+                            currentBlockIndex,
+                            States.Instance.GameConfigState.DailyWorldBossInterval);
                         ticketText.text = $"{count}";
                     }
 

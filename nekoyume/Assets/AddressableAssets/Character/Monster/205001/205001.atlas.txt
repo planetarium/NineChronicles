@@ -1,97 +1,97 @@
 
 205001.png
-size: 256,256
+size: 256,128
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
 body
   rotate: false
-  xy: 2, 147
+  xy: 2, 19
   size: 85, 107
   orig: 85, 107
   offset: 0, 0
   index: -1
 effect_01
   rotate: true
-  xy: 92, 114
-  size: 16, 14
+  xy: 163, 14
+  size: 14, 12
   orig: 16, 14
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 effect_02
-  rotate: true
-  xy: 92, 132
-  size: 26, 19
+  rotate: false
+  xy: 96, 2
+  size: 24, 17
   orig: 26, 19
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 eye_01
   rotate: false
-  xy: 67, 5
-  size: 23, 10
+  xy: 73, 9
+  size: 21, 8
   orig: 23, 10
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 eye_02
-  rotate: true
-  xy: 29, 13
-  size: 32, 10
+  rotate: false
+  xy: 41, 9
+  size: 30, 8
   orig: 32, 10
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 eye_03
-  rotate: true
-  xy: 2, 4
-  size: 41, 25
+  rotate: false
+  xy: 122, 5
+  size: 39, 23
   orig: 41, 25
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 eye_04
   rotate: false
-  xy: 92, 4
+  xy: 65, 3
   size: 22, 4
   orig: 22, 4
   offset: 0, 0
   index: -1
 eye_05
   rotate: false
-  xy: 92, 10
+  xy: 41, 2
   size: 22, 5
   orig: 22, 5
   offset: 0, 0
   index: -1
 hand_L
   rotate: true
-  xy: 29, 2
-  size: 9, 16
+  xy: 89, 21
+  size: 7, 14
   orig: 9, 16
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 hand_R
   rotate: true
-  xy: 47, 3
-  size: 12, 18
+  xy: 163, 2
+  size: 10, 16
   orig: 12, 18
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 head_01
   rotate: true
-  xy: 2, 47
-  size: 98, 88
+  xy: 89, 30
+  size: 96, 86
   orig: 98, 88
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 head_02
   rotate: false
-  xy: 89, 160
-  size: 49, 94
+  xy: 177, 34
+  size: 47, 92
   orig: 49, 94
-  offset: 0, 0
+  offset: 1, 1
   index: -1
 shadow
   rotate: false
-  xy: 41, 17
-  size: 78, 28
-  orig: 78, 28
-  offset: 0, 0
+  xy: 2, 6
+  size: 37, 11
+  orig: 39, 14
+  offset: 1, 1
   index: -1

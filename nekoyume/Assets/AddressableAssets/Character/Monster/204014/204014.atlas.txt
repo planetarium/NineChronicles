@@ -1,124 +1,124 @@
 
 204014.png
-size: 512,512
+size: 256,64
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
 arm_L
   rotate: false
-  xy: 27, 241
+  xy: 34, 4
   size: 10, 5
   orig: 10, 5
   offset: 0, 0
   index: -1
 arm_R
   rotate: false
-  xy: 172, 227
+  xy: 122, 4
   size: 19, 10
   orig: 19, 10
   offset: 0, 0
   index: -1
 body
   rotate: false
-  xy: 2, 248
+  xy: 52, 16
   size: 87, 45
   orig: 87, 45
   offset: 0, 0
   index: -1
 face_01
   rotate: false
-  xy: 147, 226
+  xy: 85, 2
   size: 23, 12
   orig: 23, 12
   offset: 0, 0
   index: -1
 face_02
-  rotate: false
-  xy: 148, 240
+  rotate: true
+  xy: 222, 7
   size: 25, 16
   orig: 25, 16
   offset: 0, 0
   index: -1
 face_03
   rotate: false
-  xy: 120, 226
+  xy: 58, 2
   size: 25, 12
   orig: 25, 12
   offset: 0, 0
   index: -1
 face_04
   rotate: false
-  xy: 120, 240
+  xy: 194, 8
   size: 26, 16
   orig: 26, 16
   offset: 0, 0
   index: -1
 leaf_01
-  rotate: true
-  xy: 196, 263
+  rotate: false
+  xy: 2, 2
   size: 30, 59
   orig: 30, 59
   offset: 0, 0
   index: -1
 leaf_02
-  rotate: false
-  xy: 91, 232
+  rotate: true
+  xy: 213, 34
   size: 27, 24
   orig: 27, 24
   offset: 0, 0
   index: -1
 leaf_03
-  rotate: true
-  xy: 196, 228
+  rotate: false
+  xy: 178, 26
   size: 33, 35
   orig: 33, 35
   offset: 0, 0
   index: -1
 leg_R
   rotate: false
-  xy: 39, 241
+  xy: 46, 4
   size: 10, 5
   orig: 10, 5
   offset: 0, 0
   index: -1
 shadow
-  rotate: false
-  xy: 91, 258
-  size: 103, 35
-  orig: 103, 35
-  offset: 0, 0
+  rotate: true
+  xy: 34, 11
+  size: 50, 16
+  orig: 52, 18
+  offset: 1, 1
   index: -1
 wood_01
-  rotate: true
-  xy: 15, 237
+  rotate: false
+  xy: 239, 51
   size: 9, 10
   orig: 9, 10
   offset: 0, 0
   index: -1
 wood_02
-  rotate: true
-  xy: 175, 239
+  rotate: false
+  xy: 175, 5
   size: 17, 18
   orig: 17, 18
   offset: 0, 0
   index: -1
 wood_03
-  rotate: true
-  xy: 2, 236
+  rotate: false
+  xy: 110, 3
   size: 10, 11
   orig: 10, 11
   offset: 0, 0
   index: -1
 wood_04
-  rotate: false
-  xy: 233, 231
+  rotate: true
+  xy: 143, 3
   size: 20, 30
   orig: 20, 30
   offset: 0, 0
   index: -1
 wood_05
-  rotate: false
-  xy: 257, 258
+  rotate: true
+  xy: 141, 25
   size: 36, 35
   orig: 36, 35
   offset: 0, 0

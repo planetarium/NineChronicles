@@ -593,6 +593,22 @@ namespace Nekoyume.BlockChain
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             }, true);
 
+            if (chargeAp)
+            {
+                var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values
+                    .First(r => r.ItemSubType == ItemSubType.ApStone);
+                LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId);
+                LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress,
+                    States.Instance.GameConfigState.ActionPointMax);
+            }
+
+            if (GameConfigStateSubject.ActionPointState.ContainsKey(avatarAddress))
+            {
+                GameConfigStateSubject.ActionPointState.Remove(avatarAddress);
+            }
+
+            GameConfigStateSubject.ActionPointState.Add(avatarAddress, true);
+
             var action = new RegisterProduct
             {
                 AvatarAddress = avatarAddress,
@@ -622,6 +638,22 @@ namespace Nekoyume.BlockChain
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             }, true);
 
+            if (chargeAp)
+            {
+                var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values
+                    .First(r => r.ItemSubType == ItemSubType.ApStone);
+                LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId);
+                LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress,
+                    States.Instance.GameConfigState.ActionPointMax);
+            }
+
+            if (GameConfigStateSubject.ActionPointState.ContainsKey(avatarAddress))
+            {
+                GameConfigStateSubject.ActionPointState.Remove(avatarAddress);
+            }
+
+            GameConfigStateSubject.ActionPointState.Add(avatarAddress, true);
+
             var action = new CancelProductRegistration
             {
                 AvatarAddress = avatarAddress,
@@ -645,6 +677,22 @@ namespace Nekoyume.BlockChain
             List<(IProductInfo, IRegisterInfo)> reRegisterInfos,
             bool chargeAp)
         {
+            if (chargeAp)
+            {
+                var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values
+                    .First(r => r.ItemSubType == ItemSubType.ApStone);
+                LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId);
+                LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress,
+                    States.Instance.GameConfigState.ActionPointMax);
+            }
+
+            if (GameConfigStateSubject.ActionPointState.ContainsKey(avatarAddress))
+            {
+                GameConfigStateSubject.ActionPointState.Remove(avatarAddress);
+            }
+
+            GameConfigStateSubject.ActionPointState.Add(avatarAddress, true);
+
             var action = new ReRegisterProduct
             {
                 AvatarAddress = avatarAddress,

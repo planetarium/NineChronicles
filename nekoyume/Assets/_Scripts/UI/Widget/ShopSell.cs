@@ -5,7 +5,6 @@ using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using Libplanet.Assets;
-using MarketService.Response;
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.Game.Controller;
@@ -286,6 +285,11 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
+        public void UpdateInventory()
+        {
+            inventory.UpdateFungibleAssets();
+        }
+
         private void ShowSell(InventoryItem model)
         {
             if (model is null)
@@ -386,12 +390,7 @@ namespace Nekoyume.UI
 
         private async void SubscribeReRegisterProduct(bool chargeAp)
         {
-            var itemProducts = new List<ItemProductResponseModel>();
-            foreach (var products in ReactiveShopState.SellItemProducts.Value.Values)
-            {
-                itemProducts.AddRange(products);
-            }
-
+            var itemProducts = ReactiveShopState.SellItemProducts.Value;
             var favProducts = ReactiveShopState.SellFungibleAssetProducts.Value;
 
             if (!itemProducts.Any() && !favProducts.Any())
@@ -451,20 +450,15 @@ namespace Nekoyume.UI
                 }
             }
 
-            OneLineSystem.Push(MailType.Auction, message,
-                NotificationCell.NotificationType.Information);
+            OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
         }
 
         private async void SubscribeCancelProductRegistration(bool chargeAp)
         {
-            var itemProducts = new List<ItemProductResponseModel>();
-            foreach (var products in ReactiveShopState.SellItemProducts.Value.Values)
-            {
-                itemProducts.AddRange(products);
-            }
-
+            var itemProducts = ReactiveShopState.SellItemProducts.Value;
             var favProducts = ReactiveShopState.SellFungibleAssetProducts.Value;
+
             if (!itemProducts.Any() && !favProducts.Any())
             {
                 OneLineSystem.Push(
@@ -687,8 +681,10 @@ namespace Nekoyume.UI
             }
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var reRegisterInfos = new List<(IProductInfo, IRegisterInfo)>();
-            reRegisterInfos.Add(GetReRegisterInfo(data.ProductId.Value, (int)data.Price.Value.MajorUnit));
+            var reRegisterInfos = new List<(IProductInfo, IRegisterInfo)>
+            {
+                GetReRegisterInfo(data.ProductId.Value, (int)data.Price.Value.MajorUnit)
+            };
 
             var itemName = data.Item.Value.ItemBase.Value is not null
                 ? data.Item.Value.ItemBase.Value.GetLocalizedName()

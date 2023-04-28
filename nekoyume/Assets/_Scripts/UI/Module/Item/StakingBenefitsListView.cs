@@ -14,6 +14,8 @@ namespace Nekoyume.UI.Module
             public long HourGlassInterest;
             public long ApPotionInterest;
             public long RuneInterest;
+            public long GoldenMeatInterest;
+            public long GoldenPowderInterest;
             public int ArenaRewardBuff;
             public int CrystalBuff;
             public int ActionPointBuff;
@@ -28,6 +30,8 @@ namespace Nekoyume.UI.Module
             public TextMeshProUGUI hourGlassInterestText;
             public TextMeshProUGUI apPotionInterestText;
             public TextMeshProUGUI runeInterestText;
+            public TextMeshProUGUI goldenMeatInterestText;
+            public TextMeshProUGUI goldenPowderInterestText;
             public TextMeshProUGUI arenaTicketBuffText;
             public TextMeshProUGUI crystalBuffText;
             public TextMeshProUGUI actionPointBuffText;
@@ -46,6 +50,8 @@ namespace Nekoyume.UI.Module
         private const string HourGlassInterestFormat = "<Style=G2>x{0}";
         private const string ApPotionInterestFormat = "<Style=G6>x{0}";
         private const string RuneInterestFormat = "<Style=G9>x{0}";
+        private const string GoldenMeatInterestFormat = "<Style=G10>x{0}";
+        private const string GoldenPowderInterestFormat = "<Style=G11>x{0}";
 
         private const string ArenaTicketBuffFormat = "<Style=G0>{0}%";
         private const string CrystalBuffFormat = "<Style=G1>{0}%";
@@ -60,7 +66,6 @@ namespace Nekoyume.UI.Module
                 textList.benefitRateText.text = $"{viewModel.BenefitRate}%";
                 textList.requiredDepositText.text =
                     string.Format(RequiredDepositFormat, viewModel.RequiredDeposit);
-
                 textList.hourGlassInterestText.text =
                     string.Format(HourGlassInterestFormat, viewModel.HourGlassInterest);
                 textList.apPotionInterestText.text =
@@ -68,7 +73,12 @@ namespace Nekoyume.UI.Module
                 textList.runeInterestText.text = viewModel.RuneInterest == 0
                     ? "-"
                     : string.Format(RuneInterestFormat, viewModel.RuneInterest);
-
+                textList.goldenMeatInterestText.text = viewModel.GoldenMeatInterest == 0
+                    ? "-"
+                    : string.Format(GoldenMeatInterestFormat, viewModel.GoldenMeatInterest);
+                textList.goldenPowderInterestText.text = viewModel.GoldenPowderInterest == 0
+                    ? "-"
+                    : string.Format(GoldenPowderInterestFormat, viewModel.GoldenPowderInterest);
                 textList.arenaTicketBuffText.text = viewModel.ArenaRewardBuff == 0
                     ? "-"
                     : string.Format(ArenaTicketBuffFormat, viewModel.ArenaRewardBuff);

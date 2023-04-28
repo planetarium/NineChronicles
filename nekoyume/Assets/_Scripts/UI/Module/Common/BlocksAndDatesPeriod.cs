@@ -16,13 +16,14 @@ namespace Nekoyume.UI.Module.Common
             long beginningBlockIndex,
             long endBlockIndex,
             long currentBlockIndex,
+            int secondsPerBlock,
             DateTime now)
         {
             blocksText.text = $"{beginningBlockIndex:N0} - {endBlockIndex:N0}";
             blocksText.enabled = true;
 
-            var from = beginningBlockIndex.BlockIndexToDateTimeString(currentBlockIndex, now);
-            var to = endBlockIndex.BlockIndexToDateTimeString(currentBlockIndex, now);
+            var from = beginningBlockIndex.BlockIndexToDateTimeString(currentBlockIndex, secondsPerBlock, now);
+            var to = endBlockIndex.BlockIndexToDateTimeString(currentBlockIndex, secondsPerBlock, now);
             datesText.text = $"({from} - {to})";
             datesText.enabled = true;
         }

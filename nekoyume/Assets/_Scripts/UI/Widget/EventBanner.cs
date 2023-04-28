@@ -4,7 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Game.Notice;
+using Nekoyume.Game.LiveAsset;
 
 namespace Nekoyume.UI.Module
 {
@@ -30,9 +30,9 @@ namespace Nekoyume.UI.Module
 
         private IEnumerator Start()
         {
-            yield return new WaitUntil(() => NoticeManager.instance.IsInitialized);
+            yield return new WaitUntil(() => LiveAssetManager.instance.IsInitialized);
 
-            var dataList = NoticeManager.instance.BannerData;
+            var dataList = LiveAssetManager.instance.BannerData;
             foreach (var data in dataList)
             {
                 if (data.UseDateTime &&
