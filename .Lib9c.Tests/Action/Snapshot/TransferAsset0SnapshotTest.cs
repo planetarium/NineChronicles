@@ -1,6 +1,7 @@
 namespace Lib9c.Tests.Action.Snapshot
 {
     using System.Threading.Tasks;
+    using Bencodex.Types;
     using Libplanet;
     using Libplanet.Assets;
     using Libplanet.Crypto;
@@ -22,7 +23,7 @@ namespace Lib9c.Tests.Action.Snapshot
                 Currency.Legacy("NNN", 2, null) * 100);
 
             return Verifier.Verify(action.PlainValue)
-                .UseTypeName(GetActionTypeId<TransferAsset0>());
+                .UseTypeName((Text)GetActionTypeId<TransferAsset0>());
         }
 
         [Fact]
@@ -50,7 +51,7 @@ namespace Lib9c.Tests.Action.Snapshot
             var states = action.Execute(actionContext);
 
             return Verifier.Verify(states)
-                .UseTypeName(GetActionTypeId<TransferAsset0>());
+                .UseTypeName((Text)GetActionTypeId<TransferAsset0>());
         }
 
         [Fact]
@@ -79,7 +80,7 @@ namespace Lib9c.Tests.Action.Snapshot
             var states = action.Execute(actionContext);
 
             return Verifier.Verify(states)
-                .UseTypeName(GetActionTypeId<TransferAsset0>());
+                .UseTypeName((Text)GetActionTypeId<TransferAsset0>());
         }
     }
 }
