@@ -99,7 +99,7 @@ namespace Nekoyume.BlockChain
                         Analyzer.Instance.Track("Unity/ActionRender",
                             new Dictionary<string, Value>()
                             {
-                                ["ActionType"] = actionType.TypeIdentifier,
+                                ["ActionType"] = (Value)actionType.TypeIdentifier,
                                 ["Elapsed"] = elapsed,
                                 ["AvatarAddress"] =
                                     States.Instance.CurrentAvatarState.address.ToString(),
@@ -1413,7 +1413,7 @@ namespace Nekoyume.BlockChain
                 if (eval.Action.TotalPlayCount > 1)
                 {
                     Widget.Find<BattleResultPopup>().ModelForMultiHackAndSlash = resultModel;
-                    if (log.IsClear)
+                    if (log.result == BattleLog.Result.Win)
                     {
                         var currentAvatar = States.Instance.CurrentAvatarState;
                         currentAvatar.exp = temporaryAvatar.exp;
