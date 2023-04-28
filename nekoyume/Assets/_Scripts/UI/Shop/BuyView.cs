@@ -412,70 +412,44 @@ namespace Nekoyume
                 return Array.Empty<int>();
             }
 
-            bool IsValid(int id, string itemName, bool useSearch, bool levelLimit)
+            bool IsValid(int id)
             {
-                var inSearch = !useSearch ||
-                               Regex.IsMatch(itemName, inputField.text, RegexOptions.IgnoreCase);
-                var inLevelLimit = !levelLimit ||
+                var inSearch = !_useSearch.Value ||
+                               Regex.IsMatch(L10nManager.LocalizeItemName(id), inputField.text, RegexOptions.IgnoreCase);
+                var inLevelLimit = !_levelLimit.Value ||
                                    (requirementSheet.TryGetValue(id, out var requirementRow) &&
                                     avatarLevel >= requirementRow.Level);
                 return inSearch && inLevelLimit;
             }
 
-            return _itemIds.Where(id => IsValid(id, L10nManager.LocalizeItemName(id), _useSearch.Value, _levelLimit.Value)).ToArray();
+            return _itemIds.Where(IsValid).ToArray();
         }
 
-        private string GetFilteredTicker(ItemSubTypeFilter filter)
+        private string[] GetFilteredTicker(ItemSubTypeFilter filter)
         {
             if (!_useSearch.Value)
             {
-                return filter == ItemSubTypeFilter.RuneStone ? "RUNE" : "SOULSTONE";
+                return new[] { filter == ItemSubTypeFilter.RuneStone ? "RUNE" : "SOULSTONE" };
             }
 
             var itemName = inputField.text;
-
             switch (filter)
             {
                 case ItemSubTypeFilter.RuneStone:
-                    if (Regex.IsMatch(itemName, "rune", RegexOptions.IgnoreCase))
-                    {
-                        return "RUNE";
-                    }
-
-                    // FIXME : May not be supported in various l10n environments
-                    if (Regex.IsMatch(itemName, "fenrir", RegexOptions.IgnoreCase))
-                    {
-                        return "RUNESTONE_FENRIR";
-                    }
-
-                    if (Regex.IsMatch(itemName, "saehrimnir", RegexOptions.IgnoreCase))
-                    {
-                        return "RUNESTONE_SAEHRIMNIR";
-                    }
-
-                    var filteredRuneList = _runeIds.Where(id => Regex.IsMatch(L10nManager.LocalizeItemName(id),
-                        itemName, RegexOptions.IgnoreCase)).ToList();
-
+                    var filteredRuneList = _runeIds.Where(id => Regex.IsMatch(L10nManager.LocalizeRuneName(id), itemName, RegexOptions.IgnoreCase)).ToList();
                     var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
                     return filteredRuneList.Any()
-                        ? runeSheet[filteredRuneList.First()].Ticker
-                        : "RUNE";
+                        ? filteredRuneList.Select(id => runeSheet[id].Ticker).ToArray()
+                        : new[] { "RUNE" };
 
                 case ItemSubTypeFilter.PetSoulStone:
-                    if (Regex.IsMatch(itemName, "Soulstone", RegexOptions.IgnoreCase))
-                    {
-                        return "SOULSTONE";
-                    }
-
-                    var filteredPetList = _petIds.Where(id => Regex.IsMatch(L10nManager.LocalizeItemName(id),
-                        itemName, RegexOptions.IgnoreCase)).ToList();
-
+                    var filteredPetList = _petIds.Where(id => Regex.IsMatch(L10nManager.LocalizePetName(id), itemName, RegexOptions.IgnoreCase)).ToList();
                     var petSheet = Game.Game.instance.TableSheets.PetSheet;
                     return filteredPetList.Any()
-                        ? petSheet[filteredPetList.First()].SoulStoneTicker.ToUpper()
-                        : "SOULSTONE";
+                        ? filteredPetList.Select(id => petSheet[id].SoulStoneTicker.ToUpper()).ToArray()
+                        : new[] { "SOULSTONE" };
                 default:
-                    return "RUNE";
+                    return new[] { "RUNE" };
             }
         }
 
@@ -503,9 +477,9 @@ namespace Nekoyume
             loading.SetActive(_loadingCount > 0);
             if (filter is ItemSubTypeFilter.RuneStone or ItemSubTypeFilter.PetSoulStone)
             {
-                var ticker = GetFilteredTicker(filter);
+                var tickers = GetFilteredTicker(filter);
                 await ReactiveShopState.RequestBuyFungibleAssetsAsync(
-                    ticker, orderType, limit * 15, reset);
+                    tickers, orderType, limit * 15, reset);
             }
             else
             {
