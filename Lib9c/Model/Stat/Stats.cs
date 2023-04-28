@@ -40,9 +40,9 @@ namespace Nekoyume.Model.Stat
             _statMap.Reset();
         }
 
-        public void Set(params Stats[] statsArray)
+        public void Set(StatMap statMap, params Stats[] statsArray)
         {
-            foreach (var stat in _statMap.GetDecimalStats(false))
+            foreach (var stat in statMap.GetDecimalStats(false))
             {
                 if (!LegacyDecimalStatTypes.Contains(stat.StatType))
                 {

@@ -84,7 +84,7 @@ namespace Nekoyume.Model.Buff
         }
 
         public static IList<Buff> GetBuffs(
-            Stats stats,
+            CharacterStats stats,
             ISkill skill,
             SkillBuffSheet skillBuffSheet,
             StatBuffSheet statBuffSheet,
@@ -108,9 +108,10 @@ namespace Nekoyume.Model.Buff
                         int additionalPower;
                         if (buffRow.ReferencedStatType != StatType.NONE)
                         {
+                            var statMap = stats.StatWithItems;
                             var multiplier = skill.Power / 10000m;
                             additionalPower = (int)Math.Round(
-                                stats.GetStat(buffRow.ReferencedStatType) * multiplier);
+                                statMap.GetStat(buffRow.ReferencedStatType) * multiplier);
                         }
                         else
                         {

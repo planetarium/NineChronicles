@@ -88,8 +88,8 @@ namespace Nekoyume.Model
             foreach (var skillRow in enemySkills)
             {
                 var isBuff =
-                    skillRow.SkillCategory == SkillCategory.Buff ||
-                    skillRow.SkillCategory == SkillCategory.Debuff;
+                    skillRow.SkillType == SkillType.Buff ||
+                    skillRow.SkillType == SkillType.Debuff;
 
                 var skill = SkillFactory.Get(skillRow, !isBuff ? dmg : 0, 100);
                 Skills.Add(skill);

@@ -32,6 +32,8 @@ namespace Nekoyume.Model.Stat
         private readonly Dictionary<int, StatModifier> _buffStatModifiers = new Dictionary<int, StatModifier>();
         private readonly List<StatModifier> _optionalStatModifiers = new List<StatModifier>();
 
+        public readonly StatMap StatWithItems = new StatMap();
+
         public int Level { get; private set; }
 
         public IStats BaseStats => _baseStats;
@@ -351,6 +353,21 @@ namespace Nekoyume.Model.Stat
         private void UpdateRuneStats()
         {
             _runeStats.Set(_runeStatModifiers, _baseStats, _equipmentStats, _consumableStats);
+            Set(StatWithItems, _baseStats, _equipmentStats, _consumableStats, _runeStats);
+            foreach (var stat in StatWithItems.GetDecimalStats(false))
+            {
+                if (!LegacyDecimalStatTypes.Contains(stat.StatType))
+                {
+                    var value = Math.Max(0m, stat.BaseValueAsInt);
+                    stat.SetBaseValue(value);
+                }
+                else
+                {
+                    var value = Math.Max(0m, stat.BaseValue);
+                    stat.SetBaseValue(value);
+                }
+            }
+
             UpdateBuffStats();
         }
 
@@ -368,7 +385,7 @@ namespace Nekoyume.Model.Stat
 
         private void UpdateTotalStats()
         {
-            Set(_baseStats, _equipmentStats, _consumableStats, _runeStats, _buffStats, _optionalStats);
+            Set(_statMap, _baseStats, _equipmentStats, _consumableStats, _runeStats, _buffStats, _optionalStats);
 
             foreach (var stat in _statMap.GetDecimalStats(false))
             {

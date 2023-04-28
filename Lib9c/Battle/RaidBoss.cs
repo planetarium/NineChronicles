@@ -68,8 +68,8 @@ namespace Nekoyume.Model
                 }
 
                 isBuff =
-                    skillRow.SkillCategory == SkillCategory.Buff ||
-                    skillRow.SkillCategory == SkillCategory.Debuff;
+                    skillRow.SkillType == SkillType.Buff ||
+                    skillRow.SkillType == SkillType.Debuff;
 
                 var skill = SkillFactory.Get(skillRow, !isBuff ? dmg : 0, 100);
                 _orderedSkills.Add(skill);
@@ -83,8 +83,8 @@ namespace Nekoyume.Model
             }
 
             isBuff =
-                enrageSkillRow.SkillCategory == SkillCategory.Buff ||
-                enrageSkillRow.SkillCategory == SkillCategory.Debuff;
+                enrageSkillRow.SkillType == SkillType.Buff ||
+                enrageSkillRow.SkillType == SkillType.Debuff;
 
             var enrageSkill = SkillFactory.Get(enrageSkillRow, !isBuff ? dmg : 0, 100);
             _enrageSkill = enrageSkill;
