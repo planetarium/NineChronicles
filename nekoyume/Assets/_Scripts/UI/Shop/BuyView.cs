@@ -405,7 +405,9 @@ namespace Nekoyume
             var avatarLevel = Game.Game.instance.States.CurrentAvatarState.level;
             var requirementSheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
 
-            if (!_useSearch.Value && !_levelLimit.Value)
+            if (!_useSearch.Value &&
+                !_levelLimit.Value &&
+                filter is ItemSubTypeFilter.RuneStone or ItemSubTypeFilter.PetSoulStone)
             {
                 return Array.Empty<int>();
             }
@@ -420,16 +422,60 @@ namespace Nekoyume
                 return inSearch && inLevelLimit;
             }
 
+            return _itemIds.Where(id => IsValid(id, L10nManager.LocalizeItemName(id), _useSearch.Value, _levelLimit.Value)).ToArray();
+        }
+
+        private string GetFilteredTicker(ItemSubTypeFilter filter)
+        {
+            if (!_useSearch.Value)
+            {
+                return filter == ItemSubTypeFilter.RuneStone ? "RUNE" : "SOULSTONE";
+            }
+
+            var itemName = inputField.text;
+
             switch (filter)
             {
                 case ItemSubTypeFilter.RuneStone:
-                     return _runeIds.Where(id => IsValid(id, L10nManager.LocalizeRuneName(id), _useSearch.Value, false)).ToArray();
+                    if (Regex.IsMatch(itemName, "rune", RegexOptions.IgnoreCase))
+                    {
+                        return "RUNE";
+                    }
+
+                    // FIXME : May not be supported in various l10n environments
+                    if (Regex.IsMatch(itemName, "fenrir", RegexOptions.IgnoreCase))
+                    {
+                        return "RUNESTONE_FENRIR";
+                    }
+
+                    if (Regex.IsMatch(itemName, "saehrimnir", RegexOptions.IgnoreCase))
+                    {
+                        return "RUNESTONE_SAEHRIMNIR";
+                    }
+
+                    var filteredRuneList = _runeIds.Where(id => Regex.IsMatch(L10nManager.LocalizeItemName(id),
+                        itemName, RegexOptions.IgnoreCase)).ToList();
+
+                    var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
+                    return filteredRuneList.Any()
+                        ? runeSheet[filteredRuneList.First()].Ticker
+                        : "RUNE";
 
                 case ItemSubTypeFilter.PetSoulStone:
-                    return _petIds.Where(id => IsValid(id, L10nManager.LocalizePetName(id), _useSearch.Value, false)).ToArray();
+                    if (Regex.IsMatch(itemName, "Soulstone", RegexOptions.IgnoreCase))
+                    {
+                        return "SOULSTONE";
+                    }
 
+                    var filteredPetList = _petIds.Where(id => Regex.IsMatch(L10nManager.LocalizeItemName(id),
+                        itemName, RegexOptions.IgnoreCase)).ToList();
+
+                    var petSheet = Game.Game.instance.TableSheets.PetSheet;
+                    return filteredPetList.Any()
+                        ? petSheet[filteredPetList.First()].SoulStoneTicker.ToUpper()
+                        : "SOULSTONE";
                 default:
-                    return _itemIds.Where(id => IsValid(id, L10nManager.LocalizeItemName(id), _useSearch.Value, _levelLimit.Value)).ToArray();
+                    return "RUNE";
             }
         }
 
@@ -452,17 +498,18 @@ namespace Nekoyume
             var orderType = filter is ItemSubTypeFilter.RuneStone or ItemSubTypeFilter.PetSoulStone
                 ? _isAscending.Value ? MarketOrderType.price : MarketOrderType.price_desc
                 : _selectedSortFilter.Value.ToMarketOrderType(_isAscending.Value);
-            var filteredItemIds = GetFilteredItemIds(filter);
 
             _loadingCount++;
             loading.SetActive(_loadingCount > 0);
             if (filter is ItemSubTypeFilter.RuneStone or ItemSubTypeFilter.PetSoulStone)
             {
+                var ticker = GetFilteredTicker(filter);
                 await ReactiveShopState.RequestBuyFungibleAssetsAsync(
-                    filter, orderType, limit * 15, reset, filteredItemIds);
+                    ticker, orderType, limit * 15, reset);
             }
             else
             {
+                var filteredItemIds = GetFilteredItemIds(filter);
                 await ReactiveShopState.RequestBuyProductsAsync(
                     filter, orderType, limit * 15, reset, filteredItemIds);
             }

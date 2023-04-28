@@ -90,21 +90,19 @@ namespace Nekoyume.State
         }
 
         public static async Task RequestBuyFungibleAssetsAsync(
-            ItemSubTypeFilter filter,
+            string ticker,
             MarketOrderType orderType,
             int limit,
-            bool reset = true,
-            int[] itemIds = null)
+            bool reset = true)
         {
             if (!reset && BuyFavMaxChecker)
             {
                 return;
             }
 
-            var ticker = filter == ItemSubTypeFilter.RuneStone ? "RUNE" : "SOULSTONE";
             var offset = reset ? 0 : CachedBuyFungibleAssetProducts.Count;
             var (fungibleAssets, totalCount) =
-                await Game.Game.instance.MarketServiceClient.GetBuyFungibleAssetProducts(ticker, offset, limit, orderType, itemIds);
+                await Game.Game.instance.MarketServiceClient.GetBuyFungibleAssetProducts(ticker, offset, limit, orderType);
 
             if (reset)
             {
