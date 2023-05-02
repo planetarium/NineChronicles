@@ -88,6 +88,11 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            if (context.BlockIndex == 6166598 && context.TxId.ToString() == "9f736e20b2ce8dd923898e0be0b95c582defd0a76156368ffe976bdfacf1d1db")
+            {
+                return context.PreviousStates;
+            }
+
             var states = context.PreviousStates;
             var shardedShopAddress = ShardedShopStateV2.DeriveAddress(itemSubType, orderId);
             var inventoryAddress = sellerAvatarAddress.Derive(LegacyInventoryKey);
