@@ -38,7 +38,7 @@ namespace Nekoyume.BlockChain.Policy
 
         public static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(8);
 
-        private readonly IActionTypeLoader _actionTypeLoader;
+        private readonly IActionLoader _actionLoader;
 
         // FIXME: Why does BlockPolicySource have renderers?
         public readonly ActionRenderer ActionRenderer = new ActionRenderer();
@@ -55,9 +55,9 @@ namespace Nekoyume.BlockChain.Policy
         public BlockPolicySource(
             ILogger logger,
             LogEventLevel logEventLevel = LogEventLevel.Verbose,
-            IActionTypeLoader actionTypeLoader = null)
+            IActionLoader actionLoader = null)
         {
-            _actionTypeLoader = actionTypeLoader ?? new StaticActionTypeLoader(
+            _actionLoader = actionLoader ?? new StaticActionLoader(
                 Assembly.GetEntryAssembly() is Assembly entryAssembly
                     ? new[] { typeof(ActionBase).Assembly, entryAssembly }
                     : new[] { typeof(ActionBase).Assembly },
@@ -157,7 +157,7 @@ namespace Nekoyume.BlockChain.Policy
 
             Func<BlockChain<NCAction>, Transaction, TxPolicyViolationException> validateNextBlockTx =
                 (blockChain, transaction) => ValidateNextBlockTxRaw(
-                    blockChain, _actionTypeLoader, transaction);
+                    blockChain, _actionLoader, transaction);
             Func<BlockChain<NCAction>, Block, BlockPolicyViolationException> validateNextBlock =
                 (blockchain, block) => ValidateNextBlockRaw(
                     block,
@@ -184,7 +184,7 @@ namespace Nekoyume.BlockChain.Policy
 
         internal static TxPolicyViolationException ValidateNextBlockTxRaw(
             BlockChain<NCAction> blockChain,
-            IActionTypeLoader actionTypeLoader,
+            IActionLoader actionLoader,
             Transaction transaction)
         {
             // Avoid NRE when genesis block appended
@@ -197,7 +197,7 @@ namespace Nekoyume.BlockChain.Policy
                     $"{((ITransaction)transaction).Actions?.Count}",
                     transaction.Id);
             }
-            else if (IsObsolete(transaction, actionTypeLoader, index))
+            else if (IsObsolete(transaction, actionLoader, index))
             {
                 return new TxPolicyViolationException(
                     $"Transaction {transaction.Id} is obsolete.",
@@ -206,7 +206,7 @@ namespace Nekoyume.BlockChain.Policy
 
             try
             {
-                var actionTypes = actionTypeLoader.Load(new ActionTypeLoaderContext(index));
+                var actionTypes = actionLoader.Load(index);
                 // Check ActivateAccount
                 if (((ITransaction)transaction).Actions is { } customActions &&
                     customActions.Count == 1 &&

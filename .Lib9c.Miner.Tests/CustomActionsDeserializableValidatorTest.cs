@@ -14,7 +14,7 @@ public class CustomActionsDeserializableValidatorTest
     [Fact]
     public void Validate()
     {
-        var validator = new CustomActionsDeserializableValidator(new MockActionTypeLoader(), 10);
+        var validator = new CustomActionsDeserializableValidator(new MockActionLoader(), 10);
         Assert.False(validator.Validate(new MockTransaction
         {
             CustomActions =
@@ -87,9 +87,9 @@ public class CustomActionsDeserializableValidatorTest
         }
     }
 
-    private class MockActionTypeLoader : IActionTypeLoader
+    private class MockActionLoader : IActionLoader
     {
-        public IDictionary<IValue, Type> Load(IActionTypeLoaderContext context)
+        public IDictionary<IValue, Type> Load(long index)
         {
             return new Dictionary<IValue, Type>
             {
@@ -97,9 +97,16 @@ public class CustomActionsDeserializableValidatorTest
             };
         }
 
-        public IEnumerable<Type> LoadAllActionTypes(IActionTypeLoaderContext context)
+        public IAction LoadAction(long index, IValue value)
         {
-            return Load(context).Values;
+            var act = new DailyReward();
+            act.LoadPlainValue(value);
+            return act;
+        }
+
+        public IEnumerable<Type> LoadAllActionTypes(long index)
+        {
+            return Load(index).Values;
         }
     }
 }

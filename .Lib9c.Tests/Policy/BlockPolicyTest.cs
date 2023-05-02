@@ -7,7 +7,6 @@ namespace Lib9c.Tests
     using System.Numerics;
     using Libplanet;
     using Libplanet.Action;
-    using Libplanet.Action.Sys;
     using Libplanet.Assets;
     using Libplanet.Blockchain;
     using Libplanet.Blockchain.Policies;
@@ -321,7 +320,7 @@ namespace Lib9c.Tests
 
             Assert.Equal(1, blockChain.Count);
             var txs = GenerateTransactions(5).OrderBy(tx => tx.Id).ToList();
-            Block block1 = new BlockContent(
+            var preEvalBlock1 = new BlockContent(
                 new BlockMetadata(
                     index: 1,
                     timestamp: DateTimeOffset.MinValue,
@@ -329,12 +328,13 @@ namespace Lib9c.Tests
                     previousHash: blockChain.Tip.Hash,
                     txHash: BlockContent.DeriveTxHash(txs),
                     lastCommit: null),
-                transactions: txs).Propose().Evaluate(adminPrivateKey, blockChain);
+                transactions: txs).Propose();
+            Block block1 = EvaluateAndSign(blockChain, preEvalBlock1, adminPrivateKey);
             blockChain.Append(block1, GenerateBlockCommit(block1, adminPrivateKey));
             Assert.Equal(2, blockChain.Count);
             Assert.True(blockChain.ContainsBlock(block1.Hash));
             txs = GenerateTransactions(10).OrderBy(tx => tx.Id).ToList();
-            Block block2 = new BlockContent(
+            PreEvaluationBlock preEvalBlock2 = new BlockContent(
                 new BlockMetadata(
                     index: 2,
                     timestamp: DateTimeOffset.MinValue,
@@ -342,12 +342,13 @@ namespace Lib9c.Tests
                     previousHash: blockChain.Tip.Hash,
                     txHash: BlockContent.DeriveTxHash(txs),
                     lastCommit: GenerateBlockCommit(blockChain.Tip, adminPrivateKey)),
-                transactions: txs).Propose().Evaluate(adminPrivateKey, blockChain);
+                transactions: txs).Propose();
+            Block block2 = EvaluateAndSign(blockChain, preEvalBlock2, adminPrivateKey);
             blockChain.Append(block2, GenerateBlockCommit(block2, adminPrivateKey));
             Assert.Equal(3, blockChain.Count);
             Assert.True(blockChain.ContainsBlock(block2.Hash));
             txs = GenerateTransactions(11).OrderBy(tx => tx.Id).ToList();
-            Block block3 = new BlockContent(
+            PreEvaluationBlock preEvalBlock3 = new BlockContent(
                 new BlockMetadata(
                     index: 3,
                     timestamp: DateTimeOffset.MinValue,
@@ -355,7 +356,8 @@ namespace Lib9c.Tests
                     previousHash: blockChain.Tip.Hash,
                     txHash: BlockContent.DeriveTxHash(txs),
                     lastCommit: GenerateBlockCommit(blockChain.Tip, adminPrivateKey)),
-                transactions: txs).Propose().Evaluate(adminPrivateKey, blockChain);
+                transactions: txs).Propose();
+            Block block3 = EvaluateAndSign(blockChain, preEvalBlock3, adminPrivateKey);
             Assert.Throws<InvalidBlockTxCountException>(
                 () => blockChain.Append(block3, GenerateBlockCommit(block3, adminPrivateKey)));
             Assert.Equal(3, blockChain.Count);
@@ -415,7 +417,7 @@ namespace Lib9c.Tests
 
             Assert.Equal(1, blockChain.Count);
             var txs = GenerateTransactions(10).OrderBy(tx => tx.Id).ToList();
-            Block block1 = new BlockContent(
+            PreEvaluationBlock preEvalBlock1 = new BlockContent(
                 new BlockMetadata(
                     index: 1,
                     timestamp: DateTimeOffset.MinValue,
@@ -423,7 +425,8 @@ namespace Lib9c.Tests
                     previousHash: blockChain.Tip.Hash,
                     txHash: BlockContent.DeriveTxHash(txs),
                     lastCommit: null),
-                transactions: txs).Propose().Evaluate(adminPrivateKey, blockChain);
+                transactions: txs).Propose();
+            Block block1 = EvaluateAndSign(blockChain, preEvalBlock1, adminPrivateKey);
 
             // Should be fine since policy hasn't kicked in yet.
             blockChain.Append(block1, GenerateBlockCommit(block1, adminPrivateKey));
@@ -431,7 +434,7 @@ namespace Lib9c.Tests
             Assert.True(blockChain.ContainsBlock(block1.Hash));
 
             txs = GenerateTransactions(10).OrderBy(tx => tx.Id).ToList();
-            Block block2 = new BlockContent(
+            PreEvaluationBlock preEvalBlock2 = new BlockContent(
                 new BlockMetadata(
                     index: 2,
                     timestamp: DateTimeOffset.MinValue,
@@ -439,7 +442,8 @@ namespace Lib9c.Tests
                     previousHash: blockChain.Tip.Hash,
                     txHash: BlockContent.DeriveTxHash(txs),
                     lastCommit: GenerateBlockCommit(blockChain.Tip, adminPrivateKey)),
-                transactions: txs).Propose().Evaluate(adminPrivateKey, blockChain);
+                transactions: txs).Propose();
+            Block block2 = EvaluateAndSign(blockChain, preEvalBlock2, adminPrivateKey);
 
             // Subpolicy kicks in.
             Assert.Throws<InvalidBlockTxCountPerSignerException>(
@@ -451,7 +455,7 @@ namespace Lib9c.Tests
 
             // Limit should also pass.
             txs = GenerateTransactions(5).OrderBy(tx => tx.Id).ToList();
-            Block block3 = new BlockContent(
+            PreEvaluationBlock preEvalBlock3 = new BlockContent(
                 new BlockMetadata(
                     index: 2,
                     timestamp: DateTimeOffset.MinValue,
@@ -459,8 +463,8 @@ namespace Lib9c.Tests
                     previousHash: blockChain.Tip.Hash,
                     txHash: BlockContent.DeriveTxHash(txs),
                     lastCommit: GenerateBlockCommit(blockChain.Tip, adminPrivateKey)),
-                transactions: txs).Propose().Evaluate(adminPrivateKey, blockChain);
-
+                transactions: txs).Propose();
+            Block block3 = EvaluateAndSign(blockChain, preEvalBlock3, adminPrivateKey);
             blockChain.Append(block3, GenerateBlockCommit(block3, adminPrivateKey));
             Assert.Equal(3, blockChain.Count);
             Assert.True(blockChain.ContainsBlock(block3.Hash));
@@ -514,6 +518,16 @@ namespace Lib9c.Tests
                 credits: null,
                 privateKey: _privateKey,
                 timestamp: timestamp ?? DateTimeOffset.MinValue);
+        }
+
+        private Block EvaluateAndSign(
+            BlockChain<PolymorphicAction<ActionBase>> blockChain,
+            PreEvaluationBlock preEvaluationBlock,
+            PrivateKey privateKey
+        )
+        {
+            var stateRootHash = blockChain.DetermineBlockStateRootHash(preEvaluationBlock, out _);
+            return preEvaluationBlock.Sign(privateKey, stateRootHash);
         }
     }
 }
