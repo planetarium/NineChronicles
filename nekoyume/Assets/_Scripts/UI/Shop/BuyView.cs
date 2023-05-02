@@ -243,8 +243,6 @@ namespace Nekoyume
             _sortOrderAnimator = sortOrderButton.GetComponent<Animator>();
             _levelLimitAnimator = levelLimitToggle.GetComponent<Animator>();
             _resetAnimator = resetButton.GetComponent<Animator>();
-            _loadingCount = 0;
-            loading.SetActive(_loadingCount > 0);
 
             _sortText = sortButton.GetComponentInChildren<TextMeshProUGUI>();
             var tableSheets = Game.Game.instance.TableSheets;
@@ -405,8 +403,7 @@ namespace Nekoyume
             var avatarLevel = Game.Game.instance.States.CurrentAvatarState.level;
             var requirementSheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
 
-            if (!_useSearch.Value &&
-                !_levelLimit.Value &&
+            if ((!_useSearch.Value && !_levelLimit.Value) ||
                 filter is ItemSubTypeFilter.RuneStone or ItemSubTypeFilter.PetSoulStone)
             {
                 return Array.Empty<int>();
@@ -495,9 +492,7 @@ namespace Nekoyume
                 return;
             }
 
-            var orderType = filter is ItemSubTypeFilter.RuneStone or ItemSubTypeFilter.PetSoulStone
-                ? _isAscending.Value ? MarketOrderType.price : MarketOrderType.price_desc
-                : _selectedSortFilter.Value.ToMarketOrderType(_isAscending.Value);
+            var orderType = _selectedSortFilter.Value.ToMarketOrderType(_isAscending.Value);
 
             _loadingCount++;
             loading.SetActive(_loadingCount > 0);
@@ -677,6 +672,8 @@ namespace Nekoyume
             toggleDropdowns.First().items.First().isOn = true;
             inputField.text = string.Empty;
             resetButton.interactable = false;
+            _loadingCount = 0;
+            loading.SetActive(_loadingCount > 0);
             if (_resetAnimator.isActiveAndEnabled)
             {
                 _resetAnimator.Play(_hashDisabled);
