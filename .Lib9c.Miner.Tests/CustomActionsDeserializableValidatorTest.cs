@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Assets;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
 using Libplanet.Tx;
@@ -14,7 +15,7 @@ public class CustomActionsDeserializableValidatorTest
     [Fact]
     public void Validate()
     {
-        var validator = new CustomActionsDeserializableValidator(new MockActionTypeLoader(), 10);
+        var validator = new CustomActionsDeserializableValidator(new MockActionLoader(), 10);
         Assert.False(validator.Validate(new MockTransaction
         {
             CustomActions =
@@ -61,6 +62,11 @@ public class CustomActionsDeserializableValidatorTest
         public BlockHash? GenesisHash { get; init; }
         public TxActionList Actions =>
             new(SystemAction is { } sa ? new List(sa) : new List(CustomActions!));
+
+        public FungibleAssetValue? MaxGasPrice => null;
+
+        public long? GasLimit => null;
+
         public TxId Id { get; init; }
         public byte[] Signature { get; init; }
         public Dictionary? SystemAction { get; init; }
@@ -87,19 +93,26 @@ public class CustomActionsDeserializableValidatorTest
         }
     }
 
-    private class MockActionTypeLoader : IActionTypeLoader
+    private class MockActionLoader : IActionLoader
     {
-        public IDictionary<string, Type> Load(IActionTypeLoaderContext context)
+        public IDictionary<IValue, Type> Load(long index)
         {
-            return new Dictionary<string, Type>
+            return new Dictionary<IValue, Type>
             {
-                ["daily_reward"] = typeof(DailyReward),
+                [(Text)"daily_reward"] = typeof(DailyReward),
             };
         }
 
-        public IEnumerable<Type> LoadAllActionTypes(IActionTypeLoaderContext context)
+        public IAction LoadAction(long index, IValue value)
         {
-            return Load(context).Values;
+            var act = new DailyReward();
+            act.LoadPlainValue(value);
+            return act;
+        }
+
+        public IEnumerable<Type> LoadAllActionTypes(long index)
+        {
+            return Load(index).Values;
         }
     }
 }
