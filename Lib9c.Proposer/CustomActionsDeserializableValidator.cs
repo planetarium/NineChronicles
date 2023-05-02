@@ -21,7 +21,7 @@ namespace Nekoyume.BlockChain
         {
             var types = _actionTypeLoader.Load(new ActionTypeLoaderContext(_nextBlockIndex));
 
-            return transaction.CustomActions?.All(ca =>
+            return transaction.Actions?.All(ca =>
                 ca is Dictionary dictionary &&
                 dictionary.TryGetValue((Text)"type_id", out IValue typeIdValue) &&
                 typeIdValue is Text typeId &&

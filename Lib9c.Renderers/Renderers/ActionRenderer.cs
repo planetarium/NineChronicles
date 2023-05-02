@@ -16,7 +16,7 @@ using System.Reactive.Linq;
 namespace Lib9c.Renderers
 {
     using NCAction = PolymorphicAction<ActionBase>;
-    using NCBlock = Block<PolymorphicAction<ActionBase>>;
+    using NCBlock = Block;
 
     public class ActionRenderer : IActionRenderer<NCAction>
     {
