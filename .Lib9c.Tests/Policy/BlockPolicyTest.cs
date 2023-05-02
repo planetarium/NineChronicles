@@ -50,7 +50,7 @@ namespace Lib9c.Tests
                 null, null, null, null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
-            Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
+            Block genesis = MakeGenesisBlock(
                 adminAddress,
                 ImmutableHashSet.Create(adminAddress),
                 initialValidators: new Dictionary<PublicKey, BigInteger>
@@ -66,8 +66,8 @@ namespace Lib9c.Tests
                 genesis,
                 renderers: new[] { blockPolicySource.BlockRenderer }
             );
-            Transaction<PolymorphicAction<ActionBase>> txByStranger =
-                Transaction<PolymorphicAction<ActionBase>>.Create(
+            Transaction txByStranger =
+                Transaction.Create<PolymorphicAction<ActionBase>>(
                     0,
                     new PrivateKey(),
                     genesis.Hash,
@@ -85,11 +85,11 @@ namespace Lib9c.Tests
                 adminPrivateKey,
                 new PolymorphicAction<ActionBase>[] { new AddActivatedAccount(newActivatedAddress) }
             );
-            Block<PolymorphicAction<ActionBase>> block = blockChain.ProposeBlock(adminPrivateKey);
+            Block block = blockChain.ProposeBlock(adminPrivateKey);
             blockChain.Append(block, GenerateBlockCommit(block, adminPrivateKey));
 
-            Transaction<PolymorphicAction<ActionBase>> txByNewActivated =
-                Transaction<PolymorphicAction<ActionBase>>.Create(
+            Transaction txByNewActivated =
+                Transaction.Create<PolymorphicAction<ActionBase>>(
                     0,
                     newActivatedPrivateKey,
                     genesis.Hash,
@@ -108,15 +108,15 @@ namespace Lib9c.Tests
                 new DailyReward(),
                 new DailyReward(),
             };
-            Transaction<PolymorphicAction<ActionBase>> txWithSingleAction =
-                Transaction<PolymorphicAction<ActionBase>>.Create(
+            Transaction txWithSingleAction =
+                Transaction.Create<PolymorphicAction<ActionBase>>(
                     0,
                     newActivatedPrivateKey,
                     genesis.Hash,
                     singleAction
                 );
-            Transaction<PolymorphicAction<ActionBase>> txWithManyActions =
-                Transaction<PolymorphicAction<ActionBase>>.Create(
+            Transaction txWithManyActions =
+                Transaction.Create<PolymorphicAction<ActionBase>>(
                     0,
                     newActivatedPrivateKey,
                     genesis.Hash,
@@ -140,7 +140,7 @@ namespace Lib9c.Tests
                 null, null, null, null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
-            Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
+            Block genesis = MakeGenesisBlock(
                 adminAddress,
                 ImmutableHashSet.Create(adminAddress),
                 initialValidators: new Dictionary<PublicKey, BigInteger>
@@ -160,7 +160,7 @@ namespace Lib9c.Tests
                 adminPrivateKey,
                 new PolymorphicAction<ActionBase>[] { new AddActivatedAccount(adminPrivateKey.ToAddress()) }
             );
-            Block<PolymorphicAction<ActionBase>> block1 = blockChain.ProposeBlock(adminPrivateKey);
+            Block block1 = blockChain.ProposeBlock(adminPrivateKey);
             Assert.Throws<InvalidBlockCommitException>(
                 () => blockChain.Append(block1, GenerateBlockCommit(block1, nonValidator)));
         }
@@ -185,7 +185,7 @@ namespace Lib9c.Tests
                 maxTransactionsPerSignerPerBlockPolicy: null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
-            Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
+            Block genesis = MakeGenesisBlock(
                 adminAddress,
                 ImmutableHashSet.Create(adminAddress),
                 new AuthorizedMinersState(
@@ -235,7 +235,7 @@ namespace Lib9c.Tests
                 maxTransactionsPerSignerPerBlockPolicy: null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
-            Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
+            Block genesis = MakeGenesisBlock(
                 adminAddress,
                 ImmutableHashSet.Create(adminAddress),
                 new AuthorizedMinersState(
@@ -263,7 +263,7 @@ namespace Lib9c.Tests
                 new PolymorphicAction<ActionBase>[] { new DailyReward(), }
             );
 
-            Block<PolymorphicAction<ActionBase>> block = blockChain.ProposeBlock(adminPrivateKey);
+            Block block = blockChain.ProposeBlock(adminPrivateKey);
             blockChain.Append(block, GenerateBlockCommit(block, adminPrivateKey));
             FungibleAssetValue actualBalance = blockChain.GetBalance(adminAddress, _currency);
             FungibleAssetValue expectedBalance = new FungibleAssetValue(_currency, 10, 0);
@@ -285,7 +285,7 @@ namespace Lib9c.Tests
                 maxTransactionsPerSignerPerBlockPolicy: null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
-            Block<PolymorphicAction<ActionBase>> genesis =
+            Block genesis =
                 MakeGenesisBlock(
                     adminPublicKey.ToAddress(),
                     ImmutableHashSet<Address>.Empty,
@@ -303,12 +303,12 @@ namespace Lib9c.Tests
             );
 
             int nonce = 0;
-            List<Transaction<PolymorphicAction<ActionBase>>> GenerateTransactions(int count)
+            List<Transaction> GenerateTransactions(int count)
             {
-                var list = new List<Transaction<PolymorphicAction<ActionBase>>>();
+                var list = new List<Transaction>();
                 for (int i = 0; i < count; i++)
                 {
-                    list.Add(Transaction<PolymorphicAction<ActionBase>>.Create(
+                    list.Add(Transaction.Create<PolymorphicAction<ActionBase>>(
                         nonce++,
                         adminPrivateKey,
                         genesis.Hash,
@@ -321,39 +321,39 @@ namespace Lib9c.Tests
 
             Assert.Equal(1, blockChain.Count);
             var txs = GenerateTransactions(5).OrderBy(tx => tx.Id).ToList();
-            Block<PolymorphicAction<ActionBase>> block1 = new BlockContent<PolymorphicAction<ActionBase>>(
+            Block block1 = new BlockContent(
                 new BlockMetadata(
                     index: 1,
                     timestamp: DateTimeOffset.MinValue,
                     publicKey: adminPublicKey,
                     previousHash: blockChain.Tip.Hash,
-                    txHash: BlockContent<PolymorphicAction<ActionBase>>.DeriveTxHash(txs),
+                    txHash: BlockContent.DeriveTxHash(txs),
                     lastCommit: null),
                 transactions: txs).Propose().Evaluate(adminPrivateKey, blockChain);
             blockChain.Append(block1, GenerateBlockCommit(block1, adminPrivateKey));
             Assert.Equal(2, blockChain.Count);
             Assert.True(blockChain.ContainsBlock(block1.Hash));
             txs = GenerateTransactions(10).OrderBy(tx => tx.Id).ToList();
-            Block<PolymorphicAction<ActionBase>> block2 = new BlockContent<PolymorphicAction<ActionBase>>(
+            Block block2 = new BlockContent(
                 new BlockMetadata(
                     index: 2,
                     timestamp: DateTimeOffset.MinValue,
                     publicKey: adminPublicKey,
                     previousHash: blockChain.Tip.Hash,
-                    txHash: BlockContent<PolymorphicAction<ActionBase>>.DeriveTxHash(txs),
+                    txHash: BlockContent.DeriveTxHash(txs),
                     lastCommit: GenerateBlockCommit(blockChain.Tip, adminPrivateKey)),
                 transactions: txs).Propose().Evaluate(adminPrivateKey, blockChain);
             blockChain.Append(block2, GenerateBlockCommit(block2, adminPrivateKey));
             Assert.Equal(3, blockChain.Count);
             Assert.True(blockChain.ContainsBlock(block2.Hash));
             txs = GenerateTransactions(11).OrderBy(tx => tx.Id).ToList();
-            Block<PolymorphicAction<ActionBase>> block3 = new BlockContent<PolymorphicAction<ActionBase>>(
+            Block block3 = new BlockContent(
                 new BlockMetadata(
                     index: 3,
                     timestamp: DateTimeOffset.MinValue,
                     publicKey: adminPublicKey,
                     previousHash: blockChain.Tip.Hash,
-                    txHash: BlockContent<PolymorphicAction<ActionBase>>.DeriveTxHash(txs),
+                    txHash: BlockContent.DeriveTxHash(txs),
                     lastCommit: GenerateBlockCommit(blockChain.Tip, adminPrivateKey)),
                 transactions: txs).Propose().Evaluate(adminPrivateKey, blockChain);
             Assert.Throws<InvalidBlockTxCountException>(
@@ -379,7 +379,7 @@ namespace Lib9c.Tests
                     .Add(new SpannedSubPolicy<int>(2, null, null, 5)));
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
-            Block<PolymorphicAction<ActionBase>> genesis =
+            Block genesis =
                 MakeGenesisBlock(
                     adminPublicKey.ToAddress(),
                     ImmutableHashSet<Address>.Empty,
@@ -397,12 +397,12 @@ namespace Lib9c.Tests
             );
 
             int nonce = 0;
-            List<Transaction<PolymorphicAction<ActionBase>>> GenerateTransactions(int count)
+            List<Transaction> GenerateTransactions(int count)
             {
-                var list = new List<Transaction<PolymorphicAction<ActionBase>>>();
+                var list = new List<Transaction>();
                 for (int i = 0; i < count; i++)
                 {
-                    list.Add(Transaction<PolymorphicAction<ActionBase>>.Create(
+                    list.Add(Transaction.Create<PolymorphicAction<ActionBase>>(
                         nonce++,
                         adminPrivateKey,
                         genesis.Hash,
@@ -415,13 +415,13 @@ namespace Lib9c.Tests
 
             Assert.Equal(1, blockChain.Count);
             var txs = GenerateTransactions(10).OrderBy(tx => tx.Id).ToList();
-            Block<PolymorphicAction<ActionBase>> block1 = new BlockContent<PolymorphicAction<ActionBase>>(
+            Block block1 = new BlockContent(
                 new BlockMetadata(
                     index: 1,
                     timestamp: DateTimeOffset.MinValue,
                     publicKey: adminPublicKey,
                     previousHash: blockChain.Tip.Hash,
-                    txHash: BlockContent<PolymorphicAction<ActionBase>>.DeriveTxHash(txs),
+                    txHash: BlockContent.DeriveTxHash(txs),
                     lastCommit: null),
                 transactions: txs).Propose().Evaluate(adminPrivateKey, blockChain);
 
@@ -431,13 +431,13 @@ namespace Lib9c.Tests
             Assert.True(blockChain.ContainsBlock(block1.Hash));
 
             txs = GenerateTransactions(10).OrderBy(tx => tx.Id).ToList();
-            Block<PolymorphicAction<ActionBase>> block2 = new BlockContent<PolymorphicAction<ActionBase>>(
+            Block block2 = new BlockContent(
                 new BlockMetadata(
                     index: 2,
                     timestamp: DateTimeOffset.MinValue,
                     publicKey: adminPublicKey,
                     previousHash: blockChain.Tip.Hash,
-                    txHash: BlockContent<PolymorphicAction<ActionBase>>.DeriveTxHash(txs),
+                    txHash: BlockContent.DeriveTxHash(txs),
                     lastCommit: GenerateBlockCommit(blockChain.Tip, adminPrivateKey)),
                 transactions: txs).Propose().Evaluate(adminPrivateKey, blockChain);
 
@@ -451,13 +451,13 @@ namespace Lib9c.Tests
 
             // Limit should also pass.
             txs = GenerateTransactions(5).OrderBy(tx => tx.Id).ToList();
-            Block<PolymorphicAction<ActionBase>> block3 = new BlockContent<PolymorphicAction<ActionBase>>(
+            Block block3 = new BlockContent(
                 new BlockMetadata(
                     index: 2,
                     timestamp: DateTimeOffset.MinValue,
                     publicKey: adminPublicKey,
                     previousHash: blockChain.Tip.Hash,
-                    txHash: BlockContent<PolymorphicAction<ActionBase>>.DeriveTxHash(txs),
+                    txHash: BlockContent.DeriveTxHash(txs),
                     lastCommit: GenerateBlockCommit(blockChain.Tip, adminPrivateKey)),
                 transactions: txs).Propose().Evaluate(adminPrivateKey, blockChain);
 
@@ -466,8 +466,7 @@ namespace Lib9c.Tests
             Assert.True(blockChain.ContainsBlock(block3.Hash));
         }
 
-        private BlockCommit GenerateBlockCommit<T>(Block<T> block, PrivateKey key)
-            where T : IAction, new()
+        private BlockCommit GenerateBlockCommit(Block block, PrivateKey key)
         {
             PrivateKey privateKey = key;
             return block.Index != 0
@@ -485,7 +484,7 @@ namespace Lib9c.Tests
                 : null;
         }
 
-        private Block<PolymorphicAction<ActionBase>> MakeGenesisBlock(
+        private Block MakeGenesisBlock(
             Address adminAddress,
             IImmutableSet<Address> activatedAddresses,
             AuthorizedMinersState authorizedMinersState = null,
