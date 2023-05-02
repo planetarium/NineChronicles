@@ -109,7 +109,6 @@ namespace Nekoyume.UI.Module.Lobby
 
         private void MakeSeasonRewardMail(int id, Address address, IEnumerable<SeasonRewards> rewards, bool isNew)
         {
-            LocalMailHelper.Instance.Initialize(address);
             var now = Game.Game.instance.Agent.BlockIndex;
             foreach (var reward in rewards.OrderBy(reward => reward.ticker))
             {

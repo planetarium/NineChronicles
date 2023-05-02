@@ -15,38 +15,42 @@ namespace Nekoyume.Helper
         {
             _localMailDictionary = new Dictionary<Address, List<Mail>>();
             _disposables = new List<IDisposable>();
-            _localMailBox = new ReactiveProperty<MailBox>();
+            _localMailBox = new ReactiveProperty<MailBox>(null);
+            Event.OnUpdateAddresses.AsObservable()
+                .Subscribe(_ => Initialize(States.Instance.CurrentAvatarState.address));
+            ReactiveAvatarState.MailBox.Subscribe(UpdateLocalMailBox);
         }
 
         private readonly Dictionary<Address, List<Mail>> _localMailDictionary;
         private readonly List<IDisposable> _disposables;
         private readonly ReactiveProperty<MailBox> _localMailBox;
         private static LocalMailHelper _instance;
+        private MailBox _originalMailBox;
 
         public static LocalMailHelper Instance => _instance ??= new LocalMailHelper();
         public IObservable<MailBox> ObservableMailBox => _localMailBox.ObserveOnMainThread();
-        public MailBox MailBox => _localMailBox.Value ?? States.Instance.CurrentAvatarState?.mailBox;
+        public MailBox MailBox => _localMailBox.Value;
 
-        public void Initialize(Address address)
+        public void Add(Address address, Mail mail)
+        {
+            Initialize(address);
+
+            _localMailDictionary[address].Add(mail);
+            UpdateLocalMailBox(_originalMailBox);
+        }
+
+        private void Initialize(Address address)
         {
             if (_localMailDictionary.ContainsKey(address))
             {
                 return;
             }
 
-            ReactiveAvatarState.MailBox.Subscribe(UpdateLocalMailBox).AddTo(_disposables);
-            Event.OnUpdateAddresses.AsObservable().First().Subscribe(_ => CleanupAndDispose());
-        }
-
-        public void Add(Address address, Mail mail)
-        {
-            if (!_localMailDictionary.ContainsKey(address))
-            {
-                _localMailDictionary.Add(address, new List<Mail>());
-            }
-
-            _localMailDictionary[address].Add(mail);
-            UpdateLocalMailBox(States.Instance.CurrentAvatarState.mailBox);
+            _localMailDictionary.Add(address, new List<Mail>());
+            Event.OnUpdateAddresses.AsObservable()
+                .First()
+                .Subscribe(_ => CleanupAndDispose())
+                .AddTo(_disposables);
         }
 
         private void CleanupAndDispose()
@@ -57,10 +61,15 @@ namespace Nekoyume.Helper
 
         private void UpdateLocalMailBox(MailBox mailBox)
         {
+            _originalMailBox = mailBox;
             var newMailBox = new MailBox();
-            foreach (var mail in mailBox)
+
+            if (_originalMailBox is not null)
             {
-                newMailBox.Add(mail);
+                foreach (var mail in _originalMailBox)
+                {
+                    newMailBox.Add(mail);
+                }
             }
 
             if (_localMailDictionary.TryGetValue(States.Instance.CurrentAvatarState.address,

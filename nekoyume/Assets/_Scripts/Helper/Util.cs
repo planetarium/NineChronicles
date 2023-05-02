@@ -35,8 +35,9 @@ namespace Nekoyume.Helper
             }
 
             secondsPerBlock ??= LiveAssetManager.instance.GameConfig.SecondsPerBlock;
-            var remainSecond = block * secondsPerBlock.Value;
-            var timeSpan = TimeSpan.FromSeconds(remainSecond);
+
+            var remainSecond = block * secondsPerBlock;
+            var timeSpan = TimeSpan.FromSeconds(remainSecond.Value);
 
             var sb = new StringBuilder();
 
