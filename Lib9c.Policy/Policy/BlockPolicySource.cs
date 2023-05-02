@@ -155,10 +155,10 @@ namespace Nekoyume.BlockChain.Policy
             maxTransactionsPerSignerPerBlockPolicy = maxTransactionsPerSignerPerBlockPolicy
                 ?? MaxTransactionsPerSignerPerBlockPolicy.Default;
 
-            Func<BlockChain<NCAction>, Transaction<NCAction>, TxPolicyViolationException> validateNextBlockTx =
+            Func<BlockChain<NCAction>, Transaction, TxPolicyViolationException> validateNextBlockTx =
                 (blockChain, transaction) => ValidateNextBlockTxRaw(
                     blockChain, _actionTypeLoader, transaction);
-            Func<BlockChain<NCAction>, Block<NCAction>, BlockPolicyViolationException> validateNextBlock =
+            Func<BlockChain<NCAction>, Block, BlockPolicyViolationException> validateNextBlock =
                 (blockchain, block) => ValidateNextBlockRaw(
                     block,
                     maxTransactionsBytesPolicy,
@@ -185,16 +185,16 @@ namespace Nekoyume.BlockChain.Policy
         internal static TxPolicyViolationException ValidateNextBlockTxRaw(
             BlockChain<NCAction> blockChain,
             IActionTypeLoader actionTypeLoader,
-            Transaction<NCAction> transaction)
+            Transaction transaction)
         {
             // Avoid NRE when genesis block appended
             long index = blockChain.Count > 0 ? blockChain.Tip.Index + 1: 0;
 
-            if (((ITransaction)transaction).CustomActions?.Count > 1)
+            if (((ITransaction)transaction).Actions?.Count > 1)
             {
                 return new TxPolicyViolationException(
                     $"Transaction {transaction.Id} has too many actions: " +
-                    $"{((ITransaction)transaction).CustomActions?.Count}",
+                    $"{((ITransaction)transaction).Actions?.Count}",
                     transaction.Id);
             }
             else if (IsObsolete(transaction, actionTypeLoader, index))
@@ -208,7 +208,7 @@ namespace Nekoyume.BlockChain.Policy
             {
                 var actionTypes = actionTypeLoader.Load(new ActionTypeLoaderContext(index));
                 // Check ActivateAccount
-                if (((ITransaction)transaction).CustomActions is { } customActions &&
+                if (((ITransaction)transaction).Actions is { } customActions &&
                     customActions.Count == 1 &&
                     customActions.First() is Dictionary dictionary &&
                     dictionary.TryGetValue((Text)"type_id", out IValue typeIdValue) &&
@@ -290,7 +290,7 @@ namespace Nekoyume.BlockChain.Policy
         }
 
         internal static BlockPolicyViolationException ValidateNextBlockRaw(
-            Block<NCAction> nextBlock,
+            Block nextBlock,
             IVariableSubPolicy<long> maxTransactionsBytesPolicy,
             IVariableSubPolicy<int> minTransactionsPerBlockPolicy,
             IVariableSubPolicy<int> maxTransactionsPerBlockPolicy,
