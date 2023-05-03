@@ -99,7 +99,7 @@ namespace Nekoyume.BlockChain
                         Analyzer.Instance.Track("Unity/ActionRender",
                             new Dictionary<string, Value>()
                             {
-                                ["ActionType"] = (Value)actionType.TypeIdentifier,
+                                ["ActionType"] = actionType.TypeIdentifier,
                                 ["Elapsed"] = elapsed,
                                 ["AvatarAddress"] =
                                     States.Instance.CurrentAvatarState.address.ToString(),
