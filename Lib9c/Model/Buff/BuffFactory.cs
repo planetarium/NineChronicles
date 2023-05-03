@@ -106,6 +106,8 @@ namespace Nekoyume.Model.Buff
                         extraValueBuff)
                     {
                         int additionalPower;
+                        // If ReferencedStatType exists,
+                        // buff value = original value + (referenced stat * (Skill.Power / 10000))
                         if (buffRow.ReferencedStatType != StatType.NONE)
                         {
                             var statMap = stats.StatWithItems;
@@ -113,6 +115,7 @@ namespace Nekoyume.Model.Buff
                             additionalPower = (int)Math.Round(
                                 statMap.GetStat(buffRow.ReferencedStatType) * multiplier);
                         }
+                        // Else, buff value = original value + Skill.Power
                         else
                         {
                             additionalPower = skill.Power;
