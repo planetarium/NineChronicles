@@ -29,7 +29,6 @@ namespace Nekoyume.Model.Skill
                     }
                 case SkillType.Heal:
                     return new HealSkill(skillRow, power, chance);
-                // todo: 코드상에서 버프와 디버프를 버프로 함께 구분하고 있는데, 고도화 될 수록 디버프를 구분해주게 될 것으로 보임.
                 case SkillType.Buff:
                 case SkillType.Debuff:
                     return new BuffSkill(skillRow, power, chance);

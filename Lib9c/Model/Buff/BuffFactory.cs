@@ -10,7 +10,7 @@ namespace Nekoyume.Model.Buff
     {
         public static StatBuff GetStatBuff(StatBuffSheet.Row row)
         {
-            switch (row.StatModifier.StatType)
+            switch (row.StatType)
             {
                 case StatType.HP:
                     return new HPBuff(row);
@@ -36,7 +36,7 @@ namespace Nekoyume.Model.Buff
 
         public static StatBuff GetCustomStatBuff(StatBuffSheet.Row row, SkillCustomField customField)
         {
-            switch (row.StatModifier.StatType)
+            switch (row.StatType)
             {
                 case StatType.HP:
                     return new HPBuff(customField, row);
@@ -60,11 +60,12 @@ namespace Nekoyume.Model.Buff
             }
         }
 
-        public static ActionBuff GetActionBuff(int power, ActionBuffSheet.Row row)
+        public static ActionBuff GetActionBuff(Stats stat, ActionBuffSheet.Row row)
         {
             switch (row.ActionBuffType)
             {
                 case ActionBuffType.Bleed:
+                    var power = (int)decimal.Round(stat.ATK * row.ATKPowerRatio);
                     return new Bleed(row, power);
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -83,7 +84,7 @@ namespace Nekoyume.Model.Buff
         }
 
         public static IList<Buff> GetBuffs(
-            int power,
+            CharacterStats stats,
             ISkill skill,
             SkillBuffSheet skillBuffSheet,
             StatBuffSheet statBuffSheet,
@@ -91,6 +92,7 @@ namespace Nekoyume.Model.Buff
             ActionBuffSheet actionBuffSheet)
         {
             var buffs = new List<Buff>();
+            var extraValueBuff = skill is BuffSkill && skill.Power > 0;
 
             if (skillBuffSheet.TryGetValue(skill.SkillRow.Id, out var skillStatBuffRow))
             {
@@ -99,13 +101,40 @@ namespace Nekoyume.Model.Buff
                     if (!statBuffSheet.TryGetValue(buffId, out var buffRow))
                         continue;
 
-                    if (!skill.CustomField.HasValue)
+                    var customField = skill.CustomField;
+                    if (!customField.HasValue &&
+                        extraValueBuff)
+                    {
+                        int additionalPower;
+                        // If ReferencedStatType exists,
+                        // buff value = original value + (referenced stat * (Skill.Power / 10000))
+                        if (buffRow.ReferencedStatType != StatType.NONE)
+                        {
+                            var statMap = stats.StatWithItems;
+                            var multiplier = skill.Power / 10000m;
+                            additionalPower = (int)Math.Round(
+                                statMap.GetStat(buffRow.ReferencedStatType) * multiplier);
+                        }
+                        // Else, buff value = original value + Skill.Power
+                        else
+                        {
+                            additionalPower = skill.Power;
+                        }
+                        
+                        customField = new SkillCustomField()
+                        {
+                            BuffDuration = buffRow.Duration,
+                            BuffValue = buffRow.Value + additionalPower,
+                        };
+                    }
+
+                    if (!customField.HasValue)
                     {
                         buffs.Add(GetStatBuff(buffRow));
                     }
                     else
                     {
-                        buffs.Add(GetCustomStatBuff(buffRow, skill.CustomField.Value));
+                        buffs.Add(GetCustomStatBuff(buffRow, customField.Value));
                     }
                 }
             }
@@ -119,7 +148,7 @@ namespace Nekoyume.Model.Buff
 
                     if (!skill.CustomField.HasValue)
                     {
-                        buffs.Add(GetActionBuff(power, buffRow));
+                        buffs.Add(GetActionBuff(stats, buffRow));
                     }
                     else
                     {

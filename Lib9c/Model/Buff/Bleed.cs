@@ -36,8 +36,7 @@ namespace Nekoyume.Model.Buff
             int simulatorWaveTurn)
         {
             var clone = (CharacterBase)affectedCharacter.Clone();
-            var originalDamage = (int) decimal.Round(Power * RowData.ATKPowerRatio);
-            var damage = affectedCharacter.GetDamage(originalDamage, false);
+            var damage = affectedCharacter.GetDamage(Power, false);
             affectedCharacter.CurrentHP -= damage;
 
             var damageInfos = new List<BattleStatus.Skill.SkillInfo>
