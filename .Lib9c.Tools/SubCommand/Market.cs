@@ -71,12 +71,12 @@ namespace Lib9c.Tools.SubCommand
                 }
             }
 
-            Block<NCAction> start = Utils.ParseBlockOffset(chain, from, defaultIndex: 0);
+            Block start = Utils.ParseBlockOffset(chain, from, defaultIndex: 0);
             stderr.WriteLine("The bottom block to search: #{0} {1}.", start.Index, start.Hash);
-            Block<NCAction> end = Utils.ParseBlockOffset(chain, to);
+            Block end = Utils.ParseBlockOffset(chain, to);
             stderr.WriteLine("The topmost block to search: #{0} {1}.", end.Index, end.Hash);
 
-            Block<NCAction> block = end;
+            Block block = end;
             int indexWidth = block.Index.ToString().Length + 1;
             Console.WriteLine(
                 "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}",
@@ -97,14 +97,14 @@ namespace Lib9c.Tools.SubCommand
                 stderr.WriteLine("Scanning block #{0} {1}...", block.Index, block.Hash);
                 stderr.Flush();
 
-                IEnumerable<(Transaction<NCAction>, NCAction)> actions = block.Transactions
+                IEnumerable<(Transaction, NCAction)> actions = block.Transactions
                     .Reverse()
                     .Where(tx => includeFails ||
                         !(chain.GetTxExecution(block.Hash, tx.Id) is { } e) ||
                         e is TxSuccess)
-                    .SelectMany(tx => tx.CustomActions is { } ca
-                        ? ca.Reverse().Select(a => (tx, a))
-                        : Enumerable.Empty<(Transaction<NCAction>, NCAction)>());
+                    .SelectMany(tx => tx.Actions is { } ca
+                        ? ca.Reverse().Select(a => (tx, ToAction(a)))
+                        : Enumerable.Empty<(Transaction, NCAction)>());
 
                 foreach (var (tx, act) in actions)
                 {
@@ -193,6 +193,15 @@ namespace Lib9c.Tools.SubCommand
 
         private static Address GetOrderAddress(Guid orderId) =>
             Model.Order.Order.DeriveAddress(orderId);
+
+        private static NCAction ToAction(IValue plainValue)
+        {
+#pragma warning disable CS0612
+            var action = new NCAction();
+#pragma warning restore CS0612
+            action.LoadPlainValue(plainValue);
+            return action;
+        }
 
         struct Order
         {

@@ -59,10 +59,11 @@ public class CustomActionsDeserializableValidatorTest
         public DateTimeOffset Timestamp { get; init; }
         public PublicKey PublicKey { get; init; }
         public BlockHash? GenesisHash { get; init; }
-        public TxActionList Actions { get; init; }
+        public TxActionList Actions =>
+            new(SystemAction is { } sa ? new List(sa) : new List(CustomActions!));
         public TxId Id { get; init; }
         public byte[] Signature { get; init; }
-        public Dictionary? SystemAction { get; init; }
+        public IValue? SystemAction { get; init; }
         public IImmutableList<IValue>? CustomActions { get; init; }
         public bool Equals(ITxInvoice? other)
         {
@@ -88,11 +89,11 @@ public class CustomActionsDeserializableValidatorTest
 
     private class MockActionTypeLoader : IActionTypeLoader
     {
-        public IDictionary<string, Type> Load(IActionTypeLoaderContext context)
+        public IDictionary<IValue, Type> Load(IActionTypeLoaderContext context)
         {
-            return new Dictionary<string, Type>
+            return new Dictionary<IValue, Type>
             {
-                ["daily_reward"] = typeof(DailyReward),
+                [(Text)"daily_reward"] = typeof(DailyReward),
             };
         }
 

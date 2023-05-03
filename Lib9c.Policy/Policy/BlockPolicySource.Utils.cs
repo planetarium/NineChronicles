@@ -43,7 +43,7 @@ namespace Nekoyume.BlockChain.Policy
             long blockIndex
         )
         {
-            if (!(transaction.CustomActions is { } customActions))
+            if (!(transaction.Actions is { } customActions))
             {
                 return false;
             }
@@ -65,7 +65,7 @@ namespace Nekoyume.BlockChain.Policy
         }
 
         internal static bool IsAdminTransaction(
-            BlockChain<NCAction> blockChain, Transaction<NCAction> transaction)
+            BlockChain<NCAction> blockChain, Transaction transaction)
         {
             return GetAdminState(blockChain) is AdminState admin
                 && admin.AdminAddress.Equals(transaction.Signer);
@@ -87,7 +87,7 @@ namespace Nekoyume.BlockChain.Policy
         }
 
         private static InvalidBlockBytesLengthException ValidateTransactionsBytesRaw(
-            Block<NCAction> block,
+            Block block,
             IVariableSubPolicy<long> maxTransactionsBytesPolicy)
         {
             long maxTransactionsBytes = maxTransactionsBytesPolicy.Getter(block.Index);
@@ -106,7 +106,7 @@ namespace Nekoyume.BlockChain.Policy
         }
 
         private static BlockPolicyViolationException ValidateTxCountPerBlockRaw(
-            Block<NCAction> block,
+            Block block,
             IVariableSubPolicy<int> minTransactionsPerBlockPolicy,
             IVariableSubPolicy<int> maxTransactionsPerBlockPolicy)
         {
@@ -136,7 +136,7 @@ namespace Nekoyume.BlockChain.Policy
         }
 
         private static BlockPolicyViolationException ValidateTxCountPerSignerPerBlockRaw(
-            Block<NCAction> block,
+            Block block,
             IVariableSubPolicy<int> maxTransactionsPerSignerPerBlockPolicy)
         {
             int maxTransactionsPerSignerPerBlock =
