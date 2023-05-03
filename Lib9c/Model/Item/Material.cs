@@ -57,13 +57,8 @@ namespace Nekoyume.Model.Item
             }
         }
 
-        public override IValue Serialize()
-        {
-            var result = ((Dictionary) base.Serialize())
-                .SetItem("item_id", ItemId.Serialize());
-
-            return result;
-        }
+        public override IValue Serialize() => ((Dictionary)base.Serialize())
+            .Add("item_id", ItemId.Serialize());
 
         public override string ToString()
         {

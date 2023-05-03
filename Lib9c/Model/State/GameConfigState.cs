@@ -21,6 +21,8 @@ namespace Nekoyume.Model.State
         public int RuneStatSlotUnlockCost { get; private set; }
         public int RuneSkillSlotUnlockCost { get; private set; }
         public int DailyRuneRewardAmount { get; private set; }
+        public int DailyWorldBossInterval { get; private set; }
+        public int WorldBossRequiredInterval { get; private set; }
 
         public GameConfigState() : base(Address)
         {
@@ -68,6 +70,14 @@ namespace Nekoyume.Model.State
             {
                 DailyRuneRewardAmount = value10.ToInteger();
             }
+            if (serialized.TryGetValue((Text)"daily_worldboss_interval", out var value11))
+            {
+                DailyWorldBossInterval = value11.ToInteger();
+            }
+            if (serialized.TryGetValue((Text)"worldboss_required_interval", out var value12))
+            {
+                WorldBossRequiredInterval = value12.ToInteger();
+            }
         }
 
         public GameConfigState(string csv) : base(Address)
@@ -109,6 +119,16 @@ namespace Nekoyume.Model.State
             if (DailyRuneRewardAmount > 0)
             {
                 values.Add((Text)"daily_rune_reward_amount", DailyRuneRewardAmount.Serialize());
+            }
+
+            if (DailyWorldBossInterval > 0)
+            {
+                values.Add((Text)"daily_worldboss_interval", DailyWorldBossInterval.Serialize());
+            }
+
+            if (WorldBossRequiredInterval > 0)
+            {
+                values.Add((Text)"worldboss_required_interval", WorldBossRequiredInterval.Serialize());
             }
 #pragma warning disable LAA1002
             return new Dictionary(values.Union((Dictionary) base.Serialize()));
@@ -156,6 +176,12 @@ namespace Nekoyume.Model.State
                     break;
                 case "daily_rune_reward_amount":
                     DailyRuneRewardAmount = TableExtensions.ParseInt(row.Value);
+                    break;
+                case "daily_worldboss_interval":
+                    DailyWorldBossInterval = TableExtensions.ParseInt(row.Value);
+                    break;
+                case "worldboss_required_interval":
+                    WorldBossRequiredInterval = TableExtensions.ParseInt(row.Value);
                     break;
             }
         }

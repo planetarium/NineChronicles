@@ -12,6 +12,7 @@ using Libplanet.Blockchain;
 using Libplanet.Blocks;
 using Libplanet.Consensus;
 using Libplanet.Crypto;
+using Libplanet.Tx;
 using Nekoyume.Action;
 using Nekoyume.BlockChain.Policy;
 using Nekoyume.Model.State;
@@ -97,8 +98,12 @@ namespace Nekoyume
             var blockAction = new BlockPolicySource(Log.Logger).GetPolicy().BlockAction;
             return
                 BlockChain<PolymorphicAction<ActionBase>>.ProposeGenesisBlock(
-                    actions,
-                    systemActions,
+                    transactions: ImmutableList<Transaction<PolymorphicAction<ActionBase>>>.Empty
+                        .Add(Transaction<PolymorphicAction<ActionBase>>.Create(
+                            0, privateKey, null, actions))
+                        .AddRange(systemActions.Select((sa, index) =>
+                            Transaction<PolymorphicAction<ActionBase>>.Create(
+                                index + 1, privateKey, null, sa))),
                     privateKey: privateKey,
                     blockAction: blockAction,
                     timestamp: timestamp);

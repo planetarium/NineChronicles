@@ -56,6 +56,8 @@ namespace Nekoyume
 
         public const long V100360ObsoleteIndex = 6_020_000;
 
+        public const long V200001ObsoleteIndex = 6_642_114;
+
         public const long V100301ExecutedBlockIndex = 5_048_399L;
 
         public const long V100310ExecutedBlockIndex = 5_217_577L;

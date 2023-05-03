@@ -121,12 +121,12 @@ namespace Nekoyume.Action
                     new List(raiderList.Select(a => a.Serialize())));
             }
 
-            if (context.BlockIndex - raiderState.UpdatedBlockIndex < Raid.RequiredInterval)
+            if (context.BlockIndex - raiderState.UpdatedBlockIndex < Raid4.RequiredInterval)
             {
                 throw new RequiredBlockIntervalException($"wait for interval. {context.BlockIndex - raiderState.UpdatedBlockIndex}");
             }
 
-            if (WorldBossHelper.CanRefillTicket(context.BlockIndex, raiderState.RefillBlockIndex, row.StartedBlockIndex))
+            if (WorldBossHelper.CanRefillTicketV1(context.BlockIndex, raiderState.RefillBlockIndex, row.StartedBlockIndex))
             {
                 raiderState.RemainChallengeCount = WorldBossHelper.MaxChallengeCount;
                 raiderState.RefillBlockIndex = context.BlockIndex;

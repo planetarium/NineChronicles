@@ -100,18 +100,18 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Serialization()
         {
-            var action = new ClaimStakeReward3(_avatarAddress);
-            var deserialized = new ClaimStakeReward3();
+            var action = new ClaimStakeReward(_avatarAddress);
+            var deserialized = new ClaimStakeReward();
             deserialized.LoadPlainValue(action.PlainValue);
             Assert.Equal(action.AvatarAddress, deserialized.AvatarAddress);
         }
 
         [Theory]
-        [InlineData(ClaimStakeReward.ObsoletedIndex)]
-        [InlineData(ClaimStakeReward.ObsoletedIndex - 1)]
+        [InlineData(ClaimStakeReward2.ObsoletedIndex)]
+        [InlineData(ClaimStakeReward2.ObsoletedIndex - 1)]
         public void Execute_Throw_ActionUnAvailableException(long blockIndex)
         {
-            var action = new ClaimStakeReward3(_avatarAddress);
+            var action = new ClaimStakeReward(_avatarAddress);
             Assert.Throws<ActionUnavailableException>(() => action.Execute(new ActionContext
             {
                 PreviousStates = _initialState,
@@ -121,13 +121,79 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(ClaimStakeReward.ObsoletedIndex, 100, ClaimStakeReward.ObsoletedIndex + StakeState.LockupInterval, 40, 4, 0)]
-        [InlineData(ClaimStakeReward.ObsoletedIndex, 6000, ClaimStakeReward.ObsoletedIndex + StakeState.LockupInterval, 4800, 36, 4)]
+        [InlineData(
+            ClaimStakeReward2.ObsoletedIndex,
+            100,
+            null,
+            ClaimStakeReward2.ObsoletedIndex + StakeState.LockupInterval,
+            40,
+            4,
+            0
+        )]
+        [InlineData(
+            ClaimStakeReward2.ObsoletedIndex,
+            6000,
+            null,
+            ClaimStakeReward2.ObsoletedIndex + StakeState.LockupInterval,
+            4800,
+            36,
+            4
+        )]
         // Calculate rune start from hard fork index
-        [InlineData(0L, 6000, ClaimStakeReward.ObsoletedIndex + StakeState.LockupInterval, 136800, 1026, 4)]
+        [InlineData(
+            0L,
+            6000,
+            0L,
+            ClaimStakeReward2.ObsoletedIndex + StakeState.LockupInterval,
+            136800,
+            1026,
+            4
+        )]
+        // Stake reward v2
+        // Stake before v2, prev. receive v1, receive v1 & v2
+        [InlineData(
+            StakeState.StakeRewardSheetV2Index - StakeState.RewardInterval * 2,
+            50,
+            StakeState.StakeRewardSheetV2Index - StakeState.RewardInterval,
+            StakeState.StakeRewardSheetV2Index + 1,
+            5,
+            1,
+            0
+        )]
+        // Stake before v2, prev. receive v2, receive v2
+        [InlineData(
+            StakeState.StakeRewardSheetV2Index - StakeState.RewardInterval,
+            50,
+            StakeState.StakeRewardSheetV2Index,
+            StakeState.StakeRewardSheetV2Index + StakeState.RewardInterval,
+            5,
+            1,
+            0
+        )]
+        // Stake after v2, no prev. receive, receive v2
+        [InlineData(
+            StakeState.StakeRewardSheetV2Index,
+            6000,
+            null,
+            StakeState.StakeRewardSheetV2Index + StakeState.RewardInterval,
+            1200,
+            9,
+            1
+        )]
+        // stake after v2, prev. receive v2, receive v2
+        [InlineData(
+            StakeState.StakeRewardSheetV2Index,
+            50,
+            StakeState.StakeRewardSheetV2Index + StakeState.RewardInterval,
+            StakeState.StakeRewardSheetV2Index + StakeState.RewardInterval * 2,
+            5,
+            1,
+            0
+        )]
         public void Execute_Success(
             long startedBlockIndex,
             int stakeAmount,
+            long? previousRewardReceiveIndex,
             long blockIndex,
             int expectedHourglass,
             int expectedApStone,
@@ -137,6 +203,7 @@ namespace Lib9c.Tests.Action
                 _avatarAddress,
                 startedBlockIndex,
                 stakeAmount,
+                previousRewardReceiveIndex,
                 blockIndex,
                 expectedHourglass,
                 expectedApStone,
@@ -146,17 +213,23 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_With_Old_AvatarState_Success()
         {
-            Execute(_avatarAddressForBackwardCompatibility, ClaimStakeReward.ObsoletedIndex, 100, ClaimStakeReward.ObsoletedIndex + StakeState.LockupInterval, 40, 4, 0);
+            Execute(_avatarAddressForBackwardCompatibility, ClaimStakeReward2.ObsoletedIndex, 100, null, ClaimStakeReward2.ObsoletedIndex + StakeState.LockupInterval, 40, 4, 0);
         }
 
-        private void Execute(Address avatarAddress, long startedBlockIndex, int stakeAmount, long blockIndex, int expectedHourglass, int expectedApStone, int expectedRune)
+        private void Execute(Address avatarAddress, long startedBlockIndex, int stakeAmount, long? previousRewardReceiveIndex, long blockIndex, int expectedHourglass, int expectedApStone, int expectedRune)
         {
             var state = _initialState;
+            var initialStakeState = new StakeState(_stakeStateAddress, startedBlockIndex);
+            if (!(previousRewardReceiveIndex is null))
+            {
+                initialStakeState.Claim((long)previousRewardReceiveIndex);
+            }
+
             state = state
-                    .SetState(_stakeStateAddress, new StakeState(_stakeStateAddress, startedBlockIndex).Serialize())
+                    .SetState(_stakeStateAddress, initialStakeState.Serialize())
                     .MintAsset(_stakeStateAddress, _currency * stakeAmount);
 
-            var action = new ClaimStakeReward3(avatarAddress);
+            var action = new ClaimStakeReward(avatarAddress);
             var states = action.Execute(new ActionContext
             {
                 PreviousStates = state,

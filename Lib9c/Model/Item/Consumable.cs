@@ -28,7 +28,7 @@ namespace Nekoyume.Model.Item
                 Stats = stats.ToList(i => new DecimalStat((Dictionary) i));
             }
         }
-        
+
         protected Consumable(SerializationInfo info, StreamingContext _)
             : this((Dictionary) Codec.Decode((byte[]) info.GetValue("serialized", typeof(byte[]))))
         {

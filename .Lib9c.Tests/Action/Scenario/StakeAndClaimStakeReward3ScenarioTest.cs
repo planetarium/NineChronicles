@@ -97,7 +97,7 @@ namespace Lib9c.Tests.Action.Scenario
                     (400000, 5),
                     (500000, 1),
                 },
-                ClaimStakeReward.ObsoletedIndex + 50400,
+                ClaimStakeReward2.ObsoletedIndex + 50400,
                 0,
             };
             yield return new object[]
@@ -108,7 +108,7 @@ namespace Lib9c.Tests.Action.Scenario
                     (400000, 49),
                     (500000, 1),
                 },
-                ClaimStakeReward.ObsoletedIndex + 50400,
+                ClaimStakeReward2.ObsoletedIndex + 50400,
                 0,
             };
 
@@ -124,7 +124,7 @@ namespace Lib9c.Tests.Action.Scenario
                     (400000, 62),
                     (500000, 2),
                 },
-                ClaimStakeReward.ObsoletedIndex + 50400,
+                ClaimStakeReward2.ObsoletedIndex + 50400,
                 0,
             };
             yield return new object[]
@@ -135,7 +135,7 @@ namespace Lib9c.Tests.Action.Scenario
                     (400000, 99),
                     (500000, 2),
                 },
-                ClaimStakeReward.ObsoletedIndex + 50400,
+                ClaimStakeReward2.ObsoletedIndex + 50400,
                 0,
             };
             yield return new object[]
@@ -146,7 +146,7 @@ namespace Lib9c.Tests.Action.Scenario
                     (400000, 624),
                     (500000, 8),
                 },
-                ClaimStakeReward.ObsoletedIndex + 50400,
+                ClaimStakeReward2.ObsoletedIndex + 50400,
                 0,
             };
 
@@ -162,7 +162,7 @@ namespace Lib9c.Tests.Action.Scenario
                     (400000, 1000),
                     (500000, 8),
                 },
-                ClaimStakeReward.ObsoletedIndex + 50400,
+                ClaimStakeReward2.ObsoletedIndex + 50400,
                 0,
             };
             yield return new object[]
@@ -173,7 +173,7 @@ namespace Lib9c.Tests.Action.Scenario
                     (400000, 9999),
                     (500000, 64),
                 },
-                ClaimStakeReward.ObsoletedIndex + 50400,
+                ClaimStakeReward2.ObsoletedIndex + 50400,
                 8,
             };
 
@@ -189,7 +189,7 @@ namespace Lib9c.Tests.Action.Scenario
                     (400000, 10000),
                     (500000, 64),
                 },
-                ClaimStakeReward.ObsoletedIndex + 50400,
+                ClaimStakeReward2.ObsoletedIndex + 50400,
                 8,
             };
             yield return new object[]
@@ -200,7 +200,7 @@ namespace Lib9c.Tests.Action.Scenario
                     (400000, 99999),
                     (500000, 626),
                 },
-                ClaimStakeReward.ObsoletedIndex + 50400,
+                ClaimStakeReward2.ObsoletedIndex + 50400,
                 83,
             };
 
@@ -216,7 +216,7 @@ namespace Lib9c.Tests.Action.Scenario
                     (400000, 100000),
                     (500000, 627),
                 },
-                ClaimStakeReward.ObsoletedIndex + 50400,
+                ClaimStakeReward2.ObsoletedIndex + 50400,
                 83,
             };
             yield return new object[]
@@ -227,7 +227,7 @@ namespace Lib9c.Tests.Action.Scenario
                     (400000, 19999999),
                     (500000, 125001),
                 },
-                ClaimStakeReward.ObsoletedIndex + 50400,
+                ClaimStakeReward2.ObsoletedIndex + 50400,
                 16666,
             };
 
@@ -246,7 +246,7 @@ namespace Lib9c.Tests.Action.Scenario
                     (400000, 45),
                     (500000, 9),
                 },
-                ClaimStakeReward.ObsoletedIndex + 500800,
+                ClaimStakeReward2.ObsoletedIndex + 500800,
                 0,
             };
             yield return new object[]
@@ -257,7 +257,7 @@ namespace Lib9c.Tests.Action.Scenario
                     (400000, 441),
                     (500000, 9),
                 },
-                ClaimStakeReward.ObsoletedIndex + 500800,
+                ClaimStakeReward2.ObsoletedIndex + 500800,
                 0,
             };
 
@@ -275,7 +275,7 @@ namespace Lib9c.Tests.Action.Scenario
                     (400000, 558),
                     (500000, 18),
                 },
-                ClaimStakeReward.ObsoletedIndex + 500800,
+                ClaimStakeReward2.ObsoletedIndex + 500800,
                 0,
             };
             yield return new object[]
@@ -286,7 +286,7 @@ namespace Lib9c.Tests.Action.Scenario
                     (400000, 891),
                     (500000, 18),
                 },
-                ClaimStakeReward.ObsoletedIndex + 500800,
+                ClaimStakeReward2.ObsoletedIndex + 500800,
                 0,
             };
             yield return new object[]
@@ -297,7 +297,7 @@ namespace Lib9c.Tests.Action.Scenario
                     (400000, 5616),
                     (500000, 72),
                 },
-                ClaimStakeReward.ObsoletedIndex + 500800,
+                ClaimStakeReward2.ObsoletedIndex + 500800,
                 0,
             };
 
@@ -315,7 +315,7 @@ namespace Lib9c.Tests.Action.Scenario
                     (400000, 9000),
                     (500000, 72),
                 },
-                ClaimStakeReward.ObsoletedIndex + 500800,
+                ClaimStakeReward2.ObsoletedIndex + 500800,
                 0,
             };
             yield return new object[]
@@ -326,7 +326,7 @@ namespace Lib9c.Tests.Action.Scenario
                     (400000, 89991),
                     (500000, 576),
                 },
-                ClaimStakeReward.ObsoletedIndex + 500800,
+                ClaimStakeReward2.ObsoletedIndex + 500800,
                 72,
             };
 
@@ -344,7 +344,7 @@ namespace Lib9c.Tests.Action.Scenario
                     (400000, 90000),
                     (500000, 576),
                 },
-                ClaimStakeReward.ObsoletedIndex + 500800,
+                ClaimStakeReward2.ObsoletedIndex + 500800,
                 72,
             };
             yield return new object[]
@@ -355,7 +355,7 @@ namespace Lib9c.Tests.Action.Scenario
                     (400000, 899991),
                     (500000, 5634),
                 },
-                ClaimStakeReward.ObsoletedIndex + 500800,
+                ClaimStakeReward2.ObsoletedIndex + 500800,
                 747,
             };
 
@@ -377,7 +377,7 @@ namespace Lib9c.Tests.Action.Scenario
                     (400000, 900000),
                     (500000, 5643),
                 },
-                ClaimStakeReward.ObsoletedIndex + 500800,
+                ClaimStakeReward2.ObsoletedIndex + 500800,
                 747,
             };
             yield return new object[]
@@ -388,7 +388,7 @@ namespace Lib9c.Tests.Action.Scenario
                     (400000, 8999991),
                     (500000, 56259),
                 },
-                ClaimStakeReward.ObsoletedIndex + 500800,
+                ClaimStakeReward2.ObsoletedIndex + 500800,
                 7497,
             };
         }
@@ -404,22 +404,22 @@ namespace Lib9c.Tests.Action.Scenario
                 const int hourglassItemId = 400000, apPotionItemId = 500000;
                 return new[]
                 {
-                    (ClaimStakeReward.ObsoletedIndex + StakeState.RewardInterval, new[]
+                    (ClaimStakeReward2.ObsoletedIndex + StakeState.RewardInterval, new[]
                     {
                         (hourglassItemId, (int)(stakeAmount / hourglassRate)),
                         (apPotionItemId, (int)(stakeAmount / apPotionRate + apPotionBonus)),
                     }),
-                    (ClaimStakeReward.ObsoletedIndex + StakeState.RewardInterval * 2, new[]
+                    (ClaimStakeReward2.ObsoletedIndex + StakeState.RewardInterval * 2, new[]
                     {
                         (hourglassItemId, (int)(stakeAmount / hourglassRate)),
                         (apPotionItemId, (int)(stakeAmount / apPotionRate + apPotionBonus)),
                     }),
-                    (ClaimStakeReward.ObsoletedIndex + StakeState.RewardInterval * 3, new[]
+                    (ClaimStakeReward2.ObsoletedIndex + StakeState.RewardInterval * 3, new[]
                     {
                         (hourglassItemId, (int)(stakeAmount / hourglassRate)),
                         (apPotionItemId, (int)(stakeAmount / apPotionRate + apPotionBonus)),
                     }),
-                    (ClaimStakeReward.ObsoletedIndex + StakeState.RewardInterval * 4, new[]
+                    (ClaimStakeReward2.ObsoletedIndex + StakeState.RewardInterval * 4, new[]
                     {
                         (hourglassItemId, (int)(stakeAmount / hourglassRate)),
                         (apPotionItemId, (int)(stakeAmount / apPotionRate + apPotionBonus)),
@@ -649,14 +649,14 @@ namespace Lib9c.Tests.Action.Scenario
             {
                 PreviousStates = states,
                 Signer = _signerAddress,
-                BlockIndex = ClaimStakeReward.ObsoletedIndex,
+                BlockIndex = ClaimStakeReward2.ObsoletedIndex,
             });
 
             Assert.True(states.TryGetStakeState(_signerAddress, out StakeState stakeState));
             Assert.NotNull(stakeState);
             Assert.Equal(0 * RuneHelper.StakeRune, _initialState.GetBalance(_avatarAddress, RuneHelper.StakeRune));
 
-            action = new ClaimStakeReward3(_avatarAddress);
+            action = new ClaimStakeReward(_avatarAddress);
             states = action.Execute(new ActionContext
             {
                 PreviousStates = states,
@@ -690,7 +690,7 @@ namespace Lib9c.Tests.Action.Scenario
         [InlineData(500000000, 500000, 500000000)]
         public void StakeAndStakeMore(long initialBalance, long stakeAmount, long newStakeAmount)
         {
-            long newStakeBlockIndex = ClaimStakeReward.ObsoletedIndex + StakeState.LockupInterval - 1;
+            long newStakeBlockIndex = ClaimStakeReward2.ObsoletedIndex + StakeState.LockupInterval - 1;
             // Validate testcases
             Assert.True(stakeAmount < newStakeAmount);
 
@@ -701,7 +701,7 @@ namespace Lib9c.Tests.Action.Scenario
             {
                 PreviousStates = states,
                 Signer = _signerAddress,
-                BlockIndex = ClaimStakeReward.ObsoletedIndex,
+                BlockIndex = ClaimStakeReward2.ObsoletedIndex,
             });
 
             Assert.True(states.TryGetStakeState(_signerAddress, out StakeState stakeState));
@@ -713,7 +713,7 @@ namespace Lib9c.Tests.Action.Scenario
                 _currency * stakeAmount,
                 states.GetBalance(stakeState.address, _currency));
 
-            action = new ClaimStakeReward3(_avatarAddress);
+            action = new ClaimStakeReward(_avatarAddress);
             states = action.Execute(new ActionContext
             {
                 PreviousStates = states,
@@ -774,7 +774,7 @@ namespace Lib9c.Tests.Action.Scenario
             {
                 PreviousStates = states,
                 Signer = _signerAddress,
-                BlockIndex = ClaimStakeReward.ObsoletedIndex,
+                BlockIndex = ClaimStakeReward2.ObsoletedIndex,
             });
 
             Assert.True(states.TryGetStakeState(_signerAddress, out StakeState stakeState));
@@ -786,12 +786,12 @@ namespace Lib9c.Tests.Action.Scenario
                 _currency * stakeAmount,
                 states.GetBalance(stakeState.address, _currency));
 
-            action = new ClaimStakeReward3(_avatarAddress);
+            action = new ClaimStakeReward(_avatarAddress);
             states = action.Execute(new ActionContext
             {
                 PreviousStates = states,
                 Signer = _signerAddress,
-                BlockIndex = ClaimStakeReward.ObsoletedIndex + StakeState.LockupInterval - 1,
+                BlockIndex = ClaimStakeReward2.ObsoletedIndex + StakeState.LockupInterval - 1,
             });
 
             action = new Stake(newStakeAmount);
@@ -800,7 +800,7 @@ namespace Lib9c.Tests.Action.Scenario
             {
                 PreviousStates = states,
                 Signer = _signerAddress,
-                BlockIndex = ClaimStakeReward.ObsoletedIndex + StakeState.LockupInterval - 1,
+                BlockIndex = ClaimStakeReward2.ObsoletedIndex + StakeState.LockupInterval - 1,
             }));
 
             Assert.True(states.TryGetStakeState(_signerAddress, out stakeState));
@@ -831,14 +831,14 @@ namespace Lib9c.Tests.Action.Scenario
             {
                 PreviousStates = states,
                 Signer = _signerAddress,
-                BlockIndex = ClaimStakeReward.ObsoletedIndex,
+                BlockIndex = ClaimStakeReward2.ObsoletedIndex,
             });
 
             // 1~3회까지 모든 보상을 수령함
             // 201,600 블록 도달 이후 → 지정된 캐릭터 앞으로 이하 보상의 수령이 가능해야 한다.
             foreach ((long claimBlockIndex, (int itemId, int amount)[] expectedItems) in claimEvents)
             {
-                action = new ClaimStakeReward3(_avatarAddress);
+                action = new ClaimStakeReward(_avatarAddress);
                 states = action.Execute(new ActionContext
                 {
                     PreviousStates = states,
@@ -865,7 +865,7 @@ namespace Lib9c.Tests.Action.Scenario
             {
                 PreviousStates = states,
                 Signer = _signerAddress,
-                BlockIndex = ClaimStakeReward.ObsoletedIndex + StakeState.LockupInterval,
+                BlockIndex = ClaimStakeReward2.ObsoletedIndex + StakeState.LockupInterval,
             });
 
             // Setup staking again.
@@ -874,10 +874,10 @@ namespace Lib9c.Tests.Action.Scenario
                 Assert.True(states.TryGetStakeState(_signerAddress, out stakeState));
                 Assert.NotNull(stakeState);
                 // 쌓여있던 보상 타이머가 정상적으로 리셋되는지
-                Assert.Equal(ClaimStakeReward.ObsoletedIndex + StakeState.LockupInterval, stakeState.StartedBlockIndex);
+                Assert.Equal(ClaimStakeReward2.ObsoletedIndex + StakeState.LockupInterval, stakeState.StartedBlockIndex);
                 // 락업기간이 새롭게 201,600으로 갱신되는지 확인
                 Assert.Equal(
-                    ClaimStakeReward.ObsoletedIndex + StakeState.LockupInterval + StakeState.LockupInterval,
+                    ClaimStakeReward2.ObsoletedIndex + StakeState.LockupInterval + StakeState.LockupInterval,
                     stakeState.CancellableBlockIndex);
                 // 기존 deposit - 현재 deposit 만큼의 ncg 인출 상태 확인
                 Assert.Equal(
@@ -890,12 +890,12 @@ namespace Lib9c.Tests.Action.Scenario
                 Assert.Throws<RequiredBlockIndexException>(() =>
                 {
                     // 현재 스테이킹된 NCG를 인출할 수 없다
-                    action = new ClaimStakeReward3(_avatarAddress);
+                    action = new ClaimStakeReward(_avatarAddress);
                     states = action.Execute(new ActionContext
                     {
                         PreviousStates = states,
                         Signer = _signerAddress,
-                        BlockIndex = ClaimStakeReward.ObsoletedIndex + StakeState.LockupInterval + 1,
+                        BlockIndex = ClaimStakeReward2.ObsoletedIndex + StakeState.LockupInterval + 1,
                     });
                 });
                 // 현재 deposit 묶인 상태 확인
@@ -922,15 +922,15 @@ namespace Lib9c.Tests.Action.Scenario
             {
                 PreviousStates = states,
                 Signer = _signerAddress,
-                BlockIndex = ClaimStakeReward.ObsoletedIndex,
+                BlockIndex = ClaimStakeReward2.ObsoletedIndex,
             });
 
-            action = new ClaimStakeReward3(_avatarAddress);
+            action = new ClaimStakeReward(_avatarAddress);
             Assert.Throws<RequiredBlockIndexException>(() => states = action.Execute(new ActionContext
             {
                 PreviousStates = states,
                 Signer = _signerAddress,
-                BlockIndex = ClaimStakeReward.ObsoletedIndex + StakeState.RewardInterval - 1,
+                BlockIndex = ClaimStakeReward2.ObsoletedIndex + StakeState.RewardInterval - 1,
             }));
 
             var avatarState = states.GetAvatarStateV2(_avatarAddress);

@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Bencodex.Types;
@@ -458,7 +457,7 @@ namespace Lib9c.DevExtensions.Action
 
             // Set Inventory.
             var inventoryAddr = avatarAddr.Derive(LegacyInventoryKey);
-            var inventory = new Inventory();
+            var inventory = new Nekoyume.Model.Item.Inventory();
             var equipmentItemSheet = sheets.GetSheet<EquipmentItemSheet>();
             var enhancementCostSheetV2 = sheets.GetSheet<EnhancementCostSheetV2>();
             var recipeSheet = sheets.GetSheet<EquipmentItemRecipeSheet>();

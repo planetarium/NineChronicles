@@ -121,40 +121,38 @@ namespace Nekoyume.Model.Item
 
         public IValue Serialize()
         {
-            var innerDictionary = new Dictionary<IKey, IValue>
-            {
-                [(Text) LegacySellerAgentAddressKey] = SellerAgentAddress.Serialize(),
-                [(Text) LegacySellerAvatarAddressKey] = SellerAvatarAddress.Serialize(),
-                [(Text) LegacyProductIdKey] = ProductId.Serialize(),
-                [(Text) LegacyPriceKey] = Price.Serialize(),
-            };
+            var innerDictionary = Dictionary.Empty
+                .Add(LegacySellerAgentAddressKey, SellerAgentAddress.Serialize())
+                .Add(LegacySellerAvatarAddressKey, SellerAvatarAddress.Serialize())
+                .Add(LegacyProductIdKey, ProductId.Serialize())
+                .Add(LegacyPriceKey, Price.Serialize());
 
             if (ItemUsable != null)
             {
-                innerDictionary.Add((Text) LegacyItemUsableKey, ItemUsable.Serialize());
+                innerDictionary = innerDictionary.Add(LegacyItemUsableKey, ItemUsable.Serialize());
             }
 
             if (Costume != null)
             {
-                innerDictionary.Add((Text) LegacyCostumeKey, Costume.Serialize());
+                innerDictionary = innerDictionary.Add(LegacyCostumeKey, Costume.Serialize());
             }
 
             if (TradableFungibleItem != null)
             {
-                innerDictionary.Add((Text) TradableFungibleItemKey, TradableFungibleItem.Serialize());
+                innerDictionary = innerDictionary.Add(TradableFungibleItemKey, TradableFungibleItem.Serialize());
             }
 
             if (TradableFungibleItemCount != 0)
             {
-                innerDictionary.Add((Text) TradableFungibleItemCountKey, TradableFungibleItemCount.Serialize());
+                innerDictionary = innerDictionary.Add(TradableFungibleItemCountKey, TradableFungibleItemCount.Serialize());
             }
 
             if (ExpiredBlockIndex != 0)
             {
-                innerDictionary.Add((Text) ExpiredBlockIndexKey, ExpiredBlockIndex.Serialize());
+                innerDictionary = innerDictionary.Add(ExpiredBlockIndexKey, ExpiredBlockIndex.Serialize());
             }
 
-            return new Dictionary(innerDictionary);
+            return innerDictionary;
         }
 
 

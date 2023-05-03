@@ -97,16 +97,12 @@ namespace Nekoyume.Model.Item
 
             public IValue Serialize()
             {
-                var innerDict = new Dictionary<IKey, IValue>
-                {
-                    [(Text) "item"] = item.Serialize(),
-                    [(Text) "count"] = (Integer) count,
-                };
-                if (Locked)
-                {
-                    innerDict.Add((Text) "l", Lock.Serialize());
-                }
-                return new Bencodex.Types.Dictionary(innerDict);
+                var innerDict = Dictionary.Empty
+                    .Add("item", item.Serialize())
+                    .Add("count", count);
+                return Locked
+                    ? innerDict.Add("l", Lock.Serialize())
+                    : innerDict;
             }
         }
 
