@@ -215,7 +215,7 @@ namespace Nekoyume.Game
             AudioController.instance.PlaySfx(AudioController.SfxCode.Heal);
             var buffRow = Game.instance.TableSheets.StatBuffSheet.Values.First(r =>
                 r.Value > 0 && r.StatType == StatType.HP);
-            var buff = new HPBuff(buffRow);
+            var buff = new StatBuff(buffRow);
             var castingEffect = Game.instance.Stage.BuffController.Get(_player.transform.position, buff);
             castingEffect.Play();
             yield return new WaitForSeconds(0.6f);
@@ -232,7 +232,7 @@ namespace Nekoyume.Game
         {
             var buffRow = Game.instance.TableSheets.StatBuffSheet.Values.First(r =>
                 r.Value < 0 && r.StatType == StatType.DEF);
-            yield return StartCoroutine(_fenrir.CoBuff(new DefenseBuff(buffRow)));
+            yield return StartCoroutine(_fenrir.CoBuff(new StatBuff(buffRow)));
             yield return new WaitForSeconds(0.7f);
             yield return StartCoroutine(PlayerAttack(1524, _fox, true, false));
             yield return StartCoroutine(_pig.CoNormalAttack(12733, true));
