@@ -10,54 +10,12 @@ namespace Nekoyume.Model.Buff
     {
         public static StatBuff GetStatBuff(StatBuffSheet.Row row)
         {
-            switch (row.StatType)
-            {
-                case StatType.HP:
-                    return new HPBuff(row);
-                case StatType.ATK:
-                    return new AttackBuff(row);
-                case StatType.DEF:
-                    return new DefenseBuff(row);
-                case StatType.CRI:
-                    return new CriticalBuff(row);
-                case StatType.HIT:
-                    return new HitBuff(row);
-                case StatType.SPD:
-                    return new SpeedBuff(row);
-                case StatType.DRR:
-                case StatType.DRV:
-                    return new DamageReductionBuff(row);
-                case StatType.CDMG:
-                    return new CriticalDamageBuff(row);
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            return new StatBuff(row);
         }
 
         public static StatBuff GetCustomStatBuff(StatBuffSheet.Row row, SkillCustomField customField)
         {
-            switch (row.StatType)
-            {
-                case StatType.HP:
-                    return new HPBuff(customField, row);
-                case StatType.ATK:
-                    return new AttackBuff(customField, row);
-                case StatType.DEF:
-                    return new DefenseBuff(customField, row);
-                case StatType.CRI:
-                    return new CriticalBuff(customField, row);
-                case StatType.HIT:
-                    return new HitBuff(customField, row);
-                case StatType.SPD:
-                    return new SpeedBuff(customField, row);
-                case StatType.DRR:
-                case StatType.DRV:
-                    return new DamageReductionBuff(customField, row);
-                case StatType.CDMG:
-                    return new CriticalDamageBuff(customField, row);
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            return new StatBuff(customField, row);
         }
 
         public static ActionBuff GetActionBuff(Stats stat, ActionBuffSheet.Row row)
