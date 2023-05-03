@@ -6,6 +6,7 @@ using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Arena;
+using Nekoyume.Game.LiveAsset;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
@@ -188,6 +189,7 @@ namespace Nekoyume.State
         {
             const int maxTicketCount = ArenaInformation.MaxTicketCount;
             var ticketResetInterval = States.Instance.GameConfigState.DailyArenaInterval;
+            var secondsPerBlock = LiveAssetManager.instance.GameConfig.SecondsPerBlock;
             var currentArenaInfo = _arenaInfoTuple.HasValue
                 ? _arenaInfoTuple.Value.current
                 : null;
@@ -216,7 +218,8 @@ namespace Nekoyume.State
                 maxTicketCount,
                 (int)progressedBlockRange,
                 ticketResetInterval,
-                purchasedCountDuringInterval);
+                purchasedCountDuringInterval,
+                secondsPerBlock);
             _arenaTicketsProgress.SetValueAndForceNotify(
                 _arenaTicketsProgress.Value);
         }

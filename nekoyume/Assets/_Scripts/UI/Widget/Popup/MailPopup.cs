@@ -258,7 +258,9 @@ namespace Nekoyume.UI
         {
             base.Initialize();
 
-            LocalMailHelper.Instance.ObservableMailBox?.Subscribe(SetList).AddTo(gameObject);
+            LocalMailHelper.Instance.ObservableMailBox
+                .Subscribe(SetList)
+                .AddTo(gameObject);
             Game.Game.instance.Agent.BlockIndexSubject
                 .ObserveOnMainThread()
                 .Subscribe(UpdateNotification)

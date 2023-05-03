@@ -51,14 +51,9 @@ namespace Nekoyume.Game
             string ticker,
             int offset,
             int limit,
-            MarketOrderType order,
-            int[] itemIds)
+            MarketOrderType order)
         {
             var url = $"{_url}/Market/products/fav/{ticker}?limit={limit}&offset={offset}&order={order}";
-            if (itemIds is not null && itemIds.Any())
-            {
-                url = url + "&itemIds=" + string.Join("&itemIds=", itemIds);
-            }
 
             var json = await _client.GetStringAsync(url);
             var options = new JsonSerializerOptions

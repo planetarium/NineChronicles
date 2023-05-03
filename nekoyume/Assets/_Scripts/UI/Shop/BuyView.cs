@@ -126,6 +126,70 @@ namespace Nekoyume
                 },
             };
 
+        private readonly Dictionary<ItemSubTypeFilter, List<ShopSortFilter>> _toggleSortFilters =
+            new()
+            {
+                {
+                    ItemSubTypeFilter.Equipment, new List<ShopSortFilter>()
+                    {
+                        ShopSortFilter.CP,
+                        ShopSortFilter.Price,
+                        ShopSortFilter.Class,
+                        ShopSortFilter.Crystal,
+                        ShopSortFilter.CrystalPerPrice,
+                        ShopSortFilter.EquipmentLevel,
+                        ShopSortFilter.OptionCount,
+                    }
+                },
+                {
+                    ItemSubTypeFilter.Food, new List<ShopSortFilter>()
+                    {
+                        ShopSortFilter.CP,
+                        ShopSortFilter.Price,
+                        ShopSortFilter.Class,
+                        ShopSortFilter.Crystal,
+                        ShopSortFilter.CrystalPerPrice,
+                        ShopSortFilter.EquipmentLevel,
+                        ShopSortFilter.OptionCount,
+                    }
+                },
+                {
+                    ItemSubTypeFilter.Materials, new List<ShopSortFilter>()
+                    {
+                        ShopSortFilter.Price,
+                        ShopSortFilter.UnitPrice,
+                    }
+                },
+                {
+                    ItemSubTypeFilter.Costume, new List<ShopSortFilter>()
+                    {
+                        ShopSortFilter.CP,
+                        ShopSortFilter.Price,
+                        ShopSortFilter.Class,
+                        ShopSortFilter.Crystal,
+                        ShopSortFilter.CrystalPerPrice,
+                        ShopSortFilter.EquipmentLevel,
+                        ShopSortFilter.OptionCount,
+                    }
+                },
+                {
+                    ItemSubTypeFilter.Stones, new List<ShopSortFilter>()
+                    {
+                        ShopSortFilter.Price,
+                        ShopSortFilter.UnitPrice
+                    }
+                },
+            };
+
+        private readonly Dictionary<ItemSubTypeFilter, int> _toggleSortFilterIndex = new()
+        {
+            { ItemSubTypeFilter.Equipment, 0 },
+            { ItemSubTypeFilter.Food, 0 },
+            { ItemSubTypeFilter.Materials, 0 },
+            { ItemSubTypeFilter.Costume, 0 },
+            { ItemSubTypeFilter.Stones, 0 },
+        };
+
         private readonly List<ShopItem> _selectedItems = new();
         private readonly List<int> _itemIds = new();
         private readonly List<int> _runeIds = new();
@@ -250,9 +314,11 @@ namespace Nekoyume
                         return;
                     }
                     _selectedSubTypeFilter.Value = _toggleSubTypes[toggleType].First();
-                    _selectedSortFilter.Value = _selectedSubTypeFilter.Value
-                        is ItemSubTypeFilter.RuneStone or ItemSubTypeFilter.PetSoulStone
-                        ? ShopSortFilter.Price : ShopSortFilter.CP;
+
+                    var itemTypeFilter = _selectedSubTypeFilter.Value.ToItemTypeFilter();
+                    _selectedSortFilter.Value = _toggleSortFilters[itemTypeFilter].First();
+                    _toggleSortFilterIndex[itemTypeFilter] = 0;
+
                     toggleDropdown.items.First().isOn = true;
                     _page.SetValueAndForceNotify(0);
                 });
@@ -267,10 +333,12 @@ namespace Nekoyume
                     var subToggleType = subTypes[subIndex];
                     item.onClickToggle.AddListener(() =>
                     {
-                        _selectedSortFilter.Value = subToggleType
-                            is ItemSubTypeFilter.RuneStone or ItemSubTypeFilter.PetSoulStone
-                            ? ShopSortFilter.Price : ShopSortFilter.CP;
                         _selectedSubTypeFilter.Value = subToggleType;
+
+                        var itemTypeFilter = _selectedSubTypeFilter.Value.ToItemTypeFilter();
+                        _selectedSortFilter.Value = _toggleSortFilters[itemTypeFilter].First();
+                        _toggleSortFilterIndex[itemTypeFilter] = 0;
+
                         _page.SetValueAndForceNotify(0);
                     });
                     item.onClickToggle.AddListener(AudioController.PlayClick);
@@ -279,18 +347,14 @@ namespace Nekoyume
 
             sortButton.onClick.AddListener(() =>
             {
-                var count = Enum.GetNames(typeof(ShopSortFilter)).Length;
-                switch (_selectedSubTypeFilter.Value)
-                {
-                    case ItemSubTypeFilter.RuneStone:
-                    case ItemSubTypeFilter.PetSoulStone:
-                        _selectedSortFilter.Value = ShopSortFilter.Price;
-                        break;
+                var itemTypeFilter = _selectedSubTypeFilter.Value.ToItemTypeFilter();
+                var sortFilters = _toggleSortFilters[itemTypeFilter];
+                var index = _toggleSortFilterIndex[itemTypeFilter];
 
-                    default:
-                        _selectedSortFilter.Value = (int)_selectedSortFilter.Value < count - 1 ? _selectedSortFilter.Value + 1 : 0;
-                        break;
-                }
+                var nextIndex = (index + 1) % sortFilters.Count;
+                _toggleSortFilterIndex[itemTypeFilter] = nextIndex;
+                _selectedSortFilter.Value = sortFilters[nextIndex];
+
                 _page.SetValueAndForceNotify(0);
             });
 
@@ -341,7 +405,9 @@ namespace Nekoyume
             var avatarLevel = Game.Game.instance.States.CurrentAvatarState.level;
             var requirementSheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
 
-            if (!_useSearch.Value && !_levelLimit.Value)
+            if (!_useSearch.Value &&
+                !_levelLimit.Value &&
+                filter is ItemSubTypeFilter.RuneStone or ItemSubTypeFilter.PetSoulStone)
             {
                 return Array.Empty<int>();
             }
@@ -356,16 +422,60 @@ namespace Nekoyume
                 return inSearch && inLevelLimit;
             }
 
+            return _itemIds.Where(id => IsValid(id, L10nManager.LocalizeItemName(id), _useSearch.Value, _levelLimit.Value)).ToArray();
+        }
+
+        private string GetFilteredTicker(ItemSubTypeFilter filter)
+        {
+            if (!_useSearch.Value)
+            {
+                return filter == ItemSubTypeFilter.RuneStone ? "RUNE" : "SOULSTONE";
+            }
+
+            var itemName = inputField.text;
+
             switch (filter)
             {
                 case ItemSubTypeFilter.RuneStone:
-                     return _runeIds.Where(id => IsValid(id, L10nManager.LocalizeRuneName(id), _useSearch.Value, false)).ToArray();
+                    if (Regex.IsMatch(itemName, "rune", RegexOptions.IgnoreCase))
+                    {
+                        return "RUNE";
+                    }
+
+                    // FIXME : May not be supported in various l10n environments
+                    if (Regex.IsMatch(itemName, "fenrir", RegexOptions.IgnoreCase))
+                    {
+                        return "RUNESTONE_FENRIR";
+                    }
+
+                    if (Regex.IsMatch(itemName, "saehrimnir", RegexOptions.IgnoreCase))
+                    {
+                        return "RUNESTONE_SAEHRIMNIR";
+                    }
+
+                    var filteredRuneList = _runeIds.Where(id => Regex.IsMatch(L10nManager.LocalizeItemName(id),
+                        itemName, RegexOptions.IgnoreCase)).ToList();
+
+                    var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
+                    return filteredRuneList.Any()
+                        ? runeSheet[filteredRuneList.First()].Ticker
+                        : "RUNE";
 
                 case ItemSubTypeFilter.PetSoulStone:
-                    return _petIds.Where(id => IsValid(id, L10nManager.LocalizePetName(id), _useSearch.Value, false)).ToArray();
+                    if (Regex.IsMatch(itemName, "Soulstone", RegexOptions.IgnoreCase))
+                    {
+                        return "SOULSTONE";
+                    }
 
+                    var filteredPetList = _petIds.Where(id => Regex.IsMatch(L10nManager.LocalizeItemName(id),
+                        itemName, RegexOptions.IgnoreCase)).ToList();
+
+                    var petSheet = Game.Game.instance.TableSheets.PetSheet;
+                    return filteredPetList.Any()
+                        ? petSheet[filteredPetList.First()].SoulStoneTicker.ToUpper()
+                        : "SOULSTONE";
                 default:
-                    return _itemIds.Where(id => IsValid(id, L10nManager.LocalizeItemName(id), _useSearch.Value, _levelLimit.Value)).ToArray();
+                    return "RUNE";
             }
         }
 
@@ -380,7 +490,7 @@ namespace Nekoyume
             var limit = _column * _row;
             var reset = _page.Value == 0;
             var count = reset ? 0 : ReactiveShopState.GetCachedBuyItemCount(filter);
-            if (reset && count > (_page.Value + 1) * limit)
+            if (!reset && count > (_page.Value + 1) * limit)
             {
                 return;
             }
@@ -388,17 +498,18 @@ namespace Nekoyume
             var orderType = filter is ItemSubTypeFilter.RuneStone or ItemSubTypeFilter.PetSoulStone
                 ? _isAscending.Value ? MarketOrderType.price : MarketOrderType.price_desc
                 : _selectedSortFilter.Value.ToMarketOrderType(_isAscending.Value);
-            var filteredItemIds = GetFilteredItemIds(filter);
 
             _loadingCount++;
             loading.SetActive(_loadingCount > 0);
             if (filter is ItemSubTypeFilter.RuneStone or ItemSubTypeFilter.PetSoulStone)
             {
+                var ticker = GetFilteredTicker(filter);
                 await ReactiveShopState.RequestBuyFungibleAssetsAsync(
-                    filter, orderType, limit * 15, reset, filteredItemIds);
+                    ticker, orderType, limit * 15, reset);
             }
             else
             {
+                var filteredItemIds = GetFilteredItemIds(filter);
                 await ReactiveShopState.RequestBuyProductsAsync(
                     filter, orderType, limit * 15, reset, filteredItemIds);
             }
@@ -569,6 +680,11 @@ namespace Nekoyume
             if (_resetAnimator.isActiveAndEnabled)
             {
                 _resetAnimator.Play(_hashDisabled);
+            }
+
+            foreach (var key in _toggleTypes)
+            {
+                _toggleSortFilterIndex[key] = 0;
             }
 
             _page.SetValueAndForceNotify(0);
