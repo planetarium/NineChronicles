@@ -1,0 +1,103 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Chapter_07
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 0
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 1
+    - serializedVersion: 3
+      m_BuildTarget: Android
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: 47
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 1
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    - serializedVersion: 3
+      m_BuildTarget: iPhone
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: 50
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 1
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 0
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 2800000, guid: aee390ae839bc4b99ac4d5d2c8a847d7, type: 3}
+    - {fileID: 2800000, guid: e76114ca10dfa4c6cac1a860d5c7d8a2, type: 3}
+    - {fileID: 2800000, guid: 9dd403d71eaf44e8687726e4bd79600b, type: 3}
+    - {fileID: 2800000, guid: 137a2b93dd2434987a9234b0c5f88216, type: 3}
+    - {fileID: 2800000, guid: 93a7c5b955127417f90f575a904e6433, type: 3}
+    - {fileID: 2800000, guid: da7231490ad414600a0e5c3114016c8b, type: 3}
+    - {fileID: 2800000, guid: 9e420bdcd85c54890b5bee0311530710, type: 3}
+    - {fileID: 2800000, guid: 75af753a4b4e44438ac84644f1631328, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 137a2b93dd2434987a9234b0c5f88216, type: 3}
+  - {fileID: 21300000, guid: 9dd403d71eaf44e8687726e4bd79600b, type: 3}
+  - {fileID: 21300000, guid: da7231490ad414600a0e5c3114016c8b, type: 3}
+  - {fileID: 21300000, guid: 93a7c5b955127417f90f575a904e6433, type: 3}
+  - {fileID: 21300000, guid: 75af753a4b4e44438ac84644f1631328, type: 3}
+  - {fileID: 21300000, guid: e76114ca10dfa4c6cac1a860d5c7d8a2, type: 3}
+  - {fileID: 21300000, guid: 9e420bdcd85c54890b5bee0311530710, type: 3}
+  - {fileID: 21300000, guid: aee390ae839bc4b99ac4d5d2c8a847d7, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - bg_world07_02_04
+  - bg_world07_02_03
+  - chapter_07_1
+  - bg_world07_03_04
+  - chapter_07_3
+  - bg_world07_01_04
+  - chapter_07_2
+  - bg_world07_01_03
+  m_RenderDataMap: {}
+  m_Tag: Chapter_07
+  m_IsVariant: 0
