@@ -243,8 +243,6 @@ namespace Nekoyume
             _sortOrderAnimator = sortOrderButton.GetComponent<Animator>();
             _levelLimitAnimator = levelLimitToggle.GetComponent<Animator>();
             _resetAnimator = resetButton.GetComponent<Animator>();
-            _loadingCount = 0;
-            loading.SetActive(_loadingCount > 0);
 
             _sortText = sortButton.GetComponentInChildren<TextMeshProUGUI>();
             var tableSheets = Game.Game.instance.TableSheets;
@@ -405,77 +403,50 @@ namespace Nekoyume
             var avatarLevel = Game.Game.instance.States.CurrentAvatarState.level;
             var requirementSheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
 
-            if (!_useSearch.Value &&
-                !_levelLimit.Value &&
+            if ((!_useSearch.Value && !_levelLimit.Value) ||
                 filter is ItemSubTypeFilter.RuneStone or ItemSubTypeFilter.PetSoulStone)
             {
                 return Array.Empty<int>();
             }
 
-            bool IsValid(int id, string itemName, bool useSearch, bool levelLimit)
+            bool IsValid(int id)
             {
-                var inSearch = !useSearch ||
-                               Regex.IsMatch(itemName, inputField.text, RegexOptions.IgnoreCase);
-                var inLevelLimit = !levelLimit ||
+                var inSearch = !_useSearch.Value ||
+                               Regex.IsMatch(L10nManager.LocalizeItemName(id), inputField.text, RegexOptions.IgnoreCase);
+                var inLevelLimit = !_levelLimit.Value ||
                                    (requirementSheet.TryGetValue(id, out var requirementRow) &&
                                     avatarLevel >= requirementRow.Level);
                 return inSearch && inLevelLimit;
             }
 
-            return _itemIds.Where(id => IsValid(id, L10nManager.LocalizeItemName(id), _useSearch.Value, _levelLimit.Value)).ToArray();
+            return _itemIds.Where(IsValid).ToArray();
         }
 
-        private string GetFilteredTicker(ItemSubTypeFilter filter)
+        private string[] GetFilteredTicker(ItemSubTypeFilter filter)
         {
             if (!_useSearch.Value)
             {
-                return filter == ItemSubTypeFilter.RuneStone ? "RUNE" : "SOULSTONE";
+                return new[] { filter == ItemSubTypeFilter.RuneStone ? "RUNE" : "SOULSTONE" };
             }
 
             var itemName = inputField.text;
-
             switch (filter)
             {
                 case ItemSubTypeFilter.RuneStone:
-                    if (Regex.IsMatch(itemName, "rune", RegexOptions.IgnoreCase))
-                    {
-                        return "RUNE";
-                    }
-
-                    // FIXME : May not be supported in various l10n environments
-                    if (Regex.IsMatch(itemName, "fenrir", RegexOptions.IgnoreCase))
-                    {
-                        return "RUNESTONE_FENRIR";
-                    }
-
-                    if (Regex.IsMatch(itemName, "saehrimnir", RegexOptions.IgnoreCase))
-                    {
-                        return "RUNESTONE_SAEHRIMNIR";
-                    }
-
-                    var filteredRuneList = _runeIds.Where(id => Regex.IsMatch(L10nManager.LocalizeItemName(id),
-                        itemName, RegexOptions.IgnoreCase)).ToList();
-
+                    var filteredRuneList = _runeIds.Where(id => Regex.IsMatch(L10nManager.LocalizeRuneName(id), itemName, RegexOptions.IgnoreCase)).ToList();
                     var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
                     return filteredRuneList.Any()
-                        ? runeSheet[filteredRuneList.First()].Ticker
-                        : "RUNE";
+                        ? filteredRuneList.Select(id => runeSheet[id].Ticker).ToArray()
+                        : new[] { "RUNE" };
 
                 case ItemSubTypeFilter.PetSoulStone:
-                    if (Regex.IsMatch(itemName, "Soulstone", RegexOptions.IgnoreCase))
-                    {
-                        return "SOULSTONE";
-                    }
-
-                    var filteredPetList = _petIds.Where(id => Regex.IsMatch(L10nManager.LocalizeItemName(id),
-                        itemName, RegexOptions.IgnoreCase)).ToList();
-
+                    var filteredPetList = _petIds.Where(id => Regex.IsMatch(L10nManager.LocalizePetName(id), itemName, RegexOptions.IgnoreCase)).ToList();
                     var petSheet = Game.Game.instance.TableSheets.PetSheet;
                     return filteredPetList.Any()
-                        ? petSheet[filteredPetList.First()].SoulStoneTicker.ToUpper()
-                        : "SOULSTONE";
+                        ? filteredPetList.Select(id => petSheet[id].SoulStoneTicker.ToUpper()).ToArray()
+                        : new[] { "SOULSTONE" };
                 default:
-                    return "RUNE";
+                    return new[] { "RUNE" };
             }
         }
 
@@ -495,17 +466,15 @@ namespace Nekoyume
                 return;
             }
 
-            var orderType = filter is ItemSubTypeFilter.RuneStone or ItemSubTypeFilter.PetSoulStone
-                ? _isAscending.Value ? MarketOrderType.price : MarketOrderType.price_desc
-                : _selectedSortFilter.Value.ToMarketOrderType(_isAscending.Value);
+            var orderType = _selectedSortFilter.Value.ToMarketOrderType(_isAscending.Value);
 
             _loadingCount++;
             loading.SetActive(_loadingCount > 0);
             if (filter is ItemSubTypeFilter.RuneStone or ItemSubTypeFilter.PetSoulStone)
             {
-                var ticker = GetFilteredTicker(filter);
+                var tickers = GetFilteredTicker(filter);
                 await ReactiveShopState.RequestBuyFungibleAssetsAsync(
-                    ticker, orderType, limit * 15, reset);
+                    tickers, orderType, limit * 15, reset);
             }
             else
             {
@@ -538,10 +507,6 @@ namespace Nekoyume
             _isAscending.Subscribe(isAscending =>
             {
                 sortOrderIcon.localScale = new Vector3(1, isAscending ? 1 : -1, 1);
-            }).AddTo(gameObject);
-            _levelLimit.Subscribe(levelLimit =>
-            {
-                levelLimitToggle.isOn = levelLimit;
             }).AddTo(gameObject);
 
             _mode.Subscribe(x =>
@@ -677,6 +642,9 @@ namespace Nekoyume
             toggleDropdowns.First().items.First().isOn = true;
             inputField.text = string.Empty;
             resetButton.interactable = false;
+            levelLimitToggle.isOn = false;
+            _loadingCount = 0;
+            loading.SetActive(_loadingCount > 0);
             if (_resetAnimator.isActiveAndEnabled)
             {
                 _resetAnimator.Play(_hashDisabled);

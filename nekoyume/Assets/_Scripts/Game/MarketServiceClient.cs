@@ -48,12 +48,17 @@ namespace Nekoyume.Game
         }
 
         public async Task<(List<FungibleAssetValueProductResponseModel>, int)> GetBuyFungibleAssetProducts(
-            string ticker,
+            string[] tickers,
             int offset,
             int limit,
             MarketOrderType order)
         {
-            var url = $"{_url}/Market/products/fav/{ticker}?limit={limit}&offset={offset}&order={order}";
+            var url = $"{_url}/Market/products/fav?limit={limit}&offset={offset}&order={order}";
+
+            if (tickers is not null && tickers.Any())
+            {
+                url = url + "&tickers=" + string.Join("&tickers=", tickers);
+            }
 
             var json = await _client.GetStringAsync(url);
             var options = new JsonSerializerOptions
