@@ -534,10 +534,6 @@ namespace Nekoyume
             {
                 sortOrderIcon.localScale = new Vector3(1, isAscending ? 1 : -1, 1);
             }).AddTo(gameObject);
-            _levelLimit.Subscribe(levelLimit =>
-            {
-                levelLimitToggle.isOn = levelLimit;
-            }).AddTo(gameObject);
 
             _mode.Subscribe(x =>
             {
@@ -672,6 +668,7 @@ namespace Nekoyume
             toggleDropdowns.First().items.First().isOn = true;
             inputField.text = string.Empty;
             resetButton.interactable = false;
+            levelLimitToggle.isOn = false;
             _loadingCount = 0;
             loading.SetActive(_loadingCount > 0);
             if (_resetAnimator.isActiveAndEnabled)
