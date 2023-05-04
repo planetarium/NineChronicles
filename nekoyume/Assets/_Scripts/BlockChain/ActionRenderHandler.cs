@@ -1413,7 +1413,7 @@ namespace Nekoyume.BlockChain
                 if (eval.Action.TotalPlayCount > 1)
                 {
                     Widget.Find<BattleResultPopup>().ModelForMultiHackAndSlash = resultModel;
-                    if (log.IsClear)
+                    if (log.result == BattleLog.Result.Win)
                     {
                         var currentAvatar = States.Instance.CurrentAvatarState;
                         currentAvatar.exp = temporaryAvatar.exp;
