@@ -5,9 +5,11 @@ namespace Lib9c.Tests
     using System.Collections.Immutable;
     using System.Linq;
     using System.Numerics;
+    using System.Reflection;
+    using Bencodex.Types;
+    using Lib9c.DevExtensions.Action;
     using Libplanet;
     using Libplanet.Action;
-    using Libplanet.Action.Sys;
     using Libplanet.Assets;
     using Libplanet.Blockchain;
     using Libplanet.Blockchain.Policies;
@@ -126,6 +128,89 @@ namespace Lib9c.Tests
             // Transaction with more than two actions is rejected.
             Assert.Null(policy.ValidateNextBlockTx(blockChain, txWithSingleAction));
             Assert.NotNull(policy.ValidateNextBlockTx(blockChain, txWithManyActions));
+        }
+
+        [Fact]
+        public void ValidateNextBlockTx_Mead()
+        {
+            var adminPrivateKey = new PrivateKey();
+            var adminAddress = adminPrivateKey.ToAddress();
+            var actionTypeLoader = new StaticActionTypeLoader(
+                Assembly.GetEntryAssembly() is Assembly entryAssembly
+                    ? new[] { typeof(ActionBase).Assembly, entryAssembly, typeof(ManipulateState).Assembly }
+                    : new[] { typeof(ActionBase).Assembly, typeof(ManipulateState).Assembly },
+                typeof(ActionBase));
+            PolymorphicAction<ActionBase>.ActionTypeLoader = actionTypeLoader;
+            var blockPolicySource = new BlockPolicySource(Logger.None, actionTypeLoader: actionTypeLoader);
+            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
+                null, null, null, null);
+            IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
+                new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
+            var mint = new ManipulateState
+            {
+                StateList = new List<(Address addr, IValue value)>(),
+                BalanceList = new List<(Address addr, FungibleAssetValue fav)>
+                {
+                    (adminAddress, 1 * Currencies.Mead),
+                },
+            };
+            Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
+                adminAddress,
+                ImmutableHashSet<Address>.Empty,
+                initialValidators: new Dictionary<PublicKey, BigInteger>
+                    { { adminPrivateKey.PublicKey, BigInteger.One } },
+                actionBases: new[] { mint }
+            );
+            using var store = new DefaultStore(null);
+            using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null));
+            var blockChain = BlockChain<PolymorphicAction<ActionBase>>.Create(
+                policy,
+                stagePolicy,
+                store,
+                stateStore,
+                genesis,
+                renderers: new[] { blockPolicySource.BlockRenderer }
+            );
+            var action = new DailyReward
+            {
+                avatarAddress = adminAddress,
+            };
+
+            Transaction<PolymorphicAction<ActionBase>> txEmpty =
+                Transaction<PolymorphicAction<ActionBase>>.Create(
+                    0,
+                    adminPrivateKey,
+                    genesis.Hash,
+                    new PolymorphicAction<ActionBase>[] { }
+                );
+            Assert.IsType<TxPolicyViolationException>(BlockPolicySource.ValidateNextBlockTxRaw(blockChain, actionTypeLoader, txEmpty, 0L));
+
+            Transaction<PolymorphicAction<ActionBase>> txByAdmin =
+                Transaction<PolymorphicAction<ActionBase>>.Create(
+                    0,
+                    adminPrivateKey,
+                    genesis.Hash,
+                    new PolymorphicAction<ActionBase>[] { action, action }
+                );
+            Assert.IsType<TxPolicyViolationException>(BlockPolicySource.ValidateNextBlockTxRaw(blockChain, actionTypeLoader, txByAdmin, 0L));
+
+            Transaction<PolymorphicAction<ActionBase>> txByStranger =
+                Transaction<PolymorphicAction<ActionBase>>.Create(
+                    0,
+                    new PrivateKey(),
+                    genesis.Hash,
+                    new PolymorphicAction<ActionBase>[] { action }
+                );
+            Assert.IsType<TxPolicyViolationException>(BlockPolicySource.ValidateNextBlockTxRaw(blockChain, actionTypeLoader, txByStranger, 0L));
+
+            Transaction<PolymorphicAction<ActionBase>> txByAdmin2 =
+                Transaction<PolymorphicAction<ActionBase>>.Create(
+                    1,
+                    adminPrivateKey,
+                    genesis.Hash,
+                    new PolymorphicAction<ActionBase>[] { action }
+                );
+            Assert.Null(BlockPolicySource.ValidateNextBlockTxRaw(blockChain, actionTypeLoader, txByAdmin2, 0L));
         }
 
         [Fact]
@@ -491,8 +576,8 @@ namespace Lib9c.Tests
             AuthorizedMinersState authorizedMinersState = null,
             Dictionary<PublicKey, BigInteger> initialValidators = null,
             DateTimeOffset? timestamp = null,
-            PendingActivationState[] pendingActivations = null
-        )
+            PendingActivationState[] pendingActivations = null,
+            IEnumerable<ActionBase> actionBases = null)
         {
             if (pendingActivations is null)
             {
@@ -514,7 +599,8 @@ namespace Lib9c.Tests
                 isActivateAdminAddress: false,
                 credits: null,
                 privateKey: _privateKey,
-                timestamp: timestamp ?? DateTimeOffset.MinValue);
+                timestamp: timestamp ?? DateTimeOffset.MinValue,
+                actionBases: actionBases);
         }
     }
 }
