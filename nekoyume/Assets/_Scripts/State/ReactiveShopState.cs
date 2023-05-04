@@ -90,7 +90,7 @@ namespace Nekoyume.State
         }
 
         public static async Task RequestBuyFungibleAssetsAsync(
-            string ticker,
+            string[] tickers,
             MarketOrderType orderType,
             int limit,
             bool reset = true)
@@ -102,7 +102,7 @@ namespace Nekoyume.State
 
             var offset = reset ? 0 : CachedBuyFungibleAssetProducts.Count;
             var (fungibleAssets, totalCount) =
-                await Game.Game.instance.MarketServiceClient.GetBuyFungibleAssetProducts(ticker, offset, limit, orderType);
+                await Game.Game.instance.MarketServiceClient.GetBuyFungibleAssetProducts(tickers, offset, limit, orderType);
 
             if (reset)
             {
