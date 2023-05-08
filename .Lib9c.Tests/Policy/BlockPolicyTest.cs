@@ -135,23 +135,18 @@ namespace Lib9c.Tests
         {
             var adminPrivateKey = new PrivateKey();
             var adminAddress = adminPrivateKey.ToAddress();
-            var actionTypeLoader = new StaticActionTypeLoader(
-                Assembly.GetEntryAssembly() is Assembly entryAssembly
-                    ? new[] { typeof(ActionBase).Assembly, entryAssembly, typeof(ManipulateState).Assembly }
-                    : new[] { typeof(ActionBase).Assembly, typeof(ManipulateState).Assembly },
-                typeof(ActionBase));
-            PolymorphicAction<ActionBase>.ActionTypeLoader = actionTypeLoader;
-            var blockPolicySource = new BlockPolicySource(Logger.None, actionTypeLoader: actionTypeLoader);
+            var blockPolicySource = new BlockPolicySource(Logger.None);
+            var actionTypeLoader = PolymorphicAction<ActionBase>.ActionTypeLoader;
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
                 null, null, null, null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
-            var mint = new ManipulateState
+            var mint = new PrepareRewardAssets
             {
-                StateList = new List<(Address addr, IValue value)>(),
-                BalanceList = new List<(Address addr, FungibleAssetValue fav)>
+                RewardPoolAddress = adminAddress,
+                Assets = new List<FungibleAssetValue>
                 {
-                    (adminAddress, 1 * Currencies.Mead),
+                    1 * Currencies.Mead,
                 },
             };
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
@@ -159,7 +154,8 @@ namespace Lib9c.Tests
                 ImmutableHashSet<Address>.Empty,
                 initialValidators: new Dictionary<PublicKey, BigInteger>
                     { { adminPrivateKey.PublicKey, BigInteger.One } },
-                actionBases: new[] { mint }
+                actionBases: new[] { mint },
+                privateKey: adminPrivateKey
             );
             using var store = new DefaultStore(null);
             using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null));
@@ -171,6 +167,7 @@ namespace Lib9c.Tests
                 genesis,
                 renderers: new[] { blockPolicySource.BlockRenderer }
             );
+            Assert.Equal(1 * Currencies.Mead, blockChain.GetBalance(adminAddress, Currencies.Mead));
             var action = new DailyReward
             {
                 avatarAddress = adminAddress,
@@ -577,7 +574,8 @@ namespace Lib9c.Tests
             Dictionary<PublicKey, BigInteger> initialValidators = null,
             DateTimeOffset? timestamp = null,
             PendingActivationState[] pendingActivations = null,
-            IEnumerable<ActionBase> actionBases = null)
+            IEnumerable<ActionBase> actionBases = null,
+            PrivateKey privateKey = null)
         {
             if (pendingActivations is null)
             {
@@ -598,7 +596,7 @@ namespace Lib9c.Tests
                 initialValidators: initialValidators,
                 isActivateAdminAddress: false,
                 credits: null,
-                privateKey: _privateKey,
+                privateKey: privateKey ?? _privateKey,
                 timestamp: timestamp ?? DateTimeOffset.MinValue,
                 actionBases: actionBases);
         }
