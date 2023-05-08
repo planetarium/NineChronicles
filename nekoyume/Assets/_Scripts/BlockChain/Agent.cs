@@ -712,7 +712,11 @@ namespace Nekoyume.BlockChain
             var polymorphicActions = actions.ToArray();
             Debug.LogFormat("Make Transaction with Actions: `{0}`",
                 string.Join(",", polymorphicActions.Select(i => i.InnerAction)));
-            Transaction tx = blocks.MakeTransaction(PrivateKey, polymorphicActions);
+            Transaction tx = blocks.MakeTransaction(
+                privateKey: PrivateKey,
+                actions: polymorphicActions,
+                updatedAddresses: polymorphicActions.CalculateUpdateAddresses()
+            );
             _onMakeTransactionSubject.OnNext((tx, actions));
 
             return tx;

@@ -481,10 +481,11 @@ namespace Nekoyume.BlockChain
         {
             var nonce = await GetNonceAsync();
             var tx = NCTx.Create<NCAction>(
-                nonce,
-                PrivateKey,
-                _genesis?.Hash,
-                actions
+                nonce: nonce,
+                privateKey: PrivateKey,
+                genesisHash: _genesis?.Hash,
+                actions: actions,
+                updatedAddresses: actions.CalculateUpdateAddresses()
             );
 
             string actionsName = default;
