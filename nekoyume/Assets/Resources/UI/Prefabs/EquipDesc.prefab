@@ -33677,7 +33677,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: All Option
+  m_text: UI_COMBINATION_GREAT_SUCCESS_RATE_FORMAT
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 6690b8bb0ae42444baa2d75973755853, type: 2}
@@ -34415,10 +34415,14 @@ MonoBehaviour:
   - {fileID: 4901881353262940766}
   recipeCell: {fileID: 946278804148290470}
   titleText: {fileID: 1595198666716948043}
+  blockIndexText: {fileID: 7270673448602237482}
+  levelText: {fileID: 8942851453121821110}
+  requiredItemRecipeView: {fileID: 111346774065562781}
+  button: {fileID: 3745099014369410291}
+  lockedObject: {fileID: 7735267976796796070}
+  lockedText: {fileID: 4847190004644591556}
   mainStatTexts:
   - {fileID: 8191505717902066824}
-  blockIndexText: {fileID: 7270673448602237482}
-  greatSuccessRateText: {fileID: 6918453992858129788}
   optionViews:
   - ParentObject: {fileID: 2317275392032755833}
     OptionText: {fileID: 7007941882053913369}
@@ -34458,11 +34462,7 @@ MonoBehaviour:
   - {fileID: 63145367696019783}
   - {fileID: 5115815443179381424}
   - {fileID: 3964192681605403236}
-  levelText: {fileID: 8942851453121821110}
-  requiredItemRecipeView: {fileID: 111346774065562781}
-  button: {fileID: 3745099014369410291}
-  lockedObject: {fileID: 7735267976796796070}
-  lockedText: {fileID: 4847190004644591556}
+  greatSuccessRateText: {fileID: 4055086873023492456}
   hammerPointView:
     parentObject: {fileID: 3843608503950069375}
     nowPoint: {fileID: 8900149776205777203}
@@ -51761,7 +51761,7 @@ PrefabInstance:
     - target: {fileID: 5730728711148222446, guid: f28b579a9755c49b5b5d1a1763a906a8,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5730728711148222447, guid: f28b579a9755c49b5b5d1a1763a906a8,
         type: 3}
@@ -51944,18 +51944,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 3424119067033608860}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &6918453992858129788 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5730728711148222432, guid: f28b579a9755c49b5b5d1a1763a906a8,
-    type: 3}
-  m_PrefabInstance: {fileID: 3424119067033608860}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6918453992858129778}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &3913568673306208291
 PrefabInstance:
   m_ObjectHideFlags: 0

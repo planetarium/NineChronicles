@@ -82,26 +82,8 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI titleText;
 
-        // [SerializeField]
-        // private TextMeshProUGUI statText;
-
-        [SerializeField]
-        private TextMeshProUGUI[] mainStatTexts;
-
         [SerializeField]
         private TextMeshProUGUI blockIndexText;
-
-        [SerializeField]
-        private TextMeshProUGUI greatSuccessRateText;
-
-        [SerializeField]
-        private List<OptionView> optionViews;
-
-        [SerializeField]
-        private List<OptionView> skillViews;
-
-        [SerializeField]
-        private List<GameObject> optionIcons;
 
         [SerializeField]
         private TextMeshProUGUI levelText;
@@ -119,9 +101,24 @@ namespace Nekoyume.UI
         private TextMeshProUGUI lockedText;
 
         [SerializeField]
-        private HammerPointView hammerPointView;
+        private TextMeshProUGUI[] mainStatTexts;
+
+        [SerializeField] [Header("[Equipment]")]
+        private List<OptionView> optionViews;
 
         [SerializeField]
+        private List<OptionView> skillViews;
+
+        [SerializeField]
+        private List<GameObject> optionIcons;
+
+        [SerializeField]
+        private TextMeshProUGUI greatSuccessRateText;
+
+        [SerializeField]
+        private HammerPointView hammerPointView;
+
+        [SerializeField] [Header("[EventMaterial]")]
         private ConditionalCostButton materialSelectButton;
 
         [SerializeField]
@@ -344,12 +341,11 @@ namespace Nekoyume.UI
         private void UpdateInformation(int index)
         {
             long blockIndex = 0;
-            decimal greatSuccessRate = 0m;
             BigInteger costNCG = 0;
             int costAP = 0;
             int recipeId = 0;
             int? subRecipeId = null;
-            Dictionary<int, int> materialMap = new Dictionary<int, int>();
+            var materialMap = new Dictionary<int, int>();
 
             var equipmentRow = _recipeRow as EquipmentItemRecipeSheet.Row;
             var consumableRow = _recipeRow as ConsumableItemRecipeSheet.Row;
@@ -376,6 +372,8 @@ namespace Nekoyume.UI
                 costNCG = equipmentRow.RequiredGold;
                 costAP = equipmentRow.RequiredActionPoint;
                 recipeId = equipmentRow.Id;
+
+                var greatSuccessRate = 0m;
 
                 // Add base material
                 materialMap.Add(equipmentRow.MaterialId, equipmentRow.MaterialCount);
@@ -438,12 +436,7 @@ namespace Nekoyume.UI
                         else
                         {
                             var level = index == MimisbrunnrRecipeIndex ? row.MimisLevel : row.Level;
-                            levelText.text = L10nManager.Localize("UI_REQUIRED_LEVEL", level);
-                            var hasEnoughLevel = States.Instance.CurrentAvatarState.level >= level;
-                            levelText.color = hasEnoughLevel
-                                ? Palette.GetColor(EnumType.ColorType.ButtonEnabled)
-                                : Palette.GetColor(EnumType.ColorType.TextDenial);
-
+                            levelText.text = $"Lv {level}";
                             levelText.enabled = true;
                         }
 
@@ -475,6 +468,11 @@ namespace Nekoyume.UI
                     }
                     requiredItemRecipeView.SetData(baseMaterialInfo, null, true, !isUnlocked);
                 }
+
+                greatSuccessRateText.text = greatSuccessRate == 0m
+                    ? "-"
+                    : L10nManager.Localize("UI_COMBINATION_GREAT_SUCCESS_RATE_FORMAT",
+                        greatSuccessRate.ToString("0.0%"));
             }
             else if (consumableRow != null)
             {
@@ -493,12 +491,7 @@ namespace Nekoyume.UI
                 }
                 else
                 {
-                    levelText.text = L10nManager.Localize("UI_REQUIRED_LEVEL", row.Level);
-                    var hasEnoughLevel = States.Instance.CurrentAvatarState.level >= row.Level;
-                    levelText.color = hasEnoughLevel
-                        ? Palette.GetColor(EnumType.ColorType.ButtonEnabled)
-                        : Palette.GetColor(EnumType.ColorType.TextDenial);
-
+                    levelText.text = $"Lv {row.Level}";
                     levelText.enabled = true;
                 }
 
@@ -530,8 +523,6 @@ namespace Nekoyume.UI
             }
 
             blockIndexText.text = blockIndex.ToString();
-            greatSuccessRateText.text =
-                greatSuccessRate == 0m ? "-" : greatSuccessRate.ToString("0.0%");
 
             var recipeInfo = new RecipeInfo
             {

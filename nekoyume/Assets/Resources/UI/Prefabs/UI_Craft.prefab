@@ -157,19 +157,19 @@ MonoBehaviour:
   categoryToggles: []
   recipeCell: {fileID: 5835008787791204539}
   titleText: {fileID: 8315517920608880877}
-  mainStatTexts:
-  - {fileID: 4167297940809631090}
-  - {fileID: 22624328500311451}
   blockIndexText: {fileID: 3497421434174899666}
-  greatSuccessRateText: {fileID: 156403051837712056}
-  optionViews: []
-  skillViews: []
-  optionIcons: []
   levelText: {fileID: 0}
   requiredItemRecipeView: {fileID: 974532824115654463}
   button: {fileID: 5693851209587391572}
   lockedObject: {fileID: 546292255942667426}
   lockedText: {fileID: 5917553840908913886}
+  mainStatTexts:
+  - {fileID: 4167297940809631090}
+  - {fileID: 22624328500311451}
+  optionViews: []
+  skillViews: []
+  optionIcons: []
+  greatSuccessRateText: {fileID: 156403051837712056}
   hammerPointView:
     parentObject: {fileID: 0}
     nowPoint: {fileID: 0}
@@ -16722,19 +16722,19 @@ MonoBehaviour:
   categoryToggles: []
   recipeCell: {fileID: 8612115018197644542}
   titleText: {fileID: 950712355151628485}
-  mainStatTexts:
-  - {fileID: 5014451849647128647}
-  - {fileID: 8325787325627658417}
   blockIndexText: {fileID: 1625987143318641402}
-  greatSuccessRateText: {fileID: 6188799841389204701}
-  optionViews: []
-  skillViews: []
-  optionIcons: []
   levelText: {fileID: 4982432732503244092}
   requiredItemRecipeView: {fileID: 7536957849281685625}
   button: {fileID: 3835580633346549049}
   lockedObject: {fileID: 7999828968123662105}
   lockedText: {fileID: 1562261598221104655}
+  mainStatTexts:
+  - {fileID: 5014451849647128647}
+  - {fileID: 8325787325627658417}
+  optionViews: []
+  skillViews: []
+  optionIcons: []
+  greatSuccessRateText: {fileID: 6188799841389204701}
   hammerPointView:
     parentObject: {fileID: 0}
     nowPoint: {fileID: 0}
@@ -34252,19 +34252,19 @@ MonoBehaviour:
   categoryToggles: []
   recipeCell: {fileID: 6637037181918955125}
   titleText: {fileID: 4421314488829443731}
-  mainStatTexts:
-  - {fileID: 5216451682657915680}
-  - {fileID: 7506536583451123785}
   blockIndexText: {fileID: 8231036691694520228}
-  greatSuccessRateText: {fileID: 5965230268928659424}
-  optionViews: []
-  skillViews: []
-  optionIcons: []
   levelText: {fileID: 7940913281812337688}
   requiredItemRecipeView: {fileID: 5572667280445502250}
   button: {fileID: 1721599450903749563}
   lockedObject: {fileID: 8342269779192701464}
   lockedText: {fileID: 3688941951123883186}
+  mainStatTexts:
+  - {fileID: 5216451682657915680}
+  - {fileID: 7506536583451123785}
+  optionViews: []
+  skillViews: []
+  optionIcons: []
+  greatSuccessRateText: {fileID: 5965230268928659424}
   hammerPointView:
     parentObject: {fileID: 0}
     nowPoint: {fileID: 0}
@@ -34489,18 +34489,18 @@ MonoBehaviour:
   categoryToggles: []
   recipeCell: {fileID: 4026531070930475950}
   titleText: {fileID: 2725380589662958667}
-  mainStatTexts:
-  - {fileID: 1240843820298943798}
   blockIndexText: {fileID: 5853917405230477336}
-  greatSuccessRateText: {fileID: 4858933674123732343}
-  optionViews: []
-  skillViews: []
-  optionIcons: []
   levelText: {fileID: 0}
   requiredItemRecipeView: {fileID: 1348249917942480631}
   button: {fileID: 0}
   lockedObject: {fileID: 0}
   lockedText: {fileID: 0}
+  mainStatTexts:
+  - {fileID: 1240843820298943798}
+  optionViews: []
+  skillViews: []
+  optionIcons: []
+  greatSuccessRateText: {fileID: 4858933674123732343}
   hammerPointView:
     parentObject: {fileID: 0}
     nowPoint: {fileID: 0}
@@ -42158,12 +42158,12 @@ PrefabInstance:
     - target: {fileID: 2246069687035291154, guid: 9fca7ee6230131a4696b74efa4577486,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: -85
+      value: -120
       objectReference: {fileID: 0}
     - target: {fileID: 2246069687035291154, guid: 9fca7ee6230131a4696b74efa4577486,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -10
+      value: -50
       objectReference: {fileID: 0}
     - target: {fileID: 2318468578717376012, guid: 9fca7ee6230131a4696b74efa4577486,
         type: 3}
@@ -42702,34 +42702,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4055086873023492456, guid: 9fca7ee6230131a4696b74efa4577486,
         type: 3}
-      propertyPath: m_text
-      value: "2.3% \uD655\uB960\uB85C \uBAA8\uB4E0 \uC635\uC158 \uD68D"
+      propertyPath: m_fontSize
+      value: 9.15
       objectReference: {fileID: 0}
     - target: {fileID: 4055086873023492456, guid: 9fca7ee6230131a4696b74efa4577486,
         type: 3}
-      propertyPath: m_fontColor.b
-      value: 0.32156864
+      propertyPath: m_fontSizeMax
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 4055086873023492456, guid: 9fca7ee6230131a4696b74efa4577486,
         type: 3}
-      propertyPath: m_fontColor.g
-      value: 0.3764706
-      objectReference: {fileID: 0}
-    - target: {fileID: 4055086873023492456, guid: 9fca7ee6230131a4696b74efa4577486,
-        type: 3}
-      propertyPath: m_fontColor.r
-      value: 0.6156863
-      objectReference: {fileID: 0}
-    - target: {fileID: 4055086873023492456, guid: 9fca7ee6230131a4696b74efa4577486,
-        type: 3}
-      propertyPath: m_sharedMaterial
-      value: 
-      objectReference: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
-        type: 2}
-    - target: {fileID: 4055086873023492456, guid: 9fca7ee6230131a4696b74efa4577486,
-        type: 3}
-      propertyPath: m_fontColor32.rgba
-      value: 4283588765
+      propertyPath: m_enableAutoSizing
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4290195490342839574, guid: 9fca7ee6230131a4696b74efa4577486,
         type: 3}
@@ -43354,11 +43338,6 @@ PrefabInstance:
     - target: {fileID: 6863250346482253278, guid: 9fca7ee6230131a4696b74efa4577486,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6918453992858129778, guid: 9fca7ee6230131a4696b74efa4577486,
-        type: 3}
-      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6939176487837263252, guid: 9fca7ee6230131a4696b74efa4577486,
