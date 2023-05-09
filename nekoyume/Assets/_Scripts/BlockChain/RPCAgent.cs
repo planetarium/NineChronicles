@@ -36,7 +36,7 @@ using UnityEngine;
 using Channel = Grpc.Core.Channel;
 using Logger = Serilog.Core.Logger;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
-using NCTx = Libplanet.Tx.Transaction<Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>>;
+using NCTx = Libplanet.Tx.Transaction;
 
 namespace Nekoyume.BlockChain
 {
@@ -58,7 +58,7 @@ namespace Nekoyume.BlockChain
 
         private Codec _codec = new Codec();
 
-        private Block<NCAction> _genesis;
+        private Block _genesis;
 
         private DateTimeOffset _lastTipChangedAt;
 
@@ -480,11 +480,12 @@ namespace Nekoyume.BlockChain
         private async Task MakeTransaction(List<NCAction> actions)
         {
             var nonce = await GetNonceAsync();
-            var tx = NCTx.Create(
-                nonce,
-                PrivateKey,
-                _genesis?.Hash,
-                actions
+            var tx = NCTx.Create<NCAction>(
+                nonce: nonce,
+                privateKey: PrivateKey,
+                genesisHash: _genesis?.Hash,
+                actions: actions,
+                updatedAddresses: actions.CalculateUpdateAddresses()
             );
 
             string actionsName = default;
@@ -548,7 +549,7 @@ namespace Nekoyume.BlockChain
         public void OnRenderBlock(byte[] oldTip, byte[] newTip)
         {
             var dict = (Bencodex.Types.Dictionary)_codec.Decode(newTip);
-            Block<NCAction> newTipBlock = BlockMarshaler.UnmarshalBlock<NCAction>(dict);
+            Block newTipBlock = BlockMarshaler.UnmarshalBlock(dict);
             BlockIndex = newTipBlock.Index;
             BlockIndexSubject.OnNext(BlockIndex);
             BlockTipHash = new BlockHash(newTipBlock.Hash.ToByteArray());
@@ -648,7 +649,7 @@ namespace Nekoyume.BlockChain
         public void OnReorged(byte[] oldTip, byte[] newTip, byte[] branchpoint)
         {
             var dict = (Bencodex.Types.Dictionary)_codec.Decode(newTip);
-            Block<NCAction> newTipBlock = BlockMarshaler.UnmarshalBlock<NCAction>(dict);
+            Block newTipBlock = BlockMarshaler.UnmarshalBlock(dict);
             BlockIndex = newTipBlock.Index;
             BlockIndexSubject.OnNext(BlockIndex);
             BlockTipHash = new BlockHash(newTipBlock.Hash.ToByteArray());
