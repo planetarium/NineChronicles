@@ -19,12 +19,18 @@ namespace Nekoyume
             return $"{stat.StatType} +{(float)value}";
         }
 
-        public static string OptionRowToString(this EquipmentItemOptionSheet.Row optionRow)
+        public static string OptionRowToString(
+            this EquipmentItemOptionSheet.Row optionRow, decimal ratio, bool showRatio = true)
         {
             var statMin = ValueToString(optionRow.StatType, optionRow.StatMin);
             var statMax = ValueToString(optionRow.StatType, optionRow.StatMax);
 
-            var description = $"{optionRow.StatType} +({statMin}-{statMax})";
+            var description = $"{optionRow.StatType} {statMin}~{statMax}";
+            if (showRatio)
+            {
+                description += $" ({ratio:0%})";
+            }
+
             return description;
         }
 

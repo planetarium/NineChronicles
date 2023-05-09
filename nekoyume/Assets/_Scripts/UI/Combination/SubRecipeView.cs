@@ -46,8 +46,8 @@ namespace Nekoyume.UI
         {
             public GameObject ParentObject;
             public TextMeshProUGUI OptionText;
-            public TextMeshProUGUI PercentageText;
             public Slider PercentageSlider;
+            public Button DescriptionButton;
         }
 
         [Serializable]
@@ -687,15 +687,14 @@ namespace Nekoyume.UI
                 .Except(statOptions)
                 .ToList();
 
-            var siblingIndex = 0;
+            var siblingIndex = 1;  // 0 is for the main option
             foreach (var (ratio, option) in options)
             {
                 if (option.StatType != StatType.NONE)
                 {
                     var optionView = optionViews.First(x => !x.ParentObject.activeSelf);
                     var normalizedRatio = ratio.NormalizeFromTenThousandths();
-                    optionView.OptionText.text = option.OptionRowToString();
-                    optionView.PercentageText.text = normalizedRatio.ToString("0%");
+                    optionView.OptionText.text = option.OptionRowToString(normalizedRatio, siblingIndex != 1);
                     optionView.PercentageSlider.value = (float) normalizedRatio;
                     optionView.ParentObject.transform.SetSiblingIndex(siblingIndex);
                     optionView.ParentObject.SetActive(true);
@@ -704,13 +703,17 @@ namespace Nekoyume.UI
                 else
                 {
                     var skillView = skillViews.First(x => !x.ParentObject.activeSelf);
-                    var description = skillSheet.TryGetValue(option.SkillId, out var skillRow)
+                    var skillName = skillSheet.TryGetValue(option.SkillId, out var skillRow)
                         ? skillRow.GetLocalizedName()
                         : string.Empty;
                     var normalizedRatio = ratio.NormalizeFromTenThousandths();
-                    skillView.OptionText.text = description;
-                    skillView.PercentageText.text = normalizedRatio.ToString("0%");
+                    skillView.OptionText.text = $"{skillName} ({normalizedRatio:0%})";
                     skillView.PercentageSlider.value = (float) normalizedRatio;
+                    skillView.DescriptionButton.onClick.RemoveAllListeners();
+                    skillView.DescriptionButton.onClick.AddListener(() =>
+                    {
+                        Debug.LogError($"Todo : Show skill description ({option.SkillId}, {skillName})");
+                    });
                     skillView.ParentObject.transform.SetSiblingIndex(siblingIndex);
                     skillView.ParentObject.SetActive(true);
                     optionIcons.Last().SetActive(true);
