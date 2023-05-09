@@ -74,30 +74,39 @@ SpriteAtlas:
     - {fileID: 2800000, guid: 137a2b93dd2434987a9234b0c5f88216, type: 3}
     - {fileID: 2800000, guid: 93a7c5b955127417f90f575a904e6433, type: 3}
     - {fileID: 2800000, guid: da7231490ad414600a0e5c3114016c8b, type: 3}
+    - {fileID: 2800000, guid: c2a36b653cd381b449f96d2f2ecfe342, type: 3}
     - {fileID: 2800000, guid: 9e420bdcd85c54890b5bee0311530710, type: 3}
+    - {fileID: 2800000, guid: 486288cded0f6a943a9a7c3946394ef2, type: 3}
     - {fileID: 2800000, guid: 75af753a4b4e44438ac84644f1631328, type: 3}
+    - {fileID: 2800000, guid: b2c8cca425d957147abc9613cc05e9b4, type: 3}
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
   - {fileID: 21300000, guid: 137a2b93dd2434987a9234b0c5f88216, type: 3}
+  - {fileID: 21300000, guid: b2c8cca425d957147abc9613cc05e9b4, type: 3}
+  - {fileID: 21300000, guid: c2a36b653cd381b449f96d2f2ecfe342, type: 3}
   - {fileID: 21300000, guid: 9dd403d71eaf44e8687726e4bd79600b, type: 3}
   - {fileID: 21300000, guid: da7231490ad414600a0e5c3114016c8b, type: 3}
   - {fileID: 21300000, guid: 93a7c5b955127417f90f575a904e6433, type: 3}
   - {fileID: 21300000, guid: 75af753a4b4e44438ac84644f1631328, type: 3}
   - {fileID: 21300000, guid: e76114ca10dfa4c6cac1a860d5c7d8a2, type: 3}
   - {fileID: 21300000, guid: 9e420bdcd85c54890b5bee0311530710, type: 3}
+  - {fileID: 21300000, guid: 486288cded0f6a943a9a7c3946394ef2, type: 3}
   - {fileID: 21300000, guid: aee390ae839bc4b99ac4d5d2c8a847d7, type: 3}
   m_PackedSpriteNamesToIndex:
-  - bg_world07_02_04
-  - bg_world07_02_03
-  - chapter_07_1
-  - bg_world07_03_04
-  - chapter_07_3
-  - bg_world07_01_04
-  - chapter_07_2
-  - bg_world07_01_03
+  - bg_chapter07_02_04
+  - chapter_07_03_02
+  - chapter_07_01_02
+  - bg_chapter07_02_03
+  - chapter_07_01_01
+  - bg_chapter07_03_04
+  - chapter_07_03_01
+  - bg_chapter07_01_04
+  - chapter_07_02_01
+  - chapter_07_02_02
+  - bg_chapter07_01_03
   m_RenderDataMap: {}
   m_Tag: Chapter_07
   m_IsVariant: 0
