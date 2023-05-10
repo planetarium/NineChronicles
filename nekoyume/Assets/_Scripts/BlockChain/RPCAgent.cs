@@ -480,7 +480,7 @@ namespace Nekoyume.BlockChain
         private async Task MakeTransaction(List<NCAction> actions)
         {
             var nonce = await GetNonceAsync();
-            var tx = NCTx.Create<NCAction>(
+            var tx = NCTx.Create(
                 nonce: nonce,
                 privateKey: PrivateKey,
                 genesisHash: _genesis?.Hash,
