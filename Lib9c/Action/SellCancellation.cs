@@ -129,14 +129,12 @@ namespace Nekoyume.Action
             }
 
             Order order = OrderFactory.Deserialize(orderDict);
-            if (context.BlockIndex > 6166597)
+            if (tradableId != order.TradableId || itemSubType != order.ItemSubType)
             {
                 return CancelV2(context, states, avatarState, addressesHex, order, tradableId, itemSubType);
             }
-            else
-            {
-                return Cancel(context, states, avatarState, addressesHex, order);
-            }
+
+            return Cancel(context, states, avatarState, addressesHex, order);
         }
 
         public static IAccountStateDelta CancelV2(IActionContext context, IAccountStateDelta states, AvatarState avatarState, string addressesHex, Order order, Guid tradableId, ItemSubType itemSubType)
