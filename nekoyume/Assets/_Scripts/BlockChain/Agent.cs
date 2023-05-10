@@ -168,7 +168,20 @@ namespace Nekoyume.BlockChain
                         store,
                         _stateStore,
                         genesisBlock,
-                        renderers: BlockPolicySource.GetRenderers());
+                        new ActionEvaluator(
+                            _ => policy.BlockAction,
+                            new BlockChainStates(store, _stateStore),
+                            policy.NativeTokens.Contains,
+                            new StaticActionLoader(
+                                new[]
+                                {
+                                    typeof(ActionBase).Assembly,
+                                }
+                            ),
+                            null
+                        ),
+                        renderers: BlockPolicySource.GetRenderers()
+                    );
                 }
                 else
                 {
