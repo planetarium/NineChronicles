@@ -13,7 +13,7 @@ SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 cd "$SCRIPT_DIR"
 SCRIPT_DIR=$(pwd)
 
-PROJECTS=("Libplanet" "Libplanet.RocksDBStore")
+PROJECTS=("Libplanet" "Libplanet.RocksDBStore" "Libplanet.Stun")
 
 
 for project in "${PROJECTS[@]}"; do
