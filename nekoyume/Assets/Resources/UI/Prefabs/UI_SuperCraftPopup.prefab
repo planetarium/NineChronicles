@@ -85,11 +85,19 @@ MonoBehaviour:
   tutorialTargets: []
   tutorialActions: 
   superCraftButton: {fileID: 1517806122348923672}
+  skillTextGroupParent: {fileID: 6624249721600050660}
   skillName: {fileID: 2760609118625277589}
   skillPowerText: {fileID: 8286126236900493500}
   skillChanceText: {fileID: 4647558963994349847}
+  noneRecipeTextParent: {fileID: 8975709671125213474}
+  normalRecipeToggleGroup: {fileID: 1929443453235196761}
   basicRecipeToggle: {fileID: 1276498893253174519}
   premiumRecipeToggle: {fileID: 4588626535414031271}
+  legendaryRecipeToggleGroup: {fileID: 568567523101287821}
+  legendaryRecipeToggles:
+  - {fileID: 4806229392832068913}
+  - {fileID: 2236395174301551292}
+  - {fileID: 7425250024428823187}
 --- !u!1 &158038873445042577
 GameObject:
   m_ObjectHideFlags: 0
@@ -501,7 +509,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 0}
   toggleTransition: 1
   graphic: {fileID: 0}
-  m_Group: {fileID: 8381691964452893270}
+  m_Group: {fileID: 1929443453235196761}
   onValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -3189,7 +3197,7 @@ GameObject:
   - component: {fileID: 595040888187556378}
   - component: {fileID: 568567523101287821}
   m_Layer: 5
-  m_Name: NewReicpe
+  m_Name: LegendaryReicpe
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3256,7 +3264,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fafe2cfe61f6974895a912c3755e8f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_AllowSwitchOff: 0
+  m_AllowSwitchOff: 1
 --- !u!1 &2557595829368880005
 GameObject:
   m_ObjectHideFlags: 0
@@ -16477,7 +16485,7 @@ MonoBehaviour:
   onClickToggle:
     m_PersistentCalls:
       m_Calls: []
-  allowSwitchOffWhenIsOn: 1
+  allowSwitchOffWhenIsOn: 0
 --- !u!1 &4778488754921297368
 GameObject:
   m_ObjectHideFlags: 0
@@ -21482,6 +21490,7 @@ GameObject:
   - component: {fileID: 3113559729005268986}
   - component: {fileID: 2573575755330927311}
   - component: {fileID: 2021028486293213975}
+  - component: {fileID: 1100879033205357190}
   m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
@@ -21537,7 +21546,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Please select the target you want to proceed with Super Craft.
+  m_text: UI_SUPER_CRAFT_NONE
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
@@ -21607,6 +21616,37 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &1100879033205357190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4878618910696723112}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixedFontAsset: 0
+  fixedFontStyle: 0
+  fixedFontSizeOffset: 0
+  fixedSpacingOption: 0
+  fixedMarginOption: 0
+  fontMaterialType: 0
+  l10nKey: UI_SUPER_CRAFT_NONE
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0
 --- !u!1 &4974431327280635926
 GameObject:
   m_ObjectHideFlags: 0
@@ -21703,13 +21743,13 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_IsOn: 1
+  m_IsOn: 0
   offObject: {fileID: 4229942296824450207}
   onObject: {fileID: 8641055774060206252}
   onClickToggle:
     m_PersistentCalls:
       m_Calls: []
-  allowSwitchOffWhenIsOn: 1
+  allowSwitchOffWhenIsOn: 0
 --- !u!1 &5051347804739722645
 GameObject:
   m_ObjectHideFlags: 0
@@ -22875,8 +22915,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7205289873205664021}
   - component: {fileID: 8536891991558383345}
+  - component: {fileID: 1929443453235196761}
   m_Layer: 5
-  m_Name: OldRecipe
+  m_Name: NormalRecipe
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -22930,6 +22971,19 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &1929443453235196761
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6163432208670454134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fafe2cfe61f6974895a912c3755e8f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AllowSwitchOff: 1
 --- !u!1 &6166956974158743722
 GameObject:
   m_ObjectHideFlags: 0
@@ -29573,7 +29627,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8980341897220593971}
-  - component: {fileID: 8381691964452893270}
   m_Layer: 5
   m_Name: RecipeTabGroup
   m_TagString: Untagged
@@ -29603,19 +29656,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 48}
   m_SizeDelta: {x: 0, y: 50}
   m_Pivot: {x: 0.5, y: 1}
---- !u!114 &8381691964452893270
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7457994734966415301}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2fafe2cfe61f6974895a912c3755e8f1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_AllowSwitchOff: 0
 --- !u!1 &7653914528431431062
 GameObject:
   m_ObjectHideFlags: 0
@@ -30747,7 +30787,7 @@ MonoBehaviour:
   onClickToggle:
     m_PersistentCalls:
       m_Calls: []
-  allowSwitchOffWhenIsOn: 1
+  allowSwitchOffWhenIsOn: 0
 --- !u!1 &8468070720705391161
 GameObject:
   m_ObjectHideFlags: 0
@@ -31177,7 +31217,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5522750744991011392
 RectTransform:
   m_ObjectHideFlags: 0
@@ -31777,7 +31817,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9045765424995302045}
   m_Layer: 5
-  m_Name: None
+  m_Name: NoneRecipe
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -31896,11 +31936,11 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 0}
   toggleTransition: 1
   graphic: {fileID: 0}
-  m_Group: {fileID: 8381691964452893270}
+  m_Group: {fileID: 1929443453235196761}
   onValueChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_IsOn: 1
+  m_IsOn: 0
   offObject: {fileID: 504313629072498330}
   onObject: {fileID: 9180883913581302694}
   onClickToggle:

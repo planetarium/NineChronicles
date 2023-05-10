@@ -8,7 +8,6 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using System;
-using System.Globalization;
 using Nekoyume.State;
 using System.Numerics;
 using Nekoyume.Action;
@@ -698,7 +697,7 @@ namespace Nekoyume.UI
                     optionView.PercentageSlider.value = (float) normalizedRatio;
                     optionView.ParentObject.transform.SetSiblingIndex(siblingIndex);
                     optionView.ParentObject.SetActive(true);
-                    optionIcons[siblingIndex].SetActive(true);
+                    optionIcons[siblingIndex - 1].SetActive(true);
                 }
                 else
                 {

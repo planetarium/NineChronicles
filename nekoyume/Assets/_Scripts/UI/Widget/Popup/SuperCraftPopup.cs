@@ -18,10 +18,14 @@ namespace Nekoyume.UI
 {
     using Nekoyume.Model.Skill;
     using UniRx;
+    using UnityEngine.UI;
     public class SuperCraftPopup : PopupWidget
     {
         [SerializeField]
         private ConditionalCostButton superCraftButton;
+
+        [SerializeField] [Space]
+        private GameObject skillTextGroupParent;
 
         [SerializeField]
         private TMP_Text skillName;
@@ -32,11 +36,23 @@ namespace Nekoyume.UI
         [SerializeField]
         private TMP_Text skillChanceText;
 
+        [SerializeField] [Space]
+        private GameObject noneRecipeTextParent;
+
+        [SerializeField] [Space]
+        private ToggleGroup normalRecipeToggleGroup;
+
         [SerializeField]
         private Toggle basicRecipeToggle;
 
         [SerializeField]
         private Toggle premiumRecipeToggle;
+
+        [SerializeField] [Space]
+        private ToggleGroup legendaryRecipeToggleGroup;
+
+        [SerializeField]
+        private Toggle[] legendaryRecipeToggles;
 
         private EquipmentItemRecipeSheet.Row _recipeRow;
         private int _subRecipeIndex;
@@ -57,6 +73,17 @@ namespace Nekoyume.UI
                 _subRecipeIndex = b ? PremiumRecipeIndex : BasicRecipeIndex;
                 SetSkillInfoText(_recipeRow.SubRecipeIds[_subRecipeIndex]);
             });
+            for (int i = 0; i < legendaryRecipeToggles.Length; i++)
+            {
+                var index = i;
+                legendaryRecipeToggles[index].onValueChanged.AddListener(b =>
+                {
+                    if (!b) return;
+                    _subRecipeIndex = index;
+                    SetSkillInfoText(_recipeRow.SubRecipeIds[_subRecipeIndex]);
+                });
+            }
+
             superCraftButton.OnSubmitSubject.Subscribe(_ =>
             {
                 var craftInfo = new Craft.CraftInfo()
@@ -82,8 +109,28 @@ namespace Nekoyume.UI
                 CostType.Crystal,
                 sheets.CrystalHammerPointSheet[_recipeRow.Id].CRYSTAL);
             base.Show(ignoreAnimation);
-            premiumRecipeToggle.isOn = true;
-            SetSkillInfoText(_recipeRow.SubRecipeIds[PremiumRecipeIndex]);
+
+            if (_recipeRow.GetResultEquipmentItemRow().Grade < 5)  // todo : 전설 등급 Grade 값 확인 필요
+            {
+                normalRecipeToggleGroup.gameObject.SetActive(true);
+                legendaryRecipeToggleGroup.gameObject.SetActive(false);
+                normalRecipeToggleGroup.SetAllTogglesOff();
+            }
+            else
+            {
+                normalRecipeToggleGroup.gameObject.SetActive(false);
+                legendaryRecipeToggleGroup.gameObject.SetActive(true);
+                legendaryRecipeToggleGroup.SetAllTogglesOff();
+
+                var recipeCount = _recipeRow.SubRecipeIds.Count;
+                for (int i = 0; i < legendaryRecipeToggles.Length; i++)
+                {
+                    legendaryRecipeToggles[i].gameObject.SetActive(i < recipeCount);
+                    // todo : 레시피 별 탭 이름 가져와서 설정
+                }
+            }
+
+            SetSkillInfoText(null);
         }
 
         private void SendAction(int? petId)
@@ -122,22 +169,31 @@ namespace Nekoyume.UI
             }
         }
 
-        private void SetSkillInfoText(int subRecipeId)
+        private void SetSkillInfoText(int? subRecipeId)
         {
+            if(subRecipeId is null)
+            {
+                skillTextGroupParent.SetActive(false);
+                noneRecipeTextParent.SetActive(true);
+                return;
+            }
+
+            skillTextGroupParent.SetActive(true);
+            noneRecipeTextParent.SetActive(false);
+
             var sheets = TableSheets.Instance;
-            var subRecipeRow = sheets.EquipmentItemSubRecipeSheetV2[subRecipeId];
+            var subRecipeRow = sheets.EquipmentItemSubRecipeSheetV2[subRecipeId.Value];
             var optionSheet = sheets.EquipmentItemOptionSheet;
             var skillOptionRow = subRecipeRow.Options
                 .Select(x => (ratio: x.Ratio, option: optionSheet[x.Id]))
                 .FirstOrDefault(tuple => tuple.option.SkillId != 0)
                 .option;
             var skillRow = sheets.SkillSheet[skillOptionRow.SkillId];
-            var isBuffSkill =
-                skillRow.SkillType == SkillType.Buff ||
-                skillRow.SkillType == SkillType.Debuff;
+            var isBuffSkill = skillRow.SkillType is SkillType.Buff or SkillType.Debuff;
             var buffRow = isBuffSkill
                 ? sheets.StatBuffSheet[sheets.SkillBuffSheet[skillOptionRow.SkillId].BuffIds.First()]
                 : null;
+
             skillName.text = L10nManager.Localize($"SKILL_NAME_{skillOptionRow.SkillId}");
             skillPowerText.text = isBuffSkill
                 ? $"{L10nManager.Localize("UI_SKILL_EFFECT")}: {buffRow.EffectToString(skillOptionRow.SkillDamageMax)}"
