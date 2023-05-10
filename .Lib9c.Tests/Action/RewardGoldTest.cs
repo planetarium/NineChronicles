@@ -541,6 +541,16 @@ namespace Lib9c.Tests.Action
                 stagePolicy: stagePolicy,
                 stateStore: stateStore,
                 genesisBlock: genesis,
+                actionEvaluator: new ActionEvaluator(
+                    policyBlockActionGetter: _ => policy.BlockAction,
+                    blockChainStates: new BlockChainStates(store, stateStore),
+                    genesisHash: genesis.Hash,
+                    nativeTokenPredicate: policy.NativeTokens.Contains,
+                    actionTypeLoader: new StaticActionLoader(
+                        new[] { typeof(ActionBase).Assembly }
+                    ),
+                    feeCalculator: null
+                ),
                 renderers: blockPolicySource.GetRenderers()
             );
             Assert.Equal(genesis.StateRootHash, blockChain.Genesis.StateRootHash);
