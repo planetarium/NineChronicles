@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using Lib9c;
 using Lib9c.Abstractions;
 using Nekoyume.Helper;
 using Nekoyume.Model;
@@ -79,44 +80,24 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            Address signer = context.Signer;
             var state = context.PreviousStates;
             if (context.Rehearsal)
             {
-                return state.MarkBalanceChanged(Amount.Currency, new[] { Sender, Recipient });
+                return state.MarkBalanceChanged(Amount.Currency, new[] {Sender, Recipient});
             }
 
-            var addressesHex = GetSignerAndOtherAddressesHex(context, context.Signer);
+            var addressesHex = GetSignerAndOtherAddressesHex(context, signer);
             var started = DateTimeOffset.UtcNow;
-            if (Sender != context.Signer)
             Log.Debug("{AddressesHex}TransferAsset4 exec started", addressesHex);
+            if (Sender != signer)
             {
-                throw new InvalidTransferSignerException(context.Signer, Sender, Recipient);
+                throw new InvalidTransferSignerException(signer, Sender, Recipient);
             }
 
             if (Sender == Recipient)
             {
                 throw new InvalidTransferRecipientException(Sender, Recipient);
-            }
-
-            Address recipientAddress = Recipient.Derive(ActivationKey.DeriveKey);
-
-            // Check new type of activation first.
-            // If result of GetState is not null, it is assumed that it has been activated.
-            if (
-                state.GetState(recipientAddress) is null &&
-                state.GetState(Addresses.ActivatedAccount) is Dictionary asDict &&
-                state.GetState(Recipient) is null
-            )
-            {
-                var activatedAccountsState = new ActivatedAccountsState(asDict);
-                var activatedAccounts = activatedAccountsState.Accounts;
-                // if ActivatedAccountsState is empty, all user is activate.
-                if (activatedAccounts.Count != 0
-                    && !activatedAccounts.Contains(Recipient)
-                    && state.GetState(Recipient) is null)
-                {
-                    throw new InvalidTransferUnactivatedRecipientException(Sender, Recipient);
-                }
             }
 
             Currency currency = Amount.Currency;
