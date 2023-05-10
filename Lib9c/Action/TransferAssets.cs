@@ -176,7 +176,7 @@ namespace Nekoyume.Action
                 );
             }
 
-            TransferAsset.CheckCrystalSender(currency, blockIndex, Sender);
+            TransferAsset3.CheckCrystalSender(currency, blockIndex, Sender);
             return state.TransferAsset(Sender, recipient, amount);
         }
     }

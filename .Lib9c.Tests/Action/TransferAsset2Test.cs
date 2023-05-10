@@ -392,7 +392,7 @@ namespace Lib9c.Tests.Action
                     PreviousStates = new State(),
                     Signer = _sender,
                     Rehearsal = false,
-                    BlockIndex = TransferAsset.CrystalTransferringRestrictionStartIndex,
+                    BlockIndex = TransferAsset3.CrystalTransferringRestrictionStartIndex,
                 });
             });
         }

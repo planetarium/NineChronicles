@@ -19,7 +19,7 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/957
     /// </summary>
     [Serializable]
-    [ActionObsolete(TransferAsset.CrystalTransferringRestrictionStartIndex - 1)]
+    [ActionObsolete(TransferAsset3.CrystalTransferringRestrictionStartIndex - 1)]
     [ActionType("transfer_asset2")]
     public class TransferAsset2 : ActionBase, ISerializable, ITransferAsset, ITransferAssetV1
     {
@@ -85,7 +85,7 @@ namespace Nekoyume.Action
                 return state.MarkBalanceChanged(Amount.Currency, new[] { Sender, Recipient });
             }
 
-            CheckObsolete(TransferAsset.CrystalTransferringRestrictionStartIndex - 1, context);
+            CheckObsolete(TransferAsset3.CrystalTransferringRestrictionStartIndex - 1, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, context.Signer);
             var started = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}TransferAsset2 exec started", addressesHex);
