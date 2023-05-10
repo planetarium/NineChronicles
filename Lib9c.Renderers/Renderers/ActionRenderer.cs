@@ -6,6 +6,7 @@ using Libplanet.Blocks;
 using Nekoyume.Action;
 using static Nekoyume.Action.ActionBase;
 using Serilog;
+using Bencodex.Types;
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
 #else
@@ -29,10 +30,10 @@ namespace Lib9c.Renderers
         public readonly Subject<(NCBlock OldTip, NCBlock NewTip)> BlockEndSubject =
             new Subject<(NCBlock OldTip, NCBlock NewTip)>();
 
-        public void RenderAction(IAction action, IActionContext context, IAccountStateDelta nextStates) =>
+        public void RenderAction(IValue action, IActionContext context, IAccountStateDelta nextStates) =>
             ActionRenderSubject.OnNext(new ActionEvaluation<ActionBase>
             {
-                Action = GetActionBase(action),
+                Action = context.BlockAction ? new RewardGold() : GetActionBase(action),
                 Signer = context.Signer,
                 BlockIndex = context.BlockIndex,
                 TxId = context.TxId,
@@ -41,10 +42,10 @@ namespace Lib9c.Renderers
                 RandomSeed = context.Random.Seed
             });
 
-        public void UnrenderAction(IAction action, IActionContext context, IAccountStateDelta nextStates) =>
+        public void UnrenderAction(IValue action, IActionContext context, IAccountStateDelta nextStates) =>
             ActionUnrenderSubject.OnNext(new ActionEvaluation<ActionBase>
             {
-                Action = GetActionBase(action),
+                Action = context.BlockAction ? new RewardGold() : GetActionBase(action),
                 Signer = context.Signer,
                 BlockIndex = context.BlockIndex,
                 TxId = context.TxId,
@@ -54,7 +55,7 @@ namespace Lib9c.Renderers
             });
 
         public void RenderActionError(
-            IAction action,
+            IValue action,
             IActionContext context,
             Exception exception
         )
@@ -62,7 +63,7 @@ namespace Lib9c.Renderers
             Log.Error(exception, "{action} execution failed.", action);
             ActionRenderSubject.OnNext(new ActionEvaluation<ActionBase>
             {
-                Action = GetActionBase(action),
+                Action = context.BlockAction ? new RewardGold() : GetActionBase(action),
                 Signer = context.Signer,
                 BlockIndex = context.BlockIndex,
                 TxId = context.TxId,
@@ -73,10 +74,10 @@ namespace Lib9c.Renderers
             });
         }
 
-        public void UnrenderActionError(IAction action, IActionContext context, Exception exception) =>
+        public void UnrenderActionError(IValue action, IActionContext context, Exception exception) =>
             ActionUnrenderSubject.OnNext(new ActionEvaluation<ActionBase>
             {
-                Action = GetActionBase(action),
+                Action = context.BlockAction ? new RewardGold() : GetActionBase(action),
                 Signer = context.Signer,
                 BlockIndex = context.BlockIndex,
                 TxId = context.TxId,
@@ -176,14 +177,12 @@ namespace Lib9c.Renderers
                     Extra = eval.Extra,
                 });
 
-        private static ActionBase GetActionBase(IAction action)
+        private static ActionBase GetActionBase(IValue actionValue)
         {
-            if (action is NCAction polymorphicAction)
-            {
-                return polymorphicAction.InnerAction;
-            }
+            var action = new NCAction();
+            action.LoadPlainValue(actionValue);
 
-            return (ActionBase)action;
+            return action.InnerAction;
         }
     }
 }

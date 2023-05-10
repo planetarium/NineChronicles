@@ -41,7 +41,7 @@ namespace Lib9c.Tests
                 acc => Enumerable
                     .Range(0, 10)
                     .Select(
-                        n => Transaction.Create<PolymorphicAction<ActionBase>>(
+                        n => Transaction.Create(
                             n,
                             acc,
                             default,
@@ -135,9 +135,9 @@ namespace Lib9c.Tests
         {
             StagePolicy stagePolicy = new StagePolicy(TimeSpan.FromHours(1), 2);
             BlockChain<NCAction> chain = MakeChainWithStagePolicy(stagePolicy);
-            var txA = Transaction.Create<PolymorphicAction<ActionBase>>(0, _accounts[0], default, new NCAction[0]);
-            var txB = Transaction.Create<PolymorphicAction<ActionBase>>(0, _accounts[0], default, new NCAction[0]);
-            var txC = Transaction.Create<PolymorphicAction<ActionBase>>(0, _accounts[0], default, new NCAction[0]);
+            var txA = Transaction.Create(0, _accounts[0], default, new NCAction[0]);
+            var txB = Transaction.Create(0, _accounts[0], default, new NCAction[0]);
+            var txC = Transaction.Create(0, _accounts[0], default, new NCAction[0]);
 
             stagePolicy.Stage(chain, txA);
             stagePolicy.Stage(chain, txB);
@@ -210,17 +210,17 @@ namespace Lib9c.Tests
 
             long nextTxNonce = chain.GetNextTxNonce(_accounts[0].ToAddress());
             Assert.Equal(0, nextTxNonce);
-            var txA = Transaction.Create<PolymorphicAction<ActionBase>>(nextTxNonce, _accounts[0], default, new NCAction[0]);
+            var txA = Transaction.Create(nextTxNonce, _accounts[0], default, new NCAction[0]);
             stagePolicy.Stage(chain, txA);
 
             nextTxNonce = chain.GetNextTxNonce(_accounts[0].ToAddress());
             Assert.Equal(1, nextTxNonce);
-            var txB = Transaction.Create<PolymorphicAction<ActionBase>>(nextTxNonce, _accounts[0], default, new NCAction[0]);
+            var txB = Transaction.Create(nextTxNonce, _accounts[0], default, new NCAction[0]);
             stagePolicy.Stage(chain, txB);
 
             nextTxNonce = chain.GetNextTxNonce(_accounts[0].ToAddress());
             Assert.Equal(2, nextTxNonce);
-            var txC = Transaction.Create<PolymorphicAction<ActionBase>>(nextTxNonce, _accounts[0], default, new NCAction[0]);
+            var txC = Transaction.Create(nextTxNonce, _accounts[0], default, new NCAction[0]);
             stagePolicy.Stage(chain, txC);
 
             nextTxNonce = chain.GetNextTxNonce(_accounts[0].ToAddress());

@@ -525,7 +525,7 @@ namespace Lib9c.Tests.Action
                 );
                 genesis = BlockChain<PolymorphicAction<ActionBase>>.ProposeGenesisBlock(
                     transactions: ImmutableList<Transaction>.Empty
-                        .Add(Transaction.Create<PolymorphicAction<ActionBase>>(
+                        .Add(Transaction.Create(
                             0,
                             new PrivateKey(),
                             null,
