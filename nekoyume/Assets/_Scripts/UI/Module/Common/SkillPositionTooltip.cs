@@ -54,7 +54,7 @@ namespace Nekoyume.UI.Module.Common
                         SetAttackSkillDescription(optionRow);
                         break;
                     case SkillType.Heal:
-                        SetHealSkillDescription(optionRow);
+                        SetHealDescription(optionRow);
                         break;
                     case SkillType.Buff:
                         SetBuffDescription(optionRow, false);
@@ -68,28 +68,77 @@ namespace Nekoyume.UI.Module.Common
             cooldownText.text = $"{L10nManager.Localize("UI_COOLDOWN")}: {skillRow.Cooldown}";
         }
 
+        public void Set(SkillSheet.Row skillRow, int chanceMin, int chanceMax, int damageMin, int damageMax)
+        {
+            titleText.text = skillRow.GetLocalizedName();
+
+            var key = $"SKILL_DESCRIPTION_{skillRow.Id}";
+            if (L10nManager.ContainsKey(key))
+            {
+                contentText.text = L10nManager.Localize(key);
+            }
+            else
+                {
+                switch (skillRow.SkillType)
+                {
+                    case SkillType.Attack:
+                        SetAttackSkillDescription(chanceMin, chanceMax, damageMin, damageMax);
+                        break;
+                    case SkillType.Heal:
+                        SetHealDescription(chanceMin, chanceMax, damageMin, damageMax);
+                        break;
+                    case SkillType.Buff:
+                        SetBuffDescription(skillRow.Id, chanceMin, chanceMax, damageMax, false);
+                        break;
+                    case SkillType.Debuff:
+                        SetBuffDescription(skillRow.Id, chanceMin, chanceMax, damageMax, true);
+                        break;
+                }
+            }
+
+            cooldownText.text = $"{L10nManager.Localize("UI_COOLDOWN")}: {skillRow.Cooldown}";
+        }
+
         private void SetAttackSkillDescription(EquipmentItemOptionSheet.Row optionRow)
         {
-            var chanceText = optionRow.SkillChanceMin == optionRow.SkillChanceMax ?
-                $"{VariableColorTag}{optionRow.SkillChanceMin}%</color>" :
-                $"{VariableColorTag}{optionRow.SkillChanceMin}-{optionRow.SkillChanceMax}%</color>";
-            var value = optionRow.SkillDamageMin == optionRow.SkillDamageMax ?
-                $"{VariableColorTag}{optionRow.SkillDamageMin}%</color>" :
-                $"{VariableColorTag}{optionRow.SkillDamageMin}-{optionRow.SkillDamageMax}</color>";
+            SetAttackSkillDescription(
+                optionRow.SkillChanceMin,
+                optionRow.SkillChanceMax,
+                optionRow.SkillDamageMin,
+                optionRow.SkillDamageMax);
+        }
+
+        private void SetAttackSkillDescription(int chanceMin, int chanceMax, int damageMin, int damageMax)
+        {
+            var chanceText = chanceMin == chanceMax ?
+                $"{VariableColorTag}{chanceMin}%</color>" :
+                $"{VariableColorTag}{chanceMin}-{chanceMax}%</color>";
+            var value = damageMin == damageMax ?
+                $"{VariableColorTag}{damageMin}</color>" :
+                $"{VariableColorTag}{damageMin}-{damageMax}</color>";
             contentText.text = L10nManager.Localize("SKILL_DESCRIPTION_ATTACK", chanceText, value);
 
             buffObject.SetActive(false);
             debuffObject.SetActive(false);
         }
 
-        private void SetHealSkillDescription(EquipmentItemOptionSheet.Row optionRow)
+        private void SetHealDescription(EquipmentItemOptionSheet.Row optionRow)
         {
-            var chanceText = optionRow.SkillChanceMin == optionRow.SkillChanceMax ?
-                $"{VariableColorTag}{optionRow.SkillChanceMin}%</color>" :
-                $"{VariableColorTag}{optionRow.SkillChanceMin}-{optionRow.SkillChanceMax}%</color>";
-            var value = optionRow.SkillDamageMin == optionRow.SkillDamageMax ?
-                $"{VariableColorTag}{optionRow.SkillDamageMin}%</color>" :
-                $"{VariableColorTag}{optionRow.SkillDamageMin}-{optionRow.SkillDamageMax}</color>";
+            SetHealDescription(
+                optionRow.SkillChanceMin,
+                optionRow.SkillChanceMax,
+                optionRow.SkillDamageMin,
+                optionRow.SkillDamageMax);
+        }
+
+        private void SetHealDescription(int chanceMin, int chanceMax, int amountMin, int amountMax)
+        {
+            var chanceText = chanceMin == chanceMax ?
+                $"{VariableColorTag}{chanceMin}%</color>" :
+                $"{VariableColorTag}{chanceMin}-{chanceMax}%</color>";
+            var value = amountMin == amountMax ?
+                $"{VariableColorTag}{amountMin}</color>" :
+                $"{VariableColorTag}{amountMin}-{amountMax}</color>";
             contentText.text = L10nManager.Localize("SKILL_DESCRIPTION_HEAL", chanceText, value);
 
             buffObject.SetActive(false);
@@ -98,13 +147,23 @@ namespace Nekoyume.UI.Module.Common
 
         private void SetBuffDescription(EquipmentItemOptionSheet.Row optionRow, bool isDebuff)
         {
+            SetBuffDescription(
+                optionRow.SkillId,
+                optionRow.SkillChanceMin,
+                optionRow.SkillChanceMax,
+                optionRow.SkillDamageMax,
+                isDebuff);
+        }
+
+        private void SetBuffDescription(int skillId, int chanceMin, int chanceMax, int damageMax, bool isDebuff)
+        {
             var sheets = TableSheets.Instance;
-            var buffRow = sheets.StatBuffSheet[sheets.SkillBuffSheet[optionRow.SkillId].BuffIds.First()];
-            var chanceText = optionRow.SkillChanceMin == optionRow.SkillChanceMax ?
-                $"{VariableColorTag}{optionRow.SkillChanceMin}%</color>" :
-                $"{VariableColorTag}{optionRow.SkillChanceMin}-{optionRow.SkillChanceMax}%</color>";
+            var buffRow = sheets.StatBuffSheet[sheets.SkillBuffSheet[skillId].BuffIds.First()];
+            var chanceText = chanceMin == chanceMax ?
+                $"{VariableColorTag}{chanceMin}%</color>" :
+                $"{VariableColorTag}{chanceMin}-{chanceMax}%</color>";
             var statType = $"{VariableColorTag}{buffRow.StatType}</color>";
-            var value = $"{VariableColorTag}{buffRow.EffectToString(optionRow.SkillDamageMax)}</color>";
+            var value = $"{VariableColorTag}{buffRow.EffectToString(damageMax)}</color>";
 
             contentText.text = L10nManager.Localize("SKILL_DESCRIPTION_STATBUFF", chanceText, statType, value);
 
