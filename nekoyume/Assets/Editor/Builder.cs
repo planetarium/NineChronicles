@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEditor.Callbacks;
+using UnityEditor.iOS.Xcode;
 #if UNITY_STANDALONE_OSX
 using UnityEditor.OSXStandalone;
 #endif
@@ -371,6 +372,37 @@ namespace Editor
 
                 fileInfo.CopyTo(Path.Combine(dest.FullName, fileInfo.Name), true);
             }
+        }
+
+        [PostProcessBuild]
+        public static void OnPostprocessBuildForiOS(BuildTarget buildTarget, string buildPath)
+        {
+            if (buildTarget != BuildTarget.iOS)
+            {
+                return;
+            }
+
+            var pbxProjectPath = Path.Combine(buildPath, "Unity-iPhone.xcodeproj/project.pbxproj");
+            var pbxProject = new PBXProject();
+            pbxProject.ReadFromFile(pbxProjectPath);
+
+            // Disable bitcode option.
+            var unityFrameworkTargetGuid = pbxProject.GetUnityFrameworkTargetGuid();
+            pbxProject.SetBuildProperty(
+                new[] { unityFrameworkTargetGuid, pbxProject.GetUnityMainTargetGuid() },
+                "ENABLE_BITCODE",
+                "NO");
+
+            // Remove static frameworks at "UnityFramework".
+            foreach (var framework in new []{"rocksdb.framework", "secp256k1.framework"})
+            {
+                var frameworkGuid = pbxProject.FindFileGuidByProjectPath($"Frameworks/Plugins/iOS/{framework}");
+                pbxProject.RemoveFrameworkFromProject(unityFrameworkTargetGuid, framework);
+                pbxProject.RemoveFileFromBuild(unityFrameworkTargetGuid, frameworkGuid);
+            }
+
+            // Re-Write project file.
+            pbxProject.WriteToFile(pbxProjectPath);
         }
 
         private static void PreProcessBuildForIOS()
