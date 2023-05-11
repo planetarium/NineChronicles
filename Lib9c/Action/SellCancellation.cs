@@ -129,7 +129,101 @@ namespace Nekoyume.Action
             }
 
             Order order = OrderFactory.Deserialize(orderDict);
+            if (tradableId != order.TradableId || itemSubType != order.ItemSubType)
+            {
+                return CancelV2(context, states, avatarState, addressesHex, order, tradableId, itemSubType);
+            }
+
             return Cancel(context, states, avatarState, addressesHex, order);
+        }
+
+        public static IAccountStateDelta CancelV2(IActionContext context, IAccountStateDelta states, AvatarState avatarState, string addressesHex, Order order, Guid tradableId, ItemSubType itemSubType)
+        {
+            var orderTradableId = tradableId;
+            var avatarAddress = avatarState.address;
+            Address shardedShopAddress = ShardedShopStateV2.DeriveAddress(itemSubType, order.OrderId);
+            Address digestListAddress = OrderDigestListState.DeriveAddress(avatarAddress);
+            Address itemAddress = Addresses.GetItemAddress(orderTradableId);
+            Address inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
+            Address worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
+            Address questListAddress = avatarAddress.Derive(LegacyQuestListKey);
+            var sw = new Stopwatch();
+            sw.Start();
+            var started = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}Sell Cancel exec started", addressesHex);
+
+            if (!states.TryGetState(shardedShopAddress, out BxDictionary shopStateDict))
+            {
+                throw new FailedLoadStateException(
+                    $"{addressesHex}failed to load {nameof(ShardedShopStateV2)}({shardedShopAddress}).");
+            }
+
+            sw.Stop();
+            Log.Verbose("{AddressesHex}Sell Cancel Get ShopState: {Elapsed}", addressesHex, sw.Elapsed);
+            sw.Restart();
+
+            avatarState.updatedAt = context.BlockIndex;
+            avatarState.blockIndex = context.BlockIndex;
+
+            if (!states.TryGetState(digestListAddress, out Dictionary rawList))
+            {
+                throw new FailedLoadStateException($"{addressesHex}failed to load {nameof(OrderDigest)}({digestListAddress}).");
+            }
+
+            var digestList = new OrderDigestListState(rawList);
+
+            // migration method
+            avatarState.inventory.UnlockInvalidSlot(digestList, context.Signer, avatarAddress);
+            avatarState.inventory.ReconfigureFungibleItem(digestList, orderTradableId);
+            avatarState.inventory.LockByReferringToDigestList(digestList, orderTradableId, context.BlockIndex);
+            //
+
+            digestList.Remove(order.OrderId);
+
+            order.ValidateCancelOrder(avatarState, orderTradableId);
+            var sellItem = order.Cancel(avatarState, context.BlockIndex);
+            if (context.BlockIndex < order.ExpiredBlockIndex)
+            {
+                var shardedShopState = new ShardedShopStateV2(shopStateDict);
+                shardedShopState.Remove(order, context.BlockIndex);
+                states = states.SetState(shardedShopAddress, shardedShopState.Serialize());
+            }
+
+            var expirationMail = avatarState.mailBox.OfType<OrderExpirationMail>()
+                .FirstOrDefault(m => m.OrderId.Equals(order.OrderId));
+            if (!(expirationMail is null))
+            {
+                avatarState.mailBox.Remove(expirationMail);
+            }
+
+            var mail = new CancelOrderMail(
+                context.BlockIndex,
+                order.OrderId,
+                context.BlockIndex,
+                order.OrderId
+            );
+            avatarState.Update(mail);
+
+            sw.Stop();
+            Log.Verbose("{AddressesHex}Sell Cancel Update AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
+            sw.Restart();
+
+            states = states
+                .SetState(itemAddress, sellItem.Serialize())
+                .SetState(digestListAddress, digestList.Serialize())
+                .SetState(inventoryAddress, avatarState.inventory.Serialize())
+                .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
+                .SetState(questListAddress, avatarState.questList.Serialize())
+                .SetState(avatarAddress, avatarState.SerializeV2());
+            sw.Stop();
+            Log.Verbose("{AddressesHex}Sell Cancel Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
+            sw.Restart();
+
+            sw.Stop();
+            var ended = DateTimeOffset.UtcNow;
+            Log.Verbose("{AddressesHex}Sell Cancel Set ShopState: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Debug("{AddressesHex}Sell Cancel Total Executed Time: {Elapsed}", addressesHex, ended - started);
+            return states;
         }
 
         public static IAccountStateDelta Cancel(IActionContext context, IAccountStateDelta states, AvatarState avatarState, string addressesHex, Order order)
