@@ -5,7 +5,9 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEditor.Callbacks;
+#if UNITY_IOS
 using UnityEditor.iOS.Xcode;
+#endif
 #if UNITY_STANDALONE_OSX
 using UnityEditor.OSXStandalone;
 #endif
@@ -374,6 +376,7 @@ namespace Editor
             }
         }
 
+#if UNITY_IOS
         [PostProcessBuild]
         public static void OnPostprocessBuildForiOS(BuildTarget buildTarget, string buildPath)
         {
@@ -404,6 +407,7 @@ namespace Editor
             // Re-Write project file.
             pbxProject.WriteToFile(pbxProjectPath);
         }
+#endif
 
         private static void PreProcessBuildForIOS()
         {
