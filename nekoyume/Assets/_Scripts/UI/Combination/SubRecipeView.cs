@@ -26,6 +26,8 @@ using Toggle = Nekoyume.UI.Module.Toggle;
 namespace Nekoyume.UI
 {
     using Libplanet.Assets;
+    using Nekoyume.EnumType;
+    using Nekoyume.UI.Module.Common;
     using UniRx;
 
     public class SubRecipeView : MonoBehaviour
@@ -48,6 +50,16 @@ namespace Nekoyume.UI
             public TextMeshProUGUI OptionText;
             public TextMeshProUGUI PercentageText;
             public Slider PercentageSlider;
+        }
+
+        [Serializable]
+        private struct SkillView
+        {
+            public GameObject ParentObject;
+            public TextMeshProUGUI OptionText;
+            public TextMeshProUGUI PercentageText;
+            public Slider PercentageSlider;
+            public Button TooltipButton;
         }
 
         [Serializable]
@@ -98,7 +110,7 @@ namespace Nekoyume.UI
         private List<OptionView> optionViews;
 
         [SerializeField]
-        private List<OptionView> skillViews;
+        private List<SkillView> skillViews;
 
         [SerializeField]
         private List<GameObject> optionIcons;
@@ -129,6 +141,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private Image requiredNormalItemImage;
+
+        [SerializeField]
+        private SkillPositionTooltip skillTooltip;
 
         public readonly Subject<RecipeInfo> CombinationActionSubject = new Subject<RecipeInfo>();
 
@@ -713,15 +728,21 @@ namespace Nekoyume.UI
                 else
                 {
                     var skillView = skillViews.First(x => !x.ParentObject.activeSelf);
-                    var description = skillSheet.TryGetValue(option.SkillId, out var skillRow)
-                        ? skillRow.GetLocalizedName()
-                        : string.Empty;
+                    var skillRow = skillSheet[option.SkillId];
                     var normalizedRatio = ratio.NormalizeFromTenThousandths();
-                    skillView.OptionText.text = description;
+                    skillView.OptionText.text = skillRow.GetLocalizedName();
                     skillView.PercentageText.text = normalizedRatio.ToString("0%");
                     skillView.PercentageSlider.value = (float) normalizedRatio;
                     skillView.ParentObject.transform.SetSiblingIndex(siblingIndex);
                     skillView.ParentObject.SetActive(true);
+                    skillView.TooltipButton.onClick.RemoveAllListeners();
+                    skillView.TooltipButton.onClick.AddListener(() =>
+                    {
+                        var rect = skillView.TooltipButton.GetComponent<RectTransform>();
+                        skillTooltip.transform.position = rect.GetWorldPositionOfPivot(PivotPresetType.MiddleLeft);
+                        skillTooltip.Set(skillRow, option);
+                        skillTooltip.gameObject.SetActive(true);
+                    });
                     optionIcons.Last().SetActive(true);
                 }
 

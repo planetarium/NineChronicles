@@ -373,6 +373,8 @@ namespace Nekoyume.L10n
                 : text;
         }
 
+        public static bool ContainsKey(string key) => _dictionary.ContainsKey(key);
+
         // ReSharper disable Unity.PerformanceAnalysis
         private static bool TryLocalize(string key, out string text)
         {
