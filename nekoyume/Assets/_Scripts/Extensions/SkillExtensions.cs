@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Codice.Client.BaseCommands.BranchExplorer;
 using Nekoyume.L10n;
 using Nekoyume.Model.Buff;
 using Nekoyume.Model.Skill;
