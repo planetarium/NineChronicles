@@ -55,11 +55,16 @@ jobs:
 
       - uses: game-ci/unity-builder@v2
         with:
+          androidKeystoreName: user # This file won't exist, but this property needs to exist.
+          androidKeystoreBase64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          androidKeystorePass: ${{ secrets.ANDROID_KEYSTORE_PASS }}
+          androidKeyaliasName: ${{ secrets.ANDROID_KEYALIAS_NAME }}
+          androidKeyaliasPass: ${{ secrets.ANDROID_KEYALIAS_PASS }}
+          androidTargetSdkVersion: AndroidApiLevel28
+          androidAppBundle: true
           projectPath: ${{ matrix.projectPath }}
           targetPlatform: ${{ matrix.targetPlatform }}
           buildMethod: 'Editor.Builder.Build${{ matrix.targetPlatform }}'
-          androidTargetSdkVersion: AndroidApiLevel28
-          androidAppBundle: true
 
       - name: Set up Python
         uses: actions/setup-python@v4
