@@ -38,7 +38,7 @@ namespace Nekoyume.Model.Skill.Arena
 
                 if (target.IsHit(caster))
                 {
-                    damage = caster.ATK + Power + statAdditionalPower;                   
+                    damage = caster.ATK + Power + statAdditionalPower;
                     damage = (int) (damage * multiplier);
                     damage = caster.GetDamage(damage, isNormalAttack);
                     damage = elementalType.GetDamage(target.DefenseElementalType, damage);
