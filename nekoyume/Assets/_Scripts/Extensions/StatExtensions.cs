@@ -86,5 +86,29 @@ namespace Nekoyume
                 valueText +
                 (row.OperationType == StatModifier.OperationType.Percentage ? "%" : string.Empty);
         }
+
+        public static string GetAcronym(this StatType type)
+        {
+            switch (type)
+            {
+                case StatType.NONE:
+                case StatType.HP:
+                case StatType.ATK:
+                case StatType.DEF:
+                case StatType.CRI:
+                case StatType.HIT:
+                case StatType.SPD:
+                case StatType.DRV:
+                case StatType.DRR:
+                case StatType.CDMG:
+                    return type.ToString();
+                case StatType.ArmorPenetration:
+                    return "A.PEN";
+                case StatType.Thorn:
+                    return "Thorn";
+                default:
+                    return "NONE";
+            }
+        }
     }
 }

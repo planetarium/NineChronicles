@@ -744,7 +744,7 @@ GameObject:
   - component: {fileID: 6682181843399210754}
   - component: {fileID: 5742353208850380027}
   m_Layer: 5
-  m_Name: Infor
+  m_Name: Info
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1586,8 +1586,8 @@ GameObject:
   - component: {fileID: 7195574900311794010}
   - component: {fileID: 3429093877357431302}
   - component: {fileID: 1089621294030438678}
-  - component: {fileID: 7235402731595210360}
   - component: {fileID: 2439477424393987725}
+  - component: {fileID: 5088317553108804424}
   m_Layer: 5
   m_Name: Position_Tooltip_Skill
   m_TagString: Untagged
@@ -1654,21 +1654,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &7235402731595210360
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5386267312040965010}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 68e3d5a901604291b9a96472285be307, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  touchHandler: {fileID: 2439477424393987725}
-  titleText: {fileID: 5453907059064974172}
-  contentText: {fileID: 2540435998773594643}
 --- !u!114 &2439477424393987725
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1681,6 +1666,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2410c6e911349d6ad72dc1f01bb7559, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5088317553108804424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5386267312040965010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5b889cf95a54e84a95f42574e587173, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  touchHandler: {fileID: 2439477424393987725}
+  titleText: {fileID: 5453907059064974172}
+  contentText: {fileID: 2540435998773594643}
+  cooldownText: {fileID: 3326181172541038662}
+  buffObject: {fileID: 6905258276986470992}
+  debuffObject: {fileID: 1700256908024960155}
+  buffIconImage: {fileID: 7041100416192264138}
+  buffStatTypeText: {fileID: 7561792839298025502}
+  debuffIconImage: {fileID: 8797049705445801004}
+  debuffStatTypeText: {fileID: 6921341025640663770}
 --- !u!1 &5453759279820981475
 GameObject:
   m_ObjectHideFlags: 0
@@ -2453,7 +2460,7 @@ GameObject:
   - component: {fileID: 7561792839298025502}
   - component: {fileID: 2717702239805116312}
   m_Layer: 5
-  m_Name: CoolDownText
+  m_Name: StatTypeText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2507,7 +2514,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Spd '
+  m_text: Thorn
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 33edc2626444d664b85126c972076f37, type: 2}

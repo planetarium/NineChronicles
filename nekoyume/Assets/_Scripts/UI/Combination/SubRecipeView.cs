@@ -27,6 +27,8 @@ using ToggleGroup = UnityEngine.UI.ToggleGroup;
 namespace Nekoyume.UI
 {
     using Libplanet.Assets;
+    using Nekoyume.EnumType;
+    using Nekoyume.UI.Module.Common;
     using UniRx;
 
     public class SubRecipeView : MonoBehaviour
@@ -64,6 +66,16 @@ namespace Nekoyume.UI
             public TextMeshProUGUI OptionText;
             public Slider PercentageSlider;
             public Button DescriptionButton;
+        }
+
+        [Serializable]
+        private struct SkillView
+        {
+            public GameObject ParentObject;
+            public TextMeshProUGUI OptionText;
+            public TextMeshProUGUI PercentageText;
+            public Slider PercentageSlider;
+            public Button TooltipButton;
         }
 
         [Serializable]
@@ -142,6 +154,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private Image requiredNormalItemImage;
+
+        [SerializeField]
+        private SkillPositionTooltip skillTooltip;
 
         public readonly Subject<RecipeInfo> CombinationActionSubject = new Subject<RecipeInfo>();
 
@@ -763,6 +778,14 @@ namespace Nekoyume.UI
                     });
                     skillView.ParentObject.transform.SetSiblingIndex(siblingIndex);
                     skillView.ParentObject.SetActive(true);
+                    skillView.TooltipButton.onClick.RemoveAllListeners();
+                    skillView.TooltipButton.onClick.AddListener(() =>
+                    {
+                        var rect = skillView.TooltipButton.GetComponent<RectTransform>();
+                        skillTooltip.transform.position = rect.GetWorldPositionOfPivot(PivotPresetType.MiddleLeft);
+                        skillTooltip.Set(skillRow, option);
+                        skillTooltip.gameObject.SetActive(true);
+                    });
                     optionIcons.Last().SetActive(true);
                 }
 

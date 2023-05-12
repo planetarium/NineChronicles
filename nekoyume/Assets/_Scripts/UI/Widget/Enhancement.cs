@@ -20,6 +20,8 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.EnumType;
+    using Nekoyume.UI.Module.Common;
     using UniRx;
 
     public class Enhancement : Widget
@@ -77,6 +79,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private Animator animator;
+
+        [SerializeField]
+        private SkillPositionTooltip skillTooltip;
 
         private static readonly int HashToRegisterBase =
             Animator.StringToHash("RegisterBase");
@@ -407,11 +412,19 @@ namespace Nekoyume.UI
                     if (row.ExtraSkillDamageGrowthMin == 0 && row.ExtraSkillDamageGrowthMax == 0 &&
                         row.ExtraSkillChanceGrowthMin == 0 && row.ExtraSkillChanceGrowthMax == 0)
                     {
-                        skillViews[i].Set(skillName,
+                        var view = skillViews[i];
+                        view.Set(skillName,
                             $"{L10nManager.Localize("UI_SKILL_POWER")} : {power}",
                             string.Empty,
                             $"{L10nManager.Localize("UI_SKILL_CHANCE")} : {chance}",
                             string.Empty);
+                        var skillRow = skills[i].skillRow;
+                        view.SetDescriptionButton(() =>
+                        {
+                            skillTooltip.Set(skillRow, chance, chance, power, power);
+                            skillTooltip.gameObject.SetActive(true);
+                            skillTooltip.transform.position = view.DescriptionPosition;
+                        });
                     }
                     else
                     {
@@ -421,12 +434,22 @@ namespace Nekoyume.UI
                         var chanceAdd = Math.Max(1,
                             (int)(chance *
                                   row.ExtraSkillChanceGrowthMax.NormalizeFromTenThousandths()));
+                        var totalPower = power + powerAdd;
+                        var totalChance = chance + chanceAdd;
 
-                        skillViews[i].Set(skillName,
+                        var view = skillViews[i];
+                        view.Set(skillName,
                             $"{L10nManager.Localize("UI_SKILL_POWER")} : {power}",
                             $"(<size=80%>max</size> +{powerAdd})",
                             $"{L10nManager.Localize("UI_SKILL_CHANCE")} : {chance}",
                             $"(<size=80%>max</size> +{chanceAdd}%)");
+                        var skillRow = skills[i].skillRow;
+                        view.SetDescriptionButton(() =>
+                        {
+                            skillTooltip.Set(skillRow, totalChance, totalChance, totalPower, totalPower);
+                            skillTooltip.gameObject.SetActive(true);
+                            skillTooltip.transform.position = view.DescriptionPosition;
+                        });
                     }
                 }
             }
