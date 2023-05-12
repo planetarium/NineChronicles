@@ -84,25 +84,44 @@ namespace Lib9c.DevExtensions
             Block genesis = store.GetBlock(
                 genesisBlockHash
             );
+            var blockChainStates = new BlockChainStates(store, stateStore);
+            ActionEvaluator actionEvaluator = new ActionEvaluator(
+                _ => policy.BlockAction,
+                blockChainStates,
+                genesis.Hash,
+                policy.NativeTokens.Contains,
+                new StaticActionLoader(
+                    new[]
+                    {
+                        typeof(ActionBase).Assembly,  // Lib9c
+                        typeof(Utils).Assembly,  // Lib9c.DevExtensions
+                    }
+                ),
+                null
+            );
             BlockChain<NCAction> chain;
             if (store.GetCanonicalChainId() is null)
             {
                 chain = BlockChain<NCAction>.Create(
-                    policy,
-                    stagePolicy,
-                    store,
-                    stateStore,
-                    genesis
+                    policy: policy,
+                    stagePolicy: stagePolicy,
+                    store: store,
+                    stateStore: stateStore,
+                    genesisBlock: genesis,
+                    actionEvaluator: actionEvaluator
                 );
             }
             else
             {
                 chain = new BlockChain<NCAction>(
-                    policy,
-                    stagePolicy,
-                    store,
-                    stateStore,
-                    genesis
+                    policy: policy,
+                    stagePolicy: stagePolicy,
+                    store: store,
+                    stateStore: stateStore,
+                    genesisBlock: genesis,
+                    renderers: null,
+                    blockChainStates: blockChainStates,
+                    actionEvaluator: actionEvaluator
                 );
             }
             return (chain, store, stateKeyValueStore, stateStore);

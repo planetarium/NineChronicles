@@ -63,6 +63,16 @@ namespace Lib9c.Tests
                 store,
                 stateStore,
                 genesis,
+                new ActionEvaluator(
+                    policyBlockActionGetter: _ => policy.BlockAction,
+                    blockChainStates: new BlockChainStates(store, stateStore),
+                    genesisHash: genesis.Hash,
+                    nativeTokenPredicate: policy.NativeTokens.Contains,
+                    actionTypeLoader: new StaticActionLoader(
+                        new[] { typeof(ActionBase).Assembly }
+                    ),
+                    feeCalculator: null
+                ),
                 renderers: new[] { blockPolicySource.BlockRenderer }
             );
             Transaction txByStranger =
@@ -153,6 +163,16 @@ namespace Lib9c.Tests
                 store,
                 stateStore,
                 genesis,
+                new ActionEvaluator(
+                    policyBlockActionGetter: _ => policy.BlockAction,
+                    blockChainStates: new BlockChainStates(store, stateStore),
+                    genesisHash: genesis.Hash,
+                    nativeTokenPredicate: policy.NativeTokens.Contains,
+                    actionTypeLoader: new StaticActionLoader(
+                        new[] { typeof(ActionBase).Assembly }
+                    ),
+                    feeCalculator: null
+                ),
                 renderers: new[] { blockPolicySource.BlockRenderer }
             );
             blockChain.MakeTransaction(
@@ -202,6 +222,16 @@ namespace Lib9c.Tests
                 store,
                 stateStore,
                 genesis,
+                new ActionEvaluator(
+                    policyBlockActionGetter: _ => policy.BlockAction,
+                    blockChainStates: new BlockChainStates(store, stateStore),
+                    genesisHash: genesis.Hash,
+                    nativeTokenPredicate: policy.NativeTokens.Contains,
+                    actionTypeLoader: new StaticActionLoader(
+                        new[] { typeof(ActionBase).Assembly }
+                    ),
+                    feeCalculator: null
+                ),
                 renderers: new[] { blockPolicySource.BlockRenderer }
             );
 
@@ -254,6 +284,16 @@ namespace Lib9c.Tests
                 store,
                 stateStore,
                 genesis,
+                new ActionEvaluator(
+                    policyBlockActionGetter: _ => policy.BlockAction,
+                    blockChainStates: new BlockChainStates(store, stateStore),
+                    genesisHash: genesis.Hash,
+                    nativeTokenPredicate: policy.NativeTokens.Contains,
+                    actionTypeLoader: new StaticActionLoader(
+                        new[] { typeof(ActionBase).Assembly }
+                    ),
+                    feeCalculator: null
+                ),
                 renderers: new[] { blockPolicySource.BlockRenderer }
             );
 
@@ -298,7 +338,17 @@ namespace Lib9c.Tests
                 stagePolicy,
                 store,
                 stateStore,
-                genesis
+                genesis,
+                new ActionEvaluator(
+                    policyBlockActionGetter: _ => policy.BlockAction,
+                    blockChainStates: new BlockChainStates(store, stateStore),
+                    genesisHash: genesis.Hash,
+                    nativeTokenPredicate: policy.NativeTokens.Contains,
+                    actionTypeLoader: new StaticActionLoader(
+                        new[] { typeof(ActionBase).Assembly }
+                    ),
+                    feeCalculator: null
+                )
             );
 
             int nonce = 0;
@@ -395,7 +445,17 @@ namespace Lib9c.Tests
                 stagePolicy,
                 store,
                 stateStore,
-                genesis
+                genesis,
+                new ActionEvaluator(
+                    policyBlockActionGetter: _ => policy.BlockAction,
+                    blockChainStates: new BlockChainStates(store, stateStore),
+                    genesisHash: genesis.Hash,
+                    nativeTokenPredicate: policy.NativeTokens.Contains,
+                    actionTypeLoader: new StaticActionLoader(
+                        new[] { typeof(ActionBase).Assembly }
+                    ),
+                    feeCalculator: null
+                )
             );
 
             int nonce = 0;
