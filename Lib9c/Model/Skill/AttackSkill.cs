@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
 using Nekoyume.Model.Elemental;
+using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model.Skill
@@ -28,7 +29,13 @@ namespace Nekoyume.Model.Skill
             var infos = new List<BattleStatus.Skill.SkillInfo>();
             var targets = SkillRow.SkillTargetType.GetTarget(caster).ToList();
             var elementalType = SkillRow.ElementalType;
-            var totalDamage = caster.ATK + Power;
+
+            // Apply stat power ratio
+            var powerMultiplier = SkillRow.StatPowerRatio / 10000m;
+            var statAdditionalPower = SkillRow.ReferencedStatType != StatType.NONE ?
+                (int)(caster.Stats.GetStat(SkillRow.ReferencedStatType) * powerMultiplier) : default;
+
+            var totalDamage = caster.ATK + Power + statAdditionalPower;
             var multipliers = GetMultiplier(SkillRow.HitCount, 1m);
             for (var i = 0; i < SkillRow.HitCount; i++)
             {
