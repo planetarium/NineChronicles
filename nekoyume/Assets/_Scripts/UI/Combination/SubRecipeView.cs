@@ -65,7 +65,6 @@ namespace Nekoyume.UI
             public GameObject ParentObject;
             public TextMeshProUGUI OptionText;
             public Slider PercentageSlider;
-            public Button DescriptionButton;
         }
 
         [Serializable]
@@ -135,7 +134,7 @@ namespace Nekoyume.UI
         private List<OptionView> optionViews;
 
         [SerializeField]
-        private List<OptionView> skillViews;
+        private List<SkillView> skillViews;
 
         [SerializeField]
         private List<GameObject> optionIcons;
@@ -771,11 +770,6 @@ namespace Nekoyume.UI
                     var normalizedRatio = ratio.NormalizeFromTenThousandths();
                     skillView.OptionText.text = $"{skillName} ({normalizedRatio:0%})";
                     skillView.PercentageSlider.value = (float) normalizedRatio;
-                    skillView.DescriptionButton.onClick.RemoveAllListeners();
-                    skillView.DescriptionButton.onClick.AddListener(() =>
-                    {
-                        Debug.LogError($"Todo : Show skill description ({option.SkillId}, {skillName})");
-                    });
                     skillView.ParentObject.transform.SetSiblingIndex(siblingIndex);
                     skillView.ParentObject.SetActive(true);
                     skillView.TooltipButton.onClick.RemoveAllListeners();
