@@ -55,7 +55,7 @@ jobs:
 
       - uses: game-ci/unity-builder@v2
         with:
-          androidKeystoreName: keystore.keystore # This file won't exist, but this property needs to exist.
+          androidKeystoreName: 9c-aos-signing-keystore.keystore # This file won't exist, but this property needs to exist.
           androidKeystoreBase64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           androidKeystorePass: ${{ secrets.ANDROID_KEYSTORE_PASS }}
           androidKeyaliasName: ${{ secrets.ANDROID_KEY_ALIAS_NAME }}
