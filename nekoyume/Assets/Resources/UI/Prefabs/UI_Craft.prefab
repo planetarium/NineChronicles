@@ -190,6 +190,7 @@ MonoBehaviour:
   - arenaType: 2
     sprite: {fileID: 21300000, guid: 8fb8d7d5f798b46aba22e35060379282, type: 3}
   requiredNormalItemImage: {fileID: 5710155306101767661}
+  skillTooltip: {fileID: 0}
 --- !u!1 &192834426727504055
 GameObject:
   m_ObjectHideFlags: 0
@@ -16855,6 +16856,7 @@ MonoBehaviour:
   materialSelectButton: {fileID: 0}
   requiredNormalItemIcons: []
   requiredNormalItemImage: {fileID: 0}
+  skillTooltip: {fileID: 0}
 --- !u!1 &4912586623246627599
 GameObject:
   m_ObjectHideFlags: 0
@@ -34728,6 +34730,7 @@ MonoBehaviour:
   materialSelectButton: {fileID: 0}
   requiredNormalItemIcons: []
   requiredNormalItemImage: {fileID: 0}
+  skillTooltip: {fileID: 0}
 --- !u!1 &8478980182715841073
 GameObject:
   m_ObjectHideFlags: 0
@@ -34972,6 +34975,7 @@ MonoBehaviour:
   - arenaType: 2
     sprite: {fileID: 21300000, guid: 8fb8d7d5f798b46aba22e35060379282, type: 3}
   requiredNormalItemImage: {fileID: 5768343284660825125}
+  skillTooltip: {fileID: 0}
 --- !u!1 &8571591880880175740
 GameObject:
   m_ObjectHideFlags: 0
@@ -42890,6 +42894,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2868714009149328494, guid: 9fca7ee6230131a4696b74efa4577486,
+        type: 3}
+      propertyPath: skillTooltip
+      value: 
+      objectReference: {fileID: 4040594779898633723}
     - target: {fileID: 2911058463978664597, guid: 9fca7ee6230131a4696b74efa4577486,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -49626,3 +49635,15 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 9119303606364323507}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4040594779898633723 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5088317553108804424, guid: 9e4148b8f5dd0492c86585ef520e7c8a,
+    type: 3}
+  m_PrefabInstance: {fileID: 9119303606364323507}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5b889cf95a54e84a95f42574e587173, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

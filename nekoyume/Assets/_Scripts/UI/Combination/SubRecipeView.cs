@@ -72,7 +72,6 @@ namespace Nekoyume.UI
         {
             public GameObject ParentObject;
             public TextMeshProUGUI OptionText;
-            public TextMeshProUGUI PercentageText;
             public Slider PercentageSlider;
             public Button TooltipButton;
         }
