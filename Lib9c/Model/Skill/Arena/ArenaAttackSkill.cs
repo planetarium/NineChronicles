@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Nekoyume.Battle;
 using Nekoyume.Model.Elemental;
+using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model.Skill.Arena
@@ -22,6 +23,11 @@ namespace Nekoyume.Model.Skill.Arena
         {
             var infos = new List<BattleStatus.Arena.ArenaSkill.ArenaSkillInfo>();
 
+            // Apply stat power ratio
+            var powerMultiplier = SkillRow.StatPowerRatio / 10000m;
+            var statAdditionalPower = SkillRow.ReferencedStatType != StatType.NONE ?
+                 (int)(caster.Stats.GetStat(SkillRow.ReferencedStatType) * powerMultiplier) : default;
+
             var multipliers = GetMultiplier(SkillRow.HitCount, 1m);
             var elementalType = isNormalAttack ? caster.OffensiveElementalType : SkillRow.ElementalType;
             for (var i = 0; i < SkillRow.HitCount; i++)
@@ -32,7 +38,7 @@ namespace Nekoyume.Model.Skill.Arena
 
                 if (target.IsHit(caster))
                 {
-                    damage = caster.ATK + Power;
+                    damage = caster.ATK + Power + statAdditionalPower;
                     damage = (int) (damage * multiplier);
                     damage = caster.GetDamage(damage, isNormalAttack);
                     damage = elementalType.GetDamage(target.DefenseElementalType, damage);

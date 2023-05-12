@@ -30,7 +30,6 @@ namespace Nekoyume.Model
         private readonly SkillActionBuffSheet _skillActionBuffSheet;
         private readonly ActionBuffSheet _actionBuffSheet;
         private readonly IArenaSimulator _simulator;
-        private readonly CharacterStats _stats;
         private readonly ArenaSkills _skills;
 
         public readonly ArenaSkills _runeSkills = new ArenaSkills();
@@ -43,6 +42,7 @@ namespace Nekoyume.Model
 
         public Guid Id { get; } = Guid.NewGuid();
         public BattleStatus.Arena.ArenaSkill SkillLog { get; private set; }
+        public CharacterStats Stats { get; }
         public ElementalType OffensiveElementalType { get; }
         public ElementalType DefenseElementalType { get; }
         public SizeType SizeType { get; }
@@ -61,22 +61,22 @@ namespace Nekoyume.Model
 
         public int Level
         {
-            get => _stats.Level;
-            set => _stats.SetStats(value);
+            get => Stats.Level;
+            set => Stats.SetStats(value);
         }
 
-        public int HP => _stats.HP;
-        public int AdditionalHP => _stats.BuffStats.HP;
-        public int ATK => _stats.ATK;
-        public int DEF => _stats.DEF;
-        public int CRI => _stats.CRI;
-        public int HIT => _stats.HIT;
-        public int SPD => _stats.SPD;
-        public int DRV => _stats.DRV;
-        public int DRR => _stats.DRR;
-        public int CDMG => _stats.CDMG;
-        public int ArmorPenetration => _stats.ArmorPenetration;
-        public int Thorn => _stats.Thorn;
+        public int HP => Stats.HP;
+        public int AdditionalHP => Stats.BuffStats.HP;
+        public int ATK => Stats.ATK;
+        public int DEF => Stats.DEF;
+        public int CRI => Stats.CRI;
+        public int HIT => Stats.HIT;
+        public int SPD => Stats.SPD;
+        public int DRV => Stats.DRV;
+        public int DRR => Stats.DRR;
+        public int CDMG => Stats.CDMG;
+        public int ArmorPenetration => Stats.ArmorPenetration;
+        public int Thorn => Stats.Thorn;
 
         public bool IsDead => CurrentHP <= 0;
         public Dictionary<int, Buff.Buff> Buffs { get; } = new Dictionary<int, Buff.Buff>();
@@ -107,7 +107,7 @@ namespace Nekoyume.Model
             _actionBuffSheet = sheets.ActionBuffSheet;
 
             _simulator = simulator;
-            _stats = GetStat(
+            Stats = GetStat(
                 digest,
                 row,
                 sheets.EquipmentItemSetEffectSheet,
@@ -139,7 +139,7 @@ namespace Nekoyume.Model
             _actionBuffSheet = sheets.ActionBuffSheet;
 
             _simulator = simulator;
-            _stats = GetStat(
+            Stats = GetStat(
                 digest,
                 row,
                 sheets.EquipmentItemSetEffectSheet,
@@ -168,7 +168,7 @@ namespace Nekoyume.Model
             _actionBuffSheet = value._actionBuffSheet;
 
             _simulator = value._simulator;
-            _stats = new CharacterStats(value._stats);
+            Stats = new CharacterStats(value.Stats);
             _skills = value._skills;
             Buffs = new Dictionary<int, Buff.Buff>();
 #pragma warning disable LAA1002
@@ -212,7 +212,7 @@ namespace Nekoyume.Model
 
         protected void ResetCurrentHP()
         {
-            CurrentHP = Math.Max(0, _stats.HP);
+            CurrentHP = Math.Max(0, Stats.HP);
         }
 
         private static CharacterStats GetStat(
@@ -272,8 +272,8 @@ namespace Nekoyume.Model
                             x.stat.StatType,
                             x.operationType,
                             x.stat.TotalValueAsInt)));
-                _stats.AddOptional(statModifiers);
-                _stats.IncreaseHpForArena();
+                Stats.AddOptional(statModifiers);
+                Stats.IncreaseHpForArena();
                 ResetCurrentHP();
 
                 if (optionInfo.SkillId == default ||
@@ -333,8 +333,8 @@ namespace Nekoyume.Model
                             x.stat.StatType,
                             x.operationType,
                             x.stat.TotalValueAsInt)));
-                _stats.AddOptional(statModifiers);
-                _stats.IncreaseHpForArena();
+                Stats.AddOptional(statModifiers);
+                Stats.IncreaseHpForArena();
                 ResetCurrentHP();
 
                 if (optionInfo.SkillId == default ||
@@ -566,7 +566,7 @@ namespace Nekoyume.Model
                 _target,
                 _simulator.Turn,
                 BuffFactory.GetBuffs(
-                    _stats,
+                    Stats,
                     selectedSkill,
                     _skillBuffSheet,
                     _statBuffSheet,
@@ -602,7 +602,7 @@ namespace Nekoyume.Model
                 _target,
                 _simulator.Turn,
                 BuffFactory.GetBuffs(
-                    _stats,
+                    Stats,
                     selectedSkill,
                     _skillBuffSheet,
                     _statBuffSheet,
@@ -637,8 +637,8 @@ namespace Nekoyume.Model
             if (!isBuffRemoved)
                 return;
 
-            _stats.SetBuffs(StatBuffs);
-            _stats.IncreaseHpForArena();
+            Stats.SetBuffs(StatBuffs);
+            Stats.IncreaseHpForArena();
         }
 
         [Obsolete("Use RemoveBuffs")]
@@ -660,7 +660,7 @@ namespace Nekoyume.Model
 
             if (isApply)
             {
-                _stats.SetBuffs(StatBuffs);
+                Stats.SetBuffs(StatBuffs);
             }
         }
 
@@ -700,8 +700,8 @@ namespace Nekoyume.Model
             {
                 var clone = (StatBuff)stat.Clone();
                 Buffs[stat.RowData.GroupId] = clone;
-                _stats.AddBuff(clone, updateImmediate);
-                _stats.IncreaseHpForArena();
+                Stats.AddBuff(clone, updateImmediate);
+                Stats.IncreaseHpForArena();
             }
             else if (buff is ActionBuff action)
             {
@@ -719,7 +719,7 @@ namespace Nekoyume.Model
 
             var clone = (Buff.StatBuff) buff.Clone();
             Buffs[buff.BuffInfo.GroupId] = clone;
-            _stats.AddBuff(clone, updateImmediate);
+            Stats.AddBuff(clone, updateImmediate);
         }
 
         public void RemoveRecentStatBuff()
@@ -752,9 +752,9 @@ namespace Nekoyume.Model
 
             if (removedBuff != null)
             {
-                _stats.RemoveBuff(removedBuff);
+                Stats.RemoveBuff(removedBuff);
                 Buffs.Remove(removedBuff.RowData.GroupId);
-                _stats.IncreaseHpForArena();
+                Stats.IncreaseHpForArena();
             }
         }
 
