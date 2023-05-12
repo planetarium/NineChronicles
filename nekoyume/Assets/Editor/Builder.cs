@@ -238,7 +238,7 @@ namespace Editor
                 buildTarget switch
                 {
                     BuildTarget.StandaloneWindows or BuildTarget.StandaloneWindows64 => $"{PlayerName}.exe",
-                    BuildTarget.Android => $"{PlayerName}.apk",
+                    BuildTarget.Android => $"{PlayerName}.{(EditorUserBuildSettings.buildAppBundle ? "aab" : "apk")}",
                     _ => PlayerName,
                 }
             );
