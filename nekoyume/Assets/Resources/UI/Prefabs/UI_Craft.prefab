@@ -153,8 +153,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 676689f8e0b58d04e80024f0d11a01dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  toggleParent: {fileID: 0}
-  categoryToggles: []
   recipeCell: {fileID: 5835008787791204539}
   titleText: {fileID: 8315517920608880877}
   blockIndexText: {fileID: 8458900632565001358}
@@ -166,6 +164,12 @@ MonoBehaviour:
   mainStatTexts:
   - {fileID: 4167297940809631090}
   - {fileID: 22624328500311451}
+  normalRecipeTabGroup:
+    toggleGroup: {fileID: 0}
+    recipeTabs: []
+  legendaryRecipeTabGroup:
+    toggleGroup: {fileID: 0}
+    recipeTabs: []
   optionViews: []
   skillViews: []
   optionIcons: []
@@ -16818,8 +16822,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 676689f8e0b58d04e80024f0d11a01dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  toggleParent: {fileID: 0}
-  categoryToggles: []
   recipeCell: {fileID: 8612115018197644542}
   titleText: {fileID: 950712355151628485}
   blockIndexText: {fileID: 8473911186083467029}
@@ -16831,6 +16833,12 @@ MonoBehaviour:
   mainStatTexts:
   - {fileID: 5014451849647128647}
   - {fileID: 8325787325627658417}
+  normalRecipeTabGroup:
+    toggleGroup: {fileID: 0}
+    recipeTabs: []
+  legendaryRecipeTabGroup:
+    toggleGroup: {fileID: 0}
+    recipeTabs: []
   optionViews: []
   skillViews: []
   optionIcons: []
@@ -34687,8 +34695,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 676689f8e0b58d04e80024f0d11a01dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  toggleParent: {fileID: 0}
-  categoryToggles: []
   recipeCell: {fileID: 6637037181918955125}
   titleText: {fileID: 4421314488829443731}
   blockIndexText: {fileID: 8679026207588490481}
@@ -34700,6 +34706,12 @@ MonoBehaviour:
   mainStatTexts:
   - {fileID: 5216451682657915680}
   - {fileID: 7506536583451123785}
+  normalRecipeTabGroup:
+    toggleGroup: {fileID: 0}
+    recipeTabs: []
+  legendaryRecipeTabGroup:
+    toggleGroup: {fileID: 0}
+    recipeTabs: []
   optionViews: []
   skillViews: []
   optionIcons: []
@@ -34924,8 +34936,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 676689f8e0b58d04e80024f0d11a01dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  toggleParent: {fileID: 0}
-  categoryToggles: []
   recipeCell: {fileID: 4026531070930475950}
   titleText: {fileID: 2725380589662958667}
   blockIndexText: {fileID: 8849908117739339007}
@@ -34936,6 +34946,12 @@ MonoBehaviour:
   lockedText: {fileID: 0}
   mainStatTexts:
   - {fileID: 1240843820298943798}
+  normalRecipeTabGroup:
+    toggleGroup: {fileID: 0}
+    recipeTabs: []
+  legendaryRecipeTabGroup:
+    toggleGroup: {fileID: 0}
+    recipeTabs: []
   optionViews: []
   skillViews: []
   optionIcons: []

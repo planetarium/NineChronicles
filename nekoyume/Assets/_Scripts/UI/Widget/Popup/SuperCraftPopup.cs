@@ -40,19 +40,16 @@ namespace Nekoyume.UI
         private GameObject noneRecipeTextParent;
 
         [SerializeField] [Space]
-        private ToggleGroup normalRecipeToggleGroup;
+        private ToggleGroup normalRecipeTabGroup;
 
         [SerializeField]
-        private Toggle basicRecipeToggle;
+        private Toggle basicRecipeTab;
 
         [SerializeField]
-        private Toggle premiumRecipeToggle;
+        private Toggle premiumRecipeTab;
 
         [SerializeField] [Space]
-        private ToggleGroup legendaryRecipeToggleGroup;
-
-        [SerializeField]
-        private Toggle[] legendaryRecipeToggles;
+        private SubRecipeView.RecipeTabGroup legendaryRecipeTabGroup;
 
         private EquipmentItemRecipeSheet.Row _recipeRow;
         private int _subRecipeIndex;
@@ -63,20 +60,20 @@ namespace Nekoyume.UI
 
         public override void Initialize()
         {
-            basicRecipeToggle.onValueChanged.AddListener(b =>
+            basicRecipeTab.onValueChanged.AddListener(b =>
             {
                 _subRecipeIndex = b ? BasicRecipeIndex : PremiumRecipeIndex;
                 SetSkillInfoText(_recipeRow.SubRecipeIds[_subRecipeIndex]);
             });
-            premiumRecipeToggle.onValueChanged.AddListener(b =>
+            premiumRecipeTab.onValueChanged.AddListener(b =>
             {
                 _subRecipeIndex = b ? PremiumRecipeIndex : BasicRecipeIndex;
                 SetSkillInfoText(_recipeRow.SubRecipeIds[_subRecipeIndex]);
             });
-            for (int i = 0; i < legendaryRecipeToggles.Length; i++)
+            for (int i = 0; i < legendaryRecipeTabGroup.recipeTabs.Count; i++)
             {
                 var index = i;
-                legendaryRecipeToggles[index].onValueChanged.AddListener(b =>
+                legendaryRecipeTabGroup.recipeTabs[index].toggle.onValueChanged.AddListener(b =>
                 {
                     if (!b) return;
                     _subRecipeIndex = index;
@@ -89,7 +86,7 @@ namespace Nekoyume.UI
                 var craftInfo = new Craft.CraftInfo()
                 {
                     RecipeID = _recipeRow.Id,
-                    SubrecipeId = premiumRecipeToggle.isOn ? PremiumRecipeIndex : BasicRecipeIndex,
+                    SubrecipeId = premiumRecipeTab.isOn ? PremiumRecipeIndex : BasicRecipeIndex,
                 };
 
                 Find<PetSelectionPopup>().Show(craftInfo, SendAction);
@@ -110,23 +107,29 @@ namespace Nekoyume.UI
                 sheets.CrystalHammerPointSheet[_recipeRow.Id].CRYSTAL);
             base.Show(ignoreAnimation);
 
-            if (_recipeRow.GetResultEquipmentItemRow().Grade < 5)  // todo : 전설 등급 Grade 값 확인 필요
+            if (_recipeRow.GetResultEquipmentItemRow().Grade < 5)
             {
-                normalRecipeToggleGroup.gameObject.SetActive(true);
-                legendaryRecipeToggleGroup.gameObject.SetActive(false);
-                normalRecipeToggleGroup.SetAllTogglesOff();
+                normalRecipeTabGroup.gameObject.SetActive(true);
+                legendaryRecipeTabGroup.toggleGroup.gameObject.SetActive(false);
+                normalRecipeTabGroup.SetAllTogglesOff();
             }
             else
             {
-                normalRecipeToggleGroup.gameObject.SetActive(false);
-                legendaryRecipeToggleGroup.gameObject.SetActive(true);
-                legendaryRecipeToggleGroup.SetAllTogglesOff();
+                normalRecipeTabGroup.gameObject.SetActive(false);
+                legendaryRecipeTabGroup.toggleGroup.gameObject.SetActive(true);
+                legendaryRecipeTabGroup.toggleGroup.SetAllTogglesOff();
 
-                var recipeCount = _recipeRow.SubRecipeIds.Count;
-                for (int i = 0; i < legendaryRecipeToggles.Length; i++)
+                var tabNames = Craft.SubRecipeTabs.First(tab => tab.RecipeId == _recipeRow.Key).TabNames;
+                for (int i = 0; i < legendaryRecipeTabGroup.recipeTabs.Count; i++)
                 {
-                    legendaryRecipeToggles[i].gameObject.SetActive(i < recipeCount);
-                    // todo : 레시피 별 탭 이름 가져와서 설정
+                    var recipeTab = legendaryRecipeTabGroup.recipeTabs[i];
+
+                    recipeTab.toggle.gameObject.SetActive(i < tabNames.Length);
+                    if (i < tabNames.Length)
+                    {
+                        recipeTab.disableText.text = tabNames[i];
+                        recipeTab.enableText.text = tabNames[i];
+                    }
                 }
             }
 

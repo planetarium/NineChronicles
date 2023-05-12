@@ -692,7 +692,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 0}
   toggleTransition: 1
   graphic: {fileID: 0}
-  m_Group: {fileID: 6817950752349112091}
+  m_Group: {fileID: 3430317230714628765}
   onValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1903,7 +1903,6 @@ GameObject:
   - component: {fileID: 6623036480462450480}
   - component: {fileID: 8596289309929906783}
   - component: {fileID: 406658371502002505}
-  - component: {fileID: 8409946845023381514}
   m_Layer: 5
   m_Name: DisabledText
   m_TagString: Untagged
@@ -2028,37 +2027,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &8409946845023381514
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1105922980201174095}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fixedFontAsset: 0
-  fixedFontStyle: 0
-  fixedFontSizeOffset: 0
-  fixedSpacingOption: 0
-  fixedMarginOption: 0
-  fontMaterialType: 1
-  l10nKey: UI_COMBINATION_FIRST_RECIPE_TITLE
-  fontMaterialIndexInitialized: 0
-  fontMaterialIndex: 0
-  defaultFontStylesInitialized: 0
-  defaultFontStyles: 0
-  defaultFontSizeInitialized: 0
-  defaultFontSize: 0
-  defaultCharacterSpacingInitialized: 0
-  defaultCharacterSpacing: 0
-  defaultWordSpacingInitialized: 0
-  defaultWordSpacing: 0
-  defaultLineSpacingInitialized: 0
-  defaultLineSpacing: 0
 --- !u!1 &1109988561148543587
 GameObject:
   m_ObjectHideFlags: 0
@@ -7625,8 +7593,9 @@ GameObject:
   - component: {fileID: 3436769837260208417}
   - component: {fileID: 1709393964374612202}
   - component: {fileID: 6517229946505544325}
+  - component: {fileID: 3430317230714628765}
   m_Layer: 5
-  m_Name: OldRecipe
+  m_Name: NormalRecipe
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7689,6 +7658,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1542980060989506577}
   m_CullTransparentMesh: 1
+--- !u!114 &3430317230714628765
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1542980060989506577}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fafe2cfe61f6974895a912c3755e8f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AllowSwitchOff: 0
 --- !u!1 &1571623763013717670
 GameObject:
   m_ObjectHideFlags: 0
@@ -8083,7 +8065,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 0}
   toggleTransition: 1
   graphic: {fileID: 0}
-  m_Group: {fileID: 6817950752349112091}
+  m_Group: {fileID: 3430317230714628765}
   onValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -13329,7 +13311,7 @@ GameObject:
   - component: {fileID: 7348799753236041054}
   - component: {fileID: 2052619893874140298}
   m_Layer: 5
-  m_Name: NewReicpe
+  m_Name: LegendaryReicpe
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -20176,7 +20158,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &9019727629456347844
 RectTransform:
   m_ObjectHideFlags: 0
@@ -21519,7 +21501,6 @@ GameObject:
   - component: {fileID: 2318468578717376012}
   - component: {fileID: 5684479881217802711}
   - component: {fileID: 5938746441612518611}
-  - component: {fileID: 3168377546593641222}
   m_Layer: 5
   m_Name: DisabledText
   m_TagString: Untagged
@@ -21644,37 +21625,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &3168377546593641222
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3392059039867814652}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fixedFontAsset: 0
-  fixedFontStyle: 0
-  fixedFontSizeOffset: 0
-  fixedSpacingOption: 0
-  fixedMarginOption: 0
-  fontMaterialType: 1
-  l10nKey: UI_COMBINATION_SECOND_RECIPE_TITLE
-  fontMaterialIndexInitialized: 0
-  fontMaterialIndex: 0
-  defaultFontStylesInitialized: 0
-  defaultFontStyles: 0
-  defaultFontSizeInitialized: 0
-  defaultFontSize: 0
-  defaultCharacterSpacingInitialized: 0
-  defaultCharacterSpacing: 0
-  defaultWordSpacingInitialized: 0
-  defaultWordSpacing: 0
-  defaultLineSpacingInitialized: 0
-  defaultLineSpacing: 0
 --- !u!1 &3469750189661190466
 GameObject:
   m_ObjectHideFlags: 0
@@ -24037,7 +23987,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4007887530917094648}
-  - component: {fileID: 6817950752349112091}
   m_Layer: 5
   m_Name: RecipeTabGroup
   m_TagString: Untagged
@@ -24067,19 +24016,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 25}
   m_SizeDelta: {x: -40, y: 54}
   m_Pivot: {x: 0.5, y: 1}
---- !u!114 &6817950752349112091
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4290195490342839574}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2fafe2cfe61f6974895a912c3755e8f1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_AllowSwitchOff: 0
 --- !u!1 &4477331840331607552
 GameObject:
   m_ObjectHideFlags: 0
@@ -24836,7 +24772,6 @@ GameObject:
   - component: {fileID: 8548433950636385992}
   - component: {fileID: 4646210440996710814}
   - component: {fileID: 6921877755123449226}
-  - component: {fileID: 1233535822822338799}
   m_Layer: 5
   m_Name: DisabledText
   m_TagString: Untagged
@@ -24961,37 +24896,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &1233535822822338799
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4939950158906084092}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fixedFontAsset: 0
-  fixedFontStyle: 0
-  fixedFontSizeOffset: 0
-  fixedSpacingOption: 0
-  fixedMarginOption: 0
-  fontMaterialType: 1
-  l10nKey: UI_COMBINATION_THIRD_RECIPE_TITLE
-  fontMaterialIndexInitialized: 0
-  fontMaterialIndex: 0
-  defaultFontStylesInitialized: 0
-  defaultFontStyles: 0
-  defaultFontSizeInitialized: 0
-  defaultFontSize: 0
-  defaultCharacterSpacingInitialized: 0
-  defaultCharacterSpacing: 0
-  defaultWordSpacingInitialized: 0
-  defaultWordSpacing: 0
-  defaultLineSpacingInitialized: 0
-  defaultLineSpacing: 0
 --- !u!1 &4945785783042323560
 GameObject:
   m_ObjectHideFlags: 0
@@ -25740,7 +25644,6 @@ GameObject:
   - component: {fileID: 2017276487324321668}
   - component: {fileID: 4002565995891683109}
   - component: {fileID: 8849326393936018754}
-  - component: {fileID: 6677787263400628181}
   m_Layer: 5
   m_Name: EnabledText
   m_TagString: Untagged
@@ -25865,37 +25768,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &6677787263400628181
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5305480405630291137}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fixedFontAsset: 0
-  fixedFontStyle: 0
-  fixedFontSizeOffset: 0
-  fixedSpacingOption: 0
-  fixedMarginOption: 0
-  fontMaterialType: 2
-  l10nKey: UI_COMBINATION_THIRD_RECIPE_TITLE
-  fontMaterialIndexInitialized: 0
-  fontMaterialIndex: 0
-  defaultFontStylesInitialized: 0
-  defaultFontStyles: 0
-  defaultFontSizeInitialized: 0
-  defaultFontSize: 0
-  defaultCharacterSpacingInitialized: 0
-  defaultCharacterSpacing: 0
-  defaultWordSpacingInitialized: 0
-  defaultWordSpacing: 0
-  defaultLineSpacingInitialized: 0
-  defaultLineSpacing: 0
 --- !u!1 &5346650393850122186
 GameObject:
   m_ObjectHideFlags: 0
@@ -34133,7 +34005,6 @@ GameObject:
   - component: {fileID: 1685294796962920357}
   - component: {fileID: 2887003515712773565}
   - component: {fileID: 5099847984887103258}
-  - component: {fileID: 8503329960198585859}
   m_Layer: 5
   m_Name: EnabledText
   m_TagString: Untagged
@@ -34258,37 +34129,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &8503329960198585859
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6684710696125267021}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fixedFontAsset: 0
-  fixedFontStyle: 0
-  fixedFontSizeOffset: 0
-  fixedSpacingOption: 0
-  fixedMarginOption: 0
-  fontMaterialType: 2
-  l10nKey: UI_COMBINATION_SECOND_RECIPE_TITLE
-  fontMaterialIndexInitialized: 0
-  fontMaterialIndex: 0
-  defaultFontStylesInitialized: 0
-  defaultFontStyles: 0
-  defaultFontSizeInitialized: 0
-  defaultFontSize: 0
-  defaultCharacterSpacingInitialized: 0
-  defaultCharacterSpacing: 0
-  defaultWordSpacingInitialized: 0
-  defaultWordSpacing: 0
-  defaultLineSpacingInitialized: 0
-  defaultLineSpacing: 0
 --- !u!1 &6784101903973079296
 GameObject:
   m_ObjectHideFlags: 0
@@ -34356,11 +34196,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 676689f8e0b58d04e80024f0d11a01dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  toggleParent: {fileID: 4290195490342839574}
-  categoryToggles:
-  - {fileID: 1308506852097649367}
-  - {fileID: 1356632953561502174}
-  - {fileID: 4901881353262940766}
   recipeCell: {fileID: 946278804148290470}
   titleText: {fileID: 1595198666716948043}
   blockIndexText: {fileID: 7270673448602237482}
@@ -34371,6 +34206,30 @@ MonoBehaviour:
   lockedText: {fileID: 4847190004644591556}
   mainStatTexts:
   - {fileID: 8191505717902066824}
+  normalRecipeTabGroup:
+    toggleGroup: {fileID: 3430317230714628765}
+    recipeTabs:
+    - toggle: {fileID: 1308506852097649367}
+      disableText: {fileID: 6979578825833700473}
+      enableText: {fileID: 2852401892255409031}
+    - toggle: {fileID: 1356632953561502174}
+      disableText: {fileID: 376100366394573118}
+      enableText: {fileID: 6801251912781755049}
+    - toggle: {fileID: 4901881353262940766}
+      disableText: {fileID: 6878760383959138734}
+      enableText: {fileID: 2400532601470442124}
+  legendaryRecipeTabGroup:
+    toggleGroup: {fileID: 2052619893874140298}
+    recipeTabs:
+    - toggle: {fileID: 2582959364086599627}
+      disableText: {fileID: 406658371502002505}
+      enableText: {fileID: 1708839466078668276}
+    - toggle: {fileID: 2331375042484226097}
+      disableText: {fileID: 5938746441612518611}
+      enableText: {fileID: 5099847984887103258}
+    - toggle: {fileID: 6090054055200230575}
+      disableText: {fileID: 6921877755123449226}
+      enableText: {fileID: 8849326393936018754}
   optionViews:
   - ParentObject: {fileID: 2317275392032755833}
     OptionText: {fileID: 7007941882053913369}
@@ -40483,7 +40342,6 @@ GameObject:
   - component: {fileID: 6023823933403216833}
   - component: {fileID: 3681424436078358668}
   - component: {fileID: 1708839466078668276}
-  - component: {fileID: 4806976793648261094}
   m_Layer: 5
   m_Name: EnabledText
   m_TagString: Untagged
@@ -40608,37 +40466,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &4806976793648261094
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7524973918554945794}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fixedFontAsset: 0
-  fixedFontStyle: 0
-  fixedFontSizeOffset: 0
-  fixedSpacingOption: 0
-  fixedMarginOption: 0
-  fontMaterialType: 2
-  l10nKey: UI_COMBINATION_FIRST_RECIPE_TITLE
-  fontMaterialIndexInitialized: 0
-  fontMaterialIndex: 0
-  defaultFontStylesInitialized: 0
-  defaultFontStyles: 0
-  defaultFontSizeInitialized: 0
-  defaultFontSize: 0
-  defaultCharacterSpacingInitialized: 0
-  defaultCharacterSpacing: 0
-  defaultWordSpacingInitialized: 0
-  defaultWordSpacing: 0
-  defaultLineSpacingInitialized: 0
-  defaultLineSpacing: 0
 --- !u!1 &7554203772134562446
 GameObject:
   m_ObjectHideFlags: 0
@@ -48354,7 +48181,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 0}
   toggleTransition: 1
   graphic: {fileID: 0}
-  m_Group: {fileID: 6817950752349112091}
+  m_Group: {fileID: 3430317230714628765}
   onValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -53044,7 +52871,7 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 6289985543930290962}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &7931920123402837602
+--- !u!114 &5257031888343329959
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -53075,7 +52902,7 @@ MonoBehaviour:
   defaultWordSpacing: 0
   defaultLineSpacingInitialized: 0
   defaultLineSpacing: 0
---- !u!114 &5257031888343329959
+--- !u!114 &7931920123402837602
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

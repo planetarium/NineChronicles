@@ -19,8 +19,10 @@ using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
 using Nekoyume.TableData.Event;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Toggle = Nekoyume.UI.Module.Toggle;
+using ToggleGroup = UnityEngine.UI.ToggleGroup;
 
 namespace Nekoyume.UI
 {
@@ -38,6 +40,21 @@ namespace Nekoyume.UI
             public int CostAP;
             public Dictionary<int, int> Materials;
             public Dictionary<int, int> ReplacedMaterials;
+        }
+
+        [Serializable]
+        public struct RecipeTabGroup
+        {
+            [Serializable]
+            public struct RecipeTab
+            {
+                public Toggle toggle;
+                public TextMeshProUGUI disableText;
+                public TextMeshProUGUI enableText;
+            }
+
+            public ToggleGroup toggleGroup;
+            public List<RecipeTab> recipeTabs;
         }
 
         [Serializable]
@@ -70,12 +87,6 @@ namespace Nekoyume.UI
         }
 
         [SerializeField]
-        private GameObject toggleParent;
-
-        [SerializeField]
-        private List<Toggle> categoryToggles;
-
-        [SerializeField]
         private RecipeCell recipeCell;
 
         [SerializeField]
@@ -103,6 +114,12 @@ namespace Nekoyume.UI
         private TextMeshProUGUI[] mainStatTexts;
 
         [SerializeField] [Header("[Equipment]")]
+        private RecipeTabGroup normalRecipeTabGroup;
+
+        [SerializeField]
+        private RecipeTabGroup legendaryRecipeTabGroup;
+
+        [SerializeField]
         private List<OptionView> optionViews;
 
         [SerializeField]
@@ -143,11 +160,23 @@ namespace Nekoyume.UI
 
         private void Awake()
         {
-            for (int i = 0; i < categoryToggles.Count; ++i)
+            for (int i = 0; i < normalRecipeTabGroup.recipeTabs.Count; ++i)
             {
                 var innerIndex = i;
-                var toggle = categoryToggles[i];
-                toggle.onValueChanged.AddListener(value =>
+                var tab = normalRecipeTabGroup.recipeTabs[i];
+                tab.toggle.onValueChanged.AddListener(value =>
+                {
+                    if (!value) return;
+                    AudioController.PlayClick();
+                    ChangeTab(innerIndex);
+                });
+            }
+
+            for (int i = 0; i < legendaryRecipeTabGroup.recipeTabs.Count; ++i)
+            {
+                var innerIndex = i;
+                var tab = legendaryRecipeTabGroup.recipeTabs[i];
+                tab.toggle.onValueChanged.AddListener(value =>
                 {
                     if (!value) return;
                     AudioController.PlayClick();
@@ -246,6 +275,48 @@ namespace Nekoyume.UI
                         }
                     }
 
+                    if (_subrecipeIds != null && _subrecipeIds.Any())
+                    {
+                        var isNormalRecipe = resultItem.Grade < 5;
+                        normalRecipeTabGroup.toggleGroup.gameObject.SetActive(isNormalRecipe);
+                        legendaryRecipeTabGroup.toggleGroup.gameObject.SetActive(!isNormalRecipe);
+
+                        if (!isNormalRecipe)
+                        {
+                            var tabNames = Craft.SubRecipeTabs.First(tab => tab.RecipeId == _recipeRow.Key).TabNames;
+                            for (int i = 0; i < legendaryRecipeTabGroup.recipeTabs.Count; i++)
+                            {
+                                var recipeTab = legendaryRecipeTabGroup.recipeTabs[i];
+
+                                recipeTab.toggle.gameObject.SetActive(i < tabNames.Length);
+                                if (i < tabNames.Length)
+                                {
+                                    recipeTab.disableText.text = tabNames[i];
+                                    recipeTab.enableText.text = tabNames[i];
+                                }
+                            }
+                        }
+
+                        var recipeGroup = isNormalRecipe ? normalRecipeTabGroup : legendaryRecipeTabGroup;
+                        if (recipeGroup.recipeTabs.Any())
+                        {
+                            var selectedRecipeTab = recipeGroup.recipeTabs[0];
+                            if (selectedRecipeTab.toggle.isOn)
+                            {
+                                ChangeTab(0);
+                            }
+                            else
+                            {
+                                selectedRecipeTab.toggle.isOn = true;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        normalRecipeTabGroup.toggleGroup.gameObject.SetActive(false);
+                        legendaryRecipeTabGroup.toggleGroup.gameObject.SetActive(false);
+                    }
+
                     recipeCell.Show(equipmentRow, false);
                     break;
                 }
@@ -271,6 +342,7 @@ namespace Nekoyume.UI
                     }
 
                     recipeCell.Show(consumableRow, false);
+                    ChangeTab(0);
                     break;
                 }
                 case EventMaterialItemRecipeSheet.Row materialRow :
@@ -279,28 +351,12 @@ namespace Nekoyume.UI
                     title = resultItem.GetLocalizedName(false, false);
                     mainStatTexts.First().text = resultItem.GetLocalizedDescription();
                     recipeCell.Show(materialRow, false);
+                    ChangeTab(0);
                     break;
                 }
             }
 
             titleText.text = title;
-
-            if (categoryToggles.Any())
-            {
-                var categoryToggle = categoryToggles[_selectedIndex];
-                if (categoryToggle.isOn)
-                {
-                    ChangeTab(_selectedIndex);
-                }
-                else
-                {
-                    categoryToggle.isOn = true;
-                }
-            }
-            else
-            {
-                ChangeTab(0);
-            }
 
             if (_disposableForOnDisable != null)
             {
@@ -379,10 +435,6 @@ namespace Nekoyume.UI
 
                 if (_subrecipeIds != null && _subrecipeIds.Any())
                 {
-                    if (toggleParent != null)
-                    {
-                        toggleParent.SetActive(true);
-                    }
                     subRecipeId = _subrecipeIds[index];
                     var subRecipe = TableSheets.Instance
                         .EquipmentItemSubRecipeSheetV2[subRecipeId.Value];
@@ -461,10 +513,6 @@ namespace Nekoyume.UI
                 }
                 else
                 {
-                    if (toggleParent != null)
-                    {
-                        toggleParent.SetActive(false);
-                    }
                     requiredItemRecipeView.SetData(baseMaterialInfo, null, true, !isUnlocked);
                 }
 

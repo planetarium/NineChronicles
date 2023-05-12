@@ -90,14 +90,21 @@ MonoBehaviour:
   skillPowerText: {fileID: 8286126236900493500}
   skillChanceText: {fileID: 4647558963994349847}
   noneRecipeTextParent: {fileID: 8975709671125213474}
-  normalRecipeToggleGroup: {fileID: 1929443453235196761}
-  basicRecipeToggle: {fileID: 1276498893253174519}
-  premiumRecipeToggle: {fileID: 4588626535414031271}
-  legendaryRecipeToggleGroup: {fileID: 568567523101287821}
-  legendaryRecipeToggles:
-  - {fileID: 4806229392832068913}
-  - {fileID: 2236395174301551292}
-  - {fileID: 7425250024428823187}
+  normalRecipeTabGroup: {fileID: 1929443453235196761}
+  basicRecipeTab: {fileID: 1276498893253174519}
+  premiumRecipeTab: {fileID: 4588626535414031271}
+  legendaryRecipeTabGroup:
+    toggleGroup: {fileID: 568567523101287821}
+    recipeTabs:
+    - toggle: {fileID: 4806229392832068913}
+      disableText: {fileID: 536670599041907651}
+      enableText: {fileID: 6219812687159398170}
+    - toggle: {fileID: 2236395174301551292}
+      disableText: {fileID: 9206993351630236522}
+      enableText: {fileID: 6927965321689379970}
+    - toggle: {fileID: 7425250024428823187}
+      disableText: {fileID: 2546766955884511825}
+      enableText: {fileID: 3284855070019993133}
 --- !u!1 &158038873445042577
 GameObject:
   m_ObjectHideFlags: 0
