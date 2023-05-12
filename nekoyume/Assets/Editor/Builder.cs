@@ -232,8 +232,60 @@ namespace Editor
         {
             string[] scenes = { "Assets/_Scenes/Game.unity" };
 
+
+            // This code snippets from: https://github.com/game-ci/documentation/blob/main/example/BuildScript.cs
+            var cliOptions = new Dictionary<string, string>();
+            var args = Environment.GetCommandLineArgs();
+            // Extract flags with optional values
+            for (int current = 0, next = 1; current < args.Length; current++, next++)
+            {
+                // Parse flag
+                var isFlag = args[current].StartsWith("-");
+                if (!isFlag)
+                {
+                    continue;
+                }
+
+                var flag = args[current].TrimStart('-');
+                // Parse optional value
+                var flagHasValue = next < args.Length && !args[next].StartsWith("-");
+                var value = flagHasValue ? args[next].TrimStart('-') : "";
+                cliOptions.Add(flag, value);
+
+                if (cliOptions.TryGetValue("androidKeystoreName", out var keystoreName) &&
+                    !string.IsNullOrEmpty(keystoreName))
+                {
+                    PlayerSettings.Android.useCustomKeystore = true;
+                    PlayerSettings.Android.keystoreName = keystoreName;
+                }
+
+                if (cliOptions.TryGetValue("androidKeystorePass", out var keystorePass) &&
+                    !string.IsNullOrEmpty(keystorePass))
+                {
+                    PlayerSettings.Android.keystorePass = keystorePass;
+                }
+
+                if (cliOptions.TryGetValue("androidKeyaliasName", out var keyaliasName) &&
+                    !string.IsNullOrEmpty(keyaliasName))
+                {
+                    PlayerSettings.Android.keyaliasName = keyaliasName;
+                }
+
+                if (cliOptions.TryGetValue("androidKeyaliasPass", out var keyaliasPass) &&
+                    !string.IsNullOrEmpty(keyaliasPass))
+                {
+                    PlayerSettings.Android.keyaliasPass = keyaliasPass;
+                }
+
+                if (cliOptions.TryGetValue("customBuildPath", out var outPath) &&
+                    !string.IsNullOrEmpty(outPath))
+                {
+                    EditorUserBuildSettings.buildAppBundle = outPath.EndsWith(".aab");
+                }
+            }
+
             targetDirName ??= buildTarget.ToString();
-            string locationPathName = Path.Combine(
+            var locationPathName = Path.Combine(
                 "../",
                 BuildBasePath,
                 targetDirName,
@@ -257,58 +309,11 @@ namespace Editor
                     : options,
             };
 
-            // This code snippets from: https://github.com/game-ci/documentation/blob/main/example/BuildScript.cs
             if (buildTarget == BuildTarget.Android)
             {
                 // Due to executable size issue, we can't use script debugging for Android at least 2021.3.5f1.
                 buildPlayerOptions.options &= ~BuildOptions.AllowDebugging;
                 buildPlayerOptions.options |= BuildOptions.CompressWithLz4HC;
-
-                var cliOptions = new Dictionary<string, string>();
-                var args = Environment.GetCommandLineArgs();
-
-                // Extract flags with optional values
-                for (int current = 0, next = 1; current < args.Length; current++, next++)
-                {
-                    // Parse flag
-                    var isFlag = args[current].StartsWith("-");
-                    if (!isFlag)
-                    {
-                        continue;
-                    }
-
-                    var flag = args[current].TrimStart('-');
-
-                    // Parse optional value
-                    var flagHasValue = next < args.Length && !args[next].StartsWith("-");
-                    var value = flagHasValue ? args[next].TrimStart('-') : "";
-                    cliOptions.Add(flag, value);
-
-                    if (cliOptions.TryGetValue("androidKeystoreName", out var keystoreName) &&
-                        !string.IsNullOrEmpty(keystoreName))
-                    {
-                        PlayerSettings.Android.useCustomKeystore = true;
-                        PlayerSettings.Android.keystoreName = keystoreName;
-                    }
-
-                    if (cliOptions.TryGetValue("androidKeystorePass", out var keystorePass) &&
-                        !string.IsNullOrEmpty(keystorePass))
-                    {
-                        PlayerSettings.Android.keystorePass = keystorePass;
-                    }
-
-                    if (cliOptions.TryGetValue("androidKeyaliasName", out var keyaliasName) &&
-                        !string.IsNullOrEmpty(keyaliasName))
-                    {
-                        PlayerSettings.Android.keyaliasName = keyaliasName;
-                    }
-
-                    if (cliOptions.TryGetValue("androidKeyaliasPass", out var keyaliasPass) &&
-                        !string.IsNullOrEmpty(keyaliasPass))
-                    {
-                        PlayerSettings.Android.keyaliasPass = keyaliasPass;
-                    }
-                }
             }
 
             UpdateDefines(useDevExtension);
