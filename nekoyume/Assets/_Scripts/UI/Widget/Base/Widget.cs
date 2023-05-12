@@ -317,7 +317,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (_isClosed)
+            if (_isClosed && !ignoreCloseAnimation)
             {
                 return;
             }
