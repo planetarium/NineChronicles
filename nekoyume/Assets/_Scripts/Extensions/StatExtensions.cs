@@ -1,8 +1,12 @@
 using mixpanel;
+using Nekoyume.Game;
+using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
+using Org.BouncyCastle.Utilities;
 using System;
 using System.Globalization;
+using System.Linq;
 
 namespace Nekoyume
 {
@@ -61,30 +65,6 @@ namespace Nekoyume
                 default:
                     throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
             }
-        }
-
-        public static string EffectToString(this StatBuffSheet.Row row, int power)
-        {
-            var valueText = row.Value.ToString();
-
-            if (power > 0)
-            {
-                var sign = power >= 0 ? "+" : "-";
-                if (row.ReferencedStatType != StatType.NONE)
-                {
-                    var multiplierText = (Math.Abs(power) / 10000m).ToString("0.##");
-                    
-                    valueText = $"({valueText} {sign} {multiplierText} {row.ReferencedStatType})";
-                }
-                else
-                {
-                    valueText = (row.Value + power).ToString();
-                }
-            }
-            
-            return (row.Value >= 0 && power >= 0 ? "+" : string.Empty) +
-                valueText +
-                (row.OperationType == StatModifier.OperationType.Percentage ? "%" : string.Empty);
         }
 
         public static string GetAcronym(this StatType type)

@@ -1,9 +1,13 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using AsyncIO;
+using Nekoyume.Game;
 using Nekoyume.L10n;
 using Nekoyume.Model.Buff;
 using Nekoyume.Model.Skill;
+using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 
 namespace Nekoyume
@@ -28,21 +32,7 @@ namespace Nekoyume
             var sb = new StringBuilder();
             if (skill is BuffSkill buffSkill)
             {
-                var sheets = Game.Game.instance.TableSheets;
-                var stat = Game.Game.instance.Stage.GetPlayer().Model.Stats;
-                var buffs = BuffFactory.GetBuffs(
-                    stat,
-                    skill,
-                    sheets.SkillBuffSheet,
-                    sheets.StatBuffSheet,
-                    sheets.SkillActionBuffSheet,
-                    sheets.ActionBuffSheet).OfType<StatBuff>();
-                if (buffs.Any())
-                {
-                    var buff = buffs.First();
-                    var powerValue = buff.RowData.EffectToString(skill.Power);
-                    sb.AppendLine($"{L10nManager.Localize("UI_SKILL_EFFECT")}: {powerValue}");
-                }
+                sb.AppendLine($"{L10nManager.Localize("UI_SKILL_EFFECT")}: {buffSkill.SkillRow.EffectToString(buffSkill.Power)}");
             }
             else
             {
@@ -51,6 +41,35 @@ namespace Nekoyume
             sb.Append($"{L10nManager.Localize("UI_SKILL_CHANCE")}: {skill.Chance}%");
 
             return sb.ToString();
+        }
+
+        public static string EffectToString(this SkillSheet.Row row, int power)
+        {
+            var sheets = TableSheets.Instance;
+            var isBuff = sheets.SkillBuffSheet.TryGetValue(row.Id, out var skillBuffRow) &&
+                row.SkillType == SkillType.Buff;
+            var showPercent = false;
+            if (isBuff)
+            {
+                var firstBuffId = skillBuffRow.BuffIds.First();
+                var buffRow = sheets.StatBuffSheet[firstBuffId];
+                power += buffRow.Value;
+                showPercent = buffRow.OperationType == StatModifier.OperationType.Percentage;
+            }
+
+            var valueText = power.ToString();
+
+            if (power > 0)
+            {
+                var sign = power >= 0 ? "+" : "-";
+                if (row.ReferencedStatType != StatType.NONE)
+                {
+                    var multiplierText = (Math.Abs(row.StatPowerRatio) / 10000m).ToString("0.##");
+                    valueText = $"({valueText} {sign} {multiplierText} {row.ReferencedStatType})";
+                }
+            }
+
+            return valueText + (showPercent ? "%" : string.Empty);
         }
     }
 }

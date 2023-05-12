@@ -82,16 +82,16 @@ namespace Nekoyume.UI.Module.Common
                 switch (skillRow.SkillType)
                 {
                     case SkillType.Attack:
-                        SetAttackSkillDescription(chanceMin, chanceMax, damageMin, damageMax);
+                        SetAttackSkillDescription(skillRow, chanceMin, chanceMax, damageMin, damageMax);
                         break;
                     case SkillType.Heal:
-                        SetHealDescription(chanceMin, chanceMax, damageMin, damageMax);
+                        SetHealDescription(skillRow, chanceMin, chanceMax, damageMin, damageMax);
                         break;
                     case SkillType.Buff:
-                        SetBuffDescription(skillRow.Id, chanceMin, chanceMax, damageMax, false);
+                        SetBuffDescription(skillRow, chanceMin, chanceMax, damageMax, false);
                         break;
                     case SkillType.Debuff:
-                        SetBuffDescription(skillRow.Id, chanceMin, chanceMax, damageMax, true);
+                        SetBuffDescription(skillRow, chanceMin, chanceMax, damageMax, true);
                         break;
                 }
             }
@@ -101,21 +101,24 @@ namespace Nekoyume.UI.Module.Common
 
         private void SetAttackSkillDescription(EquipmentItemOptionSheet.Row optionRow)
         {
+            var row = TableSheets.Instance.SkillSheet[optionRow.SkillId];
             SetAttackSkillDescription(
+                row,
                 optionRow.SkillChanceMin,
                 optionRow.SkillChanceMax,
                 optionRow.SkillDamageMin,
                 optionRow.SkillDamageMax);
         }
 
-        private void SetAttackSkillDescription(int chanceMin, int chanceMax, int damageMin, int damageMax)
+        private void SetAttackSkillDescription(SkillSheet.Row row,
+            int chanceMin, int chanceMax, int damageMin, int damageMax)
         {
             var chanceText = chanceMin == chanceMax ?
                 $"{VariableColorTag}{chanceMin}%</color>" :
                 $"{VariableColorTag}{chanceMin}-{chanceMax}%</color>";
             var value = damageMin == damageMax ?
-                $"{VariableColorTag}{damageMin}</color>" :
-                $"{VariableColorTag}{damageMin}-{damageMax}</color>";
+                $"{VariableColorTag}{row.EffectToString(damageMin)}</color>" :
+                $"{VariableColorTag}{row.EffectToString(damageMin)}-{row.EffectToString(damageMax)}</color>";
             contentText.text = L10nManager.Localize("SKILL_DESCRIPTION_ATTACK", chanceText, value);
 
             buffObject.SetActive(false);
@@ -124,21 +127,24 @@ namespace Nekoyume.UI.Module.Common
 
         private void SetHealDescription(EquipmentItemOptionSheet.Row optionRow)
         {
+            var row = TableSheets.Instance.SkillSheet[optionRow.SkillId];
             SetHealDescription(
+                row,
                 optionRow.SkillChanceMin,
                 optionRow.SkillChanceMax,
                 optionRow.SkillDamageMin,
                 optionRow.SkillDamageMax);
         }
 
-        private void SetHealDescription(int chanceMin, int chanceMax, int amountMin, int amountMax)
+        private void SetHealDescription(SkillSheet.Row row,
+            int chanceMin, int chanceMax, int amountMin, int amountMax)
         {
             var chanceText = chanceMin == chanceMax ?
                 $"{VariableColorTag}{chanceMin}%</color>" :
                 $"{VariableColorTag}{chanceMin}-{chanceMax}%</color>";
             var value = amountMin == amountMax ?
-                $"{VariableColorTag}{amountMin}</color>" :
-                $"{VariableColorTag}{amountMin}-{amountMax}</color>";
+                $"{VariableColorTag}{row.EffectToString(amountMin)}</color>" :
+                $"{VariableColorTag}{row.EffectToString(amountMin)}-{row.EffectToString(amountMax)}</color>";
             contentText.text = L10nManager.Localize("SKILL_DESCRIPTION_HEAL", chanceText, value);
 
             buffObject.SetActive(false);
@@ -147,36 +153,37 @@ namespace Nekoyume.UI.Module.Common
 
         private void SetBuffDescription(EquipmentItemOptionSheet.Row optionRow, bool isDebuff)
         {
+            var skillRow = TableSheets.Instance.SkillSheet[optionRow.SkillId];
             SetBuffDescription(
-                optionRow.SkillId,
+                skillRow,
                 optionRow.SkillChanceMin,
                 optionRow.SkillChanceMax,
                 optionRow.SkillDamageMax,
                 isDebuff);
         }
 
-        private void SetBuffDescription(int skillId, int chanceMin, int chanceMax, int damageMax, bool isDebuff)
+        private void SetBuffDescription(SkillSheet.Row skillRow, int chanceMin, int chanceMax, int damageMax, bool isDebuff)
         {
             var sheets = TableSheets.Instance;
-            var buffRow = sheets.StatBuffSheet[sheets.SkillBuffSheet[skillId].BuffIds.First()];
+            var buffRow = sheets.StatBuffSheet[sheets.SkillBuffSheet[skillRow.Id].BuffIds.First()];
             var chanceText = chanceMin == chanceMax ?
                 $"{VariableColorTag}{chanceMin}%</color>" :
                 $"{VariableColorTag}{chanceMin}-{chanceMax}%</color>";
             var statType = $"{VariableColorTag}{buffRow.StatType}</color>";
-            var value = $"{VariableColorTag}{buffRow.EffectToString(damageMax)}</color>";
-
-            contentText.text = L10nManager.Localize("SKILL_DESCRIPTION_STATBUFF", chanceText, statType, value);
+            var value = $"{VariableColorTag}{skillRow.EffectToString(damageMax)}</color>";
 
             var icon = BuffHelper.GetStatBuffIcon(buffRow.StatType, isDebuff);
             if (isDebuff)
             {
                 debuffStatTypeText.text = buffRow.StatType.GetAcronym();
                 debuffIconImage.overrideSprite = icon;
+                contentText.text = L10nManager.Localize("SKILL_DESCRIPTION_STATDEBUFF", chanceText, statType, value);
             }
             else
             {
                 buffStatTypeText.text = buffRow.StatType.GetAcronym();
                 buffIconImage.overrideSprite = icon;
+                contentText.text = L10nManager.Localize("SKILL_DESCRIPTION_STATBUFF", chanceText, statType, value);
             }
 
             buffObject.SetActive(!isDebuff);

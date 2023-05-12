@@ -193,14 +193,10 @@ namespace Nekoyume.UI
                 .option;
             var skillRow = sheets.SkillSheet[skillOptionRow.SkillId];
             var isBuffSkill = skillRow.SkillType is SkillType.Buff or SkillType.Debuff;
-            var buffRow = isBuffSkill
-                ? sheets.StatBuffSheet[sheets.SkillBuffSheet[skillOptionRow.SkillId].BuffIds.First()]
-                : null;
-
             skillName.text = L10nManager.Localize($"SKILL_NAME_{skillOptionRow.SkillId}");
             skillPowerText.text = isBuffSkill
-                ? $"{L10nManager.Localize("UI_SKILL_EFFECT")}: {buffRow.EffectToString(skillOptionRow.SkillDamageMax)}"
-                : $"{L10nManager.Localize("UI_SKILL_POWER")}: {skillOptionRow.SkillDamageMax.ToString()}";
+                ? $"{L10nManager.Localize("UI_SKILL_EFFECT")}: {skillRow.EffectToString(skillOptionRow.SkillDamageMax)}"
+                : $"{L10nManager.Localize("UI_SKILL_POWER")}: {skillOptionRow.SkillDamageMax}";
             skillChanceText.text =
                 $"{L10nManager.Localize("UI_SKILL_CHANCE")}: {skillOptionRow.SkillChanceMin.NormalizeFromTenThousandths() * 100:0%}";
         }
