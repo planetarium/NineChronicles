@@ -56,8 +56,12 @@ namespace Nekoyume.TableData
                 SkillTargetType = (SkillTargetType) Enum.Parse(typeof(SkillTargetType), fields[4]);
                 HitCount = ParseInt(fields[5]);
                 Cooldown = ParseInt(fields[6]);
-                StatPowerRatio = TryParseInt(fields[7], out var powerRatio) ? powerRatio : default;
-                ReferencedStatType = Enum.TryParse<StatType>(fields[8], out var statType) ? statType : StatType.NONE;
+
+                if (fields.Count == 9)
+                {
+                    StatPowerRatio = TryParseInt(fields[7], out var powerRatio) ? powerRatio : default;
+                    ReferencedStatType = Enum.TryParse<StatType>(fields[8], out var statType) ? statType : StatType.NONE;
+                }
             }
 
             public IValue Serialize()
