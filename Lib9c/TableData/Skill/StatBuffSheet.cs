@@ -36,7 +36,6 @@ namespace Nekoyume.TableData
             public StatType StatType { get; private set; }
             public StatModifier.OperationType OperationType { get; private set; }
             public int Value { get; private set; }
-            public StatType ReferencedStatType { get; private set; }
 
             public override void Set(IReadOnlyList<string> fields)
             {
@@ -50,9 +49,6 @@ namespace Nekoyume.TableData
                 StatType = (StatType)Enum.Parse(typeof(StatType), fields[5]);
                 OperationType = (StatModifier.OperationType)Enum.Parse(typeof(StatModifier.OperationType), fields[6]);
                 Value = ParseInt(fields[7]);
-
-                ReferencedStatType = Enum.TryParse<StatType>(fields[8], out var type)
-                    ? type : StatType.NONE;
             }
         }
 

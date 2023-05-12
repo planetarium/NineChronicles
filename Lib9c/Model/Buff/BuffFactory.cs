@@ -50,7 +50,8 @@ namespace Nekoyume.Model.Buff
             ActionBuffSheet actionBuffSheet)
         {
             var buffs = new List<Buff>();
-            var extraValueBuff = skill is BuffSkill && skill.Power > 0;
+            var extraValueBuff = skill is BuffSkill &&
+                (skill.Power > 0 || skill.SkillRow.ReferencedStatType != StatType.NONE);
 
             if (skillBuffSheet.TryGetValue(skill.SkillRow.Id, out var skillStatBuffRow))
             {
@@ -63,20 +64,15 @@ namespace Nekoyume.Model.Buff
                     if (!customField.HasValue &&
                         extraValueBuff)
                     {
-                        int additionalPower;
+                        var additionalPower = skill.Power;
                         // If ReferencedStatType exists,
-                        // buff value = original value + (referenced stat * (Skill.Power / 10000))
-                        if (buffRow.ReferencedStatType != StatType.NONE)
+                        // buff value = original value + (referenced stat * (SkillRow.StatPowerRatio / 10000))
+                        if (skill.SkillRow.ReferencedStatType != StatType.NONE)
                         {
                             var statMap = stats.StatWithItems;
-                            var multiplier = skill.Power / 10000m;
+                            var multiplier = skill.SkillRow.StatPowerRatio / 10000m;
                             additionalPower = (int)Math.Round(
-                                statMap.GetStat(buffRow.ReferencedStatType) * multiplier);
-                        }
-                        // Else, buff value = original value + Skill.Power
-                        else
-                        {
-                            additionalPower = skill.Power;
+                                statMap.GetStat(skill.SkillRow.ReferencedStatType) * multiplier);
                         }
                         
                         customField = new SkillCustomField()
