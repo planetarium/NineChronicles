@@ -471,12 +471,14 @@ namespace Nekoyume.UI
                     {
                         SetOptions(options);
 
+                        var isMimisbrunnrSubRecipe = index == MimisbrunnrRecipeIndex &&
+                                            subRecipe.IsMimisbrunnrSubRecipe.Value;
                         var hammerPointStates = States.Instance.HammerPointStates;
                         var showHammerPoint = hammerPointStates is not null &&
                                               hammerPointStates.TryGetValue(recipeId, out _hammerPointState) &&
-                                              index != MimisbrunnrRecipeIndex;
-                        hammerPointView.parentObject.SetActive(showHammerPoint);
+                                              !isMimisbrunnrSubRecipe;
 
+                        hammerPointView.parentObject.SetActive(showHammerPoint);
                         if (showHammerPoint)
                         {
                             var max = TableSheets.Instance.CrystalHammerPointSheet[recipeId].MaxPoint;
@@ -507,7 +509,7 @@ namespace Nekoyume.UI
                         }
                         else
                         {
-                            var level = index == MimisbrunnrRecipeIndex ? row.MimisLevel : row.Level;
+                            var level = isMimisbrunnrSubRecipe ? row.MimisLevel : row.Level;
                             levelText.text = $"Lv {level}";
                             levelText.enabled = true;
                         }
