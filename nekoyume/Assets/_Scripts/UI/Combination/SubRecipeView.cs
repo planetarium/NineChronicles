@@ -171,6 +171,8 @@ namespace Nekoyume.UI
         private EquipmentItemOptionSheet.Row _skillOptionRow;
         private HammerPointState _hammerPointState;
 
+        public static string[] DefaultTabNames = new string[]{ "A", "B", "C" };
+
         private void Awake()
         {
             for (int i = 0; i < normalRecipeTabGroup.recipeTabs.Count; ++i)
@@ -296,7 +298,13 @@ namespace Nekoyume.UI
 
                         if (!isNormalRecipe)
                         {
-                            var tabNames = Craft.SubRecipeTabs.First(tab => tab.RecipeId == _recipeRow.Key).TabNames;
+                            var tabNames = DefaultTabNames;
+                            var tab = Craft.SubRecipeTabs.FirstOrDefault(tab => tab.RecipeId == _recipeRow.Key);
+                            if (tab != null)
+                            {
+                                tabNames = tab.TabNames;
+                            }
+
                             for (int i = 0; i < legendaryRecipeTabGroup.recipeTabs.Count; i++)
                             {
                                 var recipeTab = legendaryRecipeTabGroup.recipeTabs[i];

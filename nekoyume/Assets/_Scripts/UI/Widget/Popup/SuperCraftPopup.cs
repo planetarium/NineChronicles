@@ -119,7 +119,13 @@ namespace Nekoyume.UI
                 legendaryRecipeTabGroup.toggleGroup.gameObject.SetActive(true);
                 legendaryRecipeTabGroup.toggleGroup.SetAllTogglesOff();
 
-                var tabNames = Craft.SubRecipeTabs.First(tab => tab.RecipeId == _recipeRow.Key).TabNames;
+                var tabNames = SubRecipeView.DefaultTabNames;
+                var tab = Craft.SubRecipeTabs.FirstOrDefault(tab => tab.RecipeId == _recipeRow.Key);
+                if (tab != null)
+                {
+                    tabNames = tab.TabNames;
+                }
+
                 for (int i = 0; i < legendaryRecipeTabGroup.recipeTabs.Count; i++)
                 {
                     var recipeTab = legendaryRecipeTabGroup.recipeTabs[i];
