@@ -364,6 +364,7 @@ namespace Nekoyume.Action
                     hammerPointSheet,
                     petOptionSheet,
                     recipeRow,
+                    subRecipeRow,
                     requiredFungibleItems,
                     addressesHex);
             }
@@ -549,6 +550,7 @@ namespace Nekoyume.Action
             CrystalHammerPointSheet hammerPointSheet,
             PetOptionSheet petOptionSheet,
             EquipmentItemRecipeSheet.Row recipeRow,
+            EquipmentItemSubRecipeSheetV2.Row subRecipeRow,
             Dictionary<int, int> requiredFungibleItems,
             string addressesHex)
         {
@@ -634,12 +636,21 @@ namespace Nekoyume.Action
                     .TransferAsset(context.Signer, Addresses.MaterialCost, costCrystal);
             }
 
-            var isBasicSubRecipe = !subRecipeId.HasValue ||
-                                   recipeRow.SubRecipeIds[0] == subRecipeId.Value;
+            int hammerPoint;
+            if (subRecipeRow?.RewardHammerPoint.HasValue ?? false)
+            {
+                hammerPoint = subRecipeRow.RewardHammerPoint.Value;
+            }
+            else
+            {
+                var isBasicSubRecipe = !subRecipeId.HasValue ||
+                                       recipeRow.SubRecipeIds[0] == subRecipeId.Value;
+                hammerPoint = isBasicSubRecipe
+                    ? BasicSubRecipeHammerPoint
+                    : SpecialSubRecipeHammerPoint;
+            }
 
-            hammerPointState.AddHammerPoint(
-                isBasicSubRecipe ? BasicSubRecipeHammerPoint : SpecialSubRecipeHammerPoint,
-                hammerPointSheet);
+            hammerPointState.AddHammerPoint(hammerPoint, hammerPointSheet);
             return states;
         }
 
