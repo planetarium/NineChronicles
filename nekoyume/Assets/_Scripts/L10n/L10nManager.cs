@@ -453,6 +453,7 @@ namespace Nekoyume.L10n
                 4 => Localize("WORLD_NAME_ASGARD"),
                 5 => Localize("WORLD_NAME_MUSPELHEIM"),
                 6 => Localize("WORLD_NAME_JOTUNHEIM"),
+                7 => Localize("WORLD_NAME_NIFLHEIM"),
                 10001 => Localize("WORLD_NAME_MIMISBRUNNR"),
                 _ => throw new ArgumentOutOfRangeException(nameof(worldId), worldId, "invalid world ID")
             };
