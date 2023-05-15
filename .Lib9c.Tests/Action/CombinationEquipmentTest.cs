@@ -97,6 +97,8 @@ namespace Lib9c.Tests.Action
         [InlineData(null, true, true, true, true, false, 11, 0, true, 1L, 2, 1, true, false, false, false, false)]
         // Mimisbrunnr Equipment.
         [InlineData(null, true, true, true, true, false, 11, 0, true, 1L, 2, 3, true, true, true, false, false)]
+        // 3rd sub recipe, not Mimisbrunnr Equipment.
+        [InlineData(null, true, true, true, true, false, 349, 0, true, 1L, 28, 101520003, true, false, false, false, false)]
         // Purchase CRYSTAL.
         [InlineData(null, true, true, true, true, false, 3, 0, true, 1L, 1, null, false, false, false, true, false)]
         // Purchase CRYSTAL with calculate previous cost.
